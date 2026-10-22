@@ -6,8 +6,8 @@ interface UnitIds {
   length: 'in' | 'ft' | 'yd' | 'mm' | 'cm' | 'm';
   area: 'in2' | 'ft2' | 'yd2' | 'mm2' | 'cm2' | 'm2';
   volume: 'in3' | 'ft3' | 'yd3' | 'mm3' | 'cm3' | 'm3';
-  mass: never;
-  density: never;
+  mass: 'lb' | 'oz' | 'ton' | 'kg' | 'tonne';
+  density: 'lb/in3' | 'lb/ft3' | 'lb/yd3' | 'ton/yd3' | 'kg/m3';
 }
 
 export type UnitIdOf<D extends DimensionName> = UnitIds[D];

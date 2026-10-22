@@ -7,6 +7,8 @@ import { valueIn, type Quantity } from './quantity.ts';
 declare const length: Quantity<'length'>;
 declare const area: Quantity<'area'>;
 declare const volume: Quantity<'volume'>;
+declare const mass: Quantity<'mass'>;
+declare const density: Quantity<'density'>;
 
 const needsArea = (value: Quantity<'area'>): Quantity<'area'> => value;
 
@@ -65,5 +67,25 @@ describe('derived dimension types (units-quantities › Derived products and quo
     divide(length, length);
     // @ts-expect-error volume × length is length^4
     multiply(volume, length);
+  });
+});
+
+describe('mass and density types (units-quantities › Derived products and quotients)', () => {
+  // spec: units-quantities › Mass over volume, Density as a derived dimension [UQ10]
+  it('derives density from mass and volume, and mass from density and volume', () => {
+    expectTypeOf(divide(mass, volume)).toEqualTypeOf<Quantity<'density'>>();
+    expectTypeOf(multiply(density, volume)).toEqualTypeOf<Quantity<'mass'>>();
+    expectTypeOf(multiply(volume, density)).toEqualTypeOf<Quantity<'mass'>>();
+    expectTypeOf(divide(mass, density)).toEqualTypeOf<Quantity<'volume'>>();
+  });
+
+  // spec: units-quantities › Unnamed product rejected [UQ24d]
+  it('rejects products and sums that mix mass or density with a length', () => {
+    // @ts-expect-error mass × length has no name
+    multiply(mass, length);
+    // @ts-expect-error density × length has no name
+    multiply(density, length);
+    // @ts-expect-error a mass is not a length
+    add(mass, length);
   });
 });

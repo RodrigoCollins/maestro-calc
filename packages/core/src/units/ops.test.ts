@@ -1,7 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { thrownCode } from '../__testing__/thrown-code.ts';
 import { Rational } from '../rational/rational.ts';
-import { ft, ft2, ft3, inch, in2, in3, m, yd2 } from './catalog.ts';
+import {
+  ft,
+  ft2,
+  ft3,
+  inch,
+  in2,
+  in3,
+  kgM3,
+  lb,
+  lbFt3,
+  m,
+  ton,
+  tonYd3,
+  yd2,
+  yd3,
+  kg,
+} from './catalog.ts';
 import {
   abs,
   add,
@@ -145,6 +161,48 @@ describe('derived products and quotients (units-quantities › Derived products 
     expect(thrownCode(() => multiply(area, area))).toBe('DIMENSION_MISMATCH');
     // @ts-expect-error length ÷ length is dimensionless; use ratio
     expect(thrownCode(() => divide(length, length))).toBe('DIMENSION_MISMATCH');
+  });
+
+  // spec: units-quantities › Unnamed product rejected [UQ24c] and Runtime dimension guard [UQ18b]
+  it('throws DIMENSION_MISMATCH for mass against length at runtime', () => {
+    const mass = quantity(1, lb);
+    // @ts-expect-error mass × length has no named dimension
+    expect(thrownCode(() => multiply(mass, length))).toBe('DIMENSION_MISMATCH');
+    // @ts-expect-error a mass is not a length
+    expect(thrownCode(() => compare(mass, length))).toBe('DIMENSION_MISMATCH');
+  });
+
+  // spec: units-quantities › Density as a derived dimension [UQ10]
+  it('turns 1.4 ton/yd3 into 2800/27 lb/ft3 and, times 3 yd3, into 8400 lb = 21/5 ton', () => {
+    const density = quantity(r(7, 5), tonYd3);
+    expect(valueIn(density, lbFt3)).toEqual(r(2800, 27));
+    const volume = quantity(3, yd3);
+    const mass = multiply(density, volume);
+    expect(mass).toEqual(quantity(8400, lb));
+    expect(valueIn(mass, ton)).toEqual(r(21, 5));
+    expect(multiply(volume, density)).toEqual(mass);
+  });
+
+  // spec: units-quantities › Metric density [UQ11]
+  it('converts 1000 kg/m3 to 14158423296/226796185 lb/ft3', () => {
+    expect(valueIn(quantity(1000, kgM3), lbFt3)).toEqual(r(14158423296, 226796185));
+  });
+
+  // spec: units-quantities › Mass over volume [UQ22]
+  it('divides 8400 lb by 3 yd3 into 2800/27 lb/ft3, and a mass by a density into 3 yd3', () => {
+    const mass = quantity(8400, lb);
+    const volume = quantity(3, yd3);
+    const density = divide(mass, volume);
+    expect(density.exponents).toEqual({ length: -3, mass: 1 });
+    expect(valueIn(density, lbFt3)).toEqual(r(2800, 27));
+    expect(equals(density, quantity(r(2800, 27), lbFt3))).toBe(true);
+    expect(divide(mass, density)).toEqual(volume);
+  });
+
+  it('compares masses across units', () => {
+    expect(compare(quantity(1, kg), quantity(2, lb))).toBe(1);
+    expect(compare(quantity(1, kg), quantity(r(23, 10), lb))).toBe(-1);
+    expect(compare(quantity(1, lb), quantity(r(45359237, 100000000), kg))).toBe(0);
   });
 
   it('checks the dimension before the zero divisor', () => {

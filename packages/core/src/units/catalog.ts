@@ -38,13 +38,35 @@ export const mm3 = cubed(mm, 'mm3');
 export const cm3 = cubed(cm, 'cm3');
 export const m3 = cubed(m, 'm3');
 
+// Canonical mass unit: the avoirdupois pound, exactly 0.45359237 kg (1959 agreement; NIST SP 811).
+// An ounce is 1/16 lb and a US short ton is 2000 lb; a tonne is 1000 kg. Written as fractions of
+// integers: 1 kg = 10^8 / 45359237 lb.
+export const lb = defineUnit('mass', 'lb', Rational.ONE);
+export const oz = defineUnit('mass', 'oz', Rational.of(1, 16));
+export const ton = defineUnit('mass', 'ton', Rational.of(2000));
+export const kg = defineUnit('mass', 'kg', Rational.of(100000000, 45359237));
+export const tonne = defineUnit('mass', 'tonne', Rational.of(100000000000, 45359237));
+
+// A density factor is the mass factor over the volume factor of its pair.
+const densityOf = (
+  mass: Unit<'mass'>,
+  volume: Unit<'volume'>,
+  id: UnitIdOf<'density'>,
+): Unit<'density'> => defineUnit('density', id, mass.factor.div(volume.factor));
+
+export const lbIn3 = densityOf(lb, in3, 'lb/in3');
+export const lbFt3 = densityOf(lb, ft3, 'lb/ft3');
+export const lbYd3 = densityOf(lb, yd3, 'lb/yd3');
+export const tonYd3 = densityOf(ton, yd3, 'ton/yd3');
+export const kgM3 = densityOf(kg, m3, 'kg/m3');
+
 /** Every unit, grouped by dimension. */
 export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } = {
   length: [inch, ft, yd, mm, cm, m],
   area: [in2, ft2, yd2, mm2, cm2, m2],
   volume: [in3, ft3, yd3, mm3, cm3, m3],
-  mass: [],
-  density: [],
+  mass: [lb, oz, ton, kg, tonne],
+  density: [lbIn3, lbFt3, lbYd3, tonYd3, kgM3],
 };
 
 /**

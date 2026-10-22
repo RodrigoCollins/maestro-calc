@@ -11,17 +11,28 @@ import {
   inch,
   in2,
   in3,
+  kg,
+  kgM3,
+  lb,
+  lbFt3,
+  lbIn3,
+  lbYd3,
   m,
   m2,
   m3,
   mm,
   mm2,
   mm3,
+  oz,
+  tonne,
+  ton,
+  tonYd3,
   UNITS,
   yd,
   yd2,
   yd3,
 } from './catalog.ts';
+import type { DimensionName } from './dimension.ts';
 import type { Unit } from './unit.ts';
 
 // Literal factor table copied from the spec (units-quantities › Exact unit factors); the
@@ -45,9 +56,19 @@ const TABLE = [
   ['volume', mm3, 'mm3', 125n, 2048383n],
   ['volume', cm3, 'cm3', 125000n, 2048383n],
   ['volume', m3, 'm3', 125000000000n, 2048383n],
+  ['mass', lb, 'lb', 1n, 1n],
+  ['mass', oz, 'oz', 1n, 16n],
+  ['mass', ton, 'ton', 2000n, 1n],
+  ['mass', kg, 'kg', 100000000n, 45359237n],
+  ['mass', tonne, 'tonne', 100000000000n, 45359237n],
+  ['density', lbIn3, 'lb/in3', 1n, 1n],
+  ['density', lbFt3, 'lb/ft3', 1n, 1728n],
+  ['density', lbYd3, 'lb/yd3', 1n, 46656n],
+  ['density', tonYd3, 'ton/yd3', 125n, 2916n],
+  ['density', kgM3, 'kg/m3', 2048383n, 56699046250n],
 ] as const;
 
-describe('length, area and volume units (units-quantities › Exact unit factors)', () => {
+describe('the 28 units (units-quantities › Exact unit factors)', () => {
   it.each(TABLE)('%s unit %#: id, dimension and exact factor', (dimension, unit, id, num, den) => {
     expect(unit.id).toBe(id);
     expect(unit.dimension).toBe(dimension);
@@ -73,25 +94,40 @@ describe('length, area and volume units (units-quantities › Exact unit factors
     }
   });
 
-  // spec: units-quantities › Dimension model — units are immutable
+  // spec: units-quantities › Table factor audit [UQ12]: each density factor is the mass factor
+  // divided by the volume factor of its pair
+  it('has density factors equal to the mass factor over the volume factor', () => {
+    const pairs = [
+      [lbIn3, lb, in3],
+      [lbFt3, lb, ft3],
+      [lbYd3, lb, yd3],
+      [tonYd3, ton, yd3],
+      [kgM3, kg, m3],
+    ] as const;
+    for (const [density, mass, volume] of pairs) {
+      expect(density.factor, density.id).toEqual(mass.factor.div(volume.factor));
+    }
+  });
+
+  // spec: units-quantities › Exact unit factors — 45,359,237 is coprime with 10^8 (reduced)
+  it('keeps the kilogram exact through the 1959 pound (1 lb = 0.45359237 kg)', () => {
+    expect(kg.factor.num * 45359237n).toBe(100000000n * kg.factor.den);
+    expect(tonne.factor).toEqual(kg.factor.mul(Rational.of(1000)));
+  });
+
+  // spec: units-quantities › Dimension model — units are immutable; Table: 28 units
   it('freezes every unit', () => {
-    const all: readonly Unit<'length' | 'area' | 'volume'>[] = [
+    const all: readonly Unit<DimensionName>[] = [
       ...UNITS.length,
       ...UNITS.area,
       ...UNITS.volume,
+      ...UNITS.mass,
+      ...UNITS.density,
     ];
-    expect(all).toHaveLength(18);
+    expect(all).toHaveLength(28);
     for (const unit of all) {
       expect(Object.isFrozen(unit), unit.id).toBe(true);
     }
-  });
-});
-
-// Interim: mass and density rows arrive with the slice that adds them (tasks 5.2 and 5.3).
-describe('catalog scope', () => {
-  it('lists no mass or density unit yet', () => {
-    expect(UNITS.mass).toEqual([]);
-    expect(UNITS.density).toEqual([]);
   });
 });
 
@@ -102,6 +138,8 @@ describe('findUnit (units-quantities › Unit lookup by id)', () => {
     expect(findUnit('area', 'ft2')).toBe(ft2);
     expect(findUnit('volume', 'm3')).toBe(m3);
     expect(findUnit('length', 'in')).toBe(inch);
+    expect(findUnit('mass', 'kg')).toBe(kg);
+    expect(findUnit('density', 'lb/ft3')).toBe(lbFt3);
   });
 
   it('answers undefined for other cases, unknown ids and ids of another dimension', () => {
@@ -110,6 +148,7 @@ describe('findUnit (units-quantities › Unit lookup by id)', () => {
     expect(findUnit('length', 'ft2')).toBeUndefined();
     expect(findUnit('area', 'ft')).toBeUndefined();
     expect(findUnit('length', '')).toBeUndefined();
+    expect(findUnit('length', 'kg')).toBeUndefined();
   });
 
   // spec: units-quantities › Known and unknown ids — every table id resolves to its constant
