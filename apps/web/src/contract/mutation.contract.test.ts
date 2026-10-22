@@ -80,11 +80,13 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     );
   });
 
-  // design: a timeout is an optimistic kill, so the budget is generous and the parallelism fixed
+  // design: a timeout is an optimistic kill, so the budget is fixed. A clean run of the suite
+  // takes about 2.3 s, so 10 s (times the factor) leaves headroom for a loaded runner while a
+  // non-terminating mutant costs 10 s instead of 30 s; 4 workers fit a 4-vCPU runner.
   it('bounds each mutant run and fixes the parallelism', () => {
-    expect(config.timeoutMS).toBe(30000);
+    expect(config.timeoutMS).toBe(10000);
     expect(config.timeoutFactor).toBe(4);
-    expect(config.concurrency).toBe(3);
+    expect(config.concurrency).toBe(4);
   });
 
   // design: stale reports must not be copied into the sandboxes

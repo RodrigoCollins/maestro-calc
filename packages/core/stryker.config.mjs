@@ -92,9 +92,11 @@ export default {
   incrementalFile: `reports/${incrementalName}`,
   reporters: ['clear-text', 'progress-append-only', 'html', 'json'],
   htmlReporter: { fileName: 'reports/mutation/index.html' },
-  // A timeout counts as a kill, so the budget is generous and the parallelism fixed.
-  timeoutMS: 30000,
+  // A timeout counts as a kill. A clean run of the suite takes about 2.3 s, so 10 s (times the
+  // factor) is ample headroom, and the 8 `gcd` mutants that never terminate cost 10 s each, not
+  // 30 s. Four workers fit the 4 vCPUs of a CI runner.
+  timeoutMS: 10000,
   timeoutFactor: 4,
-  concurrency: 3,
+  concurrency: 4,
   thresholds: { high: 95, low: 90, break: 90 },
 };
