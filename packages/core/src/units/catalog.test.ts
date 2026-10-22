@@ -110,7 +110,7 @@ describe('the 28 units (units-quantities › Exact unit factors)', () => {
   });
 
   // spec: units-quantities › Exact unit factors — 45,359,237 is coprime with 10^8 (reduced)
-  it('keeps the kilogram exact through the 1959 pound (1 lb = 0.45359237 kg)', () => {
+  it('keeps the kilogram exact through the 1959 pound (1 lb = 45359237/10^8 kg)', () => {
     expect(kg.factor.num * 45359237n).toBe(100000000n * kg.factor.den);
     expect(tonne.factor).toEqual(kg.factor.mul(Rational.of(1000)));
   });

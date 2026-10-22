@@ -12,3 +12,4 @@ export type {
   RationalParseError,
 } from './rational/index.ts';
 export { err, ok, type Result } from './result.ts';
+export * from './units/index.ts';

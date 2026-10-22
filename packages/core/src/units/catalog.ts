@@ -38,7 +38,7 @@ export const mm3 = cubed(mm, 'mm3');
 export const cm3 = cubed(cm, 'cm3');
 export const m3 = cubed(m, 'm3');
 
-// Canonical mass unit: the avoirdupois pound, exactly 0.45359237 kg (1959 agreement; NIST SP 811).
+// Canonical mass unit: the avoirdupois pound, exactly 45359237/10^8 kg (1959 agreement; NIST SP 811).
 // An ounce is 1/16 lb and a US short ton is 2000 lb; a tonne is 1000 kg. Written as fractions of
 // integers: 1 kg = 10^8 / 45359237 lb.
 export const lb = defineUnit('mass', 'lb', Rational.ONE);
