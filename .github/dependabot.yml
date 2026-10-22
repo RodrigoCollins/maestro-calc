@@ -1,0 +1,30 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+    open-pull-requests-limit: 5
+    groups:
+      vitest:
+        patterns: ['vitest', '@vitest/*']
+      eslint:
+        patterns: ['eslint', '@eslint/*', 'typescript-eslint', 'eslint-plugin-*', 'eslint-config-*']
+      prettier:
+        patterns: ['prettier', 'prettier-plugin-*']
+    ignore:
+      # typescript-eslint and @astrojs/check must declare support before a new TypeScript major.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      # Stay on the Node major pinned in .nvmrc.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+    open-pull-requests-limit: 5
