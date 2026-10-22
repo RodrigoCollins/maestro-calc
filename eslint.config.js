@@ -5,6 +5,7 @@ import astro from 'eslint-plugin-astro';
 import { createNodeResolver, importX } from 'eslint-plugin-import-x';
 import tseslint from 'typescript-eslint';
 import { testGlobs as testSupportGlobs } from './tooling/test-globs.js';
+import { packageNames, workspaceDirs } from './tooling/workspaces.js';
 
 /** Restricted globals grouped by the reason they are banned in packages/core. */
 const restrictedGlobalGroups = [
@@ -100,7 +101,17 @@ const layerImports = {
 
 const coreFiles = 'packages/core/**/*.{ts,mts,cts,tsx,js,mjs,cjs}';
 
-const testGlobs = [...testSupportGlobs, '**/*.config.{js,ts,mjs}'];
+const scriptExtensions = 'ts,mts,cts,tsx,js,mjs,cjs';
+const packageGlob = `packages/{${packageNames(import.meta.dirname).join(',')}}`;
+
+/** Config files are exempt only at a workspace root, never inside `src`. */
+const configGlobs = [
+  '*.config.{js,ts,mjs}',
+  'packages/*/*.config.{js,ts,mjs}',
+  'apps/*/*.config.{js,ts,mjs}',
+];
+
+const testGlobs = [...testSupportGlobs, ...configGlobs];
 
 /** @param {{ packageDir: string[]; devDependencies: boolean }} options */
 const extraneous = (options) => ({ 'import-x/no-extraneous-dependencies': ['error', options] });
@@ -112,7 +123,7 @@ const extraneous = (options) => ({ 'import-x/no-extraneous-dependencies': ['erro
  */
 const dependencyBlocks = (dir) => [
   {
-    files: [`${dir}/src/**/*.{ts,astro}`],
+    files: [`${dir}/src/**/*.{${scriptExtensions},astro}`],
     ignores: testGlobs,
     rules: extraneous({ packageDir: [dir], devDependencies: false }),
   },
@@ -161,7 +172,7 @@ export default defineConfig(
   { files: [coreFiles], rules: { ...coverageHonesty, ...layerImports.core } },
   { files: [coreFiles], ignores: testGlobs, rules: corePurity },
   {
-    files: ['packages/{core,data,i18n}/src/**/*.{ts,mts,cts,tsx}'],
+    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
     rules: {
       // Typings bypass: a reference directive pulls DOM or Node typings past tsconfig.src.json.
       '@typescript-eslint/triple-slash-reference': [
@@ -172,7 +183,7 @@ export default defineConfig(
   },
   {
     // Widening assertions defeat the type checker (spec: quality-gates, Lint gate).
-    files: ['packages/{core,data,i18n}/src/**/*.{ts,mts,cts,tsx}'],
+    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
     ignores: testGlobs,
     rules: { '@typescript-eslint/no-unsafe-type-assertion': 'error' },
   },
@@ -180,7 +191,7 @@ export default defineConfig(
   { files: ['packages/data/**/*.{ts,mts,cts,tsx}'], rules: layerImports.data },
   { files: ['apps/web/**/*.{ts,astro}'], rules: importsFor() },
   { files: ['**/*.astro'], plugins: { 'import-x': importX } },
-  ...['packages/core', 'packages/data', 'packages/i18n', 'apps/web'].flatMap(dependencyBlocks),
+  ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
   ...astro.configs['flat/recommended'],
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
   prettier,

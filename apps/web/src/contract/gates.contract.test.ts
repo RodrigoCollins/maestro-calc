@@ -70,6 +70,19 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     ['new Date()', 'no-restricted-globals'],
   ])('rejects %s in core', (expression, rule) => rejects(exportOf(expression), CORE, rule));
 
+  // design: only package-root config files are exempt from purity, never a source named *.config.ts
+  it('applies purity to a *.config.ts file inside core sources', () =>
+    rejects(
+      exportOf('Math.random()'),
+      'packages/core/src/x.config.ts',
+      'no-restricted-properties',
+    ));
+
+  it('exempts a package-root config file from purity', async () => {
+    const outcome = await lint(exportOf('Math.random()'), 'packages/core/vitest.config.ts');
+    expect(outcome.ruleIds).not.toContain('no-restricted-properties');
+  });
+
   // design: float leakage is a lint error in core
   it.each([
     ['(x: number) => x.toFixed(2)', 'no-restricted-syntax'],
@@ -162,6 +175,17 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     [PAGE, "---\nimport { parse } from 'yaml';\nparse('');\n---\n<p />\n"],
   ])('rejects an undeclared dependency in %s', (path, code) =>
     rejects(code, path, 'import-x/no-extraneous-dependencies'),
+  );
+
+  // design: Dependency direction — every script extension is covered, not only .ts and .astro
+  it.each(['mts', 'cts', 'tsx', 'js', 'mjs', 'cjs'])(
+    'rejects an undeclared dependency in a .%s package source',
+    (extension) =>
+      rejects(
+        "import { parse } from 'yaml';\nexport const v = parse;\n",
+        `packages/core/src/x.${extension}`,
+        'import-x/no-extraneous-dependencies',
+      ),
   );
 
   // spec: quality-gates › Clean tree [QG3]
