@@ -35,7 +35,7 @@ describe('unit conversion properties (units-quantities › Construction and conv
     expect(counts.reduce((total, count) => total + count, 0)).toBe(28);
   });
 
-  // spec: units-quantities › Round trip property [UQ14a]
+  // spec: units-quantities › Round trip property [UQ14], all 28 units
   it('reads back the value it was built from, in every unit', () => {
     forAllRationals((x) => {
       roundTrips(x, UNITS.length);
