@@ -232,3 +232,40 @@ Mutation, 04e tip, cold (`reports/` pruned by the new config): score 100.00 (tot
 - `Quantity<D>` is an exported interface (`exponents`, `canonical`, `[brand]`); the branded value is built by an internal frozen class with a `declare`d brand field and one internal factory `makeQuantity`, which is not in the barrel. A `declare const` brand would break the ambient-declaration ban, so the brand is `const brand: unique symbol = Symbol()`.
 - `scale` and `divideScalar` take a `Rational` only, as the spec says "exact Rational".
 - Task 4.0 A3/B3: the identity list hashes `.nvmrc` (not `process.version`), the whole package `*.json` set (adds `package.json`), `../../tsconfig.base.json` and `../../vitest.config.ts`. The new contract test asserts the config list EQUALS the files matched by the CI `hashFiles` globs (both directions), a stronger form of "covers every glob".
+
+### PR 4 correction round 1 (4-lens review, all pass; task 4.10)
+
+Mode: strict TDD. Applied M1, M2, M3 and every MINOR (RISK-2, RISK-3, R2, R3, R5, R6, RES-3, RES-4, RD-2 to RD-19); each new enforcement had a failing test or probe first. Deferred: none; follow-up 4.11 records RISK-1. Owner-branch fixes went into 04a, 04c and 04d (plain commits, later slices rebased with `git rebase --onto --update-refs`); 04b (391) and 04e (400) had no room, so the dimension and catalog fixes form the new slice `feat/foundation-04f-type-cost-and-hygiene`. `bf0ca02` was split into three work units (identity hash and prune, exact `STRYKER` flag, `isNegative` without a pragma). History is local and unpushed.
+
+| Branch | Changed lines (excl. lockfile) | `npm run verify` tests |
+|---|---|---|
+| 04a | 293 | 297 |
+| 04b | 391 | 329 |
+| 04c | 241 | 346 |
+| 04d | 352 | 368 |
+| 04e | 400 | 389 |
+| 04f | 363 | 396 |
+
+| Id | RED | GREEN |
+|---|---|---|
+| M1 | `typecost.contract.test.ts`: `expected 1354888 to be less than 100000` | `infer … extends InRange` guard in `SumOf`/`DifferenceOf`; 16,272 instantiations. Broken `Step` or `Add` variants still fail 42 and 26 typecheck errors |
+| M2 | contract pins for `timeoutMS 10000`, `concurrency 4` failed | config changed; 8 timeouts unchanged (below) |
+| M3 | n/a (vacuous check) | real `Rational.ONE` plus an unbranded control; removing the brand reports TS2578 at that line |
+| RISK-3, R2 | importing the config deleted a probe report; `sourceFilesIn` and `isStrykerEntry` missing | prune runs only for the `stryker` executable; dotfiles skipped in the list |
+| RISK-2, R5, R6, RES-4 | `findUnit('__proto__')` threw; catalog not frozen; no pure annotations | frozen catalog, `Object.hasOwn` guard, float scan, `/* @__PURE__ */` pins |
+
+Type cost (`npx tsc -p packages/core/tsconfig.src.json --noEmit --extendedDiagnostics`), before and after: types 187,715 to 4,934; instantiations 1,354,888 to 16,272; memory 347,393K to 47,216K; check time 1.14 s to 0.12 s.
+
+Mutation, 04f tip, cold (`reports/` removed), before (04e tip, `timeoutMS 30000`, `concurrency 3`) and after:
+
+| | Score | Killed | Timeouts | Survived | Mutants | Cold wall | Warm |
+|---|---|---|---|---|---|---|---|
+| before | 100.00 | 318 | 8 | 0 | 326 | 4 min 53 s | not measured |
+| after | 100.00 | 321 | 8 | 0 | 329 | 3 min 13 s | 2.6 s (329 of 329 reused) |
+
+The 8 timeouts are all in `rational.ts`: the `abs` arrow, the `gcd` loop block, array and `x * y` mutants, the `toBigInt` block, its `typeof` condition and equality, and the `isZero` condition; no new timeouts, so the shorter budget misclassified nothing. A stale `stryker-incremental-*.json` was pruned by a real run and survives a plain import. Negative proof [QG11]: `rational.test.ts` moved away gave score 86.63 (278 killed, 7 timeouts, 44 survived), exit 1 after 3 min 6 s; the file was restored and the tree is clean.
+
+Bundle (Rolldown, minified, gzip -9): `import { ft }` 3,020 B (1,380 gzip) before and 2,340 B (1,125 gzip) after; full barrel 5,762 B (2,413 gzip) before and 6,607 B (2,467 gzip) after (freezing and the `findUnit` guard cost about 0.8 kB when everything is imported).
+
+Accepted risk (RISK-1, also for the 04e and 04f PR bodies): `npm audit` reports dev-only findings through Stryker (`typed-rest-client` pulls an old `qs`, and 5 high `braces` findings that Dependabot #13 clears); none ships in the web bundle. Task 4.11 holds the fix at the next lockfile touch.
+

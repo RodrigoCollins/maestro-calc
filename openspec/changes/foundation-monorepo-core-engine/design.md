@@ -322,6 +322,12 @@ npm symlinks `node_modules/@maestro-calc/*` → `packages/*`; Vite resolves `exp
 
 Core is synchronous, side-effect-free and tree-shakeable (`sideEffects: false`, named free functions, per-calculator subpaths). Expected island payload for one calculator (Rational + units + parser + codec + calc) is a few KB gzip; `bigint` is supported by all evergreen browsers since 2020. Default results are prerendered, so first paint shows a correct answer without JS — the main lever for <1 s load and Lighthouse ≥95. Bundle-size budgets (size-limit) and Lighthouse land with the web/deploy changes.
 
+### Performance levers
+
+- Type-check cost: `AddVec`/`SubVec` bind each component with `infer … extends InRange` before the recursive `Add`/`Sub`, so no generic argument reaches the recursion. `tsc -p packages/core/tsconfig.src.json --extendedDiagnostics` went from 1,354,888 instantiations (347 MB, 1.14 s, 27 percent of the TS2589 budget, growing with every base dimension) to 16,272 (47 MB, 0.12 s). `typecost.contract.test.ts` fails above 100,000 instantiations.
+- Tree-shaking: unit definitions and the frozen `UNITS` catalog are `/* @__PURE__ */`. Rolldown, minified: importing only `ft` bundles 2,340 B (1,125 B gzip) instead of 3,020 B (1,380 B gzip); the full barrel grows from 5,762 B (2,413 B gzip) to 6,607 B (2,467 B gzip) because the catalog is now frozen and `findUnit` checks its input.
+- Mutation job: `timeoutMS 10000` and `concurrency 4` cut the cold run from 4 min 53 s to 3 min 13 s (follow-up 3.19b holds the sharding trigger).
+
 ## File Changes and PR Slicing
 
 Forecasts exclude the lockfile and pure renames; each slice ≤ 400 changed lines.
