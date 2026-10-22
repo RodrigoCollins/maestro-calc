@@ -58,6 +58,51 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     (name) => rejects(exportOf(name), CORE, 'no-restricted-globals'),
   );
 
+  // design: Purity (core) — ambient host redeclarations cannot reintroduce a banned global
+  it.each([
+    'declare const process: { env: Record<string, string | undefined> };\nexport const v = process.env["A"];\n',
+    'declare function fetch(url: string): void;\nexport const v = fetch;\n',
+    'declare global { const process: { env: Record<string, string> }; }\nexport const v = 1;\n',
+  ])('rejects the ambient declaration in package sources: %s', async (code) => {
+    for (const dir of ['core', 'data', 'i18n']) {
+      await rejects(code, `packages/${dir}/src/x.ts`, 'no-restricted-syntax');
+    }
+  });
+
+  it('allows ambient declarations in .d.ts files', async () => {
+    const outcome = await lint('declare const __BUILD__: string;\n', 'packages/core/src/env.d.ts');
+    expect(outcome.ruleIds).not.toContain('no-restricted-syntax');
+  });
+
+  // design: Purity (core) — host globals beyond the browser set
+  it.each([
+    'console',
+    'setTimeout',
+    'setInterval',
+    'clearTimeout',
+    'clearInterval',
+    'queueMicrotask',
+    'structuredClone',
+    'crypto',
+    'TextEncoder',
+    'TextDecoder',
+    'URLSearchParams',
+    'URL',
+  ])('rejects the host global %s in core', (name) =>
+    rejects(exportOf(name), CORE, 'no-restricted-globals'),
+  );
+
+  // design: test support stays out of shipped code
+  it.each(['core', 'data', 'i18n'])(
+    'rejects importing __testing__ code from packages/%s sources',
+    (dir) =>
+      rejects(
+        "import { fixture } from './__testing__/fixture.ts';\nexport const v = fixture;\n",
+        `packages/${dir}/src/x.ts`,
+        'no-restricted-imports',
+      ),
+  );
+
   // design: Purity (core) — the global object cannot be used to reach restricted globals
   it.each(['globalThis', 'self', 'global'])('rejects the global object alias %s in core', (name) =>
     rejects(exportOf(name), CORE, 'no-restricted-globals'),
