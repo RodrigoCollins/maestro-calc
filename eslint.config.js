@@ -40,11 +40,14 @@ const restrictedGlobals = restrictedGlobalGroups.flatMap(({ names, reason }) =>
   names.map((name) => ({ name, message: `\`${name}\` ${reason}` })),
 );
 
+const floatFormatters = '/^(toFixed|toPrecision|toExponential|toLocaleString)$/';
+
 const corePurity = {
   'no-restricted-globals': ['error', ...restrictedGlobals],
   'no-restricted-properties': [
     'error',
     { object: 'Math', property: 'random', message: 'Nondeterministic; not allowed in core.' },
+    // MW10 anchor: kept next to the `Date` global ban so `Date.now()` names its own rule.
     { object: 'Date', property: 'now', message: 'Nondeterministic; not allowed in core.' },
     {
       object: 'Number',
@@ -55,8 +58,12 @@ const corePurity = {
   'no-restricted-syntax': [
     'error',
     {
-      selector: "CallExpression[callee.property.name='toFixed']",
-      message: 'toFixed leaks floating point; format through exact Rational helpers.',
+      selector: `CallExpression[callee.property.name=${floatFormatters}]`,
+      message: 'Number formatting leaks floating point; format through exact Rational helpers.',
+    },
+    {
+      selector: `CallExpression[callee.property.value=${floatFormatters}]`,
+      message: 'Number formatting leaks floating point; format through exact Rational helpers.',
     },
   ],
 };
