@@ -86,6 +86,11 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
   // design: float leakage is a lint error in core
   it.each([
     ['(x: number) => x.toFixed(2)', 'no-restricted-syntax'],
+    ['(x: number) => x.toPrecision(2)', 'no-restricted-syntax'],
+    ['(x: number) => x.toExponential(2)', 'no-restricted-syntax'],
+    ['(x: number) => x.toLocaleString()', 'no-restricted-syntax'],
+    ["(x: number) => x['toFixed'](2)", 'no-restricted-syntax'],
+    ["(x: number) => x['toLocaleString']()", 'no-restricted-syntax'],
     ["parseFloat('1')", 'no-restricted-globals'],
     ["Number.parseFloat('1')", 'no-restricted-properties'],
   ])('rejects %s in core', (expression, rule) => rejects(exportOf(expression), CORE, rule));
