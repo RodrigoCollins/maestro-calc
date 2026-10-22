@@ -31,6 +31,10 @@ const lint = async (code: string, relativePath: string): Promise<Outcome> => {
   };
 };
 
+// Type-aware probes lint the candidate text in place of an existing on-disk file, which the
+// project service knows (R6 fallback in the tasks list).
+const typedEslint = new ESLint({ cwd: repoRoot });
+
 const CORE = 'packages/core/src/x.ts';
 const PAGE = 'apps/web/src/pages/x.astro';
 
@@ -72,6 +76,19 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     ["parseFloat('1')", 'no-restricted-globals'],
     ["Number.parseFloat('1')", 'no-restricted-properties'],
   ])('rejects %s in core', (expression, rule) => rejects(exportOf(expression), CORE, rule));
+
+  // spec: quality-gates › Lint gate — widening type assertions are errors in core
+  it.each(['core', 'data', 'i18n'])(
+    'rejects a widening type assertion in packages/%s sources',
+    async (dir) => {
+      const path = fromRoot(`packages/${dir}/src/index.ts`);
+      const code = 'export const v = JSON.parse("1") as unknown as string;\n';
+      const [result] = await typedEslint.lintText(code, { filePath: path });
+      expect(result?.messages.map((message) => message.ruleId)).toContain(
+        '@typescript-eslint/no-unsafe-type-assertion',
+      );
+    },
+  );
 
   // spec: quality-gates › Ignore pragma forbidden [QG9]
   it.each(['v8 ignore next', 'c8 ignore next', 'istanbul ignore next'])(
