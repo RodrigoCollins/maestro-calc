@@ -5,7 +5,7 @@ import astro from 'eslint-plugin-astro';
 import { createNodeResolver, importX } from 'eslint-plugin-import-x';
 import tseslint from 'typescript-eslint';
 import { testGlobs as testSupportGlobs } from './tooling/test-globs.js';
-import { packageNames, workspaceDirs } from './tooling/workspaces.js';
+import { packageGlobs, workspaceDirs } from './tooling/workspaces.js';
 
 /** Restricted globals grouped by the reason they are banned in packages/core. */
 const restrictedGlobalGroups = [
@@ -58,9 +58,13 @@ const restrictedGlobals = restrictedGlobalGroups.flatMap(({ names, reason }) =>
 const floatFormatters = '/^(toFixed|toPrecision|toExponential|toLocaleString)$/';
 
 const ambientSyntax = [
-  'TSModuleDeclaration[global=true]',
   'VariableDeclaration[declare=true]',
   'TSDeclareFunction[declare=true]',
+  'ClassDeclaration[declare=true]',
+  'TSEnumDeclaration[declare=true]',
+  // Covers `declare namespace`, `declare module 'x'` and `declare global`.
+  'TSModuleDeclaration[declare=true]',
+  'TSModuleDeclaration[global=true]',
 ];
 
 const ambientRestrictions = ambientSyntax.map((selector) => ({
@@ -68,7 +72,8 @@ const ambientRestrictions = ambientSyntax.map((selector) => ({
   message: 'Ambient declarations are not allowed in package sources; use a .d.ts file.',
 }));
 
-const corePurity = {
+/** @param {typeof ambientRestrictions} syntax extra restricted syntax (the ambient ban) */
+const corePurity = (syntax) => ({
   'no-restricted-globals': ['error', ...restrictedGlobals],
   'no-restricted-properties': [
     'error',
@@ -91,9 +96,9 @@ const corePurity = {
       selector: `CallExpression[callee.property.value=${floatFormatters}]`,
       message: 'Number formatting leaks floating point; format through exact Rational helpers.',
     },
-    ...ambientRestrictions,
+    ...syntax,
   ],
-};
+});
 
 /** Coverage pragmas are banned everywhere in core, tests and test support included. */
 const coverageHonesty = {
@@ -145,16 +150,22 @@ const testSupportImport = banned(
 const coreFiles = 'packages/core/**/*.{ts,mts,cts,tsx,js,mjs,cjs}';
 
 const scriptExtensions = 'ts,mts,cts,tsx,js,mjs,cjs';
-const packageGlob = `packages/{${packageNames(import.meta.dirname).join(',')}}`;
+/** @param {string} tail */
+const inPackages = (tail) => packageGlobs(import.meta.dirname, tail);
 
 /** Config files are exempt only at a workspace root, never inside `src`. */
-const configGlobs = [
-  '*.config.{js,ts,mjs}',
-  'packages/*/*.config.{js,ts,mjs}',
-  'apps/*/*.config.{js,ts,mjs}',
-];
+const configFile = '*.config.{js,ts,mjs}';
 
-const testGlobs = [...testSupportGlobs, ...configGlobs];
+/** Relative to one workspace root (dependency blocks prefix it with the workspace directory). */
+const relativeTestGlobs = [...testSupportGlobs, configFile];
+
+/** Relative to the repository root. */
+const testGlobs = [
+  ...testSupportGlobs,
+  configFile,
+  'packages/*/' + configFile,
+  'apps/*/' + configFile,
+];
 
 /** @param {{ packageDir: string[]; devDependencies: boolean }} options */
 const extraneous = (options) => ({ 'import-x/no-extraneous-dependencies': ['error', options] });
@@ -171,7 +182,7 @@ const dependencyBlocks = (dir) => [
     rules: extraneous({ packageDir: [dir], devDependencies: false }),
   },
   {
-    files: testGlobs.map((glob) => `${dir}/${glob}`),
+    files: relativeTestGlobs.map((glob) => `${dir}/${glob}`),
     rules: extraneous({ packageDir: ['.', dir], devDependencies: true }),
   },
 ];
@@ -216,15 +227,22 @@ export default defineConfig(
   {
     // Core sources get the same selectors through corePurity. Ambient declarations could redeclare a banned host global and silence both the type
     // checker and the globals rule.
-    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
+    files: inPackages('src/**/*.{ts,mts,cts,tsx}'),
     ignores: [...testGlobs, '**/*.d.ts'],
     rules: {
       'no-restricted-syntax': ['error', ...ambientRestrictions],
     },
   },
-  { files: [coreFiles], ignores: [...testGlobs, '**/*.d.ts'], rules: corePurity },
   {
-    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
+    files: [coreFiles],
+    ignores: [...testGlobs, '**/*.d.ts'],
+    rules: corePurity(ambientRestrictions),
+  },
+  // Declaration files are exempt from the ambient ban only: they must still obey every other
+  // purity rule.
+  { files: ['packages/core/**/*.d.ts'], ignores: testGlobs, rules: corePurity([]) },
+  {
+    files: inPackages('src/**/*.{ts,mts,cts,tsx}'),
     rules: {
       // Typings bypass: a reference directive pulls DOM or Node typings past tsconfig.src.json.
       '@typescript-eslint/triple-slash-reference': [
@@ -235,7 +253,7 @@ export default defineConfig(
   },
   {
     // Widening assertions defeat the type checker (spec: quality-gates, Lint gate).
-    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
+    files: inPackages('src/**/*.{ts,mts,cts,tsx}'),
     ignores: testGlobs,
     rules: { '@typescript-eslint/no-unsafe-type-assertion': 'error' },
   },

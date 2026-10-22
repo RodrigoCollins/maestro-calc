@@ -23,3 +23,16 @@ export const workspaceDirs = (root) => [
   ...packageNames(root).map((name) => `packages/${name}`),
   ...workspaceNames(root, 'apps').map((name) => `apps/${name}`),
 ];
+
+/**
+ * One literal glob per package (`packages/core/<tail>`). A brace group over one or zero packages
+ * matches nothing, which would silently disable every rule scoped to it, so an empty list throws.
+ * @param {string} root
+ * @param {string} tail
+ * @returns {string[]}
+ */
+export const packageGlobs = (root, tail) => {
+  const names = packageNames(root);
+  if (names.length === 0) throw new Error(`no packages found under ${root}/packages`);
+  return names.map((name) => `packages/${name}/${tail}`);
+};

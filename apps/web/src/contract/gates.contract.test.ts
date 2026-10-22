@@ -63,6 +63,11 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     'declare const process: { env: Record<string, string | undefined> };\nexport const v = process.env["A"];\n',
     'declare function fetch(url: string): void;\nexport const v = fetch;\n',
     'declare global { const process: { env: Record<string, string> }; }\nexport const v = 1;\n',
+    // Judgment Day F1: ambient classes, enums and namespaces redeclare globals as well.
+    'declare class URL {}\nexport const v = URL;\n',
+    'declare enum Mode { A }\nexport const v = Mode.A;\n',
+    'declare namespace Host { const name: string }\nexport const v = Host.name;\n',
+    "declare module 'host' { export const name: string }\nexport const v = 1;\n",
   ])('rejects the ambient declaration in package sources: %s', async (code) => {
     for (const dir of ['core', 'data', 'i18n']) {
       await rejects(code, `packages/${dir}/src/x.ts`, 'no-restricted-syntax');
@@ -72,6 +77,25 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
   it('allows ambient declarations in .d.ts files', async () => {
     const outcome = await lint('declare const __BUILD__: string;\n', 'packages/core/src/env.d.ts');
     expect(outcome.ruleIds).not.toContain('no-restricted-syntax');
+    expect(outcome.errorCount).toBe(0);
+  });
+
+  // Judgment Day F3: .d.ts files are exempt from the ambient ban only, never from purity. Type
+  // positions cannot trip these rules, so the effective configuration is asserted instead.
+  it('keeps every core purity rule except the ambient ban on .d.ts files', async () => {
+    const config = (await eslint.calculateConfigForFile(
+      fromRoot('packages/core/src/env.d.ts'),
+    )) as { rules: Record<string, unknown[]> };
+    for (const rule of [
+      'no-restricted-globals',
+      'no-restricted-properties',
+      'no-restricted-syntax',
+    ]) {
+      expect(config.rules[rule]?.[0], rule).toBe(2);
+    }
+    const selectors = JSON.stringify(config.rules['no-restricted-syntax']);
+    expect(selectors).toContain('toFixed');
+    expect(selectors).not.toContain('declare=true');
   });
 
   // design: Purity (core) — host globals beyond the browser set
