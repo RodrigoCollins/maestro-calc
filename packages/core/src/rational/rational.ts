@@ -2,12 +2,9 @@ import { CoreError } from '../errors.ts';
 import { err, ok, type Result } from '../result.ts';
 import { MAX_PARSE_LENGTH } from './limits.ts';
 
-// The only sign test in this module. Every caller either never passes zero (nonzero divisor,
-// non-equal operands, nonzero numerator) or treats it like a positive one (-0n is 0n), so the
-// `<=` mutant is equivalent. Stryker ignores every EqualityOperator mutant on the line, so the
-// `>=` mutant is hidden with it; the sign behaviour is pinned by abs, neg, sign and compare tests.
-// Stryker disable next-line EqualityOperator: `<=` is equivalent (see above)
-const isNegative = (value: bigint): boolean => value < 0n;
+// The only sign test in this module. `value <= -1n` is exact for integers and, unlike `< 0n`, has
+// no equivalent operator mutant: `<` fails at -1n, `>` and `>=` fail at every sign.
+const isNegative = (value: bigint): boolean => value <= -1n;
 
 const abs = (value: bigint): bigint => (isNegative(value) ? -value : value);
 

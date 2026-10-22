@@ -192,19 +192,16 @@ describe('mutation gate escape hatches (quality-gates › Mutation gate on core)
     .filter((path) => path.endsWith('.ts'));
   const read = (path: string): string => readFileSync(fromRoot('packages/core/src', path), 'utf8');
 
-  // design: equivalent mutants are suppressed individually, with a reason, and counted here
-  it('allows exactly the audited EqualityOperator pragma on the next line', () => {
+  // design: no equivalent mutant is left (the sign test is `value <= -1n`, so each operator
+  // mutant is killed by a negative, zero or positive case); any pragma would need a new audit.
+  it('allows no Stryker disable pragma', () => {
     const pragmas = sourceFiles.flatMap((path) =>
       read(path)
         .split('\n')
         .filter((line) => /Stryker\s+disable/.test(line))
         .map((line) => ({ path, line: line.trim() })),
     );
-    expect(pragmas).toHaveLength(1);
-    for (const { path, line } of pragmas) {
-      expect(path).toBe('rational/rational.ts');
-      expect(line).toMatch(/^\/\/ Stryker disable next-line EqualityOperator: \S.+$/);
-    }
+    expect(pragmas).toEqual([]);
   });
 
   // design: barrels are excluded from mutation, so they may only re-export
