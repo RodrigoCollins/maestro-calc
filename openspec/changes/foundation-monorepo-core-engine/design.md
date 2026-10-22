@@ -15,7 +15,7 @@ maestro-calc/
 ├── eslint.config.js  prettier.config.js  .prettierignore  vitest.config.ts
 ├── .github/workflows/ci.yml  .github/dependabot.yml
 ├── packages/
-│   ├── core/   package.json tsconfig.json vitest.config.ts stryker.config.json
+│   ├── core/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts stryker.config.json
 │   │   └── src/
 │   │       ├── index.ts                 # engine barrel (never re-exports calculators)
 │   │       ├── result.ts                # Result<T,E>, ok, err
@@ -30,12 +30,12 @@ maestro-calc/
 │   │       ├── url/        url-values.ts codec.ts released.contract.test.ts index.ts
 │   │       ├── calculators/rectangle-area/  rectangle-area.ts index.ts
 │   │       └── __testing__/ arbitraries.ts fixture-box.ts property-runs.ts   # never exported
-│   ├── data/   package.json tsconfig.json vitest.config.ts
+│   ├── data/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts
 │   │   └── src/ index.ts material.ts
-│   └── i18n/   package.json tsconfig.json vitest.config.ts
+│   └── i18n/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts
 │       └── src/ index.ts locales.ts translate.ts
 │           └── catalogs/ en/{common,rectangle-area}.ts  es/{common,rectangle-area}.ts
-└── apps/web/  package.json tsconfig.json astro.config.mjs vitest.config.ts public/
+└── apps/web/  package.json tsconfig.json tsconfig.app.json tsconfig.test.json astro.config.mjs vitest.config.ts public/
     └── src/ site.config.ts pages/index.astro lib/calculators.ts lib/*.test.ts lib/*.test-d.ts
 ```
 
@@ -60,7 +60,7 @@ apps/web ──→ core, data, i18n          data ──→ core          i18n �
 |---|---|
 | Resolution | Each `package.json` declares only allowed `@maestro-calc/*` deps (`"*"`); `exports` blocks deep imports (`@maestro-calc/core/src/...` fails to resolve under `moduleResolution: Bundler`). |
 | Lint | `import-x/no-extraneous-dependencies` (per-package `packageDir`), `import-x/no-relative-packages`, `import-x/no-cycle`; `no-restricted-imports` patterns: core bans `@maestro-calc/*`, `astro*`, `node:*`; i18n bans `@maestro-calc/*`, `node:*`; data bans `@maestro-calc/i18n`, `@maestro-calc/web`, `node:*`; every package bans `@maestro-calc/*/src/*` (deep imports). |
-| Purity (core) | tsconfig `lib: ["ES2023"]`, `types: []` (no DOM, no Node globals: `window`, `URLSearchParams`, `console`, `setTimeout` do not type-check). ESLint `no-restricted-globals`: `window`, `document`, `location`, `history`, `navigator`, `localStorage`, `sessionStorage`, `fetch`, `process`, `Date`, `performance`, `parseFloat`; `no-restricted-properties`: `Math.random`, `Date.now`, `Number.parseFloat`; `no-restricted-syntax` for `.toFixed(` — float leakage is a lint error. Data and i18n use the same tsconfig purity. |
+| Purity (core) | `tsconfig.src.json` (`lib: ["ES2023"]`, `types: []`: no DOM, no Node globals, so `window`, `URLSearchParams`, `console`, `setTimeout` do not type-check; tests are excluded and compile in `tsconfig.test.json`). ESLint `@typescript-eslint/triple-slash-reference` (all `never`) blocks `/// <reference>` typing bypasses. ESLint `no-restricted-globals`: `window`, `document`, `location`, `history`, `navigator`, `localStorage`, `sessionStorage`, `fetch`, `process`, `globalThis`, `self`, `global`, `Date`, `performance`, `parseFloat` (purity rules do not apply to tests and `__testing__`); `no-restricted-properties`: `Math.random`, `Date.now`, `Number.parseFloat`; `no-restricted-syntax` for `.toFixed(` — float leakage is a lint error. Data and i18n use the same tsconfig purity. |
 | Coverage honesty (core) | `no-warning-comments` with `terms: ['v8 ignore', 'c8 ignore', 'istanbul ignore']`, `location: 'anywhere'`, scoped to `packages/core/**`. |
 | Style | `import-x/no-default-export` in packages; named exports only. |
 
@@ -411,3 +411,7 @@ Design review round 1 (tech lead, APPROVE WITH CHANGES), applied 2026-10-22.
 | n1 | N/A threat-matrix rows collapsed to one sentence; custom equality tester removed. |
 | n2 | `openspec/config.yaml` delivery strategy aligned to `auto-chain` (stacked-to-main); 4 reviewers + Judgment Day kept. |
 | n3 | url-state-codec states URL lengths are canonical inches while typed bare numbers use the field's default unit. |
+
+### Design deviation applied in PR 2 review round 1 (tsconfig layout)
+
+Each package `tsconfig.json` is a solution config (`files: []` plus references) over `tsconfig.src.json` (the purity gate above) and `tsconfig.test.json` (Node typings for tests and `vitest.config.ts`); `typecheck` runs `tsc --noEmit -p` on both. Reason: one program cannot be both `types: []` and host tests (importing vitest pulls Node typings in through vite, which would let `process` type-check in core), and typescript-eslint's `projectService` resolves solution-style configs per file, so lint, IDE and CI see the same programs. `apps/web` follows the same shape (`tsconfig.app.json` keeps `types: ["astro/client"]`, `tsconfig.test.json` adds Node for `src/contract/**`); `astro check` and `astro build` work through the solution config. Vitest type tests point `typecheck.tsconfig` at `tsconfig.test.json`. Test globs are defined once in `tooling/test-globs.js` and shared by `vitest.config.ts` and `eslint.config.js`.
