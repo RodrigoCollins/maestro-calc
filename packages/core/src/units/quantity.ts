@@ -4,7 +4,8 @@ import { DIMENSIONS, sameVector, type DimensionName, type Exponents } from './di
 import type { Unit } from './unit.ts';
 
 // The brand exists only in the type system (a class field with `declare` emits nothing), so a
-// plain `{ exponents, canonical }` literal can never be a `Quantity`.
+// plain `{ exponents, canonical }` literal can never be a `Quantity`. It is a `unique symbol`
+// made with `Symbol()` because a `declare const` would trip the ban on ambient declarations.
 const brand: unique symbol = Symbol();
 
 /**
