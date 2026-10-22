@@ -1,5 +1,18 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import {
+  existsSync,
+  globSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { parse } from 'yaml';
 import { fromRoot, importFromRoot } from './root.ts';
 
 interface StrykerConfig {
@@ -21,6 +34,7 @@ interface StrykerConfig {
 interface StrykerModule {
   default: StrykerConfig;
   incrementalIdentityFiles: string[];
+  pruneStaleReports: (reportsDirectory: string, keepFile: string) => void;
 }
 
 const readJson = (relativePath: string): unknown =>
@@ -105,11 +119,69 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
       'tsconfig.json',
       'tsconfig.src.json',
       'tsconfig.test.json',
+      'package.json',
+      '../../tsconfig.base.json',
+      '../../vitest.config.ts',
+      '../../.nvmrc',
       '../../package-lock.json',
     ]) {
       expect(files, input).toContain(input);
     }
     expect(files).toEqual([...files].sort());
+  });
+
+  // design D10: the CI cache key and the Stryker report name must cover the same inputs. A file
+  // hashed by CI but not by the config would let a local run reuse a stale report; a file hashed
+  // by the config but not by CI would let an exact cache hit restore a report for other inputs.
+  it('hashes exactly the files that the CI cache key hashes', () => {
+    const workflow = parse(readFileSync(fromRoot('.github/workflows/ci.yml'), 'utf8')) as {
+      jobs: { mutation: { steps: { run?: string }[] } };
+    };
+    const keyStep = workflow.jobs.mutation.steps.find((step) => step.run?.includes('hashFiles('));
+    const expression = /hashFiles\(([^)]*)\)/.exec(keyStep?.run ?? '')?.[1] ?? '';
+    const globs = [...expression.matchAll(/'([^']+)'/g)].map((match) => match[1] ?? '');
+    expect(globs.length).toBeGreaterThan(4);
+
+    const ciFiles = globs
+      .flatMap((glob) => globSync(glob, { cwd: fromRoot() }))
+      .filter((path) => statSync(fromRoot(path)).isFile())
+      .sort();
+    const configFiles = module_.incrementalIdentityFiles
+      .map((path) => relative(fromRoot(), fromRoot('packages/core', path)))
+      .sort();
+    expect(configFiles).toEqual(ciFiles);
+  });
+
+  // design D10: only the report that matches the current inputs is useful; older ones pile up in
+  // `reports/` locally and in the cache directory.
+  it('prunes sibling incremental reports and keeps the current one', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-prune-'));
+    try {
+      for (const name of [
+        'stryker-incremental-aaaaaaaaaaaaaaaa.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
+        'other.json',
+      ]) {
+        writeFileSync(join(directory, name), '{}');
+      }
+      mkdirSync(join(directory, 'mutation'));
+      module_.pruneStaleReports(directory, 'stryker-incremental-bbbbbbbbbbbbbbbb.json');
+      expect(readdirSync(directory).sort()).toEqual([
+        'mutation',
+        'other.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
+      ]);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
+  it('tolerates a missing reports directory', () => {
+    const missing = join(tmpdir(), 'stryker-prune-missing');
+    expect(existsSync(missing)).toBe(false);
+    expect(() => {
+      module_.pruneStaleReports(missing, 'stryker-incremental-bbbbbbbbbbbbbbbb.json');
+    }).not.toThrow();
   });
 });
 
