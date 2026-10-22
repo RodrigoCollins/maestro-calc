@@ -15,20 +15,28 @@
     "dev": "npm run dev -w @maestro-calc/web",
     "build": "npm run build -w @maestro-calc/web",
     "preview": "npm run preview -w @maestro-calc/web",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.json",
     "check": "npm run typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "sync": "npm run astro -w @maestro-calc/web -- sync",
+    "lint": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.0.0",
     "@vitest/coverage-v8": "5.0.5",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-astro": "^1.7.0",
+    "eslint-plugin-import-x": "^4.17.1",
     "prettier": "3.9.10",
     "prettier-plugin-astro": "^1.1.1",
     "typescript": "~6.0.0",
+    "typescript-eslint": "^8.72.0",
     "vitest": "5.0.5"
   }
 }
