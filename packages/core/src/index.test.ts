@@ -11,6 +11,7 @@ describe('core public API (design: Public API)', () => {
       'Rational',
       'abs',
       'add',
+      'ceilToPurchaseUnits',
       'cm',
       'cm2',
       'cm3',
@@ -20,6 +21,7 @@ describe('core public API (design: Public API)', () => {
       'equals',
       'err',
       'findUnit',
+      'formatFeetInches',
       'ft',
       'ft2',
       'ft3',
@@ -46,9 +48,11 @@ describe('core public API (design: Public API)', () => {
       'parseDecimal',
       'quantity',
       'ratio',
+      'roundToFraction',
       'scale',
       'sign',
       'sub',
+      'toDecimalParts',
       'ton',
       'tonYd3',
       'tonne',
@@ -75,6 +79,17 @@ describe('core public API (design: Public API)', () => {
     expect(core.findUnit('mass', 'kg')).toBe(core.kg);
     const area = core.multiply(core.quantity(120, core.inch), core.quantity(150, core.inch));
     expect(core.valueIn(area, core.ft2)).toEqual(core.Rational.of(125));
+  });
+
+  // spec: fraction-format › rounding, decimal display, purchase ceiling and feet-inch formatting
+  it('wires the fraction-format API to working implementations', () => {
+    expect(core.roundToFraction(core.Rational.of(1, 128), 64, 'nearest')).toBe(1n);
+    expect(core.toDecimalParts(core.Rational.of(-1, 8), 2, 'down').fraction).toBe('13');
+    expect(core.ceilToPurchaseUnits(core.Rational.of(7, 2))).toBe(4n);
+    expect(
+      core.formatFeetInches(core.quantity(core.Rational.of(127, 2), core.inch), { denominator: 16 })
+        .text,
+    ).toBe(`5' 3 1/2"`);
   });
 
   it('wires the exports to working implementations', () => {
