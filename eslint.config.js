@@ -223,7 +223,9 @@ export default defineConfig(
     ignores: ['**/*.d.ts'],
     rules: { 'import-x/no-default-export': 'error' },
   },
-  { files: [coreFiles], rules: { ...coverageHonesty, ...layerImports.core } },
+  { files: [coreFiles], rules: coverageHonesty },
+  // The package-root config files run in Node (the Stryker config hashes files), never in core.
+  { files: [coreFiles], ignores: ['packages/core/' + configFile], rules: layerImports.core },
   {
     // Core sources get the same selectors through corePurity. Ambient declarations could redeclare a banned host global and silence both the type
     // checker and the globals rule.
@@ -269,5 +271,10 @@ export default defineConfig(
   ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
   ...astro.configs['flat/recommended'],
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
+  // Plain JS config outside every tsconfig program: parsed and linted without type information.
+  {
+    files: ['packages/core/stryker.config.mjs'],
+    extends: [tseslint.configs.disableTypeChecked],
+  },
   prettier,
 );

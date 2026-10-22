@@ -10,6 +10,6 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
-    "mutation": "stryker run --incrementalFile reports/stryker-incremental-$(find src stryker.config.json vitest.config.ts -type f | sort | xargs shasum | shasum | cut -c1-16).json"
+    "mutation": "stryker run"
   }
 }
