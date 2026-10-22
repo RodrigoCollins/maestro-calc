@@ -107,13 +107,17 @@ export const DIMENSIONS: Readonly<{ [D in DimensionName]: Readonly<Dimensions[D]
     density: vector(-3, 1),
   });
 
-const NAMES = [
-  'length',
-  'area',
-  'volume',
-  'mass',
-  'density',
-] as const satisfies readonly DimensionName[];
+// A record with one entry per name: a missing or an extra name is a compile error, so the list
+// below is exactly the five names.
+const NAME_RECORD = {
+  length: 'length',
+  area: 'area',
+  volume: 'volume',
+  mass: 'mass',
+  density: 'density',
+} as const satisfies { readonly [D in DimensionName]: D };
+
+const NAMES = Object.values(NAME_RECORD);
 
 export const sameVector = (a: Exponents, b: Exponents): boolean =>
   a.length === b.length && a.mass === b.mass;
