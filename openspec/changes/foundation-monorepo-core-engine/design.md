@@ -295,8 +295,8 @@ sequenceDiagram
   GH->>V: checkout, setup-node (node-version-file .nvmrc, cache npm)
   V->>V: npm ci → lint → format:check → typecheck → test:coverage → build
   V-->>GH: fail fast on first red step
-  GH->>M: restore cache stryker-incremental (key: core src hash, restore-keys main)
-  M->>M: npm run mutation (incremental, perTest coverage, STRYKER=1 ⇒ 50 property runs)
+  GH->>M: restore cache stryker-incremental (exact key: hash of core src, tests, config and lockfile)
+  M->>M: npm run mutation (incremental, command runner, STRYKER=1 ⇒ 50 property runs)
   M-->>GH: fail if score < break 90; save cache on main
 ```
 
@@ -310,7 +310,7 @@ Workflow: `permissions: contents: read`, `concurrency` cancel-in-progress per re
 | Coverage | v8 over `packages/*/src/**` only: `packages/core/src/**` 100/100/100/100; `packages/{data,i18n}/src/**` 90. Excludes tests, `__testing__`, `.d.ts`. `apps/web` tests run but are outside coverage (no logic in this change). |
 | Conventions | `x.test.ts` (hand-verified examples, source cited in test name or comment), `x.property.test.ts` (fast-check; seed printed on failure; `numRuns` from `__testing__/property-runs.ts`: 1000, or 50 when `STRYKER` is set), `x.test-d.ts` (`expectTypeOf`, `@ts-expect-error` for wrong-dimension ops and unnamed products), `*.contract.test.ts` (public contracts: released URL keys, i18n completeness). |
 | Properties | Rational field axioms and normalization; `fromString(toString(r)) = r`; unit round trips over 28 units; `parseLength(formatFeetInches(q, d).text) = q` for `q = k/d`, `abs(q) < 10^15` in; rounding idempotence/symmetry; URL round trip and idempotence; rectangle-area consistency. |
-| Stryker | `packages/core/stryker.config.json`: `testRunner vitest`, no checkers initially, `coverageAnalysis perTest`, `mutate src/**/*.ts` minus tests/`__testing__`/barrels, `incremental: true` (`reports/stryker-incremental.json`), thresholds high 95 / low 90 / break 90 (raise break to 95 later). Compatibility with vitest 5 spiked in PR3; fallback per the quality-gates spec. |
+| Stryker | `packages/core/stryker.config.json`: `testRunner command` (`npx vitest run`; the vitest runner is incompatible with vitest 5, see Open Questions), no checkers initially, `coverageAnalysis off`, `mutate src/**/*.ts` minus tests/`__testing__`/barrels, `incremental: true` (`reports/stryker-incremental.json`), thresholds high 95 / low 90 / break 90 (raise break to 95 later). Compatibility with vitest 5 spiked in PR3; fallback per the quality-gates spec. |
 
 ## Consuming Source TS in apps/web (PR1 spike)
 
@@ -368,7 +368,7 @@ No data migration. Each PR is independently revertible; reverting PR1 restores t
 
 ## Open Questions
 
-None blocking. Tracked follow-ups: raise mutation `break` to 95; enable the Stryker TypeScript checker once run time is measured; locale-aware decimal input; automate released-snapshot completeness.
+None blocking. Resolved in PR 3 (spike, tasks 3.13-3.14): Stryker `10.0.0` with its `vitest-runner` cannot drive vitest `5.0.5`. In mutant runs the runner narrows the run with a `testNamePattern` built from names joined by a space, while vitest 5 matches full names joined by ` > `; no test is selected, none fails, and every mutant survives (9.8 percent total, a vacuous score). `10.0.0` is the newest runner, so the fallback is the `command` runner (`npx vitest run` in the sandbox, `coverageAnalysis: off`) with the same thresholds. Consequences: no per-test selection (every mutant runs the core suite, about 70 s for 254 mutants), and Stryker cannot see which test files changed, so the incremental report is keyed by a hash of the core sources, tests and config and CI restores it on an exact key hit only. Revisit when a Stryker release supports vitest 5. Tracked follow-ups: raise mutation `break` to 95; enable the Stryker TypeScript checker once run time is measured; locale-aware decimal input; automate released-snapshot completeness.
 
 ## Design review resolution
 
