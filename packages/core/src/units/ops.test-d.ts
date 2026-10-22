@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest';
-import type { Rational } from '../rational/rational.ts';
+import { Rational } from '../rational/rational.ts';
 import { ft2 } from './catalog.ts';
 import { add, divide, multiply, ratio } from './ops.ts';
 import { valueIn, type Quantity } from './quantity.ts';
@@ -32,8 +32,12 @@ describe('quantity types (units-quantities › Dimension model, Same-dimension a
 
   // spec: units-quantities › Construction and conversion — the brand forbids literals
   it('does not accept an object literal as a quantity', () => {
-    // @ts-expect-error the unique-symbol brand cannot be forged
-    const forged: Quantity<'length'> = { exponents: { length: 1, mass: 0 }, canonical: undefined };
+    const literal = { exponents: { length: 1, mass: 0 }, canonical: Rational.ONE };
+    // control: every field is right, so the literal has the unbranded shape of a quantity
+    const unbranded: Pick<Quantity<'length'>, 'exponents' | 'canonical'> = literal;
+    // @ts-expect-error only the missing unique-symbol brand makes this an error
+    const forged: Quantity<'length'> = literal;
+    expectTypeOf(unbranded).toEqualTypeOf<Pick<Quantity<'length'>, 'exponents' | 'canonical'>>();
     expectTypeOf(forged).toEqualTypeOf<Quantity<'length'>>();
   });
 });
