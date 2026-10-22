@@ -1,6 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { fromRoot } from './root.ts';
+import { fromRoot, importFromRoot } from './root.ts';
+
+const { UNITS } = await importFromRoot<{ UNITS: Record<string, readonly unknown[]> }>(
+  'packages/core/src/units/catalog.ts',
+);
 
 const catalog = readFileSync(fromRoot('packages/core/src/units/catalog.ts'), 'utf8');
 
@@ -8,7 +12,8 @@ const withoutComments = (source: string): string =>
   source.replaceAll(/\/\*[\s\S]*?\*\//g, '').replaceAll(/\/\/.*$/gm, '');
 
 /** A decimal point or an exponent in a numeric literal: how a float sneaks into a factor. */
-const FLOAT_LITERAL = /(?<![\w.'])(?:\d+\.\d*|\.\d+|\d+(?:\.\d+)?e[+-]?\d+)(?![\w'])/i;
+const FLOAT_LITERAL =
+  /(?<![\w.'])(?:\d[\d_]*\.[\d_]*|\.\d[\d_]*|\d[\d_]*(?:\.[\d_]+)?e[+-]?\d[\d_]*)(?![\w'])/i;
 
 describe('unit catalog source (units-quantities › Exact unit factors)', () => {
   // spec: units-quantities › Exact unit factors — no float literal anywhere in a factor
@@ -17,7 +22,17 @@ describe('unit catalog source (units-quantities › Exact unit factors)', () => 
   });
 
   it('would notice a float literal (control)', () => {
-    for (const code of ['Rational.of(0.3048)', 'const x = 25.4;', 'f(1e3)', 'f(.5)', 'f(2.)']) {
+    for (const code of [
+      'Rational.of(0.3048)',
+      'const x = 25.4;',
+      'f(1e3)',
+      'f(.5)',
+      'f(2.)',
+      // numeric separators hide the point from a plain `\d+\.` scan
+      'f(1_000.5)',
+      'f(0.304_8)',
+      'f(1_0e3)',
+    ]) {
       expect(FLOAT_LITERAL.test(code), code).toBe(true);
     }
     expect(FLOAT_LITERAL.test("Rational.of(5, 127); 'lb/in3'; in3; m2")).toBe(false);
@@ -28,7 +43,9 @@ describe('unit catalog source (units-quantities › Exact unit factors)', () => 
     const definitions = catalog
       .split('\n')
       .filter((line) => /^export const (?!UNITS\b|findUnit\b)\w+ = /.test(line));
-    expect(definitions).toHaveLength(28);
+    // one `export const` per unit: the count follows the catalog, not a literal
+    expect(definitions).toHaveLength(Object.values(UNITS).flat().length);
+    expect(definitions.length).toBeGreaterThan(0);
     for (const line of definitions) {
       expect(line, line).toMatch(/^export const \w+ = \/\* @__PURE__ \*\/ \w+\(/);
     }
