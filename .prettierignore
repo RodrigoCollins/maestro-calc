@@ -1,0 +1,10 @@
+package-lock.json
+node_modules
+dist
+.astro
+coverage
+reports
+.stryker-tmp
+openspec
+docs
+PLAN.md
