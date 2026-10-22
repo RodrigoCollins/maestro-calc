@@ -7,10 +7,10 @@
   "exports": {
     ".": "./src/index.ts"
   },
-  "dependencies": {
-    "@maestro-calc/core": "*"
-  },
   "scripts": {
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@maestro-calc/core": "*"
   }
 }

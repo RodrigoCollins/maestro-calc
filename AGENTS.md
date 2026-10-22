@@ -5,12 +5,12 @@ npm workspaces monorepo: `apps/web` (Astro app, composition root) and `packages/
 When starting the dev server, run it from the web workspace in background mode:
 
 ```
-cd apps/web && astro dev --background
+cd apps/web && npx astro dev --background
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs` (from `apps/web`).
+Manage the background server with `npx astro dev stop`, `npx astro dev status`, and `npx astro dev logs` (from `apps/web`).
 
-Root scripts: `npm run dev`, `npm run build`, `npm run check` (typecheck of every workspace), `npm test`. Run `npm ci` after cloning.
+Root scripts: `npm run dev`, `npm run build`, `npm run preview`, `npm run check` (typecheck of every workspace), `npm test`. Run `npm ci` after cloning.
 
 ## Documentation
 

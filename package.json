@@ -13,6 +13,7 @@
   "scripts": {
     "dev": "npm run dev -w @maestro-calc/web",
     "build": "npm run build -w @maestro-calc/web",
+    "preview": "npm run preview -w @maestro-calc/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "check": "npm run typecheck",
     "test": "vitest run --passWithNoTests"
