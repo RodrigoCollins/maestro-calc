@@ -94,3 +94,62 @@ Applied: 1-8 plus suggestions B8, B9 (task 2.15). Deferred: A-7 (task 2.16, sugg
 | 7, 8 | 18 probes (ambient, 12 globals, `__testing__`) passed | ambient selectors (core merges them into `corePurity`, because per-block `no-restricted-syntax` replaces), host globals, per-package import blocks with `**/__testing__` |
 
 Negative probes on the tip (real `eslint` on temporary files, removed afterwards): widening cast in core and data `@typescript-eslint/no-unsafe-type-assertion`; `x.config.ts` with `Math.random()` `no-restricted-properties`; `toPrecision` `no-restricted-syntax`; `x["toFixed"](2)` `no-restricted-syntax`; ambient `declare const process` `no-restricted-syntax`; `console` `no-restricted-globals`; `./__testing__/x.ts` import `no-restricted-imports`; round 1 triple-slash `@typescript-eslint/triple-slash-reference` plus `no-restricted-globals`. B8: `const bad: number = 'x'` in `apps/web/src/pages/index.astro` makes `npm run typecheck` exit 1 (`ts(2322)`).
+
+## PR 3 (split into 03a to 03e by the slice-overflow rule)
+
+Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the previous tip, none pushed:
+
+| Branch | Tasks | Base | Changed lines (excl. lockfile) |
+|---|---|---|---|
+| `feat/foundation-03a-followups-result-support` | 3.0, 3.2-3.4 | `main` | 213 |
+| `feat/foundation-03b-rational-core` | 3.5-3.7 | 03a | 332 |
+| `feat/foundation-03c-decimal-codec-lossy` | 3.8-3.10 | 03b | 310 |
+| `feat/foundation-03d-properties-barrels` | 3.11-3.12 | 03c | 148 |
+| `feat/foundation-03e-mutation-gate` | 3.13-3.16 | 03d | 322 |
+
+### TDD Cycle Evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 3.0 F1-F4 | `gates.contract.test.ts`, `workspaces.contract.test.ts` | Contract | 140/140 | 9 failed (ambient class/enum/namespace/module, `packageGlobs`), then 2 more for the `.d.ts` probes | 146/146, lint clean | 3 package counts, 4 ambient forms | F4 is a hygiene split of glob lists, not observable by a probe (config unchanged for 3 packages) |
+| 3.3 | `result.test.ts`, `errors.test.ts` | Unit | N/A (new) | module not found | 5/5 | success and failure shapes, reason present or absent | `declare readonly reason?` keeps the property absent |
+| 3.4 | `property-runs.test.ts` | Unit | 150/150 | module not found | passes with and without `STRYKER=1` | both modes run | none needed |
+| 3.5 | `rational.test.ts` | Unit | N/A (new) | module not found | 13/13 | ER2-ER6 with 2-5 inputs each | none needed |
+| 3.6 | `rational.test.ts` | Unit | 13/13 | 12 failed | 25/25 | ER7-ER14, negatives and zero | none needed |
+| 3.7 | `rational.test.ts` | Unit | 25/25 | 7 failed | 32/32 | ER16, ER17 plus `-1/2` | floor via modulo (3.15) |
+| 3.8 | `decimal.test.ts` | Unit | 256 baseline | module not found | 35/35 | ER1, ER18-ER24, ER7b | sign and point handled by `BigInt` (3.15) |
+| 3.9 | `rational.test.ts` | Unit | 35/35 | 27 failed | 94/94 | ER25-ER28 plus round trip | none needed |
+| 3.10 | `rational.test.ts` | Unit | 94/94 | 7 failed (JSON guard passed by accident on bigint, so its own message is asserted) | 67/67 | ER29-ER31, range edges | single shift formula (3.15) |
+| 3.11 | `rational.property.test.ts` | Property | 256/256 | characterization; spot check: removing `gcd` made 3 properties fail with a printed seed and counterexample, restored | 7/7 | 1000 runs per property, parts above 2^64 | none needed |
+| 3.12 | `index.test.ts` | Unit | 263/263 | 2 failed (empty barrel) | 2/2, core coverage 100/100/100/100 | exports list and wiring | none needed |
+| 3.13-3.15 | `mutation.contract.test.ts`, Stryker | Gate | 265/265 | first run 9.84 percent (vacuous, see spike) | 100 percent after killing 16 survivors | 5 equivalent mutants documented with `Stryker disable` | see Deviations |
+| 3.16 | `ci.contract.test.ts` | Contract | 13/13 | 3 failed | 16/16 | job shape, cache key, save on main only | none needed |
+
+Totals: 276 tests passing at the 03e tip (140 before PR 3).
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npm test -- packages/core/src/rational` 119 passed; `npm test -- apps/web/src/contract` 155 passed |
+| Runtime harness | `npm run verify` exit 0 on every tip (tests 154, 186, 256, 265, 276); `npm run mutation` on 03e: score 100.00 (197 killed, 8 timeouts, 0 survived), 1 min 9 s cold, about 2 s when the report is reused |
+| Rollback | per branch: revert its commits; 03e removes `stryker.config.json`, the `mutation` scripts and the `mutation` CI job |
+
+### Spike: Stryker 10 with vitest 5 (tasks 3.13, 3.14)
+
+- Result: incompatible. `@stryker-mutator/vitest-runner@10.0.0` (newest release) ran, printed a score and exited 1, but the score was vacuous: 9.84 percent, 229 survivors including `ok = () => ({})`.
+- Cause (verified with a script against the vitest node API): in mutant runs the runner restricts tests with `testNamePattern` built from `suite name + ' ' + test name`; vitest 5 matches the full name joined with ` > `, so no test is selected, none fails (`testsCompleted: 0` in the JSON report). Mutant activation itself works (a probe test saw `ok={}` under the active mutant). `coverageAnalysis: off` does not avoid the filter. Debug logging also crashes the runner (`Converting circular structure to JSON` on vitest 5 config).
+- Fallback: F1 unavailable (no newer runner), so F2: `testRunner: command`, `npx vitest run` in the sandbox, `coverageAnalysis: off`, same thresholds. `@stryker-mutator/vitest-runner` removed from devDependencies.
+- Consequence for incremental mode: the command runner reports no test files, so Stryker reused stale survivors after tests were added. The core script therefore passes `--incrementalFile reports/stryker-incremental-<hash of src, config, vitest config>.json`, and CI restores the report on an exact key hit only (no `restore-keys` fallback).
+- Negative proof [QG11]: moving `rational.test.ts` away made `npm run mutation` exit 1 (`score 68.29 under breaking threshold 90`). [QG12] the 90 to 94 band is not reproduced: the real suite scores 100 (high band); the thresholds are asserted by `mutation.contract.test.ts`.
+
+### Deviations
+
+- Slice plan: five stacked branches instead of the `03a/03b` contingency (the group is about 1,150 lines).
+- `arbitraries.ts` moved from 3.4 to 3.11 (needs `Rational`).
+- `Rational.ZERO` and `Rational.ONE` are static members; `Rational` methods `compare` and `sign` return `-1 | 0 | 1`.
+- Mutation gate lands in 03e only; 03a to 03d have no `mutation` script (nothing to mutate before `Rational`).
+- fast-check resolved to `4.10.2` (`^4.10.2`); Stryker `10.0.0` exact.
+- Five equivalent mutants (abs, gcd sign, `compare`, `sign`, `toNumber` sign at zero or equality) are suppressed with `// Stryker disable next-line EqualityOperator: <reason>`; each is unreachable or identical because the zero or equal case returns earlier.
+- Task 3.17 (SX3-SX7) is pending for every branch: reviews, Judgment Day and PRs belong to the orchestrator; CI mutation job could not run (no push). Task 3.0 F4 has no observable probe.
+- Risk: the command runner reruns the whole core suite per mutant, so mutation time grows with core (about 70 s now); the CI job has `timeout-minutes: 30`.
