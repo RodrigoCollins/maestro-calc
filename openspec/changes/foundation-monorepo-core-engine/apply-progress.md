@@ -296,8 +296,9 @@ Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the pr
 
 | Branch | Tasks | Base | Changed lines (excl. lockfile) | `npm run verify` tests |
 |---|---|---|---|---|
-| `feat/foundation-06a-rounding-kernel` | 6.1, 6.2 | PR 5 slice | 217 | 450 |
+| `feat/foundation-06a-rounding-kernel` | 6.1, 6.2 | PR 5 slice | 223 | 450 |
 | `feat/foundation-06b-decimal-purchase` | 6.3, 6.4 | 06a | 266 | 478 |
+| `feat/foundation-06c-feet-inches` | 6.5, 6.6 | 06b | 286 | 496 |
 
 ### TDD Cycle Evidence
 
@@ -306,8 +307,33 @@ Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the pr
 | 6.2 | `rounding.test.ts`, `rounding.property.test.ts` | Unit, property | 418/418 | module not found (both files) | 32/32 | 11 rows x 3 modes (33 cells), ties in both signs, 8 invalid denominators, boundaries 2 and 64, multiples in every mode, 10^30 magnitudes, 5 properties over d in 2..64 | mutation run on 06b: the `'nearest'` default literal survived (any unknown mode fell through to nearest), so the kernel became a `Record<RoundingMode, …>` table where an unknown mode throws |
 | 6.3 | `decimal-parts.test.ts` | Unit, property | 450/450 | module not found | 55/55 in the folder | 11 rows x 3 modes rendered as `[-]int.frac` plus exact parts for the spec examples, no negative zero in 3 modes and zero, places 0 and 12, 10^25 magnitude, 5 invalid places, one property (within half a unit, `places` digits) | none needed |
 | 6.4 | `purchase.test.ts` | Unit, property | 450/450 | module not found | 60/60 in the folder | exact integers (125, 1, 10^30), fractions (7/2, 1/10^30, (10^30+1)/3), zero, 3 negatives, property `n >= x > n - 1` | none needed |
+| 6.5 | `feet-inches.test.ts` | Unit, property | 478/478 | module not found | 77/77 in the folder | FF12-FF21 (every spec scenario, parts and text), negative and carry cases beyond the spec (`-23 1/2 in` is `-1' 11 1/2"`, `-12 in` is `-1' 0"`), 10^14 in, 5 invalid denominators, untyped area quantity, one property over modes (recomposition, `0 <= inches <= 11`, reduced fraction, no negative zero) | none needed |
+| 6.6 | `index.test.ts` | Unit | 496/496 | 2 failed (export list, wiring) | 5/5 | exports list plus one wiring test through the barrel | none needed |
 
 Spot check: dropping the sign restoration in `roundScaled` fails 9 tests (the negative table rows, the tie cases and the oddness property, which printed a seed and a shrunk counterexample).
 
 All hand-verified values were re-computed with Python `fractions.Fraction` before use (33 table cells plus the magnitude cases).
+
+Spot checks for 6.5: returning `whole + 1n` for a zero fraction fails 8 tests; the `whole === 0n` test replaced by `=== 1n` fails 5.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npm test -- packages/core/src/format` 77 passed (5 files); `npm test -- packages/core/src/index` 5 passed |
+| Runtime harness | `npm run verify` exit 0 on every tip (450, 478, 496 tests); core coverage 100/100/100/100 (253 statements, 90 branches, 72 functions, 226 lines on the 06c tip). Mutation: below. N/A for a runtime path: pure functions |
+| Rollback boundary | `packages/core/src/format/*` and its two lines in `core/src/index.ts` (+ `index.test.ts`); nothing outside core changes |
+
+Mutation, 06c tip, cold (`reports/` removed): score 100.00 (total and covered), 406 killed, 8 timeouts, 0 survived, 0 ignored, 414 mutants, 5 min 7 s wall (`time`: 942 s user, 355 percent cpu). The 8 timeouts are the same `rational.ts` mutants as in PR 3 and PR 4 (itemized there); no new timeout. Per-file: decimal-parts 27 killed, feet-inches 26, purchase 6, rounding 26, rational 189 plus 8 timeouts, units 120. The earlier 06b run (before the kernel table) scored 99.49 with 2 survivors, both the `'nearest'` default literal. Cold time grew from 3 min 13 s because every mutant reruns the whole suite (2.3 s, up from about 2 s); still under the 10-minute trigger of 3.19b.
+
+Negative proof [QG11], 06c tip: with all five `format/*.test.ts` files moved away the score is 90.82 (index wiring still kills 47 of the 85 format mutants), so the gate stays green; with `index.test.ts` moved away as well the score is 79.47 (321 killed, 8 timeouts, 85 survived), `Final mutation score 79.47 under breaking threshold 90`, exit 1 after 4 min 15 s. The files were restored and the tree is clean.
+
+All hand-verified values were re-computed with Python `fractions.Fraction` before use: the 11-row rounding table (33 cells), the 11-row decimal table (33 cells), the 16 feet-inch scenarios (FF12-FF21 including the directed modes) and the extra cases above.
+
+### Scope and deviations (PR 6)
+
+- Parser out of scope: `parseLength`, its scanner and the format/parse round trip are tasks 7.1-7.11 (PR 7) and are left for the next slice. The spec scenarios `Format/parse round trip` and everything under `Length text grammar` stay unimplemented here.
+- `roundScaled` is exported from `rounding.ts` for `decimal-parts.ts` but not from the barrel (the same pattern as `makeQuantity`). It is a lookup table over `RoundingMode`, so an unknown mode throws a `TypeError` instead of acting like `nearest` (the mutation run showed the fall-through).
+- `roundToFraction`, `toDecimalParts` take `number` for `denominator` and `places` (the spec's invalid inputs include `2.5` and `NaN`), and `formatFeetInches` converts through `valueIn(length, inch)`, so an untyped non-length quantity throws `DIMENSION_MISMATCH`.
+- The formatter returns `{ parts, text }` with exported types `FeetInches`, `FeetInchesParts`, `FeetInchesOptions`, `DecimalParts`, `RoundingMode`.
 
