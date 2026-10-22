@@ -1,16 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { CoreError } from '../errors.ts';
+import { thrownCode } from '../__testing__/thrown-code.ts';
 import { Rational } from './rational.ts';
-
-const thrownCode = (action: () => unknown): string | undefined => {
-  try {
-    action();
-  } catch (error) {
-    if (error instanceof CoreError) return error.code;
-    throw error;
-  }
-  return undefined;
-};
 
 const r = (n: bigint | number, d: bigint | number = 1): Rational => Rational.of(n, d);
 
