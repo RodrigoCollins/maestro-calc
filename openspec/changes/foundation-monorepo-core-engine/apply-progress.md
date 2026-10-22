@@ -188,3 +188,47 @@ The 8 timeouts are the same count as before, all in `rational.ts` (the negative 
 Negative proof [QG11] on the 03f tip: `rational.test.ts` moved away changes the input hash, so Stryker starts a fresh run: score 69.90 (137 killed, 7 timeouts, 62 survived), `Final mutation score 69.90 under breaking threshold 90`, exit 1 after 2 min 47 s; the file was restored and the tree is clean.
 
 PR description text (spec scenario "Equivalent gate on fallback" [QG13]): "Stryker 10.0.0 with `@stryker-mutator/vitest-runner@10.0.0` (the newest release) cannot drive vitest 5.0.5: the runner restricts mutant runs with a `testNamePattern` built from names joined by a space, while vitest 5 matches names joined by ` > `, so no test runs and every mutant survives (9.8 percent, a vacuous score). The gate therefore uses Stryker's `command` test runner over the whole core suite (`coverageAnalysis: off`) with the same thresholds (95/90/90). The command runner cannot report changed tests, so the incremental report file is named after a hash of all inputs and CI restores it on an exact key hit only. Revisit when a Stryker release supports vitest 5."
+
+## PR 4 (split into 04a to 04e by the slice-overflow rule)
+
+Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the previous tip, none pushed. Scope per the orchestrator: tasks 4.0-4.8 plus the mass and density work of tasks 5.2-5.6 and 5.8 (PR 5 keeps 5.1, 5.7 and 5.9). Task 4.9 (SX1-SX7) is pending for every branch: reviews, Judgment Day and PRs belong to the orchestrator.
+
+| Branch | Tasks | Base | Changed lines (excl. lockfile) | `npm run verify` tests |
+|---|---|---|---|---|
+| `feat/foundation-04a-followups` | 4.0, 4.1 | `main` | 196 | 294 |
+| `feat/foundation-04b-dimension-catalog` | 4.2, 4.3 | 04a | 391 | 326 |
+| `feat/foundation-04c-quantity-conversion` | 4.4 | 04b | 229 | 343 |
+| `feat/foundation-04d-ops-derived` | 4.5-4.7 | 04c | 336 | 365 |
+| `feat/foundation-04e-mass-density-barrel` | 4.8, 5.2-5.6, 5.8 | 04d | 400 | 386 |
+
+### TDD Cycle Evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 4.0 A3/B3, A5/B5, A4/B4, A2/B6 | `mutation.contract.test.ts` | Contract | 289/289 | 7 failed (identity list, CI-key equality, prune function missing, root script, pragma count, `STRYKER=0` flag) | 294/294 | `STRYKER` 1, 0, empty, unset; prune keeps current and foreign files; missing directory | `isNegative` is `value <= -1n`, zero pragmas |
+| 4.0 A6/B1 | `index.test.ts` | Unit | 289/289 | 2 failed (exports list, code arrays) | passes | both arrays plus the `DECIMAL_COMMA` boundary between `fromString` and `parseDecimal` | none needed |
+| 4.2 | `dimension.test.ts`, `dimension.test-d.ts` | Unit, type | N/A (new) | module not found | 7/7 | 8 names, 6 vector sums or differences, unnamed vectors, type negative proof (a wrong `toEqualTypeOf` fails typecheck) | `Step` chain replaced 26 table lines |
+| 4.3 | `catalog.test.ts` | Unit | N/A (new) | module not found | 31/31 | 18 table rows, squares and cubes, lookup hits and misses | none needed |
+| 4.4 | `quantity.test.ts`, `units.property.test.ts` | Unit, property | 326/326 | module not found | 49/49 | UQ2-UQ8, UQ13, UQ15 (conversion half), negatives and zero, property over 18 units | spot checks below |
+| 4.5, 4.6, 4.7 | `ops.test.ts`, `ops.test-d.ts` | Unit, type | 343/343 | module not found | 71/71, typecheck clean | UQ15-UQ21, UQ23, UQ24, runtime guards per op, 6 derived types, 3 rejected products | none needed |
+| 4.8, 5.2-5.6, 5.8 | `catalog.test.ts`, `quantity.test.ts`, `ops.test.ts`, `ops.test-d.ts`, `units.property.test.ts`, `index.test.ts` | Unit, type, property | 365/365 | 21 failed (mass and density constants missing), then 2 for the barrel | 91/91 units, 386/386 full | UQ9-UQ11, UQ22, UQ25b, UQ18b, UQ24c, 28-unit audit and properties | none needed |
+
+Spot checks: setting the `ft` factor to 11 fails 10 catalog and conversion tests but NOT the properties (a round trip is linear in the factor, so only the literal tables and conversions can see a wrong factor; the task text expected the property to fail, which cannot happen). Replacing `canonical.div(unit.factor)` by `mul` in `valueIn` fails 9 tests including both properties with a printed seed and counterexample `[18446744073709551616]`. Type-level proof: changing an expected `toEqualTypeOf<'area'>()` to `'mass'` fails the vitest typecheck with the expected and actual literals.
+
+All hand-verified values were re-computed with bigint fractions before use (38 checks).
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npm test -- packages/core/src/units` 91 passed; `npm test -- apps/web/src/contract/mutation packages/core/src/index` 19 passed |
+| Runtime harness | `npm run verify` exit 0 on every tip; core coverage 100/100/100/100 (207 statements, 61 branches, 63 functions, 183 lines on the 04e tip). Mutation on the 04e tip: see below |
+
+Mutation, 04e tip, cold (`reports/` pruned by the new config): score 100.00 (total and covered), 318 killed, 8 timeouts, 0 survived, 0 ignored (no pragma left), 326 mutants, 4 min 53 s wall (`time`: 499 s user, 198 percent cpu). The 8 timeouts are the same `rational.ts` `gcd` mutants as in PR 3. Per-file: catalog 58 killed, dimension 20, ops 24, quantity 15, rational 189 plus 8 timeouts. Intermediate: 04a 100.00 (201 killed), 04b 98.89 on the first run (3 survivors: `addVec`/`subVec` mass components and the empty mass and density placeholders) then 100.00 after two vector cases and a placeholder test, 04d 100.00 (301 killed, 4 min 39 s). Cold time is under the 10-minute trigger of follow-up 3.19b; `Step` returns the wide `number` outside `-6..6`, pinned by the `volume × volume` and `area × area` `never` tests.
+
+### Deviations
+
+- Mass and density units (5.2-5.6, 5.8) ship in this PR (slice 04e), as the orchestrator scoped PR 4; PR 5 shrinks to 5.1, 5.7, 5.9.
+- Unit constants: `in` is reserved, so the inch is `inch`; the other ids are lower-case identifiers (`ft`, `m2`, `yd3`); density constants are camel case (`lbIn3`, `lbFt3`, `lbYd3`, `tonYd3`, `kgM3`).
+- `Quantity<D>` is an exported interface (`exponents`, `canonical`, `[brand]`); the branded value is built by an internal frozen class with a `declare`d brand field and one internal factory `makeQuantity`, which is not in the barrel. A `declare const` brand would break the ambient-declaration ban, so the brand is `const brand: unique symbol = Symbol()`.
+- `scale` and `divideScalar` take a `Rational` only, as the spec says "exact Rational".
+- Task 4.0 A3/B3: the identity list hashes `.nvmrc` (not `process.version`), the whole package `*.json` set (adds `package.json`), `../../tsconfig.base.json` and `../../vitest.config.ts`. The new contract test asserts the config list EQUALS the files matched by the CI `hashFiles` globs (both directions), a stronger form of "covers every glob".
