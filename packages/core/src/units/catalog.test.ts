@@ -131,6 +131,15 @@ describe('the 28 units (units-quantities › Exact unit factors)', () => {
   });
 });
 
+describe('the catalog is immutable (units-quantities › Dimension model)', () => {
+  it('freezes the catalog and every list in it', () => {
+    expect(Object.isFrozen(UNITS)).toBe(true);
+    for (const [dimension, units] of Object.entries(UNITS)) {
+      expect(Object.isFrozen(units), dimension).toBe(true);
+    }
+  });
+});
+
 describe('findUnit (units-quantities › Unit lookup by id)', () => {
   // spec: units-quantities › Known and unknown ids [UQ25a]
   it('resolves the exact id within its dimension', () => {
@@ -149,6 +158,13 @@ describe('findUnit (units-quantities › Unit lookup by id)', () => {
     expect(findUnit('area', 'ft')).toBeUndefined();
     expect(findUnit('length', '')).toBeUndefined();
     expect(findUnit('length', 'kg')).toBeUndefined();
+  });
+
+  // untyped input must not reach inherited properties such as `__proto__` or `constructor`
+  it('answers undefined for a dimension that is not one of the five', () => {
+    for (const name of ['__proto__', 'constructor', 'toString', 'hasOwnProperty', 'volumes']) {
+      expect(findUnit(name as never, 'in'), name).toBeUndefined();
+    }
   });
 
   // spec: units-quantities › Known and unknown ids — every table id resolves to its constant
