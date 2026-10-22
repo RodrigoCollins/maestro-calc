@@ -277,6 +277,7 @@ describe('core vitest config STRYKER flag (quality-gates › Mutation gate on co
     if (value === undefined) delete process.env['STRYKER'];
     else process.env['STRYKER'] = value;
     try {
+      // the query string defeats the module cache, so the config is evaluated once per value
       const url = `${pathToFileURL(fromRoot('packages/core/vitest.config.ts')).href}?flag=${String(value)}`;
       const loaded = (await import(url)) as { default: { define: Record<string, unknown> } };
       return loaded.default.define['__STRYKER__'];
