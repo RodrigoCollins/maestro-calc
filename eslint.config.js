@@ -170,6 +170,12 @@ export default defineConfig(
       ],
     },
   },
+  {
+    // Widening assertions defeat the type checker (spec: quality-gates, Lint gate).
+    files: ['packages/{core,data,i18n}/src/**/*.{ts,mts,cts,tsx}'],
+    ignores: testGlobs,
+    rules: { '@typescript-eslint/no-unsafe-type-assertion': 'error' },
+  },
   { files: ['packages/i18n/**/*.{ts,mts,cts,tsx}'], rules: layerImports.i18n },
   { files: ['packages/data/**/*.{ts,mts,cts,tsx}'], rules: layerImports.data },
   { files: ['apps/web/**/*.{ts,astro}'], rules: importsFor() },
