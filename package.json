@@ -1,23 +1,25 @@
 {
   "name": "maestro-calc",
+  "private": true,
   "type": "module",
   "version": "0.0.1",
   "engines": {
     "node": ">=22.23.4"
   },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "test": "vitest run",
-    "check": "astro check"
-  },
-  "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
-    "astro": "^7.4.2"
+    "dev": "npm run dev -w @maestro-calc/web",
+    "build": "npm run build -w @maestro-calc/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "check": "npm run typecheck",
+    "test": "vitest run --passWithNoTests"
   },
   "devDependencies": {
-    "vitest": "^5.0.5"
+    "@astrojs/check": "^0.9.12",
+    "typescript": "~6.0.0",
+    "vitest": "5.0.5"
   }
 }
