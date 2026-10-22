@@ -76,7 +76,7 @@ Lockfile and pure renames excluded from counts. Total exceeds the 400-line budge
 | `src/lib/*` | Removed |
 | `packages/{core,data,i18n}` | New |
 | `tsconfig.base.json`, `eslint.config.js`, `prettier.config.js`, `vitest.config.ts`, `.nvmrc`, `.github/workflows/ci.yml`, `.github/dependabot.yml` | New |
-| `packages/core/stryker.config.json` | New (per-package mutation config) |
+| `packages/core/stryker.config.mjs` | New (per-package mutation config) |
 | `openspec/config.yaml`, `AGENTS.md` | Modified |
 
 ## Risks

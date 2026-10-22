@@ -136,6 +136,8 @@ digits  := [0-9]+
 
 Leading zeros are accepted; trailing fractional zeros are accepted. On rejection it MUST return a failure (it never throws and never returns `NaN`-like values). If the text contains a comma anywhere, the code MUST be `DECIMAL_COMMA` (a comma used as decimal or thousands separator is rejected with a dedicated code so the UI can explain it; `1,000` is never read as 1). Every other rejection has code `MALFORMED`. Rejected inputs include: empty string, whitespace anywhere, `"5."`, `"."`, `"-"`, exponent forms (`"1e3"`), comma separators (`"1,5"`, `"1,000"` with `DECIMAL_COMMA`), hex (`"0x10"`), non-ASCII digits (full-width `５`), `"Infinity"`, `"NaN"`, and double signs. There is no digit-count limit at this layer.
 
+NOTE: as a safety net, the Rational-layer text parsers (`parseDecimal` and `Rational.fromString`) reject input longer than 1024 characters as `MALFORMED`; the boundary caps (128 characters for form input, 256 for URL input) remain the authoritative limits.
+
 `-0`, `-0.0` MUST parse to `0/1`.
 
 #### Scenario: Decimal tenths
