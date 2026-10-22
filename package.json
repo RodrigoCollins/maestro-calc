@@ -20,7 +20,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
-    "lint": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
+    "lint": "eslint . --max-warnings=0",
+    "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build"

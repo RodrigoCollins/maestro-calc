@@ -176,9 +176,10 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     const pkg = JSON.parse(readFileSync(fromRoot('package.json'), 'utf8')) as {
       scripts: Record<string, string>;
     };
-    expect(pkg.scripts['lint']).toBe(
-      'eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/',
-    );
+    // The gate never reads a cache, so local, CI and verify runs agree; lint:fast is local only.
+    expect(pkg.scripts['lint']).toContain('--max-warnings=0');
+    expect(pkg.scripts['lint']).not.toContain('--cache');
+    expect(pkg.scripts['lint:fast']).toContain('--cache');
 
     const config = (await eslint.calculateConfigForFile(fromRoot(CORE))) as {
       rules: Record<string, unknown>;
