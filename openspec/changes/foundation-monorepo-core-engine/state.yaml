@@ -10,7 +10,7 @@ phases:
   spec: done
   design: done  # revised after design review round 1
   tasks: done  # 12 stacked PR slices, ~4100 lines total, strict TDD ordering, traceability table
-  apply: pending
+  apply: in-progress  # PR 1 split into 01a (remove legacy) + 01b (skeleton) by slice-overflow rule; 01a/01b implemented locally, unpushed
   verify: pending
   archive: pending
 review:
