@@ -30,8 +30,9 @@ const forAllRationals = (check: (x: Rational) => void): void => {
 };
 
 describe('unit conversion properties (units-quantities › Construction and conversion)', () => {
-  it('covers the 18 length, area and volume units', () => {
-    expect(UNITS.length.length + UNITS.area.length + UNITS.volume.length).toBe(18);
+  it('covers all 28 units', () => {
+    const counts = Object.values(UNITS).map((units) => units.length);
+    expect(counts.reduce((total, count) => total + count, 0)).toBe(28);
   });
 
   // spec: units-quantities › Round trip property [UQ14a]
@@ -40,6 +41,8 @@ describe('unit conversion properties (units-quantities › Construction and conv
       roundTrips(x, UNITS.length);
       roundTrips(x, UNITS.area);
       roundTrips(x, UNITS.volume);
+      roundTrips(x, UNITS.mass);
+      roundTrips(x, UNITS.density);
     });
   });
 
@@ -49,6 +52,8 @@ describe('unit conversion properties (units-quantities › Construction and conv
       viaAnyUnit(x, UNITS.length);
       viaAnyUnit(x, UNITS.area);
       viaAnyUnit(x, UNITS.volume);
+      viaAnyUnit(x, UNITS.mass);
+      viaAnyUnit(x, UNITS.density);
     });
   });
 });

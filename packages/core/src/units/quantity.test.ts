@@ -1,7 +1,27 @@
 import { describe, expect, it } from 'vitest';
 import { thrownCode } from '../__testing__/thrown-code.ts';
 import { Rational } from '../rational/rational.ts';
-import { cm2, cm3, ft, ft2, ft3, inch, in2, in3, m, m2, mm, yd, yd3 } from './catalog.ts';
+import {
+  cm2,
+  cm3,
+  ft,
+  ft2,
+  ft3,
+  inch,
+  in2,
+  in3,
+  kg,
+  lb,
+  lbIn3,
+  m,
+  m2,
+  mm,
+  oz,
+  ton,
+  tonne,
+  yd,
+  yd3,
+} from './catalog.ts';
 import { quantity, valueIn } from './quantity.ts';
 import type { Unit } from './unit.ts';
 
@@ -13,6 +33,12 @@ describe('quantity construction (units-quantities › Dimension model)', () => {
     expect(quantity(2, ft).exponents).toEqual({ length: 1, mass: 0 });
     expect(quantity(1, ft2).exponents).toEqual({ length: 2, mass: 0 });
     expect(quantity(1, yd3).exponents).toEqual({ length: 3, mass: 0 });
+  });
+
+  // spec: units-quantities › Runtime exponent vector [UQ2b]
+  it('carries (0, 1) for a mass and (-3, 1) for a density', () => {
+    expect(quantity(1, lb).exponents).toEqual({ length: 0, mass: 1 });
+    expect(quantity(1, lbIn3).exponents).toEqual({ length: -3, mass: 1 });
   });
 
   // spec: units-quantities › Construction and conversion — stored as canonical = value × factor
@@ -68,6 +94,15 @@ describe('conversion (units-quantities › Exact unit factors)', () => {
   // spec: units-quantities › Square metre to square feet [UQ8]
   it('converts 1 m2 to 1562500/145161 ft2', () => {
     expect(valueIn(quantity(1, m2), ft2)).toEqual(r(1562500, 145161));
+  });
+
+  // spec: units-quantities › Mass conversions [UQ9]
+  it('converts 1 kg to lb, 1 lb to kg, 1 ton to kg, 32 oz to lb and 1 tonne to ton', () => {
+    expect(valueIn(quantity(1, kg), lb)).toEqual(r(100000000, 45359237));
+    expect(valueIn(quantity(1, lb), kg)).toEqual(r(45359237, 100000000));
+    expect(valueIn(quantity(1, ton), kg)).toEqual(r(45359237, 50000));
+    expect(valueIn(quantity(32, oz), lb)).toEqual(r(2));
+    expect(valueIn(quantity(1, tonne), ton)).toEqual(r(50000000, 45359237));
   });
 
   // spec: units-quantities › Round trip across yd3 and ft3 [UQ13]
