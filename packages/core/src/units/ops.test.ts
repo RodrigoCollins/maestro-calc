@@ -5,9 +5,10 @@ import {
   ft,
   ft2,
   ft3,
-  inch,
   in2,
   in3,
+  inch,
+  kg,
   kgM3,
   lb,
   lbFt3,
@@ -16,7 +17,6 @@ import {
   tonYd3,
   yd2,
   yd3,
-  kg,
 } from './catalog.ts';
 import {
   abs,

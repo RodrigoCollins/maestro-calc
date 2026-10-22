@@ -8,9 +8,9 @@ import {
   ft,
   ft2,
   ft3,
-  inch,
   in2,
   in3,
+  inch,
   kg,
   kgM3,
   lb,
@@ -24,8 +24,8 @@ import {
   mm2,
   mm3,
   oz,
-  tonne,
   ton,
+  tonne,
   tonYd3,
   UNITS,
   yd,
@@ -69,11 +69,14 @@ const TABLE = [
 ] as const;
 
 describe('the 28 units (units-quantities › Exact unit factors)', () => {
-  it.each(TABLE)('%s unit %#: id, dimension and exact factor', (dimension, unit, id, num, den) => {
-    expect(unit.id).toBe(id);
-    expect(unit.dimension).toBe(dimension);
-    expect(unit.factor).toEqual(Rational.of(num, den));
-  });
+  it.each(TABLE.map(([dimension, unit, id, num, den]) => ({ id, dimension, unit, num, den })))(
+    '$id ($dimension): id, dimension and exact factor',
+    ({ dimension, unit, id, num, den }) => {
+      expect(unit.id).toBe(id);
+      expect(unit.dimension).toBe(dimension);
+      expect(unit.factor).toEqual(Rational.of(num, den));
+    },
+  );
 
   // spec: units-quantities › Exact unit factors — 127^2 = 16129 and 127^3 = 2,048,383
   it('reduces every metric factor fully (127 is prime)', () => {
