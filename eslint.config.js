@@ -22,7 +22,22 @@ const restrictedGlobalGroups = [
     reason: 'is a browser API; packages/core must stay host-independent.',
   },
   {
-    names: ['fetch', 'process'],
+    names: [
+      'fetch',
+      'process',
+      'console',
+      'setTimeout',
+      'setInterval',
+      'clearTimeout',
+      'clearInterval',
+      'queueMicrotask',
+      'structuredClone',
+      'crypto',
+      'TextEncoder',
+      'TextDecoder',
+      'URLSearchParams',
+      'URL',
+    ],
     reason: 'is a host API; packages/core must stay host-independent.',
   },
   {
@@ -41,6 +56,17 @@ const restrictedGlobals = restrictedGlobalGroups.flatMap(({ names, reason }) =>
 );
 
 const floatFormatters = '/^(toFixed|toPrecision|toExponential|toLocaleString)$/';
+
+const ambientSyntax = [
+  'TSModuleDeclaration[global=true]',
+  'VariableDeclaration[declare=true]',
+  'TSDeclareFunction[declare=true]',
+];
+
+const ambientRestrictions = ambientSyntax.map((selector) => ({
+  selector,
+  message: 'Ambient declarations are not allowed in package sources; use a .d.ts file.',
+}));
 
 const corePurity = {
   'no-restricted-globals': ['error', ...restrictedGlobals],
@@ -65,6 +91,7 @@ const corePurity = {
       selector: `CallExpression[callee.property.value=${floatFormatters}]`,
       message: 'Number formatting leaks floating point; format through exact Rational helpers.',
     },
+    ...ambientRestrictions,
   ],
 };
 
@@ -90,21 +117,30 @@ const importsFor = (...patterns) => ({
   'no-restricted-imports': ['error', { patterns: [...patterns, deepImport] }],
 });
 
-const layerImports = {
-  core: importsFor(
+const layerPatterns = {
+  core: [
     banned(['@maestro-calc/*'], 'core depends on no other workspace.'),
     banned(['astro', 'astro/*', 'astro:*'], 'core must not depend on Astro.'),
     banned(['node:*'], 'core must not depend on Node builtins.'),
-  ),
-  i18n: importsFor(
+  ],
+  i18n: [
     banned(['@maestro-calc/*'], 'i18n depends on no other workspace.'),
     banned(['node:*'], 'i18n must not depend on Node builtins.'),
-  ),
-  data: importsFor(
+  ],
+  data: [
     banned(['@maestro-calc/i18n', '@maestro-calc/web'], 'data may depend only on core.'),
     banned(['node:*'], 'data must not depend on Node builtins.'),
-  ),
+  ],
 };
+
+const layerImports = Object.fromEntries(
+  Object.entries(layerPatterns).map(([layer, patterns]) => [layer, importsFor(...patterns)]),
+);
+
+const testSupportImport = banned(
+  ['**/__testing__', '**/__testing__/**'],
+  'Test support code must not be imported by shipped sources.',
+);
 
 const coreFiles = 'packages/core/**/*.{ts,mts,cts,tsx,js,mjs,cjs}';
 
@@ -177,7 +213,16 @@ export default defineConfig(
     rules: { 'import-x/no-default-export': 'error' },
   },
   { files: [coreFiles], rules: { ...coverageHonesty, ...layerImports.core } },
-  { files: [coreFiles], ignores: testGlobs, rules: corePurity },
+  {
+    // Core sources get the same selectors through corePurity. Ambient declarations could redeclare a banned host global and silence both the type
+    // checker and the globals rule.
+    files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
+    ignores: [...testGlobs, '**/*.d.ts'],
+    rules: {
+      'no-restricted-syntax': ['error', ...ambientRestrictions],
+    },
+  },
+  { files: [coreFiles], ignores: [...testGlobs, '**/*.d.ts'], rules: corePurity },
   {
     files: [`${packageGlob}/src/**/*.{ts,mts,cts,tsx}`],
     rules: {
@@ -196,6 +241,11 @@ export default defineConfig(
   },
   { files: ['packages/i18n/**/*.{ts,mts,cts,tsx}'], rules: layerImports.i18n },
   { files: ['packages/data/**/*.{ts,mts,cts,tsx}'], rules: layerImports.data },
+  ...Object.entries(layerPatterns).map(([layer, patterns]) => ({
+    files: [`packages/${layer}/src/**/*.{${scriptExtensions}}`],
+    ignores: testGlobs,
+    rules: importsFor(...patterns, testSupportImport),
+  })),
   { files: ['apps/web/**/*.{ts,astro}'], rules: importsFor() },
   { files: ['**/*.astro'], plugins: { 'import-x': importX } },
   ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
