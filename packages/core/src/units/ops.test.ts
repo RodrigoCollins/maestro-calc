@@ -22,7 +22,7 @@ import { quantity, valueIn, type Quantity } from './quantity.ts';
 const r = (n: bigint | number, d: bigint | number = 1): Rational => Rational.of(n, d);
 
 // Untyped callers: quantities of one dimension presented as another.
-const asLength = (value: Quantity<'area'> | Quantity<'volume'>): Quantity<'length'> =>
+const asLength = (value: Quantity<'area'>): Quantity<'length'> =>
   value as unknown as Quantity<'length'>;
 const length = quantity(1, ft);
 const area = quantity(1, ft2);
