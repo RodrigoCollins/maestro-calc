@@ -101,11 +101,12 @@ Coverage is collected only over `packages/*/src` (`apps/web` holds no logic in t
 `.github/workflows/ci.yml` MUST run on `pull_request` and on `push` to `main`. It MUST:
 
 - declare `permissions: contents: read`;
-- use a `concurrency` group that cancels in-progress runs of the same ref;
+- use a `concurrency` group per ref that cancels in-progress pull request runs (never runs on `main`);
 - set up Node from `.nvmrc` with npm cache;
-- run, in order: `npm ci`, `npm run lint`, `npm run format:check`, `npm run typecheck`, `npm run test:coverage`, `npm run build`;
+- run, in order (cheapest gate first): `npm ci`, `npm run format:check`, `npm run sync` (Astro types), `npm run lint`, `npm run typecheck`, `npm run test:coverage`, `npm run build`;
 - run `npm run mutation` in a separate job on every run (no path filter, so the required check never stays pending), restoring the Stryker incremental report cache before the run and saving it on `main`, so unchanged core code costs little;
 - not use `continue-on-error` on any gate step;
+- not persist the checkout credentials (`persist-credentials: false`);
 - SHOULD pin third-party actions to full-length commit SHAs.
 
 Any failing gate MUST fail the workflow run.
