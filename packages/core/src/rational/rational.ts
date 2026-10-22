@@ -1,4 +1,6 @@
 import { CoreError } from '../errors.ts';
+import { err, ok, type Result } from '../result.ts';
+import { MAX_PARSE_LENGTH } from './limits.ts';
 
 const abs = (value: bigint): bigint => (value < 0n ? -value : value);
 
@@ -16,6 +18,16 @@ const toBigInt = (value: bigint | number): bigint => {
   if (!Number.isSafeInteger(value)) throw new CoreError('NOT_AN_INTEGER');
   return BigInt(value);
 };
+
+export const RATIONAL_PARSE_CODES = ['MALFORMED', 'ZERO_DENOMINATOR'] as const;
+
+export type RationalParseCode = (typeof RATIONAL_PARSE_CODES)[number];
+
+export interface RationalParseError {
+  readonly code: RationalParseCode;
+}
+
+const CANONICAL = /^-?[0-9]+(?:\/[0-9]+)?$/;
 
 /**
  * An exact rational number over arbitrary-precision integers, always in canonical form: positive
@@ -109,5 +121,25 @@ export class Rational {
   ceil(): bigint {
     const quotient = this.num / this.den;
     return this.num > 0n && quotient * this.den !== this.num ? quotient + 1n : quotient;
+  }
+
+  /** Canonical text: `n` for integers, otherwise `n/d`. */
+  toString(): string {
+    return this.den === 1n ? String(this.num) : `${String(this.num)}/${String(this.den)}`;
+  }
+
+  /**
+   * Parses the machine format `-?digits(/digits)?` and normalizes the result.
+   *
+   * Precondition: callers bound the length (128 characters for form input, 256 for URL input).
+   * As a safety net, text longer than `MAX_PARSE_LENGTH` is rejected as MALFORMED.
+   */
+  static fromString(text: string): Result<Rational, RationalParseError> {
+    if (text.length > MAX_PARSE_LENGTH || !CANONICAL.test(text)) return err({ code: 'MALFORMED' });
+    const slash = text.indexOf('/');
+    const numerator = BigInt(text.slice(0, slash === -1 ? text.length : slash));
+    const denominator = slash === -1 ? 1n : BigInt(text.slice(slash + 1));
+    if (denominator === 0n) return err({ code: 'ZERO_DENOMINATOR' });
+    return ok(Rational.of(numerator, denominator));
   }
 }
