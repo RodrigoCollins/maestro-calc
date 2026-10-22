@@ -10,7 +10,7 @@ phases:
   spec: done
   design: done  # revised after design review round 1
   tasks: done  # 12 stacked PR slices, ~4100 lines total, strict TDD ordering, traceability table
-  apply: in-progress  # PR 1 split 01a+01b (merged); PR 2 split 02a+02b+02c by slice-overflow rule (734 lines vs 370 forecast), implemented; 4-lens review correction round 1 applied (M1, M2 and MINORs; R7 checkJs deferred as task 2.14), re-review pending; round 2 (final) applied in slice 02d-lint-hardening, task 2.15, follow-up 2.16
+  apply: in-progress  # PR 1 split 01a+01b (merged); PR 2 split 02a+02b+02c by slice-overflow rule (734 lines vs 370 forecast), implemented; 4-lens review correction round 1 applied (M1, M2 and MINORs; R7 checkJs deferred as task 2.14), re-review pending; round 2 (final) applied in slice 02d-lint-hardening, task 2.15, follow-up 2.16; PR 3 implemented as stacked 03a-03e (3.0-3.16 done, 3.17 exit/reviews pending): Stryker 10 vitest-runner incompatible with vitest 5, command-runner fallback, mutation score 100
   verify: pending
   archive: pending
 review:
