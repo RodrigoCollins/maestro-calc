@@ -269,3 +269,24 @@ Bundle (Rolldown, minified, gzip -9): `import { ft }` 3,020 B (1,380 gzip) befor
 
 Accepted risk (RISK-1, also for the 04e and 04f PR bodies): `npm audit` reports dev-only findings through Stryker (`typed-rest-client` pulls an old `qs`, and 5 high `braces` findings that Dependabot #13 clears); none ships in the web bundle. Task 4.11 holds the fix at the next lockfile touch.
 
+## PR 5 (slice `feat/foundation-05-followups-workspace`)
+
+Mode: strict TDD, runner `npm test`. One branch from `main` (PRs 1 to 4 merged, 396 tests). Scope: tasks 5.0, 5.1 and 5.7 (mass and density, tasks 5.2-5.6 and 5.8, shipped in PR 4). Task 5.9 (SX1-SX7) is pending: reviews, Judgment Day and the PR belong to the orchestrator.
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 5.0 B-2 | `typecost.contract.test.ts` | Contract | 396/396 | control tests for the count line | 3/3 | LF, CRLF, bare line, missing line; two programs (src 16,272, test 84,398) | `tsc` via `require.resolve` |
+| 5.0 B-3 | `catalog.contract.test.ts` | Contract | 396/396 | `f(1_000.5)` was not noticed (1 failed) | 3/3 | `0.304_8`, `1_0e3`, clean controls | count from `Object.values(UNITS).flat()` |
+| 5.0 B-5, A-3 | `mutation.contract.test.ts` | Contract | 396/396 | `packageJsonFiles is not a function` | 19/19 | dotfile json, directory named `nested.json`, wrong extension | `sourceFilesIn` by `Dirent.isFile()` |
+| 5.0 A-1, A-2, B-4 | none (wording, design note, bookkeeping) | Docs | n/a | n/a | n/a | n/a | n/a |
+| 5.7 | `workspace-graph.contract.test.ts` | Contract | 396/396 | n/a (characterization) | 19/19 | see spot checks | none needed |
+
+Spot checks for 5.7 (each edit made to the real manifest, tests run, edit reverted): a `zod` dependency in core, `data` without its core edge, `web` without its i18n edge, `i18n` depending on core, `moduleResolution` `Node`, `strict` false, target ES2020, a test tsconfig without `extends`, `typescript` declared in `data`, `.nvmrc` 22, `engines` `>=20`, `check` not an alias, a core export ending `.js`, a `packages/core/dist` directory: every one failed exactly one test; changing the `workspaces` globs failed two.
+
+Deviations:
+
+- B-2 `\r?$`: unnecessary. With the `m` flag `$` already matches before a CR in JavaScript, so CRLF output parses as is; a control test pins it instead of changing the regex. The instantiation budget is 40,000 (baseline 16,272); the test program (`tsconfig.test.json`, 84,398) has its own budget of 150,000.
+- A-1: Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant run (2.3 s * 4 + 10 s, about 19 s); the earlier "10 s each" wording in `stryker.config.mjs`, the contract test comment and design.md is corrected. Values are unchanged. Past apply-progress text for PR 3 and PR 4 keeps its original numbers (they describe measurements, not the mechanism).
+- A-3: `Dirent.isFile()` does not follow symlinks (the old `statSync` did); `src` holds none, and the CI `hashFiles` key remains a superset.
+- 5.7: the file is `workspace-graph.contract.test.ts`, because `workspaces.contract.test.ts` already exists. Installed-tree single version (`npm ls typescript`) is checked as "the resolved `typescript` is 6.0.x" instead of spawning `npm ls`.
+
