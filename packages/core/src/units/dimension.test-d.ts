@@ -35,4 +35,24 @@ describe('dimension type helpers (units-quantities › Derived products and quot
     expectTypeOf<NameOf<AddVec<Dimensions['volume'], Dimensions['volume']>>>().toBeNever();
     expectTypeOf<NameOf<SubVec<Dimensions['length'], Dimensions['length']>>>().toBeNever();
   });
+
+  // Exponents are tracked within -6..6; beyond that the result is the wide `number`, which can
+  // never be mistaken for a named dimension.
+  it('turns an exponent outside -6..6 into number, which names nothing', () => {
+    interface Six {
+      length: 6;
+      mass: 0;
+    }
+    interface MinusSix {
+      length: -6;
+      mass: 0;
+    }
+    type One = Dimensions['length'];
+    expectTypeOf<AddVec<Six, One>['length']>().toEqualTypeOf<number>();
+    expectTypeOf<NameOf<AddVec<Six, One>>>().toBeNever();
+    expectTypeOf<SubVec<MinusSix, One>['length']>().toEqualTypeOf<number>();
+    expectTypeOf<NameOf<SubVec<MinusSix, One>>>().toBeNever();
+    expectTypeOf<AddVec<{ length: 5; mass: 0 }, One>['length']>().toEqualTypeOf<6>();
+    expectTypeOf<AddVec<{ length: 0; mass: 0 }, MinusSix>['length']>().toEqualTypeOf<-6>();
+  });
 });
