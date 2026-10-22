@@ -106,6 +106,7 @@ Internal packages MUST expose their public API through `exports` pointing to Typ
 - GIVEN each workspace `tsconfig.json`
 - WHEN resolved with `tsc --showConfig`
 - THEN `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`, `noImplicitOverride` are all `true`
+- NOTE the leaf program configs (`tsconfig.src.json`, `tsconfig.test.json`, `tsconfig.app.json`) are what MUST extend the base; solution `tsconfig.json` files have `files: []` and only reference them
 
 #### Scenario: Single TypeScript version
 - GIVEN the installed tree
