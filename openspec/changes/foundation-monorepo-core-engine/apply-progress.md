@@ -290,3 +290,21 @@ Deviations:
 - A-3: `Dirent.isFile()` does not follow symlinks (the old `statSync` did); `src` holds none, and the CI `hashFiles` key remains a superset.
 - 5.7: the file is `workspace-graph.contract.test.ts`, because `workspaces.contract.test.ts` already exists. Installed-tree single version (`npm ls typescript`) is checked as "the resolved `typescript` is 6.0.x" instead of spawning `npm ls`.
 
+## PR 6 (split into 06a to 06c by the slice-overflow rule)
+
+Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the previous tip (06a from the PR 5 slice), none pushed. Scope per the orchestrator: the `fraction-format` rounding, decimal, purchase and feet-inch formatting requirements (tasks 6.1-6.6). The length parser (PR 7, tasks 7.1-7.11) and the format/parse round trip are NOT in this PR. Task 6.7 (SX1-SX7) is pending for every branch: reviews, Judgment Day and PRs belong to the orchestrator.
+
+| Branch | Tasks | Base | Changed lines (excl. lockfile) | `npm run verify` tests |
+|---|---|---|---|---|
+| `feat/foundation-06a-rounding-kernel` | 6.1, 6.2 | PR 5 slice | 217 | 450 |
+
+### TDD Cycle Evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 6.2 | `rounding.test.ts`, `rounding.property.test.ts` | Unit, property | 418/418 | module not found (both files) | 32/32 | 11 rows x 3 modes (33 cells), ties in both signs, 8 invalid denominators, boundaries 2 and 64, multiples in every mode, 10^30 magnitudes, 5 properties over d in 2..64 | none needed |
+
+Spot check: dropping the sign restoration in `roundScaled` fails 9 tests (the negative table rows, the tie cases and the oddness property, which printed a seed and a shrunk counterexample).
+
+All hand-verified values were re-computed with Python `fractions.Fraction` before use (33 table cells plus the magnitude cases).
+
