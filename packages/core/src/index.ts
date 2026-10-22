@@ -1,4 +1,5 @@
 export { CoreError } from './errors.ts';
+export * from './format/index.ts';
 export {
   DECIMAL_PARSE_CODES,
   parseDecimal,
