@@ -1,0 +1,18 @@
+change: foundation-monorepo-core-engine
+artifact_store: openspec
+execution_mode: auto
+delivery_strategy: auto-chain
+chain_strategy: stacked-to-main
+review_budget_lines: 400
+phases:
+  explore: done
+  propose: done
+  spec: done
+  design: done  # revised after design review round 1
+  tasks: done  # 12 stacked PR slices, ~4100 lines total, strict TDD ordering, traceability table
+  apply: pending
+  verify: pending
+  archive: pending
+review:
+  design_review_round_1: "applied 2026-10-22 (tech lead: APPROVE WITH CHANGES; specs amended, design rewritten to match, money capability added)"
+updated: 2026-10-22

@@ -1,0 +1,217 @@
+# Delta for exact-rational
+
+Package: `@maestro-calc/core`. All arithmetic in the engine is exact rational arithmetic over arbitrary-precision integers. IEEE `number` MUST NOT participate in any calculation; `toNumber` is the only lossy exit.
+
+## ADDED Requirements
+
+### Requirement: Failure conventions (shared by all core capabilities)
+
+Expected failures caused by untrusted input (user text, URL values) MUST be returned, never thrown, as the core `Result` shape: `{ ok: true, value }` or `{ ok: false, errors }`, where `errors` is a non-empty list of `{ code, ... }` objects. Single-value parsers (`parseDecimal`, `Rational.fromString`, `parseLength`, `parseMoney`) return exactly one error. Programming errors and invariant violations (for example `ZERO_DENOMINATOR` on direct construction, `DIVISION_BY_ZERO`, `NOT_AN_INTEGER`, `DIMENSION_MISMATCH`) MUST throw a core error object exposing a `code` property. Every code in every core capability is a flat `UPPER_CASE` identifier; codes never carry prose.
+
+Length limits on untrusted text are enforced at the input boundaries (`validate`: 128 characters per raw string; `parseLength`: 128 characters; URL decoding: 256 characters per value), not inside `Rational`, which has no digit-count limit.
+
+#### Scenario: Parser failure shape
+- GIVEN `parseDecimal("abc")`
+- WHEN evaluated
+- THEN the result is `{ ok: false, errors: [ { code: 'MALFORMED' } ] }` and nothing is thrown
+
+### Requirement: Normalized representation
+
+A `Rational` value MUST always be in canonical form: denominator strictly positive, numerator and denominator coprime, and zero represented as `0/1`. Construction from any integer pair `(n, d)` with `d != 0` MUST normalize. Two `Rational` values representing the same number MUST be indistinguishable by deep structural equality (so test frameworks' deep-equal works) and by `equals`. Instances MUST be immutable.
+
+Construction is `Rational.of(n, d = 1)` where `n` and `d` are `bigint` or JavaScript `number`. Construction from a JavaScript `number` MUST be accepted only for safe integers; any non-integer, `NaN`, `Infinity`, or unsafe integer MUST fail with code `NOT_AN_INTEGER`. Construction with `d = 0` MUST fail with code `ZERO_DENOMINATOR` and produce no value.
+
+#### Scenario: Reduction (6/8)
+- GIVEN numerator 6 and denominator 8
+- WHEN a Rational is constructed
+- THEN it is `3/4` (gcd(6,8)=2)
+
+#### Scenario: Sign moves to the numerator
+- GIVEN numerator 3 and denominator -6
+- WHEN a Rational is constructed
+- THEN it is `-1/2` (gcd 3; denominator positive)
+
+#### Scenario: Zero is unique
+- GIVEN numerator 0 with denominators 5 and -7
+- WHEN both Rationals are constructed
+- THEN both are `0/1` and are deeply equal
+
+#### Scenario: Zero denominator
+- GIVEN numerator 1 and denominator 0
+- WHEN a Rational is constructed
+- THEN construction fails with `ZERO_DENOMINATOR`
+
+#### Scenario: Unsafe or fractional number input
+- GIVEN the JavaScript numbers `1.5`, `NaN`, `Infinity`, and `9007199254740992`
+- WHEN each is converted to a Rational
+- THEN each fails with `NOT_AN_INTEGER`
+- AND `9007199254740991` and `-4` succeed as `9007199254740991/1` and `-4/1`
+
+### Requirement: Field arithmetic
+
+`add`, `sub`, `mul`, `div`, `neg`, `abs` MUST return exact normalized results. `div` by zero MUST fail with `DIVISION_BY_ZERO`. `compare` MUST define a total order consistent with the real numbers (returns -1, 0, 1); `equals`, `sign` (-1, 0, 1), `isZero`, `isInteger` MUST be provided. No operation may overflow or lose precision regardless of operand size.
+
+Source: field of rational numbers (standard arithmetic); no external source.
+
+#### Scenario: Floating-point trap (0.1 + 0.2)
+- GIVEN `1/10` and `2/10`
+- WHEN added
+- THEN the result is `3/10` (1/10 + 1/5 = 1/10 + 2/10 = 3/10)
+- AND it `equals` the Rational parsed from the decimal string `"0.3"`
+
+#### Scenario: Unlike denominators
+- GIVEN `1/2` and `1/3`
+- WHEN added
+- THEN the result is `5/6` (3/6 + 2/6)
+
+#### Scenario: Multiplication reduces
+- GIVEN `2/3` and `3/4`
+- WHEN multiplied
+- THEN the result is `1/2` (6/12 reduced)
+
+#### Scenario: Division
+- GIVEN `1/2` divided by `3/4`
+- WHEN evaluated
+- THEN the result is `2/3` (1/2 x 4/3 = 4/6)
+
+#### Scenario: Thirds are exact
+- GIVEN `1/3` multiplied by `3`
+- WHEN evaluated
+- THEN the result is exactly `1`
+
+#### Scenario: Division by zero
+- GIVEN any Rational `x` and the Rational `0`
+- WHEN `x / 0` is evaluated
+- THEN it fails with `DIVISION_BY_ZERO`
+
+#### Scenario: Huge operands stay exact
+- GIVEN `10^30 / 3` (as numerator `1000000000000000000000000000000`, denominator 3)
+- WHEN multiplied by `3`
+- THEN the result is exactly the integer `10^30`
+- AND `(2^100 + 1) - 2^100` equals `1`
+
+#### Scenario: Ordering
+- GIVEN `-1/2`, `-1/3`, `0`, `1/3`
+- WHEN compared pairwise
+- THEN `-1/2 < -1/3 < 0 < 1/3` (compare returns -1 for each ascending pair, 1 for each descending, 0 for identical)
+
+### Requirement: Algebraic properties
+
+For all Rationals `a, b, c` generated by property-based tests (including negatives, zero, and values with numerators and denominators beyond 2^64):
+
+- commutativity: `a+b = b+a`, `a*b = b*a`
+- associativity: `(a+b)+c = a+(b+c)`
+- distributivity: `a*(b+c) = a*b + a*c`
+- inverses: `(a+b)-b = a`; for `b != 0`, `(a/b)*b = a`
+- canonical form invariant holds for every result (denominator > 0, gcd(|n|, d) = 1)
+
+#### Scenario: Properties hold
+- GIVEN at least 1,000 random triples per property
+- WHEN each property is evaluated
+- THEN none fails
+
+### Requirement: Integer rounding primitives
+
+`floor` (toward negative infinity) and `ceil` (toward positive infinity) MUST return exact integers (as `bigint`). Integers MUST map to themselves.
+
+#### Scenario: Floor and ceil of halves
+- GIVEN `7/2` and `-7/2`
+- WHEN floor and ceil are applied
+- THEN `floor(7/2) = 3`, `ceil(7/2) = 4`, `floor(-7/2) = -4`, `ceil(-7/2) = -3`
+
+#### Scenario: Integers fixed
+- GIVEN `-4/1` and `0`
+- WHEN floor and ceil are applied
+- THEN every result equals the input (`-4`, `0`)
+
+### Requirement: Exact decimal parsing
+
+`parseDecimal(text)` MUST convert a decimal string to an exact Rational without passing through `number`. Accepted grammar (no surrounding whitespace, case-sensitive digits ASCII 0-9 only):
+
+```
+decimal := sign? ( digits ("." digits)? | "." digits )
+sign    := "-" | "+"
+digits  := [0-9]+
+```
+
+Leading zeros are accepted; trailing fractional zeros are accepted. On rejection it MUST return a failure (it never throws and never returns `NaN`-like values). If the text contains a comma anywhere, the code MUST be `DECIMAL_COMMA` (a comma used as decimal or thousands separator is rejected with a dedicated code so the UI can explain it; `1,000` is never read as 1). Every other rejection has code `MALFORMED`. Rejected inputs include: empty string, whitespace anywhere, `"5."`, `"."`, `"-"`, exponent forms (`"1e3"`), comma separators (`"1,5"`, `"1,000"` with `DECIMAL_COMMA`), hex (`"0x10"`), non-ASCII digits (full-width `５`), `"Infinity"`, `"NaN"`, and double signs. There is no digit-count limit at this layer.
+
+`-0`, `-0.0` MUST parse to `0/1`.
+
+#### Scenario: Decimal tenths
+- GIVEN `"0.1"`
+- WHEN parsed
+- THEN the result is `1/10`
+
+#### Scenario: Negative with trailing zero
+- GIVEN `"-0.250"`
+- WHEN parsed
+- THEN the result is `-1/4` (-250/1000 reduced by 250)
+
+#### Scenario: Leading-dot and integer
+- GIVEN `".5"`, `"12"`, `"1.50"`, `"00.5"`, `"+3"`
+- WHEN parsed
+- THEN results are `1/2`, `12`, `3/2`, `1/2`, `3`
+
+#### Scenario: Negative zero
+- GIVEN `"-0"` and `"-0.0"`
+- WHEN parsed
+- THEN both are `0/1`
+
+#### Scenario: Long decimal exactness
+- GIVEN `"0.3333333333333333333333"` (22 threes)
+- WHEN parsed
+- THEN the result is `3333333333333333333333/10^22` reduced (it is NOT `1/3`; no rounding occurs)
+
+#### Scenario: Malformed decimals
+- GIVEN `""`, `" 1"`, `"1 "`, `"5."`, `"."`, `"-"`, `"--1"`, `"1e3"`, `"0x10"`, `"５"`, `"NaN"`
+- WHEN each is parsed
+- THEN each returns failure `MALFORMED`
+
+#### Scenario: Comma separators
+- GIVEN `"1,5"`, `"1,000"`, `"1,000.5"`, `","`
+- WHEN each is parsed
+- THEN each returns failure `DECIMAL_COMMA`
+
+### Requirement: Canonical string codec
+
+`toString()` MUST produce the canonical text `"<n>"` when the denominator is 1, otherwise `"<n>/<d>"`, with `n` signed decimal without leading zeros or plus sign, `d` positive. `Rational.fromString(text)` MUST accept exactly the grammar `-? digits ( "/" digits )?` (ASCII, no whitespace), normalize the result, and fail with `MALFORMED` for any other text (including any comma; this is a machine format, not user input) and with `ZERO_DENOMINATOR` for a zero denominator. Round trip `fromString(toString(x)) = x` MUST hold for all Rationals.
+
+#### Scenario: Canonical output
+- GIVEN `127/2`, `-5/2`, `4/1`, `0/1`
+- WHEN `toString` is applied
+- THEN the results are `"127/2"`, `"-5/2"`, `"4"`, `"0"`
+
+#### Scenario: Non-reduced input accepted and normalized
+- GIVEN `"4/2"` and `"-6/8"`
+- WHEN parsed with `fromString`
+- THEN results are `2` and `-3/4`
+
+#### Scenario: Invalid canonical text
+- GIVEN `""`, `"1/"`, `"/2"`, `"1/-2"`, `"+1/2"`, `"1.5"`, `" 1/2"`, `"1/2/3"`
+- WHEN parsed with `fromString`
+- THEN each fails `MALFORMED`
+
+#### Scenario: Zero denominator text
+- GIVEN `"1/0"`
+- WHEN parsed with `fromString`
+- THEN it fails `ZERO_DENOMINATOR`
+
+### Requirement: Lossy exit and serialization guard
+
+`toNumber()` is the only conversion to IEEE `number`. When numerator and denominator magnitudes are both at most 2^53 - 1 it MUST return the double nearest the exact value. Otherwise it MUST return a double within one ulp of the exact value, or the correctly signed `Infinity` only when the magnitude exceeds `Number.MAX_VALUE`. When either magnitude exceeds the double range, the implementation MUST scale numerator and denominator by their bit lengths before dividing, so that a quotient of two huge integers whose value is representable never yields `NaN` or `Infinity`. Direct JSON serialization of a Rational (`JSON.stringify(rational)`) MUST throw a `TypeError` rather than produce `{}`, a lossy number, or a truncated form; persistence MUST use `toString`.
+
+#### Scenario: Nearest double
+- GIVEN `1/10` and `1/3`
+- WHEN `toNumber` is applied
+- THEN the results are `0.1` and `0.3333333333333333`
+
+#### Scenario: Huge numerator and denominator
+- GIVEN `(10^400 + 1) / 10^399` (already reduced: the numerator is odd and not a multiple of 5, so gcd = 1; both parts exceed `Number.MAX_VALUE` as doubles)
+- WHEN `toNumber` is applied
+- THEN the result is finite, not `NaN`, and within one ulp of `10` (`|result - 10| <= 2^-49`, the ulp of doubles in [8, 16))
+
+#### Scenario: JSON guard
+- GIVEN the Rational `1/3`
+- WHEN `JSON.stringify` is called on it, or on an object containing it
+- THEN a `TypeError` is thrown

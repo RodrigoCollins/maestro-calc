@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Concrete slab calculator</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&amp;family=Barlow+Condensed:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#1D4ED8}a:hover{color:#0E2240}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #F06A1D;outline-offset:2px}
+input::placeholder{color:#7A848C}
+.bp{background-color:#0E2240;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:16px 16px}
+@media (prefers-reduced-motion: no-preference){.num{transition:color .2s}}
+</style>
+</helmet>
+<div style="width: 390px; min-height: 2480px; box-sizing: border-box; background: #EEF1EF; font-family: 'Barlow', system-ui, sans-serif; color: #0E2240; font-size: 16px; line-height: 1.45">
+
+<header style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #FFFFFF; border-bottom: 1.5px solid #D5DBD8">
+<a href="#" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #0E2240" aria-label="Maestro Calc home">
+<svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="6" fill="#0E2240"></rect><path d="M6 20V8M11 20v-6M16 20V8M21 20v-6" stroke="#F06A1D" stroke-width="2.4" stroke-linecap="round"></path></svg>
+<span style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 23px; letter-spacing: 0.2px">Maestro Calc</span>
+</a>
+<div style="display: flex; align-items: center; gap: 8px">
+<div style="display: flex; border: 1.5px solid #D5DBD8; border-radius: 999px; overflow: hidden; font-weight: 600; font-size: 14px">
+<span style="padding: 7px 12px; background: #0E2240; color: #FFFFFF">EN</span>
+<a href="MobileES.dc.html" style="padding: 7px 12px; color: #0E2240; text-decoration: none">ES</a>
+</div>
+<button aria-label="Open menu" style="width: 44px; height: 44px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E2240" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>
+</button>
+</div>
+</header>
+
+<main style="padding: 16px">
+<nav aria-label="Breadcrumb" style="font-size: 14px; color: #56616B; margin-bottom: 8px"><a href="#" style="color: #56616B">Concrete</a> / Slab</nav>
+<h1 style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 38px; line-height: 1.02; margin: 0 0 10px; letter-spacing: -0.2px">Concrete slab calculator</h1>
+<p style="margin: 0 0 18px; font-size: 17px; color: #2E3A46">A {{dimL}} × {{dimW}} slab, {{T}}″ thick, needs <strong style="color: #0E2240">{{yd3}} cubic yards</strong> with {{waste}}% extra. That is <strong style="color: #0E2240">{{bags}} bags of {{bag}} lb</strong>.</p>
+
+<section aria-label="Calculator" style="background: #FFFFFF; border: 1.5px solid #D5DBD8; border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+<div role="group" aria-label="Shape" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; background: #EEF1EF; padding: 4px; border-radius: 12px">
+<button style="height: 40px; border: 0; border-radius: 9px; background: #0E2240; color: #FFFFFF; font: 600 15px 'Barlow', sans-serif" aria-pressed="true">Slab</button>
+<button style="height: 40px; border: 0; border-radius: 9px; background: transparent; color: #0E2240; font: 600 15px 'Barlow', sans-serif" aria-pressed="false">Footing</button>
+<button style="height: 40px; border: 0; border-radius: 9px; background: transparent; color: #0E2240; font: 600 15px 'Barlow', sans-serif" aria-pressed="false">Column</button>
+<button style="height: 40px; border: 0; border-radius: 9px; background: transparent; color: #0E2240; font: 600 15px 'Barlow', sans-serif" aria-pressed="false">Steps</button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 15px">Length
+<span style="display: flex; align-items: center; border: 2px solid #C3CBC7; border-radius: 12px; background: #FFFFFF; padding: 0 12px; height: 56px">
+<input inputmode="decimal" value="{{L}}" onChange="{{onL}}" aria-label="Length in feet" style="flex: 1; min-width: 0; border: 0; outline: none; font: 600 26px 'Barlow Condensed', sans-serif; color: #0E2240; background: transparent">
+<span style="color: #56616B; font-weight: 500">ft</span>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 15px">Width
+<span style="display: flex; align-items: center; border: 2px solid #C3CBC7; border-radius: 12px; background: #FFFFFF; padding: 0 12px; height: 56px">
+<input inputmode="decimal" value="{{W}}" onChange="{{onW}}" aria-label="Width in feet" style="flex: 1; min-width: 0; border: 0; outline: none; font: 600 26px 'Barlow Condensed', sans-serif; color: #0E2240; background: transparent">
+<span style="color: #56616B; font-weight: 500">ft</span>
+</span>
+</label>
+<label style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 15px">Thickness
+<span style="display: flex; align-items: center; border: 2px solid #C3CBC7; border-radius: 12px; background: #FFFFFF; padding: 0 12px; height: 56px">
+<input inputmode="decimal" value="{{T}}" onChange="{{onT}}" aria-label="Thickness in inches" style="flex: 1; min-width: 0; border: 0; outline: none; font: 600 26px 'Barlow Condensed', sans-serif; color: #0E2240; background: transparent">
+<span style="color: #56616B; font-weight: 500">in</span>
+</span>
+</label>
+<div style="display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 15px">Extra
+<span style="display: flex; align-items: center; justify-content: space-between; border: 2px solid #C3CBC7; border-radius: 12px; height: 56px; padding: 0 4px">
+<button onClick="{{wasteDown}}" aria-label="Less extra" style="width: 44px; height: 44px; border: 0; border-radius: 9px; background: #EEF1EF; color: #0E2240; font: 600 22px 'Barlow', sans-serif; cursor: pointer">−</button>
+<span class="num" style="font: 600 26px 'Barlow Condensed', sans-serif">{{waste}}%</span>
+<button onClick="{{wasteUp}}" aria-label="More extra" style="width: 44px; height: 44px; border: 0; border-radius: 9px; background: #EEF1EF; color: #0E2240; font: 600 22px 'Barlow', sans-serif; cursor: pointer">+</button>
+</span>
+</div>
+</div>
+<p style="margin: -4px 0 0; font-size: 14px; color: #56616B">Extra covers uneven ground, spills and form bulge. Type 5′ 3 1/2″ or 63.5 in, both work.</p>
+</section>
+
+<section aria-label="Result" class="bp" style="margin-top: 16px; border-radius: 16px; padding: 18px 16px 16px; color: #FFFFFF">
+<div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 12px">
+<div>
+<div style="font-size: 14px; color: #B9C6DA">You need</div>
+<div class="num" style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 64px; line-height: 0.95">{{yd3}}<span style="font-size: 28px; font-weight: 600; margin-left: 4px">yd³</span></div>
+</div>
+<div style="text-align: right; padding-bottom: 6px">
+<div class="num" style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 34px; line-height: 1; color: #F06A1D">{{bags}}</div>
+<div style="font-size: 14px; color: #B9C6DA">bags of {{bag}} lb</div>
+</div>
+</div>
+<svg viewBox="0 0 342 236" width="100%" role="img" aria-label="Plan view of the slab, {{dimL}} by {{dimW}}" style="display: block; margin-top: 10px">
+<rect x="{{d.x}}" y="{{d.y}}" width="{{d.w}}" height="{{d.h}}" fill="rgba(255,255,255,0.08)" stroke="#FFFFFF" stroke-width="2"></rect>
+<line x1="{{d.x}}" y1="{{d.ty}}" x2="{{d.x2}}" y2="{{d.ty}}" stroke="#B9C6DA" stroke-width="1.2"></line>
+<line x1="{{d.x}}" y1="{{d.y}}" x2="{{d.x}}" y2="{{d.tyEnd}}" stroke="#B9C6DA" stroke-width="1" stroke-dasharray="2 3"></line>
+<line x1="{{d.x2}}" y1="{{d.y}}" x2="{{d.x2}}" y2="{{d.tyEnd}}" stroke="#B9C6DA" stroke-width="1" stroke-dasharray="2 3"></line>
+<path d="{{d.topTicks}}" stroke="#F06A1D" stroke-width="2"></path>
+<text x="{{d.cx}}" y="{{d.tyLabel}}" fill="#FFFFFF" text-anchor="middle" style="font: 600 15px 'Barlow Condensed', sans-serif">{{dimL}}</text>
+<line x1="{{d.rx}}" y1="{{d.y}}" x2="{{d.rx}}" y2="{{d.y2}}" stroke="#B9C6DA" stroke-width="1.2"></line>
+<line x1="{{d.x2}}" y1="{{d.y}}" x2="{{d.rxEnd}}" y2="{{d.y}}" stroke="#B9C6DA" stroke-width="1" stroke-dasharray="2 3"></line>
+<line x1="{{d.x2}}" y1="{{d.y2}}" x2="{{d.rxEnd}}" y2="{{d.y2}}" stroke="#B9C6DA" stroke-width="1" stroke-dasharray="2 3"></line>
+<path d="{{d.rightTicks}}" stroke="#F06A1D" stroke-width="2"></path>
+<text x="{{d.rxLabel}}" y="{{d.cyLabel}}" fill="#FFFFFF" style="font: 600 15px 'Barlow Condensed', sans-serif">{{dimW}}</text>
+<text x="{{d.cx}}" y="{{d.cyLabel}}" fill="#B9C6DA" text-anchor="middle" style="font: 500 14px 'Barlow', sans-serif">{{area}} ft²</text>
+<text x="{{d.x}}" y="{{d.thickY}}" fill="#B9C6DA" style="font: 500 13px 'Barlow', sans-serif">{{T}}″ thick</text>
+</svg>
+</section>
+
+<section aria-label="Shopping list" style="margin-top: 16px; background: #FFFFFF; border: 1.5px solid #D5DBD8; border-radius: 16px; overflow: hidden">
+<div style="padding: 16px 16px 6px">
+<h2 style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; margin: 0">Shopping list</h2>
+</div>
+<div style="padding: 10px 16px 14px; border-bottom: 1.5px solid #E4E8E6">
+<div style="display: flex; align-items: baseline; justify-content: space-between">
+<span style="font-weight: 600">Concrete mix, {{bag}} lb bags</span>
+<span class="num" style="font: 700 26px 'Barlow Condensed', sans-serif">× {{bags}}</span>
+</div>
+<div role="group" aria-label="Bag size" style="display: flex; gap: 8px; margin-top: 10px">
+<sc-for list="{{bagOpts}}" as="item" hint-placeholder-count="3">
+<button onClick="{{item.pick}}" aria-pressed="{{item.pressed}}" style="{{item.style}}">{{item.label}}</button>
+</sc-for>
+</div>
+</div>
+<div style="padding: 12px 16px 14px; border-bottom: 1.5px solid #E4E8E6; display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+<span style="color: #2E3A46">Or order ready-mix by truck</span>
+<span style="font: 700 22px 'Barlow Condensed', sans-serif; white-space: nowrap">{{truck}} yd³</span>
+</div>
+<div style="padding: 12px 16px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px">
+<label style="display: flex; align-items: center; gap: 8px; font-weight: 600">Price per bag
+<span style="display: flex; align-items: center; border: 2px solid #C3CBC7; border-radius: 10px; height: 44px; padding: 0 10px; width: 92px; box-sizing: border-box">
+<span style="color: #56616B">$</span>
+<input inputmode="decimal" value="{{price}}" onChange="{{onPrice}}" placeholder="0.00" aria-label="Price per bag in dollars" style="width: 100%; border: 0; outline: none; font: 600 18px 'Barlow', sans-serif; color: #0E2240; background: transparent; margin-left: 4px">
+</span>
+</label>
+<div style="text-align: right">
+<div style="font-size: 13px; color: #56616B">Estimated total</div>
+<div style="font: 700 24px 'Barlow Condensed', sans-serif">{{cost}}</div>
+</div>
+</div>
+</section>
+
+<div style="margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<a href="#" style="grid-column: 1 / -1; height: 56px; border-radius: 14px; background: #1FAF5A; color: #06210F; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: 17px; text-decoration: none">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06210F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z"></path><path d="M9 9.5c.3 1.6 1.9 3.9 4.5 5l1.2-1.2 1.8.9"></path></svg>
+Send list on WhatsApp</a>
+<button style="height: 48px; border-radius: 12px; border: 1.5px solid #C3CBC7; background: #FFFFFF; color: #0E2240; font: 600 15px 'Barlow', sans-serif; cursor: pointer">Copy list</button>
+<button style="height: 48px; border-radius: 12px; border: 1.5px solid #C3CBC7; background: #FFFFFF; color: #0E2240; font: 600 15px 'Barlow', sans-serif; cursor: pointer">Share link</button>
+<button style="height: 48px; border-radius: 12px; border: 1.5px solid #C3CBC7; background: #FFFFFF; color: #0E2240; font: 600 15px 'Barlow', sans-serif; cursor: pointer">Print</button>
+</div>
+
+<aside aria-label="Advertisement" style="margin: 24px auto 0; width: 300px; height: 250px; border: 1.5px dashed #AEB7B3; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #56616B; font-size: 13px">Advertisement, 300 × 250</aside>
+
+<section style="margin-top: 28px">
+<h2 style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 28px; margin: 0 0 10px">How to use it</h2>
+<ol style="margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; color: #2E3A46">
+<li>Measure length and width of the area in feet.</li>
+<li>Enter the slab thickness in inches. Driveways usually run 4″ to 6″.</li>
+<li>Keep 10% extra unless the base is perfectly graded.</li>
+<li>Pick the bag size you buy, or compare with a truck order.</li>
+</ol>
+</section>
+
+<section style="margin-top: 24px; background: #FFFFFF; border: 1.5px solid #D5DBD8; border-radius: 16px; padding: 16px">
+<h2 style="font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 24px; margin: 0 0 8px">The formula</h2>
+<p style="margin: 0 0 10px; font: 600 19px 'Barlow Condensed', sans-serif">Cubic yards = length × width × thickness ÷ 27</p>
+<p style="margin: 0; color: #2E3A46; font-size: 15px">Thickness goes in feet: 4″ is 4 ÷ 12 = 0.333 ft. A 12 × 10 ft slab at 4″ is 12 × 10 × 0.333 = 40 ft³, and 40 ÷ 27 = 1.48 yd³ before extra.</p>
+</section>
+
+<footer style="margin-top: 24px; padding: 16px 0 32px; border-top: 1.5px solid #D5DBD8; font-size: 14px; color: #56616B; display: flex; flex-direction: column; gap: 4px">
+<span>Maestro Calc editorial team. Updated October 2026.</span>
+<span>Bag yields from manufacturer data sheets. <a href="#">See our methodology</a>.</span>
+<span><a href="#">Found a mistake? Tell us</a></span>
+</footer>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":2480}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { L: '12', W: '10', T: '4', waste: 10, bag: 80, price: '' };
+  }
+  renderVals() {
+    const s = this.state;
+    const num = (v) => { const x = parseFloat(String(v)); return isFinite(x) && x > 0 ? x : 0; };
+    const fi = (x) => { let f = Math.floor(x); let i = Math.round((x - f) * 12); if (i === 12) { f += 1; i = 0; } return f + '′ ' + i + '″'; };
+    const l = num(s.L), w = num(s.W), t = num(s.T);
+    const ft3 = l * w * t / 12 * (1 + s.waste / 100);
+    const yields = { 40: 0.30, 60: 0.45, 80: 0.60 };
+    const bags = ft3 > 0 ? Math.ceil(ft3 / yields[s.bag]) : 0;
+    const yd3 = ft3 / 27;
+    const truck = Math.ceil(yd3 * 4) / 4;
+    const p = num(s.price);
+
+    const AW = 278, AH = 160, OX = 8, OY = 40;
+    const sc = l > 0 && w > 0 ? Math.min(AW / l, AH / w) : 1;
+    const rw = l > 0 ? l * sc : AW, rh = w > 0 ? w * sc : AH;
+    const x = OX + (AW - rw) / 2, y = OY + (AH - rh) / 2, x2 = x + rw, y2 = y + rh;
+    const ty = y - 18, rx = x2 + 18;
+    const tick = (px, py) => 'M' + (px - 5) + ' ' + (py + 5) + 'L' + (px + 5) + ' ' + (py - 5);
+    const d = {
+      x, y, w: rw, h: rh, x2, y2, ty, tyEnd: ty - 4, tyLabel: ty - 8, cx: x + rw / 2,
+      topTicks: tick(x, ty) + tick(x2, ty),
+      rx, rxEnd: rx + 4, rxLabel: rx + 8, cyLabel: y + rh / 2 + 5,
+      rightTicks: tick(rx, y) + tick(rx, y2),
+      thickY: y2 + 24
+    };
+    const pill = 'height: 40px; padding: 0 16px; border-radius: 999px; font: 600 15px Barlow, sans-serif; cursor: pointer; ';
+    return {
+      L: s.L, W: s.W, T: s.T, waste: s.waste, bag: s.bag, price: s.price,
+      dimL: fi(l), dimW: fi(w), area: Math.round(l * w * 10) / 10,
+      yd3: yd3.toFixed(2), bags, truck: truck.toFixed(2),
+      cost: p > 0 ? '$' + (bags * p).toFixed(2) : 'Add a price',
+      d,
+      onL: (e) => this.setState({ L: e.target.value }),
+      onW: (e) => this.setState({ W: e.target.value }),
+      onT: (e) => this.setState({ T: e.target.value }),
+      onPrice: (e) => this.setState({ price: e.target.value }),
+      wasteDown: () => this.setState({ waste: Math.max(0, s.waste - 5) }),
+      wasteUp: () => this.setState({ waste: Math.min(30, s.waste + 5) }),
+      bagOpts: [40, 60, 80].map((b) => ({
+        label: b + ' lb',
+        pressed: String(b === s.bag),
+        pick: () => this.setState({ bag: b }),
+        style: pill + (b === s.bag ? 'border: 2px solid #0E2240; background: #0E2240; color: #FFFFFF' : 'border: 2px solid #C3CBC7; background: #FFFFFF; color: #0E2240')
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

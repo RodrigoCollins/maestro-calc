@@ -1,0 +1,76 @@
+schema: spec-driven
+
+context: |
+  Project: maestro-calc (Maestro Calc) - bilingual EN/ES US jobsite calculators. Source of truth: PLAN.md (Spanish).
+  Target stack: Astro static + strict TypeScript, Cloudflare Pages, npm-workspaces monorepo (packages/core, data, i18n; apps/web).
+  Current state: single-app Astro 7 scaffold (src/lib/engine.ts, units.ts, format.ts, types.ts, src/pages/index.astro); NOT yet the planned monorepo. Migrate or replace in the first change.
+  Testing: vitest 5 present (unit). Planned: Playwright e2e, Lighthouse budgets, SEO checks in CI, Stryker mutation testing on core.
+  Style: calc logic stays pure TS in core (no UI, no language); data and i18n separated; shareable state in URL; generated artifacts in English.
+
+strict_tdd: true
+
+testing:
+  strict_tdd: true
+  detected: 2026-10-22
+  runner:
+    command: "npm test"   # vitest run
+    framework: vitest 5.0.x
+  layers:
+    unit: { available: true, tool: vitest }
+    integration: { available: false, tool: null }
+    e2e: { available: false, tool: null, planned: playwright }
+  coverage:
+    available: false     # @vitest/coverage-v8 not installed yet
+    command: null
+    planned_command: "vitest run --coverage"
+  mutation:
+    available: false
+    planned_tool: stryker
+  quality:
+    linter: { available: false, command: null, planned: "eslint (typescript-eslint strict)" }
+    type_checker: { available: true, command: "npm run check" }   # astro check
+    formatter: { available: false, command: null, planned: "prettier" }
+
+quality_bar:
+  - Top-tier, tech-lead-approvable code.
+  - TypeScript strict (no any, no unchecked non-null assertions in core).
+  - Lint and format are blocking gates (local and CI).
+  - Every formula has unit tests with hand-verified cases (inputs and expected values sourced in the test).
+  - Coverage thresholds enforced in vitest config (core: 100% lines/branches/functions; other packages >= 90%).
+  - Mutation testing (Stryker) on calculation code (packages/core, formula parts of packages/data) with a break threshold.
+  - Each delivery gets 4 specialized reviewers plus Judgment Day.
+  - Review budget 400 changed lines per PR (additions + deletions); delivery_strategy auto-chain (chain strategy stacked-to-main).
+
+rules:
+  proposal:
+    - Include rollback plan for risky changes
+    - Reference the PLAN.md section the change implements
+    - Forecast changed lines against the 400-line review budget
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Every formula requirement lists source and at least one hand-verified example
+  design:
+    - Include sequence diagrams for complex flows
+    - Document architecture decisions with rationale
+    - Respect the core/data/i18n/web separation (PLAN.md section 6.1)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Include the review-workload forecast guard lines; split into chained PRs when over 400 lines
+  apply:
+    tdd: true
+    test_command: "npm test"
+    guidelines:
+      - RED-GREEN-REFACTOR; write the failing test with hand-verified values first
+      - Strict TypeScript; no application code outside the agreed change scope
+      - Conventional commits, no AI attribution
+  verify:
+    test_command: "npm test"
+    build_command: "npm run build"
+    type_check_command: "npm run check"
+    coverage_threshold: 100   # packages/core; others 90 (approved by Rodrigo 2026-10-22)
+    mutation_command: null    # set when Stryker is added
+    review: "4 specialized reviewers + Judgment Day before archive"
+  archive:
+    - Warn before merging destructive deltas
