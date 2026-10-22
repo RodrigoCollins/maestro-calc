@@ -199,3 +199,76 @@ describe('Rational integer rounding (exact-rational › Integer rounding primiti
     expect(r(n).ceil()).toBe(expected);
   });
 });
+
+describe('Rational canonical string codec (exact-rational › Canonical string codec)', () => {
+  const parsed = (text: string): unknown => {
+    const result = Rational.fromString(text);
+    return result.ok ? result.value : result;
+  };
+
+  // spec: exact-rational › Canonical output [ER25]
+  it.each([
+    [127, 2, '127/2'],
+    [-5, 2, '-5/2'],
+    [4, 1, '4'],
+    [0, 1, '0'],
+    [-7, 1, '-7'],
+  ])('writes %i/%i as %j', (n, d, text) => {
+    expect(r(n, d).toString()).toBe(text);
+  });
+
+  // spec: exact-rational › Non-reduced input accepted and normalized [ER26]
+  it.each([
+    ['4/2', 2n, 1n],
+    ['-6/8', -3n, 4n],
+    ['7', 7n, 1n],
+    ['-0', 0n, 1n],
+    ['0/5', 0n, 1n],
+    ['10/4', 5n, 2n],
+  ])('reads %j as a normalized value', (text, num, den) => {
+    expect(parsed(text)).toEqual({ num, den });
+  });
+
+  // spec: exact-rational › Invalid canonical text [ER27]
+  it.each([
+    '',
+    '1/',
+    '/2',
+    '1/-2',
+    '+1/2',
+    '1.5',
+    ' 1/2',
+    '1/2/3',
+    '1 /2',
+    '--1',
+    '1,5',
+    '1,000/2',
+  ])('rejects %j as MALFORMED', (text) => {
+    expect(Rational.fromString(text)).toEqual({ ok: false, errors: [{ code: 'MALFORMED' }] });
+  });
+
+  // spec: exact-rational › Invalid canonical text — Rational-layer safety cap [ER27]
+  it('accepts 1024 characters and rejects 1025 as MALFORMED', () => {
+    expect(Rational.fromString('1'.repeat(1024)).ok).toBe(true);
+    expect(Rational.fromString(`1/${'1'.repeat(1022)}`).ok).toBe(true);
+    expect(Rational.fromString('1'.repeat(1025))).toEqual({
+      ok: false,
+      errors: [{ code: 'MALFORMED' }],
+    });
+    expect(Rational.fromString(`1/${'1'.repeat(1023)}`).ok).toBe(false);
+  });
+
+  // spec: exact-rational › Zero denominator text [ER28]
+  it.each(['1/0', '0/0', '-3/00'])('rejects %j as ZERO_DENOMINATOR', (text) => {
+    expect(Rational.fromString(text)).toEqual({
+      ok: false,
+      errors: [{ code: 'ZERO_DENOMINATOR' }],
+    });
+  });
+
+  // spec: exact-rational › Canonical string codec — round trip
+  it('round trips values beyond 2^64', () => {
+    const value = r(-(2n ** 100n) - 1n, 3n * 10n ** 30n);
+    expect(parsed(value.toString())).toEqual(value);
+  });
+});
