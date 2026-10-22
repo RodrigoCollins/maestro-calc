@@ -3,7 +3,7 @@ schema: spec-driven
 context: |
   Project: maestro-calc (Maestro Calc) - bilingual EN/ES US jobsite calculators. Source of truth: PLAN.md (Spanish).
   Target stack: Astro static + strict TypeScript, Cloudflare Pages, npm-workspaces monorepo (packages/core, data, i18n; apps/web).
-  Current state: single-app Astro 7 scaffold (src/lib/engine.ts, units.ts, format.ts, types.ts, src/pages/index.astro); NOT yet the planned monorepo. Migrate or replace in the first change.
+  Current state: npm-workspaces monorepo (apps/web Astro app; packages/core, data, i18n as TypeScript-source packages); legacy src/lib prototype removed in the first change.
   Testing: vitest 5 present (unit). Planned: Playwright e2e, Lighthouse budgets, SEO checks in CI, Stryker mutation testing on core.
   Style: calc logic stays pure TS in core (no UI, no language); data and i18n separated; shareable state in URL; generated artifacts in English.
 

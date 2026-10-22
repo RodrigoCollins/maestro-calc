@@ -4,7 +4,7 @@
 
 Mode: strict TDD, bootstrap exception (no test runner yet; verified by npm commands per tasks.md).
 
-Branches (stacked, local only): `feat/foundation-01a-remove-legacy` (00de733) then `feat/foundation-01b-skeleton`.
+Branches (stacked): `feat/foundation-01a-remove-legacy` then `feat/foundation-01b-skeleton`.
 Tasks done: 1.1-1.12 (1.10 not needed). Pending: 1.13 (reviews, PR bodies).
 
 Baseline (1.2, before changes): `npm query .workspace` -> `[]`; `npm run check` -> astro prompts to install `@astrojs/check typescript` (fails); `git ls-files src/lib` -> 4 files.
