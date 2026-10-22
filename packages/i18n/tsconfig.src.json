@@ -1,0 +1,8 @@
+// Purity gate: `types: []` and no DOM make `window`, `process` or `console` type errors here.
+// Tests are a separate program (tsconfig.test.json): vitest pulls Node typings in via vite.
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": { "types": [] },
+  "include": ["src"],
+  "exclude": ["src/**/*.test.ts", "src/**/*.test-d.ts", "src/**/__testing__/**"]
+}
