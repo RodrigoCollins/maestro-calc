@@ -24,12 +24,17 @@ export type Quotient<A extends DimensionName, B extends DimensionName> = NameOf<
   SubVec<Dimensions[A], Dimensions[B]>
 >;
 
-// `never` for an unnamed result: intersecting an argument with it makes the call a type error.
-type Named<N extends DimensionName> = [N] extends [never] ? never : unknown;
+// Intersecting an argument with an unnamed result makes the call a type error, and the missing
+// property below is what the diagnostic prints, so it says why the call was rejected.
+interface Unnamed {
+  readonly 'the exponent vector names no dimension': never;
+}
+type Named<N extends DimensionName> = [N] extends [never] ? Unnamed : unknown;
 
 const map = <D extends DimensionName>(q: Quantity<D>, canonical: Rational): Quantity<D> =>
   makeQuantity<D>(q.exponents, canonical);
 
+/** `a + b` in the canonical unit; a mismatched pair (untyped callers) fails `DIMENSION_MISMATCH`. */
 export const add = <D extends DimensionName>(
   a: Quantity<D>,
   b: Quantity<NoInfer<D>>,
@@ -38,6 +43,7 @@ export const add = <D extends DimensionName>(
   return map(a, a.canonical.add(b.canonical));
 };
 
+/** `a - b` in the canonical unit; a mismatched pair (untyped callers) fails `DIMENSION_MISMATCH`. */
 export const sub = <D extends DimensionName>(
   a: Quantity<D>,
   b: Quantity<NoInfer<D>>,
@@ -46,12 +52,15 @@ export const sub = <D extends DimensionName>(
   return map(a, a.canonical.sub(b.canonical));
 };
 
+/** `-q`, keeping the dimension. */
 export const negate = <D extends DimensionName>(q: Quantity<D>): Quantity<D> =>
   map(q, q.canonical.neg());
 
+/** `|q|`, keeping the dimension. */
 export const abs = <D extends DimensionName>(q: Quantity<D>): Quantity<D> =>
   map(q, q.canonical.abs());
 
+/** Orders `a` against `b` across units; mismatched dimensions fail `DIMENSION_MISMATCH`. */
 export const compare = <D extends DimensionName>(
   a: Quantity<D>,
   b: Quantity<NoInfer<D>>,
@@ -60,6 +69,7 @@ export const compare = <D extends DimensionName>(
   return a.canonical.compare(b.canonical);
 };
 
+/** True when `a` and `b` are the same amount; mismatched dimensions fail `DIMENSION_MISMATCH`. */
 export const equals = <D extends DimensionName>(
   a: Quantity<D>,
   b: Quantity<NoInfer<D>>,
@@ -68,8 +78,10 @@ export const equals = <D extends DimensionName>(
   return a.canonical.equals(b.canonical);
 };
 
+/** True for a zero amount of any dimension. */
 export const isZero = (q: Quantity<DimensionName>): boolean => q.canonical.isZero();
 
+/** `-1`, `0` or `1` for a negative, zero or positive amount of any dimension. */
 export const sign = (q: Quantity<DimensionName>): -1 | 0 | 1 => q.canonical.sign();
 
 /** Multiplies by an exact Rational, keeping the dimension. */
