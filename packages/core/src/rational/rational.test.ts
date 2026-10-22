@@ -272,3 +272,70 @@ describe('Rational canonical string codec (exact-rational › Canonical string c
     expect(parsed(value.toString())).toEqual(value);
   });
 });
+
+describe('Rational lossy exit and serialization guard (exact-rational › Lossy exit)', () => {
+  const ulpOfTen = 2 ** -49;
+  const JSON_GUARD = 'Rational is not JSON serializable; persist toString()';
+
+  // spec: exact-rational › Nearest double [ER29]
+  it('returns the nearest double for small parts', () => {
+    expect(r(1, 10).toNumber()).toBe(0.1);
+    expect(r(1, 3).toNumber()).toBe(0.3333333333333333);
+    expect(r(-7, 2).toNumber()).toBe(-3.5);
+    expect(Rational.ZERO.toNumber()).toBe(0);
+  });
+
+  // spec: exact-rational › Nearest double — both magnitudes at the 2^53 - 1 boundary [ER29]
+  it('divides directly when both parts are at most 2^53 - 1', () => {
+    expect(r(9007199254740991, 9007199254740990).toNumber()).toBe(1.0000000000000002);
+    expect(r(-9007199254740991).toNumber()).toBe(-9007199254740991);
+  });
+
+  // spec: exact-rational › Huge numerator and denominator [ER30]
+  it('never yields NaN or Infinity for (10^400 + 1) / 10^399', () => {
+    const value = r(10n ** 400n + 1n, 10n ** 399n).toNumber();
+    expect(Number.isFinite(value)).toBe(true);
+    expect(Math.abs(value - 10)).toBeLessThanOrEqual(ulpOfTen);
+    const negative = r(-(10n ** 400n) - 1n, 10n ** 399n).toNumber();
+    expect(Number.isFinite(negative)).toBe(true);
+    expect(Math.abs(negative + 10)).toBeLessThanOrEqual(ulpOfTen);
+  });
+
+  // spec: exact-rational › Huge numerator and denominator — shifting on either side [ER30]
+  it('stays within one ulp when only the denominator is huge', () => {
+    expect(r(10n ** 399n, 10n ** 400n + 1n).toNumber()).toBe(0.1);
+    expect(r(3n * 2n ** 70n, 2n ** 71n).toNumber()).toBe(1.5);
+  });
+
+  // spec: exact-rational › Lossy exit — range limits [ER30]
+  it('saturates to a signed Infinity above the double range and to zero below it', () => {
+    expect(r(10n ** 400n).toNumber()).toBe(Number.POSITIVE_INFINITY);
+    expect(r(-(10n ** 400n)).toNumber()).toBe(Number.NEGATIVE_INFINITY);
+    expect(r(1n, 10n ** 400n).toNumber()).toBe(0);
+  });
+
+  // spec: exact-rational › Lossy exit — representable extremes survive the scaling [ER30]
+  it('keeps values near the edges of the double range', () => {
+    expect(r(2n ** 1000n).toNumber()).toBe(2 ** 1000);
+    expect(r(1n, 2n ** 1060n).toNumber()).toBe(2 ** -1060);
+    expect(r(2n ** 2000n, 2n ** 1990n).toNumber()).toBe(1024);
+  });
+
+  // spec: exact-rational › JSON guard [ER31]
+  it('throws a TypeError from JSON.stringify, directly and nested', () => {
+    // The default bigint failure is also a TypeError, so the guard's own message is asserted.
+    expect(() => JSON.stringify(r(1, 3))).toThrow(new TypeError(JSON_GUARD));
+    expect(() => JSON.stringify({ x: r(1, 3) })).toThrow(new TypeError(JSON_GUARD));
+  });
+
+  // design: Rational — leak guards; persistence uses toString
+  it('converts to text only, and refuses implicit numeric conversion', () => {
+    const value = r(127, 2);
+    expect(String(value)).toBe('127/2');
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- exercises the string hint
+    expect(`${value}`).toBe(value.toString());
+    expect(() => Number(value)).toThrow(TypeError);
+    expect(() => (value as unknown as number) + 1).toThrow(TypeError);
+    expect(() => (value as unknown as number) > 1).toThrow(TypeError);
+  });
+});

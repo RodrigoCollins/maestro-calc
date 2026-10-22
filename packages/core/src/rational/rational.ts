@@ -13,6 +13,17 @@ const gcd = (a: bigint, b: bigint): bigint => {
   return x;
 };
 
+const SAFE_MAX = BigInt(Number.MAX_SAFE_INTEGER);
+const QUOTIENT_BITS = 64;
+
+const bitLength = (value: bigint): number => value.toString(2).length;
+
+/** Multiplies by 2^exponent in two steps so an intermediate power cannot overflow or underflow. */
+const scaleByPowerOfTwo = (value: number, exponent: number): number => {
+  const half = Math.trunc(exponent / 2);
+  return value * 2 ** half * 2 ** (exponent - half);
+};
+
 const toBigInt = (value: bigint | number): bigint => {
   if (typeof value === 'bigint') return value;
   if (!Number.isSafeInteger(value)) throw new CoreError('NOT_AN_INTEGER');
@@ -141,5 +152,32 @@ export class Rational {
     const denominator = slash === -1 ? 1n : BigInt(text.slice(slash + 1));
     if (denominator === 0n) return err({ code: 'ZERO_DENOMINATOR' });
     return ok(Rational.of(numerator, denominator));
+  }
+
+  /**
+   * The only lossy exit. Exact to the nearest double when both parts are safe integers, otherwise
+   * within one ulp (or a signed Infinity beyond the double range).
+   */
+  toNumber(): number {
+    const magnitude = abs(this.num);
+    if (magnitude <= SAFE_MAX && this.den <= SAFE_MAX) return Number(this.num) / Number(this.den);
+    // Scale so the integer quotient keeps 64 or 65 significant bits, then undo the scaling.
+    const shift = QUOTIENT_BITS - (bitLength(magnitude) - bitLength(this.den));
+    const quotient =
+      shift >= 0
+        ? (magnitude << BigInt(shift)) / this.den
+        : magnitude / (this.den << BigInt(-shift));
+    const result = scaleByPowerOfTwo(Number(quotient), -shift);
+    return this.num < 0n ? -result : result;
+  }
+
+  /** Direct serialization would lose exactness; persistence uses `toString`. */
+  toJSON(): never {
+    throw new TypeError('Rational is not JSON serializable; persist toString()');
+  }
+
+  [Symbol.toPrimitive](hint: 'default' | 'number' | 'string'): string {
+    if (hint === 'string') return this.toString();
+    throw new TypeError('Rational has no implicit numeric conversion; use toNumber()');
   }
 }
