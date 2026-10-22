@@ -36,7 +36,12 @@ interface StrykerModule {
   default: StrykerConfig;
   incrementalIdentityFiles: string[];
   pruneStaleReports: (reportsDirectory: string, keepFile: string) => void;
+  isStrykerEntry: (entry: string | undefined) => boolean;
+  sourceFilesIn: (directory: string) => string[];
 }
+
+const hasDotSegment = (path: string): boolean =>
+  path.split('/').some((part) => part.startsWith('.'));
 
 const readJson = (relativePath: string): unknown =>
   JSON.parse(readFileSync(fromRoot(relativePath), 'utf8'));
@@ -144,6 +149,7 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     const ciFiles = globs
       .flatMap((glob) => globSync(glob, { cwd: fromRoot() }))
       .filter((path) => statSync(fromRoot(path)).isFile())
+      .filter((path) => !path.startsWith('packages/core/src/') || !hasDotSegment(path))
       .sort();
     const configFiles = module_.incrementalIdentityFiles
       .map((path) => relative(fromRoot(), fromRoot('packages/core', path)))
@@ -170,6 +176,49 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
         'other.json',
         'stryker-incremental-bbbbbbbbbbbbbbbb.json',
       ]);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
+  // Importing the config (a test, a lint run, an editor) must never delete reports; only the
+  // Stryker entry point may prune.
+  it('does not touch the reports directory when it is merely imported', async () => {
+    const reports = fromRoot('packages/core/reports');
+    const stale = join(reports, 'stryker-incremental-0000000000000000.json');
+    mkdirSync(reports, { recursive: true });
+    writeFileSync(stale, '{}');
+    try {
+      // a distinct query string makes Node evaluate the module again
+      await import(
+        `${pathToFileURL(fromRoot('packages/core/stryker.config.mjs')).href}?import-only`
+      );
+      expect(existsSync(stale)).toBe(true);
+    } finally {
+      rmSync(stale, { force: true });
+    }
+  });
+
+  it('recognises the Stryker entry point by its file name only', () => {
+    expect(module_.isStrykerEntry('/p/node_modules/@stryker-mutator/core/bin/stryker.js')).toBe(
+      true,
+    );
+    expect(module_.isStrykerEntry('/p/stryker-work/node_modules/vitest/vitest.mjs')).toBe(false);
+    expect(module_.isStrykerEntry(undefined)).toBe(false);
+  });
+
+  // CI `hashFiles` skips nothing, while `fs.globSync` skips dotfiles; the config therefore leaves
+  // dotfiles and dot directories out of its list, and the CI key stays a superset of it (an
+  // editor swap file changes the CI key only, which costs a cold run, never a stale hit).
+  it('lists source files without dotfiles and dot directories', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-list-'));
+    try {
+      mkdirSync(join(directory, 'sub'));
+      mkdirSync(join(directory, '.hidden'));
+      for (const name of ['a.ts', 'sub/b.ts', '.swp', 'sub/.c.ts', '.hidden/d.ts']) {
+        writeFileSync(join(directory, name), '');
+      }
+      expect(module_.sourceFilesIn(directory).sort()).toEqual(['a.ts', 'sub/b.ts']);
     } finally {
       rmSync(directory, { recursive: true });
     }

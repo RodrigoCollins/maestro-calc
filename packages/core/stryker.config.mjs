@@ -1,11 +1,22 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const packageDir = dirname(fileURLToPath(import.meta.url));
 
-const isFile = (path) => statSync(join(packageDir, path)).isFile();
+/**
+ * The files below `directory` (relative, with forward slashes), leaving out dotfiles and dot
+ * directories. `fs.globSync` skips them too, and the contract test compares this list with the
+ * files the CI key hashes. `hashFiles` in CI hashes dotfiles as well, so the CI key stays a
+ * superset: a stray editor file only costs a cold run, never a stale hit.
+ */
+export const sourceFilesIn = (directory) =>
+  readdirSync(directory, { recursive: true })
+    .map((path) => path.replaceAll('\\', '/'))
+    .filter((path) => !path.split('/').some((part) => part.startsWith('.')))
+    .filter((path) => statSync(join(directory, path)).isFile());
 
 /**
  * Every input that can change a mutation verdict, relative to this package and sorted. The
@@ -17,9 +28,7 @@ const isFile = (path) => statSync(join(packageDir, path)).isFile();
  * `.nvmrc` stands for the Node version, so the key and the report name always change together.
  */
 export const incrementalIdentityFiles = [
-  ...readdirSync(join(packageDir, 'src'), { recursive: true })
-    .map((path) => `src/${path.replaceAll('\\', '/')}`)
-    .filter(isFile),
+  ...sourceFilesIn(join(packageDir, 'src')).map((path) => `src/${path}`),
   'stryker.config.mjs',
   'vitest.config.ts',
   ...readdirSync(packageDir).filter((name) => name.endsWith('.json')),
@@ -49,7 +58,15 @@ export const pruneStaleReports = (reportsDirectory, keepFile) => {
   }
 };
 
-pruneStaleReports(join(packageDir, 'reports'), incrementalName);
+/** True when `entry` (`process.argv[1]`) is the Stryker executable, whose file is `stryker.js`. */
+export const isStrykerEntry = (entry) =>
+  entry !== undefined && /^stryker(\.\w+)?$/.test(basename(entry));
+
+// The config is also imported by tests and editors, which must not delete reports; only a real
+// Stryker run prunes.
+if (isStrykerEntry(process.argv[1])) {
+  pruneStaleReports(join(packageDir, 'reports'), incrementalName);
+}
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 export default {
