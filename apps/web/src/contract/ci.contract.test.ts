@@ -7,12 +7,17 @@ interface Step {
   name?: string;
   uses?: string;
   run?: string;
+  if?: string;
   with?: Record<string, unknown>;
   'continue-on-error'?: unknown;
 }
 
 interface Job {
   steps: Step[];
+  needs?: string | string[];
+  if?: string;
+  paths?: unknown;
+  'paths-ignore'?: unknown;
   permissions?: unknown;
   'timeout-minutes'?: number;
   'continue-on-error'?: unknown;
@@ -108,6 +113,59 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
     for (const reference of uses) {
       expect(reference).toMatch(/^[\w.-]+\/[\w.-]+(\/[\w./-]+)?@[0-9a-f]{40}(\s+#.*)?$/);
     }
+  });
+});
+
+describe('CI mutation job (quality-gates › Continuous integration workflow, Mutation gate)', () => {
+  const mutation = workflow.jobs['mutation'];
+  const steps = mutation?.steps ?? [];
+  const step = (prefix: string): Step | undefined =>
+    steps.find((candidate) => candidate.uses?.startsWith(prefix));
+
+  // spec: Mutation job always runs incrementally [QG15]
+  it('runs after verify, on every run, with nothing that can skip it', () => {
+    expect(mutation).toBeDefined();
+    expect(mutation?.needs).toBe('verify');
+    expect(mutation?.if).toBeUndefined();
+    expect(mutation?.paths).toBeUndefined();
+    expect(mutation?.['paths-ignore']).toBeUndefined();
+  });
+
+  // spec: Mutation job always runs incrementally [QG15]
+  it('runs npm run mutation after a clean install, with no continue-on-error', () => {
+    const commands = steps.flatMap((candidate) =>
+      candidate.run === undefined ? [] : [candidate.run],
+    );
+    expect(commands).toEqual(['npm ci', 'npm run mutation']);
+    expect(mutation?.['timeout-minutes']).toBeGreaterThan(0);
+    expect(mutation?.['continue-on-error']).toBeUndefined();
+    expect(step('actions/checkout@')?.with).toMatchObject({ 'persist-credentials': false });
+    expect(step('actions/setup-node@')?.with).toMatchObject({
+      'node-version-file': '.nvmrc',
+      cache: 'npm',
+    });
+  });
+
+  // spec: Mutation job always runs incrementally [QG15]
+  it('restores the incremental report by core content hash and saves it on main only', () => {
+    const restore = step('actions/cache/restore@');
+    const save = step('actions/cache/save@');
+    // The command runner reports no per-test files, so Stryker cannot tell that a test changed:
+    // only an exact content-hash hit is sound, and a restore-keys fallback is deliberately absent.
+    expect(restore?.with?.['key']).toMatch(
+      /hashFiles\(.*packages\/core\/src\/\*\*.*package-lock\.json.*\)/,
+    );
+    expect(restore?.with?.['restore-keys']).toBeUndefined();
+    expect(restore?.with?.['path']).toBe('packages/core/reports/stryker-incremental-*.json');
+    expect(save?.with?.['key']).toBe(restore?.with?.['key']);
+    expect(save?.with?.['path']).toBe(restore?.with?.['path']);
+    expect(save?.if).toContain("github.ref == 'refs/heads/main'");
+    expect(steps.indexOf(restore ?? {})).toBeLessThan(
+      steps.findIndex((s) => s.run === 'npm run mutation'),
+    );
+    expect(steps.findIndex((s) => s.run === 'npm run mutation')).toBeLessThan(
+      steps.indexOf(save ?? {}),
+    );
   });
 });
 
