@@ -60,23 +60,25 @@ export const lbYd3 = densityOf(lb, yd3, 'lb/yd3');
 export const tonYd3 = densityOf(ton, yd3, 'ton/yd3');
 export const kgM3 = densityOf(kg, m3, 'kg/m3');
 
-/** Every unit, grouped by dimension. */
-export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } = {
-  length: [inch, ft, yd, mm, cm, m],
-  area: [in2, ft2, yd2, mm2, cm2, m2],
-  volume: [in3, ft3, yd3, mm3, cm3, m3],
-  mass: [lb, oz, ton, kg, tonne],
-  density: [lbIn3, lbFt3, lbYd3, tonYd3, kgM3],
-};
+/** Every unit, grouped by dimension; the catalog and its lists are frozen. */
+export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } = Object.freeze({
+  length: Object.freeze([inch, ft, yd, mm, cm, m]),
+  area: Object.freeze([in2, ft2, yd2, mm2, cm2, m2]),
+  volume: Object.freeze([in3, ft3, yd3, mm3, cm3, m3]),
+  mass: Object.freeze([lb, oz, ton, kg, tonne]),
+  density: Object.freeze([lbIn3, lbFt3, lbYd3, tonYd3, kgM3]),
+});
 
 /**
  * Looks up a unit by its exact, case-sensitive id within one dimension; an unknown id (or the id
- * of another dimension) answers `undefined`, never a default.
+ * of another dimension) answers `undefined`, never a default, and so does a dimension name that
+ * is not one of the five (`'__proto__'` from untyped input).
  */
 export const findUnit = <D extends DimensionName>(
   dimension: D,
   id: string,
 ): Unit<D> | undefined => {
+  if (!Object.hasOwn(UNITS, dimension)) return undefined;
   const units: readonly Unit<D>[] = UNITS[dimension];
   return units.find((unit) => unit.id === id);
 };
