@@ -1,0 +1,12 @@
+// Type-checks the root tooling files (configs and shared tooling modules) against Node typings.
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    // skipLibCheck: eslint-import-context (via eslint-plugin-import-x) ships declarations that
+    // import the uninstalled `type-fest`. Remove once `tsc -p tsconfig.json` passes without it.
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["*.config.js", "*.config.ts", "tooling"]
+}
