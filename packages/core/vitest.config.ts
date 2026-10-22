@@ -2,7 +2,7 @@ import { defineProject } from 'vitest/config';
 
 export default defineProject({
   // The config runs in Node; core sources never touch `process`.
-  define: { __STRYKER__: Boolean(process.env['STRYKER']) },
+  define: { __STRYKER__: process.env['STRYKER'] === '1' },
   test: {
     name: 'core',
     environment: 'node',

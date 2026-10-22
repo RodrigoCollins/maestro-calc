@@ -19,7 +19,7 @@
     "check": "npm run typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "mutation": "STRYKER=1 npm run mutation -w @maestro-calc/core",
+    "mutation": "npm run mutation -w @maestro-calc/core",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
