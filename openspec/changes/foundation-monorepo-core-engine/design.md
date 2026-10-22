@@ -102,7 +102,7 @@ Plain objects, no methods (tree-shakeable, structurally comparable). Single-valu
 |---|---|---|
 | rational | `parseDecimal`: `MALFORMED`, `DECIMAL_COMMA`; `fromString`: `MALFORMED`, `ZERO_DENOMINATOR` (a comma is `MALFORMED` there; `DECIMAL_COMMA` belongs to `parseDecimal` only). Arrays: `DECIMAL_PARSE_CODES`, `RATIONAL_PARSE_CODES` | `NOT_AN_INTEGER`, `ZERO_DENOMINATOR`, `DIVISION_BY_ZERO` |
 | units / money | — / `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `TOO_LARGE` | `DIMENSION_MISMATCH`, `DIVISION_BY_ZERO` |
-| format | `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `ZERO_DENOMINATOR`, `UNKNOWN_UNIT`, `TOO_LONG`, `TOO_LARGE` | `INVALID_DENOMINATOR`, `INVALID_PLACES`, `NEGATIVE_QUANTITY` |
+| format | `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `ZERO_DENOMINATOR`, `UNKNOWN_UNIT`, `TOO_LONG`, `TOO_LARGE` | `INVALID_DENOMINATOR`, `INVALID_PLACES`, `INVALID_MODE`, `NEGATIVE_QUANTITY` |
 | calculator | adds `BELOW_MIN`, `ABOVE_MAX`, `UNKNOWN_OPTION` (`FieldErrorCode` = 10 codes) | `INVALID_DEFINITION` (+`reason`), `INVALID_RESULT` |
 | url | `INVALID_VALUE`, `UNSUPPORTED_VERSION` (`UrlIssueCode`) | — |
 

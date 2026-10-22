@@ -11,7 +11,7 @@ Principle: calculation never rounds. Rounding happens once, at the display or pu
 `roundToFraction(value, denominator, mode)` MUST round an exact Rational `value` to the nearest multiple of `1/denominator` and return the integer tick count `k` (a `bigint`) such that the rounded value is `k/denominator`.
 
 - `denominator` MUST be an integer in 2..64 inclusive (any integer in the range, not only powers of two). Anything else (0, 1, 65, negative, non-integer, `NaN`) MUST fail with `INVALID_DENOMINATOR`.
-- `mode` MUST be one of `nearest` (default), `up`, `down`.
+- `mode` MUST be one of `nearest` (default), `up`, `down`. Any other value (including inherited property names such as `toString`) MUST fail with `INVALID_MODE`; `toDecimalParts` and `formatFeetInches` share this rule through the same rounding kernel.
   - `nearest`: closest multiple; exact ties (value x denominator has fractional part exactly 1/2) round away from zero, symmetrically for negatives.
   - `up`: smallest multiple >= value (toward positive infinity).
   - `down`: largest multiple <= value (toward negative infinity).
