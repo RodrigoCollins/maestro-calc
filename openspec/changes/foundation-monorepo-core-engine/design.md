@@ -15,7 +15,7 @@ maestro-calc/
 ├── eslint.config.js  prettier.config.js  .prettierignore  vitest.config.ts
 ├── .github/workflows/ci.yml  .github/dependabot.yml
 ├── packages/
-│   ├── core/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts stryker.config.json
+│   ├── core/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts stryker.config.mjs
 │   │   └── src/
 │   │       ├── index.ts                 # engine barrel (never re-exports calculators)
 │   │       ├── result.ts                # Result<T,E>, ok, err
@@ -78,7 +78,7 @@ apps/web ──→ core, data, i18n          data ──→ core          i18n �
 | D8 | URL values are canonical Rational text (lengths in inches, money in dollars), no unit suffix; the decoder uses strict per-kind URL parsers and never applies a default unit | Unit-suffixed user units (`3m`); decimals; reusing the form parsers | One canonical string per value makes decode∘encode idempotent and links stable even if a field's input unit changes. Reusing form parsers would make URL meaning depend on `defaultUnit` and the unit system. |
 | D9 | Any comma in numeric input is rejected with the dedicated code `DECIMAL_COMMA` | Accept `,` as decimal; plain `MALFORMED` | `1,000 ft` silently parsed as 1 ft is a dangerous error; the dedicated code lets the UI say "use a period". Locale-aware input is a tracked follow-up. |
 | D10 | Mutation job always runs with the Stryker incremental cache, never path-filtered | Path-filtered workflow | A path-skipped required check stays pending forever; the incremental cache makes unchanged core near-free. |
-| D11 | `stryker.config.json` lives in `packages/core/` | Root config | Per-package configs scale when `data` formulas join mutation testing; the root script delegates. |
+| D11 | `stryker.config.mjs` lives in `packages/core/` | Root config | Per-package configs scale when `data` formulas join mutation testing; the root script delegates. |
 | D12 | i18n EN module per scope is the source of truth; ES module `as const satisfies CatalogOf<typeof en>`; no runtime locale fallback | Runtime EN fallback; JSON catalogs | Missing or extra ES keys are compile errors, so a fallback would only hide bugs; JSON loses the literal types needed for typed params. |
 | D13 | Units, money, and format are free functions over immutable values | `Quantity` class with methods | Tree-shakeable per page; methods on a class are always bundled. `Rational` stays a class (D3) because every module needs all of it. |
 | D14 | Canonical mass unit is the pound; mass units ship now | kg canonical; defer mass | US customary domain (like the inch for length): oz and short ton are unit fractions/integers of lb, and kg stays exact via 1 lb = 0.45359237 kg. Concrete/gravel calculators need mass and density next. |
@@ -280,7 +280,7 @@ Initial load: the page prerenders the **default** result at build time (static H
 | ESLint / typescript-eslint | `^10.13` / `^8.72` (`strictTypeChecked` + `stylisticTypeChecked`, `projectService`), eslint-plugin-astro, eslint-plugin-import-x, eslint-config-prettier |
 | Prettier | `3.9.10` exact + prettier-plugin-astro |
 | vitest / coverage-v8 | `5.0.5` exact, matching |
-| Stryker core / vitest-runner | `10.0.0` (typescript-checker deferred, follow-up) |
+| Stryker core | `10.0.0` (command runner; vitest-runner incompatible; typescript-checker deferred, follow-up) |
 | fast-check | `^4` (verify at install) |
 
 `tsconfig.base.json`: `target ES2022`, `lib ["ES2023"]`, `module ESNext`, `moduleResolution Bundler`, `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature`, `noFallthroughCasesInSwitch`, `verbatimModuleSyntax`, `isolatedModules`, `erasableSyntaxOnly`, `allowImportingTsExtensions`, `rewriteRelativeImportExtensions`, `noEmit`, `types []`; no `baseUrl` (deprecated in 6.0). Web extends `["astro/tsconfigs/strict", "../../tsconfig.base.json"]` and re-adds `DOM`.
@@ -295,8 +295,9 @@ sequenceDiagram
   GH->>V: checkout, setup-node (node-version-file .nvmrc, cache npm)
   V->>V: npm ci → lint → format:check → typecheck → test:coverage → build
   V-->>GH: fail fast on first red step
-  GH->>M: restore cache stryker-incremental (exact key: hash of core src, tests, config and lockfile)
+  GH->>M: restore cache stryker-incremental (one exact key from the step `Compute the Stryker cache key`: a superset hash of core src, tests, package and root config, `.nvmrc` and lockfile)
   M->>M: npm run mutation (incremental, command runner, STRYKER=1 ⇒ 50 property runs)
+  M-->>GH: on failure upload packages/core/reports/mutation as an artifact
   M-->>GH: fail if score < break 90; save cache on main
 ```
 
@@ -310,7 +311,8 @@ Workflow: `permissions: contents: read`, `concurrency` cancel-in-progress per re
 | Coverage | v8 over `packages/*/src/**` only: `packages/core/src/**` 100/100/100/100; `packages/{data,i18n}/src/**` 90. Excludes tests, `__testing__`, `.d.ts`. `apps/web` tests run but are outside coverage (no logic in this change). |
 | Conventions | `x.test.ts` (hand-verified examples, source cited in test name or comment), `x.property.test.ts` (fast-check; seed printed on failure; `numRuns` from `__testing__/property-runs.ts`: 1000, or 50 when `STRYKER` is set), `x.test-d.ts` (`expectTypeOf`, `@ts-expect-error` for wrong-dimension ops and unnamed products), `*.contract.test.ts` (public contracts: released URL keys, i18n completeness). |
 | Properties | Rational field axioms and normalization; `fromString(toString(r)) = r`; unit round trips over 28 units; `parseLength(formatFeetInches(q, d).text) = q` for `q = k/d`, `abs(q) < 10^15` in; rounding idempotence/symmetry; URL round trip and idempotence; rectangle-area consistency. |
-| Stryker | `packages/core/stryker.config.json`: `testRunner command` (`npx vitest run`; the vitest runner is incompatible with vitest 5, see Open Questions), no checkers initially, `coverageAnalysis off`, `mutate src/**/*.ts` minus tests/`__testing__`/barrels, `incremental: true` (`reports/stryker-incremental.json`), thresholds high 95 / low 90 / break 90 (raise break to 95 later). Compatibility with vitest 5 spiked in PR3; fallback per the quality-gates spec. |
+| Stryker | `packages/core/stryker.config.mjs`: `testRunner command` (`STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false`; the vitest runner is incompatible with vitest 5, see Open Questions), no checkers initially, `coverageAnalysis off`, `mutate src/**/*.ts` minus tests/`__testing__`/barrels, `ignorePatterns: ["reports"]`, `timeoutMS 30000`, `timeoutFactor 4`, `concurrency 3`, `incremental: true` with `reports/stryker-incremental-<hash>.json` where the 16-hex hash is computed once in the config over `src/**`, `stryker.config.mjs`, `vitest.config.ts`, `tsconfig*.json` and `../../package-lock.json` (the command runner cannot see changed or deleted tests, so a stale report would keep old verdicts), reporters `clear-text`, `progress-append-only`, `html`, `json`, thresholds high 95 / low 90 / break 90 (raise break to 95 later). Equivalent `<=` mutants are suppressed with exactly one `Stryker disable next-line EqualityOperator` pragma, on the private `isNegative` helper; a contract test fixes that count and keeps barrels to `export … from`. Compatibility with vitest 5 spiked in PR3; fallback per the quality-gates spec. |
+| Stryker without typecheck | Type tests (`*.test-d.ts`) cannot kill behavioral mutants and run in `verify`, so Stryker runs vitest with `--typecheck.enabled=false`. This keeps each mutant run cheap and avoids the sandbox trap where `extends ../../tsconfig.base.json` does not resolve from the copied directory. |
 
 ## Consuming Source TS in apps/web (PR1 spike)
 
@@ -328,7 +330,7 @@ Forecasts exclude the lockfile and pure renames; each slice ≤ 400 changed line
 |---|---|---|---|
 | 1 Skeleton | root `package.json` (workspaces), `package-lock.json`, `.nvmrc`, `tsconfig.base.json`, `tsconfig.json`, `.gitignore`; `packages/{core,data,i18n}/{package.json,tsconfig.json,src/index.ts}`; `packages/i18n/src/locales.ts`; `git mv` `astro.config.mjs`, `src/pages`, `src/site.config.ts`, `public/` → `apps/web/`; `apps/web/{package.json,tsconfig.json}`; delete `src/lib/*`; `AGENTS.md` | ~220 | `build`, `typecheck` pass; spike evidence |
 | 2 Gates | `eslint.config.js`, `prettier.config.js`, `.prettierignore`, `vitest.config.ts`, `*/vitest.config.ts`, root scripts + devDeps, `.github/workflows/ci.yml` (verify job), `.github/dependabot.yml`, `openspec/config.yaml`, `packages/i18n/src/locales.test.ts` | ~300 | CI green; only i18n has code, covered |
-| 3 Rational | `core/src/{result,errors}.ts` (+tests), `core/src/rational/*`, `core/src/__testing__/{arbitraries,property-runs}.ts`, `core/stryker.config.json`, ci.yml mutation job, fast-check + Stryker devDeps | ~380 | 100% coverage, mutation ≥ 90 |
+| 3 Rational | `core/src/{result,errors}.ts` (+tests), `core/src/rational/*`, `core/src/__testing__/{arbitraries,property-runs}.ts`, `core/stryker.config.mjs`, ci.yml mutation job, fast-check + Stryker devDeps | ~380 | 100% coverage, mutation ≥ 90 |
 | 4 Units core | `core/src/units/{dimension,unit,quantity,ops}.ts`, length/area/volume catalog, tests, `ops.test-d.ts` | ~370 | same |
 | 5 Mass and density | mass and density rows in `units/catalog.ts`, derived-dimension tests and type tests | ~200 | same |
 | 6 Rounding and formatting | `core/src/format/{rounding,decimal-parts,purchase,feet-inches}.ts` + tests/properties | ~330 | same |
@@ -368,7 +370,7 @@ No data migration. Each PR is independently revertible; reverting PR1 restores t
 
 ## Open Questions
 
-None blocking. Resolved in PR 3 (spike, tasks 3.13-3.14): Stryker `10.0.0` with its `vitest-runner` cannot drive vitest `5.0.5`. In mutant runs the runner narrows the run with a `testNamePattern` built from names joined by a space, while vitest 5 matches full names joined by ` > `; no test is selected, none fails, and every mutant survives (9.8 percent total, a vacuous score). `10.0.0` is the newest runner, so the fallback is the `command` runner (`npx vitest run` in the sandbox, `coverageAnalysis: off`) with the same thresholds. Consequences: no per-test selection (every mutant runs the core suite, about 70 s for 254 mutants), and Stryker cannot see which test files changed, so the incremental report is keyed by a hash of the core sources, tests and config and CI restores it on an exact key hit only. Revisit when a Stryker release supports vitest 5. Tracked follow-ups: raise mutation `break` to 95; enable the Stryker TypeScript checker once run time is measured; locale-aware decimal input; automate released-snapshot completeness.
+None blocking. Resolved in PR 3 (spike, tasks 3.13-3.14): Stryker `10.0.0` with its `vitest-runner` cannot drive vitest `5.0.5`. In mutant runs the runner narrows the run with a `testNamePattern` built from names joined by a space, while vitest 5 matches full names joined by ` > `; no test is selected, none fails, and every mutant survives (9.8 percent total, a vacuous score). `10.0.0` is the newest runner, so the fallback is the `command` runner (`npx vitest run` in the sandbox, `coverageAnalysis: off`) with the same thresholds. Consequences: no per-test selection (every mutant runs the whole core suite serially, about 3 minutes cold for 206 mutants), and Stryker cannot see which test files changed, so the incremental report is keyed by a hash of the core sources, tests and config and CI restores it on an exact key hit only. Revisit when a Stryker release supports vitest 5. Follow-up when Stryker supports vitest 5 (trigger: `npm view @stryker-mutator/vitest-runner versions` lists a release above `10.0.0`, or the upstream ` > ` name-join fix lands): three pins flip together, namely `mutation.contract.test.ts` (runner and `coverageAnalysis`, back to `vitest` and `perTest`), `ci.contract.test.ts` (an incremental report can then be restored with `restore-keys`), and the hashed `incrementalFile` in `stryker.config.mjs` (back to a fixed name). Tracked follow-ups: raise mutation `break` to 95; enable the Stryker TypeScript checker once run time is measured; locale-aware decimal input; automate released-snapshot completeness.
 
 ## Design review resolution
 
@@ -415,3 +417,7 @@ Design review round 1 (tech lead, APPROVE WITH CHANGES), applied 2026-10-22.
 ### Design deviation applied in PR 2 review round 1 (tsconfig layout)
 
 Each package `tsconfig.json` is a solution config (`files: []` plus references) over `tsconfig.src.json` (the purity gate above) and `tsconfig.test.json` (Node typings for tests and `vitest.config.ts`); `typecheck` runs `tsc --noEmit -p` on both. Reason: one program cannot be both `types: []` and host tests (importing vitest pulls Node typings in through vite, which would let `process` type-check in core), and typescript-eslint's `projectService` resolves solution-style configs per file, so lint, IDE and CI see the same programs. `apps/web` follows the same shape (`tsconfig.app.json` keeps `types: ["astro/client"]`, `tsconfig.test.json` adds Node for `src/contract/**`); `astro check` and `astro build` work through the solution config. Vitest type tests point `typecheck.tsconfig` at `tsconfig.test.json`. Test globs are defined once in `tooling/test-globs.js` and shared by `vitest.config.ts` and `eslint.config.js`.
+
+### Design deviation applied in PR 3 review round 1 (mutation gate hardening)
+
+The review asked for the Stryker cache key as a job-level `env`. GitHub does not expose the `runner` context or `hashFiles` to `jobs.<id>.env`, so the `mutation` job computes the key in one step (`Compute the Stryker cache key`, written to `$GITHUB_ENV`) and both the restore and the save step read `${{ env.STRYKER_CACHE_KEY }}`. The key remains a single documented value and a superset of the inputs hashed by `stryker.config.mjs`. The Rational-layer text parsers also gained a 1024-character safety cap (`MALFORMED`), below which the boundary caps (128 form, 256 URL) stay authoritative.
