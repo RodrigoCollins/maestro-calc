@@ -8,9 +8,11 @@ import { fromRoot, importFromRoot, repoRoot } from './root.ts';
 interface Workspaces {
   packageNames: (root: string) => string[];
   workspaceDirs: (root: string) => string[];
+  packageGlobs: (root: string, tail: string) => string[];
 }
 
-const { packageNames, workspaceDirs } = await importFromRoot<Workspaces>('tooling/workspaces.js');
+const { packageNames, workspaceDirs, packageGlobs } =
+  await importFromRoot<Workspaces>('tooling/workspaces.js');
 
 const onDisk = readdirSync(fromRoot('packages'), { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
@@ -31,6 +33,42 @@ describe('workspace list (monorepo-workspace › Workspace enumeration)', () => 
     } finally {
       rmSync(temp, { recursive: true });
     }
+  });
+
+  // Judgment Day F2: a brace glob over one package (`packages/{core}`) or none (`packages/{}`)
+  // matches nothing, silently disabling every rule scoped to it.
+  describe('packageGlobs', () => {
+    const withPackages = (names: string[], check: (root: string) => void): void => {
+      const temp = mkdtempSync(join(tmpdir(), 'maestro-globs-'));
+      try {
+        mkdirSync(join(temp, 'packages'), { recursive: true });
+        for (const name of names) mkdirSync(join(temp, 'packages', name));
+        check(temp);
+      } finally {
+        rmSync(temp, { recursive: true });
+      }
+    };
+
+    it('returns one literal glob per package, never a brace group', () => {
+      withPackages(['core', 'data'], (root) => {
+        expect(packageGlobs(root, 'src/**')).toEqual([
+          'packages/core/src/**',
+          'packages/data/src/**',
+        ]);
+      });
+    });
+
+    it('returns a literal glob for a repository with a single package', () => {
+      withPackages(['core'], (root) => {
+        expect(packageGlobs(root, 'src/**')).toEqual(['packages/core/src/**']);
+      });
+    });
+
+    it('fails loudly when there is no package to scope rules to', () => {
+      withPackages([], (root) => {
+        expect(() => packageGlobs(root, 'src/**')).toThrow(/no packages/i);
+      });
+    });
   });
 
   // spec: Compiler options inherited [MW13]
