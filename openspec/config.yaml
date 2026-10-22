@@ -4,7 +4,7 @@ context: |
   Project: maestro-calc (Maestro Calc) - bilingual EN/ES US jobsite calculators. Source of truth: PLAN.md (Spanish).
   Target stack: Astro static + strict TypeScript, Cloudflare Pages, npm-workspaces monorepo (packages/core, data, i18n; apps/web).
   Current state: npm-workspaces monorepo (apps/web Astro app; packages/core, data, i18n as TypeScript-source packages); legacy src/lib prototype removed in the first change.
-  Testing: vitest 5 present (unit). Planned: Playwright e2e, Lighthouse budgets, SEO checks in CI, Stryker mutation testing on core.
+  Testing: vitest 5 projects (unit tests; type tests via typecheck.include) with V8 coverage thresholds; blocking format, lint and typecheck gates in CI. Planned: fast-check property tests and Stryker mutation testing on core (PR 3), Playwright e2e, Lighthouse budgets, SEO checks in CI.
   Style: calc logic stays pure TS in core (no UI, no language); data and i18n separated; shareable state in URL; generated artifacts in English.
 
 strict_tdd: true
@@ -20,16 +20,15 @@ testing:
     integration: { available: false, tool: null }
     e2e: { available: false, tool: null, planned: playwright }
   coverage:
-    available: false     # @vitest/coverage-v8 not installed yet
-    command: null
-    planned_command: "vitest run --coverage"
+    available: true      # @vitest/coverage-v8; thresholds: core 100, data/i18n 90
+    command: "npm run test:coverage"
   mutation:
     available: false
     planned_tool: stryker
   quality:
-    linter: { available: false, command: null, planned: "eslint (typescript-eslint strict)" }
-    type_checker: { available: true, command: "npm run check" }   # astro check
-    formatter: { available: false, command: null, planned: "prettier" }
+    linter: { available: true, command: "npm run lint" }   # eslint, typescript-eslint strictTypeChecked, --max-warnings=0
+    type_checker: { available: true, command: "npm run typecheck" }   # tsc --noEmit per package program (src purity gate + tests), astro check for web, root tooling files (JS configs are linted, not type-checked: checkJs is a tracked follow-up); "npm run check" is an alias
+    formatter: { available: true, command: "npm run format:check" }   # prettier + prettier-plugin-astro
 
 quality_bar:
   - Top-tier, tech-lead-approvable code.
@@ -70,7 +69,8 @@ rules:
     build_command: "npm run build"
     type_check_command: "npm run check"
     coverage_threshold: 100   # packages/core; others 90 (approved by Rodrigo 2026-10-22)
-    mutation_command: null    # set when Stryker is added
+    mutation_command: null   # set to planned_command when Stryker lands in PR 3
+    planned_command: "npm run mutation"
     review: "4 specialized reviewers + Judgment Day before archive"
   archive:
     - Warn before merging destructive deltas
