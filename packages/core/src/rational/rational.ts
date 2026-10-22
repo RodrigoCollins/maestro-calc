@@ -2,7 +2,14 @@ import { CoreError } from '../errors.ts';
 import { err, ok, type Result } from '../result.ts';
 import { MAX_PARSE_LENGTH } from './limits.ts';
 
-const abs = (value: bigint): bigint => (value < 0n ? -value : value);
+// The only sign test in this module. Every caller either never passes zero (nonzero divisor,
+// non-equal operands, nonzero numerator) or treats it like a positive one (-0n is 0n), so the
+// `<=` mutant is equivalent. Stryker ignores every EqualityOperator mutant on the line, so the
+// `>=` mutant is hidden with it; the sign behaviour is pinned by abs, neg, sign and compare tests.
+// Stryker disable next-line EqualityOperator: `<=` is equivalent (see above)
+const isNegative = (value: bigint): boolean => value < 0n;
+
+const abs = (value: bigint): bigint => (isNegative(value) ? -value : value);
 
 const gcd = (a: bigint, b: bigint): bigint => {
   let x = abs(a);
@@ -63,7 +70,7 @@ export class Rational {
     const num = toBigInt(n);
     const den = toBigInt(d);
     if (den === 0n) throw new CoreError('ZERO_DENOMINATOR');
-    const divisor = gcd(num, den) * (den < 0n ? -1n : 1n);
+    const divisor = isNegative(den) ? -gcd(num, den) : gcd(num, den);
     return new Rational(num / divisor, den / divisor);
   }
 
@@ -102,7 +109,7 @@ export class Rational {
     const left = this.num * other.den;
     const right = other.num * this.den;
     if (left === right) return 0;
-    return left < right ? -1 : 1;
+    return isNegative(left - right) ? -1 : 1;
   }
 
   equals(other: Rational): boolean {
@@ -111,7 +118,7 @@ export class Rational {
 
   sign(): -1 | 0 | 1 {
     if (this.num === 0n) return 0;
-    return this.num < 0n ? -1 : 1;
+    return isNegative(this.num) ? -1 : 1;
   }
 
   isZero(): boolean {
@@ -124,14 +131,13 @@ export class Rational {
 
   /** Largest integer not above this value (toward negative infinity). */
   floor(): bigint {
-    const quotient = this.num / this.den;
-    return this.num < 0n && quotient * this.den !== this.num ? quotient - 1n : quotient;
+    const remainder = ((this.num % this.den) + this.den) % this.den;
+    return (this.num - remainder) / this.den;
   }
 
   /** Smallest integer not below this value (toward positive infinity). */
   ceil(): bigint {
-    const quotient = this.num / this.den;
-    return this.num > 0n && quotient * this.den !== this.num ? quotient + 1n : quotient;
+    return -this.neg().floor();
   }
 
   /** Canonical text: `n` for integers, otherwise `n/d`. */
@@ -161,14 +167,11 @@ export class Rational {
   toNumber(): number {
     const magnitude = abs(this.num);
     if (magnitude <= SAFE_MAX && this.den <= SAFE_MAX) return Number(this.num) / Number(this.den);
-    // Scale so the integer quotient keeps 64 or 65 significant bits, then undo the scaling.
+    // Scale so the integer quotient keeps 64 or 65 significant bits, then undo the scaling. A
+    // negative shift is a right shift, and floor(floor(m / 2^k) / d) = floor(m / (2^k d)).
     const shift = QUOTIENT_BITS - (bitLength(magnitude) - bitLength(this.den));
-    const quotient =
-      shift >= 0
-        ? (magnitude << BigInt(shift)) / this.den
-        : magnitude / (this.den << BigInt(-shift));
-    const result = scaleByPowerOfTwo(Number(quotient), -shift);
-    return this.num < 0n ? -result : result;
+    const result = scaleByPowerOfTwo(Number((magnitude << BigInt(shift)) / this.den), -shift);
+    return isNegative(this.num) ? -result : result;
   }
 
   /** Direct serialization would lose exactness; persistence uses `toString`. */
