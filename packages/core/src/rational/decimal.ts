@@ -22,12 +22,8 @@ const DECIMAL = /^[+-]?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)$/;
 export const parseDecimal = (text: string): Result<Rational, DecimalParseError> => {
   if (text.includes(',')) return err({ code: 'DECIMAL_COMMA' });
   if (text.length > MAX_PARSE_LENGTH || !DECIMAL.test(text)) return err({ code: 'MALFORMED' });
-  const unsigned = text.startsWith('-') || text.startsWith('+') ? text.slice(1) : text;
-  const dot = unsigned.indexOf('.');
-  const integer = dot === -1 ? unsigned : unsigned.slice(0, dot);
-  const fraction = dot === -1 ? '' : unsigned.slice(dot + 1);
-  const magnitude = BigInt(integer + fraction);
-  return ok(
-    Rational.of(text.startsWith('-') ? -magnitude : magnitude, 10n ** BigInt(fraction.length)),
-  );
+  // BigInt accepts a leading sign and leading zeros, so only the decimal point is removed.
+  const dot = text.indexOf('.');
+  const fractionDigits = dot === -1 ? 0 : text.length - dot - 1;
+  return ok(Rational.of(BigInt(text.replace('.', '')), 10n ** BigInt(fractionDigits)));
 };

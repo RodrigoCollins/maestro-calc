@@ -291,6 +291,19 @@ describe('Rational lossy exit and serialization guard (exact-rational › Lossy 
     expect(r(-9007199254740991).toNumber()).toBe(-9007199254740991);
   });
 
+  // spec: exact-rational › Nearest double — denominator exactly 2^53 - 1 [ER29]
+  it('rounds correctly when the denominator is the largest safe integer', () => {
+    // The exact value is just above a rounding tie, which only a direct division resolves upward.
+    expect(r(1, 9007199254740991).toNumber()).toBe(1 / 9007199254740991);
+    expect(r(2, 9007199254740991).toNumber()).toBe(2 / 9007199254740991);
+  });
+
+  // spec: exact-rational › Lossy exit — a huge numerator with a small denominator [ER30]
+  it('keeps a finite quotient whose numerator alone overflows a double', () => {
+    expect(r(3n * 2n ** 1023n + 1n, 3n).toNumber()).toBe(2 ** 1023);
+    expect(r(-(3n * 2n ** 1023n) - 1n, 3n).toNumber()).toBe(-(2 ** 1023));
+  });
+
   // spec: exact-rational › Huge numerator and denominator [ER30]
   it('never yields NaN or Infinity for (10^400 + 1) / 10^399', () => {
     const value = r(10n ** 400n + 1n, 10n ** 399n).toNumber();
@@ -336,6 +349,6 @@ describe('Rational lossy exit and serialization guard (exact-rational › Lossy 
     expect(`${value}`).toBe(value.toString());
     expect(() => Number(value)).toThrow(TypeError);
     expect(() => (value as unknown as number) + 1).toThrow(TypeError);
-    expect(() => (value as unknown as number) > 1).toThrow(TypeError);
+    expect(() => (value as unknown as number) > 1).toThrow(/toNumber/);
   });
 });
