@@ -297,12 +297,15 @@ Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the pr
 | Branch | Tasks | Base | Changed lines (excl. lockfile) | `npm run verify` tests |
 |---|---|---|---|---|
 | `feat/foundation-06a-rounding-kernel` | 6.1, 6.2 | PR 5 slice | 217 | 450 |
+| `feat/foundation-06b-decimal-purchase` | 6.3, 6.4 | 06a | 266 | 478 |
 
 ### TDD Cycle Evidence
 
 | Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
 |---|---|---|---|---|---|---|---|
-| 6.2 | `rounding.test.ts`, `rounding.property.test.ts` | Unit, property | 418/418 | module not found (both files) | 32/32 | 11 rows x 3 modes (33 cells), ties in both signs, 8 invalid denominators, boundaries 2 and 64, multiples in every mode, 10^30 magnitudes, 5 properties over d in 2..64 | none needed |
+| 6.2 | `rounding.test.ts`, `rounding.property.test.ts` | Unit, property | 418/418 | module not found (both files) | 32/32 | 11 rows x 3 modes (33 cells), ties in both signs, 8 invalid denominators, boundaries 2 and 64, multiples in every mode, 10^30 magnitudes, 5 properties over d in 2..64 | mutation run on 06b: the `'nearest'` default literal survived (any unknown mode fell through to nearest), so the kernel became a `Record<RoundingMode, …>` table where an unknown mode throws |
+| 6.3 | `decimal-parts.test.ts` | Unit, property | 450/450 | module not found | 55/55 in the folder | 11 rows x 3 modes rendered as `[-]int.frac` plus exact parts for the spec examples, no negative zero in 3 modes and zero, places 0 and 12, 10^25 magnitude, 5 invalid places, one property (within half a unit, `places` digits) | none needed |
+| 6.4 | `purchase.test.ts` | Unit, property | 450/450 | module not found | 60/60 in the folder | exact integers (125, 1, 10^30), fractions (7/2, 1/10^30, (10^30+1)/3), zero, 3 negatives, property `n >= x > n - 1` | none needed |
 
 Spot check: dropping the sign restoration in `roundScaled` fails 9 tests (the negative table rows, the tie cases and the oddness property, which printed a seed and a shrunk counterexample).
 
