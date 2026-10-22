@@ -131,10 +131,13 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(mutation?.['paths-ignore']).toBeUndefined();
   });
 
+  const KEY_EXPRESSION = '${{ env.STRYKER_CACHE_KEY }}';
+  const keyStep = steps.find((candidate) => candidate.run?.includes('STRYKER_CACHE_KEY=') ?? false);
+
   // spec: Mutation job always runs incrementally [QG15]
   it('runs npm run mutation after a clean install, with no continue-on-error', () => {
     const commands = steps.flatMap((candidate) =>
-      candidate.run === undefined ? [] : [candidate.run],
+      candidate.run === undefined || candidate === keyStep ? [] : [candidate.run],
     );
     expect(commands).toEqual(['npm ci', 'npm run mutation']);
     expect(mutation?.['timeout-minutes']).toBeGreaterThan(0);
@@ -146,26 +149,49 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     });
   });
 
+  // design: one documented cache key, a superset of every input the Stryker config hashes. GitHub
+  // exposes neither `runner` nor `hashFiles` to a job-level `env`, so one step defines the key
+  // for the later restore and save steps.
+  it('computes one cache key from a superset of the mutation inputs', () => {
+    expect(keyStep?.run).toContain('${RUNNER_OS}');
+    for (const input of [
+      'packages/core/src/**',
+      'packages/core/*.json',
+      'packages/core/stryker.config.mjs',
+      'packages/core/vitest.config.ts',
+      'vitest.config.ts',
+      'tsconfig.base.json',
+      '.nvmrc',
+      'package-lock.json',
+    ]) {
+      expect(keyStep?.run, input).toContain(`'${input}'`);
+    }
+  });
+
   // spec: Mutation job always runs incrementally [QG15]
-  it('restores the incremental report by core content hash and saves it on main only', () => {
+  it('restores the incremental report by that key and saves it on main only', () => {
     const restore = step('actions/cache/restore@');
     const save = step('actions/cache/save@');
     // The command runner reports no per-test files, so Stryker cannot tell that a test changed:
     // only an exact content-hash hit is sound, and a restore-keys fallback is deliberately absent.
-    expect(restore?.with?.['key']).toMatch(
-      /hashFiles\(.*packages\/core\/src\/\*\*.*package-lock\.json.*\)/,
-    );
+    expect(restore?.with?.['key']).toBe(KEY_EXPRESSION);
+    expect(save?.with?.['key']).toBe(KEY_EXPRESSION);
     expect(restore?.with?.['restore-keys']).toBeUndefined();
+    expect(save?.with?.['restore-keys']).toBeUndefined();
     expect(restore?.with?.['path']).toBe('packages/core/reports/stryker-incremental-*.json');
-    expect(save?.with?.['key']).toBe(restore?.with?.['key']);
     expect(save?.with?.['path']).toBe(restore?.with?.['path']);
     expect(save?.if).toContain("github.ref == 'refs/heads/main'");
-    expect(steps.indexOf(restore ?? {})).toBeLessThan(
-      steps.findIndex((s) => s.run === 'npm run mutation'),
-    );
-    expect(steps.findIndex((s) => s.run === 'npm run mutation')).toBeLessThan(
-      steps.indexOf(save ?? {}),
-    );
+    const run = steps.findIndex((s) => s.run === 'npm run mutation');
+    expect(steps.indexOf(keyStep ?? {})).toBeLessThan(steps.indexOf(restore ?? {}));
+    expect(steps.indexOf(restore ?? {})).toBeLessThan(run);
+    expect(run).toBeLessThan(steps.indexOf(save ?? {}));
+  });
+
+  // design: a failing gate must leave its report behind to diagnose the surviving mutants
+  it('uploads the mutation report when the job fails', () => {
+    const upload = step('actions/upload-artifact@');
+    expect(upload?.if).toBe('failure()');
+    expect(upload?.with).toMatchObject({ path: 'packages/core/reports/mutation' });
   });
 });
 

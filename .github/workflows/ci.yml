@@ -45,14 +45,30 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # Stryker reuses the report only when the key matches exactly (same core inputs).
+      # One key for restore and save. It is a superset of what the Stryker config hashes (core
+      # sources and tests, package config, root test and compiler config, Node, lockfile), so an
+      # exact hit is always sound. GitHub does not offer `runner` or `hashFiles` to a job-level env.
+      - name: Compute the Stryker cache key
+        run: >-
+          echo "STRYKER_CACHE_KEY=stryker-${RUNNER_OS}-${{
+          hashFiles('packages/core/src/**', 'packages/core/*.json',
+          'packages/core/stryker.config.mjs', 'packages/core/vitest.config.ts',
+          'vitest.config.ts', 'tsconfig.base.json', '.nvmrc', 'package-lock.json') }}"
+          >> "$GITHUB_ENV"
+      # Stryker reuses the report only when the key matches exactly (no restore-keys fallback).
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: packages/core/reports/stryker-incremental-*.json
-          key: stryker-${{ runner.os }}-${{ hashFiles('packages/core/src/**', 'packages/core/*.json', 'packages/core/vitest.config.ts', 'package-lock.json') }}
+          key: ${{ env.STRYKER_CACHE_KEY }}
       - run: npm run mutation
       - if: github.ref == 'refs/heads/main'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: packages/core/reports/stryker-incremental-*.json
-          key: stryker-${{ runner.os }}-${{ hashFiles('packages/core/src/**', 'packages/core/*.json', 'packages/core/vitest.config.ts', 'package-lock.json') }}
+          key: ${{ env.STRYKER_CACHE_KEY }}
+      - if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mutation-report
+          path: packages/core/reports/mutation
+          if-no-files-found: ignore
