@@ -11,6 +11,7 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parse } from 'yaml';
 import { fromRoot, importFromRoot } from './root.ts';
@@ -99,10 +100,8 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
   });
 
   // spec: Mutation gate on core — property runs drop to 50 under STRYKER
-  it('exposes npm run mutation at the root, flagging STRYKER and delegating to core', () => {
-    expect(scripts('package.json')['mutation']).toBe(
-      'STRYKER=1 npm run mutation -w @maestro-calc/core',
-    );
+  it('exposes npm run mutation at the root, delegating to core (the command flags STRYKER)', () => {
+    expect(scripts('package.json')['mutation']).toBe('npm run mutation -w @maestro-calc/core');
     expect(scripts('packages/core/package.json')['mutation']).toBe('stryker run');
   });
 
@@ -219,5 +218,30 @@ describe('mutation gate escape hatches (quality-gates › Mutation gate on core)
       );
       expect(remainder.trim(), path).toBe('');
     }
+  });
+});
+
+// design: `__STRYKER__` is the vitest define that drops property runs to 50, and only the exact
+// flag value 1 turns it on (`STRYKER=0` or an empty value must not).
+describe('core vitest config STRYKER flag (quality-gates › Mutation gate on core)', () => {
+  const definedFlag = async (value: string | undefined): Promise<unknown> => {
+    const saved = process.env['STRYKER'];
+    if (value === undefined) delete process.env['STRYKER'];
+    else process.env['STRYKER'] = value;
+    try {
+      const url = `${pathToFileURL(fromRoot('packages/core/vitest.config.ts')).href}?flag=${String(value)}`;
+      const loaded = (await import(url)) as { default: { define: Record<string, unknown> } };
+      return loaded.default.define['__STRYKER__'];
+    } finally {
+      if (saved === undefined) delete process.env['STRYKER'];
+      else process.env['STRYKER'] = saved;
+    }
+  };
+
+  it('is true only when STRYKER is exactly 1', async () => {
+    expect(await definedFlag('1')).toBe(true);
+    expect(await definedFlag('0')).toBe(false);
+    expect(await definedFlag('')).toBe(false);
+    expect(await definedFlag(undefined)).toBe(false);
   });
 });

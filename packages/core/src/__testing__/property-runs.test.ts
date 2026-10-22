@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { numRuns, STRYKER_SEED } from './property-runs.ts';
 
 describe('property run budget (quality-gates › Coverage gate, mutation)', () => {
-  const underStryker = Boolean(process.env['STRYKER']);
+  const underStryker = process.env['STRYKER'] === '1';
 
   // spec: quality-gates › property tests run 1000 cases, 50 under STRYKER
   it('is 1000 runs normally and 50 when STRYKER is set', () => {
