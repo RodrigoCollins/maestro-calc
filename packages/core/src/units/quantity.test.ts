@@ -24,7 +24,7 @@ describe('quantity construction (units-quantities › Dimension model)', () => {
 
   // spec: units-quantities › Construction and conversion — a Rational or a safe integer
   it('accepts a Rational or a safe integer number, and rejects other numbers', () => {
-    expect(quantity(r(7, 2), inch)).toEqual(quantity(r(7, 2), inch));
+    expect(quantity(r(7, 2), inch).canonical).toEqual(r(7, 2));
     expect(quantity(3, inch).canonical).toEqual(r(3));
     expect(quantity(-4, inch).canonical).toEqual(r(-4));
     expect(thrownCode(() => quantity(1.5, inch))).toBe('NOT_AN_INTEGER');
