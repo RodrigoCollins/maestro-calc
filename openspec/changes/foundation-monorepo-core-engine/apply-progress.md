@@ -79,3 +79,18 @@ Negative probes on the final tree: `/// <reference types="node" />` + `globalThi
 npm audit: 5 high, dev-only lint chain, GHSA-vfj7-8cjw-p6xm, no patched version, accepted, revisit on eslint-plugin-astro/astro-eslint-parser bump (same text goes in the PR bodies).
 
 Sizes (excl. lockfile, `git diff -M --numstat <base>...<tip>`): 02a 395, 02b 400, 02c 368 (includes these docs).
+
+### PR 2 Judgment Day round 2 (final bounded round, slice 02d-lint-hardening)
+
+Applied: 1-8 plus suggestions B8, B9 (task 2.15). Deferred: A-7 (task 2.16, suggestions budget). Each item had a failing contract test first.
+
+| Id | RED | GREEN |
+|---|---|---|
+| 1 | 3 tests: widening cast passed lint (rule absent; `disableTypeChecked` turns it off, so the probe uses a type-aware instance on an on-disk path) | `no-unsafe-type-assertion` for package sources, tests excluded |
+| 2 | mutating core threshold to 99 now fails (value assertions) | values asserted; `.DS_Store` filtered |
+| 3 | `lint` still carried `--cache` | `lint` uncached, `lint:fast` cached |
+| 4, 5 | 6 undeclared-dependency probes on `.mts/.cts/.tsx/.js/.mjs/.cjs` and `src/x.config.ts` purity passed lint | `tooling/workspaces.js` derivation, full extension list, root-only config globs |
+| 6 | 5 formatter probes passed | name and computed-value selectors |
+| 7, 8 | 18 probes (ambient, 12 globals, `__testing__`) passed | ambient selectors (core merges them into `corePurity`, because per-block `no-restricted-syntax` replaces), host globals, per-package import blocks with `**/__testing__` |
+
+Negative probes on the tip (real `eslint` on temporary files, removed afterwards): widening cast in core and data `@typescript-eslint/no-unsafe-type-assertion`; `x.config.ts` with `Math.random()` `no-restricted-properties`; `toPrecision` `no-restricted-syntax`; `x["toFixed"](2)` `no-restricted-syntax`; ambient `declare const process` `no-restricted-syntax`; `console` `no-restricted-globals`; `./__testing__/x.ts` import `no-restricted-imports`; round 1 triple-slash `@typescript-eslint/triple-slash-reference` plus `no-restricted-globals`. B8: `const bad: number = 'x'` in `apps/web/src/pages/index.astro` makes `npm run typecheck` exit 1 (`ts(2322)`).

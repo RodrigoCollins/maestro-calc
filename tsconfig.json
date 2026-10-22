@@ -1,4 +1,5 @@
-// Type-checks the root tooling files (configs and shared tooling modules) against Node typings.
+// Root tooling program: .ts files are type-checked; .js files are only parsed (allowJs, no checkJs
+// until task 2.14), so JS configs are covered by lint alone.
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
