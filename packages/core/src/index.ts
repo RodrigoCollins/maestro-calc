@@ -1,5 +1,10 @@
 export { CoreError } from './errors.ts';
-export { parseDecimal, Rational } from './rational/index.ts';
+export {
+  DECIMAL_PARSE_CODES,
+  parseDecimal,
+  RATIONAL_PARSE_CODES,
+  Rational,
+} from './rational/index.ts';
 export type {
   DecimalParseCode,
   DecimalParseError,

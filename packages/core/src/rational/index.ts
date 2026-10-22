@@ -4,4 +4,9 @@ export {
   type DecimalParseCode,
   type DecimalParseError,
 } from './decimal.ts';
-export { Rational, type RationalParseCode, type RationalParseError } from './rational.ts';
+export {
+  RATIONAL_PARSE_CODES,
+  Rational,
+  type RationalParseCode,
+  type RationalParseError,
+} from './rational.ts';
