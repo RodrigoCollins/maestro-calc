@@ -9,13 +9,33 @@ const loadThresholds = async (): Promise<Record<string, unknown>> => {
   return config.default.test.coverage.thresholds;
 };
 
+const all = (value: number) => ({
+  lines: value,
+  branches: value,
+  functions: value,
+  statements: value,
+});
+
+const packageNames = readdirSync(fromRoot('packages'), { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+
 describe('coverage thresholds (quality-gates › Coverage gate)', () => {
   // spec: Coverage thresholds cover every package [QG8, QG10]
-  it.each(readdirSync(fromRoot('packages')))('packages/%s has a threshold glob', async (name) => {
+  it.each(packageNames)('packages/%s has a threshold glob', async (name) => {
     expect(Object.keys(await loadThresholds())).toContain(`packages/${name}/src/**`);
   });
 
-  it('sets a global fallback threshold for files no glob covers', async () => {
-    expect(await loadThresholds()).toMatchObject({ lines: 90, branches: 90 });
+  // spec: core is held to 100 percent, other packages and the fallback to 90 [QG8, QG10]
+  it.each([
+    ['packages/core/src/**', 100],
+    ['packages/data/src/**', 90],
+    ['packages/i18n/src/**', 90],
+  ])('%s requires %i on every metric', async (glob, value) => {
+    expect((await loadThresholds())[glob]).toEqual(all(value));
+  });
+
+  it('sets a global fallback of 90 on every metric', async () => {
+    expect(await loadThresholds()).toMatchObject(all(90));
   });
 });
