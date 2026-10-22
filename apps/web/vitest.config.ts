@@ -4,6 +4,8 @@ export default defineProject({
   test: {
     name: 'web',
     environment: 'node',
+    // The first ESLint probe in the contract tests is slow on CI.
+    testTimeout: 30_000,
     include: ['src/**/*.test.ts'],
     typecheck: {
       enabled: true,
