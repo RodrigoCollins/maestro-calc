@@ -10,7 +10,7 @@ cd apps/web && npx astro dev --background
 
 Manage the background server with `npx astro dev stop`, `npx astro dev status`, and `npx astro dev logs` (from `apps/web`).
 
-Root scripts: `npm run dev`, `npm run build`, `npm run preview`, `npm run check` (typecheck of every workspace), `npm test`. Run `npm ci` after cloning.
+Root scripts: `npm run dev`, `npm run build`, `npm run preview`, `npm run check` (alias of `typecheck`), `npm run format:check`, `npm run sync` (generates Astro types, needed before lint), `npm run lint`, `npm test`, `npm run test:coverage`, and `npm run verify` (all gates cheapest-first, same order as CI). Run `npm ci` after cloning.
 
 ## Documentation
 
