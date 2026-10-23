@@ -719,3 +719,60 @@ Work unit (one commit on `feat/foundation-09j-freeze-and-tidy`, rollback boundar
 - `npm run verify`: exit 0, 1191 tests.
 - Mutation (calculator shard, cold): 458 mutants, 458 killed, 100.00, 0 survivors, no pragma.
 - Docs: `NOT_AN_OBJECT` added to the design error-code table (calculator row), the spec sentence and the `validate` doc comment name the code.
+
+## PR 10 (tasks 10.1 to 10.6, run and material contract)
+
+Mode: strict TDD, runner `npm test`. Four stacked local branches (none pushed), cut from the PR 9 tip `feat/foundation-09j-freeze-and-tidy` (`60bfea5`), NOT from `main` as task 10.1 says: PR 9 is open as #42 to #51 and not merged. The orchestrator rebases the stack with `git rebase --onto main 60bfea5 feat/foundation-10d-material-source` (and the intermediate refs) once PR 9 merges. 10.7 (exit SX1 to SX7) stays with the orchestrator. The planned three branches became four: the first build of 10c measured 415 changed lines, so the material contract is cut at the last RED/GREEN boundary into the record (`10c`) and the source and date checks (`10d`).
+
+| Branch | Base | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-10a-run-contract` (`42fba89`) | `feat/foundation-09j-freeze-and-tidy` | 394 | 1224 |
+| `feat/foundation-10b-message-keys` (`b0c0f06`) | 10a | 212 | 1230 |
+| `feat/foundation-10c-material-record` (`38c822b`) | 10b | 325 | 1252 |
+| `feat/foundation-10d-material-source` (docs commit on top of `5db45c2`) | 10c | 90 code + docs | 1287 |
+
+### TDD Cycle Evidence
+
+| Task | Test | Layer | RED | GREEN | Triangulate and notes |
+|---|---|---|---|---|---|
+| 10.2 | `run.test.ts`, `descriptors.test-d.ts` | Unit (table) + type | 21 of 22 failed (`run` is not a function) | 22/22, then 32/32 | CC21 to CC24: determinism, short circuit with a spy, ordered outputs `144 in2` and `747/50`, unit system and validated inputs reach `compute`, 24 rejected rows (omitted, undeclared, wrong measure, money vs quantity, number as money, undeclared and malformed warnings, negative and `number` qty, non-list shopping or warnings, `null` outputs, `undefined` result) and the accepted `qty 0n`; the first mutation run left 4 survivors, see below |
+| 10.3 | `run-language-free.test.ts` | Unit | module `collect-strings` not found (written before the helper) | 3/3 | the exact list of strings of `fixtureBox.run({})`, strings of shopping lines and warnings, and an injected `<b>` and `a sheet` flagged as not language-free; the helper is test support, so no mutants |
+| 10.4 | `message-keys.test.ts`, `message-keys.test-d.ts` | Unit + type | module not found (2 files failed) | 6/6 and the exports/wiring test in `index.test.ts` | IN4 (fixture-box, 12 keys in order), IN3a (rectangle-area shape, 6 keys, none for options or warnings), two selects with their own options; the type test pins the literal union, per-select options and warnings, and two keys that must not be in the union |
+| 10.5 | `material.test.ts`, `material.test-d.ts` | Unit (table) + type | module not found (2 files failed) | 57/57 across 10c and 10d | MD1 to MD4: plywood 4608 in2, deep freeze with strict-mode `TypeError`, 6 id rows, 2 name-key rows, unit id, unit name key (2 rows), duplicate, zero and negative size, 4 source rows, 12 month ends and the day after, 4 valid and 15 invalid dates (`2100-02-29`, `1900-02-29`, Arabic-Indic digits, padded, `T`-suffixed), every rejection asserts the `{ id, unit? }` cause |
+| 10.6 | barrel in `index.test.ts`, existing contract tests | Unit | `messageKeysOf` missing from the export list (1 failed) | 8/8 | `run` and `messageKeysOf` through the root barrel; the `data -> core` and rejected `data -> i18n` edges were already pinned by `gates.contract.test.ts` and `workspace-graph.contract.test.ts` (MD5), which `verify` re-runs |
+
+Expected values were recomputed independently: `144 in2` (12 x 12), `747/50` (3 x 249/50), `250/127` (5 cm), `4608` in2 (32 x 144), the leap years 2000 and 2024 against 1900 and 2100 by the Gregorian rule.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/calculator` green (`run` 32, `run-language-free` 3, `message-keys` 3, plus type tests); `npx vitest run packages/data` 57 (22 on the 10c tip) |
+| Runtime harness | `npm run verify` exit 0 on all four tips (1224, 1230, 1252, 1287 tests); core coverage 100/100/100/100 (753 statements, 427 branches), data 100 (threshold 90); `npm run lint` clean, `npm run typecheck` clean |
+| Rollback boundary | 10a: `calculator/run.ts`, `run*.test.ts`, `__testing__/collect-strings.ts`, `run` in `define.ts` and `descriptors.ts`; 10b: `calculator/message-keys*`, two barrel lines; 10c and 10d: `packages/data/src/` only |
+
+### Mutation (cold, `reports` removed first, `npm run mutation -- --shard calculator`)
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| calculator (10b tip, core unchanged by 10c and 10d) | 100.00 | 585 | 0 | 0 | 132.3 s |
+
+`run.ts` has 107 mutants and `message-keys.ts` 18; both are covered by the existing `calculator` shard glob and `mutation.contract.test.ts` stays green. The rational, units and format shards were not rerun: no file of `errors.ts`, `units/`, `money/` or `format/` changed. `packages/data` is coverage-governed only (no data shard). No pragma. SX4 on the stack: `git log --format=%B 60bfea5..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty.
+
+First run on 10a: 4 survivors in `isDeclaredWarning`: `typeof code === 'string'` followed by `declared.includes(code)` is an equivalent guard (a non-string is never included), `isRecord(warning)` and `.every` on the params were untested with a `null` warning and a mixed params object, and `some` vs `every` over one declared code. Fixes: the guard is `declared.some((code) => code === warning['code'])` (no redundant type check), plus rows for a `null` warning and a params object with one valid and one invalid value, and a test with two declared warnings. Second run 0 survivors.
+
+### Scope and deviations (PR 10)
+
+- Base: the stack is cut from the PR 9 tip, not `main` (task 10.1); see above for the rebase command.
+- Four branches, not three: 10c measured 415 lines, cut into `10c` (record, ids, units, size, freeze, exports) and `10d` (source and calendar date).
+- `run` checks more than the spec lists (non-object result, non-list `shopping`/`warnings`, string `materialId` and `purchaseUnit`, scalar warning params) so the `RunResult` type is honest; the spec rows are all covered. `INVALID_RESULT` has no `reason`; a locus (which output) is a possible follow-up if debugging needs it.
+- `messageKeysOf` returns `readonly string[]` (the lint gate forbids the narrowing assertion); recorded in design and tasks.
+- `INVALID_MATERIAL` carries the locus `{ id, unit? }` as `cause`, additive to the spec (same pattern as `INVALID_DEFINITION`). `PurchaseUnit.nameKey` is typed `material.${Id}.units.${string}`: tying the segment to the unit's own id at compile time needs a const generic per unit, so `INVALID_UNIT_NAME_KEY` stays a runtime check.
+- A `size` that is not a Quantity (an untyped `32`) is a typed compile error (MD3), and at runtime `sign` throws a `TypeError`, as for any untyped misuse of a core function.
+
+### Key learnings (PR 10)
+
+- A `typeof x === 'string'` guard before `array.includes(x)` is an equivalent mutant, because a non-string is never a member; using `some((item) => item === x)` removes the guard instead of excusing it.
+- With `noUncheckedIndexedAccess`, a month table read as `DAYS[month - 1] ?? 0` makes an out-of-range month fall out as a last day of 0, so no separate month range check is needed.
+- A helper that infers literal keys must be generic (`<const Key extends string>`): a plain `key: string` parameter widened the keys of the whole definition and broke `compute`'s input type.
+- Sizing a work unit from its first build (415 lines) and cutting it at the RED/GREEN boundary kept every branch under 400 without touching the tests.
