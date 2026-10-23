@@ -47,6 +47,10 @@ export const requireSameVector = (a: Exponents | undefined, b: Exponents | undef
   }
 };
 
+/** True when `value` is a quantity of any dimension built by this package; a lookalike never is. */
+export const isQuantity = (value: unknown): value is Quantity<DimensionName> =>
+  value instanceof QuantityValue;
+
 /**
  * True when `value` is a quantity built by this package whose dimension is `dimension`: the guard
  * for untyped input, where a lookalike object or a quantity of another dimension must not pass.
@@ -54,8 +58,7 @@ export const requireSameVector = (a: Exponents | undefined, b: Exponents | undef
 export const isQuantityOf = <D extends DimensionName>(
   value: unknown,
   dimension: D,
-): value is Quantity<D> =>
-  value instanceof QuantityValue && sameVector(value.exponents, DIMENSIONS[dimension]);
+): value is Quantity<D> => isQuantity(value) && sameVector(value.exponents, DIMENSIONS[dimension]);
 
 /** `value` in `unit` (a Rational or a safe integer) as a quantity of the unit's dimension. */
 export const quantity = <D extends DimensionName>(

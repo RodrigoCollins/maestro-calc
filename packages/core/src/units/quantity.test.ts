@@ -22,7 +22,7 @@ import {
   yd,
   yd3,
 } from './catalog.ts';
-import { isQuantityOf, quantity, valueIn } from './quantity.ts';
+import { isQuantity, isQuantityOf, quantity, valueIn } from './quantity.ts';
 import type { Unit } from './unit.ts';
 
 const r = (n: bigint | number, d: bigint | number = 1): Rational => Rational.of(n, d);
@@ -151,6 +151,21 @@ describe('runtime narrowing (units-quantities › Runtime exponent vector)', () 
     const lookalike = { exponents: { length: 1, mass: 0 }, canonical: r(2) };
     for (const value of [lookalike, null, undefined, '2 ft', 2, {}]) {
       expect(isQuantityOf(value, 'length')).toBe(false);
+    }
+  });
+});
+
+describe('runtime narrowing to any quantity (units-quantities › Runtime exponent vector)', () => {
+  it('recognises a quantity of every dimension', () => {
+    for (const value of [quantity(2, ft), quantity(2, ft2), quantity(2, yd3), quantity(2, lb)]) {
+      expect(isQuantity(value)).toBe(true);
+    }
+  });
+
+  it('rejects a lookalike object and anything that is not an object', () => {
+    const lookalike = { exponents: { length: 1, mass: 0 }, canonical: r(2) };
+    for (const value of [lookalike, null, undefined, '2 ft', 2, {}]) {
+      expect(isQuantity(value)).toBe(false);
     }
   });
 });
