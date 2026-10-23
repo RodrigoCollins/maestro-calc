@@ -216,7 +216,7 @@ input     := ws* sign? body ws*
 sign      := "-" | "+" | "−"                      (U+002D, U+002B, U+2212)
 body      := compound | simple
 compound  := uint ws* FEETMARK sep inches ws* INCHMARK?
-sep       := ws* | "-"                             (hyphen immediately adjacent to both neighbours)
+sep       := ws* | hyphen                          (hyphen immediately adjacent to both neighbours)
 inches    := number                                (any form below)
 simple    := number ws* UNIT?
 UNIT      := FEETMARK | INCHMARK | unit-word
@@ -224,7 +224,8 @@ FEETMARK  := "'" | "′" | "’" | "ft" | "foot" | "feet"
 INCHMARK  := '"' | "″" | "”" | "in" | "inch" | "inches"
 unit-word := "yd" | "yard" | "yards" | "mm" | "cm" | "m" | "meter" | "meters" | "metre" | "metres"
 number    := mixed | fraction | decimal
-mixed     := uint ( ws+ | "-" ) fraction
+mixed     := uint ( ws+ | hyphen ) fraction
+hyphen    := "-" | "−"                             (U+002D or U+2212)
 fraction  := uint "/" uint                         (no whitespace around "/")
 decimal   := uint ( "." uint )? | "." uint
 uint      := [0-9]+
@@ -233,6 +234,7 @@ uint      := [0-9]+
 Semantics and constraints:
 
 - The sign applies to the whole value (`-5' 3"` is -63 in, not -60 + 3).
+- `hyphen` accepts U+2212 as well as U+002D wherever the grammar takes a hyphen separator (`5'−3"`, `3−1/2`). This is a deliberate leniency for phone keyboards that substitute the typographic minus, the same one `sign` already allows.
 - `compound` = feet (non-negative integer only) + inches. The inch mark is OPTIONAL only when the feet mark is a symbol (`'`, `′`, `’`); if the feet mark is a word (`ft`, `foot`, `feet`) the inch mark MUST be present (so `5 ft 2` is not read as 5 ft 2 in; it fails `MALFORMED`).
 - The inches component of a compound is not limited to < 12 (`5' 15"` is 75 in).
 - Fraction denominators are any positive integer (not limited to 2..64); denominator `0` fails `ZERO_DENOMINATOR`.
@@ -257,6 +259,11 @@ Semantics and constraints:
 - GIVEN `-5' 3"`, `−5' 3"` (U+2212), `+5'`, `-0"`, `0' 0"`
 - WHEN parsed
 - THEN results are `-63`, `-63`, `60`, `0`, `0` inches; zero has no sign
+
+#### Scenario: Typographic minus as a separator
+- GIVEN `5'−3"` and `3−1/2` (default unit in), each with U+2212
+- WHEN parsed
+- THEN results are `63` and `7/2` inches, the same as with U+002D
 
 #### Scenario: Whitespace tolerance
 - GIVEN `  5'   3  1/2"  ` and `5'` U+00A0 `3"`
@@ -304,7 +311,7 @@ Semantics and constraints:
 - THEN each fails `DECIMAL_COMMA`
 
 #### Scenario: Malformed inputs
-- GIVEN `"` , `'`, `ft`, `abc`, `5' 3 1/2 1/2"`, `5.5' 3"`, `5' -3"`, `5" 3'`, `3//4`, `1 / 2`, `1e3`, `1E9`, `0x10`, `５'`, `5'3'`, `--5`, `- 5`, `5 3 1/2`, `.`, `1.`, `5'-`, `3.5 1/2`, `1/2.5`, `1 yd 2 ft`, `5 ft 2`, and an input containing a newline
+- GIVEN `"` , `'`, `ft`, `abc`, `5' 3 1/2 1/2"`, `5.5' 3"`, `5' -3"`, `5" 3'`, `3//4`, `1 / 2`, `1e3`, `1E9`, `0x10`, `５'`, `5'3'`, `5'3''`, `--5`, `- 5`, `5 3 1/2`, `.`, `1.`, `5'-`, `3.5 1/2`, `1/2.5`, `1 yd 2 ft`, `5 ft 2`, and an input containing a newline
 - WHEN each is parsed
 - THEN each fails `MALFORMED` and none throws
 
