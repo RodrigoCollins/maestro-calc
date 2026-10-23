@@ -5,5 +5,11 @@
     "types": ["astro/client"]
   },
   "include": [".astro/types.d.ts", "src/**/*", "astro.config.mjs"],
-  "exclude": ["dist", "src/contract", "src/**/*.test.ts", "src/**/*.test-d.ts"]
+  "exclude": [
+    "dist",
+    "src/contract",
+    "src/**/__testing__",
+    "src/**/*.test.ts",
+    "src/**/*.test-d.ts"
+  ]
 }

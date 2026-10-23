@@ -14,7 +14,7 @@ const render = async (locale: 'en' | 'es') => {
   const html = await (
     await AstroContainer.create()
   ).renderToString(BaseLayout, {
-    props: { locale, head },
+    props: { locale, id: 'home', head },
     slots: { default: '<h1>Body</h1>' },
     partial: false,
   });
@@ -78,5 +78,41 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(document.querySelector('link[rel=canonical]')?.getAttribute('href')).toBe(
       'https://maestrocalc.com/',
     );
+  });
+
+  // spec: site-shell › [SS1] landmarks
+  it('has exactly one header, one labelled nav, one main and one footer', async () => {
+    const { document } = await render('en');
+    expect(document.querySelectorAll('header')).toHaveLength(1);
+    expect(document.querySelectorAll('nav[aria-label]')).toHaveLength(1);
+    expect(document.querySelectorAll('nav')).toHaveLength(1);
+    expect(document.querySelectorAll('main#main')).toHaveLength(1);
+    expect(document.querySelectorAll('footer')).toHaveLength(1);
+  });
+
+  // spec: site-shell › [SS12] wiring, site-routing-i18n › [SR5] wiring
+  it.each([
+    ['en', '/', '/es', 'Español', 'Main navigation'],
+    ['es', '/es', '/', 'English', 'Navegación principal'],
+  ] as const)(
+    'wires the wordmark, switch and nav label for %s',
+    async (locale, home, other, label, nav) => {
+      const { document } = await render(locale);
+      expect(document.querySelector('header a.wordmark')?.getAttribute('href')).toBe(home);
+      expect(document.querySelector('header a.lang-switch')?.getAttribute('href')).toBe(other);
+      expect(document.querySelector('header a.lang-switch')?.text).toBe(label);
+      expect(document.querySelector('nav')?.getAttribute('aria-label')).toBe(nav);
+    },
+  );
+
+  it('lists no header or footer links while only the home page exists', async () => {
+    const { document } = await render('en');
+    expect(document.querySelectorAll('header ul, footer ul')).toHaveLength(0);
+  });
+
+  // spec: site-shell › [SS13] contact text
+  it('shows the configured contact address in the footer', async () => {
+    const { document } = await render('es');
+    expect(document.querySelector('footer')?.text).toContain('Escríbenos a hello@maestrocalc.com');
   });
 });

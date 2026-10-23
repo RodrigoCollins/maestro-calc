@@ -1,0 +1,13 @@
+---
+interface Props {
+  href: string;
+  lang: string;
+  hreflang: string;
+  label: string;
+}
+const { href, lang, hreflang, label } = Astro.props;
+---
+
+<a class="lang-switch" {href} {lang} {hreflang}>
+  {label}
+</a>
