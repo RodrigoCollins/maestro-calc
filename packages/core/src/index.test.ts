@@ -7,6 +7,7 @@ describe('core public API (design: Public API)', () => {
     expect(Object.keys(core).sort()).toEqual([
       'CoreError',
       'DECIMAL_PARSE_CODES',
+      'LENGTH_PARSE_CODES',
       'RATIONAL_PARSE_CODES',
       'Rational',
       'abs',
@@ -46,6 +47,7 @@ describe('core public API (design: Public API)', () => {
       'ok',
       'oz',
       'parseDecimal',
+      'parseLength',
       'quantity',
       'ratio',
       'roundToFraction',
@@ -90,6 +92,16 @@ describe('core public API (design: Public API)', () => {
       core.formatFeetInches(core.quantity(core.Rational.of(127, 2), core.inch), { denominator: 16 })
         .text,
     ).toBe(`5' 3 1/2"`);
+  });
+
+  // spec: fraction-format › Length text grammar and Format/parse round trip
+  it('wires parseLength to a working implementation', () => {
+    expect(core.LENGTH_PARSE_CODES).toContain('UNKNOWN_UNIT');
+    const parsed = core.parseLength(`5' 3 1/2"`);
+    expect(parsed.ok && core.valueIn(parsed.value, core.inch)).toEqual(core.Rational.of(127, 2));
+    const metric = core.parseLength('2.54', { defaultUnit: core.cm });
+    expect(metric.ok && core.valueIn(metric.value, core.inch)).toEqual(core.Rational.ONE);
+    expect(core.parseLength('5 furlongs')).toEqual(core.err({ code: 'UNKNOWN_UNIT', offset: 2 }));
   });
 
   it('wires the exports to working implementations', () => {
