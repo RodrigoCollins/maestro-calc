@@ -107,8 +107,8 @@ export const shards = {
     tests: ['src/rational', 'src/errors.test.ts', 'src/result.test.ts', 'src/index.test.ts'],
   },
   units: {
-    mutate: ['src/units/**'],
-    tests: ['src/units', 'src/index.test.ts'],
+    mutate: ['src/units/**', 'src/money/**'],
+    tests: ['src/units', 'src/money', 'src/index.test.ts'],
   },
   format: {
     mutate: ['src/format/**'],

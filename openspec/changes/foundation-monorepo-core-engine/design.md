@@ -153,13 +153,13 @@ declare function add<D extends DimensionName>(a: Quantity<D>, b: Quantity<NoInfe
 ### Money
 
 ```ts
-interface Money { readonly currency: 'USD'; readonly amount: Rational }          // exact dollars, may be negative
+interface Money { readonly currency: 'USD'; readonly amount: Rational; readonly [brand]: true }  // exact dollars, may be negative; branded like Quantity, so a literal is a type error
 interface UnitPrice<D extends DimensionName> { readonly currency: 'USD'; readonly perCanonical: Rational; readonly exponents: Exponents; readonly [brand]: D }
 declare function unitPrice<D extends DimensionName>(m: Money, unit: Unit<D>): UnitPrice<D>;  // m / unit.factor
 declare function costOf<D extends DimensionName>(p: UnitPrice<D>, q: Quantity<NoInfer<D>>): Money; // perCanonical × canonical
 ```
 
-`usd`, `addMoney`, `subMoney`, `compareMoney`, `equalsMoney`, `scaleMoney(m, k)`, `multiplyCount(m, n: number | bigint)` (n non-negative safe integer or bigint, e.g. from `ceilToPurchaseUnits`), `toCents(m) = toDecimalParts(m.amount, 2, 'nearest')`, `parseMoney(text)` (grammar `"$"? udecimal`; precedence `EMPTY`, `DECIMAL_COMMA`, `TOO_LARGE` (>18-digit run), `MALFORMED`). Money and quantities are distinct types; untyped mixing throws `DIMENSION_MISMATCH`.
+`usd`, `addMoney`, `subMoney`, `compareMoney`, `equalsMoney`, `scaleMoney(m, k)`, `multiplyCount(m, n: number | bigint)` (n non-negative safe integer or bigint, e.g. from `ceilToPurchaseUnits`), `toCents(m) = toDecimalParts(m.amount, 2, 'nearest')`, `parseMoney(text)` (grammar `"$"? udecimal`; precedence `EMPTY`, `DECIMAL_COMMA`, `TOO_LARGE` (>18-digit run), `MALFORMED`). Money and quantities are distinct types (`Money`, `Quantity` and `UnitPrice` are all branded, and the `*Money` suffix keeps money away from the quantity `add`/`sub`/`compare` of the same root barrel); untyped mixing throws `DIMENSION_MISMATCH`.
 
 ### Rounding and formatting
 

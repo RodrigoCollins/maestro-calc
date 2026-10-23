@@ -37,9 +37,14 @@ export const makeQuantity = <D extends DimensionName>(
   canonical: Rational,
 ): Quantity<D> => new QuantityValue<D>(exponents, canonical);
 
-/** Runtime guard behind every typed signature: throws `DIMENSION_MISMATCH` for untyped misuse. */
-export const requireSameVector = (a: Exponents, b: Exponents): void => {
-  if (!sameVector(a, b)) throw new CoreError('DIMENSION_MISMATCH');
+/**
+ * Runtime guard behind every typed signature: throws `DIMENSION_MISMATCH` for untyped misuse. An
+ * operand with no exponent vector at all (a money value passed as a quantity) is a mismatch too.
+ */
+export const requireSameVector = (a: Exponents | undefined, b: Exponents | undefined): void => {
+  if (a === undefined || b === undefined || !sameVector(a, b)) {
+    throw new CoreError('DIMENSION_MISMATCH');
+  }
 };
 
 /** `value` in `unit` (a Rational or a safe integer) as a quantity of the unit's dimension. */
