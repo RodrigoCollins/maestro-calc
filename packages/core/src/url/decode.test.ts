@@ -6,7 +6,7 @@ import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
-import { decode } from './codec.ts';
+import { decode, encode } from './codec.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -180,6 +180,18 @@ describe('decode (url-state-codec › Decoding)', () => {
     expect(decode(fixtureBox, 'v=1&f=37/100').state.prc).toEqual(usd(r(37, 100)));
   });
 
+  // `encode` does not check bounds (it expects a validated state), so a value out of its range
+  // comes back as the default of the field with one issue
+  it('decodes what encode wrote for an out-of-range value as the default plus INVALID_VALUE', () => {
+    const query = encode(fixtureBox, box({ cnt: 200 }));
+    expect(query).toBe('v=1&b=200');
+    expect(decode(fixtureBox, query)).toEqual({
+      state: box(),
+      unitSystem: 'imperial',
+      issues: invalid('b'),
+    });
+  });
+
   // spec: Decoding › Empty, overlong, and malformed-escape values [UC15]
   it.each([
     ['empty', 'v=1&a='],
@@ -232,5 +244,74 @@ describe('decode (url-state-codec › Decoding)', () => {
     expect(Object.isFrozen(decoded.issues)).toBe(true);
     expect(decoded.issues.every((issue) => Object.isFrozen(issue))).toBe(true);
     expect(decode(fixtureBox, 'b=7&a=x')).toEqual(decoded);
+  });
+});
+
+const unsupported = {
+  state: defaults,
+  unitSystem: 'imperial',
+  issues: [{ code: 'UNSUPPORTED_VERSION', key: 'v' }],
+};
+
+describe('decode versions (url-state-codec › Decoding, Key stability rules)', () => {
+  // spec: Decoding › Unsupported versions [UC17]
+  it.each([
+    'v=2&b=7',
+    'v=0&b=7',
+    'v=01&b=7',
+    'v=&b=7',
+    'v=abc&b=7',
+    'v=2&u=m',
+    'v&b=7',
+    'v=1.0&b=7',
+    'v=%32&b=7',
+    'v=%zz&b=7',
+    'v=toString&b=7',
+    'v=__proto__&b=7',
+    'b=7&v=2',
+    'u=m&b=7&v=2&a=5',
+    'v=2&v=1&b=7',
+    '?v=2&b=7',
+  ])('answers %j with the defaults and one UNSUPPORTED_VERSION', (query) => {
+    expect(decode(fixtureBox, query)).toEqual(unsupported);
+  });
+
+  it('reads version 1 whether it is missing, written, escaped or the first of several', () => {
+    expect(decode(fixtureBox, 'b=7').state).toEqual(box({ cnt: 7 }));
+    expect(decode(fixtureBox, 'v=%31&b=7')).toEqual({
+      state: box({ cnt: 7 }),
+      unitSystem: 'imperial',
+      issues: [],
+    });
+    expect(decode(fixtureBox, 'v=1&v=2&b=7').state).toEqual(box({ cnt: 7 }));
+    expect(decode(fixtureBox, 'v=1&v=2&b=7').issues).toEqual([]);
+  });
+
+  // spec: Decoding › Huge value within the length cap [UC18]
+  it('keeps a 204-character length exactly and re-encodes it with a literal slash', () => {
+    const huge = defineCalculator({
+      id: 'huge-box',
+      inputs: [
+        {
+          kind: 'length',
+          key: 'len',
+          urlKey: 'a',
+          default: quantity(1, inch),
+          defaultUnit: 'in',
+          metricDefaultUnit: 'cm',
+        },
+      ],
+      outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
+      compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),
+    });
+    const query = `a=${'1'.repeat(200)}/3`;
+    expect(query).toHaveLength(204);
+    const decoded = decode(huge, query);
+    expect(decoded.issues).toEqual([]);
+    expect(decoded.state.len.canonical).toEqual(Rational.of(BigInt('1'.repeat(200)), 3n));
+    expect(encode(huge, decoded.state)).toBe(`v=1&${query}`);
+    const escaped = decode(huge, `a=${'1'.repeat(200)}%2F3`);
+    expect(escaped).toEqual(decoded);
+    expect(encode(huge, escaped.state)).toBe(`v=1&${query}`);
   });
 });

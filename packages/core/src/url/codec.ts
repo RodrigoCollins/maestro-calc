@@ -189,11 +189,30 @@ const decodeV1 = (
   return resultOf(inputs, values, unitSystem, issues);
 };
 
+type Decoder = typeof decodeV1;
+
+/** The version of a query without a `v` pair. */
+const FIRST_VERSION = '1';
+
+/**
+ * The decoders by version. `v` names the codec format, not the calculator: a future version adds
+ * its decoder here and keeps `decodeV1`, so every released link keeps its meaning. Keyed by
+ * `string | null` so that the `null` of a malformed escape simply finds no decoder.
+ */
+const DECODERS: ReadonlyMap<string | null, Decoder> = new Map([[FIRST_VERSION, decodeV1]]);
+
+/** The version a query declares (the first `v` pair wins), or `null` for a malformed escape. */
+const versionOf = (pairs: readonly Pair[]): string | null => {
+  const declared = pairs.find(({ key }) => key === 'v');
+  return declared === undefined ? FIRST_VERSION : percentDecode(declared.raw);
+};
+
 /**
  * Decodes a query string, with or without a leading `?`, into a complete valid state. It never
  * throws: a value that is not valid for its field is replaced by the default of the field and
  * reported as `INVALID_VALUE` for its key; unknown keys are ignored. `u=m` selects metric and
- * never changes the meaning of a value (lengths in a URL are always inches).
+ * never changes the meaning of a value (lengths in a URL are always inches). A version that has no
+ * decoder yields all defaults, `imperial` and one `UNSUPPORTED_VERSION` issue.
  */
 export function decode<const I extends readonly InputDescriptor[]>(
   calculator: { readonly inputs: I },
@@ -203,5 +222,10 @@ export function decode(
   calculator: Pick<UrlCodable, 'inputs'>,
   query: string,
 ): DecodeResult<readonly InputDescriptor[]> {
-  return decodeV1(calculator.inputs, pairsOf(query));
+  const pairs = pairsOf(query);
+  const version = versionOf(pairs);
+  const decoder = DECODERS.get(version);
+  return decoder === undefined
+    ? resultOf(calculator.inputs, new Map(), 'imperial', [issue('UNSUPPORTED_VERSION', 'v')])
+    : decoder(calculator.inputs, pairs);
 }
