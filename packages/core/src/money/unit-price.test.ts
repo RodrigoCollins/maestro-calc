@@ -4,7 +4,7 @@ import { Rational } from '../rational/rational.ts';
 import { ft, ft2, m, yd2 } from '../units/catalog.ts';
 import { quantity, type Quantity } from '../units/quantity.ts';
 import { usd, type Money } from './money.ts';
-import { costOf, unitPrice } from './unit-price.ts';
+import { costOf, unitPrice, type UnitPrice } from './unit-price.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -55,5 +55,15 @@ describe('unit prices (money › Unit prices)', () => {
   it('rejects a quantity in place of the money of a price', () => {
     const notMoney = quantity(1, ft) as unknown as Money;
     expect(thrownCode(() => unitPrice(notMoney, ft2))).toBe('DIMENSION_MISMATCH');
+  });
+
+  // spec: money › Mismatched dimension — only unitPrice builds a price [RISK-1, REL-2]
+  it('rejects a quantity or a plain object in place of the price', () => {
+    const area = quantity(1, ft2);
+    const forged = { ...unitPrice(usd(1), ft2) } as unknown as UnitPrice<'area'>;
+    expect(thrownCode(() => costOf(area as unknown as UnitPrice<'area'>, area))).toBe(
+      'DIMENSION_MISMATCH',
+    );
+    expect(thrownCode(() => costOf(forged, area))).toBe('DIMENSION_MISMATCH');
   });
 });
