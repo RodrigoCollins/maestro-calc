@@ -722,7 +722,7 @@ Work unit (one commit on `feat/foundation-09j-freeze-and-tidy`, rollback boundar
 
 ## PR 10 (tasks 10.1 to 10.6, run and material contract)
 
-Mode: strict TDD, runner `npm test`. Four stacked local branches (none pushed), cut from the PR 9 tip `feat/foundation-09j-freeze-and-tidy` (`60bfea5`), NOT from `main` as task 10.1 says: PR 9 is open as #42 to #51 and not merged. The orchestrator rebases the stack with `git rebase --onto main 60bfea5 feat/foundation-10d-material-source` (and the intermediate refs) once PR 9 merges. 10.7 (exit SX1 to SX7) stays with the orchestrator. The planned three branches became four: the first build of 10c measured 415 changed lines, so the material contract is cut at the last RED/GREEN boundary into the record (`10c`) and the source and date checks (`10d`).
+Mode: strict TDD, runner `npm test`. Four stacked local branches (none pushed), cut from the PR 9 tip `feat/foundation-09j-freeze-and-tidy` (`60bfea5`), NOT from `main` as task 10.1 says: PR 9 is open as #42 to #51 and not merged. The orchestrator rebases the stack with `git rebase --onto main 60bfea5 feat/foundation-10f-freeze-result --update-refs` (the last slice after round 1; `--update-refs` moves the intermediate refs) once PR 9 merges. 10.7 (exit SX1 to SX7) stays with the orchestrator. The planned three branches became four: the first build of 10c measured 415 changed lines, so the material contract is cut at the last RED/GREEN boundary into the record (`10c`) and the source and date checks (`10d`).
 
 | Branch | Base | Changed lines (excl. lockfile) | Tests in `verify` |
 |---|---|---|---|
@@ -735,7 +735,7 @@ Mode: strict TDD, runner `npm test`. Four stacked local branches (none pushed), 
 
 | Task | Test | Layer | RED | GREEN | Triangulate and notes |
 |---|---|---|---|---|---|
-| 10.2 | `run.test.ts`, `descriptors.test-d.ts` | Unit (table) + type | 21 of 22 failed (`run` is not a function) | 22/22, then 32/32 | CC21 to CC24: determinism, short circuit with a spy, ordered outputs `144 in2` and `747/50`, unit system and validated inputs reach `compute`, 24 rejected rows (omitted, undeclared, wrong measure, money vs quantity, number as money, undeclared and malformed warnings, negative and `number` qty, non-list shopping or warnings, `null` outputs, `undefined` result) and the accepted `qty 0n`; the first mutation run left 4 survivors, see below |
+| 10.2 | `run.test.ts`, `descriptors.test-d.ts` | Unit (table) + type | 21 of 22 failed (`run` is not a function) | 22/22, then 32/32 | CC21 to CC24: determinism, short circuit with a spy, ordered outputs `144 in2` and `747/50`, unit system and validated inputs reach `compute`, 22 rejected rows (omitted, undeclared, wrong measure, money vs quantity, number as money, undeclared and malformed warnings, negative and `number` qty, non-list shopping or warnings, `null` outputs, `undefined` result) and the accepted `qty 0n`; the first mutation run left 4 survivors, see below |
 | 10.3 | `run-language-free.test.ts` | Unit | module `collect-strings` not found (written before the helper) | 3/3 | the exact list of strings of `fixtureBox.run({})`, strings of shopping lines and warnings, and an injected `<b>` and `a sheet` flagged as not language-free; the helper is test support, so no mutants |
 | 10.4 | `message-keys.test.ts`, `message-keys.test-d.ts` | Unit + type | module not found (2 files failed) | 6/6 and the exports/wiring test in `index.test.ts` | IN4 (fixture-box, 12 keys in order), IN3a (rectangle-area shape, 6 keys, none for options or warnings), two selects with their own options; the type test pins the literal union, per-select options and warnings, and two keys that must not be in the union |
 | 10.5 | `material.test.ts`, `material.test-d.ts` | Unit (table) + type | module not found (2 files failed) | 57/57 across 10c and 10d | MD1 to MD4: plywood 4608 in2, deep freeze with strict-mode `TypeError`, 6 id rows, 2 name-key rows, unit id, unit name key (2 rows), duplicate, zero and negative size, 4 source rows, 12 month ends and the day after, 4 valid and 15 invalid dates (`2100-02-29`, `1900-02-29`, Arabic-Indic digits, padded, `T`-suffixed), every rejection asserts the `{ id, unit? }` cause |
@@ -747,9 +747,9 @@ Expected values were recomputed independently: `144 in2` (12 x 12), `747/50` (3 
 
 | Evidence | Value |
 |---|---|
-| Focused tests | `npx vitest run packages/core/src/calculator` green (`run` 32, `run-language-free` 3, `message-keys` 3, plus type tests); `npx vitest run packages/data` 57 (22 on the 10c tip) |
+| Focused tests | `npx vitest run packages/core/src/calculator` green (`run` 29 runtime tests with the 22 rows of the shape table as separate cases, `run-language-free` 3, `message-keys` 3, plus 4 type tests); `npx vitest run packages/data` 54 runtime tests and 3 type tests (22 runtime on the 10c tip) |
 | Runtime harness | `npm run verify` exit 0 on all four tips (1224, 1230, 1252, 1287 tests); core coverage 100/100/100/100 (753 statements, 427 branches), data 100 (threshold 90); `npm run lint` clean, `npm run typecheck` clean |
-| Rollback boundary | 10a: `calculator/run.ts`, `run*.test.ts`, `__testing__/collect-strings.ts`, `run` in `define.ts` and `descriptors.ts`; 10b: `calculator/message-keys*`, two barrel lines; 10c and 10d: `packages/data/src/` only |
+| Rollback boundary | 10a: `calculator/run.ts`, `run*.test.ts`, `__testing__/collect-strings.ts`, `run` in `define.ts` and `descriptors.ts` (including `descriptors.test-d.ts`) and `calculator/index.ts`; 10b: `calculator/message-keys*`, two barrel lines and the `messageKeysOf` assertion in `index.test.ts`, which also asserts `run`, so reverting 10a needs that hunk and the language-free commit too; 10c and 10d: `packages/data/src/` only, and 10d also carries the docs commit |
 
 ### Mutation (cold, `reports` removed first, `npm run mutation -- --shard calculator`)
 
@@ -765,7 +765,7 @@ First run on 10a: 4 survivors in `isDeclaredWarning`: `typeof code === 'string'`
 
 - Base: the stack is cut from the PR 9 tip, not `main` (task 10.1); see above for the rebase command.
 - Four branches, not three: 10c measured 415 lines, cut into `10c` (record, ids, units, size, freeze, exports) and `10d` (source and calendar date).
-- `run` checks more than the spec lists (non-object result, non-list `shopping`/`warnings`, string `materialId` and `purchaseUnit`, scalar warning params) so the `RunResult` type is honest; the spec rows are all covered. `INVALID_RESULT` has no `reason`; a locus (which output) is a possible follow-up if debugging needs it.
+- `run` checks more than the spec lists (non-object result, non-list `shopping`/`warnings`, string `materialId` and `purchaseUnit`, scalar warning params) so the `RunResult` type is honest; the spec rows are all covered. `INVALID_RESULT` had no `reason` in the first build; round 1 added `RESULT_REASONS` and a locus (see the correction round below).
 - `messageKeysOf` returns `readonly string[]` (the lint gate forbids the narrowing assertion); recorded in design and tasks.
 - `INVALID_MATERIAL` carries the locus `{ id, unit? }` as `cause`, additive to the spec (same pattern as `INVALID_DEFINITION`). `PurchaseUnit.nameKey` is typed `material.${Id}.units.${string}`: tying the segment to the unit's own id at compile time needs a const generic per unit, so `INVALID_UNIT_NAME_KEY` stays a runtime check.
 - A `size` that is not a Quantity (an untyped `32`) is a typed compile error (MD3), and at runtime `sign` throws a `TypeError`, as for any untyped misuse of a core function.
@@ -776,3 +776,57 @@ First run on 10a: 4 survivors in `isDeclaredWarning`: `typeof code === 'string'`
 - With `noUncheckedIndexedAccess`, a month table read as `DAYS[month - 1] ?? 0` makes an out-of-range month fall out as a last day of 0, so no separate month range check is needed.
 - A helper that infers literal keys must be generic (`<const Key extends string>`): a plain `key: string` parameter widened the keys of the whole definition and broke `compute`'s input type.
 - Sizing a work unit from its first build (415 lines) and cutting it at the RED/GREEN boundary kept every branch under 400 without touching the tests.
+
+## PR 10 correction round 1 (task 10.8)
+
+Mode: strict TDD, runner `npm test`. Input: the consolidated review of four lenses (R1 risk, R2 readability, R3 reliability, R4 resilience) and the phase validator: 1 MAJOR (undeclared output keys pass through the prototype chain) and MINORs. Fixes were folded into the owner branches with `git commit --fixup` and `git rebase -i --autosquash --update-refs 60bfea5`; the two new commits of 10d (`isQuantity`, malformed material input) were moved before the docs commit with a sequence-editor script, and every later ref moved with them. `10a` has 3 lines of headroom after the `AnyCalculator` alias, so the `run.ts` fixes went into two new slices stacked on 10d: `10e-review-follow-ups` and `10f-freeze-result` (one slice would have measured 452 lines before the docs). History is local and unpushed.
+
+Applied: R1-1/REL-2, RD-1/RES-1, RES-2, REL-1 (10e); R1-2/RES-3/RES-4, REL-3, and the documentation items validator 1 to 5 and 7, RES-6, RD-5, RES-7, RES-8, RES-5 follow-up, R1-3, R1-4 (10f); REL-4, RD-2 (`MessageKeySource`), RD-3 (10b); RD-2 (`AnyCalculator`, 10a); REL-5/R1-5, RES-5, RD-4, RD-6 (10d); RD-7 (message of 10c). Deferred: none. Record-only: R1-3 (task 12.5b), R1-4 and the `data` shard (design Open Questions), RES-7 (task 11.1).
+
+| Branch | Fixes | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-10a-run-contract` | RD-2 (`AnyCalculator`) | 397 | 1224 |
+| `feat/foundation-10b-message-keys` | REL-4, RD-2, RD-3 | 222 | 1231 |
+| `feat/foundation-10c-material-record` | RD-7 (commit message only) | 325 | 1253 |
+| `feat/foundation-10d-material-source` | REL-5/R1-5 (with `isQuantity`), RES-5, RD-4, RD-6 | 267 | 1300 |
+| `feat/foundation-10e-review-follow-ups` | R1-1/REL-2, RD-1/RES-1, RES-2, REL-1 | 335 | 1314 |
+| `feat/foundation-10f-freeze-result` | R1-2/RES-3/RES-4, REL-3, docs | 241 | 1319 |
+
+### TDD Cycle Evidence (round 1)
+
+| Item | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| R1-1, REL-2, RD-1, RES-1, RES-2, REL-1 | `run.test.ts` | 37 failed on the first run of the new table: `RESULT_REASONS` undefined, and the rows for an object that inherits all or one declared output, a hidden (non-enumerable) declared output and a list carrying the declared keys came back `NONE` (accepted) | 48/48 after `run.ts` took own enumerable keys, `invalid(id, reason, where)` and the index scan | the 22-row CC24 table became 36 rows typed `Row = [label, bad, reason, where]` asserted with `toStrictEqual({ code, reason, cause })`; a test pins that the reasons of the rows equal `RESULT_REASONS`; compute that throws a `RangeError` and a throwing `outputs` getter propagate the same error; `Promise.resolve(good)` is `NOT_AN_OBJECT` |
+| R1-2, RES-3, RES-4 | `run.test.ts` | 4 of 48 failed: a NaN and an infinite param accepted, the lines and warnings returned by reference, a `qty` getter read twice | 48/48 | fresh frozen copies (result, outputs, each output, shopping, each line, warnings, each warning, params), extra fields of a line dropped, a getter read once; a list as params and holes were already rejected by the first slice and pinned as characterization rows |
+| REL-3 | `run-language-free.test.ts` | the injection of `2/4` and `1/1` was not flagged (1 failed) | 3/3 | canonical now means `Rational.fromString(text)` is ok and prints back as the same text |
+| REL-4 | `message-keys.test.ts`, `message-keys.test-d.ts` | characterization (green on arrival); adding a third warning to the shared fixture failed both files (1 runtime, 1 type) | 7/7 | one `picker` and one `rectangle` in `__testing__/message-key-fixtures.ts` feed both files, and the type test now pins the 6-key union of the rectangle shape |
+| REL-5, R1-5 | `quantity.test.ts`, `material.test.ts`, `index.test.ts` | `isQuantity is not a function` (2 failed in core); 8 of 67 failed in data (purchase units missing or text, a unit that is null or text, a size that is a number or a lookalike, a name of spaces or a tab and a newline) | 106 core units and index tests, 67/67 data | `isQuantity` is the dimension-agnostic twin of `isQuantityOf`, which now calls it; exported from the units barrel and the root barrel |
+| RES-5 | `material.test.ts` | with `month === 2` mutated to `true`, `2024-03-31` and `2024-12-31` failed (2) | 59/59 on the 10d tip | the surviving mutant of the review is killed by data tests; there is no `data` mutation shard yet |
+| RD-2, RD-3, RD-4, RD-6, RD-7 | none (refactor, comments, commit message) | n/a | 411 calculator tests green before and after the alias | `AnyCalculator` in `descriptors.ts` replaces three copies of the widest `Calculator` type; `Keyed` is `MessageKeySource` |
+
+### Gates (round 1)
+
+`npm run verify` exit 0 on all six tips (1224, 1231, 1253, 1300, 1314, 1319 tests); core and data coverage thresholds hold (core 100, data at least 90); `.vitest` and `packages/core/reports` were removed before each run. Type cost after the round: 20,866 instantiations for the sources (budget 40,000) and 109,072 for the test program (budget 150,000).
+
+Mutation, 10f tip, cold (`reports` removed first), one `npm run mutation -- --shard <name>` per shard:
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| calculator | 100.00 | 613 | 0 | 0 | 135.1 s |
+| units (`quantity.ts` changed) | 100.00 | 213 | 0 | 0 | 47.9 s |
+
+No pragma. The rational and format shards were not rerun: no file of `errors.ts`, `rational/` or `format/` changed. The first calculator run left 1 survivor: `typeof value === 'number' && Number.isFinite(value)` became `true && Number.isFinite(value)`, an equivalent mutant because `Number.isFinite` does not coerce and is already false for a non-number; the guard was dropped (`Number.isFinite(value)` alone), second run 0 survivors. SX4 on the stack: `git log --format=%B 60bfea5..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty.
+
+### Scope and deviations (round 1)
+
+- `10a` could not take the `run.ts` fixes (397 of 400 lines), so they became `10e` (335) and `10f`; the rebase command for the orchestrator now names `10f`.
+- `INVALID_RESULT` gained `reason` and a `cause` locus: additive to the spec, which requires the code only; one sentence was added to the spec and the design `run` bullet.
+- `10c` keeps the source and date reasons in its type; its commit message now says the checks follow in the next commit (RD-7).
+- `isQuantity` is a new core export (`index.test.ts` lists it); data uses it for the size of a purchase unit.
+
+### Key learnings (round 1)
+
+- `Object.keys(outputs).length` equal to the declared count plus `outputs[key]` reads is not a key-set check: inherited properties satisfy the read, so the declared keys must be tested against the own enumerable key list.
+- `Number.isFinite` does not coerce, so a `typeof value === 'number'` guard before it is an equivalent mutant; the same lesson as the `includes` guard of round 0.
+- Folding a commit into a branch that is full is a sizing question before it is an editing one: counting added plus deleted lines of the rewritten table showed 452 lines before any docs, which fixed the split into two slices.
+- A shared test fixture read by both the runtime and the type test makes drift between the two key sets fail in both files, which is cheaper than keeping two copies equal by review.
