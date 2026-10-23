@@ -108,7 +108,7 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
   });
 
   it('has one module per listed calculator and the common module in each locale directory', () => {
-    const expected = ['common', ...calculators.map(({ id }) => id)].sort();
+    const expected = ['common', 'site', ...calculators.map(({ id }) => id)].sort();
     for (const locale of LOCALES) {
       expect(Object.keys(modules[locale]), locale).toEqual(expected);
     }
