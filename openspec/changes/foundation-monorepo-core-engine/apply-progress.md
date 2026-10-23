@@ -560,10 +560,10 @@ Mode: strict TDD, runner `npm test`. Stacked local branches from `main` at `2897
 | `feat/foundation-09b-descriptors` | 09a | 399 | 833 |
 | `feat/foundation-09c-constraints` | 09b | 214 | 842 |
 | `feat/foundation-09d-define-validation` | 09c | 391 | 945 |
-| `feat/foundation-09e-fixture-validate-skeleton` | 09d | 362 | 956 |
+| `feat/foundation-09e-fixture-validate-skeleton` | 09d | 378 (362 before round 1) | 956 |
 | `feat/foundation-09f-validate-length` | 09e | 239 | 983 |
-| `feat/foundation-09g-validate-kinds` | 09f | 298 | 1069 |
-| `feat/foundation-09h-aggregation-barrel` | 09g | about 250 (151 before this section) | 1076 |
+| `feat/foundation-09g-validate-kinds` | 09f | 339 (298 before round 1) | 1172 (1069) |
+| `feat/foundation-09h-aggregation-barrel` | 09g | 255 | 1179 (1076) |
 
 ### First CI run of the sharded gate (task 9.0)
 
@@ -602,8 +602,8 @@ Expected values were recomputed independently: Python `fractions.Fraction` for `
 | Evidence | Value |
 |---|---|
 | Focused tests | `npx vitest run packages/core/src/calculator packages/core/src/error-codes.test.ts packages/core/src/__testing__/fixture-box.test.ts packages/core/src/index.test.ts` all green (`define` 105, `validate` 120, `constraints` 9, `fixture-box` 3, `error-codes` 1, plus 6 type tests); contract tests 229 |
-| Runtime harness | `npm run verify` exit 0 on all eight tips (828, 833, 842, 945, 956, 983, 1069, 1076 tests; core coverage 100/100/100/100: 631 statements, 356 branches, 145 functions, 546 lines); `npm run mutation` per shard below. Pure functions, no I/O |
-| Rollback boundary | 09a: `stryker.config.mjs`, `scripts/mutation.mjs`, two contract tests; 09b to 09h: `packages/core/src/calculator/`, `error-codes.ts`, `__testing__/fixture-box*`, one line each in `units/quantity.ts` (`isQuantityOf`) and `money/money.ts` (`isMoney`), two lines in `index.ts`, the `calculator` shard in `stryker.config.mjs` and `ci.yml` |
+| Runtime harness | `npm run verify` exit 0 on all eight tips after correction round 1 (828, 833, 842, 945, 956, 983, 1172, 1179 tests; the earlier claim of exit 0 on the eight tips was wrong: commit `7e703be` carried a stray `.vitest/json/output.json` that fails `format:check`, see round 1); `npm run mutation` per shard below. Pure functions, no I/O |
+| Rollback boundary | 09a: `stryker.config.mjs`, `scripts/mutation.mjs`, two contract tests; 09b to 09h: `packages/core/src/calculator/`, `error-codes.ts`, `__testing__/fixture-box*`, one guard each in `units/quantity.ts` (`isQuantityOf`, 10 lines) and `money/money.ts` (`isMoney`, 3 lines), with their tests, two lines in `index.ts`, the `calculator` shard in `stryker.config.mjs` and `ci.yml` |
 
 ### Mutation (final tip 09h, cold, `reports` removed, one `npm run mutation -- --shard <name>` per shard)
 
@@ -637,3 +637,67 @@ Negative proof [QG11] on the final tip: `define.test.ts`, `validate.test.ts` and
 - Mutation testing found redundancy in the design, not just missing tests: a guard whose only effect is also produced by the next call (`typeof` before an option lookup, a money check before a unit lookup) is an equivalent mutant, and the fix is to make one mechanism carry the behavior.
 - A validator is easier to review when it is introduced behind an internal function and exposed on the public object only after every kind parses; the half-built state then needs one temporary characterization test instead of a public lie.
 - The CI wall time of a sharded Stryker job tracks the slowest shard (4 min 19 s on the cold format shard), so a new module needs its own shard rather than a place in an existing one.
+
+## PR 9 correction round 1 (task 9.13)
+
+Mode: strict TDD, runner `npm test`. Input: the consolidated review of four lenses (R1 risk, RD readability, REL reliability, RES resilience) and the phase validator: 1 MAJOR cluster (stray committed report), 1 MAJOR (no locus) and MINORs. Fixes that fit were folded into the owning commits with `--edit` stops of `git rebase -i --update-refs` (the later branches moved with them without a conflict); 09b (399 lines) and 09d (391) had no room, so their fixes went into new last slices. One slice would have measured 526 lines, so there are two: `09i` and `09j`. History is local and unpushed.
+
+Applied: R1-1, RD-1, validator-1 (09h), RES-1, RD-10, RD-8, RES-6 (09i), REL-1 (09e), REL-2, RES-4 (09g), RES-7 (09h), RES-2, R1-4, RD-3, RD-4, RD-5, RD-6, RD-7, RD-9, RES-3, R1-2 (09j), and the documentation items RD-2, RD-11, validator-2, validator-3, RES-5, RES-8, R1-3 (09j). REL-3 kept as is. Deferred: none.
+
+| Branch | Fixes | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-09a-mutation-follow-ups` | none | 141 | 828 |
+| `feat/foundation-09b-descriptors` | none (RD-3, RD-4, RES-6 moved to 09i and 09j: no room) | 399 | 833 |
+| `feat/foundation-09c-constraints` | none | 214 | 842 |
+| `feat/foundation-09d-define-validation` | none (RES-1, RD-10, RD-8 moved to 09i: no room) | 391 | 945 |
+| `feat/foundation-09e-fixture-validate-skeleton` | REL-1 | 378 | 956 |
+| `feat/foundation-09f-validate-length` | none | 239 | 983 |
+| `feat/foundation-09g-validate-kinds` | REL-2, RES-4 | 339 | 1172 |
+| `feat/foundation-09h-aggregation-barrel` | RES-7, R1-1/RD-1/validator-1 | 255 | 1179 |
+| `feat/foundation-09i-review-follow-ups` | RES-1, RD-10, RD-8, RES-6 | 363 | 1180 |
+| `feat/foundation-09j-freeze-and-tidy` | RES-2/R1-4, RD-3 to RD-7, RD-9, RES-3/R1-2, docs | 261 | 1182 |
+
+### TDD Cycle Evidence (round 1)
+
+| Item | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| R1-1 | none (hygiene) | `npm run format:check` listed `.vitest/json/output.json` | exit 0 after `git rm --cached` and `.vitest/` in `.gitignore`; `git log --all --diff-filter=A -- .vitest/json/output.json` finds nothing in `main..09j` | the file is a local vitest report with absolute paths; on the older tips it must be deleted before `verify`, because it is not ignored there |
+| REL-1 | `mutation.contract.test.ts` | the exemption narrowed to the two arbitraries tests: `fixture-box.test.ts` is run by no shard (1 failed) | 40/40 after adding it to the `calculator` shard tests | the sibling-test rule does not cover `__testing__`, so the contract test is the only guard |
+| REL-2 | `validate.test.ts` | characterization (green on arrival) | 218 in the file | a `Rational` raw value is `MALFORMED` for a percent: the field reads strings only |
+| RES-4 | `validate.test.ts` | characterization (green on arrival) | 102 rows: 17 exotic values (symbol, function, arrays, nested object, 10^40 bigint, -0, NaN, +-Infinity, `1e99999`, `0x10`, fullwidth digits, zero-width space, `1/0`, 128 nines with and without a unit) through each of the 6 fields | every result is `ok: false` with one error of that field and a code in `FIELD_ERROR_CODES`, except the count `-0`, which is `0` |
+| RES-7 | `index.test.ts` | export list and the wiring test failed (2) | 8/8 | `MAX_TEXT_LENGTH` is 128; a 129-character count is `TOO_LONG` through the public barrel |
+| RES-1, RD-10, RD-8 | `define.test.ts`, `errors.test.ts` | 79 failed (78 rejected rows now assert the locus with `toStrictEqual`, 1 for `cause` on `CoreError`) | 109/109 | the locus is `{ id, field? }` as the ES2022 `cause`: the calculator id plus the key of the input, output or warning (the second one of a duplicate); `Row` is a typed tuple built by `row()` so a reason typo fails `tsc` |
+| RES-6 | `ci.contract.test.ts` | the upload step must be `always()` (1 failed) | 226 contract tests | a job that times out is cancelled, not failed, and `failure()` is false then |
+| RES-2, R1-4 | `define.test.ts` | frozen-at-every-level test and the empty-list defaults (2 failed) | 106/106 | input and output lists, each descriptor, select options, display hints, warnings, retired keys; `Array.prototype.push` on frozen options throws `TypeError`, and `validate` still reports the unknown option |
+| RD-3 to RD-7, RD-9 | `descriptors.test-d.ts`, `validate.test.ts` | refactor: suite green before and after | 954 core tests green before the commit | a type test pins `ValueOf<MoneyDescriptor>` and the union of all six value types; an unknown kind cannot be named by a type test because `ValueOf` is constrained to `InputDescriptor`, so `never` for it is not testable |
+
+Mutation, first run on the 09j tip: 1 survivor (`if (true) Object.freeze(input.options)`), an equivalent mutant because `Object.freeze(undefined)` is a no-op. The freeze is now `freezeList`, which iterates its argument, so the mutant throws for a non-select and dies; second run 0 survivors.
+
+### Gates
+
+`npm run verify` exit 0 on all ten tips (828, 833, 842, 945, 956, 983, 1172, 1179, 1180, 1182 tests); core coverage on the 09j tip 100/100/100/100 (657 statements, 362 branches, 151 functions, 571 lines). The `.vitest` report was removed before each tip.
+
+Mutation, 09j tip, cold (`reports` removed first), one `npm run mutation -- --shard <name>` per shard:
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| rational (`errors.ts` changed) | 100.00 | 202 | 7 | 0 | 67.8 s |
+| units | 100.00 | 212 | 0 | 0 | 48.8 s |
+| format | 100.00 | 409 | 0 | 0 | 93.6 s |
+| calculator | 100.00 | 445 | 0 | 0 | 95.9 s |
+
+Total 1275 mutants (the calculator shard grew from 418 to 445). No pragma. SX4 on the 09j tip: `git log --format=%B main..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty.
+
+### Scope and deviations (round 1)
+
+- The 09b and 09d fixes became new slices instead of folds because 09b is at 399 lines and 09d at 391; 09i and 09j are split at a commit boundary because their sum is 526 lines before the docs.
+- The locus is the ES2022 `cause` (no new field on `CoreError`, only the standard `ErrorOptions` argument), additive to the spec, which requires `code` and `reason` only.
+- Items RES-3, R1-2, R1-3, RES-5, RES-8, RD-2, RD-11, validator-2 and validator-3 are documentation: see `design.md` (calculator section, D10, Open Questions), the `calculator-contract` spec (`raw` must be an object), `tasks.md` (9.1 branch name, CC2 row, 9.13, 11.1).
+- RES-6 is not free: `always()` uploads the report of a passing run too (`if-no-files-found: ignore` only silences a missing directory), a few hundred kilobytes per shard.
+
+### Key learnings (round 1)
+
+- `Object.freeze(undefined)` is a silent no-op, so a type guard before a freeze is an equivalent mutant; moving the freeze into a helper that iterates its argument made the guard observable and killed the mutant without a pragma.
+- A generated report that is gitignored on the tip but not on the older branches of a stack makes `prettier --check .` fail locally only on the older ones, so a per-tip verify loop must delete it between checkouts.
+- A review round that cannot fold into full branches should be sized before it is written: the locus change alone measured 353 lines because a typed table of 78 rows grows when each row gains a field.
+- Folding with `git rebase -i --update-refs` and `edit` stops moved every later branch ref without a conflict, while splitting a trailing slice only needed a reorder and `git branch -f`.
