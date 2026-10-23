@@ -7,6 +7,7 @@ import {
   readFileSync,
   rmSync,
   statSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -38,6 +39,7 @@ interface StrykerModule {
   pruneStaleReports: (reportsDirectory: string, keepFile: string) => void;
   isStrykerEntry: (entry: string | undefined) => boolean;
   sourceFilesIn: (directory: string) => string[];
+  rootJsonFiles: (directory: string) => string[];
 }
 
 const hasDotSegment = (path: string): boolean =>
@@ -221,6 +223,42 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
         writeFileSync(join(directory, name), '');
       }
       expect(module_.sourceFilesIn(directory).sort()).toEqual(['a.ts', 'sub/b.ts']);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
+  // The package-root `*.json` files join the identity like the sources do: a dotfile such as an
+  // editor's `.eslintrc.json` is skipped by `fs.globSync`, so the config must skip it as well.
+  it('lists package-root json files without dotfiles, directories and other extensions', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-json-'));
+    try {
+      mkdirSync(join(directory, 'nested.json'));
+      for (const name of ['package.json', 'tsconfig.json', '.hidden.json', 'notes.txt']) {
+        writeFileSync(join(directory, name), '{}');
+      }
+      expect(module_.rootJsonFiles(directory).sort()).toEqual(['package.json', 'tsconfig.json']);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
+  // Fail closed: `fs.globSync` follows no symlink and CI `hashFiles` skips them, so a link in the
+  // identity set could make the config and the CI key disagree. A dangling link must throw too.
+  it.each(['regular', 'dangling'])('refuses a %s symlink in the identity set', (kind) => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-link-'));
+    try {
+      writeFileSync(join(directory, 'target.json'), '{}');
+      symlinkSync(
+        kind === 'regular' ? 'target.json' : 'missing.json',
+        join(directory, 'link.json'),
+      );
+      expect(() => module_.sourceFilesIn(directory)).toThrow(
+        /symlink in identity set: .*link\.json/,
+      );
+      expect(() => module_.rootJsonFiles(directory)).toThrow(
+        /symlink in identity set: .*link\.json/,
+      );
     } finally {
       rmSync(directory, { recursive: true });
     }

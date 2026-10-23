@@ -1,10 +1,18 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { basename, dirname, join, relative } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 const packageDir = dirname(fileURLToPath(import.meta.url));
+
+/**
+ * A symlink could make this list and the CI `hashFiles` key disagree (`fs.globSync` follows none,
+ * `hashFiles` skips them), so the identity set fails closed instead of guessing.
+ */
+const failOnSymlink = (path) => {
+  throw new Error(`symlink in identity set: ${path}`);
+};
 
 /**
  * The files below `directory` (relative, with forward slashes), leaving out dotfiles and dot
@@ -13,10 +21,21 @@ const packageDir = dirname(fileURLToPath(import.meta.url));
  * superset: a stray editor file only costs a cold run, never a stale hit.
  */
 export const sourceFilesIn = (directory) =>
-  readdirSync(directory, { recursive: true })
-    .map((path) => path.replaceAll('\\', '/'))
-    .filter((path) => !path.split('/').some((part) => part.startsWith('.')))
-    .filter((path) => statSync(join(directory, path)).isFile());
+  readdirSync(directory, { recursive: true, withFileTypes: true })
+    .map((entry) => ({
+      entry,
+      path: relative(directory, join(entry.parentPath, entry.name)).replaceAll('\\', '/'),
+    }))
+    .filter(({ path }) => !path.split('/').some((part) => part.startsWith('.')))
+    .filter(({ entry, path }) => (entry.isSymbolicLink() ? failOnSymlink(path) : entry.isFile()))
+    .map(({ path }) => path);
+
+/** The `*.json` files directly in `directory` (package manifest and tsconfigs), without dotfiles. */
+export const rootJsonFiles = (directory) =>
+  readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.name.endsWith('.json') && !entry.name.startsWith('.'))
+    .filter((entry) => (entry.isSymbolicLink() ? failOnSymlink(entry.name) : entry.isFile()))
+    .map((entry) => entry.name);
 
 /**
  * Every input that can change a mutation verdict, relative to this package and sorted. The
@@ -31,7 +50,7 @@ export const incrementalIdentityFiles = [
   ...sourceFilesIn(join(packageDir, 'src')).map((path) => `src/${path}`),
   'stryker.config.mjs',
   'vitest.config.ts',
-  ...readdirSync(packageDir).filter((name) => name.endsWith('.json')),
+  ...rootJsonFiles(packageDir),
   '../../.nvmrc',
   '../../package-lock.json',
   '../../tsconfig.base.json',
