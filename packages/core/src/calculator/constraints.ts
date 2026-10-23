@@ -19,7 +19,7 @@ interface Bounds {
 const HUNDRED = Rational.of(100);
 
 /** The inclusive bounds of a descriptor with the defaults of its kind applied. */
-const boundsOf = (descriptor: BoundedDescriptor): Bounds => {
+export const boundsOf = (descriptor: BoundedDescriptor): Bounds => {
   switch (descriptor.kind) {
     case 'length':
       return { min: descriptor.min?.canonical, max: descriptor.max?.canonical };
@@ -32,6 +32,20 @@ const boundsOf = (descriptor: BoundedDescriptor): Bounds => {
       return { min: descriptor.min ?? Rational.ZERO, max: descriptor.max ?? HUNDRED };
     case 'money':
       return { min: descriptor.min?.amount ?? Rational.ZERO, max: descriptor.max?.amount };
+  }
+};
+
+/** The exact amount of a descriptor's default, for a count a whole number. */
+export const defaultAmount = (descriptor: BoundedDescriptor): Rational => {
+  switch (descriptor.kind) {
+    case 'length':
+      return descriptor.default.canonical;
+    case 'count':
+      return Rational.of(descriptor.default);
+    case 'percent':
+      return descriptor.default;
+    case 'money':
+      return descriptor.default.amount;
   }
 };
 
