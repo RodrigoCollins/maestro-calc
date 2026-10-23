@@ -1,4 +1,5 @@
 import { findOption } from '../calculator/constraints.ts';
+import type { UrlIssueCode } from '../error-codes.ts';
 import type {
   AnyCalculator,
   InputDescriptor,
@@ -9,7 +10,7 @@ import { CoreError } from '../errors.ts';
 import { isMoney } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { isQuantityOf } from '../units/quantity.ts';
-import { WHOLE_NUMBER } from './url-values.ts';
+import { percentDecode, readUrlValue, WHOLE_NUMBER, type UrlValue } from './url-values.ts';
 
 /** The parts of a calculator that the codec reads. */
 export type UrlCodable = Pick<AnyCalculator, 'id' | 'inputs'>;
@@ -90,4 +91,117 @@ export function encode(
     if (text !== textOf(input, input.default)) pairs.push(`${input.urlKey}=${text}`);
   }
   return pairs.join('&');
+}
+
+/** One diagnostic of `decode`: what went wrong and the URL key it concerns. */
+export interface UrlIssue {
+  readonly code: UrlIssueCode;
+  readonly key: string;
+}
+
+export interface DecodeResult<I extends readonly InputDescriptor[]> {
+  /** A complete valid state: every field is the value of the URL or its default. */
+  readonly state: InputsOf<I>;
+  readonly unitSystem: UnitSystem;
+  /** In query order; empty when every present value was valid. */
+  readonly issues: readonly UrlIssue[];
+}
+
+/**
+ * One pair of the query: the decoded key and the raw value, still percent-encoded. A key with a
+ * malformed escape is `null`, which names no field, so such a pair is ignored like any unknown key.
+ */
+interface Pair {
+  readonly key: string | null;
+  readonly raw: string;
+}
+
+/** Splits a pair at its first `=`; a pair with no `=` has an empty value. */
+const pairOf = (segment: string): Pair => {
+  const padded = segment.includes('=') ? segment : `${segment}=`;
+  const equals = padded.indexOf('=');
+  return { key: percentDecode(padded.slice(0, equals)), raw: padded.slice(equals + 1) };
+};
+
+/** The pairs of a query in order, each key once: the first occurrence wins, later ones vanish. */
+const pairsOf = (query: string): readonly Pair[] => {
+  const seen = new Set<string | null>();
+  const body = query.startsWith('?') ? query.slice(1) : query;
+  return body
+    .split('&')
+    .map(pairOf)
+    .filter(({ key }) => {
+      const first = !seen.has(key);
+      seen.add(key);
+      return first;
+    });
+};
+
+/** The unit system a `u` value names: only `m` is metric, and `undefined` marks any other value. */
+const unitSystemOf = (raw: string): UnitSystem | undefined =>
+  percentDecode(raw) === 'm' ? 'metric' : undefined;
+
+/** The result for a state: frozen, with the issues in the order they were found. */
+const resultOf = (
+  inputs: readonly InputDescriptor[],
+  values: ReadonlyMap<string, UrlValue>,
+  unitSystem: UnitSystem,
+  issues: readonly UrlIssue[],
+): DecodeResult<readonly InputDescriptor[]> => {
+  const state = Object.fromEntries(
+    inputs.map((input) => [input.key, values.get(input.key) ?? input.default]),
+  );
+  return Object.freeze({
+    state: Object.freeze(state),
+    unitSystem,
+    issues: Object.freeze(issues),
+  });
+};
+
+const issue = (code: UrlIssueCode, key: string): UrlIssue => Object.freeze({ code, key });
+
+/** Reads the pairs of a version 1 query against the inputs of a calculator. */
+const decodeV1 = (
+  inputs: readonly InputDescriptor[],
+  pairs: readonly Pair[],
+): DecodeResult<readonly InputDescriptor[]> => {
+  // keyed by `string | null` so that the `null` key of a malformed escape simply finds nothing
+  const byUrlKey = new Map<string | null, InputDescriptor>(
+    inputs.map((input) => [input.urlKey, input]),
+  );
+  const values = new Map<string, UrlValue>();
+  const issues: UrlIssue[] = [];
+  let unitSystem: UnitSystem = 'imperial';
+  for (const { key, raw } of pairs) {
+    if (key === 'u') {
+      const preference = unitSystemOf(raw);
+      if (preference === undefined) issues.push(issue('INVALID_VALUE', key));
+      else unitSystem = preference;
+      continue;
+    }
+    // unknown, retired, `v` and differently cased keys name no field and are ignored
+    const input = byUrlKey.get(key);
+    if (input === undefined) continue;
+    const value = readUrlValue(input, raw);
+    if (value === undefined) issues.push(issue('INVALID_VALUE', input.urlKey));
+    else values.set(input.key, value);
+  }
+  return resultOf(inputs, values, unitSystem, issues);
+};
+
+/**
+ * Decodes a query string, with or without a leading `?`, into a complete valid state. It never
+ * throws: a value that is not valid for its field is replaced by the default of the field and
+ * reported as `INVALID_VALUE` for its key; unknown keys are ignored. `u=m` selects metric and
+ * never changes the meaning of a value (lengths in a URL are always inches).
+ */
+export function decode<const I extends readonly InputDescriptor[]>(
+  calculator: { readonly inputs: I },
+  query: string,
+): DecodeResult<I>;
+export function decode(
+  calculator: Pick<UrlCodable, 'inputs'>,
+  query: string,
+): DecodeResult<readonly InputDescriptor[]> {
+  return decodeV1(calculator.inputs, pairsOf(query));
 }
