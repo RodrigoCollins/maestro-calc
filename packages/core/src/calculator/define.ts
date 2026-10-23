@@ -62,12 +62,14 @@ const METRIC_UNITS: readonly string[] = ['mm', 'cm', 'm'];
 
 /**
  * Where a definition is faulty, carried as the `cause` of the `INVALID_DEFINITION` error: the
- * calculator `id` and, when one applies, the key of the faulty input, output or warning. Only
- * identifiers, never prose.
+ * calculator `id`, the `reason` (repeated here because a log that prints the cause, as vitest and
+ * `astro build` do, then says why without the stack) and, when one applies, the key of the faulty
+ * input, output or warning. Only identifiers, never prose.
  */
 export interface DefinitionLocus {
   readonly id: string;
   readonly field?: string;
+  readonly reason: DefinitionReason;
 }
 
 /** Throws `INVALID_DEFINITION` with the reason and the locus of `field` unless `condition` holds. */
@@ -77,7 +79,7 @@ const ensureIn =
   (id: string): Ensure =>
   (condition, reason, field) => {
     if (condition) return;
-    const locus: DefinitionLocus = field === undefined ? { id } : { id, field };
+    const locus: DefinitionLocus = field === undefined ? { id, reason } : { id, field, reason };
     throw new CoreError('INVALID_DEFINITION', reason, { cause: locus });
   };
 

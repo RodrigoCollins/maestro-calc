@@ -322,13 +322,14 @@ describe('defineCalculator validation (calculator-contract › Definition-time v
     );
   });
 
-  // the locus names the calculator and, when one applies, the faulty input, output or warning
+  // the locus names the calculator, the reason (so a build log says why without the stack) and,
+  // when one applies, the faulty input, output or warning (PR 11 review RES-5)
   it.each(rejected)('throws INVALID_DEFINITION %s for %s', (reason, _label, patch, field) => {
     const id = typeof patch['id'] === 'string' ? patch['id'] : 'box';
     expect(rejection(patch)).toStrictEqual({
       code: 'INVALID_DEFINITION',
       reason,
-      locus: field === undefined ? { id } : { id, field },
+      locus: field === undefined ? { id, reason } : { id, field, reason },
     });
   });
 
