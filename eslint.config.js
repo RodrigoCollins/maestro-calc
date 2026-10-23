@@ -214,6 +214,12 @@ export default defineConfig(
       ],
     },
     rules: {
+      // An invisible character in a string, template or comment reads like a plain space in review;
+      // write it as an escape (`\u2003`) so that the text shows what it is.
+      'no-irregular-whitespace': [
+        'error',
+        { skipStrings: false, skipTemplates: false, skipComments: false, skipRegExps: false },
+      ],
       'import-x/no-relative-packages': 'error',
       'import-x/no-cycle': ['error', { maxDepth: 10, ignoreExternal: true }],
     },
