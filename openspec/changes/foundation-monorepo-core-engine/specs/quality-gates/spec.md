@@ -134,3 +134,5 @@ Automated dependency updates (if configured by the repository) SHOULD ignore sem
 - GIVEN a `.github/dependabot.yml` in the repository
 - WHEN parsed
 - THEN an `ignore` rule for `typescript` with `update-types: ["version-update:semver-major"]` is present
+
+NOTE (PR 8): the mutation gate runs per shard (`rational`, `units`, `format`) with the same thresholds; any shard below `break` fails the gate, and the `mutation-gate` job aggregates the matrix into one required check.

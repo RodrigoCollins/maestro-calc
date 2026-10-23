@@ -16,3 +16,4 @@ phases:
 review:
   design_review_round_1: "applied 2026-10-22 (tech lead: APPROVE WITH CHANGES; specs amended, design rewritten to match, money capability added)"
 updated: 2026-10-22
+# PR 8 correction round 1 applied (08e); verify 821 tests; mutation 100.00 on all shards
