@@ -38,7 +38,7 @@ const isContainer = (value: unknown): value is object =>
  * `input`: inches for a length, percent points, dollars for money, an integer, an option id, and
  * `1` or `0`. One value has one text, so comparing texts is comparing exact values.
  */
-const textOf = (input: InputDescriptor, value: unknown): string | undefined => {
+export const urlTextOf = (input: InputDescriptor, value: unknown): string | undefined => {
   switch (input.kind) {
     case 'length':
       return isQuantityOf(value, 'length') ? value.canonical.toString() : undefined;
@@ -83,12 +83,12 @@ export function encode(
   if (!isContainer(state)) throw new CoreError('NOT_AN_OBJECT');
   const pairs = unitSystem === 'metric' ? ['v=1', 'u=m'] : ['v=1'];
   for (const input of calculator.inputs) {
-    const text = textOf(input, state[input.key]);
+    const text = urlTextOf(input, state[input.key]);
     if (text === undefined) {
       const locus: StateLocus = { id: calculator.id, field: input.key };
       throw new CoreError('INVALID_STATE', 'FIELD_VALUE', { cause: locus });
     }
-    if (text !== textOf(input, input.default)) pairs.push(`${input.urlKey}=${text}`);
+    if (text !== urlTextOf(input, input.default)) pairs.push(`${input.urlKey}=${text}`);
   }
   return pairs.join('&');
 }
