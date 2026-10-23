@@ -8,8 +8,7 @@ import type { BoundedDescriptor, SelectDescriptor } from './descriptors.ts';
  */
 export type ConstraintError =
   | { readonly code: 'BELOW_MIN'; readonly params: { readonly min: string } }
-  | { readonly code: 'ABOVE_MAX'; readonly params: { readonly max: string } }
-  | { readonly code: 'UNKNOWN_OPTION' };
+  | { readonly code: 'ABOVE_MAX'; readonly params: { readonly max: string } };
 
 interface Bounds {
   readonly min: Rational | undefined;
@@ -68,9 +67,10 @@ export const checkAmount = (
   return undefined;
 };
 
-/** Checks an option id against the exact, case-sensitive options of a select. */
-export const checkOption = (
-  descriptor: SelectDescriptor,
-  option: string,
-): ConstraintError | undefined =>
-  descriptor.options.includes(option) ? undefined : { code: 'UNKNOWN_OPTION' };
+/**
+ * The option of a select that `value` names, matched exactly and case-sensitively, or `undefined`.
+ * `value` is untyped input: anything that is not one of the option ids, a non-string included,
+ * finds nothing.
+ */
+export const findOption = (descriptor: SelectDescriptor, value: unknown): string | undefined =>
+  descriptor.options.find((option) => option === value);

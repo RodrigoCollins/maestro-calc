@@ -3,7 +3,7 @@ import { usd, type Money } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { ft, inch, mm } from '../units/catalog.ts';
 import { quantity, type Quantity } from '../units/quantity.ts';
-import { checkAmount, checkOption, type ConstraintError } from './constraints.ts';
+import { checkAmount, findOption, type ConstraintError } from './constraints.ts';
 import type {
   CountDescriptor,
   LengthDescriptor,
@@ -58,7 +58,6 @@ const select: SelectDescriptor = {
 
 const below = (min: string): ConstraintError => ({ code: 'BELOW_MIN', params: { min } });
 const above = (max: string): ConstraintError => ({ code: 'ABOVE_MAX', params: { max } });
-const UNKNOWN: ConstraintError = { code: 'UNKNOWN_OPTION' };
 const inInches = (q: Quantity<'length'>): Rational => q.canonical;
 
 // Every bound is a canonical Rational string in the canonical unit of the kind (inches, whole
@@ -139,12 +138,12 @@ describe('checkAmount (calculator-contract › Total validation without silent c
   });
 });
 
-describe('checkOption (calculator-contract › Select and boolean [CC18])', () => {
-  it('accepts exactly the declared options of a select, case-sensitively', () => {
-    expect(checkOption(select, 'x')).toBeUndefined();
-    expect(checkOption(select, 'y')).toBeUndefined();
-    expect(checkOption(select, 'z')).toEqual(UNKNOWN);
-    expect(checkOption(select, 'Y')).toEqual(UNKNOWN);
-    expect(checkOption(select, '')).toEqual(UNKNOWN);
+describe('findOption (calculator-contract › Select and boolean [CC18])', () => {
+  it('finds exactly the declared options of a select, case-sensitively', () => {
+    expect(findOption(select, 'x')).toBe('x');
+    expect(findOption(select, 'y')).toBe('y');
+    for (const value of ['z', 'Y', '', ' x', 1, null, undefined, ['x']]) {
+      expect(findOption(select, value)).toBeUndefined();
+    }
   });
 });

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { fixtureBox } from '../__testing__/fixture-box.ts';
-import { usd } from '../money/money.ts';
+import { FIELD_ERROR_CODES } from '../error-codes.ts';
+import { isMoney, usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { err, ok } from '../result.ts';
 import { ft, ft2, inch, mm, yd } from '../units/catalog.ts';
@@ -65,19 +66,6 @@ describe('validateRecord (calculator-contract › Total validation without silen
       }),
     });
     expect(validateRecord(inherited.inputs, {})).toEqual(ok({ valueOf: 4, toString: true }));
-  });
-
-  // Kinds are added one at a time (tasks 9.7 and 9.8): until a kind parses, a given value is
-  // refused rather than accepted unchecked, and the errors follow the declaration order.
-  it('refuses a given value that no kind parses yet, in declaration order', () => {
-    expect(validate({ cnt: '7', len: 'abc', zzz: 1 })).toEqual({
-      ok: false,
-      errors: [
-        { field: 'len', code: 'MALFORMED' },
-        { field: 'cnt', code: 'MALFORMED' },
-      ],
-    });
-    expect(validate({ flg: true })).toEqual(err({ field: 'flg', code: 'MALFORMED' }));
   });
 });
 
@@ -181,7 +169,7 @@ describe('validateRecord length field (calculator-contract › Total validation,
   });
 
   it('reports one error per field and still validates the other fields', () => {
-    expect(validate({ len: '5 furlongs', cnt: '7' })).toEqual({
+    expect(validate({ len: '5 furlongs', cnt: 'x' })).toEqual({
       ok: false,
       errors: [
         { field: 'len', code: 'UNKNOWN_UNIT' },
@@ -189,4 +177,189 @@ describe('validateRecord length field (calculator-contract › Total validation,
       ],
     });
   });
+});
+
+const failed = (field: string, code: string, params?: object): unknown =>
+  err(params === undefined ? { field, code } : { field, code, params });
+const r = (n: number, d = 1): Rational => Rational.of(n, d);
+const long = '1'.repeat(129);
+
+const show = (raw: unknown): string => {
+  if (typeof raw === 'string') {
+    return raw.length > 20 ? `a string of ${String(raw.length)} characters` : JSON.stringify(raw);
+  }
+  if (isMoney(raw)) return `usd(${raw.amount.toString()})`;
+  return raw instanceof Object ? 'an object' : String(raw);
+};
+// One test per row: the raw value of field `key` validated alone (the accepted value, or the failed
+// result), against what the spec expects.
+const cases = (key: string, table: [raw: unknown, expected: unknown][]): void => {
+  for (const [raw, expected] of table) {
+    it(`${key}: ${show(raw)}`, () => {
+      const result = validate({ [key]: raw });
+      expect(result.ok ? result.value[key] : result).toEqual(expected);
+    });
+  }
+};
+
+describe('validateRecord count field (calculator-contract › Count edge cases [CC11])', () => {
+  // spec: Count edge cases: no input is ever silently turned into 0
+  cases('cnt', [
+    ['abc', failed('cnt', 'MALFORMED')],
+    ['-1', failed('cnt', 'MALFORMED')],
+    ['1.5', failed('cnt', 'MALFORMED')],
+    ['12abc', failed('cnt', 'MALFORMED')],
+    ['', failed('cnt', 'EMPTY')],
+    ['007', 7],
+    [7, 7],
+    [7.5, failed('cnt', 'MALFORMED')],
+    ['101', failed('cnt', 'ABOVE_MAX', { max: '100' })],
+    ['9007199254740992', failed('cnt', 'ABOVE_MAX', { max: '100' })],
+    [null, failed('cnt', 'MALFORMED')],
+    ['1,000', failed('cnt', 'DECIMAL_COMMA')],
+    [long, failed('cnt', 'TOO_LONG')],
+    // beyond the table of the spec
+    ['0', 0],
+    ['100', 100],
+    ['00100', 100],
+    [' 7 ', 7],
+    ['  7  ', 7],
+    ['\u00A0\t 7 \t\u00A0', 7],
+    [0, 0],
+    ['\t7\u00A0', 7],
+    ['  ', failed('cnt', 'EMPTY')],
+    ['a,b', failed('cnt', 'DECIMAL_COMMA')],
+    ['+7', failed('cnt', 'MALFORMED')],
+    ['7\n', failed('cnt', 'MALFORMED')],
+    ['\u0667', failed('cnt', 'MALFORMED')],
+    [-1, failed('cnt', 'MALFORMED')],
+    [2 ** 53, failed('cnt', 'MALFORMED')],
+    [true, failed('cnt', 'MALFORMED')],
+    [' '.repeat(129), failed('cnt', 'TOO_LONG')],
+  ]);
+
+  it('compares a count beyond the safe integers without precision loss', () => {
+    const field = { kind: 'count', key: 'cnt', urlKey: 'a', default: 1, min: 5 } as const;
+    const check = (raw: string): unknown => validateRecord([field], { cnt: raw });
+    const above = failed('cnt', 'ABOVE_MAX', { max: '9007199254740991' });
+    expect(check('9007199254740991')).toEqual(ok({ cnt: Number.MAX_SAFE_INTEGER }));
+    expect(check('9007199254740992')).toEqual(above);
+    expect(check('99999999999999999999999')).toEqual(above);
+    expect(check('4')).toEqual(failed('cnt', 'BELOW_MIN', { min: '5' }));
+  });
+});
+
+describe('validateRecord percent field (calculator-contract › Percent edge cases [CC16])', () => {
+  cases('pct', [
+    ['12.5%', r(25, 2)],
+    ['12.5', r(25, 2)],
+    ['-0', r(0)],
+    ['100', r(100)],
+    ['100.0001', failed('pct', 'ABOVE_MAX', { max: '100' })],
+    ['12.5 %', failed('pct', 'MALFORMED')],
+    ['abc', failed('pct', 'MALFORMED')],
+    ['-1', failed('pct', 'BELOW_MIN', { min: '0' })],
+    ['12,5', failed('pct', 'DECIMAL_COMMA')],
+    // beyond the table of the spec
+    ['100%', r(100)],
+    [' 12.5% ', r(25, 2)],
+    ['  12.5%  ', r(25, 2)],
+    ['.5', r(1, 2)],
+    ['0', r(0)],
+    ['%', failed('pct', 'MALFORMED')],
+    ['12.5%%', failed('pct', 'MALFORMED')],
+    ['12,5%', failed('pct', 'DECIMAL_COMMA')],
+    ['', failed('pct', 'EMPTY')],
+    [12.5, failed('pct', 'MALFORMED')],
+    // a Rational is not text: the percent field reads strings only, even if the value is in range
+    [r(25, 2), failed('pct', 'MALFORMED')],
+    [null, failed('pct', 'MALFORMED')],
+    [long, failed('pct', 'TOO_LONG')],
+  ]);
+});
+
+describe('validateRecord money field (calculator-contract › Money edge cases [CC17])', () => {
+  cases('prc', [
+    ['$4.98', usd(r(249, 50))],
+    ['4.987', usd(r(4987, 1000))],
+    ['1,000', failed('prc', 'DECIMAL_COMMA')],
+    ['-1', failed('prc', 'MALFORMED')],
+    ['10000', usd(r(10000))],
+    ['10000.01', failed('prc', 'ABOVE_MAX', { max: '10000' })],
+    ['', failed('prc', 'EMPTY')],
+    [usd(-1), failed('prc', 'BELOW_MIN', { min: '0' })],
+    // beyond the table of the spec
+    [' $5 ', usd(r(5))],
+    ['0', usd(r(0))],
+    [usd(r(5)), usd(r(5))],
+    [usd(r(10001)), failed('prc', 'ABOVE_MAX', { max: '10000' })],
+    ['1234567890123456789', failed('prc', 'TOO_LARGE')],
+    ['$', failed('prc', 'MALFORMED')],
+    [5, failed('prc', 'MALFORMED')],
+    [{ currency: 'USD', amount: r(5) }, failed('prc', 'MALFORMED')],
+    [null, failed('prc', 'MALFORMED')],
+    [long, failed('prc', 'TOO_LONG')],
+  ]);
+});
+
+// Totality: no raw value, however odd, makes a field throw; each yields a value or one error whose
+// code is in the closed list. `-0` is the one exotic value that is accepted, as the count 0.
+const exotic: [label: string, raw: unknown][] = [
+  ['a symbol', Symbol('s')],
+  ['a function', () => 1],
+  ['an empty array', []],
+  ['an array of numbers', [1, 2]],
+  ['a nested object', { a: { b: [1] } }],
+  ['a bigint beyond 2^64', 10n ** 40n],
+  ['negative zero', -0],
+  ['NaN', Number.NaN],
+  ['Infinity', Number.POSITIVE_INFINITY],
+  ['-Infinity', Number.NEGATIVE_INFINITY],
+  ['an exponent beyond any range', '1e99999'],
+  ['a hexadecimal string', '0x10'],
+  ['fullwidth digits', '\uFF11\uFF12'],
+  ['a zero-width space inside', '1\u200B2'],
+  ['a zero denominator', '1/0'],
+  ['128 nines', '9'.repeat(128)],
+  ['128 nines and a unit', `${'9'.repeat(128)} in`],
+];
+
+describe('validateRecord never throws (calculator-contract › Total validation)', () => {
+  const keys = ['len', 'cnt', 'pct', 'sel', 'flg', 'prc'];
+  it.each(
+    keys.flatMap((key) =>
+      exotic.map(([label, raw]): [string, string, unknown] => [key, label, raw]),
+    ),
+  )('%s: %s', (key, label, raw) => {
+    const result = validate({ [key]: raw });
+    const accepted = key === 'cnt' && label === 'negative zero';
+    const failures = result.ok ? [] : result.errors;
+    expect(result.ok).toBe(accepted);
+    expect(failures.map(({ field }) => field)).toEqual(accepted ? [] : [key]);
+    for (const { code } of failures) expect(FIELD_ERROR_CODES).toContain(code);
+  });
+});
+
+describe('validateRecord select and boolean fields (calculator-contract › Select and boolean [CC18])', () => {
+  cases('sel', [
+    ['y', 'y'],
+    ['x', 'x'],
+    ['Y', failed('sel', 'UNKNOWN_OPTION')],
+    ['z', failed('sel', 'UNKNOWN_OPTION')],
+    [1, failed('sel', 'UNKNOWN_OPTION')],
+    [null, failed('sel', 'UNKNOWN_OPTION')],
+    [' x', failed('sel', 'UNKNOWN_OPTION')],
+    ['', failed('sel', 'UNKNOWN_OPTION')],
+    [long, failed('sel', 'TOO_LONG')],
+  ]);
+
+  cases('flg', [
+    [false, false],
+    [true, true],
+    ['true', failed('flg', 'MALFORMED')],
+    [1, failed('flg', 'MALFORMED')],
+    [0, failed('flg', 'MALFORMED')],
+    [null, failed('flg', 'MALFORMED')],
+    [long, failed('flg', 'TOO_LONG')],
+  ]);
 });
