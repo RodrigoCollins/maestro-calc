@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { existsSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { existsSync, globSync, lstatSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { basename, join, relative } from 'node:path';
 
 /*
@@ -40,6 +40,60 @@ export const rootJsonFiles = (directory) =>
     .filter((entry) => entry.name.endsWith('.json') && !entry.name.startsWith('.'))
     .filter((entry) => (entry.isSymbolicLink() ? failOnSymlink(entry.name) : entry.isFile()))
     .map((entry) => entry.name);
+
+/**
+ * The files `patterns` match under `packageDir` (relative, with forward slashes), leaving out
+ * dotfiles and dot directories like `sourceFilesIn`. A pattern may reach a sibling package
+ * (`../core/src/**`). Fail closed: a pattern that matches no file is a typo or a deleted module,
+ * and a symlink could make this list and the CI `hashFiles` key disagree.
+ */
+const filesMatching = (packageDir, patterns) =>
+  patterns.flatMap((pattern) => {
+    const files = globSync(pattern, { cwd: packageDir })
+      .map((path) => path.replaceAll('\\', '/'))
+      .filter((path) => !path.split('/').some((part) => part.startsWith('.') && part !== '..'))
+      .filter((path) => {
+        const stat = lstatSync(join(packageDir, path));
+        return stat.isSymbolicLink() ? failOnSymlink(path) : stat.isFile();
+      });
+    if (files.length === 0) throw new Error(`identity glob matches no file: ${pattern}`);
+    return files;
+  });
+
+/**
+ * What every shard of a package shares: the package config, the vitest config, the package json
+ * files and the toolchain of the repository (Node version, lockfile, this file, compiler and test
+ * config of the root). Any change to them can change a verdict of any shard.
+ */
+export const sharedIdentityFiles = (packageDir) =>
+  [
+    'stryker.config.mjs',
+    'vitest.config.ts',
+    ...rootJsonFiles(packageDir),
+    '../../.nvmrc',
+    '../../package-lock.json',
+    '../../tooling/stryker.mjs',
+    '../../tsconfig.base.json',
+    '../../vitest.config.ts',
+  ].sort();
+
+/**
+ * Every input that can change a verdict of one shard, relative to `packageDir` and sorted: the
+ * files its `mutate` globs match (the negated ones are ignored), its `tests` (a directory stands
+ * for everything below it), its `deps` (the other sources its code and tests import) and the
+ * `shared` files. A report is named after one hash of exactly these, so a change elsewhere in
+ * the package does not start a cold run. A contract test checks the `deps` against the import
+ * graph, and the CI cache key hashes the same files.
+ */
+export const identityFilesOf = ({ packageDir, shared, mutate, tests = [], deps }) => {
+  const testGlobs = tests.map((path) => (path.endsWith('.ts') ? path : `${path}/**`));
+  const patterns = [...mutate.filter((glob) => !glob.startsWith('!')), ...testGlobs, ...deps];
+  for (const path of shared) {
+    if (!existsSync(join(packageDir, path)))
+      throw new Error(`shared identity file missing: ${path}`);
+  }
+  return [...new Set([...filesMatching(packageDir, patterns), ...shared])].sort();
+};
 
 /** The first 16 hex digits of one SHA-256 over the paths and contents of `files` (relative to `packageDir`). */
 export const identityHashOf = (packageDir, files) => {
