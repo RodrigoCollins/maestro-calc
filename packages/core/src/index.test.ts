@@ -8,18 +8,23 @@ describe('core public API (design: Public API)', () => {
       'CoreError',
       'DECIMAL_PARSE_CODES',
       'LENGTH_PARSE_CODES',
+      'MONEY_PARSE_CODES',
       'RATIONAL_PARSE_CODES',
       'Rational',
       'abs',
       'add',
+      'addMoney',
       'ceilToPurchaseUnits',
       'cm',
       'cm2',
       'cm3',
       'compare',
+      'compareMoney',
+      'costOf',
       'divide',
       'divideScalar',
       'equals',
+      'equalsMoney',
       'err',
       'findUnit',
       'formatFeetInches',
@@ -43,21 +48,28 @@ describe('core public API (design: Public API)', () => {
       'mm2',
       'mm3',
       'multiply',
+      'multiplyCount',
       'negate',
       'ok',
       'oz',
       'parseDecimal',
       'parseLength',
+      'parseMoney',
       'quantity',
       'ratio',
       'roundToFraction',
       'scale',
+      'scaleMoney',
       'sign',
       'sub',
+      'subMoney',
+      'toCents',
       'toDecimalParts',
       'ton',
       'tonYd3',
       'tonne',
+      'unitPrice',
+      'usd',
       'valueIn',
       'yd',
       'yd2',
@@ -102,6 +114,25 @@ describe('core public API (design: Public API)', () => {
     const metric = core.parseLength('2.54', { defaultUnit: core.cm });
     expect(metric.ok && core.valueIn(metric.value, core.inch)).toEqual(core.Rational.ONE);
     expect(core.parseLength('5 furlongs')).toEqual(core.err({ code: 'UNKNOWN_UNIT', offset: 2 }));
+  });
+
+  // spec: money › Exact money value, Unit prices, Display rounding to cents, Money text grammar
+  it('wires the money API to working implementations', () => {
+    expect(core.MONEY_PARSE_CODES).toContain('DECIMAL_COMMA');
+    expect(core.parseMoney('1,5')).toEqual(core.err({ code: 'DECIMAL_COMMA' }));
+    const price = core.parseMoney('$0.37');
+    expect(price.ok).toBe(true);
+    const area = core.quantity(core.Rational.of(25, 2), core.ft2);
+    const cost = price.ok && core.costOf(core.unitPrice(price.value, core.ft2), area);
+    expect(cost && core.toCents(cost)).toEqual({ negative: false, integer: 4n, fraction: '63' });
+    const total = core.multiplyCount(core.usd(core.Rational.of(249, 50)), 4n);
+    expect(core.addMoney(total, core.usd(1)).amount).toEqual(core.Rational.of(523, 25));
+    expect(core.subMoney(total, total).amount.isZero()).toBe(true);
+    expect(core.scaleMoney(total, core.Rational.of(1, 2)).amount).toEqual(
+      core.Rational.of(249, 25),
+    );
+    expect(core.compareMoney(core.usd(1), total)).toBe(-1);
+    expect(core.equalsMoney(total, core.usd(core.Rational.of(498, 25)))).toBe(true);
   });
 
   it('wires the exports to working implementations', () => {
