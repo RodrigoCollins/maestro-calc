@@ -207,10 +207,12 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(run).toBeLessThan(steps.indexOf(save ?? {}));
   });
 
-  // design: a failing gate must leave its report behind to diagnose the surviving mutants
-  it('uploads the mutation report when the job fails', () => {
+  // design: a failing gate must leave its report behind to diagnose the surviving mutants. A job
+  // that times out is cancelled, not failed, and `failure()` is false then, so the upload runs on
+  // `always()`.
+  it('uploads the mutation report even when the job fails or times out', () => {
     const upload = step('actions/upload-artifact@');
-    expect(upload?.if).toBe('failure()');
+    expect(upload?.if).toBe('always()');
     expect(upload?.with).toMatchObject({
       name: 'mutation-report-${{ matrix.shard }}',
       path: 'packages/core/reports/mutation',
