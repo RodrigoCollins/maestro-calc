@@ -3,9 +3,9 @@ import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from './root.ts';
 
-/** The most type instantiations the core sources may cost (the measured baseline is 16,272). */
+/** The most type instantiations the core sources may cost (measured: 20,866 after PR 10). */
 const SOURCE_BUDGET = 40_000;
-/** The same for the test program, which adds the property and type tests (baseline 84,398). */
+/** The same for the test program, which adds the property and type tests (measured: 109,072 after PR 10). */
 const TEST_BUDGET = 150_000;
 
 const tsc = createRequire(import.meta.url).resolve('typescript/bin/tsc');
