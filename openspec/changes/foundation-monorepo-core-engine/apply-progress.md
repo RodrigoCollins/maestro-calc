@@ -377,3 +377,106 @@ CI numbers behind the decision (the CI trigger is a wall time of 20 min, not a l
 Negative proof [QG11], 06d tip: with the five `format/*.test.ts` files and `index.test.ts` moved away the run scored 78.71 (321 killed, 8 timeouts, 89 survived), `Final mutation score 78.71 under breaking threshold 90`, exit 1 after 2 min 24 s. The files were restored (`git checkout`) and the tree is clean.
 
 Work Unit Evidence: focused tests `npx vitest run packages/core/src/format apps/web/src/contract` green on every tip; runtime harness `npm run verify` exit 0 on every tip (table above) and `npm run mutation` on the 06d tip; rollback boundary per branch: revert its commits (06d removes `--isolate=false`, `check:dist` and the annotation, nothing else).
+
+## PR 7 (split into 07a to 07e by the slice-overflow rule)
+
+Mode: strict TDD, runner `npm test`. Stacked branches, each branched from the previous tip (07a from `main` at `403b0d4`), none pushed. Scope per the orchestrator: task 7.0 (PR 5/6 Judgment Day follow-ups) and the `parseLength` requirements of `fraction-format` (Length text grammar, Format/parse round trip), tasks 7.0-7.10. Task 7.11 (SX5 reviews, SX6 Judgment Day, PRs) belongs to the orchestrator. The forecast of ~390 lines would have fit one branch only without tests for the offsets and the whole MALFORMED table; the first cut (follow-ups plus scanner) measured 431 lines, so the stack was cut into five.
+
+| Branch | Tasks | Base | Changed lines (excl. lockfile) | `npm run verify` tests |
+|---|---|---|---|---|
+| `feat/foundation-07a-followups` | 7.0, 7.1 | `main` | 61 (93 after round 1) | 509 (516) |
+| `feat/foundation-07b-length-scanner` | 7.2, 7.4 | 07a | 371 (392) | 575 (583) |
+| `feat/foundation-07c-length-parser-simple` | 7.3, 7.5 | 07b | 331 (328) | 653 (662) |
+| `feat/foundation-07d-length-parser-compound` | 7.6, 7.7, 7.8 | 07c | 209 (306) | 730 (731) |
+| `feat/foundation-07e-length-round-trip` | 7.9, 7.10 | 07d | 163 (219) | 737 (738) |
+
+Commits (conventional, one work unit each, no attribution; subjects as rewritten in round 1): `refactor(repo): apply PR 5/6 judgment day follow-ups`, `feat(repo): reject raw irregular whitespace in TS and JS files`, `feat(core): add length scanner and pre-processing rules`, `feat(core): add length parser simple forms`, `feat(core): add length parser compound forms, signs and offsets`, `test(core): add format/parse round-trip properties, export parseLength`, and this docs commit.
+
+### Design as built
+
+`scanner.ts` does the pre-processing (128 cap, blank, comma) and one linear `matchAll` pass over a single regex (whitespace run, digit run, word `[A-Za-z]+[0-9]*`, any other single character), so there is no backtracking. Whitespace at either end is not emitted; every token keeps its index in the original text. `parser.ts` is a cursor over the tokens: every reader returns `undefined` when its part of the grammar does not match, `attempt` rewinds optional parts (the denominator of a fraction, the tail of a mixed number), and the cursor position at the end is the MALFORMED offset. The only other fault, a zero denominator, is recorded in `cursor.zeroAt`. Digits go through `BigInt` of scanner-validated ASCII runs (at most 18 digits each); there is no `number`, `parseFloat`, `parseDecimal` or float formatter. Feet and inches are added with `add(quantity(feet, ft), quantity(inches, inch))`, the sign with `negate`.
+
+### TDD Cycle Evidence
+
+| Task | Test file | Layer | Safety net | RED | GREEN | TRIANGULATE | REFACTOR |
+|---|---|---|---|---|---|---|---|
+| 7.0 | `workspace-graph.contract.test.ts`, `mutation.contract.test.ts`, `rounding.test.ts` | Contract | 509/509 | the script tests failed once `check:dist` pointed at the file (script missing), then the success run asserted empty stderr | 509/509 | clean exits 0 with empty stderr; `packages/core/dist` and `packages/data/dist` exit 1 and name the directory | `scripts/*.mjs` joined the no-type-info lint block; docs only for B-1, B-2, A-3 |
+| 7.2, 7.4 | `scanner.test.ts` | Unit | 509/509 | module not found | 66/66, then 575/575 in `verify` | 16 unit words x 3 spellings, 13 unknown-unit cases with offsets, 5 numeric-notation cases, 5 word-not-after-number cases, 5 unmapped characters (full-width digit, astral emoji, U+2003), 18 vs 19 digit runs including the fractional run, 128 vs 129 characters, precedence of the codes, edge versus inner whitespace | none needed |
+| 7.3, 7.5 | `parser.test.ts` | Unit | 575/575 | module not found | 78/78 in the folder, 653/653 in `verify` | FP2 (8 rows), FP6 (7 spec rows plus 9 more), FP7, FP9 (4 offsets), FP10, 16 decimal/mark spellings, default unit | `1.` and `.` now consume the point and fail at the end of the input (a point must be followed by digits), which also made the `?? text.length` branch reachable and covered |
+| 7.6, 7.7, 7.8 | `parser.test.ts` | Unit, fuzz | 653/653 | 51 failed (compound and sign forms) | 153/153 in the folder, 730/730 in `verify` | FP1 (8 spellings), FP2b (12), FP3 (11), FP4, FP5 plus an 18-digit feet value, 26 MALFORMED rows from the spec table each with a hand-counted offset, 13 more rejections (word feet without inch mark, fractional feet, hyphen separator not touching both neighbours, double signs), offsets from the untrimmed text, one fuzz property (never throws, one known code, a success is a length) | none needed |
+| 7.9 | `length-parser.property.test.ts` | Property | 730/730 | characterization (green on arrival, as the task says) | 6/6 | FR1 over d in 2..64 with zero, small, full-range and boundary ticks; FR2 over the same texts; the three canonical texts; `83333333333333' 3 63/64"` at the bound | spot check: `divisor + 1n` in the fraction branch fails 3 tests (both properties and the bound case); restored |
+| 7.10 | `index.test.ts` | Unit | 735/735 | 2 failed (export list, wiring) | 6/6 | export list plus one wiring test (spec example, `defaultUnit: cm`, an offset) | two mutants from the first mutation run killed: see below |
+
+All expected values were recomputed with Python `fractions.Fraction` before use: the 12 unit conversions (`7500/127`, `50/127`, `1`, `36`, `6/5`, `18`, `60`, `5/254`, `12500/127`), `127/2`, `243/4`, `76801/64`, `61728394506172839/500000000000000000`, `1481481468148148137`, the bound text, and every offset was counted by hand on the quoted text (one count was wrong, `5-/2`, and the test run showed the rewind: offset 1, not 2).
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/format/length-parser` 227 passed (3 files) on the 07e tip; `packages/core/src/index` 6 passed |
+| Runtime harness | `npm run verify` exit 0 on all five tips (509, 575, 653, 730, 737 tests); core coverage 100/100/100/100. Mutation: below. N/A for a runtime path: pure functions |
+| Rollback boundary | `packages/core/src/format/length-parser/`, one export block in `format/index.ts`, one test in `index.test.ts`; 07a alone is the follow-ups (`scripts/check-dist.mjs`, `package.json`, `eslint.config.js`, two contract tests, design, spec, Stryker comment) |
+
+Mutation, 07e tip, cold (`npm run mutation`, new content hash so no incremental hit): the first run scored 99.73 (727 killed, 8 timeouts, 2 survived, 4 min 7 s). Survivor 1, `scanner.ts` `/^[eExX][0-9]+$/` without `$`, is an equivalent mutant (a word is letters then digits, so it never continues after the digits); the regex became `/^[eExX][0-9]/` and the leading `e`/`x` plus digit is exactly the rule. Survivor 2, `parser.ts` `if (numerator === undefined) return undefined;` in `takeMixedTail`, was real: tests `5 /2` (offset 2) and `5-/2` (offset 1) kill it. Final run: score 100.00 (total and covered), 727 killed, 8 timeouts, 0 survived, 735 mutants, 4 min 14 s wall (`time`: 666 s user, 306 percent cpu). The 8 timeouts are the same `rational.ts` `gcd`-family mutants as in PR 3 to PR 6; no new timeout. Per file: parser.ts 139 killed, scanner.ts 178, decimal-parts 27, feet-inches 26, purchase 6, rounding 30, rational 189 plus 8 timeouts, units 120, `errors.ts` 5, `result.ts` 7. No pragma. The mutation contract test pins that `index.ts` barrels are excluded from `mutate`, so `length-parser/index.ts` is `export … from` only.
+
+Negative proof [QG11], 07e tip, with `parser.test.ts`, `length-parser.property.test.ts` and `index.test.ts` moved away: `npm run test:coverage` exits 1 (`parser.ts` 0 percent, lines 78.13 against 100, branches 64.24); `npm run mutation` scores 81.09 (588 killed, 8 timeouts, 139 survived), `Final mutation score 81.09 under breaking threshold 90`, exit 1 after 4 min 3 s. The files were restored and the tree was clean.
+
+### Scope and deviations (PR 7)
+
+- Slicing: five branches instead of the contingency of two. Task 7.3 is split across slices: its pre-processing assertions are tested on `scan` in 07b and on `parseLength` in 07c, because the 128-character success case needs the simple form.
+- Spec versus the hand-off text: `5 ft2` is `UNKNOWN_UNIT` (spec scenario "Unknown unit", unit token `ft2`) and `5 ft 2` is `MALFORMED`; the hand-off listed `5 ft2` as a missing-inch-mark case, which is the `5 ft 2` row of the table. For the same maximal-run rule `5ft3in` is `UNKNOWN_UNIT` (`ft3` is one token); `5ft 3in` is the valid spelling. Both are tested.
+- `defaultUnit` is a `Unit<'length'>` (an object such as `ft`), not a unit id string; PR 9 maps `'in' | 'ft' | 'yd'` and the metric ids through `findUnit`. An untyped caller passing a unit of another dimension gets a quantity of that dimension (no throw, no check), the same trust the other typed signatures place on the caller.
+- Offset policy (task 7.2, in `codes.ts`): zero-based index in the original text of the first character of the offending token; for MALFORMED it is the first token the parser could not use, or, when the input ended too early (`1.`, `5'-`, `5 ft 2`), the end of the last token (round 1 REL-2; it was the untrimmed text length). It is not rewound to an earlier token, so `5.5' 3"` points at the space after the feet mark (4). `EMPTY` and `TOO_LONG` carry no offset; `DECIMAL_COMMA` points at the first comma.
+- The 128-character cap counts UTF-16 code units (`text.length`), like the other boundaries; an astral character counts as two.
+- The fuzz property lives in `parser.test.ts` (task 7.7), the round-trip properties in `length-parser.property.test.ts` (task 7.9).
+- 7.0: the A-2/B-3 script prints through `process.stderr.write` (the `no-undef` rule has no `console` outside core) and runs from the repository root; the check no longer uses `fs.globSync`, and the test asserts empty stderr on success.
+
+### Key learnings
+
+- A parser built from "take or undefined" readers plus an `attempt` rewind needs no error plumbing: the cursor position when everything unwinds is the error offset, and a dangling `1/` or `1 1/` falls out as leftover input at the right token.
+- Mutation testing found an equivalent regex mutant (the `$` anchor) that could not be killed; the fix is to write the regex so that it has no equivalent form, not to add a test.
+- A tool input that carries `\u00A0` can arrive as a raw U+00A0; `no-irregular-whitespace` catches it in sources, but not in test strings, so a scan for `\u00a0` after each write is cheap insurance.
+
+## PR 7 correction round 1 (task 7.12)
+
+Mode: strict TDD, runner `npm test`. Input: the consolidated 4-lens review (all pass; 2 MAJOR, MINORs). Each fix went into the branch that owns the file and the later slices were rebased with `git rebase --onto`; fixes are folded into the owning commits through `--fixup=amend:` and `--autosquash --update-refs`, so history stays one work unit per commit. No overflow slice `07f` was needed: every branch stays under 400 changed lines. History is local and unpushed, so subjects over 72 characters were reworded and the commits with non-obvious decisions got bodies (RD-10).
+
+Applied: M1, M2, REL-1, REL-2, REL-3, REL-4, R1, R2, RES-3, RD-2, RD-3, RD-4, RD-5, RD-6, RD-7, RD-8, RD-9, RD-10. Deferred: none. RD-8 took the comment option (the invariant "a plain `uint` is exactly one token" is documented where it is used) instead of changing `parseNumber`'s return type, which would have added equivalent mutants.
+
+| Branch | Fixes | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-07a-followups` | M1 lint rule and probes; commit rewording | 93 | 516 |
+| `feat/foundation-07b-length-scanner` | M1 escape, RD-5, RD-6, RD-7, RES-3, R2 (doc and test), RD-9 helper | 392 | 583 |
+| `feat/foundation-07c-length-parser-simple` | RD-9, REL-1 mixed-number row | 328 | 662 |
+| `feat/foundation-07d-length-parser-compound` | REL-1, REL-2, REL-4, R1, RD-2, RD-3, RD-4, RD-5, RD-8 (comment) | 306 | 731 |
+| `feat/foundation-07e-length-round-trip` | M2 and REL-3 docs, 7.12, 8.0 | 219 | 738 |
+
+### TDD Cycle Evidence (round 1)
+
+| Item | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| M1 lint | `gates.contract.test.ts` irregular-whitespace probes (string, template, comment; test, type-test, source and config files; escaped form accepted) | 4 of 6 probes failed (strings are skipped by default; templates and comments already failed); `eslint scanner.test.ts` reported the raw U+2003 at 75:8 | 90/90 in the file; `npm run lint` clean after the escape | rule applies to every TS and JS file; sweep of the tree with `rg -P` found one raw character (the em space) plus a ZWJ in `README.md` (not linted) |
+| REL-1 | `3\u22121/2` row (07c), `5'\u22123"` row (07d) | characterization; proved non-vacuous by changing the scanner map entry to U+2213: both rows and the marks test fail | pass | spec EBNF `hyphen := "-" \| "−"` and a scenario |
+| REL-2 | `1. ` (2), `5 ft 2 ` (6), NBSP/tab variant (4) | failed: trailing blanks counted (3, 7, 5) | pass with `text.trimEnd().length` | the scanner rejects every whitespace that `trimEnd` strips beyond blank, so it equals the end of the last token |
+| R1 | fuzz property with the offset invariant and six more characters | with the EOF offset broken to `text.length + 1` the property failed in 3 of 3 normal runs (1000 cases); under Stryker (50 cases) only the unit rows catch it | pass | EMPTY and TOO_LONG carry no offset; others an integer in [0, text.length] |
+| R2 | `scan('\u{1F600},')` offset 2 and a 129-unit input of 128 code points | pinned behaviour (green on arrival) | pass | documented in `scan` and `codes.ts` |
+| REL-4, RD-2 | table rows `5'3''` (3), `1/` (1), `5" 3` (2), `5 m 5` (3), `1/2 3/4` (4), `1 1/2 1/2` (6) | offsets hand-counted before running | pass | the two 07c MALFORMED lists were removed; the point-consumes test keeps `1.x`, `1."`, `1 2` |
+| RES-3 | mutation run | first run left one survivor: the `?.` on `tokens[length - 2]` in `lastKind` was an equivalent mutant (whitespace is never first) | rewritten with `filter`; second run 0 survivors | |
+
+### CI evidence for the mutation job (M2, RES-1, RES-2)
+
+First `--isolate=false` run on `main` at `403b0d4`, cold, 418 mutants, `concurrency 4`: job 10 min 22 s, Stryker 10 min 3 s, dry run net 1663 ms. CI over local (143.63 s) is 4.0 times, down from 4.5 to 4.8. CI per killed mutant 1.38 s. Projection: PR 7 (735 mutants) about 17.6 min, PR 8 about 20 to 21 min (crosses the 20-minute trigger of 3.19b), PR 11 above 30 min (the job limit). Therefore task 8.0 (3-runner matrix, one Stryker invocation per module with a matching `vitest run src/<module>`, plus a cross-module shard, per-shard incremental file and cache key, thresholds, `needs: verify`, unchanged `timeout-minutes`, contract test update, one run re-measuring `concurrency 3` versus `4`) is the blocking first task of PR 8. design.md Performance levers and D10 and tasks 3.19b carry the numbers.
+
+### Gates
+
+`npm run verify` exit 0 on all five tips (516, 583, 662, 731, 738 tests; core coverage 100/100/100/100). Lint probe: see the table. Mutation, 07e tip, cold (`packages/core/reports` removed first, `npm run mutation`): score 100.00, 732 killed, 8 timeouts, 0 survived, 740 mutants, 4 min 8 s wall (`time`: 249.43 s real, 656 s user). The 8 timeouts are the known `rational.ts` mutants (lines 9, 14, 15 twice, 31, 32 twice, 122), none in the length parser. Per file: parser.ts 140, scanner.ts 182. The first run, before the `lastKind` rewrite, scored 99.87 with the one equivalent survivor above (741 mutants, 4 min 2 s).
+
+Negative proof [QG11], 07e tip, with `parser.test.ts`, `length-parser.property.test.ts` and `index.test.ts` moved away: `Final mutation score 81.08 under breaking threshold 90`, 592 killed, 8 timeouts, 140 survived, exit 1 after 3 min 59 s. The files were restored and the tree was clean.
+
+Work Unit Evidence: focused tests `npx vitest run packages/core/src/format/length-parser apps/web/src/contract/gates.contract.test.ts` green on every tip; runtime harness `npm run verify` exit 0 on every tip and `npm run mutation` on the 07e tip; rollback boundary per branch: revert its commits (07a alone removes the lint rule and its probes; 07b to 07d keep their behaviour apart from the listed fixes).
+
+### Key learnings (round 1)
+
+- `no-irregular-whitespace` skips strings by default, which is exactly where an invisible test character hides; enabling strings, templates and comments is a one-line config change, and it needs a probe that lints a string with the raw character.
+- Equivalent mutants also appear when a lint-driven `?.` guards an index that cannot be out of range; replacing the index arithmetic with a `filter` removed the guard instead of suppressing the mutant.
+- Folding review fixes into the owning commits with `--fixup=amend:` and `--autosquash --update-refs` keeps a stack at one work unit per commit, but every later branch needs its own `--onto` rebase and a conflict check on shared test files.
