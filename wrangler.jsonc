@@ -1,0 +1,16 @@
+// Cloudflare Workers Builds deploys the static Astro output as assets only, with no Worker script.
+// The build output of `npm run build` (the web workspace) is `apps/web/dist`.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "maestro-calc",
+  "compatibility_date": "2026-10-23",
+  "build": {
+    "command": "npm run build",
+  },
+  "assets": {
+    "directory": "./apps/web/dist",
+    // Astro builds with `trailingSlash: 'never'` and `build.format: 'file'`, so `/about` is `about.html`.
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+}
