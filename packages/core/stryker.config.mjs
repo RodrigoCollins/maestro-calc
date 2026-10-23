@@ -2,11 +2,13 @@ import { basename, dirname, join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
+  identityFilesOf,
   identityHashOf,
   isStrykerEntry,
   pruneStaleReports,
   rootJsonFiles,
   shardOptions,
+  sharedIdentityFiles,
   sourceFilesIn,
 } from '../../tooling/stryker.mjs';
 
@@ -15,28 +17,32 @@ export { isStrykerEntry, pruneStaleReports, rootJsonFiles, sourceFilesIn };
 
 const packageDir = dirname(fileURLToPath(import.meta.url));
 
-/**
- * Every input that can change a mutation verdict, relative to this package and sorted. The
- * command runner reports no per-test files, so Stryker cannot see that a test was changed or
- * deleted and would keep stale survivors or kills from an older report. The incremental report
- * is therefore named after one hash of all of these inputs, and any change starts a fresh run.
- *
- * The CI cache key (`hashFiles` in `ci.yml`) covers the same files, which a contract test pins:
- * `.nvmrc` stands for the Node version, so the key and the report name always change together.
- */
-export const incrementalIdentityFiles = [
-  ...sourceFilesIn(join(packageDir, 'src')).map((path) => `src/${path}`),
-  'stryker.config.mjs',
-  'vitest.config.ts',
-  ...rootJsonFiles(packageDir),
-  '../../.nvmrc',
-  '../../package-lock.json',
-  '../../tooling/stryker.mjs',
-  '../../tsconfig.base.json',
-  '../../vitest.config.ts',
-].sort();
+const shared = sharedIdentityFiles(packageDir);
 
-const identityHash = identityHashOf(packageDir, incrementalIdentityFiles);
+/**
+ * The code every shard runs beside what it mutates, read from the import graph (a contract test
+ * walks it and fails when a shard imports a file its identity does not hold): the kernel
+ * modules, the barrel tests and the test support that is not the released snapshot. The root
+ * barrel is listed as a file: it names no calculator, and `src/index.test.ts` only pins its
+ * export names. A change here starts a cold run in every core shard; a change to a calculator or
+ * to the released snapshot does not.
+ */
+const kernel = [
+  'src/*.ts',
+  'src/calculator/**',
+  'src/format/**',
+  'src/money/**',
+  'src/rational/**',
+  'src/units/**',
+  'src/__testing__/arbitraries.ts',
+  'src/__testing__/collect-strings.ts',
+  'src/__testing__/fixture-box.ts',
+  'src/__testing__/language-free.ts',
+  'src/__testing__/length-failure.ts',
+  'src/__testing__/message-key-fixtures.ts',
+  'src/__testing__/property-runs.ts',
+  'src/__testing__/thrown-code.ts',
+];
 
 /**
  * The command runner reruns the whole test command for every mutant, so the cost of a run is
@@ -51,14 +57,17 @@ export const shards = {
   rational: {
     mutate: ['src/rational/**', 'src/errors.ts', 'src/result.ts'],
     tests: ['src/rational', 'src/errors.test.ts', 'src/result.test.ts', 'src/index.test.ts'],
+    deps: kernel,
   },
   units: {
     mutate: ['src/units/**', 'src/money/**'],
     tests: ['src/units', 'src/money', 'src/index.test.ts'],
+    deps: kernel,
   },
   format: {
     mutate: ['src/format/**'],
     tests: ['src/format', 'src/index.test.ts'],
+    deps: kernel,
   },
   calculator: {
     mutate: ['src/calculator/**', 'src/error-codes.ts'],
@@ -68,30 +77,54 @@ export const shards = {
       'src/__testing__/fixture-box.test.ts',
       'src/index.test.ts',
     ],
+    deps: kernel,
   },
   // The URL codec has its own shard (PR 10 review RES-7): the `calculator` shard is projected at
   // 6.4 to 8.8 minutes on CI (135 s local cold), and the codec's tests only need the fixture and
-  // the barrel.
+  // the barrel. Its tests build their calculators by hand: they import no calculator and not the
+  // released snapshot (a contract test checks it), so a new calculator never colds this shard.
   url: {
     mutate: ['src/url/**'],
     tests: ['src/url', 'src/index.test.ts'],
+    deps: kernel,
   },
   // Calculators are a shard of their own (design D10 split rule, PR 12): one directory per
   // calculator, so the shard grows with the catalog and is split by directory when its cold CI
   // wall time passes 10 minutes. Their tests need only the calculator directories and the barrel.
+  // This is the only shard that depends on the calculators and on the released snapshot, and the
+  // only one a calculator pull request colds.
   calculators: {
     mutate: ['src/calculators/**'],
     tests: ['src/calculators', 'src/index.test.ts'],
+    deps: [...kernel, 'src/url/**', 'src/__testing__/released-snapshot.ts'],
   },
 };
 
 export const shardNames = Object.keys(shards);
 
+/**
+ * The inputs that name the incremental report of `shard`: its own sources, tests and `deps` plus
+ * the shared files. `all` (a direct `stryker run` with no shard) is every file of `src`.
+ */
+export const identityFilesFor = (shard) => {
+  if (shard === 'all') {
+    return [
+      ...new Set([
+        ...sourceFilesIn(join(packageDir, 'src')).map((path) => `src/${path}`),
+        ...shared,
+      ]),
+    ].sort();
+  }
+  if (!Object.hasOwn(shards, shard)) throw new Error(`unknown mutation shard: ${shard}`);
+  return identityFilesOf({ packageDir, shared, ...shards[shard] });
+};
+
+/** Every input of core, the identity of a run with no shard. */
+export const incrementalIdentityFiles = identityFilesFor('all');
+
 /** The Stryker options of one shard, or of all of core in one invocation for `all`. */
 export const optionsFor = (shard) => {
-  if (shard !== 'all' && !Object.hasOwn(shards, shard)) {
-    throw new Error(`unknown mutation shard: ${shard}`);
-  }
+  const identityHash = identityHashOf(packageDir, identityFilesFor(shard));
   const selected = shard === 'all' ? { mutate: ['src/**/*.ts'], tests: undefined } : shards[shard];
   return shardOptions({ identityHash, shard, ...selected });
 };

@@ -463,13 +463,7 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       expect(options.thresholds).toEqual({ high: 95, low: 90, break: 90 });
       expect(options.incremental).toBe(true);
     }
-    const hashes = new Set(
-      [...module_.shardNames, 'all'].map(
-        (name) =>
-          /stryker-incremental-([0-9a-f]{16})-/.exec(module_.optionsFor(name).incrementalFile)?.[1],
-      ),
-    );
-    expect(hashes.size).toBe(1);
+    // the per-shard identity is pinned in mutation-identity.contract.test.ts
   });
 
   it('rejects an unknown shard and defaults to all of core', () => {

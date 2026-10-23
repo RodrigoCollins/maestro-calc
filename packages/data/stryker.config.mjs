@@ -2,50 +2,63 @@ import { basename, dirname, join } from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import {
+  identityFilesOf,
   identityHashOf,
   isStrykerEntry,
   pruneStaleReports,
-  rootJsonFiles,
   shardOptions,
-  sourceFilesIn,
+  sharedIdentityFiles,
 } from '../../tooling/stryker.mjs';
 
 const packageDir = dirname(fileURLToPath(import.meta.url));
-const coreDir = join(packageDir, '..', 'core');
 
 /**
  * The package is small (139 mutants, about 30 s cold at PR 12), so it is one shard that runs the
  * whole data suite. Coverage alone let a surviving `month === 2` mutant through `defineMaterial`
  * (PR 10 review RES-5), so the first real material record meets the same gate as core.
+ *
+ * The data tests import `@maestro-calc/core`, whose sources run unmutated beside the mutated data
+ * sources, so every file of core that its root barrel reaches (and the manifest with its `exports`)
+ * is part of the identity; otherwise a core change would reuse a stale report. The calculators
+ * and the test support of core are not: data imports neither (a contract test walks the import
+ * graph and fails if that changes), so a calculator pull request does not cold this shard.
  */
-export const shardNames = ['data'];
+export const shards = {
+  data: {
+    mutate: ['src/**/*.ts'],
+    tests: undefined,
+    deps: [
+      '../core/*.json',
+      '../core/src/*.ts',
+      '../core/src/calculator/**',
+      '../core/src/format/**',
+      '../core/src/money/**',
+      '../core/src/rational/**',
+      '../core/src/units/**',
+      '../core/src/url/**',
+    ],
+  },
+};
 
-/**
- * Every input that can change a verdict of this shard, relative to this package and sorted.
- * The data tests import `@maestro-calc/core`, whose sources run unmutated beside the mutated
- * data sources, so any file of core that can change what they see is part of the identity (the
- * sources and the manifest with its `exports`); otherwise a core change would reuse a stale report.
- */
-export const incrementalIdentityFiles = [
-  ...sourceFilesIn(join(packageDir, 'src')).map((path) => `src/${path}`),
-  ...sourceFilesIn(join(coreDir, 'src')).map((path) => `../core/src/${path}`),
-  'stryker.config.mjs',
-  'vitest.config.ts',
-  ...rootJsonFiles(packageDir),
-  ...rootJsonFiles(coreDir).map((path) => `../core/${path}`),
-  '../../.nvmrc',
-  '../../package-lock.json',
-  '../../tooling/stryker.mjs',
-  '../../tsconfig.base.json',
-  '../../vitest.config.ts',
-].sort();
+export const shardNames = Object.keys(shards);
+
+const shared = sharedIdentityFiles(packageDir);
+
+/** The inputs that name the incremental report of the one shard: `data`. */
+export const identityFilesFor = (shard) => {
+  if (shard !== 'data') throw new Error(`unknown mutation shard: ${shard}`);
+  return identityFilesOf({ packageDir, shared, ...shards.data });
+};
+
+/** Every input of the data shard (kept for the tests that read the identity of the package). */
+export const incrementalIdentityFiles = identityFilesFor('data');
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
 const options = shardOptions({
   identityHash: identityHashOf(packageDir, incrementalIdentityFiles),
   shard: 'data',
-  mutate: ['src/**/*.ts'],
-  tests: undefined,
+  mutate: shards.data.mutate,
+  tests: shards.data.tests,
 });
 
 // Importing the config (a test, a lint run, an editor) must never delete reports; only a real
