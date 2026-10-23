@@ -4,6 +4,9 @@ import type { DimensionName } from '../units/dimension.ts';
 import type { Quantity } from '../units/quantity.ts';
 import type { UnitIdOf } from '../units/unit.ts';
 
+/** The unit system that picks the unit of a bare number in a length field. */
+export type UnitSystem = 'imperial' | 'metric';
+
 interface Base<K extends string> {
   readonly key: K;
   readonly urlKey: string;
