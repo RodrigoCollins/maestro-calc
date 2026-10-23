@@ -171,11 +171,67 @@ describe('defineMaterial (material-data-contract › Material record shape)', ()
       'NON_POSITIVE_SIZE',
       { id: 'plywood-sheet', unit: 'sheet' },
     ],
+    [
+      'purchase units that are missing',
+      { ...plywood(), purchaseUnits: undefined },
+      'NO_PURCHASE_UNITS',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'purchase units that are text',
+      { ...plywood(), purchaseUnits: 'sheet' },
+      'NO_PURCHASE_UNITS',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a purchase unit that is null',
+      { ...plywood(), purchaseUnits: [null] },
+      'INVALID_UNIT_ID',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a purchase unit that is text',
+      { ...plywood(), purchaseUnits: ['sheet'] },
+      'INVALID_UNIT_ID',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a size that is a plain number',
+      { ...plywood(), purchaseUnits: [{ ...plywood().purchaseUnits[0], size: 32 }] },
+      'NON_POSITIVE_SIZE',
+      { id: 'plywood-sheet', unit: 'sheet' },
+    ],
+    [
+      'a size that only looks like a quantity',
+      {
+        ...plywood(),
+        purchaseUnits: [
+          {
+            ...plywood().purchaseUnits[0],
+            size: { exponents: { length: 2, mass: 0 }, canonical: Rational.of(4608) },
+          },
+        ],
+      },
+      'NON_POSITIVE_SIZE',
+      { id: 'plywood-sheet', unit: 'sheet' },
+    ],
     ['no source', { ...plywood(), source: undefined }, 'MISSING_SOURCE', { id: 'plywood-sheet' }],
     ['a null source', { ...plywood(), source: null }, 'MISSING_SOURCE', { id: 'plywood-sheet' }],
     [
       'a source with an empty name',
       { ...plywood(), source: { name: '', retrieved: '2026-10-22' } },
+      'MISSING_SOURCE',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a source whose name is only spaces',
+      { ...plywood(), source: { name: '   ', retrieved: '2026-10-22' } },
+      'MISSING_SOURCE',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a source whose name is only a tab and a newline',
+      { ...plywood(), source: { name: '\t\n', retrieved: '2026-10-22' } },
       'MISSING_SOURCE',
       { id: 'plywood-sheet' },
     ],

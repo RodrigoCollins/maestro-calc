@@ -1,4 +1,4 @@
-import { CoreError, sign, type DimensionName, type Quantity } from '@maestro-calc/core';
+import { CoreError, isQuantity, sign, type DimensionName, type Quantity } from '@maestro-calc/core';
 
 /** Where a material comes from; `retrieved` is a real calendar date, `YYYY-MM-DD`. */
 export interface MaterialSource {
@@ -58,12 +58,15 @@ const isCalendarDate = (text: string): boolean => {
   return day >= 1 && day <= last;
 };
 
+const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
+  typeof value === 'object' && value !== null;
+
 const hasSourceName = (source: unknown): boolean =>
-  typeof source === 'object' &&
-  source !== null &&
-  'name' in source &&
-  typeof source.name === 'string' &&
-  source.name !== '';
+  isRecord(source) && typeof source['name'] === 'string' && source['name'].trim() !== '';
+
+/** The id of a purchase unit, or `undefined` when the unit is not an object with a text id. */
+const unitIdOf = (unit: unknown): string | undefined =>
+  isRecord(unit) && typeof unit['id'] === 'string' ? unit['id'] : undefined;
 
 /**
  * Where a record is faulty, carried as the `cause` of the `INVALID_MATERIAL` error: the material
@@ -95,12 +98,13 @@ export const defineMaterial = <const Id extends string>(
   const ensure = ensureIn(id);
   ensure(ID.test(id), 'INVALID_ID');
   ensure(nameKey === `material.${id}.name`, 'INVALID_NAME_KEY');
-  ensure(purchaseUnits.length > 0, 'NO_PURCHASE_UNITS');
+  ensure(Array.isArray(purchaseUnits) && purchaseUnits.length > 0, 'NO_PURCHASE_UNITS');
   const seen = new Set<string>();
   for (const unit of purchaseUnits) {
-    ensure(ID.test(unit.id), 'INVALID_UNIT_ID', unit.id);
+    const unitId = unitIdOf(unit);
+    ensure(unitId !== undefined && ID.test(unitId), 'INVALID_UNIT_ID', unitId);
     ensure(unit.nameKey === `material.${id}.units.${unit.id}`, 'INVALID_UNIT_NAME_KEY', unit.id);
-    ensure(sign(unit.size) > 0, 'NON_POSITIVE_SIZE', unit.id);
+    ensure(isQuantity(unit.size) && sign(unit.size) > 0, 'NON_POSITIVE_SIZE', unit.id);
     ensure(!seen.has(unit.id), 'DUPLICATE_UNIT_ID', unit.id);
     seen.add(unit.id);
   }
