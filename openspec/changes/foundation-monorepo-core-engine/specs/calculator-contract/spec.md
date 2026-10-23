@@ -100,7 +100,7 @@ A calculator MAY declare `warnings` (a list of warning codes) and `retiredUrlKey
 - `boolean`: only the JavaScript booleans `true`/`false`; anything else (`"true"`, `1`, `null`) is `MALFORMED`.
 - `money`: raw string via `parseMoney` (codes `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `TOO_LARGE` as-is), or a `Money`; bounds as above with `params` in dollars.
 - `null` for any non-select field is `MALFORMED`.
-- `raw` itself MUST be an object. A non-object container, or a property getter that throws, is a programmer error and throws (it is not a field error).
+- `raw` itself MUST be an object. A non-object container, or a property getter that throws, is a programmer error and throws a `CoreError` with code `NOT_AN_OBJECT` for a non-object container (it is not a field error).
 - Defaults are not re-validated against constraints at call time (they are validated at definition).
 
 The full set of `FieldError` codes is: `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `ZERO_DENOMINATOR`, `UNKNOWN_UNIT`, `TOO_LONG`, `TOO_LARGE`, `BELOW_MIN`, `ABOVE_MAX`, `UNKNOWN_OPTION`.

@@ -1,4 +1,5 @@
 import type { FieldErrorCode } from '../error-codes.ts';
+import { CoreError } from '../errors.ts';
 import { parseLength } from '../format/length-parser/parser.ts';
 import { isMoney } from '../money/money.ts';
 import { parseMoney } from '../money/parse.ts';
@@ -151,17 +152,22 @@ const readField = (
   }
 };
 
+/** An object (an array included) can hold fields; null, a primitive and a function cannot. */
+const isContainer = (raw: unknown): raw is object => typeof raw === 'object' && raw !== null;
+
 /**
  * Validates `raw` against `inputs`. Every declared field is read (no short-circuit) in declaration
  * order; a key that is absent from `raw`, or present as `undefined`, takes the default, and an
  * undeclared key is ignored. An inherited property is not a value the caller gave. `raw` must be an
- * object: a non-object container, or a getter that throws, is a programmer error and throws (D5).
+ * object: a non-object container (a function included), or a getter that throws, is a programmer
+ * error and throws `CoreError('NOT_AN_OBJECT')` or the getter's own error (D5).
  */
 export const validateRecord = (
   inputs: Descriptors,
   raw: Readonly<Record<string, unknown>>,
   { unitSystem }: ValidateOptions = {},
 ): Result<InputsOf<Descriptors>, FieldError> => {
+  if (!isContainer(raw)) throw new CoreError('NOT_AN_OBJECT');
   const values: [string, Value][] = [];
   const errors: FieldError[] = [];
   for (const input of inputs) {

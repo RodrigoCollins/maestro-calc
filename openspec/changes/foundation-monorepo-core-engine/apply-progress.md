@@ -701,3 +701,21 @@ Total 1275 mutants (the calculator shard grew from 418 to 445). No pragma. SX4 o
 - A generated report that is gitignored on the tip but not on the older branches of a stack makes `prettier --check .` fail locally only on the older ones, so a per-tip verify loop must delete it between checkouts.
 - A review round that cannot fold into full branches should be sized before it is written: the locus change alone measured 353 lines because a typed table of 78 rows grows when each row gains a field.
 - Folding with `git rebase -i --update-refs` and `edit` stops moved every later branch ref without a conflict, while splitting a trailing slice only needed a reorder and `git branch -f`.
+
+## PR 9 Judgment Day round 1 (task 9.14)
+
+Ledger (two judges):
+
+| ID | Severity | Status | Note |
+|---|---|---|---|
+| JD-1 | MAJOR | fixed | `validateRecord` had no container guard: primitives returned `ok` with defaults, `null`/`undefined` threw a bare `TypeError`. Confirmed by both judges. |
+| JD-2 | WARNING | info, follow-up | `retiredUrlKeys` entries are not validated; recorded in design Open Questions. |
+| JD-3 | SUGGESTION | info | `as unknown as Definition` in the define test table and `as` casts on parsed YAML/JSON in the contract tests. |
+
+Work unit (one commit on `feat/foundation-09j-freeze-and-tidy`, rollback boundary = that commit): `validateRecord` throws `CoreError('NOT_AN_OBJECT')` unless `raw` is a non-null `object` (an array and a null-prototype object are accepted; a function is rejected and pinned). The guard is a private `isContainer` type guard, because an inline `=== null` check is flagged as an unnecessary condition by the types.
+
+- RED: the new table failed 8 rows (null, undefined, number, string, boolean, bigint, symbol, function) before the guard.
+- Focused: `npx vitest run packages/core/src/calculator packages/core/src/index.test.ts` 360 passed; `npm run typecheck` clean.
+- `npm run verify`: exit 0, 1191 tests.
+- Mutation (calculator shard, cold): 458 mutants, 458 killed, 100.00, 0 survivors, no pragma.
+- Docs: `NOT_AN_OBJECT` added to the design error-code table (calculator row), the spec sentence and the `validate` doc comment name the code.

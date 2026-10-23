@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fixtureBox } from '../__testing__/fixture-box.ts';
+import { thrownCode } from '../__testing__/thrown-code.ts';
 import { FIELD_ERROR_CODES } from '../error-codes.ts';
 import { isMoney, usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
@@ -425,5 +426,30 @@ describe('Calculator.validate (calculator-contract › Total validation without 
   it('validates the defaults of a record with unknown keys, like validateRecord', () => {
     expect(fixtureBox.validate({ zzz: 1 })).toEqual(validateRecord(fixtureBox.inputs, {}));
     expect(fixtureBox.validate({})).toEqual(ok(defaults));
+  });
+});
+
+describe('validate container (calculator-contract › raw MUST be an object)', () => {
+  const notObjects: [string, unknown][] = [
+    ['null', null],
+    ['undefined', undefined],
+    ['a number', 5],
+    ['a string', 'str'],
+    ['a boolean', true],
+    ['a bigint', 10n],
+    ['a symbol', Symbol('raw')],
+    ['a function', () => 1],
+  ];
+  it.each(notObjects)('%s throws NOT_AN_OBJECT', (_label, raw) => {
+    const container = raw as Record<string, unknown>;
+    expect(thrownCode(() => fixtureBox.validate(container))).toBe('NOT_AN_OBJECT');
+    expect(thrownCode(() => validate(container))).toBe('NOT_AN_OBJECT');
+  });
+
+  it('accepts an array and a null-prototype object, reading own keys only', () => {
+    const bare = Object.create(null) as Record<string, unknown>;
+    bare['cnt'] = '7';
+    expect(validate(bare)).toEqual(ok({ ...defaults, cnt: 7 }));
+    expect(fixtureBox.validate([] as unknown as Record<string, unknown>)).toEqual(ok(defaults));
   });
 });
