@@ -142,6 +142,58 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
   });
 
+  // review R1-1: test support (`__testing__`) never ships from the web app
+  it.each([
+    [
+      'apps/web/src/lib/x.ts',
+      "import { renderComponent } from '../__testing__/render-component.ts';",
+      true,
+    ],
+    [
+      'apps/web/src/pages/x.astro',
+      "import { renderComponent } from '../__testing__/render-component.ts';",
+      true,
+    ],
+    [
+      'apps/web/src/components/X.astro',
+      "import { renderComponent } from '../__testing__/render-component.ts';",
+      true,
+    ],
+    [
+      'apps/web/src/lib/x.test.ts',
+      "import { renderComponent } from '../__testing__/render-component.ts';",
+      false,
+    ],
+    ['apps/web/src/__testing__/x.ts', "import { parse } from './render-component.ts';", false],
+  ])('checks imports of web test support in %s (%s): rejected=%s', async (path, line, rejected) => {
+    const code = path.endsWith('.astro')
+      ? `---\n${line}\n---\n<p />\n`
+      : `${line}\nexport const v = 1;\n`;
+    const { ruleIds } = await lint(code, path);
+    expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
+  });
+
+  // design: presentational components never import the catalogs, the route table or content APIs
+  it.each([
+    ["import { createTranslator } from '@maestro-calc/i18n';\n", true],
+    ["import { enSite } from '@maestro-calc/i18n/catalogs/en/site';\n", true],
+    ["import { ROUTES } from '../routing/routes.ts';\n", true],
+    ["import { getEntry } from 'astro:content';\n", true],
+    ["import SkipLink from './SkipLink.astro';\n", false],
+    ["import { siteText } from '../lib/site-text.ts';\n", false],
+  ])('checks %s in a component: rejected=%s', async (body, rejected) => {
+    const { ruleIds } = await lint(`---\n${body}---\n<p />\n`, 'apps/web/src/components/X.astro');
+    expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
+  });
+
+  it('lets a layout import the route table', async () => {
+    const { ruleIds } = await lint(
+      "---\nimport { LOCALE_TAGS } from '../routing/routes.ts';\n---\n<p />\n",
+      'apps/web/src/layouts/X.astro',
+    );
+    expect(ruleIds).not.toContain('no-restricted-imports');
+  });
+
   // PR 12 review R1-1: shipped data code must not reach the test support of core (or of any package)
   it.each([
     ['packages/data/src/x.ts', true],
