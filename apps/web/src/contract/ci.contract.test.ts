@@ -21,7 +21,8 @@ interface Job {
   'paths-ignore'?: unknown;
   permissions?: unknown;
   'timeout-minutes'?: number;
-  strategy?: { 'fail-fast'?: boolean; matrix?: { shard?: string[] } };
+  name?: string;
+  strategy?: { 'fail-fast'?: boolean; matrix?: { include?: { shard: string; inputs: string }[] } };
   'continue-on-error'?: unknown;
 }
 
@@ -147,7 +148,9 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
   // config, so a shard added there cannot go unrun in CI. One failing shard must not hide the
   // scores of the others.
   it('runs one matrix entry per Stryker shard without failing fast', () => {
-    expect(mutation?.strategy?.matrix?.shard).toEqual(shardNames);
+    expect(mutation?.strategy?.matrix?.include?.map(({ shard }) => shard)).toEqual(shardNames);
+    // the check name is the shard, not the whole matrix entry (its `inputs` run to many lines)
+    expect(mutation?.name).toBe('mutation (${{ matrix.shard }})');
     expect(mutation?.strategy?.['fail-fast']).toBe(false);
     expect(mutation?.['timeout-minutes']).toBe(30);
   });
@@ -173,19 +176,14 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
   // design: one documented cache key, a superset of every input the Stryker config hashes. GitHub
   // exposes neither `runner` nor `hashFiles` to a job-level `env`, so one step defines the key
   // for the later restore and save steps.
-  it('computes one cache key from a superset of the mutation inputs', () => {
+  it('computes one cache key per shard from the shard inputs and the root files', () => {
     expect(keyStep?.run).toContain('${RUNNER_OS}');
     // one key (and one report) per shard: the shards never overwrite each other's cache
     expect(keyStep?.run).toContain('${{ matrix.shard }}');
+    // the shard's own inputs; the globs of the root files are pinned, per shard, by
+    // mutation-identity.contract.test.ts against `identityFilesFor`
+    expect(keyStep?.run).toContain('hashFiles(matrix.inputs,');
     for (const input of [
-      'packages/core/src/**',
-      'packages/core/*.json',
-      'packages/core/stryker.config.mjs',
-      'packages/core/vitest.config.ts',
-      'packages/data/src/**',
-      'packages/data/*.json',
-      'packages/data/stryker.config.mjs',
-      'packages/data/vitest.config.ts',
       'vitest.config.ts',
       'tooling/stryker.mjs',
       'tsconfig.base.json',

@@ -37,16 +37,154 @@ jobs:
   # One runner per Stryker shard (design 3.19b): the command runner reruns the shard's tests for
   # every mutant, so splitting `mutate` and the test command by module cuts the wall time.
   mutation:
+    # Without a name GitHub would list every matrix value, `inputs` included.
+    name: mutation (${{ matrix.shard }})
     needs: verify
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        # Must equal the `shards` of packages/core/stryker.config.mjs followed by `data`, the one shard of
-        # packages/data/stryker.config.mjs (ci.contract.test.ts enforces it);
-        # `npm run mutation -- --list` prints the names.
-        shard: [rational, units, format, calculator, url, calculators, data]
+        # Must list the `shards` of packages/core/stryker.config.mjs followed by `data`, the one
+        # shard of packages/data/stryker.config.mjs (ci.contract.test.ts enforces it);
+        # `npm run mutation -- --list` prints the names. `inputs` are the globs of the files that
+        # name the shard's report (the package's `identityFilesFor` minus the root files that
+        # every entry shares, which the key step lists): one calculator pull request changes the
+        # key of the `calculators` shard only. mutation-identity.contract.test.ts pins them.
+        include:
+          - shard: rational
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+          - shard: units
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+          - shard: format
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+          - shard: calculator
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/src/__testing__/fixture-box.test.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+          - shard: url
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+              packages/core/src/url/**
+          - shard: calculators
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+              packages/core/src/url/**
+              packages/core/src/__testing__/released-snapshot.ts
+              packages/core/src/calculators/**
+          - shard: data
+            inputs: |
+              packages/data/src/**
+              packages/core/*.json
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/url/**
+              packages/data/*.json
+              packages/data/stryker.config.mjs
+              packages/data/vitest.config.ts
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -56,17 +194,15 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # One key for restore and save. It is a superset of what the Stryker configs hash (core and
-      # data sources and tests, package config, root test and compiler config, Node, lockfile), so an
-      # exact hit is always sound. GitHub does not offer `runner` or `hashFiles` to a job-level env.
+      # One key for restore and save, per shard. It hashes the shard's own inputs (`matrix.inputs`)
+      # and the root files every shard shares (Node, lockfile, compiler and test config, the shared
+      # Stryker module), a superset of what the Stryker config hashes for that shard, so an exact
+      # hit is always sound. GitHub does not offer `runner` or `hashFiles` to a job-level env.
       - name: Compute the Stryker cache key
         run: >-
           echo "STRYKER_CACHE_KEY=stryker-${RUNNER_OS}-${{ matrix.shard }}-${{
-          hashFiles('packages/core/src/**', 'packages/core/*.json',
-          'packages/core/stryker.config.mjs', 'packages/core/vitest.config.ts',
-          'packages/data/src/**', 'packages/data/*.json', 'packages/data/stryker.config.mjs',
-          'packages/data/vitest.config.ts', 'vitest.config.ts', 'tooling/stryker.mjs', 'tsconfig.base.json', '.nvmrc',
-          'package-lock.json') }}"
+          hashFiles(matrix.inputs, 'vitest.config.ts', 'tooling/stryker.mjs',
+          'tsconfig.base.json', '.nvmrc', 'package-lock.json') }}"
           >> "$GITHUB_ENV"
       # Stryker reuses the report only when the key matches exactly (no restore-keys fallback). Each
       # shard has its own key and report, so shards never overwrite each other's cache.

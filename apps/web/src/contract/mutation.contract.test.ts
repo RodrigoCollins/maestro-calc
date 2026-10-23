@@ -6,16 +6,14 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
-  statSync,
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parse } from 'yaml';
 import { fromRoot, importFromRoot } from './root.ts';
 
 interface StrykerConfig {
@@ -52,9 +50,6 @@ interface StrykerModule {
   sourceFilesIn: (directory: string) => string[];
   rootJsonFiles: (directory: string) => string[];
 }
-
-const hasDotSegment = (path: string): boolean =>
-  path.split('/').some((part) => part.startsWith('.'));
 
 const readJson = (relativePath: string): unknown =>
   JSON.parse(readFileSync(fromRoot(relativePath), 'utf8'));
@@ -158,37 +153,6 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
       expect(files, input).toContain(input);
     }
     expect(files).toEqual([...files].sort());
-  });
-
-  // design D10: the CI cache key and the Stryker report name must cover the same inputs. A file
-  // hashed by CI but not by the config would let a local run reuse a stale report; a file hashed
-  // by the config but not by CI would let an exact cache hit restore a report for other inputs.
-  it('hashes exactly the files that the CI cache key hashes', () => {
-    const workflow = parse(readFileSync(fromRoot('.github/workflows/ci.yml'), 'utf8')) as {
-      jobs: { mutation: { steps: { run?: string }[] } };
-    };
-    const keyStep = workflow.jobs.mutation.steps.find((step) => step.run?.includes('hashFiles('));
-    const expression = /hashFiles\(([^)]*)\)/.exec(keyStep?.run ?? '')?.[1] ?? '';
-    const globs = [...expression.matchAll(/'([^']+)'/g)].map((match) => match[1] ?? '');
-    expect(globs.length).toBeGreaterThan(4);
-
-    const ciFiles = globs
-      .flatMap((glob) => globSync(glob, { cwd: fromRoot() }))
-      .filter((path) => statSync(fromRoot(path)).isFile())
-      .filter((path) => !/^packages\/[^/]+\/src\//.test(path) || !hasDotSegment(path))
-      .sort();
-    // one key serves every shard, so it covers the identity of each package that has a shard
-    const configFiles = [
-      ...new Set([
-        ...module_.incrementalIdentityFiles.map((path) =>
-          relative(fromRoot(), fromRoot('packages/core', path)),
-        ),
-        ...dataModule.incrementalIdentityFiles.map((path) =>
-          relative(fromRoot(), fromRoot('packages/data', path)),
-        ),
-      ]),
-    ].sort();
-    expect(configFiles).toEqual(ciFiles);
   });
 
   // design D10: only the report that matches the current inputs is useful; older ones pile up in
