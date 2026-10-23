@@ -830,3 +830,86 @@ No pragma. The rational and format shards were not rerun: no file of `errors.ts`
 - `Number.isFinite` does not coerce, so a `typeof value === 'number'` guard before it is an equivalent mutant; the same lesson as the `includes` guard of round 0.
 - Folding a commit into a branch that is full is a sizing question before it is an editing one: counting added plus deleted lines of the rewritten table showed 452 lines before any docs, which fixed the split into two slices.
 - A shared test fixture read by both the runtime and the type test makes drift between the two key sets fail in both files, which is cheaper than keeping two copies equal by review.
+
+## PR 11 (tasks 11.1 to 11.9, URL codec)
+
+Mode: strict TDD, runner `npm test`. Five code branches and one records branch, all local and unpushed, stacked on the PR 10 tip `feat/foundation-10f-freeze-result` (`7a8b7e0`), NOT on `main` as task 11.1 says: PR 9 (#42 to #51) and PR 10 (#52 to #57) are open and unmerged. Once PR 10 merges the orchestrator rebases the stack with `git rebase --onto main 7a8b7e0 feat/foundation-11f-record-pr11 --update-refs`. 11.10 (exit SX1 to SX7) stays with the orchestrator. The planned two-way split (`11a` = 11.2 to 11.5, `11b` = 11.6 to 11.9) became five slices because the first build of decode with versioning measured 440 lines and `11a` alone was 287 before encode; each slice is cut at a RED/GREEN boundary.
+
+| Branch | Base | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-11a-url-values` (`599ee0e`) | `feat/foundation-10f-freeze-result` | 287 | 1378 |
+| `feat/foundation-11b-url-encode` (`f2fc6c6`) | 11a | 241 | 1405 |
+| `feat/foundation-11c-url-decode` (`9962de8`) | 11b | 347 | 1447 |
+| `feat/foundation-11d-url-versioning` (`a5d3be7`) | 11c | 303 | 1471 |
+| `feat/foundation-11e-released-keys` (`9fb0b90`) | 11d | 304 (harness commit alone: 1481 tests) | 1484 |
+| `feat/foundation-11f-record-pr11` | 11e | 114 (docs only) | 1484 |
+
+Baseline before the stack: 1319 tests at the PR 10 tip, `npm run verify` exit 0.
+
+### TDD Cycle Evidence
+
+| Task | Test | Layer | RED | GREEN | Triangulate and notes |
+|---|---|---|---|---|---|
+| 11.2 | `error-codes.test.ts`, `error-codes.test-d.ts` | Unit + type | 2 of 3 failed (`URL_ISSUE_CODES` and `ALL_ERROR_CODES` undefined) | 3/3 and the type tests | the 12 codes are the 10 field codes then the 2 url codes, distinct (`Set` size 12); both unions pinned |
+| 11.3 | `url/url-values.test.ts` | Unit (tables) | module not found (file failed to load) | 55/55 | length, money, percent canonical text (`127/2`, `24/2`, `498/100`, `0`, bounds), 13 rejected spellings (`1/0`, `5'`, `63.5in`, `4.98`, `$5`, `1 m`, empty, `+1`, `1/`, `/2`, `1/2/3`, a leading space) for three kinds, out-of-range rows, an open length accepts a negative, count `007`, `-1`, `1.5`, `1e3`, Arabic-Indic digit, `2^53` against the safe bound and 200 nines, select including `toString`, boolean `1`/`0` only, `%2F`/`%2f`, `%zz`, `%ff`, `+`, and the 256 cap counted on the raw text (`%31` x 100 invalid, x 85 valid) |
+| shard | `mutation.contract.test.ts` | Contract | 3 failed (five shards named, `url-values.ts` has no shard, a test file runs in no shard) | 40/40 | the `url` shard added to `stryker.config.mjs` and the `ci.yml` matrix; `ci.contract.test.ts` stayed green because it reads `shardNames` |
+| 11.4 | `url/codec.test.ts`, `codec.test-d.ts` | Unit + type | module not found | 27/27, 82 with the url values | UC1 to UC5 and MN10 with the spec strings; equal-value spellings (`1 ft`, `100/10`, `498/100`) omitted; 13 untyped rows throw `INVALID_STATE` with the cause `{ id, field }`; output matches `^[0-9a-z/=&-]+$` and has no `%` |
+| 11.5 | `url/decode.test.ts` | Unit (tables) | 42 of 42 failed (`decode` is not a function) | 42/42 | UC6 to UC16 plus: `u` values `x`, empty, `M`, `metric`, `i`, `toString`; escaped `u=%6D`; retired key ignored; pairs with no `=`; `b=7=8`; `+`; escaped keys, duplicate across spellings; frozen result |
+| 11.6 | `url/decode.test.ts` | Unit (table) | 16 of 60 failed (every version row) | 60/60 | UC17 with 16 rows (`v&b=7`, `v=1.0`, `v=%32`, `v=%zz`, `v=toString`, `v=__proto__`, `b=7&v=2`, `v=2&v=1`, `?v=2`) and the accepted `v=%31`, `v=1&v=2`; UC18 (204 characters, `%2F3` variant) passed on arrival: characterization |
+| 11.7 | `url/codec.property.test.ts` | Property | green on arrival (characterization) | 6/6 (1000 cases each, 50 under Stryker) | break-the-code check: `toNumber()` in the length text failed 2 properties; round trip for the bounded fixture and an unbounded calculator (signed lengths beyond 64 bits, sub-cent money), fuzz validity for both, fixed point for both |
+| 11.8 | `url/released.contract.test.ts` | Contract + unit | module `released.ts` not found | 10/10 | UC21 (`l` to `len`), UC22 (`120` to `144`), UC23 (appended `h`, old link decodes to its default), removed tuple, vanished calculator, key and kind change, an inserted field, options (add allowed, remove fails, required for select only), canonical default text; break-the-code check: deleting the default comparison failed 2 tests |
+| 11.9 | `index.test.ts`, `codec.test-d.ts` | Unit + type | 2 of 9 failed (export list, wiring) | 9/9 | `encode`, `decode`, `RESERVED_URL_KEYS`, `ALL_ERROR_CODES`, `URL_ISSUE_CODES` through the root barrel; typed state, `@ts-expect-error` rows for a wrong option and a missing field |
+
+Expected values come from the spec scenarios and were recomputed by hand: `5000/127` in per metre (1 m = 100/2.54 in), `127/2` for 63.5 in, `249/50` for $4.98, `1200.5` as `2401/2`, the 202-character fraction `1...1/3` (digit sum 200 is not a multiple of 3).
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/url` 158 runtime tests plus 2 type tests on the 11e tip (`url-values` 55, `codec` 27, `decode` 60, `codec.property` 6, `released.contract` 10); `src/error-codes.test.ts` 3 and 4 type tests |
+| Runtime harness | `npm run verify` exit 0 on every tip (1378, 1405, 1447, 1471, 1481, 1484 tests); core coverage stays 100; `npm run lint` and typecheck clean; cold mutation below |
+| Rollback boundary | 11a: `error-codes.ts` additions, `url/url-values*`, the `url` shard in `stryker.config.mjs`, `ci.yml` and `mutation.contract.test.ts`; 11b: `url/codec.ts` `encode` and `codec.test.ts`; 11c: `decode` and `decode.test.ts`; 11d: the version registry (about 30 lines of `codec.ts`), its rows, `codec.property.test.ts`; 11e: `__testing__/released.ts`, `released.contract.test.ts`, the barrels, `calculator/reserved-keys.ts` and its import in `define.ts` (the barrel commit alone is revertible) |
+
+### Mutation (cold, `reports` removed first, `npm run mutation -- --shard <name>`, final code tip `9fb0b90`)
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| url (new) | 100.00 | 178 | 0 | 0 | 40.3 s |
+| calculator (`error-codes.ts`, `define.ts`, `reserved-keys.ts` changed) | 100.00 | 613 | 0 | 0 | 135.4 s |
+
+The rational, units and format shards were not rerun: no file of `errors.ts`, `result.ts`, `rational/`, `units/`, `money/` or `format/` changed. No pragma. Logs: `scratchpad/mut11-url.log`, `mut11-calculator.log`.
+
+Survivors found on the way (all killed by rewriting, none by a pragma): `catch {}` in `percentDecode` (the empty block also returns `undefined`, so the function now returns `null`); a `typeof value === 'number'` guard before `Number.isSafeInteger` (equivalent, the second call does not coerce; replaced by `Number.isSafeInteger(value) && WHOLE_NUMBER.test(String(value))`); in the pair splitter an initial `[]` mutated to a one-string array, `equals < 0` against `<= 0`, and `key === null || seen.has(key)` and `version === null ? undefined : DECODERS.get(version)` (a `null` key finds nothing anyway). The splitter now pads a pair with `=` and uses `indexOf` and `slice`, pairs are built with `map` and `filter`, and the lookup maps are keyed `string | null`, so the `null` of a malformed escape needs no branch.
+
+### Negative proof [QG11] for the `url` shard
+
+On the final code tip the five url test files (`url-values`, `codec`, `decode`, `codec.property`, `released.contract`) were moved out of `packages/core/src/url`, `npm run mutation -- --shard url` was run, the files were restored and `git status` was clean:
+
+| Run | Score | Killed | Survived | Exit |
+|---|---|---|---|---|
+| url, tests removed | 54.49 | 97 | 81 | 1 (`Final mutation score 54.49 under breaking threshold 90`) |
+
+The 97 kills that remain come from `src/index.test.ts`, which stays in every shard command. Log: `scratchpad/mut11-url-negative.log`.
+
+SX4 on the stack: `git log --format=%B 7a8b7e0..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty; the longest subject is 68 characters.
+
+### Scope and deviations (PR 11)
+
+- Base: the stack is cut from the PR 10 tip, not `main` (task 11.1); the rebase command is above.
+- Five code slices plus a records slice, not two: sizes 287, 241, 347, 303 and 304, each at the last RED/GREEN boundary; the docs live in `11f` because `11e` has 96 lines of headroom and the records are larger.
+- `URL_ISSUE_CODES` and `ALL_ERROR_CODES` are in `error-codes.ts` (task 11.2 said "add `url/` codes"): no new mutable module, no import of `url/` by the shared codes.
+- `readUrlValue` takes the raw (still percent-encoded) value and decodes it itself, so the 256 cap applies to the raw text as the spec says. Percent decoding uses `decodeURIComponent` in `try`: the lint gate restricts only `URL` and `URLSearchParams`, so no hand-written decoder was needed.
+- `encode` throws `CoreError('INVALID_STATE', 'FIELD_VALUE')` with the cause `{ id, field }` for a state whose value is not of the kind of its field. The spec says nothing about an untyped state; this follows D5 and the locus pattern of `INVALID_DEFINITION` and `INVALID_RESULT`. Recorded in the design error table.
+- `RESERVED_URL_KEYS` moved from `define.ts` to `calculator/reserved-keys.ts` and is exported by `url/index.ts`; behavior is unchanged (`define.test.ts` rows `v` and `u` still kill its mutants).
+- Rule 4 in the harness: options may be added to a released select, never removed or renamed (the snapshot options must be a subset of the current ones); the spec's rule 8 says "modified" without saying whether an added option counts, and rule 4 allows adding.
+- `data` mutation shard: deferred to PR 12 (reason in task 11.1 and the design Open Questions).
+- The type of `decode` and `encode` is a generic overload over `{ inputs: I }` (and `id`), so a calculator, or any object with those fields, is accepted and the state is typed `InputsOf<I>`; the implementation signature is the wide one, like `defineCalculator`.
+- Stryker note: the `url` shard runs `src/url` and `src/index.test.ts`; the property tests run 50 cases with the fixed seed.
+
+### Key learnings (PR 11)
+
+- A guard that only protects a function that cannot be wrong for the guarded value (`typeof x === 'number'` before `Number.isSafeInteger`, `key === null` before a `Map.get`) is an equivalent mutant, so keying the maps by `string | null` removes the branch instead of excusing it.
+- A `try`/`catch` whose `catch` returns `undefined` leaves an equivalent mutant in a function that already returns `undefined` on the empty path; returning a distinct sentinel (`null`) makes the empty `catch` observable.
+- Counting the 256-character cap on the raw value means the value parser must receive the percent-encoded text and decode it itself; a caller that decodes first would accept 300 raw characters that decode to 100.
+- Cutting a slice at the last RED/GREEN boundary is cheap when the later behavior (the version registry) is a few lines of production code over rows of tests: the registry was removed from the decode commit and restored in the next branch with its 16 RED rows.
+- A harness that compares each released tuple with the input at the same position makes "append only" a single rule: inserting a field before another fails as a key and url-key change of the shifted tuples.
