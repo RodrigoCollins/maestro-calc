@@ -208,6 +208,51 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     }
   });
 
+  // A legacy `keepFile` (no shard suffix) prunes the legacy reports only. The match is explicit, so
+  // a shard that happens to be named `undefined` is a shard like any other and survives.
+  it('prunes only the legacy reports when the kept report has no shard suffix', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-prune-legacy-'));
+    try {
+      for (const name of [
+        'stryker-incremental-aaaaaaaaaaaaaaaa.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-undefined.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-units.json',
+      ]) {
+        writeFileSync(join(directory, name), '{}');
+      }
+      module_.pruneStaleReports(directory, 'stryker-incremental-bbbbbbbbbbbbbbbb.json');
+      expect(readdirSync(directory).sort()).toEqual([
+        'stryker-incremental-aaaaaaaaaaaaaaaa-undefined.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-units.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
+      ]);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
+  // The shard name is data, not a pattern: a name with regex metacharacters prunes exactly itself.
+  it('treats the shard name literally when pruning', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'stryker-prune-literal-'));
+    try {
+      for (const name of [
+        'stryker-incremental-aaaaaaaaaaaaaaaa-a.c.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-abc.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb-a.c.json',
+      ]) {
+        writeFileSync(join(directory, name), '{}');
+      }
+      module_.pruneStaleReports(directory, 'stryker-incremental-bbbbbbbbbbbbbbbb-a.c.json');
+      expect(readdirSync(directory).sort()).toEqual([
+        'stryker-incremental-aaaaaaaaaaaaaaaa-abc.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb-a.c.json',
+      ]);
+    } finally {
+      rmSync(directory, { recursive: true });
+    }
+  });
+
   // Importing the config (a test, a lint run, an editor) must never delete reports; only the
   // Stryker entry point may prune.
   it('does not touch the reports directory when it is merely imported', async () => {
@@ -424,6 +469,34 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
   });
 });
 
+describe('mutation shard environment (STRYKER_SHARD)', () => {
+  const incrementalFileWith = async (value: string | undefined): Promise<string> => {
+    const saved = process.env['STRYKER_SHARD'];
+    if (value === undefined) delete process.env['STRYKER_SHARD'];
+    else process.env['STRYKER_SHARD'] = value;
+    try {
+      // the query string defeats the module cache, so the config is evaluated once per value
+      const url = `${pathToFileURL(fromRoot('packages/core/stryker.config.mjs')).href}?env=${String(value)}`;
+      return ((await import(url)) as StrykerModule).default.incrementalFile;
+    } finally {
+      if (saved === undefined) delete process.env['STRYKER_SHARD'];
+      else process.env['STRYKER_SHARD'] = saved;
+    }
+  };
+
+  // A CI matrix or a shell can export an empty variable; that means "not set", never a shard named ''.
+  it.each([undefined, ''])(
+    'treats STRYKER_SHARD=%j as unset and runs all of core',
+    async (value) => {
+      expect(await incrementalFileWith(value)).toBe(config.incrementalFile);
+    },
+  );
+
+  it('still selects the shard that the variable names', async () => {
+    expect(await incrementalFileWith('format')).toMatch(/-format\.json$/);
+  });
+});
+
 describe('mutation runner script (scripts/mutation.mjs)', () => {
   interface Runner {
     selectShards: (argv: string[], names: string[]) => string[];
@@ -448,6 +521,30 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     const twice = run('--shard', 'rational', '--shard=format');
     expect(twice.status).toBe(1);
     expect(twice.stderr).toMatch(/only one --shard/);
+  });
+
+  // A typo such as `--shards` or `--lst` used to run every shard silently (A5/B-6).
+  it('rejects an unknown argument without running Stryker', () => {
+    for (const argument of ['--bogus', '--shards', 'rational', '-l']) {
+      const result = run(argument);
+      expect(result.status, argument).toBe(1);
+      expect(result.stderr, argument).toContain(`unknown argument: ${argument}`);
+    }
+    const mixed = run('--shard', 'rational', '--bogus');
+    expect(mixed.status).toBe(1);
+    expect(mixed.stderr).toContain('unknown argument: --bogus');
+  });
+
+  it('accepts exactly --list, --shard <name> and --shard=<name>', async () => {
+    const { selectShards } = await importFromRoot<Runner>('scripts/mutation.mjs');
+    const names = ['a', 'b'];
+    expect(selectShards(['--list'], names)).toEqual(names);
+    expect(selectShards(['--list', '--shard', 'b'], names)).toEqual(['b']);
+    expect(selectShards(['--shard=a', '--list'], names)).toEqual(['a']);
+    expect(() => selectShards(['--shard', 'a', 'b'], names)).toThrow(/unknown argument: b/);
+    expect(() => selectShards(['--shard=a', '--list=1'], names)).toThrow(
+      /unknown argument: --list=1/,
+    );
   });
 
   it('selects every shard by default and exactly one with --shard', async () => {
