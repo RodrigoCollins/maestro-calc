@@ -164,7 +164,7 @@ export const optionsFor = (shard) => {
     // about 19 s each. Four workers fit the 4 vCPUs of a CI runner.
     timeoutMS: 10000,
     timeoutFactor: 4,
-    concurrency: 4,
+    concurrency: 3,
     thresholds: { high: 95, low: 90, break: 90 },
   };
 };

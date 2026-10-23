@@ -107,7 +107,7 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
   it('bounds each mutant run and fixes the parallelism', () => {
     expect(config.timeoutMS).toBe(10000);
     expect(config.timeoutFactor).toBe(4);
-    expect(config.concurrency).toBe(4);
+    expect(config.concurrency).toBe(3);
   });
 
   // design: stale reports must not be copied into the sandboxes
