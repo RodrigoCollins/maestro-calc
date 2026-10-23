@@ -135,6 +135,13 @@ export const shards = {
       'src/index.test.ts',
     ],
   },
+  // The URL codec has its own shard (PR 10 review RES-7): the `calculator` shard is projected at
+  // 6.4 to 8.8 minutes on CI (135 s local cold), and the codec's tests only need the fixture and
+  // the barrel.
+  url: {
+    mutate: ['src/url/**'],
+    tests: ['src/url', 'src/index.test.ts'],
+  },
 };
 
 export const shardNames = Object.keys(shards);

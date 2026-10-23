@@ -45,7 +45,7 @@ jobs:
       matrix:
         # Must equal `shards` in packages/core/stryker.config.mjs (ci.contract.test.ts enforces it);
         # `npm run mutation -- --list` prints the names.
-        shard: [rational, units, format, calculator]
+        shard: [rational, units, format, calculator, url]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
