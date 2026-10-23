@@ -7,3 +7,10 @@ export {
 } from './feet-inches.ts';
 export { ceilToPurchaseUnits } from './purchase.ts';
 export { roundToFraction, type RoundingMode } from './rounding.ts';
+export {
+  LENGTH_PARSE_CODES,
+  parseLength,
+  type LengthParseCode,
+  type LengthParseError,
+  type LengthParseOptions,
+} from './length-parser/index.ts';
