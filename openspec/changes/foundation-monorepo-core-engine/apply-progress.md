@@ -530,7 +530,7 @@ Negative proof [QG11], per shard on the 08a tip with a test file group moved awa
 - Three runners, not four: the cross-module `src/index.test.ts` is added to every shard's test command (barrels are excluded from `mutate`, so a fourth runner would score nothing). Shard assignment: `errors.ts` and `result.ts` with `rational`, `money` with `units`.
 - A shard rerun keeps the whole identity hash (all core inputs), so a change in one module colds every shard; a per-shard hash would need a dependency graph and is not worth it at this size.
 - 8.1 A-4 (the already pushed commit `7644bb6` mixes `feat` and `test`): the repository has no CHANGELOG file, so the note is this line. A-3/B-2: see the table; the review's literal invariant is false for the documented offset policy (a failure may point just after a token, onto a blank).
-- 8.2: the vector guard is in `requireSameVector` (`units/quantity.ts`), the single place every `ops.ts` function uses, not in `ops.ts` itself.
+- 8.2: the vector guard is in `requireSameVector` (`units/quantity.ts`), the place every same-dimension binary op in `ops.ts` uses (`add`, `sub`, `compare`, `equals`, `ratio`); unary ops and `multiply`/`divide` are not guarded, not in `ops.ts` itself.
 - R3 (spec wording conflict): the 18-digit cap applies to fractional runs too, as the task says; `0.1234567890123456789` is `TOO_LARGE`.
 - The tasks.md numbering has two `8.1` entries (follow-ups and "create branch"); both are marked done.
 
@@ -542,10 +542,10 @@ Negative proof [QG11], per shard on the 08a tip with a test file group moved awa
 
 ## PR 8 correction round 1 (4 lenses PASS; orchestrator-finished after two agent stalls)
 
-- M1: `Money` carries a unique-symbol brand (`money.ts`); `money.test-d.ts` rejects a literal, `add(quantity, money)`, `addMoney(money, quantity)` and `costOf(price, money)`.
+- M1: `Money` carries a unique-symbol brand (`money.ts`); `money.test-d.ts` rejects a literal, `add(money, money)`, `add(length, money)`, `addMoney(money, length)`, `addMoney(length, money)` and `costOf(price, money)`.
 - RISK-1/REL-2: `requireUnitPrice` (`instanceof UnitPriceValue`) guards `costOf`.
 - RES-1/2/3: `mutation-gate` aggregate job; per-shard `reports/mutation/<shard>/`; `--reporter=dot`. Incremental report sizes after: format 800 KB, rational 368 KB, units 364 KB (format was 12.7 MB).
 - REL-4/5, RISK-2/REL-6: contract and script hardening as listed in task 8.8.
 - Gates on the 08e tip (`npm run verify`): 821 tests, coverage 100/100/100/100, exit 0. Cold `npm run mutation` (all shards): rational 100.00 (202 killed, 7 timeouts, 0 survived, 66.5 s), units 100.00 (207 killed, 45.2 s), format 100.00 (409 killed, 88.7 s); exit 0.
-- Note: the gcd timeout count moved from 8 to 7 under the shorter per-mutant budget with the dot reporter; all remaining timeouts are the known `rational.ts` gcd family, none survived.
+- Note: the command also carries `--bail=1` (verdict-safe); the gcd timeout count moved from 8 to 7 because bail makes a run fail at the first failing test instead of hanging in a later one; all remaining timeouts are the known `rational.ts` gcd family, none survived.
 

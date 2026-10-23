@@ -79,6 +79,8 @@ Coverage is collected only over `packages/*/src` (`apps/web` holds no logic in t
 
 ### Requirement: Mutation gate on core
 
+The gate runs per shard (`rational`, `units`, `format`) with the same thresholds; any shard below `break` fails the gate, and the `mutation-gate` job aggregates the matrix into one required check.
+
 `npm run mutation` MUST run Stryker (vitest runner) over `packages/core/src` (excluding tests) and MUST fail when the mutation score is below the `break` threshold. Thresholds MUST be `high: 95`, `low: 90`, `break: 90`. Incremental mode MUST be enabled and its state cacheable in CI. The TypeScript checker plugin is not enabled initially (a tracked follow-up once mutation run time is measured). If the Stryker 10 + vitest 5 combination proves incompatible, the fallback MUST preserve an equivalent blocking mutation gate (e.g. a compatible runner version); the gate MUST NOT be dropped silently. Raising `break` to 95 once core stabilizes is a tracked follow-up, not part of this change.
 
 #### Scenario: Score below break
@@ -134,5 +136,3 @@ Automated dependency updates (if configured by the repository) SHOULD ignore sem
 - GIVEN a `.github/dependabot.yml` in the repository
 - WHEN parsed
 - THEN an `ignore` rule for `typescript` with `update-types: ["version-update:semver-major"]` is present
-
-NOTE (PR 8): the mutation gate runs per shard (`rational`, `units`, `format`) with the same thresholds; any shard below `break` fails the gate, and the `mutation-gate` job aggregates the matrix into one required check.
