@@ -57,6 +57,11 @@ Hand-verified table (inches, `v x d` shown):
 - THEN each fails `INVALID_DENOMINATOR`
 - AND `2` and `64` succeed (boundaries are inclusive)
 
+#### Scenario: Unknown mode
+- GIVEN mode `toString` or `banana`
+- WHEN rounding is requested
+- THEN each fails `INVALID_MODE`
+
 #### Scenario: Idempotence and symmetry properties
 - GIVEN random Rationals and every denominator 2..64
 - WHEN `nearest` rounding is applied twice, and again to the negated value

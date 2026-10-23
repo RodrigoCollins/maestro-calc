@@ -201,24 +201,34 @@ describe('internal packages ship TypeScript source (monorepo-workspace › Inter
   // and this test pins the script itself against a temporary workspace.
   describe('check:dist (the post-build assertion)', () => {
     const script = rootManifest.scripts?.['check:dist'] ?? '';
-    const runIn = (dist: string | undefined): number | null => {
+    // The script is `node scripts/check-dist.mjs`; the temporary workspace has no `scripts`
+    // directory, so the real file is run by absolute path with the temporary root as cwd.
+    const runIn = (dist: string | undefined): { status: number | null; stderr: string } => {
       const root = mkdtempSync(join(tmpdir(), 'check-dist-'));
       try {
         mkdirSync(join(root, 'packages', 'core', 'src'), { recursive: true });
         if (dist !== undefined) mkdirSync(join(root, dist), { recursive: true });
-        return spawnSync(script, { cwd: root, shell: true, encoding: 'utf8' }).status;
+        const { status, stderr } = spawnSync(
+          process.execPath,
+          [fromRoot('scripts/check-dist.mjs')],
+          { cwd: root, encoding: 'utf8' },
+        );
+        return { status, stderr };
       } finally {
         rmSync(root, { recursive: true });
       }
     };
 
     it('passes when no package has a dist directory', () => {
-      expect(script).not.toBe('');
-      expect(runIn(undefined)).toBe(0);
+      expect(script).toBe('node scripts/check-dist.mjs');
+      // No ExperimentalWarning either: the check does not use the experimental `fs.globSync`.
+      expect(runIn(undefined)).toEqual({ status: 0, stderr: '' });
     });
 
     it.each(['packages/core/dist', 'packages/data/dist'])('fails when %s exists', (dist) => {
-      expect(runIn(dist)).toBe(1);
+      const run = runIn(dist);
+      expect(run.status).toBe(1);
+      expect(run.stderr).toContain(dist);
     });
   });
 });

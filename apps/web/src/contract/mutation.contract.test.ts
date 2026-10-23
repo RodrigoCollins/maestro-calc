@@ -79,6 +79,9 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
   // one vitest process per mutant run instead of one fork per test file: the cost of a mutant is
   // the vitest boot, not the tests, and the measured cold run halves (4 min 57 s to 2 min 24 s on
   // 418 mutants) with identical verdicts. The mutant still lives in a fresh process per run.
+  // Consequence for every core test: with `--isolate=false` all test files share one module
+  // registry, so a test must not keep mutable module state (a counter, a cache, a mutated
+  // constant) that another file could observe; such state would make a verdict depend on order.
   it('runs the whole suite serially in one process with STRYKER set and without type tests', () => {
     expect(config.commandRunner.command).toBe(
       'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',

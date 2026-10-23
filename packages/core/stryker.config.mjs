@@ -96,6 +96,8 @@ export default {
     // keeps every mutant run cheap and out of the sandbox `extends ../../tsconfig.base.json` path.
     // `--isolate=false` runs all test files in one worker instead of one fork per file: a mutant
     // run costs the vitest boot, not the tests, so this halves the cold run with identical verdicts.
+    // Core tests therefore must not keep cross-file mutable module state: all files share one
+    // module registry in a run.
     command:
       'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',
   },
