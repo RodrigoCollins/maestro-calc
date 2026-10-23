@@ -69,17 +69,42 @@ export const shards = {
     tests: ['src/format', 'src/index.test.ts'],
     deps: kernel,
   },
-  calculator: {
-    mutate: ['src/calculator/**', 'src/error-codes.ts'],
+  // The calculator contract is two shards because its single shard measured 9 min 47 s of Stryker
+  // on CI (PR 11 run 40006514352, 4.16 times the 141 s local cold run), at the 10 minute trigger of
+  // design D10. `define` holds the definition side, `run` the execution side. The run tests build
+  // their calculators with `defineCalculator`, so define's sources are part of the run shard's
+  // identity (the kernel) and a change to define colds both, but only run files are mutated there.
+  'calculator-define': {
+    mutate: [
+      'src/calculator/constraints.ts',
+      'src/calculator/define.ts',
+      'src/calculator/descriptors.ts',
+      'src/calculator/reserved-keys.ts',
+      'src/calculator/validate.ts',
+      'src/error-codes.ts',
+    ],
     tests: [
-      'src/calculator',
+      'src/calculator/constraints.test.ts',
+      'src/calculator/define.test.ts',
+      'src/calculator/reserved-keys.test.ts',
+      'src/calculator/validate.test.ts',
       'src/error-codes.test.ts',
       'src/__testing__/fixture-box.test.ts',
       'src/index.test.ts',
     ],
     deps: kernel,
   },
-  // The URL codec has its own shard (PR 10 review RES-7): the `calculator` shard is projected at
+  'calculator-run': {
+    mutate: ['src/calculator/message-keys.ts', 'src/calculator/run.ts'],
+    tests: [
+      'src/calculator/message-keys.test.ts',
+      'src/calculator/run-language-free.test.ts',
+      'src/calculator/run.test.ts',
+      'src/index.test.ts',
+    ],
+    deps: kernel,
+  },
+  // The URL codec has its own shard (PR 10 review RES-7): the calculator contract was projected at
   // 6.4 to 8.8 minutes on CI (135 s local cold), and the codec's tests only need the fixture and
   // the barrel. Its tests build their calculators by hand: they import no calculator and not the
   // released snapshot (a contract test checks it), so a new calculator never colds this shard.

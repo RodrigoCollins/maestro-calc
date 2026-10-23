@@ -338,12 +338,13 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
     );
 
-  it('has six named shards', () => {
+  it('has seven named shards', () => {
     expect(module_.shardNames).toEqual([
       'rational',
       'units',
       'format',
-      'calculator',
+      'calculator-define',
+      'calculator-run',
       'url',
       'calculators',
     ]);
@@ -592,7 +593,7 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     expect(mixed.stderr).toContain('unknown argument: --bogus');
   });
 
-  // Each shard runs in the package that declares it (core for the first seven, data for `data`).
+  // Each shard runs in the package that declares it (core for all of them but `data`).
   it('maps every shard to the package that declares it, and refuses a name declared twice', async () => {
     const { loadShardOwners } = await importFromRoot<{
       loadShardOwners: (root: string) => Promise<Map<string, string>>;
