@@ -75,10 +75,13 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
 
   // design: a direct `stryker run` must behave like `npm run mutation`, so the define flag is set
   // in the command; type tests cannot kill behavioral mutants and run in `verify`, and skipping
-  // them also avoids the sandbox `extends ../../tsconfig.base.json` path.
-  it('runs the whole suite serially with STRYKER set and without type tests', () => {
+  // them also avoids the sandbox `extends ../../tsconfig.base.json` path. `--isolate=false` keeps
+  // one vitest process per mutant run instead of one fork per test file: the cost of a mutant is
+  // the vitest boot, not the tests, and the measured cold run halves (4 min 57 s to 2 min 24 s on
+  // 418 mutants) with identical verdicts. The mutant still lives in a fresh process per run.
+  it('runs the whole suite serially in one process with STRYKER set and without type tests', () => {
     expect(config.commandRunner.command).toBe(
-      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false',
+      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',
     );
   });
 
