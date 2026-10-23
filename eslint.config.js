@@ -296,9 +296,15 @@ export default defineConfig(
   ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
   ...astro.configs['flat/recommended'],
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
+  {
+    // The Stryker configs share `tooling/stryker.mjs` by relative path: the repository root is not
+    // a package they could import by name.
+    files: ['packages/*/stryker.config.mjs'],
+    rules: { 'import-x/no-relative-packages': 'off' },
+  },
   // Plain JS config outside every tsconfig program: parsed and linted without type information.
   {
-    files: ['packages/core/stryker.config.mjs', 'scripts/*.mjs'],
+    files: ['packages/core/stryker.config.mjs', 'scripts/*.mjs', 'tooling/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   prettier,

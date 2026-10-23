@@ -178,6 +178,7 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
       'packages/core/stryker.config.mjs',
       'packages/core/vitest.config.ts',
       'vitest.config.ts',
+      'tooling/stryker.mjs',
       'tsconfig.base.json',
       '.nvmrc',
       'package-lock.json',

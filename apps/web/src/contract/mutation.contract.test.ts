@@ -151,6 +151,7 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
       '../../vitest.config.ts',
       '../../.nvmrc',
       '../../package-lock.json',
+      '../../tooling/stryker.mjs',
     ]) {
       expect(files, input).toContain(input);
     }

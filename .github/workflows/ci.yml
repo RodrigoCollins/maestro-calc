@@ -63,7 +63,8 @@ jobs:
           echo "STRYKER_CACHE_KEY=stryker-${RUNNER_OS}-${{ matrix.shard }}-${{
           hashFiles('packages/core/src/**', 'packages/core/*.json',
           'packages/core/stryker.config.mjs', 'packages/core/vitest.config.ts',
-          'vitest.config.ts', 'tsconfig.base.json', '.nvmrc', 'package-lock.json') }}"
+          'vitest.config.ts', 'tooling/stryker.mjs', 'tsconfig.base.json', '.nvmrc',
+          'package-lock.json') }}"
           >> "$GITHUB_ENV"
       # Stryker reuses the report only when the key matches exactly (no restore-keys fallback). Each
       # shard has its own key and report, so shards never overwrite each other's cache.
