@@ -549,3 +549,91 @@ Negative proof [QG11], per shard on the 08a tip with a test file group moved awa
 - Gates on the 08e tip (`npm run verify`): 821 tests, coverage 100/100/100/100, exit 0. Cold `npm run mutation` (all shards): rational 100.00 (202 killed, 7 timeouts, 0 survived, 66.5 s), units 100.00 (207 killed, 45.2 s), format 100.00 (409 killed, 88.7 s); exit 0.
 - Note: the command also carries `--bail=1` (verdict-safe); the gcd timeout count moved from 8 to 7 because bail makes a run fail at the first failing test instead of hanging in a later one; all remaining timeouts are the known `rational.ts` gcd family, none survived.
 
+
+## PR 9 (tasks 9.0 to 9.11, calculator contract)
+
+Mode: strict TDD, runner `npm test`. Stacked local branches from `main` at `28971cb` (none pushed): `09a` mutation-runner follow-ups and the first sharded CI run (9.0, 9.1), `09b` descriptor types, `defineCalculator` signature and the `calculator` mutation shard (9.2), `09c` constraint checks (9.3), `09d` definition-time validation (9.4), `09e` field error codes, `fixture-box` and the validate skeleton (9.10, 9.5, 9.6), `09f` length validation (9.7), `09g` count, percent, money, select and boolean validation (9.8), `09h` `Calculator.validate` with ordered aggregation and the barrels (9.9, 9.11). 9.12 (SX1 to SX7) stays with the orchestrator. The planned four branches became eight because the first build of 09a to 09c measured 805 changed lines.
+
+| Branch | Base | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-09a-mutation-follow-ups` | `main` | 141 | 828 |
+| `feat/foundation-09b-descriptors` | 09a | 399 | 833 |
+| `feat/foundation-09c-constraints` | 09b | 214 | 842 |
+| `feat/foundation-09d-define-validation` | 09c | 391 | 945 |
+| `feat/foundation-09e-fixture-validate-skeleton` | 09d | 362 | 956 |
+| `feat/foundation-09f-validate-length` | 09e | 239 | 983 |
+| `feat/foundation-09g-validate-kinds` | 09f | 298 | 1069 |
+| `feat/foundation-09h-aggregation-barrel` | 09g | about 250 (151 before this section) | 1076 |
+
+### First CI run of the sharded gate (task 9.0)
+
+GitHub Actions run 39954771896 on `feat/foundation-08e-gate-aggregate-and-reports` (the tree of `main` at `28971cb`), cold (every `stryker-Linux-<shard>-…` cache key was a miss), `concurrency 4`, 4-vCPU runners, 2026-10-23 UTC:
+
+| Job | Started to completed | Wall | Result |
+|---|---|---|---|
+| verify | 12:37:55 to 12:39:26 | 1 min 31 s | success, 821 tests |
+| mutation (rational) | 12:39:29 to 12:43:19 | 3 min 50 s | 100.00, 209 mutants, 0 survived, 7 timed out (the known gcd family) |
+| mutation (units) | 12:39:29 to 12:42:51 | 3 min 22 s | 100.00, 207 mutants, 0 survived, 0 timed out |
+| mutation (format) | 12:39:29 to 12:43:48 | 4 min 19 s | 100.00, 409 mutants, 0 survived, 0 timed out |
+| mutation-gate | 12:43:50 to 12:43:53 | 3 s | success |
+
+The whole workflow took 5 min 58 s (12:37:55 to 12:43:53). The matrix wall time is the slowest shard, 4 min 19 s, against 18 min 57 s for the last unsharded run on `main` (run 39889564663, PR 7 tip, 735 mutants, 02:38:03 to 02:57:00). CI over local on the format shard: 259 s over 88.7 s, 2.9 times. The `concurrency 3` result: appended by the orchestrator after the throwaway run (draft PR #41, never merged). No 2-D matrix was created. The `calculator` shard added in this PR runs 93.3 s cold locally, so about 3 to 5 minutes on CI at the measured ratios, below the format shard's 4 min 19 s plus some headroom; the 30-minute job limit is far away.
+
+### TDD Cycle Evidence
+
+| Task | Test | Layer | RED | GREEN | Triangulate and notes |
+|---|---|---|---|---|---|
+| 9.0 | `mutation.contract.test.ts` | Unit (contract) | 4 failed of the 6 rows run first (`pruneStaleReports` with a legacy kept report and a shard named `undefined`, a shard `a.c` pruning `abc`, `STRYKER_SHARD=''` throwing `unknown mutation shard: `, `selectShards` accepting `--list=1` and `b`) | 61/61 (54 before, 7 new), 828 in `verify` | the process-level `unknown argument` test was not run in RED: the old script then launched every Stryker shard (it started one and was killed), so only its `selectShards` twin was observed failing; both pass in GREEN |
+| 9.2 | `descriptors.test-d.ts`, `define.test.ts`, `mutation.contract.test.ts` | Type + unit | `tsc`: `define.ts` not found, `inputs` implicitly `any`, `toEqualTypeOf` against `never` (5 errors); the contract test failed 3 (a fourth shard, a source file owned by no shard, a test file run by no shard) | typecheck clean, 7/7, contracts 226/226 | break-the-code spot check: `ValueOf` returning `string` for `count` fails `tsc` with `Types of property 'cnt' are incompatible`; the cases cover input inference, `sel === 'z'`, `inputs.zzz`, a missing output, an area returned as a length, money returned as a quantity, an undeclared warning code |
+| 9.3 | `constraints.test.ts` | Unit | module not found | 9/9 | both ends of every bound for four kinds, the defaults (count `0..MAX_SAFE_INTEGER`, percent `0..100`, money minimum $0), no bound unless declared (length), a bound as a fraction (`25/2`, `1/3`, `5/2`, `25/127`), a count beyond the safe integers; mutation 56/56 killed |
+| 9.4 | `define.test.ts` | Unit (table) | `DEFINITION_REASONS is not iterable`, 78 failed | 100/100, then 105/105 | 17 reasons, 78 rejected rows (one fault per row) and 24 accepted rows on the other side of each boundary; the first mutation run left 10 survivors (units `ft` and `m` never accepted, a count without bounds, a boolean input, a two-output list with one bad key), each killed by a new row or a rewrite (see deviations) |
+| 9.10 | `error-codes.test.ts`, `error-codes.test-d.ts` | Unit + type | module not found; contract: a source file with no shard (2 failed) | 1/1 + 2 type tests, contracts 229/229 | exact list of ten codes; every parser and constraint code extends `FieldErrorCode` |
+| 9.5 | `fixture-box.test.ts` | Unit | module not found | 3/3 | the spec table as canonical strings; outputs with role and display; compute 144 in2 and 747/50 |
+| 9.6 | `validate.test.ts` | Unit | module not found | 5/5 | defaults [CC9], `undefined` and undeclared keys [CC20], declaration order of the keys, a field named `valueOf` or `toString` is not read from the prototype |
+| 9.7 | `validate.test.ts`, `quantity.test.ts` | Unit | `tsc`: no `ValidateOptions`, third argument rejected; `isQuantityOf`: 2 failed | 30/30, units 18/18 | CC12 to CC15 plus the six default-unit pairs, a quantity as raw value, lookalike and other-dimension rejection |
+| 9.8 | `validate.test.ts`, `money.test.ts` | Unit (table) | 55 failed of 111 | 111/111, then 120 after the survivors | CC11, CC16 to CC18 and 71 more rows; the first mutation run left 4 survivors (whitespace run quantifiers, the number `0`, an equivalent select guard, an equivalent TOO_LONG guard), fixed by rows and rewrites |
+| 9.9 | `validate.test.ts`, `descriptors.test-d.ts` | Unit + type | `tsc`: `validate` does not exist on `Calculator` (5 errors) | 238/238 in the folder | CC10, CC19, one error per field with params, the unit system passed through |
+| 9.11 | `index.test.ts` | Unit | export list and the wiring test failed (2) | 8/8 | `defineCalculator` through the root barrel, `validate` and `compute` on it |
+
+Expected values were recomputed independently: Python `fractions.Fraction` for `5000/127` (1 m in inches), `250/127` (5 cm), `25000/127` (5 m), `25/127` (5 mm), `76799/64` (1199 63/64 in), `747/50` (3 x 249/50) and `249/50`; the inches of 5 ft (60), 5 yd (180) and 100 ft (1200) by hand. The rows copy the cited spec scenarios (CC1 to CC20) and add rows only where the code has an extra branch.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/calculator packages/core/src/error-codes.test.ts packages/core/src/__testing__/fixture-box.test.ts packages/core/src/index.test.ts` all green (`define` 105, `validate` 120, `constraints` 9, `fixture-box` 3, `error-codes` 1, plus 6 type tests); contract tests 229 |
+| Runtime harness | `npm run verify` exit 0 on all eight tips (828, 833, 842, 945, 956, 983, 1069, 1076 tests; core coverage 100/100/100/100: 631 statements, 356 branches, 145 functions, 546 lines); `npm run mutation` per shard below. Pure functions, no I/O |
+| Rollback boundary | 09a: `stryker.config.mjs`, `scripts/mutation.mjs`, two contract tests; 09b to 09h: `packages/core/src/calculator/`, `error-codes.ts`, `__testing__/fixture-box*`, one line each in `units/quantity.ts` (`isQuantityOf`) and `money/money.ts` (`isMoney`), two lines in `index.ts`, the `calculator` shard in `stryker.config.mjs` and `ci.yml` |
+
+### Mutation (final tip 09h, cold, `reports` removed, one `npm run mutation -- --shard <name>` per shard)
+
+| Shard | Mutate | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|---|
+| rational | `rational/**`, `errors.ts`, `result.ts` | 100.00 | 202 | 7 | 0 | 66.0 s |
+| units | `units/**`, `money/**` | 100.00 | 212 | 0 | 0 | 48.3 s |
+| format | `format/**` | 100.00 | 409 | 0 | 0 | 92.7 s |
+| calculator | `calculator/**`, `error-codes.ts` | 100.00 | 418 | 0 | 0 | 93.3 s |
+
+Total 1248 mutants. The 7 timeouts are the known `rational.ts` `gcd` family. In the calculator shard `constraints.ts` has 61 mutants, `define.ts` 237 and `validate.ts` 120; `descriptors.ts` and `error-codes.ts` have none (Stryker does not mutate type declarations or a string array under `as const`, so `FIELD_ERROR_CODES` is pinned by an exact-equality test and a type test instead). No pragma.
+
+Negative proof [QG11] on the final tip: `define.test.ts`, `validate.test.ts` and `constraints.test.ts` moved away, `npm run mutation -- --shard calculator` scored 31.34 (131 killed, 287 survived), `under breaking threshold 90`, exit 1, 87.7 s. The files were restored and `git status` was clean.
+
+### Scope and deviations (PR 9)
+
+- Eight branches, not four. The first build of the descriptors, constraints and `define` pieces measured 805 changed lines, so the PR is cut at the last RED/GREEN boundary into `09a` to `09h`, each at most 399. 09b holds the first calculator source files and therefore the `calculator` shard (the contract tests demand one); `src/error-codes.ts` and its test joined the shard in 09e, when the file first existed.
+- `checkConstraints(descriptor, value)` became `checkAmount(descriptor, amount: Rational)` and `findOption(descriptor, value: unknown)`: one function over the descriptor union would need a type assertion to correlate kind and value, and the lint forbids them. A count is compared as a Rational so a value beyond the safe integers keeps its precision. `findOption` (instead of `checkOption`) returns the matching id so that `UNKNOWN_OPTION` for a non-string needs no guard that mutation testing proves redundant.
+- Task 9.10 ran before 9.6 because `FieldError` is typed with `FieldErrorCode`. `Calculator.validate` is wired in 9.9, not 9.5: 9.6 to 9.8 test `validateRecord(inputs, raw, options)` directly, so a half-built validator is never reachable through the public object. In between, one characterization test pinned "a given value is refused as `MALFORMED`" and was replaced by the kind tests in 9.8.
+- `defineCalculator` is an overload (generic signature plus a wide implementation signature), so an omitted `warnings` keeps the default `readonly []` without a type assertion. `Calculator.validate` and `compute` are readonly function properties (the lint rejects unbound methods).
+- Extra definition rules beyond the spec rows, to keep `Rational.of` from throwing `NOT_AN_INTEGER` at call time: a count bound that is not a non-negative safe integer is `INVALID_BOUNDS`, a fractional or out-of-range count default is `DEFAULT_INVALID`. Duplicate warning codes are `DUPLICATE_KEY`. Checks run in a fixed order, so a definition with two faults reports the first.
+- An undeclared extra output is not a compile error (TypeScript skips excess-property checks on an inferred return); the spec's "exactly the outputs" is enforced for a missing or mistyped output, and `run` (PR 10) rejects an undeclared key at runtime.
+- `TOO_LONG` applies to every string raw value, select and boolean included (the spec's first rule says "String raw values"). A percent accepts strings only; a number is `MALFORMED`.
+- Equivalent mutants were removed by rewriting, never by a pragma: the display unit check indexes `UNITS[measure]` (so a missing money guard throws) instead of `findUnit`; retired URL keys are `new Set(definition.retiredUrlKeys)` (no `?? []` default that survives as `["Stryker was here"]`); `unitSystem` has no default string (only `=== 'metric'` is read); the `TOO_LONG` check lives at the one place where it is observable.
+- `isQuantityOf` (units) and `isMoney` (money) are new guards for untyped raw values; they live in the units shard and are fully mutation-tested (quantity.ts 27, money.ts 27 killed). RED for `isMoney`: the test and the export were written in one step, so its RED is the missing export and was not executed separately; `isQuantityOf` RED was executed (2 failed).
+- Spec reading, for the reviewers: `UnitSystem` is `'imperial' | 'metric'` (default imperial when the option or the whole options object is absent); the percent bound strings are percent points; a money bound is dollars.
+
+### Key learnings (PR 9)
+
+- A type assertion ban shapes the API: correlating a descriptor kind with its value type in one function was impossible without a cast, so the constraint checks became two typed functions and the wide-implementation overload became the pattern for defaults.
+- Mutation testing found redundancy in the design, not just missing tests: a guard whose only effect is also produced by the next call (`typeof` before an option lookup, a money check before a unit lookup) is an equivalent mutant, and the fix is to make one mechanism carry the behavior.
+- A validator is easier to review when it is introduced behind an internal function and exposed on the public object only after every kind parses; the half-built state then needs one temporary characterization test instead of a public lie.
+- The CI wall time of a sharded Stryker job tracks the slowest shard (4 min 19 s on the cold format shard), so a new module needs its own shard rather than a place in an existing one.
