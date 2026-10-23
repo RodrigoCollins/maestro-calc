@@ -111,9 +111,10 @@ export default {
   incrementalFile: `reports/${incrementalName}`,
   reporters: ['clear-text', 'progress-append-only', 'html', 'json'],
   htmlReporter: { fileName: 'reports/mutation/index.html' },
-  // A timeout counts as a kill. A clean run of the suite takes about 2.3 s, so 10 s (times the
-  // factor) is ample headroom, and the 8 `gcd` mutants that never terminate cost 10 s each, not
-  // 30 s. Four workers fit the 4 vCPUs of a CI runner.
+  // A timeout counts as a kill. Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant
+  // run, about 19 s here (a clean run of the suite takes about 2.3 s: 2.3 * 4 + 10), so a loaded
+  // runner has ample headroom while the 8 `gcd` mutants that never terminate cost about 19 s each
+  // instead of about 39 s at `timeoutMS 30000`. Four workers fit the 4 vCPUs of a CI runner.
   timeoutMS: 10000,
   timeoutFactor: 4,
   concurrency: 4,
