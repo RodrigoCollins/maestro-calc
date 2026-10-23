@@ -971,3 +971,212 @@ No pragma. The `url` shard grew from 178 to 286 mutants (the harness has 99). Th
 - A row added to an owner branch can reference an import that only a later branch adds, so every tip needs its own `verify` run and not only the last one.
 - Replacing an array fallback with a predicate (`input.kind !== 'select' || !input.options.includes(option)`) removes an equivalent mutant that no honest test can kill.
 - Matching live tuples by position and checking retired tuples by key keeps the append-only rule a single rule and keeps every existing diagnostic message unchanged.
+
+## PR 12 (tasks 12.1 to 12.11, proof calculator, i18n, web wiring)
+
+Mode: strict TDD, runner `npm test`. Eight code branches and one records branch, all local and unpushed, stacked on the PR 11 tip `feat/foundation-11f-record-pr11` (`90933bd`), NOT on `main` as task 12.1 says: PRs 9, 10 and 11 (#42 to #64) are open and unmerged. Once PR 11 merges the orchestrator rebases with `git rebase --onto main 90933bd feat/foundation-12i-record-pr12 --update-refs`. 12.12 (exit SX1 to SX7) stays with the orchestrator. The route after it: open the PRs of the stack bottom first and merge the chain, then `sdd-verify` for the whole change, then `sdd-archive`. The planned two-way split became eight code slices: the translator, the catalogs and the web contract tests did not fit 400 lines together (the first i18n commit measured 539), and the data shard needed its Stryker helpers extracted first.
+
+| Branch | Base | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|
+| `feat/foundation-12a-rectangle-area` (`d5c0f63`) | `feat/foundation-11f-record-pr11` | 362 | 1529 |
+| `feat/foundation-12b-url-snapshot` (`1120722`) | 12a | 141 | 1539 |
+| `feat/foundation-12c-i18n-translator` (`b313e81`) | 12b | 263 | 1556 |
+| `feat/foundation-12d-i18n-catalogs` (`f259179`) | 12c | 276 | 1567 |
+| `feat/foundation-12e-web-registry` (`f14c5b6`) | 12d | 165 | 1577 |
+| `feat/foundation-12f-web-contracts` (`854d5aa`) | 12e | 238 | 1590 |
+| `feat/foundation-12g-stryker-shared` (`231a740`) | 12f | 284 | 1590 |
+| `feat/foundation-12h-data-mutation-shard` (`9c9a522`) | 12g | 250 | 1598 |
+| `feat/foundation-12i-record-pr12` | 12h | docs only | 1598 |
+
+Baseline before the stack: 1503 tests at the PR 11 tip. Total of the code slices: 1,979 changed lines against a forecast of about 360 (the forecast sized the calculator, catalogs and registry, and not the translator tests, the contract helpers or the second Stryker config).
+
+### TDD Cycle Evidence
+
+| Task | Test | Layer | RED | GREEN | Triangulate and notes |
+|---|---|---|---|---|---|
+| 12.2 to 12.4 | `calculators/rectangle-area/rectangle-area.test.ts` | Unit (tables) | module `./index.ts` not found (file failed to load) | 20/20 | descriptor, case F, cases A to E, G and H, bare feet and metres, `100001'`, nine invalid inputs; values recomputed with `fractions.Fraction` before writing; the cases passed on arrival because `compute` is one multiply (characterization); break-the-code: `multiply(length, length)` failed 9 tests |
+| shard | `mutation.contract.test.ts` | Contract | 2 failed (`rectangle-area.ts` has no shard; `typecost` saw a type error) | 226/226 | the `calculators` shard added to `stryker.config.mjs`, `ci.yml`; the type error was `TS4111` on an index signature in the test |
+| 12.5 | `rectangle-area.shape.test.ts`, `rectangle-area.property.test.ts` | Unit + property | shape file: `__testing__/language-free.ts` not found | 28 core tests | roles, area exponents, nine result strings; four properties (swap, 9 ft2 per yd2, `381/1250` squared, non-negative) passed on arrival (characterization) |
+| 12.6 | `rectangle-area.url.test.ts`, `url/released.contract.test.ts` | Unit + contract | with an empty snapshot the new "records rectangle-area" row fails (1 of 19) | 19/19 | RA12 and RA13 including the metric case D state through `validate`; my first `quantity(63.5, inch)` threw `NOT_AN_INTEGER` (Rational.of(127, 2) now) |
+| 12.7 | `index.test.ts`, `workspace-graph.contract.test.ts` | Unit + contract | passed on arrival | 10/10 | re-exporting `rectangleArea` from the barrel fails 2 tests |
+| 12.8 | `translate.test.ts`, `translate.test-d.ts`, `catalog.test-d.ts` | Unit + type | module `./translate.ts` not found | 19/19 | IN5, IN7, IN8 plus own-key lookup (`toString`, `constructor`), `$&` inserted verbatim, repeated placeholder, error shape, `placeholdersOf`, `hasStrayBraces`; `@ts-expect-error` for a wrong key, a missing param, an extra param on a no-param message, a missing and an extra es key |
+| 12.9 | `catalogs.contract.test.ts`, `catalog-content.test.ts` | Contract + unit | `catalogs/en/common.ts` not found | 30/30 | exact tables of 6 labels and 12 errors in EN and ES; fixture pairs for IN9b and IN10; grammar, whitespace and brace rows |
+| 12.5b, 12.10 smoke | `lib/calculators.test.ts`, `lib/language-free.contract.test.ts` | Unit + contract | `./calculators.ts` and `../contract/language-free.ts` not found | 6/6 | case A through the subpath, the es title, the registry equals the directories of core, negative rows (prose, markup, `2/4`, `1/1`, failed run, empty result) |
+| 12.10 contracts | `lib/i18n-contract.test.ts`, `.test-d.ts`, `lib/released.contract.test.ts` | Contract + type | written with the helpers, so the RED is shown by the break-the-code check: adding a second calculator to the registry fails 5 tests (`no released tuple`, missing keys, directory list) | 20/20 | the helpers (`missing-keys.ts`, `released.ts`) were created in the same step as their tests, a deviation from the order of the cycle |
+| lint gate | `gates.contract.test.ts` | Contract | the `.astro` row failed (plain TypeScript is not a valid frontmatter) | 94/94 | `testing/*` imports of core are rejected in `lib/x.ts` and `pages/x.astro`, allowed in `x.test.ts` and `contract/x.ts` |
+| 12.10c | `mutation.contract.test.ts`, `ci.contract.test.ts` | Contract | both files failed to load (`packages/data/stryker.config.mjs` not found) | 237/237 and 47/47 | data shard options, identity, CI key as a union of both identities, `--list`, `loadShardOwners` and its duplicate-name error |
+| 12.10c survivor | `material.test.ts` | Unit | the first data run left 1 survivor (`unitIdOf`, `typeof … === 'string'` replaced by `true`) | 68/68 and 139 of 139 killed | a purchase unit whose id is a number must report no unit in the locus |
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/calculators packages/core/src/url/released` 52 tests on the 12b tip; `packages/i18n` 30 on the 12d tip; `apps/web/src/lib` 20 and `apps/web/src/contract` 237 on the 12h tip; `packages/data` 68 |
+| Runtime harness | `npm run verify` exit 0 on every tip (1529, 1539, 1556, 1567, 1577, 1590, 1590, 1598 tests) including `astro build` and `check:dist`; the built `apps/web/dist/index.html` holds `Rectangle Area` and `Area (square feet): 100.00`; cold mutation below |
+| Rollback boundary | 12a: `calculators/rectangle-area/`, `__testing__/language-free.ts`, the `calculators` shard (config, matrix, contract); 12b: `__testing__/released-snapshot.ts` and the tests of the barrel and the subpath; 12c: `i18n/src/translate.ts` and its tests; 12d: `i18n/src/catalogs/`; 12e: `web/src/lib/calculators.ts`, `index.astro`, the `testing/*` exports of `packages/core/package.json` and their lint rule in `eslint.config.js`; 12f: `web/src/contract/{missing-keys,released}.ts` and the two contract tests; 12g: `tooling/stryker.mjs`, the slimmed core config and the Stryker block of `eslint.config.js`; 12h: `packages/data/stryker.config.mjs`, `packages/data/package.json` (the `mutation` script), `eslint.config.js`, `scripts/mutation.mjs`, the CI matrix and paths. Revert order: 12h and 12g together (12h builds its config on the helpers of 12g and the matrix of 12h lists `data`), and 12a to 12e newest first (each imports files of the one below; 12f goes with 12e, whose registry it iterates) |
+
+### Mutation (cold, `npm run mutation -- --shard <name>`, final code tip `9c9a522`)
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| calculators (new) | 100.00 | 39 | 0 | 0 | 10.0 s |
+| data (new) | 100.00 | 139 | 0 | 0 | 30.4 s |
+| url | 100.00 | 286 | 0 | 0 | 65.1 s |
+| calculator | 100.00 | 613 | 0 | 0 | 141.1 s |
+| rational | 100.00 | 202 | 7 | 0 | 67.1 s |
+| units | 100.00 | 213 | 0 | 0 | 50.7 s |
+| format | 100.00 | 409 | 0 | 0 | 96.5 s |
+
+All seven shards were run because `tooling/stryker.mjs` and the core manifest changed (every identity hash changed). No pragma. Logs: `scratchpad/mut12-<shard>.log`. The `calculators` log was produced by a second cold run after the first one reused the report of an earlier tip with the same identity (1.6 s).
+
+### Negative proof [QG11] for the new shards
+
+| Shard | Run | Score | Exit |
+|---|---|---|---|
+| calculators | the three test files of `rectangle-area/` moved out | 0.00 (39 survived) | 1 (`under breaking threshold 90`) |
+| data | `material.test.ts` replaced by a stub test (with no test file at all the dry run fails with "No test files found", which proves nothing about the score) | 0.00 (139 survived) | 1 (`under breaking threshold 90`) |
+
+Both restored, `git status` clean. Logs: `scratchpad/neg12-calculators.log`, `neg12-data.log`.
+
+### Full-chain hygiene (task 12.11)
+
+- `npm run verify` exit 0 on the final code tip: 72 test files, 1598 tests; coverage 100 percent for statements (950), branches (550), functions (229) and lines (826) over core, data and i18n (thresholds core 100, data and i18n 90).
+- `fd -t d dist packages` empty (also with `-HI`); the MW4 `rg -n "src/lib/(engine|units|format|types)" …` empty; `git status --porcelain` clean after the runs.
+- SX4: `git log --format=%B 90933bd..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty; the longest subject is 71 characters.
+- Type budget: 22,631 instantiations for the sources (57 percent of 40,000; 22,316 before, so `rectangle-area` costs about 315) and 119,771 for the test program (80 percent of 150,000; 117,737 before).
+
+### Scope and deviations (PR 12)
+
+- Base: the stack is cut from the PR 11 tip, not `main` (task 12.1); the rebase command is above.
+- Eight code slices plus a records slice, not two: sizes 362, 141, 263, 276, 165, 238, 284 and 250. The i18n work was first committed as one unit of 539 lines and split at the translator/catalog boundary.
+- Task 12.5b landed in `12e`, not `12a`: it needs the web registry, and core tests cannot import `node:*` (lint), so a directory scan in core was not possible. The web test also asserts that the registry lists every directory under `packages/core/src/calculators`.
+- Layer-clean completeness (task 12.10): the snapshot `RELEASED` moved from `url/released.contract.test.ts` to `core/src/__testing__/released-snapshot.ts` and core exposes it, `released-harness` and the other test support through `testing/*` subpaths; the HARD test lives in web and runs `completenessProblems` against the real registry. Core's own `REGISTRY` is `[rectangleArea]` imported from the calculator directory. Lint (a new block plus a probe test) keeps those subpaths out of shipped web code.
+- `calculators` shard in its own mutation shard, not in `calculator` (D10 split rule); the `data` shard needed `tooling/stryker.mjs` (shared identity hash, pruning, shard options) first, so `12g` is a refactor slice and `12h` the shard. The CI cache key stays one superset for all shards (a data change colds the core shards); recorded as a follow-up.
+- The i18n key grammar of the spec (`[A-Za-z0-9-]+` per segment) has no underscore although `errors.BELOW_MIN` needs one; the spec, the contract test and the design now say `[A-Za-z0-9_-]+`.
+- Translator errors are an `I18nError` class with a `code` (i18n imports nothing, so no `CoreError`); the spec names only the codes. `placeholdersOf` and `hasStrayBraces` are public so that core-less contract tests in two packages share them.
+- `rectangle-area` outputs share one quantity: a `Quantity` keeps no unit, so the display hint is the only difference between the three outputs.
+- `index.astro` renders the title and the default area of the registry's first calculator (smoke, not a product page), prerendered; the PR 1 `Locales:` probe is gone.
+- A first draft of the shape for `ParamsOf<'Hello'>` resolved to `{}` and failed the empty-object lint; `ParamsOf` is now `Readonly<Record<NamesIn<S>, string | number>>` and the test pins a message with a placeholder.
+
+### Key learnings (PR 12)
+
+- A `Quantity` stores canonical square inches with no unit, so a calculator whose outputs differ only by unit returns the same value three times and the display hint carries the whole difference.
+- The core lint gate bans `node:*` in core tests as well, so any check that must read the file system (a directory scan, a catalog listing) has to live in `apps/web`, the only package allowed to.
+- A dotted key grammar of `[A-Za-z0-9-]+` cannot hold the `errors.BELOW_MIN` keys the same spec requires, and only a test that applies the grammar to the real catalogs shows it.
+- Moving the Stryker identity and option logic to one shared module lets a second package join the gate with a 60-line config, but the shared file must be in every identity set and in the CI key because its command flags decide mutant verdicts.
+- A cold mutation run of a shard whose identity did not change since the last run is a 1.6 s cache hit, so evidence for a cold run needs the shard report removed first.
+
+## PR 12 correction round 1 (task 12.13)
+
+Mode: strict TDD, runner `npm test`. Input: four lenses (R1 risk PASS with 3 minors, R2 readability FAIL with 2 MAJOR documentation findings, R3 reliability PASS with 4 minors, R4 resilience PASS with 2 MAJOR scaling findings and minors) and the phase validator (PASS WITH NOTES). Small fixes were folded into the owner branches with `git commit --fixup` and `git rebase -i --autosquash --update-refs 90933bd` (no conflict). The larger work became six new slices stacked between `12h` and the records slice, which stays last. History is local and unpushed. The only deviation from the order of the cycle is listed in the evidence table (rows marked "on arrival").
+
+Applied (by ID): R2 RD-1 (recipe in `AGENTS.md`; `pairs` removed, the catalog modules are read from the directories by the web test and hygiene-checked there; the English key union is derived from the registry type), RD-7 (the pinned `toEqual([rectangleArea])` is a `toContain`), RD-8 (nits in the rectangle-area tests, spec tags and spelled-out review IDs), RD-2/REL-4 (neutral tú register in the catalog, the spec and task 12.9), R3 REL-1 (retired-tuple row), REL-3 (negative proof rerun at the new tip), R4 RES-1 (per-shard identity and CI key), RES-2 and RES-4 (D10 split rules; `calculator` split in two shards), RES-3 (type budgets scale with the calculator count), RES-5 (`reason` in the cause), RES-6 and RD-3 (`index.astro`), RES-8 (`scripts/mutation.mjs` discovery), R1-1 to R1-3 (test-support boundary), RD-4 to RD-6 (comments, design rows), the validator items D1 to D6, the rollback line and the deploy note. Record-only: RES-7 (no mutation shard for the translator: deferred to the next change that touches it, recorded in design Open Questions and task 12.12, because the shard also needs CI matrix, identity and contract work that is a slice of its own) and RES-9 (mutation needs a POSIX shell). Deferred: none.
+
+| Branch | Tip | Content | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|---|
+| `feat/foundation-12a-rectangle-area` | `8a25f00` | fixup: test nits (merged import, `outcomeOf`, `Quantity<'length'>`) | 361 | 1529 |
+| `feat/foundation-12b-url-snapshot` | `a10221c` | unchanged | 141 | 1539 |
+| `feat/foundation-12c-i18n-translator` | `8dbae26` | unchanged (rebased) | 263 | 1556 |
+| `feat/foundation-12d-i18n-catalogs` | `8fba93d` | fixup: tú register, `catalogProblems` test support, spec delta | 280 | 1566 |
+| `feat/foundation-12e-web-registry` | `5d0f4be` | fixup: lint bans, explicit `testing/*` exports, `index.astro`, relaxed registry test, spec tags | 233 | 1587 |
+| `feat/foundation-12f-web-contracts` | `b67f537` | fixup: directory-derived modules and hygiene, registry-derived key type, retired row, type budgets | 322 | 1602 |
+| `feat/foundation-12g-stryker-shared` | `dd151c6` | fixup: generalised comments | 287 | 1602 |
+| `feat/foundation-12h-data-mutation-shard` | `c1c606c` | fixup: config discovery in `scripts/mutation.mjs`, comment | 292 | 1611 |
+| `feat/foundation-12j-released-test-split` (new) | `15bbb97` | the `url` shard imports no calculator and not the snapshot | 63 | 1611 |
+| `feat/foundation-12k-identity-helpers` (new) | `0c1c7f5` | `identityFilesOf`, `sharedIdentityFiles` | 194 | 1619 |
+| `feat/foundation-12l-per-shard-identity` (new) | `015b827` | per-shard identity in both configs, import-graph contract | 381 | 1636 |
+| `feat/foundation-12m-per-shard-ci-key` (new) | `fb3a059` | per-shard matrix entries and cache key, contract | 315 | 1644 |
+| `feat/foundation-12n-split-calculator-shard` (new) | `6a7bd3f` | `calculator-define` and `calculator-run` | 61 | 1647 |
+| `feat/foundation-12o-define-failure-reason` (new) | `7691e70` | `reason` in the `INVALID_DEFINITION` cause | 13 | 1647 |
+| `feat/foundation-12i-record-pr12` | see report | records, spec, design, `AGENTS.md`, state | docs only | 1647 |
+
+### TDD Cycle Evidence (round 1)
+
+| Item | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| RD-2, REL-4 (tú) | `catalog-content.test.ts` | 1 failed (`says exactly the Spanish messages`: Ingrese, Use, Elija) | 31/31 | the exact table changed first; a register guard (`ingrese`, `use`, `utilice`, `elija`, `seleccione`, `escriba`, `introduzca`, `verifique` as whole words) passed on arrival and is pinned by a positive and a negative sample |
+| RD-1, REL-2 (hygiene of every module) | `lib/i18n-contract.test.ts` | on arrival (characterization) | 7/7 | `catalogProblems` moved from the i18n test to `__testing__/catalog-problems.ts` (exported as `testing/catalog-problems`); break-the-code: a trailing space in `Largo` failed the new row with `surrounding whitespace in es` |
+| RD-1 (English key union) | `lib/i18n-contract.test-d.ts` | on arrival | 3/3 | break-the-code: deleting `calc.rectangle-area.title` from the English module made the first check a type error |
+| R1-1, R1-2 (lint) | `gates.contract.test.ts` | 4 failed (data `testing` import, `../contract/root.ts` from `lib/x.ts` and `pages/x.astro`, `../contract`) | 102/102 | rows allow the same import in `x.test.ts`, `__testing__/x.ts` and `contract/x.ts` |
+| R1-3 (exports) | `manifest.contract.test.ts` | 3 failed (the `testing/*` wildcard) | 34/34 | explicit entries `collect-strings`, `language-free`, `released-harness`, `released-snapshot` in core and `catalog-problems` in i18n; each target must exist |
+| REL-1 | `lib/released.contract.test.ts` | on arrival | 5/5 | break-the-code: dropping the `retired !== true` filter of `completenessProblems` failed the new row |
+| RES-3 | `typecost.contract.test.ts` | not applicable (budget formula) | 3/3 | no assertion mirrors the formula; the two budget tests still pass at 22,631 of 30,250 and 119,762 of 137,000 |
+| RES-8 | `mutation.contract.test.ts` | 1 failed (`Cannot find module`: the script still named the packages) | 48/48 | a fresh temporary root with two packages out of name order and one without a config |
+| RES-1 helpers (12k) | `mutation-identity-files.contract.test.ts` | 28 failed (`identityFilesOf is not a function`, first run of the whole new file) | 8/8 for the helpers | union, dedupe, negated mutate globs, dotfiles, a sibling package, an unmatched glob, a missing shared file, two symlinks |
+| RES-1 identity (12l) | `mutation-identity.contract.test.ts` | `identityFilesFor is not a function` | 17/17 | each shard holds its own files; the calculators and the snapshot are in the identity of `calculators` alone; the import-graph walk is green for the kernel `deps`; the prototype of the walk, run before the `url` test split, listed `released-snapshot.ts` and `rectangle-area` in the `url` closure, which is why `12j` exists |
+| RES-1 CI (12m) | `mutation-ci-key.contract.test.ts`, `ci.contract.test.ts` | `include` undefined (7 shard rows, 2 more) | 283/283 | the walk of `hashFiles` globs found a missing `fixture-box.test.ts` line in the first matrix entry of `calculator` |
+| RES-4 | `mutation.contract.test.ts`, `mutation-ci-key.contract.test.ts` | 1 failed (`has seven named shards`), then 4 failed (matrix entries) | 286/286 | the cold runs of both new shards were 100.00 on the first try (no test file had to move between them) |
+| RES-5 | `calculator/define.test.ts` | 78 failed (the locus lacked `reason`) | 106/106, 1243 core tests | `toStrictEqual` rows unchanged except the locus |
+| RD-7, RD-8 nits | `calculators/rectangle-area/*.test.ts` | not applicable (refactor) | 33/33 before and after | |
+
+### Work Unit Evidence (round 1)
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run apps/web/src/contract` 283 (12m) and 286 (12n); `packages/core/src/calculator/define.test.ts` 106; `packages/i18n` 29; `apps/web/src/lib` 24 |
+| Runtime harness | `npm run verify` exit 0 on all fifteen tips including `astro build` and `check:dist`; cold mutation on all eight shards; the identity proof below |
+| Rollback boundary | 12j: `calculators/released.contract.test.ts` and `url/released-harness.test.ts` (revert together); 12k: `identityFilesOf` and its test; 12l: the two Stryker configs and the identity contract; 12m: the matrix, the key step and the CI contract (revert 12m before 12l: the key test needs the identity); 12n: the two `calculator-*` shards, their matrix entries and the contract rows; 12o: `define.ts` and the locus rows |
+
+### Gates (round 1)
+
+`npm run verify` exit 0 on all fifteen tips (1529, 1539, 1556, 1566, 1587, 1602, 1602, 1611 on 12a to 12h; 1611, 1619, 1636, 1644, 1647, 1647 on 12j to 12o; 1647 on 12i); `.vitest` and both `reports` directories were removed before each run. Type cost: 22,631 instantiations for the sources and 119,762 for the test program. SX4: `git log --format=%B 90933bd..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty; the longest subject is 71 characters.
+
+Mutation, final code tip (`7691e70`, the records slice adds no code), cold (both `reports` directories removed first), logs `scratchpad/mut12c-<shard>.log`:
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| rational | 100.00 | 202 | 7 | 0 | 68 s |
+| units | 100.00 | 213 | 0 | 0 | 49 s |
+| format | 100.00 | 409 | 0 | 0 | 91 s |
+| calculator-define (new) | 100.00 | 460 | 0 | 0 | 101 s |
+| calculator-run (new) | 100.00 | 153 | 0 | 0 | 35 s |
+| url | 100.00 | 286 | 0 | 0 | 65 s |
+| calculators | 100.00 | 39 | 0 | 0 | 10 s |
+| data | 100.00 | 139 | 0 | 0 | 31 s |
+
+No pragma. The two new shards add up to the 613 mutants of the former `calculator` shard (97 s and 34 s on the first run, 131 s together against 141 s for the shard), so the split loses no mutant and no kill. At the CI factor 4.16 they project to about 7 minutes and 2.4 minutes against 9 min 47 s.
+
+### Identity proof
+
+`optionsFor(<shard>).incrementalFile` of every shard, before and after appending a comment line to `packages/core/src/calculators/rectangle-area/rectangle-area.ts` (reverted afterwards), and, for contrast, after the same edit to `packages/core/src/format/rounding.ts` (reverted):
+
+| Shard | Before | After a calculator edit | After a kernel edit |
+|---|---|---|---|
+| rational | `ba06789a17092081` | `ba06789a17092081` | `684dd726e37cc7de` |
+| units | `ba06789a17092081` | `ba06789a17092081` | `684dd726e37cc7de` |
+| format | `ba06789a17092081` | `ba06789a17092081` | `684dd726e37cc7de` |
+| calculator-define | `0562cf75fb487c23` | `0562cf75fb487c23` | `c1f57f084fb0f159` |
+| calculator-run | `ba06789a17092081` | `ba06789a17092081` | `684dd726e37cc7de` |
+| url | `943ef06334963d5a` | `943ef06334963d5a` | `e2496d9a8329ced3` |
+| calculators | `35de9987b1609cd4` | `601512ed4585e6ec` | `c71535d47a84895c` |
+| data | `e9ac63f92c39b097` | `e9ac63f92c39b097` | `279a32422a93fca2` |
+
+A calculator edit changes the report name of `calculators` only. The kernel shards share most of their inputs (their tests reach the kernel through `index.test.ts`, `fixture-box` and `arbitraries`), so a kernel edit colds every shard, as before.
+
+### Negative proof [QG11]
+
+| Shard | Run | Score | Exit |
+|---|---|---|---|
+| calculator-define | `constraints`, `define`, `reserved-keys` and `validate` tests replaced by stubs | 47.39 (242 survived; `index`, `error-codes` and `fixture-box` tests still kill 218) | 1 (`under breaking threshold 90`) |
+| calculator-run | `message-keys`, `run` and `run-language-free` tests replaced by stubs | 32.03 (104 survived) | 1 |
+| calculators (rerun at the new tip, REL-3) | the four `rectangle-area` tests and `released.contract.test.ts` replaced by stubs | 0.00 (39 survived) | 1 |
+
+The first negative proof of `calculators` (round 0) ran on the working tree of `12a`; this run is on the final tip. All restored, `git status` clean. A first attempt that moved the test files away failed differently and proved the other guard: `identityFilesOf` throws `matches no file` when a listed test is missing, so a deleted test cannot silently shrink the identity.
+
+### Scope and deviations (round 1)
+
+- Six new slices instead of one or two: the identity work split into helpers, configs and CI key (194, 381 and 315 lines) and the released-test split came first because the `url` shard imported a calculator.
+- The pinned `deps` of the review (`rational` listing `src/rational/**`, `errors.ts`, `result.ts`) was too small: the import-graph walk shows the tests of every kernel shard reach units, format and the calculator contract. The `deps` are therefore the kernel plus the shard's extras, and the gain is the isolation of `calculators` and `url`, which are the ones that grow.
+- The root barrel `src/index.ts` is read for its own text and not followed: `index.test.ts` only pins its export names, and following it would have put every module in every identity.
+- The check name of a matrix job is `mutation (<shard>)` (explicit `name`), because a matrix entry with a multi-line `inputs` would otherwise name the job after all its values. Multi-line `inputs` passed to `hashFiles(matrix.inputs, …)` rely on `hashFiles` splitting its patterns on newlines (the runner joins its arguments with newlines); the contract test expands the same globs with `fs.globSync`, but GitHub itself was not run, so the first CI run of this stack is the proof.
+- `catalogProblems` is test support exported from `@maestro-calc/i18n` as `testing/catalog-problems` and lint-banned from shipped code like the core subpaths.
+- Intermediate tip: on `12d` the catalogs have no real-catalog hygiene test (it needs the directory listing, which only web may read); `12f` adds it. Every tip passes `verify`.
+- No `Co-Authored-By` or AI attribution in any commit (the user's global rule).
+
+### Key learnings (round 1)
+
+- An import-graph walk over a shard's sources and tests shows that the five kernel shards share one closure through `index.test.ts`, `fixture-box` and `arbitraries`, so only a shard whose tests are decoupled from the kernel (here `calculators`) can get an identity of its own.
+- A contract test that reads the `hashFiles` globs of the CI matrix and expands them with `fs.globSync` found a missing file in the first draft of a matrix entry, which a hand check of 20 lines would not have.
+- A harness test that mixes a snapshot of real calculators with hand-built ones pulls a calculator into the closure of a shard that must not depend on it, so the two have to live in different test files.
+- A glob that matches nothing must be an error in an identity list, because a silent empty match makes the report name depend on fewer files than the shard runs.
+- Writing the new contract test files first made the first run fail 28 tests at once on a missing function, which showed the API the tooling needed before any of it existed.

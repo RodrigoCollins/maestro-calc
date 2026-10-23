@@ -82,7 +82,7 @@ Workspace dependencies MUST form an acyclic graph with exactly these allowed edg
 
 ### Requirement: Internal packages ship TypeScript source
 
-Internal packages MUST expose their public API through `exports` pointing to TypeScript source. There MUST be no build step, emitted `dist`, or generated declaration step for `core`, `data`, or `i18n` in this change. Consumers (Vite, Astro, vitest) MUST resolve and compile that source directly.
+Internal packages MUST expose their public API through `exports` pointing to TypeScript source. There MUST be no build step, emitted `dist`, or generated declaration step for `core`, `data`, or `i18n` in this change. Consumers (Vite, Astro, vitest) MUST resolve and compile that source directly. A package MAY also expose named test-support subpaths under `testing/` (one explicit entry per file, never a wildcard) for the contract tests of `apps/web`; shipped sources, including `packages/data` and shipped web code, MUST NOT import them, and lint rejects such an import (a probe test pins it).
 
 #### Scenario: Web build consumes workspace source
 - GIVEN `apps/web` importing `@maestro-calc/core`, `@maestro-calc/data`, and `@maestro-calc/i18n`
