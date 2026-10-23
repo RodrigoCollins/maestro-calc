@@ -34,6 +34,11 @@ const failure = (record: unknown): { code: string; reason?: string; cause?: unkn
   return { code: 'NONE' };
 };
 
+const withSource = (retrieved: string): MaterialRecord<'plywood-sheet'> => ({
+  ...plywood(),
+  source: { name: 'Manufacturer catalog', retrieved },
+});
+
 describe('defineMaterial (material-data-contract › Material record shape)', () => {
   // spec: material-data-contract › Valid plywood sheet [MD1]
   it('returns the record with equal content and 4608 in2 for 32 ft2', () => {
@@ -166,9 +171,72 @@ describe('defineMaterial (material-data-contract › Material record shape)', ()
       'NON_POSITIVE_SIZE',
       { id: 'plywood-sheet', unit: 'sheet' },
     ],
+    ['no source', { ...plywood(), source: undefined }, 'MISSING_SOURCE', { id: 'plywood-sheet' }],
+    ['a null source', { ...plywood(), source: null }, 'MISSING_SOURCE', { id: 'plywood-sheet' }],
+    [
+      'a source with an empty name',
+      { ...plywood(), source: { name: '', retrieved: '2026-10-22' } },
+      'MISSING_SOURCE',
+      { id: 'plywood-sheet' },
+    ],
+    [
+      'a source whose name is not text',
+      { ...plywood(), source: { name: 7, retrieved: '2026-10-22' } },
+      'MISSING_SOURCE',
+      { id: 'plywood-sheet' },
+    ],
   ])('a record with %s', (_name, record, reason, cause) => {
     it(`throws INVALID_MATERIAL ${reason} and names where`, () => {
       expect(failure(record)).toStrictEqual({ code: 'INVALID_MATERIAL', reason, cause });
+    });
+  });
+
+  // spec: material-data-contract › Rejections [MD2]
+  describe('the retrieved date', () => {
+    // each month's last day is valid and the day after is not; February by the leap-year rule
+    const monthEnds = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const pad = (n: number): string => String(n).padStart(2, '0');
+
+    it.each(monthEnds.map((last, index) => [index + 1, last] as const))(
+      'accepts the last day of month %i and rejects the next',
+      (month, last) => {
+        expect(failure(withSource(`2026-${pad(month)}-${pad(last)}`)).code).toBe('NONE');
+        expect(failure(withSource(`2026-${pad(month)}-${pad(last + 1)}`)).reason).toBe(
+          'INVALID_SOURCE_DATE',
+        );
+      },
+    );
+
+    // a leap year does not move the end of any month but February
+    it.each(['2024-02-29', '2000-02-29', '2024-03-31', '2024-12-31', '2026-01-01', '0001-01-01'])(
+      'accepts %s',
+      (date) => {
+        expect(failure(withSource(date)).code).toBe('NONE');
+      },
+    );
+
+    it.each([
+      '2026-02-30',
+      '2026-02-29',
+      '2100-02-29',
+      '1900-02-29',
+      '2026-13-01',
+      '2026-00-10',
+      '2026-10-00',
+      '22/10/2026',
+      '2026-1-5',
+      '2026-10-22T00:00',
+      ' 2026-10-22',
+      '2026-10-22 ',
+      '2026/10/22',
+      '٢٠٢٦-١٠-٢٢',
+      '',
+    ])('rejects %j', (date) => {
+      expect(failure(withSource(date))).toStrictEqual({
+        code: 'INVALID_MATERIAL',
+        reason: 'INVALID_SOURCE_DATE',
+        cause: { id: 'plywood-sheet' },
+      });
     });
   });
 

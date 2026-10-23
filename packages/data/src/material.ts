@@ -38,6 +38,32 @@ type MaterialReason =
   | 'INVALID_SOURCE_DATE';
 
 const ID = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
+const DATE = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/;
+const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+const isLeapYear = (year: number): boolean =>
+  year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+
+/**
+ * True for a real `YYYY-MM-DD` date. Integer arithmetic only: `Date` would read `2026-02-30` as
+ * March and depends on the host clock settings. A month outside 1..12 has no entry, so its last
+ * day is 0 and no day fits.
+ */
+const isCalendarDate = (text: string): boolean => {
+  const match = DATE.exec(text);
+  if (match === null) return false;
+  // the regex guarantees three groups; the defaults only satisfy the index check
+  const [year = 0, month = 0, day = 0] = match.slice(1).map(Number);
+  const last = month === 2 && isLeapYear(year) ? 29 : (DAYS_IN_MONTH[month - 1] ?? 0);
+  return day >= 1 && day <= last;
+};
+
+const hasSourceName = (source: unknown): boolean =>
+  typeof source === 'object' &&
+  source !== null &&
+  'name' in source &&
+  typeof source.name === 'string' &&
+  source.name !== '';
 
 /**
  * Where a record is faulty, carried as the `cause` of the `INVALID_MATERIAL` error: the material
@@ -58,7 +84,8 @@ const ensureIn =
 
 /**
  * Defines a material: validates it eagerly, deep-freezes it and returns it. A faulty record throws
- * `CoreError('INVALID_MATERIAL', reason)`; the name keys must be `material.<id>.name` and
+ * `CoreError('INVALID_MATERIAL', reason)`; each unit is checked on its own before its id is compared
+ * with the earlier ones, and the name keys must be `material.<id>.name` and
  * `material.<id>.units.<unitId>`, the shape the i18n catalogs are checked against.
  */
 export const defineMaterial = <const Id extends string>(
@@ -77,6 +104,8 @@ export const defineMaterial = <const Id extends string>(
     ensure(!seen.has(unit.id), 'DUPLICATE_UNIT_ID', unit.id);
     seen.add(unit.id);
   }
+  ensure(hasSourceName(source), 'MISSING_SOURCE');
+  ensure(isCalendarDate(source.retrieved), 'INVALID_SOURCE_DATE');
   for (const unit of purchaseUnits) Object.freeze(unit);
   Object.freeze(purchaseUnits);
   Object.freeze(source);
