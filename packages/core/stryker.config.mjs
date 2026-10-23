@@ -126,6 +126,10 @@ export const shards = {
     mutate: ['src/format/**'],
     tests: ['src/format', 'src/index.test.ts'],
   },
+  calculator: {
+    mutate: ['src/calculator/**'],
+    tests: ['src/calculator', 'src/index.test.ts'],
+  },
 };
 
 export const shardNames = Object.keys(shards);

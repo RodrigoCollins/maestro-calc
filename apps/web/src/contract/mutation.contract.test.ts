@@ -363,8 +363,8 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
     );
 
-  it('has three named shards', () => {
-    expect(module_.shardNames).toEqual(['rational', 'units', 'format']);
+  it('has four named shards', () => {
+    expect(module_.shardNames).toEqual(['rational', 'units', 'format', 'calculator']);
   });
 
   // design 3.19b: no gap (a file nobody mutates) and no overlap (a file scored twice, which also
