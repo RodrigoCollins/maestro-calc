@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  alternates?: readonly { hreflang: string; href: string }[];
+  robots?: string;
+}
+const { title, description, canonical, alternates = [], robots } = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+<title>{title}</title>
+<meta name="description" content={description} />
+{robots !== undefined && <meta name="robots" content={robots} />}
+{canonical !== undefined && <link rel="canonical" href={canonical} />}
+{alternates.map(({ hreflang, href }) => (
+  <link rel="alternate" hreflang={hreflang} href={href} />
+))}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />

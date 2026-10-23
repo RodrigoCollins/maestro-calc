@@ -4,6 +4,9 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteText } from '../lib/site-text.ts';
+import { headFor } from '../seo/head.ts';
 
 // Smoke wiring (not a product page): the default area of rectangle-area, through the package entry
 // points, prerendered at build time. The page names its calculator by import, so a second entry in
@@ -15,21 +18,12 @@ const primary = result.ok
   : undefined;
 if (primary === undefined) throw new Error('rectangle-area must run with its defaults');
 const { integer, fraction } = toDecimalParts(valueIn(primary.value, ft2), 2);
+const head = headFor('home', 'en', siteText('en'));
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{t('calc.rectangle-area.title')}</title>
-  </head>
-  <body>
-    <h1>{t('calc.rectangle-area.title')}</h1>
-    <p>
-      {t('calc.rectangle-area.outputs.areaFt2')}: {integer.toString()}.{fraction}
-    </p>
-  </body>
-</html>
+<BaseLayout locale="en" head={head}>
+  <h1>{t('calc.rectangle-area.title')}</h1>
+  <p>
+    {t('calc.rectangle-area.outputs.areaFt2')}: {integer.toString()}.{fraction}
+  </p>
+</BaseLayout>
