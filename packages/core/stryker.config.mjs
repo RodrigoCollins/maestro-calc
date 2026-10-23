@@ -67,20 +67,29 @@ for (const path of incrementalIdentityFiles) {
 
 const identityHash = identity.digest('hex').slice(0, 16);
 
+// `stryker-incremental-<hash>-<shard>.json`, or the legacy unsharded `stryker-incremental-<hash>.json`.
+const REPORT_NAME = /^stryker-incremental-[0-9a-f]+(?:-(.+))?\.json$/;
+
+/** The shard a report belongs to: `undefined` for a legacy report, `null` for any other file. */
+const shardOfReport = (name) => {
+  const match = REPORT_NAME.exec(name);
+  return match === null ? null : match[1];
+};
+
 /**
  * Deletes the incremental reports of the shard that `keepFile` belongs to (and the legacy
  * unsharded ones) except `keepFile` itself, so old reports do not pile up. The reports of the
  * other shards stay: a local full run writes one report per shard. A `keepFile` with no shard
- * suffix (the legacy name) matches only the legacy unsharded reports.
+ * suffix (the legacy name) matches only the legacy unsharded reports. The shard is compared as
+ * text, never interpolated into a pattern.
  */
 export const pruneStaleReports = (reportsDirectory, keepFile) => {
   if (!existsSync(reportsDirectory)) return;
-  const shard = /^stryker-incremental-[0-9a-f]+-(.+)\.json$/.exec(keepFile)?.[1];
-  const own = new RegExp(`^stryker-incremental-[0-9a-f]+(-${shard})?\\.json$`);
+  const keepShard = shardOfReport(keepFile);
   for (const name of readdirSync(reportsDirectory)) {
-    if (own.test(name) && name !== keepFile) {
-      rmSync(join(reportsDirectory, name));
-    }
+    const shard = shardOfReport(name);
+    if (name === keepFile || shard === null) continue;
+    if (shard === undefined || shard === keepShard) rmSync(join(reportsDirectory, name));
   }
 };
 
@@ -170,7 +179,7 @@ export const optionsFor = (shard) => {
 };
 
 /** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
-const options = optionsFor(process.env.STRYKER_SHARD ?? 'all');
+const options = optionsFor(process.env.STRYKER_SHARD || 'all');
 
 // The config is also imported by tests and editors, which must not delete reports; only a real
 // Stryker run prunes.

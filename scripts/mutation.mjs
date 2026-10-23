@@ -6,8 +6,23 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const isShardFlag = (argument) => argument === '--shard' || argument.startsWith('--shard=');
 
+/**
+ * Only `--list`, `--shard <name>` and `--shard=<name>` exist: a typo such as `--shards` must fail
+ * instead of silently running every shard. The word after a bare `--shard` is its value.
+ */
+const rejectUnknownArguments = (argv) => {
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index];
+    if (argument === '--shard') index += 1;
+    else if (argument !== '--list' && !argument.startsWith('--shard=')) {
+      throw new Error(`unknown argument: ${argument}`);
+    }
+  }
+};
+
 /** Every shard by default, or the one named by `--shard <name>` / `--shard=<name>`. */
 export const selectShards = (argv, names) => {
+  rejectUnknownArguments(argv);
   const index = argv.findIndex(isShardFlag);
   if (index === -1) return names;
   if (argv.filter(isShardFlag).length > 1) throw new Error('only one --shard is allowed');
