@@ -396,6 +396,10 @@ Follow-up (PR 11 review, RES-3): `decode` has no total cap on the query length, 
 
 Follow-up (PR 11 review, RES-5): record the first CI wall time of `mutation (calculator)` and of the new `mutation (url)` job when the stack is pushed (calculator is 135 s local cold, projected at 6.4 to 8.8 minutes on CI; url is about 64 s local cold, 286 mutants including the released-key harness).
 
+Follow-up (PR 12 Judgment Day, both judges, the FIRST follow-up of the next change): the per-shard mutation identity of `rational`, `units`, `format`, `calculator-define` and `calculator-run` (and their CI `hashFiles` inputs) omits `src/url/**`, although every one of those shards runs `src/index.test.ts`, which loads the url codec through the root barrel. A codec change can therefore reuse stale mutant verdicts on an exact cache hit (the cache is saved on `main` only; `verify` and a cold run still catch a broken codec). Fix by following the root barrel in the identity closure walk, or by adding `src/url/**` to the kernel deps, and remove the assertion in `apps/web/src/contract/mutation-identity.contract.test.ts` that pins the gap.
+
+Follow-up (PR 11 Judgment Day, Judge A, info): `encode` does not enforce the 256-character value cap that `decode` applies, so a valid over-long value on a calculator without `max` round-trips to the default (decide in the spec: cap in `encode` or document); `decode` throws a host `TypeError` for a non-string query from an untyped caller (guard like `encode`'s `NOT_AN_OBJECT`); `StateLocus` is not exported from the url barrel.
+
 ## Design review resolution
 
 Design review round 1 (tech lead, APPROVE WITH CHANGES), applied 2026-10-22.
