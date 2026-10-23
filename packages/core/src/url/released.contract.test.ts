@@ -1,21 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { compareReleased, type ReleasedField } from './released-harness.ts';
+import {
+  compareReleased,
+  type ReleasedCalculator,
+  type ReleasedField,
+} from './released-harness.ts';
 import { defineCalculator } from '../calculator/define.ts';
 import type { InputDescriptor } from '../calculator/descriptors.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
-import { decode, type UrlCodable } from './codec.ts';
+import { decode } from './codec.ts';
 
 /**
  * The public URL contract (url-state-codec › Key stability rules, rule 8): one ordered tuple per
  * input of every released calculator. A tuple is never modified or removed and a released
  * calculator never disappears; appending fields and calculators is allowed. The snapshot stays
- * empty until the first calculator ships in PR 12.
+ * empty until the first calculator ships in PR 12. Extend `RELEASED` and `REGISTRY` together: a
+ * calculator in one and not in the other is only noticed once PR 12 adds the completeness test.
  */
 const RELEASED: readonly ReleasedField[] = [];
 
 /** Every calculator that has been released. */
-const REGISTRY: readonly UrlCodable[] = [];
+const REGISTRY: readonly ReleasedCalculator[] = [];
 
 const lengthInput = (key: string, urlKey: string, inches: number): InputDescriptor => ({
   kind: 'length',
@@ -27,10 +32,15 @@ const lengthInput = (key: string, urlKey: string, inches: number): InputDescript
 });
 
 /** A calculator shaped like the first one to ship (`rectangle-area`) with the given inputs. */
-const area = (inputs: readonly [InputDescriptor, ...InputDescriptor[]], id = 'rectangle-area') =>
+const area = (
+  inputs: readonly [InputDescriptor, ...InputDescriptor[]],
+  id = 'rectangle-area',
+  retiredUrlKeys: readonly string[] = [],
+) =>
   defineCalculator({
     id,
     inputs,
+    retiredUrlKeys,
     outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
     compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),
   });
@@ -80,6 +90,14 @@ describe('released url keys (url-state-codec › Key stability rules)', () => {
         { kind: 'boolean', key: 'hole', urlKey: 'h', default: true },
       ]);
       expect(compareReleased(snapshot, [widened])).toEqual([]);
+      const appended: ReleasedField = {
+        ...LENGTH,
+        key: 'hole',
+        urlKey: 'h',
+        kind: 'boolean',
+        default: '1',
+      };
+      expect(compareReleased([...snapshot, appended], [widened])).toEqual([]);
       expect(decode(widened, 'v=1&l=150').state).toEqual({
         length: quantity(150, inch),
         width: quantity(120, inch),
@@ -90,6 +108,45 @@ describe('released url keys (url-state-codec › Key stability rules)', () => {
     it('accepts an appended calculator', () => {
       const other = area([lengthInput('side', 's', 12)], 'square-area');
       expect(compareReleased(snapshot, [current(), other])).toEqual([]);
+    });
+
+    it('checks each released calculator against its own tuples, wherever it is listed', () => {
+      const side: ReleasedField = {
+        calculatorId: 'square-area',
+        key: 'side',
+        urlKey: 's',
+        kind: 'length',
+        default: '12',
+      };
+      const square = area([lengthInput('side', 's', 12)], 'square-area');
+      expect(compareReleased([...snapshot, side], [square, current()])).toEqual([]);
+      const retuned = area([lengthInput('side', 's', 24)], 'square-area');
+      expect(compareReleased([...snapshot, side], [retuned, current()])).toEqual([
+        'square-area.side: default changed from "12" to "24"',
+      ]);
+      expect(compareReleased([...snapshot, side], [current()])).toEqual([
+        'square-area: released calculator is missing',
+      ]);
+    });
+
+    it('reports a default that is not a value of its kind', () => {
+      // a hand-built calculator: `defineCalculator` would refuse the default
+      const broken: ReleasedCalculator = {
+        id: 'rectangle-area',
+        retiredUrlKeys: [],
+        // @ts-expect-error the default is not a count, on purpose
+        inputs: [{ kind: 'count', key: 'n', urlKey: 'n', default: 'seven' }],
+      };
+      const tuple: ReleasedField = {
+        ...LENGTH,
+        key: 'n',
+        urlKey: 'n',
+        kind: 'count',
+        default: '7',
+      };
+      expect(compareReleased([tuple], [broken])).toEqual([
+        'rectangle-area.n: default changed from "7" to "(not a value)"',
+      ]);
     });
 
     it('fails when a tuple is removed or a released calculator vanishes', () => {
@@ -151,12 +208,93 @@ describe('released url keys (url-state-codec › Key stability rules)', () => {
         kind: 'select',
         default: 'matte',
       };
+      const flag = area([{ kind: 'boolean', key: 'finish', urlKey: 'f', default: false }]);
+      expect(compareReleased([released], [flag])).toEqual([
+        'rectangle-area.finish: kind changed from "select" to "boolean"',
+        'rectangle-area.finish: default changed from "matte" to "0"',
+        'rectangle-area.finish: option "matte" removed',
+        'rectangle-area.finish: option "gloss" removed',
+      ]);
       expect(compareReleased([bare], [select(['matte'])])).toEqual([
         'rectangle-area.finish: a select tuple needs options',
       ]);
       expect(compareReleased([{ ...LENGTH, options: ['a'] }], [current()])).toEqual([
         'rectangle-area.length: only a select tuple has options',
       ]);
+    });
+
+    // spec: rules 2 and 3 (a new default needs a new field; the old key is retired, never reused)
+    describe('a retired field', () => {
+      const retired: ReleasedField = { ...WIDTH, retired: true };
+      const oldKeyListed = (inputs: readonly [InputDescriptor, ...InputDescriptor[]]) =>
+        area(inputs, 'rectangle-area', ['w']);
+
+      it('accepts a field retired with its key in retiredUrlKeys', () => {
+        const retuned = oldKeyListed([lengthInput('length', 'l', 120)]);
+        expect(compareReleased([LENGTH, retired], [retuned])).toEqual([]);
+      });
+
+      it('accepts a replacement appended after the retired field', () => {
+        const retuned = oldKeyListed([
+          lengthInput('length', 'l', 120),
+          lengthInput('breadth', 'br', 144),
+        ]);
+        expect(compareReleased([LENGTH, retired], [retuned])).toEqual([]);
+      });
+
+      it('fails when the key is not in retiredUrlKeys', () => {
+        const silent = area([lengthInput('length', 'l', 120)]);
+        expect(compareReleased([LENGTH, retired], [silent])).toEqual([
+          'rectangle-area.width: retired url key "w" is missing from retiredUrlKeys',
+        ]);
+        const other = area([lengthInput('length', 'l', 120)], 'rectangle-area', ['x']);
+        expect(compareReleased([LENGTH, retired], [other])).toEqual([
+          'rectangle-area.width: retired url key "w" is missing from retiredUrlKeys',
+        ]);
+      });
+
+      it('fails when a retired key comes back as a new input', () => {
+        const reused = { ...current(), retiredUrlKeys: ['w'] };
+        expect(compareReleased([LENGTH, retired], [reused])).toEqual([
+          'rectangle-area.width: retired url key "w" is used again by the input "width"',
+        ]);
+        const unlisted = area([lengthInput('length', 'l', 120), lengthInput('depth', 'w', 12)]);
+        expect(compareReleased([LENGTH, retired], [unlisted])).toEqual([
+          'rectangle-area.width: retired url key "w" is missing from retiredUrlKeys',
+          'rectangle-area.width: retired url key "w" is used again by the input "depth"',
+        ]);
+      });
+
+      it('still holds the live fields to their position, skipping the retired one', () => {
+        const depth: ReleasedField = { ...LENGTH, key: 'depth', urlKey: 'd' };
+        const snapshotWithGap = [LENGTH, retired, depth];
+        const shrunk = oldKeyListed([
+          lengthInput('length', 'l', 120),
+          lengthInput('depth', 'd', 120),
+        ]);
+        expect(compareReleased(snapshotWithGap, [shrunk])).toEqual([]);
+        const swapped = oldKeyListed([
+          lengthInput('depth', 'd', 120),
+          lengthInput('length', 'l', 120),
+        ]);
+        expect(compareReleased(snapshotWithGap, [swapped])).toEqual([
+          'rectangle-area.length: key changed from "length" to "depth"',
+          'rectangle-area.length: url key changed from "l" to "d"',
+          'rectangle-area.depth: key changed from "depth" to "length"',
+          'rectangle-area.depth: url key changed from "d" to "l"',
+        ]);
+        const narrowed = oldKeyListed([lengthInput('length', 'l', 120)]);
+        expect(compareReleased(snapshotWithGap, [narrowed])).toEqual([
+          'rectangle-area.depth: field removed',
+        ]);
+      });
+
+      it('does not excuse removing a live field', () => {
+        const narrowed = oldKeyListed([lengthInput('length', 'l', 120)]);
+        expect(compareReleased([LENGTH, WIDTH], [narrowed])).toEqual([
+          'rectangle-area.width: field removed',
+        ]);
+      });
     });
 
     it('writes every default as its canonical url text', () => {
