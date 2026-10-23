@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { compareReleased, type ReleasedField } from '../__testing__/released.ts';
+import { compareReleased, type ReleasedField } from './released-harness.ts';
 import { defineCalculator } from '../calculator/define.ts';
 import type { InputDescriptor } from '../calculator/descriptors.ts';
 import { inch } from '../units/catalog.ts';

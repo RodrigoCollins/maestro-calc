@@ -1,5 +1,10 @@
+/*
+ * The comparison behind the released-key contract test. It lives beside the codec, not in
+ * `__testing__`, so that the `url` mutation shard mutates it (the shards skip `__testing__`): a
+ * harness that cannot fail would guard nothing. No barrel exports it.
+ */
 import type { InputDescriptor } from '../calculator/descriptors.ts';
-import { urlTextOf, type UrlCodable } from '../url/codec.ts';
+import { urlTextOf, type UrlCodable } from './codec.ts';
 
 /**
  * One input of a released calculator as the public URL contract records it (url-state-codec ›
