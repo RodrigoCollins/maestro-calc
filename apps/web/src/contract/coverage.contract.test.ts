@@ -35,6 +35,18 @@ describe('coverage thresholds (quality-gates › Coverage gate)', () => {
     expect((await loadThresholds())[glob]).toEqual(all(value));
   });
 
+  // spec: quality-gates › Coverage gate for the web helpers: pure routing and SEO code is held to 100
+  it.each(['apps/web/src/routing/**', 'apps/web/src/seo/**'])(
+    '%s is covered and requires 100 on every metric',
+    async (glob) => {
+      const config = await importFromRoot<{
+        default: { test: { coverage: { include: string[] } } };
+      }>('vitest.config.ts');
+      expect(config.default.test.coverage.include).toContain(glob);
+      expect((await loadThresholds())[glob]).toEqual(all(100));
+    },
+  );
+
   it('sets a global fallback of 90 on every metric', async () => {
     expect(await loadThresholds()).toMatchObject(all(90));
   });
