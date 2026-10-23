@@ -119,9 +119,14 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
   });
 });
 
-const { shardNames } = await importFromRoot<{ shardNames: string[] }>(
+const coreShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/core/stryker.config.mjs',
 );
+const dataShards = await importFromRoot<{ shardNames: string[] }>(
+  'packages/data/stryker.config.mjs',
+);
+// the shards of every package that has a Stryker config, core first
+const shardNames = [...coreShards.shardNames, ...dataShards.shardNames];
 
 describe('CI mutation job (quality-gates › Continuous integration workflow, Mutation gate)', () => {
   const mutation = workflow.jobs['mutation'];
@@ -177,6 +182,10 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
       'packages/core/*.json',
       'packages/core/stryker.config.mjs',
       'packages/core/vitest.config.ts',
+      'packages/data/src/**',
+      'packages/data/*.json',
+      'packages/data/stryker.config.mjs',
+      'packages/data/vitest.config.ts',
       'vitest.config.ts',
       'tooling/stryker.mjs',
       'tsconfig.base.json',
@@ -198,7 +207,7 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(restore?.with?.['restore-keys']).toBeUndefined();
     expect(save?.with?.['restore-keys']).toBeUndefined();
     expect(restore?.with?.['path']).toBe(
-      'packages/core/reports/stryker-incremental-*-${{ matrix.shard }}.json',
+      'packages/*/reports/stryker-incremental-*-${{ matrix.shard }}.json',
     );
     expect(save?.with?.['path']).toBe(restore?.with?.['path']);
     expect(save?.if).toContain("github.ref == 'refs/heads/main'");
@@ -216,7 +225,7 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(upload?.if).toBe('always()');
     expect(upload?.with).toMatchObject({
       name: 'mutation-report-${{ matrix.shard }}',
-      path: 'packages/core/reports/mutation',
+      path: 'packages/*/reports/mutation',
     });
   });
 });

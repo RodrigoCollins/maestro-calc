@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { existsSync, readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
@@ -35,10 +36,33 @@ export const selectShards = (argv, names) => {
   return [name];
 };
 
+/**
+ * Shard name to the package directory that owns it. The packages are the directories of
+ * `packages/` that have a `stryker.config.mjs`, in name order (`core` before `data`), so a package
+ * that adds a config joins the run without a list to keep. A name two packages declare would run
+ * the wrong one, so it is an error.
+ */
+export const loadShardOwners = async (root) => {
+  const owners = new Map();
+  const packages = readdirSync(join(root, 'packages'), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => join(root, 'packages', entry.name))
+    .filter((directory) => existsSync(join(directory, 'stryker.config.mjs')))
+    .sort();
+  for (const directory of packages) {
+    const { shardNames } = await import(pathToFileURL(join(directory, 'stryker.config.mjs')).href);
+    for (const shard of shardNames) {
+      if (owners.has(shard)) throw new Error(`mutation shard declared twice: ${shard}`);
+      owners.set(shard, directory);
+    }
+  }
+  return owners;
+};
+
 const main = async () => {
   const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-  const packageDir = join(root, 'packages', 'core');
-  const { shardNames } = await import(pathToFileURL(join(packageDir, 'stryker.config.mjs')).href);
+  const owners = await loadShardOwners(root);
+  const shardNames = [...owners.keys()];
   const args = process.argv.slice(2);
   // Validate the shard first, so `--list --shard nope` fails like `--shard nope`.
   const selected = selectShards(args, shardNames);
@@ -49,7 +73,7 @@ const main = async () => {
   // Run the Stryker script with this Node: `npx` is `npx.cmd` on Windows and cannot be spawned
   // without a shell. Its package `exports` hide the bin, so it is found next to `package.json`.
   const strykerDir = dirname(
-    createRequire(join(packageDir, 'package.json')).resolve('@stryker-mutator/core/package.json'),
+    createRequire(join(root, 'package.json')).resolve('@stryker-mutator/core/package.json'),
   );
   const strykerBin = join(strykerDir, 'bin', 'stryker.js');
   const failed = [];
@@ -57,7 +81,7 @@ const main = async () => {
     const started = Date.now();
     process.stdout.write(`\n=== mutation shard: ${shard} ===\n`);
     const { status, error } = spawnSync(process.execPath, [strykerBin, 'run'], {
-      cwd: packageDir,
+      cwd: owners.get(shard),
       env: { ...process.env, STRYKER_SHARD: shard },
       stdio: 'inherit',
     });

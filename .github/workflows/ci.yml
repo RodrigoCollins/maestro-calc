@@ -43,9 +43,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Must equal `shards` in packages/core/stryker.config.mjs (ci.contract.test.ts enforces it);
+        # Must equal the `shards` of packages/core/stryker.config.mjs followed by `data`, the one shard of
+        # packages/data/stryker.config.mjs (ci.contract.test.ts enforces it);
         # `npm run mutation -- --list` prints the names.
-        shard: [rational, units, format, calculator, url, calculators]
+        shard: [rational, units, format, calculator, url, calculators, data]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -55,34 +56,35 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # One key for restore and save. It is a superset of what the Stryker config hashes (core
-      # sources and tests, package config, root test and compiler config, Node, lockfile), so an
+      # One key for restore and save. It is a superset of what the Stryker configs hash (core and
+      # data sources and tests, package config, root test and compiler config, Node, lockfile), so an
       # exact hit is always sound. GitHub does not offer `runner` or `hashFiles` to a job-level env.
       - name: Compute the Stryker cache key
         run: >-
           echo "STRYKER_CACHE_KEY=stryker-${RUNNER_OS}-${{ matrix.shard }}-${{
           hashFiles('packages/core/src/**', 'packages/core/*.json',
           'packages/core/stryker.config.mjs', 'packages/core/vitest.config.ts',
-          'vitest.config.ts', 'tooling/stryker.mjs', 'tsconfig.base.json', '.nvmrc',
+          'packages/data/src/**', 'packages/data/*.json', 'packages/data/stryker.config.mjs',
+          'packages/data/vitest.config.ts', 'vitest.config.ts', 'tooling/stryker.mjs', 'tsconfig.base.json', '.nvmrc',
           'package-lock.json') }}"
           >> "$GITHUB_ENV"
       # Stryker reuses the report only when the key matches exactly (no restore-keys fallback). Each
       # shard has its own key and report, so shards never overwrite each other's cache.
       - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: packages/core/reports/stryker-incremental-*-${{ matrix.shard }}.json
+          path: packages/*/reports/stryker-incremental-*-${{ matrix.shard }}.json
           key: ${{ env.STRYKER_CACHE_KEY }}
       - run: npm run mutation -- --shard ${{ matrix.shard }}
       - if: github.ref == 'refs/heads/main'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: packages/core/reports/stryker-incremental-*-${{ matrix.shard }}.json
+          path: packages/*/reports/stryker-incremental-*-${{ matrix.shard }}.json
           key: ${{ env.STRYKER_CACHE_KEY }}
       - if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: mutation-report-${{ matrix.shard }}
-          path: packages/core/reports/mutation
+          path: packages/*/reports/mutation
           if-no-files-found: ignore
 
   # The one stable required-check name, whatever the number of shards: branch protection requires

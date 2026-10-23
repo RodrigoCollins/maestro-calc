@@ -304,7 +304,7 @@ export default defineConfig(
   },
   // Plain JS config outside every tsconfig program: parsed and linted without type information.
   {
-    files: ['packages/core/stryker.config.mjs', 'scripts/*.mjs', 'tooling/*.mjs'],
+    files: ['packages/*/stryker.config.mjs', 'scripts/*.mjs', 'tooling/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   prettier,

@@ -196,6 +196,12 @@ describe('defineMaterial (material-data-contract › Material record shape)', ()
       { id: 'plywood-sheet' },
     ],
     [
+      'a purchase unit whose id is a number',
+      { ...plywood(), purchaseUnits: [{ ...plywood().purchaseUnits[0], id: 7 }] },
+      'INVALID_UNIT_ID',
+      { id: 'plywood-sheet' },
+    ],
+    [
       'a size that is a plain number',
       { ...plywood(), purchaseUnits: [{ ...plywood().purchaseUnits[0], size: 32 }] },
       'NON_POSITIVE_SIZE',

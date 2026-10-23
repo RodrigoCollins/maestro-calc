@@ -60,6 +60,8 @@ const readJson = (relativePath: string): unknown =>
   JSON.parse(readFileSync(fromRoot(relativePath), 'utf8'));
 
 const module_ = await importFromRoot<StrykerModule>('packages/core/stryker.config.mjs');
+// The data package builds its own single shard on the same gate (task 12.10c).
+const dataModule = await importFromRoot<StrykerModule>('packages/data/stryker.config.mjs');
 // The default export follows STRYKER_SHARD, so assertions about all of core read it explicitly.
 const config = module_.optionsFor('all');
 const scripts = (relativePath: string): Record<string, string> =>
@@ -173,11 +175,19 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     const ciFiles = globs
       .flatMap((glob) => globSync(glob, { cwd: fromRoot() }))
       .filter((path) => statSync(fromRoot(path)).isFile())
-      .filter((path) => !path.startsWith('packages/core/src/') || !hasDotSegment(path))
+      .filter((path) => !/^packages\/[^/]+\/src\//.test(path) || !hasDotSegment(path))
       .sort();
-    const configFiles = module_.incrementalIdentityFiles
-      .map((path) => relative(fromRoot(), fromRoot('packages/core', path)))
-      .sort();
+    // one key serves every shard, so it covers the identity of each package that has a shard
+    const configFiles = [
+      ...new Set([
+        ...module_.incrementalIdentityFiles.map((path) =>
+          relative(fromRoot(), fromRoot('packages/core', path)),
+        ),
+        ...dataModule.incrementalIdentityFiles.map((path) =>
+          relative(fromRoot(), fromRoot('packages/data', path)),
+        ),
+      ]),
+    ].sort();
     expect(configFiles).toEqual(ciFiles);
   });
 
@@ -510,6 +520,79 @@ describe('mutation shard environment (STRYKER_SHARD)', () => {
   });
 });
 
+// PR 10 review RES-5 and PR 11 validator D5: coverage alone let a surviving `month === 2` mutant
+// through `defineMaterial`, so the data package is mutation-tested like core, as one shard.
+describe('data mutation shard (quality-gates › Mutation gate, task 12.10c)', () => {
+  const dataSrc = fromRoot('packages/data/src');
+  const sources = readdirSync(dataSrc, { recursive: true })
+    .map(String)
+    .filter((path) => path.endsWith('.ts') && !/\.test(-d)?\.ts$/.test(path))
+    .filter((path) => !/(^|\/)index\.ts$/.test(path) && !path.startsWith('__testing__/'))
+    .map((path) => `src/${path}`);
+  const options = dataModule.default;
+
+  it('is the one shard named data', () => {
+    expect(dataModule.shardNames).toEqual(['data']);
+    expect(module_.shardNames).not.toContain('data');
+  });
+
+  it('mutates every source of the package and not its tests, test support or barrels', () => {
+    expect(sources).toContain('src/material.ts');
+    const exclusions = config.mutate.filter((glob) => glob.startsWith('!'));
+    expect(options.mutate).toEqual(['src/**/*.ts', ...exclusions]);
+    const matched = globSync('src/**/*.ts', { cwd: fromRoot('packages/data') });
+    expect(sources.every((path) => matched.includes(path))).toBe(true);
+  });
+
+  it('runs the whole data suite with the same flags as core, in its own package directory', () => {
+    expect(options.commandRunner.command).toBe(config.commandRunner.command);
+    expect(options.commandRunner.command).not.toContain(' src/');
+    expect(options.incrementalFile).toMatch(
+      /^reports\/stryker-incremental-[0-9a-f]{16}-data\.json$/,
+    );
+    expect(options.htmlReporter.fileName).toBe('reports/mutation/data/index.html');
+    expect(options.jsonReporter.fileName).toBe('reports/mutation/data/mutation.json');
+  });
+
+  it('shares the gate options with core: runner, thresholds, timeouts and reporters', () => {
+    const own = ['mutate', 'commandRunner', 'incrementalFile', 'htmlReporter', 'jsonReporter'];
+    const shared = (source: StrykerConfig) =>
+      Object.fromEntries(Object.entries(source).filter(([key]) => !own.includes(key)));
+    expect(shared(options)).toEqual(shared(config));
+    expect(options.thresholds).toEqual({ high: 95, low: 90, break: 90 });
+  });
+
+  // The data tests import the core sources, so a core change can change a verdict: the report
+  // is named after the sources of both packages, and the CI key (a superset) covers them too.
+  it('keys its report by its own inputs and by every source of core', () => {
+    const files = dataModule.incrementalIdentityFiles;
+    for (const input of [
+      'src/material.ts',
+      'src/material.test.ts',
+      'stryker.config.mjs',
+      'vitest.config.ts',
+      'package.json',
+      '../core/src/rational/rational.ts',
+      '../core/src/units/quantity.ts',
+      '../core/package.json',
+      '../../package-lock.json',
+      '../../tooling/stryker.mjs',
+    ]) {
+      expect(files, input).toContain(input);
+    }
+    expect(files).toEqual([...files].sort());
+  });
+
+  it('is run by the root script, which lists it after the core shards', () => {
+    const { stdout } = spawnSync(process.execPath, [fromRoot('scripts/mutation.mjs'), '--list'], {
+      cwd: fromRoot(),
+      encoding: 'utf8',
+    });
+    expect(stdout.trim().split('\n').at(-1)).toBe('data');
+    expect(scripts('packages/data/package.json')['mutation']).toBe('stryker run');
+  });
+});
+
 describe('mutation runner script (scripts/mutation.mjs)', () => {
   interface Runner {
     selectShards: (argv: string[], names: string[]) => string[];
@@ -521,7 +604,10 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     });
 
   it('lists the shards and rejects an unknown one without running Stryker', () => {
-    expect(run('--list').stdout.trim().split('\n')).toEqual(module_.shardNames);
+    expect(run('--list').stdout.trim().split('\n')).toEqual([
+      ...module_.shardNames,
+      ...dataModule.shardNames,
+    ]);
     const bad = run('--shard', 'nope');
     expect(bad.status).toBe(1);
     expect(bad.stderr).toMatch(/unknown mutation shard: nope/);
@@ -546,6 +632,69 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     const mixed = run('--shard', 'rational', '--bogus');
     expect(mixed.status).toBe(1);
     expect(mixed.stderr).toContain('unknown argument: --bogus');
+  });
+
+  // Each shard runs in the package that declares it (core for the first seven, data for `data`).
+  it('maps every shard to the package that declares it, and refuses a name declared twice', async () => {
+    const { loadShardOwners } = await importFromRoot<{
+      loadShardOwners: (root: string) => Promise<Map<string, string>>;
+    }>('scripts/mutation.mjs');
+    const owners = await loadShardOwners(fromRoot());
+    expect(owners.get('rational')).toBe(fromRoot('packages/core'));
+    expect(owners.get('data')).toBe(fromRoot('packages/data'));
+    expect([...owners.keys()]).toEqual([...module_.shardNames, ...dataModule.shardNames]);
+    // the discovery is the directory scan itself: no package with a config can be left out
+    const withConfig = readdirSync(fromRoot('packages')).filter((name) =>
+      existsSync(fromRoot('packages', name, 'stryker.config.mjs')),
+    );
+    expect(withConfig.sort()).toEqual(['core', 'data']);
+    expect(new Set(owners.values())).toEqual(
+      new Set(withConfig.map((name) => fromRoot('packages', name))),
+    );
+
+    const root = mkdtempSync(join(tmpdir(), 'mutation-owners-'));
+    try {
+      for (const name of ['alpha', 'beta']) {
+        mkdirSync(join(root, 'packages', name), { recursive: true });
+        writeFileSync(
+          join(root, 'packages', name, 'stryker.config.mjs'),
+          "export const shardNames = ['same'];\n",
+        );
+      }
+      await expect(loadShardOwners(root)).rejects.toThrow('mutation shard declared twice: same');
+    } finally {
+      rmSync(root, { recursive: true });
+    }
+  });
+
+  // PR 12 review RES-8: a package is found by its config, not by a name kept in the script, and a
+  // package with no config (i18n today) is simply not a mutation package. A fresh root per test:
+  // Node caches an imported config by its path.
+  it('discovers the packages that have a Stryker config, in name order', async () => {
+    const { loadShardOwners } = await importFromRoot<{
+      loadShardOwners: (root: string) => Promise<Map<string, string>>;
+    }>('scripts/mutation.mjs');
+    const root = mkdtempSync(join(tmpdir(), 'mutation-discovery-'));
+    try {
+      for (const [name, shard] of [
+        ['zeta', 'last'],
+        ['alpha', 'first'],
+      ] as const) {
+        mkdirSync(join(root, 'packages', name), { recursive: true });
+        writeFileSync(
+          join(root, 'packages', name, 'stryker.config.mjs'),
+          `export const shardNames = ['${shard}'];\n`,
+        );
+      }
+      mkdirSync(join(root, 'packages', 'no-config'));
+      writeFileSync(join(root, 'packages', 'stray-file.txt'), '');
+      expect([...(await loadShardOwners(root))]).toEqual([
+        ['first', join(root, 'packages', 'alpha')],
+        ['last', join(root, 'packages', 'zeta')],
+      ]);
+    } finally {
+      rmSync(root, { recursive: true });
+    }
   });
 
   it('accepts exactly --list, --shard <name> and --shard=<name>', async () => {
