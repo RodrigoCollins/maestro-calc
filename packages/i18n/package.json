@@ -6,7 +6,8 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./catalogs/*": "./src/catalogs/*.ts"
+    "./catalogs/*": "./src/catalogs/*.ts",
+    "./testing/catalog-problems": "./src/__testing__/catalog-problems.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
