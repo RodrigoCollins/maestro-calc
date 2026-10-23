@@ -1,6 +1,7 @@
 import { Rational } from '../../rational/rational.ts';
 import { err, ok, type Result } from '../../result.ts';
-import { inch } from '../../units/catalog.ts';
+import { ft, inch } from '../../units/catalog.ts';
+import { add, negate } from '../../units/ops.ts';
 import { quantity, type Quantity } from '../../units/quantity.ts';
 import type { Unit } from '../../units/unit.ts';
 import type { LengthParseError } from './codes.ts';
@@ -35,9 +36,10 @@ const takeUint = (cursor: Cursor): PlainToken | undefined => {
   return token;
 };
 
-const takeUnit = (cursor: Cursor): UnitToken | undefined => {
+/** A unit token, or only a token of the unit `only` when given. */
+const takeUnit = (cursor: Cursor, only?: Unit<'length'>): UnitToken | undefined => {
   const token = cursor.tokens[cursor.pos];
-  if (token?.kind !== 'unit') return undefined;
+  if (token?.kind !== 'unit' || (only !== undefined && token.unit !== only)) return undefined;
   cursor.pos += 1;
   return token;
 };
@@ -105,21 +107,54 @@ const parseNumber = (cursor: Cursor): Rational | undefined => {
     : Rational.of(BigInt(whole.text));
 };
 
-/** `simple := number ws* UNIT?`. */
+/**
+ * The rest of `compound := uint ws* FEETMARK sep inches ws* INCHMARK?`, after the feet mark. The
+ * hyphen separator must touch the feet mark (and the number after it); a word feet mark needs an
+ * inch mark so that `5 ft 2` is not read as 5 ft 2 in.
+ */
+const parseInches = (
+  cursor: Cursor,
+  feet: Rational,
+  feetMark: UnitToken,
+): Quantity<'length'> | undefined => {
+  if (!takeKind(cursor, 'minus')) takeKind(cursor, 'ws');
+  const inches = parseNumber(cursor);
+  if (inches === undefined) return undefined;
+  takeKind(cursor, 'ws');
+  const inchMark = takeUnit(cursor, inch);
+  if (inchMark === undefined && !feetMark.symbol) return undefined;
+  return add(quantity(feet, ft), quantity(inches, inch));
+};
+
+/**
+ * `body := compound | simple`, where `simple := number ws* UNIT?`. Both forms start with the same
+ * number, optional whitespace and optional unit, which are read once: a feet mark with input left
+ * after it starts a compound (only a plain `uint` may be its feet), anything else is simple.
+ */
 const parseValue = (
   cursor: Cursor,
   defaultUnit: Unit<'length'>,
 ): Quantity<'length'> | undefined => {
+  const start = cursor.pos;
   const amount = parseNumber(cursor);
   if (amount === undefined) return undefined;
+  // A plain `uint` is exactly one token; decimals, fractions and mixed numbers are several.
+  const isUint = cursor.pos === start + 1;
   takeKind(cursor, 'ws');
   const mark = takeUnit(cursor);
-  return quantity(amount, mark === undefined ? defaultUnit : mark.unit);
+  if (mark === undefined) return quantity(amount, defaultUnit);
+  // Not a feet mark, or a feet mark that ends the input (`5'`, `5 ft`): a simple value.
+  if (mark.unit !== ft || cursor.pos === cursor.tokens.length) return quantity(amount, mark.unit);
+  return isUint ? parseInches(cursor, amount, mark) : undefined;
 };
 
 /**
  * Converts length text to an exact length: never rounds, never goes through `number`, never
  * throws. Fails with exactly one error; see `LengthParseError` for the code list and `offset`.
+ *
+ * Precedence when several things are wrong: the scanner's codes in scan order (`TOO_LONG`,
+ * `EMPTY`, `DECIMAL_COMMA`, then the first lexical fault); then `ZERO_DENOMINATOR`, wherever the
+ * zero sits in the text; then `MALFORMED`.
  */
 export const parseLength = (
   text: string,
@@ -128,10 +163,20 @@ export const parseLength = (
   const scanned = scan(text);
   if (!scanned.ok) return scanned;
   const cursor: Cursor = { tokens: scanned.value, pos: 0, zeroAt: undefined };
+  // `input := ws* sign? body ws*`: the sign applies to the whole value and touches the body.
+  const negative = takeKind(cursor, 'minus');
+  if (!negative) takeKind(cursor, 'plus');
   const value = parseValue(cursor, defaultUnit);
+  // A zero denominator is reported even when the parse failed elsewhere or stopped early.
   if (cursor.zeroAt !== undefined) return err({ code: 'ZERO_DENOMINATOR', offset: cursor.zeroAt });
   if (value === undefined || cursor.pos < cursor.tokens.length) {
-    return err({ code: 'MALFORMED', offset: cursor.tokens[cursor.pos]?.start ?? text.length });
+    // The first token the parser could not use. When the input ended too early there is none, and
+    // the offset is the end of the last token: the scanner drops trailing whitespace, so that is
+    // the trimmed length (anything `trimEnd` would also strip never gets past the scanner).
+    return err({
+      code: 'MALFORMED',
+      offset: cursor.tokens[cursor.pos]?.start ?? text.trimEnd().length,
+    });
   }
-  return ok(value);
+  return ok(negative ? negate(value) : value);
 };

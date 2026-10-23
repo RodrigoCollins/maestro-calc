@@ -1,8 +1,11 @@
+import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { failure } from '../../__testing__/length-failure.ts';
+import { numRuns } from '../../__testing__/property-runs.ts';
 import { ft, inch, yd } from '../../units/catalog.ts';
 import { valueIn } from '../../units/quantity.ts';
 import type { Unit } from '../../units/unit.ts';
+import { LENGTH_PARSE_CODES } from './codes.ts';
 import { parseLength } from './parser.ts';
 
 /** The parsed value in inches as exact text (`63`, `127/2`), or the failure result itself. */
@@ -156,32 +159,202 @@ describe('parseLength simple forms (fraction-format › Length text grammar)', (
   it('rejects an unknown unit word with the offset of the word', () => {
     expect(parsed('5 furlongs')).toEqual(failure('UNKNOWN_UNIT', 2));
     expect(parsed('5ft2')).toEqual(failure('UNKNOWN_UNIT', 1));
+    // the unit token is the maximal [A-Za-z]+[0-9]* run, so `ft3` is one (unknown) word
+    expect(parsed('5ft3in')).toEqual(failure('UNKNOWN_UNIT', 1));
   });
 
-  // spec: Malformed inputs [FP13]: the part of the table that needs no compound form
-  it.each(['"', "'", 'ft', 'abc', '3//4', '1 / 2', '.', '1.', '1/', '1/2.5', '3.5 1/2', '5 3 1/2'])(
-    'rejects %j with MALFORMED',
-    (text) => {
-      expect(parseLength(text)).toMatchObject({ ok: false, errors: [{ code: 'MALFORMED' }] });
-    },
-  );
-
-  // spec: Malformed inputs [FP13]: a unit, then more input
-  it.each(['1 yd 2 ft', '5" 3', '5 m 5', '1/2 3/4', '1 1/2 1/2'])(
-    'rejects %j: only one number and one unit fit a simple form',
-    (text) => {
-      expect(parseLength(text)).toMatchObject({ ok: false, errors: [{ code: 'MALFORMED' }] });
-    },
-  );
-
-  // spec: Length text grammar: a malformed fraction is not read as a shorter valid one; a point
-  // must be followed by digits, so the error points at the end of the input or the next token
-  it('does not read 1/ or 1. as the number 1', () => {
-    expect(parsed('1/')).toEqual(failure('MALFORMED', 1));
-    expect(parsed('1.')).toEqual(failure('MALFORMED', 2));
-    expect(parsed('.')).toEqual(failure('MALFORMED', 1));
+  // spec: Length text grammar: a decimal point consumes the next token whether or not digits
+  // follow, so the error points past the point; the other malformed rows are in the table below
+  it('does not read 1.x, 1." or 1 2 as the number 1', () => {
     expect(parsed('1.x')).toEqual(failure('MALFORMED', 2));
     expect(parsed('1."')).toEqual(failure('MALFORMED', 2));
     expect(parsed('1 2')).toEqual(failure('MALFORMED', 2));
+  });
+});
+
+describe('parseLength compound forms (fraction-format › Length text grammar)', () => {
+  // spec: Equivalent spellings of 63.5 inches [FP1]: 5 x 12 + 3.5 = 63.5 = 127/2
+  it.each([
+    `5' 3-1/2"`,
+    '5ft 3 1/2in',
+    '63.5in',
+    `5' 3.5"`,
+    `5'-3 1/2"`,
+    `5'3 1/2`,
+    '5′ 3 1/2″',
+    '5’ 3 1/2”',
+  ])('reads %j as 127/2 in', (text) => {
+    expect(parsed(text)).toBe('127/2');
+  });
+
+  // spec: Feet only, inches only, bare numbers [FP2b]
+  it.each([
+    [`5'3"`, '63'],
+    ['5 ft 3 in', '63'],
+    ['5ft 3in', '63'],
+    ['5 feet 3 inches', '63'],
+    ['5 foot 3 inch', '63'],
+    [`5 ' 3 "`, '63'],
+    [`5'3`, '63'],
+    [`5' 0"`, '60'],
+    [`0' 3/4"`, '3/4'],
+    [`5'-3"`, '63'],
+    [`5'\u22123"`, '63'], // U+2212 MINUS SIGN separates feet and inches like a hyphen
+    [`5'3 "`, '63'],
+    [`5' 3/4"`, '243/4'],
+  ])('reads %j as %s in', (text, expected) => {
+    expect(parsed(text)).toBe(expected);
+  });
+
+  // spec: Signs and unicode minus [FP3]: the sign applies to the whole value
+  it.each([
+    [`-5' 3"`, '-63'],
+    [`\u22125' 3"`, '-63'],
+    [`+5'`, '60'],
+    ['-0"', '0'],
+    [`0' 0"`, '0'],
+    [`-0' 0"`, '0'],
+    [`+5' 3 1/2"`, '127/2'],
+    ['-3 1/2', '-7/2'],
+    ['-1.5 m', '-7500/127'],
+    ['\u2212.5', '-1/2'],
+    ['+1/3"', '1/3'],
+  ])('reads %j as %s in', (text, expected) => {
+    expect(parsed(text)).toBe(expected);
+  });
+
+  // spec: Whitespace tolerance [FP4]
+  it('reads runs of spaces and a no-break space between the parts', () => {
+    expect(parsed(`  5'   3  1/2"  `)).toBe('127/2');
+    expect(parsed(`5'\u00A03"`)).toBe('63');
+    expect(parsed(`5\t'\t3\t"`)).toBe('63');
+  });
+
+  // spec: Inches beyond 11 and large feet [FP5]
+  it('does not limit the inches to 11 or the feet to a few digits', () => {
+    expect(parsed(`5' 15"`)).toBe('75');
+    expect(parsed(`100'`)).toBe('1200');
+    expect(parsed(`123456789012345678' 1"`)).toBe('1481481468148148137');
+  });
+
+  // spec: Zero denominator [FP9]: in the inches of a compound too
+  it('rejects a zero denominator in the inches', () => {
+    expect(parsed(`5' 1/0"`)).toEqual(failure('ZERO_DENOMINATOR', 5));
+  });
+
+  // spec: Malformed inputs [FP13]: the whole table, each with its hand-counted offset (the first
+  // token the parser could not use, or the text length when the input ended too early)
+  it.each([
+    ['"', 0],
+    ["'", 0],
+    ['ft', 0],
+    ['abc', 0],
+    [`5' 3 1/2 1/2"`, 9],
+    [`5.5' 3"`, 4],
+    [`5' -3"`, 3],
+    [`5" 3'`, 2],
+    ['3//4', 1],
+    ['1 / 2', 2],
+    ['1e3', 1],
+    ['1E9', 1],
+    ['0x10', 1],
+    ["５'", 0],
+    [`5'3'`, 3],
+    ['--5', 1],
+    ['- 5', 1],
+    ['5 3 1/2', 2],
+    ['5 /2', 2],
+    ['5-/2', 1],
+    ['.', 1],
+    ['1.', 2],
+    [`5'-`, 3],
+    ['3.5 1/2', 4],
+    ['1/2.5', 3],
+    ['1 yd 2 ft', 4],
+    ['5 ft 2', 6],
+    ['5\n3', 1],
+    ['1/', 1],
+    [`5" 3`, 2],
+    ['5 m 5', 3],
+    ['1/2 3/4', 4],
+    ['1 1/2 1/2', 6],
+    [`5'3''`, 3],
+  ])('rejects %j with MALFORMED at %i', (text, offset) => {
+    expect(parsed(text)).toEqual(failure('MALFORMED', offset));
+  });
+
+  // spec: Length text grammar: the inch mark is optional only after a symbol feet mark; fractional
+  // feet are not allowed in a compound; the hyphen separator touches both neighbours
+  it.each([
+    ['5ft 3', 5],
+    ['5 foot 2', 8],
+    ['1 1/2 ft 3 in', 8],
+    ['1/2\' 3"', 4],
+    [`5' - 3"`, 3],
+    [`5'- 3"`, 3],
+    [`5' 3 ft`, 5],
+    [`5' 3 m`, 5],
+    ['-+5', 1],
+    ['+-5', 1],
+    ['++5', 1],
+    ['5 ft ft', 5],
+    [`5' +3"`, 3],
+    [`5' \u22123"`, 3],
+  ])('rejects %j with MALFORMED at %i', (text, offset) => {
+    expect(parsed(text)).toEqual(failure('MALFORMED', offset));
+  });
+
+  // spec: Length text grammar: offsets index the untrimmed original text
+  it('counts offsets from the start of the untrimmed text', () => {
+    expect(parsed('  5 furlongs')).toEqual(failure('UNKNOWN_UNIT', 4));
+    expect(parsed('  1/0"')).toEqual(failure('ZERO_DENOMINATOR', 4));
+    expect(parsed('\u00A0\t5 3 1/2')).toEqual(failure('MALFORMED', 4));
+    expect(parsed('  5,5')).toEqual(failure('DECIMAL_COMMA', 3));
+  });
+
+  // spec: Length text grammar: input that ends too early points at the end of its last token, not
+  // at the trailing whitespace that was dropped
+  it('points at the end of the last token when the input ends too early', () => {
+    expect(parsed('1. ')).toEqual(failure('MALFORMED', 2));
+    expect(parsed('5 ft 2 ')).toEqual(failure('MALFORMED', 6));
+    expect(parsed('\u00A0\t1.\u00A0 ')).toEqual(failure('MALFORMED', 4));
+  });
+
+  // spec: Length text grammar: the function never throws and a success is always a length
+  // The offset invariant: EMPTY and TOO_LONG carry none; any other failure points inside the text.
+  it('never throws, fails with one known code and a sound offset, and succeeds with a length', () => {
+    const alphabet = fc.constantFrom(
+      ...'0123456789 \t\n/.-+,\'"ftinmcydxe'.split(''),
+      '\u00A0',
+      '\u2212',
+      '′',
+      '″',
+      '’',
+      '”',
+      '５',
+      'é',
+      '\uD83D',
+      '\uDE00',
+      '\u200B',
+      '\uFEFF',
+      '\u202E',
+      '\u3000',
+    );
+    fc.assert(
+      fc.property(fc.string({ unit: alphabet, maxLength: 140 }), (text) => {
+        const result = parseLength(text);
+        if (result.ok) return valueIn(result.value, inch).den > 0n;
+        const [error, ...rest] = result.errors;
+        const unlocated = error.code === 'EMPTY' || error.code === 'TOO_LONG';
+        const offsetOk = unlocated
+          ? error.offset === undefined
+          : error.offset !== undefined &&
+            Number.isInteger(error.offset) &&
+            error.offset >= 0 &&
+            error.offset <= text.length;
+        return rest.length === 0 && LENGTH_PARSE_CODES.includes(error.code) && offsetOk;
+      }),
+      { numRuns },
+    );
   });
 });
