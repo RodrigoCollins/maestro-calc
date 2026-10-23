@@ -1,7 +1,7 @@
 import { CoreError } from '../errors.ts';
 import { UNITS } from '../units/catalog.ts';
 import { boundsOf, checkAmount, defaultAmount } from './constraints.ts';
-import { validateRecord, type ValidateOptions } from './validate.ts';
+import { validateRecord } from './validate.ts';
 import type {
   BoundedDescriptor,
   Calculator,
@@ -10,6 +10,7 @@ import type {
   InputsOf,
   OutputDescriptor,
   SelectDescriptor,
+  ValidateOptions,
 } from './descriptors.ts';
 
 export interface CalculatorDefinition<

@@ -11,6 +11,7 @@ export type {
   ComputeResult,
   CountDescriptor,
   DisplayHint,
+  FieldError,
   InputDescriptor,
   InputsOf,
   LengthDescriptor,
@@ -20,7 +21,8 @@ export type {
   SelectDescriptor,
   ShoppingLine,
   UnitSystem,
+  ValidateOptions,
   ValueOf,
   WarningEntry,
 } from './descriptors.ts';
-export { MAX_TEXT_LENGTH, type FieldError, type ValidateOptions } from './validate.ts';
+export { MAX_TEXT_LENGTH } from './validate.ts';

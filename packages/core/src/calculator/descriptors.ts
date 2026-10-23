@@ -4,18 +4,18 @@ import type { DimensionName } from '../units/dimension.ts';
 import type { Quantity } from '../units/quantity.ts';
 import type { Result } from '../result.ts';
 import type { UnitIdOf } from '../units/unit.ts';
-import type { FieldError, ValidateOptions } from './validate.ts';
+import type { FieldErrorCode } from '../error-codes.ts';
 
 /** The unit system that picks the unit of a bare number in a length field. */
 export type UnitSystem = 'imperial' | 'metric';
 
-interface Base<K extends string> {
-  readonly key: K;
+interface Base {
+  readonly key: string;
   readonly urlKey: string;
 }
 
 /** A length input; `defaultUnit` applies to bare numbers in imperial, `metricDefaultUnit` in metric. */
-export type LengthDescriptor = Base<string> & {
+export type LengthDescriptor = Base & {
   readonly kind: 'length';
   readonly default: Quantity<'length'>;
   readonly defaultUnit: 'in' | 'ft' | 'yd';
@@ -25,7 +25,7 @@ export type LengthDescriptor = Base<string> & {
 };
 
 /** A whole-number input; the bounds default to `0..Number.MAX_SAFE_INTEGER`. */
-export type CountDescriptor = Base<string> & {
+export type CountDescriptor = Base & {
   readonly kind: 'count';
   readonly default: number;
   readonly min?: number;
@@ -33,7 +33,7 @@ export type CountDescriptor = Base<string> & {
 };
 
 /** A percent input in percent points (12.5 percent is `25/2`, not `1/8`); bounds default to `0..100`. */
-export type PercentDescriptor = Base<string> & {
+export type PercentDescriptor = Base & {
   readonly kind: 'percent';
   readonly default: Rational;
   readonly min?: Rational;
@@ -41,19 +41,19 @@ export type PercentDescriptor = Base<string> & {
 };
 
 /** A choice among a non-empty list of unique option ids. */
-export type SelectDescriptor = Base<string> & {
+export type SelectDescriptor = Base & {
   readonly kind: 'select';
   readonly options: readonly [string, ...string[]];
   readonly default: string;
 };
 
-export type BooleanDescriptor = Base<string> & {
+export type BooleanDescriptor = Base & {
   readonly kind: 'boolean';
   readonly default: boolean;
 };
 
 /** An amount of US dollars; the minimum defaults to `usd(0)` and is never negative. */
-export type MoneyDescriptor = Base<string> & {
+export type MoneyDescriptor = Base & {
   readonly kind: 'money';
   readonly default: Money;
   readonly min?: Money;
@@ -108,7 +108,9 @@ export type ValueOf<D extends InputDescriptor> = D extends { readonly kind: 'len
         ? Option
         : D extends { readonly kind: 'boolean' }
           ? boolean
-          : Money;
+          : D extends { readonly kind: 'money' }
+            ? Money
+            : never;
 
 /** The record `compute` receives: one entry per declared input. */
 export type InputsOf<I extends readonly InputDescriptor[]> = {
@@ -140,6 +142,18 @@ export interface ComputeResult<O extends readonly OutputDescriptor[], W extends 
   readonly outputs: { readonly [D in O[number] as D['key']]: MeasureValue<D['measure']> };
   readonly shopping: readonly ShoppingLine[];
   readonly warnings: readonly WarningEntry<W>[];
+}
+
+/** One failed field: its key, one code, and the violated bound for `BELOW_MIN`/`ABOVE_MAX`. */
+export interface FieldError {
+  readonly field: string;
+  readonly code: FieldErrorCode;
+  readonly params?: { readonly min: string } | { readonly max: string };
+}
+
+export interface ValidateOptions {
+  /** Picks the unit of a bare number in a length field. Default `imperial`. */
+  readonly unitSystem?: UnitSystem;
 }
 
 /** A defined calculator: its metadata in declared order, `validate` and its pure `compute`. */

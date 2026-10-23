@@ -12,6 +12,7 @@ import { checkAmount, findOption } from './constraints.ts';
 import type {
   BoundedDescriptor,
   CountDescriptor,
+  FieldError,
   InputDescriptor,
   InputsOf,
   LengthDescriptor,
@@ -19,21 +20,11 @@ import type {
   PercentDescriptor,
   SelectDescriptor,
   UnitSystem,
+  ValidateOptions,
 } from './descriptors.ts';
 
-/** One failed field: its key, one code, and the violated bound for `BELOW_MIN`/`ABOVE_MAX`. */
-export interface FieldError {
-  readonly field: string;
-  readonly code: FieldErrorCode;
-  readonly params?: { readonly min: string } | { readonly max: string };
-}
-
-export interface ValidateOptions {
-  /** Picks the unit of a bare number in a length field. Default `imperial`. */
-  readonly unitSystem?: UnitSystem;
-}
-
 type Descriptors = readonly InputDescriptor[];
+/** The validated value of one field: any of the value types of the kinds. */
 type Value = InputsOf<Descriptors>[string];
 type FieldFailure = Omit<FieldError, 'field'>;
 
@@ -48,7 +39,8 @@ const LENGTH_UNITS: Readonly<
   m,
 };
 
-interface Failure {
+/** What a field reads from a parser failure: its code (the offsets and params stay in the parser). */
+interface ParseFailure {
   readonly code: FieldErrorCode;
 }
 
@@ -64,7 +56,7 @@ const SURROUNDING_WS = /^[ \t\u00A0]+|[ \t\u00A0]+$/g;
  */
 const parseText = <T>(
   raw: unknown,
-  parse: (text: string) => Result<T, Failure>,
+  parse: (text: string) => Result<T, ParseFailure>,
 ): Result<T, FieldFailure> => {
   if (typeof raw !== 'string') return err({ code: 'MALFORMED' });
   const text = raw.replace(SURROUNDING_WS, '');
@@ -96,13 +88,13 @@ const readLength = (
 };
 
 /** A whole number: digits only, so no sign, point or exponent; a comma is a decimal comma. */
-const parseWhole = (text: string): Result<bigint, Failure> => {
+const parseWhole = (text: string): Result<bigint, ParseFailure> => {
   if (text.includes(',')) return err({ code: 'DECIMAL_COMMA' });
   return /^[0-9]+$/.test(text) ? ok(BigInt(text)) : err({ code: 'MALFORMED' });
 };
 
 /** A number is a count only when it is already a non-negative safe integer. */
-const wholeNumber = (value: number): Result<bigint, Failure> =>
+const wholeNumber = (value: number): Result<bigint, ParseFailure> =>
   Number.isSafeInteger(value) && value >= 0 ? ok(BigInt(value)) : err({ code: 'MALFORMED' });
 
 const readCount = (input: CountDescriptor, raw: unknown): Result<Value, FieldFailure> => {
@@ -113,7 +105,7 @@ const readCount = (input: CountDescriptor, raw: unknown): Result<Value, FieldFai
 };
 
 /** Percent points as a decimal with one optional trailing `%` and no blank before it. */
-const parsePercent = (text: string): Result<Rational, Failure> =>
+const parsePercent = (text: string): Result<Rational, ParseFailure> =>
   parseDecimal(text.endsWith('%') ? text.slice(0, -1) : text);
 
 const readPercent = (input: PercentDescriptor, raw: unknown): Result<Value, FieldFailure> => {
@@ -177,6 +169,8 @@ export const validateRecord = (
     if (field.ok) values.push([input.key, field.value]);
     else errors.push({ field: input.key, ...field.errors[0] });
   }
+  // Head and tail, not a length check: a failed Result needs the non-empty tuple
+  // `[FieldError, ...FieldError[]]`, and only destructuring builds it without a type assertion.
   const [first, ...rest] = errors;
   return first === undefined
     ? ok(Object.fromEntries(values))

@@ -8,7 +8,13 @@ import { cm, ft, ft2, inch, mm, yd } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { isQuantityOf, quantity } from '../units/quantity.ts';
 import { defineCalculator } from './define.ts';
-import { validateRecord, type ValidateOptions } from './validate.ts';
+import type { ValidateOptions } from './descriptors.ts';
+import { validateRecord } from './validate.ts';
+
+const r = (n: number, d = 1): Rational => Rational.of(n, d);
+// A failed result for one field, with the params of a violated bound when there are any.
+const failed = (field: string, code: string, params?: object): unknown =>
+  err(params === undefined ? { field, code } : { field, code, params });
 
 const validate = (
   raw: Readonly<Record<string, unknown>>,
@@ -78,8 +84,7 @@ describe('validateRecord length field (calculator-contract › Total validation,
     const len = result.ok ? result.value['len'] : undefined;
     return isQuantityOf(len, 'length') ? len.canonical.toString() : result;
   };
-  const failure = (code: string, params?: object): unknown =>
-    err(params === undefined ? { field: 'len', code } : { field: 'len', code, params });
+  const failure = (code: string, params?: object): unknown => failed('len', code, params);
 
   // spec: calculator-contract › Length bounds are inclusive [CC12]
   it.each([
@@ -179,9 +184,6 @@ describe('validateRecord length field (calculator-contract › Total validation,
   });
 });
 
-const failed = (field: string, code: string, params?: object): unknown =>
-  err(params === undefined ? { field, code } : { field, code, params });
-const r = (n: number, d = 1): Rational => Rational.of(n, d);
 const long = '1'.repeat(129);
 
 const show = (raw: unknown): string => {
