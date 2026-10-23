@@ -18,7 +18,7 @@ const { homeHref, navLabel, links, language } = Astro.props;
       <ul>
         {links.map(({ href, label }) => (
           <li>
-            <a class="nav-link" {href}>
+            <a class="nav-link tap-target" {href}>
               {label}
             </a>
           </li>

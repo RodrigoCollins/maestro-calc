@@ -7,18 +7,16 @@ interface Props {
 const { href } = Astro.props;
 ---
 
-<a class="wordmark" {href}>
+<a class="wordmark tap-target" {href}>
   {SITE.name}
 </a>
 
 <style>
   .wordmark {
-    display: inline-flex;
-    align-items: center;
     font-family: var(--font-display);
     font-size: var(--text-h3);
     font-weight: 700;
-    color: var(--color-ink);
+    color: var(--color-text);
     text-decoration: none;
   }
 </style>
