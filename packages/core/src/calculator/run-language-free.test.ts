@@ -26,10 +26,13 @@ const ran = (computed: unknown): unknown =>
 // The patterns of calculator-contract › Pure, language-free compute: an identifier, a canonical
 // Rational, or the currency code, and never whitespace or markup.
 const IDENTIFIER = /^[a-z][A-Za-z0-9._-]*$/;
-const CANONICAL_RATIONAL = /^-?[0-9]+(\/[0-9]+)?$/;
+// canonical means it parses and prints back as the same text: `2/4` and `1/1` are not
+const isCanonicalRational = (text: string): boolean => {
+  const parsed = Rational.fromString(text);
+  return parsed.ok && parsed.value.toString() === text;
+};
 const isLanguageFree = (text: string): boolean =>
-  (IDENTIFIER.test(text) || CANONICAL_RATIONAL.test(text) || text === 'USD') &&
-  !/[\s<>]/.test(text);
+  (IDENTIFIER.test(text) || isCanonicalRational(text) || text === 'USD') && !/[\s<>]/.test(text);
 
 describe('the result of run (calculator-contract › Language-free results)', () => {
   // spec: calculator-contract › Language-free results [CC25]
@@ -57,9 +60,12 @@ describe('the result of run (calculator-contract › Language-free results)', ()
     ]);
   });
 
-  it('flags a string that carries markup or prose', () => {
-    const shopping = [{ materialId: '<b>', purchaseUnit: 'a sheet', qty: 1n }];
+  it('flags a string that carries markup, prose or a Rational that is not reduced', () => {
+    const shopping = [
+      { materialId: '<b>', purchaseUnit: 'a sheet', qty: 1n },
+      { materialId: '2/4', purchaseUnit: '1/1', qty: 1n },
+    ];
     const bad = collectStrings(ran({ ...good, shopping })).filter((text) => !isLanguageFree(text));
-    expect(bad).toEqual(['<b>', 'a sheet']);
+    expect(bad).toEqual(['<b>', 'a sheet', '2/4', '1/1']);
   });
 });
