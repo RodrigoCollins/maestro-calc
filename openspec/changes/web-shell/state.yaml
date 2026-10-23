@@ -1,0 +1,16 @@
+change: web-shell
+artifact_store: openspec
+execution_mode: auto
+delivery_strategy: auto-chain
+chain_strategy: stacked-to-main
+review_budget_lines: 400
+phases:
+  explore: skipped  # context gathered directly by the propose phase (PLAN.md, design direction, archived foundation follow-ups)
+  propose: done  # 9 stacked PR slices forecast, ~2,800 lines; decisions D1-D8 recorded in proposal.md
+  spec: done  # 5 new + 3 modified capability deltas under specs/
+  design: done  # revised after design review round 1
+  tasks: done  # 11 stacked PRs, ~3,240 lines forecast; 19 tasks in the largest slice; traceability covers every scenario id
+  apply: pending
+  verify: pending
+  archive: pending
+updated: 2026-10-23
