@@ -223,7 +223,7 @@ All hand-verified values were re-computed with bigint fractions before use (38 c
 | Focused tests | `npm test -- packages/core/src/units` 91 passed; `npm test -- apps/web/src/contract/mutation packages/core/src/index` 19 passed |
 | Runtime harness | `npm run verify` exit 0 on every tip; core coverage 100/100/100/100 (207 statements, 61 branches, 63 functions, 183 lines on the 04e tip). Mutation on the 04e tip: see below |
 
-Mutation, 04e tip, cold (`reports/` pruned by the new config): score 100.00 (total and covered), 318 killed, 8 timeouts, 0 survived, 0 ignored (no pragma left), 326 mutants, 4 min 53 s wall (`time`: 499 s user, 198 percent cpu). The 8 timeouts are the same `rational.ts` `gcd` mutants as in PR 3. Per-file: catalog 58 killed, dimension 20, ops 24, quantity 15, rational 189 plus 8 timeouts. Intermediate: 04a 100.00 (201 killed), 04b 98.89 on the first run (3 survivors: `addVec`/`subVec` mass components and the empty mass and density placeholders) then 100.00 after two vector cases and a placeholder test, 04d 100.00 (301 killed, 4 min 39 s). Cold time is under the 10-minute trigger of follow-up 3.19b; `Step` returns the wide `number` outside `-6..6`, pinned by the `volume × volume` and `area × area` `never` tests.
+Mutation, 04e tip, cold (`reports/` pruned by the new config): score 100.00 (total and covered), 318 killed, 8 timeouts, 0 survived, 0 ignored (no pragma left), 326 mutants, 4 min 53 s wall (`time`: 499 s user, 198 percent cpu). The 8 timeouts are the same `rational.ts` `gcd` mutants as in PR 3. Per-file: catalog 58 killed, dimension 20, ops 24, quantity 15, rational 189 plus 8 timeouts. Intermediate: 04a 100.00 (201 killed), 04b 98.89 on the first run (3 survivors: `addVec`/`subVec` mass components and the empty mass and density placeholders) then 100.00 after two vector cases and a placeholder test, 04d 100.00 (301 killed, 4 min 39 s). Cold local time was 4 min 53 s (the CI trigger of follow-up 3.19b is a CI wall time of 20 minutes, and CI runs 4.5 to 4.8 times slower than local, see PR 5/6 correction round 1); `Step` returns the wide `number` outside `-6..6`, pinned by the `volume × volume` and `area × area` `never` tests.
 
 ### Deviations
 
@@ -324,7 +324,7 @@ Spot checks for 6.5: returning `whole + 1n` for a zero fraction fails 8 tests; t
 | Runtime harness | `npm run verify` exit 0 on every tip (450, 478, 496 tests); core coverage 100/100/100/100 (253 statements, 90 branches, 72 functions, 226 lines on the 06c tip). Mutation: below. N/A for a runtime path: pure functions |
 | Rollback boundary | `packages/core/src/format/*` and its two lines in `core/src/index.ts` (+ `index.test.ts`); nothing outside core changes |
 
-Mutation, 06c tip, cold (`reports/` removed): score 100.00 (total and covered), 406 killed, 8 timeouts, 0 survived, 0 ignored, 414 mutants, 5 min 7 s wall (`time`: 942 s user, 355 percent cpu). The 8 timeouts are the same `rational.ts` mutants as in PR 3 and PR 4 (itemized there); no new timeout. Per-file: decimal-parts 27 killed, feet-inches 26, purchase 6, rounding 26, rational 189 plus 8 timeouts, units 120. The earlier 06b run (before the kernel table) scored 99.49 with 2 survivors, both the `'nearest'` default literal. Cold time grew from 3 min 13 s because every mutant reruns the whole suite (2.3 s, up from about 2 s); still under the 10-minute trigger of 3.19b.
+Mutation, 06c tip, cold (`reports/` removed): score 100.00 (total and covered), 406 killed, 8 timeouts, 0 survived, 0 ignored, 414 mutants, 5 min 7 s wall (`time`: 942 s user, 355 percent cpu). The 8 timeouts are the same `rational.ts` mutants as in PR 3 and PR 4 (itemized there); no new timeout. Per-file: decimal-parts 27 killed, feet-inches 26, purchase 6, rounding 26, rational 189 plus 8 timeouts, units 120, other core files (`errors.ts` 5, `result.ts` 7) 12; the sum is 406 killed plus 8 timeouts = 414. The earlier 06b run (before the kernel table) scored 99.49 with 2 survivors, both the `'nearest'` default literal. Cold time grew from 3 min 13 s because every mutant reruns the whole suite (2.3 s, up from about 2 s). The trigger of 3.19b is a CI wall time of 20 minutes, not a local one; with CI 4.5 to 4.8 times slower than local, this tip projected to 18.7 to 20 min before the `--isolate=false` fix (PR 5/6 correction round 1).
 
 Negative proof [QG11], 06c tip: with all five `format/*.test.ts` files moved away the score is 90.82 (index wiring still kills 47 of the 85 format mutants), so the gate stays green; with `index.test.ts` moved away as well the score is 79.47 (321 killed, 8 timeouts, 85 survived), `Final mutation score 79.47 under breaking threshold 90`, exit 1 after 4 min 15 s. The files were restored and the tree is clean.
 
@@ -333,7 +333,47 @@ All hand-verified values were re-computed with Python `fractions.Fraction` befor
 ### Scope and deviations (PR 6)
 
 - Parser out of scope: `parseLength`, its scanner and the format/parse round trip are tasks 7.1-7.11 (PR 7) and are left for the next slice. The spec scenarios `Format/parse round trip` and everything under `Length text grammar` stay unimplemented here.
-- `roundScaled` is exported from `rounding.ts` for `decimal-parts.ts` but not from the barrel (the same pattern as `makeQuantity`). It is a lookup table over `RoundingMode`, so an unknown mode throws a `TypeError` instead of acting like `nearest` (the mutation run showed the fall-through).
+- `roundScaled` is exported from `rounding.ts` for `decimal-parts.ts` but not from the barrel (the same pattern as `makeQuantity`). It is a lookup table over `RoundingMode` guarded by `Object.hasOwn`, so an unknown mode throws `CoreError('INVALID_MODE')` instead of acting like `nearest` (the mutation run showed the fall-through; correction round 1 added the own-property guard).
 - `roundToFraction`, `toDecimalParts` take `number` for `denominator` and `places` (the spec's invalid inputs include `2.5` and `NaN`), and `formatFeetInches` converts through `valueIn(length, inch)`, so an untyped non-length quantity throws `DIMENSION_MISMATCH`.
 - The formatter returns `{ parts, text }` with exported types `FeetInches`, `FeetInchesParts`, `FeetInchesOptions`, `DecimalParts`, `RoundingMode`.
 
+
+## PR 5/6 correction round 1 (4-lens review, all pass; task 6.8)
+
+Mode: strict TDD. Applied M1 and every MINOR (RISK-1, RISK-2, R1, R2, R3, RD-1 to RD-11, RES-4, RES-6); each new enforcement had a failing test first. Deferred: none (RES-4 is a documented decision, no code). The stack was first rebased onto `origin/main` (`a4cca05`, a Dependabot bump touching `package.json` and the lockfile only). Fixes went into the branch that owns the file (fixup commits plus `git rebase -i --autosquash --update-refs`) and the Stryker, CI and docs changes into the new slice `06d`.
+
+| Branch | Tip | Changed lines (excl. lockfile) | `npm run verify` tests |
+|---|---|---|---|
+| 05 | `6542b11` | 389 | 420 |
+| 06a | `3687441` | 248 | 458 |
+| 06b | `d5e5bb1` | 301 | 490 |
+| 06c | `a5d5dd8` | 302 | 509 |
+| 06d | see `git log` | 118 | 509 |
+
+| Id | Branch | RED | GREEN |
+|---|---|---|---|
+| RISK-1 | 05 | `refuses a regular/dangling symlink in the identity set`: `sourceFilesIn` and `rootJsonFiles` returned without throwing | both throw `symlink in identity set: <path>` for any non-dotfile link |
+| RD-3 | 05 | n/a (rename) | `packageJsonFiles` is `rootJsonFiles` in config and contract test |
+| RD-5 | 05 | n/a (history) | commit `aa1c653` split into the identity-files refactor and `docs(repo): correct the Stryker timeout formula` |
+| RD-8, RD-9 | 05 | n/a (refactor, tests stay green) | dead `dir !== '.'` filter dropped, `extendsBase` a hoisted const arrow using `relative()`, typecost count is checked once without `Number(count)` |
+| RISK-2, R1 | 06a | `rejects mode "toString" / "constructor" / "__proto__" / "banana" / ""`: nothing thrown (inherited names crashed with `TypeError` or fell through) | `Object.hasOwn(ROUNDERS, mode)` in `roundScaled` throws `INVALID_MODE`; the denominator is still checked first. Spec and design code lists amended |
+| R3 | 06b | characterization (green on arrival): the property now covers all three modes (`places` digits, nearest within half a unit, `down <= x <= up` at most one unit apart, nearest between) | none needed |
+| RD-1, RD-2, RD-6, RD-7, RD-10, RD-11 | 06a to 06c | JSDoc, helper typing and test hygiene only | `INVALID_MODE` tests through `toDecimalParts` and `formatFeetInches` (green by construction through the shared kernel); `reduced` computed once; `Rational.of(127, 2)` inlined in `index.test.ts`; `RoundingMode` imported by the feet-inches helper with the `exactOptionalPropertyTypes` comment |
+| R2 | 06d | the old `has no dist directory` check ran before any build and could never fail; new tests: `check:dist` script missing, CI step list without it | `check:dist` (`node --input-type=module -e` over `packages/*/dist`) runs in `verify` and CI after `npm run build`; 3 tests run the script in a temporary workspace (clean exits 0, `packages/core/dist` and `packages/data/dist` exit 1) |
+| RES-6 | 06d | n/a (annotation) | `/* @__PURE__ */ Object.values(NAME_RECORD)` |
+| M1 | 06d | contract pin for `--isolate=false` failed | command updated; numbers below |
+
+Mutation, cold (`reports/` removed), same 418 mutants, before and after `--isolate=false`:
+
+| | Score | Killed | Timeouts | Survived | Cold wall | CPU (user) |
+|---|---|---|---|---|---|---|
+| before (06c tip) | 100.00 | 410 | 8 | 0 | 296.99 s (4 min 57 s) | 920 s |
+| after (06d tip) | 100.00 | 410 | 8 | 0 | 143.63 s (2 min 24 s) | 322 s |
+
+The 8 timeouts are the same `rational.ts` mutants as before (the `abs` arrow at line 9, the `gcd` loop block, array and `x * y` at lines 14 and 15, the `toBigInt` block, `typeof` condition and equality at lines 31 and 32, and the `isZero` condition at line 122). Per-file at 418 mutants: decimal-parts 27, feet-inches 26, purchase 6, rounding 30 (four new `INVALID_MODE` mutants), rational 189 plus 8 timeouts, units 120, `errors.ts` 5, `result.ts` 7 (410 killed plus 8 timeouts).
+
+CI numbers behind the decision (the CI trigger is a wall time of 20 min, not a local one): PR 3 tip 7.95 min (208 mutants, `concurrency 3`); PR 4 tip 14.87 min on `main` and 15.87 min on the PR (329 mutants, `concurrency 4`); CI is 4.5 to 4.8 times slower than local, so the 06c tip projected to 18.7 to 20 min before this fix. The cost per mutant is the vitest boot (one fork per test file), which `--isolate=false` removes; `concurrency 4` was neutral on the 4-vCPU runner, and `3` versus `4` must be re-measured on CI (follow-up in 3.19b, with `timeout-minutes` 45 as the interim guard).
+
+Negative proof [QG11], 06d tip: with the five `format/*.test.ts` files and `index.test.ts` moved away the run scored 78.71 (321 killed, 8 timeouts, 89 survived), `Final mutation score 78.71 under breaking threshold 90`, exit 1 after 2 min 24 s. The files were restored (`git checkout`) and the tree is clean.
+
+Work Unit Evidence: focused tests `npx vitest run packages/core/src/format apps/web/src/contract` green on every tip; runtime harness `npm run verify` exit 0 on every tip (table above) and `npm run mutation` on the 06d tip; rollback boundary per branch: revert its commits (06d removes `--isolate=false`, `check:dist` and the annotation, nothing else).
