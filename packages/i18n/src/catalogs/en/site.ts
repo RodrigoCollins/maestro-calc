@@ -10,6 +10,7 @@ export const enSite = {
   'site.footer.terms': 'Terms',
   'site.footer.contact': 'Contact',
   'site.footer.contactLabel': 'Contact us at',
+  'page.home.heading': 'Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
   'page.home.description':
     'Jobsite calculators for builders and homeowners in the US. Enter your measurements and see exactly what to buy.',

@@ -1,0 +1,22 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import { staticPaths } from '../routing/routes.ts';
+import type { PageId } from '../routing/routes.ts';
+import HomeView from '../views/HomeView.astro';
+
+export const getStaticPaths = () => staticPaths();
+
+interface Props {
+  id: PageId;
+  locale: Locale;
+}
+
+// One view per route id: a route added to the table without a view is a type error here.
+const views = { home: HomeView } satisfies Record<PageId, AstroComponentFactory>;
+
+const { id, locale } = Astro.props;
+const View = views[id];
+---
+
+<View {locale} />
