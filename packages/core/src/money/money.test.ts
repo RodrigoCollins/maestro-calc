@@ -9,6 +9,7 @@ import {
   addMoney,
   compareMoney,
   equalsMoney,
+  isMoney,
   multiplyCount,
   scaleMoney,
   subMoney,
@@ -111,5 +112,17 @@ describe('toCents (money › Display rounding to cents)', () => {
     expect(toCents(money)).toEqual({ negative: false, integer: 0n, fraction: '00' });
     expect(money.amount.toString()).toBe('1/1000');
     expect(toCents(usd(r(-1, 1000)))).toEqual({ negative: false, integer: 0n, fraction: '00' });
+  });
+});
+
+describe('isMoney (money › Exact money value, untyped input)', () => {
+  // Only `usd` builds money, so untyped input (a JSON body, a form) is money or it is not.
+  it('is true for money built by usd and false for anything else', () => {
+    expect(isMoney(usd(5))).toBe(true);
+    expect(isMoney(usd(r(-1, 3)))).toBe(true);
+    const lookalike = { currency: 'USD', amount: r(5) };
+    for (const value of [lookalike, quantity(5, ft), r(5), '$5', 5, null, undefined]) {
+      expect(isMoney(value)).toBe(false);
+    }
   });
 });

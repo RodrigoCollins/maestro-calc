@@ -40,6 +40,9 @@ class MoneyValue implements Money {
 export const usd = (amount: Rational | number): Money =>
   new MoneyValue(typeof amount === 'number' ? Rational.of(amount) : amount);
 
+/** True for money built by `usd`: the guard for untyped input, where a lookalike must not pass. */
+export const isMoney = (value: unknown): value is Money => value instanceof MoneyValue;
+
 /**
  * Runtime guard for untyped callers (the typed signatures already forbid it): only `usd` builds
  * money, so a quantity or a plain object fails `DIMENSION_MISMATCH`. Returns the exact amount.
