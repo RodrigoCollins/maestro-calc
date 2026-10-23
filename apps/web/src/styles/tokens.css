@@ -2,13 +2,14 @@
 :root {
   color-scheme: light;
 
-  --color-ink: #0e2240;
-  --color-link: #1d4ed8;
-  --color-orange: #f06a1d;
-  --color-secondary: #56616b;
-  --color-ground: #eef1ef;
-  --color-surface: #ffffff;
-  --color-whatsapp: #1faf5a;
+  --color-text: #0e2240; /* Blueprint ink */
+  --color-link: #1d4ed8; /* Chalk line */
+  --color-accent: #f06a1d; /* Safety orange */
+  --color-text-secondary: #56616b; /* Form gray */
+  --color-ground: #eef1ef; /* Plan paper */
+  --color-surface: #ffffff; /* Sheet white */
+  --color-whatsapp: #1faf5a; /* WhatsApp */
+  --color-on-whatsapp: #06210f; /* WhatsApp: near-black text, white fails contrast */
 
   /* Type scale: 17 px body, condensed display sizes for headings. */
   --text-base: 1.0625rem;

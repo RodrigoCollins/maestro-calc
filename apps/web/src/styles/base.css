@@ -11,7 +11,7 @@ html {
 body {
   margin: 0;
   background: var(--color-ground);
-  color: var(--color-ink);
+  color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: var(--leading-body);
@@ -55,9 +55,9 @@ svg {
 
 /* Keyboard focus: an orange outline for the brand and an ink ring so it holds 3:1 on any ground. */
 :focus-visible {
-  outline: 3px solid var(--color-orange);
+  outline: 3px solid var(--color-accent);
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px var(--color-ink);
+  box-shadow: 0 0 0 2px var(--color-text);
 }
 
 .skip-link {
@@ -67,11 +67,9 @@ svg {
   z-index: 10;
   display: inline-flex;
   align-items: center;
-  min-height: var(--target-size);
-  min-width: var(--target-size);
   padding: 0 var(--space-3);
   background: var(--color-surface);
-  color: var(--color-ink);
+  color: var(--color-text);
   transform: translateY(-150%);
 }
 
@@ -83,11 +81,8 @@ svg {
   max-width: var(--measure);
 }
 
-/* Interactive elements of the header and footer: at least 44 px in both directions. */
-.wordmark,
-.nav-link,
-.footer-link,
-.lang-switch {
+/* Tap target: at least 44 px in both directions. Components opt in with this class. */
+.tap-target {
   display: inline-flex;
   align-items: center;
   min-height: var(--target-size);

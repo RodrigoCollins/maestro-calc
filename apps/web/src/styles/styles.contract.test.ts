@@ -1,7 +1,13 @@
 import { globSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { contrast } from '../contract/contrast.ts';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import LanguageSwitch from '../components/LanguageSwitch.astro';
+import SkipLink from '../components/SkipLink.astro';
+import Wordmark from '../components/Wordmark.astro';
 import { fromRoot } from '../contract/root.ts';
+import { renderComponent } from '../__testing__/render-component.ts';
 
 const stylesheets = globSync('apps/web/src/styles/*.css', { cwd: fromRoot() }).sort();
 const read = (name: string): string => readFileSync(fromRoot('apps/web/src/styles', name), 'utf8');
@@ -49,15 +55,39 @@ const ORANGE = '#F06A1D';
 const SECONDARY = '#56616B';
 const GROUND = '#EEF1EF';
 const SURFACE = '#FFFFFF';
+const WHATSAPP = '#1FAF5A';
+const ON_WHATSAPP = '#06210F';
 
 describe('Blueprint tokens (site-shell › Design tokens)', () => {
   // spec: site-shell › [SS5]
-  it('declares the seven palette values and a light colour scheme on :root', () => {
+  it('declares the seven palette values, the WhatsApp text colour and a light colour scheme on :root', () => {
     const values = Object.values(root).map((value) => value.toUpperCase());
-    for (const expected of [INK, LINK, ORANGE, SECONDARY, GROUND, SURFACE, '#1FAF5A']) {
+    for (const expected of [INK, LINK, ORANGE, SECONDARY, GROUND, SURFACE, WHATSAPP, ON_WHATSAPP]) {
       expect(values, expected).toContain(expected);
     }
     expect(root['color-scheme']).toBe('light');
+  });
+
+  // review RD-8: tokens are named by role, and each names its docs/design/direction.md swatch
+  it.each([
+    ['--color-text', INK, 'Blueprint ink'],
+    ['--color-link', LINK, 'Chalk line'],
+    ['--color-accent', ORANGE, 'Safety orange'],
+    ['--color-text-secondary', SECONDARY, 'Form gray'],
+    ['--color-ground', GROUND, 'Plan paper'],
+    ['--color-surface', SURFACE, 'Sheet white'],
+    ['--color-whatsapp', WHATSAPP, 'WhatsApp'],
+    ['--color-on-whatsapp', ON_WHATSAPP, 'WhatsApp'],
+  ])('names %s by role with the %s swatch comment', (name, hex, swatch) => {
+    expect(colour(name)).toBe(hex);
+    const line = tokens.split('\n').find((text) => text.includes(`${name}:`));
+    expect(line, name).toMatch(new RegExp(String.raw`/\*.*${swatch}.*\*/`));
+  });
+
+  it('has no colour token named after its hue or after the old swatch names', () => {
+    expect(
+      Object.keys(root).filter((name) => /^--color-(ink|orange|secondary)$/.test(name)),
+    ).toEqual([]);
   });
 
   // spec: site-shell › [SS6]
@@ -90,6 +120,11 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
 });
 
 describe('contrast (site-shell › [SS7, SS14, SS16])', () => {
+  it('keeps the WhatsApp label legible: near-black text on the WhatsApp green', () => {
+    expect(contrast(ON_WHATSAPP, WHATSAPP)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast('#FFFFFF', WHATSAPP)).toBeLessThan(4.5);
+  });
+
   it('keeps text at 4.5:1 or more on the page ground', () => {
     expect(contrast(INK, GROUND)).toBeGreaterThan(13);
     expect(contrast(LINK, GROUND)).toBeGreaterThanOrEqual(4.5);
@@ -121,12 +156,45 @@ describe('skip link styles (site-shell › Skip link)', () => {
 
 // spec: site-shell › [SS15] source side
 describe('touch targets (site-shell › Focus visibility and touch targets)', () => {
+  it('defines one .tap-target utility at the target size in both directions', () => {
+    const rule = baseRules.get('.tap-target');
+    expect(rule?.['min-height']).toBe('var(--target-size)');
+    expect(rule?.['min-width']).toBe('var(--target-size)');
+  });
+
+  // review RD-9: components opt in; base.css holds no selector keyed to a component class
   it.each(['.skip-link', '.wordmark', '.nav-link', '.footer-link', '.lang-switch'])(
-    '%s is at least the target size tall and wide',
+    'keeps %s out of the global stylesheet size rules',
     (selector) => {
-      const rule = baseRules.get(selector);
-      expect(rule?.['min-height'], selector).toBe('var(--target-size)');
-      expect(rule?.['min-width'], selector).toBe('var(--target-size)');
+      expect(baseRules.get(selector)?.['min-height'], selector).toBeUndefined();
+      expect(baseRules.get(selector)?.['min-width'], selector).toBeUndefined();
     },
   );
+
+  const link = { href: '/x', label: 'X' };
+  it.each([
+    ['SkipLink', SkipLink, { label: 'Skip' }],
+    ['Wordmark', Wordmark, { href: '/' }],
+    [
+      'LanguageSwitch',
+      LanguageSwitch,
+      { href: '/es', lang: 'es', hreflang: 'es-US', label: 'Español' },
+    ],
+    ['SiteFooter', SiteFooter, { contactLabel: 'Contact', email: 'a@b.c', links: [link] }],
+    [
+      'SiteHeader',
+      SiteHeader,
+      {
+        homeHref: '/',
+        navLabel: 'Main',
+        links: [link],
+        language: { href: '/es', lang: 'es', hreflang: 'es-US', label: 'Español' },
+      },
+    ],
+  ])('%s marks every link as a tap target', async (_name, component, props) => {
+    const document = await renderComponent(component, props);
+    const anchors = document.querySelectorAll('a');
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const anchor of anchors) expect(anchor.classList.contains('tap-target')).toBe(true);
+  });
 });

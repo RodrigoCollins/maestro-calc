@@ -8,6 +8,6 @@ interface Props {
 const { href, lang, hreflang, label } = Astro.props;
 ---
 
-<a class="lang-switch" {href} {lang} {hreflang}>
+<a class="lang-switch tap-target" {href} {lang} {hreflang}>
   {label}
 </a>
