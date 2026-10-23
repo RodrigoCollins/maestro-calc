@@ -480,3 +480,62 @@ Work Unit Evidence: focused tests `npx vitest run packages/core/src/format/lengt
 - `no-irregular-whitespace` skips strings by default, which is exactly where an invisible test character hides; enabling strings, templates and comments is a one-line config change, and it needs a probe that lints a string with the raw character.
 - Equivalent mutants also appear when a lint-driven `?.` guards an index that cannot be out of range; replacing the index arithmetic with a `filter` removed the guard instead of suppressing the mutant.
 - Folding review fixes into the owning commits with `--fixup=amend:` and `--autosquash --update-refs` keeps a stack at one work unit per commit, but every later branch needs its own `--onto` rebase and a conflict check on shared test files.
+
+## PR 8 (tasks 8.0 to 8.6, money)
+
+Mode: strict TDD, runner `npm test`. Stacked branches from `main` (none pushed): `08a` shard the mutation job (8.0), `08b` PR 7 Judgment Day follow-ups (8.1), `08c` money type and `toCents` (8.2, 8.3), `08d` unit prices, `parseMoney`, barrels (8.4 to 8.6). 8.7 (SX5 to SX7) stays with the orchestrator.
+
+| Branch | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|
+| `feat/foundation-08a-mutation-shards` | 398 (against `main`) | 748 |
+| `feat/foundation-08b-length-followups` | 38 (against 08a) | 749 |
+| `feat/foundation-08c-money-type` | 199 (against 08b) | 763 |
+| `feat/foundation-08d-money-parse-prices` | about 395 (against 08c, docs included) | 813 |
+
+### TDD Cycle Evidence
+
+| Task | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| 8.0 | `mutation.contract.test.ts`, `ci.contract.test.ts` | 17 failed (no `shards`, `optionsFor`, `scripts/mutation.mjs`, matrix) | 214/214, then 748/748 in `verify` | shard coverage asserted from the filesystem (each mutable source file in exactly one shard, sibling test run by its shard), matrix equals `shardNames`, per-shard report name and cache key, prune keeps other shards |
+| 8.1 | `parser.test.ts` | characterization plus a real finding | 222/222 | the fuzz offset invariant of the review (`text[offset]` not blank, bound `trimEnd().length`) failed on ` U+FEFF`, `+\t` and `. 0`; the sound form is: offset at most the text minus trailing blanks, and a blank only right after a non-blank. `lastKind` is a `reduceRight` walk (an index loop left 2 equivalent mutants) |
+| 8.2, 8.3 | `money.test.ts` | module not found | 14/14 | MN1 to MN3, MN7, MN-mix; `Money` only from `usd` (private class) so a quantity is rejected; `requireSameVector` rejects an operand with no vector |
+| 8.4 | `unit-price.test.ts`, `.test-d.ts` | module not found | 8/8 + typecheck | MN4 to MN6; first mutation run left 2 survivors (freeze, currency): pinned |
+| 8.5 | `parse.test.ts` | module not found | 36/36 | MN8, MN9, 12 more MALFORMED rows, 18 versus 19 digits in each run, precedence, two properties (never throws; digits.digits equals an independent bigint computation) |
+| 8.6 | `index.test.ts` | export list failed | 6/6 | 12 new exports plus a wiring test: `$0.37/ft2 x 12.5 ft2` shows `4.63` |
+
+All expected values were recomputed with Python `fractions.Fraction`: `747/50` (14.94), `999/1000` (1.00), `498/25` (19.92), `185/4` (46.25), `37/8` (4.63 by tie), `333/100`, `381/1250`, `-1/200` (-0.01), `37/14400`, `523/25`, `249/25`, `61728394506172839/50`, `61728394506172839/500000000000000000`.
+
+### Work Unit Evidence
+
+| Evidence | Value |
+|---|---|
+| Focused tests | `npx vitest run packages/core/src/money` 63 passed (3 files); contract tests 214 passed |
+| Runtime harness | `npm run verify` exit 0 on all four tips (748, 749, 763, 813 tests; core coverage 100/100/100/100); `npm run mutation` below. Pure functions, no runtime path |
+| Rollback boundary | 08a: `ci.yml`, `stryker.config.mjs`, `scripts/mutation.mjs`, two contract tests; 08b: `scanner.ts` `lastKind` and test; 08c and 08d: `packages/core/src/money/`, one line in `units/quantity.ts`, one export line in `index.ts` |
+
+### Mutation (final tip, cold, `reports` removed, `npm run mutation`, all shards sequentially)
+
+| Shard | Mutate | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|---|
+| rational | `rational/**`, `errors.ts`, `result.ts` | 100.00 | 201 | 8 | 0 | 74.6 s |
+| units | `units/**`, `money/**` | 100.00 | 202 | 0 | 0 | 53.8 s |
+| format | `format/**` | 100.00 | 409 | 0 | 0 | 110.6 s |
+
+Total 820 mutants, 3 min 59 s wall sequentially (`time`: 508 s user). Before sharding the same code was one run of 740 mutants at 4 min 8 s; the first sharded run on the 08a tip (740 mutants) took 73.7 s, 31.0 s and 106.2 s (3 min 31 s). On CI the shards run in parallel, so the job takes about the slowest shard (format, about 4 times local, so about 7 to 8 min) instead of about 17 to 21 min; a CI run is needed to confirm and to re-measure `concurrency 3` versus `4` (not possible locally). The 8 timeouts are the known `rational.ts` `gcd` mutants. No pragma.
+
+Negative proof [QG11], per shard on the 08a tip with a test file group moved away: rational (`rational.test.ts`, `rational.property.test.ts`) 51.67, units (`ops.test.ts`, `quantity.test.ts`) 80.83, format (`length-parser/parser.test.ts`) 87.59, each `under breaking threshold 90`, exit 1. On the final tip, money (`money.test.ts`, `parse.test.ts`, `unit-price.test.ts` moved away): units shard 81.68, exit 1, 37 survived. Files restored, tree clean.
+
+### Scope and deviations (PR 8)
+
+- Three runners, not four: the cross-module `src/index.test.ts` is added to every shard's test command (barrels are excluded from `mutate`, so a fourth runner would score nothing). Shard assignment: `errors.ts` and `result.ts` with `rational`, `money` with `units`.
+- A shard rerun keeps the whole identity hash (all core inputs), so a change in one module colds every shard; a per-shard hash would need a dependency graph and is not worth it at this size.
+- 8.1 A-4 (the already pushed commit `7644bb6` mixes `feat` and `test`): the repository has no CHANGELOG file, so the note is this line. A-3/B-2: see the table; the review's literal invariant is false for the documented offset policy (a failure may point just after a token, onto a blank).
+- 8.2: the vector guard is in `requireSameVector` (`units/quantity.ts`), the single place every `ops.ts` function uses, not in `ops.ts` itself.
+- R3 (spec wording conflict): the 18-digit cap applies to fractional runs too, as the task says; `0.1234567890123456789` is `TOO_LARGE`.
+- The tasks.md numbering has two `8.1` entries (follow-ups and "create branch"); both are marked done.
+
+### Key learnings (PR 8)
+
+- The command runner reruns the whole test command per mutant, so a shard needs both a narrower `mutate` and a narrower test command, and the shard set is only trustworthy if a test derives it from the filesystem.
+- A fuzz invariant copied from a review needs to be run against the real offset policy before it is enforced: three counterexamples (` U+FEFF`, `+\t`, `. 0`) showed that "not on a blank" and "within trimEnd" were both wrong.
+- A runtime guard for untyped callers should be one instance check on a private class, not a chain of property checks: each extra condition is another mutant that needs its own test.
