@@ -160,7 +160,7 @@ export const optionsFor = (shard) => {
     htmlReporter: { fileName: `reports/mutation/${shard}/index.html` },
     jsonReporter: { fileName: `reports/mutation/${shard}/mutation.json` },
     // A timeout counts as a kill. Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant
-    // run, so a loaded runner has headroom while the 8 `gcd` mutants that never terminate cost
+    // run, so a loaded runner has headroom while the `gcd` mutants that never terminate (7 timeouts under bail) cost
     // about 19 s each. Four workers fit the 4 vCPUs of a CI runner.
     timeoutMS: 10000,
     timeoutFactor: 4,
