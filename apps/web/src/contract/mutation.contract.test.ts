@@ -82,9 +82,10 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     );
   });
 
-  // design: a timeout is an optimistic kill, so the budget is fixed. A clean run of the suite
-  // takes about 2.3 s, so 10 s (times the factor) leaves headroom for a loaded runner while a
-  // non-terminating mutant costs 10 s instead of 30 s; 4 workers fit a 4-vCPU runner.
+  // design: a timeout is an optimistic kill, so the budget is fixed. Stryker allows
+  // `netTime * timeoutFactor + timeoutMS` per mutant run (2.3 s * 4 + 10 s, about 19 s), which
+  // leaves headroom for a loaded runner while a non-terminating mutant costs about 19 s instead
+  // of about 39 s at `timeoutMS 30000`; 4 workers fit a 4-vCPU runner.
   it('bounds each mutant run and fixes the parallelism', () => {
     expect(config.timeoutMS).toBe(10000);
     expect(config.timeoutFactor).toBe(4);
