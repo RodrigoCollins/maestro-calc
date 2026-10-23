@@ -22,7 +22,7 @@ import {
   yd,
   yd3,
 } from './catalog.ts';
-import { quantity, valueIn } from './quantity.ts';
+import { isQuantityOf, quantity, valueIn } from './quantity.ts';
 import type { Unit } from './unit.ts';
 
 const r = (n: bigint | number, d: bigint | number = 1): Rational => Rational.of(n, d);
@@ -134,5 +134,23 @@ describe('conversion (units-quantities › Exact unit factors)', () => {
     expect(thrownCode(() => valueIn(quantity(1, ft2), volumeUnitAsArea))).toBe(
       'DIMENSION_MISMATCH',
     );
+  });
+});
+
+describe('runtime narrowing (units-quantities › Runtime exponent vector)', () => {
+  // Untyped input (a form value, a JSON body) is never a quantity unless this package built it.
+  it('recognises a quantity of the named dimension only', () => {
+    expect(isQuantityOf(quantity(2, ft), 'length')).toBe(true);
+    expect(isQuantityOf(quantity(2, ft2), 'area')).toBe(true);
+    expect(isQuantityOf(quantity(2, ft2), 'length')).toBe(false);
+    expect(isQuantityOf(quantity(2, ft), 'area')).toBe(false);
+    expect(isQuantityOf(quantity(2, lbIn3), 'length')).toBe(false);
+  });
+
+  it('rejects values that only look like a quantity', () => {
+    const lookalike = { exponents: { length: 1, mass: 0 }, canonical: r(2) };
+    for (const value of [lookalike, null, undefined, '2 ft', 2, {}]) {
+      expect(isQuantityOf(value, 'length')).toBe(false);
+    }
   });
 });
