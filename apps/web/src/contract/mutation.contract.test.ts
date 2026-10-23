@@ -28,6 +28,8 @@ interface StrykerConfig {
   incremental: boolean;
   incrementalFile: string;
   reporters: string[];
+  htmlReporter: { fileName: string };
+  jsonReporter: { fileName: string };
   timeoutMS: number;
   timeoutFactor: number;
   concurrency: number;
@@ -58,7 +60,8 @@ const readJson = (relativePath: string): unknown =>
   JSON.parse(readFileSync(fromRoot(relativePath), 'utf8'));
 
 const module_ = await importFromRoot<StrykerModule>('packages/core/stryker.config.mjs');
-const config = module_.default;
+// The default export follows STRYKER_SHARD, so assertions about all of core read it explicitly.
+const config = module_.optionsFor('all');
 const scripts = (relativePath: string): Record<string, string> =>
   (readJson(relativePath) as { scripts: Record<string, string> }).scripts;
 
@@ -93,7 +96,7 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
   // constant) that another file could observe; such state would make a verdict depend on order.
   it('runs the whole suite serially in one process with STRYKER set and without type tests', () => {
     expect(config.commandRunner.command).toBe(
-      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',
+      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false --reporter=dot --bail=1',
     );
   });
 
@@ -298,7 +301,7 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
 describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b)', () => {
   const srcRoot = fromRoot('packages/core/src');
   const base = 'STRYKER=1 npx --no-install vitest run --no-file-parallelism';
-  const flags = '--typecheck.enabled=false --isolate=false';
+  const flags = '--typecheck.enabled=false --isolate=false --reporter=dot --bail=1';
   const filesUnder = (path: string): string[] => globSync(path, { cwd: fromRoot('packages/core') });
   // every file the mutation gate must score: sources, not tests, test support or barrels
   const mutable = readdirSync(srcRoot, { recursive: true })
@@ -308,6 +311,8 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
     .filter((path) => !path.startsWith('__testing__/') && !/(^|\/)index\.ts$/.test(path))
     .map((path) => `src/${path}`)
     .sort();
+  const isExclusion = (glob: string): boolean => glob.startsWith('!');
+  const exclusions = config.mutate.filter(isExclusion);
   const owners = (file: string): string[] =>
     module_.shardNames.filter((name) =>
       (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
@@ -328,7 +333,7 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
 
   it('lists only globs that match files, and keeps the shared exclusions', () => {
     for (const name of module_.shardNames) {
-      expect(module_.optionsFor(name).mutate.slice(-4), name).toEqual(config.mutate.slice(-4));
+      expect(module_.optionsFor(name).mutate.filter(isExclusion), name).toEqual(exclusions);
       for (const glob of module_.shards[name]?.mutate ?? []) {
         expect(filesUnder(glob), glob).not.toHaveLength(0);
       }
@@ -353,6 +358,31 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       expect(module_.optionsFor(name).commandRunner.command).toBe(
         `${base} ${flags} ${tests.join(' ')}`,
       );
+    }
+  });
+
+  // The tests of the test support (`__testing__`) exercise the arbitraries, not a mutable source, so
+  // no shard runs them; `verify` does. Every other test file must run in at least one shard.
+  it('leaves no test file unrun by every shard', () => {
+    const tests = globSync('src/**/*.test.ts', { cwd: fromRoot('packages/core') })
+      .map((path) => path.replaceAll('\\', '/'))
+      .filter((path) => !path.startsWith('src/__testing__/'));
+    expect(tests.length).toBeGreaterThan(10);
+    for (const test of tests) {
+      const runners = module_.shardNames.filter((name) =>
+        (module_.shards[name]?.tests ?? []).some((prefix) => test.startsWith(prefix)),
+      );
+      expect(runners, test).not.toHaveLength(0);
+    }
+  });
+
+  // Stryker writes one report per shard under `reports/mutation/<shard>/`, so the failure artifact
+  // (path `reports/mutation`) of one runner never mixes with another's.
+  it('writes the html and json reports of each shard to its own directory', () => {
+    for (const name of module_.shardNames) {
+      const options = module_.optionsFor(name);
+      expect(options.htmlReporter.fileName).toBe(`reports/mutation/${name}/index.html`);
+      expect(options.jsonReporter.fileName).toBe(`reports/mutation/${name}/mutation.json`);
     }
   });
 
@@ -409,6 +439,15 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     const bad = run('--shard', 'nope');
     expect(bad.status).toBe(1);
     expect(bad.stderr).toMatch(/unknown mutation shard: nope/);
+  });
+
+  it('validates --shard before listing and rejects more than one', () => {
+    const listed = run('--list', '--shard', 'nope');
+    expect(listed.status).toBe(1);
+    expect(listed.stderr).toMatch(/unknown mutation shard: nope/);
+    const twice = run('--shard', 'rational', '--shard=format');
+    expect(twice.status).toBe(1);
+    expect(twice.stderr).toMatch(/only one --shard/);
   });
 
   it('selects every shard by default and exactly one with --shard', async () => {

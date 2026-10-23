@@ -9,6 +9,7 @@ interface Step {
   run?: string;
   if?: string;
   with?: Record<string, unknown>;
+  env?: Record<string, string>;
   'continue-on-error'?: unknown;
 }
 
@@ -213,6 +214,26 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(upload?.with).toMatchObject({
       name: 'mutation-report-${{ matrix.shard }}',
       path: 'packages/core/reports/mutation',
+    });
+  });
+});
+
+// design D10: branch protection requires `mutation-gate`, the single name that stays stable when a
+// shard is added or removed; it fails unless every shard of the matrix succeeded.
+describe('CI mutation aggregate (quality-gates › Mutation gate on core)', () => {
+  const gate = workflow.jobs['mutation-gate'];
+
+  it('waits for every shard and runs even when one of them failed or was skipped', () => {
+    expect(gate?.needs).toBe('mutation');
+    expect(gate?.if).toBe('always()');
+    expect(gate?.['continue-on-error']).toBeUndefined();
+  });
+
+  it('succeeds only when the whole mutation job result is success', () => {
+    expect(gate?.steps).toHaveLength(1);
+    expect(gate?.steps[0]).toMatchObject({
+      env: { MUTATION_RESULT: '${{ needs.mutation.result }}' },
+      run: 'test "$MUTATION_RESULT" = success',
     });
   });
 });

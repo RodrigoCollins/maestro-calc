@@ -70,7 +70,8 @@ const identityHash = identity.digest('hex').slice(0, 16);
 /**
  * Deletes the incremental reports of the shard that `keepFile` belongs to (and the legacy
  * unsharded ones) except `keepFile` itself, so old reports do not pile up. The reports of the
- * other shards stay: a local full run writes one report per shard.
+ * other shards stay: a local full run writes one report per shard. A `keepFile` with no shard
+ * suffix (the legacy name) matches only the legacy unsharded reports.
  */
 export const pruneStaleReports = (reportsDirectory, keepFile) => {
   if (!existsSync(reportsDirectory)) return;
@@ -99,7 +100,9 @@ const excluded = [
  * (mutants) x (tests per run). A shard mutates a few modules and runs only their tests plus the
  * cross-module `index.test.ts` (cheap, and the only place that pins the wiring of the barrels).
  * The shards must cover every mutable file of `src` exactly once; a contract test asserts it from
- * the filesystem, so a new module cannot be left out.
+ * the filesystem, so a new module cannot be left out. Each shard is one entry of the `matrix.shard`
+ * list of the `mutation` job in `.github/workflows/ci.yml` (a contract test keeps the two equal);
+ * `npm run mutation -- --list` prints the names, `-- --shard <name>` runs one.
  */
 export const shards = {
   rational: {
@@ -124,9 +127,13 @@ export const shardNames = Object.keys(shards);
 // `--isolate=false` runs all test files in one worker instead of one fork per file: a mutant
 // run costs the vitest boot, not the tests, so this halves the cold run with identical verdicts.
 // Core tests therefore must not keep cross-file mutable module state: all files share one
-// module registry in a run.
+// module registry in a run. The verdict of a mutant run is the exit code, but Stryker stores the
+// whole output of every killed mutant in its reports: `--reporter=dot` shrinks the progress lines
+// and `--bail=1` stops at the first failing test, so a mutant that fails 190 tests keeps one
+// failure report instead of 190 (the cold format shard report shrinks from 12.3 MB to the size in
+// apply-progress). A kill is a kill after one failure, so the verdicts do not change.
 const vitestCommand =
-  'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false';
+  'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false --reporter=dot --bail=1';
 
 /** The Stryker options of one shard, or of all of core in one invocation for `all`. */
 export const optionsFor = (shard) => {
@@ -149,7 +156,9 @@ export const optionsFor = (shard) => {
     incremental: true,
     incrementalFile: `reports/${incrementalName}`,
     reporters: ['clear-text', 'progress-append-only', 'html', 'json'],
-    htmlReporter: { fileName: 'reports/mutation/index.html' },
+    // One directory per shard, so the failure artifact of a runner never mixes with another's.
+    htmlReporter: { fileName: `reports/mutation/${shard}/index.html` },
+    jsonReporter: { fileName: `reports/mutation/${shard}/mutation.json` },
     // A timeout counts as a kill. Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant
     // run, so a loaded runner has headroom while the 8 `gcd` mutants that never terminate cost
     // about 19 s each. Four workers fit the 4 vCPUs of a CI runner.
