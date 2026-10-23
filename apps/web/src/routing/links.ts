@@ -19,3 +19,9 @@ export const linksFor = <Id extends string>(
   candidates
     .filter((id) => Object.hasOwn(table, id))
     .map((id) => ({ id, href: pathOf(id, locale, table) }));
+
+/** Pages offered in the header navigation, in order, when they exist in the table. */
+export const HEADER_PAGES = ['methodology', 'about'] as const;
+
+/** Pages offered in the footer, in order, when they exist in the table. */
+export const FOOTER_PAGES = ['privacy', 'terms', 'contact'] as const;

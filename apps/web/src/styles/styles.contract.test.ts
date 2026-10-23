@@ -10,23 +10,27 @@ const base = read('base.css');
 
 type Declarations = Record<string, string>;
 
-/** Flat rules of a stylesheet (no nesting): selector to its declarations. */
-const rulesOf = (css: string): Map<string, Declarations> =>
-  new Map(
-    Array.from(
-      css.replaceAll(/\/\*[\s\S]*?\*\//g, '').matchAll(/([^{}]+)\{([^{}]*)\}/g),
-      ([, selector = '', body = '']) => [
-        selector.trim().replaceAll(/\s+/g, ' '),
-        Object.fromEntries(
-          body
-            .split(';')
-            .map((declaration) => declaration.split(/:(.*)/s).map((part) => part.trim()))
-            .filter(([property]) => property !== undefined && property !== '')
-            .map(([property = '', value = '']) => [property, value]),
-        ),
-      ],
-    ),
-  );
+/** Flat rules of a stylesheet (no nesting): each selector of a list to its merged declarations. */
+const rulesOf = (css: string): Map<string, Declarations> => {
+  const rules = new Map<string, Declarations>();
+  for (const [, selectors = '', body = ''] of css
+    .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+    const declarations = Object.fromEntries(
+      body
+        .split(';')
+        .map((declaration) => declaration.split(/:(.*)/s).map((part) => part.trim()))
+        .filter(([property]) => property !== undefined && property !== '')
+        .map(([property = '', value = '']) => [property, value]),
+    );
+    for (const selector of selectors
+      .split(',')
+      .map((part) => part.trim().replaceAll(/\s+/g, ' '))) {
+      rules.set(selector, { ...rules.get(selector), ...declarations });
+    }
+  }
+  return rules;
+};
 
 const tokenRules = rulesOf(tokens);
 const baseRules = rulesOf(base);
@@ -70,7 +74,7 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
     expect(resolve(body?.['background']).toUpperCase()).toBe(GROUND);
     expect(resolve(body?.['color']).toUpperCase()).toBe(INK);
     expect(body?.['font-family']).toBe('var(--font-body)');
-    expect(baseRules.get('h1, h2, h3')?.['font-family']).toBe('var(--font-display)');
+    expect(baseRules.get('h1')?.['font-family']).toBe('var(--font-display)');
   });
 
   // spec: site-shell › [SS11] source side
@@ -113,4 +117,16 @@ describe('skip link styles (site-shell › Skip link)', () => {
     expect(baseRules.get('.skip-link')?.['transform']).toBe('translateY(-150%)');
     expect(baseRules.get('.skip-link:focus')?.['transform']).toBe('none');
   });
+});
+
+// spec: site-shell › [SS15] source side
+describe('touch targets (site-shell › Focus visibility and touch targets)', () => {
+  it.each(['.skip-link', '.wordmark', '.nav-link', '.footer-link', '.lang-switch'])(
+    '%s is at least the target size tall and wide',
+    (selector) => {
+      const rule = baseRules.get(selector);
+      expect(rule?.['min-height'], selector).toBe('var(--target-size)');
+      expect(rule?.['min-width'], selector).toBe('var(--target-size)');
+    },
+  );
 });

@@ -21,7 +21,7 @@ const { integer, fraction } = toDecimalParts(valueIn(primary.value, ft2), 2);
 const head = headFor('home', 'en', siteText('en'));
 ---
 
-<BaseLayout locale="en" head={head}>
+<BaseLayout locale="en" id="home" head={head}>
   <h1>{t('calc.rectangle-area.title')}</h1>
   <p>
     {t('calc.rectangle-area.outputs.areaFt2')}: {integer.toString()}.{fraction}

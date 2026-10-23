@@ -68,6 +68,7 @@ svg {
   display: inline-flex;
   align-items: center;
   min-height: var(--target-size);
+  min-width: var(--target-size);
   padding: 0 var(--space-3);
   background: var(--color-surface);
   color: var(--color-ink);
@@ -80,4 +81,15 @@ svg {
 
 .prose {
   max-width: var(--measure);
+}
+
+/* Interactive elements of the header and footer: at least 44 px in both directions. */
+.wordmark,
+.nav-link,
+.footer-link,
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-size);
+  min-width: var(--target-size);
 }

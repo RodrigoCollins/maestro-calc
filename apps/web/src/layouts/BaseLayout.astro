@@ -2,18 +2,36 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { Font } from 'astro:assets';
 import SeoHead from '../components/SeoHead.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
 import SkipLink from '../components/SkipLink.astro';
 import { siteText } from '../lib/site-text.ts';
-import { LOCALE_TAGS } from '../routing/routes.ts';
+import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
+import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
+import type { ShellPageId } from '../routing/routes.ts';
+import { switchFor } from '../routing/switch.ts';
 import type { NotFoundHead, PageHead } from '../seo/head.ts';
+import { SITE } from '../site.config.ts';
 import '../styles/tokens.css';
 import '../styles/base.css';
 
 interface Props {
   locale: Locale;
+  /** The route id of the page, or `notFound`: it decides where the language switch points. */
+  id: ShellPageId;
   head: PageHead | NotFoundHead;
 }
-const { locale, head } = Astro.props;
+const { locale, id, head } = Astro.props;
+const text = siteText(locale);
+const language = { ...switchFor(id, locale), label: text('site.switch.label') };
+const headerLinks = linksFor(HEADER_PAGES, locale).map((link) => ({
+  href: link.href,
+  label: text(`site.nav.${link.id}`),
+}));
+const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
+  href: link.href,
+  label: text(`site.footer.${link.id}`),
+}));
 ---
 
 <!doctype html>
@@ -24,9 +42,20 @@ const { locale, head } = Astro.props;
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
   </head>
   <body>
-    <SkipLink label={siteText(locale)('site.skipLink')} />
+    <SkipLink label={text('site.skipLink')} />
+    <SiteHeader
+      homeHref={pathOf('home', locale)}
+      navLabel={text('site.nav.label')}
+      links={headerLinks}
+      {language}
+    />
     <main id="main">
       <slot />
     </main>
+    <SiteFooter
+      contactLabel={text('site.footer.contactLabel')}
+      email={SITE.contactEmail}
+      links={footerLinks}
+    />
   </body>
 </html>
