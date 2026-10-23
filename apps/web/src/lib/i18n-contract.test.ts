@@ -1,0 +1,144 @@
+import { readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { placeholdersOf } from '@maestro-calc/i18n';
+import { catalogProblems } from '@maestro-calc/i18n/testing/catalog-problems';
+import { describe, expect, it } from 'vitest';
+import { missingKeys, requiredKeys } from '../contract/missing-keys.ts';
+import { fromRoot } from '../contract/root.ts';
+import { calculators } from './calculators.ts';
+
+type Module = Readonly<Record<string, string>>;
+
+const LOCALES = ['en', 'es'] as const;
+type Locale = (typeof LOCALES)[number];
+
+/**
+ * The catalog modules of a locale, read from its directory: module id (the file name) to the one
+ * catalog the file exports. Nothing is listed by hand, so a module added to a directory is
+ * checked by every test below the day it is written.
+ */
+const loadModules = async (locale: Locale): Promise<Record<string, Module>> => {
+  const directory = fromRoot('packages/i18n/src/catalogs', locale);
+  const files = readdirSync(directory).filter((file) => file.endsWith('.ts'));
+  const loaded = await Promise.all(
+    files.map(async (file) => {
+      const exported = Object.values(
+        (await import(/* @vite-ignore */ join(directory, file))) as object,
+      );
+      const [catalog, ...others] = exported as Module[];
+      if (catalog === undefined || others.length > 0) {
+        throw new Error(`${locale}/${file}: a catalog module exports exactly one catalog`);
+      }
+      return [file.replace(/\.ts$/, ''), catalog] as const;
+    }),
+  );
+  return Object.fromEntries(loaded.sort(([a], [b]) => a.localeCompare(b)));
+};
+
+const modules: Record<Locale, Record<string, Module>> = {
+  en: await loadModules('en'),
+  es: await loadModules('es'),
+};
+
+/** The catalog a page builds for `id` in `locale`: the common module and the calculator's own. */
+const catalogOf = (locale: Locale, id: string): Module => ({
+  ...modules[locale]['common'],
+  ...modules[locale][id],
+});
+
+const RECTANGLE_AREA_KEYS = [
+  'calc.rectangle-area.title',
+  'calc.rectangle-area.inputs.length',
+  'calc.rectangle-area.inputs.width',
+  'calc.rectangle-area.outputs.areaFt2',
+  'calc.rectangle-area.outputs.areaYd2',
+  'calc.rectangle-area.outputs.areaM2',
+];
+const ERROR_KEYS = [
+  'errors.EMPTY',
+  'errors.MALFORMED',
+  'errors.DECIMAL_COMMA',
+  'errors.ZERO_DENOMINATOR',
+  'errors.UNKNOWN_UNIT',
+  'errors.TOO_LONG',
+  'errors.TOO_LARGE',
+  'errors.BELOW_MIN',
+  'errors.ABOVE_MAX',
+  'errors.UNKNOWN_OPTION',
+  'errors.INVALID_VALUE',
+  'errors.UNSUPPORTED_VERSION',
+];
+
+describe('registry catalog completeness (i18n-catalog › Catalog completeness and hygiene)', () => {
+  // spec: Convention for the proof calculator [IN3, RA14]
+  it('requires the six calculator keys and the twelve error keys, in that order', () => {
+    const [rectangleArea] = calculators;
+    expect(requiredKeys(rectangleArea)).toEqual([...RECTANGLE_AREA_KEYS, ...ERROR_KEYS]);
+  });
+
+  it('has every required key of every listed calculator in both locales', () => {
+    expect(calculators.length).toBeGreaterThan(0);
+    for (const calculator of calculators) {
+      for (const locale of ['en', 'es'] as const) {
+        expect(missingKeys(calculator, catalogOf(locale, calculator.id)), locale).toEqual([]);
+      }
+    }
+  });
+
+  it('keeps the same placeholders in en and es for every required key', () => {
+    for (const calculator of calculators) {
+      const en = catalogOf('en', calculator.id);
+      const es = catalogOf('es', calculator.id);
+      for (const key of requiredKeys(calculator)) {
+        expect(placeholdersOf(es[key] ?? ''), key).toEqual(placeholdersOf(en[key] ?? ''));
+      }
+    }
+  });
+
+  // spec: Key naming convention: {min} only in BELOW_MIN, {max} only in ABOVE_MAX
+  it('has {min} in errors.BELOW_MIN, {max} in errors.ABOVE_MAX and nothing else', () => {
+    for (const locale of ['en', 'es'] as const) {
+      const common = modules[locale]['common'] ?? {};
+      expect(Object.keys(common)).toEqual(ERROR_KEYS);
+      for (const [key, message] of Object.entries(common)) {
+        const expected = { 'errors.BELOW_MIN': ['min'], 'errors.ABOVE_MAX': ['max'] }[key] ?? [];
+        expect(placeholdersOf(message), `${locale} ${key}`).toEqual(expected);
+      }
+    }
+  });
+
+  it('has one module per listed calculator and the common module in each locale directory', () => {
+    const expected = ['common', ...calculators.map(({ id }) => id)].sort();
+    for (const locale of LOCALES) {
+      expect(Object.keys(modules[locale]), locale).toEqual(expected);
+    }
+  });
+
+  // PR 12 review REL-2 and RD-1: the hygiene of the i18n package (same keys, clean messages, same
+  // placeholders) applies to every module of the directory, not to a list kept in a test.
+  it('keeps every module of es in step with en: keys, grammar, whitespace, braces, placeholders', () => {
+    expect(Object.keys(modules.en).length).toBeGreaterThan(1);
+    for (const [id, en] of Object.entries(modules.en)) {
+      expect(catalogProblems(en, modules.es[id] ?? {}), id).toEqual([]);
+    }
+  });
+
+  // spec: Calculator without labels fails [IN11]
+  it('names a key that a calculator needs and the catalog lacks', () => {
+    const [rectangleArea] = calculators;
+    const withPerimeter = {
+      id: rectangleArea.id,
+      inputs: rectangleArea.inputs,
+      outputs: [
+        ...rectangleArea.outputs,
+        { key: 'perimeter', measure: 'length', role: 'secondary' },
+      ],
+      warnings: ['tooLong'],
+    } as const;
+    expect(missingKeys(withPerimeter, catalogOf('en', 'rectangle-area'))).toEqual([
+      'calc.rectangle-area.outputs.perimeter',
+      'calc.rectangle-area.warnings.tooLong',
+    ]);
+    expect(missingKeys(rectangleArea, {})).toEqual([...RECTANGLE_AREA_KEYS, ...ERROR_KEYS]);
+  });
+});

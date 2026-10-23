@@ -1,12 +1,27 @@
 import { spawnSync } from 'node:child_process';
+import { readdirSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from './root.ts';
 
-/** The most type instantiations the core sources may cost (measured: 20,866 after PR 10). */
-const SOURCE_BUDGET = 40_000;
-/** The same for the test program, which adds the property and type tests (measured: 109,072 after PR 10). */
-const TEST_BUDGET = 150_000;
+/** The calculators core ships: one directory each under `src/calculators`. */
+const CALCULATORS = readdirSync(fromRoot('packages/core/src/calculators'), {
+  withFileTypes: true,
+}).filter((entry) => entry.isDirectory()).length;
+
+/**
+ * The most type instantiations the core sources may cost: a base of 30,000 (measured: 22,631 with
+ * one calculator, 20,866 after PR 10) plus 250 per calculator (measured: about 177 per calculator
+ * in the sources, with headroom). A flat cap would be crossed by growth the design expects, and
+ * raising it by hand would hide a real regression; this one moves only with the catalog.
+ */
+const SOURCE_BUDGET = 30_000 + 250 * CALCULATORS;
+/**
+ * The same for the test program, which adds the property and type tests: a base of 135,000
+ * (measured: 119,771 with one calculator) plus 2,000 per calculator (measured: about 1,497 per
+ * calculator). A flat 150,000 would be crossed near the 22nd calculator.
+ */
+const TEST_BUDGET = 135_000 + 2_000 * CALCULATORS;
 
 const tsc = createRequire(import.meta.url).resolve('typescript/bin/tsc');
 
