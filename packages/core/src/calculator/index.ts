@@ -28,4 +28,5 @@ export type {
   WarningEntry,
 } from './descriptors.ts';
 export { messageKeysOf, type MessageKeysOf } from './message-keys.ts';
+export { RESULT_REASONS, type ResultLocus, type ResultReason } from './run.ts';
 export { MAX_TEXT_LENGTH } from './validate.ts';

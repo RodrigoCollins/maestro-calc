@@ -257,6 +257,7 @@ export function defineCalculator(
   freezeList(definition.inputs);
   freezeList(definition.outputs);
   const runnable = {
+    id: definition.id,
     outputs: definition.outputs,
     warnings: Object.freeze(definition.warnings ?? []),
     validate: (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) =>
@@ -264,7 +265,6 @@ export function defineCalculator(
     compute: definition.compute,
   };
   return Object.freeze({
-    id: definition.id,
     inputs: definition.inputs,
     retiredUrlKeys: Object.freeze(definition.retiredUrlKeys ?? []),
     ...runnable,

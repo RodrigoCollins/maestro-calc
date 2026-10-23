@@ -13,6 +13,7 @@ describe('core public API (design: Public API)', () => {
       'MAX_TEXT_LENGTH',
       'MONEY_PARSE_CODES',
       'RATIONAL_PARSE_CODES',
+      'RESULT_REASONS',
       'Rational',
       'abs',
       'add',

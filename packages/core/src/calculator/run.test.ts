@@ -1,15 +1,152 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fixtureBox } from '../__testing__/fixture-box.ts';
-import { thrownCode } from '../__testing__/thrown-code.ts';
+import { CoreError } from '../errors.ts';
 import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { in2, inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { defineCalculator } from './define.ts';
+import { RESULT_REASONS, type ResultReason } from './run.ts';
 
 const area = quantity(144, in2);
 const cost = usd(Rational.of(747, 50));
 const good = { outputs: { area, cost }, shopping: [], warnings: [] };
+
+interface Where {
+  readonly output?: string;
+  readonly index?: number;
+}
+type Row = [label: string, bad: unknown, reason: ResultReason, where: Where];
+const row = (label: string, bad: unknown, reason: ResultReason, where: Where = {}): Row => [
+  label,
+  bad,
+  reason,
+  where,
+];
+
+/** What a failed action reports: the code, the reason and the locus carried as the cause. */
+const failure = (action: () => unknown): { code: string; reason?: string; cause?: unknown } => {
+  try {
+    action();
+  } catch (error) {
+    if (error instanceof CoreError) {
+      return {
+        code: error.code,
+        ...(error.reason === undefined ? {} : { reason: error.reason }),
+        cause: error.cause,
+      };
+    }
+    throw error;
+  }
+  return { code: 'NONE' };
+};
+
+const line = { materialId: 'a', purchaseUnit: 'b', qty: 1n };
+const warn = { code: 'bigCount', params: {} };
+const withOutputs = (outputs: unknown): unknown => ({ ...good, outputs });
+const withShopping = (shopping: unknown): unknown => ({ ...good, shopping });
+const withWarnings = (warnings: unknown): unknown => ({ ...good, warnings });
+
+const rejected: Row[] = [
+  // [CC24] the outputs are exactly the declared keys, own and enumerable
+  row('omits an output', withOutputs({ area }), 'OUTPUT_KEYS'),
+  row('adds an undeclared output', withOutputs({ area, cost, extra: area }), 'OUTPUT_KEYS'),
+  row(
+    'inherits every declared output',
+    withOutputs(Object.assign(Object.create({ area, cost }), { x: 1, y: 2 })),
+    'OUTPUT_KEYS',
+  ),
+  row(
+    'inherits one declared output and adds an own extra',
+    withOutputs(Object.assign(Object.create({ area }), { cost, extra: 1 })),
+    'OUTPUT_KEYS',
+  ),
+  row(
+    'hides a declared output from enumeration',
+    withOutputs(Object.defineProperty({ cost, extra: area }, 'area', { value: area })),
+    'OUTPUT_KEYS',
+  ),
+  row('returns outputs that are not an object', withOutputs(null), 'NOT_AN_OBJECT'),
+  row(
+    'returns outputs that are a list',
+    withOutputs(Object.assign([], { area, cost })),
+    'NOT_AN_OBJECT',
+  ),
+  row('returns a list as the result', Object.assign([], good), 'NOT_AN_OBJECT'),
+  row('returns a promise', Promise.resolve(good), 'NOT_AN_OBJECT'),
+  row('returns nothing', undefined, 'NOT_AN_OBJECT'),
+  // the value of each output has the declared measure
+  row(
+    'returns area as a length',
+    withOutputs({ area: quantity(12, inch), cost }),
+    'OUTPUT_MEASURE',
+    {
+      output: 'area',
+    },
+  ),
+  row('returns area as money', withOutputs({ area: cost, cost }), 'OUTPUT_MEASURE', {
+    output: 'area',
+  }),
+  row('returns cost as a quantity', withOutputs({ area, cost: area }), 'OUTPUT_MEASURE', {
+    output: 'cost',
+  }),
+  row('returns cost as a number', withOutputs({ area, cost: 15 }), 'OUTPUT_MEASURE', {
+    output: 'cost',
+  }),
+  // shopping is a dense list of lines
+  row('returns shopping that is not a list', withShopping(undefined), 'SHOPPING'),
+  row('returns a negative qty', withShopping([{ ...line, qty: -1n }]), 'SHOPPING', { index: 0 }),
+  row('returns a qty that is a number', withShopping([{ ...line, qty: 1 }]), 'SHOPPING', {
+    index: 0,
+  }),
+  row('returns a line without a material', withShopping([{ ...line, materialId: 7 }]), 'SHOPPING', {
+    index: 0,
+  }),
+  row(
+    'returns a line without a purchase unit',
+    withShopping([{ ...line, purchaseUnit: undefined }]),
+    'SHOPPING',
+    { index: 0 },
+  ),
+  row('returns a line that is null', withShopping([null]), 'SHOPPING', { index: 0 }),
+  row('returns a bad line after a good one', withShopping([line, 'sheet']), 'SHOPPING', {
+    index: 1,
+  }),
+  row('returns a hole in the shopping list', withShopping(new Array(1)), 'SHOPPING', { index: 0 }),
+  row(
+    'returns a hole between two lines',
+    withShopping(Object.assign(new Array(3), { 0: line, 2: line })),
+    'SHOPPING',
+    { index: 1 },
+  ),
+  // warnings are a dense list of declared codes with scalar, finite params
+  row('returns warnings that are not a list', withWarnings(undefined), 'WARNING'),
+  row('emits an undeclared warning', withWarnings([{ code: 'nope', params: {} }]), 'WARNING', {
+    index: 0,
+  }),
+  row('emits a warning without a code', withWarnings([{ params: {} }]), 'WARNING', { index: 0 }),
+  row('emits a warning that is null', withWarnings([null]), 'WARNING', { index: 0 }),
+  row('emits a warning that is not an object', withWarnings(['bigCount']), 'WARNING', { index: 0 }),
+  row(
+    'emits a warning code that is not a string',
+    withWarnings([{ code: 1, params: {} }]),
+    'WARNING',
+    {
+      index: 0,
+    },
+  ),
+  row('emits a bad warning after a good one', withWarnings([warn, null]), 'WARNING', { index: 1 }),
+  row('emits params that are not an object', withWarnings([{ ...warn, params: 5 }]), 'WARNING', {
+    index: 0,
+  }),
+  row(
+    'emits a param that is an object',
+    withWarnings([{ ...warn, params: { cnt: 1, over: { n: 1 } } }]),
+    'WARNING',
+    { index: 0 },
+  ),
+  row('returns a hole in the warnings', withWarnings(new Array(1)), 'WARNING', { index: 0 }),
+];
 
 /** A fixture-box whose `compute` returns `bad`, which only an untyped cast can reach. */
 const returning = (bad: unknown): typeof fixtureBox =>
@@ -89,54 +226,47 @@ describe('Calculator.run (calculator-contract › Pure, language-free compute)',
   });
 
   // spec: calculator-contract › Result shape enforcement [CC24]
-  describe.each([
-    ['omits an output', { ...good, outputs: { area } }],
-    ['adds an undeclared output', { ...good, outputs: { area, cost, extra: area } }],
-    ['returns area as a length', { ...good, outputs: { area: quantity(12, inch), cost } }],
-    ['returns area as money', { ...good, outputs: { area: cost, cost } }],
-    ['returns cost as a quantity', { ...good, outputs: { area, cost: area } }],
-    ['returns cost as a number', { ...good, outputs: { area, cost: 15 } }],
-    ['emits an undeclared warning', { ...good, warnings: [{ code: 'nope', params: {} }] }],
-    ['emits a warning without a code', { ...good, warnings: [{ params: {} }] }],
-    ['emits a warning that is null', { ...good, warnings: [null] }],
-    ['emits a warning that is not an object', { ...good, warnings: ['bigCount'] }],
-    ['returns warnings that are not a list', { ...good, warnings: undefined }],
-    [
-      'returns a negative qty',
-      { ...good, shopping: [{ materialId: 'a', purchaseUnit: 'b', qty: -1n }] },
-    ],
-    [
-      'returns a qty that is a number',
-      { ...good, shopping: [{ materialId: 'a', purchaseUnit: 'b', qty: 1 }] },
-    ],
-    [
-      'returns a shopping line without a material',
-      { ...good, shopping: [{ materialId: 7, purchaseUnit: 'b', qty: 1n }] },
-    ],
-    [
-      'returns a shopping line without a purchase unit',
-      { ...good, shopping: [{ materialId: 'a', purchaseUnit: undefined, qty: 1n }] },
-    ],
-    [
-      'emits a warning whose params are not an object',
-      { ...good, warnings: [{ code: 'bigCount', params: 5 }] },
-    ],
-    [
-      'emits a warning whose param is an object',
-      { ...good, warnings: [{ code: 'bigCount', params: { cnt: 1, over: { n: 1 } } }] },
-    ],
-    [
-      'emits a warning whose code is not a string',
-      { ...good, warnings: [{ code: 1, params: {} }] },
-    ],
-    ['returns a shopping line that is not an object', { ...good, shopping: [null] }],
-    ['returns shopping that is not a list', { ...good, shopping: undefined }],
-    ['returns outputs that are not an object', { ...good, outputs: null }],
-    ['returns nothing', undefined],
-  ])('a compute that %s', (_name, bad) => {
-    it('makes run throw INVALID_RESULT', () => {
-      expect(thrownCode(() => returning(bad).run({}))).toBe('INVALID_RESULT');
+  it('lists every reason of the contract once', () => {
+    expect([...RESULT_REASONS].sort()).toEqual(
+      [...new Set(rejected.map(([, , reason]) => reason))].sort(),
+    );
+  });
+
+  it.each(rejected)(
+    'a compute that %s makes run throw INVALID_RESULT %s',
+    (_name, bad, reason, where) => {
+      expect(failure(() => returning(bad).run({}))).toStrictEqual({
+        code: 'INVALID_RESULT',
+        reason,
+        cause: { id: 'fixture-box', ...where },
+      });
+    },
+  );
+
+  it('pins what run does when compute itself fails', () => {
+    const boom = new RangeError('boom');
+    const throwing = defineCalculator({
+      id: 'fixture-box',
+      inputs: fixtureBox.inputs,
+      outputs: fixtureBox.outputs,
+      warnings: fixtureBox.warnings,
+      compute: () => {
+        throw boom;
+      },
     });
+    expect(() => throwing.run({})).toThrow(boom);
+    const getter = {
+      get outputs(): never {
+        throw boom;
+      },
+    };
+    expect(() => returning(getter).run({})).toThrow(boom);
+  });
+
+  // spec: calculator-contract › Ordered outputs [CC23]
+  it('lists the outputs in declaration order whatever order compute built them in', () => {
+    const reversed = returning({ ...good, outputs: { cost, area } }).run({});
+    expect(reversed.ok && reversed.value.outputs.map(({ key }) => key)).toEqual(['area', 'cost']);
   });
 
   it('accepts any of several declared warning codes', () => {
