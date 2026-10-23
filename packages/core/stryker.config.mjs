@@ -130,7 +130,7 @@ export const shardNames = Object.keys(shards);
 // module registry in a run. The verdict of a mutant run is the exit code, but Stryker stores the
 // whole output of every killed mutant in its reports: `--reporter=dot` shrinks the progress lines
 // and `--bail=1` stops at the first failing test, so a mutant that fails 190 tests keeps one
-// failure report instead of 190 (the cold format shard report shrinks from 12.3 MB to the size in
+// failure report instead of 190 (the cold format shard report shrinks from 12.7 MB to the size in
 // apply-progress). A kill is a kill after one failure, so the verdicts do not change.
 const vitestCommand =
   'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false --reporter=dot --bail=1';

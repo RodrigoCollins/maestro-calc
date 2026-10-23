@@ -24,6 +24,8 @@ describe('money types (money › Exact money)', () => {
     expectTypeOf(addMoney(usd(1), money)).toEqualTypeOf<Money>();
     // @ts-expect-error a Money is not a Quantity
     add(money, money);
+    // @ts-expect-error a Money is not a Quantity, even as the second operand
+    add(length, money);
     // @ts-expect-error a length is not Money
     addMoney(money, length);
     // @ts-expect-error a length is not Money
