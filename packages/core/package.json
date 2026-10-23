@@ -6,7 +6,11 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./calculators/*": "./src/calculators/*/index.ts"
+    "./calculators/*": "./src/calculators/*/index.ts",
+    "./testing/collect-strings": "./src/__testing__/collect-strings.ts",
+    "./testing/language-free": "./src/__testing__/language-free.ts",
+    "./testing/released-harness": "./src/url/released-harness.ts",
+    "./testing/released-snapshot": "./src/__testing__/released-snapshot.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

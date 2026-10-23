@@ -131,3 +131,30 @@ describe('package source type environment', () => {
     expect(parseTsconfig(config).options.types).toEqual(types);
   });
 });
+
+describe('test-support exports (monorepo-workspace, PR 12 review R1-3)', () => {
+  const exportsOf = (dir: string): Record<string, string> =>
+    (JSON.parse(readFileSync(fromRoot(dir, 'package.json'), 'utf8')) as { exports: never }).exports;
+  const testingEntries = (dir: string): [string, string][] =>
+    Object.entries(exportsOf(dir)).filter(([subpath]) => subpath.startsWith('./testing'));
+
+  // A `testing/*` wildcard would publish every file added to `__testing__` the day it is written;
+  // the explicit list is exactly what the web contract tests import.
+  it('lists the test-support subpaths one by one, with no wildcard', () => {
+    expect(testingEntries('packages/core').map(([subpath]) => subpath)).toEqual([
+      './testing/collect-strings',
+      './testing/language-free',
+      './testing/released-harness',
+      './testing/released-snapshot',
+    ]);
+    expect(testingEntries('packages/i18n').map(([subpath]) => subpath)).toEqual([
+      './testing/catalog-problems',
+    ]);
+  });
+
+  it.each(['packages/core', 'packages/i18n'])('%s: every test-support subpath is a file', (dir) => {
+    for (const [, target] of testingEntries(dir)) {
+      expect(() => readFileSync(fromRoot(dir, target), 'utf8'), target).not.toThrow();
+    }
+  });
+});

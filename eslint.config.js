@@ -147,6 +147,12 @@ const testSupportImport = banned(
   'Test support code must not be imported by shipped sources.',
 );
 
+/** The `testing/*` subpaths of a package are test support: no shipped source may import them. */
+const packageTestingImport = banned(
+  ['@maestro-calc/*/testing', '@maestro-calc/*/testing/**'],
+  'Test support of a package must not be imported by shipped code.',
+);
+
 const coreFiles = 'packages/core/**/*.{ts,mts,cts,tsx,js,mjs,cjs}';
 
 const scriptExtensions = 'ts,mts,cts,tsx,js,mjs,cjs';
@@ -270,9 +276,22 @@ export default defineConfig(
   ...Object.entries(layerPatterns).map(([layer, patterns]) => ({
     files: [`packages/${layer}/src/**/*.{${scriptExtensions}}`],
     ignores: testGlobs,
-    rules: importsFor(...patterns, testSupportImport),
+    rules: importsFor(...patterns, testSupportImport, packageTestingImport),
   })),
   { files: ['apps/web/**/*.{ts,astro}'], rules: importsFor() },
+  {
+    // The `testing/*` subpaths of core and i18n and the `src/contract` helpers exist for the contract
+    // tests of the web app only.
+    files: ['apps/web/**/*.{ts,astro}'],
+    ignores: [...testGlobs, 'apps/web/src/contract/**'],
+    rules: importsFor(
+      packageTestingImport,
+      banned(
+        ['**/contract', '**/contract/**'],
+        'Contract-test helpers (src/contract) must not be imported by shipped web code.',
+      ),
+    ),
+  },
   { files: ['**/*.astro'], plugins: { 'import-x': importX } },
   ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
   ...astro.configs['flat/recommended'],

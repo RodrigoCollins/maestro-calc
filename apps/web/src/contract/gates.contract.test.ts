@@ -127,6 +127,50 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
       ),
   );
 
+  // design: the testing subpaths of core are for contract tests, never for shipped web code
+  it.each([
+    ['apps/web/src/lib/x.ts', true],
+    ['apps/web/src/pages/x.astro', true],
+    ['apps/web/src/lib/x.test.ts', false],
+    ['apps/web/src/contract/x.ts', false],
+  ])('checks imports of core test support in %s: rejected=%s', async (path, rejected) => {
+    const body = "import { collectStrings } from '@maestro-calc/core/testing/collect-strings';\n";
+    const code = path.endsWith('.astro')
+      ? `---\n${body}---\n`
+      : `${body}export const v = collectStrings;\n`;
+    const { ruleIds } = await lint(code, path);
+    expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
+  });
+
+  // PR 12 review R1-1: shipped data code must not reach the test support of core (or of any package)
+  it.each([
+    ['packages/data/src/x.ts', true],
+    ['packages/data/src/x.test.ts', false],
+    ['packages/data/src/__testing__/x.ts', false],
+  ])('checks imports of core test support in %s: rejected=%s', async (path, rejected) => {
+    const body = "import { collectStrings } from '@maestro-calc/core/testing/collect-strings';\n";
+    const { ruleIds } = await lint(`${body}export const v = collectStrings;\n`, path);
+    expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
+  });
+
+  // PR 12 review R1-2: contract helpers (`src/contract`) are test support of the web app too
+  it.each([
+    ['apps/web/src/lib/x.ts', "import { fromRoot } from '../contract/root.ts';", true],
+    ['apps/web/src/lib/x.ts', "import * as contract from '../contract';", true],
+    ['apps/web/src/pages/x.astro', "import { fromRoot } from '../contract/root.ts';", true],
+    ['apps/web/src/lib/x.test.ts', "import { fromRoot } from '../contract/root.ts';", false],
+    ['apps/web/src/contract/x.ts', "import { fromRoot } from './root.ts';", false],
+  ])(
+    'checks imports of the contract directory in %s (%s): rejected=%s',
+    async (path, line, rejected) => {
+      const code = path.endsWith('.astro')
+        ? `---\n${line}\n---\n`
+        : `${line}\nexport const v = 1;\n`;
+      const { ruleIds } = await lint(code, path);
+      expect(ruleIds.includes('no-restricted-imports')).toBe(rejected);
+    },
+  );
+
   // design: Purity (core) — the global object cannot be used to reach restricted globals
   it.each(['globalThis', 'self', 'global'])('rejects the global object alias %s in core', (name) =>
     rejects(exportOf(name), CORE, 'no-restricted-globals'),
