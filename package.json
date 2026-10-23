@@ -19,7 +19,7 @@
     "check": "npm run typecheck",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "mutation": "npm run mutation -w @maestro-calc/core",
+    "mutation": "node scripts/mutation.mjs",
     "check:dist": "node scripts/check-dist.mjs",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",

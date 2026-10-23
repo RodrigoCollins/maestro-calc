@@ -65,13 +65,19 @@ for (const path of incrementalIdentityFiles) {
     .update('\0');
 }
 
-const incrementalName = `stryker-incremental-${identity.digest('hex').slice(0, 16)}.json`;
+const identityHash = identity.digest('hex').slice(0, 16);
 
-/** Deletes every incremental report except the current one, so old reports do not pile up. */
+/**
+ * Deletes the incremental reports of the shard that `keepFile` belongs to (and the legacy
+ * unsharded ones) except `keepFile` itself, so old reports do not pile up. The reports of the
+ * other shards stay: a local full run writes one report per shard.
+ */
 export const pruneStaleReports = (reportsDirectory, keepFile) => {
   if (!existsSync(reportsDirectory)) return;
+  const shard = /^stryker-incremental-[0-9a-f]+-(.+)\.json$/.exec(keepFile)?.[1];
+  const own = new RegExp(`^stryker-incremental-[0-9a-f]+(-${shard})?\\.json$`);
   for (const name of readdirSync(reportsDirectory)) {
-    if (/^stryker-incremental-.*\.json$/.test(name) && name !== keepFile) {
+    if (own.test(name) && name !== keepFile) {
       rmSync(join(reportsDirectory, name));
     }
   }
@@ -81,46 +87,86 @@ export const pruneStaleReports = (reportsDirectory, keepFile) => {
 export const isStrykerEntry = (entry) =>
   entry !== undefined && /^stryker(\.\w+)?$/.test(basename(entry));
 
+const excluded = [
+  '!src/**/*.test.ts',
+  '!src/**/*.test-d.ts',
+  '!src/__testing__/**',
+  '!src/**/index.ts',
+];
+
+/**
+ * The command runner reruns the whole test command for every mutant, so the cost of a run is
+ * (mutants) x (tests per run). A shard mutates a few modules and runs only their tests plus the
+ * cross-module `index.test.ts` (cheap, and the only place that pins the wiring of the barrels).
+ * The shards must cover every mutable file of `src` exactly once; a contract test asserts it from
+ * the filesystem, so a new module cannot be left out.
+ */
+export const shards = {
+  rational: {
+    mutate: ['src/rational/**', 'src/errors.ts', 'src/result.ts'],
+    tests: ['src/rational', 'src/errors.test.ts', 'src/result.test.ts', 'src/index.test.ts'],
+  },
+  units: {
+    mutate: ['src/units/**'],
+    tests: ['src/units', 'src/index.test.ts'],
+  },
+  format: {
+    mutate: ['src/format/**'],
+    tests: ['src/format', 'src/index.test.ts'],
+  },
+};
+
+export const shardNames = Object.keys(shards);
+
+// STRYKER=1 flips the `__STRYKER__` define, so a direct `stryker run` behaves like the npm
+// script. Type tests cannot kill behavioral mutants (they run in `verify`), and skipping them
+// keeps every mutant run cheap and out of the sandbox `extends ../../tsconfig.base.json` path.
+// `--isolate=false` runs all test files in one worker instead of one fork per file: a mutant
+// run costs the vitest boot, not the tests, so this halves the cold run with identical verdicts.
+// Core tests therefore must not keep cross-file mutable module state: all files share one
+// module registry in a run.
+const vitestCommand =
+  'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false';
+
+/** The Stryker options of one shard, or of all of core in one invocation for `all`. */
+export const optionsFor = (shard) => {
+  if (shard !== 'all' && !Object.hasOwn(shards, shard)) {
+    throw new Error(`unknown mutation shard: ${shard}`);
+  }
+  const selected = shard === 'all' ? undefined : shards[shard];
+  const incrementalName = `stryker-incremental-${identityHash}-${shard}.json`;
+  return {
+    testRunner: 'command',
+    commandRunner: {
+      command:
+        selected === undefined ? vitestCommand : `${vitestCommand} ${selected.tests.join(' ')}`,
+    },
+    coverageAnalysis: 'off',
+    mutate:
+      selected === undefined ? ['src/**/*.ts', ...excluded] : [...selected.mutate, ...excluded],
+    // Stale reports must not be copied into the sandboxes.
+    ignorePatterns: ['reports'],
+    incremental: true,
+    incrementalFile: `reports/${incrementalName}`,
+    reporters: ['clear-text', 'progress-append-only', 'html', 'json'],
+    htmlReporter: { fileName: 'reports/mutation/index.html' },
+    // A timeout counts as a kill. Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant
+    // run, so a loaded runner has headroom while the 8 `gcd` mutants that never terminate cost
+    // about 19 s each. Four workers fit the 4 vCPUs of a CI runner.
+    timeoutMS: 10000,
+    timeoutFactor: 4,
+    concurrency: 4,
+    thresholds: { high: 95, low: 90, break: 90 },
+  };
+};
+
+/** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
+const options = optionsFor(process.env.STRYKER_SHARD ?? 'all');
+
 // The config is also imported by tests and editors, which must not delete reports; only a real
 // Stryker run prunes.
 if (isStrykerEntry(process.argv[1])) {
-  pruneStaleReports(join(packageDir, 'reports'), incrementalName);
+  pruneStaleReports(join(packageDir, 'reports'), basename(options.incrementalFile));
 }
 
-/** @type {import('@stryker-mutator/api/core').PartialStrykerOptions} */
-export default {
-  testRunner: 'command',
-  commandRunner: {
-    // STRYKER=1 flips the `__STRYKER__` define, so a direct `stryker run` behaves like the npm
-    // script. Type tests cannot kill behavioral mutants (they run in `verify`), and skipping them
-    // keeps every mutant run cheap and out of the sandbox `extends ../../tsconfig.base.json` path.
-    // `--isolate=false` runs all test files in one worker instead of one fork per file: a mutant
-    // run costs the vitest boot, not the tests, so this halves the cold run with identical verdicts.
-    // Core tests therefore must not keep cross-file mutable module state: all files share one
-    // module registry in a run.
-    command:
-      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',
-  },
-  coverageAnalysis: 'off',
-  mutate: [
-    'src/**/*.ts',
-    '!src/**/*.test.ts',
-    '!src/**/*.test-d.ts',
-    '!src/__testing__/**',
-    '!src/**/index.ts',
-  ],
-  // Stale reports must not be copied into the sandboxes.
-  ignorePatterns: ['reports'],
-  incremental: true,
-  incrementalFile: `reports/${incrementalName}`,
-  reporters: ['clear-text', 'progress-append-only', 'html', 'json'],
-  htmlReporter: { fileName: 'reports/mutation/index.html' },
-  // A timeout counts as a kill. Stryker allows `netTime * timeoutFactor + timeoutMS` per mutant
-  // run, about 19 s here (a clean run of the suite takes about 2.3 s: 2.3 * 4 + 10), so a loaded
-  // runner has ample headroom while the 8 `gcd` mutants that never terminate cost about 19 s each
-  // instead of about 39 s at `timeoutMS 30000`. Four workers fit the 4 vCPUs of a CI runner.
-  timeoutMS: 10000,
-  timeoutFactor: 4,
-  concurrency: 4,
-  thresholds: { high: 95, low: 90, break: 90 },
-};
+export default options;

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { describe, expect, it } from 'vitest';
-import { fromRoot } from './root.ts';
+import { fromRoot, importFromRoot } from './root.ts';
 
 interface Step {
   name?: string;
@@ -20,6 +20,7 @@ interface Job {
   'paths-ignore'?: unknown;
   permissions?: unknown;
   'timeout-minutes'?: number;
+  strategy?: { 'fail-fast'?: boolean; matrix?: { shard?: string[] } };
   'continue-on-error'?: unknown;
 }
 
@@ -117,6 +118,10 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
   });
 });
 
+const { shardNames } = await importFromRoot<{ shardNames: string[] }>(
+  'packages/core/stryker.config.mjs',
+);
+
 describe('CI mutation job (quality-gates › Continuous integration workflow, Mutation gate)', () => {
   const mutation = workflow.jobs['mutation'];
   const steps = mutation?.steps ?? [];
@@ -132,6 +137,15 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(mutation?.['paths-ignore']).toBeUndefined();
   });
 
+  // design 3.19b: one runner per shard; the matrix must list exactly the shards of the Stryker
+  // config, so a shard added there cannot go unrun in CI. One failing shard must not hide the
+  // scores of the others.
+  it('runs one matrix entry per Stryker shard without failing fast', () => {
+    expect(mutation?.strategy?.matrix?.shard).toEqual(shardNames);
+    expect(mutation?.strategy?.['fail-fast']).toBe(false);
+    expect(mutation?.['timeout-minutes']).toBe(30);
+  });
+
   const KEY_EXPRESSION = '${{ env.STRYKER_CACHE_KEY }}';
   const keyStep = steps.find((candidate) => candidate.run?.includes('STRYKER_CACHE_KEY=') ?? false);
 
@@ -140,7 +154,7 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     const commands = steps.flatMap((candidate) =>
       candidate.run === undefined || candidate === keyStep ? [] : [candidate.run],
     );
-    expect(commands).toEqual(['npm ci', 'npm run mutation']);
+    expect(commands).toEqual(['npm ci', 'npm run mutation -- --shard ${{ matrix.shard }}']);
     expect(mutation?.['timeout-minutes']).toBeGreaterThan(0);
     expect(mutation?.['continue-on-error']).toBeUndefined();
     expect(step('actions/checkout@')?.with).toMatchObject({ 'persist-credentials': false });
@@ -155,6 +169,8 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
   // for the later restore and save steps.
   it('computes one cache key from a superset of the mutation inputs', () => {
     expect(keyStep?.run).toContain('${RUNNER_OS}');
+    // one key (and one report) per shard: the shards never overwrite each other's cache
+    expect(keyStep?.run).toContain('${{ matrix.shard }}');
     for (const input of [
       'packages/core/src/**',
       'packages/core/*.json',
@@ -179,10 +195,12 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
     expect(save?.with?.['key']).toBe(KEY_EXPRESSION);
     expect(restore?.with?.['restore-keys']).toBeUndefined();
     expect(save?.with?.['restore-keys']).toBeUndefined();
-    expect(restore?.with?.['path']).toBe('packages/core/reports/stryker-incremental-*.json');
+    expect(restore?.with?.['path']).toBe(
+      'packages/core/reports/stryker-incremental-*-${{ matrix.shard }}.json',
+    );
     expect(save?.with?.['path']).toBe(restore?.with?.['path']);
     expect(save?.if).toContain("github.ref == 'refs/heads/main'");
-    const run = steps.findIndex((s) => s.run === 'npm run mutation');
+    const run = steps.findIndex((s) => s.run === 'npm run mutation -- --shard ${{ matrix.shard }}');
     expect(steps.indexOf(keyStep ?? {})).toBeLessThan(steps.indexOf(restore ?? {}));
     expect(steps.indexOf(restore ?? {})).toBeLessThan(run);
     expect(run).toBeLessThan(steps.indexOf(save ?? {}));
@@ -192,7 +210,10 @@ describe('CI mutation job (quality-gates › Continuous integration workflow, Mu
   it('uploads the mutation report when the job fails', () => {
     const upload = step('actions/upload-artifact@');
     expect(upload?.if).toBe('failure()');
-    expect(upload?.with).toMatchObject({ path: 'packages/core/reports/mutation' });
+    expect(upload?.with).toMatchObject({
+      name: 'mutation-report-${{ matrix.shard }}',
+      path: 'packages/core/reports/mutation',
+    });
   });
 });
 
