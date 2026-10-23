@@ -57,7 +57,7 @@ const isMeasure = (
 ): value is Quantity<DimensionName> | Money =>
   measure === 'money' ? isMoney(value) : isQuantityOf(value, measure);
 
-/** The outputs as a list in declaration order, when exactly the declared keys are own. */
+/** The outputs as a frozen list in declaration order, when exactly the declared keys are own. */
 const outputsOf = (
   id: string,
   declared: readonly OutputDescriptor[],
@@ -69,66 +69,75 @@ const outputsOf = (
   if (own.length !== declared.length || !declared.every(({ key }) => own.includes(key))) {
     return invalid(id, 'OUTPUT_KEYS');
   }
-  return declared.map(({ key, role, measure }) => {
-    const value = outputs[key];
-    if (!isMeasure(value, measure)) return invalid(id, 'OUTPUT_MEASURE', { output: key });
-    return { key, role, value };
-  });
+  return Object.freeze(
+    declared.map(({ key, role, measure }) => {
+      const value = outputs[key];
+      if (!isMeasure(value, measure)) return invalid(id, 'OUTPUT_MEASURE', { output: key });
+      return Object.freeze({ key, role, value });
+    }),
+  );
 };
 
-const isShoppingLine = (line: unknown): line is ShoppingLine =>
-  isRecord(line) &&
-  typeof line['materialId'] === 'string' &&
-  typeof line['purchaseUnit'] === 'string' &&
-  typeof line['qty'] === 'bigint' &&
-  line['qty'] >= 0n;
-
-const isParam = (value: unknown): boolean => ['number', 'boolean', 'string'].includes(typeof value);
-
-const isDeclaredWarning = (
-  declared: readonly string[],
-  warning: unknown,
-): warning is WarningEntry<string> =>
-  isRecord(warning) &&
-  declared.some((code) => code === warning['code']) &&
-  isRecord(warning['params']) &&
-  Object.values(warning['params']).every(isParam);
-
+/** A frozen copy of each line; `Array.from` visits the holes of a sparse list as `undefined`. */
 const shoppingOf = (id: string, shopping: unknown): readonly ShoppingLine[] => {
   if (!Array.isArray(shopping)) return invalid(id, 'SHOPPING');
-  // `findIndex` visits the holes of a sparse list as `undefined`, which is not a line
-  const index = shopping.findIndex((line) => !isShoppingLine(line));
-  return index === -1 ? shopping.filter(isShoppingLine) : invalid(id, 'SHOPPING', { index });
+  return Object.freeze(
+    Array.from(shopping, (line: unknown, index): ShoppingLine => {
+      if (!isRecord(line)) return invalid(id, 'SHOPPING', { index });
+      const { materialId, purchaseUnit, qty } = line;
+      if (typeof materialId !== 'string' || typeof purchaseUnit !== 'string') {
+        return invalid(id, 'SHOPPING', { index });
+      }
+      if (typeof qty !== 'bigint' || qty < 0n) return invalid(id, 'SHOPPING', { index });
+      return Object.freeze({ materialId, purchaseUnit, qty });
+    }),
+  );
 };
 
+type Param = number | boolean | string;
+
+const isParam = (value: unknown): value is Param =>
+  typeof value === 'boolean' || typeof value === 'string' || Number.isFinite(value);
+
+/** A frozen copy of each warning, whose code is declared and whose params are scalar. */
 const warningsOf = (
   id: string,
   declared: readonly string[],
   warnings: unknown,
 ): readonly WarningEntry<string>[] => {
   if (!Array.isArray(warnings)) return invalid(id, 'WARNING');
-  const isValid = (warning: unknown): warning is WarningEntry<string> =>
-    isDeclaredWarning(declared, warning);
-  const index = warnings.findIndex((warning) => !isValid(warning));
-  return index === -1 ? warnings.filter(isValid) : invalid(id, 'WARNING', { index });
+  return Object.freeze(
+    Array.from(warnings, (warning: unknown, index): WarningEntry<string> => {
+      if (!isRecord(warning)) return invalid(id, 'WARNING', { index });
+      const { code, params } = warning;
+      const known = declared.find((candidate) => candidate === code);
+      if (known === undefined || !isRecord(params)) return invalid(id, 'WARNING', { index });
+      const entries = Object.entries(params);
+      if (!entries.every((entry): entry is [string, Param] => isParam(entry[1]))) {
+        return invalid(id, 'WARNING', { index });
+      }
+      return Object.freeze({ code: known, params: Object.freeze(Object.fromEntries(entries)) });
+    }),
+  );
 };
 
-/** The shape of a `compute` result as a run result; a result off the contract throws. */
+/** The shape of a `compute` result as a frozen run result; a result off the contract throws. */
 const shapeOf = (
   { id, outputs, warnings }: Runnable,
   result: unknown,
 ): RunResult<readonly OutputDescriptor[], string> => {
   if (!isRecord(result)) return invalid(id, 'NOT_AN_OBJECT');
-  return {
+  return Object.freeze({
     outputs: outputsOf(id, outputs, result['outputs']),
     shopping: shoppingOf(id, result['shopping']),
     warnings: warningsOf(id, warnings, result['warnings']),
-  };
+  });
 };
 
 /**
  * `validate` then `compute`. A failed validation is returned as it is and `compute` is not called;
  * a computed result that breaks the shape rules throws `INVALID_RESULT` with a reason and a locus.
+ * The result is a frozen copy, so what `compute` built (and may still hold) cannot change it.
  */
 export const runCalculator = (
   calculator: Runnable,

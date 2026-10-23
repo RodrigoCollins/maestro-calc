@@ -139,9 +139,21 @@ const rejected: Row[] = [
   row('emits params that are not an object', withWarnings([{ ...warn, params: 5 }]), 'WARNING', {
     index: 0,
   }),
+  row('emits params that are a list', withWarnings([{ ...warn, params: [1] }]), 'WARNING', {
+    index: 0,
+  }),
   row(
     'emits a param that is an object',
     withWarnings([{ ...warn, params: { cnt: 1, over: { n: 1 } } }]),
+    'WARNING',
+    { index: 0 },
+  ),
+  row('emits a param that is NaN', withWarnings([{ ...warn, params: { cnt: NaN } }]), 'WARNING', {
+    index: 0,
+  }),
+  row(
+    'emits a param that is infinite',
+    withWarnings([{ ...warn, params: { cnt: Infinity } }]),
     'WARNING',
     { index: 0 },
   ),
@@ -267,6 +279,53 @@ describe('Calculator.run (calculator-contract › Pure, language-free compute)',
   it('lists the outputs in declaration order whatever order compute built them in', () => {
     const reversed = returning({ ...good, outputs: { cost, area } }).run({});
     expect(reversed.ok && reversed.value.outputs.map(({ key }) => key)).toEqual(['area', 'cost']);
+  });
+
+  it('returns frozen copies of the shopping lines and warnings, not the ones compute built', () => {
+    const lines = [{ materialId: 'plywood-sheet', purchaseUnit: 'sheet', qty: 5n, extra: 'x' }];
+    const params = { cnt: 101 };
+    const warnings = [{ code: 'bigCount', params }];
+    const result = returning({ ...good, shopping: lines, warnings }).run({});
+    if (!result.ok) throw new Error('the result must be accepted');
+    const { value } = result;
+    expect(value.shopping).toStrictEqual([
+      { materialId: 'plywood-sheet', purchaseUnit: 'sheet', qty: 5n },
+    ]);
+    expect(value.shopping[0]).not.toBe(lines[0]);
+    expect(value.warnings[0]?.params).not.toBe(params);
+    params.cnt = 0;
+    lines[0] = { materialId: 'other', purchaseUnit: 'sheet', qty: 1n, extra: 'y' };
+    expect([value.shopping[0]?.materialId, value.warnings[0]?.params]).toEqual([
+      'plywood-sheet',
+      { cnt: 101 },
+    ]);
+    expect(
+      [
+        value,
+        value.outputs,
+        value.outputs[0],
+        value.shopping,
+        value.shopping[0],
+        value.warnings,
+        value.warnings[0],
+        value.warnings[0]?.params,
+      ].map(Object.isFrozen),
+    ).toEqual([true, true, true, true, true, true, true, true]);
+  });
+
+  it('reads each field of a shopping line once', () => {
+    let reads = 0;
+    const flaky = {
+      materialId: 'a',
+      purchaseUnit: 'b',
+      get qty(): bigint {
+        reads += 1;
+        return reads === 1 ? 1n : -1n;
+      },
+    };
+    const result = returning({ ...good, shopping: [flaky] }).run({});
+    expect(result.ok && result.value.shopping[0]?.qty).toBe(1n);
+    expect(reads).toBe(1);
   });
 
   it('accepts any of several declared warning codes', () => {

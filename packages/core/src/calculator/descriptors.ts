@@ -192,7 +192,8 @@ export interface Calculator<
   readonly compute: (inputs: InputsOf<I>) => ComputeResult<O, W[number]>;
   /**
    * `validate` then `compute`, with the shape of the result enforced: a result that breaks the
-   * contract throws `CoreError('INVALID_RESULT', reason)`, a programming error.
+   * contract throws `CoreError('INVALID_RESULT', reason)`, a programming error. The result is a
+   * frozen copy of what `compute` built.
    */
   readonly run: (
     raw: Readonly<Record<string, unknown>>,
