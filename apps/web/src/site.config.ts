@@ -1,9 +1,7 @@
-// Global site settings. Brand name and domain are placeholders until the domain is bought.
+// Global site settings. The tagline lives in the `site` catalog, not here.
 export const SITE = {
   name: 'Maestro Calc',
   url: 'https://maestrocalc.com',
-  tagline: 'Construction & yard calculators that tell you exactly what to buy.',
-  locale: 'en-US',
   author: {
     name: 'Maestro Calc Editorial Team',
     role: 'Editorial team',
@@ -11,5 +9,5 @@ export const SITE = {
   },
   // Filled in once AdSense is approved; ad slots render nothing while empty.
   adsenseClient: '',
-  contactEmail: 'hello@maestrocalc.com',
+  contactEmail: 'contacto@maestrocalc.com',
 } as const;
