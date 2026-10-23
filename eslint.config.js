@@ -286,10 +286,30 @@ export default defineConfig(
     ignores: [...testGlobs, 'apps/web/src/contract/**'],
     rules: importsFor(
       packageTestingImport,
+      testSupportImport,
       banned(
         ['**/contract', '**/contract/**'],
         'Contract-test helpers (src/contract) must not be imported by shipped web code.',
       ),
+    ),
+  },
+  {
+    // Presentational components receive plain props: they read no catalog, route table or content.
+    files: ['apps/web/src/components/**/*.{ts,astro}'],
+    ignores: testGlobs,
+    rules: importsFor(
+      packageTestingImport,
+      testSupportImport,
+      banned(['**/contract', '**/contract/**'], 'Contract-test helpers must not be shipped.'),
+      banned(
+        ['@maestro-calc/i18n', '@maestro-calc/i18n/**'],
+        'Components receive text as props; only layouts and views read the catalogs.',
+      ),
+      banned(
+        ['**/routing', '**/routing/**'],
+        'Components receive paths as props; only layouts and views read the route table.',
+      ),
+      banned(['astro:content'], 'Components receive content as props; only views query it.'),
     ),
   },
   { files: ['**/*.astro'], plugins: { 'import-x': importX } },
