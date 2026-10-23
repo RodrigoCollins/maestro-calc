@@ -73,10 +73,11 @@ const malformed = (offset: number): Result<never, LengthParseError> =>
   err({ code: 'MALFORMED', offset });
 
 /** The kind of the last token that is not whitespace. */
-const lastKind = (tokens: readonly Token[]): Token['kind'] | undefined => {
-  const significant = tokens.filter((token) => token.kind !== 'ws');
-  return significant[significant.length - 1]?.kind;
-};
+const lastKind = (tokens: readonly Token[]): Token['kind'] | undefined =>
+  tokens.reduceRight<Token['kind'] | undefined>(
+    (found, token) => found ?? (token.kind === 'ws' ? undefined : token.kind),
+    undefined,
+  );
 
 const wordToken = (
   word: string,
