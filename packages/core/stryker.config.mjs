@@ -22,10 +22,11 @@ const shared = sharedIdentityFiles(packageDir);
 /**
  * The code every shard runs beside what it mutates, read from the import graph (a contract test
  * walks it and fails when a shard imports a file its identity does not hold): the kernel
- * modules, the barrel tests and the test support that is not the released snapshot. The root
- * barrel is listed as a file: it names no calculator, and `src/index.test.ts` only pins its
- * export names. A change here starts a cold run in every core shard; a change to a calculator or
- * to the released snapshot does not.
+ * modules, the barrel tests and the test support that is not the released snapshot. The walk
+ * follows the root barrel, and `src/*.ts` covers it. `src/url/**` is in the kernel because
+ * `src/index.test.ts` imports the barrel, which re-exports the codec. A change here (a codec edit
+ * included) starts a cold run in every core shard; a change to a calculator or to the released
+ * snapshot does not.
  */
 const kernel = [
   'src/*.ts',
@@ -34,6 +35,7 @@ const kernel = [
   'src/money/**',
   'src/rational/**',
   'src/units/**',
+  'src/url/**',
   'src/__testing__/arbitraries.ts',
   'src/__testing__/collect-strings.ts',
   'src/__testing__/fixture-box.ts',
@@ -121,7 +123,7 @@ export const shards = {
   calculators: {
     mutate: ['src/calculators/**'],
     tests: ['src/calculators', 'src/index.test.ts'],
-    deps: [...kernel, 'src/url/**', 'src/__testing__/released-snapshot.ts'],
+    deps: [...kernel, 'src/__testing__/released-snapshot.ts'],
   },
 };
 

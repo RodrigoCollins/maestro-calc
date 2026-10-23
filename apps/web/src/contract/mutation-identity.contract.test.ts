@@ -78,7 +78,10 @@ describe('core shard identities (quality-gates › Mutation gate on core, design
   it('keeps the sources of the other shards in step with their own tests, not in `calculators`', () => {
     expect(identity('url')).toContain('src/url/codec.ts');
     expect(identity('calculators')).toContain('src/url/codec.ts');
-    expect(identity('rational')).not.toContain('src/url/codec.ts');
+    // the barrel test imports `src/url`, so every kernel shard holds the codec (design W1)
+    for (const name of ['rational', 'units', 'format', 'calculator-define', 'calculator-run']) {
+      expect(identity(name), `${name} holds the codec`).toContain('src/url/codec.ts');
+    }
     expect(identity('format')).toContain('src/rational/rational.ts');
     expect(identity('rational')).toContain('src/rational/rational.ts');
   });
@@ -92,7 +95,8 @@ describe('core shard identities (quality-gates › Mutation gate on core, design
     expect(hashOf('calculators')).not.toBe(hashOf('rational'));
     // shards with the same inputs share a hash; the shard suffix keeps their report files apart
     expect(hashOf('rational')).toBe(hashOf('units'));
-    expect(hashOf('url')).not.toBe(hashOf('rational'));
+    // `url` mutates the codec every kernel shard now holds, so its identity equals the kernel's
+    expect(hashOf('url')).toBe(hashOf('rational'));
   });
 });
 
@@ -161,17 +165,15 @@ const closureOf = (starts: readonly string[], leaves: readonly string[] = []): S
 };
 
 describe('shard identity against the import graph (design D10, fail closed)', () => {
-  // `src/index.test.ts` only pins the names the root barrel exports, and a barrel is nothing but
-  // `export … from` lines, so the barrel is read for its own text and not followed: every module
-  // behind it that a shard really runs is reached through the imports of its own tests.
-  const rootBarrel = resolve(coreRoot, 'src/index.ts');
-
+  // `src/index.test.ts` imports the root barrel, so the walk follows the barrel: every module
+  // behind it that a shard really loads must be in its identity, and the next module added to the
+  // barrel fails this test instead of hiding behind a leaf (design W1).
   it.each(core.shardNames)(
     '%s: every file its sources and tests import is in its identity',
     (name) => {
       const shard = core.shards[name];
       const files = new Set(core.identityFilesFor(name));
-      const reached = [...closureOf(ownFilesOf(shard ?? { mutate: [], deps: [] }), [rootBarrel])];
+      const reached = [...closureOf(ownFilesOf(shard ?? { mutate: [], deps: [] }))];
       expect(reached.length).toBeGreaterThan(10);
       const missing = reached
         .map((file) => relative(coreRoot, file))
@@ -186,7 +188,7 @@ describe('shard identity against the import graph (design D10, fail closed)', ()
     '%s: imports no calculator and not the released snapshot',
     (name) => {
       const shard = core.shards[name];
-      const reached = [...closureOf(ownFilesOf(shard ?? { mutate: [], deps: [] }), [rootBarrel])];
+      const reached = [...closureOf(ownFilesOf(shard ?? { mutate: [], deps: [] }))];
       const forbidden = reached
         .map((file) => relative(coreRoot, file))
         .filter(

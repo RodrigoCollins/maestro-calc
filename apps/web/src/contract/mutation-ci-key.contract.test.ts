@@ -83,6 +83,15 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
     ]);
   });
 
+  // The kernel shards hold the codec behind the root barrel (design W1), so CI must hash it too.
+  it.each(['rational', 'units', 'format', 'calculator-define', 'calculator-run'])(
+    '%s: the matrix inputs hash the URL codec',
+    (shard) => {
+      const entry = entries.find((candidate) => candidate.shard === shard);
+      expect(lines(entry ?? { shard, inputs: '' })).toContain('packages/core/src/url/**');
+    },
+  );
+
   // A file hashed by CI but not by the config would let a local run reuse a stale report; a file
   // hashed by the config but not by CI would let an exact cache hit restore a report for other inputs.
   it.each([...core.shardNames, ...data.shardNames])(
