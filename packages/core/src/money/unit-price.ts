@@ -1,3 +1,4 @@
+import { CoreError } from '../errors.ts';
 import type { Rational } from '../rational/rational.ts';
 import { DIMENSIONS, type DimensionName, type Exponents } from '../units/dimension.ts';
 import { requireSameVector, type Quantity } from '../units/quantity.ts';
@@ -38,6 +39,15 @@ export const unitPrice = <D extends DimensionName>(m: Money, unit: Unit<D>): Uni
   new UnitPriceValue<D>(requireMoney(m).div(unit.factor), DIMENSIONS[unit.dimension]);
 
 /**
+ * Runtime guard for untyped callers, like `requireMoney`: only `unitPrice` builds a price, so a
+ * quantity or a plain object fails `DIMENSION_MISMATCH`.
+ */
+const requireUnitPrice = <D extends DimensionName>(value: UnitPrice<D>): UnitPriceValue<D> => {
+  if (!(value instanceof UnitPriceValue)) throw new CoreError('DIMENSION_MISMATCH');
+  return value;
+};
+
+/**
  * The exact cost of `q`: the price times the quantity, whatever unit `q` was entered in. A
  * quantity of another dimension fails `DIMENSION_MISMATCH` (a type error for typed callers).
  */
@@ -45,6 +55,7 @@ export const costOf = <D extends DimensionName>(
   price: UnitPrice<D>,
   q: Quantity<NoInfer<D>>,
 ): Money => {
-  requireSameVector(price.exponents, q.exponents);
-  return usd(price.perCanonical.mul(q.canonical));
+  const { exponents, perCanonical } = requireUnitPrice(price);
+  requireSameVector(exponents, q.exponents);
+  return usd(perCanonical.mul(q.canonical));
 };
