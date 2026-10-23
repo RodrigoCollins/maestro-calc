@@ -142,6 +142,13 @@ export const shards = {
     mutate: ['src/url/**'],
     tests: ['src/url', 'src/index.test.ts'],
   },
+  // Calculators are a shard of their own (design D10 split rule, PR 12): one directory per
+  // calculator, so the shard grows with the catalog and is split by directory when its cold CI
+  // wall time passes 10 minutes. Their tests need only the calculator directories and the barrel.
+  calculators: {
+    mutate: ['src/calculators/**'],
+    tests: ['src/calculators', 'src/index.test.ts'],
+  },
 };
 
 export const shardNames = Object.keys(shards);

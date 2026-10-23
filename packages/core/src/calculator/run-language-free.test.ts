@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { collectStrings } from '../__testing__/collect-strings.ts';
 import { fixtureBox } from '../__testing__/fixture-box.ts';
+import { isLanguageFree } from '../__testing__/language-free.ts';
 import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { in2 } from '../units/catalog.ts';
@@ -22,17 +23,6 @@ const ran = (computed: unknown): unknown =>
     warnings: fixtureBox.warnings,
     compute: () => computed as ReturnType<typeof fixtureBox.compute>,
   }).run({});
-
-// The patterns of calculator-contract › Pure, language-free compute: an identifier, a canonical
-// Rational, or the currency code, and never whitespace or markup.
-const IDENTIFIER = /^[a-z][A-Za-z0-9._-]*$/;
-// canonical means it parses and prints back as the same text: `2/4` and `1/1` are not
-const isCanonicalRational = (text: string): boolean => {
-  const parsed = Rational.fromString(text);
-  return parsed.ok && parsed.value.toString() === text;
-};
-const isLanguageFree = (text: string): boolean =>
-  (IDENTIFIER.test(text) || isCanonicalRational(text) || text === 'USD') && !/[\s<>]/.test(text);
 
 describe('the result of run (calculator-contract › Language-free results)', () => {
   // spec: calculator-contract › Language-free results [CC25]
