@@ -1,6 +1,7 @@
 import { CoreError } from '../errors.ts';
 import { UNITS } from '../units/catalog.ts';
 import { boundsOf, checkAmount, defaultAmount } from './constraints.ts';
+import { validateRecord, type ValidateOptions } from './validate.ts';
 import type {
   BoundedDescriptor,
   Calculator,
@@ -183,6 +184,8 @@ export function defineCalculator(
     outputs: definition.outputs,
     warnings: definition.warnings ?? [],
     retiredUrlKeys: definition.retiredUrlKeys ?? [],
+    validate: (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) =>
+      validateRecord(definition.inputs, raw, options),
     compute: definition.compute,
   });
 }

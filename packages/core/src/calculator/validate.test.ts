@@ -4,7 +4,7 @@ import { FIELD_ERROR_CODES } from '../error-codes.ts';
 import { isMoney, usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { err, ok } from '../result.ts';
-import { ft, ft2, inch, mm, yd } from '../units/catalog.ts';
+import { cm, ft, ft2, inch, mm, yd } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { isQuantityOf, quantity } from '../units/quantity.ts';
 import { defineCalculator } from './define.ts';
@@ -362,4 +362,66 @@ describe('validateRecord select and boolean fields (calculator-contract › Sele
     [null, failed('flg', 'MALFORMED')],
     [long, failed('flg', 'TOO_LONG')],
   ]);
+});
+
+describe('Calculator.validate (calculator-contract › Total validation without silent coercion)', () => {
+  // spec: calculator-contract › Full valid record [CC10]
+  it('validates a full record: 5\' 3" is 63 in, 12.5% is 25/2, $5 is usd(5)', () => {
+    const raw = { len: `5' 3"`, cnt: '7', pct: '12.5%', sel: 'y', flg: true, prc: '$5' };
+    expect(fixtureBox.validate(raw)).toEqual(
+      ok({
+        len: quantity(63, inch),
+        cnt: 7,
+        pct: Rational.of(25, 2),
+        sel: 'y',
+        flg: true,
+        prc: usd(5),
+      }),
+    );
+  });
+
+  // spec: calculator-contract › Multiple errors in declaration order [CC19]
+  it('reports every bad field once, in declaration order, and returns no value', () => {
+    const result = fixtureBox.validate({ cnt: 'x', len: 'abc', pct: '5' });
+    expect(result).toEqual({
+      ok: false,
+      errors: [
+        { field: 'len', code: 'MALFORMED' },
+        { field: 'cnt', code: 'MALFORMED' },
+      ],
+    });
+    expect(result).not.toHaveProperty('value');
+  });
+
+  it('keeps one error per field and the params of a violated bound', () => {
+    const result = fixtureBox.validate({
+      len: "101'",
+      cnt: '101',
+      pct: '101',
+      sel: 'z',
+      prc: '-1',
+    });
+    expect(result).toEqual({
+      ok: false,
+      errors: [
+        { field: 'len', code: 'ABOVE_MAX', params: { max: '1200' } },
+        { field: 'cnt', code: 'ABOVE_MAX', params: { max: '100' } },
+        { field: 'pct', code: 'ABOVE_MAX', params: { max: '100' } },
+        { field: 'sel', code: 'UNKNOWN_OPTION' },
+        { field: 'prc', code: 'MALFORMED' },
+      ],
+    });
+  });
+
+  // spec: calculator-contract › Unit system selects the default unit for bare numbers [CC15]
+  it('passes the unit system to the length field', () => {
+    const metric = fixtureBox.validate({ len: '5' }, { unitSystem: 'metric' });
+    expect(metric).toEqual(ok({ ...defaults, len: quantity(5, cm) }));
+    expect(fixtureBox.validate({ len: '5' })).toEqual(ok({ ...defaults, len: quantity(5, inch) }));
+  });
+
+  it('validates the defaults of a record with unknown keys, like validateRecord', () => {
+    expect(fixtureBox.validate({ zzz: 1 })).toEqual(validateRecord(fixtureBox.inputs, {}));
+    expect(fixtureBox.validate({})).toEqual(ok(defaults));
+  });
 });

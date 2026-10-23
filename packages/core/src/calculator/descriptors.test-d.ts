@@ -4,7 +4,9 @@ import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { quantity, type Quantity } from '../units/quantity.ts';
+import type { Result } from '../result.ts';
 import { defineCalculator } from './define.ts';
+import type { FieldError } from './validate.ts';
 
 // A `fixture-box`-shaped definition written inline (the shared fixture is built in task 9.5): the
 // `const` generics must keep the keys, kinds, measures and option ids as literals.
@@ -117,5 +119,14 @@ describe('calculator types (calculator-contract › Field kinds and descriptors)
         warnings: [{ code: 'nope', params: {} }],
       }),
     });
+  });
+
+  // spec: calculator-contract › Total validation: Result of the inputs or of field errors
+  it('types validate as a Result of the inferred inputs or of field errors', () => {
+    expectTypeOf(box.validate({})).toEqualTypeOf<
+      Result<Parameters<typeof box.compute>[0], FieldError>
+    >();
+    // @ts-expect-error the options accept only the two unit systems
+    box.validate({}, { unitSystem: 'martian' });
   });
 });

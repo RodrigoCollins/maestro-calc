@@ -2,7 +2,9 @@ import type { Money } from '../money/money.ts';
 import type { Rational } from '../rational/rational.ts';
 import type { DimensionName } from '../units/dimension.ts';
 import type { Quantity } from '../units/quantity.ts';
+import type { Result } from '../result.ts';
 import type { UnitIdOf } from '../units/unit.ts';
+import type { FieldError, ValidateOptions } from './validate.ts';
 
 /** The unit system that picks the unit of a bare number in a length field. */
 export type UnitSystem = 'imperial' | 'metric';
@@ -140,7 +142,7 @@ export interface ComputeResult<O extends readonly OutputDescriptor[], W extends 
   readonly warnings: readonly WarningEntry<W>[];
 }
 
-/** A defined calculator: its metadata, readable in declared order, and its pure `compute`. */
+/** A defined calculator: its metadata in declared order, `validate` and its pure `compute`. */
 export interface Calculator<
   Id extends string,
   I extends readonly InputDescriptor[],
@@ -152,5 +154,10 @@ export interface Calculator<
   readonly outputs: O;
   readonly warnings: W;
   readonly retiredUrlKeys: readonly string[];
+  /** Validates an untyped record (form strings, or typed values) without coercing anything. */
+  readonly validate: (
+    raw: Readonly<Record<string, unknown>>,
+    options?: ValidateOptions,
+  ) => Result<InputsOf<I>, FieldError>;
   readonly compute: (inputs: InputsOf<I>) => ComputeResult<O, W[number]>;
 }
