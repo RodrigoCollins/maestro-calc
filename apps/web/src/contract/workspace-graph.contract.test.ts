@@ -1,6 +1,8 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { dirname, relative, resolve } from 'node:path';
+import { tmpdir } from 'node:os';
+import { dirname, join, relative, resolve } from 'node:path';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from './root.ts';
@@ -194,7 +196,29 @@ describe('internal packages ship TypeScript source (monorepo-workspace › Inter
     for (const target of targets) expect(target, `${dir} ${target}`).toMatch(/\.ts$/);
   });
 
-  it.each(packageDirs)('%s has no dist directory', (dir) => {
-    expect(existsSync(fromRoot(dir, 'dist'))).toBe(false);
+  // spec: Web build consumes workspace source [MW11b]. A `dist` is gitignored and can only appear
+  // after a build, so the check runs as a post-build step (`check:dist`, in `verify` and in CI)
+  // and this test pins the script itself against a temporary workspace.
+  describe('check:dist (the post-build assertion)', () => {
+    const script = rootManifest.scripts?.['check:dist'] ?? '';
+    const runIn = (dist: string | undefined): number | null => {
+      const root = mkdtempSync(join(tmpdir(), 'check-dist-'));
+      try {
+        mkdirSync(join(root, 'packages', 'core', 'src'), { recursive: true });
+        if (dist !== undefined) mkdirSync(join(root, dist), { recursive: true });
+        return spawnSync(script, { cwd: root, shell: true, encoding: 'utf8' }).status;
+      } finally {
+        rmSync(root, { recursive: true });
+      }
+    };
+
+    it('passes when no package has a dist directory', () => {
+      expect(script).not.toBe('');
+      expect(runIn(undefined)).toBe(0);
+    });
+
+    it.each(['packages/core/dist', 'packages/data/dist'])('fails when %s exists', (dist) => {
+      expect(runIn(dist)).toBe(1);
+    });
   });
 });
