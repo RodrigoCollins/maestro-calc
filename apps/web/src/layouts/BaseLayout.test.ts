@@ -1,6 +1,5 @@
-import { experimental_AstroContainer as AstroContainer } from 'astro/container';
-import { parse } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
+import { renderComponent } from '../__testing__/render-component.ts';
 import BaseLayout from './BaseLayout.astro';
 
 const head = {
@@ -11,14 +10,12 @@ const head = {
 };
 
 const render = async (locale: 'en' | 'es') => {
-  const html = await (
-    await AstroContainer.create()
-  ).renderToString(BaseLayout, {
-    props: { locale, id: 'home', head },
-    slots: { default: '<h1>Body</h1>' },
-    partial: false,
-  });
-  return { html, document: parse(html) };
+  const document = await renderComponent(
+    BaseLayout,
+    { locale, id: 'home', head },
+    { partial: false, slots: { default: '<h1>Body</h1>' } },
+  );
+  return { html: document.toString(), document };
 };
 
 describe('BaseLayout (site-shell › Base layout)', () => {
