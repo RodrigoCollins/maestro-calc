@@ -118,7 +118,7 @@ export type InputsOf<I extends readonly InputDescriptor[]> = {
 };
 
 /** The value of an output: a quantity of its dimension, or money. */
-type MeasureValue<M extends OutputDescriptor['measure']> = M extends 'money'
+export type MeasureValue<M extends OutputDescriptor['measure']> = M extends 'money'
   ? Money
   : M extends DimensionName
     ? Quantity<M>
@@ -140,6 +140,22 @@ export interface WarningEntry<Code extends string> {
 /** What `compute` returns: exactly one entry per declared output key. */
 export interface ComputeResult<O extends readonly OutputDescriptor[], W extends string> {
   readonly outputs: { readonly [D in O[number] as D['key']]: MeasureValue<D['measure']> };
+  readonly shopping: readonly ShoppingLine[];
+  readonly warnings: readonly WarningEntry<W>[];
+}
+
+/** One output of a run, tagged with its key and role. */
+export type RunOutput<O extends readonly OutputDescriptor[]> = {
+  readonly [D in O[number] as D['key']]: {
+    readonly key: D['key'];
+    readonly role: D['role'];
+    readonly value: MeasureValue<D['measure']>;
+  };
+}[O[number]['key']];
+
+/** What a successful `run` returns: `outputs` is the list of `RunOutput` in declaration order. */
+export interface RunResult<O extends readonly OutputDescriptor[], W extends string> {
+  readonly outputs: readonly RunOutput<O>[];
   readonly shopping: readonly ShoppingLine[];
   readonly warnings: readonly WarningEntry<W>[];
 }
@@ -174,4 +190,20 @@ export interface Calculator<
     options?: ValidateOptions,
   ) => Result<InputsOf<I>, FieldError>;
   readonly compute: (inputs: InputsOf<I>) => ComputeResult<O, W[number]>;
+  /**
+   * `validate` then `compute`, with the shape of the result enforced: a result that breaks the
+   * contract throws `CoreError('INVALID_RESULT')`, a programming error.
+   */
+  readonly run: (
+    raw: Readonly<Record<string, unknown>>,
+    options?: ValidateOptions,
+  ) => Result<RunResult<O, W[number]>, FieldError>;
 }
+
+/** A calculator of any shape: what generic code such as `run` and `messageKeysOf` accepts. */
+export type AnyCalculator = Calculator<
+  string,
+  readonly InputDescriptor[],
+  readonly OutputDescriptor[],
+  readonly string[]
+>;

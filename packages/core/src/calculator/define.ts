@@ -1,9 +1,11 @@
 import { CoreError } from '../errors.ts';
 import { UNITS } from '../units/catalog.ts';
 import { boundsOf, checkAmount, defaultAmount } from './constraints.ts';
+import { runCalculator } from './run.ts';
 import { validateRecord } from './validate.ts';
 import type {
   BoundedDescriptor,
+  AnyCalculator,
   Calculator,
   ComputeResult,
   InputDescriptor,
@@ -243,7 +245,7 @@ export function defineCalculator(
     readonly OutputDescriptor[],
     readonly string[]
   >,
-): Calculator<string, readonly InputDescriptor[], readonly OutputDescriptor[], readonly string[]> {
+): AnyCalculator {
   checkDefinition(definition);
   for (const input of definition.inputs) {
     if (input.kind === 'select') freezeList(input.options);
@@ -254,14 +256,19 @@ export function defineCalculator(
   }
   freezeList(definition.inputs);
   freezeList(definition.outputs);
-  return Object.freeze({
-    id: definition.id,
-    inputs: definition.inputs,
+  const runnable = {
     outputs: definition.outputs,
     warnings: Object.freeze(definition.warnings ?? []),
-    retiredUrlKeys: Object.freeze(definition.retiredUrlKeys ?? []),
     validate: (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) =>
       validateRecord(definition.inputs, raw, options),
     compute: definition.compute,
+  };
+  return Object.freeze({
+    id: definition.id,
+    inputs: definition.inputs,
+    retiredUrlKeys: Object.freeze(definition.retiredUrlKeys ?? []),
+    ...runnable,
+    run: (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) =>
+      runCalculator(runnable, raw, options),
   });
 }

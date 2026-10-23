@@ -130,6 +130,19 @@ describe('calculator types (calculator-contract › Field kinds and descriptors)
     box.validate({}, { unitSystem: 'martian' });
   });
 
+  // spec: calculator-contract › Ordered outputs
+  it('types run as a Result of outputs tagged with their key, role and measure', () => {
+    const ran = box.run({});
+    expectTypeOf(ran.ok).toEqualTypeOf<boolean>();
+    if (!ran.ok) return;
+    expectTypeOf<(typeof ran.value.outputs)[number]>().toEqualTypeOf<
+      | { readonly key: 'area'; readonly role: 'primary'; readonly value: Quantity<'area'> }
+      | { readonly key: 'cost'; readonly role: 'secondary'; readonly value: Money }
+    >();
+    // @ts-expect-error the options accept only the two unit systems
+    box.run({}, { unitSystem: 'martian' });
+  });
+
   // The last branch of `ValueOf` names the money kind, so a kind added to `InputDescriptor` without
   // a branch resolves to `never` instead of silently being money. (The constraint on `ValueOf`
   // keeps a type test from naming an unknown kind, so the union and the money case pin it.)

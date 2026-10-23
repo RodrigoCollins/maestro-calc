@@ -18,6 +18,8 @@ export type {
   MoneyDescriptor,
   OutputDescriptor,
   PercentDescriptor,
+  RunOutput,
+  RunResult,
   SelectDescriptor,
   ShoppingLine,
   UnitSystem,
