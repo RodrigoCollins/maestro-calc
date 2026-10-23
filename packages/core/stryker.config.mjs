@@ -94,8 +94,10 @@ export default {
     // STRYKER=1 flips the `__STRYKER__` define, so a direct `stryker run` behaves like the npm
     // script. Type tests cannot kill behavioral mutants (they run in `verify`), and skipping them
     // keeps every mutant run cheap and out of the sandbox `extends ../../tsconfig.base.json` path.
+    // `--isolate=false` runs all test files in one worker instead of one fork per file: a mutant
+    // run costs the vitest boot, not the tests, so this halves the cold run with identical verdicts.
     command:
-      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false',
+      'STRYKER=1 npx --no-install vitest run --no-file-parallelism --typecheck.enabled=false --isolate=false',
   },
   coverageAnalysis: 'off',
   mutate: [
