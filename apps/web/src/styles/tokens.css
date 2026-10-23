@@ -1,0 +1,32 @@
+/* Blueprint tokens (docs/design/direction.md). The palette is a light theme only. */
+:root {
+  color-scheme: light;
+
+  --color-ink: #0e2240;
+  --color-link: #1d4ed8;
+  --color-orange: #f06a1d;
+  --color-secondary: #56616b;
+  --color-ground: #eef1ef;
+  --color-surface: #ffffff;
+  --color-whatsapp: #1faf5a;
+
+  /* Type scale: 17 px body, condensed display sizes for headings. */
+  --text-base: 1.0625rem;
+  --text-small: 0.9375rem;
+  --text-h3: 1.375rem;
+  --text-h2: 1.75rem;
+  --text-h1: 2.25rem;
+  --leading-body: 1.55;
+  --leading-heading: 1.15;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2.5rem;
+
+  /* WCAG 2.2 target size with room to spare: 44 px. */
+  --target-size: 2.75rem;
+  --measure: 42rem;
+  --page-width: 64rem;
+}
