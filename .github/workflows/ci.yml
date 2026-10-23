@@ -43,6 +43,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Must equal `shards` in packages/core/stryker.config.mjs (ci.contract.test.ts enforces it);
+        # `npm run mutation -- --list` prints the names.
         shard: [rational, units, format]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -81,3 +83,17 @@ jobs:
           name: mutation-report-${{ matrix.shard }}
           path: packages/core/reports/mutation
           if-no-files-found: ignore
+
+  # The one stable required-check name, whatever the number of shards: branch protection requires
+  # `mutation-gate`, not the `mutation (<shard>)` entries of the matrix, so adding a shard needs no
+  # settings change. `always()` makes a failed, cancelled or skipped shard fail this job too.
+  mutation-gate:
+    needs: mutation
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every mutation shard to pass
+        env:
+          MUTATION_RESULT: ${{ needs.mutation.result }}
+        run: test "$MUTATION_RESULT" = success
