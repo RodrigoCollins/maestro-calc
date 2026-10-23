@@ -117,7 +117,7 @@ const NAME_RECORD = {
   density: 'density',
 } as const satisfies { readonly [D in DimensionName]: D };
 
-const NAMES = Object.values(NAME_RECORD);
+const NAMES = /* @__PURE__ */ Object.values(NAME_RECORD);
 
 export const sameVector = (a: Exponents, b: Exponents): boolean =>
   a.length === b.length && a.mass === b.mass;
