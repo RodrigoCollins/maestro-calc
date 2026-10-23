@@ -60,6 +60,7 @@ jobs:
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
+              packages/core/src/url/**
               packages/core/src/__testing__/arbitraries.ts
               packages/core/src/__testing__/collect-strings.ts
               packages/core/src/__testing__/fixture-box.ts
@@ -79,6 +80,7 @@ jobs:
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
+              packages/core/src/url/**
               packages/core/src/__testing__/arbitraries.ts
               packages/core/src/__testing__/collect-strings.ts
               packages/core/src/__testing__/fixture-box.ts
@@ -98,6 +100,7 @@ jobs:
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
+              packages/core/src/url/**
               packages/core/src/__testing__/arbitraries.ts
               packages/core/src/__testing__/collect-strings.ts
               packages/core/src/__testing__/fixture-box.ts
@@ -117,6 +120,7 @@ jobs:
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
+              packages/core/src/url/**
               packages/core/src/__testing__/arbitraries.ts
               packages/core/src/__testing__/collect-strings.ts
               packages/core/src/__testing__/fixture-box.ts
@@ -137,6 +141,7 @@ jobs:
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
+              packages/core/src/url/**
               packages/core/src/__testing__/arbitraries.ts
               packages/core/src/__testing__/collect-strings.ts
               packages/core/src/__testing__/fixture-box.ts
