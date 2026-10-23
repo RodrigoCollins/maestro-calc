@@ -216,6 +216,12 @@ const checkDefinition = (
   ensureNone(ensure, firstRepeat(warnings, self), 'DUPLICATE_KEY', self);
 };
 
+/** Freezes every item of a list, then the list itself. */
+const freezeList = (items: readonly unknown[]): void => {
+  for (const item of items) Object.freeze(item);
+  Object.freeze(items);
+};
+
 /**
  * Defines a calculator. The `const` type parameters keep every key, kind, measure, option id and
  * warning code as a literal, so `compute` receives exactly the declared inputs and must return
@@ -238,12 +244,21 @@ export function defineCalculator(
   >,
 ): Calculator<string, readonly InputDescriptor[], readonly OutputDescriptor[], readonly string[]> {
   checkDefinition(definition);
+  for (const input of definition.inputs) {
+    if (input.kind === 'select') freezeList(input.options);
+  }
+  for (const output of definition.outputs) {
+    // freezing an absent display is a no-op
+    Object.freeze(output.display);
+  }
+  freezeList(definition.inputs);
+  freezeList(definition.outputs);
   return Object.freeze({
     id: definition.id,
     inputs: definition.inputs,
     outputs: definition.outputs,
-    warnings: definition.warnings ?? [],
-    retiredUrlKeys: definition.retiredUrlKeys ?? [],
+    warnings: Object.freeze(definition.warnings ?? []),
+    retiredUrlKeys: Object.freeze(definition.retiredUrlKeys ?? []),
     validate: (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) =>
       validateRecord(definition.inputs, raw, options),
     compute: definition.compute,

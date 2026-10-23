@@ -45,6 +45,48 @@ describe('defineCalculator (calculator-contract › Field kinds and descriptors)
     expect(Object.isFrozen(box)).toBe(true);
   });
 
+  // The registry shares one definition with every page: nothing reachable from it may change.
+  it('freezes the metadata at every level, so no list or descriptor can be altered', () => {
+    const mode = {
+      kind: 'select',
+      key: 'mode',
+      urlKey: 'b',
+      default: 'x',
+      options: ['x', 'y'],
+    } as const;
+    const lengthOutput = {
+      key: 'len',
+      measure: 'length',
+      role: 'primary',
+      display: { unit: 'ft', format: 'decimal', places: 2 },
+    } as const;
+    const frozen = defineCalculator({
+      id: 'frozen',
+      inputs: [side, mode],
+      outputs: [lengthOutput],
+      warnings: ['bigSide'],
+      retiredUrlKeys: ['z'],
+      compute: () => ({ outputs: { len: quantity(1, ft) }, shopping: [], warnings: [] }),
+    });
+    expect([
+      Object.isFrozen(frozen.inputs),
+      Object.isFrozen(frozen.inputs[0]),
+      Object.isFrozen(frozen.inputs[1]),
+      Object.isFrozen(frozen.inputs[1].options),
+      Object.isFrozen(frozen.outputs),
+      Object.isFrozen(frozen.outputs[0]),
+      Object.isFrozen(frozen.outputs[0].display),
+      Object.isFrozen(frozen.warnings),
+      Object.isFrozen(frozen.retiredUrlKeys),
+    ]).toEqual(Array<boolean>(9).fill(true));
+    // a mutation attempt throws in strict mode instead of silently changing what validate reads
+    expect(() => Array.prototype.push.call(frozen.inputs[1].options, 'z')).toThrow(TypeError);
+    expect(frozen.validate({ mode: 'z' })).toEqual({
+      ok: false,
+      errors: [{ field: 'mode', code: 'UNKNOWN_OPTION' }],
+    });
+  });
+
   it('defaults the warnings and the retired URL keys to empty lists', () => {
     const plain = defineCalculator({
       id: 'plain',
@@ -57,6 +99,10 @@ describe('defineCalculator (calculator-contract › Field kinds and descriptors)
       }),
     });
     expect([plain.warnings, plain.retiredUrlKeys]).toEqual([[], []]);
+    expect([Object.isFrozen(plain.warnings), Object.isFrozen(plain.retiredUrlKeys)]).toEqual([
+      true,
+      true,
+    ]);
   });
 });
 
