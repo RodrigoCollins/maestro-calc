@@ -40,9 +40,11 @@ class MoneyValue implements Money {
 export const usd = (amount: Rational | number): Money =>
   new MoneyValue(typeof amount === 'number' ? Rational.of(amount) : amount);
 
-// Runtime guard for untyped callers: only `usd` builds money, so a quantity (or a plain object)
-// is rejected.
-const requireMoney = (value: Money): Rational => {
+/**
+ * Runtime guard for untyped callers (the typed signatures already forbid it): only `usd` builds
+ * money, so a quantity or a plain object fails `DIMENSION_MISMATCH`. Returns the exact amount.
+ */
+export const requireMoney = (value: Money): Rational => {
   if (!(value instanceof MoneyValue)) throw new CoreError('DIMENSION_MISMATCH');
   return value.amount;
 };
