@@ -53,7 +53,7 @@ interface Failure {
 }
 
 /** Raw strings longer than this, before trimming, are `TOO_LONG`. */
-const MAX_TEXT_LENGTH = 128;
+export const MAX_TEXT_LENGTH = 128;
 
 /** The whitespace of the text grammars: space, tab and no-break space (not every Unicode blank). */
 const SURROUNDING_WS = /^[ \t\u00A0]+|[ \t\u00A0]+$/g;

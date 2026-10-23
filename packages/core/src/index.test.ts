@@ -7,7 +7,10 @@ describe('core public API (design: Public API)', () => {
     expect(Object.keys(core).sort()).toEqual([
       'CoreError',
       'DECIMAL_PARSE_CODES',
+      'DEFINITION_REASONS',
+      'FIELD_ERROR_CODES',
       'LENGTH_PARSE_CODES',
+      'MAX_TEXT_LENGTH',
       'MONEY_PARSE_CODES',
       'RATIONAL_PARSE_CODES',
       'Rational',
@@ -21,6 +24,7 @@ describe('core public API (design: Public API)', () => {
       'compare',
       'compareMoney',
       'costOf',
+      'defineCalculator',
       'divide',
       'divideScalar',
       'equals',
@@ -133,6 +137,38 @@ describe('core public API (design: Public API)', () => {
     );
     expect(core.compareMoney(core.usd(1), total)).toBe(-1);
     expect(core.equalsMoney(total, core.usd(core.Rational.of(498, 25)))).toBe(true);
+  });
+
+  // spec: calculator-contract › Field kinds and descriptors, Total validation
+  it('wires the calculator contract to working implementations', () => {
+    expect(core.FIELD_ERROR_CODES).toHaveLength(10);
+    expect(core.DEFINITION_REASONS).toContain('DUPLICATE_URL_KEY');
+    const boxes = core.defineCalculator({
+      id: 'boxes',
+      inputs: [{ kind: 'count', key: 'cnt', urlKey: 'a', default: 2, max: 9 }],
+      outputs: [{ key: 'cost', measure: 'money', role: 'primary' }],
+      compute: (inputs) => ({
+        outputs: { cost: core.multiplyCount(core.usd(core.Rational.of(249, 50)), inputs.cnt) },
+        shopping: [],
+        warnings: [],
+      }),
+    });
+    expect(boxes.validate({ cnt: '10' })).toEqual({
+      ok: false,
+      errors: [{ field: 'cnt', code: 'ABOVE_MAX', params: { max: '9' } }],
+    });
+    // the longest raw string a field reads: one more character is TOO_LONG
+    expect(core.MAX_TEXT_LENGTH).toBe(128);
+    expect(boxes.validate({ cnt: '1'.repeat(core.MAX_TEXT_LENGTH + 1) })).toEqual({
+      ok: false,
+      errors: [{ field: 'cnt', code: 'TOO_LONG' }],
+    });
+    const valid = boxes.validate({ cnt: '3' });
+    expect(valid).toEqual(core.ok({ cnt: 3 }));
+    // 3 x $4.98 = 747/50
+    expect(valid.ok && boxes.compute(valid.value).outputs.cost.amount).toEqual(
+      core.Rational.of(747, 50),
+    );
   });
 
   it('wires the exports to working implementations', () => {

@@ -1,4 +1,6 @@
+export * from './calculator/index.ts';
 export { CoreError } from './errors.ts';
+export { FIELD_ERROR_CODES, type FieldErrorCode } from './error-codes.ts';
 export * from './format/index.ts';
 export * from './money/index.ts';
 export {
