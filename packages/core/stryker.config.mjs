@@ -128,7 +128,12 @@ export const shards = {
   },
   calculator: {
     mutate: ['src/calculator/**', 'src/error-codes.ts'],
-    tests: ['src/calculator', 'src/error-codes.test.ts', 'src/index.test.ts'],
+    tests: [
+      'src/calculator',
+      'src/error-codes.test.ts',
+      'src/__testing__/fixture-box.test.ts',
+      'src/index.test.ts',
+    ],
   },
 };
 

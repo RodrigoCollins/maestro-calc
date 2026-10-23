@@ -406,12 +406,17 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
     }
   });
 
-  // The tests of the test support (`__testing__`) exercise the arbitraries, not a mutable source, so
-  // no shard runs them; `verify` does. Every other test file must run in at least one shard.
+  // The tests of the arbitraries exercise test support, not a mutable source, so no shard runs
+  // them; `verify` does. Every other test file, `fixture-box.test.ts` included, must run in at
+  // least one shard.
+  const unsharded = [
+    'src/__testing__/arbitraries.test.ts',
+    'src/__testing__/property-runs.test.ts',
+  ];
   it('leaves no test file unrun by every shard', () => {
     const tests = globSync('src/**/*.test.ts', { cwd: fromRoot('packages/core') })
       .map((path) => path.replaceAll('\\', '/'))
-      .filter((path) => !path.startsWith('src/__testing__/'));
+      .filter((path) => !unsharded.includes(path));
     expect(tests.length).toBeGreaterThan(10);
     for (const test of tests) {
       const runners = module_.shardNames.filter((name) =>
