@@ -3,10 +3,20 @@ import { describe, expect, it } from 'vitest';
 import { failure } from '../../__testing__/length-failure.ts';
 import { numRuns } from '../../__testing__/property-runs.ts';
 import { ft, inch, yd } from '../../units/catalog.ts';
+import { DIMENSIONS, sameVector } from '../../units/dimension.ts';
 import { valueIn } from '../../units/quantity.ts';
 import type { Unit } from '../../units/unit.ts';
 import { LENGTH_PARSE_CODES } from './codes.ts';
 import { parseLength } from './parser.ts';
+
+const BLANKS = [' ', '\t', '\u00A0'];
+
+/**
+ * The text without the parser's own trailing blanks. `String.trimEnd` would also strip U+FEFF and
+ * U+3000, which the scanner rejects as unknown characters at their own index (the fuzz property
+ * found ` \uFEFF`: offset 1, `trimEnd` length 0), so it is not the right bound.
+ */
+const withoutTrailingBlanks = (text: string): string => text.replace(/[ \t\u00A0]+$/u, '');
 
 /** The parsed value in inches as exact text (`63`, `127/2`), or the failure result itself. */
 const parsed = (text: string, defaultUnit?: Unit<'length'>): unknown => {
@@ -151,6 +161,8 @@ describe('parseLength simple forms (fraction-format › Length text grammar)', (
     ['3 1/0', 4],
     ['3-1/00', 4],
     ['0/0', 2],
+    // intentional precedence: the zero denominator is reported before the stray `.5` is read
+    ['3/0.5', 2],
   ])('rejects %j with ZERO_DENOMINATOR at %i', (text, offset) => {
     expect(parsed(text)).toEqual(failure('ZERO_DENOMINATOR', offset));
   });
@@ -321,7 +333,9 @@ describe('parseLength compound forms (fraction-format › Length text grammar)',
   });
 
   // spec: Length text grammar: the function never throws and a success is always a length
-  // The offset invariant: EMPTY and TOO_LONG carry none; any other failure points inside the text.
+  // The offset invariant: EMPTY and TOO_LONG carry none; any other failure points at or before the
+  // end of the last token. It starts a token (a non-blank) or ends one (a blank right after a
+  // non-blank, as in `. 0`, where the point wants digits); it never lands inside a run of blanks.
   it('never throws, fails with one known code and a sound offset, and succeeds with a length', () => {
     const alphabet = fc.constantFrom(
       ...'0123456789 \t\n/.-+,\'"ftinmcydxe'.split(''),
@@ -343,15 +357,18 @@ describe('parseLength compound forms (fraction-format › Length text grammar)',
     fc.assert(
       fc.property(fc.string({ unit: alphabet, maxLength: 140 }), (text) => {
         const result = parseLength(text);
-        if (result.ok) return valueIn(result.value, inch).den > 0n;
+        if (result.ok) return sameVector(result.value.exponents, DIMENSIONS.length);
         const [error, ...rest] = result.errors;
+        const end = withoutTrailingBlanks(text).length;
         const unlocated = error.code === 'EMPTY' || error.code === 'TOO_LONG';
         const offsetOk = unlocated
           ? error.offset === undefined
           : error.offset !== undefined &&
             Number.isInteger(error.offset) &&
             error.offset >= 0 &&
-            error.offset <= text.length;
+            error.offset <= end &&
+            (!BLANKS.includes(text[error.offset] ?? '') ||
+              !BLANKS.includes(text[error.offset - 1] ?? ''));
         return rest.length === 0 && LENGTH_PARSE_CODES.includes(error.code) && offsetOk;
       }),
       { numRuns },
