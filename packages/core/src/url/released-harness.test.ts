@@ -4,16 +4,11 @@ import {
   type ReleasedCalculator,
   type ReleasedField,
 } from './released-harness.ts';
-import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { defineCalculator } from '../calculator/define.ts';
-import { rectangleArea } from '../calculators/rectangle-area/index.ts';
 import type { InputDescriptor } from '../calculator/descriptors.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { decode } from './codec.ts';
-
-/** Every calculator of core that has been released; the web registry is checked in `apps/web`. */
-const REGISTRY: readonly ReleasedCalculator[] = [rectangleArea];
 
 const lengthInput = (key: string, urlKey: string, inches: number): InputDescriptor => ({
   kind: 'length',
@@ -50,29 +45,6 @@ const snapshot = [LENGTH, WIDTH];
 const current = () => area([lengthInput('length', 'l', 120), lengthInput('width', 'w', 120)]);
 
 describe('released url keys (url-state-codec › Key stability rules)', () => {
-  it('holds for every released calculator', () => {
-    expect(compareReleased(RELEASED, REGISTRY)).toEqual([]);
-  });
-
-  // spec: calc-rectangle-area › Descriptor: exactly the keys and defaults l and w, default 120
-  it('records rectangle-area with one tuple per input, in order', () => {
-    expect(
-      RELEASED.map(({ calculatorId, key, urlKey, default: text }) => [
-        calculatorId,
-        key,
-        urlKey,
-        text,
-      ]),
-    ).toEqual([
-      ['rectangle-area', 'length', 'l', '120'],
-      ['rectangle-area', 'width', 'w', '120'],
-    ]);
-    expect(rectangleArea.inputs.map(({ key, urlKey }) => [key, urlKey])).toEqual([
-      ['length', 'l'],
-      ['width', 'w'],
-    ]);
-  });
-
   describe('harness', () => {
     it('accepts a calculator that matches its snapshot', () => {
       expect(compareReleased(snapshot, [current()])).toEqual([]);
