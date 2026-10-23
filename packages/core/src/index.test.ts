@@ -48,6 +48,7 @@ describe('core public API (design: Public API)', () => {
       'm',
       'm2',
       'm3',
+      'messageKeysOf',
       'mm',
       'mm2',
       'mm3',
@@ -169,6 +170,19 @@ describe('core public API (design: Public API)', () => {
     expect(valid.ok && boxes.compute(valid.value).outputs.cost.amount).toEqual(
       core.Rational.of(747, 50),
     );
+    // run: validate then compute, with the outputs as a list; messageKeysOf names the i18n keys
+    expect(boxes.run({ cnt: '3' })).toEqual(
+      core.ok({
+        outputs: [{ key: 'cost', role: 'primary', value: core.usd(core.Rational.of(747, 50)) }],
+        shopping: [],
+        warnings: [],
+      }),
+    );
+    expect(core.messageKeysOf(boxes)).toEqual([
+      'calc.boxes.title',
+      'calc.boxes.inputs.cnt',
+      'calc.boxes.outputs.cost',
+    ]);
   });
 
   it('wires the exports to working implementations', () => {

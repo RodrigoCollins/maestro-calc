@@ -27,4 +27,5 @@ export type {
   ValueOf,
   WarningEntry,
 } from './descriptors.ts';
+export { messageKeysOf, type MessageKeysOf } from './message-keys.ts';
 export { MAX_TEXT_LENGTH } from './validate.ts';
