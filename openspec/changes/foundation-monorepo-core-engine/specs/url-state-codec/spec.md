@@ -31,6 +31,8 @@ Scenarios use the `fixture-box` calculator defined in `calculator-contract` (url
 
 The encoder MUST be deterministic and MUST NOT emit unknown keys or the calculator id.
 
+`encode` expects a validated state and checks only its shape: a state that is not an object MUST throw `CoreError('NOT_AN_OBJECT')`, and a field whose value is not of the kind of its descriptor (for example a number for a `length`, or an option id the descriptor does not declare) MUST throw `CoreError('INVALID_STATE')` with the reason `FIELD_VALUE` and the cause `{ id, field }` (the calculator id and the field key, identifiers only). A value of the right kind outside its bounds is not checked by `encode`: its text decodes back to the default of that field with `INVALID_VALUE`.
+
 #### Scenario: All defaults
 - GIVEN the default `fixture-box` state
 - WHEN encoded
@@ -164,7 +166,7 @@ Once a calculator's URL keys are released (merged to `main`), the following MUST
 5. Length values are always inches and money values are always dollars, in exact canonical Rational form; the unit of the URL representation MUST NOT change within a version.
 6. New fields MAY be added in version 1 with new keys and defaults: links without them decode with the default.
 7. Any incompatible change requires `v=2`; a `v=2` decoder MUST read all `v=1` links with identical meaning. `v` and `u` are reserved for every calculator.
-8. A committed contract test `packages/core/src/url/released.contract.test.ts` MUST hold a literal snapshot, per released calculator, of the ordered tuples `{ calculatorId, key, urlKey, kind, default, options }` (with `default` written as its canonical URL value text and `options` present for `select` only), and MUST fail when any existing tuple is modified or removed, or a released calculator disappears; appending new fields or calculators is permitted.
+8. A committed contract test `packages/core/src/url/released.contract.test.ts` MUST hold a literal snapshot, per released calculator, of the ordered tuples `{ calculatorId, key, urlKey, kind, default, options }` (with `default` written as its canonical URL value text and `options` present for `select` only), and MUST fail when any existing tuple is modified or removed, or a released calculator disappears; appending new fields or calculators is permitted. "Modified" follows rules 3 and 4: a changed key, `urlKey`, kind or default fails, adding an option to a `select` is allowed and removing one fails. A tuple marked `retired` (rules 2 and 3) is never removed from the snapshot: it MUST have its `urlKey` in the calculator's `retiredUrlKeys`, no input may carry that `urlKey` again, and the remaining (non-retired) tuples are matched to the inputs in order, so only appending is possible.
 
 Rationale for rule 3 (accepted tradeoff): omitting defaults keeps links short and stable, but it makes every released default part of the public contract. Retuning a default after release therefore requires a new field with a new `urlKey` (the old key is retired), which is accepted knowingly in exchange for short links.
 

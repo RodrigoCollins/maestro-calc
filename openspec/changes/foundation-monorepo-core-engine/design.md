@@ -27,7 +27,7 @@ maestro-calc/
 │   │       ├── format/     rounding.ts decimal-parts.ts purchase.ts feet-inches.ts index.ts
 │   │       │   └── length-parser/  scanner.ts parser.ts codes.ts index.ts
 │   │       ├── calculator/ descriptors.ts define.ts validate.ts constraints.ts run.ts index.ts
-│   │       ├── url/        url-values.ts codec.ts released.contract.test.ts index.ts
+│   │       ├── url/        url-values.ts codec.ts released-harness.ts released.contract.test.ts index.ts
 │   │       ├── calculators/rectangle-area/  rectangle-area.ts index.ts
 │   │       └── __testing__/ arbitraries.ts fixture-box.ts property-runs.ts   # never exported
 │   ├── data/   package.json tsconfig.json tsconfig.src.json tsconfig.test.json vitest.config.ts
@@ -104,7 +104,7 @@ Plain objects, no methods (tree-shakeable, structurally comparable). Single-valu
 | units / money | — / `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `TOO_LARGE` | `DIMENSION_MISMATCH`, `DIVISION_BY_ZERO` |
 | format | `EMPTY`, `MALFORMED`, `DECIMAL_COMMA`, `ZERO_DENOMINATOR`, `UNKNOWN_UNIT`, `TOO_LONG`, `TOO_LARGE` | `INVALID_DENOMINATOR`, `INVALID_PLACES`, `INVALID_MODE`, `NEGATIVE_QUANTITY` |
 | calculator | adds `BELOW_MIN`, `ABOVE_MAX`, `UNKNOWN_OPTION` (`FieldErrorCode` = 10 codes) | `INVALID_DEFINITION` (+`reason`), `INVALID_RESULT`, `NOT_AN_OBJECT` |
-| url | `INVALID_VALUE`, `UNSUPPORTED_VERSION` (`UrlIssueCode`) | `INVALID_STATE` (+`reason` `FIELD_VALUE`, locus `{ id, field }` as `cause`): `encode` got a state whose value is not of the kind of its field |
+| url | `INVALID_VALUE`, `UNSUPPORTED_VERSION` (`UrlIssueCode`) | `INVALID_STATE` (+`reason` `FIELD_VALUE`, locus `{ id, field }` as `cause`): `encode` got a state whose value is not of the kind of its field; `NOT_AN_OBJECT`: `encode` got a state that is not an object |
 
 `error-codes.ts` exports `ALL_ERROR_CODES = [...FIELD_ERROR_CODES, ...URL_ISSUE_CODES] as const` (12 user-facing codes, deduplicated union of the module literals) so web can prove every one has an `errors.<CODE>` message. Thrown codes are programming errors and have no message. Errors carry codes, optional `offset` (parsers), and canonical-string `params` — never prose.
 
@@ -234,14 +234,14 @@ type FieldError = { field: string; code: FieldErrorCode; params?: { min: string 
 
 | Concern | Rule |
 |---|---|
-| API | `encode(calculator, state, { unitSystem? }) → string`; `decode(calculator, query) → { state, unitSystem, issues }` (never throws). `RESERVED_URL_KEYS = ['v', 'u']` (in `calculator/reserved-keys.ts`, re-exported by `url/index.ts`). Both are typed from the inputs (`InputsOf<I>`); `encode` throws `INVALID_STATE` for an untyped state. |
+| API | `encode(calculator, state, { unitSystem? }) → string`; `decode(calculator, query) → { state, unitSystem, issues }` (never throws). `RESERVED_URL_KEYS = ['v', 'u']` (in `calculator/reserved-keys.ts`, re-exported by `url/index.ts`). Both are typed from the inputs (`InputsOf<I>`); `encode` expects a validated state: it throws `NOT_AN_OBJECT` for a state that is not an object and `INVALID_STATE` for a value of the wrong kind, and does not check bounds (an out-of-range value decodes back to the default with `INVALID_VALUE`; decided in the PR 11 review, RES-4). |
 | Format | `v=1` first, then `u=m` when metric, then non-default fields in **declaration order**, joined with `&` by a custom serializer. Canonical values use only `[0-9a-z/-]` (query-safe per RFC 3986 §3.4), so nothing is percent-encoded and `/` stays literal. `URLSearchParams` is not used (it encodes `/` and is not in core's type environment). |
 | Canonical values | length: `Rational.toString()` in inches; percent: in percent points; money: in dollars; count: integer; select: option id; boolean: `1`/`0`. Equality with the default is exact value equality. |
 | Decoding | Strip `?`, split on `&`, split each pair at the first `=`, percent-decode with `decodeURIComponent` inside `try` (malformed escape ⇒ invalid value); `/` and `%2F` are equivalent; `+` is not special. First occurrence of any key wins, later duplicates are ignored without an issue. Unknown and retired keys are ignored. |
 | Strict URL parsers (D8) | `url-values.ts` holds one strict parser per kind: length/percent/money → `Rational.fromString` only; count → `^[0-9]+$`; select → exact option id; boolean → `1`/`0`. Then the shared `checkAmount` and `findOption` from the calculator module (bounds/options). No default unit is ever applied; `5'`, `63.5in`, `4.98`, `$5` are invalid. Raw value > 256 chars ⇒ invalid. Invalid ⇒ default + `{ code: 'INVALID_VALUE', key }`, issues in query order. |
 | Versioning | Missing `v` ⇒ 1. `v` names the codec format, not the calculator: decoders are a `{ 1: decodeV1 }` registry; a future `v=2` keeps `decodeV1`. Any other `v` ⇒ all defaults, `imperial`, one `UNSUPPORTED_VERSION` issue. |
 | Unit system | `u=m` ⇒ `metric`; absent ⇒ `imperial`; other ⇒ `imperial` + `INVALID_VALUE` for `u`. `u` never changes value meaning. |
-| Key stability | Keys are a public contract (spec rules 1–8). `packages/core/src/url/released.contract.test.ts` holds a literal snapshot per released calculator of ordered `{ calculatorId, key, urlKey, kind, default, options }` tuples (default as canonical URL text) and fails on any modification or removal; additions are allowed. Defaults are immutable once released (accepted tradeoff: retuning a default needs a new key). Keys are at most 3 chars, so `utm_*` and `gclid` never collide. |
+| Key stability | Keys are a public contract (spec rules 1–8). `packages/core/src/url/released.contract.test.ts` holds a literal snapshot per released calculator of ordered `{ calculatorId, key, urlKey, kind, default, options }` tuples (default as canonical URL text) and fails on any modification or removal; additions are allowed. A dropped field stays in the snapshot as a tuple marked `retired`: the harness (`url/released-harness.ts`, in the `url` mutation shard, exported from no barrel) then requires its key in `retiredUrlKeys` and no input on it, and matches the non-retired tuples to the inputs in order, so only appending is possible. Defaults are immutable once released (accepted tradeoff: retuning a default needs a new key). Keys are at most 3 chars, so `utm_*` and `gclid` never collide. |
 | Guarantees (property-tested) | `decode(encode(x, s)) ≡ (x, s)` with no issues; decode-then-encode is idempotent for any query; fuzzed queries never throw; defaults encode to `v=1`. |
 
 Saved projects (paid, future) persist the same canonical state string — no second serialization format.
@@ -325,7 +325,7 @@ Core is synchronous, side-effect-free and tree-shakeable (`sideEffects: false`, 
 
 ### Performance levers
 
-- Type-check cost: `AddVec`/`SubVec` bind each component with `infer … extends InRange` before the recursive `Add`/`Sub`, so no generic argument reaches the recursion. `tsc -p packages/core/tsconfig.src.json --extendedDiagnostics` went from 1,354,888 instantiations (347 MB, 1.14 s, 27 percent of the TS2589 budget, growing with every base dimension) to 16,272 (47 MB, 0.12 s). `typecost.contract.test.ts` fails at 40,000 instantiations or more for the sources (baseline 16,272) and at 150,000 or more for the test program (baseline 84,398).
+- Type-check cost: `AddVec`/`SubVec` bind each component with `infer … extends InRange` before the recursive `Add`/`Sub`, so no generic argument reaches the recursion. `tsc -p packages/core/tsconfig.src.json --extendedDiagnostics` went from 1,354,888 instantiations (347 MB, 1.14 s, 27 percent of the TS2589 budget, growing with every base dimension) to 16,272 (47 MB, 0.12 s). `typecost.contract.test.ts` fails at 40,000 instantiations or more for the sources (baseline 16,272) and at 150,000 or more for the test program (baseline 84,398). Measured after the PR 11 correction round: 22,316 for the sources (56 percent of the budget; 21,829 before the round) and 117,737 for the test program (78 percent; 117,402 before), so the test program leaves about 32,000 instantiations of headroom for PR 12.
 - Tree-shaking: unit definitions, the frozen `UNITS` catalog and the dimension name list are `/* @__PURE__ */`. Rolldown, minified: importing only `ft` bundles 2,340 B (1,125 B gzip) instead of 3,020 B (1,380 B gzip); the full barrel grows from 5,762 B (2,413 B gzip) to 6,607 B (2,467 B gzip) because the catalog is now frozen and `findUnit` checks its input.
 - Mutation job: `timeoutMS 10000` and `concurrency 4` cut the local cold run from 4 min 53 s to 3 min 13 s (329 mutants). CI runs 4.5 to 4.8 times slower than local: PR 3 tip 7.95 min (208 mutants, `concurrency 3`), PR 4 tip 14.87 min on `main` and 15.87 min on the PR (329 mutants, `concurrency 4`). `concurrency 4` was neutral on the 4-vCPU runner, and the 06c tip (about 414 mutants) projected to 18.7 to 20 min, at the 20-minute trigger of 3.19b.
 - Root cause and lever: the per-mutant cost is the vitest boot (one fork per test file, about 2.3 s for 18 files), not the test content, so sharding on one runner cannot help while boot dominates. `--isolate=false` runs all files of a mutant run in one worker: local cold 296.99 s to 143.63 s on 418 mutants (user time 920 s to 322 s) with identical verdicts (410 killed, the same 8 `rational.ts` timeouts, 0 survived). Concurrency 3 versus 4 must be re-measured on CI after this change (follow-up 3.19b); `timeout-minutes: 30` stays.
@@ -369,7 +369,7 @@ Total forecast ~3,880 lines across 12 chained PRs.
 | Second consumer | In-monorepo consumers (Workers/wrangler, Expo/Metro) bundle TS source directly. A published/external consumer triggers a `tsc` emit for core only (D2 flags already set). |
 | Saved projects, PDF | Persist the canonical URL state string; PDF renders from the run result (+ future geometry data) in a Worker. |
 | Shared links without a default flash (handoff to the web change; not implemented here) | When `location.search` is non-empty, a tiny inline script in the page head marks the prerendered results as pending (for example a `data-pending` attribute that hides the default numbers) before first paint, and the calculator island uses `client:load` (not `client:idle`) so it decodes the URL and renders the shared result immediately. Pages without a query keep the prerendered default. |
-| Released-snapshot completeness | Today registration in `released.contract.test.ts` is a release-checklist item; once several calculators exist, a web test can assert every entry of `calculators.ts` appears in the snapshot. |
+| Released-snapshot completeness | Registration in `released.contract.test.ts` is a release-checklist item until PR 12 (task 12.10) adds a HARD completeness test: every calculator in `apps/web/src/lib/calculators.ts` has one tuple per input in `RELEASED`, and `REGISTRY` is imported from the real registry (PR 11 review REL-4, RES-2). |
 
 ## Security Notes
 
@@ -388,6 +388,10 @@ None blocking. Resolved in PR 3 (spike, tasks 3.13-3.14): Stryker `10.0.0` with 
 Follow-up (PR 9 Judgment Day, JD-2, info): `defineCalculator` does not validate the entries of `retiredUrlKeys` (shape or collisions with live keys); decide whether to add an `INVALID_URL_KEY` check for them in a later PR.
 
 Follow-up (PR 11, task 11.1): a `data` mutation shard (about 30 s cold, 119 mutants at PR 10) is not added in PR 11; `packages/data` has no Stryker config of its own and no real material record exists until PR 12, so the shard (a second config plus the CI matrix entry and its contract tests) lands with the first real records, in PR 12.
+
+Follow-up (PR 11 review, RES-3): `decode` has no total cap on the query length, only the 256-character cap on each value; 2 MB of malformed keys decodes in 309 ms. A cap of about 8 KB that returns the defaults plus one issue would need a spec delta (a new requirement and a new scenario) and is not added here.
+
+Follow-up (PR 11 review, RES-5): record the first CI wall time of `mutation (calculator)` and of the new `mutation (url)` job when the stack is pushed (calculator is 135 s local cold, projected at 6.4 to 8.8 minutes on CI; url is about 64 s local cold, 286 mutants including the released-key harness).
 
 ## Design review resolution
 

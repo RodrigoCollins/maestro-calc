@@ -913,3 +913,61 @@ SX4 on the stack: `git log --format=%B 7a8b7e0..HEAD | rg -i 'co-authored|claude
 - Counting the 256-character cap on the raw value means the value parser must receive the percent-encoded text and decode it itself; a caller that decodes first would accept 300 raw characters that decode to 100.
 - Cutting a slice at the last RED/GREEN boundary is cheap when the later behavior (the version registry) is a few lines of production code over rows of tests: the registry was removed from the decode commit and restored in the next branch with its 16 RED rows.
 - A harness that compares each released tuple with the input at the same position makes "append only" a single rule: inserting a field before another fails as a key and url-key change of the shifted tuples.
+
+## PR 11 correction round 1 (task 11.11)
+
+Mode: strict TDD, runner `npm test`. Input: four lenses (R1 risk, R2 readability, R3 reliability and R4 resilience, with one MAJOR, RES-1) and the phase validator (PASS WITH NOTES). Fixes were folded into the owner branches with `git commit --fixup` and `git rebase -i --autosquash --update-refs 7a8b7e0`; the commit bodies of RD-2 were written with a reword step in the same rebase. The harness work (RES-1, RES-7) would have taken `11e` from 304 to about 420 lines, so it became a new slice `feat/foundation-11g-review-follow-ups` stacked on `11e` and placed before the records slice, which stays last. History is local and unpushed.
+
+Applied: RES-1 and RES-7 (11g), R1-1/REL-2/RES-6 (11e plus 11a for the frozen lists), RES-4 and the `encode` doc (11b), REL-1 and the R1-3 spelling (11c), REL-3 and the DECODERS comment (11d), RD-3, RD-6 and RD-8 (11a), RD-4 and RD-5 (11g), RD-7 (11a and 11c), RD-2 (commit bodies of 11a, 11e, and the re-typed harness subject), and the documentation items D1, D2, D3, D5, D6, REL-4/RES-2, RES-3, RES-5 and the type budget. Deferred: none. Record-only: REL-4/RES-2 (task 12.10), RES-3 and RES-5 (design Open Questions), D5 (task 12.10c).
+
+| Branch | Tip | Fixes | Changed lines (excl. lockfile) | Tests in `verify` |
+|---|---|---|---|---|
+| `feat/foundation-11a-url-values` | `cbfeead` | frozen code lists, RD-3, RD-6, RD-7, RD-8, body of the shard commit | 301 | 1379 |
+| `feat/foundation-11b-url-encode` | `0b781cd` | RES-4 guard and doc | 274 | 1412 |
+| `feat/foundation-11c-url-decode` | `244f75b` | R1-3 spelling | 352 | 1455 |
+| `feat/foundation-11d-url-versioning` | `6d4490f` | REL-1 (MN10 and out-of-range rows), REL-3, DECODERS comment | 328 | 1480 |
+| `feat/foundation-11e-released-keys` | `cc55f30` | reserved-key constants, harness subject and bodies | 341 | 1495 |
+| `feat/foundation-11g-review-follow-ups` (new) | `9b4197c` | RES-1, RES-7, RD-4, RD-5 | 304 | 1503 |
+| `feat/foundation-11f-record-pr11` | see report | records, spec, design, state | docs only | 1503 |
+
+### TDD Cycle Evidence (round 1)
+
+| Item | Test | RED | GREEN | Notes |
+|---|---|---|---|---|
+| RES-6 frozen lists | `error-codes.test.ts` | 1 failed (`Object.isFrozen` false for the three lists) | 4/4 | `Object.freeze([...] as const)` keeps the tuple types, the type tests stayed green |
+| R1-1, REL-2 constants | `calculator/reserved-keys.test.ts` | 2 of 2 failed (`UNIT_KEY` and `VERSION_KEY` undefined, list not frozen) | 2/2, 1200 core tests | the test was written with the file; the RED was shown afterwards by restoring the old file, which is a deviation from the order of the cycle |
+| RES-4 | `url/codec.test.ts` | 5 of 5 failed (`null`, `undefined`, a number, a string and a function as the state: `TypeError` or `INVALID_STATE` instead of `NOT_AN_OBJECT`) | 35/35 | a list stays `INVALID_STATE` (characterization row); the first guard failed lint (`no-unnecessary-condition`), so a type-guard helper `isContainer` like the one in `validate.ts` replaced the inline check |
+| REL-1 | `url/decode.test.ts` | green on arrival (characterization of MN10) | 62/62 | also pins that an out-of-range value written by `encode` decodes to the default plus `INVALID_VALUE` (the documented RES-4 choice); first placed in `11c` where `encode` is not imported, so verify failed lint there and the row moved to `11d` |
+| REL-3 | `url/codec.property.test.ts` | green on arrival (more tokens, more input) | 6/6 | `%61 %75 %76 %6D %ff %ED%A0%80 %C3%A9 \uD800` added, duplicate `%` removed, `${key}=${240 to 300 digits}` for the known keys |
+| RES-1 | `url/released.contract.test.ts` | 5 of 6 new rows failed (a retired field with its key listed, a replacement appended after it, a missing key, a reused key, live tuples skipping the retired one); "does not excuse a removed live field" passed on arrival | 16/16, 18/18 with the mutation rows below | rows: retiring with the key in `retiredUrlKeys` passes; without it fails; a key listed in another way (`['x']`) fails; reusing the key fails (a hand-built calculator, because `defineCalculator` refuses it); the old UC21 to UC23 rows are unchanged |
+| RES-7 | the same file | first url run: 6 survivors in the moved harness (97.89) | 286 of 286 killed | killed with rows for two released calculators listed in any order, a default that is not a value of its kind, and a select tuple against a changed kind; the `now` array was rewritten as a `removed` predicate because the `[]` fallback was an equivalent mutant, and `?? ''` became a named `NOT_A_VALUE` |
+| RD-3, RD-6, RD-8 (DECODERS), RD-4 doc, RD-5 | url tests | n/a (rename, comments, one added assertion) | green before and after | UC23 also checks that the snapshot extended with the appended `h` tuple passes |
+
+### Gates (round 1)
+
+`npm run verify` exit 0 on all seven tips (1379, 1412, 1455, 1480, 1495, 1503, 1503 tests); `.vitest` and `packages/core/reports` were removed before each run; core coverage stays 100. Type cost after the round: 22,316 instantiations for the sources (56 percent of the 40,000 budget; 21,829 before the round) and 117,737 for the test program (78 percent of 150,000; 117,402 before).
+
+Mutation, final code tip (`9b4197c`), cold (`reports` removed first), logs `scratchpad/mut11c-url.log` and `mut11c-calculator.log`:
+
+| Shard | Score | Killed | Timeouts | Survived | Wall |
+|---|---|---|---|---|---|
+| url (now includes `released-harness.ts`) | 100.00 | 286 | 0 | 0 | 64.6 s |
+| calculator (`error-codes.ts`, `reserved-keys.ts` changed) | 100.00 | 613 | 0 | 0 | 136.1 s |
+
+No pragma. The `url` shard grew from 178 to 286 mutants (the harness has 99). The other shards were not rerun: no file of `rational/`, `units/`, `money/` or `format/` changed. SX4 over `7a8b7e0..HEAD` (`git log --format=%B | rg -i 'co-authored|claude|anthropic|generated with'`) is empty; the longest subject is 68 characters.
+
+### Scope and deviations (round 1)
+
+- New slice `11g-review-follow-ups` sits between `11e` and `11f`, so the rebase command for the orchestrator now names `11f` (the last slice) and still moves all seven refs.
+- `compareReleased` matches the non-retired tuples to the inputs by position, not by `urlKey`: positional matching keeps the messages of UC21 to UC23 and enforces append-only through the order of the live tuples; the retired tuples are checked by key.
+- `encode` does not check bounds (decision recorded in the spec and the design): an out-of-range value of the right kind decodes back to the default with `INVALID_VALUE`.
+- The harness widens its input to `ReleasedCalculator = UrlCodable & Pick<AnyCalculator, 'retiredUrlKeys'>`; `UrlCodable` of the codec stays narrow.
+- The harness commit of `11e` was re-typed from `test` to `feat` because it exports `urlTextOf` (production code).
+
+### Key learnings (round 1)
+
+- A test-support module under `__testing__` is excluded from every mutation shard, so a harness whose job is to fail must live in a mutated path or its failure logic is unproven; moving it surfaced six survivors at once.
+- A `fixup!` commit created on top of the final tree carries the context of the final tree, so a hunk that depends on a line added by a later branch conflicts when autosquash replays it on the earlier one; resolving by keeping the earlier line and letting the later commit re-apply its own change worked in every case.
+- A row added to an owner branch can reference an import that only a later branch adds, so every tip needs its own `verify` run and not only the last one.
+- Replacing an array fallback with a predicate (`input.kind !== 'select' || !input.options.includes(option)`) removes an equivalent mutant that no honest test can kill.
+- Matching live tuples by position and checking retired tuples by key keeps the append-only rule a single rule and keeps every existing diagnostic message unchanged.
