@@ -62,7 +62,7 @@ describe('roundToFraction (fraction-format › Fraction rounding policy)', () =>
     },
   );
 
-  // spec: Invalid rounding mode: an own-property lookup, so inherited names are rejected too
+  // spec: fraction-format › Unknown mode: an own-property lookup, so inherited names are rejected too
   it.each(['toString', 'constructor', '__proto__', 'banana', ''])(
     'rejects mode %j with INVALID_MODE',
     (mode) => {

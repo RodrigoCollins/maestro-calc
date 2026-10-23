@@ -20,7 +20,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "mutation": "npm run mutation -w @maestro-calc/core",
-    "check:dist": "node --input-type=module -e \"import { globSync } from 'node:fs'; const dist = globSync('packages/*/dist'); if (dist.length > 0) { console.error('build output in a source-only package: ' + dist.join(', ')); process.exit(1); }\"",
+    "check:dist": "node scripts/check-dist.mjs",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",

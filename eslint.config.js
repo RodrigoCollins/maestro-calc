@@ -273,7 +273,7 @@ export default defineConfig(
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
   // Plain JS config outside every tsconfig program: parsed and linted without type information.
   {
-    files: ['packages/core/stryker.config.mjs'],
+    files: ['packages/core/stryker.config.mjs', 'scripts/*.mjs'],
     extends: [tseslint.configs.disableTypeChecked],
   },
   prettier,
