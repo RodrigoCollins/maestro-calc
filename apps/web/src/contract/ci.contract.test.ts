@@ -87,6 +87,7 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
       'npm run typecheck',
       'npm run test:coverage',
       'npm run build',
+      'npm run check:dist',
     ]);
     for (const job of Object.values(workflow.jobs)) {
       expect(job['continue-on-error']).toBeUndefined();
