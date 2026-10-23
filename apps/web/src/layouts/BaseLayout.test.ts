@@ -110,6 +110,8 @@ describe('BaseLayout (site-shell › Base layout)', () => {
   // spec: site-shell › [SS13] contact text
   it('shows the configured contact address in the footer', async () => {
     const { document } = await render('es');
-    expect(document.querySelector('footer')?.text).toContain('Escríbenos a hello@maestrocalc.com');
+    expect(document.querySelector('footer')?.text).toContain(
+      'Escríbenos a contacto@maestrocalc.com',
+    );
   });
 });
