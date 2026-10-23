@@ -1,10 +1,7 @@
-import type { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import type { Locale } from '@maestro-calc/i18n';
+import type { SiteText } from '../lib/site-text.ts';
 import { alternatesOf, pathOf, urlOf } from '../routing/routes.ts';
 import type { Alternate, PageId } from '../routing/routes.ts';
-
-/** Looks a `site` catalog message up for one locale; the key is checked against the catalog. */
-export type SiteText = (key: keyof typeof enSite) => string;
 
 export interface PageHead {
   readonly title: string;

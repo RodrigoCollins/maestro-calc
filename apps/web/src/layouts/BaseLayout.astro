@@ -1,0 +1,32 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import { Font } from 'astro:assets';
+import SeoHead from '../components/SeoHead.astro';
+import SkipLink from '../components/SkipLink.astro';
+import { siteText } from '../lib/site-text.ts';
+import { LOCALE_TAGS } from '../routing/routes.ts';
+import type { NotFoundHead, PageHead } from '../seo/head.ts';
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+interface Props {
+  locale: Locale;
+  head: PageHead | NotFoundHead;
+}
+const { locale, head } = Astro.props;
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[locale]}>
+  <head>
+    <SeoHead {...head} />
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+  </head>
+  <body>
+    <SkipLink label={siteText(locale)('site.skipLink')} />
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>
