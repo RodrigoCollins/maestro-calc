@@ -262,6 +262,32 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
       ),
   );
 
+  // spec: quality-gates › Lint gate › Irregular whitespace: an invisible character in a string,
+  // template or comment looks like a plain space in review, so it must be written as an escape.
+  // `\u2003` here stays an escape in this file; the probe text holds the raw character.
+  it.each([
+    ['a string in a test file', 'packages/core/src/x.test.ts', 'export const v = "5\u2003";\n'],
+    ['a template in a test file', 'packages/core/src/x.test.ts', 'export const v = `5\u2003`;\n'],
+    [
+      'a comment in a test file',
+      'packages/core/src/x.test.ts',
+      '// 5\u2003\nexport const v = 1;\n',
+    ],
+    ['a string in a type test', 'packages/core/src/x.test-d.ts', 'export const v = "5\u2003";\n'],
+    ['a string in package sources', CORE, 'export const v = "5\u00A0";\n'],
+    ['a string in a config file', 'packages/core/vitest.config.ts', 'export const v = "\uFEFF";\n'],
+  ])('rejects a raw irregular whitespace character in %s', (_where, path, code) =>
+    rejects(code, path, 'no-irregular-whitespace'),
+  );
+
+  it('accepts the same characters written as escapes', async () => {
+    const outcome = await lint(
+      'export const v = "5\\u2003 \\u00A0";\n',
+      'packages/core/src/x.test.ts',
+    );
+    expect(outcome.ruleIds).toEqual([]);
+  });
+
   // spec: quality-gates › Clean tree [QG3]
   it('accepts a clean file with no errors and no warnings', async () => {
     const outcome = await lint('export const answer = 42;\n', CORE);
