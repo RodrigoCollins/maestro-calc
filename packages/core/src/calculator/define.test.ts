@@ -5,7 +5,7 @@ import { Rational } from '../rational/rational.ts';
 import { ft, in2, inch } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { quantity } from '../units/quantity.ts';
-import { defineCalculator, DEFINITION_REASONS } from './define.ts';
+import { defineCalculator, DEFINITION_REASONS, type DefinitionReason } from './define.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -72,11 +72,14 @@ const area = { key: 'area', measure: 'area', role: 'primary' };
 const baseline = { id: 'box', inputs: [side, count, select], outputs: [area], compute };
 const define = (patch: Record<string, unknown>): unknown =>
   defineCalculator({ ...baseline, ...patch } as unknown as Definition);
-const reasonOf = (patch: Record<string, unknown>): unknown => {
+// The rejection of a patched baseline: the code, the reason and the locus carried as the cause.
+const rejection = (patch: Record<string, unknown>): unknown => {
   try {
     define(patch);
   } catch (error) {
-    if (error instanceof CoreError) return [error.code, error.reason];
+    if (error instanceof CoreError) {
+      return { code: error.code, reason: error.reason, locus: error.cause };
+    }
     throw error;
   }
   return undefined;
@@ -93,111 +96,154 @@ const displayed = (display: Record<string, unknown>): Record<string, unknown> =>
   withOutput({ display });
 
 // spec: calculator-contract › Definition-time validation: every reason, one fault per row
-const rejected: [reason: string, label: string, patch: Record<string, unknown>][] = [
+// A row is the reason, a label, the patch of the baseline and the key of the input, output or
+// warning where the fault is (none when it belongs to the calculator as a whole).
+type Patch = Record<string, unknown>;
+type Row = [reason: DefinitionReason, label: string, patch: Patch, field: string | undefined];
+const row = (reason: DefinitionReason, label: string, patch: Patch, field?: string): Row => [
+  reason,
+  label,
+  patch,
+  field,
+];
+const rejected: Row[] = [
   // [CC6] identifiers
-  ...['Rect Area', 'rect area', 'rect--area', 'rect-', '-rect', '1rect', ''].map(
-    (id): [string, string, Record<string, unknown>] => ['INVALID_ID', `id ${id}`, { id }],
+  ...['Rect Area', 'rect area', 'rect--area', 'rect-', '-rect', '1rect', ''].map((id) =>
+    row('INVALID_ID', `id ${id}`, { id }),
   ),
-  ...['1abc', 'Abc', 'a-b', 'a b', ''].flatMap(
-    (key): [string, string, Record<string, unknown>][] => [
-      ['INVALID_KEY', `input key ${key}`, withSide({ key })],
-      ['INVALID_KEY', `output key ${key}`, withOutput({ key })],
-      ['INVALID_KEY', `warning code ${key}`, { warnings: [key] }],
-    ],
-  ),
-  ...['abcd', '', 'A', '1a', 'a-', 'a b'].map(
-    (urlKey): [string, string, Record<string, unknown>] => [
-      'INVALID_URL_KEY',
-      `urlKey ${urlKey}`,
-      withSide({ urlKey }),
-    ],
+  ...['1abc', 'Abc', 'a-b', 'a b', ''].flatMap((key) => [
+    row('INVALID_KEY', `input key ${key}`, withSide({ key }), key),
+    row('INVALID_KEY', `output key ${key}`, withOutput({ key }), key),
+    row('INVALID_KEY', `warning code ${key}`, { warnings: [key] }, key),
+  ]),
+  ...['abcd', '', 'A', '1a', 'a-', 'a b'].map((urlKey) =>
+    row('INVALID_URL_KEY', `urlKey ${urlKey}`, withSide({ urlKey }), 'side'),
   ),
   // [CC4] reserved keys
-  ['RESERVED_URL_KEY', 'urlKey v', withSide({ urlKey: 'v' })],
-  ['RESERVED_URL_KEY', 'urlKey u', withSide({ urlKey: 'u' })],
-  ['RESERVED_URL_KEY', 'a retired key', { ...withSide({ urlKey: 'q' }), retiredUrlKeys: ['q'] }],
-  // [CC3] duplicates
-  ['DUPLICATE_KEY', 'input keys', withInputs(side, { ...count, key: 'side' })],
-  ['DUPLICATE_KEY', 'warning codes', { warnings: ['big', 'big'] }],
-  ['DUPLICATE_URL_KEY', 'two a', withInputs(side, { ...count, urlKey: 'a' })],
+  row('RESERVED_URL_KEY', 'urlKey v', withSide({ urlKey: 'v' }), 'side'),
+  row('RESERVED_URL_KEY', 'urlKey u', withSide({ urlKey: 'u' }), 'side'),
+  row(
+    'RESERVED_URL_KEY',
+    'a retired key',
+    { ...withSide({ urlKey: 'q' }), retiredUrlKeys: ['q'] },
+    'side',
+  ),
+  // [CC3] duplicates: the field is the second one
+  row('DUPLICATE_KEY', 'input keys', withInputs(side, { ...count, key: 'side' }), 'side'),
+  row('DUPLICATE_KEY', 'warning codes', { warnings: ['big', 'big'] }, 'big'),
+  row('DUPLICATE_URL_KEY', 'two a', withInputs(side, { ...count, urlKey: 'a' }), 'cnt'),
   // [CC8]
-  ['NO_INPUTS', 'no inputs', withInputs()],
-  ['NO_OPTIONS', 'no options', withInputs({ ...select, options: [] })],
-  ['DUPLICATE_OPTION', 'x twice', withInputs({ ...select, options: ['x', 'x'] })],
-  ...['X', 'x_y', '-x', 'x-', 'x--y', ''].map(
-    (option): [string, string, Record<string, unknown>] => [
+  row('NO_INPUTS', 'no inputs', withInputs()),
+  row('NO_OPTIONS', 'no options', withInputs({ ...select, options: [] }), 'sel'),
+  row('DUPLICATE_OPTION', 'x twice', withInputs({ ...select, options: ['x', 'x'] }), 'sel'),
+  ...['X', 'x_y', '-x', 'x-', 'x--y', ''].map((option) =>
+    row(
       'INVALID_OPTION_ID',
       `option ${option}`,
       withInputs({ ...select, options: ['x', option] }),
-    ],
+      'sel',
+    ),
   ),
   // [CC6] units and bounds
-  ['INVALID_UNIT', 'metricDefaultUnit ft', withSide({ metricDefaultUnit: 'ft' })],
-  ['INVALID_UNIT', 'metricDefaultUnit in', withSide({ metricDefaultUnit: 'in' })],
-  ['INVALID_UNIT', 'defaultUnit m', withSide({ defaultUnit: 'm' })],
-  ['INVALID_UNIT', 'defaultUnit cm', withSide({ defaultUnit: 'cm' })],
-  [
+  row('INVALID_UNIT', 'metricDefaultUnit ft', withSide({ metricDefaultUnit: 'ft' }), 'side'),
+  row('INVALID_UNIT', 'metricDefaultUnit in', withSide({ metricDefaultUnit: 'in' }), 'side'),
+  row('INVALID_UNIT', 'defaultUnit m', withSide({ defaultUnit: 'm' }), 'side'),
+  row('INVALID_UNIT', 'defaultUnit cm', withSide({ defaultUnit: 'cm' }), 'side'),
+  row(
     'INVALID_BOUNDS',
     'percent min 50 max 10',
     withInputs({ kind: 'percent', key: 'p', urlKey: 'p', default: r(20), min: r(50), max: r(10) }),
-  ],
-  [
+    'p',
+  ),
+  row(
     'INVALID_BOUNDS',
     'negative money min',
     withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(0), min: usd(-1) }),
-  ],
-  [
+    'm',
+  ),
+  row(
     'INVALID_BOUNDS',
     'money min above max',
     withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(5), min: usd(6), max: usd(5) }),
-  ],
-  [
+    'm',
+  ),
+  row(
     'INVALID_BOUNDS',
     'length min above max',
     withSide({ min: quantity(2, ft), max: quantity(1, ft) }),
-  ],
-  ['INVALID_BOUNDS', 'count min above max', withCount({ min: 5, max: 4, default: 5 })],
-  ['INVALID_BOUNDS', 'negative count min', withCount({ min: -1 })],
-  ['INVALID_BOUNDS', 'fractional count min', withCount({ min: 1.5 })],
-  ['INVALID_BOUNDS', 'unsafe count max', withCount({ max: 2 ** 53 })],
+    'side',
+  ),
+  row('INVALID_BOUNDS', 'count min above max', withCount({ min: 5, max: 4, default: 5 }), 'cnt'),
+  row('INVALID_BOUNDS', 'negative count min', withCount({ min: -1 }), 'cnt'),
+  row('INVALID_BOUNDS', 'fractional count min', withCount({ min: 1.5 }), 'cnt'),
+  row('INVALID_BOUNDS', 'unsafe count max', withCount({ max: 2 ** 53 }), 'cnt'),
   // [CC5] defaults
-  ['DEFAULT_INVALID', 'count below min', withCount({ min: 5, max: 10, default: 3 })],
-  ['DEFAULT_INVALID', 'count above max', withCount({ default: 101 })],
-  ['DEFAULT_INVALID', 'negative count', withCount({ default: -1 })],
-  ['DEFAULT_INVALID', 'fractional count', withCount({ default: 1.5 })],
-  ['DEFAULT_INVALID', 'select outside options', withInputs({ ...select, default: 'z' })],
-  [
+  row('DEFAULT_INVALID', 'count below min', withCount({ min: 5, max: 10, default: 3 }), 'cnt'),
+  row('DEFAULT_INVALID', 'count above max', withCount({ default: 101 }), 'cnt'),
+  row('DEFAULT_INVALID', 'negative count', withCount({ default: -1 }), 'cnt'),
+  row('DEFAULT_INVALID', 'fractional count', withCount({ default: 1.5 }), 'cnt'),
+  row('DEFAULT_INVALID', 'select outside options', withInputs({ ...select, default: 'z' }), 'sel'),
+  row(
     'DEFAULT_INVALID',
     'percent above 100',
     withInputs({ kind: 'percent', key: 'p', urlKey: 'p', default: r(201, 2) }),
-  ],
-  [
+    'p',
+  ),
+  row(
     'DEFAULT_INVALID',
     'negative money',
     withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(-1) }),
-  ],
-  ['DEFAULT_INVALID', 'length above max', withSide({ max: quantity(1, inch) })],
+    'm',
+  ),
+  row('DEFAULT_INVALID', 'length above max', withSide({ max: quantity(1, inch) }), 'side'),
   // [CC7] outputs
-  ['NO_OUTPUTS', 'no outputs', withOutputs()],
-  ['DUPLICATE_OUTPUT_KEY', 'two area', withOutputs(area, { ...area, role: 'secondary' })],
-  ['PRIMARY_COUNT', 'no primary', withOutput({ role: 'secondary' })],
-  ['PRIMARY_COUNT', 'two primaries', withOutputs(area, { ...area, key: 'other' })],
-  ['INVALID_DISPLAY', 'area in ft', displayed({ unit: 'ft', format: 'decimal', places: 2 })],
-  ['INVALID_DISPLAY', 'places 13', displayed({ unit: 'ft2', format: 'decimal', places: 13 })],
-  ['INVALID_DISPLAY', 'places -1', displayed({ unit: 'ft2', format: 'decimal', places: -1 })],
-  ['INVALID_DISPLAY', 'places 1.5', displayed({ unit: 'ft2', format: 'decimal', places: 1.5 })],
-  [
+  row('NO_OUTPUTS', 'no outputs', withOutputs()),
+  row(
+    'DUPLICATE_OUTPUT_KEY',
+    'two area',
+    withOutputs(area, { ...area, role: 'secondary' }),
+    'area',
+  ),
+  row('PRIMARY_COUNT', 'no primary', withOutput({ role: 'secondary' })),
+  row('PRIMARY_COUNT', 'two primaries', withOutputs(area, { ...area, key: 'other' })),
+  row(
+    'INVALID_DISPLAY',
+    'area in ft',
+    displayed({ unit: 'ft', format: 'decimal', places: 2 }),
+    'area',
+  ),
+  row(
+    'INVALID_DISPLAY',
+    'places 13',
+    displayed({ unit: 'ft2', format: 'decimal', places: 13 }),
+    'area',
+  ),
+  row(
+    'INVALID_DISPLAY',
+    'places -1',
+    displayed({ unit: 'ft2', format: 'decimal', places: -1 }),
+    'area',
+  ),
+  row(
+    'INVALID_DISPLAY',
+    'places 1.5',
+    displayed({ unit: 'ft2', format: 'decimal', places: 1.5 }),
+    'area',
+  ),
+  row(
     'INVALID_DISPLAY',
     'fraction on an area',
     displayed({ unit: 'ft2', format: 'fraction', denominator: 16 }),
-  ],
-  [
+    'area',
+  ),
+  row(
     'INVALID_KEY',
     'a bad second output key',
     withOutputs(area, { ...area, key: '1abc', role: 'secondary' }),
-  ],
-  ['INVALID_KEY', 'a bad second warning code', { warnings: ['big', '1abc'] }],
-  [
+    '1abc',
+  ),
+  row('INVALID_KEY', 'a bad second warning code', { warnings: ['big', '1abc'] }, '1abc'),
+  row(
     'INVALID_DISPLAY',
     'money with a display',
     withOutputs(area, {
@@ -206,17 +252,21 @@ const rejected: [reason: string, label: string, patch: Record<string, unknown>][
       role: 'secondary',
       display: { unit: 'ft2', format: 'decimal', places: 2 },
     }),
-  ],
-  ...[65, 1, 2.5].map((denominator): [string, string, Record<string, unknown>] => [
-    'INVALID_DISPLAY',
-    `denominator ${String(denominator)}`,
-    withOutputs({
-      key: 'len',
-      measure: 'length',
-      role: 'primary',
-      display: { unit: 'in', format: 'fraction', denominator },
-    }),
-  ]),
+    'cost',
+  ),
+  ...[65, 1, 2.5].map((denominator) =>
+    row(
+      'INVALID_DISPLAY',
+      `denominator ${String(denominator)}`,
+      withOutputs({
+        key: 'len',
+        measure: 'length',
+        role: 'primary',
+        display: { unit: 'in', format: 'fraction', denominator },
+      }),
+      'len',
+    ),
+  ),
 ];
 
 describe('defineCalculator validation (calculator-contract › Definition-time validation)', () => {
@@ -226,8 +276,14 @@ describe('defineCalculator validation (calculator-contract › Definition-time v
     );
   });
 
-  it.each(rejected)('throws INVALID_DEFINITION %s for %s', (reason, _label, patch) => {
-    expect(reasonOf(patch)).toEqual(['INVALID_DEFINITION', reason]);
+  // the locus names the calculator and, when one applies, the faulty input, output or warning
+  it.each(rejected)('throws INVALID_DEFINITION %s for %s', (reason, _label, patch, field) => {
+    const id = typeof patch['id'] === 'string' ? patch['id'] : 'box';
+    expect(rejection(patch)).toStrictEqual({
+      code: 'INVALID_DEFINITION',
+      reason,
+      locus: field === undefined ? { id } : { id, field },
+    });
   });
 
   // the accepted side of every boundary above
@@ -285,6 +341,6 @@ describe('defineCalculator validation (calculator-contract › Definition-time v
       withOutputs(area, { key: 'half', measure: 'area', role: 'intermediate' }),
     ],
   ])('accepts %s', (_label, patch) => {
-    expect(reasonOf(patch)).toBeUndefined();
+    expect(rejection(patch)).toBeUndefined();
   });
 });

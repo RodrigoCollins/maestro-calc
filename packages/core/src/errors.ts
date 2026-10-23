@@ -7,8 +7,8 @@ export class CoreError extends Error {
   declare readonly reason?: string;
   readonly code: string;
 
-  constructor(code: string, reason?: string) {
-    super(code);
+  constructor(code: string, reason?: string, options?: ErrorOptions) {
+    super(code, options);
     this.name = 'CoreError';
     this.code = code;
     if (reason !== undefined) this.reason = reason;

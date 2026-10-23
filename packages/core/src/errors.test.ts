@@ -22,4 +22,10 @@ describe('CoreError (exact-rational › Failure conventions)', () => {
     expect(error.reason).toBe('duplicate key');
     expect(error.code).toBe('INVALID_DEFINITION');
   });
+
+  it('keeps the cause it was given and has none otherwise', () => {
+    const cause = { id: 'box' };
+    expect(new CoreError('INVALID_DEFINITION', 'NO_INPUTS', { cause }).cause).toBe(cause);
+    expect('cause' in new CoreError('INVALID_DEFINITION', 'NO_INPUTS')).toBe(false);
+  });
 });

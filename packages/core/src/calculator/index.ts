@@ -2,6 +2,7 @@ export {
   defineCalculator,
   DEFINITION_REASONS,
   type CalculatorDefinition,
+  type DefinitionLocus,
   type DefinitionReason,
 } from './define.ts';
 export type {
