@@ -539,3 +539,13 @@ Negative proof [QG11], per shard on the 08a tip with a test file group moved awa
 - The command runner reruns the whole test command per mutant, so a shard needs both a narrower `mutate` and a narrower test command, and the shard set is only trustworthy if a test derives it from the filesystem.
 - A fuzz invariant copied from a review needs to be run against the real offset policy before it is enforced: three counterexamples (` U+FEFF`, `+\t`, `. 0`) showed that "not on a blank" and "within trimEnd" were both wrong.
 - A runtime guard for untyped callers should be one instance check on a private class, not a chain of property checks: each extra condition is another mutant that needs its own test.
+
+## PR 8 correction round 1 (4 lenses PASS; orchestrator-finished after two agent stalls)
+
+- M1: `Money` carries a unique-symbol brand (`money.ts`); `money.test-d.ts` rejects a literal, `add(quantity, money)`, `addMoney(money, quantity)` and `costOf(price, money)`.
+- RISK-1/REL-2: `requireUnitPrice` (`instanceof UnitPriceValue`) guards `costOf`.
+- RES-1/2/3: `mutation-gate` aggregate job; per-shard `reports/mutation/<shard>/`; `--reporter=dot`. Incremental report sizes after: format 800 KB, rational 368 KB, units 364 KB (format was 12.7 MB).
+- REL-4/5, RISK-2/REL-6: contract and script hardening as listed in task 8.8.
+- Gates on the 08e tip (`npm run verify`): 821 tests, coverage 100/100/100/100, exit 0. Cold `npm run mutation` (all shards): rational 100.00 (202 killed, 7 timeouts, 0 survived, 66.5 s), units 100.00 (207 killed, 45.2 s), format 100.00 (409 killed, 88.7 s); exit 0.
+- Note: the gcd timeout count moved from 8 to 7 under the shorter per-mutant budget with the dot reporter; all remaining timeouts are the known `rational.ts` gcd family, none survived.
+
