@@ -10,6 +10,7 @@ import {
   symlinkSync,
   writeFileSync,
 } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -33,8 +34,16 @@ interface StrykerConfig {
   thresholds: { high: number; low: number; break: number };
 }
 
+interface Shard {
+  mutate: string[];
+  tests: string[];
+}
+
 interface StrykerModule {
   default: StrykerConfig;
+  shards: Record<string, Shard>;
+  shardNames: string[];
+  optionsFor: (shard: string) => StrykerConfig;
   incrementalIdentityFiles: string[];
   pruneStaleReports: (reportsDirectory: string, keepFile: string) => void;
   isStrykerEntry: (entry: string | undefined) => boolean;
@@ -117,14 +126,14 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
 
   // spec: Mutation gate on core — property runs drop to 50 under STRYKER
   it('exposes npm run mutation at the root, delegating to core (the command flags STRYKER)', () => {
-    expect(scripts('package.json')['mutation']).toBe('npm run mutation -w @maestro-calc/core');
+    expect(scripts('package.json')['mutation']).toBe('node scripts/mutation.mjs');
     expect(scripts('packages/core/package.json')['mutation']).toBe('stryker run');
   });
 
   // spec: Score below break [QG11]: the command runner reports no test files, so Stryker cannot
   // tell a test was removed; the report file name therefore carries one hash of every core input.
   it('keys the incremental report by a hash computed once in the Stryker config', () => {
-    expect(config.incrementalFile).toMatch(/^reports\/stryker-incremental-[0-9a-f]{16}\.json$/);
+    expect(config.incrementalFile).toMatch(/^reports\/stryker-incremental-[0-9a-f]{16}-all\.json$/);
     const files = module_.incrementalIdentityFiles;
     for (const input of [
       'src/rational/rational.ts',
@@ -169,23 +178,27 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
   });
 
   // design D10: only the report that matches the current inputs is useful; older ones pile up in
-  // `reports/` locally and in the cache directory.
-  it('prunes sibling incremental reports and keeps the current one', () => {
+  // `reports/` locally and in the cache directory. A shard prunes its own reports (and the legacy
+  // unsharded ones), never the reports of the other shards that a local full run just produced.
+  it('prunes the stale reports of its own shard and keeps every other shard', () => {
     const directory = mkdtempSync(join(tmpdir(), 'stryker-prune-'));
     try {
       for (const name of [
+        'stryker-incremental-aaaaaaaaaaaaaaaa-units.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb-units.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-format.json',
         'stryker-incremental-aaaaaaaaaaaaaaaa.json',
-        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
         'other.json',
       ]) {
         writeFileSync(join(directory, name), '{}');
       }
       mkdirSync(join(directory, 'mutation'));
-      module_.pruneStaleReports(directory, 'stryker-incremental-bbbbbbbbbbbbbbbb.json');
+      module_.pruneStaleReports(directory, 'stryker-incremental-bbbbbbbbbbbbbbbb-units.json');
       expect(readdirSync(directory).sort()).toEqual([
         'mutation',
         'other.json',
-        'stryker-incremental-bbbbbbbbbbbbbbbb.json',
+        'stryker-incremental-aaaaaaaaaaaaaaaa-format.json',
+        'stryker-incremental-bbbbbbbbbbbbbbbb-units.json',
       ]);
     } finally {
       rmSync(directory, { recursive: true });
@@ -275,8 +288,137 @@ describe('mutation gate (quality-gates › Mutation gate on core)', () => {
     const missing = join(tmpdir(), 'stryker-prune-missing');
     expect(existsSync(missing)).toBe(false);
     expect(() => {
-      module_.pruneStaleReports(missing, 'stryker-incremental-bbbbbbbbbbbbbbbb.json');
+      module_.pruneStaleReports(missing, 'stryker-incremental-bbbbbbbbbbbbbbbb-all.json');
     }).not.toThrow();
+  });
+});
+
+// design D10 / 3.19b: the command runner reruns the whole suite per mutant, so the mutation job is
+// split by module: one Stryker invocation per shard whose test command shrinks with `mutate`.
+describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b)', () => {
+  const srcRoot = fromRoot('packages/core/src');
+  const base = 'STRYKER=1 npx --no-install vitest run --no-file-parallelism';
+  const flags = '--typecheck.enabled=false --isolate=false';
+  const filesUnder = (path: string): string[] => globSync(path, { cwd: fromRoot('packages/core') });
+  // every file the mutation gate must score: sources, not tests, test support or barrels
+  const mutable = readdirSync(srcRoot, { recursive: true })
+    .map(String)
+    .filter((path) => path.endsWith('.ts') && !path.endsWith('.d.ts'))
+    .filter((path) => !/\.test(-d)?\.ts$/.test(path))
+    .filter((path) => !path.startsWith('__testing__/') && !/(^|\/)index\.ts$/.test(path))
+    .map((path) => `src/${path}`)
+    .sort();
+  const owners = (file: string): string[] =>
+    module_.shardNames.filter((name) =>
+      (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
+    );
+
+  it('has three named shards', () => {
+    expect(module_.shardNames).toEqual(['rational', 'units', 'format']);
+  });
+
+  // design 3.19b: no gap (a file nobody mutates) and no overlap (a file scored twice, which also
+  // costs twice) between the shards, asserted from the filesystem so a new module cannot slip by.
+  it('assigns every mutable source file to exactly one shard', () => {
+    expect(mutable.length).toBeGreaterThan(10);
+    for (const file of mutable) {
+      expect(owners(file), file).toHaveLength(1);
+    }
+  });
+
+  it('lists only globs that match files, and keeps the shared exclusions', () => {
+    for (const name of module_.shardNames) {
+      expect(module_.optionsFor(name).mutate.slice(-4), name).toEqual(config.mutate.slice(-4));
+      for (const glob of module_.shards[name]?.mutate ?? []) {
+        expect(filesUnder(glob), glob).not.toHaveLength(0);
+      }
+    }
+  });
+
+  // The test command must run the tests of the shard's own files (a sibling `x.test.ts`) and the
+  // cross-module tests, and nothing is left unrun: every test file belongs to some shard.
+  it('runs the sibling test of each mutated file and the cross-module test in every shard', () => {
+    for (const name of module_.shardNames) {
+      const shard = module_.shards[name];
+      const tests = shard?.tests ?? [];
+      expect(tests, name).toContain('src/index.test.ts');
+      for (const file of mutable.filter((path) => owners(path).includes(name))) {
+        const sibling = file.replace(/\.ts$/, '.test.ts');
+        if (!existsSync(fromRoot('packages/core', sibling))) continue;
+        expect(
+          tests.some((test) => sibling.startsWith(test)),
+          `${name} runs ${sibling}`,
+        ).toBe(true);
+      }
+      expect(module_.optionsFor(name).commandRunner.command).toBe(
+        `${base} ${flags} ${tests.join(' ')}`,
+      );
+    }
+  });
+
+  it('names the incremental report after the shard and keeps one threshold set', () => {
+    for (const name of module_.shardNames) {
+      const options = module_.optionsFor(name);
+      expect(options.incrementalFile, name).toMatch(
+        new RegExp(`^reports/stryker-incremental-[0-9a-f]{16}-${name}\\.json$`),
+      );
+      expect(options.thresholds).toEqual({ high: 95, low: 90, break: 90 });
+      expect(options.incremental).toBe(true);
+    }
+    const hashes = new Set(
+      [...module_.shardNames, 'all'].map(
+        (name) =>
+          /stryker-incremental-([0-9a-f]{16})-/.exec(module_.optionsFor(name).incrementalFile)?.[1],
+      ),
+    );
+    expect(hashes.size).toBe(1);
+  });
+
+  it('rejects an unknown shard and defaults to all of core', () => {
+    expect(() => module_.optionsFor('nope')).toThrow(/unknown mutation shard: nope/);
+    expect(module_.optionsFor('all').mutate).toEqual(config.mutate);
+    expect(config.commandRunner.command).not.toContain(' src/');
+  });
+
+  it('reads the shard from STRYKER_SHARD', async () => {
+    const saved = process.env['STRYKER_SHARD'];
+    process.env['STRYKER_SHARD'] = 'units';
+    try {
+      const url = `${pathToFileURL(fromRoot('packages/core/stryker.config.mjs')).href}?shard=units`;
+      const loaded = (await import(url)) as StrykerModule;
+      expect(loaded.default.incrementalFile).toMatch(/-units\.json$/);
+    } finally {
+      if (saved === undefined) delete process.env['STRYKER_SHARD'];
+      else process.env['STRYKER_SHARD'] = saved;
+    }
+  });
+});
+
+describe('mutation runner script (scripts/mutation.mjs)', () => {
+  interface Runner {
+    selectShards: (argv: string[], names: string[]) => string[];
+  }
+  const run = (...args: string[]): { status: number | null; stdout: string; stderr: string } =>
+    spawnSync(process.execPath, [fromRoot('scripts/mutation.mjs'), ...args], {
+      cwd: fromRoot(),
+      encoding: 'utf8',
+    });
+
+  it('lists the shards and rejects an unknown one without running Stryker', () => {
+    expect(run('--list').stdout.trim().split('\n')).toEqual(module_.shardNames);
+    const bad = run('--shard', 'nope');
+    expect(bad.status).toBe(1);
+    expect(bad.stderr).toMatch(/unknown mutation shard: nope/);
+  });
+
+  it('selects every shard by default and exactly one with --shard', async () => {
+    const { selectShards } = await importFromRoot<Runner>('scripts/mutation.mjs');
+    const names = ['a', 'b', 'c'];
+    expect(selectShards([], names)).toEqual(names);
+    expect(selectShards(['--shard', 'b'], names)).toEqual(['b']);
+    expect(selectShards(['--shard=c'], names)).toEqual(['c']);
+    expect(() => selectShards(['--shard'], names)).toThrow(/--shard needs a name/);
+    expect(() => selectShards(['--shard', 'z'], names)).toThrow(/unknown mutation shard: z/);
   });
 });
 
