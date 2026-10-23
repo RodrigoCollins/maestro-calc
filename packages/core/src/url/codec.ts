@@ -1,4 +1,5 @@
 import { findOption } from '../calculator/constraints.ts';
+import { UNIT_KEY, VERSION_KEY } from '../calculator/reserved-keys.ts';
 import type { UrlIssueCode } from '../error-codes.ts';
 import type {
   AnyCalculator,
@@ -81,7 +82,8 @@ export function encode(
   { unitSystem }: EncodeOptions = {},
 ): string {
   if (!isContainer(state)) throw new CoreError('NOT_AN_OBJECT');
-  const pairs = unitSystem === 'metric' ? ['v=1', 'u=m'] : ['v=1'];
+  const version = `${VERSION_KEY}=${FIRST_VERSION}`;
+  const pairs = unitSystem === 'metric' ? [version, `${UNIT_KEY}=m`] : [version];
   for (const input of calculator.inputs) {
     const text = urlTextOf(input, state[input.key]);
     if (text === undefined) {
@@ -173,7 +175,7 @@ const decodeV1 = (
   const issues: UrlIssue[] = [];
   let unitSystem: UnitSystem = 'imperial';
   for (const { key, raw } of pairs) {
-    if (key === 'u') {
+    if (key === UNIT_KEY) {
       const preference = unitSystemOf(raw);
       if (preference === undefined) issues.push(issue('INVALID_VALUE', key));
       else unitSystem = preference;
@@ -203,7 +205,7 @@ const DECODERS: ReadonlyMap<string | null, Decoder> = new Map([[FIRST_VERSION, d
 
 /** The version a query declares (the first `v` pair wins), or `null` for a malformed escape. */
 const versionOf = (pairs: readonly Pair[]): string | null => {
-  const declared = pairs.find(({ key }) => key === 'v');
+  const declared = pairs.find(({ key }) => key === VERSION_KEY);
   return declared === undefined ? FIRST_VERSION : percentDecode(declared.raw);
 };
 
@@ -226,6 +228,8 @@ export function decode(
   const version = versionOf(pairs);
   const decoder = DECODERS.get(version);
   return decoder === undefined
-    ? resultOf(calculator.inputs, new Map(), 'imperial', [issue('UNSUPPORTED_VERSION', 'v')])
+    ? resultOf(calculator.inputs, new Map(), 'imperial', [
+        issue('UNSUPPORTED_VERSION', VERSION_KEY),
+      ])
     : decoder(calculator.inputs, pairs);
 }

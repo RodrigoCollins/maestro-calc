@@ -1,6 +1,13 @@
 export * from './calculator/index.ts';
 export { CoreError } from './errors.ts';
-export { FIELD_ERROR_CODES, type FieldErrorCode } from './error-codes.ts';
+export {
+  ALL_ERROR_CODES,
+  FIELD_ERROR_CODES,
+  URL_ISSUE_CODES,
+  type AllErrorCode,
+  type FieldErrorCode,
+  type UrlIssueCode,
+} from './error-codes.ts';
 export * from './format/index.ts';
 export * from './money/index.ts';
 export {
@@ -17,3 +24,4 @@ export type {
 } from './rational/index.ts';
 export { err, ok, type Result } from './result.ts';
 export * from './units/index.ts';
+export * from './url/index.ts';

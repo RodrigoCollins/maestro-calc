@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { fixtureBox } from './__testing__/fixture-box.ts';
 import * as core from './index.ts';
 
 describe('core public API (design: Public API)', () => {
   // design: Public API — Rational, parseDecimal, Result helpers and CoreError
   it('exports the exact-number toolkit', () => {
     expect(Object.keys(core).sort()).toEqual([
+      'ALL_ERROR_CODES',
       'CoreError',
       'DECIMAL_PARSE_CODES',
       'DEFINITION_REASONS',
@@ -13,8 +15,10 @@ describe('core public API (design: Public API)', () => {
       'MAX_TEXT_LENGTH',
       'MONEY_PARSE_CODES',
       'RATIONAL_PARSE_CODES',
+      'RESERVED_URL_KEYS',
       'RESULT_REASONS',
       'Rational',
+      'URL_ISSUE_CODES',
       'abs',
       'add',
       'addMoney',
@@ -25,9 +29,11 @@ describe('core public API (design: Public API)', () => {
       'compare',
       'compareMoney',
       'costOf',
+      'decode',
       'defineCalculator',
       'divide',
       'divideScalar',
+      'encode',
       'equals',
       'equalsMoney',
       'err',
@@ -192,5 +198,17 @@ describe('core public API (design: Public API)', () => {
     expect(parsed).toEqual(core.ok(core.Rational.of(1, 2)));
     expect(core.err('X')).toEqual({ ok: false, errors: ['X'] });
     expect(new core.CoreError('X').code).toBe('X');
+  });
+
+  // spec: url-state-codec › Encoding and Decoding; design: codec and ALL_ERROR_CODES
+  it('wires the url codec and the user-facing error codes', () => {
+    const state = core.decode(fixtureBox, 'v=1&b=7&u=m');
+    expect(core.encode(fixtureBox, state.state, { unitSystem: state.unitSystem })).toBe(
+      'v=1&u=m&b=7',
+    );
+    expect(core.RESERVED_URL_KEYS).toEqual(['v', 'u']);
+    expect(core.URL_ISSUE_CODES).toEqual(['INVALID_VALUE', 'UNSUPPORTED_VERSION']);
+    expect(core.ALL_ERROR_CODES).toHaveLength(12);
+    expect(core.ALL_ERROR_CODES).toEqual([...core.FIELD_ERROR_CODES, ...core.URL_ISSUE_CODES]);
   });
 });

@@ -1,6 +1,7 @@
 import { CoreError } from '../errors.ts';
 import { UNITS } from '../units/catalog.ts';
 import { boundsOf, checkAmount, defaultAmount } from './constraints.ts';
+import { RESERVED_URL_KEYS } from './reserved-keys.ts';
 import { runCalculator } from './run.ts';
 import { validateRecord } from './validate.ts';
 import type {
@@ -56,8 +57,6 @@ const ID = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
 const KEY = /^[a-z][A-Za-z0-9]*$/;
 const URL_KEY = /^[a-z][a-z0-9]{0,2}$/;
 const OPTION_ID = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-/** URL keys that belong to the codec: the format version and the unit-system preference. */
-const RESERVED_URL_KEYS: readonly string[] = ['v', 'u'];
 const IMPERIAL_UNITS: readonly string[] = ['in', 'ft', 'yd'];
 const METRIC_UNITS: readonly string[] = ['mm', 'cm', 'm'];
 
