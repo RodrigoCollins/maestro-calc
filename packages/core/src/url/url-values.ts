@@ -33,10 +33,11 @@ const readUrlAmount = (descriptor: BoundedDescriptor, text: string): Rational | 
   return parsed.ok ? withinUrlBounds(descriptor, parsed.value) : undefined;
 };
 
-const WHOLE = /^[0-9]+$/;
+/** The grammar of a count: digits only, so no sign, point or exponent. */
+export const WHOLE_NUMBER = /^[0-9]+$/;
 
 const readUrlCount = (descriptor: BoundedDescriptor, text: string): number | undefined => {
-  if (!WHOLE.test(text)) return undefined;
+  if (!WHOLE_NUMBER.test(text)) return undefined;
   // compared as a Rational, so a value beyond the safe integers is out of range with no precision loss
   const amount = withinUrlBounds(descriptor, Rational.of(BigInt(text)));
   return amount === undefined ? undefined : Number(amount.num);
