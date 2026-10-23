@@ -154,7 +154,8 @@ const readField = (
 /**
  * Validates `raw` against `inputs`. Every declared field is read (no short-circuit) in declaration
  * order; a key that is absent from `raw`, or present as `undefined`, takes the default, and an
- * undeclared key is ignored. An inherited property is not a value the caller gave.
+ * undeclared key is ignored. An inherited property is not a value the caller gave. `raw` must be an
+ * object: a non-object container, or a getter that throws, is a programmer error and throws (D5).
  */
 export const validateRecord = (
   inputs: Descriptors,
