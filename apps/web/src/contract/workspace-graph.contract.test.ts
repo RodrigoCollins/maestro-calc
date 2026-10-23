@@ -196,6 +196,21 @@ describe('internal packages ship TypeScript source (monorepo-workspace › Inter
     for (const target of targets) expect(target, `${dir} ${target}`).toMatch(/\.ts$/);
   });
 
+  // design D7: every calculator is its own export subpath, so a page bundles only what it renders
+  it('exposes each calculator of core through the calculators/* subpath', () => {
+    const exports = readManifest('packages/core').exports ?? {};
+    expect(exports['./calculators/*']).toBe('./src/calculators/*/index.ts');
+    const directories = readdirSync(fromRoot('packages/core/src/calculators'), {
+      withFileTypes: true,
+    }).filter((entry) => entry.isDirectory());
+    expect(directories.map((entry) => entry.name)).toContain('rectangle-area');
+    for (const { name } of directories) {
+      expect(existsSync(fromRoot('packages/core/src/calculators', name, 'index.ts')), name).toBe(
+        true,
+      );
+    }
+  });
+
   // spec: Web build consumes workspace source [MW11b]. A `dist` is gitignored and can only appear
   // after a build, so the check runs as a post-build step (`check:dist`, in `verify` and in CI)
   // and this test pins the script itself against a temporary workspace.

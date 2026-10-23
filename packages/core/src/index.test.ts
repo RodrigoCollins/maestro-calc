@@ -211,4 +211,15 @@ describe('core public API (design: Public API)', () => {
     expect(core.ALL_ERROR_CODES).toHaveLength(12);
     expect(core.ALL_ERROR_CODES).toEqual([...core.FIELD_ERROR_CODES, ...core.URL_ISSUE_CODES]);
   });
+
+  // spec: calc-rectangle-area; design: Package Layout (the barrel never re-exports calculators)
+  it('does not re-export any calculator', () => {
+    expect(core).not.toHaveProperty('rectangleArea');
+    // a calculator is the only export with a `compute` function
+    const exported: unknown[] = Object.values(core);
+    const calculators = exported.filter(
+      (value) => typeof value === 'object' && value !== null && 'compute' in value,
+    );
+    expect(calculators).toEqual([]);
+  });
 });

@@ -4,23 +4,16 @@ import {
   type ReleasedCalculator,
   type ReleasedField,
 } from './released-harness.ts';
+import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { defineCalculator } from '../calculator/define.ts';
+import { rectangleArea } from '../calculators/rectangle-area/index.ts';
 import type { InputDescriptor } from '../calculator/descriptors.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { decode } from './codec.ts';
 
-/**
- * The public URL contract (url-state-codec › Key stability rules, rule 8): one ordered tuple per
- * input of every released calculator. A tuple is never modified or removed and a released
- * calculator never disappears; appending fields and calculators is allowed. The snapshot stays
- * empty until the first calculator ships in PR 12. Extend `RELEASED` and `REGISTRY` together: a
- * calculator in one and not in the other is only noticed once PR 12 adds the completeness test.
- */
-const RELEASED: readonly ReleasedField[] = [];
-
-/** Every calculator that has been released. */
-const REGISTRY: readonly ReleasedCalculator[] = [];
+/** Every calculator of core that has been released; the web registry is checked in `apps/web`. */
+const REGISTRY: readonly ReleasedCalculator[] = [rectangleArea];
 
 const lengthInput = (key: string, urlKey: string, inches: number): InputDescriptor => ({
   kind: 'length',
@@ -59,6 +52,25 @@ const current = () => area([lengthInput('length', 'l', 120), lengthInput('width'
 describe('released url keys (url-state-codec › Key stability rules)', () => {
   it('holds for every released calculator', () => {
     expect(compareReleased(RELEASED, REGISTRY)).toEqual([]);
+  });
+
+  // spec: calc-rectangle-area › Descriptor: exactly the keys and defaults l and w, default 120
+  it('records rectangle-area with one tuple per input, in order', () => {
+    expect(
+      RELEASED.map(({ calculatorId, key, urlKey, default: text }) => [
+        calculatorId,
+        key,
+        urlKey,
+        text,
+      ]),
+    ).toEqual([
+      ['rectangle-area', 'length', 'l', '120'],
+      ['rectangle-area', 'width', 'w', '120'],
+    ]);
+    expect(rectangleArea.inputs.map(({ key, urlKey }) => [key, urlKey])).toEqual([
+      ['length', 'l'],
+      ['width', 'w'],
+    ]);
   });
 
   describe('harness', () => {
