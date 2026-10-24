@@ -33,13 +33,15 @@ const descriptionOf = (id: string, locale: Locale): string =>
 
 /** A site whose catalogs hold a generated title and description per page id and locale. */
 export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
-  const catalogOf = (locale: Locale): Record<string, string> =>
-    Object.fromEntries(
+  const catalogOf = (locale: Locale): Record<string, string> => ({
+    'site.switch.label': locale === 'en' ? 'Español' : 'English',
+    ...Object.fromEntries(
       [...Object.keys(routes), NOT_FOUND_ID].flatMap((id) => [
         [`page.${id}.title`, titleOf(id, locale)],
         [`page.${id}.description`, descriptionOf(id, locale)],
       ]),
-    );
+    ),
+  });
   return { routes, config: SITE, catalogs: { en: catalogOf('en'), es: catalogOf('es') } };
 };
 
@@ -90,7 +92,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     '<a class="skip-link" href="#main">Skip to main content</a>',
     `<header><a href="${pathOf('home', locale, routes)}">Maestro Calc</a>`,
     `<nav aria-label="${NAV_LABEL}">${headerLinks === '' ? '' : `<ul>${headerLinks}</ul>`}`,
-    `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">Switch</a></nav></header>`,
+    `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     `<main id="main"><h1>${headingOf(id)}</h1></main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,

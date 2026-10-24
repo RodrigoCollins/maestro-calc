@@ -1,7 +1,7 @@
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
-import { attrsOf } from './dom.ts';
+import { attr, attrsOf } from './dom.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
@@ -78,19 +78,28 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
 };
 
 const navigationProblems = (page: Page, site: Site): Problem[] => {
-  const counterpart = switchFor(page.id, page.locale, site.routes).href;
+  const { href: counterpart, lang, hreflang } = switchFor(page.id, page.locale, site.routes);
+  const label = site.catalogs[page.locale]['site.switch.label'];
   const same = (actual: readonly string[], expected: readonly string[]): boolean =>
     actual.join('\n') === expected.join('\n');
   const expectedHrefs = (candidates: readonly string[]): string[] =>
     linksFor(candidates, page.locale, site.routes).map(({ href }) => href);
   return [
-    ...(same(attrsOf(page.root, 'header a[hreflang]', 'href'), [counterpart])
+    ...(same(
+      page.root
+        .querySelectorAll('header a[hreflang]')
+        .map(
+          (link) =>
+            `${attr(link, 'href')} ${attr(link, 'lang')} ${attr(link, 'hreflang')} ${link.text.trim()}`,
+        ),
+      [`${counterpart} ${lang} ${hreflang} ${String(label)}`],
+    )
       ? []
       : [
           problem(
             page.file,
             'switch',
-            `the language switch must be the single link to ${counterpart}`,
+            `the language switch must be the single link to ${counterpart} (lang ${lang}, hreflang ${hreflang}, text "${String(label)}")`,
           ),
         ]),
     ...(same(attrsOf(page.root, 'header li a', 'href'), expectedHrefs(HEADER_PAGES))
