@@ -1,6 +1,7 @@
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { parse } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
+import { serializeJsonLd } from '../seo/json-ld.ts';
 import SeoHead from './SeoHead.astro';
 
 const render = async (props: Record<string, unknown>) =>
@@ -72,5 +73,19 @@ describe('SeoHead (site-seo › Document head)', () => {
     expect(head.querySelector('link[rel=canonical]')).toBeNull();
     expect(head.querySelectorAll('link[rel=alternate]')).toHaveLength(0);
     expect(head.querySelector('title')?.text).toBe('Page not found | Maestro Calc');
+  });
+
+  // spec: site-seo › [SE6, SE7] render side
+  it('renders one JSON-LD block that parses to the object, when given one', async () => {
+    const data = { '@context': 'https://schema.org', name: 'A </script> & B' };
+    const head = await render({ ...indexable, jsonLd: serializeJsonLd(data) });
+    const scripts = head.querySelectorAll('script');
+    expect(scripts).toHaveLength(1);
+    expect(scripts[0]?.getAttribute('type')).toBe('application/ld+json');
+    expect(JSON.parse(scripts[0]?.text ?? '')).toEqual(data);
+  });
+
+  it('renders no script at all without JSON-LD', async () => {
+    expect((await render(indexable)).querySelectorAll('script')).toHaveLength(0);
   });
 });

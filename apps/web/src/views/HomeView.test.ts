@@ -2,7 +2,9 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import HomeView from './HomeView.astro';
+import NotFoundView from './NotFoundView.astro';
 
 const render = (locale: 'en' | 'es') => renderComponent(HomeView, { locale }, { partial: false });
 
@@ -74,5 +76,32 @@ describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
       for (const term of FORBIDDEN)
         expect(value.toLowerCase(), `${key} ${term}`).not.toContain(term);
     }
+  });
+});
+
+describe('HomeView JSON-LD (site-seo › [SE6, SE7] render side)', () => {
+  it.each([
+    ['en', 'https://maestrocalc.com/', 'en-US'],
+    ['es', 'https://maestrocalc.com/es', 'es-US'],
+  ] as const)(
+    'embeds the Organization and WebSite graph on the %s home',
+    async (locale, url, tag) => {
+      const document = await render(locale);
+      const blocks = document.querySelectorAll('script[type="application/ld+json"]');
+      expect(blocks).toHaveLength(1);
+      expect(document.querySelectorAll('script')).toHaveLength(1);
+      expect(blocks[0]?.text).toBe(serializeJsonLd(homeJsonLd(locale)));
+      const graph = (JSON.parse(blocks[0]?.text ?? '') as { '@graph': Record<string, unknown>[] })[
+        '@graph'
+      ];
+      expect(graph.map((node) => node['@type'])).toEqual(['Organization', 'WebSite']);
+      expect(graph[1]).toMatchObject({ url, inLanguage: tag });
+      expect(graph.some((node) => 'logo' in node)).toBe(false);
+    },
+  );
+
+  it('is the only view that passes JSON-LD', async () => {
+    const notFound = await renderComponent(NotFoundView, { locale: 'en' }, { partial: false });
+    expect(notFound.querySelectorAll('script')).toHaveLength(0);
   });
 });

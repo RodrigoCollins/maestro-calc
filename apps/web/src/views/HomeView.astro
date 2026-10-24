@@ -3,6 +3,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteText } from '../lib/site-text.ts';
 import { headFor } from '../seo/head.ts';
+import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 
 interface Props {
   locale: Locale;
@@ -11,7 +12,11 @@ const { locale } = Astro.props;
 const text = siteText(locale);
 ---
 
-<BaseLayout {locale} id="home" head={headFor('home', locale, text)}>
+<BaseLayout
+  {locale}
+  id="home"
+  head={{ ...headFor('home', locale, text), jsonLd: serializeJsonLd(homeJsonLd(locale)) }}
+>
   <h1>{text('page.home.heading')}</h1>
   <p>{text('page.home.intro')}</p>
 </BaseLayout>
