@@ -1,0 +1,11 @@
+// The root wrangler.jsonc without its `build` command: the e2e job serves the `dist` that `verify`
+// already built. `wrangler-e2e.contract.test.ts` keeps the two `assets` blocks equal.
+{
+  "name": "maestro-calc",
+  "compatibility_date": "2026-10-23",
+  "assets": {
+    "directory": "../../apps/web/dist",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+}

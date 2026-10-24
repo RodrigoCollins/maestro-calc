@@ -21,6 +21,21 @@ updates:
       # Stay on the Node major pinned in .nvmrc.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+  - package-ecosystem: npm
+    directory: /tooling/site-browser
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+    open-pull-requests-limit: 5
+    groups:
+      playwright:
+        patterns: ['@playwright/*', 'playwright*']
+    ignore:
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:

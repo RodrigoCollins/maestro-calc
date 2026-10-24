@@ -201,6 +201,8 @@ export default defineConfig(
     '**/reports/**',
     '**/.stryker-tmp/**',
     '**/node_modules/**',
+    // The browser tooling is its own package with its own install, lint-free by design.
+    'tooling/site-browser/**',
   ]),
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   {

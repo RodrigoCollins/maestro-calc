@@ -1,9 +1,11 @@
-import { readFileSync } from 'node:fs';
+import { globSync, readFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { ESLint } from 'eslint';
 import * as prettier from 'prettier';
+import ts from 'typescript';
 import tseslint from 'typescript-eslint';
 import { describe, expect, it } from 'vitest';
-import { fromRoot, repoRoot } from './root.ts';
+import { fromRoot, importFromRoot, repoRoot } from './root.ts';
 
 // Virtual file paths are not known to the type-aware project service, so the probes run the
 // repository config with type information switched off. The rules under test are not type-aware;
@@ -461,5 +463,66 @@ describe('format gate (quality-gates)', () => {
   it('formats Astro files through the Astro plugin', async () => {
     expect(await check('---\nconst a   =  1\n---\n<p>{a}</p>\n', PAGE)).toBe(false);
     expect(await check('---\nconst a = 1;\n---\n\n<p>{a}</p>\n', PAGE)).toBe(true);
+  });
+});
+
+describe('tooling/site-browser stays outside the repository gates (site-quality, monorepo-workspace)', () => {
+  const spec = 'tooling/site-browser/e2e/smoke.spec.ts';
+
+  it('is ignored by ESLint, while the other tooling helpers stay linted', async () => {
+    const plain = new ESLint({ cwd: repoRoot });
+    expect(await plain.isPathIgnored(fromRoot(spec))).toBe(true);
+    expect(await plain.isPathIgnored(fromRoot('tooling/workspaces.js'))).toBe(false);
+  });
+
+  it('is in no root, web or package tsconfig program', () => {
+    // tsconfig.base.json only holds shared options: it is extended, never run as a program
+    const configs = globSync(
+      ['tsconfig*.json', 'apps/*/tsconfig*.json', 'packages/*/tsconfig*.json'],
+      { cwd: fromRoot() },
+    ).filter((config) => config !== 'tsconfig.base.json');
+    expect(configs.length).toBeGreaterThan(5);
+    for (const config of configs) {
+      const read = ts.readConfigFile(fromRoot(config), (path) => ts.sys.readFile(path));
+      const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, dirname(fromRoot(config)));
+      expect(
+        parsed.fileNames.filter((file) => file.includes('/tooling/site-browser/')),
+        config,
+      ).toEqual([]);
+    }
+  });
+
+  it('is in no root vitest project', async () => {
+    const config = await importFromRoot<{ default: { test: { projects: string[] } } }>(
+      'vitest.config.ts',
+    );
+    expect(config.default.test.projects.length).toBeGreaterThan(0);
+    expect(config.default.test.projects.filter((project) => project.includes('tooling'))).toEqual(
+      [],
+    );
+  });
+
+  it('is still formatted by Prettier, except its lockfile', async () => {
+    const ignored = async (path: string): Promise<boolean> =>
+      (await prettier.getFileInfo(fromRoot(path), { ignorePath: fromRoot('.prettierignore') }))
+        .ignored;
+    expect(await ignored('tooling/site-browser/playwright.config.ts')).toBe(false);
+    expect(await ignored('tooling/site-browser/package-lock.json')).toBe(true);
+    expect(readFileSync(fromRoot('.prettierignore'), 'utf8').split('\n')).toContain(
+      'tooling/site-browser/package-lock.json',
+    );
+  });
+
+  it('keeps its run output out of git', () => {
+    const ignores = readFileSync(fromRoot('.gitignore'), 'utf8').split('\n');
+    for (const entry of [
+      'tooling/site-browser/node_modules',
+      'tooling/site-browser/playwright-report',
+      'tooling/site-browser/test-results',
+      'tooling/site-browser/.wrangler',
+      '.lighthouseci',
+    ]) {
+      expect(ignores, entry).toContain(entry);
+    }
   });
 });

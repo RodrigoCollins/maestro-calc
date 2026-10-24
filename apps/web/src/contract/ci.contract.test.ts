@@ -265,6 +265,7 @@ describe('CI mutation aggregate (quality-gates › Mutation gate on core)', () =
 describe('Dependency-bot configuration (quality-gates › Dependency-bot major pinning)', () => {
   interface Update {
     'package-ecosystem': string;
+    directory: string;
     cooldown?: { 'default-days': number };
     'open-pull-requests-limit'?: number;
     groups?: Record<string, { patterns: string[] }>;
@@ -282,11 +283,14 @@ describe('Dependency-bot configuration (quality-gates › Dependency-bot major p
   });
 
   // spec: quality-gates › Dependency-bot major pinning — both ecosystems covered
-  it('updates both npm and GitHub Actions', () => {
-    expect(config.updates.map((update) => update['package-ecosystem'])).toEqual([
-      'npm',
-      'github-actions',
-    ]);
+  it('updates npm (the workspaces, then the browser tooling package) and GitHub Actions', () => {
+    expect(config.updates.map((update) => [update['package-ecosystem'], update.directory])).toEqual(
+      [
+        ['npm', '/'],
+        ['npm', '/tooling/site-browser'],
+        ['github-actions', '/'],
+      ],
+    );
   });
 
   // design: dependency updates are throttled and batched
