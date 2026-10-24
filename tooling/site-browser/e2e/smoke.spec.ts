@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
 import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
 import { langOf, notFoundSamples, routable, unknown } from './urls.ts';
@@ -15,6 +15,7 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
+const MAX_TABS = 30;
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
@@ -34,6 +35,15 @@ const loadedFromElsewhere = async (page: Page, baseURL: string | undefined, path
   await page.goto(path);
   await page.waitForLoadState('networkidle');
   return { foreign, scripts, violations };
+};
+
+/** Presses Tab until `target` has focus, failing after a bounded number of presses. */
+const tabTo = async (page: Page, target: Locator): Promise<void> => {
+  for (let press = 0; press < MAX_TABS; press += 1) {
+    await page.keyboard.press('Tab');
+    if (await target.evaluate((element) => element === document.activeElement)) return;
+  }
+  await expect(target).toBeFocused();
 };
 
 /** Everything the keyboard can reach in the shell: skip link, header, footer. */
@@ -98,9 +108,8 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
           expect(hrefs).toContain(href);
         }
         for (let index = 0; index < count; index += 1) {
-          await page.keyboard.press('Tab');
-          // The outline belongs to the shell link the keyboard is meant to reach, in document order.
-          await expect(shellLinks(page).nth(index)).toBeFocused();
+          // The keyboard reaches each shell link in document order; page content may sit between them.
+          await tabTo(page, shellLinks(page).nth(index));
           const { color, width } = await page.evaluate(() => {
             const style = getComputedStyle(document.activeElement ?? document.body);
             return { color: style.outlineColor, width: Number.parseFloat(style.outlineWidth) };
