@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
@@ -90,5 +90,19 @@ describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', 
     const { code, err, out } = run(missing);
     expect({ code, out }).toEqual({ code: 1, out: '' });
     expect(err).toBe(`check:site: ${missing} not found. Run \`npm run build\` first.\n`);
+  });
+
+  it('names apps/web/dist when no directory is given and the default one is absent', () => {
+    // A copy of the script in a scratch `apps/web` with no `dist`: the real build is never touched.
+    const web = join(scratch, 'default-root', 'apps', 'web');
+    mkdirSync(join(web, 'scripts'), { recursive: true });
+    copyFileSync(script, join(web, 'scripts', 'check-site.ts'));
+    symlinkSync(fromRoot('apps/web/src'), join(web, 'src'));
+    symlinkSync(fromRoot('node_modules'), join(scratch, 'default-root', 'node_modules'));
+    const result = spawnSync(process.execPath, [join(web, 'scripts', 'check-site.ts')], {
+      encoding: 'utf8',
+    });
+    expect({ code: result.status, out: result.stdout }).toEqual({ code: 1, out: '' });
+    expect(result.stderr).toBe('check:site: apps/web/dist not found. Run `npm run build` first.\n');
   });
 });
