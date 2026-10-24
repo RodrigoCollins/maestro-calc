@@ -12,6 +12,12 @@ export interface Problem {
 /** The text of every built file by posix path relative to `dist` (binary files hold ''). */
 export type Dist = ReadonlyMap<string, string>;
 
+/** What `Dist` cannot hold: the byte size of every built file and the bytes of every font. */
+export interface Binary {
+  readonly sizes: ReadonlyMap<string, number>;
+  readonly fonts: ReadonlyMap<string, Uint8Array>;
+}
+
 /** What the checks compare the build against: the route table, the site settings and the catalogs. */
 export interface Site {
   readonly routes: RouteTable;

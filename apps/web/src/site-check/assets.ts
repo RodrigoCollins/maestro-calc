@@ -1,4 +1,4 @@
-import { attrsOf } from './dom.ts';
+import { attrsOf, urlsIn } from './dom.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem } from './types.ts';
 
@@ -19,7 +19,6 @@ const WOFF2_COUNT = 4;
 const OFF_ORIGIN = /^(?:https?:)?\/\//i;
 const ABSOLUTE = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
 const SCHEME_DECLARATION = /(?<![\w-])color-scheme\s*:([^;}]*)/g;
-const CSS_URL = /url\(\s*["']?([^"')]*)["']?\s*\)/g;
 
 /** The CSS a page carries: its own `<style>` elements and every stylesheet file of `dist`. */
 const cssOf = (page: Page, dist: Dist): string =>
@@ -34,8 +33,6 @@ const srcsetUrls = (srcset: string): string[] =>
     .split(',')
     .map((candidate) => candidate.trim().replace(/\s.*$/s, ''))
     .filter((url) => url !== '');
-
-const urlsIn = (css: string): string[] => Array.from(css.matchAll(CSS_URL), ([, url = '']) => url);
 
 /** `#fff` and `#FFFFFF` are the same colour: compare six upper-case digits. */
 const hexColoursIn = (css: string): Set<string> =>

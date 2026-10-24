@@ -1,0 +1,223 @@
+import { describe, expect, it } from 'vitest';
+import { budgetProblems, budgetSummary, LIMITS } from './budgets.ts';
+import type { Sizes } from './budgets.ts';
+import { pagesOf } from './files.ts';
+import { FIXTURE_ROUTES, fixtureSite, VALID_CSS, validDist } from './__testing__/page-fixture.ts';
+
+const FONTS = ['a', 'b', 'c', 'd'].map((name) => `_astro/fonts/${name}.woff2`);
+const INLINE_CSS = new TextEncoder().encode(VALID_CSS).length;
+
+/** A valid dist, its byte sizes (text files by length, each font 20,000 B) and the parsed pages. */
+const build = (
+  edit: (dist: Map<string, string>, sizes: Map<string, number>) => void = () => undefined,
+) => {
+  const dist = validDist(fixtureSite());
+  const sizes = new Map<string, number>(
+    [...dist].map(([file, text]) => [file, new TextEncoder().encode(text).length]),
+  );
+  for (const font of FONTS) sizes.set(font, 20_000);
+  edit(dist, sizes);
+  return { pages: pagesOf(dist, FIXTURE_ROUTES), sizes: sizes as Sizes, dist };
+};
+
+const problemsAfter = (edit?: Parameters<typeof build>[0]) => {
+  const { pages, sizes, dist } = build(edit);
+  return budgetProblems(pages, sizes, dist);
+};
+
+const withLinkedCss =
+  (file: string, bytes: number) => (dist: Map<string, string>, sizes: Map<string, number>) => {
+    dist.set(
+      'about.html',
+      (dist.get('about.html') ?? '').replace(
+        '</head>',
+        `<link rel="stylesheet" href="/${file}"></head>`,
+      ),
+    );
+    sizes.set(file, bytes);
+  };
+
+describe('byte budgets over a valid dist (site-quality › [SQ6])', () => {
+  it('has none, and the limits are the design values', () => {
+    expect(problemsAfter()).toEqual([]);
+    expect(LIMITS).toEqual({
+      html: 40_960,
+      css: 20_480,
+      font: 30_720,
+      fonts: 92_160,
+      weight: 163_840,
+    });
+  });
+});
+
+describe('HTML budget (site-quality › [SQ7])', () => {
+  it('passes a page of 40,960 bytes', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 40_960))).toEqual([]);
+  });
+
+  it('fails a page of 40,961 bytes, naming the file and the limit', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 40_961))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'html-budget',
+        message: '40,961 B exceeds the limit of 40,960 B',
+      },
+    ]);
+  });
+});
+
+describe('CSS budget, inline plus linked (site-quality › [SQ6])', () => {
+  it('passes 20,480 bytes in total', () => {
+    expect(problemsAfter(withLinkedCss('_astro/a.css', 20_480 - INLINE_CSS))).toEqual([]);
+  });
+
+  it('fails 20,481 bytes in total, naming the page and the limit', () => {
+    expect(problemsAfter(withLinkedCss('_astro/a.css', 20_481 - INLINE_CSS))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'css-budget',
+        message: '20,481 B of CSS exceeds the limit of 20,480 B',
+      },
+    ]);
+  });
+
+  it('counts a stylesheet that is not in the build as empty (another rule names it)', () => {
+    expect(
+      problemsAfter((dist) => {
+        dist.set(
+          'about.html',
+          (dist.get('about.html') ?? '').replace(
+            '</head>',
+            '<link rel="stylesheet" href="/_astro/missing.css"><link rel="stylesheet" href="https://cdn.example.com/x.css"></head>',
+          ),
+        );
+      }),
+    ).toEqual([]);
+  });
+});
+
+describe('font budgets (site-shell › [SS8])', () => {
+  it('passes a font of 30,720 bytes', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set(FONTS[0] ?? '', 30_720))).toEqual([]);
+  });
+
+  it('fails a font of 30,721 bytes, naming the file and the limit', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set(FONTS[0] ?? '', 30_721))).toEqual([
+      { file: FONTS[0], rule: 'font-budget', message: '30,721 B exceeds the limit of 30,720 B' },
+    ]);
+  });
+
+  it('passes four fonts that together are 92,160 bytes', () => {
+    expect(
+      problemsAfter((_dist, sizes) => {
+        for (const font of FONTS) sizes.set(font, 23_040);
+      }),
+    ).toEqual([]);
+  });
+
+  it('fails four fonts of 23,041 bytes, naming the total and the limit', () => {
+    expect(
+      problemsAfter((_dist, sizes) => {
+        for (const font of FONTS) sizes.set(font, 23_041);
+      }),
+    ).toEqual([
+      {
+        file: '(dist)',
+        rule: 'fonts-budget',
+        message: '92,164 B of fonts exceeds the limit of 92,160 B',
+      },
+    ]);
+  });
+});
+
+describe('JavaScript budget (site-quality › [SQ8])', () => {
+  it.each([
+    ['a script element', '<script src="/_astro/x.js"></script>'],
+    ['a module preload', '<link rel="modulepreload" href="/_astro/x.js">'],
+  ])('fails a page that references %s, naming the file', (_name, markup) => {
+    expect(
+      problemsAfter((dist, sizes) => {
+        dist.set(
+          'index.html',
+          (dist.get('index.html') ?? '').replace('</head>', `${markup}</head>`),
+        );
+        sizes.set('_astro/x.js', 1);
+      }),
+    ).toEqual([
+      {
+        file: 'index.html',
+        rule: 'js-budget',
+        message: '/_astro/x.js (1 B) is JavaScript, and the budget is 0 B',
+      },
+    ]);
+  });
+
+  it('counts a referenced script that has no size as zero bytes and still names it', () => {
+    const problems = problemsAfter((dist) => {
+      dist.set(
+        'index.html',
+        (dist.get('index.html') ?? '').replace(
+          '</head>',
+          '<script src="/_astro/y.js"></script></head>',
+        ),
+      );
+    });
+    expect(problems.map(({ rule }) => rule)).toEqual(['js-budget']);
+  });
+});
+
+// The inline CSS is part of the HTML bytes, so only the linked CSS adds to the weight: the favicon
+// must make up the rest of 163,840 (153,600 from the other limits, minus the inline CSS).
+describe('page weight (site-quality › [SQ6])', () => {
+  const atLimit = (favicon: number) => (dist: Map<string, string>, sizes: Map<string, number>) => {
+    sizes.set('about.html', LIMITS.html);
+    withLinkedCss('_astro/a.css', LIMITS.css - INLINE_CSS)(dist, sizes);
+    for (const font of FONTS) sizes.set(font, LIMITS.fonts / 4);
+    sizes.set('favicon.svg', favicon);
+  };
+
+  it('passes 163,840 bytes: HTML, linked CSS, referenced fonts and the favicon', () => {
+    expect(problemsAfter(atLimit(10_240 + INLINE_CSS))).toEqual([]);
+  });
+
+  it('fails 163,841 bytes, naming the page and the limit', () => {
+    expect(problemsAfter(atLimit(10_241 + INLINE_CSS))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'weight-budget',
+        message: '163,841 B exceeds the limit of 163,840 B',
+      },
+    ]);
+  });
+});
+
+describe('budget summary (site-quality › [SQ6])', () => {
+  it('prints the largest page and its size per category', () => {
+    const { pages, sizes, dist } = build((_dist, mutable) => {
+      mutable.set('about.html', 12_345);
+      mutable.set(FONTS[1] ?? '', 23_040);
+    });
+    expect(budgetSummary(pages, sizes, dist)).toEqual([
+      'budget html: largest /about.html 12,345 B (limit 40,960)',
+      `budget css: largest /index.html ${INLINE_CSS.toLocaleString('en-US')} B (limit 20,480)`,
+      'budget font: largest /_astro/fonts/b.woff2 23,040 B (limit 30,720)',
+      'budget fonts: total 83,040 B in 4 files (limit 92,160)',
+      'budget js: 0 B referenced (limit 0)',
+      expect.stringMatching(/^budget weight: largest \/about\.html [\d,]+ B \(limit 163,840\)$/),
+    ]);
+  });
+
+  it('adds up the referenced JavaScript, which has no budget', () => {
+    const { pages, sizes, dist } = build((mutable, bytes) => {
+      mutable.set(
+        'index.html',
+        (mutable.get('index.html') ?? '').replace(
+          '</head>',
+          '<script src="/_astro/x.js"></script></head>',
+        ),
+      );
+      bytes.set('_astro/x.js', 1_234);
+    });
+    expect(budgetSummary(pages, sizes, dist)[4]).toBe('budget js: 1,234 B referenced (limit 0)');
+  });
+});
