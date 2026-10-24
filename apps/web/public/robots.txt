@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://maestrocalc.com/sitemap.xml
