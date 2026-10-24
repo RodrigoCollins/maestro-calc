@@ -35,6 +35,13 @@ jobs:
       - run: npm run check:site
       # MW11b: the packages ship source, so a build must leave no `dist` behind.
       - run: npm run check:dist
+      # The site-browser job serves this exact build instead of rebuilding it.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: web-dist
+          path: apps/web/dist
+          if-no-files-found: error
+          retention-days: 1
 
   # One runner per Stryker shard (design 3.19b): the command runner reruns the shard's tests for
   # every mutant, so splitting `mutate` and the test command by module cuts the wall time.
@@ -262,3 +269,45 @@ jobs:
         env:
           MUTATION_RESULT: ${{ needs.mutation.result }}
         run: test "$MUTATION_RESULT" = success
+
+  # Browser gate (axe and phone smoke) against `wrangler dev`, which applies the same asset rules and
+  # headers as production. Runs beside the mutation matrix; never path-filtered, so its required
+  # check cannot stay pending.
+  site-browser:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: tooling/site-browser/package-lock.json
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: web-dist
+          path: apps/web/dist
+      - run: npm ci --prefix tooling/site-browser
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
+      - run: npx --prefix tooling/site-browser playwright install --with-deps --only-shell chromium
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-report
+          path: tooling/site-browser/playwright-report
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-test-results
+          path: tooling/site-browser/test-results
+          if-no-files-found: ignore
