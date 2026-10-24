@@ -10,7 +10,24 @@ cd apps/web && npx astro dev --background
 
 Manage the background server with `npx astro dev stop`, `npx astro dev status`, and `npx astro dev logs` (from `apps/web`).
 
-Root scripts: `npm run dev`, `npm run build`, `npm run preview`, `npm run check` (alias of `typecheck`), `npm run format:check`, `npm run sync` (generates Astro types, needed before lint), `npm run lint` (uncached, as in CI; `npm run lint:fast` is the cached local variant), `npm test`, `npm run test:coverage`, `npm run check:site` (checks the built `apps/web/dist` against the route table and the `site` catalogs: head, links, zero JavaScript, sitemap, robots, JSON-LD; run it after `npm run build`; the rules live in `apps/web/src/site-check`, and it enforces the byte budgets: HTML 40,960 B, CSS 20,480 B, each woff2 30,720 B and four together 92,160 B, no JavaScript, page weight 163,840 B, and prints the largest page per category), `npm run test:e2e` (axe and phone smoke in Chromium against `wrangler dev` serving the built `apps/web/dist`; see below) and `npm run lighthouse` (Lighthouse CI over six pages against `wrangler dev`; needs Google Chrome and the tooling install below; accessibility, SEO and best practices at 0.95 and layout shift at 0.01 block, performance only warns) and `npm run verify` (all gates cheapest-first, same order as the CI `verify` job, ending `build`, `check:site`, `check:dist`; it does not run mutation testing or the browser tests), and `npm run mutation` (Stryker over `packages/core` and `packages/data`, one shard at a time: `npm run mutation -- --list`, `-- --shard <name>`; cold wall times in `openspec/changes/archive/2026-10-23-foundation-monorepo-core-engine/apply-progress.md`; the CI `mutation` job runs one runner per shard after `verify`; POSIX shells only). Run `npm ci` after cloning.
+Root scripts:
+
+- `npm run dev`
+- `npm run build`
+- `npm run preview`
+- `npm run check` (alias of `typecheck`)
+- `npm run format:check`
+- `npm run sync` (generates Astro types, needed before lint)
+- `npm run lint` (uncached, as in CI; `npm run lint:fast` is the cached local variant)
+- `npm test`
+- `npm run test:coverage`
+- `npm run check:site` (checks the built `apps/web/dist` against the route table and the `site` catalogs: head, links, zero JavaScript, sitemap, robots, JSON-LD; run it after `npm run build`; the rules live in `apps/web/src/site-check`, and it enforces the byte budgets: HTML 40,960 B, CSS 20,480 B, each woff2 30,720 B and four together 92,160 B, no JavaScript, page weight 163,840 B, and prints the largest page per category)
+- `npm run test:e2e` (axe and phone smoke in Chromium against `wrangler dev` serving the built `apps/web/dist`; see below)
+- `npm run lighthouse` (Lighthouse CI over six pages against `wrangler dev`; needs Google Chrome and the tooling install below; accessibility, SEO and best practices at 0.95 and layout shift at 0.01 block, performance only warns)
+- `npm run verify` (all gates cheapest-first, same order as the CI `verify` job, ending `build`, `check:site`, `check:dist`; it does not run mutation testing or the browser tests)
+- `npm run mutation` (Stryker over `packages/core` and `packages/data`, one shard at a time: `npm run mutation -- --list`, `-- --shard <name>`; cold wall times in `openspec/changes/archive/2026-10-23-foundation-monorepo-core-engine/apply-progress.md`; the CI `mutation` job runs one runner per shard after `verify`; POSIX shells only)
+
+Run `npm ci` after cloning. `apps/web/src/contract/end-state.contract.test.ts` is the only pinned count (pages, URLs, entries); a new site-level page must update it, and every other test derives its counts from `ROUTES`.
 
 Browser tests: `tooling/site-browser` is a package of its own (own `package-lock.json`, not an npm workspace) so the root install and the `verify` job never download Wrangler or a browser. It is excluded from the root ESLint, TypeScript and Vitest runs and typechecks itself (`npm run typecheck --prefix tooling/site-browser`). Once per machine: `npm ci --prefix tooling/site-browser` and `npx --prefix tooling/site-browser playwright install --only-shell chromium`. Then `npm run build && npm run test:e2e` (the specs read the route table from `apps/web`, so new pages are picked up). `npm run build && npm run lighthouse` audits the same build (reports go to the ignored `tooling/site-browser/.lighthouseci`). The `site-browser` CI job runs the same on the `dist` that `verify` uploads, then Lighthouse on the runner's Chrome.
 
