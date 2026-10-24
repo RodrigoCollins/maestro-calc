@@ -314,3 +314,28 @@ Both blind judges (A and B, full sweep after a completion request) returned **AP
 `verify` 2m45s; `site-browser` 1m12s (first real run, green); all mutation shards passed (slowest `format` 6m52s). Merged as `main` `4027573` and verified live: `/` and `/es` 200; `/does-not-exist` and `/es/nada` 404; `/sitemap.xml` and `/robots.txt` 200; CSP and `nosniff` served; the only `<script>` is the ld+json block. Tasks 8.14 and SX8 satisfied; the G2 exit tasks 5.10, 6.8, 7.19 and 8.15 are ticked (four reviewers PASS, correction round 1, Judgment Day APPROVED).
 
 Group 3 (PR 9 to PR 11 plus the G2 follow-ups JD-1..JD-7) runs on ONE branch, `feat/web-shell-g3-trust-pages-final`, created from `main` `4027573`. Nothing pushed, no PR opened, `gentle-ai` not run. Sections follow below.
+
+## Group 3 (G2 follow-ups, PR 9 to PR 11)
+
+Mode: strict TDD (`npm test`). Branch `feat/web-shell-g3-trust-pages-final` from `main` `4027573`. Exit tasks 9.10, 10.9, 11.11 and F.1/F.2 stay open on purpose (reviews and owner actions pending).
+
+### G2 Judgment Day follow-ups
+
+| ID | What changed | Commit |
+|---|---|---|
+| JD-1 | Owner-review markers match whole words (Unicode lookarounds) in visible text plus HTML comments; script and style bodies and attributes are ignored; benign text (`drafting`, `borradores`, `calc.example`) passes. The message-key scan needs two segments after `calc` (`calc.rectangle-area.title`), as the real keys have. `Page.root` is parsed with `comment: true` | `32ddc13` |
+| JD-2 | `check:site` prints the resolved directory for a relative argument; test spawns with a relative argument and a scratch cwd | `fd951e0` |
+| JD-4 | `headers.contract.test.ts` asserts no rule sets `X-Robots-Tag` (spot check: appending one fails it) | `9e2e280` |
+| JD-3, JD-5 | `localeOfPath` exported from `routes.ts` and used by `tooling/site-browser/e2e` (`urls.ts`, `smoke.spec.ts`); unused locale parameter of `notFoundHead` dropped; the foreign-origin, no-script and CSP test now also runs on both 404 responses | `8dc4c8a` |
+| JD-6 | `check:site` asserts the switch `href`, `lang`, `hreflang` and visible text (`site.switch.label`); the [SR7] round trip asserts 200 on each hop | `8703b10` |
+| JD-7 | One-page pins updated as the pages arrived (routes, links, BaseLayout, sitemap, files, CLI, catalog tests), counts derived from `ROUTES` wherever possible | `9ff5827` |
+| Minor | CSP `style-src 'unsafe-inline'` rationale recorded in `_headers`; `Person` added to the forbidden JSON-LD list of the site-seo spec. `networkidle` in `smoke.spec.ts` left as is (the fonts and the CSP report need the page to settle) | `3d27d9d` |
+
+JD follow-ups: 302 changed lines (241+, 61-).
+
+### PR 9 (content collection, methodology, about)
+
+Commits: `5bcdad8` feat(web) content collection and schema · `9ff5827` feat(web) methodology and about pages with the update-date rule · `6f34a5c` test(web) keyboard focus walk. PR 9 boundary (code tip): `6f34a5c`. Changed lines vs the JD tip `3d27d9d`: 959 (918+, 41-); the four Markdown files are 100 lines, tests carry most of the rest (contract helper and tests, schema test, view test).
+`npm run verify` exit 0, 2210 tests (123 files); `check:site` `checked 8 pages`, `pending ownerReview entries: 4`; `npm run test:e2e` 62 passed (axe on the 6 routable pages and the 2 not-found pages).
+
+Deviations: (1) one commit carries the pages, their catalog keys and the `updated` rule (they cannot be separated and stay green: the rule needs the entries and the fixture dates). (2) The catch-all dispatches by `id === 'home'`; the `views` map did not type once the two views took different props. (3) The container test of `TrustPageView` needs the content store: `vitest.global-setup.ts` runs `astro sync` and copies `node_modules/.astro/data-store.json` to `.astro/`. (4) The e2e keyboard walk tabs past page content to each shell link (home and prose links now sit between header and footer).
