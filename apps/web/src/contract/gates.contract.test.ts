@@ -290,6 +290,21 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     );
   });
 
+  // check:site runs at build time, so its sources may use the web devDependency that parses HTML
+  it('lets check:site sources import devDependencies and keeps shipped sources to dependencies', async () => {
+    const code = "import { parse } from 'node-html-parser';\nexport const p = parse;\n";
+    const lint = async (path: string) =>
+      (await typedEslint.lintText(code, { filePath: fromRoot(path) }))[0]?.messages.map(
+        (message) => message.ruleId,
+      );
+    expect(await lint('apps/web/src/site-check/files.ts')).not.toContain(
+      'import-x/no-extraneous-dependencies',
+    );
+    expect(await lint('apps/web/src/lib/site-text.ts')).toContain(
+      'import-x/no-extraneous-dependencies',
+    );
+  });
+
   // spec: quality-gates › Ignore pragma forbidden [QG9]
   it.each(['v8 ignore next', 'c8 ignore next', 'istanbul ignore next'])(
     'rejects the coverage pragma "%s" in core, tests and test support included',

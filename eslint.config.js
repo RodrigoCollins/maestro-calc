@@ -314,6 +314,11 @@ export default defineConfig(
   },
   { files: ['**/*.astro'], plugins: { 'import-x': importX } },
   ...workspaceDirs(import.meta.dirname).flatMap(dependencyBlocks),
+  {
+    // check:site runs at build time over `dist`: its sources and CLI may use web devDependencies.
+    files: ['apps/web/src/site-check/**/*.ts', 'apps/web/scripts/**/*.ts'],
+    rules: extraneous({ packageDir: ['.', 'apps/web'], devDependencies: true }),
+  },
   ...astro.configs['flat/recommended'],
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
   {
