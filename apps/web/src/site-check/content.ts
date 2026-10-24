@@ -5,7 +5,7 @@ import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
 /** Whole words that mean a page still carries review state (a bare `pending` is allowed). */
-const OWNER_REVIEW_MARKERS = ['ownerReview', 'draft', 'borrador', 'pending review'];
+export const OWNER_REVIEW_MARKERS = ['ownerReview', 'draft', 'borrador', 'pending review'];
 
 /** The retired placeholder address, joined from parts so the source-side scan finds no literal. */
 export const OLD_ADDRESS = ['hello', 'maestrocalc.com'].join('@');
