@@ -52,6 +52,17 @@ describe('security headers (site-quality › [SQ12])', () => {
       ).not.toContain('set-cookie');
     }
   });
+
+  // spec: site-seo › [SE13] (indexability is the HTML head's job; a header must never override it)
+  it('sets no X-Robots-Tag on any path, so routable pages stay indexable', () => {
+    expect(rules.length).toBeGreaterThan(0);
+    for (const rule of rules) {
+      expect(
+        rule.lines.map(([name]) => name.toLowerCase()),
+        rule.pattern,
+      ).not.toContain('x-robots-tag');
+    }
+  });
 });
 
 describe('asset caching (site-quality › [SQ13])', () => {
