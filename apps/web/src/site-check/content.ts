@@ -1,17 +1,20 @@
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
-import { alternatesIn } from './dom.ts';
+import { alternatesIn, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
-/** Strings that mean a page still carries review state (a bare `pending` is allowed). */
-const OWNER_REVIEW_MARKERS = ['ownerreview', 'draft', 'borrador', 'pending review'];
+/** Whole words that mean a page still carries review state (a bare `pending` is allowed). */
+const OWNER_REVIEW_MARKERS = ['ownerReview', 'draft', 'borrador', 'pending review'];
 
 /** The retired placeholder address, joined from parts so the source-side scan finds no literal. */
 export const OLD_ADDRESS = ['hello', 'maestrocalc.com'].join('@');
 
-/** ICW6: a catalog key (`errors.…`, `calc.…`) printed instead of its message. */
-const MESSAGE_KEY = /\b(errors|calc)\.[a-z]/;
+/**
+ * ICW6: a catalog key printed instead of its message. Calculator keys have at least two
+ * segments after `calc` (`calc.rectangle-area.title`), so `calc.example` is plain text.
+ */
+const MESSAGE_KEY = /\b(?:errors\.[a-z]|calc\.[a-z][a-z0-9-]*\.[a-z])/i;
 
 const FORBIDDEN_TYPES = [
   'Product',
@@ -31,7 +34,7 @@ export const countPending = (entries: readonly string[]): number =>
   ).length;
 
 const reviewProblems = (page: Page): Problem[] =>
-  OWNER_REVIEW_MARKERS.filter((marker) => page.html.toLowerCase().includes(marker)).map((marker) =>
+  OWNER_REVIEW_MARKERS.filter((marker) => hasWord(visibleText(page.root), marker)).map((marker) =>
     problem(page.file, 'owner-review', `the page contains "${marker}"`),
   );
 
@@ -41,7 +44,7 @@ const addressProblems = (dist: Dist): Problem[] =>
     .map(([file]) => problem(file, 'old-address', `${OLD_ADDRESS} must not appear`));
 
 const messageKeyProblems = (page: Page): Problem[] =>
-  MESSAGE_KEY.test(page.html)
+  MESSAGE_KEY.test(visibleText(page.root))
     ? [problem(page.file, 'message-key', 'a catalog key appears instead of its message')]
     : [];
 
