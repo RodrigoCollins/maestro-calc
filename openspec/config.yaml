@@ -18,13 +18,16 @@ testing:
   layers:
     unit: { available: true, tool: vitest }
     integration: { available: false, tool: null }
-    e2e: { available: false, tool: null, planned: playwright }
+    e2e: { available: true, tool: playwright, command: "npm run test:e2e" }   # tooling/site-browser: axe + phone smoke against wrangler dev; needs npm ci --prefix tooling/site-browser and a built apps/web/dist
   coverage:
     available: true      # @vitest/coverage-v8; thresholds: core 100, data/i18n 90
     command: "npm run test:coverage"
   mutation:
     available: true      # Stryker 10 command runner over packages/core (vitest-runner incompatible with vitest 5)
     command: "npm run mutation"   # thresholds high 95 / low 90 / break 90, STRYKER=1 gives 50 property runs
+  site_check:
+    available: true
+    command: "npm run check:site"   # built-HTML rules over apps/web/dist (after npm run build); 100 percent covered in apps/web/src/site-check
   quality:
     linter: { available: true, command: "npm run lint" }   # eslint, typescript-eslint strictTypeChecked, --max-warnings=0
     type_checker: { available: true, command: "npm run typecheck" }   # tsc --noEmit per package program (src purity gate + tests), astro check for web, root tooling files (JS configs are linted, not type-checked: checkJs is a tracked follow-up); "npm run check" is an alias

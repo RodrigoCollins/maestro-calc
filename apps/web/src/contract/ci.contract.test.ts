@@ -318,3 +318,85 @@ describe('Dependency-bot configuration (quality-gates › Dependency-bot major p
     });
   });
 });
+
+describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15], [SQ16])', () => {
+  const job = workflow.jobs['site-browser'];
+  const steps = job?.steps ?? [];
+  const step = (prefix: string): Step | undefined =>
+    steps.find((candidate) => candidate.uses?.startsWith(prefix));
+  const runs = steps.flatMap((candidate) => (candidate.run === undefined ? [] : [candidate.run]));
+
+  it('runs after verify only, on every run, with nothing that can skip it', () => {
+    expect(job?.needs).toBe('verify');
+    expect(job?.if).toBeUndefined();
+    expect(job?.paths).toBeUndefined();
+    expect(job?.['paths-ignore']).toBeUndefined();
+    expect(job?.permissions).toBeUndefined();
+    expect(job?.['continue-on-error']).toBeUndefined();
+  });
+
+  it('is bounded to ten minutes and sends no telemetry', () => {
+    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(10);
+    expect(job?.['timeout-minutes']).toBeGreaterThan(0);
+    expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
+      WRANGLER_SEND_METRICS: 'false',
+    });
+  });
+
+  it('runs the same dist that verify built, without rebuilding it', () => {
+    expect(step('actions/download-artifact@')?.with).toMatchObject({ path: 'apps/web/dist' });
+    expect(runs.filter((run) => run.includes('npm run build'))).toEqual([]);
+  });
+
+  it('installs Node from .nvmrc and only the tooling package', () => {
+    expect(step('actions/setup-node@')?.with).toMatchObject({
+      'node-version-file': '.nvmrc',
+      cache: 'npm',
+      'cache-dependency-path': 'tooling/site-browser/package-lock.json',
+    });
+    expect(runs).toContain('npm ci --prefix tooling/site-browser');
+    expect(runs).not.toContain('npm ci');
+  });
+
+  it('caches the browser by the tooling lockfile and installs Chromium only', () => {
+    const cache = step('actions/cache@');
+    expect(cache?.with?.['path']).toBe('~/.cache/ms-playwright');
+    expect(String(cache?.with?.['key'])).toContain(
+      "hashFiles('tooling/site-browser/package-lock.json')",
+    );
+    const install = runs.filter((run) => run.includes('playwright install'));
+    expect(install).toHaveLength(1);
+    expect(install[0]).toContain('chromium');
+    expect(install[0]).not.toMatch(/firefox|webkit/);
+  });
+
+  it('runs the browser tests and uploads reports only on failure', () => {
+    expect(runs).toContain('npm run test:e2e');
+    const uploads = steps.filter((candidate) =>
+      candidate.uses?.startsWith('actions/upload-artifact@'),
+    );
+    expect(uploads.length).toBeGreaterThan(0);
+    for (const upload of uploads) expect(upload.if).toBe('failure()');
+  });
+
+  it('runs beside the mutation matrix, never behind it', () => {
+    expect([workflow.jobs['mutation']?.needs].flat()).not.toContain('site-browser');
+    expect([job?.needs].flat()).not.toContain('mutation');
+  });
+
+  it('has verify hand its dist over after the last gate', () => {
+    const verifySteps = verify?.steps ?? [];
+    const last = verifySteps.at(-1);
+    expect(last?.uses?.startsWith('actions/upload-artifact@')).toBe(true);
+    expect(last?.with).toMatchObject({ path: 'apps/web/dist' });
+    expect(verifySteps.findLast((candidate) => candidate.run !== undefined)?.run).toBe(
+      'npm run check:dist',
+    );
+  });
+
+  it('starts the Wrangler server without telemetry in the Playwright config', () => {
+    expect(readFileSync(fromRoot('tooling/site-browser/playwright.config.ts'), 'utf8')).toContain(
+      "WRANGLER_SEND_METRICS: 'false'",
+    );
+  });
+});
