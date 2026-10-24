@@ -64,6 +64,10 @@ describe('site scripts (monorepo-workspace › [MWW3], [MWW4])', () => {
     expect(scriptsOf('apps/web')['check:site']).toBe('node scripts/check-site.ts');
   });
 
+  it('has test:e2e at the root, delegating to the browser tooling package', () => {
+    expect(scriptsOf('.')['test:e2e']).toBe('npm test --prefix tooling/site-browser');
+  });
+
   it('ends verify with build, check:site, check:dist', () => {
     expect(scriptsOf('.')['verify']).toMatch(
       / && npm run build && npm run check:site && npm run check:dist$/,
