@@ -32,3 +32,9 @@ const escapeRegExp = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/
 /** Whether `word` (one or more words) occurs in `text` between non-letters and non-digits, ignoring case. */
 export const hasWord = (text: string, word: string): boolean =>
   new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(word)}(?![\\p{L}\\p{N}])`, 'iu').test(text);
+
+const CSS_URL = /url\(\s*["']?([^"')]*)["']?\s*\)/g;
+
+/** Every `url(...)` target in a piece of CSS, in order. */
+export const urlsIn = (css: string): string[] =>
+  Array.from(css.matchAll(CSS_URL), ([, url = '']) => url);
