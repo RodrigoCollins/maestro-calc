@@ -5,12 +5,13 @@ import type { Binary, Dist, Page, Problem } from './types.ts';
 /** The byte size of every file under `dist`, by posix path (text and binary alike). */
 export type Sizes = Binary['sizes'];
 
-/** Design budgets (site-quality): bytes on disk, uncompressed. JavaScript has none (0). */
+/** Design budgets (site-quality): bytes on disk, uncompressed. JavaScript has none (`js: 0`). */
 export const LIMITS = {
   html: 40_960,
   css: 20_480,
   font: 30_720,
   fonts: 92_160,
+  js: 0,
   weight: 163_840,
 } as const;
 
@@ -36,7 +37,7 @@ interface Measure {
   /** Inline `<style>` text plus every linked stylesheet. */
   readonly css: number;
   readonly scripts: readonly string[];
-  /** The linked CSS, fonts and favicon a visitor downloads besides the HTML. */
+  /** The HTML plus the linked CSS, fonts (referenced by CSS or preloaded) and favicon a visitor downloads. */
   readonly weight: number;
 }
 
@@ -69,6 +70,9 @@ const measure = (page: Page, sizes: Sizes, dist: Dist): Measure => {
 const fontFiles = (sizes: Sizes): string[] =>
   [...sizes.keys()].filter((file) => file.endsWith('.woff2'));
 
+/** `over` for a file or page whose size needs no qualifier after the byte count. */
+const PLAIN = '';
+
 const over = (what: string, bytes: number, limit: number): string =>
   `${fmt(bytes)} B${what} exceeds the limit of ${fmt(limit)} B`;
 
@@ -81,7 +85,7 @@ export const budgetProblems = (pages: readonly Page[], sizes: Sizes, dist: Dist)
       const { html, css, scripts, weight } = measure(page, sizes, dist);
       return [
         ...(html > LIMITS.html
-          ? [problem(page.file, 'html-budget', over('', html, LIMITS.html))]
+          ? [problem(page.file, 'html-budget', over(PLAIN, html, LIMITS.html))]
           : []),
         ...(css > LIMITS.css
           ? [problem(page.file, 'css-budget', over(' of CSS', css, LIMITS.css))]
@@ -90,17 +94,17 @@ export const budgetProblems = (pages: readonly Page[], sizes: Sizes, dist: Dist)
           problem(
             page.file,
             'js-budget',
-            `/${file} (${fmt(sizeOf(sizes, file))} B) is JavaScript, and the budget is 0 B`,
+            `/${file} (${fmt(sizeOf(sizes, file))} B) is JavaScript, and the budget is ${fmt(LIMITS.js)} B`,
           ),
         ),
         ...(weight > LIMITS.weight
-          ? [problem(page.file, 'weight-budget', over('', weight, LIMITS.weight))]
+          ? [problem(page.file, 'weight-budget', over(PLAIN, weight, LIMITS.weight))]
           : []),
       ];
     }),
     ...fonts
       .filter((file) => sizeOf(sizes, file) > LIMITS.font)
-      .map((file) => problem(file, 'font-budget', over('', sizeOf(sizes, file), LIMITS.font))),
+      .map((file) => problem(file, 'font-budget', over(PLAIN, sizeOf(sizes, file), LIMITS.font))),
     ...(fontTotal > LIMITS.fonts
       ? [problem(DIST, 'fonts-budget', over(' of fonts', fontTotal, LIMITS.fonts))]
       : []),
@@ -141,7 +145,7 @@ export const budgetSummary = (pages: readonly Page[], sizes: Sizes, dist: Dist):
       LIMITS.font,
     ),
     `budget fonts: total ${fmt(sum(fonts.map((file) => sizeOf(sizes, file))))} B in ${String(fonts.length)} files (limit ${fmt(LIMITS.fonts)})`,
-    `budget js: ${fmt(sum(measures.flatMap(([, m]) => m.scripts.map((file) => sizeOf(sizes, file)))))} B referenced (limit 0)`,
+    `budget js: ${fmt(sum(measures.flatMap(([, m]) => m.scripts.map((file) => sizeOf(sizes, file)))))} B referenced (limit ${fmt(LIMITS.js)})`,
     largest(
       'weight',
       measures.map(([file, m]) => [file, m.weight]),

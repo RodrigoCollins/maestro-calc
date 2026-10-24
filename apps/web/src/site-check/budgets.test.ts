@@ -45,6 +45,7 @@ describe('byte budgets over a valid dist (site-quality › [SQ6])', () => {
       css: 20_480,
       font: 30_720,
       fonts: 92_160,
+      js: 0,
       weight: 163_840,
     });
   });
@@ -182,6 +183,40 @@ describe('page weight (site-quality › [SQ6])', () => {
 
   it('fails 163,841 bytes, naming the page and the limit', () => {
     expect(problemsAfter(atLimit(10_241 + INLINE_CSS))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'weight-budget',
+        message: '163,841 B exceeds the limit of 163,840 B',
+      },
+    ]);
+  });
+});
+
+// A font that only a preload names is still downloaded, so its bytes are part of the weight.
+describe('page weight of a preloaded font that no CSS names (site-quality › [SQ6])', () => {
+  const PRELOADED = '_astro/fonts/e.woff2';
+  const withPreload =
+    (favicon: number) => (dist: Map<string, string>, sizes: Map<string, number>) => {
+      sizes.set('about.html', LIMITS.html);
+      withLinkedCss('_astro/a.css', LIMITS.css - INLINE_CSS)(dist, sizes);
+      dist.set(
+        'about.html',
+        (dist.get('about.html') ?? '').replace(
+          '</head>',
+          `<link rel="preload" as="font" type="font/woff2" href="/${PRELOADED}"></head>`,
+        ),
+      );
+      for (const font of FONTS) sizes.set(font, 10_000);
+      sizes.set(PRELOADED, 30_000);
+      sizes.set('favicon.svg', favicon);
+    };
+
+  it('passes 163,840 bytes when the preloaded font is counted', () => {
+    expect(problemsAfter(withPreload(32_400 + INLINE_CSS))).toEqual([]);
+  });
+
+  it('fails 163,841 bytes, which only the preloaded font can bring over the limit', () => {
+    expect(problemsAfter(withPreload(32_401 + INLINE_CSS))).toEqual([
       {
         file: 'about.html',
         rule: 'weight-budget',
