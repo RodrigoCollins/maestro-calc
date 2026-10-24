@@ -8,6 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "check:site": "node scripts/check-site.ts",
     "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
