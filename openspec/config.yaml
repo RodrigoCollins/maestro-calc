@@ -22,12 +22,15 @@ testing:
   coverage:
     available: true      # @vitest/coverage-v8; thresholds: core 100, data/i18n 90
     command: "npm run test:coverage"
+  lighthouse:
+    available: true
+    command: "npm run lighthouse"   # tooling/site-browser: lhci autorun over 6 pages; a11y/SEO/best-practices >= 0.95 and CLS <= 0.01 block, performance warns
   mutation:
     available: true      # Stryker 10 command runner over packages/core (vitest-runner incompatible with vitest 5)
     command: "npm run mutation"   # thresholds high 95 / low 90 / break 90, STRYKER=1 gives 50 property runs
   site_check:
     available: true
-    command: "npm run check:site"   # built-HTML rules over apps/web/dist (after npm run build); 100 percent covered in apps/web/src/site-check
+    command: "npm run check:site"   # built-HTML rules over apps/web/dist (after npm run build); 100 percent covered in apps/web/src/site-check; byte budgets: HTML 40,960, CSS 20,480, woff2 30,720 each and 92,160 together, JS 0, page weight 163,840; Spanish glyph coverage from the woff2 cmap
   quality:
     linter: { available: true, command: "npm run lint" }   # eslint, typescript-eslint strictTypeChecked, --max-warnings=0
     type_checker: { available: true, command: "npm run typecheck" }   # tsc --noEmit per package program (src purity gate + tests), astro check for web, root tooling files (JS configs are linted, not type-checked: checkJs is a tracked follow-up); "npm run check" is an alias
