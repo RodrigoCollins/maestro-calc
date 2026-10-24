@@ -1,5 +1,6 @@
-import { getEntry } from 'astro:content';
 import { describe, expect, it } from 'vitest';
+import { readEntries } from '../contract/content.ts';
+import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { LOCALE_TAGS, LOCALES, ROUTES, urlOf, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
@@ -8,6 +9,7 @@ import { hasWord, visibleText } from '../site-check/dom.ts';
 import TrustPageView from './TrustPageView.astro';
 
 const trustIds = Object.keys(ROUTES).filter((id): id is PageId => id !== 'home');
+const entries = readEntries(fromRoot('apps/web/src/content/pages'));
 const pages = trustIds.flatMap((id) => LOCALES.map((locale) => ({ id, locale })));
 const render = ({ id, locale }: { id: PageId; locale: 'en' | 'es' }) =>
   renderComponent(TrustPageView, { id, locale }, { partial: false });
@@ -30,7 +32,9 @@ describe('TrustPageView (trust-pages › Visible update date, Owner-review marki
   // spec: trust-pages › [TP6]
   it.each(pages)('shows the update date of $id in $locale as a time element', async (page) => {
     const document = await render(page);
-    const updated = (await getEntry('pages', `${page.locale}/${page.id}`))?.data.updated ?? '';
+    const updated =
+      entries.find((entry) => entry.path === `${page.locale}/${page.id}.md`)?.fields['updated'] ??
+      '';
     expect(updated).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const times = document.querySelectorAll('main time');
     expect(times).toHaveLength(1);
