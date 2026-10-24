@@ -293,3 +293,18 @@ RES-1 (apt on cache hit), R1-1, R1-2 (HSTS at the zone), R1-4, R1-5, RES-3, RES-
 - `assetProblems` keeps `(pages, dist)` (it needs no site) and `fileSetProblems`/`pagesOf` keep their `(dist, routes)` shape; the three rule families that use the site all take `(pages, site, dist)`.
 - `urlOf` in the routing module still reads the global `SITE.url`, so `Site.config.url` only feeds the Organization url check.
 - Task 8.8 text in `tasks.md` still lists `.lighthouseci`; PR 11 adds it.
+
+## G2 Judgment Day
+
+Both blind judges (A and B, full sweep after a completion request) returned **APPROVED** on `b60556c..d72a40f`, with no CRITICAL or MAJOR finding, so there is no Judgment Day fix round. Verified by the orchestrator: JD-A-1 (`npx --prefix tooling/site-browser playwright`) resolves the pinned 1.64.1 locally; the first real CI run confirms it.
+
+### Follow-ups for group 3 (do first, before the trust pages)
+
+- **JD-1 (both judges, WARNING)**: `site-check/content.ts` owner-review markers match substrings (`draft`, `borrador`) over the whole HTML, so copy such as "drafting" or "borradores" would fail `check:site`. Match whole words (and scope to visible text plus frontmatter), with a benign-substring test. The same applies to the `\b(errors|calc)\.[a-z]` scan (`calc.example`).
+- **JD-2 (B, WARNING)**: `scripts/check-site.ts` resolves a relative directory against the workspace cwd and echoes the typed argument; print the resolved path and test a relative argument.
+- **JD-3 (A, WARNING)**: the e2e foreign-origin / no-script / CSP-violation test runs only on routable pages; also run it on the two 404 responses [SQ5, SQ14, SS19].
+- **JD-4 (A)**: assert in `headers.contract.test.ts` that no `_headers` rule sets `X-Robots-Tag` [SE13].
+- **JD-5 (A, B)**: export the `/es` locale-by-path helper from `routes.ts` and reuse it in `tooling/site-browser/e2e/urls.ts`; drop the unused `_locale` of `notFoundHead`.
+- **JD-6 (A)**: check:site asserts the switch's `lang`, `hreflang` and visible text, or documents that the component test owns them [SR5]; [SR7] round trip asserts 200 per hop.
+- **JD-7 (B)**: tests that pin the one-page table (`links.test.ts:47`, `BaseLayout.test.ts:105`) and `.lighthouseci` absence (`gates.contract.test.ts:527`) must be updated by PR 9 and PR 11.
+- Minor: record why the CSP keeps `style-src 'unsafe-inline'`; record `Person` in the forbidden JSON-LD types in the spec; `networkidle` in `smoke.spec.ts`.
