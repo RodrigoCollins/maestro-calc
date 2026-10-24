@@ -308,3 +308,9 @@ Both blind judges (A and B, full sweep after a completion request) returned **AP
 - **JD-6 (A)**: check:site asserts the switch's `lang`, `hreflang` and visible text, or documents that the component test owns them [SR5]; [SR7] round trip asserts 200 per hop.
 - **JD-7 (B)**: tests that pin the one-page table (`links.test.ts:47`, `BaseLayout.test.ts:105`) and `.lighthouseci` absence (`gates.contract.test.ts:527`) must be updated by PR 9 and PR 11.
 - Minor: record why the CSP keeps `style-src 'unsafe-inline'`; record `Person` in the forbidden JSON-LD types in the spec; `networkidle` in `smoke.spec.ts`.
+
+## G2 CI evidence (PR #83, run 40049239116)
+
+`verify` 2m45s; `site-browser` 1m12s (first real run, green); all mutation shards passed (slowest `format` 6m52s). Merged as `main` `4027573` and verified live: `/` and `/es` 200; `/does-not-exist` and `/es/nada` 404; `/sitemap.xml` and `/robots.txt` 200; CSP and `nosniff` served; the only `<script>` is the ld+json block. Tasks 8.14 and SX8 satisfied; the G2 exit tasks 5.10, 6.8, 7.19 and 8.15 are ticked (four reviewers PASS, correction round 1, Judgment Day APPROVED).
+
+Group 3 (PR 9 to PR 11 plus the G2 follow-ups JD-1..JD-7) runs on ONE branch, `feat/web-shell-g3-trust-pages-final`, created from `main` `4027573`. Nothing pushed, no PR opened, `gentle-ai` not run. Sections follow below.
