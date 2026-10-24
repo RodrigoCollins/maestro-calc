@@ -520,9 +520,10 @@ describe('tooling/site-browser stays outside the repository gates (site-quality,
       'tooling/site-browser/playwright-report',
       'tooling/site-browser/test-results',
       'tooling/site-browser/.wrangler',
-      '.lighthouseci',
     ]) {
       expect(ignores, entry).toContain(entry);
     }
+    // PR 11 adds `.lighthouseci` with the step that writes it.
+    expect(ignores).not.toContain('.lighthouseci');
   });
 });
