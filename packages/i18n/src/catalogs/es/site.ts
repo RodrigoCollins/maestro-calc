@@ -14,6 +14,8 @@ export const esSite = {
   'site.footer.contact': 'Contacto',
   'site.footer.contactLabel': 'Escríbenos a',
   'page.home.heading': 'Maestro Calc',
+  'page.home.intro':
+    'Calcula tu obra y sabe qué comprar. Estamos preparando las primeras calculadoras y explicaremos cómo sale cada número.',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
     'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe exactamente qué comprar.',
