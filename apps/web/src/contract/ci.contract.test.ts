@@ -370,6 +370,12 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(install[0]).not.toMatch(/firefox|webkit/);
   });
 
+  it('typechecks the tooling package before it runs the browser tests', () => {
+    const typecheck = runs.indexOf('npm run typecheck --prefix tooling/site-browser');
+    expect(typecheck).toBeGreaterThan(runs.indexOf('npm ci --prefix tooling/site-browser'));
+    expect(typecheck).toBeLessThan(runs.indexOf('npm run test:e2e'));
+  });
+
   it('runs the browser tests and uploads reports only on failure', () => {
     expect(runs).toContain('npm run test:e2e');
     const uploads = steps.filter((candidate) =>
