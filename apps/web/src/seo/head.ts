@@ -27,7 +27,7 @@ export const headFor = (id: PageId, locale: Locale, text: SiteText): PageHead =>
 });
 
 /** The not-found head: no canonical and no alternates, so nothing points search engines at it. */
-export const notFoundHead = (_locale: Locale, text: SiteText): NotFoundHead => ({
+export const notFoundHead = (text: SiteText): NotFoundHead => ({
   title: text('page.notFound.title'),
   description: text('page.notFound.description'),
   robots: 'noindex',

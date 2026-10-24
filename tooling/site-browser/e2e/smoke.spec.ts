@@ -2,8 +2,8 @@ import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
-import { LOCALES } from '../../../apps/web/src/routing/routes.ts';
-import { langOf, routable, unknown } from './urls.ts';
+import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
+import { langOf, notFoundSamples, routable, unknown } from './urls.ts';
 
 const headersFile = readFileSync(
   new URL('../../../apps/web/public/_headers', import.meta.url),
@@ -15,6 +15,26 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
+
+const CLEAN = { foreign: [], scripts: [], violations: [] };
+
+/** Visits `path` and reports every request to another origin, every script and every CSP message. */
+const loadedFromElsewhere = async (page: Page, baseURL: string | undefined, path: string) => {
+  const origin = new URL(baseURL ?? '').origin;
+  const foreign: string[] = [];
+  const scripts: string[] = [];
+  const violations: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).origin !== origin) foreign.push(request.url());
+    if (request.resourceType() === 'script') scripts.push(request.url());
+  });
+  page.on('console', (message) => {
+    if (/content security policy/i.test(message.text())) violations.push(message.text());
+  });
+  await page.goto(path);
+  await page.waitForLoadState('networkidle');
+  return { foreign, scripts, violations };
+};
 
 /** Everything the keyboard can reach in the shell: skip link, header, footer. */
 const shellLinks = (page: Page) => page.locator('a.skip-link, header a, footer a');
@@ -48,24 +68,7 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         page,
         baseURL,
       }) => {
-        const origin = new URL(baseURL ?? '').origin;
-        const foreign: string[] = [];
-        const scripts: string[] = [];
-        const violations: string[] = [];
-        page.on('request', (request) => {
-          if (new URL(request.url()).origin !== origin) foreign.push(request.url());
-          if (request.resourceType() === 'script') scripts.push(request.url());
-        });
-        page.on('console', (message) => {
-          if (/content security policy/i.test(message.text())) violations.push(message.text());
-        });
-        await page.goto(path);
-        await page.waitForLoadState('networkidle');
-        expect({ foreign, scripts, violations }).toEqual({
-          foreign: [],
-          scripts: [],
-          violations: [],
-        });
+        expect(await loadedFromElsewhere(page, baseURL, path)).toEqual(CLEAN);
       });
 
       test('shows a skip link on the first Tab and Enter jumps to main', async ({ page }) => {
@@ -87,7 +90,7 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         await page.goto(path);
         const count = await shellLinks(page).count();
         expect(count).toBeGreaterThanOrEqual(3);
-        const locale = LOCALES.find((candidate) => langOf(path).startsWith(candidate)) ?? 'en';
+        const locale = localeOfPath(path);
         const hrefs = await shellLinks(page).evaluateAll((links) =>
           links.map((link) => link.getAttribute('href')),
         );
@@ -146,6 +149,17 @@ test.describe('unknown paths (site-routing-i18n › [SR11], [SR12])', () => {
         await expect(page.locator('main a')).toBeVisible();
       });
     }
+  }
+});
+
+test.describe('the 404 responses load nothing foreign (site-quality › [SQ5], [SQ14], site-shell › [SS19])', () => {
+  for (const path of notFoundSamples) {
+    test(`${path} loads nothing from another origin, no script and no CSP violation`, async ({
+      page,
+      baseURL,
+    }) => {
+      expect(await loadedFromElsewhere(page, baseURL, path)).toEqual(CLEAN);
+    });
   }
 });
 

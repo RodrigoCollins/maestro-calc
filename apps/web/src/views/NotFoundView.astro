@@ -12,7 +12,7 @@ const { locale } = Astro.props;
 const text = siteText(locale);
 ---
 
-<BaseLayout {locale} id={NOT_FOUND_ID} head={notFoundHead(locale, text)}>
+<BaseLayout {locale} id={NOT_FOUND_ID} head={notFoundHead(text)}>
   <h1>{text('page.notFound.heading')}</h1>
   <p>{text('page.notFound.body')}</p>
   <a class="home-link tap-target" href={pathOf('home', locale)}>
