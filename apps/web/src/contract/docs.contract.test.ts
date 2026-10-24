@@ -37,6 +37,15 @@ describe('docs reflect the site scripts (monorepo-workspace › [MWW5])', () => 
     expect(agents).toContain('npm run lighthouse');
   });
 
+  it('lists the root scripts as bullets, one per script, and names the one pinned count', () => {
+    const bullets = agents.split('\n').filter((line) => line.startsWith('- `npm'));
+    for (const script of ['dev', 'build', 'check:site', 'test:e2e', 'lighthouse', 'verify']) {
+      expect(bullets.filter((line) => line.startsWith(`- \`npm run ${script}\``))).toHaveLength(1);
+    }
+    expect(agents).toContain('end-state.contract.test.ts');
+    expect(agents).toMatch(/only pinned count/);
+  });
+
   it('tells a newcomer how to install the browser tooling and why it is outside the workspaces', () => {
     expect(agents).toContain('npm ci --prefix tooling/site-browser');
     expect(agents).toContain('playwright install');
