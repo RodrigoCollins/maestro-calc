@@ -346,3 +346,34 @@ Commits: `d8f26cf` feat(web) cookie, storage and third-party facts in check:site
 `npm run verify` exit 0, 2272 tests (125 files); `check:site` `checked 14 pages`, `pending ownerReview entries: 10`; `fd -e html . apps/web/dist` 14 files; `hello@` absent from `dist`; `npm run test:e2e` 110 passed (12 routable paths without redirect, the language round trip with a 200 per hop, axe on the 12 routable and 2 not-found pages).
 
 Deviations: (1) 10.4 lives in `BaseLayout.test.ts` and `links.test.ts` (see the task). (2) The third rule of 10.5 reports `third-party-origin` for text assets (`.css`, `.js`, `.mjs`, `.json`, `.map`); the older `third-party` rule still reports the same CSS `@import` against the page, so a stylesheet pointing off-origin is named twice (file and page), which is intended. (3) The ICW4 seed uses an id that is not in the table (`pricing`) once `contact` became real. (4) Copy states only today's facts: Cloudflare hosting with standard request logs, no cookies, no analytics, no advertising, no accounts, no forms, mail used only to reply; terms assert no governing law, entity or address; contact promises no response time. All ten entries are `ownerReview: pending`.
+
+### PR 11 (budgets, glyph check, Lighthouse)
+
+Commits: `f6d2061` feat(web) byte budgets · `3faf183` feat(web) woff2 cmap reader · `490c086` feat(web) budgets and glyphs enforced in check:site · `182e088` docs(repo) budgets and Lighthouse documented · `b9bb2d3` ci: Lighthouse CI in the site-browser job. PR 11 boundary (code tip): `b9bb2d3`. Changed lines vs the PR 10 code tip `9fd870f` (lockfiles and openspec excluded): 1,281 (1,254+, 27-); `budgets.ts` 151, `woff2-cmap.ts` 270 and the tests carry most of it.
+
+Evidence:
+
+- `npm run verify` exit 0, 2328 tests (128 files); `site-check` 100/100/100/100. `check:site` prints `checked 14 pages`, the six `budget` lines (largest HTML `/es/sobre-nosotros.html` 8,452 B; CSS 4,545 B; largest font 22,772 B and four fonts 89,720 B; JS 0 B; largest page weight `/es/sobre-nosotros.html` 98,462 B) and `pending ownerReview entries: 10`.
+- `npm run test:e2e` 110 passed. `npm run lighthouse` exit 0; every page scores 100 for performance, accessibility, best practices and SEO, CLS 0, LCP 1.2 s (mobile preset, one run, local Chrome). Negative proofs: SEO 1.01 at `error` exits 1; performance 1.01 at `warn` exits 0 with a warning.
+- Font swap layout shift (RES-1): measured with all woff2 delayed 0, 1.5 and 4 s on five pages at 390 px: 0 except 0.0005 on `/privacy`; no calibration of the 700-weight fallback needed.
+- Mutation: no `packages/core` or `packages/data` file changed, so it was not run locally (the CI matrix colds on the lockfile change of the tooling package only if the root lockfile changed; it did not).
+
+Deviations: (1) `budgetProblems(pages, sizes, dist)` and `glyphProblems(fonts)` take byte maps (`Binary`) the CLI reads from disk, because `Dist` holds text only; `checkSite` has a third parameter. (2) The page-weight boundary test uses a 10,240 B favicon plus the inline CSS length to reach exactly 163,840, since the other limits sum to 153,600. (3) `@lhci/cli` 0.15.1 brings a dev-only tree with 19 reported advisories (`npm audit` in `tooling/site-browser`; zero with `--omit=dev`); it runs in CI only and never ships. (4) Lighthouse starts the server with `WRANGLER_SEND_METRICS=false` inside `startServerCommand` (POSIX shell). (5) A few commit subjects are 76 to 81 characters (the earlier informal 74 limit); no commit lint exists. (6) The `site-browser` CI wall time with Lighthouse is unmeasured until the PR run (the Lighthouse run alone was about 70 s locally).
+
+## Group 3 totals and state
+
+- Commits since `main` `4027573`: see `git log 4027573..HEAD`; SX4 is clean (`git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` is empty). Code boundaries: JD follow-ups `3d27d9d`, PR 9 `6f34a5c`, PR 10 `9fd870f`, PR 11 `b9bb2d3`.
+- Changed lines (lockfiles and openspec excluded): JD 300 (240+, 60-), PR 9 959 (918+, 41-), PR 10 481 (467+, 14-), PR 11 1,281 (1,254+, 27-); whole group 3,001 (2,869+, 132-). Every PR section is over 400 (tests carry the lines); the owner accepted one group PR.
+- Open on purpose: exit tasks 9.10, 10.9, 11.11 (SX5 reviewers, SX6 Judgment Day, SX7 PR body, SX8 measured on the PR run), 1.7 and 1.8 (group 1 carry-overs), 2.18, 3.14, 4.9, and F.1/F.2.
+
+### Task F.1: owner checklist (copy into the PR 10 and PR 11 bodies)
+
+| Item | Owner | Date | Result |
+|---|---|---|---|
+| Cloudflare Email Routing: `contacto@maestrocalc.com` forwards to the owner's mailbox (before the contact page deploys) | owner | pending | pending |
+| Email Address Obfuscation (Scrape Shield) off. Post-deploy: `curl -s https://maestrocalc.com/contact \| rg 'cdn-cgi'` returns nothing | owner | pending | pending |
+| Cloudflare Web Analytics JS snippet auto-injection off. Post-deploy: `curl -s https://maestrocalc.com/ \| rg 'cloudflareinsights\|<script'` shows only the JSON-LD block | owner | pending | pending |
+| `site-browser` added as a required status check on `main` next to `verify` and `mutation-gate` (its first green run was on PR #83, 1m12s) | owner | pending | pending |
+| Post-deploy smoke: `/x` is a 404 in English, `/es/x` a 404 in Spanish, `/es/` answers 307 to `/es`, one response carries the `_headers` values; submit `/sitemap.xml` in Search Console | owner | pending | pending |
+| Read the 10 trust entries (`apps/web/src/content/pages/{en,es}/*.md`) and flip `ownerReview: pending` to `approved` in each; `check:site` then prints `pending ownerReview entries: 0` (it prints 10 today) | owner | pending | pending |
+| Decide the open legal facts the copy deliberately leaves out (governing law, entity name, postal address); the terms state none of them today | owner | pending | pending |
