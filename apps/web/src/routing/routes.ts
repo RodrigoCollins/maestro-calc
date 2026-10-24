@@ -38,8 +38,11 @@ export interface StaticPath<Id extends string = PageId> {
   readonly props: { readonly id: Id; readonly locale: Locale };
 }
 
-/** The locales, in `LOCALE_TAGS` order. */
-export const LOCALES = Object.keys(LOCALE_TAGS) as Locale[];
+/**
+ * The locales, in `LOCALE_TAGS` order. Listed by hand rather than read from `Object.keys`, which is
+ * typed `string[]`; `routes.test-d.ts` fails when the tuple and `Locale` disagree.
+ */
+export const LOCALES = ['en', 'es'] as const satisfies readonly Locale[];
 
 // Lowercase ASCII segments joined by single slashes, no trailing slash; the root is `/`.
 const PATH_SHAPE = /^\/([a-z0-9-]+(\/[a-z0-9-]+)*)?$/;

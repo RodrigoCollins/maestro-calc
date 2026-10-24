@@ -1,6 +1,7 @@
+import type { Locale } from '@maestro-calc/i18n';
 import type { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { describe, expectTypeOf, it } from 'vitest';
-import type { PageId, ShellPageId } from './routes.ts';
+import type { LOCALES, PageId, ShellPageId } from './routes.ts';
 
 describe('route ids against the site catalog (site-seo › Titles and descriptions)', () => {
   it('has a title and a description key in the English site module for every page id', () => {
@@ -19,5 +20,12 @@ describe('route ids against the site catalog (site-seo › Titles and descriptio
   it('adds exactly the not-found page to the routable ids for the shell', () => {
     expectTypeOf<ShellPageId>().toEqualTypeOf<PageId | 'notFound'>();
     expectTypeOf<string>().not.toExtend<ShellPageId>();
+  });
+});
+
+describe('the locale list (G1 review carry-over: no cast)', () => {
+  it('is a readonly tuple of exactly the locales, so a new locale is a type error until it is listed', () => {
+    expectTypeOf<typeof LOCALES>().toEqualTypeOf<readonly ['en', 'es']>();
+    expectTypeOf<(typeof LOCALES)[number]>().toEqualTypeOf<Locale>();
   });
 });
