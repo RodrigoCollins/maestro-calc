@@ -1,0 +1,21 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteText } from '../lib/site-text.ts';
+import { NOT_FOUND_ID, pathOf } from '../routing/routes.ts';
+import { notFoundHead } from '../seo/head.ts';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const text = siteText(locale);
+---
+
+<BaseLayout {locale} id={NOT_FOUND_ID} head={notFoundHead(locale, text)}>
+  <h1>{text('page.notFound.heading')}</h1>
+  <p>{text('page.notFound.body')}</p>
+  <a class="home-link tap-target" href={pathOf('home', locale)}>
+    {text('page.notFound.homeLink')}
+  </a>
+</BaseLayout>

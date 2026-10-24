@@ -14,6 +14,9 @@ export const enSite = {
   'page.home.title': 'Maestro Calc: jobsite calculators',
   'page.home.description':
     'Jobsite calculators for builders and homeowners in the US. Enter your measurements and see exactly what to buy.',
+  'page.notFound.heading': 'Page not found',
+  'page.notFound.body': 'The page you are looking for does not exist or has moved.',
+  'page.notFound.homeLink': 'Go to the home page',
   'page.notFound.title': 'Page not found | Maestro Calc',
   'page.notFound.description':
     'The page you are looking for does not exist or has moved. Go back to the Maestro Calc home page.',

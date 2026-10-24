@@ -17,6 +17,9 @@ export const esSite = {
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
     'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe exactamente qué comprar.',
+  'page.notFound.heading': 'Página no encontrada',
+  'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
+  'page.notFound.homeLink': 'Ir a la página de inicio',
   'page.notFound.title': 'Página no encontrada | Maestro Calc',
   'page.notFound.description':
     'La página que buscas no existe o cambió de lugar. Vuelve a la página de inicio de Maestro Calc.',
