@@ -17,6 +17,9 @@ import { SITE } from '../../site.config.ts';
 import { fileOf } from '../files.ts';
 import type { Dist, Site } from '../types.ts';
 
+/** The `updated` date every fixture entry carries. */
+export const UPDATED = '2026-10-23';
+
 /** A table with several pages, so link, fragment and reciprocity rules have something to check. */
 export const FIXTURE_ROUTES = {
   home: { en: '/', es: '/es' },
@@ -42,7 +45,17 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
       ]),
     ),
   });
-  return { routes, config: SITE, catalogs: { en: catalogOf('en'), es: catalogOf('es') } };
+  const updates = Object.fromEntries(
+    Object.keys(routes)
+      .filter((id) => id !== 'home')
+      .flatMap((id) => LOCALES.map((locale) => [`${locale}/${id}`, UPDATED])),
+  );
+  return {
+    routes,
+    config: SITE,
+    catalogs: { en: catalogOf('en'), es: catalogOf('es') },
+    updates,
+  };
 };
 
 /** The CSS of a valid page: the palette, a light scheme and four swapped same-origin fonts. */
@@ -59,6 +72,12 @@ const NAV_LABEL = 'Main navigation';
 
 /** The text each page shows as its h1; the check only needs it to be non-empty. */
 const headingOf = (id: string): string => `Heading of ${id}`;
+
+/** The visible update date of a trust page (the home and not-found pages have none). */
+const updatedLine = (id: string, locale: Locale, site: Site): string => {
+  const updated = site.updates[`${locale}/${id}`];
+  return updated === undefined ? '' : `<p><time datetime="${updated}">${updated}</time></p>`;
+};
 
 /** One valid built page for `id` in `locale`, shaped like the Astro output. */
 export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()): string => {
@@ -93,7 +112,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<header><a href="${pathOf('home', locale, routes)}">Maestro Calc</a>`,
     `<nav aria-label="${NAV_LABEL}">${headerLinks === '' ? '' : `<ul>${headerLinks}</ul>`}`,
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
-    `<main id="main"><h1>${headingOf(id)}</h1></main>`,
+    `<main id="main"><h1>${headingOf(id)}</h1>${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

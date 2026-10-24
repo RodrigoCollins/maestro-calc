@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentProblems, countPending, OLD_ADDRESS } from './content.ts';
+import { contentProblems, countPending, OLD_ADDRESS, updatedOf } from './content.ts';
 import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
 import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
@@ -402,5 +402,73 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
     expect(problemsAfter({ 'about.html': intoMain(block('{"@type":"Organization"}')) })).toEqual(
       [],
     );
+  });
+});
+
+describe('trust page update date (trust-pages › [TP6] built side)', () => {
+  const dateOf = (about: string) => (html: string) =>
+    html.replace(/<time datetime="[^"]*">/, `<time datetime="${about}">`);
+
+  it('accepts a time element equal to the entry date on every trust page', () => {
+    expect(problemsAfter()).toEqual([]);
+  });
+
+  it('names a page whose time differs from its entry', () => {
+    expect(problemsAfter({ 'about.html': dateOf('2026-10-22') })).toEqual([
+      {
+        file: 'about.html',
+        rule: 'updated',
+        message: 'time datetime "2026-10-22" is not the entry date 2026-10-23 of en/about',
+      },
+    ]);
+  });
+
+  it('names the Spanish counterpart by its own entry', () => {
+    expect(
+      problemsAfter({ 'es/sobre-nosotros.html': dateOf('2025-01-01') }).map(
+        ({ file, message }) => ({ file, message }),
+      ),
+    ).toEqual([
+      {
+        file: 'es/sobre-nosotros.html',
+        message: 'time datetime "2025-01-01" is not the entry date 2026-10-23 of es/about',
+      },
+    ]);
+  });
+
+  it('fails a trust page without a time element or with two', () => {
+    const none = (html: string) => html.replace(/<p><time[^>]*>[^<]*<\/time><\/p>/, '');
+    const two = (html: string) =>
+      html.replace('</main>', '<time datetime="2026-10-23">x</time></main>');
+    expect(rulesOf(problemsAfter({ 'privacy.html': none }), 'privacy.html')).toEqual(['updated']);
+    expect(rulesOf(problemsAfter({ 'privacy.html': two }), 'privacy.html')).toEqual(['updated']);
+  });
+
+  it('fails a trust page that has no content entry', () => {
+    const site = fixtureSite();
+    const dist = validDist(site);
+    const updates = Object.fromEntries(
+      Object.entries(site.updates).filter(([key]) => key !== 'en/about'),
+    );
+    expect(
+      contentProblems(pagesOf(dist, FIXTURE_ROUTES), { ...site, updates }, dist).filter(
+        ({ file }) => file === 'about.html',
+      ),
+    ).toEqual([{ file: 'about.html', rule: 'updated', message: 'no content entry for en/about' }]);
+  });
+
+  it('ignores the home and not-found pages', () => {
+    const withTime = (html: string) =>
+      html.replace('</main>', '<time datetime="1999-01-01">x</time></main>');
+    expect(problemsAfter({ 'index.html': withTime, '404.html': withTime })).toEqual([]);
+  });
+
+  it('reads the date from the frontmatter, with or without quotes', () => {
+    expect(updatedOf('---\nid: about\nupdated: 2026-10-23\nownerReview: pending\n---\n# A')).toBe(
+      '2026-10-23',
+    );
+    expect(updatedOf('---\nupdated: "2026-10-23"\n---\n')).toBe('2026-10-23');
+    expect(updatedOf('---\nid: about\n---\nupdated: 2026-10-23\n')).toBeUndefined();
+    expect(updatedOf('# no frontmatter')).toBeUndefined();
   });
 });

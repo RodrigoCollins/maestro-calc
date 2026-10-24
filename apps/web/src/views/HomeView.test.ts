@@ -44,6 +44,20 @@ const FORBIDDEN = [
   'estrellas',
 ];
 
+describe('HomeView links (trust-pages › [TP7])', () => {
+  it.each([
+    ['en', ['/methodology', '/about'], ['How we calculate', 'About Maestro Calc']],
+    ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Cómo calculamos', 'Sobre Maestro Calc']],
+  ] as const)(
+    'links the methodology and about pages from the %s home',
+    async (locale, hrefs, labels) => {
+      const links = (await render(locale)).querySelectorAll('main a[href]');
+      expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
+      expect(links.map((link) => link.text.trim())).toEqual(labels);
+    },
+  );
+});
+
 describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
   it.each([
     ['en', enSite],
@@ -56,7 +70,8 @@ describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
 
   it.each(['en', 'es'] as const)('lists no upcoming calculators on the %s home', async (locale) => {
     const main = (await render(locale)).querySelector('main');
-    expect(main?.querySelectorAll('p')).toHaveLength(1);
+    // the introduction, then one line with the two trust-page links
+    expect(main?.querySelectorAll('p')).toHaveLength(2);
     expect(main?.querySelectorAll('ul, ol')).toHaveLength(0);
   });
 

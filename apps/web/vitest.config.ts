@@ -11,6 +11,7 @@ export default getViteConfig(
       // The first ESLint probe in the contract tests is slow on CI.
       testTimeout: 30_000,
       include: ['src/**/*.test.ts'],
+      globalSetup: ['./vitest.global-setup.ts'],
       typecheck: {
         enabled: true,
         include: ['src/**/*.test-d.ts'],

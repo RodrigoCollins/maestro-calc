@@ -13,6 +13,7 @@ import { basename, dirname, join } from 'node:path';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { afterAll, describe, expect, it } from 'vitest';
+import { readEntries } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
 import { ROUTES } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
@@ -20,7 +21,16 @@ import { pageCount } from './files.ts';
 import { validDist } from './__testing__/page-fixture.ts';
 
 const script = fromRoot('apps/web/scripts/check-site.ts');
-const site = { routes: ROUTES, config: SITE, catalogs: { en: enSite, es: esSite } };
+// The CLI reads the real content entries, so the expected dates and count derive from them too.
+const entries = readEntries(fromRoot('apps/web/src/content/pages'));
+const site = {
+  routes: ROUTES,
+  config: SITE,
+  catalogs: { en: enSite, es: esSite },
+  updates: Object.fromEntries(
+    entries.map((entry) => [entry.path.replace(/\.md$/, ''), entry.fields['updated'] ?? '']),
+  ),
+};
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {
   rmSync(scratch, { recursive: true, force: true });
@@ -51,14 +61,16 @@ const edited =
     dist.set(file, edit(dist.get(file) ?? ''));
   };
 
+const pending = entries.filter((entry) => entry.fields['ownerReview'] === 'pending').length;
+
 describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', () => {
   it('exits 0 on a valid dist and prints the page count and the pending reviews', () => {
     const { code, out, err } = run(writeDist());
     expect({ code, err }).toEqual({ code: 0, err: '' });
     expect(out).toBe(
-      `check:site: checked ${String(pageCount(ROUTES))} pages\npending ownerReview entries: 0\n`,
+      `check:site: checked ${String(pageCount(ROUTES))} pages\npending ownerReview entries: ${String(pending)}\n`,
     );
-    expect(pageCount(ROUTES)).toBe(4);
+    expect(pageCount(ROUTES)).toBe(2 * Object.keys(ROUTES).length + 2);
   });
 
   it.each([

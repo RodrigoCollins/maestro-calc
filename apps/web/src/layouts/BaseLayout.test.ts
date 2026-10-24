@@ -102,9 +102,20 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     },
   );
 
-  it('lists no header or footer links while only the home page exists', async () => {
+  // spec: site-shell › [SS12] header links
+  it.each([
+    ['en', ['/methodology', '/about'], ['Methodology', 'About']],
+    ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Metodología', 'Sobre nosotros']],
+  ] as const)('lists the header links of the table in %s', async (locale, hrefs, labels) => {
+    const { document } = await render(locale);
+    const links = document.querySelectorAll('header nav li a');
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
+    expect(links.map((link) => link.text.trim())).toEqual(labels);
+  });
+
+  it('lists no footer links while the legal pages are not in the table', async () => {
     const { document } = await render('en');
-    expect(document.querySelectorAll('header ul, footer ul')).toHaveLength(0);
+    expect(document.querySelectorAll('footer ul')).toHaveLength(0);
   });
 
   // spec: site-shell › [SS13] contact text

@@ -58,6 +58,12 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES.home).toEqual({ en: '/', es: '/es' });
   });
 
+  // spec: site-routing-i18n › Route table (methodology and about enter with their pages)
+  it('lists the methodology and about pages with translated Spanish slugs', () => {
+    expect(ROUTES.methodology).toEqual({ en: '/methodology', es: '/es/metodologia' });
+    expect(ROUTES.about).toEqual({ en: '/about', es: '/es/sobre-nosotros' });
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);
@@ -123,6 +129,10 @@ describe('route helpers (site-routing-i18n › Paths, URLs and alternates)', () 
     expect(staticPaths()).toEqual([
       { params: { path: undefined }, props: { id: 'home', locale: 'en' } },
       { params: { path: 'es' }, props: { id: 'home', locale: 'es' } },
+      { params: { path: 'methodology' }, props: { id: 'methodology', locale: 'en' } },
+      { params: { path: 'es/metodologia' }, props: { id: 'methodology', locale: 'es' } },
+      { params: { path: 'about' }, props: { id: 'about', locale: 'en' } },
+      { params: { path: 'es/sobre-nosotros' }, props: { id: 'about', locale: 'es' } },
     ]);
     expect(staticPaths()).toHaveLength(2 * Object.keys(ROUTES).length);
     expect(staticPaths(fixture).map(({ params }) => params.path)).toEqual([

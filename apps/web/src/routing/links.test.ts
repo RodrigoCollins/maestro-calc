@@ -44,8 +44,18 @@ describe('link lists (site-routing-i18n › [SR2]; site-shell › [SS12, SS13])'
     ]);
   });
 
-  it('is empty for the real table while only the home page exists', () => {
-    expect(linksFor(HEADER, 'en')).toEqual([]);
+  it('offers the methodology and about links of the real table in both locales', () => {
+    expect(linksFor(HEADER, 'en')).toEqual([
+      { id: 'methodology', href: '/methodology' },
+      { id: 'about', href: '/about' },
+    ]);
+    expect(linksFor(HEADER, 'es').map(({ href }) => href)).toEqual([
+      '/es/metodologia',
+      '/es/sobre-nosotros',
+    ]);
+  });
+
+  it('has no footer links in the real table until the legal pages exist', () => {
     expect(linksFor(FOOTER, 'es')).toEqual([]);
   });
 });
