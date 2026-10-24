@@ -11,6 +11,8 @@ export const enSite = {
   'site.footer.contact': 'Contact',
   'site.footer.contactLabel': 'Contact us at',
   'page.home.heading': 'Maestro Calc',
+  'page.home.intro':
+    'Jobsite calculators that tell you exactly what to buy. The first calculators are still being built, and we will explain how every number is worked out.',
   'page.home.title': 'Maestro Calc: jobsite calculators',
   'page.home.description':
     'Jobsite calculators for builders and homeowners in the US. Enter your measurements and see exactly what to buy.',
