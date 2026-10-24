@@ -11,7 +11,7 @@ These terms explain how to use Maestro Calc. By using the site, you accept them.
 
 ## Results are estimates
 
-Every result is an estimate. Check it with a qualified professional and your local code before you buy materials or build.
+Every result is an estimate. Check it with a qualified professional and your local building code before you buy materials or build.
 
 ## No warranty
 

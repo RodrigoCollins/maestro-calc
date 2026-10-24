@@ -143,6 +143,11 @@ describe('methodology (trust-pages › [TP9])', () => {
     ).toEqual([]);
   });
 
+  it('words the Spanish commitment as a promise about publication, not a list to follow', () => {
+    expect(bodyOf('es/methodology.md')).not.toContain('seguirá todo lo que sigue');
+    expect(bodyOf('es/methodology.md')).toContain('cumplirá estas reglas cuando se publique');
+  });
+
   it('keeps the corrections links on real paths of the table', () => {
     expect(corrections.en).toBe(`](${pathOf('about', 'en')}#corrections)`);
     expect(corrections.es).toBe(`](${pathOf('about', 'es')}#correcciones)`);
@@ -189,6 +194,26 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
     },
   );
 
+  it.each([
+    ['en', 'exactly what to buy', 'estimate what to buy'],
+    ['es', 'exactamente qué comprar', 'estiman qué comprar'],
+  ] as const)('promises estimates, not exact purchases, in %s', (locale, promise, estimate) => {
+    const body = bodyOf(`${locale}/about.md`);
+    expect(body).not.toContain(promise);
+    expect(body).toContain(estimate);
+  });
+
+  it.each([
+    ['en', /will cite its sources/],
+    ['es', /citará sus fuentes/],
+  ] as const)('says in %s that sources will appear on calculator pages', (locale, future) => {
+    expect(sectionOf(bodyOf(`${locale}/about.md`), anchors[locale][1])).toMatch(future);
+  });
+
+  it.each(LOCALES)('explains in a comment why %s headings use raw h2 elements (TP10)', (locale) => {
+    expect(bodyOf(`${locale}/about.md`)).toMatch(/<!--[^>]*anchor[^>]*-->|<!--[^>]*ancla[^>]*-->/);
+  });
+
   it.each(LOCALES)('explains how to report an error and the dated log in %s', (locale) => {
     const section = sectionOf(bodyOf(`${locale}/about.md`), anchors[locale][2]);
     expect(section).toContain(SITE.contactEmail);
@@ -206,8 +231,13 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
 
 describe('privacy (trust-pages › [TP13], [TP14])', () => {
   const required = {
-    en: ['Cloudflare', 'does not use cookies', 'before we add analytics or advertising'],
-    es: ['Cloudflare', 'no usa cookies', 'antes de añadir analítica o publicidad'],
+    en: [
+      'Cloudflare',
+      'does not use cookies',
+      'Do Not Track',
+      'before we add analytics or advertising',
+    ],
+    es: ['Cloudflare', 'no usa cookies', 'No rastrear', 'antes de añadir analítica o publicidad'],
   } as const;
   const forbidden = [
     'Google Analytics',
@@ -237,8 +267,8 @@ describe('privacy (trust-pages › [TP13], [TP14])', () => {
 
 describe('terms and disclaimer (trust-pages › [TP15], [TP16])', () => {
   const required = {
-    en: ['estimates', 'local code', 'as is'],
-    es: ['estimaciones', 'código local', 'tal cual'],
+    en: ['estimates', 'local building code', 'as is'],
+    es: ['estimaciones', 'código de construcción local', 'tal cual'],
   } as const;
   const forbidden = ['governed by', 'jurisdiction', 'LLC', 'Inc.', 'se rige por', 'jurisdicción'];
 
@@ -263,6 +293,13 @@ describe('contact (trust-pages › [TP17])', () => {
     expect(body).toContain(prompt[locale]);
     expect(present(body, ['<form', '<script'])).toEqual([]);
   });
+
+  it.each(LOCALES)(
+    'says the prompt once, so the paragraph below it does not repeat it in %s',
+    (locale) => {
+      expect(bodyOf(`${locale}/contact.md`).split(prompt[locale])).toHaveLength(2);
+    },
+  );
 
   it.each(LOCALES)('promises no response time in %s', (locale) => {
     const body = bodyOf(`${locale}/contact.md`);
