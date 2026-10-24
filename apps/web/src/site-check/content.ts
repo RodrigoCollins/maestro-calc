@@ -108,6 +108,9 @@ const sitemapProblems = (pages: readonly Page[], dist: Dist, site: Site): Proble
       .filter(({ loc }) => !expected.includes(loc))
       .map(({ loc }) => problem('sitemap.xml', 'sitemap', `unexpected URL ${loc}`)),
     ...entries
+      .filter(({ loc }, index) => entries.findIndex((entry) => entry.loc === loc) !== index)
+      .map(({ loc }) => problem('sitemap.xml', 'sitemap', `duplicate URL ${loc}`)),
+    ...entries
       .filter(({ loc }) => loc.includes('?'))
       .map(({ loc }) => problem('sitemap.xml', 'sitemap', `URL ${loc} has a query string`)),
     ...entries.flatMap(({ loc, alternates }) => {
@@ -194,7 +197,7 @@ const jsonLdProblems = (page: Page): Problem[] => {
   } else {
     problems.push(
       ...nodes
-        .map((node) => node['@type'])
+        .flatMap((node) => [node['@type']].flat())
         .filter((type) => typeof type === 'string' && FORBIDDEN_TYPES.includes(type))
         .map((type) => `${String(type)} is not allowed on this page`),
     );

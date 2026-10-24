@@ -62,6 +62,37 @@ describe('language and meta (site-seo › [SS2], site-routing-i18n › [SR4])', 
   });
 });
 
+describe('exactly one of each head element (site-seo › [SS2], [SE3])', () => {
+  it.each([
+    ['meta charset', '<meta charset="utf-8">', 'charset'],
+    [
+      'viewport',
+      '<meta name="viewport" content="width=device-width, initial-scale=1">',
+      'viewport',
+    ],
+  ])('fails a page with a second identical %s', (_name, element, rule) => {
+    expect(
+      rulesOf(
+        problemsAfter({ 'about.html': (h) => h.replace('<title>', `${element}<title>`) }),
+        'about.html',
+      ),
+    ).toEqual([rule]);
+  });
+
+  it('fails a page with a second identical meta description, naming the count', () => {
+    const problems = problemsAfter({
+      'about.html': (h) => h.replace(/(<meta name="description"[^>]*>)/, '$1$1'),
+    });
+    expect(problems).toEqual([
+      {
+        file: 'about.html',
+        rule: 'description',
+        message: 'expected exactly one description, found 2',
+      },
+    ]);
+  });
+});
+
 describe('title (site-seo › [SE1], [SE2])', () => {
   const title = (value: string) => ({ 'page.home.title': value });
 

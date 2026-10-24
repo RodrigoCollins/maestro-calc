@@ -168,6 +168,22 @@ describe('sitemap (site-seo › [SE10], [SE11], [SE12])', () => {
     ]);
   });
 
+  it('fails a URL listed twice', () => {
+    expect(
+      sitemap((xml) => {
+        const entry =
+          /<url><loc>https:\/\/maestrocalc\.com\/about<\/loc>.*?<\/url>/.exec(xml)?.[0] ?? '';
+        return xml.replace('</urlset>', `${entry}</urlset>`);
+      }),
+    ).toEqual([
+      {
+        file: 'sitemap.xml',
+        rule: 'sitemap',
+        message: 'duplicate URL https://maestrocalc.com/about',
+      },
+    ]);
+  });
+
   it('reads XML entities in the URLs', () => {
     expect(
       sitemap((xml) =>
@@ -315,6 +331,27 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
       ).toEqual(['json-ld']);
     },
   );
+
+  it.each([
+    ['a type list', '["Thing","Product"]'],
+    ['a one-item type list', '["Review"]'],
+  ])('forbids a forbidden type inside %s', (_name, types) => {
+    expect(
+      rulesOf(problemsAfter({ 'about.html': intoMain(block(`{"@type":${types}}`)) }), 'about.html'),
+    ).toEqual(['json-ld']);
+    expect(
+      rulesOf(
+        problemsAfter({ 'about.html': intoMain(block(`{"@graph":[{"@type":${types}}]}`)) }),
+        'about.html',
+      ),
+    ).toEqual(['json-ld']);
+  });
+
+  it('accepts a list of allowed types on another page', () => {
+    expect(
+      problemsAfter({ 'about.html': intoMain(block('{"@type":["Organization","Thing"]}')) }),
+    ).toEqual([]);
+  });
 
   it('accepts valid data of an allowed type on another page', () => {
     expect(problemsAfter({ 'about.html': intoMain(block('{"@type":"Organization"}')) })).toEqual(

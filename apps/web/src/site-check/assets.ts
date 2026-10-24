@@ -16,6 +16,7 @@ const FONT_HOSTS = [
 const WOFF2_COUNT = 4;
 const OFF_ORIGIN = /^(?:https?:)?\/\//i;
 const ABSOLUTE = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
+const SCHEME_DECLARATION = /(?<![\w-])color-scheme\s*:([^;}]*)/g;
 const CSS_URL = /url\(\s*["']?([^"')]*)["']?\s*\)/g;
 
 /** The CSS a page carries: its own `<style>` elements and every stylesheet file of `dist`. */
@@ -24,6 +25,13 @@ const cssOf = (page: Page, dist: Dist): string =>
     ...page.root.querySelectorAll('style').map((style) => style.text),
     ...[...dist].filter(([file]) => file.endsWith('.css')).map(([, text]) => text),
   ].join('\n');
+
+/** The URL of every candidate of a `srcset` value: the first token of each comma-separated item. */
+const srcsetUrls = (srcset: string): string[] =>
+  srcset
+    .split(',')
+    .map((candidate) => candidate.trim().split(/\s+/)[0] ?? '')
+    .filter((url) => url !== '');
 
 const urlsIn = (css: string): string[] => Array.from(css.matchAll(CSS_URL), ([, url = '']) => url);
 
@@ -56,6 +64,7 @@ const scriptProblems = (page: Page): Problem[] => [
 const originProblems = (page: Page, css: string): Problem[] => {
   const references = [
     ...attrsOf(page.root, '[src]', 'src'),
+    ...attrsOf(page.root, '[srcset]', 'srcset').flatMap(srcsetUrls),
     ...attrsOf(page.root, 'link[rel~=stylesheet], link[rel~=preload], link[rel~=icon]', 'href'),
     ...urlsIn(css),
   ];
@@ -72,13 +81,16 @@ const originProblems = (page: Page, css: string): Problem[] => {
 
 const styleProblems = (page: Page, css: string): Problem[] => {
   const colours = hexColoursIn(css);
+  const schemes = Array.from(css.matchAll(SCHEME_DECLARATION), ([, value = '']) =>
+    value.replace(/!important/i, '').trim(),
+  );
   return [
     ...PALETTE.filter((colour) => !colours.has(colour)).map((colour) =>
       problem(page.file, 'palette', `the CSS lacks the palette colour ${colour}`),
     ),
-    ...(/color-scheme\s*:\s*light/.test(css)
+    ...(schemes.length > 0 && schemes.every((value) => value === 'light')
       ? []
-      : [problem(page.file, 'color-scheme', 'the CSS must declare color-scheme: light')]),
+      : [problem(page.file, 'color-scheme', 'the CSS must declare color-scheme: light, only')]),
     ...(css.includes('prefers-color-scheme')
       ? [problem(page.file, 'prefers-color-scheme', 'the site has no dark theme')]
       : []),

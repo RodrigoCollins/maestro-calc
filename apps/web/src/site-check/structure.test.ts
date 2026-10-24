@@ -34,6 +34,12 @@ describe('landmarks (site-shell › [SS1])', () => {
     ['a nav label', (h: string) => h.replace(' aria-label="Main navigation"', '')],
     ['a nav label text', (h: string) => h.replace('aria-label="Main navigation"', 'aria-label=""')],
     ['a second nav', (h: string) => h.replace('<main', '<nav aria-label="More"></nav><main')],
+    ['a second nav without a label', (h: string) => h.replace('<main', '<nav></nav><main')],
+    [
+      'a second labelled nav of the same label',
+      (h: string) => h.replace('<main', '<nav aria-label="Main navigation"></nav><main'),
+    ],
+    ['a second main#main', (h: string) => h.replace('</main>', '</main><main id="main"></main>')],
   ])('fails a page without %s', (_name, edit) => {
     expect(rulesOf({ 'about.html': edit }, 'about.html')).toContain('landmarks');
   });
@@ -90,6 +96,21 @@ describe('skip link (site-shell › [SS3])', () => {
           'about.html': (h) =>
             h.replace('<a class="skip-link"', '<a href="/">Home</a><a class="skip-link"'),
         },
+        'about.html',
+      ),
+    ).toEqual(['skip-link']);
+  });
+
+  it.each([
+    ['a button', '<button>x</button>'],
+    ['an input', '<input>'],
+    ['a select', '<select></select>'],
+    ['a textarea', '<textarea></textarea>'],
+    ['an element with a tabindex', '<div tabindex="0">x</div>'],
+  ])('fails a page with %s before the skip link', (_name, markup) => {
+    expect(
+      rulesOf(
+        { 'about.html': (h) => h.replace('<a class="skip-link"', `${markup}<a class="skip-link"`) },
         'about.html',
       ),
     ).toEqual(['skip-link']);

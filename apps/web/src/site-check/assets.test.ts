@@ -35,6 +35,7 @@ describe('zero client JavaScript (site-shell › [SS18])', () => {
     ['a module script', '<script type="module" src="/a.js"></script>', 'script'],
     ['a script without a type', '<script type="">x</script>', 'script'],
     ['an event handler attribute', '<button onclick="go()">x</button>', 'inline-handler'],
+    ['a mixed-case event handler attribute', '<button onClick="go()">x</button>', 'inline-handler'],
     ['an island', '<astro-island></astro-island>', 'astro-island'],
     ['a module preload', '<link rel="modulepreload" href="/a.js">', 'modulepreload'],
   ])('fails a page with %s', (_name, markup, rule) => {
@@ -70,6 +71,28 @@ describe('same-origin subresources (site-shell › [SS9])', () => {
     expect(rulesOf(problemsAfter({ 'about.html': intoMain(markup) }), 'about.html')).toEqual([
       'third-party',
     ]);
+  });
+
+  it.each([
+    ['an absolute candidate', 'https://example.com/a.png 1x, /b.png 2x'],
+    ['a later candidate', '/a.png 1x, //example.com/b.png 2x'],
+    ['a candidate without a descriptor', '/a.png 1x,\n https://example.com/b.png'],
+  ])('fails an image srcset with %s', (_name, srcset) => {
+    expect(
+      rulesOf(
+        problemsAfter({ 'about.html': intoMain(`<img src="/a.png" srcset="${srcset}">`) }),
+        'about.html',
+      ),
+    ).toEqual(['third-party']);
+  });
+
+  it('fails a source srcset to another origin and accepts a same-origin one', () => {
+    const source = (srcset: string) =>
+      intoMain(`<picture><source srcset="${srcset}"><img src="/a.png"></picture>`);
+    expect(
+      rulesOf(problemsAfter({ 'about.html': source('https://example.com/a.avif') }), 'about.html'),
+    ).toEqual(['third-party']);
+    expect(problemsAfter({ 'about.html': source('/a.avif 1x, /b.avif 2x') })).toEqual([]);
   });
 
   it.each(['stylesheet', 'preload', 'icon'])('fails a %s link to another origin', (rel) => {
@@ -141,6 +164,32 @@ describe('palette and colour scheme (site-shell › [SS5], [SS6])', () => {
     expect(problems).toEqual([
       { file: 'about.html', rule: 'palette', message: 'the CSS lacks the palette colour #1FAF5A' },
     ]);
+  });
+
+  it.each([
+    ['light dark', 'color-scheme:light dark'],
+    ['dark', 'color-scheme:dark'],
+    ['lighter', 'color-scheme:lighter'],
+    ['light and a later dark declaration', 'color-scheme:light}.b{color-scheme:dark'],
+  ])('fails a colour scheme that is not exactly light: %s', (_name, declaration) => {
+    expect(
+      rulesOf(
+        problemsAfter({
+          'about.html': withCss(VALID_CSS.replace('color-scheme:light', declaration)),
+        }),
+        'about.html',
+      ),
+    ).toEqual(['color-scheme']);
+  });
+
+  it('accepts a spaced light declaration with an important flag', () => {
+    expect(
+      problemsAfter({
+        'about.html': withCss(
+          VALID_CSS.replace('color-scheme:light', 'color-scheme : light !important'),
+        ),
+      }),
+    ).toEqual([]);
   });
 
   it('requires a light colour scheme and forbids a dark one', () => {
