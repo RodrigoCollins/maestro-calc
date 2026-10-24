@@ -6,7 +6,14 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
 import { SITE } from '../src/site.config.ts';
-import { checkSite, countPending, pageCount, updatedOf } from '../src/site-check/checks.ts';
+import {
+  budgetSummary,
+  checkSite,
+  countPending,
+  pageCount,
+  pagesOf,
+  updatedOf,
+} from '../src/site-check/checks.ts';
 
 const BINARY = new Set([
   '.woff2',
@@ -53,12 +60,24 @@ const updates = Object.fromEntries(
   }),
 );
 
-const problems = checkSite(new Map(filesUnder(dist)), {
+const files = filesUnder(dist);
+const built = new Map(files);
+const site = {
   routes: ROUTES,
   config: SITE,
   catalogs: { en: enSite, es: esSite },
   updates,
-});
+};
+// What the text map cannot hold: every file's byte size and the bytes of each font.
+const binary = {
+  sizes: new Map(files.map(([file]) => [file, statSync(join(dist, file)).size])),
+  fonts: new Map(
+    files
+      .filter(([file]) => file.endsWith('.woff2'))
+      .map(([file]) => [file, readFileSync(join(dist, file))]),
+  ),
+};
+const problems = checkSite(built, site, binary);
 
 if (problems.length > 0) {
   for (const { file, rule, message } of problems) console.error(`${file}: ${rule}: ${message}`);
@@ -67,6 +86,7 @@ if (problems.length > 0) {
 }
 
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
+for (const line of budgetSummary(pagesOf(built, ROUTES), binary.sizes, built)) console.log(line);
 console.log(
   `pending ownerReview entries: ${String(countPending(entries.map(([, text]) => text)))}`,
 );

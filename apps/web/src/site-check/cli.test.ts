@@ -20,6 +20,22 @@ import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { validDist } from './__testing__/page-fixture.ts';
 
+const FONT_DIRECTORIES = ['barlow', 'barlow', 'barlow-condensed', 'barlow-condensed'] as const;
+const FONT_FILES = [
+  'barlow-latin-400-normal.woff2',
+  'barlow-latin-600-normal.woff2',
+  'barlow-condensed-latin-600-normal.woff2',
+  'barlow-condensed-latin-700-normal.woff2',
+] as const;
+/** Real woff2 files: the glyph check reads their cmap and the byte budgets weigh them. */
+const realFont = (index: number): string =>
+  fromRoot(
+    'node_modules/@fontsource',
+    FONT_DIRECTORIES[index] ?? '',
+    'files',
+    FONT_FILES[index] ?? '',
+  );
+
 const script = fromRoot('apps/web/scripts/check-site.ts');
 // The CLI reads the real content entries, so the expected dates and count derive from them too.
 const entries = readEntries(fromRoot('apps/web/src/content/pages'));
@@ -38,7 +54,10 @@ afterAll(() => {
 
 let counter = 0;
 /** Writes the valid dist for the real route table, after `edit`, into a fresh directory. */
-const writeDist = (edit: (dist: Map<string, string>) => void = () => undefined): string => {
+const writeDist = (
+  edit: (dist: Map<string, string>) => void = () => undefined,
+  afterWrite: (dir: string) => void = () => undefined,
+): string => {
   const dist = validDist(site);
   edit(dist);
   counter += 1;
@@ -47,6 +66,10 @@ const writeDist = (edit: (dist: Map<string, string>) => void = () => undefined):
     mkdirSync(dirname(join(dir, file)), { recursive: true });
     writeFileSync(join(dir, file), text);
   }
+  ['a', 'b', 'c', 'd'].forEach((name, index) => {
+    copyFileSync(realFont(index), join(dir, `_astro/fonts/${name}.woff2`));
+  });
+  afterWrite(dir);
   return dir;
 };
 
@@ -63,13 +86,77 @@ const edited =
 
 const pending = entries.filter((entry) => entry.fields['ownerReview'] === 'pending').length;
 
+describe('check:site byte budgets and glyphs (site-quality › [SQ6], [SQ7], [SQ8], site-shell › [SS10])', () => {
+  it('prints the largest page and size per category on a green build [SQ6]', () => {
+    const { code, out } = run(writeDist());
+    expect(code).toBe(0);
+    expect(out).toMatch(/^budget html: largest \/[\w/.-]+\.html [\d,]+ B \(limit 40,960\)$/m);
+    expect(out).toMatch(/^budget css: largest \/[\w/.-]+\.html [\d,]+ B \(limit 20,480\)$/m);
+    expect(out).toMatch(
+      /^budget font: largest \/_astro\/fonts\/[a-d]\.woff2 [\d,]+ B \(limit 30,720\)$/m,
+    );
+    expect(out).toMatch(/^budget fonts: total [\d,]+ B in 4 files \(limit 92,160\)$/m);
+    expect(out).toMatch(/^budget js: 0 B referenced \(limit 0\)$/m);
+    expect(out).toMatch(/^budget weight: largest \/[\w/.-]+\.html [\d,]+ B \(limit 163,840\)$/m);
+  });
+
+  it('exits 1 for an HTML file of 40,961 bytes, naming the file and the limit [SQ7]', () => {
+    const grow = edited('index.html', (html) => {
+      const pad = 40_961 - Buffer.byteLength(html) - '<!---->'.length;
+      return `${html}<!--${'x'.repeat(pad)}-->`;
+    });
+    const { code, err } = run(writeDist(grow));
+    expect(code).toBe(1);
+    expect(err).toContain('index.html: html-budget: 40,961 B exceeds the limit of 40,960 B');
+  });
+
+  it('exits 1 for a referenced JavaScript file, naming it [SQ8]', () => {
+    const { code, err } = run(
+      writeDist((dist) => {
+        dist.set('_astro/x.js', 'x');
+        dist.set(
+          'index.html',
+          (dist.get('index.html') ?? '').replace(
+            '</head>',
+            '<script src="/_astro/x.js"></script></head>',
+          ),
+        );
+      }),
+    );
+    expect(code).toBe(1);
+    expect(err).toContain('index.html: js-budget: /_astro/x.js (1 B) is JavaScript');
+  });
+
+  it('exits 1 for a font without the letter ñ, naming the code point [SS10]', () => {
+    const latinExt = fromRoot(
+      'node_modules/@fontsource/barlow/files/barlow-latin-ext-400-normal.woff2',
+    );
+    const { code, err } = run(
+      writeDist(undefined, (dir) => {
+        copyFileSync(latinExt, join(dir, '_astro/fonts/a.woff2'));
+      }),
+    );
+    expect(code).toBe(1);
+    expect(err).toContain('_astro/fonts/a.woff2: glyphs: U+00F1 is missing from the font');
+  });
+});
+
 describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', () => {
   it('exits 0 on a valid dist and prints the page count and the pending reviews', () => {
     const { code, out, err } = run(writeDist());
     expect({ code, err }).toEqual({ code: 0, err: '' });
-    expect(out).toBe(
-      `check:site: checked ${String(pageCount(ROUTES))} pages\npending ownerReview entries: ${String(pending)}\n`,
-    );
+    const lines = out.trimEnd().split('\n');
+    expect(lines[0]).toBe(`check:site: checked ${String(pageCount(ROUTES))} pages`);
+    expect(lines.at(-1)).toBe(`pending ownerReview entries: ${String(pending)}`);
+    // between the two: one budget line per category
+    expect(lines.slice(1, -1).map((line) => line.split(':')[0])).toEqual([
+      'budget html',
+      'budget css',
+      'budget font',
+      'budget fonts',
+      'budget js',
+      'budget weight',
+    ]);
     expect(pageCount(ROUTES)).toBe(2 * Object.keys(ROUTES).length + 2);
   });
 
