@@ -342,14 +342,14 @@ Deviations: (1) one commit carries the pages, their catalog keys and the `update
 
 ### PR 10 (privacy, terms, contact; pinned end state)
 
-Commits: `d8f26cf` feat(web) cookie, storage and third-party facts in check:site · `9fd870f` feat(web) privacy, terms and contact pages and the pinned end state. PR 10 boundary (code tip): `9fd870f`. Changed lines vs the PR 9 code tip `6f34a5c` (docs excluded): 481 (467+, 14-); the six Markdown files and the catalog keys are 198 of them.
+Commits: `1b2a2ce` feat(web) cookie, storage and third-party facts in check:site · `5ce4940` feat(web) privacy, terms and contact pages and the pinned end state. PR 10 boundary (code tip): `5ce4940`. Changed lines vs the PR 9 code tip `6f34a5c` (docs excluded): 481 (467+, 14-); the six Markdown files and the catalog keys are 198 of them.
 `npm run verify` exit 0, 2272 tests (125 files); `check:site` `checked 14 pages`, `pending ownerReview entries: 10`; `fd -e html . apps/web/dist` 14 files; `hello@` absent from `dist`; `npm run test:e2e` 110 passed (12 routable paths without redirect, the language round trip with a 200 per hop, axe on the 12 routable and 2 not-found pages).
 
 Deviations: (1) 10.4 lives in `BaseLayout.test.ts` and `links.test.ts` (see the task). (2) The third rule of 10.5 reports `third-party-origin` for text assets (`.css`, `.js`, `.mjs`, `.json`, `.map`); the older `third-party` rule still reports the same CSS `@import` against the page, so a stylesheet pointing off-origin is named twice (file and page), which is intended. (3) The ICW4 seed uses an id that is not in the table (`pricing`) once `contact` became real. (4) Copy states only today's facts: Cloudflare hosting with standard request logs, no cookies, no analytics, no advertising, no accounts, no forms, mail used only to reply; terms assert no governing law, entity or address; contact promises no response time. All ten entries are `ownerReview: pending`.
 
 ### PR 11 (budgets, glyph check, Lighthouse)
 
-Commits: `f6d2061` feat(web) byte budgets · `3faf183` feat(web) woff2 cmap reader · `490c086` feat(web) budgets and glyphs enforced in check:site · `182e088` docs(repo) budgets and Lighthouse documented · `b9bb2d3` ci: Lighthouse CI in the site-browser job. PR 11 boundary (code tip): `b9bb2d3`. Changed lines vs the PR 10 code tip `9fd870f` (lockfiles and openspec excluded): 1,281 (1,254+, 27-); `budgets.ts` 151, `woff2-cmap.ts` 270 and the tests carry most of it.
+Commits: `fad9bd7` feat(web) byte budgets · `55a2737` feat(web) woff2 cmap reader · `cb8b731` feat(web) budgets and glyphs enforced in check:site · `9a52189` docs(repo) budgets and Lighthouse documented · `6989c93` ci: Lighthouse CI in the site-browser job. PR 11 boundary (code tip): `6989c93`. Changed lines vs the PR 10 code tip `5ce4940` (lockfiles and openspec excluded): 1,281 (1,254+, 27-); `budgets.ts` 151, `woff2-cmap.ts` 270 and the tests carry most of it.
 
 Evidence:
 
@@ -362,7 +362,7 @@ Deviations: (1) `budgetProblems(pages, sizes, dist)` and `glyphProblems(fonts)` 
 
 ## Group 3 totals and state
 
-- Commits since `main` `4027573`: see `git log 4027573..HEAD`; SX4 is clean (`git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` is empty). Code boundaries: JD follow-ups `3d27d9d`, PR 9 `6f34a5c`, PR 10 `9fd870f`, PR 11 `b9bb2d3`.
+- Commits since `main` `4027573`: see `git log 4027573..HEAD`; SX4 is clean (`git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` is empty). Code boundaries: JD follow-ups `3d27d9d`, PR 9 `6f34a5c`, PR 10 `5ce4940`, PR 11 `6989c93`.
 - Changed lines (lockfiles and openspec excluded): JD 300 (240+, 60-), PR 9 959 (918+, 41-), PR 10 481 (467+, 14-), PR 11 1,281 (1,254+, 27-); whole group 3,001 (2,869+, 132-). Every PR section is over 400 (tests carry the lines); the owner accepted one group PR.
 - Open on purpose: exit tasks 9.10, 10.9, 11.11 (SX5 reviewers, SX6 Judgment Day, SX7 PR body, SX8 measured on the PR run), 1.7 and 1.8 (group 1 carry-overs), 2.18, 3.14, 4.9, and F.1/F.2.
 
@@ -375,5 +375,27 @@ Deviations: (1) `budgetProblems(pages, sizes, dist)` and `glyphProblems(fonts)` 
 | Cloudflare Web Analytics JS snippet auto-injection off. Post-deploy: `curl -s https://maestrocalc.com/ \| rg 'cloudflareinsights\|<script'` shows only the JSON-LD block | owner | pending | pending |
 | `site-browser` added as a required status check on `main` next to `verify` and `mutation-gate` (its first green run was on PR #83, 1m12s) | owner | pending | pending |
 | Post-deploy smoke: `/x` is a 404 in English, `/es/x` a 404 in Spanish, `/es/` answers 307 to `/es`, one response carries the `_headers` values; submit `/sitemap.xml` in Search Console | owner | pending | pending |
+| Cloudflare Bot Fight Mode and Super Bot Fight Mode can set a challenge cookie (`__cf_bm`, `cf_clearance`) on visitors; keep them off, or change the privacy and terms copy ("does not use cookies") before turning them on. Post-deploy: `curl -sI https://maestrocalc.com/ \| rg -i set-cookie` returns nothing (R1-4) | owner | pending | pending |
 | Read the 10 trust entries (`apps/web/src/content/pages/{en,es}/*.md`) and flip `ownerReview: pending` to `approved` in each; `check:site` then prints `pending ownerReview entries: 0` (it prints 10 today) | owner | pending | pending |
 | Decide the open legal facts the copy deliberately leaves out (governing law, entity name, postal address); the terms state none of them today | owner | pending | pending |
+
+## G3 correction round 1
+
+All four review lenses passed; this round folds the minor findings. Strict TDD (`npm test`). First step: `de02e04` and `f603ee6` were squashed (non-interactive `git rebase -i` with `GIT_SEQUENCE_EDITOR`) into `fe08cbb` "docs(repo): tick group 2 exit and PR 9 tasks and record progress"; the tree at the end of that rebase equalled the tree of the previous tip (`1bbd620`), and every later SHA in this file was rewritten to the new one.
+
+| Finding | What changed | Commit |
+|---|---|---|
+| RD-1, RD-2, RD-3, RD-4, R1-2, R1-3, RD-5 | Contact paragraph no longer repeats the prompt; es methodology "cumplirá estas reglas cuando se publique"; about says the calculators "estimate what to buy" / "estiman qué comprar" and that each calculator page "will cite its sources" / "citará sus fuentes"; terms "local building code" / "código de construcción local"; privacy Do Not Track sentence (no operator or retention invented); HTML comment in both about pages explaining raw `h2` anchors (it avoids every owner-review marker; it ships in the built HTML). Pins first in `content.contract.test.ts` (13 red, then green). Home tagline untouched; all entries stay `ownerReview: pending` | `9d70070` |
+| REL-1 | `otherOrigin` ignores the `http://www.w3.org/2000/svg` and `.../1999/xlink` namespace names; new cases `//maestrocalc.com.evil.com` and a longer namespace host (the lookahead pins; green on arrival) | `c7c3895` |
+| REL-2, RD-10 | The woff2 test builder takes a transform `version` (flags bits 6 and 7); a non-glyf table at version 2 and glyf at version 3 pin `version !== 0` (proved red with a mutant); `NUM_TABLES_AT` and `COMPRESSED_SIZE_AT` named, the reserved 2 bytes commented | `f60928d` |
+| REL-3, RD-6, RD-7 | Preloaded font that no CSS names counts in the page weight (proved red with a mutant that drops the preload); `Measure.weight` comment says it includes the HTML; `PLAIN` names the empty `over` qualifier; `LIMITS.js = 0` feeds both messages | `62c91b1` |
+| RD-8, RD-9 | `Binary` is `BuildBytes`, `validBinary` is `validBuildBytes`, `LATIN_FONT` is `latinFont`; fixture comment says the size is stubbed; the fixture resolves the font from `import.meta.dirname` instead of `contract/root.ts` | `0db5d48` |
+| RD-11 | `TrustPageView.test.ts` imports `OWNER_REVIEW_MARKERS` (now exported), `hasWord` and `visibleText`; the date comes from the content entry (`readEntries`, because ESLint cannot resolve `astro:content` in a `.ts` test) and is formatted with `Intl` | `b17507b`, `ad8fc35` |
+| RD-13, RES-5 | AGENTS.md "Root scripts" is a bullet list (text unchanged) and says `end-state.contract.test.ts` is the only pinned count; `docs.contract.test.ts` pins one bullet per script and that line | `88e3b52` |
+| RD-14 | Squash described above | `fe08cbb` |
+| R1-4 | Added to the F.1 owner checklist (Bot Fight Mode cookies) | this docs commit |
+| RES-1 | Decision: Lighthouse keeps `numberOfRuns: 1` to save Actions minutes; no change | none |
+
+Evidence: `npm run verify` exit 0, 2343 tests (128 files; 15 more than before), `site-check` coverage 100; `check:site` checked 14 pages, `pending ownerReview entries: 10`; `npm run build && npm run test:e2e` 110 passed; `npm run lighthouse` exit 0. Changed lines of the round (lockfiles excluded, before this docs commit): 300 (239+, 61-).
+
+Follow-ups (out of scope, not fixed): R1-1 (`@lhci/cli` dev-tree advisories), R1-5, R1-6, R1-7, R1-8, RES-2 (measure the `site-browser` wall time on the PR run), RES-3 and RES-4 (calculator-pages change: Lighthouse representative URLs per template, and `check:site` must cover calculator pages), RES-6, REL-4, REL-5, REL-6 (CRLF: consider `.gitattributes` later), RD-12.
