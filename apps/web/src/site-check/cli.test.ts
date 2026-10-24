@@ -1,7 +1,15 @@
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -90,6 +98,20 @@ describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', 
     const { code, err, out } = run(missing);
     expect({ code, out }).toEqual({ code: 1, out: '' });
     expect(err).toBe(`check:site: ${missing} not found. Run \`npm run build\` first.\n`);
+  });
+
+  it('resolves a relative directory against the working directory and prints the resolved path [JD-2]', () => {
+    const cwd = realpathSync(scratch);
+    const dist = writeDist();
+    const relative = (argument: string) =>
+      spawnSync(process.execPath, [script, argument], { encoding: 'utf8', cwd });
+    const missing = relative('nowhere');
+    expect({ code: missing.status, out: missing.stdout }).toEqual({ code: 1, out: '' });
+    expect(missing.stderr).toBe(
+      `check:site: ${join(cwd, 'nowhere')} not found. Run \`npm run build\` first.\n`,
+    );
+    const found = relative(basename(dist));
+    expect({ code: found.status, err: found.stderr }).toEqual({ code: 0, err: '' });
   });
 
   it('names apps/web/dist when no directory is given and the default one is absent', () => {

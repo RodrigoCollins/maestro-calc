@@ -22,10 +22,13 @@ const BINARY = new Set([
 const webRoot = resolve(import.meta.dirname, '..');
 
 const given = process.argv[2];
+// A relative argument resolves against the working directory; the message prints the result.
 const dist = given === undefined ? join(webRoot, 'dist') : resolve(given);
 
 if (!existsSync(dist)) {
-  console.error(`check:site: ${given ?? 'apps/web/dist'} not found. Run \`npm run build\` first.`);
+  console.error(
+    `check:site: ${given === undefined ? 'apps/web/dist' : dist} not found. Run \`npm run build\` first.`,
+  );
   process.exit(1);
 }
 
