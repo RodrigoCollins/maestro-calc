@@ -118,6 +118,8 @@ interface TableSpec {
   readonly data: number[];
   /** Original length when it differs from the stored data (a transformed table). */
   readonly original?: number;
+  /** The transform version of the directory flags (bits 6 and 7); 0 when omitted. */
+  readonly version?: number;
 }
 
 const KNOWN: Record<string, number> = { cmap: 0, head: 1, glyf: 10, loca: 11 };
@@ -127,11 +129,15 @@ const woff2 = (
   tables: TableSpec[],
   overrides: { signature?: number[]; trim?: number } = {},
 ): Uint8Array => {
-  const directory = tables.flatMap(({ tag, data, original }) => {
+  const directory = tables.flatMap(({ tag, data, original, version = 0 }) => {
     const index = KNOWN[tag];
-    const transformed = tag === 'glyf' || tag === 'loca';
+    // glyf and loca are transformed at version 0; every other table is transformed at any other version
+    const transformed = tag === 'glyf' || tag === 'loca' ? version === 0 : version !== 0;
+    const flags = (version << 6) | (index ?? 0x3f);
     return [
-      ...(index === undefined ? [0x3f, ...Array.from(tag, (char) => char.charCodeAt(0))] : [index]),
+      ...(index === undefined
+        ? [flags, ...Array.from(tag, (char) => char.charCodeAt(0))]
+        : [flags]),
       ...base128(original ?? data.length),
       ...(transformed ? base128(data.length) : []),
     ];
@@ -139,9 +145,9 @@ const woff2 = (
   const stream = brotliCompressSync(Uint8Array.from(tables.flatMap(({ data }) => data)));
   const header = [
     ...(overrides.signature ?? [0x77, 0x4f, 0x46, 0x32]),
-    ...u32(0x10000, 0),
-    ...u16(tables.length, 0),
-    ...u32(0, stream.length),
+    ...u32(0x10000, 0), // flavor, length
+    ...u16(tables.length, 0), // numTables, then 2 reserved bytes, so the next field starts at 16
+    ...u32(0, stream.length), // totalSfntSize, totalCompressedSize (at byte 20)
     ...new Array<number>(24).fill(0),
   ];
   return bytes(header, directory, stream).subarray(0, undefined);
@@ -175,6 +181,19 @@ describe('WOFF2 table reader (site-shell › [SS10])', () => {
     );
     expect(tables.get('glyf')).toHaveLength(12);
     expect(tables.get('loca')).toHaveLength(0);
+    expect([...(tables.get('cmap') ?? [])]).toEqual(CMAP);
+  });
+
+  it('reads a stored length for any other table with a non-zero transform version, and none for glyf at version 3', () => {
+    const tables = readWoff2Tables(
+      woff2([
+        { tag: 'head', data: [1, 2, 3], original: 50, version: 2 },
+        { tag: 'glyf', data: [4, 5], version: 3 },
+        { tag: 'cmap', data: CMAP },
+      ]),
+    );
+    expect([...(tables.get('head') ?? [])]).toEqual([1, 2, 3]);
+    expect([...(tables.get('glyf') ?? [])]).toEqual([4, 5]);
     expect([...(tables.get('cmap') ?? [])]).toEqual(CMAP);
   });
 

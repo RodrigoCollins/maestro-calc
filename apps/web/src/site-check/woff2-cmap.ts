@@ -8,6 +8,13 @@ export const SPANISH_CODE_POINTS = [
 ] as const;
 
 const HEADER_BYTES = 48;
+/** `numTables` (u16) follows signature, flavor and length (4 + 4 + 4 bytes). */
+const NUM_TABLES_AT = 12;
+/**
+ * `totalCompressedSize` (u32): after `numTables` (2 bytes), the 2 reserved bytes that follow it
+ * and `totalSfntSize` (4 bytes), so 12 + 2 + 2 + 4.
+ */
+const COMPRESSED_SIZE_AT = 20;
 const SIGNATURE = 0x774f4632; // "wOF2"
 const ARBITRARY_TAG = 63;
 
@@ -138,9 +145,9 @@ export const readWoff2Tables = (file: Uint8Array): Map<string, Uint8Array> => {
   if (file.length < HEADER_BYTES) throw new Error('truncated WOFF2 header');
   const header = new Reader(file);
   if (header.u32() !== SIGNATURE) throw new Error('not a WOFF2 file');
-  header.position = 12;
+  header.position = NUM_TABLES_AT;
   const count = header.u16();
-  header.position = 20;
+  header.position = COMPRESSED_SIZE_AT;
   const compressedSize = header.u32();
 
   const directory = new Reader(file, HEADER_BYTES, 'truncated WOFF2 table directory');
