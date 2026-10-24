@@ -8,6 +8,8 @@ export interface PageHead {
   readonly description: string;
   readonly canonical: string;
   readonly alternates: readonly Alternate[];
+  /** Serialized structured data; only a view that has some (the home pages) adds it. */
+  readonly jsonLd?: string;
 }
 
 export interface NotFoundHead {

@@ -5,8 +5,10 @@ interface Props {
   canonical?: string;
   alternates?: readonly { hreflang: string; href: string }[];
   robots?: string;
+  /** A serialized JSON-LD document (see `serializeJsonLd`), written verbatim into a data block. */
+  jsonLd?: string;
 }
-const { title, description, canonical, alternates = [], robots } = Astro.props;
+const { title, description, canonical, alternates = [], robots, jsonLd } = Astro.props;
 ---
 
 <meta charset="utf-8" />
@@ -20,3 +22,4 @@ const { title, description, canonical, alternates = [], robots } = Astro.props;
   <link rel="alternate" hreflang={hreflang} href={href} />
 ))}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+{jsonLd !== undefined && <script is:inline type="application/ld+json" set:html={jsonLd} />}
