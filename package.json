@@ -23,6 +23,7 @@
     "check:dist": "node scripts/check-dist.mjs",
     "check:site": "npm run check:site -w @maestro-calc/web",
     "test:e2e": "npm test --prefix tooling/site-browser",
+    "lighthouse": "npm run lighthouse --prefix tooling/site-browser",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
