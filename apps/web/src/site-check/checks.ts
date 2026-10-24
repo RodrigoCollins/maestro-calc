@@ -1,5 +1,6 @@
 import { assetProblems } from './assets.ts';
 import { contentProblems } from './content.ts';
+import { factProblems } from './facts.ts';
 import { fileSetProblems, pagesOf } from './files.ts';
 import { headProblems } from './head.ts';
 import { structureProblems } from './structure.ts';
@@ -18,5 +19,6 @@ export const checkSite = (dist: Dist, site: Site): Problem[] => {
     ...structureProblems(pages, site, dist),
     ...assetProblems(pages, dist),
     ...contentProblems(pages, site, dist),
+    ...factProblems(site, dist),
   ];
 };

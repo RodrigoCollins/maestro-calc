@@ -99,6 +99,22 @@ describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', 
       edited('es.html', (html) => html.replaceAll(/<link rel="alternate"[^>]*>/g, '')),
       'index.html: reciprocity: alternate es.html does not list index.html back',
     ],
+    [
+      'a cookie header',
+      (dist: Map<string, string>) => dist.set('_headers', '/*\n  Set-Cookie: a=1\n'),
+      '_headers: cookie-header:',
+    ],
+    [
+      'a localStorage reference',
+      edited('index.html', (html) => html.replace('</main>', 'localStorage</main>')),
+      'index.html: storage:',
+    ],
+    [
+      'a third-party origin in a built asset',
+      (dist: Map<string, string>) =>
+        dist.set('_astro/x.css', '@import url(https://cdn.example.com/a.css);'),
+      '_astro/x.css: third-party-origin:',
+    ],
   ])('exits 1 for %s, naming the file', (_name, edit, line) => {
     const { code, err } = run(writeDist(edit));
     expect(code).toBe(1);
