@@ -1,7 +1,10 @@
+import { getEntry } from 'astro:content';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { LOCALE_TAGS, LOCALES, ROUTES, urlOf, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
+import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
+import { hasWord, visibleText } from '../site-check/dom.ts';
 import TrustPageView from './TrustPageView.astro';
 
 const trustIds = Object.keys(ROUTES).filter((id): id is PageId => id !== 'home');
@@ -27,19 +30,25 @@ describe('TrustPageView (trust-pages › Visible update date, Owner-review marki
   // spec: trust-pages › [TP6]
   it.each(pages)('shows the update date of $id in $locale as a time element', async (page) => {
     const document = await render(page);
+    const updated = (await getEntry('pages', `${page.locale}/${page.id}`))?.data.updated ?? '';
+    expect(updated).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     const times = document.querySelectorAll('main time');
     expect(times).toHaveLength(1);
-    expect(times[0]?.getAttribute('datetime')).toBe('2026-10-23');
+    expect(times[0]?.getAttribute('datetime')).toBe(updated);
     expect(times[0]?.text.trim()).toBe(
-      page.locale === 'en' ? 'October 23, 2026' : '23 de octubre de 2026',
+      new Intl.DateTimeFormat(LOCALE_TAGS[page.locale], {
+        dateStyle: 'long',
+        timeZone: 'UTC',
+      }).format(new Date(`${updated}T00:00:00Z`)),
     );
   });
 
   // spec: trust-pages › [TP5]
   it.each(pages)('does not render the review state of $id in $locale', async (page) => {
-    const text = (await render(page)).querySelector('body')?.text.toLowerCase() ?? '';
-    for (const marker of ['ownerreview', 'draft', 'borrador', 'pending review']) {
-      expect(text, marker).not.toContain(marker);
+    // the same words and the same reading (visible text plus comments) as check:site
+    const text = visibleText(await render(page));
+    for (const marker of OWNER_REVIEW_MARKERS) {
+      expect(hasWord(text, marker), marker).toBe(false);
     }
   });
 
