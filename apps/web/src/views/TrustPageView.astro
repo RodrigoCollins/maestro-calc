@@ -1,0 +1,35 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { siteText } from '../lib/site-text.ts';
+import { LOCALE_TAGS } from '../routing/routes.ts';
+import type { PageId } from '../routing/routes.ts';
+import { headFor } from '../seo/head.ts';
+
+interface Props {
+  /** A route id with Markdown copy: every id of the table except `home`. */
+  id: Exclude<PageId, 'home'>;
+  locale: Locale;
+}
+const { id, locale } = Astro.props;
+const text = siteText(locale);
+const entry = await getEntry('pages', `${locale}/${id}`);
+if (entry === undefined) throw new Error(`no content entry for ${locale}/${id}`);
+const { Content } = await render(entry);
+const { updated } = entry.data;
+// The date is a calendar day, so it is formatted in UTC: no timezone can move it.
+const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+}).format(new Date(`${updated}T00:00:00Z`));
+---
+
+<BaseLayout {locale} {id} head={headFor(id, locale, text)}>
+  <article class="prose">
+    <Content />
+    <p class="updated">
+      {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
+    </p>
+  </article>
+</BaseLayout>

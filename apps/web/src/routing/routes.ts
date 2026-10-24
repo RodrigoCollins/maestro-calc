@@ -15,6 +15,8 @@ export const LOCALE_TAGS = { en: 'en-US', es: 'es-US' } as const satisfies Recor
  */
 export const ROUTES = {
   home: { en: '/', es: '/es' },
+  methodology: { en: '/methodology', es: '/es/metodologia' },
+  about: { en: '/about', es: '/es/sobre-nosotros' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

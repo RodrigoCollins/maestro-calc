@@ -91,15 +91,16 @@ describe('site catalog: shell strings (i18n-catalog › Site scope)', () => {
 });
 
 describe('site catalog: page metadata (site-seo › Titles and descriptions)', () => {
-  it('has the home and not-found pages in both locales', () => {
-    expect(pageIds(enSite)).toEqual(['home', 'notFound']);
-    expect(pageIds(esSite)).toEqual(['home', 'notFound']);
+  it('has the routable pages and the not-found page in both locales', () => {
+    const ids = ['home', 'methodology', 'about', 'notFound'];
+    expect(pageIds(enSite)).toEqual(ids);
+    expect(pageIds(esSite)).toEqual(ids);
   });
 
   // spec: site-seo › [SE1]
   it('keeps every title between 10 and 60 characters', () => {
     const titles = entriesOf('title');
-    expect(titles).toHaveLength(4);
+    expect(titles).toHaveLength(pageIds(enSite).length * 2);
     for (const { locale, id, text } of titles) {
       expect(text.length, `${locale} ${id}`).toBeGreaterThanOrEqual(10);
       expect(text.length, `${locale} ${id}`).toBeLessThanOrEqual(60);
@@ -120,7 +121,7 @@ describe('site catalog: page metadata (site-seo › Titles and descriptions)', (
 
   it('keeps every description between 70 and 160 characters', () => {
     const descriptions = entriesOf('description');
-    expect(descriptions).toHaveLength(4);
+    expect(descriptions).toHaveLength(pageIds(enSite).length * 2);
     for (const { locale, id, text } of descriptions) {
       expect(text.length, `${locale} ${id}`).toBeGreaterThanOrEqual(70);
       expect(text.length, `${locale} ${id}`).toBeLessThanOrEqual(160);
@@ -131,7 +132,7 @@ describe('site catalog: page metadata (site-seo › Titles and descriptions)', (
     const texts = entriesOf('description')
       .filter(({ id }) => id !== 'notFound')
       .map(({ text }) => text);
-    expect(texts).toHaveLength(2);
-    expect(new Set(texts).size).toBe(2);
+    expect(texts).toHaveLength((pageIds(enSite).length - 1) * 2);
+    expect(new Set(texts).size).toBe(texts.length);
   });
 });

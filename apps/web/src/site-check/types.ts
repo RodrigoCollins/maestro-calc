@@ -17,6 +17,8 @@ export interface Site {
   readonly routes: RouteTable;
   readonly config: { readonly name: string; readonly url: string; readonly contactEmail: string };
   readonly catalogs: Readonly<Record<Locale, Readonly<Record<string, string>>>>;
+  /** The `updated` date of each content entry, keyed `<locale>/<id>` (`en/about`). */
+  readonly updates: Readonly<Record<string, string>>;
 }
 
 /** A built HTML page, parsed once, with the id and locale the route table gives its file. */

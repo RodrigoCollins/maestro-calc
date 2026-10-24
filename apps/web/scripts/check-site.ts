@@ -6,7 +6,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
 import { SITE } from '../src/site.config.ts';
-import { checkSite, countPending, pageCount } from '../src/site-check/checks.ts';
+import { checkSite, countPending, pageCount, updatedOf } from '../src/site-check/checks.ts';
 
 const BINARY = new Set([
   '.woff2',
@@ -43,15 +43,21 @@ const filesUnder = (directory: string): [string, string][] =>
 
 const content = join(webRoot, 'src', 'content', 'pages');
 const entries = existsSync(content)
-  ? filesUnder(content)
-      .filter(([file]) => file.endsWith('.md'))
-      .map(([, text]) => text)
+  ? filesUnder(content).filter(([file]) => file.endsWith('.md'))
   : [];
+// `en/about.md` becomes the key `en/about`; an entry without a readable date is left out.
+const updates = Object.fromEntries(
+  entries.flatMap(([file, text]) => {
+    const updated = updatedOf(text);
+    return updated === undefined ? [] : [[file.replace(/\.md$/, ''), updated]];
+  }),
+);
 
 const problems = checkSite(new Map(filesUnder(dist)), {
   routes: ROUTES,
   config: SITE,
   catalogs: { en: enSite, es: esSite },
+  updates,
 });
 
 if (problems.length > 0) {
@@ -61,4 +67,6 @@ if (problems.length > 0) {
 }
 
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
-console.log(`pending ownerReview entries: ${String(countPending(entries))}`);
+console.log(
+  `pending ownerReview entries: ${String(countPending(entries.map(([, text]) => text)))}`,
+);

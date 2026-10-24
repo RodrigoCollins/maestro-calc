@@ -1,5 +1,5 @@
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
-import { alternatesIn, hasWord, visibleText } from './dom.ts';
+import { alternatesIn, attr, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
@@ -32,6 +32,30 @@ export const countPending = (entries: readonly string[]): number =>
   entries.filter((entry) =>
     /^---\n(?:[^\n]*\n)*?ownerReview:[ \t]*pending[ \t]*\n(?:[^\n]*\n)*?---/.test(entry),
   ).length;
+
+/** The `updated` date of a content entry, read from its frontmatter, or undefined. */
+export const updatedOf = (entry: string): string | undefined =>
+  /^---\n(?:[^\n]*\n)*?updated:[ \t]*"?([^\s"]+)"?[ \t]*\n(?:[^\n]*\n)*?---/.exec(entry)?.[1];
+
+const updatedProblems = (page: Page, site: Site): Problem[] => {
+  if (!page.routable || page.id === 'home') return [];
+  const key = `${page.locale}/${page.id}`;
+  const expected = site.updates[key];
+  if (expected === undefined) return [problem(page.file, 'updated', `no content entry for ${key}`)];
+  const shown = page.root
+    .querySelectorAll('main time[datetime]')
+    .map((time) => attr(time, 'datetime'));
+  if (shown.length === 1 && shown[0] === expected) return [];
+  return [
+    problem(
+      page.file,
+      'updated',
+      shown.length === 1
+        ? `time datetime "${shown.join('')}" is not the entry date ${expected} of ${key}`
+        : `expected one time[datetime] equal to ${expected}, found ${String(shown.length)}`,
+    ),
+  ];
+};
 
 const reviewProblems = (page: Page): Problem[] =>
   OWNER_REVIEW_MARKERS.filter((marker) => hasWord(visibleText(page.root), marker)).map((marker) =>
@@ -215,6 +239,7 @@ export const contentProblems = (pages: readonly Page[], site: Site, dist: Dist):
     ...reviewProblems(page),
     ...messageKeyProblems(page),
     ...jsonLdProblems(page, site),
+    ...updatedProblems(page, site),
   ]),
   ...addressProblems(dist),
   ...robotsProblems(dist),

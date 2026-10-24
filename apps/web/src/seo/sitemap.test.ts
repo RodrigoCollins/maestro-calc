@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { alternatesOf, ROUTES, urlOf } from '../routing/routes.ts';
+import type { PageId } from '../routing/routes.ts';
 import { sitemapXml } from './sitemap.ts';
 
 const blocksOf = (xml: string): string[] => xml.match(/<url>[\s\S]*?<\/url>/g) ?? [];
@@ -20,13 +21,14 @@ describe('sitemap (site-seo › Sitemap)', () => {
     expect(locsOf(xml)).toEqual(
       ids.flatMap((id) => Object.values(ROUTES[id as keyof typeof ROUTES]).map(urlOf)),
     );
-    for (const block of blocksOf(xml)) {
+    const expected = ids.flatMap((id) => [id, id].map((same) => alternatesOf(same as PageId)));
+    blocksOf(xml).forEach((block, index) => {
       const links = Array.from(
         block.matchAll(/<xhtml:link rel="alternate" hreflang="([^"]+)" href="([^"]+)"\/>/g),
         (match) => ({ hreflang: match[1], href: match[2] }),
       );
-      expect(links, block).toEqual(alternatesOf('home'));
-    }
+      expect(links, block).toEqual(expected[index]);
+    });
   });
 
   it('writes the home block exactly', () => {

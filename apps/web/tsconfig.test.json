@@ -10,6 +10,7 @@
     "src/**/*.test.ts",
     "src/**/*.test-d.ts",
     "scripts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "vitest.global-setup.ts"
   ]
 }

@@ -12,6 +12,16 @@ describe('route ids against the site catalog (site-seo › Titles and descriptio
     >();
   });
 
+  it('lists the methodology and about pages as ids, so their catalog keys are required', () => {
+    expectTypeOf<'methodology' | 'about'>().toExtend<PageId>();
+    expectTypeOf<
+      | 'page.methodology.title'
+      | 'page.methodology.description'
+      | 'page.about.title'
+      | 'page.about.description'
+    >().toExtend<keyof typeof enSite>();
+  });
+
   it('keeps the page id a literal union rather than string', () => {
     expectTypeOf<string>().not.toExtend<PageId>();
     expectTypeOf<'home'>().toExtend<PageId>();

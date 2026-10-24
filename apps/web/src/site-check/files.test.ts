@@ -5,7 +5,16 @@ import { FIXTURE_ROUTES, validDist } from './__testing__/page-fixture.ts';
 
 describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
   it('lists the routable pages in both locales and the two not-found pages', () => {
-    expect(expectedFiles(ROUTES)).toEqual(['index.html', 'es.html', '404.html', 'es/404.html']);
+    expect(expectedFiles(ROUTES)).toEqual([
+      'index.html',
+      'es.html',
+      'methodology.html',
+      'es/metodologia.html',
+      'about.html',
+      'es/sobre-nosotros.html',
+      '404.html',
+      'es/404.html',
+    ]);
   });
 
   it('maps any table path to its file: /x to x.html and /es/x to es/x.html', () => {
@@ -19,7 +28,7 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
 
   // spec: site-seo › [SE14] derived
   it('counts two files per id plus two not-found pages', () => {
-    expect(pageCount(ROUTES)).toBe(4);
+    expect(pageCount(ROUTES)).toBe(2 * Object.keys(ROUTES).length + 2);
     expect(pageCount(FIXTURE_ROUTES)).toBe(10);
   });
 });

@@ -2,6 +2,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteText } from '../lib/site-text.ts';
+import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 
@@ -19,4 +20,20 @@ const text = siteText(locale);
 >
   <h1>{text('page.home.heading')}</h1>
   <p>{text('page.home.intro')}</p>
+  <p class="home-links">
+    <a class="tap-target" href={pathOf('methodology', locale)}>
+      {text('page.home.links.methodology')}
+    </a>
+    <a class="tap-target" href={pathOf('about', locale)}>
+      {text('page.home.links.about')}
+    </a>
+  </p>
 </BaseLayout>
+
+<style>
+  .home-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>
