@@ -121,15 +121,25 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         }
       });
 
-      test('switches language and back to the same page', async ({ page }) => {
+      test('switches language and back to the same page, each hop answering 200', async ({
+        page,
+      }) => {
         await page.goto(path);
         const pathOf = (): string => new URL(page.url()).pathname;
-        await page.locator('header a[hreflang]').click();
+        const hop = async (): Promise<number> => {
+          const [response] = await Promise.all([
+            page.waitForResponse((candidate) => candidate.request().isNavigationRequest()),
+            page.locator('header a[hreflang]').click(),
+          ]);
+          await page.waitForLoadState('load');
+          return response.status();
+        };
+        expect(await hop()).toBe(200);
         await expect(page.locator('html')).toHaveAttribute(
           'lang',
           langOf(path) === 'en-US' ? 'es-US' : 'en-US',
         );
-        await page.locator('header a[hreflang]').click();
+        expect(await hop()).toBe(200);
         expect(pathOf()).toBe(path);
       });
     });

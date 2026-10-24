@@ -181,10 +181,26 @@ describe('language switch (site-routing-i18n › [SR5], [SR6])', () => {
     ).toEqual(['switch']);
   });
 
+  const anchor = '<a href="/es" lang="es" hreflang="es-US">Español</a>';
+  it.each([
+    ['lang', '<a href="/es" lang="en" hreflang="es-US">Español</a>'],
+    ['hreflang', '<a href="/es" lang="es" hreflang="es">Español</a>'],
+    ['visible text', '<a href="/es" lang="es" hreflang="es-US">Spanish</a>'],
+  ])('fails a switch with the wrong %s [SR5]', (_name, wrong) => {
+    expect(rulesOf({ 'index.html': (h) => h.replace(anchor, wrong) }, 'index.html')).toEqual([
+      'switch',
+    ]);
+  });
+
+  it('accepts the valid switch of the English and the Spanish home pages', () => {
+    expect(rulesOf({ 'index.html': (h) => h }, 'index.html')).toEqual([]);
+    expect(rulesOf({ 'es.html': (h) => h }, 'es.html')).toEqual([]);
+  });
+
   it('fails a page without a language switch', () => {
     expect(
       rulesOf(
-        { 'es.html': (h) => h.replace(/<a href="[^"]*" lang="en"[^>]*>Switch<\/a>/, '') },
+        { 'es.html': (h) => h.replace(/<a href="[^"]*" lang="en"[^>]*>[^<]*<\/a>/, '') },
         'es.html',
       ),
     ).toEqual(['switch']);
