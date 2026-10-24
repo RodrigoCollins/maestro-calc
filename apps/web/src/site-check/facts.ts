@@ -9,6 +9,14 @@ const TEXT_ASSET = /\.(?:css|m?js|json|map)$/;
 
 const hostOf = (url: string): string => new URL(url).host;
 
+/** XML namespace names inline SVG carries: identifiers that no browser ever requests. */
+const NAMESPACES = ['http://www.w3.org/2000/svg', 'http://www.w3.org/1999/xlink'];
+
+const NAMESPACE = new RegExp(
+  `(?:${NAMESPACES.map((name) => name.replaceAll('.', String.raw`\.`)).join('|')})(?![\\w.-])`,
+  'g',
+);
+
 const otherOrigin = (origin: string) =>
   new RegExp(
     String.raw`(?:https?:)?//(?!${origin.replaceAll('.', String.raw`\.`)}(?![\w.-]))[\w-]+(?:\.[\w-]+)+`,
@@ -30,7 +38,7 @@ const storageProblems = (dist: Dist): Problem[] =>
 const originProblems = (site: Site, dist: Dist): Problem[] => {
   const foreign = otherOrigin(hostOf(site.config.url));
   return [...dist]
-    .filter(([file, text]) => TEXT_ASSET.test(file) && foreign.test(text))
+    .filter(([file, text]) => TEXT_ASSET.test(file) && foreign.test(text.replace(NAMESPACE, '')))
     .map(([file]) =>
       problem(file, 'third-party-origin', 'a built asset references another origin'),
     );

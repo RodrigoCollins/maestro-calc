@@ -62,6 +62,16 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
     ['a css url', '_astro/a.css', '@import url(https://cdn.example.com/a.css);'],
     ['a protocol-relative url', '_astro/b.css', '@import "//cdn.example.com/a.css";'],
     ['a script file', '_astro/c.js', 'fetch("https://api.example.com/x")'],
+    [
+      'a host that only starts like the site',
+      '_astro/d.css',
+      '@import "//maestrocalc.com.evil.com/a.css";',
+    ],
+    [
+      'a namespace host with a longer name',
+      '_astro/e.js',
+      'x("http://www.w3.org/2000/svg.evil.com")',
+    ],
   ])('fails %s that points off the site origin', (_name, file, text) => {
     expect(problemsAfter((dist) => dist.set(file, text))).toEqual([
       { file, rule: 'third-party-origin', message: 'a built asset references another origin' },
@@ -73,6 +83,11 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
       problemsAfter((dist) => {
         dist.set('_astro/a.css', '/* https://maestrocalc.com/about */');
         dist.set('_astro/b.css', '@import "/local.css";');
+        dist.set(
+          '_astro/c.js',
+          'e("http://www.w3.org/2000/svg");a("http://www.w3.org/1999/xlink")',
+        );
+        dist.set('_astro/d.json', '{"xmlns":"http://www.w3.org/2000/svg"}');
       }),
     ).toEqual([]);
   });
