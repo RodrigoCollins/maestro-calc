@@ -77,6 +77,13 @@ svg {
   transform: none;
 }
 
+/* Page column: the width of the header and footer, with a 16 px gutter on phones. */
+main {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: var(--space-3);
+}
+
 .prose {
   max-width: var(--measure);
 }
