@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { Locale } from '@maestro-calc/i18n';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../routing/links.ts';
 import {
@@ -16,8 +17,7 @@ import { homeJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { switchFor } from '../../routing/switch.ts';
 import { SITE } from '../../site.config.ts';
 import { fileOf } from '../files.ts';
-import { fromRoot } from '../../contract/root.ts';
-import type { Binary, Dist, Site } from '../types.ts';
+import type { BuildBytes, Dist, Site } from '../types.ts';
 
 /** The `updated` date every fixture entry carries. */
 export const UPDATED = '2026-10-23';
@@ -145,13 +145,19 @@ export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
 };
 
 /** The real latin subset of Barlow 400, a font that holds every Spanish code point. */
-export const LATIN_FONT = (): Uint8Array =>
-  readFileSync(fromRoot('node_modules/@fontsource/barlow/files/barlow-latin-400-normal.woff2'));
+export const latinFont = (): Uint8Array =>
+  readFileSync(
+    // five levels up from this directory is the repository root
+    resolve(
+      import.meta.dirname,
+      '../../../../../node_modules/@fontsource/barlow/files/barlow-latin-400-normal.woff2',
+    ),
+  );
 
-/** The sizes and fonts of a valid dist: text files by length, each font 20,000 B of real latin glyphs. */
-export const validBinary = (dist: Dist = validDist()): Binary => {
+/** The sizes and fonts of a valid dist: text files by length; each font holds the real latin glyphs but is sized as a stubbed 20,000 B. */
+export const validBuildBytes = (dist: Dist = validDist()): BuildBytes => {
   const fonts = new Map(
-    [...dist.keys()].filter((file) => file.endsWith('.woff2')).map((file) => [file, LATIN_FONT()]),
+    [...dist.keys()].filter((file) => file.endsWith('.woff2')).map((file) => [file, latinFont()]),
   );
   const sizes = new Map(
     [...dist].map(([file, text]) => [

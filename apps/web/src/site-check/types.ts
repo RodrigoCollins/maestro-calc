@@ -13,7 +13,7 @@ export interface Problem {
 export type Dist = ReadonlyMap<string, string>;
 
 /** What `Dist` cannot hold: the byte size of every built file and the bytes of every font. */
-export interface Binary {
+export interface BuildBytes {
   readonly sizes: ReadonlyMap<string, number>;
   readonly fonts: ReadonlyMap<string, Uint8Array>;
 }
