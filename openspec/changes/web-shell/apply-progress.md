@@ -258,3 +258,38 @@ SX4: `git log b60556c..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|ge
 3. v8 branch coverage counts every `?? ''`: one helper (`attr`) with a test for the missing case keeps 100 percent without defensive branches elsewhere.
 4. `wrangler dev` with `wrangler.e2e.jsonc` reproduces the 404-page, `drop-trailing-slash` and `_headers` behaviour locally, so the Workers rows of the design are testable without deploying.
 5. When a contract test pins an exact list that a slice legitimately extends (dependabot ecosystems), update the pin to the new exact list instead of loosening it.
+
+## G2 correction round 1
+
+Mode: strict TDD. All four review lenses passed; this round folds the minor findings. Same branch, nothing pushed.
+
+### Finding to commit map
+
+| Finding | Commit |
+|---|---|
+| REL-1 (duplicate charset, viewport, description, nav, main#main), REL-2 (focusable before skip link, mixed-case handler), REL-5 (array `@type`, duplicate sitemap `<loc>`, exact `light`, `srcset`) | `d75ee75` test(web): seed site-check duplicate and focus cases and close four false negatives |
+| RD-6 (not-found paths) | `d4b1bb3` feat(web): name the not-found paths in the routing module |
+| RD-1, RD-2, RD-3, RD-4, RD-5, RD-6 (site-check side) | `56873d1` refactor(web): inject the site settings into check:site and share its helpers |
+| REL-6 | `c052813` test(web): cover the check:site default-directory message |
+| REL-3, REL-4, R1-3, RD-7, RES-2 | `a2fad9a` test(web): assert the focused shell link, redirect status and 404 headers in e2e |
+| RES-11 | `292bac6` ci: typecheck the site-browser tooling before the browser tests |
+| RD-8 | `a77e251` build(repo): leave .lighthouseci out of .gitignore until PR 11 |
+
+### Evidence
+
+- RED observed: 10 failed for REL-5 (array types, duplicate loc, scheme, srcset); `notFoundPathOf` missing; the CI typecheck step and the `.lighthouseci` pin failed before the edits.
+- REL-1/REL-2 were test gaps over correct code. Mutation spot checks (mutate, run, revert): `charsets`, `viewports`, `descriptions` and `main#main` counts and the `FIRST_FOCUSABLE` list each turn a test red; the second-unlabelled-nav case was added for the `count('nav')` mutation. Two mutants are equivalent and survive by design: `labels.length === 1` (implied by `count('nav') === 1`) and removing `toLowerCase` on attribute names (node-html-parser already lowercases attribute names, so the mixed-case test passes either way and stays as a regression guard).
+- RD-1: new tests inject a different contact address and site name through `Site`; `Site` now has `config` (name, url, contactEmail).
+- RD-5 and RD-4 were refactored with the existing suite as the net; the "reported once per build" test was added with the change, not before it. CSS rules are still evaluated per page (a page missing CSS is still caught) and identical findings collapse to one `(dist)` entry.
+- Tests: 2106 (120 files), up from 2075; `npm run verify` exit 0; `site-check` stays 100/100/100/100; `npm run test:e2e` 28 passed (was 27: the 404 header case); `npm run typecheck --prefix tooling/site-browser` clean.
+- Changed lines vs `edea9a8` (lockfiles excluded): 375 added, 97 removed.
+
+### Follow-ups (not in this round)
+
+RES-1 (apt on cache hit), R1-1, R1-2 (HSTS at the zone), R1-4, R1-5, RES-3, RES-6, RES-10 (owner actions already in design.md), RD-9.
+
+### Notes
+
+- `assetProblems` keeps `(pages, dist)` (it needs no site) and `fileSetProblems`/`pagesOf` keep their `(dist, routes)` shape; the three rule families that use the site all take `(pages, site, dist)`.
+- `urlOf` in the routing module still reads the global `SITE.url`, so `Site.config.url` only feeds the Organization url check.
+- Task 8.8 text in `tasks.md` still lists `.lighthouseci`; PR 11 adds it.
