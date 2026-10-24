@@ -12,9 +12,10 @@ export interface Problem {
 /** The text of every built file by posix path relative to `dist` (binary files hold ''). */
 export type Dist = ReadonlyMap<string, string>;
 
-/** What the checks compare the build against: the route table and the `site` catalogs. */
+/** What the checks compare the build against: the route table, the site settings and the catalogs. */
 export interface Site {
   readonly routes: RouteTable;
+  readonly config: { readonly name: string; readonly url: string; readonly contactEmail: string };
   readonly catalogs: Readonly<Record<Locale, Readonly<Record<string, string>>>>;
 }
 

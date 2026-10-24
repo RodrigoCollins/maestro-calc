@@ -13,6 +13,8 @@ const FONT_HOSTS = [
   'unpkg.com',
 ];
 
+/** The `file` of a finding about the build as a whole. */
+const DIST = '(dist)';
 const WOFF2_COUNT = 4;
 const OFF_ORIGIN = /^(?:https?:)?\/\//i;
 const ABSOLUTE = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
@@ -30,7 +32,7 @@ const cssOf = (page: Page, dist: Dist): string =>
 const srcsetUrls = (srcset: string): string[] =>
   srcset
     .split(',')
-    .map((candidate) => candidate.trim().split(/\s+/)[0] ?? '')
+    .map((candidate) => candidate.trim().replace(/\s.*$/s, ''))
     .filter((url) => url !== '');
 
 const urlsIn = (css: string): string[] => Array.from(css.matchAll(CSS_URL), ([, url = '']) => url);
@@ -79,33 +81,49 @@ const originProblems = (page: Page, css: string): Problem[] => {
   ];
 };
 
-const styleProblems = (page: Page, css: string): Problem[] => {
+/** Palette and colour-scheme rules over the CSS of one page, against the build as a whole. */
+const styleProblems = (css: string): Problem[] => {
   const colours = hexColoursIn(css);
   const schemes = Array.from(css.matchAll(SCHEME_DECLARATION), ([, value = '']) =>
     value.replace(/!important/i, '').trim(),
   );
   return [
     ...PALETTE.filter((colour) => !colours.has(colour)).map((colour) =>
-      problem(page.file, 'palette', `the CSS lacks the palette colour ${colour}`),
+      problem(DIST, 'palette', `the CSS lacks the palette colour ${colour}`),
     ),
     ...(schemes.length > 0 && schemes.every((value) => value === 'light')
       ? []
-      : [problem(page.file, 'color-scheme', 'the CSS must declare color-scheme: light, only')]),
+      : [problem(DIST, 'color-scheme', 'the CSS must declare color-scheme: light, only')]),
     ...(css.includes('prefers-color-scheme')
-      ? [problem(page.file, 'prefers-color-scheme', 'the site has no dark theme')]
+      ? [problem(DIST, 'prefers-color-scheme', 'the site has no dark theme')]
       : []),
   ];
 };
 
-const fontFaceProblems = (page: Page, css: string): Problem[] =>
+const fontFaceProblems = (css: string): Problem[] =>
   Array.from(css.matchAll(/@font-face\s*\{([^}]*)\}/g), ([, body = '']) => body).flatMap((body) => [
     ...(/font-display\s*:\s*swap/.test(body)
       ? []
-      : [problem(page.file, 'font-display', '@font-face must set font-display: swap')]),
+      : [problem(DIST, 'font-display', '@font-face must set font-display: swap')]),
     ...urlsIn(body)
       .filter((url) => ABSOLUTE.test(url))
-      .map((url) => problem(page.file, 'font-url', `font url ${url} must be a same-origin path`)),
+      .map((url) => problem(DIST, 'font-url', `font url ${url} must be a same-origin path`)),
   ]);
+
+/**
+ * Every page is judged on the CSS it ships, but the CSS is one build artefact: the same finding on
+ * several pages is reported once, against `(dist)`.
+ */
+const cssProblems = (pages: readonly Page[], dist: Dist): Problem[] => {
+  const found = new Map<string, Problem>();
+  for (const page of pages) {
+    const css = cssOf(page, dist);
+    for (const entry of [...styleProblems(css), ...fontFaceProblems(css)]) {
+      found.set(`${entry.rule}\n${entry.message}`, entry);
+    }
+  }
+  return [...found.values()];
+};
 
 const distProblems = (dist: Dist): Problem[] => {
   const woff2 = [...dist.keys()].filter((file) => file.endsWith('.woff2')).length;
@@ -115,7 +133,7 @@ const distProblems = (dist: Dist): Problem[] => {
       .map((file) => problem(file, 'js-file', 'dist must hold no JavaScript file')),
     ...(woff2 === WOFF2_COUNT
       ? []
-      : [problem('(dist)', 'fonts', `expected exactly four .woff2 files, found ${String(woff2)}`)]),
+      : [problem(DIST, 'fonts', `expected exactly four .woff2 files, found ${String(woff2)}`)]),
   ];
 };
 
@@ -123,12 +141,8 @@ const distProblems = (dist: Dist): Problem[] => {
 export const assetProblems = (pages: readonly Page[], dist: Dist): Problem[] => [
   ...pages.flatMap((page) => {
     const css = cssOf(page, dist);
-    return [
-      ...scriptProblems(page),
-      ...originProblems(page, css),
-      ...styleProblems(page, css),
-      ...fontFaceProblems(page, css),
-    ];
+    return [...scriptProblems(page), ...originProblems(page, css)];
   }),
+  ...cssProblems(pages, dist),
   ...distProblems(dist),
 ];

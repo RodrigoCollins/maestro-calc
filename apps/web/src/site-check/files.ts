@@ -1,15 +1,16 @@
 import { parse } from 'node-html-parser';
-import { LOCALES, NOT_FOUND_ID, pathOf } from '../routing/routes.ts';
+import { LOCALES, NOT_FOUND_ID, notFoundPathOf, pathOf, urlOf } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
 import { problem } from './types.ts';
-import type { Dist, Page, Problem } from './types.ts';
-
-/** The not-found page of each locale is a file of its own, outside the route table. */
-const NOT_FOUND_PATHS = { en: '/404', es: '/es/404' } as const;
+import type { Dist, Page, Problem, Site } from './types.ts';
 
 /** The built file of a table path: `/` is `index.html`, `/es/x` is `es/x.html`. */
 export const fileOf = (path: string): string =>
   path === '/' ? 'index.html' : `${path.slice(1)}.html`;
+
+/** The absolute URL of a routable page: the canonical and the sitemap `<loc>`. */
+export const urlOfPage = (page: Page, site: Site): string =>
+  urlOf(pathOf(page.id, page.locale, site.routes));
 
 interface Entry {
   readonly file: string;
@@ -28,7 +29,7 @@ const entriesOf = (routes: RouteTable): Entry[] => [
     })),
   ),
   ...LOCALES.map((locale) => ({
-    file: fileOf(NOT_FOUND_PATHS[locale]),
+    file: fileOf(notFoundPathOf(locale)),
     id: NOT_FOUND_ID,
     locale,
     routable: false,

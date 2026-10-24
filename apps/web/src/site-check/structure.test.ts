@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
 import { structureProblems } from './structure.ts';
 import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
@@ -251,6 +252,21 @@ describe('favicon (site-shell › [SS17])', () => {
         entry.rule,
       ]),
     ).toEqual([['favicon.svg', 'favicon']]);
+  });
+
+  it('reads the contact address from the injected site, not the site config', () => {
+    const site = { ...fixtureSite(), config: { ...SITE, contactEmail: 'other@example.test' } };
+    const dist = validDist(site);
+    const html = dist.get('about.html') ?? '';
+    dist.set(
+      'about.html',
+      html.replace(`mailto:${SITE.contactEmail}`, 'mailto:other@example.test'),
+    );
+    expect(
+      structureProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist).filter(
+        (entry) => entry.file === 'about.html',
+      ),
+    ).toEqual([]);
   });
 
   it('accepts the orange mark alone, in lower case', () => {

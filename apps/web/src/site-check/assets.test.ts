@@ -162,7 +162,7 @@ describe('palette and colour scheme (site-shell › [SS5], [SS6])', () => {
       'about.html': withCss(VALID_CSS.replace('#1faf5a', '#1faf5b')),
     });
     expect(problems).toEqual([
-      { file: 'about.html', rule: 'palette', message: 'the CSS lacks the palette colour #1FAF5A' },
+      { file: '(dist)', rule: 'palette', message: 'the CSS lacks the palette colour #1FAF5A' },
     ]);
   });
 
@@ -177,7 +177,7 @@ describe('palette and colour scheme (site-shell › [SS5], [SS6])', () => {
         problemsAfter({
           'about.html': withCss(VALID_CSS.replace('color-scheme:light', declaration)),
         }),
-        'about.html',
+        '(dist)',
       ),
     ).toEqual(['color-scheme']);
   });
@@ -196,7 +196,7 @@ describe('palette and colour scheme (site-shell › [SS5], [SS6])', () => {
     expect(
       rulesOf(
         problemsAfter({ 'about.html': withCss(VALID_CSS.replace('color-scheme:light', '')) }),
-        'about.html',
+        '(dist)',
       ),
     ).toEqual(['color-scheme']);
     expect(
@@ -204,9 +204,24 @@ describe('palette and colour scheme (site-shell › [SS5], [SS6])', () => {
         problemsAfter({
           'about.html': withCss(`${VALID_CSS}@media (prefers-color-scheme:dark){a{color:#000}}`),
         }),
-        'about.html',
+        '(dist)',
       ),
     ).toEqual(['prefers-color-scheme']);
+  });
+
+  it('reports a CSS finding once for the build, however many pages ship it', () => {
+    const broken = (html: string): string => html.replace(VALID_CSS, 'a{color:#000}');
+    const problems = problemsAfter(
+      Object.fromEntries(['index.html', 'es.html', 'about.html'].map((file) => [file, broken])),
+    );
+    expect(problems.filter((entry) => entry.rule === 'color-scheme')).toEqual([
+      {
+        file: '(dist)',
+        rule: 'color-scheme',
+        message: 'the CSS must declare color-scheme: light, only',
+      },
+    ]);
+    expect(problems.filter((entry) => entry.rule === 'palette')).toHaveLength(7);
   });
 
   it('reads CSS files of dist as well as inline styles', () => {
@@ -238,22 +253,22 @@ describe('fonts (site-shell › [SS8])', () => {
         problemsAfter({
           'about.html': (html) => html.replace(';font-display:swap}', '}'),
         }),
-        'about.html',
+        '(dist)',
       ),
     ).toEqual(['font-display']);
   });
 
   it('requires every font url to be a same-origin relative path', () => {
     const rules = (url: string): string[] =>
-      rulesOf(
-        problemsAfter({
-          'about.html': (html) => html.replace('/_astro/fonts/a.woff2', url),
-        }),
-        'about.html',
-      );
-    expect(rules('https://example.com/a.woff2')).toEqual(['third-party', 'font-url']);
-    expect(rules('//example.com/a.woff2')).toEqual(['third-party', 'font-url']);
-    expect(rules('data:font/woff2;base64,AA')).toEqual(['font-url']);
+      problemsAfter({
+        'about.html': (html) => html.replace('/_astro/fonts/a.woff2', url),
+      }).map((entry) => `${entry.file} ${entry.rule}`);
+    expect(rules('https://example.com/a.woff2')).toEqual([
+      'about.html third-party',
+      '(dist) font-url',
+    ]);
+    expect(rules('//example.com/a.woff2')).toEqual(['about.html third-party', '(dist) font-url']);
+    expect(rules('data:font/woff2;base64,AA')).toEqual(['(dist) font-url']);
     expect(rules('fonts/a.woff2')).toEqual([]);
   });
 });

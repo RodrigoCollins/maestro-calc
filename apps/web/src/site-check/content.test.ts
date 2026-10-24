@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { contentProblems, countPending, OLD_ADDRESS } from './content.ts';
+import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
 import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
 
@@ -13,7 +14,7 @@ const problemsAfter = (
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
   mutate(dist);
-  return contentProblems(pagesOf(dist, FIXTURE_ROUTES), dist, site);
+  return contentProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist);
 };
 
 const rulesOf = (problems: ReturnType<typeof problemsAfter>, file: string): string[] =>
@@ -350,6 +351,22 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
   it('accepts a list of allowed types on another page', () => {
     expect(
       problemsAfter({ 'about.html': intoMain(block('{"@type":["Organization","Thing"]}')) }),
+    ).toEqual([]);
+  });
+
+  it('reads the site name from the injected site, not the site config', () => {
+    const site = { ...fixtureSite(), config: { ...SITE, name: 'Other Co' } };
+    const dist = validDist(site);
+    for (const file of ['index.html', 'es.html']) {
+      dist.set(
+        file,
+        (dist.get(file) ?? '').replaceAll(`"name":"${SITE.name}"`, '"name":"Other Co"'),
+      );
+    }
+    expect(
+      contentProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist).filter(
+        (entry) => entry.rule === 'json-ld',
+      ),
     ).toEqual([]);
   });
 

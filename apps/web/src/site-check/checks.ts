@@ -17,6 +17,6 @@ export const checkSite = (dist: Dist, site: Site): Problem[] => {
     ...headProblems(pages, site),
     ...structureProblems(pages, site, dist),
     ...assetProblems(pages, dist),
-    ...contentProblems(pages, dist, site),
+    ...contentProblems(pages, site, dist),
   ];
 };
