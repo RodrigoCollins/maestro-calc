@@ -1,9 +1,9 @@
 import { attrsOf, urlsIn } from './dom.ts';
 import { problem } from './types.ts';
-import type { Binary, Dist, Page, Problem } from './types.ts';
+import type { BuildBytes, Dist, Page, Problem } from './types.ts';
 
 /** The byte size of every file under `dist`, by posix path (text and binary alike). */
-export type Sizes = Binary['sizes'];
+export type Sizes = BuildBytes['sizes'];
 
 /** Design budgets (site-quality): bytes on disk, uncompressed. JavaScript has none (`js: 0`). */
 export const LIMITS = {

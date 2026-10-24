@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { checkSite } from './checks.ts';
-import { LATIN_FONT, fixtureSite, validBinary, validDist } from './__testing__/page-fixture.ts';
+import { latinFont, fixtureSite, validBuildBytes, validDist } from './__testing__/page-fixture.ts';
 
 describe('checkSite', () => {
   it('finds nothing wrong with a valid dist', () => {
-    expect(checkSite(validDist(), fixtureSite(), validBinary())).toEqual([]);
+    expect(checkSite(validDist(), fixtureSite(), validBuildBytes())).toEqual([]);
   });
 
   it('runs the file-set, head, structure, asset, content, budget and glyph rules together', () => {
@@ -17,9 +17,12 @@ describe('checkSite', () => {
         .replace(/<meta name="description"[^>]*>/, ''),
     );
     dist.set('_astro/x.js', '');
-    const binary = validBinary(dist);
-    const sizes = new Map(binary.sizes).set('index.html', 40_961);
-    const fonts = new Map(binary.fonts).set('_astro/fonts/a.woff2', LATIN_FONT().subarray(0, 10));
+    const buildBytes = validBuildBytes(dist);
+    const sizes = new Map(buildBytes.sizes).set('index.html', 40_961);
+    const fonts = new Map(buildBytes.fonts).set(
+      '_astro/fonts/a.woff2',
+      latinFont().subarray(0, 10),
+    );
     expect(
       checkSite(dist, fixtureSite(), { sizes, fonts })
         .map(({ file, rule }) => `${file} ${rule}`)

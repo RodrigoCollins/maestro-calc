@@ -69,7 +69,7 @@ const site = {
   updates,
 };
 // What the text map cannot hold: every file's byte size and the bytes of each font.
-const binary = {
+const buildBytes = {
   sizes: new Map(files.map(([file]) => [file, statSync(join(dist, file)).size])),
   fonts: new Map(
     files
@@ -77,7 +77,7 @@ const binary = {
       .map(([file]) => [file, readFileSync(join(dist, file))]),
   ),
 };
-const problems = checkSite(built, site, binary);
+const problems = checkSite(built, site, buildBytes);
 
 if (problems.length > 0) {
   for (const { file, rule, message } of problems) console.error(`${file}: ${rule}: ${message}`);
@@ -86,7 +86,8 @@ if (problems.length > 0) {
 }
 
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
-for (const line of budgetSummary(pagesOf(built, ROUTES), binary.sizes, built)) console.log(line);
+for (const line of budgetSummary(pagesOf(built, ROUTES), buildBytes.sizes, built))
+  console.log(line);
 console.log(
   `pending ownerReview entries: ${String(countPending(entries.map(([, text]) => text)))}`,
 );
