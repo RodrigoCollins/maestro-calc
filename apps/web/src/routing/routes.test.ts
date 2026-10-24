@@ -5,6 +5,7 @@ import {
   LOCALE_TAGS,
   LOCALES,
   NOT_FOUND_ID,
+  notFoundPathOf,
   pathOf,
   ROUTES,
   routeProblems,
@@ -23,6 +24,14 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(LOCALES).toEqual(Object.keys(LOCALE_TAGS));
     expect(NOT_FOUND_ID).toBe('notFound');
     expect(Object.hasOwn(ROUTES, NOT_FOUND_ID)).toBe(false);
+  });
+
+  it('puts each locale not-found page next to its home, outside the table', () => {
+    expect(notFoundPathOf('en')).toBe('/404');
+    expect(notFoundPathOf('es')).toBe('/es/404');
+    expect(
+      routeProblems({ [NOT_FOUND_ID]: { en: notFoundPathOf('en'), es: notFoundPathOf('es') } }),
+    ).toEqual([]);
   });
 
   it('tags the locales with their BCP 47 region', () => {

@@ -22,6 +22,10 @@ export type PageId = keyof typeof ROUTES;
 /** The not-found page has a head and a layout but no route, so it never enters `ROUTES`. */
 export const NOT_FOUND_ID = 'notFound';
 
+/** The not-found file of each locale: `404.html` and `es/404.html`, which no route table lists. */
+export const notFoundPathOf = (locale: Locale): `/${string}` =>
+  locale === 'en' ? '/404' : '/es/404';
+
 /** Every id the shell can render: the routable pages and the not-found page. */
 export type ShellPageId = PageId | typeof NOT_FOUND_ID;
 
