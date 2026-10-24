@@ -198,3 +198,16 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
     for (const anchor of anchors) expect(anchor.classList.contains('tap-target')).toBe(true);
   });
 });
+
+describe('Page gutter (G1 review carry-over)', () => {
+  const main = baseRules.get('main');
+
+  it('keeps main content off the screen edge with a 16 px gutter on phones', () => {
+    expect(rem(resolve(main?.['padding']))).toBe(16);
+  });
+
+  it('centres main content in the page width, the same column as the header and footer', () => {
+    expect(resolve(main?.['max-width'])).toBe('64rem');
+    expect(main?.['margin']).toBe('0 auto');
+  });
+});
