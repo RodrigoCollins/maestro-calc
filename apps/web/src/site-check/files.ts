@@ -61,5 +61,5 @@ export const fileSetProblems = (dist: Dist, routes: RouteTable): Problem[] => {
 export const pagesOf = (dist: Dist, routes: RouteTable): Page[] =>
   entriesOf(routes).flatMap((entry) => {
     const html = dist.get(entry.file);
-    return html === undefined ? [] : [{ ...entry, html, root: parse(html) }];
+    return html === undefined ? [] : [{ ...entry, html, root: parse(html, { comment: true }) }];
   });

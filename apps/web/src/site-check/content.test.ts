@@ -41,6 +41,31 @@ describe('owner-review markers (trust-pages › [TP5])', () => {
     },
   );
 
+  it.each([
+    'drafting a new guide',
+    'los borradores de la guía',
+    'write to calc.example for details',
+    'redrafted and ownerReviewer-free',
+  ])('allows the benign text "%s" (JD-1)', (text) => {
+    expect(problemsAfter({ 'about.html': intoMain(`<p>${text}</p>`) })).toEqual([]);
+  });
+
+  it('ignores markers inside script and style bodies and attribute values', () => {
+    expect(
+      problemsAfter({
+        'about.html': intoMain(
+          '<style>.draft{color:red}</style><p class="borrador" title="ownerReview">ok</p>',
+        ),
+      }),
+    ).toEqual([]);
+  });
+
+  it('still fails a marker inside an HTML comment', () => {
+    expect(
+      rulesOf(problemsAfter({ 'about.html': intoMain('<!-- draft -->') }), 'about.html'),
+    ).toEqual(['owner-review']);
+  });
+
   it('allows the bare word pending', () => {
     expect(problemsAfter({ 'about.html': intoMain('<p>Pending work, nothing else</p>') })).toEqual(
       [],
@@ -58,11 +83,14 @@ describe('placeholder address and message keys (trust-pages › [TP18], i18n-cat
     ]);
   });
 
-  it.each(['errors.input', 'calc.rectangle'])('fails the message key %s in a page', (key) => {
-    expect(
-      rulesOf(problemsAfter({ 'about.html': intoMain(`<p>${key}</p>`) }), 'about.html'),
-    ).toEqual(['message-key']);
-  });
+  it.each(['errors.input', 'errors.EMPTY', 'calc.rectangle-area.title'])(
+    'fails the message key %s in a page',
+    (key) => {
+      expect(
+        rulesOf(problemsAfter({ 'about.html': intoMain(`<p>${key}</p>`) }), 'about.html'),
+      ).toEqual(['message-key']);
+    },
+  );
 
   it.each(['We fixed the errors. Next', 'the recalc.x file', 'maestrocalc.com', 'calc(1px)'])(
     'accepts the text "%s"',
