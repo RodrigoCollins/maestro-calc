@@ -10,7 +10,7 @@ phases:
   spec: done  # 5 new + 3 modified capability deltas under specs/
   design: done  # revised after design review round 1
   tasks: done  # 11 stacked PRs, ~3,240 lines forecast; 19 tasks in the largest slice; traceability covers every scenario id
-  apply: in-progress  # group 1 (PR 1 to PR 4) applied on feat/web-shell-g1-visible-site; PR 5 onward pending
+  apply: in-progress  # group 1 (PR 1 to PR 4) on feat/web-shell-g1-visible-site; group 2 (G1 carry-overs, PR 5 to PR 8) on feat/web-shell-g2-seo-quality-infra, 8.14 deferred to the orchestrator; PR 9 onward pending
   verify: pending
   archive: pending
 updated: 2026-10-23
