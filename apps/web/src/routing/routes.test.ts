@@ -20,6 +20,7 @@ const fixture = {
 describe('route table (site-routing-i18n › Route table)', () => {
   it('lists the locales once, in tag order, and names the not-found page', () => {
     expect(LOCALES).toEqual(['en', 'es']);
+    expect(LOCALES).toEqual(Object.keys(LOCALE_TAGS));
     expect(NOT_FOUND_ID).toBe('notFound');
     expect(Object.hasOwn(ROUTES, NOT_FOUND_ID)).toBe(false);
   });
