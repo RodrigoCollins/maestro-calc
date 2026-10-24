@@ -5,6 +5,7 @@ import {
   LOCALE_TAGS,
   LOCALES,
   NOT_FOUND_ID,
+  notFoundPathOf,
   pathOf,
   urlOf,
 } from '../../routing/routes.ts';
@@ -13,6 +14,7 @@ import { sitemapXml } from '../../seo/sitemap.ts';
 import { homeJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { switchFor } from '../../routing/switch.ts';
 import { SITE } from '../../site.config.ts';
+import { fileOf } from '../files.ts';
 import type { Dist, Site } from '../types.ts';
 
 /** A table with several pages, so link, fragment and reciprocity rules have something to check. */
@@ -38,7 +40,7 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
         [`page.${id}.description`, descriptionOf(id, locale)],
       ]),
     );
-  return { routes, catalogs: { en: catalogOf('en'), es: catalogOf('es') } };
+  return { routes, config: SITE, catalogs: { en: catalogOf('en'), es: catalogOf('es') } };
 };
 
 /** The CSS of a valid page: the palette, a light scheme and four swapped same-origin fonts. */
@@ -101,9 +103,6 @@ const FAVICON =
 
 const ROBOTS = 'User-agent: *\nAllow: /\nSitemap: https://maestrocalc.com/sitemap.xml\n';
 
-/** The path of a built HTML file for a table path: `/` is `index.html`, `/es/x` is `es/x.html`. */
-const fileOf = (path: string): string => (path === '/' ? 'index.html' : `${path.slice(1)}.html`);
-
 /** A complete valid `dist` for the site: every page, the favicon, robots, sitemap and four fonts. */
 export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
   const dist = new Map<string, string>();
@@ -112,8 +111,9 @@ export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
       dist.set(fileOf(pathOf(id, locale, site.routes)), validPage(id, locale, site));
     }
   }
-  dist.set('404.html', validPage(NOT_FOUND_ID, 'en', site));
-  dist.set('es/404.html', validPage(NOT_FOUND_ID, 'es', site));
+  for (const locale of LOCALES) {
+    dist.set(fileOf(notFoundPathOf(locale)), validPage(NOT_FOUND_ID, locale, site));
+  }
   dist.set('favicon.svg', FAVICON);
   dist.set('robots.txt', ROBOTS);
   dist.set('sitemap.xml', sitemapXml(site.routes));

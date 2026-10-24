@@ -1,5 +1,6 @@
-import { alternatesOf, LOCALE_TAGS, pathOf, urlOf } from '../routing/routes.ts';
+import { alternatesOf, LOCALE_TAGS } from '../routing/routes.ts';
 import { alternatesIn, attrsOf } from './dom.ts';
+import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
 import type { Page, Problem, Site } from './types.ts';
 
@@ -14,16 +15,10 @@ const rangeOf = ({ min, max }: { min: number; max: number }): string =>
 const within = (text: string, { min, max }: { min: number; max: number }): boolean =>
   text.length >= min && text.length <= max;
 
-const attributeOf = (page: Page, selector: string, name: string): string[] =>
-  attrsOf(page.root, selector, name);
-
-const urlOfPage = (page: Page, site: Site): string =>
-  urlOf(pathOf(page.id, page.locale, site.routes));
-
 const languageProblems = (page: Page): Problem[] => {
   const lang = page.root.querySelector('html')?.getAttribute('lang');
-  const charsets = attributeOf(page, 'meta[charset]', 'charset');
-  const viewports = attributeOf(page, 'meta[name=viewport]', 'content');
+  const charsets = attrsOf(page.root, 'meta[charset]', 'charset');
+  const viewports = attrsOf(page.root, 'meta[name=viewport]', 'content');
   return [
     ...(lang === LOCALE_TAGS[page.locale]
       ? []
@@ -85,7 +80,7 @@ const titleProblems = (page: Page, site: Site): Problem[] => {
 };
 
 const descriptionProblems = (page: Page, site: Site): Problem[] => {
-  const descriptions = attributeOf(page, 'meta[name=description]', 'content');
+  const descriptions = attrsOf(page.root, 'meta[name=description]', 'content');
   const [text] = descriptions;
   if (descriptions.length !== 1 || text === undefined) {
     return [
@@ -131,8 +126,8 @@ const uniqueProblems = (
 };
 
 const indexingProblems = (page: Page, site: Site): Problem[] => {
-  const robots = attributeOf(page, 'meta[name=robots]', 'content').join(',').toLowerCase();
-  const canonicals = attributeOf(page, 'link[rel=canonical]', 'href');
+  const robots = attrsOf(page.root, 'meta[name=robots]', 'content').join(',').toLowerCase();
+  const canonicals = attrsOf(page.root, 'link[rel=canonical]', 'href');
   const alternates = alternatesIn(page.root);
   if (!page.routable) {
     return [
@@ -175,7 +170,7 @@ const reciprocityProblems = (pages: readonly Page[], site: Site): Problem[] => {
   const routable = pages.filter((page) => page.routable);
   const byUrl = new Map(routable.map((page) => [urlOfPage(page, site), page]));
   return routable.flatMap((page) =>
-    attributeOf(page, 'link[rel=alternate][hreflang]', 'href').flatMap((href) => {
+    attrsOf(page.root, 'link[rel=alternate][hreflang]', 'href').flatMap((href) => {
       const target = byUrl.get(href);
       if (target === undefined) {
         return [problem(page.file, 'reciprocity', `alternate ${href} is not a page of the build`)];
@@ -211,7 +206,7 @@ export const headProblems = (pages: readonly Page[], site: Site): Problem[] => [
     pages.filter((page) => page.routable),
     'description-unique',
     'description',
-    (page) => attributeOf(page, 'meta[name=description]', 'content')[0],
+    (page) => attrsOf(page.root, 'meta[name=description]', 'content')[0],
   ),
   ...reciprocityProblems(pages, site),
 ];

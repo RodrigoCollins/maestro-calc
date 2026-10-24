@@ -1,6 +1,6 @@
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
-import { SITE } from '../site.config.ts';
 import { alternatesIn } from './dom.ts';
+import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
@@ -83,7 +83,7 @@ const entriesOfSitemap = (xml: string): SitemapEntry[] =>
       .join('\n'),
   }));
 
-const sitemapProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[] => {
+const sitemapProblems = (pages: readonly Page[], site: Site, dist: Dist): Problem[] => {
   const xml = dist.get('sitemap.xml');
   const others = [...dist.keys()].filter(
     (file) => /(?:^|\/)sitemap[^/]*\.xml$/.test(file) && file !== 'sitemap.xml',
@@ -99,7 +99,7 @@ const sitemapProblems = (pages: readonly Page[], dist: Dist, site: Site): Proble
   );
   const listed = new Set(entries.map(({ loc }) => loc));
   const headOf = (loc: string): Page | undefined =>
-    pages.find((page) => page.routable && urlOf(pathOf(page.id, page.locale, site.routes)) === loc);
+    pages.find((page) => page.routable && urlOfPage(page, site) === loc);
   return [
     ...expected
       .filter((url) => !listed.has(url))
@@ -147,11 +147,12 @@ const nodesOf = (document: unknown): Node[] => {
 const jsonLdBlocks = (page: Page): string[] =>
   page.root.querySelectorAll('script[type="application/ld+json"]').map((script) => script.text);
 
-const homeNodeProblems = (page: Page, nodes: readonly Node[]): string[] => {
+const homeNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] => {
+  const { name, url } = site.config;
   const typeOf = (type: string): Node | undefined => nodes.find((node) => node['@type'] === type);
   const organization = typeOf('Organization');
   const website = typeOf('WebSite');
-  const home = urlOf(pathOf('home', page.locale));
+  const home = urlOf(pathOf('home', page.locale, site.routes));
   return [
     ...(nodes.length === 2 && organization !== undefined && website !== undefined
       ? []
@@ -159,7 +160,7 @@ const homeNodeProblems = (page: Page, nodes: readonly Node[]): string[] => {
     ...(organization === undefined
       ? []
       : [
-          ...(organization['name'] === SITE.name && organization['url'] === SITE.url
+          ...(organization['name'] === name && organization['url'] === url
             ? []
             : ['the Organization needs the site name and url']),
           ...(['logo', 'image'] as const)
@@ -169,7 +170,7 @@ const homeNodeProblems = (page: Page, nodes: readonly Node[]): string[] => {
     ...(website === undefined
       ? []
       : [
-          ...(website['name'] === SITE.name ? [] : ['the WebSite needs the site name']),
+          ...(website['name'] === name ? [] : ['the WebSite needs the site name']),
           ...(website['url'] === home ? [] : [`the WebSite url must be ${home}`]),
           ...(website['inLanguage'] === LOCALE_TAGS[page.locale]
             ? []
@@ -178,7 +179,7 @@ const homeNodeProblems = (page: Page, nodes: readonly Node[]): string[] => {
   ];
 };
 
-const jsonLdProblems = (page: Page): Problem[] => {
+const jsonLdProblems = (page: Page, site: Site): Problem[] => {
   const blocks = jsonLdBlocks(page);
   const documents: unknown[] = [];
   const problems: string[] = [];
@@ -193,7 +194,7 @@ const jsonLdProblems = (page: Page): Problem[] => {
   if (page.id === 'home') {
     if (blocks.length !== 1)
       problems.push(`expected one JSON-LD block, found ${String(blocks.length)}`);
-    else if (documents.length === 1) problems.push(...homeNodeProblems(page, nodes));
+    else if (documents.length === 1) problems.push(...homeNodeProblems(page, site, nodes));
   } else {
     problems.push(
       ...nodes
@@ -206,13 +207,13 @@ const jsonLdProblems = (page: Page): Problem[] => {
 };
 
 /** Content, placeholder, robots, sitemap and structured-data rules. */
-export const contentProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[] => [
+export const contentProblems = (pages: readonly Page[], site: Site, dist: Dist): Problem[] => [
   ...pages.flatMap((page) => [
     ...reviewProblems(page),
     ...messageKeyProblems(page),
-    ...jsonLdProblems(page),
+    ...jsonLdProblems(page, site),
   ]),
   ...addressProblems(dist),
   ...robotsProblems(dist),
-  ...sitemapProblems(pages, dist, site),
+  ...sitemapProblems(pages, site, dist),
 ];

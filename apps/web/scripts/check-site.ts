@@ -5,6 +5,7 @@ import { extname, join, resolve, sep } from 'node:path';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
+import { SITE } from '../src/site.config.ts';
 import { checkSite, countPending, pageCount } from '../src/site-check/checks.ts';
 
 const BINARY = new Set([
@@ -46,6 +47,7 @@ const entries = existsSync(content)
 
 const problems = checkSite(new Map(filesUnder(dist)), {
   routes: ROUTES,
+  config: SITE,
   catalogs: { en: enSite, es: esSite },
 });
 

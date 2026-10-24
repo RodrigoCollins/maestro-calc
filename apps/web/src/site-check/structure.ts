@@ -1,16 +1,12 @@
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
-import { SITE } from '../site.config.ts';
 import { attrsOf } from './dom.ts';
 import { problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
 const FIRST_FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]';
-const MAILTO = `mailto:${SITE.contactEmail}`;
 const FAVICON_PATH = '/favicon.svg';
-
-const hrefsOf = (page: Page, selector: string): string[] => attrsOf(page.root, selector, 'href');
 
 const landmarkProblems = (page: Page): Problem[] => {
   const count = (selector: string): number => page.root.querySelectorAll(selector).length;
@@ -61,9 +57,10 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
       target.routable ? [[pathOf(target.id, target.locale, site.routes), target] as const] : [],
     ),
   );
+  const mailto = `mailto:${site.config.contactEmail}`;
   const idsOf = (target: Page): Set<string> => new Set(attrsOf(target.root, '[id]', 'id'));
-  return hrefsOf(page, 'a[href]').flatMap((href) => {
-    if (href === MAILTO || href === FAVICON_PATH) return [];
+  return attrsOf(page.root, 'a[href]', 'href').flatMap((href) => {
+    if (href === mailto || href === FAVICON_PATH) return [];
     if (href.startsWith('#')) {
       return idsOf(page).has(href.slice(1))
         ? []
@@ -87,7 +84,7 @@ const navigationProblems = (page: Page, site: Site): Problem[] => {
   const expectedHrefs = (candidates: readonly string[]): string[] =>
     linksFor(candidates, page.locale, site.routes).map(({ href }) => href);
   return [
-    ...(same(hrefsOf(page, 'header a[hreflang]'), [counterpart])
+    ...(same(attrsOf(page.root, 'header a[hreflang]', 'href'), [counterpart])
       ? []
       : [
           problem(
@@ -96,10 +93,10 @@ const navigationProblems = (page: Page, site: Site): Problem[] => {
             `the language switch must be the single link to ${counterpart}`,
           ),
         ]),
-    ...(same(hrefsOf(page, 'header li a'), expectedHrefs(HEADER_PAGES))
+    ...(same(attrsOf(page.root, 'header li a', 'href'), expectedHrefs(HEADER_PAGES))
       ? []
       : [problem(page.file, 'nav-links', 'header links differ from the route table')]),
-    ...(same(hrefsOf(page, 'footer li a'), expectedHrefs(FOOTER_PAGES))
+    ...(same(attrsOf(page.root, 'footer li a', 'href'), expectedHrefs(FOOTER_PAGES))
       ? []
       : [problem(page.file, 'footer-links', 'footer links differ from the route table')]),
   ];

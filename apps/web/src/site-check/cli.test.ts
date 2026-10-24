@@ -7,11 +7,12 @@ import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { afterAll, describe, expect, it } from 'vitest';
 import { fromRoot } from '../contract/root.ts';
 import { ROUTES } from '../routing/routes.ts';
+import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { validDist } from './__testing__/page-fixture.ts';
 
 const script = fromRoot('apps/web/scripts/check-site.ts');
-const site = { routes: ROUTES, catalogs: { en: enSite, es: esSite } };
+const site = { routes: ROUTES, config: SITE, catalogs: { en: enSite, es: esSite } };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {
   rmSync(scratch, { recursive: true, force: true });
