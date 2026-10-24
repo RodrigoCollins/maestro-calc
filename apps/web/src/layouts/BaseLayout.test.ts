@@ -113,9 +113,20 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(links.map((link) => link.text.trim())).toEqual(labels);
   });
 
-  it('lists no footer links while the legal pages are not in the table', async () => {
-    const { document } = await render('en');
-    expect(document.querySelectorAll('footer ul')).toHaveLength(0);
+  // spec: site-shell › [SS13] footer links from the real table
+  it.each([
+    ['en', ['/privacy', '/terms', '/contact'], ['Privacy', 'Terms', 'Contact']],
+    [
+      'es',
+      ['/es/privacidad', '/es/terminos', '/es/contacto'],
+      ['Privacidad', 'Términos', 'Contacto'],
+    ],
+  ] as const)('lists the footer links of the table in %s', async (locale, hrefs, labels) => {
+    const { document } = await render(locale);
+    const links = document.querySelectorAll('footer li a');
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
+    expect(links.map((link) => link.text.trim())).toEqual(labels);
+    expect(document.querySelector('footer')?.text).toContain('contacto@maestrocalc.com');
   });
 
   // spec: site-shell › [SS13] contact text

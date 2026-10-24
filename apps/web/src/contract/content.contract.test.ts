@@ -203,3 +203,76 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
     expect(sectionOf(body, 'zz')).toBe('');
   });
 });
+
+describe('privacy (trust-pages › [TP13], [TP14])', () => {
+  const required = {
+    en: ['Cloudflare', 'does not use cookies', 'before we add analytics or advertising'],
+    es: ['Cloudflare', 'no usa cookies', 'antes de añadir analítica o publicidad'],
+  } as const;
+  const forbidden = [
+    'Google Analytics',
+    'GA4',
+    'Tag Manager',
+    'GTM',
+    'AdSense',
+    'Mediavine',
+    'Raptive',
+    'Amazon',
+    'affiliate',
+    'afiliad',
+  ];
+
+  it.each(LOCALES)('states the required facts and the contact address in %s', (locale) => {
+    const body = bodyOf(`${locale}/privacy.md`);
+    expect(body).not.toBe('');
+    expect(present(body, [...required[locale], SITE.contactEmail])).toHaveLength(
+      required[locale].length + 1,
+    );
+  });
+
+  it.each(LOCALES)('names none of the services the site does not use in %s', (locale) => {
+    expect(present(bodyOf(`${locale}/privacy.md`), forbidden)).toEqual([]);
+  });
+});
+
+describe('terms and disclaimer (trust-pages › [TP15], [TP16])', () => {
+  const required = {
+    en: ['estimates', 'local code', 'as is'],
+    es: ['estimaciones', 'código local', 'tal cual'],
+  } as const;
+  const forbidden = ['governed by', 'jurisdiction', 'LLC', 'Inc.', 'se rige por', 'jurisdicción'];
+
+  it.each(LOCALES)('uses the disclaimer wording in %s', (locale) => {
+    const body = bodyOf(`${locale}/terms.md`);
+    expect(body).not.toBe('');
+    expect(present(body, required[locale])).toHaveLength(required[locale].length);
+  });
+
+  it.each(LOCALES)('asserts no governing law, jurisdiction or entity in %s', (locale) => {
+    expect(present(bodyOf(`${locale}/terms.md`), forbidden)).toEqual([]);
+  });
+});
+
+describe('contact (trust-pages › [TP17])', () => {
+  const prompt = { en: 'Found an error?', es: '¿Encontraste un error?' } as const;
+  const responseTime = [/\b(within|in)\s+\d+\s+(hour|day|business)/i, /\ben\s+\d+\s+(hora|día)/i];
+
+  it.each(LOCALES)('shows the address and the prompt, with no form or script, in %s', (locale) => {
+    const body = bodyOf(`${locale}/contact.md`);
+    expect(body).toContain(SITE.contactEmail);
+    expect(body).toContain(prompt[locale]);
+    expect(present(body, ['<form', '<script'])).toEqual([]);
+  });
+
+  it.each(LOCALES)('promises no response time in %s', (locale) => {
+    const body = bodyOf(`${locale}/contact.md`);
+    expect(body).not.toBe('');
+    for (const pattern of responseTime) expect(body).not.toMatch(pattern);
+  });
+
+  it('recognises the response-time promises it rejects', () => {
+    expect(responseTime.some((pattern) => pattern.test('We reply within 2 days.'))).toBe(true);
+    expect(responseTime.some((pattern) => pattern.test('Respondemos en 24 horas.'))).toBe(true);
+    expect(responseTime.some((pattern) => pattern.test('We read every message.'))).toBe(false);
+  });
+});

@@ -25,6 +25,15 @@ export const enSite = {
   'page.about.title': 'About | Maestro Calc',
   'page.about.description':
     'Who writes Maestro Calc, how we use AI and how to report an error. Our editorial policy in plain language.',
+  'page.privacy.title': 'Privacy | Maestro Calc',
+  'page.privacy.description':
+    'What Maestro Calc collects and what it does not: no cookies, no analytics, no advertising and no accounts. Hosted on Cloudflare.',
+  'page.terms.title': 'Terms | Maestro Calc',
+  'page.terms.description':
+    'The terms for using Maestro Calc: results are estimates, to be checked with a qualified professional and your local code.',
+  'page.contact.title': 'Contact | Maestro Calc',
+  'page.contact.description':
+    'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

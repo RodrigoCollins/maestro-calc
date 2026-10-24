@@ -12,13 +12,16 @@ describe('route ids against the site catalog (site-seo › Titles and descriptio
     >();
   });
 
-  it('lists the methodology and about pages as ids, so their catalog keys are required', () => {
-    expectTypeOf<'methodology' | 'about'>().toExtend<PageId>();
+  it('lists the trust pages as ids, so their catalog keys are required', () => {
+    expectTypeOf<'methodology' | 'about' | 'privacy' | 'terms' | 'contact'>().toExtend<PageId>();
     expectTypeOf<
       | 'page.methodology.title'
       | 'page.methodology.description'
       | 'page.about.title'
       | 'page.about.description'
+      | 'page.privacy.title'
+      | 'page.terms.description'
+      | 'page.contact.title'
     >().toExtend<keyof typeof enSite>();
   });
 

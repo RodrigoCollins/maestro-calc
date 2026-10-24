@@ -12,6 +12,12 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
       'es/metodologia.html',
       'about.html',
       'es/sobre-nosotros.html',
+      'privacy.html',
+      'es/privacidad.html',
+      'terms.html',
+      'es/terminos.html',
+      'contact.html',
+      'es/contacto.html',
       '404.html',
       'es/404.html',
     ]);
