@@ -90,6 +90,7 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
       'npm run typecheck',
       'npm run test:coverage',
       'npm run build',
+      'npm run check:site',
       'npm run check:dist',
     ]);
     for (const job of Object.values(workflow.jobs)) {
@@ -98,6 +99,19 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
         expect(step['continue-on-error']).toBeUndefined();
       }
     }
+  });
+
+  // spec: quality-gates › [QGW5] site gate order
+  it('runs check:site immediately after the build and check:dist last', () => {
+    const build = commands.indexOf('npm run build');
+    expect(build).toBeGreaterThan(0);
+    expect(commands[build + 1]).toBe('npm run check:site');
+    expect(commands.at(-1)).toBe('npm run check:dist');
+  });
+
+  // spec: quality-gates › [QGW7] the mutation job never waits for the browser job
+  it('keeps site-browser out of the mutation needs', () => {
+    expect([workflow.jobs['mutation']?.needs].flat()).toEqual(['verify']);
   });
 
   // spec: quality-gates › Continuous integration workflow — local `verify` mirrors CI

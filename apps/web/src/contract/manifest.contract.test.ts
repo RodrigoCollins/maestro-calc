@@ -51,6 +51,26 @@ describe('workspace manifests', () => {
   });
 });
 
+describe('site scripts (monorepo-workspace › [MWW3], [MWW4])', () => {
+  const scriptsOf = (dir: string): Record<string, string> =>
+    (
+      JSON.parse(readFileSync(fromRoot(dir, 'package.json'), 'utf8')) as {
+        scripts: Record<string, string>;
+      }
+    ).scripts;
+
+  it('has check:site at the root, delegating to the web workspace', () => {
+    expect(scriptsOf('.')['check:site']).toBe('npm run check:site -w @maestro-calc/web');
+    expect(scriptsOf('apps/web')['check:site']).toBe('node scripts/check-site.ts');
+  });
+
+  it('ends verify with build, check:site, check:dist', () => {
+    expect(scriptsOf('.')['verify']).toMatch(
+      / && npm run build && npm run check:site && npm run check:dist$/,
+    );
+  });
+});
+
 describe('tsconfig layout (monorepo-workspace › Toolchain pins)', () => {
   const leaves = (dir: string, names: string[]): string[] => names.map((name) => `${dir}/${name}`);
   const layout: Record<string, string[]> = {

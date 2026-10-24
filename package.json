@@ -21,12 +21,13 @@
     "test:coverage": "vitest run --coverage",
     "mutation": "node scripts/mutation.mjs",
     "check:dist": "node scripts/check-dist.mjs",
+    "check:site": "npm run check:site -w @maestro-calc/web",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:dist"
+    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:site && npm run check:dist"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",

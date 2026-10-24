@@ -31,6 +31,8 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:coverage
       - run: npm run build
+      # QGW5: the built HTML is checked right after the build, before the dist guard.
+      - run: npm run check:site
       # MW11b: the packages ship source, so a build must leave no `dist` behind.
       - run: npm run check:dist
 
