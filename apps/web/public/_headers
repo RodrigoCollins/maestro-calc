@@ -1,4 +1,6 @@
 # Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
+# style-src keeps 'unsafe-inline' on purpose: Astro inlines all page CSS into <style> tags (no
+# external stylesheet, no nonce at build time). Scripts stay at 'none', which is the rule that matters.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

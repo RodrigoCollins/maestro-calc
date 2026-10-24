@@ -39,7 +39,7 @@ Every page MUST have exactly one `<h1>` with non-empty text. Heading levels MUST
 
 ### Requirement: Structured data
 
-Both home pages MUST contain JSON-LD (`<script type="application/ld+json">`) that parses as JSON and declares exactly one `Organization` and one `WebSite`. `Organization` MUST have `name` `Maestro Calc` and `url` `https://maestrocalc.com` and MUST NOT contain a `logo` property (D8). `WebSite` MUST have `name` `Maestro Calc`, `url` equal to the page's own canonical URL and `inLanguage` equal to `en-US` or `es-US`. Any JSON-LD on any other page MUST parse and MUST NOT declare types the page does not support (`Product`, `Review`, `AggregateRating`, `FAQPage`, `BreadcrumbList` are forbidden in this change).
+Both home pages MUST contain JSON-LD (`<script type="application/ld+json">`) that parses as JSON and declares exactly one `Organization` and one `WebSite`. `Organization` MUST have `name` `Maestro Calc` and `url` `https://maestrocalc.com` and MUST NOT contain a `logo` property (D8). `WebSite` MUST have `name` `Maestro Calc`, `url` equal to the page's own canonical URL and `inLanguage` equal to `en-US` or `es-US`. Any JSON-LD on any other page MUST parse and MUST NOT declare types the page does not support (`Product`, `Review`, `AggregateRating`, `FAQPage`, `BreadcrumbList`, `Person` are forbidden in this change).
 
 #### Scenario: [SE6] Home JSON-LD
 - GIVEN built `/` and `/es`
