@@ -1,4 +1,5 @@
 package-lock.json
+tooling/site-browser/package-lock.json
 node_modules
 dist
 .astro
