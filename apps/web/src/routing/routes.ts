@@ -53,6 +53,9 @@ const PATH_SHAPE = /^\/([a-z0-9-]+(\/[a-z0-9-]+)*)?$/;
 
 const isSpanishPath = (path: string): boolean => path === '/es' || path.startsWith('/es/');
 
+/** The locale that owns a path: Spanish under `/es`, English everywhere else (unknown paths too). */
+export const localeOfPath = (path: string): Locale => (isSpanishPath(path) ? 'es' : 'en');
+
 /** What is wrong with a table, one line each: the invariants of site-routing-i18n. */
 export const routeProblems = (table: RouteTable): string[] => {
   const seen = new Set<string>();

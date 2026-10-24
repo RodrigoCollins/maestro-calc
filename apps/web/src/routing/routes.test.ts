@@ -4,6 +4,7 @@ import {
   alternatesOf,
   LOCALE_TAGS,
   LOCALES,
+  localeOfPath,
   NOT_FOUND_ID,
   notFoundPathOf,
   pathOf,
@@ -17,6 +18,21 @@ const fixture = {
   about: { en: '/about', es: '/es/sobre-nosotros' },
   methodology: { en: '/methodology', es: '/es/metodologia' },
 } as const;
+
+describe('locale of a path (site-routing-i18n › [SR11], [SR12])', () => {
+  it.each([
+    ['/', 'en'],
+    ['/about', 'en'],
+    ['/essay', 'en'],
+    ['/does-not-exist', 'en'],
+    ['/es', 'es'],
+    ['/es/', 'es'],
+    ['/es/metodologia', 'es'],
+    ['/es/a/b/c', 'es'],
+  ] as const)('%s belongs to %s', (path, locale) => {
+    expect(localeOfPath(path)).toBe(locale);
+  });
+});
 
 describe('route table (site-routing-i18n › Route table)', () => {
   it('lists the locales once, in tag order, and names the not-found page', () => {

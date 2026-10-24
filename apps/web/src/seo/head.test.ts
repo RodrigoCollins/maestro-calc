@@ -40,12 +40,12 @@ describe('head data (site-seo › Titles, descriptions and canonicals)', () => {
 
   // spec: site-routing-i18n › [SR14]
   it('marks the not-found head noindex, without canonical or alternates', () => {
-    expect(notFoundHead('es', text)).toStrictEqual({
+    expect(notFoundHead(text)).toStrictEqual({
       title: '«page.notFound.title»',
       description: '«page.notFound.description»',
       robots: 'noindex',
     });
-    expect(notFoundHead('en', (key) => key.toUpperCase())).toStrictEqual({
+    expect(notFoundHead((key) => key.toUpperCase())).toStrictEqual({
       title: 'PAGE.NOTFOUND.TITLE',
       description: 'PAGE.NOTFOUND.DESCRIPTION',
       robots: 'noindex',
