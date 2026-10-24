@@ -11,7 +11,7 @@ Estos términos explican cómo usar Maestro Calc. Al usar el sitio, los aceptas.
 
 ## Los resultados son estimaciones
 
-Cada resultado es una estimación. Verifícalo con un profesional calificado y con el código local antes de comprar materiales o construir.
+Cada resultado es una estimación. Verifícalo con un profesional calificado y con el código de construcción local antes de comprar materiales o construir.
 
 ## Sin garantía
 

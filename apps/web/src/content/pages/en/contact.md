@@ -11,4 +11,4 @@ Write to us at contacto@maestrocalc.com.
 
 ## Found an error?
 
-Found an error? Tell us which page it is on and what looks wrong. If you can, include the numbers you entered and the result you got. Confirmed errors are corrected and logged on the [about page](/about#corrections).
+Tell us which page it is on and what looks wrong. If you can, include the numbers you entered and the result you got. Confirmed errors are corrected and logged on the [about page](/about#corrections).

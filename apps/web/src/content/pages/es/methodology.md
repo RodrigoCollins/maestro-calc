@@ -7,7 +7,7 @@ ownerReview: pending
 
 # Cómo calculamos
 
-Maestro Calc crea calculadoras de obra. Esta página describe las reglas que sigue cada calculadora. Todavía no hay ninguna calculadora publicada, así que aquí no hay fórmulas, rendimientos ni fuentes que listar. Cada calculadora seguirá todo lo que sigue cuando se publique.
+Maestro Calc crea calculadoras de obra. Esta página describe las reglas que sigue cada calculadora. Todavía no hay ninguna calculadora publicada, así que aquí no hay fórmulas, rendimientos ni fuentes que listar. Cada calculadora cumplirá estas reglas cuando se publique.
 
 ## Cálculos exactos
 
