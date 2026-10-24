@@ -17,6 +17,9 @@ export const ROUTES = {
   home: { en: '/', es: '/es' },
   methodology: { en: '/methodology', es: '/es/metodologia' },
   about: { en: '/about', es: '/es/sobre-nosotros' },
+  privacy: { en: '/privacy', es: '/es/privacidad' },
+  terms: { en: '/terms', es: '/es/terminos' },
+  contact: { en: '/contact', es: '/es/contacto' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

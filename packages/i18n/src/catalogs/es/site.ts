@@ -28,6 +28,15 @@ export const esSite = {
   'page.about.title': 'Sobre nosotros | Maestro Calc',
   'page.about.description':
     'Quién escribe Maestro Calc, cómo usamos la IA y cómo avisarnos de un error. Nuestra política editorial, en lenguaje claro.',
+  'page.privacy.title': 'Privacidad | Maestro Calc',
+  'page.privacy.description':
+    'Qué recopila Maestro Calc y qué no: sin cookies, sin analítica, sin publicidad y sin cuentas. El sitio se aloja en Cloudflare.',
+  'page.terms.title': 'Términos | Maestro Calc',
+  'page.terms.description':
+    'Los términos de uso de Maestro Calc: los resultados son estimaciones y debes verificarlos con un profesional calificado y el código local.',
+  'page.contact.title': 'Contacto | Maestro Calc',
+  'page.contact.description':
+    'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

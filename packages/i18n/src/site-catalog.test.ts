@@ -92,7 +92,7 @@ describe('site catalog: shell strings (i18n-catalog › Site scope)', () => {
 
 describe('site catalog: page metadata (site-seo › Titles and descriptions)', () => {
   it('has the routable pages and the not-found page in both locales', () => {
-    const ids = ['home', 'methodology', 'about', 'notFound'];
+    const ids = ['home', 'methodology', 'about', 'privacy', 'terms', 'contact', 'notFound'];
     expect(pageIds(enSite)).toEqual(ids);
     expect(pageIds(esSite)).toEqual(ids);
   });

@@ -55,7 +55,16 @@ describe('link lists (site-routing-i18n › [SR2]; site-shell › [SS12, SS13])'
     ]);
   });
 
-  it('has no footer links in the real table until the legal pages exist', () => {
-    expect(linksFor(FOOTER, 'es')).toEqual([]);
+  it('offers the legal and contact links of the real table in both locales', () => {
+    expect(linksFor(FOOTER, 'en').map(({ href }) => href)).toEqual([
+      '/privacy',
+      '/terms',
+      '/contact',
+    ]);
+    expect(linksFor(FOOTER, 'es').map(({ href }) => href)).toEqual([
+      '/es/privacidad',
+      '/es/terminos',
+      '/es/contacto',
+    ]);
   });
 });

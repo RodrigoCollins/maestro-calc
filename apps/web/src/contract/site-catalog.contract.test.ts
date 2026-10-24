@@ -34,11 +34,11 @@ describe('route table and site catalog agree (i18n-catalog › [ICW1, ICW4, ICW7
     expect(routeCatalogProblems(ids, { en: enSite, es: withoutDescription })).toEqual([
       'es: missing page.home.description',
     ]);
-    expect(routeCatalogProblems([...ids, 'contact'], catalogs)).toEqual([
-      'en: missing page.contact.title',
-      'en: missing page.contact.description',
-      'es: missing page.contact.title',
-      'es: missing page.contact.description',
+    expect(routeCatalogProblems([...ids, 'pricing'], catalogs)).toEqual([
+      'en: missing page.pricing.title',
+      'en: missing page.pricing.description',
+      'es: missing page.pricing.title',
+      'es: missing page.pricing.description',
     ]);
   });
 

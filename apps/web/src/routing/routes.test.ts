@@ -59,9 +59,12 @@ describe('route table (site-routing-i18n › Route table)', () => {
   });
 
   // spec: site-routing-i18n › Route table (methodology and about enter with their pages)
-  it('lists the methodology and about pages with translated Spanish slugs', () => {
+  it('lists the trust pages with translated Spanish slugs', () => {
     expect(ROUTES.methodology).toEqual({ en: '/methodology', es: '/es/metodologia' });
     expect(ROUTES.about).toEqual({ en: '/about', es: '/es/sobre-nosotros' });
+    expect(ROUTES.privacy).toEqual({ en: '/privacy', es: '/es/privacidad' });
+    expect(ROUTES.terms).toEqual({ en: '/terms', es: '/es/terminos' });
+    expect(ROUTES.contact).toEqual({ en: '/contact', es: '/es/contacto' });
   });
 
   // spec: site-routing-i18n › Table invariants hold
@@ -133,6 +136,12 @@ describe('route helpers (site-routing-i18n › Paths, URLs and alternates)', () 
       { params: { path: 'es/metodologia' }, props: { id: 'methodology', locale: 'es' } },
       { params: { path: 'about' }, props: { id: 'about', locale: 'en' } },
       { params: { path: 'es/sobre-nosotros' }, props: { id: 'about', locale: 'es' } },
+      { params: { path: 'privacy' }, props: { id: 'privacy', locale: 'en' } },
+      { params: { path: 'es/privacidad' }, props: { id: 'privacy', locale: 'es' } },
+      { params: { path: 'terms' }, props: { id: 'terms', locale: 'en' } },
+      { params: { path: 'es/terminos' }, props: { id: 'terms', locale: 'es' } },
+      { params: { path: 'contact' }, props: { id: 'contact', locale: 'en' } },
+      { params: { path: 'es/contacto' }, props: { id: 'contact', locale: 'es' } },
     ]);
     expect(staticPaths()).toHaveLength(2 * Object.keys(ROUTES).length);
     expect(staticPaths(fixture).map(({ params }) => params.path)).toEqual([
