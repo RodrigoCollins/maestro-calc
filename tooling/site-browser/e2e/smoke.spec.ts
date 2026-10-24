@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
+import { LOCALES } from '../../../apps/web/src/routing/routes.ts';
 import { langOf, routable, unknown } from './urls.ts';
 
 const headersFile = readFileSync(
@@ -85,8 +87,17 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         await page.goto(path);
         const count = await shellLinks(page).count();
         expect(count).toBeGreaterThanOrEqual(3);
+        const locale = LOCALES.find((candidate) => langOf(path).startsWith(candidate)) ?? 'en';
+        const hrefs = await shellLinks(page).evaluateAll((links) =>
+          links.map((link) => link.getAttribute('href')),
+        );
+        for (const { href } of linksFor([...HEADER_PAGES, ...FOOTER_PAGES], locale)) {
+          expect(hrefs).toContain(href);
+        }
         for (let index = 0; index < count; index += 1) {
           await page.keyboard.press('Tab');
+          // The outline belongs to the shell link the keyboard is meant to reach, in document order.
+          await expect(shellLinks(page).nth(index)).toBeFocused();
           const { color, width } = await page.evaluate(() => {
             const style = getComputedStyle(document.activeElement ?? document.body);
             return { color: style.outlineColor, width: Number.parseFloat(style.outlineWidth) };
@@ -139,21 +150,36 @@ test.describe('unknown paths (site-routing-i18n › [SR11], [SR12])', () => {
 });
 
 test.describe('Workers asset rules (design: Cloudflare Workers Assets Behaviour)', () => {
-  test('redirects /es/ to /es with one hop, and ends on a 200', async ({ page }) => {
+  test('reaches /es from /es/ in at most one redirect (307) and ends on a 200', async ({
+    page,
+  }) => {
     const response = await page.goto('/es/');
     expect(response?.status()).toBe(200);
     expect(new URL(page.url()).pathname).toBe('/es');
-    expect(response?.request().redirectedFrom()?.redirectedFrom()).toBeNull();
+    const hop = response?.request().redirectedFrom() ?? null;
+    if (hop !== null) {
+      expect(hop.redirectedFrom()).toBeNull();
+      expect((await hop.response())?.status()).toBe(307);
+    }
   });
 
-  test('sends the security headers of _headers on a page', async ({ request }) => {
-    const headers = (await request.get('/')).headers();
-    expect(headers['x-content-type-options']).toBe(declared('X-Content-Type-Options'));
-    expect(headers['referrer-policy']).toBe(declared('Referrer-Policy'));
-    expect(headers['permissions-policy']).toBe(declared('Permissions-Policy'));
-    expect(headers['content-security-policy']).toBe(declared('Content-Security-Policy'));
-    expect(headers['set-cookie']).toBeUndefined();
-  });
+  for (const [path, status] of [
+    ['/', 200],
+    ['/does-not-exist', 404],
+  ] as const) {
+    test(`sends the security headers of _headers on ${path} (${String(status)})`, async ({
+      request,
+    }) => {
+      const response = await request.get(path);
+      expect(response.status()).toBe(status);
+      const headers = response.headers();
+      expect(headers['x-content-type-options']).toBe(declared('X-Content-Type-Options'));
+      expect(headers['referrer-policy']).toBe(declared('Referrer-Policy'));
+      expect(headers['permissions-policy']).toBe(declared('Permissions-Policy'));
+      expect(headers['content-security-policy']).toBe(declared('Content-Security-Policy'));
+      expect(headers['set-cookie']).toBeUndefined();
+    });
+  }
 
   test('caches hashed assets as immutable and pages not at all', async ({ page, request }) => {
     await page.goto('/');

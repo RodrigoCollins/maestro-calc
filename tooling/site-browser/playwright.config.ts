@@ -26,6 +26,9 @@ export default defineConfig({
     command: 'npx wrangler dev --config wrangler.e2e.jsonc --port 8787 --ip 127.0.0.1',
     url: origin,
     reuseExistingServer: false,
+    // Piped so a failed wrangler boot shows its own output instead of a bare timeout.
+    stdout: 'pipe',
+    stderr: 'pipe',
     env: { WRANGLER_SEND_METRICS: 'false' },
     timeout: 60_000,
   },
