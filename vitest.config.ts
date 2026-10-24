@@ -9,7 +9,12 @@ export default defineConfig({
     projects: ['packages/*', 'apps/web'],
     coverage: {
       provider: 'v8',
-      include: ['packages/*/src/**', 'apps/web/src/routing/**', 'apps/web/src/seo/**'],
+      include: [
+        'packages/*/src/**',
+        'apps/web/src/routing/**',
+        'apps/web/src/seo/**',
+        'apps/web/src/site-check/**',
+      ],
       exclude: [...testGlobs, '**/*.d.ts'],
       thresholds: {
         ...ninety,
@@ -18,6 +23,7 @@ export default defineConfig({
         'packages/i18n/src/**': ninety,
         'apps/web/src/routing/**': full,
         'apps/web/src/seo/**': full,
+        'apps/web/src/site-check/**': full,
       },
     },
   },
