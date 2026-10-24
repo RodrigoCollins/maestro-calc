@@ -273,6 +273,23 @@ describe('lint gate (quality-gates, monorepo-workspace)', () => {
     },
   );
 
+  // G1 review carry-over: the web app is shipped code too, so the same rule applies to its sources
+  it('rejects a widening type assertion in apps/web sources but not in its tests', async () => {
+    const code = 'export const v = JSON.parse("1") as unknown as string;\n';
+    const [source] = await typedEslint.lintText(code, {
+      filePath: fromRoot('apps/web/src/lib/site-text.ts'),
+    });
+    expect(source?.messages.map((message) => message.ruleId)).toContain(
+      '@typescript-eslint/no-unsafe-type-assertion',
+    );
+    const [test] = await typedEslint.lintText(code, {
+      filePath: fromRoot('apps/web/src/lib/site-text.test.ts'),
+    });
+    expect(test?.messages.map((message) => message.ruleId)).not.toContain(
+      '@typescript-eslint/no-unsafe-type-assertion',
+    );
+  });
+
   // spec: quality-gates › Ignore pragma forbidden [QG9]
   it.each(['v8 ignore next', 'c8 ignore next', 'istanbul ignore next'])(
     'rejects the coverage pragma "%s" in core, tests and test support included',

@@ -267,7 +267,7 @@ export default defineConfig(
   },
   {
     // Widening assertions defeat the type checker (spec: quality-gates, Lint gate).
-    files: inPackages('src/**/*.{ts,mts,cts,tsx}'),
+    files: [...inPackages('src/**/*.{ts,mts,cts,tsx}'), 'apps/web/src/**/*.{ts,mts,cts,tsx}'],
     ignores: testGlobs,
     rules: { '@typescript-eslint/no-unsafe-type-assertion': 'error' },
   },
