@@ -1,0 +1,125 @@
+---
+import type { Choice, Field, FormView } from './model.ts';
+
+interface Props {
+  form: FormView;
+}
+const { form } = Astro.props;
+const { unitsLabel, units, shapeLabel, shapes, groups, waste, bagLabel, bags, prices, copyLabel } =
+  form;
+const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' : 'false');
+const fieldId = (scope: string, field: Field) => `calc-${scope}-${field.key}`;
+---
+
+<form class="calc-form" autocomplete="off" novalidate>
+  <div class="calc-group" role="group" aria-labelledby="calc-units-label">
+    <span class="calc-legend" id="calc-units-label">
+      {unitsLabel}
+    </span>
+    {units.map((choice) => (
+      <button
+        class="calc-choice"
+        type="button"
+        data-unit={choice.id}
+        aria-pressed={pressed(choice)}
+        disabled
+      >
+        {choice.label}
+      </button>
+    ))}
+  </div>
+  <div class="calc-group" role="group" aria-labelledby="calc-shape-label">
+    <span class="calc-legend" id="calc-shape-label">
+      {shapeLabel}
+    </span>
+    {shapes.map((choice) => (
+      <button
+        class="calc-choice"
+        type="button"
+        data-shape-button={choice.id}
+        aria-pressed={pressed(choice)}
+        disabled
+      >
+        {choice.label}
+      </button>
+    ))}
+  </div>
+  <div class="calc-shape-area" data-reserved="shape">
+    {groups.map(({ id, visible, fields }) => (
+      <div class="calc-fields" data-shape={id} hidden={!visible}>
+        {fields.map((field) => (
+          <div class="calc-field">
+            <label for={fieldId(id, field)}>{field.label}</label>
+            <input
+              id={fieldId(id, field)}
+              name={field.key}
+              type="text"
+              inputmode={field.mode}
+              autocomplete="off"
+              value={field.value}
+              disabled
+            />
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+  <div class="calc-field">
+    <label for="calc-waste">{waste.label}</label>
+    <input
+      id="calc-waste"
+      name={waste.key}
+      type="text"
+      inputmode={waste.mode}
+      autocomplete="off"
+      value={waste.value}
+      disabled
+    />
+    <p class="calc-help">{waste.help}</p>
+  </div>
+  <div class="calc-steppers" data-reserved="steppers">
+    <button class="calc-choice" type="button" data-waste-step="less" hidden disabled>
+      {waste.less}
+    </button>
+    <button class="calc-choice" type="button" data-waste-step="more" hidden disabled>
+      {waste.more}
+    </button>
+  </div>
+  <div class="calc-group" role="group" aria-labelledby="calc-bag-label">
+    <span class="calc-legend" id="calc-bag-label">
+      {bagLabel}
+    </span>
+    {bags.map((choice) => (
+      <button
+        class="calc-choice"
+        type="button"
+        data-bag={choice.id}
+        aria-pressed={pressed(choice)}
+        disabled
+      >
+        {choice.label}
+      </button>
+    ))}
+  </div>
+  {prices.map((field) => (
+    <div class="calc-field">
+      <label for={fieldId('price', field)}>{field.label}</label>
+      <input
+        id={fieldId('price', field)}
+        name={field.key}
+        type="text"
+        inputmode={field.mode}
+        autocomplete="off"
+        value={field.value}
+        placeholder={field.placeholder}
+        disabled
+      />
+    </div>
+  ))}
+  <div class="calc-copy" data-reserved="copy">
+    <button class="calc-choice" type="button" data-copy hidden disabled>
+      {copyLabel}
+    </button>
+    <p class="calc-status" data-copy-status role="status"></p>
+  </div>
+</form>

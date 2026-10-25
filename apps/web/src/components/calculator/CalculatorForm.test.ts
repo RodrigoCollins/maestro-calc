@@ -1,0 +1,165 @@
+import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { describe, expect, it } from 'vitest';
+import { renderComponent } from '../../__testing__/render-component.ts';
+import { concreteView } from '../../lib/calculator-page.ts';
+import CalculatorForm from './CalculatorForm.astro';
+
+const render = (locale: 'en' | 'es') =>
+  renderComponent(CalculatorForm, { form: concreteView(locale).form });
+
+describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP12], [CP41] static)', () => {
+  // spec: calculator-page › [CP11] all four shape groups are in the HTML, only the slab is visible
+  it('holds the fields of each shape in the order of the spec, with only the slab visible', async () => {
+    const root = await render('en');
+    const groups = root.querySelectorAll('[data-shape]');
+    expect(groups.map((group) => group.getAttribute('data-shape'))).toEqual([
+      'slab',
+      'footing',
+      'column',
+      'steps',
+    ]);
+    expect(groups.map((group) => group.hasAttribute('hidden'))).toEqual([false, true, true, true]);
+    expect(
+      groups.map((group) =>
+        group.querySelectorAll('input').map((input) => input.getAttribute('name')),
+      ),
+    ).toEqual([
+      ['length', 'width', 'thickness'],
+      ['length', 'footingWidth', 'footingDepth', 'count'],
+      ['diameter', 'height', 'count'],
+      ['stepWidth', 'rise', 'run', 'stepCount'],
+    ]);
+  });
+
+  // spec: calculator-page › Form controls: the default text of each input
+  it('shows the default text of every field, in the unit the field is read in', async () => {
+    const root = await render('en');
+    const valueOf = (name: string) =>
+      root.querySelector(`input[name="${name}"]`)?.getAttribute('value');
+    expect(
+      [
+        'length',
+        'width',
+        'thickness',
+        'footingWidth',
+        'footingDepth',
+        'diameter',
+        'height',
+        'stepWidth',
+        'rise',
+        'run',
+        'stepCount',
+        'count',
+        'waste',
+      ].map(valueOf),
+    ).toEqual([
+      '12 ft',
+      '10 ft',
+      '4 in',
+      '16 in',
+      '8 in',
+      '12 in',
+      '8 ft',
+      '4 ft',
+      '7 in',
+      '11 in',
+      '3',
+      '1',
+      '10',
+    ]);
+  });
+
+  it('leaves the prices empty with the 0.00 placeholder', async () => {
+    const root = await render('en');
+    for (const name of ['bagPrice', 'readyMixPrice']) {
+      const input = root.querySelector(`input[name="${name}"]`);
+      expect(input?.getAttribute('value'), name).toBe('');
+      expect(input?.getAttribute('placeholder'), name).toBe('0.00');
+    }
+  });
+
+  // spec: calculator-page › [CP12] labels, keyboards, no submit button
+  it.each([
+    ['en', enConcrete],
+    ['es', esConcrete],
+  ] as const)(
+    'labels every %s input with its catalog text and the right keyboard',
+    async (locale, catalog) => {
+      const root = await render(locale);
+      const inputs = root.querySelectorAll('input');
+      expect(inputs).toHaveLength(17);
+      for (const input of inputs) {
+        const name = input.getAttribute('name') ?? '';
+        const label = root.querySelector(`label[for="${input.getAttribute('id') ?? ''}"]`);
+        expect(label?.text.trim(), name).toBe(
+          catalog[`calc.concrete.inputs.${name}` as keyof typeof catalog],
+        );
+        expect(input.getAttribute('autocomplete'), name).toBe('off');
+        expect(input.getAttribute('inputmode'), name).toBe(
+          name === 'count' || name === 'stepCount' ? 'numeric' : 'decimal',
+        );
+      }
+      expect(new Set(inputs.map((input) => input.getAttribute('id'))).size).toBe(inputs.length);
+      expect(root.querySelectorAll('button[type=submit], input[type=submit]')).toHaveLength(0);
+      expect(
+        root.querySelectorAll('button').every((button) => button.getAttribute('type') === 'button'),
+      ).toBe(true);
+    },
+  );
+
+  // spec: calculator-page › [CP11] single-choice buttons form a labelled group with aria-pressed
+  it('exposes the unit, shape and bag choices as pressed buttons in labelled groups', async () => {
+    const root = await render('en');
+    const pressed = (selector: string) =>
+      root
+        .querySelectorAll(selector)
+        .map((button) => [button.text.trim(), button.getAttribute('aria-pressed')]);
+    expect(pressed('[data-unit]')).toEqual([
+      ['US (ft, in)', 'true'],
+      ['Metric (m, cm)', 'false'],
+    ]);
+    expect(pressed('[data-shape-button]')).toEqual([
+      ['Slab', 'true'],
+      ['Footing', 'false'],
+      ['Column', 'false'],
+      ['Steps', 'false'],
+    ]);
+    expect(pressed('[data-bag]')).toEqual([
+      ['40 lb', 'false'],
+      ['60 lb', 'false'],
+      ['80 lb', 'true'],
+    ]);
+    const groups = root.querySelectorAll('[role=group]');
+    expect(groups).toHaveLength(3);
+    for (const group of groups) {
+      const labelled = group.getAttribute('aria-labelledby') ?? '';
+      expect(root.querySelector(`#${labelled}`)?.text.trim(), labelled).not.toBe('');
+    }
+  });
+
+  // spec: calculator-page › [CP41] static: disabled controls, the script-only controls hidden
+  it('renders every control disabled and hides the steppers and the copy button', async () => {
+    const root = await render('en');
+    const controls = root.querySelectorAll('input, button');
+    expect(controls.length).toBeGreaterThan(20);
+    expect(controls.every((control) => control.hasAttribute('disabled'))).toBe(true);
+    expect(
+      root.querySelectorAll('[data-waste-step]').map((button) => button.hasAttribute('hidden')),
+    ).toEqual([true, true]);
+    expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
+    expect(root.querySelector('[data-copy]')?.text.trim()).toBe('Copy link');
+    expect(root.querySelector('[data-waste-step="less"]')?.text.trim()).toBe('Less extra');
+  });
+
+  it('keeps the reserved areas of the form (shape area, copy status)', async () => {
+    const root = await render('en');
+    expect(
+      root.querySelectorAll('[data-reserved]').map((el) => el.getAttribute('data-reserved')),
+    ).toEqual(['shape', 'steppers', 'copy']);
+    expect(root.querySelector('[data-copy-status]')?.getAttribute('role')).toBe('status');
+    expect(root.querySelector('.calc-help')?.text.trim()).toBe(
+      enConcrete['calc.concrete.page.wasteHelp'],
+    );
+  });
+});
