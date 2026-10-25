@@ -1,7 +1,7 @@
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { alternatesIn, attr, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
-import { problem } from './types.ts';
+import { isCalculatorPage, problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
 /** Whole words that mean a page still carries review state (a bare `pending` is allowed). */
@@ -16,14 +16,26 @@ export const OLD_ADDRESS = ['hello', 'maestrocalc.com'].join('@');
  */
 const MESSAGE_KEY = /\b(?:errors\.[a-z]|calc\.[a-z][a-z0-9-]*\.[a-z])/i;
 
+/** Types a page that is neither a calculator page nor a home page may never declare. */
 const FORBIDDEN_TYPES = [
   'Product',
   'Review',
   'AggregateRating',
   'FAQPage',
   'BreadcrumbList',
+  'WebApplication',
   'Person',
 ];
+
+/** The three types of a calculator page, once each (site-seo › Calculator structured data). */
+const CALCULATOR_TYPES = ['WebApplication', 'BreadcrumbList', 'FAQPage'];
+
+/** What the `WebApplication` may never claim: it is a free tool without ratings, offers or images. */
+const WEB_APPLICATION_FORBIDDEN = ['offers', 'aggregateRating', 'review', 'ratingValue', 'image'];
+
+const HOME_NAME = { en: 'Home', es: 'Inicio' } as const;
+const FAQ_SECTION_IDS = ['faq', 'preguntas-frecuentes'];
+const MIN_FAQ_ITEMS = 4;
 
 const SITEMAP_URL = urlOf('/sitemap.xml');
 
@@ -206,6 +218,143 @@ const homeNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): strin
   ];
 };
 
+const normalized = (text: string): string => text.replace(/\s+/g, ' ').trim();
+
+interface FaqItem {
+  readonly question: string;
+  readonly answer: string;
+}
+
+/** The visible FAQ: each `h3` of the FAQ section with the text that follows it up to the next heading. */
+const visibleFaq = (page: Page): FaqItem[] => {
+  const heading = page.root
+    .querySelectorAll('h2')
+    .find((candidate) => FAQ_SECTION_IDS.includes(attr(candidate, 'id')));
+  const items: { question: string; answer: string[] }[] = [];
+  for (
+    let element = heading?.nextElementSibling ?? null;
+    element !== null && element.tagName !== 'H2';
+    element = element.nextElementSibling
+  ) {
+    if (element.tagName === 'H3') items.push({ question: normalized(element.text), answer: [] });
+    else items.at(-1)?.answer.push(element.text);
+  }
+  return items.map(({ question, answer }) => ({ question, answer: normalized(answer.join(' ')) }));
+};
+
+const textOf = (value: unknown): string => (typeof value === 'string' ? normalized(value) : '');
+
+const nodesIn = (value: unknown): Node[] => (Array.isArray(value) ? value.filter(isNode) : []);
+
+const headingOf = (page: Page): string => normalized(page.root.querySelector('h1')?.text ?? '');
+
+const webApplicationProblems = (page: Page, site: Site, app: Node): string[] => {
+  const heading = headingOf(page);
+  const canonical = urlOfPage(page, site);
+  const expected: [string, unknown, unknown][] = [
+    ['name', app['name'], heading],
+    ['url', app['url'], canonical],
+    ['inLanguage', app['inLanguage'], LOCALE_TAGS[page.locale]],
+    ['applicationCategory', app['applicationCategory'], 'UtilitiesApplication'],
+    ['operatingSystem', app['operatingSystem'], 'Any'],
+    ['isAccessibleForFree', app['isAccessibleForFree'], true],
+  ];
+  return [
+    ...expected
+      .filter(([, actual, wanted]) => actual !== wanted)
+      .map(([key, , wanted]) =>
+        key === 'name'
+          ? `the WebApplication name must be the h1 "${heading}"`
+          : `the WebApplication ${key} must be ${String(wanted)}`,
+      ),
+    ...WEB_APPLICATION_FORBIDDEN.filter((key) => key in app).map(
+      (key) => `the WebApplication must not have ${key}`,
+    ),
+  ];
+};
+
+const breadcrumbProblems = (page: Page, site: Site, list: Node): string[] => {
+  const items = nodesIn(list['itemListElement']);
+  const home = urlOf(pathOf('home', page.locale, site.routes));
+  const heading = headingOf(page);
+  const [first, second] = items;
+  const right =
+    items.length === 2 &&
+    first?.['position'] === 1 &&
+    first['name'] === HOME_NAME[page.locale] &&
+    first['item'] === home &&
+    second?.['position'] === 2 &&
+    second['name'] === heading &&
+    second['item'] === urlOfPage(page, site);
+  return right
+    ? []
+    : [
+        `the BreadcrumbList must be ${HOME_NAME[page.locale]} (${home}) then the page (name and canonical)`,
+      ];
+};
+
+const faqProblems = (page: Page, faq: Node): string[] => {
+  const shown = visibleFaq(page);
+  const entities = nodesIn(faq['mainEntity']).map((entity) => ({
+    question: textOf(entity['name']),
+    answer: textOf(nodesIn([entity['acceptedAnswer']]).at(0)?.['text']),
+  }));
+  const parity =
+    entities.length === shown.length
+      ? shown.flatMap(({ question, answer }, index) =>
+          entities
+            .slice(index, index + 1)
+            .flatMap((entity) => [
+              ...(entity.question === question
+                ? []
+                : [
+                    `FAQ question ${String(index + 1)} "${question}" is "${entity.question}" in the FAQPage`,
+                  ]),
+              ...(entity.answer === answer
+                ? []
+                : [`FAQ answer ${String(index + 1)} of the page differs from the FAQPage`]),
+            ]),
+        )
+      : [
+          `the FAQPage has ${String(entities.length)} questions and the page shows ${String(shown.length)}`,
+        ];
+  return [
+    ...parity,
+    ...(shown.length >= MIN_FAQ_ITEMS
+      ? []
+      : [
+          `the page needs at least ${String(MIN_FAQ_ITEMS)} FAQ items, found ${String(shown.length)}`,
+        ]),
+  ];
+};
+
+/** Exactly WebApplication, BreadcrumbList and FAQPage, with the values of site-seo and the FAQ of the page. */
+const calculatorNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] => {
+  const typesOf = (node: Node): unknown[] => [node['@type']].flat();
+  const ofType = (type: string): Node[] => nodes.filter((node) => typesOf(node).includes(type));
+  const [app] = ofType('WebApplication');
+  const [list] = ofType('BreadcrumbList');
+  const [faq] = ofType('FAQPage');
+  return [
+    ...CALCULATOR_TYPES.flatMap((type) =>
+      ofType(type).length === 1
+        ? []
+        : [`expected exactly one ${type}, found ${String(ofType(type).length)}`],
+    ),
+    ...nodes
+      .flatMap(typesOf)
+      .filter((type) => typeof type === 'string' && !CALCULATOR_TYPES.includes(type))
+      .map((type) => `${String(type)} is not allowed on this page`),
+    ...(app === undefined || ofType('WebApplication').length !== 1
+      ? []
+      : webApplicationProblems(page, site, app)),
+    ...(list === undefined || ofType('BreadcrumbList').length !== 1
+      ? []
+      : breadcrumbProblems(page, site, list)),
+    ...(faq === undefined || ofType('FAQPage').length !== 1 ? [] : faqProblems(page, faq)),
+  ];
+};
+
 const jsonLdProblems = (page: Page, site: Site): Problem[] => {
   const blocks = jsonLdBlocks(page);
   const documents: unknown[] = [];
@@ -222,6 +371,8 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
     if (blocks.length !== 1)
       problems.push(`expected one JSON-LD block, found ${String(blocks.length)}`);
     else if (documents.length === 1) problems.push(...homeNodeProblems(page, site, nodes));
+  } else if (isCalculatorPage(page, site)) {
+    problems.push(...calculatorNodeProblems(page, site, nodes));
   } else {
     problems.push(
       ...nodes

@@ -358,7 +358,8 @@ describe('calculator page scripts (site-shell › [SS20])', () => {
     ],
     [
       'an event handler',
-      (h: string) => h.replace('<h2>Result</h2>', '<h2 onclick="x()">Result</h2>'),
+      (h: string) =>
+        h.replace('<h2 id="calc-result-heading">Result</h2>', '<h2 onclick="x()">Result</h2>'),
       'inline-handler',
     ],
     ['an island', inHead('<astro-island></astro-island>'), 'astro-island'],

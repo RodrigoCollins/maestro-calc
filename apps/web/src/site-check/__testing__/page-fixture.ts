@@ -112,7 +112,11 @@ export const faqOf = (locale: Locale): { question: string; answer: string }[] =>
     answer: `Answer ${String(n)} in ${locale}.`,
   }));
 
-const FAQ_ID = { en: 'faq', es: 'preguntas-frecuentes' } as const;
+/** The five content sections of a calculator page (calculator-page › [CP5]). */
+const SECTION_IDS = {
+  en: ['how-to-use', 'formulas', 'tips', 'faq', 'sources'],
+  es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
+} as const;
 
 /** The body of a valid calculator page: breadcrumb, h1, result, five sections, sources and date. */
 const calculatorMain = (id: string, locale: Locale, site: Site): string => {
@@ -121,16 +125,17 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     .map(({ question, answer }) => `<h3>${question}</h3><p>${answer}</p>`)
     .join('');
   const updated = site.updates[`${locale}/${id}`] ?? UPDATED;
+  const [how, formulas, tips, faqId, sources] = SECTION_IDS[locale];
   return [
     '<main id="main">',
     `<ol aria-label="Breadcrumb"><li><a href="${home}">Home</a></li><li>${headingOf(id)}</li></ol>`,
     `<h1>${headingOf(id)}</h1>`,
-    '<h2>Result</h2>',
-    '<h2 id="how-to-use">How to use</h2><p>Text.</p>',
-    '<h2 id="formulas">Formulas</h2><p>Text.</p>',
-    '<h2 id="tips">Tips</h2><p>Text.</p>',
-    `<h2 id="${FAQ_ID[locale]}">FAQ</h2>${faq}`,
-    '<h2 id="sources">Sources</h2>',
+    '<h2 id="calc-result-heading">Result</h2>',
+    `<h2 id="${how}">How to use</h2><p>Text.</p>`,
+    `<h2 id="${formulas}">Formulas</h2><p>Text.</p>`,
+    `<h2 id="${tips}">Tips</h2><p>Text.</p>`,
+    `<h2 id="${faqId}">FAQ</h2>${faq}`,
+    `<h2 id="${sources}">Sources</h2>`,
     `<ul><li><a href="${QUIKRETE_URL}">QUIKRETE</a></li><li><a href="${NIST_URL}">NIST</a></li></ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
     '</main>',

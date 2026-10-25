@@ -2,7 +2,7 @@ import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
 import { attr, attrsOf } from './dom.ts';
-import { problem } from './types.ts';
+import { isCalculatorPage, problem } from './types.ts';
 import type { Dist, Page, Problem, Site } from './types.ts';
 
 const FIRST_FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]';
@@ -46,6 +46,55 @@ const headingOrderProblems = (page: Page): Problem[] => {
   );
 };
 
+/** The h2 ids of a calculator page: the result heading, then the five sections (calculator-page › [CP5]). */
+const RESULT_ID = 'calc-result-heading';
+const SECTION_IDS = {
+  en: ['how-to-use', 'formulas', 'tips', 'faq', 'sources'],
+  es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
+} as const;
+const FAQ_IDS = ['faq', 'preguntas-frecuentes'];
+
+const breadcrumbProblems = (page: Page): Problem[] => {
+  const first = page.root.querySelector('main ol[aria-label], main h1');
+  return first?.tagName === 'OL' && attr(first, 'aria-label').trim() !== ''
+    ? []
+    : [problem(page.file, 'breadcrumb', 'a calculator page needs a labelled ol before the h1')];
+};
+
+const sectionProblems = (page: Page): Problem[] => {
+  const ids = attrsOf(page.root, 'main h2', 'id');
+  const expected = [RESULT_ID, ...SECTION_IDS[page.locale]];
+  return ids.join(' ') === expected.join(' ')
+    ? []
+    : [
+        problem(
+          page.file,
+          'sections',
+          `the h2 ids are "${ids.join(' ')}", expected "${expected.join(' ')}"`,
+        ),
+      ];
+};
+
+/** FAQ questions are h3 under the FAQ h2: an h3 anywhere else is a heading out of place (site-seo › [SE18]). */
+const faqHeadingProblems = (page: Page): Problem[] => {
+  let section = '';
+  return page.root.querySelectorAll('main h2, main h3').flatMap((heading) => {
+    if (heading.tagName === 'H2') {
+      section = attr(heading, 'id');
+      return [];
+    }
+    return FAQ_IDS.includes(section)
+      ? []
+      : [
+          problem(
+            page.file,
+            'heading-order',
+            `the h3 "${heading.text.trim()}" is outside the FAQ section`,
+          ),
+        ];
+  });
+};
+
 const skipLinkProblems = (page: Page): Problem[] =>
   page.root.querySelector(FIRST_FOCUSABLE)?.getAttribute('href') === '#main'
     ? []
@@ -58,9 +107,11 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
     ),
   );
   const mailto = `mailto:${site.config.contactEmail}`;
+  // a calculator page may link the sources of its entry; nothing else leaves the site
+  const sources = site.externalLinks?.[page.id] ?? [];
   const idsOf = (target: Page): Set<string> => new Set(attrsOf(target.root, '[id]', 'id'));
   return attrsOf(page.root, 'a[href]', 'href').flatMap((href) => {
-    if (href === mailto || href === FAVICON_PATH) return [];
+    if (href === mailto || href === FAVICON_PATH || sources.includes(href)) return [];
     if (href.startsWith('#')) {
       return idsOf(page).has(href.slice(1))
         ? []
@@ -137,6 +188,9 @@ export const structureProblems = (pages: readonly Page[], site: Site, dist: Dist
     ...linkProblems(page, pages, site),
     ...navigationProblems(page, site),
     ...iconProblems(page),
+    ...(isCalculatorPage(page, site)
+      ? [...breadcrumbProblems(page), ...sectionProblems(page), ...faqHeadingProblems(page)]
+      : []),
   ]),
   ...faviconProblems(dist),
 ];

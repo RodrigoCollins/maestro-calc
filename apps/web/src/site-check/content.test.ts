@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { contentProblems, countPending, OLD_ADDRESS, updatedOf } from './content.ts';
 import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
-import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
+import {
+  CALC_ROUTES,
+  calculatorSite,
+  FIXTURE_ROUTES,
+  fixtureSite,
+  validDist,
+} from './__testing__/page-fixture.ts';
 
 type Edit = (text: string) => string;
 
@@ -470,5 +476,477 @@ describe('trust page update date (trust-pages › [TP6] built side)', () => {
     expect(updatedOf('---\nupdated: "2026-10-23"\n---\n')).toBe('2026-10-23');
     expect(updatedOf('---\nid: about\n---\nupdated: 2026-10-23\n')).toBeUndefined();
     expect(updatedOf('# no frontmatter')).toBeUndefined();
+  });
+});
+
+// ---- the calculator template: exactly WebApplication, BreadcrumbList and FAQPage ----
+
+interface Node extends Record<string, unknown> {
+  '@type': string;
+}
+interface Graph {
+  '@graph': Node[];
+}
+
+const CALC_PAGE = 'concrete-calculator.html';
+const CALC_ES = 'es/calculadora-de-concreto.html';
+const LD = /<script type="application\/ld\+json">(.*?)<\/script>/;
+
+/** Content problems of a valid dist with a calculator page, after `edit` changed its JSON-LD graph or its HTML. */
+const calcProblemsAfter = (
+  edits: Readonly<Record<string, (graph: Node[]) => Node[]>> = {},
+  html: Readonly<Record<string, Edit>> = {},
+) => {
+  const site = calculatorSite();
+  const dist = validDist(site);
+  for (const [file, edit] of Object.entries(edits)) {
+    dist.set(
+      file,
+      (dist.get(file) ?? '').replace(LD, (_match, json: string) => {
+        const graph = JSON.parse(json) as Graph;
+        return `<script type="application/ld+json">${JSON.stringify({ ...graph, '@graph': edit(graph['@graph']) })}</script>`;
+      }),
+    );
+  }
+  for (const [file, edit] of Object.entries(html)) dist.set(file, edit(dist.get(file) ?? ''));
+  return contentProblems(pagesOf(dist, CALC_ROUTES), site, dist);
+};
+
+const messagesOf = (problems: ReturnType<typeof calcProblemsAfter>, file: string): string[] =>
+  problems
+    .filter((entry) => entry.file === file && entry.rule === 'json-ld')
+    .map((entry) => entry.message);
+
+const at = <T>(list: readonly T[], index: number): T => {
+  const found = list[index];
+  if (found === undefined) throw new Error(`no item ${String(index)}`);
+  return found;
+};
+
+/** The items of the BreadcrumbList or the questions of the FAQPage of a graph. */
+const listOf = (graph: Node[], type: string, key: string): Node[] => {
+  const list = node(graph, type)[key];
+  if (!Array.isArray(list)) throw new Error(`${type} has no ${key}`);
+  return list as Node[];
+};
+
+const node = (graph: Node[], type: string): Node => {
+  const found = graph.find((entry) => entry['@type'] === type);
+  if (found === undefined) throw new Error(`no ${type}`);
+  return found;
+};
+
+describe('calculator structured data (site-seo › [SE19], [SE20], [SE21], [SE22])', () => {
+  // spec: site-seo › [SE19] the three types with the values of the spec, in both locales
+  it('accepts the valid calculator pages', () => {
+    expect(calcProblemsAfter()).toEqual([]);
+  });
+
+  // spec: site-seo › [SE21] a forbidden property or type fails, naming the page and the property
+  it.each([
+    [
+      'offers',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['offers'] = {};
+        return graph;
+      },
+      'the WebApplication must not have offers',
+    ],
+    [
+      'aggregateRating',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['aggregateRating'] = {};
+        return graph;
+      },
+      'the WebApplication must not have aggregateRating',
+    ],
+    [
+      'review',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['review'] = {};
+        return graph;
+      },
+      'the WebApplication must not have review',
+    ],
+    [
+      'ratingValue',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['ratingValue'] = 5;
+        return graph;
+      },
+      'the WebApplication must not have ratingValue',
+    ],
+    [
+      'image',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['image'] = 'x';
+        return graph;
+      },
+      'the WebApplication must not have image',
+    ],
+    [
+      'a Product node',
+      (graph: Node[]) => [...graph, { '@type': 'Product' }],
+      'Product is not allowed on this page',
+    ],
+    [
+      'an AggregateRating node',
+      (graph: Node[]) => [...graph, { '@type': 'AggregateRating' }],
+      'AggregateRating is not allowed on this page',
+    ],
+    [
+      'a Person node',
+      (graph: Node[]) => [...graph, { '@type': 'Person' }],
+      'Person is not allowed on this page',
+    ],
+    [
+      'a second WebApplication',
+      (graph: Node[]) => [...graph, { ...node(graph, 'WebApplication') }],
+      'expected exactly one WebApplication, found 2',
+    ],
+  ])('fails %s', (_name, edit, message) => {
+    expect(messagesOf(calcProblemsAfter({ [CALC_PAGE]: edit }), CALC_PAGE)).toContain(message);
+  });
+
+  // spec: site-seo › [SE22] a missing type fails, naming the page and the type
+  it.each(['WebApplication', 'BreadcrumbList', 'FAQPage'])(
+    'fails a page without its %s',
+    (type) => {
+      const found = messagesOf(
+        calcProblemsAfter({
+          [CALC_ES]: (graph) => graph.filter((entry) => entry['@type'] !== type),
+        }),
+        CALC_ES,
+      );
+      expect(found).toContain(`expected exactly one ${type}, found 0`);
+    },
+  );
+
+  it('fails a page without any JSON-LD block', () => {
+    expect(
+      messagesOf(calcProblemsAfter({}, { [CALC_PAGE]: (h) => h.replace(LD, '') }), CALC_PAGE),
+    ).toEqual([
+      'expected exactly one WebApplication, found 0',
+      'expected exactly one BreadcrumbList, found 0',
+      'expected exactly one FAQPage, found 0',
+    ]);
+  });
+
+  // spec: site-seo › [SE19] the property values
+  it.each([
+    [
+      'name',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['name'] = 'Other';
+        return graph;
+      },
+      'the WebApplication name must be the h1 "Heading of concrete"',
+    ],
+    [
+      'url',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['url'] = 'https://maestrocalc.com/x';
+        return graph;
+      },
+      'the WebApplication url must be https://maestrocalc.com/concrete-calculator',
+    ],
+    [
+      'inLanguage',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['inLanguage'] = 'es-US';
+        return graph;
+      },
+      'the WebApplication inLanguage must be en-US',
+    ],
+    [
+      'applicationCategory',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['applicationCategory'] = 'Game';
+        return graph;
+      },
+      'the WebApplication applicationCategory must be UtilitiesApplication',
+    ],
+    [
+      'operatingSystem',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['operatingSystem'] = 'iOS';
+        return graph;
+      },
+      'the WebApplication operatingSystem must be Any',
+    ],
+    [
+      'isAccessibleForFree',
+      (graph: Node[]) => {
+        node(graph, 'WebApplication')['isAccessibleForFree'] = 'true';
+        return graph;
+      },
+      'the WebApplication isAccessibleForFree must be true',
+    ],
+  ])('fails a WebApplication with the wrong %s', (_name, edit, message) => {
+    expect(messagesOf(calcProblemsAfter({ [CALC_PAGE]: edit }), CALC_PAGE)).toEqual([message]);
+  });
+
+  it.each([
+    [
+      'one item',
+      (graph: Node[]) => {
+        node(graph, 'BreadcrumbList')['itemListElement'] = [
+          (node(graph, 'BreadcrumbList')['itemListElement'] as unknown[])[0],
+        ];
+        return graph;
+      },
+    ],
+    [
+      'a wrong home name',
+      (graph: Node[]) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 0)['name'] = 'Start';
+        return graph;
+      },
+    ],
+    [
+      'a wrong home item',
+      (graph: Node[]) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 0)['item'] =
+          'https://maestrocalc.com/es';
+        return graph;
+      },
+    ],
+    [
+      'a wrong second name',
+      (graph: Node[]) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 1)['name'] = 'Other';
+        return graph;
+      },
+    ],
+    [
+      'a wrong second item',
+      (graph: Node[]) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 1)['item'] =
+          'https://maestrocalc.com/x';
+        return graph;
+      },
+    ],
+  ])('fails a BreadcrumbList with %s', (_name, edit) => {
+    expect(messagesOf(calcProblemsAfter({ [CALC_PAGE]: edit }), CALC_PAGE)).toEqual([
+      'the BreadcrumbList must be Home (https://maestrocalc.com/) then the page (name and canonical)',
+    ]);
+  });
+
+  it('names Inicio and the Spanish home for the Spanish page', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_ES]: (graph) => {
+            at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 0)['name'] = 'Home';
+            return graph;
+          },
+        }),
+        CALC_ES,
+      ),
+    ).toEqual([
+      'the BreadcrumbList must be Inicio (https://maestrocalc.com/es) then the page (name and canonical)',
+    ]);
+  });
+
+  // spec: site-seo › [SE20] FAQ parity, one to one, in order, at least four
+  it('fails a FAQ question that the page does not show, and a shown one that is missing', () => {
+    const found = messagesOf(
+      calcProblemsAfter({
+        [CALC_PAGE]: (graph) => {
+          const faq = node(graph, 'FAQPage');
+          faq['mainEntity'] = [
+            ...(faq['mainEntity'] as Node[]),
+            {
+              '@type': 'Question',
+              name: 'Hidden?',
+              acceptedAnswer: { '@type': 'Answer', text: 'x' },
+            },
+          ];
+          return graph;
+        },
+      }),
+      CALC_PAGE,
+    );
+    expect(found).toEqual(['the FAQPage has 5 questions and the page shows 4']);
+  });
+
+  it('fails a different question text, a different answer and a different order', () => {
+    const entities = (graph: Node[]) => listOf(graph, 'FAQPage', 'mainEntity');
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            at(entities(graph), 1)['name'] = 'Changed?';
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ),
+    ).toEqual(['FAQ question 2 "Question 2 in en?" is "Changed?" in the FAQPage']);
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            (at(entities(graph), 2)['acceptedAnswer'] as Node)['text'] = 'Different.';
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ),
+    ).toEqual(['FAQ answer 3 of the page differs from the FAQPage']);
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            const list = entities(graph);
+            node(graph, 'FAQPage')['mainEntity'] = [list[1], list[0], list[2], list[3]];
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ).length,
+    ).toBeGreaterThan(0);
+  });
+
+  it('reads a missing mainEntity, a missing answer and a missing item list as empty', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            delete node(graph, 'FAQPage')['mainEntity'];
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ),
+    ).toEqual(['the FAQPage has 0 questions and the page shows 4']);
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            delete at(listOf(graph, 'FAQPage', 'mainEntity'), 0)['acceptedAnswer'];
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ),
+    ).toEqual(['FAQ answer 1 of the page differs from the FAQPage']);
+    expect(
+      messagesOf(
+        calcProblemsAfter({
+          [CALC_PAGE]: (graph) => {
+            delete node(graph, 'BreadcrumbList')['itemListElement'];
+            return graph;
+          },
+        }),
+        CALC_PAGE,
+      ),
+    ).toEqual([
+      'the BreadcrumbList must be Home (https://maestrocalc.com/) then the page (name and canonical)',
+    ]);
+  });
+
+  it('compares with an empty heading when the page has no h1', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter(
+          {},
+          { [CALC_PAGE]: (h) => h.replace('<h1>Heading of concrete</h1>', '') },
+        ),
+        CALC_PAGE,
+      ),
+    ).toEqual([
+      'the WebApplication name must be the h1 ""',
+      'the BreadcrumbList must be Home (https://maestrocalc.com/) then the page (name and canonical)',
+    ]);
+  });
+
+  it('ignores whitespace differences between the visible answer and the JSON-LD', () => {
+    expect(
+      calcProblemsAfter(
+        {},
+        {
+          [CALC_PAGE]: (h) => h.replace('<p>Answer 1 in en.</p>', '<p>  Answer 1\n in   en. </p>'),
+        },
+      ),
+    ).toEqual([]);
+  });
+
+  it('requires at least four visible FAQ items', () => {
+    const three = (h: string) =>
+      h.replace(/<h3>Question 4 in en\?<\/h3><p>Answer 4 in en\.<\/p>/, '');
+    const dropLast = (graph: Node[]) => {
+      const faq = node(graph, 'FAQPage');
+      faq['mainEntity'] = listOf(graph, 'FAQPage', 'mainEntity').slice(0, 3);
+      return graph;
+    };
+    expect(
+      messagesOf(calcProblemsAfter({ [CALC_PAGE]: dropLast }, { [CALC_PAGE]: three }), CALC_PAGE),
+    ).toEqual(['the page needs at least 4 FAQ items, found 3']);
+  });
+
+  it('finds no FAQ section on a page without the FAQ heading', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter({}, { [CALC_PAGE]: (h) => h.replace('id="faq"', 'id="questions"') }),
+        CALC_PAGE,
+      ),
+    ).toContain('the page needs at least 4 FAQ items, found 0');
+  });
+
+  // spec: site-seo › [SE8] a malformed block still fails
+  it('fails a malformed block on a calculator page', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter(
+          {},
+          {
+            [CALC_PAGE]: (h) =>
+              h.replace('</head>', '<script type="application/ld+json">{"a":</script></head>'),
+          },
+        ),
+        CALC_PAGE,
+      ),
+    ).toContain('a JSON-LD block is not valid JSON');
+  });
+});
+
+describe('other pages stay free of calculator types (site-seo › [SE23])', () => {
+  it.each([
+    'WebApplication',
+    'BreadcrumbList',
+    'FAQPage',
+    'Product',
+    'Review',
+    'AggregateRating',
+    'Person',
+  ])('fails %s on a trust page of a site that has a calculator page', (type) => {
+    const site = calculatorSite();
+    const dist = validDist(site);
+    dist.set(
+      'privacy.html',
+      (dist.get('privacy.html') ?? '').replace(
+        '</main>',
+        `<script type="application/ld+json">{"@type":"${type}"}</script></main>`,
+      ),
+    );
+    expect(
+      contentProblems(pagesOf(dist, CALC_ROUTES), site, dist)
+        .filter((entry) => entry.file === 'privacy.html')
+        .map((entry) => entry.message),
+    ).toEqual([`${type} is not allowed on this page`]);
+  });
+});
+
+describe('calculator page update date (calculator-page › [CP8] built side)', () => {
+  it('requires the one time element to equal the date of the calculator entry', () => {
+    expect(
+      calcProblemsAfter(
+        {},
+        { [CALC_PAGE]: (h) => h.replace('datetime="2026-10-23"', 'datetime="2026-10-24"') },
+      )
+        .filter((entry) => entry.rule === 'updated')
+        .map((entry) => entry.message),
+    ).toEqual(['time datetime "2026-10-24" is not the entry date 2026-10-23 of en/concrete']);
   });
 });
