@@ -1,0 +1,59 @@
+---
+import ShoppingLine from './ShoppingLine.astro';
+import type { ResultView } from './model.ts';
+
+interface Props {
+  result: ResultView;
+}
+const {
+  heading,
+  primary,
+  rows,
+  shopping,
+  costs,
+  readyMixNote,
+  estimateNote,
+  termsLabel,
+  termsHref,
+} = Astro.props.result;
+---
+
+<section class="calc-result" aria-labelledby="calc-result-heading">
+  <h2 id="calc-result-heading">{heading}</h2>
+  <p class="calc-primary">
+    {primary.before}
+    <span class="calc-figure" data-output={primary.key}>
+      {primary.value}
+    </span>
+    {primary.after}
+  </p>
+  <dl class="calc-rows">
+    {rows.map(({ key, label, value }) => (
+      <div class="calc-row">
+        <dt>{label}</dt>
+        <dd class="calc-figure" data-output={key}>
+          {value}
+        </dd>
+      </div>
+    ))}
+  </dl>
+  <ShoppingLine {shopping} />
+  {costs.map(({ key, label, value, visible, hint }) => (
+    <Fragment>
+      <p class="calc-cost" data-cost-row={key} hidden={!visible}>
+        <span class="calc-label">{label}</span>
+        <span class="calc-figure" data-output={key}>
+          {value}
+        </span>
+      </p>
+      <p class="calc-hint" data-hint-row={key} hidden={visible}>
+        <span class="calc-label">{label}</span>
+        <span data-price-hint={key}>{hint}</span>
+      </p>
+    </Fragment>
+  ))}
+  <p class="calc-note">{readyMixNote}</p>
+  <p class="calc-note">
+    {estimateNote} <a href={termsHref}>{termsLabel}</a>
+  </p>
+</section>
