@@ -2,7 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
 import { structureProblems } from './structure.ts';
-import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
+import {
+  CALC_ROUTES,
+  calculatorSite,
+  FIXTURE_ROUTES,
+  fixtureSite,
+  NIST_URL,
+  QUIKRETE_URL,
+  validDist,
+} from './__testing__/page-fixture.ts';
 
 type Edits = Readonly<Record<string, (html: string) => string>>;
 
@@ -287,5 +295,158 @@ describe('favicon (site-shell › [SS17])', () => {
 
   it('accepts the orange mark alone, in lower case', () => {
     expect(problemsAfter({ 'favicon.svg': () => '<svg><rect fill="#f06a1d"/></svg>' })).toEqual([]);
+  });
+});
+
+// ---- the calculator template: breadcrumb, sections, FAQ headings and outbound links ----
+
+const PAGE = 'concrete-calculator.html';
+const ES_PAGE = 'es/calculadora-de-concreto.html';
+
+/** Structure problems of a valid dist with a calculator page, after `edits` changed its pages. */
+const calcProblemsAfter = (edits: Edits = {}, site = calculatorSite()) => {
+  const dist = validDist(site);
+  for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
+  return structureProblems(pagesOf(dist, CALC_ROUTES), site, dist);
+};
+
+const calcRulesOf = (edits: Edits, file: string): string[] =>
+  calcProblemsAfter(edits)
+    .filter((entry) => entry.file === file)
+    .map((entry) => entry.rule);
+
+describe('calculator page anatomy (calculator-page › [CP5] built side)', () => {
+  it('accepts the valid calculator pages: one nav, a breadcrumb list, five sections', () => {
+    expect(calcProblemsAfter()).toEqual([]);
+  });
+
+  // spec: calculator-page › [CP5] a labelled list above the h1, and exactly one nav
+  it.each([
+    ['no breadcrumb', (h: string) => h.replace(/<ol aria-label="Breadcrumb">.*?<\/ol>/, '')],
+    ['an unlabelled breadcrumb', (h: string) => h.replace('<ol aria-label="Breadcrumb">', '<ol>')],
+    [
+      'an empty label',
+      (h: string) => h.replace('<ol aria-label="Breadcrumb">', '<ol aria-label=" ">'),
+    ],
+    [
+      'the list after the h1',
+      (h: string) => h.replace(/(<ol aria-label="Breadcrumb">.*?<\/ol>)(<h1>.*?<\/h1>)/, '$2$1'),
+    ],
+  ])('fails a page with %s', (_name, edit) => {
+    expect(calcProblemsAfter({ [PAGE]: edit })).toEqual([
+      {
+        file: PAGE,
+        rule: 'breadcrumb',
+        message: 'a calculator page needs a labelled ol before the h1',
+      },
+    ]);
+  });
+
+  it('fails a breadcrumb written as a second nav', () => {
+    expect(
+      calcRulesOf(
+        {
+          [PAGE]: (h) =>
+            h
+              .replace(
+                '<ol aria-label="Breadcrumb">',
+                '<nav aria-label="Trail"><ol aria-label="Breadcrumb">',
+              )
+              .replace('</ol><h1>', '</ol></nav><h1>'),
+        },
+        PAGE,
+      ),
+    ).toContain('landmarks');
+  });
+
+  // spec: calculator-page › [CP5] the five content sections in order, in the language of the page
+  it.each([
+    ['a missing section', PAGE, (h: string) => h.replace('<h2 id="tips">Tips</h2>', '')],
+    [
+      'sections in another order',
+      PAGE,
+      (h: string) =>
+        h
+          .replace('id="formulas"', 'id="tmp"')
+          .replace('id="tips"', 'id="formulas"')
+          .replace('id="tmp"', 'id="tips"'),
+    ],
+    [
+      'a Spanish id on the English page',
+      PAGE,
+      (h: string) => h.replace('id="how-to-use"', 'id="como-usar"'),
+    ],
+    [
+      'an English id on the Spanish page',
+      ES_PAGE,
+      (h: string) => h.replace('id="fuentes"', 'id="sources"'),
+    ],
+    ['no result heading', PAGE, (h: string) => h.replace(' id="calc-result-heading"', '')],
+    ['an extra h2', PAGE, (h: string) => h.replace('</main>', '<h2 id="extra">More</h2></main>')],
+  ])('fails a calculator page with %s', (_name, file, edit) => {
+    const found = calcProblemsAfter({ [file]: edit }).filter((entry) => entry.rule === 'sections');
+    expect(found).toHaveLength(1);
+    expect(found[0]?.file).toBe(file);
+  });
+
+  // spec: site-seo › [SE18] FAQ questions are h3 under the FAQ h2, and nowhere else
+  it('fails an h3 outside the FAQ section', () => {
+    expect(
+      calcProblemsAfter({
+        [PAGE]: (h) =>
+          h.replace('<h2 id="tips">Tips</h2>', '<h2 id="tips">Tips</h2><h3>Stray</h3>'),
+      }),
+    ).toEqual([
+      { file: PAGE, rule: 'heading-order', message: 'the h3 "Stray" is outside the FAQ section' },
+    ]);
+  });
+
+  it('allows the h3 questions of the FAQ section in the Spanish page too', () => {
+    expect(calcRulesOf({}, ES_PAGE)).toEqual([]);
+  });
+});
+
+describe('outbound links (site-routing-i18n › [SR2] allowlist, calculator-page › [CP8])', () => {
+  it('accepts the source links of the calculator entry on its pages', () => {
+    const dist = validDist(calculatorSite());
+    expect(dist.get(PAGE)).toContain(QUIKRETE_URL);
+    expect(dist.get(ES_PAGE)).toContain(NIST_URL);
+    expect(calcProblemsAfter()).toEqual([]);
+  });
+
+  it('fails an outbound link that is not a source of the entry, naming the page', () => {
+    expect(
+      calcProblemsAfter({
+        [PAGE]: (h) => h.replace('</main>', '<a href="https://example.com/x">x</a></main>'),
+      }),
+    ).toEqual([
+      {
+        file: PAGE,
+        rule: 'link',
+        message: 'https://example.com/x is not a path of the route table',
+      },
+    ]);
+  });
+
+  it('allows the sources of a calculator on that calculator only', () => {
+    expect(
+      calcProblemsAfter({
+        'privacy.html': (h) => h.replace('</main>', `<a href="${QUIKRETE_URL}">q</a></main>`),
+      }),
+    ).toEqual([
+      {
+        file: 'privacy.html',
+        rule: 'link',
+        message: `${QUIKRETE_URL} is not a path of the route table`,
+      },
+    ]);
+  });
+
+  it('allows nothing outbound when the site lists no source links', () => {
+    expect(
+      calcProblemsAfter({}, { ...calculatorSite(), externalLinks: {} }).map(
+        (entry) => entry.file,
+      ),
+    ).toEqual([PAGE, PAGE, ES_PAGE, ES_PAGE]);
   });
 });

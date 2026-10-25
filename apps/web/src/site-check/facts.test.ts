@@ -194,6 +194,10 @@ describe('calculator bundle facts (site-shell › [SS23], calculator-page › [C
     ]);
   });
 
+  it('reads an import that dist lacks as an empty file', () => {
+    expect(calcProblemsAfter(appended(ENTRY_FILE, ';import"./chunks/gone.js"'))).toEqual([]);
+  });
+
   it("checks only the files of the graph: a script nobody loads is the file-set rule's concern", () => {
     expect(calcProblemsAfter((dist) => dist.set('_astro/orphan.js', 'fetch("/x")'))).toEqual([]);
   });
