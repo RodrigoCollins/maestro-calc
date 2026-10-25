@@ -8,6 +8,7 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, ft3, in3, m3, yd3 } from '../../units/catalog.ts';
 import { isQuantityOf, quantity, valueIn, type Quantity } from '../../units/quantity.ts';
 import type { ValidateOptions } from '../../calculator/descriptors.ts';
+import { PI } from '../../geometry/pi.ts';
 import { createConcrete } from './index.ts';
 
 const concrete = createConcrete(CONCRETE_YIELDS);
@@ -221,5 +222,70 @@ describe('concrete costs (calc-concrete › Costs)', () => {
   // spec: calc-concrete › [CC21] Prices default to zero
   it('costs exactly zero with no price', () => {
     expect(costs({})).toEqual({ bagCost: usd(0), readyMixCost: usd(0) });
+  });
+});
+
+describe('concrete footing and column (calc-concrete › Volume computation)', () => {
+  const FOOTING = { shape: 'footing', length: '18ft' };
+
+  // spec: calc-concrete › [CC9] Footing with a piece count (F1)
+  it('computes three 18 ft footings, 16 in by 8 in', () => {
+    const { netVolume, volumeFt3, volumeYd3 } = volumes({ ...FOOTING, count: '3' });
+    expect(valueIn(netVolume, ft3)).toEqual(Rational.of(48));
+    expect(valueIn(volumeFt3, ft3)).toEqual(Rational.of(264, 5));
+    expect(valueIn(volumeYd3, yd3)).toEqual(Rational.of(88, 45));
+    expect(valueIn(volumes({ ...FOOTING, count: '1' }).netVolume, ft3)).toEqual(Rational.of(16));
+  });
+
+  // spec: calc-concrete › [CC10] Column uses PI exactly (C1, C2)
+  it.each([
+    ['C1', {}, 2, 11, 5, '0.26'],
+    ['C2', { count: '4' }, 8, 44, 5, '1.02'],
+  ])('computes the columns %s from the exact PI', (_name, extra, netPi, totalPi, over, shown) => {
+    const { netVolume, volumeFt3, volumeYd3 } = volumes({ shape: 'column', ...extra });
+    expect(valueIn(netVolume, ft3)).toEqual(PI.mul(Rational.of(netPi)));
+    expect(valueIn(volumeFt3, ft3)).toEqual(PI.mul(Rational.of(totalPi, over)));
+    expect(places2(valueIn(volumeYd3, yd3))).toBe(shown);
+  });
+
+  // spec: calc-concrete › [CC13] Unused fields do not matter
+  it('ignores the fields the shape does not use', () => {
+    const plain = outputs({ ...FOOTING, count: '3' });
+    const noisy = outputs({
+      ...FOOTING,
+      count: '3',
+      diameter: '5ft',
+      height: '50ft',
+      stepCount: '40',
+    });
+    expect(noisy).toEqual(plain);
+  });
+});
+
+describe('concrete bags for every shape (calc-concrete › Waste and bag shopping)', () => {
+  const S2 = { length: '20', width: '15', thickness: '6in' };
+  const F1 = { shape: 'footing', length: '18ft', count: '3' };
+  const S3 = { length: '4', width: '3', thickness: '10' };
+
+  // spec: calc-concrete › [CC15] Exact integers do not round up
+  it.each([
+    [S2, '80', 275n],
+    [S2, '40', 550n],
+    [F1, '80', 88n],
+    [F1, '40', 176n],
+  ])('buys exactly %j with the %s lb bag: %s', (raw, bag, qty) => {
+    expect(shoppingOf({ ...raw, bag })[0]?.qty).toBe(qty);
+  });
+
+  // spec: calc-concrete › [CC17] Other shapes and zero (80, 60 and 40 lb)
+  it.each([
+    ['C1', { shape: 'column' }, undefined, [12n, 16n, 24n]],
+    ['C2', { shape: 'column', count: '4' }, undefined, [47n, 62n, 93n]],
+    ['S3', S3, { unitSystem: 'metric' as const }, [78n, 104n, 156n]],
+    ['Z', { length: '0' }, undefined, [0n, 0n, 0n]],
+  ])('buys the case %s: %j', (_name, raw, options, [qty80, qty60, qty40]) => {
+    expect(shoppingOf({ ...raw, bag: '80' }, options)[0]?.qty).toBe(qty80);
+    expect(shoppingOf({ ...raw, bag: '60' }, options)[0]?.qty).toBe(qty60);
+    expect(shoppingOf({ ...raw, bag: '40' }, options)[0]?.qty).toBe(qty40);
   });
 });

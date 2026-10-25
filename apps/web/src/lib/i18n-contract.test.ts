@@ -77,6 +77,8 @@ const CONCRETE_KEYS = [
     'readyMixPrice',
   ].map((key) => `calc.concrete.inputs.${key}`),
   'calc.concrete.options.shape.slab',
+  'calc.concrete.options.shape.footing',
+  'calc.concrete.options.shape.column',
   'calc.concrete.options.bag.40',
   'calc.concrete.options.bag.60',
   'calc.concrete.options.bag.80',

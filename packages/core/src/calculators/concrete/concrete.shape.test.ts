@@ -72,7 +72,10 @@ describe('concrete descriptors (calc-concrete › Descriptor and permanent URL c
       min: Rational.ZERO,
       max: Rational.of(50),
     });
-    expect(byKey['shape']).toMatchObject({ default: 'slab', options: ['slab'] });
+    expect(byKey['shape']).toMatchObject({
+      default: 'slab',
+      options: ['slab', 'footing', 'column'],
+    });
     expect(byKey['bag']).toMatchObject({ default: '80', options: ['40', '60', '80'] });
     expect(byKey['bagPrice']).toMatchObject({ default: usd(0), max: usd(10000) });
     expect(byKey['readyMixPrice']).toMatchObject({ default: usd(0), max: usd(10000) });

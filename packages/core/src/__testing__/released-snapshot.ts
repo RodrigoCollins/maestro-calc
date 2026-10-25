@@ -29,7 +29,7 @@ export const RELEASED: readonly ReleasedField[] = [
     urlKey: 'sh',
     kind: 'select',
     default: 'slab',
-    options: ['slab'],
+    options: ['slab', 'footing', 'column'],
   },
   {
     calculatorId: 'concrete',
