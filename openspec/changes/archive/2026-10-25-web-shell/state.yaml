@@ -10,7 +10,7 @@ phases:
   spec: done  # 5 new + 3 modified capability deltas under specs/
   design: done  # revised after design review round 1
   tasks: done  # 11 stacked PRs, ~3,240 lines forecast; 19 tasks in the largest slice; traceability covers every scenario id
-  apply: in-progress  # group 1 (PR 1 to PR 4) and group 2 (PR 5 to PR 8) merged (PR #83, main 4027573); group 3 (G2 follow-ups JD-1..JD-7, PR 9 to PR 11) done on feat/web-shell-g3-trust-pages-final, tip 6989c93 plus docs; open: exit tasks 9.10, 10.9, 11.11 (reviews, PR) and F.1/F.2 (owner)
-  verify: pending
-  archive: pending
-updated: 2026-10-23
+  apply: done  # groups 1-3 merged: PR #82, #83, #84 (+ #85 tagline)
+  verify: done  # PASS WITH WARNINGS, 106/106 scenarios, verify-report.md
+  archive: done  # 2026-10-25, specs promoted to openspec/specs
+updated: 2026-10-25
