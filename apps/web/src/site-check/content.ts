@@ -49,6 +49,15 @@ export const countPending = (entries: readonly string[]): number =>
 export const updatedOf = (entry: string): string | undefined =>
   /^---\n(?:[^\n]*\n)*?updated:[ \t]*"?([^\s"]+)"?[ \t]*\n(?:[^\n]*\n)*?---/.exec(entry)?.[1];
 
+/** The `https` urls of the `sources` of a calculator entry, read from its frontmatter in order. */
+export const sourceUrlsOf = (entry: string): string[] => {
+  const frontmatter = /^---\n((?:[^\n]*\n)*?)---/.exec(entry)?.[1] ?? '';
+  return Array.from(
+    frontmatter.matchAll(/^[ \t]*(?:-[ \t]+)?url:[ \t]*"?(https:\/\/[^\s"]+)"?[ \t]*$/gm),
+    ([, url = '']) => url,
+  );
+};
+
 const updatedProblems = (page: Page, site: Site): Problem[] => {
   if (!page.routable || page.id === 'home') return [];
   const key = `${page.locale}/${page.id}`;

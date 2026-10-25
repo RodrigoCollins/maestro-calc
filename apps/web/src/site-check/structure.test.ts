@@ -444,9 +444,7 @@ describe('outbound links (site-routing-i18n › [SR2] allowlist, calculator-page
 
   it('allows nothing outbound when the site lists no source links', () => {
     expect(
-      calcProblemsAfter({}, { ...calculatorSite(), externalLinks: {} }).map(
-        (entry) => entry.file,
-      ),
+      calcProblemsAfter({}, { ...calculatorSite(), externalLinks: {} }).map((entry) => entry.file),
     ).toEqual([PAGE, PAGE, ES_PAGE, ES_PAGE]);
   });
 });

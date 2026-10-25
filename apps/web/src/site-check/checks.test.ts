@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { checkSite } from './checks.ts';
-import { latinFont, fixtureSite, validBuildBytes, validDist } from './__testing__/page-fixture.ts';
+import {
+  calculatorSite,
+  fixtureSite,
+  latinFont,
+  validBuildBytes,
+  validDist,
+} from './__testing__/page-fixture.ts';
 
 describe('checkSite', () => {
   it('finds nothing wrong with a valid dist', () => {
@@ -38,5 +44,31 @@ describe('checkSite', () => {
         '_astro/fonts/a.woff2 glyphs',
       ]),
     );
+  });
+
+  it('finds nothing wrong with a valid dist that has a calculator page in each locale', () => {
+    const site = calculatorSite();
+    const dist = validDist(site);
+    expect(checkSite(dist, site, validBuildBytes(dist))).toEqual([]);
+  });
+
+  // spec: site-quality › [SQ26] gate side: an inline script on a calculator page fails check:site
+  it('fails an inline script added to a calculator page, naming the page and the rule', () => {
+    const site = calculatorSite();
+    const dist = validDist(site);
+    dist.set(
+      'concrete-calculator.html',
+      (dist.get('concrete-calculator.html') ?? '').replace(
+        '</body>',
+        '<script>alert(1)</script></body>',
+      ),
+    );
+    expect(checkSite(dist, site, validBuildBytes(dist))).toEqual([
+      {
+        file: 'concrete-calculator.html',
+        rule: 'script',
+        message: 'an inline script is not allowed',
+      },
+    ]);
   });
 });
