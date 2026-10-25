@@ -4,15 +4,62 @@ import { CoreError } from '../../errors.ts';
 import { ceilToPurchaseUnits } from '../../format/purchase.ts';
 import { multiplyCount, usd } from '../../money/money.ts';
 import { costOf, unitPrice } from '../../money/unit-price.ts';
+import { circleArea } from '../../geometry/circle.ts';
 import { Rational } from '../../rational/rational.ts';
 import { ft, inch, yd3 } from '../../units/catalog.ts';
-import { multiply, ratio, scale, sign } from '../../units/ops.ts';
+import { divideScalar, multiply, ratio, scale, sign } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
 
 /** The yield of one bag, by bag size in pounds: injected, so core holds no material constant. */
 export type BagYields = Readonly<Record<'40' | '60' | '80', Quantity<'volume'>>>;
 
 const HUNDRED = Rational.of(100);
+
+const TWO = Rational.of(2);
+
+type Length = Quantity<'length'>;
+
+/** The volume of a slab: `length x width x thickness`. */
+const slabVolume = (length: Length, width: Length, thickness: Length): Quantity<'volume'> =>
+  multiply(multiply(length, width), thickness);
+
+/** The volume of `count` footings: `length x footingWidth x footingDepth` each. */
+const footingVolume = (
+  length: Length,
+  footingWidth: Length,
+  footingDepth: Length,
+  count: number,
+): Quantity<'volume'> =>
+  scale(multiply(multiply(length, footingWidth), footingDepth), Rational.of(count));
+
+/** The volume of `count` columns: `PI x (diameter / 2)^2 x height` each. */
+const columnVolume = (diameter: Length, height: Length, count: number): Quantity<'volume'> =>
+  scale(multiply(circleArea(divideScalar(diameter, TWO)), height), Rational.of(count));
+
+/** The fields `netVolumeOf` reads, by the shape that uses them. */
+interface Dimensions {
+  readonly shape: 'slab' | 'footing' | 'column';
+  readonly length: Length;
+  readonly width: Length;
+  readonly thickness: Length;
+  readonly footingWidth: Length;
+  readonly footingDepth: Length;
+  readonly diameter: Length;
+  readonly height: Length;
+  readonly count: number;
+}
+
+/** The net volume of the chosen shape; the fields of the other shapes are not read. */
+const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => {
+  switch (inputs.shape) {
+    case 'slab':
+      return slabVolume(inputs.length, inputs.width, inputs.thickness);
+    case 'footing':
+      return footingVolume(inputs.length, inputs.footingWidth, inputs.footingDepth, inputs.count);
+    case 'column':
+      return columnVolume(inputs.diameter, inputs.height, inputs.count);
+  }
+};
 
 const BAG_SIZES = ['40', '60', '80'] as const;
 
@@ -69,7 +116,13 @@ export const createConcrete = (yields: BagYields) => {
   return defineCalculator({
     id: 'concrete',
     inputs: [
-      { kind: 'select', key: 'shape', urlKey: 'sh', default: 'slab', options: ['slab'] },
+      {
+        kind: 'select',
+        key: 'shape',
+        urlKey: 'sh',
+        default: 'slab',
+        options: ['slab', 'footing', 'column'],
+      },
       lengthField('length', 'l', 144, BIG, quantity(1000, ft)),
       lengthField('width', 'w', 120, BIG, quantity(1000, ft)),
       lengthField('thickness', 't', 4, SMALL, quantity(10, ft)),
@@ -122,8 +175,9 @@ export const createConcrete = (yields: BagYields) => {
       { key: 'bagCost', measure: 'money', role: 'secondary' },
       { key: 'readyMixCost', measure: 'money', role: 'secondary' },
     ],
-    compute: ({ length, width, thickness, waste, bag, bagPrice, readyMixPrice }) => {
-      const net = multiply(multiply(length, width), thickness);
+    compute: (inputs) => {
+      const { waste, bag, bagPrice, readyMixPrice } = inputs;
+      const net = netVolumeOf(inputs);
       const total = scale(net, Rational.ONE.add(waste.div(HUNDRED)));
       // whole bags only: the ceiling of total volume over the yield is the only rounding
       const qty = ceilToPurchaseUnits(ratio(total, yields[bag]));

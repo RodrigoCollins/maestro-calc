@@ -22,6 +22,8 @@ export const esConcrete = {
   'calc.concrete.inputs.bagPrice': 'Precio por bolsa ($)',
   'calc.concrete.inputs.readyMixPrice': 'Precio del premezclado por yarda cúbica ($)',
   'calc.concrete.options.shape.slab': 'Losa',
+  'calc.concrete.options.shape.footing': 'Zapata',
+  'calc.concrete.options.shape.column': 'Columna',
   'calc.concrete.options.bag.40': '40 lb',
   'calc.concrete.options.bag.60': '60 lb',
   'calc.concrete.options.bag.80': '80 lb',

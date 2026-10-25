@@ -56,6 +56,11 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['rp', 'readyMixPrice', 'money', '0'],
       ],
     );
+    expect(tuples.find(({ urlKey }) => urlKey === 'sh')?.options).toEqual([
+      'slab',
+      'footing',
+      'column',
+    ]);
     expect(tuples.find(({ urlKey }) => urlKey === 'bg')?.options).toEqual(['40', '60', '80']);
   });
 });
