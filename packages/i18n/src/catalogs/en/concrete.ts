@@ -21,6 +21,7 @@ export const enConcrete = {
   'calc.concrete.options.shape.slab': 'Slab',
   'calc.concrete.options.shape.footing': 'Footing',
   'calc.concrete.options.shape.column': 'Column',
+  'calc.concrete.options.shape.steps': 'Steps',
   'calc.concrete.options.bag.40': '40 lb',
   'calc.concrete.options.bag.60': '60 lb',
   'calc.concrete.options.bag.80': '80 lb',
