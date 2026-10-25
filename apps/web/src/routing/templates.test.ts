@@ -1,0 +1,71 @@
+import { describe, expect, it } from 'vitest';
+import { NOT_FOUND_ID, ROUTES } from './routes.ts';
+import { CALCULATOR_PAGES, PAGELESS, templateOf, templateProblems } from './templates.ts';
+
+describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
+  // spec: site-routing-i18n › [SR17] until go-live no page uses the calculator template
+  it('lists no calculator page yet and keeps rectangle-area and concrete pageless', () => {
+    expect(CALCULATOR_PAGES).toEqual([]);
+    expect(PAGELESS).toEqual(['rectangle-area', 'concrete']);
+  });
+
+  // spec: site-routing-i18n › [SR18] the template of home, a trust id and the not-found page
+  it.each([
+    ['home', 'home'],
+    ['methodology', 'trust'],
+    ['privacy', 'trust'],
+    [NOT_FOUND_ID, 'notFound'],
+  ] as const)('gives %s the %s template', (id, template) => {
+    expect(templateOf(id)).toBe(template);
+  });
+
+  it('gives an id of the calculator list the calculator template', () => {
+    expect(templateOf('about', ['about'])).toBe('calculator');
+    expect(templateOf('about', [])).toBe('trust');
+    expect(templateOf('home', ['about'])).toBe('home');
+  });
+});
+
+describe('page lists against the table and the registry (site-routing-i18n › [SR17])', () => {
+  const routes = { ...ROUTES, concrete: { en: '/concrete-calculator', es: '/es/calculadora' } };
+  const registry = ['rectangle-area', 'concrete'];
+
+  it('has no problem for the real lists', () => {
+    expect(templateProblems(ROUTES, CALCULATOR_PAGES, PAGELESS, registry)).toEqual([]);
+  });
+
+  it('has no problem once concrete is a page and rectangle-area is pageless', () => {
+    expect(templateProblems(routes, ['concrete'], ['rectangle-area'], registry)).toEqual([]);
+  });
+
+  // spec: site-routing-i18n › [SR17] each failure names the id
+  it('names a page id that is not in the route table', () => {
+    expect(templateProblems(ROUTES, ['concrete'], ['rectangle-area'], registry)).toEqual([
+      'concrete: page id is not in the route table',
+    ]);
+  });
+
+  it('names a registry calculator that is in neither list', () => {
+    expect(templateProblems(ROUTES, [], ['rectangle-area'], registry)).toEqual([
+      'concrete: registry calculator is in neither the page list nor PAGELESS',
+    ]);
+  });
+
+  it('names an id that is in both lists', () => {
+    expect(
+      templateProblems(routes, ['concrete'], ['rectangle-area', 'concrete'], registry),
+    ).toEqual(['concrete: id is in both the page list and PAGELESS']);
+  });
+
+  it('names a PAGELESS id that is not in the registry', () => {
+    expect(templateProblems(ROUTES, [], ['rectangle-area', 'concrete', 'ghost'], registry)).toEqual(
+      ['ghost: PAGELESS id is not in the registry'],
+    );
+  });
+
+  it('names a page id that is not a registry calculator', () => {
+    expect(templateProblems(routes, ['about', 'concrete'], ['rectangle-area'], registry)).toEqual([
+      'about: page id is not a registry calculator',
+    ]);
+  });
+});
