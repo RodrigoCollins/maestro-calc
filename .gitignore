@@ -16,3 +16,4 @@ tooling/site-browser/playwright-report
 tooling/site-browser/test-results
 tooling/site-browser/.wrangler
 .lighthouseci
+*.bak

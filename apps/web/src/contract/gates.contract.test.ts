@@ -513,6 +513,11 @@ describe('tooling/site-browser stays outside the repository gates (site-quality,
     );
   });
 
+  // review R1-1: a stray `.bak` copy was committed once (a8e5c53)
+  it('keeps backup copies out of git', () => {
+    expect(readFileSync(fromRoot('.gitignore'), 'utf8').split('\n')).toContain('*.bak');
+  });
+
   it('keeps its run output out of git', () => {
     const ignores = readFileSync(fromRoot('.gitignore'), 'utf8').split('\n');
     for (const entry of [
