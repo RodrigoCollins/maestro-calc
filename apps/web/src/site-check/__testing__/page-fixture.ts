@@ -30,6 +30,20 @@ export const FIXTURE_ROUTES = {
   privacy: { en: '/privacy', es: '/es/privacidad' },
 } as const satisfies RouteTable;
 
+/** The fixture table plus a calculator page, so the template rules have a page to check. */
+export const CALC_ROUTES = {
+  ...FIXTURE_ROUTES,
+  concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
+} as const satisfies RouteTable;
+
+/** The outbound links a calculator page may carry: the sources of its entry. */
+export const QUIKRETE_URL = 'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf';
+export const NIST_URL = 'https://www.nist.gov/pml/special-publication-811';
+
+/** The entry and the chunk that every valid calculator fixture loads (language-free, no network). */
+export const ENTRY_FILE = '_astro/concrete.js';
+export const CHUNK_FILE = '_astro/chunks/rational.js';
+
 const titleOf = (id: string, locale: Locale): string =>
   id === 'home' ? `Maestro Calc: ${locale} home` : `${id} ${locale} | Maestro Calc`;
 
@@ -40,6 +54,9 @@ const descriptionOf = (id: string, locale: Locale): string =>
 export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
   const catalogOf = (locale: Locale): Record<string, string> => ({
     'site.switch.label': locale === 'en' ? 'Español' : 'English',
+    'errors.DECIMAL_COMMA':
+      locale === 'en' ? 'Use a period for decimals' : 'Usa punto para los decimales',
+    'site.calculator.copyLink': locale === 'en' ? 'Copy link' : 'Copiar enlace',
     ...Object.fromEntries(
       [...Object.keys(routes), NOT_FOUND_ID].flatMap((id) => [
         [`page.${id}.title`, titleOf(id, locale)],
@@ -59,6 +76,13 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
     updates,
   };
 };
+
+/** A site whose table has a calculator page `concrete`, listed in `calculatorPages`. */
+export const calculatorSite = (): Site => ({
+  ...fixtureSite(CALC_ROUTES),
+  calculatorPages: ['concrete'],
+  externalLinks: { concrete: [QUIKRETE_URL, NIST_URL] },
+});
 
 /** The CSS of a valid page: the palette, a light scheme and four swapped same-origin fonts. */
 export const VALID_CSS =
@@ -81,6 +105,77 @@ const updatedLine = (id: string, locale: Locale, site: Site): string => {
   return updated === undefined ? '' : `<p><time datetime="${updated}">${updated}</time></p>`;
 };
 
+/** Four FAQ items, one per question, as the entry body would hold them. */
+export const faqOf = (locale: Locale): { question: string; answer: string }[] =>
+  [1, 2, 3, 4].map((n) => ({
+    question: `Question ${String(n)} in ${locale}?`,
+    answer: `Answer ${String(n)} in ${locale}.`,
+  }));
+
+const FAQ_ID = { en: 'faq', es: 'preguntas-frecuentes' } as const;
+
+/** The body of a valid calculator page: breadcrumb, h1, result, five sections, sources and date. */
+const calculatorMain = (id: string, locale: Locale, site: Site): string => {
+  const home = pathOf('home', locale, site.routes);
+  const faq = faqOf(locale)
+    .map(({ question, answer }) => `<h3>${question}</h3><p>${answer}</p>`)
+    .join('');
+  const updated = site.updates[`${locale}/${id}`] ?? UPDATED;
+  return [
+    '<main id="main">',
+    `<ol aria-label="Breadcrumb"><li><a href="${home}">Home</a></li><li>${headingOf(id)}</li></ol>`,
+    `<h1>${headingOf(id)}</h1>`,
+    '<h2>Result</h2>',
+    '<h2 id="how-to-use">How to use</h2><p>Text.</p>',
+    '<h2 id="formulas">Formulas</h2><p>Text.</p>',
+    '<h2 id="tips">Tips</h2><p>Text.</p>',
+    `<h2 id="${FAQ_ID[locale]}">FAQ</h2>${faq}`,
+    '<h2 id="sources">Sources</h2>',
+    `<ul><li><a href="${QUIKRETE_URL}">QUIKRETE</a></li><li><a href="${NIST_URL}">NIST</a></li></ul>`,
+    `<p><time datetime="${updated}">${updated}</time></p>`,
+    '</main>',
+  ].join('');
+};
+
+/** The three JSON-LD nodes of a valid calculator page. */
+export const calculatorJsonLd = (id: string, locale: Locale, site: Site) => {
+  const canonical = urlOf(pathOf(id, locale, site.routes));
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebApplication',
+        name: headingOf(id),
+        url: canonical,
+        inLanguage: LOCALE_TAGS[locale],
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Any',
+        isAccessibleForFree: true,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: locale === 'en' ? 'Home' : 'Inicio',
+            item: urlOf(pathOf('home', locale, site.routes)),
+          },
+          { '@type': 'ListItem', position: 2, name: headingOf(id), item: canonical },
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqOf(locale).map(({ question, answer }) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer },
+        })),
+      },
+    ],
+  };
+};
+
 /** One valid built page for `id` in `locale`, shaped like the Astro output. */
 export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()): string => {
   const { routes } = site;
@@ -94,6 +189,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
   const headerLinks = links(HEADER_PAGES);
   const footerLinks = links(FOOTER_PAGES);
   const catalog = site.catalogs[locale];
+  const calculator = site.calculatorPages?.includes(id) === true;
   return [
     `<!DOCTYPE html><html lang="${LOCALE_TAGS[locale]}"><head>`,
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',
@@ -108,13 +204,19 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     id === 'home'
       ? `<script type="application/ld+json">${serializeJsonLd(homeJsonLd(locale))}</script>`
       : '',
+    calculator
+      ? `<script type="application/ld+json">${serializeJsonLd(calculatorJsonLd(id, locale, site))}</script>` +
+        `<script type="module" src="/${ENTRY_FILE}"></script>`
+      : '',
     `<style>${VALID_CSS}</style>`,
     '</head><body>',
     '<a class="skip-link" href="#main">Skip to main content</a>',
     `<header><a href="${pathOf('home', locale, routes)}">Maestro Calc</a>`,
     `<nav aria-label="${NAV_LABEL}">${headerLinks === '' ? '' : `<ul>${headerLinks}</ul>`}`,
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
-    `<main id="main"><h1>${headingOf(id)}</h1>${updatedLine(id, locale, site)}</main>`,
+    calculator
+      ? calculatorMain(id, locale, site)
+      : `<main id="main"><h1>${headingOf(id)}</h1>${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',
@@ -136,6 +238,10 @@ export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
   }
   for (const locale of LOCALES) {
     dist.set(fileOf(notFoundPathOf(locale)), validPage(NOT_FOUND_ID, locale, site));
+  }
+  if ((site.calculatorPages ?? []).length > 0) {
+    dist.set(ENTRY_FILE, 'import"./chunks/rational.js";const a=1;export{a};');
+    dist.set(CHUNK_FILE, 'export const r=1;');
   }
   dist.set('favicon.svg', FAVICON);
   dist.set('robots.txt', ROBOTS);

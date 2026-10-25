@@ -1,6 +1,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import type { HTMLElement } from 'node-html-parser';
 import type { RouteTable } from '../routing/routes.ts';
+import { templateOf } from '../routing/templates.ts';
 
 /** One failed rule: the built file (relative to `dist`), the rule name and what is wrong. */
 export interface Problem {
@@ -25,6 +26,10 @@ export interface Site {
   readonly catalogs: Readonly<Record<Locale, Readonly<Record<string, string>>>>;
   /** The `updated` date of each content entry, keyed `<locale>/<id>` (`en/about`). */
   readonly updates: Readonly<Record<string, string>>;
+  /** The route ids rendered with the calculator template (`CALCULATOR_PAGES`); none when absent. */
+  readonly calculatorPages?: readonly string[];
+  /** The outbound `https` links each calculator page may carry (its `sources[].url`), by page id. */
+  readonly externalLinks?: Readonly<Record<string, readonly string[]>>;
 }
 
 /** A built HTML page, parsed once, with the id and locale the route table gives its file. */
@@ -44,3 +49,9 @@ export const problem = (file: string, rule: string, message: string): Problem =>
   rule,
   message,
 });
+
+/** Whether the route table's calculator list gives this page the calculator template. */
+export const isCalculatorPage = (
+  page: Page,
+  { calculatorPages = [] }: Pick<Site, 'calculatorPages'>,
+): boolean => templateOf(page.id, calculatorPages) === 'calculator';

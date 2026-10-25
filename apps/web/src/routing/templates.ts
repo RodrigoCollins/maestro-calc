@@ -1,5 +1,5 @@
 import { NOT_FOUND_ID } from './routes.ts';
-import type { PageId, RouteTable, ShellPageId } from './routes.ts';
+import type { PageId, RouteTable } from './routes.ts';
 
 /**
  * The route ids rendered with the calculator page template: the page id is the calculator id.
@@ -16,7 +16,7 @@ export type Template = 'home' | 'trust' | 'calculator' | 'notFound';
 
 /** The template of a page id: never guessed from the HTML. */
 export const templateOf = (
-  id: ShellPageId,
+  id: string,
   calculatorPages: readonly string[] = CALCULATOR_PAGES,
 ): Template => {
   if (id === NOT_FOUND_ID) return 'notFound';

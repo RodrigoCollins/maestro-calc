@@ -20,7 +20,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...fileSetProblems(dist, site.routes),
     ...headProblems(pages, site),
     ...structureProblems(pages, site, dist),
-    ...assetProblems(pages, dist),
+    ...assetProblems(pages, dist, site),
     ...contentProblems(pages, site, dist),
     ...factProblems(site, dist),
     ...budgetProblems(pages, buildBytes.sizes, dist),
