@@ -399,3 +399,12 @@ All four review lenses passed; this round folds the minor findings. Strict TDD (
 Evidence: `npm run verify` exit 0, 2343 tests (128 files; 15 more than before), `site-check` coverage 100; `check:site` checked 14 pages, `pending ownerReview entries: 10`; `npm run build && npm run test:e2e` 110 passed; `npm run lighthouse` exit 0. Changed lines of the round (lockfiles excluded, before this docs commit): 300 (239+, 61-).
 
 Follow-ups (out of scope, not fixed): R1-1 (`@lhci/cli` dev-tree advisories), R1-5, R1-6, R1-7, R1-8, RES-2 (measure the `site-browser` wall time on the PR run), RES-3 and RES-4 (calculator-pages change: Lighthouse representative URLs per template, and `check:site` must cover calculator pages), RES-6, REL-4, REL-5, REL-6 (CRLF: consider `.gitattributes` later), RD-12.
+
+## G3 Judgment Day
+
+Judge A: **APPROVED** (no severe). Judge B: **CHANGES REQUIRED** on JD-B-1 (MAJOR): the about page claimed every page shows its update date, but home does not. Verified by the orchestrator and fixed in `bee615c` (claim narrowed to policy and methodology pages, pinned in `content.contract.test.ts`) and `b7d7f7a` (TP15 spec, task 10.3/10.6 and the terms catalog descriptions aligned with "local building code" / "código de construcción local"; the `ROUTES` add-a-page recipe rewritten for the catch-all dispatch and `TRUST_IDS`; the internal spec id dropped from the shipped about comment). Scoped re-judgment by judge B: **APPROVED**. `npm run verify` exit 0 (2345 tests), `npm run test:e2e` 110 passed.
+
+### Follow-ups
+
+- **Owner decision**: the home tagline and description promise "exactly what to buy" / "exactamente qué comprar", while terms and about say every result is an estimate. Raise it during the `ownerReview` read (F.1).
+- `TRUST_IDS` is a second list next to `ROUTES` (a type test tying it to `Exclude<PageId, 'home'>`); `STORAGE_APIS` could add `sessionStorage` and `indexedDB`; `countPending`/`updatedOf` should parse the frontmatter block first (with CRLF, REL-6); `format12` should cap a group's length; contact and privacy could link the address with `mailto:` once Email Obfuscation is confirmed off.
