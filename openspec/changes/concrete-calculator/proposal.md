@@ -45,7 +45,7 @@ Core stays pure: `createConcrete(bags)` returns a `defineCalculator` definition;
 |---|---|---|---|
 | D1 | Progressive enhancement: build-time default result + one same-origin module script; `<noscript>` note | Worker SSR for a GET result path; framework island (Preact) | Static hosting cannot compute a GET; SSR adds runtime cost and a second render path. Vanilla TS keeps bytes low |
 | D2 | Global CSP `script-src 'self'` (no inline, no eval); `check:site` allows scripts only on calculator pages | Per-path CSP in `_headers`; nonce/hash | `_headers` caps at 100 rules and slugs are flat, so per-path cannot scale to 100+ calculators × 2 locales; static build has no nonce |
-| D3 | JS budget ≤ 32,768 B raw per calculator page; 0 elsewhere; calculator page-weight ceiling set in design from a measurement (≤ 196,608 B) | One global JS number | Keeps static pages at zero; bounds the island |
+| D3 | JS budget ≤ 49,152 B raw per calculator page; 0 elsewhere; calculator page-weight ceiling set in design from a measurement (≤ 196,608 B) | One global JS number | Keeps static pages at zero; bounds the island |
 | D4 | One calculator `concrete` with a `shape` select; per-shape fields where meaning differs; footing/column have a piece count | One calculator per shape; one page per shape | §4.1 one page; one URL contract; shared waste/bag/price |
 | D5 | Formulas: slab and footing L×W×T(×n); column π(d/2)²h×n; steps W×run×rise×N(N+1)/2; waste applied before bags; bags = ⌈V/yield⌉ | Integer-step approximations | Standard prism/cylinder geometry; steps stacked as full-height blocks |
 | D6 | π as a ≥ 30-digit rational in `core-geometry`, disclosed on methodology | 355/113; floats | Exact pipeline stays rational; error far below display rounding and bag ceilings |
@@ -77,7 +77,7 @@ Defaults from the approved mockup: slab 12 ft × 10 ft × 4 in, waste 10%, bag 8
 | Bag yields wrong or unsourced | Med | Fetch datasheet at spec; owner confirms (OA1) before data slice merges |
 | Defaults/URL keys frozen by mistake | Med | Owner review of tuples before group 1 merges (OA2) |
 | Astro inlines a small script (blocked by CSP) | Med | `check:site` rejects inline scripts; design pins an external bundle |
-| Bundle exceeds 32 KiB (bigint rational, parser, codec) | Med | Measure in the island slice; subpath imports, PURE annotations |
+| Bundle exceeds 48 KiB (bigint rational, parser, codec) | Med | Measure in the island slice; subpath imports, PURE annotations |
 | Spec deltas target web-shell specs not yet promoted | High | Archive web-shell before `sdd-spec` of this change |
 | Deferred live drawing weakens the Blueprint signature | Low | Follow-up change; result panel keeps tokens |
 

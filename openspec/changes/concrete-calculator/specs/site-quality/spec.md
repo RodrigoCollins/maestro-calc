@@ -10,7 +10,7 @@ The browser job and `check:site` MUST cover the calculator template, in both loc
 
 - axe-core (same tags as above) runs on each calculator page in the default state and after interaction: shape switched to footing, to column and to steps, an invalid field (error shown), the metric unit system, and a non-zero price (cost rows visible); 0 violations in each.
 - A Playwright project with JavaScript disabled loads each calculator page and asserts the default result, the "not running" note (`calculator-page` [CP40]), and that no request has type `script`.
-- A size probe runs in `verify` from the engine group onward: it bundles and minifies, with the web build's bundler, the engine surface the calculator entry will import (the calculator factory, the yields-only module, validation, the URL codec and the display formatting of core) and fails above 24,576 bytes, which leaves 8,192 bytes of the 32,768 budget for the page controller, presenter and DOM code. Its measured size is printed and recorded in the apply progress.
+- A size probe runs in `verify` from the engine group onward: it bundles and minifies, with the web build's bundler, the engine surface the calculator entry will import (the calculator factory, the yields-only module, validation, the URL codec and the display formatting of core) and fails above 40,960 bytes, which leaves 8,192 bytes of the 49,152 budget for the page controller, presenter and DOM code. Its measured size is printed and recorded in the apply progress.
 - A page loaded with a state in its query (`?v=1&sh=footing&l=216&n=3`) keeps cumulative layout shift at or below 0.01.
 - No CSP violation message appears in the console during load or interaction.
 - The `calculators` mutation shard's mutant count is measured and recorded in the apply progress; when it passes about 400 it is split per `AGENTS.md` (D14).
@@ -28,7 +28,7 @@ The browser job and `check:site` MUST cover the calculator template, in both loc
 #### Scenario: [SQ27] Engine size probe
 - GIVEN the size probe over the engine surface of the concrete entry
 - WHEN `npm run verify` runs
-- THEN it prints the minified size and fails when it exceeds 24,576 bytes
+- THEN it prints the minified size and fails when it exceeds 40,960 bytes
 
 #### Scenario: [SQ28] Static pages request no script, including platform injections
 - GIVEN Chromium loading every non-calculator page of the local build, and the post-deploy smoke loading `/` and `/privacy` in production
@@ -89,7 +89,7 @@ A Playwright smoke test MUST run on a 390x844 viewport with touch emulation and 
 
 ### Requirement: Byte budgets
 
-`npm run check:site` MUST fail when, for any built page, any of these measured raw (uncompressed) sizes is exceeded: HTML <= 40,960 bytes; CSS (linked plus inline) <= 20,480 bytes; each woff2 <= 30,720 bytes and the four together <= 92,160 bytes; client JavaScript = 0 bytes on a page that is not a calculator page, and <= 32,768 bytes on a calculator page (the sum of every JS file reachable from the page: its entry script, its `modulepreload` targets and their static imports, i.e. the entry plus its static graph); page weight (HTML + CSS + fonts it loads + favicon + the JavaScript it loads) <= 163,840 bytes on a page that is not a calculator page and <= 196,608 bytes on a calculator page. The design phase MAY lower the calculator numbers after measuring the build, never raise them. Rationale: the longest trust page is about 1,500 words (about 12 KB of HTML), a Latin Barlow woff2 weighs about 15 to 25 KB, a token-based static CSS is under 10 KB; budgets leave about 2x headroom and keep first load under the 1 s goal of PLAN.md §4.3 on a mobile connection; a vanilla module that carries the exact-rational engine and the URL codec fits in 32 KiB.
+`npm run check:site` MUST fail when, for any built page, any of these measured raw (uncompressed) sizes is exceeded: HTML <= 40,960 bytes; CSS (linked plus inline) <= 20,480 bytes; each woff2 <= 30,720 bytes and the four together <= 92,160 bytes; client JavaScript = 0 bytes on a page that is not a calculator page, and <= 49,152 bytes on a calculator page (the sum of every JS file reachable from the page: its entry script, its `modulepreload` targets and their static imports, i.e. the entry plus its static graph); page weight (HTML + CSS + fonts it loads + favicon + the JavaScript it loads) <= 163,840 bytes on a page that is not a calculator page and <= 196,608 bytes on a calculator page. The design phase MAY lower the calculator numbers after measuring the build, never raise them. Rationale: the longest trust page is about 1,500 words (about 12 KB of HTML), a Latin Barlow woff2 weighs about 15 to 25 KB, a token-based static CSS is under 10 KB; budgets leave about 2x headroom and keep first load under the 1 s goal of PLAN.md §4.3 on a mobile connection; a vanilla module that carries the exact-rational engine and the URL codec fits in 48 KiB.
 (Previously: client JavaScript = 0 bytes everywhere and one page-weight ceiling of 163,840 bytes.)
 
 #### Scenario: [SQ6] Budgets pass on the build
@@ -108,14 +108,14 @@ A Playwright smoke test MUST run on a 390x844 viewport with touch emulation and 
 - THEN it exits non-zero
 
 #### Scenario: [SQ22] Calculator JS budget edge
-- GIVEN a built copy where the JS file of the calculator pages is 32,768 bytes, and another where it is 32,769 bytes
+- GIVEN a built copy where the JS file of the calculator pages is 49,152 bytes, and another where it is 49,153 bytes
 - WHEN `npm run check:site` runs
-- THEN the first exits 0 and the second exits non-zero naming the page, the file and the 32,768 limit
+- THEN the first exits 0 and the second exits non-zero naming the page, the file and the 49,152 limit
 
 #### Scenario: [SQ23] Imports are counted
 - GIVEN a built copy where the calculator script statically imports a second JS file of 20,000 bytes while the entry is 20,000 bytes
 - WHEN `npm run check:site` runs
-- THEN it exits non-zero (40,000 > 32,768)
+- THEN it exits non-zero (50,000 > 49,152)
 
 #### Scenario: [SQ24] Calculator weight ceiling
 - GIVEN a built copy where a calculator page weighs 196,609 bytes, and another where a trust page weighs 163,841 bytes

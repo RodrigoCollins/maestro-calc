@@ -38,7 +38,7 @@ When built, the page shows the engine's default answer. One external entry modul
 | C14 | CSP `script-src 'self'` (SQ12). **OA5 (owner, DR-18):** keep Cloudflare Email Address Obfuscation and Rocket Loader off, since `script-src 'self'` would allow their `/cdn-cgi/` scripts. SQ28 checks this locally (`check:site` plus e2e: static pages request no script and reference no `/cdn-cgi/`) and in the post-deploy smoke | Per-path CSP; nonce or hash | Closes the gap opened by the relaxed policy |
 | C15 | `present.ts` formats both locales the same way: `,` grouping, `.` decimals, built on `toDecimalParts`/`toCents`/`formatFeetInches`. No `Intl` | `Intl.NumberFormat` | Build-time and live strings stay byte-identical |
 | C16 | The FAQ lives in the Markdown body. `content/faq.ts#faqOf(body)` feeds `calculatorJsonLd`. `check:site` checks parity with the built HTML. Answers are plain text of at most 600 characters (DR-16) | A `faq` frontmatter field | One source, and the HTML stays bounded |
-| C17 | **Size probe in G1 (DR-7, SQ27).** `apps/web/src/contract/client-size.contract.test.ts` calls Vite's `build()` with `write: false`, minify on, library mode, and a virtual entry that re-exports what the entry will use: `concrete` from `lib/concrete.ts`, `encode`, `decode`, `toDecimalParts`, `toCents`, `formatFeetInches`. It asserts ≤ 24,576 B (leaving 8,192 B for the presenter, controller and DOM code) and prints the size. `vite` becomes an explicit `apps/web` devDependency, pinned to Astro's version. **Mitigation path if over:**<br>(1) keep `defineMaterial`, the material record and the data root off the client path, and confirm `sideEffects: false` tree-shaking;<br>(2) stop pulling unused parsers in through barrel re-exports by importing core subpaths or modules where the package exports allow it, or add narrow core subpath exports (a reviewed core change);<br>(3) drop the client's use of the length-parser branches the page never accepts (none expected: CP24 needs the full parser);<br>(4) owner decision. Inlining is never an option | Measuring only in G3 | The 32 KiB risk is known before any page work |
+| C17 | **Size probe in G1 (DR-7, SQ27).** `apps/web/src/contract/client-size.contract.test.ts` calls Vite's `build()` with `write: false`, minify on, library mode, and a virtual entry that re-exports what the entry will use: `concrete` from `lib/concrete.ts`, `encode`, `decode`, `toDecimalParts`, `toCents`, `formatFeetInches`. It asserts ≤ 40,960 B (leaving 8,192 B for the presenter, controller and DOM code) and prints the size. `vite` becomes an explicit `apps/web` devDependency, pinned to Astro's version. **Mitigation path if over:**<br>(1) keep `defineMaterial`, the material record and the data root off the client path, and confirm `sideEffects: false` tree-shaking;<br>(2) stop pulling unused parsers in through barrel re-exports by importing core subpaths or modules where the package exports allow it, or add narrow core subpath exports (a reviewed core change);<br>(3) drop the client's use of the length-parser branches the page never accepts (none expected: CP24 needs the full parser);<br>(4) owner decision. Inlining is never an option | Measuring only in G3 | The 48 KiB risk is known before any page work |
 | C18 | HTML budget proof in G2 (DR-16): a `CalculatorBody` render test with full-length placeholder copy (1,500 words, 8 FAQ answers of 600 characters, all templates) asserts the page HTML ≤ 40,960 B | Measuring after go-live | Finds the overrun before the copy is written |
 
 ### `check:site` and budgets (template derived from `ROUTES`, `CALCULATOR_PAGES`, `PAGELESS`)
@@ -49,7 +49,7 @@ When built, the page shows the engine's default answer. One external entry modul
 | `on*`, `astro-island` | forbidden | forbidden |
 | `modulepreload` | forbidden | same-origin only |
 | `dist` JS | only under `_astro/` and reachable from a calculator page | — |
-| JS budget | 0 | entry + static graph ≤ 32,768 B |
+| JS budget | 0 | entry + static graph ≤ 49,152 B |
 | Page weight | ≤ 163,840 B | ≤ 196,608 B, JS included |
 | HTML / CSS | 40,960 / 20,480 | same |
 | JSON-LD | home graph; calculator types forbidden | exactly WebApplication + BreadcrumbList + FAQPage, with FAQ parity |
@@ -144,11 +144,15 @@ Chained PRs recommended: Yes
 
 | Risk | Mitigation |
 |---|---|
-| Engine surface > 24,576 B | Caught in G1 by S6; C17 mitigation path before G2 starts |
+| Engine surface > 40,960 B | Caught in G1 by S6; C17 mitigation path before G2 starts |
 | Calculator HTML > 40,960 B | C18 proof in S8 with full-length copy; FAQ answer cap |
 | `vite` import in the probe drifts from Astro's bundler version | Pinned to Astro's version; a contract test compares them |
 | Platform-injected scripts allowed by `'self'` | OA5 + SQ28 (local and post-deploy) |
 | G3 is the riskiest merge (publishes everything) | Its slices are reviewed separately, and the group is gated by the full e2e/axe/Lighthouse suite before merge |
+
+## Budget decision (owner, 2026-10-25)
+
+The G1 size probe (C17) measured the engine surface at 28,457 B minified, against the original 24,576 B cap. Drivers (rendered bytes): `calculator/define.ts` 4,923; `calculators/concrete/concrete.ts` 4,775; `rational/rational.ts` 3,526; length `parser.ts` 3,516; `url/codec.ts` 3,448; `calculator/validate.ts` 3,314; `calculator/run.ts` 2,758; `units/catalog.ts` 2,698; length `scanner.ts` 2,617. The data package adds only 226 B. The mitigation ladder gave nothing: the client path already excludes the material record, importing core modules instead of the barrel changes 10 B, and the full length parser is required (CP24). The owner raised the budgets instead: the client entry graph is at most 49,152 B (was 32,768) and the engine probe at most 40,960 B (was 24,576), keeping 8,192 B for page code. The calculator page-weight ceiling stays 196,608 B (it already includes JS). Core slimming (split the units catalog, lighter client-side definition validation, precomputed calculator metadata) is a recorded follow-up outside this change.
 
 ## Open Questions
 
@@ -181,7 +185,7 @@ None blocking. Owner actions: OA1–OA4, plus OA5 (Cloudflare script-injecting f
 | DR-4 | SQ25 does not scale | One representative calculator page. Spec SQ25 + requirement text |
 | DR-5 | A live page before its trust copy and gates | Route lands in G3 S13a/S13b with entry, methodology, privacy, home link, axe/CLS; G1/G2 unrouted (`CalculatorBody` render tests, fixtures); C7 `PAGELESS` transition; slice table. Specs: SR17 note, TP26, privacy merge rule, CP6 `id` |
 | DR-6 | Privacy says "no forms" and nothing about URL state | trust-pages privacy requirement MODIFIED with the EN/ES `calculators` section, a new cookies sentence, TP12 extended, TP27 pins (keeps "no accounts"); S12 |
-| DR-7 | Bundle risk measured too late | C17 size probe in G1 S6 (SQ27, 24,576 B) with a written mitigation path |
+| DR-7 | Bundle risk measured too late | C17 size probe in G1 S6 (SQ27, 40,960 B) with a written mitigation path |
 | DR-8 | S3 over budget | S3a (metadata, tuples, registry, catalogs, slab volume) / S3b (waste, bags, costs, drift). The judge's exact split text was not in the message I received; this split follows the coupling constraints |
 | DR-9 | S10 over budget | S11a (pure controller) / S11b (DOM + entry) |
 | DR-10 | `sh` options across slices | C3: S4/S5 extend the same unmerged tuple |
