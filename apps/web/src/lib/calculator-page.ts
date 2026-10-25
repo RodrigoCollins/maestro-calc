@@ -21,7 +21,7 @@ import {
   fillMessage,
   percentText,
 } from '../calculator/present.ts';
-import { SHAPE_FIELDS, SHAPES } from '../calculator/shapes.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
 
@@ -109,6 +109,7 @@ export const concreteView = (locale: Locale): CalculatorView => {
   );
   const [before = '', after = ''] = templates.volumeYd3.split('{value}');
 
+  const defaultShape = defaultOf('shape');
   const form: FormView = {
     unitsLabel: text('site.calculator.unitsLabel'),
     units: [
@@ -117,11 +118,10 @@ export const concreteView = (locale: Locale): CalculatorView => {
     ],
     shapeLabel: label('shape'),
     shapes: choices('shape'),
-    groups: SHAPES.map((id) => ({
-      id,
-      visible: id === defaultOf('shape'),
-      fields: SHAPE_FIELDS[id].map(field),
-    })),
+    fields: DIMENSION_ORDER.map((key) => {
+      const shapes = SHAPES.filter((shape) => SHAPE_FIELDS[shape].some((used) => used === key));
+      return { ...field(key), shapes, visible: shapes.some((shape) => shape === defaultShape) };
+    }),
     waste: {
       ...field('waste'),
       help: text('calc.concrete.page.wasteHelp'),

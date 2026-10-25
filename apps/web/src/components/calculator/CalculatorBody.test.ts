@@ -209,7 +209,7 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     expect(
       root.querySelectorAll('[data-waste-step]').every((step) => step.hasAttribute('hidden')),
     ).toBe(true);
-    expect(root.querySelectorAll('input[name]')).toHaveLength(17);
+    expect(root.querySelectorAll('input[name]')).toHaveLength(15);
   });
 
   // spec: calculator-page › [CP44] static, DR-13: the areas the script rewrites exist from the start

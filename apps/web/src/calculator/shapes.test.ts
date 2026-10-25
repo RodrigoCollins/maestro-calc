@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
-import { SHAPE_FIELDS } from './shapes.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS } from './shapes.ts';
 
 describe('visible fields per shape (calculator-page › Form controls, [CP11])', () => {
   // spec: calculator-page › [CP11] the table of visible fields, in order
@@ -33,5 +33,21 @@ describe('visible fields per shape (calculator-page › Form controls, [CP11])',
         .filter((key) => !always.includes(key))
         .sort(),
     ).toEqual([...shown].sort());
+  });
+
+  // One list of inputs serves all four shapes: each shape's fields keep their order inside it, so
+  // hiding the other fields shows the order of the spec (calculator-page › [CP11]).
+  it('keeps the fields of every shape in the order of the one input list', () => {
+    expect([...DIMENSION_ORDER].sort()).toEqual(
+      [...new Set(Object.values(SHAPE_FIELDS).flat())].sort(),
+    );
+    for (const [shape, fields] of Object.entries(SHAPE_FIELDS)) {
+      const positions = fields.map((field) => DIMENSION_ORDER.indexOf(field));
+      expect(
+        positions.every((position) => position >= 0),
+        shape,
+      ).toBe(true);
+      expect(positions, shape).toEqual([...positions].sort((a, b) => a - b));
+    }
   });
 });
