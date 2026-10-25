@@ -7,7 +7,7 @@ const rules = parseHeaders(readFileSync(fromRoot('apps/web/public/_headers'), 'u
 const block = (pattern: string) => rules.find((rule) => rule.pattern === pattern);
 
 const CSP =
-  "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+  "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
 describe('_headers parser', () => {
   it('reads path lines, indented headers and comments', () => {
@@ -41,6 +41,44 @@ describe('security headers (site-quality › [SQ12])', () => {
     expect(all?.headers['permissions-policy']).toContain('microphone=()');
     expect(all?.headers['permissions-policy']).toContain('geolocation=()');
     expect(all?.headers['content-security-policy']).toBe(CSP);
+  });
+
+  // spec: site-quality › [SQ12] script-src is exactly 'self' and appears once in the file
+  it("allows scripts from the page origin only: script-src is exactly 'self'", () => {
+    const directives = (block('/*')?.headers['content-security-policy'] ?? '').split('; ');
+    expect(directives.filter((directive) => directive.startsWith('script-src'))).toEqual([
+      "script-src 'self'",
+    ]);
+    const text = readFileSync(fromRoot('apps/web/public/_headers'), 'utf8');
+    expect(text.match(/script-src/g)).toHaveLength(1);
+    const scriptSrc = directives.find((directive) => directive.startsWith('script-src')) ?? '';
+    for (const forbidden of [
+      "'unsafe-inline'",
+      "'unsafe-eval'",
+      "'strict-dynamic'",
+      "'nonce-",
+      "'sha256-",
+      'data:',
+      'http',
+      '.',
+    ]) {
+      expect(scriptSrc, forbidden).not.toContain(forbidden);
+    }
+  });
+
+  // spec: site-quality › [SQ12] the other directives are unchanged
+  it('keeps the other directives as they were before the script rule changed', () => {
+    const directives = (block('/*')?.headers['content-security-policy'] ?? '').split('; ');
+    expect(directives.filter((directive) => !directive.startsWith('script-src'))).toEqual([
+      "default-src 'self'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "font-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+    ]);
   });
 
   it('sets no cookie anywhere', () => {
@@ -80,6 +118,8 @@ describe('asset caching (site-quality › [SQ13])', () => {
     '/_astro/fonts/a3a3eff37ba0612c.woff2',
     '/_astro/index.Ab12Cd34.css',
     '/_astro/page.hash.js',
+    '/_astro/concrete.Ab12Cd34.js',
+    '/_astro/chunks/rational.Zz99.js',
   ])('matches the built asset %s with the immutable rule', (path) => {
     expect(immutable.some((rule) => appliesTo(rule.pattern, path))).toBe(true);
   });

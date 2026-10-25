@@ -1,11 +1,13 @@
 # Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
 # style-src keeps 'unsafe-inline' on purpose: Astro inlines all page CSS into <style> tags (no
-# external stylesheet, no nonce at build time). Scripts stay at 'none', which is the rule that matters.
+# external stylesheet, no nonce at build time). Scripts are 'self' only: no inline script, no eval,
+# no nonce or hash, no host. Static pages carry no script at all (check:site); a calculator page
+# carries its one same-origin module.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Hashed fonts and CSS never change under one name.
 /_astro/*
