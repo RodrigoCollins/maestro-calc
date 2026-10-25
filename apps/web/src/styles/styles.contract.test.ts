@@ -92,7 +92,11 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
 
   // spec: site-shell › [SS6]
   it('has no dark theme in any stylesheet', () => {
-    expect(stylesheets).toHaveLength(2);
+    expect(stylesheets.map((name) => name.split('/').pop())).toEqual([
+      'base.css',
+      'calculator.css',
+      'tokens.css',
+    ]);
     for (const name of stylesheets) {
       expect(readFileSync(fromRoot(name), 'utf8'), name).not.toContain('prefers-color-scheme');
     }
@@ -209,5 +213,70 @@ describe('Page gutter (G1 review carry-over)', () => {
   it('centres main content in the page width, the same column as the header and footer', () => {
     expect(resolve(main?.['max-width'])).toBe('64rem');
     expect(main?.['margin']).toBe('0 auto');
+  });
+});
+
+describe('calculator styles (calculator-page › Form controls, Layout stability; site-shell › Design tokens)', () => {
+  const calculator = read('calculator.css');
+  const rules = rulesOf(calculator);
+  const declared = (selector: string, property: string): string =>
+    resolve(rules.get(selector)?.[property]);
+
+  // spec: calculator-page › Form controls: inputs at least 56 px, every other control the target size
+  it('makes the text inputs 56 px tall and the buttons the 44 px target in both directions', () => {
+    expect(rem(declared('.calc-field input', 'min-height'))).toBe(56);
+    expect(declared('.calc-choice', 'min-height')).toBe('2.75rem');
+    expect(declared('.calc-choice', 'min-width')).toBe('2.75rem');
+  });
+
+  // spec: calculator-page › Layout stability: figures in fixed-width cells with tabular digits
+  it('sets the figures in tabular numerals inside cells of a fixed width', () => {
+    expect(declared('.calc-figure', 'font-variant-numeric')).toBe('tabular-nums');
+    expect(declared('.calc-figure', 'display')).toBe('inline-block');
+    expect(declared('.calc-figure', 'min-width')).toMatch(/^\d+ch$/);
+  });
+
+  // spec: calculator-page › [CP14], [CP44] and DR-13: every area the script rewrites keeps its size
+  it.each(['.calc-answer', '.calc-notice', '.calc-steppers', '.calc-copy'])(
+    'reserves a block size for %s',
+    (selector) => {
+      expect(rem(declared(selector, 'min-height')), selector).toBeGreaterThanOrEqual(44);
+    },
+  );
+
+  it('reserves the height of the tallest shape, four rows, for the shape area', () => {
+    const row = rem(declared('.calc-field', 'min-height'));
+    expect(row).toBeGreaterThanOrEqual(96);
+    expect(declared('.calc-shape-area', 'min-height')).toContain('4 *');
+  });
+
+  // spec: calculator-page › Accessibility of the interactive page: no animation, ring untouched
+  it('animates nothing and leaves the focus ring to the base stylesheet', () => {
+    expect(calculator).not.toMatch(/animation|transition|@keyframes/);
+    expect(calculator).not.toMatch(/outline|:focus|box-shadow/);
+  });
+
+  // spec: calculator-page › Result panel: safety orange on the ink ground keeps the text contrast
+  it('puts orange and white on the ink ground of the result panel at 4.5:1 or more', () => {
+    expect(declared('.calc-result', 'background').toUpperCase()).toBe(INK);
+    expect(declared('.calc-qty', 'color').toUpperCase()).toBe(ORANGE);
+    expect(declared('.calc-result', 'color').toUpperCase()).toBe(SURFACE);
+    expect(contrast(ORANGE, INK)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(SURFACE, INK)).toBeGreaterThanOrEqual(4.5);
+  });
+
+  // The stylesheet reaches a page through the one component that uses its classes.
+  it('is imported by the CalculatorBody container', () => {
+    const body = readFileSync(
+      fromRoot('apps/web/src/components/calculator/CalculatorBody.astro'),
+      'utf8',
+    );
+    expect(body).toContain("import '../../styles/calculator.css';");
+  });
+
+  // spec: site-quality › CSS budget: the sources of all stylesheets stay well inside 20,480 B
+  it('keeps the sources of the three stylesheets inside the CSS budget', () => {
+    const bytes = [tokens, base, calculator].reduce((sum, css) => sum + Buffer.byteLength(css), 0);
+    expect(bytes).toBeLessThanOrEqual(20480);
   });
 });

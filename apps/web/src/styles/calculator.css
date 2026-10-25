@@ -1,0 +1,195 @@
+/* The calculator page parts (Blueprint tokens). The focus ring stays the one of base.css. */
+.calculator [hidden] {
+  display: none;
+}
+
+.calc-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  font-size: var(--text-small);
+  list-style: none;
+}
+
+.calc-breadcrumb li + li::before {
+  content: '/';
+  margin-right: var(--space-2);
+}
+
+/* Reserved areas: the script fills them without moving anything below (CP44). */
+.calc-answer {
+  min-height: 7.5rem;
+  font-size: var(--text-h3);
+  font-weight: 600;
+}
+
+.calc-notice {
+  min-height: 9rem;
+}
+
+.calc-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.calc-legend {
+  flex-basis: 100%;
+  font-weight: 600;
+}
+
+.calc-choice {
+  min-height: var(--target-size);
+  min-width: var(--target-size);
+  padding: 0 var(--space-3);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.calc-choice[aria-pressed='true'] {
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+.calc-choice:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* The tallest shape has four rows; every shape reserves that block (CP14). */
+.calc-shape-area {
+  min-height: calc(4 * 6rem + 3 * var(--space-3));
+}
+
+.calc-fields {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.calc-field {
+  display: grid;
+  gap: var(--space-1);
+  min-height: 6rem;
+  align-content: start;
+}
+
+.calc-field label {
+  font-weight: 600;
+}
+
+.calc-field input {
+  min-height: 3.5rem;
+  padding: 0 var(--space-3);
+  border: 2px solid var(--color-text);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.calc-field input[aria-invalid='true'] {
+  border-color: var(--color-link);
+}
+
+.calc-help {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-small);
+}
+
+.calc-steppers {
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--target-size);
+}
+
+.calc-copy {
+  min-height: 5rem;
+}
+
+.calc-status {
+  min-height: 1.6rem;
+  margin: var(--space-1) 0 0;
+}
+
+/* The result panel: ink ground, orange for what to buy. */
+.calc-result {
+  margin: var(--space-4) 0;
+  padding: var(--space-3);
+  background: var(--color-text);
+  color: var(--color-surface);
+}
+
+.calc-result a {
+  color: var(--color-surface);
+}
+
+.calc-rows {
+  margin: 0 0 var(--space-3);
+}
+
+.calc-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) 0;
+}
+
+.calc-row dt,
+.calc-row dd {
+  margin: 0;
+}
+
+.calc-figure {
+  display: inline-block;
+  min-width: 8ch;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.calc-primary {
+  font-size: var(--text-h2);
+  font-weight: 600;
+}
+
+.calc-primary .calc-figure {
+  font-size: var(--text-h1);
+}
+
+.calc-shopping {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-weight: 600;
+}
+
+.calc-qty {
+  color: var(--color-accent);
+  font-size: var(--text-h1);
+}
+
+.calc-cost,
+.calc-hint {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.calc-note {
+  font-size: var(--text-small);
+}
+
+.calc-content {
+  max-width: var(--measure);
+}
