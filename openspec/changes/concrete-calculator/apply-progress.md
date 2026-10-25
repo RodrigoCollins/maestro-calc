@@ -119,3 +119,30 @@ After the S6 probe measured 28,457 B against 24,576 B, Rodrigo decided to raise 
 - Deviation: the helper lives under `contract/__testing__/` instead of `contract/client-build.ts`.
 - No core or data file changed after the final mutation run, so no mutation re-run.
 - G1.3: GX1 `verify` is green locally and GX2 is clean; push, CI, reviewers, Judgment Day and the PR stay with the orchestrator.
+
+## G1 correction round 1
+
+All four review lenses passed; this round folds their findings. Base `12ea373`.
+
+| Finding | Commit | Change |
+| --- | --- | --- |
+| R1-1 / RD-1 / RES-1 | `fed82ad` | `.bak` removed from git, `*.bak` ignored, gates contract assertion |
+| RD-2 | `545c16a` | one `SHAPES` and one `BAG_SIZES` feed descriptors, types and a `Record<Shape, fn>` table (the switch is gone); `stepsVolume` above its user. `Dimensions` stays hand-written (the inferred input type is not reachable from `compute`'s parameter without a larger change), only its `shape` is derived |
+| REL-1 | `0d461fe` | steps triangular number built with `Rational` (`n.mul(n.add(1)).div(2)`) |
+| RD-5 | `455e37d` | bag key decision below |
+| RD-4 | `b89c7d6` | `inches`, `cents` and the state arbitrary in `packages/core/src/__testing__/concrete-arbitraries.ts`; listed in the `calculators` shard `deps` and in the CI inputs |
+| RD-3 | `eb78912` | ICW10 comment says final (17 inputs, four shapes, six outputs) |
+| RES-7 | `5586992` | AGENTS.md: a concrete-sized calculator adds about 190 mutants, split after about 2 |
+
+### Bag key decision (RD-5)
+
+One convention, the purchase unit id `bag-<n>`: core `BagYields` is `Record<'bag-40' | 'bag-60' | 'bag-80', Quantity<'volume'>>`, data `CONCRETE_MIX_YIELDS` already was, and the shopping line `purchaseUnit` is the same string, built by one helper (`bagUnitOf`) that also looks the yield up. The web root passes `CONCRETE_MIX_YIELDS` straight to `createConcrete` (no remap) and the drift guard compares by id (no regex, `yieldsOfSubpath` removed). The select option ids (`bg=40|60|80`), `RELEASED` and every spec'd purchase unit id are untouched. The spec (calc-concrete Yield injection), design C2 and task 3a.6 were amended to the new key set; this is a core API key rename, not a URL change.
+
+### Results
+
+- `npm run verify` exit 0: 148 test files, 2536 tests (unchanged count; one gates test added, one test moved nowhere).
+- Mutation: calculators 179 mutants (140 in concrete.ts, was 193 before the table refactor), 100.00; data 100.00 (no data source changed); other shards have no changed inputs. Logs: `c1-*.log` in the session scratchpad.
+
+### Follow-ups (out of scope)
+
+RD-6 (AGENTS.md factory recipe, G3 S12), RD-7, RD-8 (Title Case labels and "Number of pieces" are spec-mandated; owner copy review), RD-9 (ci.yml anchors), RES-2 (URL contract is frozen at merge: owner approval OA2 requested by the orchestrator before merge; codec v2 is the escape hatch), RES-3 to RES-6, REL-2.
