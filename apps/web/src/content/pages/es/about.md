@@ -13,9 +13,9 @@ Todo lo que hay en este sitio viene del Equipo editorial de Maestro Calc. No pub
 
 <h2 id="politica-editorial">Política editorial</h2>
 
-Cada página dice qué cubre y cuándo se actualizó por última vez. Presentamos las estimaciones como estimaciones. La [página de metodología](/es/metodologia) explica cómo sale cada número. Hoy el sitio no tiene publicidad ni patrocinadores, así que nada de lo que ves está influido por ellos.
+Cada página de políticas y de metodología dice cuándo se actualizó por última vez. Presentamos las estimaciones como estimaciones. La [página de metodología](/es/metodologia) explica cómo sale cada número. Hoy el sitio no tiene publicidad ni patrocinadores, así que nada de lo que ves está influido por ellos.
 
-<!-- Los elementos h2 en bruto mantienen estable el ancla de cada sección aunque cambie el título (trust-pages TP10). -->
+<!-- Los elementos h2 en bruto mantienen estable el ancla de cada sección aunque cambie el título. -->
 
 <h2 id="uso-de-ia">Cómo usamos la IA</h2>
 
