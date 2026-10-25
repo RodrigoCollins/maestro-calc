@@ -1,0 +1,41 @@
+---
+import Breadcrumb from './Breadcrumb.astro';
+import CalculatorForm from './CalculatorForm.astro';
+import ResultPanel from './ResultPanel.astro';
+import SourceList from './SourceList.astro';
+import type { CalculatorContent, CalculatorView } from './model.ts';
+
+interface Props {
+  view: CalculatorView;
+  content: CalculatorContent;
+}
+const { view, content } = Astro.props;
+const { templates } = view;
+// Inert messages the script reads: `errors.<CODE>`, `answer.<shape>` and the copy states.
+const messages = [
+  ...Object.entries(templates.errors).map(([code, text]) => [`errors.${code}`, text] as const),
+  ...Object.entries(templates.answers).map(([shape, text]) => [`answer.${shape}`, text] as const),
+  ['copy.copied', templates.copy.copied] as const,
+  ['copy.failed', templates.copy.failed] as const,
+];
+---
+
+<div class="calculator" data-calculator={view.id}>
+  <Breadcrumb breadcrumb={view.breadcrumb} />
+  <h1>{view.title}</h1>
+  <p class="calc-answer" data-answer data-reserved="answer" aria-live="polite">
+    {view.answer}
+  </p>
+  <div class="calc-notice" data-reserved="notice">
+    <p data-not-running>{view.notRunning}</p>
+  </div>
+  <CalculatorForm form={view.form} />
+  <ResultPanel result={view.result} />
+  {messages.map(([name, text]) => (
+    <template data-message={name}>{text}</template>
+  ))}
+  <div class="calc-content">
+    <slot />
+    <SourceList {content} />
+  </div>
+</div>
