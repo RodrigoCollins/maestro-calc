@@ -13,7 +13,7 @@ Branch `feat/concrete-g1-engine` (all G1 slices are work-unit commits on this on
 | S4 footing, column | done | `84263aa` | 2,495 | 203 (~380) |
 | S5 steps, properties, language-free | done | `7d01dcb` | 2,531 | 355 (~380) |
 | S5 url test (contingency move into S6) | done | `cf2af4c` | 2,531 | 106 |
-| S6 size probe | **blocked** (pin committed, probe over budget) | `a21055a` | 2,532 | 32 (pin and lockfile) |
+| S6 size probe | done after the owner budget decision | see below | 2,532 | 32 (pin and lockfile) |
 
 G1 commits: `a0dddb2..a21055a` (8 commits). GX2 hygiene (`git log a0dddb2..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'`) returns nothing.
 
@@ -110,3 +110,12 @@ G1.3 / GX1 to GX5 (push, CI, four reviewers, Judgment Day, PR against `main`): d
 ## Owner decision: raise the JS budget (2026-10-25)
 
 After the S6 probe measured 28,457 B against 24,576 B, Rodrigo decided to raise the budgets: client entry graph at most 49,152 B (was 32,768), engine probe at most 40,960 B (was 24,576), leaving 8,192 B for page code; page weight stays 196,608 B. Core slimming is a recorded follow-up. Specs (site-quality, calculator-page), design.md ("Budget decision"), proposal D3, tasks.md and state.yaml were amended in one docs commit. The BLOCKED status of S6 above is superseded.
+
+## S6 completed (after the budget decision)
+
+- Probe committed: `apps/web/src/contract/client-size.contract.test.ts` with helper `apps/web/src/contract/__testing__/client-build.ts` (the `__testing__` directory is test support for the lint, so the vite import is allowed there with no config change).
+- Measured size: **28,457 B** against the new cap **40,960 B** (12,503 B of headroom; the page-code allowance of 8,192 B fits inside it).
+- Spot checks (reverted): cap set to 28,000 fails with `expected 28457 to be less than or equal to 28000`; extra unused core exports in the entry (29,752 B) fail against a 28,500 cap.
+- Deviation: the helper lives under `contract/__testing__/` instead of `contract/client-build.ts`.
+- No core or data file changed after the final mutation run, so no mutation re-run.
+- G1.3: GX1 `verify` is green locally and GX2 is clean; push, CI, reviewers, Judgment Day and the PR stay with the orchestrator.
