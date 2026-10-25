@@ -96,25 +96,27 @@ const VOLUME_OF: Readonly<Record<Shape, (inputs: Dimensions) => Quantity<'volume
 /** The net volume of the chosen shape. */
 const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => VOLUME_OF[inputs.shape](inputs);
 
+/** The reason is not one of `DEFINITION_REASONS`: the factory owns it. */
+const bagYieldsFailure = (): CoreError =>
+  new CoreError('INVALID_DEFINITION', 'BAG_YIELDS', {
+    cause: { id: 'concrete', reason: 'BAG_YIELDS' },
+  });
+
 /**
  * The factory owns this check, before `defineCalculator` runs: the yields are exactly the keys
- * `bag-40`, `bag-60` and `bag-80`, each a volume above zero. The reason is not one of `DEFINITION_REASONS`.
+ * `bag-40`, `bag-60` and `bag-80`, each a volume above zero. It returns a frozen snapshot read once,
+ * so a caller that keeps and changes its object (or a getter) cannot alter the calculator later.
  */
-const requireBagYields = (yields: BagYields): void => {
-  const units = BAG_SIZES.map(bagUnitOf);
-  const valid =
-    Object.keys(yields).length === units.length &&
-    units.every(
-      (unit) =>
-        Object.hasOwn(yields, unit) &&
-        isQuantityOf(yields[unit], 'volume') &&
-        sign(yields[unit]) === 1,
-    );
-  if (!valid) {
-    throw new CoreError('INVALID_DEFINITION', 'BAG_YIELDS', {
-      cause: { id: 'concrete', reason: 'BAG_YIELDS' },
-    });
-  }
+const snapshotBagYields = (yields: unknown): BagYields => {
+  if (typeof yields !== 'object' || yields === null) throw bagYieldsFailure();
+  if (Object.keys(yields).length !== BAG_SIZES.length) throw bagYieldsFailure();
+  const read = (size: BagSize): Quantity<'volume'> => {
+    const unit = bagUnitOf(size);
+    const value: unknown = Object.hasOwn(yields, unit) ? Reflect.get(yields, unit) : undefined;
+    if (!isQuantityOf(value, 'volume') || sign(value) !== 1) throw bagYieldsFailure();
+    return value;
+  };
+  return Object.freeze({ 'bag-40': read('40'), 'bag-60': read('60'), 'bag-80': read('80') });
 };
 
 /** A length field: its default in inches, the unit a bare number is read in, and its maximum. */
@@ -144,8 +146,8 @@ const SMALL = ['in', 'cm'] as const;
  * waste allowance, a bag shopping line and optional costs. `yields` are the bag yields, supplied
  * by the composition root; exact arithmetic throughout, rounding only at the bag count.
  */
-export const createConcrete = (yields: BagYields) => {
-  requireBagYields(yields);
+export const createConcrete = (suppliedYields: BagYields) => {
+  const yields = snapshotBagYields(suppliedYields);
   return defineCalculator({
     id: 'concrete',
     inputs: [

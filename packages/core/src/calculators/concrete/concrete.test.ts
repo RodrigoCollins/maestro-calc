@@ -163,8 +163,45 @@ describe('createConcrete yield validation (calc-concrete › Yield injection)', 
     ['a length for 80', { ...CONCRETE_YIELDS, 'bag-80': quantity(1, ft) }],
     ['a lookalike for 60', { ...CONCRETE_YIELDS, 'bag-60': { exponents: {}, canonical: 1 } }],
     ['a number for 40', { ...CONCRETE_YIELDS, 'bag-40': 3 }],
+    [
+      'an inherited 60 and an own bag-50',
+      Object.assign(Object.create({ 'bag-60': CONCRETE_YIELDS['bag-60'] }) as object, {
+        'bag-40': CONCRETE_YIELDS['bag-40'],
+        'bag-80': CONCRETE_YIELDS['bag-80'],
+        'bag-50': CONCRETE_YIELDS['bag-40'],
+      }),
+    ],
+    ['null', null],
+    ['undefined', undefined],
+    ['a number', 3],
+    ['a string', 'bag-80'],
   ])('throws BAG_YIELDS for %s', (_name, yields) => {
     expect(failure(() => createConcrete(yields as never))).toStrictEqual(BAG_YIELDS);
+  });
+
+  // spec: calc-concrete › [CC5] the factory keeps a snapshot of the validated yields
+  it('does not see a yield the caller changes after validation', () => {
+    const yields = { ...CONCRETE_YIELDS };
+    const own = createConcrete(yields);
+    yields['bag-80'] = quantity(100, ft3);
+    const result = own.run({});
+    expect(result.ok && result.value.shopping[0]?.qty).toBe(74n);
+  });
+
+  // spec: calc-concrete › [CC5] each yield is read once, so a getter cannot pass validation and then change
+  it('reads each yield once', () => {
+    let reads = 0;
+    const yields = {
+      ...CONCRETE_YIELDS,
+      get 'bag-80'() {
+        reads += 1;
+        return reads === 1 ? CONCRETE_YIELDS['bag-80'] : quantity(100, ft3);
+      },
+    };
+    const own = createConcrete(yields);
+    const result = own.run({});
+    expect(result.ok && result.value.shopping[0]?.qty).toBe(74n);
+    expect(reads).toBe(1);
   });
 
   // spec: calc-concrete › [CC5] the factory owns the reason
