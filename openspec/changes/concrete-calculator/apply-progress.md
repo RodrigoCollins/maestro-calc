@@ -146,3 +146,13 @@ One convention, the purchase unit id `bag-<n>`: core `BagYields` is `Record<'bag
 ### Follow-ups (out of scope)
 
 RD-6 (AGENTS.md factory recipe, G3 S12), RD-7, RD-8 (Title Case labels and "Number of pieces" are spec-mandated; owner copy review), RD-9 (ci.yml anchors), RES-2 (URL contract is frozen at merge: owner approval OA2 requested by the orchestrator before merge; codec v2 is the escape hatch), RES-3 to RES-6, REL-2.
+
+## G1 Judgment Day
+
+Both blind judges returned **APPROVED** on `477fb75..c574bdf` (no CRITICAL or MAJOR). Both recomputed the default slab (74 bags of 80 lb) and a column or steps case by hand, and confirmed the 17 released URL tuples against the spec. The stale size-probe comment (both judges) is fixed in the same commit as this note.
+
+### Follow-ups for group 2 (do first)
+
+- **JD-1 (A, B)**: `createConcrete` keeps the caller's yields object after validating it; snapshot the three validated volumes into a frozen local record and turn a `null`/non-object argument into `BAG_YIELDS`, with tests.
+- **JD-2 (A, B)**: hand-kept per-calculator lists (`calculators.test.ts` id literals, the concrete key literal in `i18n-contract.test.ts`, `MaterialKeys<typeof concreteMix>`, the `testing/*` fixture exports, the `calculators` shard `deps`, the CI inputs and the manifest list) contradict "Nothing else is kept by hand"; derive what can be derived (directory listing, `requiredKeys`, a `src/__testing__/*-yields.ts` glob) and document the rest in the AGENTS.md factory recipe (G3 S12).
+- **JD-3 (B)**: property tests P1, P2 and P10 mirror the implementation; add one independent oracle (a bigint-only integer slab computation).

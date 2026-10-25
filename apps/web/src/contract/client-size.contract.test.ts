@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildClient } from './__testing__/client-build.ts';
 import { fromRoot } from './root.ts';
 
-/** The most the engine surface may weigh minified: 32 KiB less 8 KiB for the page code. */
+/** The most the engine surface may weigh minified: 48 KiB less 8 KiB for the page code. */
 const ENGINE_BUDGET = 40_960;
 
 /** What the client entry of the concrete page will re-export from the engine (design C17). */
