@@ -204,6 +204,22 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
   });
 
   it.each([
+    ['en', 'Every page says', /Each policy and methodology page says when it was last updated/],
+    [
+      'es',
+      'Cada página dice',
+      /Cada página de políticas y de metodología dice cuándo se actualizó por última vez/,
+    ],
+  ] as const)(
+    'claims an update date only for the pages that show one in %s',
+    (locale, overclaim, claim) => {
+      const section = sectionOf(bodyOf(`${locale}/about.md`), anchors[locale][0]);
+      expect(section).not.toContain(overclaim);
+      expect(section).toMatch(claim);
+    },
+  );
+
+  it.each([
     ['en', /will cite its sources/],
     ['es', /citará sus fuentes/],
   ] as const)('says in %s that sources will appear on calculator pages', (locale, future) => {
