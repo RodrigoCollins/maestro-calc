@@ -15,6 +15,23 @@ type EnglishKeys = keyof typeof enCommon | keyof typeof enConcrete | keyof typeo
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
   M['nameKey'] | M['purchaseUnits'][number]['nameKey'];
 
+/** The page copy of the concrete calculator (`calc.concrete.page.*`), exactly: a new key is added here. */
+type ConcretePageKeys =
+  | 'calc.concrete.page.answer.slab'
+  | 'calc.concrete.page.answer.footing'
+  | 'calc.concrete.page.answer.column'
+  | 'calc.concrete.page.answer.steps'
+  | 'calc.concrete.page.example'
+  | 'calc.concrete.page.volumeYd3'
+  | 'calc.concrete.page.volumeM3'
+  | 'calc.concrete.page.shoppingLine'
+  | 'calc.concrete.page.bagYield'
+  | 'calc.concrete.page.wasteHelp'
+  | 'calc.concrete.page.wasteLess'
+  | 'calc.concrete.page.wasteMore'
+  | 'calc.concrete.page.priceHint'
+  | 'calc.concrete.page.readyMixNote';
+
 /** The keys core derives for every calculator of the registry, one calculator at a time. */
 type DerivedKeys<C = (typeof calculators)[number]> = C extends Parameters<typeof messageKeysOf>[0]
   ? MessageKeysOf<C>
@@ -31,9 +48,16 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
   });
 
   // the other direction: the English modules hold nothing the calculator does not use
-  it('holds no English key beyond the derived keys, the error codes and the material keys', () => {
+  it('holds no English key beyond the derived keys, the error codes, the material keys and the page keys', () => {
     expectTypeOf<EnglishKeys>().toExtend<
-      DerivedKeys | `errors.${AllErrorCode}` | MaterialKeys<typeof concreteMix>
+      DerivedKeys | `errors.${AllErrorCode}` | MaterialKeys<typeof concreteMix> | ConcretePageKeys
     >();
+  });
+
+  // spec: i18n-catalog › [ICW11] the page keys of the English module are exactly these
+  it('holds exactly the page keys of the list, no more and no fewer', () => {
+    expectTypeOf<
+      Extract<keyof typeof enConcrete, `calc.concrete.page.${string}`>
+    >().toEqualTypeOf<ConcretePageKeys>();
   });
 });

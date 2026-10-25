@@ -144,3 +144,44 @@ describe('site catalog: page metadata (site-seo › Titles and descriptions)', (
     expect(new Set(texts).size).toBe(texts.length);
   });
 });
+
+/** key, en, es: the calculator-page UI table of ICW17. */
+const CALCULATOR_ROWS = [
+  ['site.calculator.breadcrumb', 'Breadcrumb', 'Ruta de navegación'],
+  ['site.calculator.breadcrumbHome', 'Home', 'Inicio'],
+  ['site.calculator.resultHeading', 'Result', 'Resultado'],
+  ['site.calculator.unitsLabel', 'Units', 'Unidades'],
+  ['site.calculator.unitsUs', 'US (ft, in)', 'EE. UU. (ft, in)'],
+  ['site.calculator.unitsMetric', 'Metric (m, cm)', 'Métrico (m, cm)'],
+  ['site.calculator.copyLink', 'Copy link', 'Copiar enlace'],
+  ['site.calculator.linkCopied', 'Link copied', 'Enlace copiado'],
+  [
+    'site.calculator.copyFailed',
+    'Could not copy. Select the link and copy it.',
+    'No se pudo copiar. Selecciona el enlace y cópialo.',
+  ],
+  [
+    'site.calculator.noscript',
+    'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
+    'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
+  ],
+  [
+    'site.calculator.estimateNote',
+    'Estimates only. Check quantities with your supplier and the local building code.',
+    'Son estimaciones. Confirma las cantidades con tu proveedor y el código de construcción local.',
+  ],
+] as const;
+
+describe('site catalog: calculator page UI (i18n-catalog › [ICW17])', () => {
+  it.each(CALCULATOR_ROWS)('resolves %s exactly in English and Spanish', (key, en, es) => {
+    expect(enSite[key]).toBe(en);
+    expect(esSite[key]).toBe(es);
+  });
+
+  it('holds exactly the eleven keys in both locales, and they have no placeholder', () => {
+    const keys = CALCULATOR_ROWS.map(([key]) => key);
+    for (const module of [enSite, esSite]) {
+      expect(Object.keys(module).filter((key) => key.startsWith('site.calculator.'))).toEqual(keys);
+    }
+  });
+});

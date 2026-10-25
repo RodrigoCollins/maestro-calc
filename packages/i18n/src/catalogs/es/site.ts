@@ -14,6 +14,19 @@ export const esSite = {
   'site.footer.contact': 'Contacto',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',
+  'site.calculator.breadcrumb': 'Ruta de navegación',
+  'site.calculator.breadcrumbHome': 'Inicio',
+  'site.calculator.resultHeading': 'Resultado',
+  'site.calculator.unitsLabel': 'Unidades',
+  'site.calculator.unitsUs': 'EE. UU. (ft, in)',
+  'site.calculator.unitsMetric': 'Métrico (m, cm)',
+  'site.calculator.copyLink': 'Copiar enlace',
+  'site.calculator.linkCopied': 'Enlace copiado',
+  'site.calculator.copyFailed': 'No se pudo copiar. Selecciona el enlace y cópialo.',
+  'site.calculator.noscript':
+    'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
+  'site.calculator.estimateNote':
+    'Son estimaciones. Confirma las cantidades con tu proveedor y el código de construcción local.',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
     'Calcula tu obra y sabe qué comprar. Estamos preparando las primeras calculadoras y explicaremos cómo sale cada número.',

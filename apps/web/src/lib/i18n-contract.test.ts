@@ -143,12 +143,37 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
     expect(extraKeys(concrete, withExtra, materialsBoughtBy(concrete, materials))).toEqual([
       'calc.concrete.extra',
     ]);
+    // a page key is allowed under the calculator's own prefix and nowhere else
+    const withPage = { ...withExtra, 'calc.rectangle-area.page.note': 'Note' };
+    expect(extraKeys(concrete, withPage, materialsBoughtBy(concrete, materials))).toEqual([
+      'calc.concrete.extra',
+      'calc.rectangle-area.page.note',
+    ]);
     // a material key is allowed for the calculator that buys it, and only for that one
     const rectangle = calculators.find(({ id }) => id === 'rectangle-area');
     if (rectangle === undefined) throw new Error('rectangle-area is not in the registry');
     expect(
       extraKeys(rectangle, catalogOf('en', 'concrete'), materialsBoughtBy(rectangle, materials)),
     ).toContain('calc.concrete.title');
+  });
+
+  // spec: i18n-catalog › Key naming convention: a module may also hold `calc.<id>.page.*` copy
+  it('holds the page keys of a calculator in both locales with the same placeholders', () => {
+    for (const calculator of calculators) {
+      const prefix = `calc.${calculator.id}.page.`;
+      const en = catalogOf('en', calculator.id);
+      const es = catalogOf('es', calculator.id);
+      const pageKeys = (module: Module) =>
+        Object.keys(module).filter((key) => key.startsWith(prefix));
+      expect(pageKeys(es), calculator.id).toEqual(pageKeys(en));
+      for (const key of pageKeys(en)) {
+        expect(placeholdersOf(es[key] ?? ''), key).toEqual(placeholdersOf(en[key] ?? ''));
+      }
+    }
+    const concrete = catalogOf('en', 'concrete');
+    expect(
+      Object.keys(concrete).filter((key) => key.startsWith('calc.concrete.page.')),
+    ).toHaveLength(14);
   });
 
   it('keeps the same placeholders in en and es for every required key', () => {

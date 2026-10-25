@@ -56,4 +56,27 @@ describe('Spanish register (i18n-catalog › Neutral tú register, no voseo)', (
       expect(catalogRegisterProblems(exported[0] as Record<string, string>), file).toEqual([]);
     }
   });
+
+  // spec: i18n-catalog › [ICW18] the concrete module and `site.calculator.*` are scanned
+  it('scans the Spanish concrete module and the calculator keys of the site module', async () => {
+    const site = await importFromRoot<Record<string, Record<string, string>>>(
+      'packages/i18n/src/catalogs/es/site.ts',
+    );
+    const concrete = await importFromRoot<Record<string, Record<string, string>>>(
+      'packages/i18n/src/catalogs/es/concrete.ts',
+    );
+    const calculatorKeys = Object.entries(site['esSite'] ?? {}).filter(([key]) =>
+      key.startsWith('site.calculator.'),
+    );
+    expect(calculatorKeys).toHaveLength(11);
+    expect(catalogRegisterProblems(Object.fromEntries(calculatorKeys))).toEqual([]);
+    expect(Object.keys(concrete['esConcrete'] ?? {})).toContain('calc.concrete.page.answer.slab');
+    // the scan is not blind to these keys: a voseo form in one of them is reported
+    expect(
+      catalogRegisterProblems({
+        ...Object.fromEntries(calculatorKeys),
+        'site.calculator.x': 'Elegí',
+      }),
+    ).toEqual(['site.calculator.x: Elegí']);
+  });
 });

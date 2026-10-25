@@ -22,8 +22,8 @@ export const missingKeys = (
 
 /**
  * The keys of `catalog` that `calculator` does not account for, by name: the required keys and the
- * material keys of the materials it buys (`bought`, from `materialsBoughtBy`); from the page slice
- * on, its `calc.<id>.page.*` keys too (i18n-catalog › Undeclared extra key fails).
+ * material keys of the materials it buys (`bought`, from `materialsBoughtBy`) and its own
+ * `calc.<id>.page.*` copy (i18n-catalog › Key naming convention, Undeclared extra key fails).
  */
 export const extraKeys = (
   calculator: KeySource,
@@ -31,5 +31,6 @@ export const extraKeys = (
   bought: readonly MaterialRecord[],
 ): string[] => {
   const allowed = new Set([...requiredKeys(calculator), ...bought.flatMap(materialKeysOf)]);
-  return Object.keys(catalog).filter((key) => !allowed.has(key));
+  const pagePrefix = `calc.${calculator.id}.page.`;
+  return Object.keys(catalog).filter((key) => !allowed.has(key) && !key.startsWith(pagePrefix));
 };
