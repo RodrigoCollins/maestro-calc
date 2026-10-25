@@ -74,7 +74,7 @@ describe('concrete descriptors (calc-concrete › Descriptor and permanent URL c
     });
     expect(byKey['shape']).toMatchObject({
       default: 'slab',
-      options: ['slab', 'footing', 'column'],
+      options: ['slab', 'footing', 'column', 'steps'],
     });
     expect(byKey['bag']).toMatchObject({ default: '80', options: ['40', '60', '80'] });
     expect(byKey['bagPrice']).toMatchObject({ default: usd(0), max: usd(10000) });

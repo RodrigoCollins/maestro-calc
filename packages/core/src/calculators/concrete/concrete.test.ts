@@ -289,3 +289,53 @@ describe('concrete bags for every shape (calc-concrete › Waste and bag shoppin
     expect(shoppingOf({ ...raw, bag: '40' }, options)[0]?.qty).toBe(qty40);
   });
 });
+
+describe('concrete steps (calc-concrete › Volume computation)', () => {
+  // spec: calc-concrete › [CC11] Steps stacked as full-height blocks (T1, T2, T3)
+  it.each([
+    [{}, Rational.of(77, 6)],
+    [{ stepCount: '1' }, Rational.of(77, 36)],
+    [{ stepCount: '0' }, Rational.ZERO],
+  ])('computes the steps %j: net %s ft3', (extra, net) => {
+    expect(valueIn(volumes({ shape: 'steps', ...extra }).netVolume, ft3)).toEqual(net);
+  });
+
+  // spec: calc-concrete › [CC17] T1 bag quantities (80, 60 and 40 lb)
+  it('buys the default steps: 24, 32 and 48 bags', () => {
+    const steps = { shape: 'steps' };
+    expect(shoppingOf({ ...steps, bag: '80' })[0]?.qty).toBe(24n);
+    expect(shoppingOf({ ...steps, bag: '60' })[0]?.qty).toBe(32n);
+    expect(shoppingOf({ ...steps, bag: '40' })[0]?.qty).toBe(48n);
+  });
+
+  // spec: calc-concrete › [CC11] the other shapes' fields do not matter for steps (T1 by hand)
+  it('stacks N(N+1)/2 blocks of width times run times rise', () => {
+    const { volumeFt3, volumeYd3 } = volumes({ shape: 'steps' });
+    expect(valueIn(volumeFt3, ft3)).toEqual(Rational.of(847, 60));
+    expect(valueIn(volumeYd3, yd3)).toEqual(Rational.of(847, 1620));
+    expect(places2(valueIn(volumeYd3, yd3))).toBe('0.52');
+  });
+});
+
+describe('concrete maximum (calc-concrete › [CC12] and [CC18])', () => {
+  const H = { length: '1000ft', width: '1000ft', thickness: '10ft', waste: '0' };
+
+  // spec: calc-concrete › [CC18] Maximum
+  it.each([
+    ['40', 33333334n],
+    ['60', 22222223n],
+    ['80', 16666667n],
+  ])('buys the maximum slab with the %s lb bag: %s bags', (bag, qty) => {
+    const [line] = shoppingOf({ ...H, bag });
+    expect(line?.qty).toBe(qty);
+    expect(typeof line?.qty).toBe('bigint');
+  });
+
+  // spec: calc-concrete › [CC12] Zero dimension and maximum bounds (H, displayed)
+  it('shows the maximum slab as 10,000,000 ft3, 370370.37 yd3 and 283168.47 m3', () => {
+    const { volumeFt3, volumeYd3, volumeM3 } = volumes(H);
+    expect(valueIn(volumeFt3, ft3)).toEqual(Rational.of(10000000));
+    expect(places2(valueIn(volumeYd3, yd3))).toBe('370370.37');
+    expect(places2(valueIn(volumeM3, m3))).toBe('283168.47');
+  });
+});

@@ -30,6 +30,7 @@ const ROWS = [
   ['calc.concrete.options.shape.slab', 'Slab', 'Losa'],
   ['calc.concrete.options.shape.footing', 'Footing', 'Zapata'],
   ['calc.concrete.options.shape.column', 'Column', 'Columna'],
+  ['calc.concrete.options.shape.steps', 'Steps', 'Escalones'],
   ['calc.concrete.options.bag.40', '40 lb', '40 lb'],
   ['calc.concrete.options.bag.60', '60 lb', '60 lb'],
   ['calc.concrete.options.bag.80', '80 lb', '80 lb'],

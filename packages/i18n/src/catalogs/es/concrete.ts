@@ -24,6 +24,7 @@ export const esConcrete = {
   'calc.concrete.options.shape.slab': 'Losa',
   'calc.concrete.options.shape.footing': 'Zapata',
   'calc.concrete.options.shape.column': 'Columna',
+  'calc.concrete.options.shape.steps': 'Escalones',
   'calc.concrete.options.bag.40': '40 lb',
   'calc.concrete.options.bag.60': '60 lb',
   'calc.concrete.options.bag.80': '80 lb',

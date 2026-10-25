@@ -60,6 +60,7 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
       'slab',
       'footing',
       'column',
+      'steps',
     ]);
     expect(tuples.find(({ urlKey }) => urlKey === 'bg')?.options).toEqual(['40', '60', '80']);
   });

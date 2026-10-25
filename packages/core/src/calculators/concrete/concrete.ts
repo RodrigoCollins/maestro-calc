@@ -38,7 +38,7 @@ const columnVolume = (diameter: Length, height: Length, count: number): Quantity
 
 /** The fields `netVolumeOf` reads, by the shape that uses them. */
 interface Dimensions {
-  readonly shape: 'slab' | 'footing' | 'column';
+  readonly shape: 'slab' | 'footing' | 'column' | 'steps';
   readonly length: Length;
   readonly width: Length;
   readonly thickness: Length;
@@ -46,6 +46,10 @@ interface Dimensions {
   readonly footingDepth: Length;
   readonly diameter: Length;
   readonly height: Length;
+  readonly stepWidth: Length;
+  readonly rise: Length;
+  readonly run: Length;
+  readonly stepCount: number;
   readonly count: number;
 }
 
@@ -58,8 +62,22 @@ const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => {
       return footingVolume(inputs.length, inputs.footingWidth, inputs.footingDepth, inputs.count);
     case 'column':
       return columnVolume(inputs.diameter, inputs.height, inputs.count);
+    case 'steps':
+      return stepsVolume(inputs.stepWidth, inputs.rise, inputs.run, inputs.stepCount);
   }
 };
+
+/**
+ * The volume of `stepCount` steps: step `k` is a full-height block `stepWidth x run x (k x rise)`,
+ * and `1 + 2 + ... + N` is `N(N+1)/2`.
+ */
+const stepsVolume = (
+  stepWidth: Length,
+  rise: Length,
+  run: Length,
+  stepCount: number,
+): Quantity<'volume'> =>
+  scale(multiply(multiply(stepWidth, run), rise), Rational.of((stepCount * (stepCount + 1)) / 2));
 
 const BAG_SIZES = ['40', '60', '80'] as const;
 
@@ -121,7 +139,7 @@ export const createConcrete = (yields: BagYields) => {
         key: 'shape',
         urlKey: 'sh',
         default: 'slab',
-        options: ['slab', 'footing', 'column'],
+        options: ['slab', 'footing', 'column', 'steps'],
       },
       lengthField('length', 'l', 144, BIG, quantity(1000, ft)),
       lengthField('width', 'w', 120, BIG, quantity(1000, ft)),
