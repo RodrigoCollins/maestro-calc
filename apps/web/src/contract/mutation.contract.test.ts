@@ -37,6 +37,7 @@ interface StrykerConfig {
 interface Shard {
   mutate: string[];
   tests: string[];
+  deps?: string[];
 }
 
 interface StrykerModule {
@@ -45,6 +46,7 @@ interface StrykerModule {
   shardNames: string[];
   optionsFor: (shard: string) => StrykerConfig;
   incrementalIdentityFiles: string[];
+  identityFilesFor: (shard: string) => string[];
   pruneStaleReports: (reportsDirectory: string, keepFile: string) => void;
   isStrykerEntry: (entry: string | undefined) => boolean;
   sourceFilesIn: (directory: string) => string[];
@@ -366,6 +368,27 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
         expect(filesUnder(glob), glob).not.toHaveLength(0);
       }
     }
+  });
+
+  // JD-2 (concrete group 1): the test support a calculator brings (`<id>-arbitraries.ts`,
+  // `<id>-yields.ts`) is named by pattern in the calculators shard, so a new calculator never needs
+  // a hand edit of the shard identity; no other shard holds it.
+  it('holds the per-calculator test support of the calculators shard by pattern', () => {
+    const support = globSync('src/__testing__/*-{arbitraries,yields}.ts', {
+      cwd: fromRoot('packages/core'),
+    }).sort();
+    expect(support.length).toBeGreaterThan(1);
+    const deps = module_.shards['calculators']?.deps ?? [];
+    expect(deps).toContain('src/__testing__/*-arbitraries.ts');
+    expect(deps).toContain('src/__testing__/*-yields.ts');
+    const identityOf = (name: string): string[] => module_.identityFilesFor(name);
+    for (const file of support) {
+      expect(identityOf('calculators'), file).toContain(file);
+      for (const other of module_.shardNames.filter((name) => name !== 'calculators')) {
+        expect(identityOf(other), `${other} holds ${file}`).not.toContain(file);
+      }
+    }
+    expect(deps.filter((dep) => /concrete|rectangle/.test(dep))).toEqual([]);
   });
 
   // The test command must run the tests of the shard's own files (a sibling `x.test.ts`) and the

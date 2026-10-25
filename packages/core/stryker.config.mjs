@@ -127,8 +127,8 @@ export const shards = {
     tests: ['src/calculators', 'src/index.test.ts'],
     deps: [
       ...kernel,
-      'src/__testing__/concrete-arbitraries.ts',
-      'src/__testing__/concrete-yields.ts',
+      'src/__testing__/*-arbitraries.ts',
+      'src/__testing__/*-yields.ts',
       'src/__testing__/released-snapshot.ts',
     ],
   },
