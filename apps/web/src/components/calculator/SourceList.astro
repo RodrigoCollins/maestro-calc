@@ -1,0 +1,22 @@
+---
+import type { CalculatorContent } from './model.ts';
+
+interface Props {
+  content: CalculatorContent;
+}
+const { updatedLabel, updated, updatedText, sources } = Astro.props.content;
+---
+
+<ul class="calc-sources">
+  {sources.map(({ name, url, retrieved }) => (
+    <li>
+      <a href={url} rel="noopener">
+        {name}
+      </a>
+      , {retrieved}
+    </li>
+  ))}
+</ul>
+<p class="calc-updated">
+  {updatedLabel}: <time datetime={updated}>{updatedText}</time>
+</p>
