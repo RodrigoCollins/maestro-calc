@@ -1,0 +1,70 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import CalculatorBody from '../../components/calculator/CalculatorBody.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { concreteView } from '../../lib/calculator-page.ts';
+import { siteText } from '../../lib/site-text.ts';
+import { headFor } from '../../seo/head.ts';
+import { serializeJsonLd } from '../../seo/json-ld.ts';
+import { copyOf, faqOf } from './budget-copy.ts';
+
+export const getStaticPaths = () => [{ params: { locale: 'en' } }, { params: { locale: 'es' } }];
+
+// Test support: the budget proof builds this page with the real pipeline and measures the file.
+const locale: Locale = Astro.params['locale'] === 'es' ? 'es' : 'en';
+const extra = Number(process.env['BUDGET_EXTRA'] ?? '0');
+const text = siteText(locale);
+const faq = faqOf(locale);
+const jsonLd = serializeJsonLd({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: text('page.about.title'),
+      url: 'https://maestrocalc.com/about',
+      inLanguage: locale === 'es' ? 'es-US' : 'en-US',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Any',
+      isAccessibleForFree: true,
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://maestrocalc.com/' },
+        { '@type': 'ListItem', position: 2, name: text('page.about.title') },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faq.map(({ question, answer }) => ({
+        '@type': 'Question',
+        name: question,
+        acceptedAnswer: { '@type': 'Answer', text: answer },
+      })),
+    },
+  ],
+});
+const content = {
+  updatedLabel: text('site.trust.updated'),
+  updated: '2026-10-25',
+  updatedText: '2026-10-25',
+  sources: [
+    {
+      name: 'QUIKRETE Concrete Mix No. 1101 data sheet',
+      url: 'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+      retrieved: '2026-10-25',
+    },
+    {
+      name: 'NIST Special Publication 811, Appendix B',
+      url: 'https://www.nist.gov/pml/special-publication-811',
+      retrieved: '2026-10-25',
+    },
+  ],
+};
+---
+
+<BaseLayout {locale} id="about" head={{ ...headFor('about', locale, text), jsonLd }}>
+  <CalculatorBody view={concreteView(locale)} {content}>
+    <Fragment set:html={copyOf(locale, extra)} />
+  </CalculatorBody>
+</BaseLayout>

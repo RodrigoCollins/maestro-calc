@@ -37,9 +37,9 @@ When built, the page shows the engine's default answer. One external entry modul
 | C13 | All strings come from the page: `<template>`s for the 12 error messages, 4 answer sentences, notices and copy states. Labels, `inputmode`, `aria-invalid`/`aria-describedby`, "—" on error, bounds in the field's unit. The answer sentence is a polite live region. Copy has a status region plus a read-only fallback. Inputs ≥ 56 px, other targets ≥ 44 px | A JSON data block; strings in JS | The bundle stays language-free |
 | C14 | CSP `script-src 'self'` (SQ12). **OA5 (owner, DR-18):** keep Cloudflare Email Address Obfuscation and Rocket Loader off, since `script-src 'self'` would allow their `/cdn-cgi/` scripts. SQ28 checks this locally (`check:site` plus e2e: static pages request no script and reference no `/cdn-cgi/`) and in the post-deploy smoke | Per-path CSP; nonce or hash | Closes the gap opened by the relaxed policy |
 | C15 | `present.ts` formats both locales the same way: `,` grouping, `.` decimals, built on `toDecimalParts`/`toCents`/`formatFeetInches`. No `Intl` | `Intl.NumberFormat` | Build-time and live strings stay byte-identical |
-| C16 | The FAQ lives in the Markdown body. `content/faq.ts#faqOf(body)` feeds `calculatorJsonLd`. `check:site` checks parity with the built HTML. Answers are plain text of at most 600 characters (DR-16) | A `faq` frontmatter field | One source, and the HTML stays bounded |
+| C16 | The FAQ lives in the Markdown body. `content/faq.ts#faqOf(body)` feeds `calculatorJsonLd`. `check:site` checks parity with the built HTML. Answers are plain text of at most 450 characters (DR-16; lowered from 600 by the S8 budget decision below) | A `faq` frontmatter field | One source, and the HTML stays bounded |
 | C17 | **Size probe in G1 (DR-7, SQ27).** `apps/web/src/contract/client-size.contract.test.ts` calls Vite's `build()` with `write: false`, minify on, library mode, and a virtual entry that re-exports what the entry will use: `concrete` from `lib/concrete.ts`, `encode`, `decode`, `toDecimalParts`, `toCents`, `formatFeetInches`. It asserts ≤ 40,960 B (leaving 8,192 B for the presenter, controller and DOM code) and prints the size. `vite` becomes an explicit `apps/web` devDependency, pinned to Astro's version. **Mitigation path if over:**<br>(1) keep `defineMaterial`, the material record and the data root off the client path, and confirm `sideEffects: false` tree-shaking;<br>(2) stop pulling unused parsers in through barrel re-exports by importing core subpaths or modules where the package exports allow it, or add narrow core subpath exports (a reviewed core change);<br>(3) drop the client's use of the length-parser branches the page never accepts (none expected: CP24 needs the full parser);<br>(4) owner decision. Inlining is never an option | Measuring only in G3 | The 48 KiB risk is known before any page work |
-| C18 | HTML budget proof in G2 (DR-16): a `CalculatorBody` render test with full-length placeholder copy (1,500 words, 8 FAQ answers of 600 characters, all templates) asserts the page HTML ≤ 40,960 B | Measuring after go-live | Finds the overrun before the copy is written |
+| C18 | HTML budget proof in G2 (DR-16): a `CalculatorBody` render test with full-length placeholder copy (1,500 words, 8 FAQ answers of 450 characters, all templates) asserts the page HTML ≤ 40,960 B | Measuring after go-live | Finds the overrun before the copy is written |
 
 ### `check:site` and budgets (template derived from `ROUTES`, `CALCULATOR_PAGES`, `PAGELESS`)
 
@@ -154,6 +154,16 @@ Chained PRs recommended: Yes
 
 The G1 size probe (C17) measured the engine surface at 28,457 B minified, against the original 24,576 B cap. Drivers (rendered bytes): `calculator/define.ts` 4,923; `calculators/concrete/concrete.ts` 4,775; `rational/rational.ts` 3,526; length `parser.ts` 3,516; `url/codec.ts` 3,448; `calculator/validate.ts` 3,314; `calculator/run.ts` 2,758; `units/catalog.ts` 2,698; length `scanner.ts` 2,617. The data package adds only 226 B. The mitigation ladder gave nothing: the client path already excludes the material record, importing core modules instead of the barrel changes 10 B, and the full length parser is required (CP24). The owner raised the budgets instead: the client entry graph is at most 49,152 B (was 32,768) and the engine probe at most 40,960 B (was 24,576), keeping 8,192 B for page code. The calculator page-weight ceiling stays 196,608 B (it already includes JS). Core slimming (split the units catalog, lighter client-side definition validation, precomputed calculator metadata) is a recorded follow-up outside this change.
 
+## Budget decision: HTML (pipeline, G2 S8, 2026-10-25)
+
+The C18 proof, run with the production pipeline (the real Astro build of an injected placeholder page: BaseLayout, `CalculatorBody`, 1,500 words in five sections, 8 FAQ answers, the JSON-LD with the same FAQ text, 18 templates, the inlined CSS), first measured **42,321 B (EN) and 42,603 B (ES)** against 40,960 B: over by about 1.4 KB and 1.6 KB. A render in the test container had under-reported by about 2.8 KB because the container emits neither the inlined global CSS nor the minified font CSS. Fallback ladder of task 8.5, in order:
+
+1. Shorten markup: every dimension input is now in the page once (the four shape groups repeated `length` and `count`), tagged with the shapes that show it (`data-shapes`), and `type="text"` is dropped (the default). Saved 650 B.
+2. Render only the active shape and clone the others from templates: not applied (the bytes would only move into `<template>`).
+3. Lower the FAQ answer cap from 600 to 450 characters (the FAQ text is in the HTML and again in the JSON-LD, so each character costs two bytes). Specs, design and tasks amended (calculator-page content requirement, C16, C18, DR-16, tasks 10.3, 10.7, 10.8). Saved 2.4 KB.
+
+Result: **39,268 B (EN) and 39,517 B (ES)**, a margin of 1,692 B and 1,443 B (4.1 and 3.5 percent). The budget was not raised. The words cap stays at 1,500.
+
 ## Open Questions
 
 None blocking. Owner actions: OA1–OA4, plus OA5 (Cloudflare script-injecting features off).
@@ -194,6 +204,6 @@ None blocking. Owner actions: OA1–OA4, plus OA5 (Cloudflare script-injecting f
 | DR-13 | Shift from revealed elements | C8 reserved areas. Spec "Layout stability" |
 | DR-14 | JS-on module failure | C9 static note hidden on mount. Spec CP40, CP41, CP49 |
 | DR-15 | Concrete text in a shared key | `calc.concrete.page.example`; `site.calculator.noscript` made generic. Specs ICW11, ICW12, ICW17, CP40 |
-| DR-16 | HTML budget | C18 render proof with full-length copy; FAQ answer cap of 600 characters. Spec CP content requirement |
+| DR-16 | HTML budget | C18 render proof with full-length copy; FAQ answer cap of 450 characters (600 before the S8 budget decision). Spec CP content requirement |
 | DR-17 | Metric → US exactness | C12; spec toggle text + CP50 |
 | DR-18 | `/cdn-cgi` scripts allowed by `'self'` | C14 OA5 + SQ28 |
