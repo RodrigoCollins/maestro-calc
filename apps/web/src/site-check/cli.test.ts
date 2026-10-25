@@ -84,7 +84,11 @@ const edited =
     dist.set(file, edit(dist.get(file) ?? ''));
   };
 
-const pending = entries.filter((entry) => entry.fields['ownerReview'] === 'pending').length;
+// The count covers the trust pages and the calculators collection (calculator-page › Page anatomy).
+const calculatorEntries = readEntries(fromRoot('apps/web/src/content/calculators'));
+const pending = [...entries, ...calculatorEntries].filter(
+  (entry) => entry.fields['ownerReview'] === 'pending',
+).length;
 
 describe('check:site byte budgets and glyphs (site-quality › [SQ6], [SQ7], [SQ8], site-shell › [SS10])', () => {
   it('prints the largest page and size per category on a green build [SQ6]', () => {
