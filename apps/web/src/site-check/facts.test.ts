@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { factProblems } from './facts.ts';
-import { fixtureSite, validDist } from './__testing__/page-fixture.ts';
+import { pagesOf } from './files.ts';
+import {
+  CALC_ROUTES,
+  calculatorSite,
+  CHUNK_FILE,
+  ENTRY_FILE,
+  fixtureSite,
+  QUIKRETE_URL,
+  validDist,
+} from './__testing__/page-fixture.ts';
 
 const problemsAfter = (mutate: (dist: Map<string, string>) => void = () => undefined) => {
   const site = fixtureSite();
@@ -29,6 +38,8 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
   it.each([
     ['index.html', 'document.cookie', '<p>document.cookie</p>'],
     ['about.html', 'localStorage', '<p>localStorage</p>'],
+    ['about.html', 'sessionStorage', '<p>sessionStorage</p>'],
+    ['index.html', 'indexedDB', '<p>indexedDB</p>'],
     ['_astro/a.css', 'document.cookie', '/* document.cookie */'],
   ])('fails %s that references %s', (file, what, markup) => {
     const problems = problemsAfter((dist) =>
@@ -90,5 +101,123 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
         dist.set('_astro/d.json', '{"xmlns":"http://www.w3.org/2000/svg"}');
       }),
     ).toEqual([]);
+  });
+});
+
+// ---- the calculator bundle: no storage, no network, no message text, no foreign origin ----
+
+const calcProblemsAfter = (mutate: (dist: Map<string, string>) => void = () => undefined) => {
+  const site = calculatorSite();
+  const dist = validDist(site);
+  mutate(dist);
+  return factProblems(site, dist, pagesOf(dist, CALC_ROUTES));
+};
+
+const appended = (file: string, text: string) => (dist: Map<string, string>) =>
+  dist.set(file, `${dist.get(file) ?? ''}${text}`);
+
+describe('calculator bundle facts (site-shell › [SS23], calculator-page › [CP42], [CP47])', () => {
+  it('finds nothing wrong with the valid entry and its chunk', () => {
+    expect(calcProblemsAfter()).toEqual([]);
+  });
+
+  // spec: site-shell › [SS23] the network and storage APIs, in the entry and in any imported chunk
+  it.each([
+    ['fetch(', 'fetch("/x")'],
+    ['XMLHttpRequest', 'new XMLHttpRequest()'],
+    ['sendBeacon', 'navigator.sendBeacon("/x")'],
+    ['WebSocket', 'new WebSocket("wss://x")'],
+  ])('fails %s in the entry and in a chunk, naming the file', (api, code) => {
+    for (const file of [ENTRY_FILE, CHUNK_FILE]) {
+      const found = calcProblemsAfter(appended(file, `;${code}`)).filter(
+        (entry) => entry.rule === 'bundle-api',
+      );
+      expect(found).toEqual([
+        { file, rule: 'bundle-api', message: `${api} must not appear in the calculator bundle` },
+      ]);
+    }
+  });
+
+  it('leaves the storage APIs to the sitewide storage rule', () => {
+    expect(
+      calcProblemsAfter(
+        appended(ENTRY_FILE, ';document.cookie;localStorage.x;sessionStorage.y;indexedDB.open()'),
+      ).map((entry) => entry.rule),
+    ).toEqual(['storage', 'storage', 'storage', 'storage']);
+  });
+
+  // spec: site-shell › [SS23], calculator-page › [CP42] no catalog message text of either locale
+  it.each([
+    ['en', 'Use a period for decimals', 'errors.DECIMAL_COMMA'],
+    ['es', 'Usa punto para los decimales', 'errors.DECIMAL_COMMA'],
+    ['en', 'Copy link', 'site.calculator.copyLink'],
+    ['es', 'Copiar enlace', 'site.calculator.copyLink'],
+  ])(
+    'fails the %s message "%s" in the bundle, naming the file and the key',
+    (locale, text, key) => {
+      expect(calcProblemsAfter(appended(CHUNK_FILE, `;t("${text}")`))).toEqual([
+        {
+          file: CHUNK_FILE,
+          rule: 'bundle-text',
+          message: `the ${locale} message ${key} must not appear in the calculator bundle`,
+        },
+      ]);
+    },
+  );
+
+  it('does not look for the messages in the page, where they belong', () => {
+    expect(
+      calcProblemsAfter((dist) =>
+        dist.set(
+          'privacy.html',
+          (dist.get('privacy.html') ?? '').replace('</main>', '<p>Copy link</p></main>'),
+        ),
+      ),
+    ).toEqual([]);
+  });
+
+  // spec: calculator-page › [CP47] only the site origin, over https
+  it('fails the source URL in the bundle through the third-party scan, naming the file', () => {
+    expect(calcProblemsAfter(appended(ENTRY_FILE, `;u("${QUIKRETE_URL}")`))).toEqual([
+      {
+        file: ENTRY_FILE,
+        rule: 'third-party-origin',
+        message: 'a built asset references another origin',
+      },
+    ]);
+  });
+
+  it('allows https://maestrocalc.com in the bundle and fails the insecure form', () => {
+    expect(calcProblemsAfter(appended(ENTRY_FILE, ';u("https://maestrocalc.com/x")'))).toEqual([]);
+    expect(calcProblemsAfter(appended(ENTRY_FILE, ';u("http://maestrocalc.com/x")'))).toEqual([
+      { file: ENTRY_FILE, rule: 'bundle-origin', message: 'http://maestrocalc.com must be https' },
+    ]);
+  });
+
+  it("checks only the files of the graph: a script nobody loads is the file-set rule's concern", () => {
+    expect(calcProblemsAfter((dist) => dist.set('_astro/orphan.js', 'fetch("/x")'))).toEqual([]);
+  });
+});
+
+// spec: site-quality › [SQ28] no page references a /cdn-cgi/ script
+describe('platform-injected scripts (site-quality › [SQ28])', () => {
+  it.each([
+    ['index.html', 'a home page'],
+    ['privacy.html', 'a trust page'],
+    ['concrete-calculator.html', 'a calculator page'],
+    ['404.html', 'a not-found page'],
+  ])('fails %s (%s) that references a /cdn-cgi/ script', (file) => {
+    const found = calcProblemsAfter((dist) =>
+      dist.set(
+        file,
+        (dist.get(file) ?? '').replace(
+          '</body>',
+          '<script src="/cdn-cgi/scripts/x/cloudflare-static/email-decode.min.js"></script></body>',
+        ),
+      ),
+    );
+    expect(found).toEqual([
+      { file, rule: 'cdn-cgi', message: 'a page must not reference a /cdn-cgi/ script' },
+    ]);
   });
 });
