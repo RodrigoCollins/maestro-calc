@@ -3,7 +3,8 @@ import { join } from 'node:path';
 import { placeholdersOf } from '@maestro-calc/i18n';
 import { catalogProblems } from '@maestro-calc/i18n/testing/catalog-problems';
 import { describe, expect, it } from 'vitest';
-import { missingKeys, requiredKeys } from '../contract/missing-keys.ts';
+import { extraKeys, missingKeys, requiredKeys } from '../contract/missing-keys.ts';
+import { materials, materialsBoughtBy } from '../contract/material-catalog.ts';
 import { fromRoot } from '../contract/root.ts';
 import { calculators } from './calculators.ts';
 
@@ -79,7 +80,7 @@ const CONCRETE_KEYS = [
   'calc.concrete.options.bag.40',
   'calc.concrete.options.bag.60',
   'calc.concrete.options.bag.80',
-  ...['volumeYd3', 'volumeFt3', 'volumeM3', 'netVolume'].map(
+  ...['volumeYd3', 'volumeFt3', 'volumeM3', 'netVolume', 'bagCost', 'readyMixCost'].map(
     (key) => `calc.concrete.outputs.${key}`,
   ),
 ];
@@ -118,6 +119,34 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
         expect(missingKeys(calculator, catalogOf(locale, calculator.id)), locale).toEqual([]);
       }
     }
+  });
+
+  // spec: i18n-catalog › [ICW15] Undeclared extra key fails; [ICW11] the material keys are allowed
+  it('holds no key beyond the derived ones and the material keys of the materials it buys', () => {
+    for (const calculator of calculators) {
+      for (const locale of LOCALES) {
+        expect(
+          extraKeys(
+            calculator,
+            catalogOf(locale, calculator.id),
+            materialsBoughtBy(calculator, materials),
+          ),
+          locale,
+        ).toEqual([]);
+      }
+    }
+    const concrete = calculators.find(({ id }) => id === 'concrete');
+    if (concrete === undefined) throw new Error('concrete is not in the registry');
+    const withExtra = { ...catalogOf('en', 'concrete'), 'calc.concrete.extra': 'Extra' };
+    expect(extraKeys(concrete, withExtra, materialsBoughtBy(concrete, materials))).toEqual([
+      'calc.concrete.extra',
+    ]);
+    // a material key is allowed for the calculator that buys it, and only for that one
+    const rectangle = calculators.find(({ id }) => id === 'rectangle-area');
+    if (rectangle === undefined) throw new Error('rectangle-area is not in the registry');
+    expect(
+      extraKeys(rectangle, catalogOf('en', 'concrete'), materialsBoughtBy(rectangle, materials)),
+    ).toContain('calc.concrete.title');
   });
 
   it('keeps the same placeholders in en and es for every required key', () => {

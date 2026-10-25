@@ -79,7 +79,7 @@ describe('concrete descriptors (calc-concrete › Descriptor and permanent URL c
   });
 
   // spec: calc-concrete › [CC1] Metadata (outputs and display hints, no warnings)
-  it('declares the volume outputs with their roles and display hints and no warnings', () => {
+  it('declares the six outputs with their roles and display hints and no warnings', () => {
     expect(concrete.outputs).toEqual([
       {
         key: 'volumeYd3',
@@ -105,6 +105,8 @@ describe('concrete descriptors (calc-concrete › Descriptor and permanent URL c
         role: 'intermediate',
         display: { unit: 'ft3', format: 'decimal', places: 2 },
       },
+      { key: 'bagCost', measure: 'money', role: 'secondary' },
+      { key: 'readyMixCost', measure: 'money', role: 'secondary' },
     ]);
     expect(concrete.warnings).toEqual([]);
   });
@@ -116,5 +118,16 @@ describe('concrete descriptors (calc-concrete › Descriptor and permanent URL c
     expect(keys).not.toContain('v');
     expect(keys).not.toContain('u');
     expect(new Set(keys).size).toBe(keys.length);
+  });
+
+  // spec: calc-concrete › [CC1] Metadata (one shopping line, language-free identifiers)
+  it('declares exactly one shopping line, for the chosen bag', () => {
+    for (const bag of ['40', '60', '80']) {
+      const result = concrete.run({ bag });
+      if (!result.ok) throw new Error('run failed');
+      expect(
+        result.value.shopping.map(({ materialId, purchaseUnit }) => [materialId, purchaseUnit]),
+      ).toEqual([['concrete-mix', `bag-${bag}`]]);
+    }
   });
 });

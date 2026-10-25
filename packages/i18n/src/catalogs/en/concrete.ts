@@ -26,4 +26,10 @@ export const enConcrete = {
   'calc.concrete.outputs.volumeFt3': 'Concrete needed (cubic feet)',
   'calc.concrete.outputs.volumeM3': 'Concrete needed (cubic meters)',
   'calc.concrete.outputs.netVolume': 'Volume before extra (cubic feet)',
+  'calc.concrete.outputs.bagCost': 'Cost of the bags',
+  'calc.concrete.outputs.readyMixCost': 'Cost of ready-mix',
+  'material.concrete-mix.name': 'Concrete mix',
+  'material.concrete-mix.units.bag-40': '40 lb bag',
+  'material.concrete-mix.units.bag-60': '60 lb bag',
+  'material.concrete-mix.units.bag-80': '80 lb bag',
 } as const;
