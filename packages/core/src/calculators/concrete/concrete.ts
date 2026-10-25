@@ -10,9 +10,6 @@ import { ft, inch, yd3 } from '../../units/catalog.ts';
 import { divideScalar, multiply, ratio, scale, sign } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
 
-/** The yield of one bag, by bag size in pounds: injected, so core holds no material constant. */
-export type BagYields = Readonly<Record<'40' | '60' | '80', Quantity<'volume'>>>;
-
 const HUNDRED = Rational.of(100);
 
 const TWO = Rational.of(2);
@@ -43,6 +40,16 @@ const SHAPES = ['slab', 'footing', 'column', 'steps'] as const;
 const BAG_SIZES = ['40', '60', '80'] as const;
 
 type Shape = (typeof SHAPES)[number];
+type BagSize = (typeof BAG_SIZES)[number];
+
+/** The purchase unit id of a bag size: the one key of the yields, the data and the shopping line. */
+const bagUnitOf = (size: BagSize): `bag-${BagSize}` => `bag-${size}`;
+
+/**
+ * The yield of one bag, by purchase unit id (`bag-<pounds>`), the id the material record and the
+ * shopping line use too: injected, so core holds no material constant.
+ */
+export type BagYields = Readonly<Record<`bag-${BagSize}`, Quantity<'volume'>>>;
 
 /**
  * The volume of `stepCount` steps: step `k` is a full-height block `stepWidth x run x (k x rise)`,
@@ -91,17 +98,17 @@ const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => VOLUME_OF[inputs
 
 /**
  * The factory owns this check, before `defineCalculator` runs: the yields are exactly the keys
- * `40`, `60` and `80`, each a volume above zero. The reason is not one of `DEFINITION_REASONS`.
+ * `bag-40`, `bag-60` and `bag-80`, each a volume above zero. The reason is not one of `DEFINITION_REASONS`.
  */
 const requireBagYields = (yields: BagYields): void => {
-  const keys = Object.keys(yields);
+  const units = BAG_SIZES.map(bagUnitOf);
   const valid =
-    keys.length === BAG_SIZES.length &&
-    BAG_SIZES.every(
-      (size) =>
-        Object.hasOwn(yields, size) &&
-        isQuantityOf(yields[size], 'volume') &&
-        sign(yields[size]) === 1,
+    Object.keys(yields).length === units.length &&
+    units.every(
+      (unit) =>
+        Object.hasOwn(yields, unit) &&
+        isQuantityOf(yields[unit], 'volume') &&
+        sign(yields[unit]) === 1,
     );
   if (!valid) {
     throw new CoreError('INVALID_DEFINITION', 'BAG_YIELDS', {
@@ -206,7 +213,8 @@ export const createConcrete = (yields: BagYields) => {
       const net = netVolumeOf(inputs);
       const total = scale(net, Rational.ONE.add(waste.div(HUNDRED)));
       // whole bags only: the ceiling of total volume over the yield is the only rounding
-      const qty = ceilToPurchaseUnits(ratio(total, yields[bag]));
+      const unit = bagUnitOf(bag);
+      const qty = ceilToPurchaseUnits(ratio(total, yields[unit]));
       return {
         outputs: {
           volumeYd3: total,
@@ -216,7 +224,7 @@ export const createConcrete = (yields: BagYields) => {
           bagCost: multiplyCount(bagPrice, qty),
           readyMixCost: costOf(unitPrice(readyMixPrice, yd3), total),
         },
-        shopping: [{ materialId: 'concrete-mix', purchaseUnit: `bag-${bag}`, qty }],
+        shopping: [{ materialId: 'concrete-mix', purchaseUnit: unit, qty }],
         warnings: [],
       };
     },

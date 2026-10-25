@@ -152,17 +152,17 @@ describe('createConcrete yield validation (calc-concrete › Yield injection)', 
     reason: 'BAG_YIELDS',
     cause: { id: 'concrete', reason: 'BAG_YIELDS' },
   };
-  const withoutSixty = { '40': CONCRETE_YIELDS['40'], '80': CONCRETE_YIELDS['80'] };
+  const withoutSixty = { 'bag-40': CONCRETE_YIELDS['bag-40'], 'bag-80': CONCRETE_YIELDS['bag-80'] };
 
   // spec: calc-concrete › [CC5] Invalid yields
   it.each([
     ['a missing 60', withoutSixty],
-    ['an extra key 50', { ...CONCRETE_YIELDS, '50': CONCRETE_YIELDS['40'] }],
-    ['a zero 80', { ...CONCRETE_YIELDS, '80': quantity(0, ft3) }],
-    ['a negative 40', { ...CONCRETE_YIELDS, '40': quantity(-1, ft3) }],
-    ['a length for 80', { ...CONCRETE_YIELDS, '80': quantity(1, ft) }],
-    ['a lookalike for 60', { ...CONCRETE_YIELDS, '60': { exponents: {}, canonical: 1 } }],
-    ['a number for 40', { ...CONCRETE_YIELDS, '40': 3 }],
+    ['an extra key bag-50', { ...CONCRETE_YIELDS, 'bag-50': CONCRETE_YIELDS['bag-40'] }],
+    ['a zero 80', { ...CONCRETE_YIELDS, 'bag-80': quantity(0, ft3) }],
+    ['a negative 40', { ...CONCRETE_YIELDS, 'bag-40': quantity(-1, ft3) }],
+    ['a length for 80', { ...CONCRETE_YIELDS, 'bag-80': quantity(1, ft) }],
+    ['a lookalike for 60', { ...CONCRETE_YIELDS, 'bag-60': { exponents: {}, canonical: 1 } }],
+    ['a number for 40', { ...CONCRETE_YIELDS, 'bag-40': 3 }],
   ])('throws BAG_YIELDS for %s', (_name, yields) => {
     expect(failure(() => createConcrete(yields as never))).toStrictEqual(BAG_YIELDS);
   });

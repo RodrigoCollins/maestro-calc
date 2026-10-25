@@ -16,7 +16,7 @@ const defaultsOf = (calculator: typeof concrete): string[] => {
 
 describe('the web concrete calculator (calc-concrete › Yield injection)', () => {
   // spec: calc-concrete › Yield injection: the root builds the record from the yields-only module
-  it('is built from CONCRETE_MIX_YIELDS, bag-<n> mapped to <n>', () => {
+  it('is built from CONCRETE_MIX_YIELDS, keyed by purchase unit id like core', () => {
     expect(concrete.id).toBe('concrete');
     expect(defaultsOf(concrete)).toEqual(defaultsOf(createConcrete(CONCRETE_YIELDS)));
     expect(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).toString()).toBe('3/5');

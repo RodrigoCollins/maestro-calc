@@ -3,11 +3,11 @@ import { CONCRETE_YIELDS } from '@maestro-calc/core/testing/concrete-yields';
 import { concreteMix } from '@maestro-calc/data';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { describe, expect, it } from 'vitest';
-import { yieldDrift, yieldsOfRecord, yieldsOfSubpath } from '../contract/yield-drift.ts';
+import { yieldDrift, yieldsOfRecord } from '../contract/yield-drift.ts';
 
 const sides = () => ({
   core: CONCRETE_YIELDS,
-  data: yieldsOfSubpath(CONCRETE_MIX_YIELDS),
+  data: CONCRETE_MIX_YIELDS,
   record: yieldsOfRecord(concreteMix),
 });
 
@@ -21,15 +21,15 @@ describe('yield drift guard (calc-concrete › [CC6] Yield drift guard)', () => 
   it.each(['core', 'data', 'record'] as const)(
     'reports the %s side when it alone changes',
     (side) => {
-      const drifted = { ...CONCRETE_YIELDS, '80': quantity(Rational.of(3, 6), ft3) };
+      const drifted = { ...CONCRETE_YIELDS, 'bag-80': quantity(Rational.of(3, 6), ft3) };
       expect(yieldDrift({ ...sides(), [side]: drifted })).toEqual([
-        `${side}: 80 is 1/2 ft3, expected 3/5 ft3`,
+        `${side}: bag-80 is 1/2 ft3, expected 3/5 ft3`,
       ]);
     },
   );
 
   it('reports a missing size', () => {
-    const partial = { '40': CONCRETE_YIELDS['40'], '80': CONCRETE_YIELDS['80'] };
-    expect(yieldDrift({ ...sides(), core: partial })).toEqual(['core: 60 is missing']);
+    const partial = { 'bag-40': CONCRETE_YIELDS['bag-40'], 'bag-80': CONCRETE_YIELDS['bag-80'] };
+    expect(yieldDrift({ ...sides(), core: partial })).toEqual(['core: bag-60 is missing']);
   });
 });
