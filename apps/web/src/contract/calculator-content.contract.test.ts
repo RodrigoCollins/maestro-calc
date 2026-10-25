@@ -40,6 +40,34 @@ const entryOf = (locale: (typeof LOCALES)[number]): CalculatorEntry => {
 
 const frontmatterOf = (entry: CalculatorEntry) => calculatorSchema(['concrete']).parse(entry.data);
 
+/** The default state through the page builder, which runs the registry calculator. */
+const engineExample = () => {
+  const { result } = concreteView('en');
+  const { shopping } = result;
+  return {
+    netFt3: result.rows.find((row) => row.key === 'netVolume')?.value,
+    totalFt3: result.rows.find((row) => row.key === 'volumeFt3')?.value,
+    yd3: result.primary.value,
+    bags: Number(shopping.qty),
+    bagLb: Number(shopping.unit.replace('bag-', '')),
+  };
+};
+
+/** What is wrong with a worked example: it differs from the engine, or a figure is not in Formulas. */
+const exampleProblems = (
+  example: Readonly<Record<string, unknown>>,
+  engine: Readonly<Record<string, unknown>>,
+  formulas: string,
+): string[] => [
+  ...(JSON.stringify(example) === JSON.stringify(engine)
+    ? []
+    : ['the worked example differs from the engine']),
+  ...Object.values(example)
+    .map(String)
+    .filter((figure) => !formulas.includes(figure))
+    .map((figure) => `${figure} is missing from the Formulas section`),
+];
+
 const SECTION_IDS = {
   en: ['how-to-use', 'formulas', 'tips', 'faq', 'sources'],
   es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
@@ -124,16 +152,6 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
     (locale) => {
       const entry = entryOf(locale);
       const { workedExample } = frontmatterOf(entry);
-      const { result } = concreteView('en');
-      const { shopping } = result;
-      const engine = {
-        netFt3: result.rows.find((row) => row.key === 'netVolume')?.value,
-        totalFt3: result.rows.find((row) => row.key === 'volumeFt3')?.value,
-        yd3: result.primary.value,
-        bags: Number(shopping.qty),
-        bagLb: Number(shopping.unit.replace('bag-', '')),
-      };
-      expect(workedExample).toEqual(engine);
       expect(workedExample).toEqual({
         netFt3: '40.00',
         totalFt3: '44.00',
@@ -141,20 +159,27 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
         bags: 74,
         bagLb: 80,
       });
-      const formulas = sectionOf(entry.body, 'formulas');
-      for (const figure of Object.values(workedExample).map(String)) {
-        expect(formulas, figure).toContain(figure);
-      }
+      expect(
+        exampleProblems(workedExample, engineExample(), sectionOf(entry.body, 'formulas')),
+      ).toEqual([]);
     },
   );
 
-  // spec: calculator-page › [CP9] changing one side alone fails the test
-  it('fails when the Markdown or the engine changes alone', () => {
+  // spec: calculator-page › [CP9] changing one side alone fails the check
+  it('fails when the frontmatter, the Markdown or the engine changes alone', () => {
     const entry = entryOf('en');
-    const formulas = sectionOf(entry.body, 'formulas');
-    expect(formulas.replaceAll('1.63', '1.64')).not.toContain('1.63');
     const { workedExample } = frontmatterOf(entry);
-    expect({ ...workedExample, bags: 75 }).not.toEqual({ ...workedExample });
+    const formulas = sectionOf(entry.body, 'formulas');
+    expect(exampleProblems({ ...workedExample, bags: 75 }, engineExample(), formulas)).toEqual([
+      'the worked example differs from the engine',
+      '75 is missing from the Formulas section',
+    ]);
+    expect(
+      exampleProblems(workedExample, engineExample(), formulas.replaceAll('1.63', '1.64')),
+    ).toEqual(['1.63 is missing from the Formulas section']);
+    expect(exampleProblems(workedExample, { ...engineExample(), bags: 75 }, formulas)).toEqual([
+      'the worked example differs from the engine',
+    ]);
   });
 
   // spec: calculator-page › [CP10] length and parity
