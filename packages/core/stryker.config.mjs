@@ -32,6 +32,7 @@ const kernel = [
   'src/*.ts',
   'src/calculator/**',
   'src/format/**',
+  'src/geometry/**',
   'src/money/**',
   'src/rational/**',
   'src/units/**',
@@ -61,9 +62,10 @@ export const shards = {
     tests: ['src/rational', 'src/errors.test.ts', 'src/result.test.ts', 'src/index.test.ts'],
     deps: kernel,
   },
+  // `src/geometry/**` (pi and the circle area) rides with the units: it is built on them.
   units: {
-    mutate: ['src/units/**', 'src/money/**'],
-    tests: ['src/units', 'src/money', 'src/index.test.ts'],
+    mutate: ['src/units/**', 'src/money/**', 'src/geometry/**'],
+    tests: ['src/units', 'src/money', 'src/geometry', 'src/index.test.ts'],
     deps: kernel,
   },
   format: {

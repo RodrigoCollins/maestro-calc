@@ -66,6 +66,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -86,6 +87,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -106,6 +108,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -126,6 +129,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -147,6 +151,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -167,6 +172,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -187,6 +193,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**
@@ -211,6 +218,7 @@ jobs:
               packages/core/src/*.ts
               packages/core/src/calculator/**
               packages/core/src/format/**
+              packages/core/src/geometry/**
               packages/core/src/money/**
               packages/core/src/rational/**
               packages/core/src/units/**

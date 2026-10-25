@@ -32,6 +32,7 @@ export const shards = {
       '../core/src/*.ts',
       '../core/src/calculator/**',
       '../core/src/format/**',
+      '../core/src/geometry/**',
       '../core/src/money/**',
       '../core/src/rational/**',
       '../core/src/units/**',

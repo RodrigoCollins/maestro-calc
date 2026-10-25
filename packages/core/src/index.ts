@@ -9,6 +9,7 @@ export {
   type UrlIssueCode,
 } from './error-codes.ts';
 export * from './format/index.ts';
+export * from './geometry/index.ts';
 export * from './money/index.ts';
 export {
   DECIMAL_PARSE_CODES,
