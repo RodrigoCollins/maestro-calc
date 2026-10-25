@@ -1,5 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { ft2, valueIn, yd3 } from '@maestro-calc/core';
+import { ft2, isQuantity, valueIn, yd3 } from '@maestro-calc/core';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { createTranslator } from '@maestro-calc/i18n';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
@@ -34,14 +34,17 @@ describe('calculator registry (calc-rectangle-area › Bilingual labels)', () =>
     expect(calculators).toContain(concrete);
   });
 
-  // spec: calc-concrete › [CC30] Web registry (S1 through the registry; the bags come with the cost slice)
+  // spec: calc-concrete › [CC30] Web registry (S1 through the registry, 74 bags of 80 lb)
   it('computes the default slab through the registry: 44/27 cubic yards', () => {
     const entry = calculators.find(({ id }) => id === 'concrete');
     const result = entry?.run({});
     if (!result?.ok) throw new Error('run failed');
     const primary = result.value.outputs.find(({ key }) => key === 'volumeYd3');
     expect(primary?.role).toBe('primary');
-    expect(primary && valueIn(primary.value as never, yd3).toString()).toBe('44/27');
+    expect(isQuantity(primary?.value) && valueIn(primary.value, yd3).toString()).toBe('44/27');
+    expect(result.value.shopping).toEqual([
+      { materialId: 'concrete-mix', purchaseUnit: 'bag-80', qty: 74n },
+    ]);
   });
 
   // design D7: a calculator that core ships but the site does not list would never be checked

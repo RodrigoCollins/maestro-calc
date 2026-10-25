@@ -51,6 +51,12 @@ const ROWS = [
     'Volume before extra (cubic feet)',
     'Volumen sin extra (pies cúbicos)',
   ],
+  ['calc.concrete.outputs.bagCost', 'Cost of the bags', 'Costo de las bolsas'],
+  ['calc.concrete.outputs.readyMixCost', 'Cost of ready-mix', 'Costo del premezclado'],
+  ['material.concrete-mix.name', 'Concrete mix', 'Mezcla de concreto'],
+  ['material.concrete-mix.units.bag-40', '40 lb bag', 'Bolsa de 40 lb'],
+  ['material.concrete-mix.units.bag-60', '60 lb bag', 'Bolsa de 60 lb'],
+  ['material.concrete-mix.units.bag-80', '80 lb bag', 'Bolsa de 80 lb'],
 ] as const;
 
 describe('concrete labels (i18n-catalog › [ICW12] Exact labels of concrete)', () => {

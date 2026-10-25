@@ -1,4 +1,6 @@
 import { ALL_ERROR_CODES, messageKeysOf } from '@maestro-calc/core';
+import type { MaterialRecord } from '@maestro-calc/data';
+import { materialKeysOf } from './material-catalog.ts';
 
 /** What the keys derive from: the id, inputs, outputs and warnings of a calculator. */
 type KeySource = Parameters<typeof messageKeysOf>[0];
@@ -17,3 +19,17 @@ export const missingKeys = (
   calculator: KeySource,
   catalog: Readonly<Record<string, string>>,
 ): string[] => requiredKeys(calculator).filter((key) => !Object.hasOwn(catalog, key));
+
+/**
+ * The keys of `catalog` that `calculator` does not account for, by name: the required keys and the
+ * material keys of the materials it buys (`bought`, from `materialsBoughtBy`); from the page slice
+ * on, its `calc.<id>.page.*` keys too (i18n-catalog › Undeclared extra key fails).
+ */
+export const extraKeys = (
+  calculator: KeySource,
+  catalog: Readonly<Record<string, string>>,
+  bought: readonly MaterialRecord[],
+): string[] => {
+  const allowed = new Set([...requiredKeys(calculator), ...bought.flatMap(materialKeysOf)]);
+  return Object.keys(catalog).filter((key) => !allowed.has(key));
+};

@@ -29,4 +29,10 @@ export const esConcrete = {
   'calc.concrete.outputs.volumeFt3': 'Concreto necesario (pies cúbicos)',
   'calc.concrete.outputs.volumeM3': 'Concreto necesario (metros cúbicos)',
   'calc.concrete.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
+  'calc.concrete.outputs.bagCost': 'Costo de las bolsas',
+  'calc.concrete.outputs.readyMixCost': 'Costo del premezclado',
+  'material.concrete-mix.name': 'Mezcla de concreto',
+  'material.concrete-mix.units.bag-40': 'Bolsa de 40 lb',
+  'material.concrete-mix.units.bag-60': 'Bolsa de 60 lb',
+  'material.concrete-mix.units.bag-80': 'Bolsa de 80 lb',
 } as const satisfies CatalogOf<typeof enConcrete>;
