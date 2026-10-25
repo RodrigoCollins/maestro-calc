@@ -30,7 +30,7 @@ export const enSite = {
     'What Maestro Calc collects and what it does not: no cookies, no analytics, no advertising and no accounts. Hosted on Cloudflare.',
   'page.terms.title': 'Terms | Maestro Calc',
   'page.terms.description':
-    'The terms for using Maestro Calc: results are estimates, to be checked with a qualified professional and your local code.',
+    'The terms for using Maestro Calc: results are estimates, to be checked with a qualified professional and your local building code.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

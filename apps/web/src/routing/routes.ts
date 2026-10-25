@@ -8,8 +8,10 @@ export const LOCALE_TAGS = { en: 'en-US', es: 'es-US' } as const satisfies Recor
  * Page id to the path of the page in each locale. Pages enter the table only when they exist.
  *
  * To add a page, make four edits: (1) a `ROUTES` entry (`routeProblems` and the routes tests catch a
- * bad path); (2) its view in the `views` map of `pages/[...path].astro` (a missing view is a type
- * error); (3) `page.<id>.title` and `page.<id>.description` in both site catalogs (the route/catalog
+ * bad path); (2) its body: `pages/[...path].astro` renders every id except `home` with
+ * `TrustPageView`, so a Markdown page needs the id in `TRUST_IDS` (`content/schema.ts`) and
+ * `content/pages/{en,es}/<id>.md` (the content contract test names a missing entry), while any other
+ * kind of page needs its own branch in the catch-all; (3) `page.<id>.title` and `page.<id>.description` in both site catalogs (the route/catalog
  * agreement contract test); (4) optionally the id in `HEADER_PAGES` or `FOOTER_PAGES` plus its
  * `site.nav.<id>` or `site.footer.<id>` key (a type error in `BaseLayout.astro` when the key is missing).
  */

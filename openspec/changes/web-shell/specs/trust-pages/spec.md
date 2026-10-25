@@ -109,7 +109,7 @@ The terms page (`/terms`, `/es/terminos`) MUST state that results are estimates,
 #### Scenario: [TP15] Disclaimer wording
 - GIVEN built terms pages
 - WHEN text is searched
-- THEN EN contains `estimates` and `local code`; ES contains `estimaciones` and `código local`
+- THEN EN contains `estimates` and `local building code`; ES contains `estimaciones` and `código de construcción local`
 
 #### Scenario: [TP16] No invented legal facts
 - GIVEN built terms pages
