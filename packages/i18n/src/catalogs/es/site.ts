@@ -21,7 +21,7 @@ export const esSite = {
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
-    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe exactamente qué comprar.',
+    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y calcula qué comprar.',
   'page.methodology.title': 'Metodología | Maestro Calc',
   'page.methodology.description':
     'Cómo Maestro Calc calcula cada número: aritmética exacta, fórmulas probadas, fuentes citadas y un proceso de correcciones abierto.',

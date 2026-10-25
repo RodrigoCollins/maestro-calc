@@ -1,6 +1,6 @@
 /** Site shell and page metadata, English: the source of truth for the `site.*` and `page.*` keys. */
 export const enSite = {
-  'site.tagline': 'Jobsite calculators that tell you exactly what to buy',
+  'site.tagline': 'Jobsite calculators that estimate what to buy',
   'site.skipLink': 'Skip to main content',
   'site.nav.label': 'Main navigation',
   'site.nav.methodology': 'Methodology',
@@ -13,12 +13,12 @@ export const enSite = {
   'site.trust.updated': 'Last updated',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
-    'Jobsite calculators that tell you exactly what to buy. The first calculators are still being built, and we will explain how every number is worked out.',
+    'Jobsite calculators that estimate what to buy. The first calculators are still being built, and we will explain how every number is worked out.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
   'page.home.description':
-    'Jobsite calculators for builders and homeowners in the US. Enter your measurements and see exactly what to buy.',
+    'Jobsite calculators for builders and homeowners in the US. Enter your measurements and estimate what to buy.',
   'page.methodology.title': 'Methodology | Maestro Calc',
   'page.methodology.description':
     'How Maestro Calc works out every number: exact arithmetic, tested formulas, cited sources and a public corrections process.',
