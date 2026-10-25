@@ -31,3 +31,38 @@ export const pageSchema = z.strictObject({
 });
 
 export type PageFrontmatter = z.infer<typeof pageSchema>;
+
+const decimalText = z.string().regex(/^\d+\.\d{2}$/, 'a decimal with two places');
+
+/** The worked example of the Formulas section: display texts and whole numbers (a contract test runs it through the engine). */
+const workedExample = z.strictObject({
+  netFt3: decimalText,
+  totalFt3: decimalText,
+  yd3: decimalText,
+  bags: z.number().int().nonnegative(),
+  bagLb: z.number().int().positive(),
+});
+
+/** A source of the entry: a name, an `https` link and the day it was retrieved. */
+const source = z.strictObject({
+  name: z.string().min(1),
+  url: z.url({ protocol: /^https$/, hostname: /^[^\s]+$/ }),
+  retrieved: isoDate,
+});
+
+/**
+ * Frontmatter of one calculator entry (calculator-page › Page anatomy and content collection):
+ * strict, with the calculator id limited to the registry's (`ids`), at least one source and the
+ * worked example the Formulas section shows.
+ */
+export const calculatorSchema = (ids: readonly [string, ...string[]]) =>
+  z.strictObject({
+    id: z.enum(ids),
+    locale: z.enum(LOCALES),
+    updated: isoDate,
+    ownerReview: z.enum(['pending', 'approved']),
+    sources: z.array(source).min(1),
+    workedExample,
+  });
+
+export type CalculatorFrontmatter = z.infer<ReturnType<typeof calculatorSchema>>;
