@@ -5,8 +5,8 @@ import { concreteStateArb } from '../../__testing__/concrete-arbitraries.ts';
 import { numRuns } from '../../__testing__/property-runs.ts';
 import type { ShoppingLine } from '../../calculator/descriptors.ts';
 import { Rational } from '../../rational/rational.ts';
-import { ft3, in3, yd3 } from '../../units/catalog.ts';
-import { isQuantityOf, valueIn } from '../../units/quantity.ts';
+import { ft3, in3, inch, yd3 } from '../../units/catalog.ts';
+import { isQuantityOf, quantity, valueIn } from '../../units/quantity.ts';
 import type { Unit } from '../../units/unit.ts';
 import { createConcrete } from './index.ts';
 
@@ -213,5 +213,50 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
       }),
       { numRuns },
     );
+  });
+
+  // JD-3 (concrete group 1): the properties above restate the implementation with `Rational`; this
+  // one shares nothing with it. The oracle is plain `bigint` arithmetic on a slab measured in
+  // eighths of an inch, a waste in tenths of a percent and the bag yields written out in cubic
+  // inches (0.30, 0.45 and 0.60 ft3 times 1,728 in3 per ft3 are 2592/5, 3888/5 and 5184/5).
+  describe('P12: an independent bigint oracle for the slab', () => {
+    const YIELD_FIFTHS = { '40': 2592n, '60': 3888n, '80': 5184n } as const;
+    const ceilDiv = (numerator: bigint, denominator: bigint): bigint =>
+      (numerator + denominator - 1n) / denominator;
+
+    it('agrees with the calculator on the total volume and the bags of any slab', () => {
+      fc.assert(
+        fc.property(
+          concreteStateArb,
+          fc.bigInt({ min: 0n, max: 96_000n }),
+          fc.bigInt({ min: 0n, max: 96_000n }),
+          fc.bigInt({ min: 0n, max: 960n }),
+          fc.bigInt({ min: 0n, max: 500n }),
+          fc.constantFrom('40', '60', '80'),
+          (base, length8, width8, thickness8, wasteTenths, bag) => {
+            const eighths = (value: bigint) => quantity(Rational.of(value, 8n), inch);
+            const state: State = {
+              ...base,
+              shape: 'slab',
+              length: eighths(length8),
+              width: eighths(width8),
+              thickness: eighths(thickness8),
+              waste: Rational.of(wasteTenths, 10n),
+              bag,
+            };
+            // cubic inches = (L8 x W8 x T8 / 8^3) x (1000 + tenths) / 1000
+            const totalNum = length8 * width8 * thickness8 * (1000n + wasteTenths);
+            const totalDen = 512n * 1000n;
+            const bags = ceilDiv(totalNum * 5n, totalDen * YIELD_FIFTHS[bag]);
+
+            const { result, qty } = run(state);
+            const total = volumeIn(result.outputs.volumeFt3, in3);
+            expect(total.num * totalDen).toBe(totalNum * total.den);
+            expect(qty).toBe(bags);
+          },
+        ),
+        { numRuns },
+      );
+    });
   });
 });
