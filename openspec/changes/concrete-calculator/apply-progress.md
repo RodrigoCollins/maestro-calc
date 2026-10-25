@@ -172,7 +172,9 @@ Branch `feat/concrete-g2-page-parts` (created from `main` `1691d83`, which conta
 | JD-3 bigint slab oracle | done | `38f5027` | 2,547 | see JD |
 | JD total | done | `05f1bf1` | 2,547 | 229 |
 | S7 presenter and copy | done (four commits, each at most 400) | `ff198ce` | 2,694 | 1,162 (~400): 123 + 333 + 399 + 307 |
-| S8 body, parts, styles, budget | done (seven commits, each at most 400) | `38f5358` | 2,747 | 1,863 (~400): 348 + 169 + 317 + 290 + 292 + 267 + 180 |
+| S8 body, parts, styles, budget | done (seven commits, each at most 400; two correction commits follow) | `38f5358`, then `2c47f88` | 2,768 | 1,863 (~400): 348 + 169 + 317 + 290 + 292 + 267 + 180 (+ 167 + 406 corrections) |
+| S9 templates, check:site, CSP | done (nine commits, three above 400) | `2515838` | 2,913 | 2,856 (~400) |
+| S10 collection, copy, faqOf, JSON-LD | done (five commits, one above 400) | `447ebcc` | 2,983 | 946 (~400): 177 + 152 + 163 + 423 + 69 |
 
 ## G1 Judgment Day follow-ups (done first, own commits)
 
@@ -239,3 +241,29 @@ Commits (the S9a/S9b contingency, cut into work units): `8bd20f8` template lists
 - The old `js-file` rule (no JavaScript file in dist) became: only under `_astro/`, and reachable from a calculator page by static imports (an entry that only dynamic-imports a chunk would dodge the byte budget, so that chunk is reported). The test message changed accordingly; the file is still named.
 - The tests of the byte budget read "entry 20,000 + import 20,000 > 49,152" in the spec; the arithmetic is 40,000, so the fixture uses 30,000 + 20,000 = 50,000.
 - Size: forecast 400, actual 2,856 over nine commits. Three commits are above 400 (551, 880, 406) because the fixtures, the rule and its tests are inseparable (the 100 percent coverage gate on `site-check` and the calculator fixtures are shared); flagged for the GX3 reviewers. The S8 correction commits sit after the first S9 commit in the history.
+
+## S10: `calculators` collection, EN/ES copy, `faqOf`, `calculatorJsonLd`
+
+Commits: `d3eb0e2` the collection and `calculatorSchema` (177), `f5a2d36` `faqOf` (152), `4dc4bad` `calculatorJsonLd` (163), `2053854` the two entries with their content contract (423, above 400: the contract needs both locales to be green), `447ebcc` the pending count of the new collection and the worked-example guard (69). `npm run verify` at the tip: 168 files, 2,983 tests. `npm run test:e2e`: 110 passed, the site is unchanged.
+
+- Scenarios proven: CP5 source side (five `h2` ids per locale, in order), CP6 (the strict schema rejects `sources: []`, an unknown review state, a day-first date, an `http` source url, a worked example without `bags`, and `npm run build` exits non-zero naming the entry and the field), CP7 (missing `es` counterpart named, duplicate `(concrete, en)` named), CP8 and MDC4 (the QUIKRETE source equals `concreteMix.source` in name, URL and date; a NIST SP 811 Appendix B source with a retrieval date; no `ownerReview`, `draft`, `borrador`, `pending review` in a body), CP9 (the worked example equals the engine through the page builder and every figure `40.00`, `44.00`, `1.63`, `74`, `80` is in the Formulas section, with the three one-sided changes failing), CP10 (1,339 words in EN, between 800 and 1,500 in both, equal `h2` and FAQ counts, 8 plain-text answers of at most 450 characters), the Spanish register, the rule-of-thumb and approximate wording and the methodology links; SE19 and SE20 builder side (`calculatorJsonLd`: three types, `Home`/`Inicio`, no offers, rating, review or image, no `</script>` once serialized).
+- 10.10 negative proofs (run, reverted): `sources: []` in the English entry (the build fails: `calculators → en/concrete data does not match collection schema`, `sources: Too small: expected array to have >=1 items`); `bags: 75` (CP9 fails); a 851-character answer (`faqOf` fails naming the question).
+- G2.1 production-consistency review of the tip: `npm run build` builds 14 pages, no JavaScript file, CSP `script-src 'self'`; `rg -i "calc.concrete|concrete|calc-result|concreto"` over `apps/web/dist` finds nothing (the entries and keys are not rendered). `concrete` stays in `PAGELESS`, `CALCULATOR_PAGES` is empty.
+
+### Deviations (S10)
+
+- `calculatorSchema(ids)` is a factory (the registry ids come from `content.config.ts`), and the NIST source is the landing page of SP 811 (`https://www.nist.gov/pml/special-publication-811`) because no deeper stable URL could be verified offline; its `retrieved` date is the pipeline date `2026-10-25` like the QUIKRETE one. Both are for the owner to confirm in the pending review.
+- The Sources section copy carries the "retrieved" wording (no catalog key exists for it); the retrieval dates render as plain text and the review date is the one `time` element.
+- `astro-modules.d.ts` now declares the one function the test program needs from `astro:content` (`defineCollection`), so `content.config.ts` can be unit tested without the Astro program.
+- The FAQ cap is 450 characters (design "Budget decision: HTML"). The ES entry has 1,443 B of HTML headroom at the maximum copy; the real entries are 1,339 words (EN) and about the same in ES, so there is margin.
+- The two content commits were merged with their contract test into one (423 lines), because a contract test that needs both locales cannot be green with one entry.
+- An accidental `git stash pop` (the stash list holds two older stashes of other branches) applied the top old stash and conflicted in three files; the three files were restored from HEAD and no stash was dropped. No code or history was lost (`git diff HEAD` empty for tracked files).
+
+## G2 results
+
+- Commits: `git log 1691d83..HEAD` on `feat/concrete-g2-page-parts` (all work-unit commits; no push, no PR). History hygiene: no `Co-Authored-By`, `claude`, `anthropic` or `generated with` in the messages.
+- `npm run verify` at the G2 tip: exit 0, 168 test files, 2,983 tests (baseline at the G1 tip: 148 files, 2,536; JD added 11).
+- `npm run build && npm run test:e2e` after S9 and after S10: 110 passed each time, the built site is unchanged (14 pages, no script).
+- Mutation: `calculators` shard 183 mutants, 100.00 after JD-1 and again after JD-2's config change (concrete.ts 144 mutants); no other core or data source changed in G2.
+- HTML budget (calculator page, production pipeline): 39,268 B (EN), 39,517 B (ES) of 40,960 B.
+- Remaining for the orchestrator: G2.2 / GX1 to GX5 (push, CI, four reviewers, Judgment Day, PR against `main`).
