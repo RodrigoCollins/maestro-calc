@@ -14,7 +14,9 @@ describe('released url snapshot (url-state-codec › Key stability rules, comple
 
   describe('completenessProblems', () => {
     const [rectangleArea] = calculators;
-    const length = RELEASED[0];
+    // the fixtures below reshape one calculator; the tuples of the others are not their business
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'rectangle-area');
+    const length = tuples[0];
 
     it('fails a calculator that ships without any tuple', () => {
       expect(completenessProblems([], [rectangleArea])).toEqual([
@@ -37,7 +39,7 @@ describe('released url snapshot (url-state-codec › Key stability rules, comple
         inputs: [lengthInput, breadth],
         retiredUrlKeys: ['w'],
       };
-      const retired: ReleasedField[] = RELEASED.map((tuple) =>
+      const retired: ReleasedField[] = tuples.map((tuple) =>
         tuple.key === 'width' ? { ...tuple, retired: true } : tuple,
       );
       expect(completenessProblems(retired, [reshaped])).toEqual([
@@ -56,10 +58,10 @@ describe('released url snapshot (url-state-codec › Key stability rules, comple
     });
 
     it('fails a released calculator that left the registry, and a tuple that was changed', () => {
-      expect(completenessProblems(RELEASED, [])).toEqual([
+      expect(completenessProblems(tuples, [])).toEqual([
         'rectangle-area: released calculator is missing from the registry',
       ]);
-      const retuned = RELEASED.map((tuple) => ({ ...tuple, default: '144' }));
+      const retuned = tuples.map((tuple) => ({ ...tuple, default: '144' }));
       expect(completenessProblems(retuned, [rectangleArea])).toEqual([
         'rectangle-area.length: default changed from "144" to "120"',
         'rectangle-area.width: default changed from "144" to "120"',

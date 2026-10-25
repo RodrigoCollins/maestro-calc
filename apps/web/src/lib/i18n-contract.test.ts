@@ -54,6 +54,35 @@ const RECTANGLE_AREA_KEYS = [
   'calc.rectangle-area.outputs.areaYd2',
   'calc.rectangle-area.outputs.areaM2',
 ];
+const CONCRETE_KEYS = [
+  'calc.concrete.title',
+  ...[
+    'shape',
+    'length',
+    'width',
+    'thickness',
+    'footingWidth',
+    'footingDepth',
+    'diameter',
+    'height',
+    'stepWidth',
+    'rise',
+    'run',
+    'stepCount',
+    'count',
+    'waste',
+    'bag',
+    'bagPrice',
+    'readyMixPrice',
+  ].map((key) => `calc.concrete.inputs.${key}`),
+  'calc.concrete.options.shape.slab',
+  'calc.concrete.options.bag.40',
+  'calc.concrete.options.bag.60',
+  'calc.concrete.options.bag.80',
+  ...['volumeYd3', 'volumeFt3', 'volumeM3', 'netVolume'].map(
+    (key) => `calc.concrete.outputs.${key}`,
+  ),
+];
 const ERROR_KEYS = [
   'errors.EMPTY',
   'errors.MALFORMED',
@@ -74,6 +103,12 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
   it('requires the six calculator keys and the twelve error keys, in that order', () => {
     const [rectangleArea] = calculators;
     expect(requiredKeys(rectangleArea)).toEqual([...RECTANGLE_AREA_KEYS, ...ERROR_KEYS]);
+  });
+
+  // spec: i18n-catalog › [ICW10] Derived keys of concrete (partial: one shape, four outputs)
+  it('requires the concrete keys derived from its descriptors', () => {
+    const concrete = calculators.find(({ id }) => id === 'concrete');
+    expect(concrete && requiredKeys(concrete)).toEqual([...CONCRETE_KEYS, ...ERROR_KEYS]);
   });
 
   it('has every required key of every listed calculator in both locales', () => {
