@@ -172,6 +172,7 @@ Branch `feat/concrete-g2-page-parts` (created from `main` `1691d83`, which conta
 | JD-3 bigint slab oracle | done | `38f5027` | 2,547 | see JD |
 | JD total | done | `05f1bf1` | 2,547 | 229 |
 | S7 presenter and copy | done (four commits, each at most 400) | `ff198ce` | 2,694 | 1,162 (~400): 123 + 333 + 399 + 307 |
+| S8 body, parts, styles, budget | done (seven commits, each at most 400) | `38f5358` | 2,747 | 1,863 (~400): 348 + 169 + 317 + 290 + 292 + 267 + 180 |
 
 ## G1 Judgment Day follow-ups (done first, own commits)
 
@@ -196,3 +197,21 @@ Commits (work-unit split inside the S7a/S7b contingency, because the presenter w
 - Footing, column and steps sentences are authored (no plural form needed): `Footing ({length} long, {width} wide, {depth} deep, count {count}): ...`, `Column ({diameter} diameter, {height} tall, count {count}): ...`, `Steps (count {stepCount}, {stepWidth} wide, {rise} rise, {run} run): ...` and the Spanish counterparts. They are copy for the owner to review.
 - The ICW10 web test now derives the convention keys per calculator instead of listing 43 literals (JD-2), and `extraKeys` allows `calc.<id>.page.*` of that calculator.
 - Size: forecast 400, actual 1,162; the group PR is above 400 by the owner's decision, the unit of review is the commit (all at most 400).
+
+## S8: CalculatorBody, parts, styles, HTML budget proof
+
+Commits (the S8a/S8b contingency, cut further because the slice is about 1,860 lines): `7af7c7e` shopping/breadcrumb/source parts with the model types and `shapes.ts` (348), `afc7b52` result panel (169), `c5fb21e` the view builder `lib/calculator-page.ts` (317), `785a5fa` the form (290), `1505418` the container (292), `1f0b4e2` `styles/calculator.css` and its contract (267), `38f5358` the budget proof (180). Each commit is green; `npm run verify` at the tip: 161 files, 2,747 tests.
+
+- Scenarios proven (static, by rendering): CP1, CP2, CP3 (figures equal `run({})` of the registry calculator rounded), CP4 (six `data-output` in order plus one `data-shopping="bag-80"`), CP5 (breadcrumb `ol[aria-label]` before the H1, the result `h2`, no `nav`), CP8 source side (`SourceList`: name, link, retrieval date, exactly one `time` equal to `updated`), CP11 static (four groups, only the slab visible, `aria-pressed`), CP12 (labels from the catalog, `inputmode`, `autocomplete="off"`, no submit), CP15, CP17, CP40 static (note visible, outside `<noscript>`, exact EN and ES text), CP41 static (every input and button `disabled`, copy and steppers `hidden`), CP43 (12 error templates with `{min}`/`{max}`, 4 sentences, 2 copy states), CP44 static (reserved `data-reserved` areas: answer, notice, shape, steppers, copy).
+- HTML budget proof (SQ7, C18, DR-16): the whole page (BaseLayout, CalculatorBody, 1,500 words in five sections, 8 FAQ answers of 600 characters, a JSON-LD graph with the same FAQ text, all 18 templates) is **37,754 B** against 40,960 B (3,206 B of headroom, 92.2 percent). The seeded test grows the copy by the headroom plus one and fails. No fallback of the ladder was needed, nothing raised.
+- Negative proofs (run, reverted): a cost row un-hidden (2 fail), `disabled` dropped from the shape and unit buttons (2 fail), the messages moved out of `<template>` (1 fails), the note moved into `<noscript>` (3 fail).
+- `npm run build` still builds 14 pages; `rg -l -i "calc-result|concrete" apps/web/dist` finds nothing (nothing routed, `concrete` stays in `PAGELESS`).
+
+### Deviations (S8)
+
+- Styles are the global `styles/calculator.css`, imported by `CalculatorBody.astro`; `styles.contract.test.ts` now expects the three stylesheets by name (it pinned a count of two).
+- The page text is resolved by `apps/web/src/lib/calculator-page.ts` (`concreteView(locale)`), the only module that joins the engine, the presenter and the catalogs; the container and parts stay catalog-free. Hidden shape groups render their own inputs (ids `calc-<shape>-<key>`, `name` is the field key), so `length` and `count` appear in two groups each; the controller (G3) keeps them in step.
+- Cost rows come as two elements per cost (the row, hidden without a price, and the hint line, hidden with one) so that the price hint can be addressed per row; the `data-price-hint` text is the catalog `priceHint` exactly.
+- `SourceList` shows the retrieval date as plain text and the review date as the one `time` element, so `time[datetime]` equals the entry's `updated` (CP8); no catalog word for "retrieved" exists in the ICW17 key set, so the Sources section copy (S10) carries that wording.
+- The unit hint next to each label is not rendered: the field text itself carries the unit (`12 ft`), and the spec's key set has no hint key.
+- CSS reserved sizes (`7.5rem` answer, `9rem` notice, four rows of `6rem` for the shape area, `5rem` copy) are estimates from the longest sentences; the CLS e2e in G3 measures them.
