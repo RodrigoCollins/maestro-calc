@@ -36,9 +36,29 @@ const footingVolume = (
 const columnVolume = (diameter: Length, height: Length, count: number): Quantity<'volume'> =>
   scale(multiply(circleArea(divideScalar(diameter, TWO)), height), Rational.of(count));
 
+/** The shapes of the calculator, in the order the select offers them. */
+const SHAPES = ['slab', 'footing', 'column', 'steps'] as const;
+
+/** The bag sizes in pounds, in the order the select offers them. */
+const BAG_SIZES = ['40', '60', '80'] as const;
+
+type Shape = (typeof SHAPES)[number];
+
+/**
+ * The volume of `stepCount` steps: step `k` is a full-height block `stepWidth x run x (k x rise)`,
+ * and `1 + 2 + ... + N` is `N(N+1)/2`.
+ */
+const stepsVolume = (
+  stepWidth: Length,
+  rise: Length,
+  run: Length,
+  stepCount: number,
+): Quantity<'volume'> =>
+  scale(multiply(multiply(stepWidth, run), rise), Rational.of((stepCount * (stepCount + 1)) / 2));
+
 /** The fields `netVolumeOf` reads, by the shape that uses them. */
 interface Dimensions {
-  readonly shape: 'slab' | 'footing' | 'column' | 'steps';
+  readonly shape: Shape;
   readonly length: Length;
   readonly width: Length;
   readonly thickness: Length;
@@ -53,33 +73,16 @@ interface Dimensions {
   readonly count: number;
 }
 
-/** The net volume of the chosen shape; the fields of the other shapes are not read. */
-const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => {
-  switch (inputs.shape) {
-    case 'slab':
-      return slabVolume(inputs.length, inputs.width, inputs.thickness);
-    case 'footing':
-      return footingVolume(inputs.length, inputs.footingWidth, inputs.footingDepth, inputs.count);
-    case 'column':
-      return columnVolume(inputs.diameter, inputs.height, inputs.count);
-    case 'steps':
-      return stepsVolume(inputs.stepWidth, inputs.rise, inputs.run, inputs.stepCount);
-  }
+/** The volume of each shape; the fields of the other shapes are not read. */
+const VOLUME_OF: Readonly<Record<Shape, (inputs: Dimensions) => Quantity<'volume'>>> = {
+  slab: (d) => slabVolume(d.length, d.width, d.thickness),
+  footing: (d) => footingVolume(d.length, d.footingWidth, d.footingDepth, d.count),
+  column: (d) => columnVolume(d.diameter, d.height, d.count),
+  steps: (d) => stepsVolume(d.stepWidth, d.rise, d.run, d.stepCount),
 };
 
-/**
- * The volume of `stepCount` steps: step `k` is a full-height block `stepWidth x run x (k x rise)`,
- * and `1 + 2 + ... + N` is `N(N+1)/2`.
- */
-const stepsVolume = (
-  stepWidth: Length,
-  rise: Length,
-  run: Length,
-  stepCount: number,
-): Quantity<'volume'> =>
-  scale(multiply(multiply(stepWidth, run), rise), Rational.of((stepCount * (stepCount + 1)) / 2));
-
-const BAG_SIZES = ['40', '60', '80'] as const;
+/** The net volume of the chosen shape. */
+const netVolumeOf = (inputs: Dimensions): Quantity<'volume'> => VOLUME_OF[inputs.shape](inputs);
 
 /**
  * The factory owns this check, before `defineCalculator` runs: the yields are exactly the keys
@@ -139,7 +142,7 @@ export const createConcrete = (yields: BagYields) => {
         key: 'shape',
         urlKey: 'sh',
         default: 'slab',
-        options: ['slab', 'footing', 'column', 'steps'],
+        options: SHAPES,
       },
       lengthField('length', 'l', 144, BIG, quantity(1000, ft)),
       lengthField('width', 'w', 120, BIG, quantity(1000, ft)),
@@ -161,7 +164,7 @@ export const createConcrete = (yields: BagYields) => {
         min: Rational.ZERO,
         max: Rational.of(50),
       },
-      { kind: 'select', key: 'bag', urlKey: 'bg', default: '80', options: ['40', '60', '80'] },
+      { kind: 'select', key: 'bag', urlKey: 'bg', default: '80', options: BAG_SIZES },
       { kind: 'money', key: 'bagPrice', urlKey: 'bp', default: usd(0), max: usd(10000) },
       { kind: 'money', key: 'readyMixPrice', urlKey: 'rp', default: usd(0), max: usd(10000) },
     ],
