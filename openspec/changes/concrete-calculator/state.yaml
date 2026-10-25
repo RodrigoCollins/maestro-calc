@@ -11,7 +11,7 @@ phases:
   spec: done  # 10 capabilities (3 new, 7 modified), 180 scenarios; yields sourced (QUIKRETE 1101 data sheet, retrieved 2026-10-25), OA1 reduced to acknowledging the source
   design: done  # reconciled with specs (R1-R12); design review round 1 applied (DR-1..DR-18, specs amended); 17 review units in 3 PRs (G1 engine S1-S6, G2 unrouted page parts S7-S10, G3 go-live S11a-S13b), ~5,210 lines
   tasks: done  # 160 tasks in 17 review units / 3 group PRs (~5,190 lines); S3 cut = judge's (S3a ~380 / S3b ~300); 186 id'd scenarios + 6 unnamed all mapped; S9 and S10 have named split contingencies
-  apply: pending
+  apply: partial  # G1 S1-S5 done (8 commits on feat/concrete-g1-engine, tip a21055a, 2532 tests, all 8 mutation shards 100.00); S6 size probe BLOCKED: engine surface 28457 B > 24576 B limit, ladder steps 1-3 gave no gain, owner decision needed; G2/G3 pending
   verify: pending
   archive: pending
 updated: 2026-10-25
