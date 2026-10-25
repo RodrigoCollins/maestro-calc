@@ -34,8 +34,16 @@ describe('site catalog: shell strings (i18n-catalog › Site scope)', () => {
 
   // spec: i18n-catalog › [ICW8]
   it('says the tagline exactly', () => {
-    expect(enSite['site.tagline']).toBe('Jobsite calculators that tell you exactly what to buy');
+    expect(enSite['site.tagline']).toBe('Jobsite calculators that estimate what to buy');
     expect(esSite['site.tagline']).toBe('Calcula tu obra y sabe qué comprar');
+  });
+
+  // Every result is an estimate (terms, about), so no shell copy promises an exact purchase.
+  it('never promises exact purchases', () => {
+    const values = [...Object.values(enSite), ...Object.values(esSite)];
+    expect(
+      values.filter((value) => /exactly what to buy|exactamente qué comprar/i.test(value)),
+    ).toEqual([]);
   });
 
   it('labels the navigation, the language switch and the footer links', () => {

@@ -18,7 +18,7 @@ Note: 14 keys is the end-of-change state. Page ids enter the route table and the
 #### Scenario: [ICW8] Site tagline
 - GIVEN `t('site.tagline')` for each locale
 - WHEN resolved
-- THEN the values are exactly `Jobsite calculators that tell you exactly what to buy` (en) and `Calcula tu obra y sabe qué comprar` (es), per PLAN.md §3
+- THEN the values are exactly `Jobsite calculators that estimate what to buy` (en) and `Calcula tu obra y sabe qué comprar` (es), per PLAN.md §3
 
 #### Scenario: [ICW2] Skip link labels
 - GIVEN `t('site.skipLink')` for each locale

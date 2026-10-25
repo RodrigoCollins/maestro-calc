@@ -68,7 +68,7 @@ producto pago. Opcional: observar grupos de Facebook de contratistas latinos y N
 
 - **Marca: Maestro Calc** — dominio `maestrocalc.com` (+ `maestrocalc.net` defensivo).
 - "Maestro" funciona en los dos idiomas: maestro de obra (ES) / experto (EN).
-- Bajadas: EN "Jobsite calculators that tell you exactly what to buy" · ES "Calcula tu obra y sabe qué comprar".
+- Bajadas: EN "Jobsite calculators that estimate what to buy" (suavizada el 2026-10-25: todo resultado es una estimación) · ES "Calcula tu obra y sabe qué comprar".
 - Trademarkia: sin marcas "Maestro Calc"/"MaestroCalc". Riesgo: **Maestro ERP** (Maestro Technologies / JDM,
   software de estimación para contratistas en Norteamérica). Reglas:
   1. Usar siempre "Maestro Calc", nunca "Maestro" solo.
