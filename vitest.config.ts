@@ -11,6 +11,7 @@ export default defineConfig({
       provider: 'v8',
       include: [
         'packages/*/src/**',
+        'apps/web/src/calculator/**',
         'apps/web/src/routing/**',
         'apps/web/src/seo/**',
         'apps/web/src/site-check/**',
@@ -21,6 +22,7 @@ export default defineConfig({
         'packages/core/src/**': full,
         'packages/data/src/**': ninety,
         'packages/i18n/src/**': ninety,
+        'apps/web/src/calculator/**': full,
         'apps/web/src/routing/**': full,
         'apps/web/src/seo/**': full,
         'apps/web/src/site-check/**': full,
