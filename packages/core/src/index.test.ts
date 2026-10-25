@@ -14,6 +14,7 @@ describe('core public API (design: Public API)', () => {
       'LENGTH_PARSE_CODES',
       'MAX_TEXT_LENGTH',
       'MONEY_PARSE_CODES',
+      'PI',
       'RATIONAL_PARSE_CODES',
       'RESERVED_URL_KEYS',
       'RESULT_REASONS',
@@ -23,6 +24,7 @@ describe('core public API (design: Public API)', () => {
       'add',
       'addMoney',
       'ceilToPurchaseUnits',
+      'circleArea',
       'cm',
       'cm2',
       'cm3',
@@ -127,6 +129,15 @@ describe('core public API (design: Public API)', () => {
     const metric = core.parseLength('2.54', { defaultUnit: core.cm });
     expect(metric.ok && core.valueIn(metric.value, core.inch)).toEqual(core.Rational.ONE);
     expect(core.parseLength('5 furlongs')).toEqual(core.err({ code: 'UNKNOWN_UNIT', offset: 2 }));
+  });
+
+  // spec: core-geometry › Rational pi, Circle area
+  it('wires the geometry API to working implementations', () => {
+    expect(
+      core.PI.equals(core.Rational.of(314159265358979323846264338327950288n, 10n ** 35n)),
+    ).toBe(true);
+    const area = core.circleArea(core.quantity(6, core.inch));
+    expect(core.valueIn(area, core.ft2)).toEqual(core.PI.div(core.Rational.of(4)));
   });
 
   // spec: money › Exact money value, Unit prices, Display rounding to cents, Money text grammar
