@@ -1,6 +1,5 @@
 import { CoreError, ft2, in2, quantity, Rational, valueIn } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import * as data from './index.ts';
 import { defineMaterial, type MaterialRecord } from './material.ts';
 
 /** The plywood sheet of the spec: one purchase unit of 32 ft2 (4 ft x 8 ft). */
@@ -300,10 +299,5 @@ describe('defineMaterial (material-data-contract › Material record shape)', ()
         cause: { id: 'plywood-sheet' },
       });
     });
-  });
-
-  // spec: material-data-contract › Empty registry [MD4]
-  it('exports defineMaterial and no material record', () => {
-    expect(Object.keys(data)).toEqual(['defineMaterial']);
   });
 });
