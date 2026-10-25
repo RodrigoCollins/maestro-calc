@@ -1,7 +1,7 @@
 import type { CatalogOf } from '../../translate.ts';
 import type { enConcrete } from '../en/concrete.ts';
 
-/** Labels of the `concrete` calculator, Spanish: the same keys as English. */
+/** Copy of the `concrete` calculator, Spanish (neutral tú): the same keys as English. */
 export const esConcrete = {
   'calc.concrete.title': 'Calculadora de Concreto',
   'calc.concrete.inputs.shape': 'Forma',
@@ -38,4 +38,24 @@ export const esConcrete = {
   'material.concrete-mix.units.bag-40': 'Bolsa de 40 lb',
   'material.concrete-mix.units.bag-60': 'Bolsa de 60 lb',
   'material.concrete-mix.units.bag-80': 'Bolsa de 80 lb',
+  'calc.concrete.page.example': 'Ejemplo: una losa de 12 ft por 10 ft, de 4 in de espesor.',
+  'calc.concrete.page.volumeYd3': '{value} yardas cúbicas',
+  'calc.concrete.page.volumeM3': '{value} metros cúbicos',
+  'calc.concrete.page.shoppingLine': 'Mezcla de concreto, bolsas de {bagLb} lb',
+  'calc.concrete.page.bagYield': 'Unos {yield} pies cúbicos por bolsa',
+  'calc.concrete.page.wasteLess': 'Menos extra',
+  'calc.concrete.page.wasteMore': 'Más extra',
+  'calc.concrete.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.concrete.page.wasteHelp':
+    'El extra cubre derrames, terreno disparejo y excavación de más. El 10% es un punto de partida común; cámbialo según tu trabajo.',
+  'calc.concrete.page.readyMixNote':
+    'Premezclado: pide el volumen de arriba; tu proveedor define el mínimo y los incrementos.',
+  'calc.concrete.page.answer.slab':
+    'Losa ({length} × {width}, {thickness} de espesor): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.footing':
+    'Zapata ({length} de largo, {width} de ancho, {depth} de profundidad, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.column':
+    'Columna ({diameter} de diámetro, {height} de alto, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.steps':
+    'Escalones (cantidad {stepCount}, {stepWidth} de ancho, {rise} de altura, {run} de profundidad): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
 } as const satisfies CatalogOf<typeof enConcrete>;

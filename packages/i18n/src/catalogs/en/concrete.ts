@@ -1,4 +1,4 @@
-/** Labels of the `concrete` calculator, English: the keys core derives from its descriptors. */
+/** Copy of the `concrete` calculator, English: the keys core derives, the material keys and the page copy. */
 export const enConcrete = {
   'calc.concrete.title': 'Concrete Calculator',
   'calc.concrete.inputs.shape': 'Shape',
@@ -35,4 +35,24 @@ export const enConcrete = {
   'material.concrete-mix.units.bag-40': '40 lb bag',
   'material.concrete-mix.units.bag-60': '60 lb bag',
   'material.concrete-mix.units.bag-80': '80 lb bag',
+  'calc.concrete.page.example': 'Example: a 12 ft by 10 ft slab, 4 in thick.',
+  'calc.concrete.page.volumeYd3': '{value} cubic yards',
+  'calc.concrete.page.volumeM3': '{value} cubic meters',
+  'calc.concrete.page.shoppingLine': 'Concrete mix, {bagLb} lb bags',
+  'calc.concrete.page.bagYield': 'About {yield} cubic feet per bag',
+  'calc.concrete.page.wasteLess': 'Less extra',
+  'calc.concrete.page.wasteMore': 'More extra',
+  'calc.concrete.page.priceHint': 'Add your price to see the cost',
+  'calc.concrete.page.wasteHelp':
+    'Extra covers spills, uneven ground and over-digging. 10% is a common starting point; change it to match your job.',
+  'calc.concrete.page.readyMixNote':
+    'Ready-mix: order the volume above; your supplier sets the minimum and the increments.',
+  'calc.concrete.page.answer.slab':
+    'Slab ({length} × {width}, {thickness} thick): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.footing':
+    'Footing ({length} long, {width} wide, {depth} deep, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.column':
+    'Column ({diameter} diameter, {height} tall, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+  'calc.concrete.page.answer.steps':
+    'Steps (count {stepCount}, {stepWidth} wide, {rise} rise, {run} run): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
 } as const;

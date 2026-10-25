@@ -11,6 +11,19 @@ export const enSite = {
   'site.footer.contact': 'Contact',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',
+  'site.calculator.breadcrumb': 'Breadcrumb',
+  'site.calculator.breadcrumbHome': 'Home',
+  'site.calculator.resultHeading': 'Result',
+  'site.calculator.unitsLabel': 'Units',
+  'site.calculator.unitsUs': 'US (ft, in)',
+  'site.calculator.unitsMetric': 'Metric (m, cm)',
+  'site.calculator.copyLink': 'Copy link',
+  'site.calculator.linkCopied': 'Link copied',
+  'site.calculator.copyFailed': 'Could not copy. Select the link and copy it.',
+  'site.calculator.noscript':
+    'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
+  'site.calculator.estimateNote':
+    'Estimates only. Check quantities with your supplier and the local building code.',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
     'Jobsite calculators that estimate what to buy. The first calculators are still being built, and we will explain how every number is worked out.',
