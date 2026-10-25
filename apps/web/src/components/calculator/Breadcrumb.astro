@@ -1,0 +1,17 @@
+---
+import type { BreadcrumbView } from './model.ts';
+
+interface Props {
+  breadcrumb: BreadcrumbView;
+}
+const { label, homeLabel, homeHref, current } = Astro.props.breadcrumb;
+---
+
+<ol class="calc-breadcrumb" aria-label={label}>
+  <li>
+    <a class="tap-target" href={homeHref}>
+      {homeLabel}
+    </a>
+  </li>
+  <li aria-current="page">{current}</li>
+</ol>

@@ -1,0 +1,18 @@
+---
+import type { ShoppingView } from './model.ts';
+
+interface Props {
+  shopping: ShoppingView;
+}
+const { unit, label, qty, bagYield } = Astro.props.shopping;
+---
+
+<p class="calc-shopping">
+  <span class="calc-label">{label}</span>
+  <span class="calc-figure calc-qty" data-shopping={unit}>
+    {qty}
+  </span>
+</p>
+<p class="calc-note" data-bag-yield>
+  {bagYield}
+</p>
