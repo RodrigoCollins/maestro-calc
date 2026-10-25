@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { contentProblems, countPending, OLD_ADDRESS, updatedOf } from './content.ts';
+import { contentProblems, countPending, OLD_ADDRESS, sourceUrlsOf, updatedOf } from './content.ts';
 import { SITE } from '../site.config.ts';
 import { pagesOf } from './files.ts';
 import {
@@ -948,5 +948,37 @@ describe('calculator page update date (calculator-page › [CP8] built side)', (
         .filter((entry) => entry.rule === 'updated')
         .map((entry) => entry.message),
     ).toEqual(['time datetime "2026-10-24" is not the entry date 2026-10-23 of en/concrete']);
+  });
+});
+
+describe('source links of a calculator entry (calculator-page › [CP8]; site-routing-i18n › [SR2])', () => {
+  const entry = [
+    '---',
+    'id: concrete',
+    'locale: en',
+    'updated: 2026-10-25',
+    'sources:',
+    '  - name: QUIKRETE',
+    '    url: https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+    '    retrieved: 2026-10-25',
+    '  - name: NIST',
+    '    url: "https://www.nist.gov/pml/special-publication-811"',
+    '    retrieved: 2026-10-25',
+    '---',
+    'url: https://example.com/in-the-body',
+    '',
+  ].join('\n');
+
+  it('reads the https urls of the frontmatter, quoted or not, in order', () => {
+    expect(sourceUrlsOf(entry)).toEqual([
+      'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+      'https://www.nist.gov/pml/special-publication-811',
+    ]);
+  });
+
+  it('reads nothing from a body, a missing frontmatter or an http url', () => {
+    expect(sourceUrlsOf('no frontmatter\nurl: https://example.com')).toEqual([]);
+    expect(sourceUrlsOf('---\nid: x\n---\nurl: https://example.com\n')).toEqual([]);
+    expect(sourceUrlsOf('---\nsources:\n  - url: http://example.com\n---\n')).toEqual([]);
   });
 });

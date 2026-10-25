@@ -2,9 +2,12 @@
 // Usage: node apps/web/scripts/check-site.ts [dist-directory]
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, resolve, sep } from 'node:path';
+import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
+import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
+import { CALCULATOR_PAGES } from '../src/routing/templates.ts';
 import { SITE } from '../src/site.config.ts';
 import {
   budgetSummary,
@@ -12,6 +15,7 @@ import {
   countPending,
   pageCount,
   pagesOf,
+  sourceUrlsOf,
   updatedOf,
 } from '../src/site-check/checks.ts';
 
@@ -48,16 +52,31 @@ const filesUnder = (directory: string): [string, string][] =>
       BINARY.has(extname(file)) ? '' : readFileSync(join(directory, file), 'utf8'),
     ]);
 
-const content = join(webRoot, 'src', 'content', 'pages');
-const entries = existsSync(content)
-  ? filesUnder(content).filter(([file]) => file.endsWith('.md'))
-  : [];
+/** The Markdown entries of a content collection, by path relative to the collection (`en/about.md`). */
+const collection = (name: string): [string, string][] => {
+  const directory = join(webRoot, 'src', 'content', name);
+  return existsSync(directory)
+    ? filesUnder(directory).filter(([file]) => file.endsWith('.md'))
+    : [];
+};
+
+const entries = collection('pages');
+const calculatorEntries = collection('calculators');
 // `en/about.md` becomes the key `en/about`; an entry without a readable date is left out.
 const updates = Object.fromEntries(
-  entries.flatMap(([file, text]) => {
+  [...entries, ...calculatorEntries].flatMap(([file, text]) => {
     const updated = updatedOf(text);
     return updated === undefined ? [] : [[file.replace(/\.md$/, ''), updated]];
   }),
+);
+// A calculator page may link the sources of its entry, in either locale, and nothing else outbound.
+const externalLinks = Object.fromEntries(
+  CALCULATOR_PAGES.map((id) => [
+    id,
+    calculatorEntries
+      .filter(([file]) => file.endsWith(`/${id}.md`))
+      .flatMap(([, text]) => sourceUrlsOf(text)),
+  ]),
 );
 
 const files = filesUnder(dist);
@@ -65,8 +84,10 @@ const built = new Map(files);
 const site = {
   routes: ROUTES,
   config: SITE,
-  catalogs: { en: enSite, es: esSite },
+  catalogs: { en: { ...enCommon, ...enSite }, es: { ...esCommon, ...esSite } },
   updates,
+  calculatorPages: CALCULATOR_PAGES,
+  externalLinks,
 };
 // What the text map cannot hold: every file's byte size and the bytes of each font.
 const buildBytes = {
@@ -86,8 +107,8 @@ if (problems.length > 0) {
 }
 
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
-for (const line of budgetSummary(pagesOf(built, ROUTES), buildBytes.sizes, built))
+for (const line of budgetSummary(pagesOf(built, ROUTES), buildBytes.sizes, built, site))
   console.log(line);
 console.log(
-  `pending ownerReview entries: ${String(countPending(entries.map(([, text]) => text)))}`,
+  `pending ownerReview entries: ${String(countPending([...entries, ...calculatorEntries].map(([, text]) => text)))}`,
 );

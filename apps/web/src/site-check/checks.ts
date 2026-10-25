@@ -10,7 +10,7 @@ import type { BuildBytes, Dist, Problem, Site } from './types.ts';
 
 export type { BuildBytes, Dist, Problem, Site } from './types.ts';
 export { budgetSummary } from './budgets.ts';
-export { countPending, updatedOf } from './content.ts';
+export { countPending, sourceUrlsOf, updatedOf } from './content.ts';
 export { expectedFiles, pageCount, pagesOf } from './files.ts';
 
 /** Every rule of `check:site` over a built `dist`, in the order the rules are documented. */
