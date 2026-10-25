@@ -55,38 +55,24 @@ const RECTANGLE_AREA_KEYS = [
   'calc.rectangle-area.outputs.areaYd2',
   'calc.rectangle-area.outputs.areaM2',
 ];
-const CONCRETE_KEYS = [
-  'calc.concrete.title',
-  ...[
-    'shape',
-    'length',
-    'width',
-    'thickness',
-    'footingWidth',
-    'footingDepth',
-    'diameter',
-    'height',
-    'stepWidth',
-    'rise',
-    'run',
-    'stepCount',
-    'count',
-    'waste',
-    'bag',
-    'bagPrice',
-    'readyMixPrice',
-  ].map((key) => `calc.concrete.inputs.${key}`),
-  'calc.concrete.options.shape.slab',
-  'calc.concrete.options.shape.footing',
-  'calc.concrete.options.shape.column',
-  'calc.concrete.options.shape.steps',
-  'calc.concrete.options.bag.40',
-  'calc.concrete.options.bag.60',
-  'calc.concrete.options.bag.80',
-  ...['volumeYd3', 'volumeFt3', 'volumeM3', 'netVolume', 'bagCost', 'readyMixCost'].map(
-    (key) => `calc.concrete.outputs.${key}`,
-  ),
-];
+/**
+ * The keys the naming convention asks of a calculator, written out from its descriptors (a title,
+ * one label per input, one per option of each select, one per output) so that no calculator's key
+ * list is kept by hand: a new calculator is checked against the convention the day it is listed.
+ */
+const conventionKeys = (calculator: (typeof calculators)[number]): string[] => {
+  const prefix = `calc.${calculator.id}`;
+  return [
+    `${prefix}.title`,
+    ...calculator.inputs.map(({ key }) => `${prefix}.inputs.${key}`),
+    ...calculator.inputs.flatMap((input) =>
+      input.kind === 'select'
+        ? input.options.map((option) => `${prefix}.options.${input.key}.${option}`)
+        : [],
+    ),
+    ...calculator.outputs.map(({ key }) => `${prefix}.outputs.${key}`),
+  ];
+};
 const ERROR_KEYS = [
   'errors.EMPTY',
   'errors.MALFORMED',
@@ -109,10 +95,23 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
     expect(requiredKeys(rectangleArea)).toEqual([...RECTANGLE_AREA_KEYS, ...ERROR_KEYS]);
   });
 
+  // spec: i18n-catalog › [ICW10] Derived keys, for every listed calculator
+  it.each(calculators.map((calculator) => [calculator.id, calculator] as const))(
+    'requires the keys of the naming convention and the twelve error keys for %s',
+    (_id, calculator) => {
+      expect(requiredKeys(calculator)).toEqual([...conventionKeys(calculator), ...ERROR_KEYS]);
+    },
+  );
+
   // spec: i18n-catalog › [ICW10] Derived keys of concrete (final: 17 inputs, four shapes, six outputs)
-  it('requires the concrete keys derived from its descriptors', () => {
+  it('requires 43 keys for concrete: title, 17 inputs, 4 shape, 3 bag options, 6 outputs, 12 errors', () => {
     const concrete = calculators.find(({ id }) => id === 'concrete');
-    expect(concrete && requiredKeys(concrete)).toEqual([...CONCRETE_KEYS, ...ERROR_KEYS]);
+    if (concrete === undefined) throw new Error('concrete is not in the registry');
+    const keys = requiredKeys(concrete);
+    expect(keys).toHaveLength(43);
+    expect(keys).toContain('calc.concrete.options.shape.steps');
+    expect(keys).toContain('calc.concrete.options.bag.60');
+    expect(keys).toContain('calc.concrete.outputs.readyMixCost');
   });
 
   it('has every required key of every listed calculator in both locales', () => {

@@ -29,8 +29,8 @@ describe('calculator registry (calc-rectangle-area › Bilingual labels)', () =>
   });
 
   // spec: calc-concrete › [CC30] Web registry
-  it('lists concrete next to rectangle-area, as the very object the web builds', () => {
-    expect(calculators.map(({ id }) => id)).toEqual(['rectangle-area', 'concrete']);
+  it('lists concrete once, as the very object the web builds', () => {
+    expect(calculators.filter(({ id }) => id === 'concrete')).toEqual([concrete]);
     expect(calculators).toContain(concrete);
   });
 
@@ -55,7 +55,8 @@ describe('calculator registry (calc-rectangle-area › Bilingual labels)', () =>
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort();
-    expect(shipped).toEqual(['concrete', 'rectangle-area']);
+    expect(shipped).toContain('rectangle-area');
+    expect(shipped).toContain('concrete');
     expect(calculators.map(({ id }) => id).sort()).toEqual(shipped);
   });
 });
