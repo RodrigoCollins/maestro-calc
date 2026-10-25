@@ -106,3 +106,7 @@ Changed lines from `git diff -M --numstat <previous tip>..<tip> -- . ':(exclude)
 All eight shards, one after the other, on the tip `a21055a` (no source change since the S5 runs): rational 202 killed + 7 timeout (209 mutants), units 219, format 409, calculator-define 460, calculator-run 153, url 286, calculators 193, data 160. Every shard 100.00, exit 0. Logs: `mut-final-<shard>.log` in the session scratchpad.
 
 G1.3 / GX1 to GX5 (push, CI, four reviewers, Judgment Day, PR against `main`): deferred to the orchestrator.
+
+## Owner decision: raise the JS budget (2026-10-25)
+
+After the S6 probe measured 28,457 B against 24,576 B, Rodrigo decided to raise the budgets: client entry graph at most 49,152 B (was 32,768), engine probe at most 40,960 B (was 24,576), leaving 8,192 B for page code; page weight stays 196,608 B. Core slimming is a recorded follow-up. Specs (site-quality, calculator-page), design.md ("Budget decision"), proposal D3, tasks.md and state.yaml were amended in one docs commit. The BLOCKED status of S6 above is superseded.
