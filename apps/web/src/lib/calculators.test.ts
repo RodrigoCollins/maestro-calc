@@ -1,5 +1,5 @@
 import { readdirSync } from 'node:fs';
-import { ft2, valueIn } from '@maestro-calc/core';
+import { ft2, valueIn, yd3 } from '@maestro-calc/core';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { createTranslator } from '@maestro-calc/i18n';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
@@ -7,6 +7,7 @@ import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from '../contract/root.ts';
 import { calculators } from './calculators.ts';
+import { concrete } from './concrete.ts';
 
 describe('web smoke (calc-rectangle-area › Web smoke import)', () => {
   // spec: Web smoke import [RA15, MW12]: the packages are consumed through their entry points
@@ -27,6 +28,22 @@ describe('calculator registry (calc-rectangle-area › Bilingual labels)', () =>
     expect(calculators).toContain(rectangleArea);
   });
 
+  // spec: calc-concrete › [CC30] Web registry
+  it('lists concrete next to rectangle-area, as the very object the web builds', () => {
+    expect(calculators.map(({ id }) => id)).toEqual(['rectangle-area', 'concrete']);
+    expect(calculators).toContain(concrete);
+  });
+
+  // spec: calc-concrete › [CC30] Web registry (S1 through the registry; the bags come with the cost slice)
+  it('computes the default slab through the registry: 44/27 cubic yards', () => {
+    const entry = calculators.find(({ id }) => id === 'concrete');
+    const result = entry?.run({});
+    if (!result?.ok) throw new Error('run failed');
+    const primary = result.value.outputs.find(({ key }) => key === 'volumeYd3');
+    expect(primary?.role).toBe('primary');
+    expect(primary && valueIn(primary.value as never, yd3).toString()).toBe('44/27');
+  });
+
   // design D7: a calculator that core ships but the site does not list would never be checked
   it('lists every calculator that core ships, once', () => {
     const shipped = readdirSync(fromRoot('packages/core/src/calculators'), {
@@ -35,7 +52,7 @@ describe('calculator registry (calc-rectangle-area › Bilingual labels)', () =>
       .filter((entry) => entry.isDirectory())
       .map((entry) => entry.name)
       .sort();
-    expect(shipped).toContain('rectangle-area');
+    expect(shipped).toEqual(['concrete', 'rectangle-area']);
     expect(calculators.map(({ id }) => id).sort()).toEqual(shipped);
   });
 });

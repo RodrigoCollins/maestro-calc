@@ -1,0 +1,32 @@
+import type { CatalogOf } from '../../translate.ts';
+import type { enConcrete } from '../en/concrete.ts';
+
+/** Labels of the `concrete` calculator, Spanish: the same keys as English. */
+export const esConcrete = {
+  'calc.concrete.title': 'Calculadora de Concreto',
+  'calc.concrete.inputs.shape': 'Forma',
+  'calc.concrete.inputs.length': 'Largo',
+  'calc.concrete.inputs.width': 'Ancho',
+  'calc.concrete.inputs.thickness': 'Espesor',
+  'calc.concrete.inputs.footingWidth': 'Ancho de la zapata',
+  'calc.concrete.inputs.footingDepth': 'Profundidad de la zapata',
+  'calc.concrete.inputs.diameter': 'Diámetro',
+  'calc.concrete.inputs.height': 'Altura',
+  'calc.concrete.inputs.stepWidth': 'Ancho de los escalones',
+  'calc.concrete.inputs.rise': 'Altura de cada escalón (rise)',
+  'calc.concrete.inputs.run': 'Profundidad de cada escalón (run)',
+  'calc.concrete.inputs.stepCount': 'Cantidad de escalones',
+  'calc.concrete.inputs.count': 'Cantidad de piezas',
+  'calc.concrete.inputs.waste': 'Extra por desperdicio (%)',
+  'calc.concrete.inputs.bag': 'Tamaño de la bolsa',
+  'calc.concrete.inputs.bagPrice': 'Precio por bolsa ($)',
+  'calc.concrete.inputs.readyMixPrice': 'Precio del premezclado por yarda cúbica ($)',
+  'calc.concrete.options.shape.slab': 'Losa',
+  'calc.concrete.options.bag.40': '40 lb',
+  'calc.concrete.options.bag.60': '60 lb',
+  'calc.concrete.options.bag.80': '80 lb',
+  'calc.concrete.outputs.volumeYd3': 'Concreto necesario (yardas cúbicas)',
+  'calc.concrete.outputs.volumeFt3': 'Concreto necesario (pies cúbicos)',
+  'calc.concrete.outputs.volumeM3': 'Concreto necesario (metros cúbicos)',
+  'calc.concrete.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
+} as const satisfies CatalogOf<typeof enConcrete>;

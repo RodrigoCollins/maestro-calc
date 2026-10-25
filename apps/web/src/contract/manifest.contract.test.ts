@@ -167,6 +167,7 @@ describe('test-support exports (monorepo-workspace, PR 12 review R1-3)', () => {
   it('lists the test-support subpaths one by one, with no wildcard', () => {
     expect(testingEntries('packages/core').map(([subpath]) => subpath)).toEqual([
       './testing/collect-strings',
+      './testing/concrete-yields',
       './testing/language-free',
       './testing/released-harness',
       './testing/released-snapshot',
