@@ -27,11 +27,22 @@ const shared = {
   optimizedFallbacks: true,
 };
 
+/**
+ * Astro inlines an import-free script chunk below `assetsInlineLimit` (4,096 B by default) into the
+ * page, which `script-src 'self'` forbids and the JavaScript budget cannot count. A function that
+ * returns `false` for `.js` keeps every script a file; `undefined` leaves CSS, SVG and the rest to
+ * the default limit.
+ * @param {string} file
+ * @returns {boolean | undefined}
+ */
+const assetsInlineLimit = (file) => (file.endsWith('.js') ? false : undefined);
+
 // https://astro.build/config
 export default defineConfig({
   site: SITE.url,
   trailingSlash: 'never',
   build: { format: 'file' },
+  vite: { build: { assetsInlineLimit } },
   fonts: [
     {
       ...shared,
