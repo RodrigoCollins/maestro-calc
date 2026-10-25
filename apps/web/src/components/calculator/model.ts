@@ -19,11 +19,10 @@ export interface Field {
   readonly placeholder?: string;
 }
 
-/** The fields of one shape; only the pressed shape is visible. */
-export interface ShapeGroup {
-  readonly id: string;
+/** A dimension input: held once in the page, shown when the pressed shape is one of `shapes`. */
+export interface ShapeField extends Field {
+  readonly shapes: readonly string[];
   readonly visible: boolean;
-  readonly fields: readonly Field[];
 }
 
 export interface FormView {
@@ -31,7 +30,8 @@ export interface FormView {
   readonly units: readonly Choice[];
   readonly shapeLabel: string;
   readonly shapes: readonly Choice[];
-  readonly groups: readonly ShapeGroup[];
+  /** Every dimension input once, in the one order of the form (`DIMENSION_ORDER`). */
+  readonly fields: readonly ShapeField[];
   readonly waste: Field & { readonly help: string; readonly less: string; readonly more: string };
   readonly bagLabel: string;
   readonly bags: readonly Choice[];

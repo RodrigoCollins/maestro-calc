@@ -9,27 +9,33 @@ const render = (locale: 'en' | 'es') =>
   renderComponent(CalculatorForm, { form: concreteView(locale).form });
 
 describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP12], [CP41] static)', () => {
-  // spec: calculator-page › [CP11] all four shape groups are in the HTML, only the slab is visible
-  it('holds the fields of each shape in the order of the spec, with only the slab visible', async () => {
+  // spec: calculator-page › [CP11] static: each input is in the HTML once, tagged with the shapes
+  // that show it, and only the slab fields are visible
+  it('holds each input once, tagged with its shapes, with only the slab visible', async () => {
     const root = await render('en');
-    const groups = root.querySelectorAll('[data-shape]');
-    expect(groups.map((group) => group.getAttribute('data-shape'))).toEqual([
-      'slab',
-      'footing',
-      'column',
-      'steps',
+    const rows = root
+      .querySelectorAll('[data-shapes]')
+      .map((row) => [
+        row.querySelector('input')?.getAttribute('name'),
+        row.getAttribute('data-shapes'),
+        row.hasAttribute('hidden'),
+      ]);
+    expect(rows).toEqual([
+      ['length', 'slab footing', false],
+      ['width', 'slab', false],
+      ['thickness', 'slab', false],
+      ['footingWidth', 'footing', true],
+      ['footingDepth', 'footing', true],
+      ['diameter', 'column', true],
+      ['height', 'column', true],
+      ['stepWidth', 'steps', true],
+      ['rise', 'steps', true],
+      ['run', 'steps', true],
+      ['stepCount', 'steps', true],
+      ['count', 'footing column', true],
     ]);
-    expect(groups.map((group) => group.hasAttribute('hidden'))).toEqual([false, true, true, true]);
-    expect(
-      groups.map((group) =>
-        group.querySelectorAll('input').map((input) => input.getAttribute('name')),
-      ),
-    ).toEqual([
-      ['length', 'width', 'thickness'],
-      ['length', 'footingWidth', 'footingDepth', 'count'],
-      ['diameter', 'height', 'count'],
-      ['stepWidth', 'rise', 'run', 'stepCount'],
-    ]);
+    const names = root.querySelectorAll('input').map((input) => input.getAttribute('name'));
+    expect(new Set(names).size).toBe(names.length);
   });
 
   // spec: calculator-page › Form controls: the default text of each input
@@ -88,7 +94,7 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     async (locale, catalog) => {
       const root = await render(locale);
       const inputs = root.querySelectorAll('input');
-      expect(inputs).toHaveLength(17);
+      expect(inputs).toHaveLength(15);
       for (const input of inputs) {
         const name = input.getAttribute('name') ?? '';
         const label = root.querySelector(`label[for="${input.getAttribute('id') ?? ''}"]`);

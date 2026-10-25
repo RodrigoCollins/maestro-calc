@@ -1,14 +1,13 @@
 ---
-import type { Choice, Field, FormView } from './model.ts';
+import type { Choice, FormView } from './model.ts';
 
 interface Props {
   form: FormView;
 }
 const { form } = Astro.props;
-const { unitsLabel, units, shapeLabel, shapes, groups, waste, bagLabel, bags, prices, copyLabel } =
+const { unitsLabel, units, shapeLabel, shapes, fields, waste, bagLabel, bags, prices, copyLabel } =
   form;
 const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' : 'false');
-const fieldId = (scope: string, field: Field) => `calc-${scope}-${field.key}`;
 ---
 
 <form class="calc-form" autocomplete="off" novalidate>
@@ -45,22 +44,17 @@ const fieldId = (scope: string, field: Field) => `calc-${scope}-${field.key}`;
     ))}
   </div>
   <div class="calc-shape-area" data-reserved="shape">
-    {groups.map(({ id, visible, fields }) => (
-      <div class="calc-fields" data-shape={id} hidden={!visible}>
-        {fields.map((field) => (
-          <div class="calc-field">
-            <label for={fieldId(id, field)}>{field.label}</label>
-            <input
-              id={fieldId(id, field)}
-              name={field.key}
-              type="text"
-              inputmode={field.mode}
-              autocomplete="off"
-              value={field.value}
-              disabled
-            />
-          </div>
-        ))}
+    {fields.map((field) => (
+      <div class="calc-field" data-shapes={field.shapes.join(' ')} hidden={!field.visible}>
+        <label for={`calc-${field.key}`}>{field.label}</label>
+        <input
+          id={`calc-${field.key}`}
+          name={field.key}
+          inputmode={field.mode}
+          autocomplete="off"
+          value={field.value}
+          disabled
+        />
       </div>
     ))}
   </div>
@@ -69,7 +63,6 @@ const fieldId = (scope: string, field: Field) => `calc-${scope}-${field.key}`;
     <input
       id="calc-waste"
       name={waste.key}
-      type="text"
       inputmode={waste.mode}
       autocomplete="off"
       value={waste.value}
@@ -103,11 +96,10 @@ const fieldId = (scope: string, field: Field) => `calc-${scope}-${field.key}`;
   </div>
   {prices.map((field) => (
     <div class="calc-field">
-      <label for={fieldId('price', field)}>{field.label}</label>
+      <label for={`calc-${field.key}`}>{field.label}</label>
       <input
-        id={fieldId('price', field)}
+        id={`calc-${field.key}`}
         name={field.key}
-        type="text"
         inputmode={field.mode}
         autocomplete="off"
         value={field.value}
