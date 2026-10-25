@@ -1,11 +1,21 @@
 import {
+  cm,
+  formatFeetInches,
+  inch,
+  m,
+  mm,
+  quantity,
   Rational,
   toCents,
   toDecimalParts,
+  usd,
   valueIn,
+  type InputDescriptor,
+  type LengthDescriptor,
   type Money,
   type Quantity,
   type Unit,
+  type UnitSystem,
 } from '@maestro-calc/core';
 
 /*
@@ -13,6 +23,15 @@ import {
  * and `.` marks decimals in both locales (no `Intl`), so the build-time render and the script write
  * the same strings. Words arrive as arguments (templates), never from a catalog.
  */
+
+type Length = Quantity<'length'>;
+
+/** The largest denominator of a feet-and-inches fraction (1/64 of an inch). */
+const FRACTION_LIMIT = 64n;
+/** `toDecimalParts` rounds to at most this many places. */
+const MAX_PLACES = 12;
+
+const METRIC_UNITS = { mm, cm, m } as const;
 
 /** `1234567` as `1,234,567`. */
 export const groupedInteger = (value: bigint): string =>
@@ -42,3 +61,120 @@ export const percentText = (percent: Rational): string =>
 /** Replaces each `{name}` of `template` that `values` holds; other placeholders stay. */
 export const fillMessage = (template: string, values: Readonly<Record<string, string>>): string =>
   template.replace(/\{(\w+)\}/g, (placeholder, name: string) => values[name] ?? placeholder);
+
+/** The decimal places of a fraction with this denominator, or `undefined` when it never terminates. */
+const placesOf = (denominator: bigint): number | undefined => {
+  let rest = denominator;
+  let twos = 0;
+  let fives = 0;
+  while (rest % 2n === 0n) {
+    rest /= 2n;
+    twos += 1;
+  }
+  while (rest % 5n === 0n) {
+    rest /= 5n;
+    fives += 1;
+  }
+  const places = Math.max(twos, fives);
+  return rest === 1n && places <= MAX_PLACES ? places : undefined;
+};
+
+/** `3 1/2`, `1/2` or `3`: whole inches with a reduced fraction. */
+const inchesPart = (whole: bigint, numerator: bigint, denominator: bigint): string => {
+  if (numerator === 0n) return String(whole);
+  const fraction = `${String(numerator)}/${String(denominator)}`;
+  return whole === 0n ? fraction : `${String(whole)} ${fraction}`;
+};
+
+interface UsStyle {
+  /** Total inches even above a foot (`16 in`), as a field with an inch unit shows them. */
+  readonly inchesOnly: boolean;
+  /** Group the feet (`1,000 ft`) for text the reader does not type back. */
+  readonly grouped: boolean;
+}
+
+/** A length as feet, inches and a fraction rounded to the nearest `1/denominator` of an inch. */
+const usText = (length: Length, denominator: number, { inchesOnly, grouped }: UsStyle): string => {
+  const { feet, inches, fraction } = formatFeetInches(length, { denominator }).parts;
+  const rest = (whole: bigint) => inchesPart(whole, fraction.numerator, fraction.denominator);
+  if (inchesOnly || feet === 0n) return `${rest(feet * 12n + inches)} in`;
+  const feetText = `${grouped ? groupedInteger(feet) : String(feet)} ft`;
+  return inches === 0n && fraction.numerator === 0n ? feetText : `${feetText} ${rest(inches)} in`;
+};
+
+/** The exact decimal of a length in `unit`, or `undefined` when it has none (or too many places). */
+const exactMetricText = (
+  length: Length,
+  unit: Unit<'length'>,
+  grouped: boolean,
+): string | undefined => {
+  const value = valueIn(length, unit);
+  const places = placesOf(value.den);
+  return places === undefined ? undefined : decimalText(value, places, grouped);
+};
+
+/**
+ * A length inside a sentence, rounded for display: US as `12 ft`, `4 in`, `12 ft 6 in`,
+ * `5 ft 3 1/2 in` (to 1/64 in); metric with two places, metres from one metre up, else centimetres.
+ * Lengths are never negative here (the engine bounds them at zero).
+ */
+export const dimensionText = (length: Length, system: UnitSystem): string => {
+  if (system === 'imperial') return usText(length, 64, { inchesOnly: false, grouped: true });
+  const metres = valueIn(length, m);
+  return metres.compare(Rational.ONE) === -1
+    ? `${decimalText(valueIn(length, cm), 2, true)} cm`
+    : `${decimalText(metres, 2, true)} m`;
+};
+
+/** What a length field needs to know about its descriptor to write its text. */
+export type LengthUnits = Pick<LengthDescriptor, 'defaultUnit' | 'metricDefaultUnit'>;
+
+/** The text of a length field or of its bound; only the bound groups thousands (`1,000 ft`). */
+const lengthText = (
+  length: Length,
+  units: LengthUnits,
+  system: UnitSystem,
+  grouped: boolean,
+): string => {
+  const inches = valueIn(length, inch);
+  if (system === 'metric') {
+    const unit = METRIC_UNITS[units.metricDefaultUnit];
+    const decimal = exactMetricText(length, unit, grouped);
+    if (decimal !== undefined) return `${decimal} ${unit.id}`;
+  } else if (inches.den <= FRACTION_LIMIT) {
+    const inchesOnly = units.defaultUnit === 'in';
+    if (inches.isZero()) return inchesOnly ? '0 in' : '0 ft';
+    const denominator = inches.den < 2n ? 2 : Number(inches.den);
+    return usText(length, denominator, { inchesOnly, grouped });
+  }
+  // no US fraction and no metric decimal: the exact inches, which is never a whole number here
+  return `${String(inches.num)}/${String(inches.den)} in`;
+};
+
+/**
+ * The text of a length field: exact, so that parsing it gives the same length back. US is feet and
+ * inches with a fraction of denominator 64 at most when that is exact (`12 ft 6 in`; `16 in` in a
+ * field whose unit is inches), else exact inches (`20000/127 in`). Metric is the exact decimal in
+ * the field's metric unit (`3.6576 m`), else exact inches (`127/3 in`).
+ */
+export const fieldText = (length: Length, units: LengthUnits, system: UnitSystem): string =>
+  lengthText(length, units, system, false);
+
+/** A violated bound (`min` or `max`, a canonical Rational string) in the unit of its field. */
+export const boundText = (field: InputDescriptor, bound: string, system: UnitSystem): string => {
+  const parsed = Rational.fromString(bound);
+  if (!parsed.ok) throw new TypeError(`not a bound: ${bound}`);
+  const value = parsed.value;
+  switch (field.kind) {
+    case 'length':
+      return lengthText(quantity(value, inch), field, system, true);
+    case 'percent':
+      return `${percentText(value)}%`;
+    case 'count':
+      return groupedInteger(value.num);
+    case 'money':
+      return moneyText(usd(value));
+    default:
+      throw new TypeError(`${field.kind} has no bounds`);
+  }
+};
