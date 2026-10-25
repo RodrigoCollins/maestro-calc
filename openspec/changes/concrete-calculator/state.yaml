@@ -1,0 +1,17 @@
+change: concrete-calculator
+artifact_store: openspec
+execution_mode: auto
+delivery_strategy: auto-chain
+chain_strategy: stacked-to-main
+review_budget_lines: 400
+pr_grouping: one PR per group of slices (owner decision, saves CI minutes and deploys)
+phases:
+  explore: skipped  # context gathered directly by the propose phase (PLAN.md, AGENTS.md recipe, specs, web-shell design and follow-ups, mockup)
+  propose: done  # D1-D14 recorded; 10 slices in 3 PR groups, ~3,300 lines forecast; owner actions OA1-OA4
+  spec: done  # 10 capabilities (3 new, 7 modified), 180 scenarios; yields sourced (QUIKRETE 1101 data sheet, retrieved 2026-10-25), OA1 reduced to acknowledging the source
+  design: done  # reconciled with specs (R1-R12); design review round 1 applied (DR-1..DR-18, specs amended); 17 review units in 3 PRs (G1 engine S1-S6, G2 unrouted page parts S7-S10, G3 go-live S11a-S13b), ~5,210 lines
+  tasks: done  # 160 tasks in 17 review units / 3 group PRs (~5,190 lines); S3 cut = judge's (S3a ~380 / S3b ~300); 186 id'd scenarios + 6 unnamed all mapped; S9 and S10 have named split contingencies
+  apply: pending
+  verify: pending
+  archive: pending
+updated: 2026-10-25
