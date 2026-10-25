@@ -109,7 +109,7 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
     expect(requiredKeys(rectangleArea)).toEqual([...RECTANGLE_AREA_KEYS, ...ERROR_KEYS]);
   });
 
-  // spec: i18n-catalog › [ICW10] Derived keys of concrete (partial: one shape, four outputs)
+  // spec: i18n-catalog › [ICW10] Derived keys of concrete (final: 17 inputs, four shapes, six outputs)
   it('requires the concrete keys derived from its descriptors', () => {
     const concrete = calculators.find(({ id }) => id === 'concrete');
     expect(concrete && requiredKeys(concrete)).toEqual([...CONCRETE_KEYS, ...ERROR_KEYS]);
