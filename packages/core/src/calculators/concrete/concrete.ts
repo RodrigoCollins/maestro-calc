@@ -53,8 +53,13 @@ const stepsVolume = (
   rise: Length,
   run: Length,
   stepCount: number,
-): Quantity<'volume'> =>
-  scale(multiply(multiply(stepWidth, run), rise), Rational.of((stepCount * (stepCount + 1)) / 2));
+): Quantity<'volume'> => {
+  const steps = Rational.of(stepCount);
+  return scale(
+    multiply(multiply(stepWidth, run), rise),
+    steps.mul(steps.add(Rational.ONE)).div(TWO),
+  );
+};
 
 /** The fields `netVolumeOf` reads, by the shape that uses them. */
 interface Dimensions {
