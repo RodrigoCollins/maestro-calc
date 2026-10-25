@@ -1,12 +1,12 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { CONCRETE_YIELDS } from '../../__testing__/concrete-yields.ts';
+import { concreteStateArb } from '../../__testing__/concrete-arbitraries.ts';
 import { numRuns } from '../../__testing__/property-runs.ts';
 import type { ShoppingLine } from '../../calculator/descriptors.ts';
-import { usd } from '../../money/money.ts';
 import { Rational } from '../../rational/rational.ts';
-import { ft3, in3, inch, yd3 } from '../../units/catalog.ts';
-import { isQuantityOf, quantity, valueIn, type Quantity } from '../../units/quantity.ts';
+import { ft3, in3, yd3 } from '../../units/catalog.ts';
+import { isQuantityOf, valueIn } from '../../units/quantity.ts';
 import type { Unit } from '../../units/unit.ts';
 import { createConcrete } from './index.ts';
 
@@ -14,38 +14,6 @@ const concrete = createConcrete(CONCRETE_YIELDS);
 
 /** The state `compute` takes: a validated record of the 17 inputs. */
 type State = Parameters<typeof concrete.compute>[0];
-
-/** A length in inches between 0 and `max`, with a small denominator (halves up to eighths). */
-const inches = (max: number): fc.Arbitrary<Quantity<'length'>> =>
-  fc
-    .integer({ min: 1, max: 8 })
-    .chain((den) =>
-      fc
-        .bigInt({ min: 0n, max: BigInt(max) * BigInt(den) })
-        .map((num) => quantity(Rational.of(num, BigInt(den)), inch)),
-    );
-
-const cents = fc.integer({ min: 0, max: 1_000_000 }).map((value) => usd(Rational.of(value, 100)));
-
-const stateArb: fc.Arbitrary<State> = fc.record({
-  shape: fc.constantFrom('slab', 'footing', 'column', 'steps'),
-  length: inches(12000),
-  width: inches(12000),
-  thickness: inches(120),
-  footingWidth: inches(120),
-  footingDepth: inches(120),
-  diameter: inches(240),
-  height: inches(1200),
-  stepWidth: inches(1200),
-  rise: inches(60),
-  run: inches(60),
-  stepCount: fc.integer({ min: 0, max: 50 }),
-  count: fc.integer({ min: 1, max: 1000 }),
-  waste: fc.integer({ min: 0, max: 500 }).map((tenths) => Rational.of(tenths, 10)),
-  bag: fc.constantFrom('40', '60', '80'),
-  bagPrice: cents,
-  readyMixPrice: cents,
-});
 
 const volumeIn = (value: unknown, unit: Unit<'volume'>): Rational => {
   if (!isQuantityOf(value, 'volume')) throw new Error('not a volume');
@@ -94,7 +62,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P1 waste is applied to the net volume
   it('P1: the total is the net volume times 1 plus waste over 100', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { net, total } = run(state);
         expect(total).toEqual(net.mul(Rational.ONE.add(state.waste.div(Rational.of(100)))));
       }),
@@ -105,7 +73,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P2 27 cubic feet to the cubic yard
   it('P2: cubic yards times 27 is cubic feet', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { result, total } = run(state);
         expect(volumeIn(result.outputs.volumeYd3, yd3).mul(Rational.of(27))).toEqual(total);
       }),
@@ -116,7 +84,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P3 the bag count is the smallest that covers the volume
   it('P3: the bags cover the volume and one fewer would not', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { total, qty } = run(state);
         const bagYield = volumeIn(CONCRETE_YIELDS[`bag-${state.bag}`], ft3);
         expect(Rational.of(qty).mul(bagYield).compare(total)).not.toBe(-1);
@@ -135,7 +103,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P4 more waste never buys fewer bags; a bigger bag never more
   it('P4: bags never decrease with waste and never increase with the bag size', () => {
     fc.assert(
-      fc.property(stateArb, fc.integer({ min: 0, max: 500 }), (state, tenths) => {
+      fc.property(concreteStateArb, fc.integer({ min: 0, max: 500 }), (state, tenths) => {
         const more = { ...state, waste: state.waste.add(Rational.of(tenths, 10)) };
         fc.pre(more.waste.compare(Rational.of(50)) !== 1);
         expect(run(more).qty).toBeGreaterThanOrEqual(run(state).qty);
@@ -151,7 +119,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   it('P5: k times m pieces is k times the volume of m pieces', () => {
     fc.assert(
       fc.property(
-        stateArb,
+        concreteStateArb,
         fc.constantFrom('footing', 'column'),
         fc.integer({ min: 1, max: 30 }),
         fc.integer({ min: 1, max: 30 }),
@@ -168,7 +136,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P6 a slab is symmetric in length and width
   it('P6: swapping the length and the width of a slab changes no output', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const slab = { ...state, shape: 'slab' } as const;
         const swapped = { ...slab, length: slab.width, width: slab.length };
         expect(concrete.compute(swapped)).toEqual(concrete.compute(slab));
@@ -180,7 +148,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P7 the steps are the sum of full-height blocks
   it('P7: the steps volume is the sum of the blocks of k times the rise', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const steps = { ...state, shape: 'steps' } as const;
         const blocks = Array.from({ length: steps.stepCount }, (_, index) =>
           steps.stepWidth.canonical
@@ -196,7 +164,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P8 the fields a shape does not use do not matter
   it('P8: replacing the unused fields changes no output', () => {
     fc.assert(
-      fc.property(stateArb, stateArb, (state, other) => {
+      fc.property(concreteStateArb, concreteStateArb, (state, other) => {
         const used: readonly string[] = USED[state.shape];
         const swapped: State = { ...state };
         for (const field of DIMENSION_FIELDS) {
@@ -211,7 +179,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P9 nothing is negative
   it('P9: volumes and costs are never negative', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { outputs } = concrete.compute(state);
         for (const volume of [outputs.volumeYd3, outputs.volumeFt3, outputs.volumeM3]) {
           expect(volume.canonical.sign()).not.toBe(-1);
@@ -227,7 +195,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
   // spec: calc-concrete › [CC25] P10 the ready-mix cost is the price per cubic yard times the cubic yards
   it('P10: the ready-mix cost is the price times the cubic yards', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { outputs } = concrete.compute(state);
         expect(outputs.readyMixCost.amount).toEqual(
           state.readyMixPrice.amount.mul(volumeIn(outputs.volumeYd3, yd3)),
@@ -239,7 +207,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
 
   it('P11: the bag cost is the bag price times the bags', () => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const { result, qty } = run(state);
         expect(result.outputs.bagCost.amount).toEqual(state.bagPrice.amount.mul(Rational.of(qty)));
       }),

@@ -1,12 +1,9 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { CONCRETE_YIELDS } from '../../__testing__/concrete-yields.ts';
+import { concreteStateArb } from '../../__testing__/concrete-arbitraries.ts';
 import { numRuns } from '../../__testing__/property-runs.ts';
 import type { ValidateOptions } from '../../calculator/descriptors.ts';
-import { usd } from '../../money/money.ts';
-import { Rational } from '../../rational/rational.ts';
-import { inch } from '../../units/catalog.ts';
-import { quantity } from '../../units/quantity.ts';
 import { decode, encode } from '../../url/codec.ts';
 import { createConcrete } from './index.ts';
 
@@ -61,42 +58,10 @@ describe('concrete url state (calc-concrete › Shareable state)', () => {
   });
 });
 
-/** A length in inches up to `max`, with a small denominator. */
-const inches = (max: number) =>
-  fc
-    .integer({ min: 1, max: 8 })
-    .chain((den) =>
-      fc
-        .bigInt({ min: 0n, max: BigInt(max) * BigInt(den) })
-        .map((num) => quantity(Rational.of(num, BigInt(den)), inch)),
-    );
-
-const cents = fc.integer({ min: 0, max: 1_000_000 }).map((value) => usd(Rational.of(value, 100)));
-
-const stateArb = fc.record({
-  shape: fc.constantFrom('slab', 'footing', 'column', 'steps'),
-  length: inches(12000),
-  width: inches(12000),
-  thickness: inches(120),
-  footingWidth: inches(120),
-  footingDepth: inches(120),
-  diameter: inches(240),
-  height: inches(1200),
-  stepWidth: inches(1200),
-  rise: inches(60),
-  run: inches(60),
-  stepCount: fc.integer({ min: 0, max: 50 }),
-  count: fc.integer({ min: 1, max: 1000 }),
-  waste: fc.integer({ min: 0, max: 500 }).map((tenths) => Rational.of(tenths, 10)),
-  bag: fc.constantFrom('40', '60', '80'),
-  bagPrice: cents,
-  readyMixPrice: cents,
-});
-
 describe('concrete url round trip (calc-concrete › [CC29] Round trip)', () => {
   it.each(['imperial', 'metric'] as const)('decodes what it encoded, in %s', (unitSystem) => {
     fc.assert(
-      fc.property(stateArb, (state) => {
+      fc.property(concreteStateArb, (state) => {
         const query = encode(concrete, state, { unitSystem });
         expect(decode(concrete, query)).toEqual({ state, unitSystem, issues: [] });
       }),

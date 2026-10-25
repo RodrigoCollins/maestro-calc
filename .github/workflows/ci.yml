@@ -209,6 +209,7 @@ jobs:
               packages/core/stryker.config.mjs
               packages/core/vitest.config.ts
               packages/core/src/url/**
+              packages/core/src/__testing__/concrete-arbitraries.ts
               packages/core/src/__testing__/concrete-yields.ts
               packages/core/src/__testing__/released-snapshot.ts
               packages/core/src/calculators/**
