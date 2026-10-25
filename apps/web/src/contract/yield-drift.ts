@@ -1,20 +1,14 @@
 import { ft3, type DimensionName, type Quantity } from '@maestro-calc/core';
 import type { MaterialRecord } from '@maestro-calc/data';
 
-/** The bag yields by bag size in pounds, as three sides name them. */
+/** The bag yields by purchase unit id (`bag-<pounds>`), as three sides name them. */
 export type SizedYields = Readonly<Record<string, Quantity<DimensionName>>>;
 
-const EXPECTED = { '40': '3/10', '60': '9/20', '80': '3/5' } as const;
+const EXPECTED = { 'bag-40': '3/10', 'bag-60': '9/20', 'bag-80': '3/5' } as const;
 
-const bagSize = (id: string): string => id.replace(/^bag-/, '');
-
-/** The purchase unit sizes of a material record by bag size (`bag-80` to `80`). */
+/** The purchase unit sizes of a material record by purchase unit id. */
 export const yieldsOfRecord = (record: MaterialRecord): SizedYields =>
-  Object.fromEntries(record.purchaseUnits.map(({ id, size }) => [bagSize(id), size]));
-
-/** The yields-only module's record by bag size (`bag-80` to `80`). */
-export const yieldsOfSubpath = (yields: SizedYields): SizedYields =>
-  Object.fromEntries(Object.entries(yields).map(([id, size]) => [bagSize(id), size]));
+  Object.fromEntries(record.purchaseUnits.map(({ id, size }) => [id, size]));
 
 /** True for a volume: the exponent vector of `length^3`. */
 const isVolume = ({ exponents }: Quantity<DimensionName>): boolean =>

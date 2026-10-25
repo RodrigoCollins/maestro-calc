@@ -118,7 +118,7 @@ describe('concrete properties (calc-concrete › Consistency properties)', () =>
     fc.assert(
       fc.property(stateArb, (state) => {
         const { total, qty } = run(state);
-        const bagYield = volumeIn(CONCRETE_YIELDS[state.bag], ft3);
+        const bagYield = volumeIn(CONCRETE_YIELDS[`bag-${state.bag}`], ft3);
         expect(Rational.of(qty).mul(bagYield).compare(total)).not.toBe(-1);
         if (qty > 0n) {
           expect(
