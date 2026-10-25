@@ -156,3 +156,43 @@ Both blind judges returned **APPROVED** on `477fb75..c574bdf` (no CRITICAL or MA
 - **JD-1 (A, B)**: `createConcrete` keeps the caller's yields object after validating it; snapshot the three validated volumes into a frozen local record and turn a `null`/non-object argument into `BAG_YIELDS`, with tests.
 - **JD-2 (A, B)**: hand-kept per-calculator lists (`calculators.test.ts` id literals, the concrete key literal in `i18n-contract.test.ts`, `MaterialKeys<typeof concreteMix>`, the `testing/*` fixture exports, the `calculators` shard `deps`, the CI inputs and the manifest list) contradict "Nothing else is kept by hand"; derive what can be derived (directory listing, `requiredKeys`, a `src/__testing__/*-yields.ts` glob) and document the rest in the AGENTS.md factory recipe (G3 S12).
 - **JD-3 (B)**: property tests P1, P2 and P10 mirror the implementation; add one independent oracle (a bigint-only integer slab computation).
+
+---
+
+# Apply progress: concrete-calculator (G2 unrouted page parts)
+
+Branch `feat/concrete-g2-page-parts` (created from `main` `1691d83`, which contains merged G1; all G2 slices are work-unit commits on this one branch, no push, no PR). Strict TDD. Invariant (DR-5): nothing in G2 routes the page; `concrete` stays in `PAGELESS`.
+
+## G2 status
+
+| Slice | Status | Tip | Tests after `verify` | Changed lines (forecast) |
+|---|---|---|---|---|
+| JD-1 snapshot of the yields | done | `fdd80f9` | 2,547 (after JD-3) | see JD |
+| JD-2 derived lists | done | `05f1bf1` | 2,547 | see JD |
+| JD-3 bigint slab oracle | done | `38f5027` | 2,547 | see JD |
+| JD total | done | `05f1bf1` | 2,547 | 229 |
+| S7 presenter and copy | done (four commits, each at most 400) | `ff198ce` | 2,694 | 1,162 (~400): 123 + 333 + 399 + 307 |
+
+## G1 Judgment Day follow-ups (done first, own commits)
+
+- **JD-1** (`fdd80f9`): `createConcrete` snapshots the three validated volumes (read once each, `Object.freeze`) and a `null`, `undefined` or non-object argument throws `BAG_YIELDS`. Tests: null, undefined, number, string, an inherited key beside an own extra key, a post-validation mutation and a getter that returns a different value on its second read (`reads` is 1). RED seen: 4 failed (null, undefined, mutation, getter). Mutation `calculators` shard: 183 mutants, 100.00 (concrete.ts 144).
+- **JD-3** (`38f5027`): property P12 in `concrete.property.test.ts`: slab in eighths of an inch, waste in tenths, bag yields written as 2592/5, 3888/5, 5184/5 in3, all `bigint`; checks the total volume (cross-multiplied against `num/den`) and the bags with an integer ceiling. Spot check: waste divisor `HUNDRED` changed to 101 fails P1 and P12 (reverted).
+- **JD-2** (`05f1bf1`): derived what can be derived: `calculators.test.ts` no longer lists the ids (concrete once, the directory listing equals the registry); the ICW10 test derives the convention keys from every calculator's descriptors (`conventionKeys`) and pins only the spec count 43 for concrete; the `calculators` shard `deps` and the CI inputs name the per-calculator test support by pattern (`src/__testing__/*-arbitraries.ts`, `*-yields.ts`), with a new contract that the globs match the files, that the shard holds them and no other shard does, and that no dep names a calculator. Mutation `calculators` after the config change: 183 mutants, 100.00.
+- **Left by hand, for the AGENTS.md recipe (G3 S12)**: (1) the English module imports in `apps/web/src/lib/i18n-contract.test-d.ts` (`EnglishKeys`; a type cannot read a directory), plus its `MaterialKeys<typeof concreteMix>` union and the new `ConcretePageKeys` union; (2) the `./testing/<name>` subpath in `packages/core/package.json` and the explicit list in `manifest.contract.test.ts` (deliberately no wildcard, PR 12 review R1-3); (3) `RELEASED` and `REGISTRY` (append-only by design); (4) `released-snapshot.ts` in the shard deps (one file for all calculators); (5) the web `calculators.ts` list.
+
+## S7: presenter and catalog copy
+
+Commits (work-unit split inside the S7a/S7b contingency, because the presenter with its tests is 867 lines): `ab2d2f6` number and money text (123), `0f146b6` length, field and bound text with the round-trip property (333), `17875b1` figures and answer values (399), `ff198ce` i18n page copy and `site.calculator.*` (307). Each commit is green.
+
+- Scenarios proven: CP1/CP2/CP3 values (default figures through the engine), CP15 order, CP16 (`$481.00`, `$244.44`), CP18 (`2.72`, `$407.41`), CP19 to CP22 table (10 rows through the engine), CP24 engine side, CP31 bound formatting (`1,000 ft`, `50%`, `1,000`, `$10,000.00`, metric `304.8 m`), CP33 text and sentences, CP34 codec side (`l=20000/127&w=15000/127&t=500/127`), CP50 round trips (three properties, 1,000 runs each, both unit systems, both directions); ICW11, ICW12 (page rows included), ICW13 (placeholders, openings, endings), ICW17 (eleven keys), ICW18 (the `concrete` module and `site.calculator.*` are scanned, with a seeded `Elegí` that is reported).
+- `apps/web/src/calculator/**` is covered at 100 (`coverage.contract.test.ts` first, then `vitest.config.ts`).
+- Negative proofs (run, reverted): grouping `,` swapped for `.` (12 tests fail); `moneyText` rounding down (3 fail); `{bags}` removed from the ES footing sentence (5 fail across catalog and web completeness); `Ingrese` in `site.calculator.copyFailed` (3 fail: register and catalog).
+- `rg -n "from '@maestro-calc/i18n'" apps/web/src/calculator` is empty.
+
+### Deviations (S7)
+
+- API names are the design's own (the tasks give no signatures): `figuresOf(state, result, yields, system)` takes the state and the bag yields, returns texts, cost visibility and the volume order (not a filled sentence; the caller does `fillMessage(template, { yield: figures.bagYield })`); `answerValues(state, result, system, templates)`; `fieldText(length, { defaultUnit, metricDefaultUnit }, system)`; `boundText(descriptor, bound, system)`.
+- `dimensionText` depends on the value only (US `1 ft 4 in` for 16 in, 1/64 rounding; metric metres from 1 m else centimetres), while `fieldText` depends on the field's default unit (`16 in` in an inch field, `12 ft 6 in` in a foot field). So the footing sentence reads `1 ft 4 in` where the field reads `16 in`.
+- Footing, column and steps sentences are authored (no plural form needed): `Footing ({length} long, {width} wide, {depth} deep, count {count}): ...`, `Column ({diameter} diameter, {height} tall, count {count}): ...`, `Steps (count {stepCount}, {stepWidth} wide, {rise} rise, {run} run): ...` and the Spanish counterparts. They are copy for the owner to review.
+- The ICW10 web test now derives the convention keys per calculator instead of listing 43 literals (JD-2), and `extraKeys` allows `calc.<id>.page.*` of that calculator.
+- Size: forecast 400, actual 1,162; the group PR is above 400 by the owner's decision, the unit of review is the commit (all at most 400).
