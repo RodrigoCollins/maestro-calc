@@ -23,7 +23,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...assetProblems(pages, dist, site),
     ...contentProblems(pages, site, dist),
     ...factProblems(site, dist),
-    ...budgetProblems(pages, buildBytes.sizes, dist),
+    ...budgetProblems(pages, buildBytes.sizes, dist, site),
     ...glyphProblems(buildBytes.fonts),
   ];
 };

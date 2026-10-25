@@ -1,6 +1,8 @@
+import { scriptRootsOf } from './assets.ts';
 import { attrsOf, urlsIn } from './dom.ts';
-import { problem } from './types.ts';
-import type { BuildBytes, Dist, Page, Problem } from './types.ts';
+import { graphOf } from './graph.ts';
+import { isCalculatorPage, problem } from './types.ts';
+import type { BuildBytes, Dist, Page, Problem, Site } from './types.ts';
 
 /** The byte size of every file under `dist`, by posix path (text and binary alike). */
 export type Sizes = BuildBytes['sizes'];
@@ -14,6 +16,15 @@ export const LIMITS = {
   js: 0,
   weight: 163_840,
 } as const;
+
+/**
+ * The calculator template's own ceilings (site-quality › Byte budgets): the JavaScript of a page is
+ * its entry, its module preloads and their static imports, and it counts toward the page weight.
+ */
+export const CALCULATOR_LIMITS = { js: 49_152, weight: 196_608 } as const;
+
+/** What the budget rules need to know of the site: which pages are calculator pages. */
+type Templates = Pick<Site, 'calculatorPages'>;
 
 const DIST = '(dist)';
 const JS_FILE = /\.m?js$/;
@@ -36,12 +47,16 @@ interface Measure {
   readonly html: number;
   /** Inline `<style>` text plus every linked stylesheet. */
   readonly css: number;
+  /** The script files a static page references (the budget is zero). */
   readonly scripts: readonly string[];
-  /** The HTML plus the linked CSS, fonts (referenced by CSS or preloaded) and favicon a visitor downloads. */
+  /** The entry file of a calculator page, if any, and the bytes of its whole JavaScript graph. */
+  readonly entry: string | undefined;
+  readonly js: number;
+  /** The HTML plus the linked CSS, fonts (referenced by CSS or preloaded), favicon and JavaScript a visitor downloads. */
   readonly weight: number;
 }
 
-const measure = (page: Page, sizes: Sizes, dist: Dist): Measure => {
+const measure = (page: Page, sizes: Sizes, dist: Dist, calculator: boolean): Measure => {
   const size = (file: string): number => sizeOf(sizes, file);
   const html = size(page.file);
   const inline = page.root.querySelectorAll('style').map((style) => style.text);
@@ -59,11 +74,15 @@ const measure = (page: Page, sizes: Sizes, dist: Dist): Measure => {
     ...attrsOf(page.root, 'link[href]', 'href'),
   ]).filter((file) => JS_FILE.test(file));
   const linkedBytes = sum(linked.map(size));
+  const roots = calculator ? scriptRootsOf(page) : [];
+  const js = sum(graphOf(roots, dist).map(size));
   return {
     html,
     css: sum(inline.map((text) => new TextEncoder().encode(text).length)) + linkedBytes,
-    scripts,
-    weight: html + linkedBytes + sum([...fonts].map(size)) + sum(icons.map(size)),
+    scripts: calculator ? [] : scripts,
+    entry: roots[0],
+    js,
+    weight: html + linkedBytes + sum([...fonts].map(size)) + sum(icons.map(size)) + js,
   };
 };
 
@@ -77,12 +96,19 @@ const over = (what: string, bytes: number, limit: number): string =>
   `${fmt(bytes)} B${what} exceeds the limit of ${fmt(limit)} B`;
 
 /** Pages, fonts and scripts over their byte budget, each named with its limit. */
-export const budgetProblems = (pages: readonly Page[], sizes: Sizes, dist: Dist): Problem[] => {
+export const budgetProblems = (
+  pages: readonly Page[],
+  sizes: Sizes,
+  dist: Dist,
+  site: Templates = {},
+): Problem[] => {
   const fonts = fontFiles(sizes);
   const fontTotal = sum(fonts.map((file) => sizeOf(sizes, file)));
   return [
     ...pages.flatMap((page) => {
-      const { html, css, scripts, weight } = measure(page, sizes, dist);
+      const calculator = isCalculatorPage(page, site);
+      const { html, css, scripts, entry, js, weight } = measure(page, sizes, dist, calculator);
+      const weightLimit = calculator ? CALCULATOR_LIMITS.weight : LIMITS.weight;
       return [
         ...(html > LIMITS.html
           ? [problem(page.file, 'html-budget', over(PLAIN, html, LIMITS.html))]
@@ -97,8 +123,17 @@ export const budgetProblems = (pages: readonly Page[], sizes: Sizes, dist: Dist)
             `/${file} (${fmt(sizeOf(sizes, file))} B) is JavaScript, and the budget is ${fmt(LIMITS.js)} B`,
           ),
         ),
-        ...(weight > LIMITS.weight
-          ? [problem(page.file, 'weight-budget', over(PLAIN, weight, LIMITS.weight))]
+        ...(js > CALCULATOR_LIMITS.js
+          ? [
+              problem(
+                page.file,
+                'js-budget',
+                `/${String(entry)} and its imports weigh ${fmt(js)} B, and the budget is ${fmt(CALCULATOR_LIMITS.js)} B`,
+              ),
+            ]
+          : []),
+        ...(weight > weightLimit
+          ? [problem(page.file, 'weight-budget', over(PLAIN, weight, weightLimit))]
           : []),
       ];
     }),
@@ -125,18 +160,27 @@ const largest = (
 };
 
 /** One line per category with the largest page or file and its size (site-quality › [SQ6]). */
-export const budgetSummary = (pages: readonly Page[], sizes: Sizes, dist: Dist): string[] => {
-  const measures = pages.map((page) => [page.file, measure(page, sizes, dist)] as const);
+export const budgetSummary = (
+  pages: readonly Page[],
+  sizes: Sizes,
+  dist: Dist,
+  site: Templates = {},
+): string[] => {
+  const measures = pages.map(
+    (page) => [page, measure(page, sizes, dist, isCalculatorPage(page, site))] as const,
+  );
+  const statics = measures.filter(([page]) => !isCalculatorPage(page, site));
+  const calculators = measures.filter(([page]) => isCalculatorPage(page, site));
   const fonts = fontFiles(sizes);
   return [
     largest(
       'html',
-      measures.map(([file, m]) => [file, m.html]),
+      measures.map(([page, m]) => [page.file, m.html]),
       LIMITS.html,
     ),
     largest(
       'css',
-      measures.map(([file, m]) => [file, m.css]),
+      measures.map(([page, m]) => [page.file, m.css]),
       LIMITS.css,
     ),
     largest(
@@ -145,11 +189,25 @@ export const budgetSummary = (pages: readonly Page[], sizes: Sizes, dist: Dist):
       LIMITS.font,
     ),
     `budget fonts: total ${fmt(sum(fonts.map((file) => sizeOf(sizes, file))))} B in ${String(fonts.length)} files (limit ${fmt(LIMITS.fonts)})`,
-    `budget js: ${fmt(sum(measures.flatMap(([, m]) => m.scripts.map((file) => sizeOf(sizes, file)))))} B referenced (limit ${fmt(LIMITS.js)})`,
+    `budget js: ${fmt(sum(statics.flatMap(([, m]) => m.scripts.map((file) => sizeOf(sizes, file)))))} B referenced (limit ${fmt(LIMITS.js)})`,
     largest(
       'weight',
-      measures.map(([file, m]) => [file, m.weight]),
+      statics.map(([page, m]) => [page.file, m.weight]),
       LIMITS.weight,
     ),
+    ...(calculators.length === 0
+      ? []
+      : [
+          largest(
+            'js (calculator)',
+            calculators.map(([page, m]) => [page.file, m.js]),
+            CALCULATOR_LIMITS.js,
+          ),
+          largest(
+            'weight (calculator)',
+            calculators.map(([page, m]) => [page.file, m.weight]),
+            CALCULATOR_LIMITS.weight,
+          ),
+        ]),
   ];
 };
