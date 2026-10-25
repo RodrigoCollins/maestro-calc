@@ -125,7 +125,12 @@ export const shards = {
   calculators: {
     mutate: ['src/calculators/**'],
     tests: ['src/calculators', 'src/index.test.ts'],
-    deps: [...kernel, 'src/__testing__/concrete-yields.ts', 'src/__testing__/released-snapshot.ts'],
+    deps: [
+      ...kernel,
+      'src/__testing__/concrete-arbitraries.ts',
+      'src/__testing__/concrete-yields.ts',
+      'src/__testing__/released-snapshot.ts',
+    ],
   },
 };
 
