@@ -6,7 +6,7 @@ import { calculatorSchema } from '../content/schema.ts';
 import { faqOf } from '../content/faq.ts';
 import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
 import { concrete } from '../lib/concrete.ts';
-import { concreteView } from '../lib/concrete-page.ts';
+import { concreteView } from '../lib/page-view.ts';
 import { calculators } from '../lib/calculators.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord } from '../site-check/dom.ts';

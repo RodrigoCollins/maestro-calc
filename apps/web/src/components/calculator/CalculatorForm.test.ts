@@ -2,7 +2,7 @@ import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { concreteView } from '../../lib/concrete-page.ts';
+import { concreteView } from '../../lib/page-view.ts';
 import CalculatorForm from './CalculatorForm.astro';
 
 const render = (locale: 'en' | 'es') =>
