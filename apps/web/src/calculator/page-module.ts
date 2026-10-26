@@ -176,7 +176,9 @@ export const shoppingLinesOf = (
   engine: readonly ShoppingLine[],
   units?: readonly string[],
 ): readonly ShoppingLine[] => {
-  if (engine.length !== declared.length) return fail('SHOPPING_LINES', id);
+  if (engine.length !== declared.length || new Set(declared).size !== declared.length) {
+    return fail('SHOPPING_LINES', id);
+  }
   return declared.map((material, index) => {
     const matches = engine.filter((line) => line.materialId === material);
     const [line] = matches;
