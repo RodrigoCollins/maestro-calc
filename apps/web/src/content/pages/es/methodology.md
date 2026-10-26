@@ -25,7 +25,7 @@ Cada página de calculadora cita sus fuentes y muestra la fecha de la última re
 
 <h2 id="concreto">Calculadora de concreto</h2>
 
-La calculadora de concreto estima el concreto para una losa, una zapata, una columna o unos escalones, y las bolsas de mezcla que debes comprar. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+La [calculadora de concreto](/es/calculadora-de-concreto) estima el concreto para una losa, una zapata, una columna o unos escalones, y las bolsas de mezcla que debes comprar. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
 
 Cada forma parte de un volumen:
 

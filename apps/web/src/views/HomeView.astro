@@ -19,7 +19,12 @@ const text = siteText(locale);
   head={{ ...headFor('home', locale, text), jsonLd: serializeJsonLd(homeJsonLd(locale)) }}
 >
   <h1>{text('page.home.heading')}</h1>
-  <p>{text('page.home.intro')}</p>
+  <p>
+    {text('page.home.intro')}{' '}
+    <a class="tap-target" href={pathOf('concrete', locale)}>
+      {text('page.home.links.concrete')}
+    </a>
+  </p>
   <p class="home-links">
     <a class="tap-target" href={pathOf('methodology', locale)}>
       {text('page.home.links.methodology')}

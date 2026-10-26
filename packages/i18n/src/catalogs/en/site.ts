@@ -30,7 +30,8 @@ export const enSite = {
   'site.calculator.hintCm': 'centimeters',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
-    'Jobsite calculators that estimate what to buy. The first calculators are still being built, and we will explain how every number is worked out.',
+    'Jobsite calculators that estimate what to buy. We explain how every number is worked out.',
+  'page.home.links.concrete': 'Try the concrete calculator',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',

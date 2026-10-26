@@ -1,3 +1,5 @@
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
+import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { templateOf } from '../routing/templates.ts';
@@ -281,6 +283,35 @@ describe('privacy (trust-pages › [TP13], [TP14])', () => {
 
   it.each(LOCALES)('names none of the services the site does not use in %s', (locale) => {
     expect(present(bodyOf(`${locale}/privacy.md`), forbidden)).toEqual([]);
+  });
+});
+
+describe('the copy follows the route table (trust-pages › [TP26], [TP21], [TP27])', () => {
+  const routed = Object.hasOwn(ROUTES, 'concrete');
+  const mentions = (text: string): boolean => /concrete|concreto/i.test(text);
+
+  // spec: trust-pages › [TP26] the methodology, the home link and the privacy section exist iff the page is routed
+  it('names the concrete calculator in the methodology exactly when it is routed', () => {
+    for (const locale of LOCALES) {
+      expect(mentions(bodyOf(`${locale}/methodology.md`)), locale).toBe(routed);
+    }
+  });
+
+  it('links the concrete calculator from the home page exactly when it is routed', () => {
+    expect('page.home.links.concrete' in enSite).toBe(routed);
+    expect('page.home.links.concrete' in esSite).toBe(routed);
+  });
+
+  it('has the calculators section of the privacy page exactly when a calculator page is routed', () => {
+    const routedPages = Object.keys(ROUTES).filter((id) => templateOf(id) === 'calculator');
+    for (const [locale, title] of [
+      ['en', '## Calculators'],
+      ['es', '## Calculadoras'],
+    ] as const) {
+      expect(bodyOf(`${locale}/privacy.md`).includes(`\n${title}\n`), locale).toBe(
+        routedPages.length > 0,
+      );
+    }
   });
 });
 
