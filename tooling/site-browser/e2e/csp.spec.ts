@@ -30,7 +30,7 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
       await expect(page.locator('#calc-length')).toBeEnabled();
       await page.locator('#calc-length').fill('20');
       await expect(page.locator('[data-shopping]')).toHaveText('123');
-      await page.locator('[data-choice="shape"][data-value="footing"]').click();
+      await page.locator('[data-choice="shape"] [value="footing"]').click();
       await expect(page.locator('[data-shopping]')).not.toHaveText('123');
       await page.locator('[data-copy]').click();
       await expect(page.locator('[data-copy-status]')).not.toHaveText('');

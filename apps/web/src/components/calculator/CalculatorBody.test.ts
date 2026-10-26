@@ -213,7 +213,9 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     ).toBe(true);
     expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
     expect(
-      root.querySelectorAll('[data-step="waste"]').every((step) => step.hasAttribute('hidden')),
+      root
+        .querySelectorAll('[data-step="waste"] button')
+        .every((step) => step.hasAttribute('hidden')),
     ).toBe(true);
     expect(root.querySelectorAll('input[name]')).toHaveLength(15);
   });
@@ -224,7 +226,7 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     const reserved = root
       .querySelectorAll('[data-reserved]')
       .map((el) => el.getAttribute('data-reserved'));
-    expect(reserved.sort()).toEqual(['answer', 'copy', 'notice', 'shape', 'steppers']);
+    expect(reserved.sort()).toEqual(['answer', 'copy', 'notice']);
     expect(root.querySelector('[data-reserved="answer"]')?.getAttribute('aria-live')).toBe(
       'polite',
     );
@@ -293,14 +295,14 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
     const root = await render('en');
     const values = (selector: string, attribute: string) =>
       root.querySelectorAll(selector).map((el) => el.getAttribute(attribute));
-    expect(values('[data-choice="shape"]', 'data-value')).toEqual([
+    expect(values('[data-choice="shape"] button', 'value')).toEqual([
       'slab',
       'footing',
       'column',
       'steps',
     ]);
-    expect(values('[data-choice="bag"]', 'data-value')).toEqual(['40', '60', '80']);
-    expect(values('[data-step="waste"]', 'data-direction')).toEqual(['less', 'more']);
+    expect(values('[data-choice="bag"] button', 'value')).toEqual(['40', '60', '80']);
+    expect(values('[data-step="waste"] button', 'value')).toEqual(['less', 'more']);
     for (const hook of ['[data-copy]', '[data-copy-status]', '[data-primary]']) {
       expect(root.querySelectorAll(hook), hook).toHaveLength(1);
     }
@@ -316,11 +318,11 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
     expect(values('[data-line]', 'data-line')).toEqual(['0']);
     expect(root.querySelector('[data-line="0"] [data-fill="bagLb"]')?.text).toBe('80');
     expect(root.querySelector('[data-line-note="0"] [data-fill="yield"]')?.text).toBe('0.60');
-    const area = root.querySelector('[data-reserved="shape"]');
+    const area = root.querySelector('[data-choice="shape"] + .calc-choice-area');
     expect(area?.getAttribute('style')).toBe('--calc-rows:4');
     expect(
       root.querySelectorAll(
-        '[data-shape-button], [data-bag], [data-waste-step], [data-bag-lb], [data-bag-yield], [data-yield]',
+        '[data-shape-button], [data-bag], [data-waste-step], [data-bag-lb], [data-bag-yield], [data-yield], [data-value], [data-direction], [data-reserved="shape"], [data-reserved="steppers"]',
       ),
     ).toHaveLength(0);
   });

@@ -30,7 +30,12 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
   {items.map((item) =>
     item.kind === 'choice' ? (
       <Fragment>
-        <div class="calc-group" role="group" aria-labelledby={labelId(item.key)}>
+        <div
+          class="calc-group"
+          role="group"
+          aria-labelledby={labelId(item.key)}
+          data-choice={item.key}
+        >
           <span class="calc-legend" id={labelId(item.key)}>
             {item.label}
           </span>
@@ -38,8 +43,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
             <button
               class="calc-choice"
               type="button"
-              data-choice={item.key}
-              data-value={choice.id}
+              value={choice.id}
               aria-pressed={pressed(choice)}
               disabled
             >
@@ -48,11 +52,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
           ))}
         </div>
         {item.area !== undefined && (
-          <div
-            class="calc-choice-area"
-            data-reserved={item.key}
-            style={`--calc-rows:${String(item.area.rows)}`}
-          >
+          <div class="calc-choice-area" style={`--calc-rows:${String(item.area.rows)}`}>
             {item.area.fields.map((field) => (
               <CalculatorField {field} hidden={!field.visible} />
             ))}
@@ -63,25 +63,11 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       <Fragment>
         <CalculatorField field={item.field} />
         {item.stepper !== undefined && (
-          <div class="calc-steppers" data-reserved="steppers">
-            <button
-              class="calc-choice"
-              type="button"
-              data-step={item.stepper.key}
-              data-direction="less"
-              hidden
-              disabled
-            >
+          <div class="calc-steppers" data-step={item.stepper.key}>
+            <button class="calc-choice" type="button" value="less" hidden disabled>
               {item.stepper.less}
             </button>
-            <button
-              class="calc-choice"
-              type="button"
-              data-step={item.stepper.key}
-              data-direction="more"
-              hidden
-              disabled
-            >
+            <button class="calc-choice" type="button" value="more" hidden disabled>
               {item.stepper.more}
             </button>
           </div>
