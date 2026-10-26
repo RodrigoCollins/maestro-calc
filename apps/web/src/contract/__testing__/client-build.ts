@@ -44,6 +44,9 @@ export const buildClient = async (source: string): Promise<ClientBuild> => {
       // the client build of Astro (vite-build-config): esnext target, minified
       target: 'esnext',
       minify: true,
+      // library mode keeps the whitespace of an `es` bundle to protect tree shaking; the browser
+      // downloads the minified file, so the size is measured with the whitespace removed
+      rolldownOptions: { output: { minify: { codegen: { removeWhitespace: true } } } },
       lib: { entry: VIRTUAL_ENTRY, formats: ['es'], fileName: 'client' },
     },
   });
