@@ -1,0 +1,17 @@
+change: calculator-core
+artifact_store: openspec
+execution_mode: auto
+delivery_strategy: auto-chain
+chain_strategy: stacked-to-main
+review_budget_lines: 400
+pr_grouping: one PR per group of slices (owner decision, saves CI minutes and deploys; work-unit commits per slice, 400 lines per slice measured by hand, a group PR above 400 is accepted)
+phases:
+  explore: done  # explore.md: web layer mapped with file:line citations; approach C recommended (generic core + typed page module, concrete as module 1, rectangle-area headless)
+  propose: done  # D1-D13 recorded; new capability calculator-web-core, modified calculator-page and site-quality; 10 slices in 3 PR groups, ~3,160 lines forecast; no owner actions
+  spec: done  # 3 capabilities: calculator-web-core (new, 10 requirements, 37 scenarios CWC1-37), calculator-page (delta: 1 added, 4 modified, 21 scenarios incl. CP54-58), site-quality (delta: 1 modified, 11 scenarios incl. SQ29-32); amended R1-R7 after design review round 1 (module id = registry calculator id, slot table, full hook table, D13 unit level, builder rules), no id renumbered
+  design: done  # design review round 1 applied (M-1..M-6, m-1..m-11), 18 slices (rename-first), 3 groups (G1 6, G2 8, G3 4), ~4,420 lines forecast (git diff --shortstat with rename detection, every slice <=400, S3/S5/S15 at risk with splits); D13 at unit level
+  tasks: done  # 131 numbered tasks (plus SX1-SX5 and GX1-GX6 templates), 18 slices S1-S18, 3 groups G1/G2/G3, ~4,420 lines forecast (G1 ~1,770, G2 ~1,750, G3 ~900), 46 new scenario ids mapped (CWC1-37, CP54-58, SQ29-32) plus 22 kept CP/SQ ids
+  apply: pending
+  verify: pending
+  archive: pending
+updated: 2026-10-26
