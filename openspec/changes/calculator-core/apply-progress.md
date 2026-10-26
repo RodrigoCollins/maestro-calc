@@ -249,3 +249,26 @@ After the four GX3 reviews on `d77fb9d` (one CRITICAL, verified: the HTML budget
 - `npm run check:site`: JS graph of the concrete calculator page 38,778 B (G2 tip 38,378 B; the mount collects the groups and the controller shares `checkModule`; the G1 soft target of 38,500 B is exceeded by 278 B, a follow-up for G3 if the owner wants it back under; gate 49,152 B), largest HTML 34,100 B (`/es/calculadora-de-concreto`, G2 tip 34,314 B), CSS 7,399 B, calculator page weight 162,888 B (limit 196,608 B), no JavaScript elsewhere.
 - Full-length HTML proof with the faithful fixture: EN 40,567 B, ES 40,836 B of 40,960 B.
 - `npm run build && npm run test:e2e`: 283 passed (39.5 s of Playwright wall time), run after the trim and at the tip; the mapping, verify and e2e logs are in the scratchpad (`g2c/`).
+
+## G2 Judgment Day
+
+Two blind judges on `da0c0e2` (the correction-round tip) returned no severe finding; both agreed on the same two info items, folded in below (same mode: strict TDD, one unit per commit, the tree green at each, nothing pushed, `packages/` and `.github/` untouched, no other refactor). **JUDGMENT: APPROVED.**
+
+### Commits (oldest first, `git diff --shortstat -M`)
+
+| Item | Commit | Subject | Changed lines |
+|---|---|---|---|
+| A second placeholder in a shopping text | a2206d0 | fix(web): refuse a shopping text that carries a second placeholder, naming its page key | 83+ / 8- (91) |
+| MP-primary-before-span-imperial-only | 1601c04 | fix(web): hold the primary prefix span when either unit system's sentence has one | 68+ / 11- (79) |
+| this section | this commit | docs(openspec): record the G2 Judgment Day verdict | |
+
+### Info items
+
+- **A second placeholder in a shopping text (both judges).** `fillSplitOf` in `lib/page-view.ts` split a label or note around the first placeholder the fills name, so a text holding a second one (another fill name, or the same name twice) would have rendered it as literal `{name}` text with no `data-fill` element. The builder now fails the build instead: after splitting on the chosen placeholder, a leftover `{<fill name>}` throws `SHOPPING_LINES` with `at` the page-key suffix (`alphaLine`, `alphaNote`), the existing code whose meaning fits (the declared line and its text disagree); no new `PageModuleCode`. Tests first in `lib/page-view.test.ts` (RED 3: two fills in the label, the same fill twice in the label, two fills in the note; plus a green case with text on both sides of one placeholder in the label and another fill in the note). The `ShoppingLineSpec.parts` comment in `calculator/page-module.ts` said a line may carry any number of placeholders; it now says one placeholder per text, the label and the note filled by one name each, the same or not. `lib/page-view.ts` stays at 100 percent.
+- **MP-primary-before-span-imperial-only (both judges; the correction round had left it as a follow-up).** `ResultPanel.astro` rendered `<span data-primary-before>` only when the build-time (US) sentence had a prefix, and the mount tolerates a missing span, so a module whose metric sentence has a prefix while the US one starts with `{value}` lost the prefix after a unit switch. The result view's primary now carries `prefixed` (`components/calculator/model.ts`): `resultViewOf` derives it from the sentences of both unit systems (`sentenceOf`, the page key of each system's primary output or the bare `{value}`), and the component renders the span when `prefixed` is true with the US `before` text (empty when that sentence has none), which the script then rewrites. Tests first: `lib/page-view.test.ts` (RED: the hinted fixture with `{value} feet` / `Edge {value} inches` gives `prefixed: true` with `before: ''`; concrete gives `prefixed: false`; the five existing primary expectations carry the flag) and `ResultPanel.test.ts` (RED: the span is rendered empty when prefixed with an empty `before`, absent when not prefixed). Concrete has no prefix in either locale, so its markup is byte-identical: the estimated 30 B of HTML were never spent.
+
+### Measured
+
+- Full-length HTML proof with the faithful fixture after both units: **EN 40,567 B, ES 40,836 B** of 40,960 B, the same two numbers as after the correction round (the concrete page did not grow by a byte).
+- `npm run typecheck` 0 errors, `npm run lint` clean and the relevant vitest files green before each commit (`page-view.test.ts` 50, `ResultPanel.test.ts` 8, `CalculatorBody.test.ts` and `CalculatorBody.budget.test.ts` unchanged and green).
+- `npm run verify` exit 0 at the tip: 192 test files, 3,537 tests (correction round 3,531: four for the placeholder guard, two for the prefix span); coverage thresholds all met, `apps/web/src/calculator/**` and `apps/web/src/lib/page-view.ts` at 100 percent; `check:site` unchanged (largest HTML 34,100 B, JS graph of the concrete page 38,778 B, calculator page weight 162,888 B)..
