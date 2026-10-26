@@ -8,7 +8,7 @@ const ORANGE = 'rgb(240, 106, 29)';
 const input = (page: Page, key: string): Locator => page.locator(`#calc-${key}`);
 const output = (page: Page, key: string): Locator => page.locator(`[data-output="${key}"]`);
 const shapeButton = (page: Page, shape: string): Locator =>
-  page.locator(`[data-choice="shape"][data-value="${shape}"]`);
+  page.locator(`[data-choice="shape"] [value="${shape}"]`);
 
 /** Opens the page and waits for the script: the controls are enabled and the note is gone. */
 const open = async (page: Page, calculator: ConcretePage, query = ''): Promise<void> => {
@@ -46,8 +46,8 @@ for (const calculator of CONCRETE_PAGES) {
       await open(page, calculator);
       await expect(page.locator('form :disabled')).toHaveCount(0);
       await expect(page.locator('[data-copy]')).toBeVisible();
-      await expect(page.locator('[data-step="waste"]')).toHaveCount(2);
-      await expect(page.locator('[data-step="waste"]').first()).toBeVisible();
+      await expect(page.locator('[data-step="waste"] button')).toHaveCount(2);
+      await expect(page.locator('[data-step="waste"] button').first()).toBeVisible();
       await expect(page.locator('[data-not-running]')).toBeHidden();
     });
 
@@ -164,7 +164,7 @@ for (const calculator of CONCRETE_PAGES) {
         [60, 98, '0.45'],
         [40, 147, '0.30'],
       ] as const) {
-        await page.locator(`[data-choice="bag"][data-value="${String(lb)}"]`).click();
+        await page.locator(`[data-choice="bag"] [value="${String(lb)}"]`).click();
         await expectFigures(page, ['1.63', '44.00', '1.25', '40.00', String(bags)]);
         await expect(page.locator('[data-line-note="0"]')).toHaveText(
           calculator.yieldLine(yieldValue),
@@ -183,14 +183,14 @@ for (const calculator of CONCRETE_PAGES) {
       await input(page, 'waste').fill('0');
       await expectFigures(page, ['1.48', '40.00', '1.13', '40.00', '67']);
       await input(page, 'waste').fill('10');
-      await page.locator('[data-step="waste"][data-direction="more"]').click();
+      await page.locator('[data-step="waste"] [value="more"]').click();
       await expect(input(page, 'waste')).toHaveValue('15');
       await expectFigures(page, ['1.70', '46.00', '1.30', '40.00', '77']);
       await input(page, 'waste').fill('0');
-      await page.locator('[data-step="waste"][data-direction="less"]').click();
+      await page.locator('[data-step="waste"] [value="less"]').click();
       await expect(input(page, 'waste')).toHaveValue('0');
       await input(page, 'waste').fill('50');
-      await page.locator('[data-step="waste"][data-direction="more"]').click();
+      await page.locator('[data-step="waste"] [value="more"]').click();
       await expect(input(page, 'waste')).toHaveValue('50');
     });
 
@@ -271,7 +271,7 @@ for (const calculator of CONCRETE_PAGES) {
       const history = await page.evaluate(() => window.history.length);
       await input(page, 'length').fill('20');
       await expect.poll(() => query(page)).toBe('?v=1&l=240');
-      await page.locator('[data-choice="bag"][data-value="60"]').click();
+      await page.locator('[data-choice="bag"] [value="60"]').click();
       await expect.poll(() => query(page)).toBe('?v=1&l=240&bg=60');
       await input(page, 'bagPrice').fill('6.50');
       await expect.poll(() => query(page)).toBe('?v=1&l=240&bg=60&bp=13/2');
@@ -414,7 +414,7 @@ for (const calculator of CONCRETE_PAGES) {
       await open(page, calculator, '?v=1&l=240');
       const toggle = page.locator('header a[hreflang]');
       await expect(toggle).toHaveAttribute('href', `${calculator.other}?v=1&l=240`);
-      await page.locator('[data-choice="bag"][data-value="60"]').click();
+      await page.locator('[data-choice="bag"] [value="60"]').click();
       await expect(toggle).toHaveAttribute('href', `${calculator.other}?v=1&l=240&bg=60`);
       await expect(page.locator('link[rel=canonical]')).toHaveAttribute(
         'href',
@@ -438,7 +438,7 @@ for (const calculator of CONCRETE_PAGES) {
     test('copies the address with the query and says so', async ({ page, context }) => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       await open(page, calculator);
-      await page.locator('[data-step="waste"][data-direction="more"]').click();
+      await page.locator('[data-step="waste"] [value="more"]').click();
       await page.locator('[data-copy]').click();
       await expect(page.locator('[data-copy-status]')).toHaveText(
         calculator.site['site.calculator.linkCopied'] ?? '',
@@ -476,19 +476,19 @@ for (const calculator of CONCRETE_PAGES) {
       const order = [
         '[data-unit="imperial"]',
         '[data-unit="metric"]',
-        '[data-choice="shape"][data-value="slab"]',
-        '[data-choice="shape"][data-value="footing"]',
-        '[data-choice="shape"][data-value="column"]',
-        '[data-choice="shape"][data-value="steps"]',
+        '[data-choice="shape"] [value="slab"]',
+        '[data-choice="shape"] [value="footing"]',
+        '[data-choice="shape"] [value="column"]',
+        '[data-choice="shape"] [value="steps"]',
         '#calc-length',
         '#calc-width',
         '#calc-thickness',
         '#calc-waste',
-        '[data-step="waste"][data-direction="less"]',
-        '[data-step="waste"][data-direction="more"]',
-        '[data-choice="bag"][data-value="40"]',
-        '[data-choice="bag"][data-value="60"]',
-        '[data-choice="bag"][data-value="80"]',
+        '[data-step="waste"] [value="less"]',
+        '[data-step="waste"] [value="more"]',
+        '[data-choice="bag"] [value="40"]',
+        '[data-choice="bag"] [value="60"]',
+        '[data-choice="bag"] [value="80"]',
         '#calc-bagPrice',
         '#calc-readyMixPrice',
         '[data-copy]',

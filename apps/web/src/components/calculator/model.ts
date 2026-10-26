@@ -34,7 +34,7 @@ export interface AreaField extends Field {
 /** A single-choice group built from a select input, and the block of fields it drives, if any. */
 export interface ChoiceItemView {
   readonly kind: 'choice';
-  /** The select key: the value of `data-choice`, of `data-reserved` and of the legend id. */
+  /** The select key: the value of `data-choice` on the group and the stem of the legend id. */
   readonly key: string;
   readonly label: string;
   readonly choices: readonly Choice[];

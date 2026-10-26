@@ -70,10 +70,20 @@ interface Line {
   readonly fills: readonly Element[];
 }
 
+/** One group of pressed buttons: the unit toggle or a choice group, with the buttons it holds. */
+interface Group {
+  /** The select key of a choice group (`data-choice`); the unit toggle has none. */
+  readonly key: string;
+  readonly buttons: readonly Element[];
+}
+
 /** The elements of the page the script reads and writes, collected once. */
 interface Ui {
   readonly form: HTMLFormElement;
   readonly inputs: ReadonlyMap<string, HTMLInputElement>;
+  readonly units: readonly Element[];
+  /** The choice groups of the page: an empty list for a page that declares no choice slot. */
+  readonly choices: readonly Group[];
   /** Absent for a page with no answer slot. */
   readonly answer: Element | null;
   readonly note: HTMLElement;
@@ -99,6 +109,11 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
   inputs: new Map(
     keys.map((key) => [key, findAs(root, `#${inputId(key)}`, HTMLInputElement)] as const),
   ),
+  units: findAll(root, '[data-unit]'),
+  choices: findAll(root, '[data-choice]').map((group) => ({
+    key: group.getAttribute('data-choice') ?? '',
+    buttons: findAll(group, 'button'),
+  })),
   answer: root.querySelector('[data-answer]'),
   note: findAs(root, '[data-not-running]', HTMLElement),
   noticeArea: find(root, '[data-reserved="notice"]'),
@@ -189,12 +204,14 @@ const renderPanel = (ui: Ui, view: View): void => {
 };
 
 const renderChoices = (ui: Ui, view: View): void => {
-  for (const button of findAll(ui.form, '[data-unit]')) {
+  for (const button of ui.units) {
     setPressed(button, button.getAttribute('data-unit') === view.system);
   }
-  for (const button of findAll(ui.form, '[data-choice]')) {
-    const chosen = view.choices[button.getAttribute('data-choice') ?? ''];
-    setPressed(button, button.getAttribute('data-value') === chosen);
+  for (const { key, buttons } of ui.choices) {
+    const chosen = view.choices[key];
+    for (const button of buttons) {
+      setPressed(button, button.getAttribute('value') === chosen);
+    }
   }
 };
 
@@ -213,17 +230,25 @@ const render = (ui: Ui, keys: readonly string[], { view }: Output): void => {
   ui.switchLink.setAttribute('href', view.switchHref);
 };
 
-/** The event a click on `button` stands for, when it is one of the form's controls. */
+/** The value of `hook` on the nearest group around `button`, `undefined` outside one. */
+const groupKeyOf = (button: Element, hook: string): string | undefined =>
+  button.closest(`[${hook}]`)?.getAttribute(hook) ?? undefined;
+
+/**
+ * The event a click on `button` stands for, when it is one of the form's controls: a unit button
+ * names its system; a choice or stepper button carries its option as its value and the group
+ * around it (`data-choice`, `data-step`) names the key.
+ */
 const eventOf = (button: Element): UiEvent | undefined => {
   const unit = button.getAttribute('data-unit');
   if (unit === 'imperial' || unit === 'metric') return { type: 'units', system: unit };
-  const select = button.getAttribute('data-choice');
-  const option = button.getAttribute('data-value');
-  if (select !== null && option !== null) return { type: 'choice', select, option };
-  const step = button.getAttribute('data-step');
-  const direction = button.getAttribute('data-direction');
-  if (step !== null && (direction === 'less' || direction === 'more')) {
-    return { type: 'step', key: step, direction };
+  const option = button.getAttribute('value');
+  if (option === null) return undefined;
+  const select = groupKeyOf(button, 'data-choice');
+  if (select !== undefined) return { type: 'choice', select, option };
+  const step = groupKeyOf(button, 'data-step');
+  if (step !== undefined && (option === 'less' || option === 'more')) {
+    return { type: 'step', key: step, direction: option };
   }
   return undefined;
 };
@@ -315,7 +340,7 @@ export const mount = (module: AnyPageModule): void => {
       control.disabled = false;
     }
   }
-  for (const control of findAll(ui.form, '[data-copy][hidden], [data-step][hidden]')) {
+  for (const control of findAll(ui.form, '[data-copy][hidden], [data-step] [hidden]')) {
     if (control instanceof HTMLElement) control.hidden = false;
   }
   ui.note.hidden = true;

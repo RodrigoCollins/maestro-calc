@@ -31,15 +31,15 @@ const STATES: readonly { name: string; drive: (page: Page) => Promise<void> }[] 
   { name: 'default', drive: async () => undefined },
   {
     name: 'footing',
-    drive: (page) => page.locator('[data-choice="shape"][data-value="footing"]').click(),
+    drive: (page) => page.locator('[data-choice="shape"] [value="footing"]').click(),
   },
   {
     name: 'column',
-    drive: (page) => page.locator('[data-choice="shape"][data-value="column"]').click(),
+    drive: (page) => page.locator('[data-choice="shape"] [value="column"]').click(),
   },
   {
     name: 'steps',
-    drive: (page) => page.locator('[data-choice="shape"][data-value="steps"]').click(),
+    drive: (page) => page.locator('[data-choice="shape"] [value="steps"]').click(),
   },
   { name: 'error', drive: (page) => page.locator('#calc-length').fill('abc') },
   { name: 'metric', drive: (page) => page.locator('[data-unit="metric"]').click() },
