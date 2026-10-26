@@ -1,6 +1,7 @@
 import {
   decode,
   encode,
+  parseLength,
   Rational,
   toCents,
   type FieldError,
@@ -399,7 +400,8 @@ const commit = (env: Environment, state: State): Output => {
     return { state, view: viewOf(env, state, evaluation), write: undefined };
   }
   const write = `?${encode(concrete, evaluation.valid, { unitSystem: state.system })}`;
-  const next = { ...state, valid: evaluation.valid, search: write };
+  // the rewritten address no longer holds what the link notice was about
+  const next = { ...state, valid: evaluation.valid, search: write, notice: '' };
   return { state: next, view: viewOf(env, next, evaluation), write };
 };
 
@@ -430,11 +432,26 @@ export const start = (env: Environment, search: string): Output => {
   return unchanged(env, state);
 };
 
+/**
+ * A text that is not valid, kept through a unit change. A bare number (`150`, out of range) is
+ * written with the unit it was typed in (`150 in`): left bare, the other system would read it in
+ * its own default unit and turn an invalid entry into a valid one that nobody typed. A text that
+ * already has a unit, or that is not a length at all, does not take the unit and is kept as typed.
+ */
+const keptText = (state: State, key: TextKey): string => {
+  const text = state.texts[key];
+  const field = descriptorOf(key);
+  if (field.kind !== 'length') return text;
+  const unit = state.system === 'metric' ? field.metricDefaultUnit : field.defaultUnit;
+  const qualified = `${text} ${unit}`;
+  return parseLength(qualified).ok ? qualified : text;
+};
+
 /** Every text re-written for another unit system, each parsed in the one it was typed in. */
 const convertedTexts = (state: State, system: UnitSystem): Record<TextKey, string> => {
   const converted = (key: TextKey): string => {
     const parsed = parsedWith(state, key, state.texts[key]);
-    return parsed === undefined ? state.texts[key] : textsOf(parsed, system)[key];
+    return parsed === undefined ? keptText(state, key) : textsOf(parsed, system)[key];
   };
   return {
     length: converted('length'),
