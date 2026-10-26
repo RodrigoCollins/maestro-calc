@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { pathOf, ROUTES } from '../routing/routes.ts';
+import { templateOf } from '../routing/templates.ts';
 import { SITE } from '../site.config.ts';
 import {
   emailsIn,
@@ -18,7 +19,7 @@ import { fromRoot } from './root.ts';
 
 const LOCALES = ['en', 'es'] as const;
 const entries = readEntries(fromRoot('apps/web/src/content/pages'));
-const trustIds = Object.keys(ROUTES).filter((id) => id !== 'home');
+const trustIds = Object.keys(ROUTES).filter((id) => templateOf(id) === 'trust');
 const bodyOf = (path: string): string => entries.find((entry) => entry.path === path)?.body ?? '';
 
 describe('content entries (trust-pages › [TP1], [TP3])', () => {

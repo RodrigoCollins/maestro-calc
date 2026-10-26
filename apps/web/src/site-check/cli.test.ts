@@ -18,7 +18,8 @@ import { fromRoot } from '../contract/root.ts';
 import { ROUTES } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
-import { validDist } from './__testing__/page-fixture.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
+import { NIST_URL, QUIKRETE_URL, validDist } from './__testing__/page-fixture.ts';
 
 const FONT_DIRECTORIES = ['barlow', 'barlow', 'barlow-condensed', 'barlow-condensed'] as const;
 const FONT_FILES = [
@@ -39,15 +40,19 @@ const realFont = (index: number): string =>
 const script = fromRoot('apps/web/scripts/check-site.ts');
 // The CLI reads the real content entries, so the expected dates and count derive from them too.
 const entries = readEntries(fromRoot('apps/web/src/content/pages'));
+const calculatorEntries = readEntries(fromRoot('apps/web/src/content/calculators'));
 const site = {
   routes: ROUTES,
   config: SITE,
   catalogs: { en: enSite, es: esSite },
   updates: Object.fromEntries(
-    entries.map((entry) => [entry.path.replace(/\.md$/, ''), entry.fields['updated'] ?? '']),
+    [...entries, ...calculatorEntries].map((entry) => [
+      entry.path.replace(/\.md$/, ''),
+      entry.fields['updated'] ?? '',
+    ]),
   ),
-  calculatorPages: [],
-  externalLinks: {},
+  calculatorPages: CALCULATOR_PAGES,
+  externalLinks: { concrete: [QUIKRETE_URL, NIST_URL] },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {
@@ -87,7 +92,6 @@ const edited =
   };
 
 // The count covers the trust pages and the calculators collection (calculator-page › Page anatomy).
-const calculatorEntries = readEntries(fromRoot('apps/web/src/content/calculators'));
 const pending = [...entries, ...calculatorEntries].filter(
   (entry) => entry.fields['ownerReview'] === 'pending',
 ).length;
@@ -162,6 +166,8 @@ describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', 
       'budget fonts',
       'budget js',
       'budget weight',
+      'budget js (calculator)',
+      'budget weight (calculator)',
     ]);
     expect(pageCount(ROUTES)).toBe(2 * Object.keys(ROUTES).length + 2);
   });

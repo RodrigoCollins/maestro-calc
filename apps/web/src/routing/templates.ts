@@ -3,13 +3,19 @@ import type { PageId, RouteTable } from './routes.ts';
 
 /**
  * The route ids rendered with the calculator page template: the page id is the calculator id.
- * Empty until the go-live slice routes `concrete`; `PAGELESS` holds the registry calculators
- * that have no page, and the two lists never overlap.
+ * `PAGELESS` holds the registry calculators that have no page, and the two lists never overlap.
  */
-export const CALCULATOR_PAGES: readonly PageId[] = [];
+export const CALCULATOR_PAGES = ['concrete'] as const satisfies readonly PageId[];
+
+/** The id of a page that uses the calculator template. */
+export type CalculatorPageId = (typeof CALCULATOR_PAGES)[number];
+
+/** Whether `id` is a calculator page id (a type guard for the catch-all route). */
+export const isCalculatorPage = (id: string): id is CalculatorPageId =>
+  CALCULATOR_PAGES.some((page) => page === id);
 
 /** Registry calculators without a page (site-routing-i18n › Calculator pages in the route table). */
-export const PAGELESS: readonly string[] = ['rectangle-area', 'concrete'];
+export const PAGELESS: readonly string[] = ['rectangle-area'];
 
 /** The page templates: `check:site` and the browser lists derive their rules from them. */
 export type Template = 'home' | 'trust' | 'calculator' | 'notFound';

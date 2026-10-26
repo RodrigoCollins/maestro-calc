@@ -12,23 +12,18 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
     expect(templateProblems(ROUTES, CALCULATOR_PAGES, PAGELESS, registry)).toEqual([]);
   });
 
-  // spec: site-routing-i18n › [SR17] until go-live concrete is a registry calculator without a page
+  // spec: site-routing-i18n › [SR17] concrete has its page; rectangle-area is a registry calculator without one
   it('keeps every registry calculator in exactly one list', () => {
     expect(registry.length).toBeGreaterThan(1);
     for (const id of registry) {
       expect([pageIds.includes(id), PAGELESS.includes(id)].filter(Boolean), id).toHaveLength(1);
     }
-    expect(PAGELESS).toContain('concrete');
+    expect(CALCULATOR_PAGES).toEqual(['concrete']);
+    expect(PAGELESS).toEqual(['rectangle-area']);
   });
 
   // spec: site-routing-i18n › [SR17] each failure names the id
   it.each([
-    [
-      'a page id missing from the table',
-      ['concrete'],
-      ['rectangle-area'],
-      'concrete: page id is not in the route table',
-    ],
     [
       'a registry calculator in neither list',
       [],
@@ -52,9 +47,24 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
   });
 
   // spec: site-routing-i18n › [SR18] the template of every routable id, from the table
-  it('gives every id of the table the home or the trust template while no page is routed', () => {
-    const templates = Object.keys(ROUTES).map((id) => [id, templateOf(id as keyof typeof ROUTES)]);
-    expect(templates.filter(([, template]) => template === 'calculator')).toEqual([]);
+  it('gives home, the calculator and each trust page their template', () => {
+    const templates = Object.keys(ROUTES).map((id) => [id, templateOf(id)]);
+    expect(templates.filter(([, template]) => template === 'calculator')).toEqual([
+      ['concrete', 'calculator'],
+    ]);
     expect(templates.find(([id]) => id === 'home')?.[1]).toBe('home');
+    expect(templates.filter(([, template]) => template === 'trust')).toHaveLength(
+      Object.keys(ROUTES).length - 2,
+    );
+  });
+
+  // spec: site-routing-i18n › [SR17] a page id outside the table is named
+  it('names a calculator page id that the route table lacks', () => {
+    const withoutConcrete = Object.fromEntries(
+      Object.entries(ROUTES).filter(([id]) => id !== 'concrete'),
+    );
+    expect(templateProblems(withoutConcrete, ['concrete'], ['rectangle-area'], registry)).toEqual([
+      'concrete: page id is not in the route table',
+    ]);
   });
 });

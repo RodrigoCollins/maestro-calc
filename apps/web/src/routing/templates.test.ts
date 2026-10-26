@@ -3,10 +3,10 @@ import { NOT_FOUND_ID, ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, PAGELESS, templateOf, templateProblems } from './templates.ts';
 
 describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
-  // spec: site-routing-i18n › [SR17] until go-live no page uses the calculator template
-  it('lists no calculator page yet and keeps rectangle-area and concrete pageless', () => {
-    expect(CALCULATOR_PAGES).toEqual([]);
-    expect(PAGELESS).toEqual(['rectangle-area', 'concrete']);
+  // spec: site-routing-i18n › [SR17] concrete is the one calculator page; rectangle-area has none
+  it('lists concrete as the calculator page and keeps rectangle-area pageless', () => {
+    expect(CALCULATOR_PAGES).toEqual(['concrete']);
+    expect(PAGELESS).toEqual(['rectangle-area']);
   });
 
   // spec: site-routing-i18n › [SR18] the template of home, a trust id and the not-found page
@@ -14,6 +14,7 @@ describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
     ['home', 'home'],
     ['methodology', 'trust'],
     ['privacy', 'trust'],
+    ['concrete', 'calculator'],
     [NOT_FOUND_ID, 'notFound'],
   ] as const)('gives %s the %s template', (id, template) => {
     expect(templateOf(id)).toBe(template);
@@ -27,7 +28,10 @@ describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
 });
 
 describe('page lists against the table and the registry (site-routing-i18n › [SR17])', () => {
-  const routes = { ...ROUTES, concrete: { en: '/concrete-calculator', es: '/es/calculadora' } };
+  const withoutConcrete = Object.fromEntries(
+    Object.entries(ROUTES).filter(([id]) => id !== 'concrete'),
+  );
+  const routes = ROUTES;
   const registry = ['rectangle-area', 'concrete'];
 
   it('has no problem for the real lists', () => {
@@ -40,13 +44,13 @@ describe('page lists against the table and the registry (site-routing-i18n › [
 
   // spec: site-routing-i18n › [SR17] each failure names the id
   it('names a page id that is not in the route table', () => {
-    expect(templateProblems(ROUTES, ['concrete'], ['rectangle-area'], registry)).toEqual([
+    expect(templateProblems(withoutConcrete, ['concrete'], ['rectangle-area'], registry)).toEqual([
       'concrete: page id is not in the route table',
     ]);
   });
 
   it('names a registry calculator that is in neither list', () => {
-    expect(templateProblems(ROUTES, [], ['rectangle-area'], registry)).toEqual([
+    expect(templateProblems(routes, [], ['rectangle-area'], registry)).toEqual([
       'concrete: registry calculator is in neither the page list nor PAGELESS',
     ]);
   });
@@ -58,7 +62,7 @@ describe('page lists against the table and the registry (site-routing-i18n › [
   });
 
   it('names a PAGELESS id that is not in the registry', () => {
-    expect(templateProblems(ROUTES, [], ['rectangle-area', 'concrete', 'ghost'], registry)).toEqual(
+    expect(templateProblems(routes, [], ['rectangle-area', 'concrete', 'ghost'], registry)).toEqual(
       ['ghost: PAGELESS id is not in the registry'],
     );
   });
