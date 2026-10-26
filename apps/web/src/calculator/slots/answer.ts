@@ -22,9 +22,7 @@ export function answerSlot(
   const { by, values } = spec;
   if (by === undefined) return { templates: ['answer'], template: () => 'answer', values };
   const select = calculator.inputs.find((input) => input.key === by);
-  if (select?.kind !== 'select') {
-    return fail('CHOICE_OPTIONS', calculator.id, by);
-  }
+  if (select?.kind !== 'select') return fail('ANSWER_SELECT', calculator.id, by);
   return {
     templates: select.options.map((option) => `answer.${option}`),
     template: (valid) => `answer.${optionOf(valid, by)}`,
