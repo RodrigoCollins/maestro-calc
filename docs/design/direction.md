@@ -13,6 +13,7 @@ Canvas: https://claude.ai/artifact/3eoGcWjiAKpc6XDm58HKsA · Mockup sources: `do
 | Plan paper | `#EEF1EF` | Page ground |
 | Sheet white | `#FFFFFF` | Tool surfaces |
 | WhatsApp | `#1FAF5A` | Share button, near-black text `#06210F` (white fails contrast) |
+| Error red | `#B42318` | Invalid input border and error text (4.5:1 on Plan paper and Sheet white); never the only cue, the message says it too |
 
 Type: Barlow Condensed 600–700 (numbers, headings) + Barlow 400–600 (body, controls).
 
