@@ -29,9 +29,18 @@ test.describe('axe (site-quality › [SQ1], [SQ2])', () => {
 /** The interactive states of a calculator page that axe scans (site-quality › [SQ17]). */
 const STATES: readonly { name: string; drive: (page: Page) => Promise<void> }[] = [
   { name: 'default', drive: async () => undefined },
-  { name: 'footing', drive: (page) => page.locator('[data-shape-button="footing"]').click() },
-  { name: 'column', drive: (page) => page.locator('[data-shape-button="column"]').click() },
-  { name: 'steps', drive: (page) => page.locator('[data-shape-button="steps"]').click() },
+  {
+    name: 'footing',
+    drive: (page) => page.locator('[data-choice="shape"][data-value="footing"]').click(),
+  },
+  {
+    name: 'column',
+    drive: (page) => page.locator('[data-choice="shape"][data-value="column"]').click(),
+  },
+  {
+    name: 'steps',
+    drive: (page) => page.locator('[data-choice="shape"][data-value="steps"]').click(),
+  },
   { name: 'error', drive: (page) => page.locator('#calc-length').fill('abc') },
   { name: 'metric', drive: (page) => page.locator('[data-unit="metric"]').click() },
   {

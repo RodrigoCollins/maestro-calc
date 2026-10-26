@@ -102,8 +102,8 @@ const collect = (root: Document): Ui => ({
   },
   shopping: {
     qty: find(root, '[data-shopping]'),
-    bagLb: find(root, '[data-bag-lb]'),
-    yield: find(root, '[data-yield]'),
+    bagLb: find(root, '[data-fill="bagLb"]'),
+    yield: find(root, '[data-fill="yield"]'),
   },
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
@@ -166,13 +166,13 @@ const renderPanel = (ui: Ui, view: View): void => {
 };
 
 const renderChoices = (ui: Ui, view: View): void => {
-  const groups: [string, string][] = [
-    ['data-unit', view.system],
-    ['data-shape-button', view.choices.shape],
-    ['data-bag', view.choices.bag],
+  const groups: [string, string, string][] = [
+    ['[data-unit]', 'data-unit', view.system],
+    ['[data-choice="shape"]', 'data-value', view.choices.shape],
+    ['[data-choice="bag"]', 'data-value', view.choices.bag],
   ];
-  for (const [attribute, chosen] of groups) {
-    for (const button of findAll(ui.form, `[${attribute}]`)) {
+  for (const [selector, attribute, chosen] of groups) {
+    for (const button of findAll(ui.form, selector)) {
       button.setAttribute(
         'aria-pressed',
         button.getAttribute(attribute) === chosen ? 'true' : 'false',
@@ -199,12 +199,18 @@ const textKeyOf = (name: string): TextKey | undefined => TEXT_KEYS.find((key) =>
 const eventOf = (button: Element): UiEvent | undefined => {
   const unit = button.getAttribute('data-unit');
   if (unit === 'imperial' || unit === 'metric') return { type: 'units', system: unit };
-  const shape = button.getAttribute('data-shape-button');
-  if (shape !== null) return { type: 'choice', select: 'shape', option: shape };
-  const bag = button.getAttribute('data-bag');
-  if (bag !== null) return { type: 'choice', select: 'bag', option: bag };
-  const step = button.getAttribute('data-waste-step');
-  if (step === 'less' || step === 'more') return { type: 'step', key: 'waste', direction: step };
+  const option = button.getAttribute('data-value');
+  const select = button.getAttribute('data-choice');
+  if (option !== null && (select === 'shape' || select === 'bag')) {
+    return { type: 'choice', select, option };
+  }
+  const direction = button.getAttribute('data-direction');
+  if (
+    button.getAttribute('data-step') === 'waste' &&
+    (direction === 'less' || direction === 'more')
+  ) {
+    return { type: 'step', key: 'waste', direction };
+  }
   return undefined;
 };
 
@@ -291,7 +297,7 @@ export const mount = (): void => {
       control.disabled = false;
     }
   }
-  for (const control of findAll(ui.form, '[data-copy][hidden], [data-waste-step][hidden]')) {
+  for (const control of findAll(ui.form, '[data-copy][hidden], [data-step][hidden]')) {
     if (control instanceof HTMLElement) control.hidden = false;
   }
   ui.note.hidden = true;
