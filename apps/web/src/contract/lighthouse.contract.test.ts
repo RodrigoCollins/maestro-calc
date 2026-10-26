@@ -1,7 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { describe, expect, it } from 'vitest';
-import { fromRoot } from './root.ts';
+import { ROUTES } from '../routing/routes.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
+import { fromRoot, importFromRoot } from './root.ts';
 
 interface Lighthouserc {
   ci: {
@@ -38,8 +40,8 @@ describe('Lighthouse CI configuration (site-quality › [SQ9])', () => {
       '/es',
       '/methodology',
       '/es/metodologia',
-      '/privacy',
-      '/es/privacidad',
+      '/concrete-calculator',
+      '/es/calculadora-de-concreto',
     ]);
     expect(rc.ci.collect.numberOfRuns).toBe(1);
   });
@@ -92,6 +94,51 @@ describe('Lighthouse CI configuration (site-quality › [SQ9])', () => {
 
   it('keeps its output out of git', () => {
     expect(read('.gitignore').split('\n')).toContain('.lighthouseci');
+  });
+});
+
+/** What is wrong with the representative calculator page against the audited URLs, one line each. */
+const representativeProblems = (
+  id: string,
+  urls: readonly string[],
+  pages: readonly string[] = CALCULATOR_PAGES,
+  routes: Readonly<Record<string, { en: string; es: string }>> = ROUTES,
+): string[] => {
+  const paths = urls.map((url) => new URL(url).pathname);
+  const entry = routes[id];
+  return [
+    ...(pages.includes(id) ? [] : [`${id} is not a calculator page of the table`]),
+    ...(entry === undefined
+      ? []
+      : [entry.en, entry.es]
+          .filter((path) => !paths.includes(path))
+          .map((path) => `${path} is not audited`)),
+  ];
+};
+
+describe('Lighthouse representative calculator page (site-quality › [SQ25])', () => {
+  // spec: site-quality › [SQ25] one representative page per template, named once, in two locales
+  it('audits both paths of the representative calculator page named in the browser tooling', async () => {
+    const { REPRESENTATIVE } = await importFromRoot<{ REPRESENTATIVE: string }>(
+      'tooling/site-browser/e2e/representative.ts',
+    );
+    expect(REPRESENTATIVE).toBe('concrete');
+    expect(representativeProblems(REPRESENTATIVE, rc.ci.collect.url)).toEqual([]);
+  });
+
+  it('names the page that is not a calculator page of the table', () => {
+    expect(representativeProblems('about', rc.ci.collect.url)).toEqual([
+      'about is not a calculator page of the table',
+      '/about is not audited',
+      '/es/sobre-nosotros is not audited',
+    ]);
+  });
+
+  it('names a representative path that Lighthouse does not audit', () => {
+    const urls = rc.ci.collect.url.filter((url) => !url.endsWith('/es/calculadora-de-concreto'));
+    expect(representativeProblems('concrete', urls)).toEqual([
+      '/es/calculadora-de-concreto is not audited',
+    ]);
   });
 });
 
