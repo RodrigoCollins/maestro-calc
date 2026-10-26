@@ -39,6 +39,8 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
     ['about.html', 'localStorage', '<p>localStorage</p>'],
     ['about.html', 'sessionStorage', '<p>sessionStorage</p>'],
     ['index.html', 'indexedDB', '<p>indexedDB</p>'],
+    ['index.html', 'cookieStore', '<p>cookieStore</p>'],
+    ['about.html', 'navigator.storage', '<p>navigator.storage</p>'],
     ['_astro/a.css', 'document.cookie', '/* document.cookie */'],
   ])('fails %s that references %s', (file, what, markup) => {
     const problems = problemsAfter((dist) =>
@@ -126,6 +128,8 @@ describe('calculator bundle facts (site-shell › [SS23], calculator-page › [C
     ['XMLHttpRequest', 'new XMLHttpRequest()'],
     ['sendBeacon', 'navigator.sendBeacon("/x")'],
     ['WebSocket', 'new WebSocket("wss://x")'],
+    ['EventSource', 'new EventSource("/x")'],
+    ['caches.', 'caches.open("x")'],
   ])('fails %s in the entry and in a chunk, naming the file', (api, code) => {
     for (const file of [ENTRY_FILE, CHUNK_FILE]) {
       const found = calcProblemsAfter(appended(file, `;${code}`)).filter(

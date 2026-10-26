@@ -101,8 +101,8 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
 
   // spec: calculator-page › [CP3] the figures are the engine's, rounded for display
   it('shows the engine output rounded to two places', async () => {
-    const entry = calculators[1];
-    expect(entry.id).toBe('concrete');
+    const entry = calculators.find(({ id }) => id === 'concrete');
+    if (entry === undefined) throw new Error('concrete is not registered');
     const result = entry.run({});
     if (!result.ok) throw new Error('run failed');
     const places2 = (value: Rational) => {

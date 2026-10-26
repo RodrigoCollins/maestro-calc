@@ -46,7 +46,9 @@ const hexColoursIn = (css: string): Set<string> =>
 /** A same-origin absolute path: `/a/b.js`, not `//host/b.js` and not a URL. */
 const isSameOriginPath = (ref: string): boolean => ref.startsWith('/') && !ref.startsWith('//');
 
-const ENTRY_PATH = /^\/_astro\/[^?#]+\.js$/;
+/** An entry under `/_astro/`; a `..` segment would climb out of it. */
+const isEntryPath = (src: string): boolean =>
+  /^\/_astro\/[^?#]+\.js$/.test(src) && !src.split('/').includes('..');
 
 /**
  * Event handlers, islands and module preloads: the rules both templates share. `preloadFault`
@@ -114,7 +116,7 @@ const calculatorScriptProblems = (page: Page): Problem[] => {
             `expected exactly one module script, found ${String(entries.length)}`,
           ),
         ]),
-    ...(entry === undefined || ENTRY_PATH.test(src)
+    ...(entry === undefined || isEntryPath(src)
       ? []
       : [
           problem(
@@ -234,7 +236,10 @@ const distProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[]
   );
   return [
     ...[...dist.keys()]
-      .filter((file) => /\.m?js$/.test(file))
+      .filter((file) => file.endsWith('.wasm'))
+      .map((file) => problem(file, 'js-file', 'WebAssembly is not allowed')),
+    ...[...dist.keys()]
+      .filter((file) => /\.[cm]?js$/.test(file))
       .flatMap((file) => {
         if (!file.startsWith('_astro/')) {
           return [problem(file, 'js-file', 'JavaScript is only allowed under _astro/')];

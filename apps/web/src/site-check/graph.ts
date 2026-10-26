@@ -1,8 +1,8 @@
 import { posix } from 'node:path';
 import type { Dist } from './types.ts';
 
-/** `import"./a.js"`, `import{x}from"./a.js"`, `export*from"./a.js"`: a static specifier ending in .js or .mjs. */
-const STATIC_IMPORT = /(?:\bimport|\bfrom)\s*["']([^"']+\.m?js)["']/g;
+/** `import"./a.js"`, `import{x}from"./a.js"`, `export*from"./a.js"`: a static specifier ending in .js, .mjs or .cjs. */
+const STATIC_IMPORT = /(?:\bimport|\bfrom)\s*["']([^"']+\.[cm]?js)["']/g;
 
 /**
  * The `dist` files a script imports statically, in source order. A dynamic `import()` is not

@@ -799,6 +799,24 @@ describe('calculator structured data (site-seo › [SE19], [SE20], [SE21], [SE22
     ).toBeGreaterThan(0);
   });
 
+  it('reads an ampersand the same way in the page (an entity) and in the FAQPage (a character)', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter(
+          {
+            [CALC_PAGE]: (graph) => {
+              (at(listOf(graph, 'FAQPage', 'mainEntity'), 0)['acceptedAnswer'] as Node)['text'] =
+                'Answer 1 in en & more.';
+              return graph;
+            },
+          },
+          { [CALC_PAGE]: (h) => h.replace('Answer 1 in en.', 'Answer 1 in en &amp; more.') },
+        ),
+        CALC_PAGE,
+      ),
+    ).toEqual([]);
+  });
+
   it('reads a missing mainEntity, a missing answer and a missing item list as empty', () => {
     expect(
       messagesOf(

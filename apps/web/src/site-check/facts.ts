@@ -4,10 +4,27 @@ import { isCalculatorPage, problem } from './types.ts';
 import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** Browser APIs the privacy page says the site never uses. */
-const STORAGE_APIS = ['document.cookie', 'localStorage', 'sessionStorage', 'indexedDB'];
+const STORAGE_APIS = [
+  'document.cookie',
+  'localStorage',
+  'sessionStorage',
+  'indexedDB',
+  'cookieStore',
+  'navigator.storage',
+];
 
-/** Network APIs the calculator bundle never calls: it makes no request (site-shell › [SS23]). */
-const NETWORK_APIS = ['fetch(', 'XMLHttpRequest', 'sendBeacon', 'WebSocket'];
+/**
+ * APIs the calculator bundle never calls: it makes no request and keeps nothing in a cache
+ * (site-shell › [SS23]). `caches.` stays out of the sitewide scan above because prose may use it.
+ */
+const BUNDLE_APIS = [
+  'fetch(',
+  'XMLHttpRequest',
+  'sendBeacon',
+  'WebSocket',
+  'EventSource',
+  'caches.',
+];
 
 /** The catalog messages that must stay out of the bundle: one error and one UI label, per locale. */
 const SAMPLE_KEYS = ['errors.DECIMAL_COMMA', 'site.calculator.copyLink'];
@@ -62,7 +79,7 @@ const bundleProblems = (pages: readonly Page[], site: Site, dist: Dist): Problem
   return bundleFiles(pages, site, dist).flatMap((file) => {
     const text = dist.get(file) ?? '';
     return [
-      ...NETWORK_APIS.filter((api) => text.includes(api)).map((api) =>
+      ...BUNDLE_APIS.filter((api) => text.includes(api)).map((api) =>
         problem(file, 'bundle-api', `${api} must not appear in the calculator bundle`),
       ),
       ...Object.entries(site.catalogs).flatMap(([locale, catalog]) =>
