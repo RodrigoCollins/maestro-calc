@@ -299,7 +299,7 @@ The builder (not the controller) also derives the input modes and the money plac
 | Item | Today | Forecast | How it is checked |
 |---|---|---|---|
 | Concrete entry graph | 36,450 B | 37,000–38,500 B | `client-entry.contract` prints the size each slice; recorded at S5 (library build) and S14 (real build, `check:site`). Target ≤ 38,500 B; gate 49,152 |
-| Rectangle-area proof entry | — | about 29,500–31,000 B | S17 asserts it is smaller than concrete and reaches no `slots/` file |
+| Rectangle-area proof entry | 27,227 B measured at G1 (controller and rectangle-area page, no mount) | 31,000–33,000 B with a mount | `entry-graph.contract` asserts now that the graph reaches no `calculator/slots/` and no `calculator/concrete/` module; S17 asserts it is smaller than concrete |
 | Calculator HTML | 39,268 / 39,517 B | +about 200 B (S7); margin about 1,500 / 1,250 B | `CalculatorBody.budget.test` in S7; budget 40,960 |
 | Page weight and CSS | — | unchanged | `check:site` |
 

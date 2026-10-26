@@ -39,3 +39,26 @@ describe('concrete client entry: source graph (calculator-page › [CP48])', () 
     expect(graphViolations(modules)).toContain(expected);
   });
 });
+
+describe('rectangle-area proof entry: source graph (calculator-web-core › [CWC1], [CWC9])', () => {
+  const PROOF_ENTRY = `
+    import { controllerOf } from '${fromRoot('apps/web/src/calculator/controller.ts')}';
+    import { rectangleAreaPage } from '${fromRoot('apps/web/src/calculator/rectangle-area/page.ts')}';
+    export const controller = controllerOf(rectangleAreaPage);
+  `;
+
+  // spec: calculator-web-core › [CWC1] a module with no slot carries no slot code and no other calculator's files
+  it('reaches the controller and no slot file and no concrete file', async () => {
+    const { modules } = await buildClient(PROOF_ENTRY);
+    expect(reaches(modules, '/apps/web/src/calculator/controller.ts')).toBe(true);
+    expect(reaches(modules, '/apps/web/src/calculator/rectangle-area/page.ts')).toBe(true);
+    expect(modules.filter((id) => /\/calculator\/(slots|concrete)\//.test(id))).toEqual([]);
+  });
+
+  it('is found when the entry imports a slot', async () => {
+    const { modules } = await buildClient(
+      `${PROOF_ENTRY}\nexport { answerSlot } from '${fromRoot('apps/web/src/calculator/slots/answer.ts')}';`,
+    );
+    expect(modules.some((id) => id.includes('/calculator/slots/'))).toBe(true);
+  });
+});
