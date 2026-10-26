@@ -206,6 +206,16 @@ describe('scan tokens (fraction-format › Length text grammar)', () => {
     expect(scan('5ft2 in2')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
     expect(scan('5m2in')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
     expect(scan('1ft1234567890123456789in')).toStrictEqual(failure('TOO_LARGE', 3));
+    expect(tokensOf('1ft123456789012345678in').map((token) => token.text)).toEqual([
+      '1',
+      'ft',
+      '123456789012345678',
+      'in',
+    ]);
+    expect(scan('5xft6in')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('5ft2 3in')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('ft6in')).toStrictEqual(failure('MALFORMED', 0));
+    expect(scan('5 ft6in')).toStrictEqual(failure('UNKNOWN_UNIT', 2));
   });
 
   // spec: fraction-format delta › Length text grammar [FPX2]: a period glued to a unit word
@@ -219,6 +229,7 @@ describe('scan tokens (fraction-format › Length text grammar)', () => {
       ['unit', 2],
       ['dot', 5],
     ]);
+    expect(tokensOf('5 in"').map((token) => token.text)).toEqual(['5', ' ', 'in', '"']);
     expect(tokensOf('5. ').map((token) => token.kind)).toEqual(['uint', 'dot']);
     expect(tokensOf(`5' .`).map((token) => token.kind)).toEqual(['uint', 'unit', 'ws', 'dot']);
   });
