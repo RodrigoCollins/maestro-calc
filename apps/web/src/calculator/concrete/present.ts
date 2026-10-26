@@ -53,7 +53,7 @@ const volumeOutput = (result: ConcreteResult, key: VolumeKey): Quantity<'volume'
 
 /** The whole bags of the one shopping line. */
 const bagsOf = (result: ConcreteResult): bigint => {
-  const [line] = result.shopping;
+  const line = result.shopping.find(({ materialId }) => materialId === 'concrete-mix');
   if (line === undefined) throw new TypeError('the result has no shopping line');
   return line.qty;
 };

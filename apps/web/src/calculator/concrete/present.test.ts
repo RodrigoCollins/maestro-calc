@@ -137,8 +137,26 @@ describe('a result the presenter cannot read is a programming error', () => {
     ['a volume holds money', swapped('volumeFt3', usd(1)), 'volumeFt3 is not a volume'],
     ['a cost holds a volume', swapped('bagCost', quantity(1, ft3)), 'bagCost is not money'],
     ['the shopping line is missing', { ...result, shopping: [] }, 'no shopping line'],
+    [
+      'the shopping line is another material',
+      { ...result, shopping: result.shopping.map((line) => ({ ...line, materialId: 'other' })) },
+      'no shopping line',
+    ],
   ])('throws when %s', (_name, broken, message) => {
     expect(read(broken)).toThrow(message);
+  });
+
+  it('reads the bags from the concrete-mix line, not from the first line', () => {
+    const [mix] = result.shopping;
+    if (mix === undefined) throw new TypeError('the defaults have a mix line');
+    const extra = { ...mix, materialId: 'other', qty: 1n };
+    const figures = figuresOf(
+      state,
+      { ...result, shopping: [extra, mix] },
+      CONCRETE_MIX_YIELDS,
+      'imperial',
+    );
+    expect(figures.bags).toBe(figuresOf(state, result, CONCRETE_MIX_YIELDS, 'imperial').bags);
   });
 
   it('throws when the yield of the chosen bag is missing', () => {
