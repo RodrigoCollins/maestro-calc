@@ -6,12 +6,13 @@ import {
   type Environment,
   type Output,
   type State,
+  type TextKey,
   type UiEvent,
   type View,
 } from '../calculator/controller.ts';
-import { TEXT_KEYS, type TextKey } from '../calculator/concrete-layout.ts';
-import { DIMENSION_ORDER } from '../calculator/concrete/shapes.ts';
-import { errorId, hintId } from '../calculator/ids.ts';
+import { errorId, helpId, hintId } from '../calculator/ids.ts';
+import { textKeysOf } from '../calculator/texts.ts';
+import { concrete } from '../lib/concrete.ts';
 
 /*
  * The thin DOM glue of the concrete page (design C11, C13): it collects the elements the server
@@ -56,6 +57,8 @@ const messagesOf = (root: ParentNode): Record<string, string> => {
     Array.from(template.content.children, (entry) => [entry.id, entry.textContent]),
   );
 };
+
+const TEXT_KEYS = textKeysOf(concrete);
 
 /** The elements of the page the script reads and writes, collected once. */
 interface Ui {
@@ -129,9 +132,7 @@ const renderField = (ui: Ui, key: TextKey, view: View): void => {
   } else {
     input.ownerDocument.getElementById(errorId(key))?.remove();
   }
-  if (DIMENSION_ORDER.some((dimension) => dimension === key)) {
-    box.toggleAttribute('hidden', !view.visible.includes(key));
-  }
+  box.toggleAttribute('hidden', field.hidden);
 };
 
 const renderPanel = (ui: Ui, view: View): void => {
@@ -235,6 +236,7 @@ export const mount = (): void => {
     origin: location.origin,
     path: location.pathname,
     switchPath: ui.switchLink.getAttribute('href') ?? '',
+    helps: new Set(TEXT_KEYS.filter((key) => document.getElementById(helpId(key)) !== null)),
   };
   let current: State;
   const show = (output: Output): void => {

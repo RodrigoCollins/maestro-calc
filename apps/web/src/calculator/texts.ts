@@ -51,6 +51,18 @@ export function textKeysOf(calculator: AnyCalculator): readonly string[] {
   return calculator.inputs.filter(isTextInput).map(({ key }) => key);
 }
 
+/** A record with one value per text key, in definition order: the keys keep their literal types. */
+export function byTextKey<C extends AnyCalculator, V>(
+  calculator: C,
+  valueOf: (key: TextKey<C>) => V,
+): Readonly<Record<TextKey<C>, V>>;
+export function byTextKey<V>(
+  calculator: AnyCalculator,
+  valueOf: (key: string) => V,
+): Readonly<Record<string, V>> {
+  return Object.fromEntries(textKeysOf(calculator).map((key) => [key, valueOf(key)]));
+}
+
 /** The text of every text field for a state, in definition order. */
 export function textsOf<C extends AnyCalculator>(
   calculator: C,

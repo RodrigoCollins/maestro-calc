@@ -2,7 +2,7 @@ import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { concreteView } from '../../lib/concrete-page.ts';
 import { err, Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
@@ -18,6 +18,12 @@ import {
   type Output,
   type UiEvent,
 } from '../controller.ts';
+
+// The engine is called through a spy that still computes, so the raw record can be read (CWC6).
+vi.mock('../../lib/concrete.ts', async (importOriginal) => {
+  const original = await importOriginal<typeof import('../../lib/concrete.ts')>();
+  return { concrete: { ...original.concrete, validate: vi.fn(original.concrete.validate) } };
+});
 
 /** The messages the page carries as templates, by name, for a locale (the script reads them from the DOM). */
 const messagesOf = (locale: 'en' | 'es'): Messages => {
@@ -39,12 +45,14 @@ const EN: Environment = {
   origin: 'https://maestrocalc.com',
   path: '/concrete-calculator',
   switchPath: '/es/calculadora-de-concreto',
+  helps: new Set(['waste']),
 };
 const ES: Environment = {
   messages: messagesOf('es'),
   origin: 'https://maestrocalc.com',
   path: '/es/calculadora-de-concreto',
   switchPath: '/concrete-calculator',
+  helps: new Set(['waste']),
 };
 
 /** Applies the events in order from the page loaded with `search`; every step's output, last last. */
@@ -573,5 +581,61 @@ describe('controller: invariants and edges', () => {
     ]);
     expect(last('', [type('waste', '48'), waste('more')]).view.fields.waste.text).toBe('50');
     expect(last('', [type('waste', '3'), waste('less')]).view.fields.waste.text).toBe('0');
+  });
+});
+
+describe('controller: raw record and helps (calculator-web-core › [CWC6], [CWC18]; K7)', () => {
+  const rawOfLastCall = () => {
+    const [raw] = vi.mocked(concrete.validate).mock.calls.at(-1) ?? [];
+    if (raw === undefined) throw new Error('the engine was not called');
+    return raw;
+  };
+
+  // spec: calculator-web-core › [CWC6] an empty price is an explicit undefined key
+  it('hands the engine an own undefined key for an empty price, over the last valid state', () => {
+    vi.mocked(concrete.validate).mockClear();
+    last('', [type('bagPrice', '6.50'), type('bagPrice', ''), type('length', '20')]);
+    const raw = rawOfLastCall();
+    expect(Object.hasOwn(raw, 'bagPrice')).toBe(true);
+    expect(raw['bagPrice']).toBeUndefined();
+    expect(raw['readyMixPrice']).toBeUndefined();
+    expect([raw['length'], raw['width'], raw['waste']]).toEqual(['20', '10 ft', '10']);
+    expect([raw['shape'], raw['bag']]).toEqual(['slab', '80']);
+  });
+
+  // spec: calculator-web-core › Generic controller behaviour: a hidden field keeps its value
+  it('reads a hidden field from the last valid state, not from its text', () => {
+    last('', [type('footingWidth', 'abc'), type('length', '20')]);
+    const hidden = rawOfLastCall()['footingWidth'];
+    expect(typeof hidden).toBe('object');
+  });
+
+  // spec: calculator-web-core › [CWC18] a field with help is described by it while valid
+  it('describes a field by its help while it has no error, and a field without help by nothing', () => {
+    const out = last('');
+    expect(out.view.fields.waste.describedBy).toBe('calc-waste-help');
+    expect(out.view.fields.count.describedBy).toBe('');
+    expect(out.view.fields.length.describedBy).toBe('calc-length-hint');
+    const none = last('', [], { ...EN, helps: new Set() });
+    expect(none.view.fields.waste.describedBy).toBe('');
+    const invalid = last('', [type('waste', '51')]);
+    expect(invalid.view.fields.waste.describedBy).toBe('calc-waste-error');
+  });
+
+  // spec: calculator-page › [CP11] the fields a shape does not show are hidden, the others are not
+  it('marks the driven fields the shape does not show as hidden', () => {
+    const slab = last('').view.fields;
+    expect([slab.length.hidden, slab.footingWidth.hidden, slab.stepCount.hidden]).toEqual([
+      false,
+      true,
+      true,
+    ]);
+    expect([slab.waste.hidden, slab.bagPrice.hidden]).toEqual([false, false]);
+    const steps = last('', [shape('steps')]).view.fields;
+    expect([steps.length.hidden, steps.rise.hidden, steps.stepCount.hidden]).toEqual([
+      true,
+      false,
+      false,
+    ]);
   });
 });
