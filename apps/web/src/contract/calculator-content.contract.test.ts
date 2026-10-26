@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { calculatorSchema } from '../content/schema.ts';
 import { faqOf } from '../content/faq.ts';
 import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
+import { concrete } from '../lib/concrete.ts';
 import { concreteView } from '../lib/concrete-page.ts';
 import { calculators } from '../lib/calculators.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
@@ -249,6 +250,33 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
     expect(faq[0]?.answer).toContain('La losa tiene 40 pies cúbicos');
     expect(faq[1]?.answer).toContain('Una losa de 12 ft por 10 ft tiene 40 pies cúbicos');
   });
+
+  // spec: calculator-page › Form controls: the copy names every field that reads a bare number in feet or meters
+  it.each([
+    ['en', 'feet for', 'meters for', ' and '],
+    ['es', 'pies para', 'metros para', ' y '],
+  ] as const)(
+    'names every long-dimension field when it says which unit a plain number is read in (%s)',
+    (locale, feet, meters, joiner) => {
+      const long = new Set<string>(
+        concrete.inputs
+          .filter((input) => input.kind === 'length' && input.defaultUnit === 'ft')
+          .map((input) => input.key),
+      );
+      const labels = concreteView(locale)
+        .form.fields.filter((field) => long.has(field.key))
+        .map((field) => field.label.toLowerCase());
+      // the list is the labels in form order, the last one joined with "and"
+      const list = `${labels.slice(0, -1).join(', ')}${joiner}${labels.at(-1) ?? ''}`;
+      expect(long.size).toBeGreaterThan(0);
+      expect(labels).toHaveLength(long.size);
+      const body = entryOf(locale).body;
+      expect(body).toContain(`${feet} ${list}`);
+      expect(body).toContain(`${meters} ${list}`);
+      // the old list named three of the six inch fields only
+      expect(body).not.toMatch(/thickness, depth and rise|espesor, la profundidad y la altura/);
+    },
+  );
 
   // spec: calculator-page › Page anatomy: the Spanish register
   it('passes the Spanish register check', () => {

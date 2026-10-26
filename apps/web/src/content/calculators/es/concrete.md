@@ -23,7 +23,7 @@ workedExample:
 La calculadora convierte las medidas de tu vaciado en el concreto que necesitas y las bolsas que debes comprar. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Elige la forma del vaciado: una losa, una zapata, una columna o unos escalones. Solo ves los campos de esa forma.
-2. Ingresa las medidas como las lees en la cinta: 12 ft, 12 ft 6 in o 5 ft 3 1/2 in. Un número solo se lee en la unidad que muestra el campo: pies para las medidas largas y pulgadas para el espesor, la profundidad y la altura del escalón. Cambia a métrico para escribir metros y centímetros.
+2. Ingresa las medidas como las lees en la cinta: 12 ft, 12 ft 6 in o 5 ft 3 1/2 in. Un número solo se lee en la unidad que aparece junto a cada campo: pies para largo, ancho, altura y ancho de los escalones, y pulgadas para las demás medidas. Cambia a métrico para escribir metros y centímetros.
 3. Ajusta el extra por desperdicio. La calculadora empieza en 10 por ciento y lo puedes cambiar en el campo o con los dos botones.
 4. Elige el tamaño de bolsa que vas a comprar: 40, 60 u 80 lb.
 5. Si quieres ver costos, escribe el precio de una bolsa o el precio del premezclado por yarda cúbica. Un precio vacío cuenta como cero y su fila de costo queda oculta.
@@ -100,7 +100,7 @@ Elige Escalones y escribe el ancho, la altura (rise), la profundidad (run) y la 
 
 ### ¿Puedo usar metros y centímetros?
 
-Sí. Presiona Métrico y escribe metros para las medidas largas y centímetros para el espesor, la profundidad y la altura del escalón. Cambiar de unidad nunca cambia tus números, solo cómo se escriben. Las bolsas se quedan en libras, porque así se venden.
+Sí. Presiona Métrico y escribe metros para largo, ancho, altura y ancho de los escalones, y centímetros para las demás medidas. Cambiar de unidad nunca cambia tus números, solo cómo se escriben. Las bolsas se quedan en libras, porque así se venden.
 
 <h2 id="fuentes">Fuentes y fecha de revisión</h2>
 
