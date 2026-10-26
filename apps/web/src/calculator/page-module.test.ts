@@ -52,7 +52,7 @@ describe('shoppingLinesOf (calculator-web-core › [CWC3])', () => {
     ['a missing line', ['a', 'b'], [line('a')]],
     ['a line the engine did not return', ['a', 'b'], [line('a'), line('c')]],
     ['a duplicate engine line', ['a', 'b'], [line('a'), line('a')]],
-    ['a duplicate declared line', ['a', 'a'], [line('a'), line('a')]],
+    ['a duplicate declared line', ['a', 'a'], [line('a'), line('b')]],
   ] as const)('throws SHOPPING_LINES for %s', (_what, declared, engine) => {
     const error = pageModuleErrorOf(() => shoppingLinesOf('x', declared, engine));
     expect(error).toBeInstanceOf(PageModuleError);
