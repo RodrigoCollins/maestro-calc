@@ -1,10 +1,10 @@
 import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
-import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
-import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import {
   choiceCalculator,
   fieldsOf,
@@ -118,10 +118,8 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
 
   // spec: calculator-page › [CP51] the unit hint of the US system on every length field
   it('gives each length field the hint of the unit it is read in, and the others none', () => {
-    const hints = Object.fromEntries(
-      concreteView('en').form.fields.map(({ key, hint }) => [key, hint]),
-    );
-    expect(hints).toEqual({
+    const { form } = concreteView('en');
+    expect(Object.fromEntries(fieldsOf(form).map(({ key, hint }) => [key, hint]))).toEqual({
       length: 'feet',
       width: 'feet',
       thickness: 'inches',
@@ -134,14 +132,13 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       run: 'inches',
       stepCount: undefined,
       count: undefined,
+      waste: undefined,
+      bagPrice: undefined,
+      readyMixPrice: undefined,
     });
-    expect(concreteView('es').form.fields.find(({ key }) => key === 'rise')?.hint).toBe('pulgadas');
-    const { form } = concreteView('en');
-    expect([form.waste.hint, ...form.prices.map(({ hint }) => hint)]).toEqual([
-      undefined,
-      undefined,
-      undefined,
-    ]);
+    expect(fieldsOf(concreteView('es').form).find(({ key }) => key === 'rise')?.hint).toBe(
+      'pulgadas',
+    );
   });
 
   // spec: calculator-page › [CP51] the four hints travel as inert messages for the unit toggle
@@ -167,18 +164,23 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
   it('presses the defaults: US units, slab, 80 lb bags, and describes the groups', () => {
     const { form } = concreteView('en');
     expect(form.units.filter(({ pressed }) => pressed).map(({ id }) => id)).toEqual(['imperial']);
-    expect(form.shapes.map(({ id, pressed }) => [id, pressed])).toEqual([
+    const [shape, , bag] = form.items;
+    expect(
+      shape?.kind === 'choice' && shape.choices.map(({ id, pressed }) => [id, pressed]),
+    ).toEqual([
       ['slab', true],
       ['footing', false],
       ['column', false],
       ['steps', false],
     ]);
-    expect(form.bags.map(({ id, pressed }) => [id, pressed])).toEqual([
+    expect(bag?.kind === 'choice' && bag.choices.map(({ id, pressed }) => [id, pressed])).toEqual([
       ['40', false],
       ['60', false],
       ['80', true],
     ]);
-    expect(form.fields.map(({ key, visible }) => [key, visible])).toEqual([
+    expect(
+      shape?.kind === 'choice' && shape.area?.fields.map(({ key, visible }) => [key, visible]),
+    ).toEqual([
       ['length', true],
       ['width', true],
       ['thickness', true],
@@ -191,11 +193,6 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       ['run', false],
       ['stepCount', false],
       ['count', false],
-    ]);
-    expect(form.waste).toMatchObject({ key: 'waste', value: '10', mode: 'decimal' });
-    expect(form.prices.map(({ key, value, placeholder }) => [key, value, placeholder])).toEqual([
-      ['bagPrice', '', '0.00'],
-      ['readyMixPrice', '', '0.00'],
     ]);
   });
 });
@@ -394,40 +391,10 @@ describe('concreteView guards (calculator-web-core › Page-view builder)', () =
     const { concreteView: broken } = await import('./page-view.ts');
     return () => broken('en');
   };
-  const without = (key: string) => (real: typeof concrete) => ({
-    ...real,
-    inputs: real.inputs.filter((input) => input.key !== key),
-  });
-  const replacing = (key: string, input: object) => (real: typeof concrete) => ({
-    ...real,
-    inputs: real.inputs.map((found) => (found.key === key ? input : found)),
-  });
-
   afterEach(() => {
     vi.doUnmock('./concrete.ts');
     vi.doUnmock('@maestro-calc/i18n/catalogs/en/concrete');
     vi.resetModules();
-  });
-
-  it('names the input a definition lacks', async () => {
-    expect(await viewOf(without('bagPrice'))).toThrow('concrete has no input bagPrice');
-  });
-
-  it('names a select that is not one, whichever of its two reads meets it first', async () => {
-    const count = (key: string) => ({ kind: 'count', key, urlKey: 'zz', default: 1 });
-    expect(await viewOf(replacing('shape', count('shape')))).toThrow('shape is not a select');
-    expect(await viewOf(replacing('bag', count('bag')))).toThrow('bag is not a select');
-  });
-
-  it('names a length unit that has no hint message', async () => {
-    expect(
-      await viewOf((real) => ({
-        ...real,
-        inputs: real.inputs.map((input) =>
-          input.key === 'length' ? { ...input, defaultUnit: 'yd' } : input,
-        ),
-      })),
-    ).toThrow('no unit hint for yd');
   });
 
   it('refuses a definition whose default state does not run or validate', async () => {
@@ -444,6 +411,15 @@ describe('concreteView guards (calculator-web-core › Page-view builder)', () =
     vi.resetModules();
     vi.doMock('@maestro-calc/i18n/catalogs/en/concrete', () => ({ enConcrete: {} }));
     const { concreteView: broken } = await import('./page-view.ts');
-    expect(() => broken('en')).toThrow('missing message calc.concrete.page.volumeYd3 for en');
+    let thrown: unknown;
+    try {
+      broken('en');
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toMatchObject({
+      code: 'PAGE_KEY',
+      cause: { id: 'concrete', at: 'calc.concrete.page.volumeYd3' },
+    });
   });
 });

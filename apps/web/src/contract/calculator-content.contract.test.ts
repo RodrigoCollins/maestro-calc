@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { concreteMix } from '@maestro-calc/data';
 import { parse } from 'yaml';
 import { describe, expect, it } from 'vitest';
+import { fieldsOf } from '../__testing__/page-fixtures.ts';
 import { calculatorSchema } from '../content/schema.ts';
 import { faqOf } from '../content/faq.ts';
 import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
@@ -263,8 +264,8 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
           .filter((input) => input.kind === 'length' && input.defaultUnit === 'ft')
           .map((input) => input.key),
       );
-      const labels = concreteView(locale)
-        .form.fields.filter((field) => long.has(field.key))
+      const labels = fieldsOf(concreteView(locale).form)
+        .filter((field) => long.has(field.key))
         .map((field) => field.label.toLowerCase());
       // the list is the labels in form order, the last one joined with "and"
       const list = `${labels.slice(0, -1).join(', ')}${joiner}${labels.at(-1) ?? ''}`;
