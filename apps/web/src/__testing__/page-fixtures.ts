@@ -65,6 +65,23 @@ export const choiceCalculator = defineCalculator({
   compute: () => unused,
 });
 
+/**
+ * A select `mode` followed by four count fields: a choice slot may show any of them, so a test can
+ * place the driven fields right after the select or leave a gap, and `c` and `d` stay plain fields.
+ */
+export const formCalculator = defineCalculator({
+  id: 'form-fixture',
+  inputs: [
+    { kind: 'select', key: 'mode', urlKey: 'm1', options: ['small', 'large'], default: 'small' },
+    count('a', 'c1'),
+    count('b', 'c2'),
+    count('c', 'c3'),
+    count('d', 'c4'),
+  ],
+  outputs: [total],
+  compute: () => unused,
+});
+
 /** The value of a successful result; a failure fails the test that asked for it. */
 export const unwrap = <T>(
   result: { readonly ok: true; readonly value: T } | { readonly ok: false },
