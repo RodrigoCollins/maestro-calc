@@ -11,6 +11,8 @@ export interface ClientBuild {
   readonly size: number;
   /** The text of all emitted chunks. */
   readonly code: string;
+  /** Every module the bundler loaded before tree shaking: the source graph of the entry. */
+  readonly modules: readonly string[];
 }
 
 const isChunk = (item: Rolldown.OutputChunk | Rolldown.OutputAsset): item is Rolldown.OutputChunk =>
@@ -22,6 +24,7 @@ const isChunk = (item: Rolldown.OutputChunk | Rolldown.OutputAsset): item is Rol
  * is written. The result is the size and the text of the emitted chunks (design C17, SQ27).
  */
 export const buildClient = async (source: string): Promise<ClientBuild> => {
+  let modules: readonly string[] = [];
   const output = await build({
     root: fromRoot('apps/web'),
     configFile: false,
@@ -31,6 +34,9 @@ export const buildClient = async (source: string): Promise<ClientBuild> => {
         name: 'virtual-client-entry',
         resolveId: (id) => (id === VIRTUAL_ENTRY ? id : undefined),
         load: (id) => (id === VIRTUAL_ENTRY ? source : undefined),
+        buildEnd() {
+          modules = Array.from(this.getModuleIds());
+        },
       },
     ],
     build: {
@@ -46,5 +52,9 @@ export const buildClient = async (source: string): Promise<ClientBuild> => {
     'output' in result ? result.output.filter(isChunk) : [],
   );
   const code = chunks.map((chunk) => chunk.code).join('\n');
-  return { size: chunks.reduce((total, chunk) => total + Buffer.byteLength(chunk.code), 0), code };
+  return {
+    size: chunks.reduce((total, chunk) => total + Buffer.byteLength(chunk.code), 0),
+    code,
+    modules,
+  };
 };
