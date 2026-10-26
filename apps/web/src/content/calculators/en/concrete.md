@@ -23,7 +23,7 @@ workedExample:
 The calculator turns the size of a pour into the concrete you need and the bags to buy. The result updates as you type, so there is nothing to submit.
 
 1. Pick the shape of the pour: a slab, a footing, a column or steps. Only the fields for that shape are shown.
-2. Enter the measurements. Type them the way you read a tape: 12 ft, 12 ft 6 in or 5 ft 3 1/2 in. A plain number is read in the unit shown by the field, feet for long dimensions and inches for thickness, depth and rise. Switch to metric to type meters and centimeters.
+2. Enter the measurements. Type them the way you read a tape: 12 ft, 12 ft 6 in or 5 ft 3 1/2 in. A plain number is read in the unit named beside each field: feet for length, width, height and step width, and inches for every other measurement. Switch to metric to type meters and centimeters.
 3. Set the extra for waste. The calculator starts at 10 percent, and you can change it with the field or the two buttons.
 4. Choose the bag size you will buy: 40, 60 or 80 lb.
 5. If you want costs, type the price of one bag or the price of ready-mix per cubic yard. A price left empty counts as zero and its cost row stays hidden.
@@ -100,7 +100,7 @@ Pick Steps, then enter the step width, the rise, the run and the number of steps
 
 ### Can I use meters and centimeters?
 
-Yes. Press Metric, then type meters for long dimensions and centimeters for thickness, depth and rise. Switching units never changes your numbers, only how they are written. Bag sizes stay in pounds, because that is how the bags are sold.
+Yes. Press Metric, then type meters for length, width, height and step width, and centimeters for every other measurement. Switching units never changes your numbers, only how they are written. Bag sizes stay in pounds, because that is how the bags are sold.
 
 <h2 id="sources">Sources and review date</h2>
 
