@@ -1,3 +1,9 @@
+import {
+  FAQ_MIN_ITEMS,
+  FAQ_SECTION_IDS,
+  sourceTypography,
+  type FaqItem,
+} from '../content/faq-shape.ts';
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { alternatesIn, attr, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
@@ -33,9 +39,12 @@ const CALCULATOR_TYPES = ['WebApplication', 'BreadcrumbList', 'FAQPage'];
 /** What the `WebApplication` may never claim: it is a free tool without ratings, offers or images. */
 const WEB_APPLICATION_FORBIDDEN = ['offers', 'aggregateRating', 'review', 'ratingValue', 'image'];
 
+/**
+ * The breadcrumb's home label, written out here on purpose: the page builder takes it from the
+ * catalog key `site.calculator.breadcrumbHome`, and this independent copy is the oracle that
+ * fails the build if the two ever drift apart (site-seo › Calculator structured data).
+ */
 const HOME_NAME = { en: 'Home', es: 'Inicio' } as const;
-const FAQ_SECTION_IDS = ['faq', 'preguntas-frecuentes'];
-const MIN_FAQ_ITEMS = 4;
 
 const SITEMAP_URL = urlOf('/sitemap.xml');
 
@@ -229,16 +238,11 @@ const homeNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): strin
 
 const normalized = (text: string): string => text.replace(/\s+/g, ' ').trim();
 
-interface FaqItem {
-  readonly question: string;
-  readonly answer: string;
-}
-
 /** The visible FAQ: each `h3` of the FAQ section with the text that follows it up to the next heading. */
 const visibleFaq = (page: Page): FaqItem[] => {
   const heading = page.root
     .querySelectorAll('h2')
-    .find((candidate) => FAQ_SECTION_IDS.includes(attr(candidate, 'id')));
+    .find((candidate) => (FAQ_SECTION_IDS as readonly string[]).includes(attr(candidate, 'id')));
   const items: { question: string; answer: string[] }[] = [];
   for (
     let element = heading?.nextElementSibling ?? null;
@@ -252,6 +256,10 @@ const visibleFaq = (page: Page): FaqItem[] => {
 };
 
 const textOf = (value: unknown): string => (typeof value === 'string' ? normalized(value) : '');
+
+/** Both sides of the FAQ parity as the Markdown source wrote them: smartypants curls the page only. */
+const sameText = (shown: string, structured: string): boolean =>
+  sourceTypography(shown) === sourceTypography(structured);
 
 const nodesIn = (value: unknown): Node[] => (Array.isArray(value) ? value.filter(isNode) : []);
 
@@ -310,29 +318,28 @@ const faqProblems = (page: Page, faq: Node): string[] => {
   }));
   const parity =
     entities.length === shown.length
-      ? shown.flatMap(({ question, answer }, index) =>
-          entities
-            .slice(index, index + 1)
-            .flatMap((entity) => [
-              ...(entity.question === question
-                ? []
-                : [
-                    `FAQ question ${String(index + 1)} "${question}" is "${entity.question}" in the FAQPage`,
-                  ]),
-              ...(entity.answer === answer
-                ? []
-                : [`FAQ answer ${String(index + 1)} of the page differs from the FAQPage`]),
-            ]),
-        )
+      ? shown.flatMap(({ question, answer }, index) => {
+          const entity = { question: '', answer: '', ...entities[index] };
+          return [
+            ...(sameText(question, entity.question)
+              ? []
+              : [
+                  `FAQ question ${String(index + 1)} "${question}" is "${entity.question}" in the FAQPage`,
+                ]),
+            ...(sameText(answer, entity.answer)
+              ? []
+              : [`FAQ answer ${String(index + 1)} of the page differs from the FAQPage`]),
+          ];
+        })
       : [
           `the FAQPage has ${String(entities.length)} questions and the page shows ${String(shown.length)}`,
         ];
   return [
     ...parity,
-    ...(shown.length >= MIN_FAQ_ITEMS
+    ...(shown.length >= FAQ_MIN_ITEMS
       ? []
       : [
-          `the page needs at least ${String(MIN_FAQ_ITEMS)} FAQ items, found ${String(shown.length)}`,
+          `the page needs at least ${String(FAQ_MIN_ITEMS)} FAQ items, found ${String(shown.length)}`,
         ]),
   ];
 };
@@ -341,26 +348,28 @@ const faqProblems = (page: Page, faq: Node): string[] => {
 const calculatorNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] => {
   const typesOf = (node: Node): unknown[] => [node['@type']].flat();
   const ofType = (type: string): Node[] => nodes.filter((node) => typesOf(node).includes(type));
-  const [app] = ofType('WebApplication');
-  const [list] = ofType('BreadcrumbList');
-  const [faq] = ofType('FAQPage');
+  const apps = ofType('WebApplication');
+  const lists = ofType('BreadcrumbList');
+  const faqs = ofType('FAQPage');
+  const once = <T>(found: readonly Node[], check: (node: Node) => T[]): T[] =>
+    found.length === 1 ? found.flatMap(check) : [];
   return [
-    ...CALCULATOR_TYPES.flatMap((type) =>
-      ofType(type).length === 1
-        ? []
-        : [`expected exactly one ${type}, found ${String(ofType(type).length)}`],
+    ...(
+      [
+        ['WebApplication', apps],
+        ['BreadcrumbList', lists],
+        ['FAQPage', faqs],
+      ] as const
+    ).flatMap(([type, found]) =>
+      found.length === 1 ? [] : [`expected exactly one ${type}, found ${String(found.length)}`],
     ),
     ...nodes
       .flatMap(typesOf)
       .filter((type) => typeof type === 'string' && !CALCULATOR_TYPES.includes(type))
       .map((type) => `${String(type)} is not allowed on this page`),
-    ...(app === undefined || ofType('WebApplication').length !== 1
-      ? []
-      : webApplicationProblems(page, site, app)),
-    ...(list === undefined || ofType('BreadcrumbList').length !== 1
-      ? []
-      : breadcrumbProblems(page, site, list)),
-    ...(faq === undefined || ofType('FAQPage').length !== 1 ? [] : faqProblems(page, faq)),
+    ...once(apps, (app) => webApplicationProblems(page, site, app)),
+    ...once(lists, (list) => breadcrumbProblems(page, site, list)),
+    ...once(faqs, (faq) => faqProblems(page, faq)),
   ];
 };
 

@@ -62,9 +62,10 @@ const collection = (name: string): [string, string][] => {
 
 const entries = collection('pages');
 const calculatorEntries = collection('calculators');
+const allEntries = [...entries, ...calculatorEntries];
 // `en/about.md` becomes the key `en/about`; an entry without a readable date is left out.
 const updates = Object.fromEntries(
-  [...entries, ...calculatorEntries].flatMap(([file, text]) => {
+  allEntries.flatMap(([file, text]) => {
     const updated = updatedOf(text);
     return updated === undefined ? [] : [[file.replace(/\.md$/, ''), updated]];
   }),
@@ -109,5 +110,5 @@ if (problems.length > 0) {
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
 for (const line of budgetSummary(contextOf(built, site, buildBytes.sizes))) console.log(line);
 console.log(
-  `pending ownerReview entries: ${String(countPending([...entries, ...calculatorEntries].map(([, text]) => text)))}`,
+  `pending ownerReview entries: ${String(countPending(allEntries.map(([, text]) => text)))}`,
 );
