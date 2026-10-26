@@ -2,7 +2,7 @@ import { concreteMix } from '@maestro-calc/data';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { decode, ft3, PI, type Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { figuresOf } from '../calculator/concrete-present.ts';
+import { figuresOf } from '../calculator/concrete/present.ts';
 import { volumeText } from '../calculator/present.ts';
 import { concrete } from '../lib/concrete.ts';
 import { hasWord } from '../site-check/dom.ts';

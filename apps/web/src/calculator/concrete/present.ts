@@ -7,7 +7,7 @@ import {
   type Quantity,
   type UnitSystem,
 } from '@maestro-calc/core';
-import type { concrete } from '../lib/concrete.ts';
+import type { concrete } from '../../lib/concrete.ts';
 import {
   fillMessage,
   groupedInteger,
@@ -15,7 +15,7 @@ import {
   percentText,
   dimensionText,
   volumeText,
-} from './present.ts';
+} from '../present.ts';
 
 /*
  * The text of the figures and the short answer of the concrete page: the concrete calculator's own

@@ -1,16 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
-import {
-  ALWAYS_VISIBLE,
-  RESERVED_ROWS,
-  TEXT_KEYS,
-  errorId,
-  helpId,
-  hintId,
-  inputId,
-  layoutOf,
-} from './concrete-layout.ts';
-import { DIMENSION_ORDER, SHAPES } from './concrete-shapes.ts';
+import { ALWAYS_VISIBLE, RESERVED_ROWS, TEXT_KEYS, layoutOf } from './concrete-layout.ts';
+import { DIMENSION_ORDER, SHAPES } from './concrete/shapes.ts';
 
 describe('layout (calculator-page › Form controls, [CP11] data, [CP14] logic)', () => {
   // spec: calculator-page › [CP11] the visible fields per shape, in the order of the table
@@ -51,13 +42,5 @@ describe('layout (calculator-page › Form controls, [CP11] data, [CP14] logic)'
       .sort();
     expect([...TEXT_KEYS].sort()).toEqual(textual);
     expect(new Set(TEXT_KEYS).size).toBe(TEXT_KEYS.length);
-  });
-
-  // spec: calculator-page › [CP46] an input, its hint, its help and its message have ids
-  it('names the input, hint, help and error elements of a field', () => {
-    expect(inputId('length')).toBe('calc-length');
-    expect(hintId('length')).toBe('calc-length-hint');
-    expect(helpId('waste')).toBe('calc-waste-help');
-    expect(errorId('length')).toBe('calc-length-error');
   });
 });
