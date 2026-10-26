@@ -74,10 +74,11 @@ export interface StepperSlot<C extends AnyCalculator> {
 export interface ShoppingLineSpec<C extends AnyCalculator> {
   /** The `materialId` of the engine line this one shows. */
   readonly material: string;
-  /** The page-key suffix of the label and the placeholder the quantity unit fills. */
+  /** The page-key suffix of the label. */
   readonly label: string;
-  readonly fill: string;
-  readonly note?: { readonly key: string; readonly fill: string };
+  /** The page-key suffix of the note under the line, if it has one. */
+  readonly note?: string;
+  /** The placeholders each text carries are the keys of `fills`, so a line may have any number. */
   parts(moment: Moment<C>): {
     readonly unit: string;
     readonly fills: Readonly<Record<string, string>>;

@@ -116,8 +116,8 @@ export interface StepperSlot<C extends AnyCalculator> {
 }
 export interface ShoppingLineSpec<C extends AnyCalculator> {
   readonly material: string;                 // the engine line's `materialId` (M-4)
-  readonly label: string; readonly fill: string;               // page-key suffix, placeholder
-  readonly note?: { readonly key: string; readonly fill: string };
+  readonly label: string;                    // page-key suffix
+  readonly note?: string;                    // page-key suffix; placeholders = keys of `parts().fills`
   parts(moment: Moment<C>): { readonly unit: string; readonly fills: Readonly<Record<string, string>> };
 }
 export interface ShoppingLineView {
@@ -220,8 +220,8 @@ export const concretePage = definePage({
   choices: choiceSlot(concrete, [{ select: 'shape', shows: SHAPE_FIELDS }]),
   steppers: stepperSlot(concrete, { waste: Rational.of(5) }),
   shopping: shoppingSlot(concrete, [{
-    material: 'concrete-mix', label: 'shoppingLine', fill: 'bagLb',
-    note: { key: 'bagYield', fill: 'yield' },
+    material: 'concrete-mix', label: 'shoppingLine',
+    note: 'bagYield',
     parts: (m) => ({ unit: `bag-${m.choices.bag}`, fills: bagFills(m, CONCRETE_MIX_YIELDS) }),
   }]),
   costs: costSlot(concrete, [{ output: 'bagCost', price: 'bagPrice' },
