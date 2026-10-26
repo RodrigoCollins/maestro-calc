@@ -367,3 +367,11 @@ Evidence at `a71aa8c`: `npm run verify` exit 0, 177 files, 3,268 tests (G3 tip: 
 - REL-1: a bare out-of-range number (`150`) is written with the unit it was typed in (`150 in`) when the system changes; left bare, the other system would read it as valid in its own default unit. A text with its own unit, an unreadable text, or an invalid text in a field that is not a length (`waste`, `count`, a price) is kept as typed.
 - REL-5: a word that is a feet word followed by one letter (`5ftx"`) is still `UNKNOWN_UNIT` at the word; the glued split only applies when the word carries digits.
 - Follow-ups for the next change (out of scope): automated post-deploy smoke, e2e sharding, ready-mix price per m³ (owner decision).
+
+## G3 Judgment Day
+
+Round 1 on `a4bb08a..4fa2b48`: judge A returned no finding (recomputed the four methodology rows, read the controller, mount, scanner, budgets, CSP, templates and the recipe); judge B returned one MAJOR, **JD-B-1**: the form-level `keydown` listener called `preventDefault` on every Enter, so a focused `type="button"` control (shape, unit, bag, waste step, copy) could not be pressed with Enter, only with Space. One judge only, so the orchestrator reproduced it in Chromium against the built site: with focus on the Footing button, Enter left `aria-pressed="false"` and the address unchanged, Space switched the shape. Confirmed as introduced by the candidate.
+
+Fix round 1 (ledger `cc-g3-jd-fix-1`): `dec668c` restricts the guard to `event.target instanceof HTMLInputElement` and adds the e2e test "activates a focused button with Enter, like Space" (red before, green after, both locales); `8525e8b` dates the four privacy and methodology pages edited in this candidate `2026-10-26` (judge A's INFO observation). Scoped re-judgment by both judges over the frozen ledger and the fix delta: no finding (fields still do not submit, CP23 intact; no `select` or `textarea` in the form; the date keeps the ISO format).
+
+Final verification at `8525e8b`: `npm run verify` exit 0 (3,268 tests, coverage 100); `npm run test:e2e` 283 passed in 39.9 s; `npm run lighthouse` 100 in the four categories on the six URLs. Budgets: JS graph 36,450 B / 49,152; calculator page weight 160,533 B / 196,608; HTML 34,073 B / 40,960. **JUDGMENT: APPROVED.** G3.2 continues with the push, CI (GX6 wall time) and the PR against `main`.
