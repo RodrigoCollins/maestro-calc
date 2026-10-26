@@ -140,8 +140,7 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
       retrieved: concreteMix.source.retrieved,
     });
     const nist = sources.find((source) => source.url.includes('nist.gov'));
-    expect(nist?.name).toContain('SP 811');
-    expect(nist?.name).toContain('Appendix B');
+    expect(nist?.name).toMatch(/^NIST SP 811, Appendix B\b/);
     expect(nist?.retrieved).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
@@ -223,6 +222,33 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
       expect(faq.every(({ answer }) => answer.length <= FAQ_MAX_ANSWER)).toBe(true);
     },
   );
+
+  // spec: calculator-page › [CP10] the FAQ answers state the figure before the extra, then the bags with it
+  it.each([
+    [
+      'en',
+      /12\.83 cubic feet before the extra\. With 10 percent extra, that is 24 bags of 80 lb\./,
+    ],
+    [
+      'es',
+      /12\.83 pies cúbicos antes del extra\. Con 10 por ciento de extra, son 24 bolsas de 80 lb\./,
+    ],
+  ] as const)(
+    'writes the steps answer of the %s entry in the figure-then-extra order',
+    (locale, sentence) => {
+      const steps = faqOf(entryOf(locale).body).find(({ answer }) => answer.includes('12.83'));
+      expect(steps?.answer).toMatch(sentence);
+    },
+  );
+
+  it('asks the Spanish slab question in the natural verb and states the slab as having its volume', () => {
+    const faq = faqOf(entryOf('es').body);
+    expect(faq.map(({ question }) => question)).toContain(
+      '¿Cuántas yardas cúbicas de concreto lleva una losa de 4 in?',
+    );
+    expect(faq[0]?.answer).toContain('La losa tiene 40 pies cúbicos');
+    expect(faq[1]?.answer).toContain('Una losa de 12 ft por 10 ft tiene 40 pies cúbicos');
+  });
 
   // spec: calculator-page › Page anatomy: the Spanish register
   it('passes the Spanish register check', () => {
