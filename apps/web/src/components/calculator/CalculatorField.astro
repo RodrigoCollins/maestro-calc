@@ -4,11 +4,9 @@ import type { Field } from './model.ts';
 
 interface Props {
   field: Field;
-  /** The shapes a dimension input belongs to, joined into `data-shapes`; absent for the others. */
-  shapes?: readonly string[];
   hidden?: boolean;
 }
-const { field, shapes, hidden = false } = Astro.props;
+const { field, hidden = false } = Astro.props;
 const id = inputId(field.key);
 const { hint, help } = field;
 // The input is described by its unit hint and its help text; a message for an error uses the same
@@ -21,7 +19,7 @@ const describedBy = [
   .join(' ');
 ---
 
-<div class="calc-field" data-shapes={shapes?.join(' ')} hidden={hidden}>
+<div class="calc-field" hidden={hidden}>
   <label for={id}>{field.label}</label>
   <input
     id={id}

@@ -26,9 +26,8 @@ export interface Field {
   readonly help?: string;
 }
 
-/** A dimension input: held once in the page, shown when the pressed shape is one of `shapes`. */
+/** A dimension input: held once in the page, visible while the pressed shape uses it (`layout.ts`). */
 export interface ShapeField extends Field {
-  readonly shapes: readonly string[];
   readonly visible: boolean;
 }
 

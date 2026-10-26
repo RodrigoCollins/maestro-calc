@@ -9,30 +9,26 @@ const render = (locale: 'en' | 'es') =>
   renderComponent(CalculatorForm, { form: concreteView(locale).form });
 
 describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP12], [CP41] static)', () => {
-  // spec: calculator-page › [CP11] static: each input is in the HTML once, tagged with the shapes
-  // that show it, and only the slab fields are visible
-  it('holds each input once, tagged with its shapes, with only the slab visible', async () => {
+  // spec: calculator-page › [CP11] static: each input is in the HTML once, in the one order of the
+  // form, and only the slab fields are visible
+  it('holds each input once, in the order of the form, with only the slab visible', async () => {
     const root = await render('en');
     const rows = root
-      .querySelectorAll('[data-shapes]')
-      .map((row) => [
-        row.querySelector('input')?.getAttribute('name'),
-        row.getAttribute('data-shapes'),
-        row.hasAttribute('hidden'),
-      ]);
+      .querySelectorAll('.calc-shape-area .calc-field')
+      .map((row) => [row.querySelector('input')?.getAttribute('name'), row.hasAttribute('hidden')]);
     expect(rows).toEqual([
-      ['length', 'slab footing', false],
-      ['width', 'slab', false],
-      ['thickness', 'slab', false],
-      ['footingWidth', 'footing', true],
-      ['footingDepth', 'footing', true],
-      ['diameter', 'column', true],
-      ['height', 'column', true],
-      ['stepWidth', 'steps', true],
-      ['rise', 'steps', true],
-      ['run', 'steps', true],
-      ['stepCount', 'steps', true],
-      ['count', 'footing column', true],
+      ['length', false],
+      ['width', false],
+      ['thickness', false],
+      ['footingWidth', true],
+      ['footingDepth', true],
+      ['diameter', true],
+      ['height', true],
+      ['stepWidth', true],
+      ['rise', true],
+      ['run', true],
+      ['stepCount', true],
+      ['count', true],
     ]);
     const names = root.querySelectorAll('input').map((input) => input.getAttribute('name'));
     expect(new Set(names).size).toBe(names.length);

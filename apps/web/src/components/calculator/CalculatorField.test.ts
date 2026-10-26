@@ -28,21 +28,14 @@ describe('CalculatorField (calculator-page › Form controls, [CP12], [CP41] sta
     expect(root.querySelector('input')?.getAttribute('inputmode')).toBe('numeric');
   });
 
-  it('tags the shapes it belongs to and hides itself when asked', async () => {
-    const root = await renderComponent(CalculatorField, {
-      field,
-      shapes: ['slab', 'footing'],
-      hidden: true,
-    });
-    const wrapper = root.querySelector('.calc-field');
-    expect(wrapper?.getAttribute('data-shapes')).toBe('slab footing');
-    expect(wrapper?.hasAttribute('hidden')).toBe(true);
+  it('hides itself when asked', async () => {
+    const root = await renderComponent(CalculatorField, { field, hidden: true });
+    expect(root.querySelector('.calc-field')?.hasAttribute('hidden')).toBe(true);
   });
 
-  it('is visible and untagged by default, and has no description without a hint or help', async () => {
+  it('is visible by default, and has no description without a hint or help', async () => {
     const root = await renderComponent(CalculatorField, { field });
     const wrapper = root.querySelector('.calc-field');
-    expect(wrapper?.hasAttribute('data-shapes')).toBe(false);
     expect(wrapper?.hasAttribute('hidden')).toBe(false);
     expect(root.querySelector('input')?.hasAttribute('aria-describedby')).toBe(false);
     expect(root.querySelector('small')).toBeNull();
