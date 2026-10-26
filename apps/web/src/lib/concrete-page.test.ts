@@ -2,7 +2,7 @@ import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it } from 'vitest';
-import { concreteView } from './calculator-page.ts';
+import { concreteView } from './concrete-page.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English

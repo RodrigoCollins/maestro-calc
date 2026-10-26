@@ -4,7 +4,7 @@ import { parse } from 'yaml';
 import { describe, expect, it } from 'vitest';
 import { calculatorSchema } from '../content/schema.ts';
 import { faqOf, FAQ_MAX_ANSWER } from '../content/faq.ts';
-import { concreteView } from '../lib/calculator-page.ts';
+import { concreteView } from '../lib/concrete-page.ts';
 import { calculators } from '../lib/calculators.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord } from '../site-check/dom.ts';
