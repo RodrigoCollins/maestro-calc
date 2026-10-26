@@ -225,6 +225,18 @@ for (const calculator of CONCRETE_PAGES) {
       await expect(input(page, 'length')).toHaveValue('20');
     });
 
+    // spec: calculator-page › [CP23] Enter does not navigate, and still presses the button it is on
+    test('activates a focused button with Enter, like Space', async ({ page }) => {
+      await open(page, calculator);
+      await shapeButton(page, 'footing').focus();
+      await page.keyboard.press('Enter');
+      await expect(shapeButton(page, 'footing')).toHaveAttribute('aria-pressed', 'true');
+      await expect.poll(() => query(page)).toBe('?v=1&sh=footing');
+      await shapeButton(page, 'column').focus();
+      await page.keyboard.press('Space');
+      await expect(shapeButton(page, 'column')).toHaveAttribute('aria-pressed', 'true');
+    });
+
     // spec: calculator-page › [CP24] every state, loaded through its link, shows the figures of the engine
     for (const state of STATES) {
       test(`loads the state "${state.name}" from its link with the engine's figures`, async ({
