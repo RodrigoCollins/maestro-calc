@@ -163,22 +163,20 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       ['60', false],
       ['80', true],
     ]);
-    expect(form.fields.map(({ key, shapes, visible }) => [key, shapes.join(' '), visible])).toEqual(
-      [
-        ['length', 'slab footing', true],
-        ['width', 'slab', true],
-        ['thickness', 'slab', true],
-        ['footingWidth', 'footing', false],
-        ['footingDepth', 'footing', false],
-        ['diameter', 'column', false],
-        ['height', 'column', false],
-        ['stepWidth', 'steps', false],
-        ['rise', 'steps', false],
-        ['run', 'steps', false],
-        ['stepCount', 'steps', false],
-        ['count', 'footing column', false],
-      ],
-    );
+    expect(form.fields.map(({ key, visible }) => [key, visible])).toEqual([
+      ['length', true],
+      ['width', true],
+      ['thickness', true],
+      ['footingWidth', false],
+      ['footingDepth', false],
+      ['diameter', false],
+      ['height', false],
+      ['stepWidth', false],
+      ['rise', false],
+      ['run', false],
+      ['stepCount', false],
+      ['count', false],
+    ]);
     expect(form.waste).toMatchObject({ key: 'waste', value: '10', mode: 'decimal' });
     expect(form.prices.map(({ key, value, placeholder }) => [key, value, placeholder])).toEqual([
       ['bagPrice', '', '0.00'],

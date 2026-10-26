@@ -46,7 +46,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
   </div>
   <div class="calc-shape-area" data-reserved="shape">
     {fields.map((field) => (
-      <CalculatorField {field} shapes={field.shapes} hidden={!field.visible} />
+      <CalculatorField {field} hidden={!field.visible} />
     ))}
   </div>
   <CalculatorField field={waste} />

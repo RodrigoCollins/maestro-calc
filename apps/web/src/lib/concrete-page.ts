@@ -133,7 +133,7 @@ export const concreteView = (locale: Locale): ConcretePageView => {
     shapes: choices('shape'),
     fields: DIMENSION_ORDER.map((key) => {
       const shapes = SHAPES.filter((shape) => SHAPE_FIELDS[shape].some((used) => used === key));
-      return { ...field(key), shapes, visible: shapes.some((shape) => shape === defaultShape) };
+      return { ...field(key), visible: shapes.some((shape) => shape === defaultShape) };
     }),
     waste: {
       ...field('waste'),

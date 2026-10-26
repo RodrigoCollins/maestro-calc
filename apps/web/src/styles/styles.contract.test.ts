@@ -274,6 +274,20 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     );
   });
 
+  // spec: calculator-page › Errors without a button: the message is in the error colour and the size of a hint
+  it('draws the error message the script adds in the error colour token', () => {
+    expect(declared('.calc-error', 'color')).toBe(
+      declared(".calc-field input[aria-invalid='true']", 'border-color'),
+    );
+    expect(rules.get('.calc-error')?.['color']).toBe('var(--color-error)');
+    expect(rules.get('.calc-error')?.['grid-column']).toBe('1 / -1');
+  });
+
+  // spec: calculator-page › Copy link: the read-only fallback field is a full-size input
+  it('makes the copy fallback field as tall as the other inputs', () => {
+    expect(rem(declared('.calc-fallback', 'min-height'))).toBe(56);
+  });
+
   // spec: calculator-page › Accessibility of the interactive page: no animation, ring untouched
   it('animates nothing and leaves the focus ring to the base stylesheet', () => {
     expect(calculator).not.toMatch(/animation|transition|@keyframes/);
