@@ -342,3 +342,28 @@ Commits: `a43f3a3` test(e2e) drive the calculator with scripts enabled; `c0006db
 
 ### Group 3 summary and G3.1
 `git log main..HEAD` shows S11a to S13b (route, templates, methodology, privacy, home, tooling all present). G3.2 (GX1-GX6, PR) belongs to the orchestrator. Nothing pushed.
+
+## G3 correction round 1
+
+All four lenses passed on `a4bb08a..4a11049`; these are the folded findings. Fifteen commits on top of `4a11049` (40 files, 366 insertions, 64 deletions). The correction agent left two gaps the orchestrator closed in `a71aa8c`: the non-length branch of `keptText` (`concrete-controller.ts`) was uncovered (web `calculator/**` statements 99.63 percent) and the `split === -1` check of `gluedFeet` (`scanner.ts`) had two surviving mutants (`format` shard 99.57).
+
+Evidence at `a71aa8c`: `npm run verify` exit 0, 177 files, 3,268 tests (G3 tip: 3,230), coverage 100 everywhere; `format` shard 469 mutants, 100.00; `npm run test:e2e` 281 passed in 54.3 s; `npm run lighthouse` 100 in the four categories on the six URLs. Budgets: JS graph 36,412 B / 49,152; calculator page weight 160,495 B / 196,608 (ES); HTML 34,073 B / 40,960 (ES). History hygiene clean.
+
+### Finding to commit
+
+| Finding | Commit |
+|---|---|
+| RD-2 (controller, layout, shapes, mount and the e2e page list named concrete-scoped) | `4f20847` |
+| RD-5 (Spanish page title in sentence case; methodology labels the starting-values case and writes the pi error as 10⁻³⁵) | `250b6f4`, `f749aff`, `4e36079` |
+| RD-1 (AGENTS.md names the concrete-only view and the e2e page list) | `59052e3` |
+| RES-1, RES-3 (browser cache keyed by the runner image; traces and screenshots of failed e2e tests kept) | `eeca26a` |
+| R1-1 (privacy page says the address stays in the browser history; spec sentence) | `9c7dc19`, `823dba4` |
+| REL-5 (`12ft6in` and abbreviation periods `12 ft. 6 in.` in the length grammar; spec, parser, mutants) | `8f25886`, `7beeca4`, `20d1b96`, `937004d` |
+| REL-1, REL-2, REL-3 (an invalid bare number keeps its unit through the unit toggle; the link notice clears on the rewrite; spec pins) | `1486bbc`, `a62179e` |
+| Coverage and mutant gaps of REL-1 and REL-5 | `a71aa8c` |
+
+### Decisions and deviations
+
+- REL-1: a bare out-of-range number (`150`) is written with the unit it was typed in (`150 in`) when the system changes; left bare, the other system would read it as valid in its own default unit. A text with its own unit, an unreadable text, or an invalid text in a field that is not a length (`waste`, `count`, a price) is kept as typed.
+- REL-5: a word that is a feet word followed by one letter (`5ftx"`) is still `UNKNOWN_UNIT` at the word; the glued split only applies when the word carries digits.
+- Follow-ups for the next change (out of scope): automated post-deploy smoke, e2e sharding, ready-mix price per m³ (owner decision).
