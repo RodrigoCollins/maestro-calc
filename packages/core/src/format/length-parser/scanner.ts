@@ -68,9 +68,8 @@ const WORDS = new Map<string, Unit<'length'>>([
 const LEXEMES = /([ \t\u00A0]+)|([0-9]+)|([A-Za-z]+[0-9]*)|[^]/gu;
 const BLANK = /^[ \t\u00A0]*$/;
 const NUMERIC_NOTATION = /^[eExX][0-9]/;
-// `ft6` in `12ft6in`: a feet word glued to the inches digits, read as two tokens only when an
-// inch mark follows (`5ft2` and `5 m2` stay unknown units, they mean square feet and meters).
-const FEET_AND_DIGITS = /^(ft|foot|feet)([0-9]+)$/i;
+// What may follow `ft6` in `12ft6in`: the inch mark that makes the digits inches (`5ft2` and `5 m2`
+// stay unknown units, they mean square feet and square meters).
 const INCH_MARK_AHEAD = /^[ \t\u00A0]*(?:(?:in|inch|inches)(?![A-Za-z0-9])|["\u2033\u201D])/i;
 
 const malformed = (offset: number): Result<never, LengthParseError> =>
@@ -100,6 +99,15 @@ const wordToken = (
     : malformed(start);
 };
 
+const wordTokens = (
+  word: string,
+  start: number,
+  before: readonly Token[],
+): Result<readonly Token[], LengthParseError> => {
+  const token = wordToken(word, start, before);
+  return token.ok ? ok([token.value]) : token;
+};
+
 const markOrPunctuationToken = (char: string, start: number): Result<Token, LengthParseError> => {
   const unit = MARKS.get(char);
   if (unit !== undefined) return ok({ kind: 'unit', start, text: char, unit, symbol: true });
@@ -115,18 +123,18 @@ const gluedFeet = (
   word: string,
   start: number,
   text: string,
-  end: number,
   before: readonly Token[],
 ): Result<readonly Token[], LengthParseError> | null => {
-  const parts = FEET_AND_DIGITS.exec(word);
-  if (parts === null || before[before.length - 1]?.kind !== 'uint') return null;
-  if (!INCH_MARK_AHEAD.test(text.slice(end))) return null;
-  const [, feetWord = '', inches = ''] = parts;
-  if (inches.length > MAX_DIGITS)
-    return err({ code: 'TOO_LARGE', offset: start + feetWord.length });
+  const split = word.search(/[0-9]/);
+  const feetWord = word.slice(0, split);
+  const inches = word.slice(split);
+  if (split === -1 || WORDS.get(feetWord.toLowerCase()) !== ft) return null;
+  if (before[before.length - 1]?.kind !== 'uint') return null;
+  if (!INCH_MARK_AHEAD.test(text.slice(start + word.length))) return null;
+  if (inches.length > MAX_DIGITS) return err({ code: 'TOO_LARGE', offset: start + split });
   return ok([
     { kind: 'unit', start, text: feetWord, unit: ft, symbol: false },
-    { kind: 'uint', start: start + feetWord.length, text: inches },
+    { kind: 'uint', start: start + split, text: inches },
   ]);
 };
 
@@ -156,20 +164,15 @@ export const scan = (text: string): Result<readonly Token[], LengthParseError> =
     } else if (digits !== undefined) {
       if (digits.length > MAX_DIGITS) return err({ code: 'TOO_LARGE', offset: start });
       tokens.push({ kind: 'uint', start, text: digits });
-    } else if (start === abbreviationDot) {
-      continue;
-    } else {
-      const glued = word === undefined ? null : gluedFeet(word, start, text, end, tokens);
-      if (glued !== null) {
-        if (!glued.ok) return glued;
-        tokens.push(...glued.value);
-        continue;
-      }
-      const token =
-        word === undefined ? markOrPunctuationToken(lexeme, start) : wordToken(word, start, tokens);
+    } else if (word !== undefined) {
+      const read = gluedFeet(word, start, text, tokens) ?? wordTokens(word, start, tokens);
+      if (!read.ok) return read;
+      tokens.push(...read.value);
+      if (text[end] === '.') abbreviationDot = end;
+    } else if (start !== abbreviationDot) {
+      const token = markOrPunctuationToken(lexeme, start);
       if (!token.ok) return token;
       tokens.push(token.value);
-      if (word !== undefined && text[end] === '.') abbreviationDot = end;
     }
   }
   return ok(tokens);
