@@ -120,7 +120,7 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the pinned counts', 'apps/web/src/contract/end-state.contract.test.ts'],
     ['the Lighthouse representative', 'tooling/site-browser/e2e/representative.ts'],
     ['the page builder', 'apps/web/src/lib/page-view.ts'],
-    ['the concrete-only view', 'concreteView'],
+    ['the per-id page table', 'apps/web/src/lib/pages.ts'],
     ['the hand-kept browser pages', 'tooling/site-browser/e2e/concrete-pages.ts'],
     ['the concrete mount', 'apps/web/src/client/concrete-mount.ts'],
     ['the controller', 'apps/web/src/calculator/controller.ts'],
@@ -135,6 +135,11 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
   it('names only paths that exist in the repository', () => {
     const missing = pathsIn(recipe).filter((path) => !exists(path));
     expect(missing).toEqual([]);
+  });
+
+  // spec: calculator-web-core › [CWC35] the recipe no longer says that CalculatorView renders concrete for every id
+  it('does not claim that CalculatorView renders the concrete view for every id', () => {
+    expect(recipe).not.toContain('concreteView');
   });
 
   it('lists what is still kept by hand instead of claiming that nothing is', () => {

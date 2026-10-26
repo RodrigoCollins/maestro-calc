@@ -2,12 +2,12 @@ import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { concreteView } from '../../lib/page-view.ts';
+import { pageView } from '../../lib/pages.ts';
 import CalculatorForm from './CalculatorForm.astro';
 import type { AreaField, FormView } from './model.ts';
 
 const render = (locale: 'en' | 'es') =>
-  renderComponent(CalculatorForm, { form: concreteView(locale).form });
+  renderComponent(CalculatorForm, { form: pageView('concrete', locale).form });
 
 describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP12], [CP41] static)', () => {
   // spec: calculator-page › [CP11] static: each input is in the HTML once, in the one order of the

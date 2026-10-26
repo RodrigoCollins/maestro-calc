@@ -1,7 +1,7 @@
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it, vi } from 'vitest';
-import { concreteView } from '../../lib/page-view.ts';
+import { pageView } from '../../lib/pages.ts';
 import { err, Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
 import {
@@ -33,7 +33,7 @@ vi.mock('../../lib/concrete.ts', async (importOriginal) => {
 
 /** The messages the page carries as templates, by name, for a locale (the script reads them from the DOM). */
 const messagesOf = (locale: 'en' | 'es'): Messages =>
-  Object.fromEntries(concreteView(locale).messages);
+  Object.fromEntries(pageView('concrete', locale).messages);
 
 const EN: Environment = {
   messages: messagesOf('en'),

@@ -4,7 +4,7 @@ import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import {
@@ -23,14 +23,14 @@ import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { choiceSlot } from '../calculator/slots/choices.ts';
 import { costSlot } from '../calculator/slots/costs.ts';
 import { shoppingSlot } from '../calculator/slots/shopping.ts';
-import type { concrete } from './concrete.ts';
 import { concrete as concreteCalculator } from './concrete.ts';
-import { concreteView, formViewOf, pageViewOf, resultViewOf } from './page-view.ts';
+import { formViewOf, pageViewOf, resultViewOf } from './page-view.ts';
+import { pageView } from './pages.ts';
 
-describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
+describe('the concrete page view (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
   it('describes the default English page from the engine and the catalogs', () => {
-    const view = concreteView('en');
+    const view = pageView('concrete', 'en');
     expect(view.title).toBe('Concrete Calculator');
     expect(view.answer).toBe(
       'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
@@ -66,7 +66,7 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
 
   // spec: calculator-page › [CP2] the default render, Spanish
   it('describes the default Spanish page with the same figures', () => {
-    const view = concreteView('es');
+    const view = pageView('concrete', 'es');
     expect(view.title).toBe('Calculadora de Concreto');
     expect(view.answer).toBe(
       'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
@@ -90,31 +90,31 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
 
   // spec: calculator-page › [CP40] static: the "not running" note, then the example sentence
   it('joins the generic note and the calculator example', () => {
-    expect(concreteView('en').notRunning).toBe(
+    expect(pageView('concrete', 'en').notRunning).toBe(
       'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example. Example: a 12 ft by 10 ft slab, 4 in thick.',
     );
-    expect(concreteView('es').notRunning).toBe(
+    expect(pageView('concrete', 'es').notRunning).toBe(
       'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo. Ejemplo: una losa de 12 ft por 10 ft, de 4 in de espesor.',
     );
   });
 
   // spec: calculator-page › [CP17] and [CP5] the paths come from the route table
   it('points the breadcrumb home and the terms link at the locale paths', () => {
-    expect(concreteView('en').breadcrumb).toEqual({
+    expect(pageView('concrete', 'en').breadcrumb).toEqual({
       label: 'Breadcrumb',
       homeLabel: 'Home',
       homeHref: '/',
       current: 'Concrete Calculator',
     });
-    expect(concreteView('es').breadcrumb.homeHref).toBe('/es');
-    expect(concreteView('en').result.termsHref).toBe('/terms');
-    expect(concreteView('es').result.termsHref).toBe('/es/terminos');
-    expect(concreteView('es').result.termsLabel).toBe('Términos');
+    expect(pageView('concrete', 'es').breadcrumb.homeHref).toBe('/es');
+    expect(pageView('concrete', 'en').result.termsHref).toBe('/terms');
+    expect(pageView('concrete', 'es').result.termsHref).toBe('/es/terminos');
+    expect(pageView('concrete', 'es').result.termsLabel).toBe('Términos');
   });
 
   // spec: calculator-page › [CP43] raw messages for the templates, placeholders kept
   it('carries the twelve error messages, the four sentences and the copy states raw', () => {
-    const messages = Object.fromEntries(concreteView('en').messages);
+    const messages = Object.fromEntries(pageView('concrete', 'en').messages);
     const names = Object.keys(messages);
     expect(names.filter((name) => name.startsWith('errors.'))).toEqual(
       ALL_ERROR_CODES.map((code) => `errors.${code}`),
@@ -133,14 +133,14 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       'Link copied',
       'Could not copy. Select the link and copy it.',
     ]);
-    expect(Object.fromEntries(concreteView('es').messages)['errors.MALFORMED']).toBe(
+    expect(Object.fromEntries(pageView('concrete', 'es').messages)['errors.MALFORMED']).toBe(
       esCommon['errors.MALFORMED'],
     );
   });
 
   // spec: calculator-page › [CP51] the unit hint of the US system on every length field
   it('gives each length field the hint of the unit it is read in, and the others none', () => {
-    const { form } = concreteView('en');
+    const { form } = pageView('concrete', 'en');
     expect(Object.fromEntries(fieldsOf(form).map(({ key, hint }) => [key, hint]))).toEqual({
       length: 'feet',
       width: 'feet',
@@ -158,7 +158,7 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       bagPrice: undefined,
       readyMixPrice: undefined,
     });
-    expect(fieldsOf(concreteView('es').form).find(({ key }) => key === 'rise')?.hint).toBe(
+    expect(fieldsOf(pageView('concrete', 'es').form).find(({ key }) => key === 'rise')?.hint).toBe(
       'pulgadas',
     );
   });
@@ -167,7 +167,7 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
   it('carries the four unit hints in both locales for the script', () => {
     const hints = (locale: 'en' | 'es') =>
       Object.fromEntries(
-        concreteView(locale).messages.filter(([name]) => name.startsWith('hint.')),
+        pageView('concrete', locale).messages.filter(([name]) => name.startsWith('hint.')),
       );
     expect(hints('en')).toEqual({
       'hint.ft': 'feet',
@@ -176,7 +176,7 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       'hint.cm': 'centimeters',
     });
     const volumes = Object.fromEntries(
-      concreteView('en').messages.filter(([name]) => name.startsWith('volume.')),
+      pageView('concrete', 'en').messages.filter(([name]) => name.startsWith('volume.')),
     );
     expect(volumes).toEqual({
       'volume.yd3': '{value} cubic yards',
@@ -191,7 +191,7 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
   });
 
   it('presses the defaults: US units, slab, 80 lb bags, and describes the groups', () => {
-    const { form } = concreteView('en');
+    const { form } = pageView('concrete', 'en');
     expect(form.units.filter(({ pressed }) => pressed).map(({ id }) => id)).toEqual(['imperial']);
     const [shape, , bag] = form.items;
     expect(
@@ -689,47 +689,30 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
   });
 });
 
-/**
- * The builder reads the concrete definition once; these cases swap it for a broken copy (the real
- * one with one fact changed) to reach the guards that name a drifted definition or catalog.
- */
-describe('concreteView guards (calculator-web-core › Page-view builder)', () => {
-  const viewOf = async (change: (real: typeof concrete) => unknown) => {
-    vi.resetModules();
-    const real = await vi.importActual<{ concrete: typeof concrete }>('./concrete.ts');
-    vi.doMock('./concrete.ts', () => ({ concrete: change(real.concrete) }));
-    const { concreteView: broken } = await import('./page-view.ts');
-    return () => broken('en');
-  };
-  afterEach(() => {
-    vi.doUnmock('./concrete.ts');
-    vi.doUnmock('@maestro-calc/i18n/catalogs/en/concrete');
-    vi.resetModules();
-  });
+describe('pageViewOf guards (calculator-web-core › Page-view builder)', () => {
+  const enCatalog: Record<string, string> = { ...enCommon, ...enConcrete, ...enSite };
 
-  it('refuses a definition whose default state does not run or validate', async () => {
-    const failure = { ok: false, error: { code: 'MALFORMED' } };
-    expect(await viewOf((real) => ({ ...real, run: () => failure }))).toThrow(
+  // the default state of the definition must run and validate, or no page can be built from it
+  it('refuses a definition whose default state does not run or validate', () => {
+    const failure = { ok: false, errors: [{ field: 'length', code: 'MALFORMED' }] } as const;
+    const withRun = definePage({ calculator: { ...concreteCalculator, run: () => failure } });
+    expect(() => pageViewOf(withRun, 'en', enCatalog)).toThrow(
       'the default run of concrete failed',
     );
-    expect(await viewOf((real) => ({ ...real, validate: () => failure }))).toThrow(
+    const withValidate = definePage({
+      calculator: { ...concreteCalculator, validate: () => failure },
+    });
+    expect(() => pageViewOf(withValidate, 'en', enCatalog)).toThrow(
       'the default state of concrete failed',
     );
   });
 
-  it('names a message the catalog lacks', async () => {
-    vi.resetModules();
-    vi.doMock('@maestro-calc/i18n/catalogs/en/concrete', () => ({ enConcrete: {} }));
-    const { concreteView: broken } = await import('./page-view.ts');
-    let thrown: unknown;
-    try {
-      broken('en');
-    } catch (error) {
-      thrown = error;
-    }
-    expect(thrown).toMatchObject({
-      code: 'PAGE_KEY',
-      cause: { id: 'concrete', at: 'calc.concrete.outputs.volumeYd3' },
-    });
+  // spec: calculator-web-core › Page-view builder: a missing page key fails the build naming the key
+  it('names the first message the catalog lacks', () => {
+    const lacking = { ...enCatalog };
+    delete lacking['calc.concrete.outputs.volumeYd3'];
+    const error = pageModuleErrorOf(() => pageViewOf(concretePage, 'en', lacking));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.outputs.volumeYd3' });
   });
 });

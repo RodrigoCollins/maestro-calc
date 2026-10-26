@@ -15,7 +15,8 @@ import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
-import { concreteView, pageViewOf } from '../../lib/page-view.ts';
+import { pageViewOf } from '../../lib/page-view.ts';
+import { pageView } from '../../lib/pages.ts';
 import { calculators } from '../../lib/calculators.ts';
 import CalculatorBody from './CalculatorBody.astro';
 import type { CalculatorContent } from './model.ts';
@@ -28,7 +29,7 @@ const CONTENT: CalculatorContent = {
 };
 
 const render = (locale: 'en' | 'es') =>
-  renderComponent(CalculatorBody, { view: concreteView(locale), content: CONTENT });
+  renderComponent(CalculatorBody, { view: pageView('concrete', locale), content: CONTENT });
 
 type Root = Awaited<ReturnType<typeof render>>;
 
@@ -174,7 +175,7 @@ describe('CalculatorBody, anatomy (calculator-page › [CP5], [CP15], [CP17])', 
   it('shows the sources and the review date after the content slot', async () => {
     const root = await renderComponent(
       CalculatorBody,
-      { view: concreteView('en'), content: CONTENT },
+      { view: pageView('concrete', 'en'), content: CONTENT },
       { slots: { default: '<h2 id="how-to-use">How to use</h2>' } },
     );
     const ids = root.querySelectorAll('h2').map((el) => el.getAttribute('id'));
@@ -283,5 +284,74 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
       'hint.ft',
       'hint.m',
     ]);
+  });
+});
+
+describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calculator-web-core › [CWC24], [CWC33])', () => {
+  // spec: calculator-page › [CP54] the hooks of the concrete page
+  it('exposes the generic hooks of the concrete page and none of the old ones', async () => {
+    const root = await render('en');
+    const values = (selector: string, attribute: string) =>
+      root.querySelectorAll(selector).map((el) => el.getAttribute(attribute));
+    expect(values('[data-choice="shape"]', 'data-value')).toEqual([
+      'slab',
+      'footing',
+      'column',
+      'steps',
+    ]);
+    expect(values('[data-choice="bag"]', 'data-value')).toEqual(['40', '60', '80']);
+    expect(values('[data-step="waste"]', 'data-direction')).toEqual(['less', 'more']);
+    for (const hook of ['[data-copy]', '[data-copy-status]', '[data-primary]']) {
+      expect(root.querySelectorAll(hook), hook).toHaveLength(1);
+    }
+    expect(values('[data-shopping]', 'data-shopping')).toEqual(['bag-80']);
+    expect(values('[data-output]', 'data-output')).toEqual([
+      'volumeYd3',
+      'volumeFt3',
+      'volumeM3',
+      'netVolume',
+      'bagCost',
+      'readyMixCost',
+    ]);
+    expect(values('[data-line]', 'data-line')).toEqual(['0']);
+    expect(root.querySelector('[data-line="0"] [data-fill="bagLb"]')?.text).toBe('80');
+    expect(root.querySelector('[data-line-note="0"] [data-fill="yield"]')?.text).toBe('0.60');
+    const area = root.querySelector('[data-reserved="shape"]');
+    expect(area?.getAttribute('style')).toBe('--calc-rows:4');
+    expect(
+      root.querySelectorAll(
+        '[data-shape-button], [data-bag], [data-waste-step], [data-bag-lb], [data-bag-yield], [data-yield]',
+      ),
+    ).toHaveLength(0);
+  });
+
+  // spec: calculator-web-core › [CWC24], [CWC33] and calculator-page › [CP56]: a module with no slot renders no slot hook
+  it('renders rectangle-area through the real components with two fields and no slot element', async () => {
+    const view = pageViewOf(rectangleAreaPage, 'en', {
+      ...enCommon,
+      ...enRectangleArea,
+      ...enSite,
+    });
+    const root = await renderComponent(CalculatorBody, { view, content: CONTENT });
+    expect(root.querySelector('[data-calculator]')?.getAttribute('data-calculator')).toBe(
+      'rectangle-area',
+    );
+    expect(root.querySelectorAll('input').map((input) => input.getAttribute('id'))).toEqual([
+      'calc-length',
+      'calc-width',
+    ]);
+    expect(outputs(root)).toEqual([
+      ['areaFt2', '100.00'],
+      ['areaYd2', '11.11'],
+      ['areaM2', '9.29'],
+    ]);
+    expect(root.querySelector('[data-primary]')?.text).toBe('100.00');
+    expect(root.querySelectorAll('[data-unit]')).toHaveLength(2);
+    expect(root.querySelectorAll('[data-copy], [data-copy-status]')).toHaveLength(2);
+    expect(
+      root.querySelectorAll(
+        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint]',
+      ),
+    ).toHaveLength(0);
   });
 });
