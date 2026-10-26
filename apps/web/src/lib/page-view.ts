@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
+import { ALL_ERROR_CODES, type OutputDescriptor, type UnitSystem } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import type {
   AreaField,
@@ -179,6 +179,10 @@ const fillSplitOf = (
     : { name, before, value: required(fills[name], name), after };
 };
 
+/** The primary sentence of a unit system: the page key of its output when the catalog has it, else the bare value. */
+const sentenceOf = (module: AnyPageModule, catalog: Messages, system: UnitSystem): string =>
+  catalog[pageKey(module.id, primaryOutputOf(module, system).key)] ?? '{value}';
+
 /** The result panel of a module at `moment`, the default state (see `resultViewOf`). */
 const resultViewAt = (
   module: AnyPageModule,
@@ -199,14 +203,15 @@ const resultViewAt = (
       ).value,
     );
   const primary = primaryOutputOf(module, SYSTEM);
-  const [before = '', after = ''] = (catalog[pageKey(id, primary.key)] ?? '{value}').split(
-    '{value}',
+  const [before = '', after = ''] = sentenceOf(module, catalog, SYSTEM).split('{value}');
+  const prefixed = UNIT_SYSTEMS.some(
+    (system) => !sentenceOf(module, catalog, system).startsWith('{value}'),
   );
   const views = shopping === undefined ? [] : shopping.view(moment);
 
   return {
     heading: text('site.calculator.resultHeading'),
-    primary: { key: primary.key, before, value: figureOf(primary), after },
+    primary: { key: primary.key, prefixed, before, value: figureOf(primary), after },
     rows: outputs
       .filter(({ display }) => display !== undefined)
       .map((descriptor) => ({

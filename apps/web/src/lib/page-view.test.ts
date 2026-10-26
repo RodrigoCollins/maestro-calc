@@ -44,6 +44,7 @@ describe('the concrete page view (calculator-page › [CP1], [CP2], [CP3], [CP4]
     );
     expect(view.result.primary).toEqual({
       key: 'volumeYd3',
+      prefixed: false,
       before: '',
       value: '1.63',
       after: ' cubic yards',
@@ -452,7 +453,13 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
         ['areaM2', 'Area (square meters)', '9.29', undefined],
       ],
     );
-    expect(result.primary).toEqual({ key: 'areaFt2', before: '', value: '100.00', after: '' });
+    expect(result.primary).toEqual({
+      key: 'areaFt2',
+      prefixed: false,
+      before: '',
+      value: '100.00',
+      after: '',
+    });
     expect(result.shopping).toEqual([]);
     expect(result.costs).toEqual([]);
     expect('costsNote' in result).toBe(false);
@@ -599,6 +606,7 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
   it('splits the primary sentence on its value and names a page key the catalog lacks', () => {
     expect(resultViewOf(concretePage, 'en', enCatalog).primary).toEqual({
       key: 'volumeYd3',
+      prefixed: false,
       before: '',
       value: '1.63',
       after: ' cubic yards',
@@ -607,6 +615,28 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
     const error = pageModuleErrorOf(() => resultViewOf(concretePage, 'en', catalog));
     expect(error.code).toBe('PAGE_KEY');
     expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.page.shoppingLine' });
+  });
+
+  // the page holds the `data-primary-before` span when the sentence of either unit system has a prefix
+  it('marks the primary prefixed when the metric sentence has text before the value', () => {
+    const ft = { unit: 'ft', format: 'decimal', places: 2 } as const;
+    const inch = { unit: 'in', format: 'decimal', places: 2 } as const;
+    const module = definePage({
+      calculator: hintedCalculator({ span: ft, edge: inch }),
+      primary: { imperial: 'span', metric: 'edge' },
+    });
+    const catalog = catalogOf(() => false, {
+      'calc.hinted-fixture.page.span': '{value} feet',
+      'calc.hinted-fixture.page.edge': 'Edge {value} inches',
+    });
+    expect(resultViewOf(module, 'en', catalog).primary).toEqual({
+      key: 'span',
+      prefixed: true,
+      before: '',
+      value: '1.00',
+      after: ' feet',
+    });
+    expect(resultViewOf(concretePage, 'en', enCatalog).primary.prefixed).toBe(false);
   });
 });
 
@@ -661,6 +691,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     expect(view.messages.at(-1)).toEqual(['money', 'Total: {value} dollars']);
     expect(view.result.primary).toEqual({
       key: 'cost',
+      prefixed: true,
       before: 'Total: ',
       value: '$5.00',
       after: ' dollars',
@@ -748,7 +779,13 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
       homeHref: '/',
       current: 'Rectangle Area',
     });
-    expect(view.result.primary).toEqual({ key: 'areaFt2', before: '', value: '100.00', after: '' });
+    expect(view.result.primary).toEqual({
+      key: 'areaFt2',
+      prefixed: false,
+      before: '',
+      value: '100.00',
+      after: '',
+    });
     expect(view.form.items.map((item) => item.kind)).toEqual(['field', 'field']);
   });
 });

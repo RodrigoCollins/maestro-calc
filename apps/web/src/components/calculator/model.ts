@@ -98,8 +98,12 @@ export interface ShoppingLineView {
 
 export interface ResultView {
   readonly heading: string;
-  /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
-  readonly primary: Split & { readonly key: string };
+  /**
+   * The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. `prefixed` says
+   * whether the sentence of either unit system has text before the value: the page then holds the
+   * `data-primary-before` span (empty when the US sentence has none) for the script to write.
+   */
+  readonly primary: Split & { readonly key: string; readonly prefixed: boolean };
   readonly rows: readonly Row[];
   /** One entry per line the module declares, in declared order; empty for a module with none. */
   readonly shopping: readonly ShoppingLineView[];
