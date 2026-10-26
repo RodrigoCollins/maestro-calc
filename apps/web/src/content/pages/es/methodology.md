@@ -1,7 +1,7 @@
 ---
 id: methodology
 locale: es
-updated: 2026-10-23
+updated: 2026-10-26
 ownerReview: pending
 ---
 
