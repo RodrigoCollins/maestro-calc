@@ -4,6 +4,7 @@ import {
   Rational,
   type FieldError,
   type InputDescriptor,
+  type OutputDescriptor,
   type Result,
   type UnitSystem,
   type UrlIssue,
@@ -151,34 +152,22 @@ const noticeOf = (env: Environment, issues: readonly UrlIssue[]): string => {
   return first === undefined ? '' : message(env, `errors.${first.code}`);
 };
 
+/** The outputs the panel writes: every output with a display hint and every money output. */
+const figuredOf = (calculator: AnyCalculator): readonly OutputDescriptor[] =>
+  calculator.outputs.filter(({ display, measure }) => display !== undefined || measure === 'money');
+
 /**
- * The controller of a page module. Creation runs the defaults once and checks the shopping lines
- * against the declared ones (K15), so a mismatch fails at start, not on the first edit.
+ * The checks a module passes once, with the result of its defaults, before a controller runs it:
+ * the engine's shopping lines match the declared ones (K15; an empty list for a module with no
+ * shopping slot), every figure the panel shows can be written from its hint, and the primary of
+ * each unit system is one of them. The page builder replays them at build time, so a module that
+ * would render a static page and die at mount fails `astro build` instead.
  */
-export function controllerOf<C extends AnyCalculator>(module: PageModule<C>): Controller<C>;
-export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
-  type Calc = AnyCalculator;
-  const { calculator, choices, steppers, shopping, costs, answer } = module;
+export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalculator>): void => {
+  const { calculator, shopping } = module;
   const declared = shopping?.lines.map(({ material }) => material) ?? [];
-  const defaults = mustBeOk(calculator.run({}), 'run of the defaults');
   shoppingLinesOf(calculator.id, declared, defaults.shopping);
-
-  const descriptorOf = (key: string): InputDescriptor =>
-    required(
-      calculator.inputs.find((input) => input.key === key),
-      'input',
-    );
-  const textKeys = textKeysOf(calculator);
-  const selects = calculator.inputs.flatMap((input) => (input.kind === 'select' ? [input] : []));
-  const groups = choices?.groups ?? [];
-  const driven: ReadonlySet<string> = new Set(groups.flatMap((group) => group.driven));
-  const figured = calculator.outputs.filter(
-    ({ display, measure }) => display !== undefined || measure === 'money',
-  );
-  const primaryOf = (system: UnitSystem) => primaryOutputOf(module, system);
-
-  // every figure the panel shows must be writable, so a bad hint fails here and not at `start`
-  const figuredKeys = new Set(figured.map(({ key }) => key));
+  const figured = figuredOf(calculator);
   for (const descriptor of figured) {
     const output = required(
       defaults.outputs.find(({ key }) => key === descriptor.key),
@@ -190,10 +179,35 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
       fail('OUTPUT_HINT', calculator.id, descriptor.key);
     }
   }
+  const figuredKeys = new Set(figured.map(({ key }) => key));
   for (const system of ['imperial', 'metric'] as const) {
-    const { key } = primaryOf(system);
+    const { key } = primaryOutputOf(module, system);
     if (!figuredKeys.has(key)) fail('OUTPUT_HINT', calculator.id, key);
   }
+};
+
+/**
+ * The controller of a page module. Creation runs the defaults once and checks the module on them
+ * (`checkModule`), so a mismatch fails at start, not on the first edit.
+ */
+export function controllerOf<C extends AnyCalculator>(module: PageModule<C>): Controller<C>;
+export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
+  type Calc = AnyCalculator;
+  const { calculator, choices, steppers, shopping, costs, answer } = module;
+  const declared = shopping?.lines.map(({ material }) => material) ?? [];
+  checkModule(module, mustBeOk(calculator.run({}), 'run of the defaults'));
+
+  const descriptorOf = (key: string): InputDescriptor =>
+    required(
+      calculator.inputs.find((input) => input.key === key),
+      'input',
+    );
+  const textKeys = textKeysOf(calculator);
+  const selects = calculator.inputs.flatMap((input) => (input.kind === 'select' ? [input] : []));
+  const groups = choices?.groups ?? [];
+  const driven: ReadonlySet<string> = new Set(groups.flatMap((group) => group.driven));
+  const figured = figuredOf(calculator);
+  const primaryOf = (system: UnitSystem) => primaryOutputOf(module, system);
 
   const textAt = (state: State<Calc>, key: string): string => required(state.texts[key], 'text');
   const shownOf = (state: State<Calc>): readonly string[] =>
