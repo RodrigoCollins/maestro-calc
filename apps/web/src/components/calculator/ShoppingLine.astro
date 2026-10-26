@@ -1,24 +1,30 @@
 ---
-import type { ShoppingView } from './model.ts';
+import type { FillSplit, ShoppingLineView } from './model.ts';
 
 interface Props {
-  shopping: ShoppingView;
+  line: ShoppingLineView;
+  index: number;
 }
-const { unit, qty, label, bagYield } = Astro.props.shopping;
+const { line, index } = Astro.props;
+const { unit, qty, label, note } = line;
+const named = (split: FillSplit): split is FillSplit & { readonly name: string } =>
+  split.name !== undefined;
 ---
 
-<p class="calc-shopping">
+<p class="calc-shopping" data-line={index}>
   <span class="calc-label">
     {label.before}
-    <span data-fill="bagLb">{label.value}</span>
+    {named(label) && <span data-fill={label.name}>{label.value}</span>}
     {label.after}
   </span>
   <span class="calc-figure calc-qty" data-shopping={unit}>
     {qty}
   </span>
 </p>
-<p class="calc-note" data-line-note="0">
-  {bagYield.before}
-  <span data-fill="yield">{bagYield.value}</span>
-  {bagYield.after}
-</p>
+{note !== undefined && (
+  <p class="calc-note" data-line-note={index}>
+    {note.before}
+    {named(note) && <span data-fill={note.name}>{note.value}</span>}
+    {note.after}
+  </p>
+)}

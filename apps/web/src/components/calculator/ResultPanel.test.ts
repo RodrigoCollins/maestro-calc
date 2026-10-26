@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
 import ResultPanel from './ResultPanel.astro';
+import type { ResultView } from './model.ts';
 
-const result = {
+const result: ResultView = {
   heading: 'Result',
   primary: { key: 'volumeYd3', before: '', value: '1.63', after: ' cubic yards' },
   rows: [
@@ -11,12 +12,14 @@ const result = {
     { key: 'volumeM3', label: 'Concrete needed (cubic meters)', value: '1.25' },
     { key: 'netVolume', label: 'Volume before extra (cubic feet)', value: '40.00' },
   ],
-  shopping: {
-    unit: 'bag-80',
-    qty: '74',
-    label: { before: 'Concrete mix, ', value: '80', after: ' lb bags' },
-    bagYield: { before: 'About ', value: '0.60', after: ' cubic feet per bag' },
-  },
+  shopping: [
+    {
+      unit: 'bag-80',
+      qty: '74',
+      label: { name: 'bagLb', before: 'Concrete mix, ', value: '80', after: ' lb bags' },
+      note: { name: 'yield', before: 'About ', value: '0.60', after: ' cubic feet per bag' },
+    },
+  ],
   costs: [
     {
       key: 'bagCost',
@@ -33,7 +36,7 @@ const result = {
       hint: 'Add your price to see the cost',
     },
   ],
-  readyMixNote:
+  costsNote:
     'Ready-mix: order the volume above; your supplier sets the minimum and the increments.',
   estimateNote: 'Estimates only. Check quantities with your supplier and the local building code.',
   termsLabel: 'Terms',
@@ -126,9 +129,55 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
   it('closes with the ready-mix note, the estimate note and the link to the terms', async () => {
     const root = await renderComponent(ResultPanel, { result });
     const notes = root.querySelectorAll('.calc-note').map((el) => el.text.trim());
-    expect(notes).toContain(result.readyMixNote);
+    expect(notes).toContain(result.costsNote);
     expect(notes).toContain(`${result.estimateNote} Terms`);
     expect(root.querySelector('.calc-note a')?.getAttribute('href')).toBe('/terms');
     expect(root.querySelector('[data-shopping="bag-80"]')?.text).toBe('74');
+  });
+
+  // spec: calculator-web-core › [CWC3] two lines render in the declared order, one hook set each
+  it('renders each shopping line with its own index, in order, with no wrapper element', async () => {
+    const second = {
+      unit: 'box-a',
+      qty: '1,234',
+      label: { before: 'Boxes', value: '', after: '' },
+    };
+    const root = await renderComponent(ResultPanel, {
+      result: { ...result, shopping: [...result.shopping, second] },
+    });
+    expect(root.querySelectorAll('[data-line]').map((el) => el.getAttribute('data-line'))).toEqual([
+      '0',
+      '1',
+    ]);
+    expect(
+      root
+        .querySelectorAll('[data-shopping]')
+        .map((el) => [el.getAttribute('data-shopping'), el.text]),
+    ).toEqual([
+      ['bag-80', '74'],
+      ['box-a', '1,234'],
+    ]);
+    expect(
+      root.querySelectorAll('[data-line]').every((el) => el.parentNode?.tagName === 'SECTION'),
+    ).toBe(true);
+    expect(root.querySelectorAll('[data-line-note]')).toHaveLength(1);
+  });
+
+  it('renders no shopping line and no costs note for a result without either', async () => {
+    const bare: ResultView = {
+      heading: result.heading,
+      primary: result.primary,
+      rows: result.rows,
+      shopping: [],
+      costs: [],
+      estimateNote: result.estimateNote,
+      termsLabel: result.termsLabel,
+      termsHref: result.termsHref,
+    };
+    const root = await renderComponent(ResultPanel, { result: bare });
+    expect(root.querySelectorAll('[data-line], [data-shopping], [data-cost-row]')).toHaveLength(0);
+    expect(root.querySelectorAll('.calc-note').map((el) => el.text.trim())).toEqual([
+      'Estimates only. Check quantities with your supplier and the local building code. Terms',
+    ]);
   });
 });

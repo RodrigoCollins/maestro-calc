@@ -79,16 +79,6 @@ export interface CostRow extends Row {
   readonly hint: string;
 }
 
-export interface ShoppingView {
-  /** The purchase unit id shown, `bag-80`: the value of `data-shopping`. */
-  readonly unit: string;
-  readonly qty: string;
-  /** `Concrete mix, <80> lb bags`: the value is the bag size. */
-  readonly label: Split;
-  /** `About <0.60> cubic feet per bag`. */
-  readonly bagYield: Split;
-}
-
 /** A text around a value the script rewrites, with the name of that value (`data-fill`) when it has one. */
 export interface FillSplit extends Split {
   readonly name?: string;
@@ -115,19 +105,6 @@ export interface ResultView {
   readonly costs: readonly CostRow[];
   /** The note under the cost rows, when the cost slot has one. */
   readonly costsNote?: string;
-  readonly estimateNote: string;
-  readonly termsLabel: string;
-  readonly termsHref: string;
-}
-
-export interface ConcreteResultView {
-  readonly heading: string;
-  /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
-  readonly primary: Split & { readonly key: string };
-  readonly rows: readonly Row[];
-  readonly shopping: ShoppingView;
-  readonly costs: readonly CostRow[];
-  readonly readyMixNote: string;
   readonly estimateNote: string;
   readonly termsLabel: string;
   readonly termsHref: string;
@@ -162,7 +139,7 @@ export interface ConcretePageView {
   readonly answer: string;
   readonly notRunning: string;
   readonly form: FormView;
-  readonly result: ConcreteResultView;
+  readonly result: ResultView;
   readonly templates: ConcreteTemplatesView;
 }
 

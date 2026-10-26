@@ -1,5 +1,4 @@
 import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
-import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
@@ -11,16 +10,14 @@ import type {
   AreaField,
   ChoiceItemView,
   ConcretePageView,
-  ConcreteResultView,
+  FillSplit,
   Field,
   FieldItemView,
-  FillSplit,
   FormView,
   ResultView,
-  Split,
 } from '../components/calculator/model.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
-import { answerValues, figuresOf } from '../calculator/concrete/present.ts';
+import { answerValues } from '../calculator/concrete/present.ts';
 import { required, mustBeOk, type Messages } from '../calculator/controller.ts';
 import { formOf } from '../calculator/form-layout.ts';
 import {
@@ -258,7 +255,7 @@ export const concreteView = (locale: Locale): ConcretePageView => {
   const raw = concrete.run({});
   const checked = concrete.validate({});
   if (!raw.ok || !checked.ok) throw new Error('the default state of concrete must run');
-  const figures = figuresOf(checked.value, raw.value, CONCRETE_MIX_YIELDS, SYSTEM);
+  const result = resultViewOf(concretePage, locale, messages);
   const templates = {
     volumeYd3: text('calc.concrete.page.volumeYd3'),
     volumeM3: text('calc.concrete.page.volumeM3'),
@@ -272,54 +269,10 @@ export const concreteView = (locale: Locale): ConcretePageView => {
         valid: checked.value,
         result: raw.value,
       },
-      fillMessage(templates.volumeYd3, { value: figures.volumeYd3 }),
+      fillMessage(templates.volumeYd3, { value: result.primary.value }),
     ),
   );
-  const [before = '', after = ''] = templates.volumeYd3.split('{value}');
-  const around = (template: string, name: string, value: string): Split => {
-    const [head = '', tail = ''] = template.split(`{${name}}`);
-    return { before: head, value, after: tail };
-  };
-
   const form = formViewOf(concretePage, messages);
-
-  const output = (key: string) => text(`calc.concrete.outputs.${key}`);
-  const result: ConcreteResultView = {
-    heading: text('site.calculator.resultHeading'),
-    primary: { key: 'volumeYd3', before, value: figures.volumeYd3, after },
-    rows: [
-      { key: 'volumeYd3', label: output('volumeYd3'), value: figures.volumeYd3, hidden: true },
-      { key: 'volumeFt3', label: output('volumeFt3'), value: figures.volumeFt3 },
-      { key: 'volumeM3', label: output('volumeM3'), value: figures.volumeM3 },
-      { key: 'netVolume', label: output('netVolume'), value: figures.netVolume },
-    ],
-    shopping: {
-      unit: `bag-${figures.bagLb}`,
-      qty: figures.bags,
-      label: around(text('calc.concrete.page.shoppingLine'), 'bagLb', figures.bagLb),
-      bagYield: around(text('calc.concrete.page.bagYield'), 'yield', figures.bagYield),
-    },
-    costs: [
-      {
-        key: 'bagCost',
-        label: output('bagCost'),
-        value: figures.bagCost,
-        visible: figures.bagCostVisible,
-        hint: text('calc.concrete.page.priceHint'),
-      },
-      {
-        key: 'readyMixCost',
-        label: output('readyMixCost'),
-        value: figures.readyMixCost,
-        visible: figures.readyMixCostVisible,
-        hint: text('calc.concrete.page.priceHint'),
-      },
-    ],
-    readyMixNote: text('calc.concrete.page.readyMixNote'),
-    estimateNote: text('site.calculator.estimateNote'),
-    termsLabel: text('site.footer.terms'),
-    termsHref: pathOf('terms', locale),
-  };
 
   return {
     id: concrete.id,
