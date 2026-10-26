@@ -1,9 +1,23 @@
 import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
+import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { concreteView } from './page-view.ts';
+import {
+  choiceCalculator,
+  fieldsOf,
+  formCalculator,
+  lengthCalculator,
+  pageModuleErrorOf,
+} from '../__testing__/page-fixtures.ts';
+import { concretePage } from '../calculator/concrete/page.ts';
+import { definePage } from '../calculator/page-module.ts';
+import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
+import { choiceSlot } from '../calculator/slots/choices.ts';
 import type { concrete } from './concrete.ts';
+import { concreteView, formViewOf } from './page-view.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
@@ -186,6 +200,188 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
   });
 });
 
+/** A catalog that answers every key with the key itself, except the keys `lacking` accepts. */
+const catalogOf = (lacking: (key: string) => boolean = () => false) =>
+  new Proxy<Record<string, string>>(
+    {},
+    { get: (_target, key) => (typeof key === 'string' && !lacking(key) ? key : undefined) },
+  );
+
+describe('formViewOf (calculator-web-core › [CWC5], [CWC24], [CWC28]; calculator-page › [CP11], [CP12], [CP51], [CP58])', () => {
+  const enCatalog: Record<string, string> = { ...enCommon, ...enConcrete, ...enSite };
+
+  // spec: calculator-web-core › [CWC5] the units first, the items of formOf, then the copy button
+  it('puts the unit toggle first, then the items in the order of the form, then the copy label', () => {
+    const form = formViewOf(concretePage, enCatalog);
+    expect(form.unitsLabel).toBe('Units');
+    expect(form.units.map(({ id, label, pressed }) => [id, label, pressed])).toEqual([
+      ['imperial', 'US (ft, in)', true],
+      ['metric', 'Metric (m, cm)', false],
+    ]);
+    expect(form.items.map((item) => (item.kind === 'choice' ? item.key : item.field.key))).toEqual([
+      'shape',
+      'waste',
+      'bag',
+      'bagPrice',
+      'readyMixPrice',
+    ]);
+    expect(form.copyLabel).toBe('Copy link');
+  });
+
+  // spec: calculator-web-core › [CWC5] the labels come from `calc.<id>.inputs.<key>`
+  it('labels every input and every group from the inputs keys of the catalog', () => {
+    const form = formViewOf(concretePage, enCatalog);
+    const labels = Object.fromEntries(fieldsOf(form).map(({ key, label }) => [key, label]));
+    for (const [key, label] of Object.entries(labels)) {
+      expect(label, key).toBe(enCatalog[`calc.concrete.inputs.${key}`]);
+    }
+    expect(labels['length']).toBe('Length');
+    expect(form.items.flatMap((item) => (item.kind === 'choice' ? [item.label] : []))).toEqual([
+      'Shape',
+      'Bag size',
+    ]);
+  });
+
+  // spec: calculator-web-core › [CWC5] input modes from the input kind, the price placeholder
+  it('gives count inputs the numeric mode, the others the decimal mode, and a price its placeholder', () => {
+    const fields = fieldsOf(formViewOf(concretePage, enCatalog));
+    const modes = Object.fromEntries(fields.map(({ key, mode }) => [key, mode]));
+    expect(modes['stepCount']).toBe('numeric');
+    expect(modes['count']).toBe('numeric');
+    expect(fields.filter(({ mode }) => mode === 'decimal').map(({ key }) => key)).toEqual([
+      'length',
+      'width',
+      'thickness',
+      'footingWidth',
+      'footingDepth',
+      'diameter',
+      'height',
+      'stepWidth',
+      'rise',
+      'run',
+      'waste',
+      'bagPrice',
+      'readyMixPrice',
+    ]);
+    expect(
+      fields
+        .filter(({ placeholder }) => placeholder !== undefined)
+        .map(({ key, placeholder }) => [key, placeholder]),
+    ).toEqual([
+      ['bagPrice', '0.00'],
+      ['readyMixPrice', '0.00'],
+    ]);
+  });
+
+  // spec: calculator-page › [CP12] the default text of each field, in the unit the field is read in
+  it('writes the default text of the fifteen fields', () => {
+    const texts = fieldsOf(formViewOf(concretePage, enCatalog)).map(({ value }) => value);
+    expect(texts).toEqual([
+      '12 ft',
+      '10 ft',
+      '4 in',
+      '16 in',
+      '8 in',
+      '12 in',
+      '8 ft',
+      '4 ft',
+      '7 in',
+      '11 in',
+      '3',
+      '1',
+      '10',
+      '',
+      '',
+    ]);
+  });
+
+  // spec: calculator-web-core › [CWC28] and calculator-page › [CP58] the rows come from the choice slot
+  it('takes the reserved rows of the area from the choice slot, four for concrete', () => {
+    const [shape] = formViewOf(concretePage, enCatalog).items;
+    expect(shape?.kind === 'choice' && shape.area?.rows).toBe(4);
+    expect(shape?.kind === 'choice' && shape.area?.rows).toBe(
+      concretePage.choices?.groups[0]?.rows,
+    );
+  });
+
+  // spec: calculator-page › [CP58] a taller option grows the reservation with no constant edited
+  it('reserves five rows for a fixture whose option shows five fields', () => {
+    const page = definePage({
+      calculator: formCalculator,
+      choices: choiceSlot(formCalculator, [
+        { select: 'mode', shows: { small: ['a'], large: ['a', 'b', 'c', 'd', 'e'] } },
+      ]),
+    });
+    const [group] = formViewOf(page, catalogOf()).items;
+    expect(group?.kind === 'choice' && group.area?.rows).toBe(5);
+    expect(
+      group?.kind === 'choice' && group.area?.fields.map(({ key, visible }) => [key, visible]),
+    ).toEqual([
+      ['a', true],
+      ['b', false],
+      ['c', false],
+      ['d', false],
+      ['e', false],
+    ]);
+  });
+
+  // spec: calculator-web-core › [CWC5] the stepper of the waste item and its two labels
+  it('gives the waste item a stepper whose labels are the page keys wasteLess and wasteMore', () => {
+    const waste = formViewOf(concretePage, enCatalog).items.find(
+      (item) => item.kind === 'field' && item.field.key === 'waste',
+    );
+    expect(waste?.kind === 'field' && waste.stepper).toEqual({
+      key: 'waste',
+      less: 'Less extra',
+      more: 'More extra',
+    });
+    expect(waste?.kind === 'field' && waste.field.help).toBe(
+      enConcrete['calc.concrete.page.wasteHelp'],
+    );
+    const price = formViewOf(concretePage, enCatalog).items.at(-1);
+    expect(price?.kind === 'field' && price.stepper).toBeUndefined();
+  });
+
+  // spec: calculator-web-core › Page-view builder: a missing page key fails the build naming the key
+  it('throws PAGE_KEY naming the stepper key the catalog lacks', () => {
+    const lacking = { ...enCatalog };
+    delete lacking['calc.concrete.page.wasteMore'];
+    const error = pageModuleErrorOf(() => formViewOf(concretePage, lacking));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.page.wasteMore' });
+  });
+
+  // spec: calculator-web-core › Page-view builder: a unit without a hint message fails naming the unit
+  it('throws PAGE_KEY for a length unit that has no hint message', () => {
+    const page = definePage({ calculator: lengthCalculator('yd', 'm') });
+    const catalog = catalogOf((key) => key === 'site.calculator.hintYd');
+    const error = pageModuleErrorOf(() => formViewOf(page, catalog));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({ id: 'length-fixture', at: 'site.calculator.hintYd' });
+    expect(
+      formViewOf(definePage({ calculator: lengthCalculator('in', 'cm') }), catalogOf()).items,
+    ).toHaveLength(1);
+  });
+
+  // spec: calculator-web-core › [CWC24] a module with no slots has its fields and no choice item
+  it('holds the two length fields of rectangle-area and no choice item', () => {
+    const form = formViewOf(rectangleAreaPage, { ...enCommon, ...enRectangleArea, ...enSite });
+    expect(form.items.map((item) => item.kind)).toEqual(['field', 'field']);
+    expect(
+      fieldsOf(form).map(({ key, label, value, mode, hint }) => [key, label, value, mode, hint]),
+    ).toEqual([
+      ['length', 'Length', '10 ft', 'decimal', 'feet'],
+      ['width', 'Width', '10 ft', 'decimal', 'feet'],
+    ]);
+  });
+
+  it('refuses a form the layout cannot place', () => {
+    expect(
+      pageModuleErrorOf(() => formViewOf(definePage({ calculator: choiceCalculator }), catalogOf()))
+        .code,
+    ).toBe('FORM_ORDER');
+  });
+});
 /**
  * The builder reads the concrete definition once; these cases swap it for a broken copy (the real
  * one with one fact changed) to reach the guards that name a drifted definition or catalog.

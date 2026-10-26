@@ -8,15 +8,28 @@ import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
-  ConcretePageView,
-  Split,
+  AreaField,
   Choice,
-  Field,
+  ChoiceItemView,
   ConcreteFormView,
+  ConcretePageView,
   ConcreteResultView,
+  Field,
+  FieldItemView,
+  FormView,
+  Split,
 } from '../components/calculator/model.ts';
 import { answerValues, figuresOf } from '../calculator/concrete/present.ts';
+import { required, mustBeOk } from '../calculator/controller.ts';
+import { formOf } from '../calculator/form-layout.ts';
+import {
+  fail,
+  isTextInput,
+  type AnyPageModule,
+  type TextInput,
+} from '../calculator/page-module.ts';
 import { fieldText, fillMessage, percentText } from '../calculator/present.ts';
+import { textsOf } from '../calculator/texts.ts';
 import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
@@ -74,6 +87,107 @@ const defaultText = (input: InputDescriptor): string => {
     default:
       return '';
   }
+};
+
+/** A page message by key, or the `PAGE_KEY` error that names the key the catalog lacks. */
+const messageOf = (catalog: Messages, id: string, key: string): string =>
+  catalog[key] ?? fail('PAGE_KEY', id, key);
+
+/** The catalog key of the hint of a length unit (`ft` is `site.calculator.hintFt`). */
+const unitHintKeyOf = (unit: string): string =>
+  `site.calculator.hint${unit.charAt(0).toUpperCase()}${unit.slice(1)}`;
+
+/**
+ * The form of a module, resolved from its definition and the catalog: the unit toggle, then the
+ * items of `formOf` in definition order (each select a choice group with the block it drives, each
+ * text input a field with its stepper when the module has one), then the copy button. The labels
+ * are `calc.<id>.inputs.*` and `calc.<id>.options.*`; the page copy is `calc.<id>.page.*`; a missing
+ * key throws `PAGE_KEY` naming it.
+ */
+export const formViewOf = (module: AnyPageModule, catalog: Messages): FormView => {
+  const { calculator } = module;
+  const { id } = calculator;
+  const text = (key: string): string => messageOf(catalog, id, key);
+  const defaults = mustBeOk(calculator.validate({}), `the default state of ${id}`);
+  const texts = textsOf(calculator, defaults, SYSTEM);
+  const selects = new Map(
+    calculator.inputs.flatMap((input) =>
+      input.kind === 'select' ? [[input.key, input] as const] : [],
+    ),
+  );
+  const inputs = new Map(
+    calculator.inputs.flatMap((input) => (isTextInput(input) ? [[input.key, input] as const] : [])),
+  );
+  const groups = new Map(
+    (module.choices?.groups ?? []).map((group) => [group.select, group] as const),
+  );
+
+  const fieldOf = (key: string): Field => {
+    const input: TextInput = required(inputs.get(key), key);
+    const help = catalog[`calc.${id}.page.${key}Help`];
+    return {
+      key,
+      label: text(`calc.${id}.inputs.${key}`),
+      value: required(texts[key], key),
+      mode: input.kind === 'count' ? 'numeric' : 'decimal',
+      ...(input.kind === 'money' ? { placeholder: '0.00' } : {}),
+      ...(input.kind === 'length' ? { hint: text(unitHintKeyOf(input.defaultUnit)) } : {}),
+      ...(help === undefined ? {} : { help }),
+    };
+  };
+
+  const choiceOf = (
+    key: string,
+    area: { readonly fields: readonly string[]; readonly rows: number } | undefined,
+  ): ChoiceItemView => {
+    const select = required(selects.get(key), key);
+    const shown = groups.get(key)?.shown(select.default) ?? [];
+    const areaField = (field: string): AreaField => ({
+      ...fieldOf(field),
+      visible: shown.includes(field),
+    });
+    return {
+      kind: 'choice',
+      key,
+      label: text(`calc.${id}.inputs.${key}`),
+      choices: select.options.map((option) => ({
+        id: option,
+        label: text(`calc.${id}.options.${key}.${option}`),
+        pressed: option === select.default,
+      })),
+      ...(area === undefined
+        ? {}
+        : { area: { rows: area.rows, fields: area.fields.map(areaField) } }),
+    };
+  };
+
+  const fieldItemOf = (key: string, stepper: boolean): FieldItemView => ({
+    kind: 'field',
+    field: fieldOf(key),
+    ...(stepper
+      ? {
+          stepper: {
+            key,
+            less: text(`calc.${id}.page.${key}Less`),
+            more: text(`calc.${id}.page.${key}More`),
+          },
+        }
+      : {}),
+  });
+
+  return {
+    unitsLabel: text('site.calculator.unitsLabel'),
+    units: [
+      { id: 'imperial', label: text('site.calculator.unitsUs'), pressed: true },
+      { id: 'metric', label: text('site.calculator.unitsMetric'), pressed: false },
+    ],
+    items: formOf(module).map((item) =>
+      item.kind === 'choice'
+        ? choiceOf(item.select, item.area)
+        : fieldItemOf(item.key, item.stepper),
+    ),
+    copyLabel: text('site.calculator.copyLink'),
+  };
 };
 
 /** Everything the concrete calculator page shows, resolved for `locale` from the engine and the catalogs. */

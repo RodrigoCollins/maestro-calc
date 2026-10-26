@@ -56,6 +56,7 @@ describe('formOf (calculator-web-core › [CWC30], [CWC28])', () => {
       { kind: 'choice', select: 'mode', area: { fields: ['a', 'b'], rows: 2 } },
       { kind: 'field', key: 'c', stepper: false },
       { kind: 'field', key: 'd', stepper: false },
+      { kind: 'field', key: 'e', stepper: false },
     ]);
   });
 
