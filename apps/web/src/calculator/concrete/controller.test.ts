@@ -615,7 +615,7 @@ describe('controller: raw record and helps (calculator-web-core › [CWC6], [CWC
   it('reads a hidden field from the last valid state, not from its text', () => {
     last('', [type('footingWidth', 'abc'), type('length', '20')]);
     const hidden = rawOfLastCall()['footingWidth'];
-    expect(typeof hidden).toBe('object');
+    expect(hidden).toEqual(mustBeOk(concrete.validate({}), 'defaults').footingWidth);
   });
 
   // spec: calculator-web-core › [CWC18] a field with help is described by it while valid
