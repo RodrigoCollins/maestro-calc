@@ -102,7 +102,8 @@ export interface CostSlot<C extends AnyCalculator> {
   /** The page-key suffixes of the price hint and of the note under the rows. */
   readonly hint: string;
   readonly note?: string;
-  visible(valid: StateOf<C>): Readonly<Record<OutputKey<C>, boolean>>;
+  /** The visibility of each declared row, keyed by its output. */
+  visible(valid: StateOf<C>): Readonly<Partial<Record<OutputKey<C>, boolean>>>;
 }
 export interface AnswerSlot<C extends AnyCalculator> {
   /** `answer.<option>` per option of `by`, else `answer`. */
