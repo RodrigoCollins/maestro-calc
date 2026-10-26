@@ -13,7 +13,8 @@ export type FormItem =
 /**
  * The form of a module: its inputs in declaration order, each select as a choice item that holds the
  * fields its slot group drives. The driven fields must directly follow their select, so the order
- * of the page is the order of the definition; a boolean has no control on the page. Server only:
+ * of the page is the order of the definition; a boolean has no control on the page, and a driven
+ * field has no stepper, so both throw `FORM_ORDER` rather than vanish. Server only:
  * the builder reads it, the client never does.
  */
 export const formOf = (module: AnyPageModule): readonly FormItem[] => {
@@ -22,6 +23,9 @@ export const formOf = (module: AnyPageModule): readonly FormItem[] => {
   let driven = 0;
   for (const [index, input] of inputs.entries()) {
     if (driven > 0) {
+      // a choice area renders plain fields, so a stepper on one would vanish from the page
+      if (module.steppers?.keys.some((key) => key === input.key))
+        return fail('FORM_ORDER', id, input.key);
       driven -= 1;
     } else if (input.kind === 'boolean') {
       return fail('FORM_ORDER', id, input.key);
