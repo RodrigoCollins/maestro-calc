@@ -34,6 +34,17 @@ describe('SourceList (calculator-page › [CP8] source side)', () => {
     );
   });
 
+  // an outbound link without target needs no noopener; noreferrer keeps the site out of the source's logs
+  it('marks every source link external and without a referrer', async () => {
+    const root = await renderComponent(SourceList, { content });
+    const links = root.querySelectorAll('li a');
+    expect(links.map((link) => link.getAttribute('rel'))).toEqual([
+      'external noreferrer',
+      'external noreferrer',
+    ]);
+    expect(links.some((link) => link.hasAttribute('target'))).toBe(false);
+  });
+
   // spec: calculator-page › [CP8] one time element, equal to the entry's updated
   it('shows the review date as the only time element, with the ISO date', async () => {
     const root = await renderComponent(SourceList, { content });
