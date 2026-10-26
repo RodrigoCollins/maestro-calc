@@ -1,3 +1,4 @@
+import { Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../../lib/concrete.ts';
 import { concretePage } from './page.ts';
@@ -18,5 +19,21 @@ describe('the concrete page module (calculator-web-core › [CWC2])', () => {
     expect(rest).toEqual([]);
     expect(shape?.select).toBe('shape');
     expect(shape?.rows).toBe(4);
+  });
+
+  // spec: calculator-web-core › [CWC2] one stepper on waste with step 5
+  it('steps the waste by five points', () => {
+    expect(concretePage.steppers?.keys).toEqual(['waste']);
+    expect(concretePage.steppers?.next('waste', Rational.of(10), 'more')).toEqual(Rational.of(15));
+  });
+
+  // spec: calculator-web-core › [CWC2] cost rows bagCost and readyMixCost
+  it('declares the two cost rows', () => {
+    expect(concretePage.costs?.rows).toEqual([
+      { output: 'bagCost', price: 'bagPrice' },
+      { output: 'readyMixCost', price: 'readyMixPrice' },
+    ]);
+    expect(concretePage.costs?.hint).toBe('priceHint');
+    expect(concretePage.costs?.note).toBe('readyMixNote');
   });
 });
