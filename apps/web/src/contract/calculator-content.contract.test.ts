@@ -46,7 +46,8 @@ const frontmatterOf = (entry: CalculatorEntry) => calculatorSchema(['concrete'])
 /** The default state through the page builder, which runs the registry calculator. */
 const engineExample = () => {
   const { result } = concreteView('en');
-  const { shopping } = result;
+  const [shopping] = result.shopping;
+  if (shopping === undefined) throw new Error('the concrete page declares a shopping line');
   return {
     netFt3: result.rows.find((row) => row.key === 'netVolume')?.value,
     totalFt3: result.rows.find((row) => row.key === 'volumeFt3')?.value,

@@ -1,21 +1,12 @@
 ---
 import ShoppingLine from './ShoppingLine.astro';
-import type { ConcreteResultView } from './model.ts';
+import type { ResultView } from './model.ts';
 
 interface Props {
-  result: ConcreteResultView;
+  result: ResultView;
 }
-const {
-  heading,
-  primary,
-  rows,
-  shopping,
-  costs,
-  readyMixNote,
-  estimateNote,
-  termsLabel,
-  termsHref,
-} = Astro.props.result;
+const { heading, primary, rows, shopping, costs, costsNote, estimateNote, termsLabel, termsHref } =
+  Astro.props.result;
 ---
 
 <section class="calc-result" aria-labelledby="calc-result-heading">
@@ -37,7 +28,9 @@ const {
       </div>
     ))}
   </dl>
-  <ShoppingLine {shopping} />
+  {shopping.map((line, index) => (
+    <ShoppingLine {line} {index} />
+  ))}
   {costs.map(({ key, label, value, visible, hint }) => (
     <Fragment>
       <p class="calc-cost" data-cost-row={key} hidden={!visible}>
@@ -52,7 +45,7 @@ const {
       </p>
     </Fragment>
   ))}
-  <p class="calc-note">{readyMixNote}</p>
+  {costsNote !== undefined && <p class="calc-note">{costsNote}</p>}
   <p class="calc-note">
     {estimateNote} <a href={termsHref}>{termsLabel}</a>
   </p>

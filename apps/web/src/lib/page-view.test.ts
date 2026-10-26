@@ -21,8 +21,8 @@ import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { choiceSlot } from '../calculator/slots/choices.ts';
 import { costSlot } from '../calculator/slots/costs.ts';
 import { shoppingSlot } from '../calculator/slots/shopping.ts';
-import { concrete as concreteCalculator } from './concrete.ts';
 import type { concrete } from './concrete.ts';
+import { concrete as concreteCalculator } from './concrete.ts';
 import { concreteView, formViewOf, resultViewOf } from './page-view.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
@@ -47,12 +47,14 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       ['volumeM3', '1.25', undefined],
       ['netVolume', '40.00', undefined],
     ]);
-    expect(view.result.shopping).toEqual({
-      unit: 'bag-80',
-      qty: '74',
-      label: { before: 'Concrete mix, ', value: '80', after: ' lb bags' },
-      bagYield: { before: 'About ', value: '0.60', after: ' cubic feet per bag' },
-    });
+    expect(view.result.shopping).toEqual([
+      {
+        unit: 'bag-80',
+        qty: '74',
+        label: { name: 'bagLb', before: 'Concrete mix, ', value: '80', after: ' lb bags' },
+        note: { name: 'yield', before: 'About ', value: '0.60', after: ' cubic feet per bag' },
+      },
+    ]);
     expect(view.result.costs.map(({ key, visible }) => [key, visible])).toEqual([
       ['bagCost', false],
       ['readyMixCost', false],
@@ -68,12 +70,14 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
     );
     expect(view.result.primary.after).toBe(' yardas cúbicas');
-    expect(view.result.shopping.label).toEqual({
+    expect(view.result.shopping[0]?.label).toEqual({
+      name: 'bagLb',
       before: 'Mezcla de concreto, bolsas de ',
       value: '80',
       after: ' lb',
     });
-    expect(view.result.shopping.bagYield).toEqual({
+    expect(view.result.shopping[0]?.note).toEqual({
+      name: 'yield',
       before: 'Unos ',
       value: '0.60',
       after: ' pies cúbicos por bolsa',
@@ -563,7 +567,7 @@ describe('concreteView guards (calculator-web-core › Page-view builder)', () =
     }
     expect(thrown).toMatchObject({
       code: 'PAGE_KEY',
-      cause: { id: 'concrete', at: 'calc.concrete.page.volumeYd3' },
+      cause: { id: 'concrete', at: 'calc.concrete.outputs.volumeYd3' },
     });
   });
 });
