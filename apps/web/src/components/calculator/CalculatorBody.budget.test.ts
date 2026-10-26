@@ -70,7 +70,8 @@ const sizesOf = (files: Record<'en' | 'es', Buffer>): Locales => ({
 
 describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7]; design C18, DR-16)', () => {
   // spec: site-quality › [SQ7] with full-length copy: 1,500 words, 8 FAQ answers of 450 characters,
-  // the JSON-LD, every template and the inline CSS, built by the real pipeline, in both locales
+  // the JSON-LD, every template, the inline CSS, the real head and the script island, built by the
+  // real pipeline, in both locales
   it('fits the HTML budget with full-length copy, the JSON-LD and the inlined CSS', async () => {
     const sizes = sizesOf(await build('base'));
     console.info(
@@ -84,13 +85,9 @@ describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-qua
   it('carries the JSON-LD graph of calculatorJsonLd for the full-length FAQ', async () => {
     const files = await build('jsonld');
     for (const locale of ['en', 'es'] as const) {
-      const routes = {
-        ...ROUTES,
-        concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
-      } as const;
       const view = pageView('concrete', locale);
       const expected = serializeJsonLd(
-        calculatorJsonLd({ id: 'concrete', name: view.title }, locale, faqOf(locale), routes),
+        calculatorJsonLd({ id: 'concrete', name: view.title }, locale, faqOf(locale), ROUTES),
       );
       expect(files[locale].toString('utf8')).toContain(
         `<script type="application/ld+json">${expected}</script>`,
