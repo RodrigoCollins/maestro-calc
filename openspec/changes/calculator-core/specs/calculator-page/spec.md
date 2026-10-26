@@ -12,9 +12,9 @@ The markup of every calculator page MUST expose these hooks, which the browser s
 |---|---|---|
 | `data-calculator="<id>"` | the calculator body | the id of the calculator the page renders |
 | `data-unit="<system>"` | each unit-system button | the unit system it selects; the pressed button has `aria-pressed="true"` |
-| `data-choice="<selectKey>"` + `data-value="<option>"` | each button of a single-choice group | the select key of the descriptor and the option it sets; the pressed button has `aria-pressed="true"` |
-| `data-step="<inputKey>"` + `data-direction="less"` or `"more"` | each stepper button | the input it changes and whether it lowers or raises it |
-| `data-reserved="<area>"` | each block whose size is reserved in the server HTML | the area: the select key of a choice-driven block, `steppers`, `copy`, `answer`, `notice` |
+| `data-choice="<selectKey>"` | the group element around the buttons of a single-choice group | the select key of the descriptor; each button carries the option it sets in its `value` and the pressed one has `aria-pressed="true"` |
+| `data-step="<inputKey>"` | the block around the two stepper buttons | the input they change; each button carries `less` or `more` in its `value` |
+| `data-reserved="<area>"` | each block whose size is reserved in the server HTML and the script fills | the area: `copy`, `answer`, `notice` |
 | `data-copy` | the "Copy link" button | copies the current address |
 | `data-copy-status` | the polite status element | the copy outcome text |
 | `data-answer` | the short answer | the polite live region the script rewrites |
@@ -35,13 +35,13 @@ The hooks are derived from the descriptor and the module (never typed per calcul
 #### Scenario: [CP54] Hooks on the concrete page
 - GIVEN built `/concrete-calculator`
 - WHEN the hooks are listed
-- THEN there are four `data-choice="shape"` buttons (values `slab`, `footing`, `column`, `steps`), three `data-choice="bag"` buttons, two `data-step="waste"` buttons (one lowering, one raising), one `data-copy`, one `data-copy-status`, six `data-output` elements in the order of [CP4], one `data-shopping="bag-80"` and one `data-primary`
-- AND one `data-line="0"` with `data-fill="bagLb"` in its label, one `data-line-note="0"` with `data-fill="yield"`, and the shape-driven block `data-reserved="shape"` with `style="--calc-rows:4"`
-- AND none of `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield` or `data-yield` is present
+- THEN the `data-choice="shape"` group holds four buttons (values `slab`, `footing`, `column`, `steps`), the `data-choice="bag"` group three, the `data-step="waste"` block two buttons (values `less` and `more`), one `data-copy`, one `data-copy-status`, six `data-output` elements in the order of [CP4], one `data-shopping="bag-80"` and one `data-primary`
+- AND one `data-line="0"` with `data-fill="bagLb"` in its label, one `data-line-note="0"` with `data-fill="yield"`, and the shape-driven block `calc-choice-area` with `style="--calc-rows:4"`
+- AND none of `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield`, `data-yield`, `data-value`, `data-direction`, `data-reserved="shape"` or `data-reserved="steppers"` is present
 
 #### Scenario: [CP55] Hooks drive behaviour
 - GIVEN the default page with scripts running
-- WHEN the `data-choice="shape"` button with `data-value="footing"` is pressed, then the `data-step="waste"` raising button once
+- WHEN the `value="footing"` button of the `data-choice="shape"` group is pressed, then the `value="more"` button of the `data-step="waste"` block once
 - THEN the footing fields show with `aria-pressed="true"` on that button, `waste` reads `15`, and `data-copy-status` stays empty until `data-copy` is pressed
 
 #### Scenario: [CP56] Absent features have no hooks
