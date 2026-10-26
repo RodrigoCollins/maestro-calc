@@ -11,6 +11,12 @@ export { concrete } from '${fromRoot('apps/web/src/lib/concrete.ts')}';
 export { decode, encode, formatFeetInches, toCents, toDecimalParts } from '@maestro-calc/core';
 `;
 
+/** The concrete client entry, whose static graph the 49,152 B gate of `client-entry.contract` weighs. */
+const CONCRETE_ENTRY = `import '${fromRoot('apps/web/src/client/entries/concrete.ts')}';`;
+
+/** A minified bundle is one line (both entries build one chunk); a second line means whitespace is back. */
+const CHUNK_LINES = 1;
+
 describe('client engine size (site-quality › [SQ27], design C17)', () => {
   // spec: site-quality › [SQ27]: the minified engine surface leaves room for the page code
   it('fits the engine surface in 40,960 bytes minified and prints the size', async () => {
@@ -23,9 +29,14 @@ describe('client engine size (site-quality › [SQ27], design C17)', () => {
   });
 
   // spec: site-quality › [SQ27]: the size is the one the browser downloads, whitespace removed
-  it('measures the bundle minified with no indentation or line breaks left', async () => {
-    const { code } = await buildClient(ENGINE_ENTRY);
-    expect(code).not.toMatch(/\n\t|\n\n/);
+  it.each([
+    ['the engine surface', ENGINE_ENTRY],
+    ['the concrete client entry', CONCRETE_ENTRY],
+  ])('measures %s minified with no indentation or line breaks left', async (_what, source) => {
+    const { code } = await buildClient(source);
+    expect(code).not.toMatch(/\n[ \t]/);
+    expect(code).not.toMatch(/\n\n/);
+    expect(code.split('\n').length).toBeLessThanOrEqual(CHUNK_LINES);
   });
 
   // spec: site-quality › [SQ27]: the bundle carries no source text and no foreign origin
