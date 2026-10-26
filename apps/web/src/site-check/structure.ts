@@ -110,8 +110,15 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
   // a calculator page may link the sources of its entry; nothing else leaves the site
   const sources = site.externalLinks[page.id] ?? [];
   const idsOf = (target: Page): Set<string> => new Set(attrsOf(target.root, '[id]', 'id'));
-  return attrsOf(page.root, 'a[href]', 'href').flatMap((href) => {
-    if (href === mailto || href === FAVICON_PATH || sources.includes(href)) return [];
+  return page.root.querySelectorAll('a[href]').flatMap((link) => {
+    const href = attr(link, 'href');
+    if (sources.includes(href)) {
+      // an outbound source link leaves without the referrer: the page address can hold a shared state
+      return attr(link, 'rel').split(/\s+/).includes('noreferrer')
+        ? []
+        : [problem(page.file, 'link-rel', `${href} must carry rel="noreferrer"`)];
+    }
+    if (href === mailto || href === FAVICON_PATH) return [];
     if (href.startsWith('#')) {
       return idsOf(page).has(href.slice(1))
         ? []

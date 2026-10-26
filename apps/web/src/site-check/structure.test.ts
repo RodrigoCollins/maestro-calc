@@ -435,6 +435,30 @@ describe('outbound links (site-routing-i18n › [SR2] allowlist, calculator-page
     ]);
   });
 
+  // a source link leaves the site without the referrer (the page address can hold a shared state)
+  it.each([
+    ['no rel', ' rel="external noreferrer"', ''],
+    ['rel without noreferrer', 'rel="external noreferrer"', 'rel="external noopener"'],
+    ['a rel that only looks like it', 'rel="external noreferrer"', 'rel="external xnoreferrer"'],
+  ])('fails a source link with %s, naming the page and the link', (_name, from, to) => {
+    const link = `<a href="${QUIKRETE_URL}" rel="external noreferrer">`;
+    const problems = calcProblemsAfter({
+      [PAGE]: (h) => h.replace(link, link.replace(from, to)),
+    });
+    expect(problems).toEqual([
+      { file: PAGE, rule: 'link-rel', message: `${QUIKRETE_URL} must carry rel="noreferrer"` },
+    ]);
+  });
+
+  it('keeps accepting noreferrer among other rel tokens, in any order', () => {
+    const link = `<a href="${QUIKRETE_URL}" rel="external noreferrer">`;
+    expect(
+      calcProblemsAfter({
+        [PAGE]: (h) => h.replace(link, `<a href="${QUIKRETE_URL}" rel="noreferrer external">`),
+      }),
+    ).toEqual([]);
+  });
+
   it('allows nothing outbound when the site lists no source links', () => {
     expect(
       calcProblemsAfter({}, { ...calculatorSite(), externalLinks: {} }).map((entry) => entry.file),
