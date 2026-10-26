@@ -119,6 +119,9 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the home link', 'apps/web/src/views/HomeView.astro'],
     ['the pinned counts', 'apps/web/src/contract/end-state.contract.test.ts'],
     ['the Lighthouse representative', 'tooling/site-browser/e2e/representative.ts'],
+    ['the concrete-only view', 'concreteView'],
+    ['the hand-kept browser pages', 'tooling/site-browser/e2e/concrete-pages.ts'],
+    ['the concrete mount', 'apps/web/src/client/concrete-mount.ts'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),
