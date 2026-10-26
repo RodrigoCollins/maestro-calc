@@ -1,4 +1,6 @@
 import type { Locale } from '@maestro-calc/i18n';
+import type { FaqItem } from '../content/faq-shape.ts';
+import { siteText } from '../lib/site-text.ts';
 import { LOCALE_TAGS, pathOf, ROUTES, urlOf } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
@@ -20,19 +22,10 @@ export const homeJsonLd = (locale: Locale) => ({
   ],
 });
 
-/** The home label of the breadcrumb, by locale (site-seo › Calculator structured data). */
-const HOME_NAME = { en: 'Home', es: 'Inicio' } as const;
-
 /** What the structured data of a calculator page needs: its page id and the text of its h1. */
 export interface CalculatorPage {
   readonly id: string;
   readonly name: string;
-}
-
-/** One visible FAQ item: the question and the plain-text answer. */
-export interface FaqEntry {
-  readonly question: string;
-  readonly answer: string;
 }
 
 /**
@@ -42,7 +35,7 @@ export interface FaqEntry {
 export const calculatorJsonLd = (
   { id, name }: CalculatorPage,
   locale: Locale,
-  faq: readonly FaqEntry[],
+  faq: readonly FaqItem[],
   routes: RouteTable = ROUTES,
 ) => {
   const canonical = urlOf(pathOf(id, locale, routes));
@@ -64,8 +57,8 @@ export const calculatorJsonLd = (
           {
             '@type': 'ListItem',
             position: 1,
-            name: HOME_NAME[locale],
-            item: urlOf(pathOf('home', locale)),
+            name: siteText(locale)('site.calculator.breadcrumbHome'),
+            item: urlOf(pathOf('home', locale, routes)),
           },
           { '@type': 'ListItem', position: 2, name, item: canonical },
         ],

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { siteText } from '../lib/site-text.ts';
 import { ROUTES } from '../routing/routes.ts';
 import { calculatorJsonLd, homeJsonLd, serializeJsonLd } from './json-ld.ts';
 
@@ -125,6 +126,27 @@ describe('calculator structured data (site-seo › [SE19], [SE20] builder side)'
       ],
     });
     expect(questions).toMatchObject({ mainEntity: [{ name: 'Question 1?' }, {}, {}, {}] });
+  });
+
+  // spec: site-seo › [SE19] the home link follows the route table that was passed in
+  it('links the breadcrumb home from the given route table, not the production one', () => {
+    const other = { ...routes, home: { en: '/start', es: '/es/inicio' } } as const;
+    const homeOf = (locale: 'en' | 'es') =>
+      (
+        calculatorJsonLd(entry, locale, faq, other)['@graph'][1] as {
+          itemListElement: { item: string }[];
+        }
+      ).itemListElement[0]?.item;
+    expect(homeOf('en')).toBe('https://maestrocalc.com/start');
+    expect(homeOf('es')).toBe('https://maestrocalc.com/es/inicio');
+  });
+
+  // spec: site-seo › [SE19] the home name is the catalog's, so a copy edit cannot split the two
+  it.each(['en', 'es'] as const)('names the home like the %s catalog', (locale) => {
+    const graph = calculatorJsonLd(entry, locale, faq, routes)['@graph'];
+    expect(graph[1]).toMatchObject({
+      itemListElement: [{ name: siteText(locale)('site.calculator.breadcrumbHome') }, {}],
+    });
   });
 
   // spec: site-seo › [SE19] never an offer, a rating, a review or an image
