@@ -68,6 +68,10 @@ const WORDS = new Map<string, Unit<'length'>>([
 const LEXEMES = /([ \t\u00A0]+)|([0-9]+)|([A-Za-z]+[0-9]*)|[^]/gu;
 const BLANK = /^[ \t\u00A0]*$/;
 const NUMERIC_NOTATION = /^[eExX][0-9]/;
+// `ft6` in `12ft6in`: a feet word glued to the inches digits, read as two tokens only when an
+// inch mark follows (`5ft2` and `5 m2` stay unknown units, they mean square feet and meters).
+const FEET_AND_DIGITS = /^(ft|foot|feet)([0-9]+)$/i;
+const INCH_MARK_AHEAD = /^[ \t\u00A0]*(?:(?:in|inch|inches)(?![A-Za-z0-9])|["\u2033\u201D])/i;
 
 const malformed = (offset: number): Result<never, LengthParseError> =>
   err({ code: 'MALFORMED', offset });
@@ -104,6 +108,29 @@ const markOrPunctuationToken = (char: string, start: number): Result<Token, Leng
 };
 
 /**
+ * `ft6` directly after a number and before an inch mark: the feet word and the inches digits as
+ * two tokens. `null` when the word is anything else, so the usual rules apply to it.
+ */
+const gluedFeet = (
+  word: string,
+  start: number,
+  text: string,
+  end: number,
+  before: readonly Token[],
+): Result<readonly Token[], LengthParseError> | null => {
+  const parts = FEET_AND_DIGITS.exec(word);
+  if (parts === null || before[before.length - 1]?.kind !== 'uint') return null;
+  if (!INCH_MARK_AHEAD.test(text.slice(end))) return null;
+  const [, feetWord = '', inches = ''] = parts;
+  if (inches.length > MAX_DIGITS)
+    return err({ code: 'TOO_LARGE', offset: start + feetWord.length });
+  return ok([
+    { kind: 'unit', start, text: feetWord, unit: ft, symbol: false },
+    { kind: 'uint', start: start + feetWord.length, text: inches },
+  ]);
+};
+
+/**
  * Pre-processes and tokenizes length text. Rejects, in this order: more than 128 characters
  * (`TOO_LONG`, counted before trimming), blank input (`EMPTY`), any comma (`DECIMAL_COMMA`), then
  * the first lexical fault (`TOO_LARGE`, `UNKNOWN_UNIT`, `MALFORMED`). Whitespace at either end is
@@ -117,20 +144,32 @@ export const scan = (text: string): Result<readonly Token[], LengthParseError> =
   const comma = text.indexOf(',');
   if (comma !== -1) return err({ code: 'DECIMAL_COMMA', offset: comma });
   const tokens: Token[] = [];
+  // the index of a period glued to a unit word (`ft.`, `in.`): an abbreviation mark, not a token
+  let abbreviationDot = -1;
   for (const match of text.matchAll(LEXEMES)) {
     const [lexeme, spaces, digits, word] = match;
     const start = match.index;
+    const end = start + lexeme.length;
     if (spaces !== undefined) {
-      const inner = start > 0 && start + lexeme.length < text.length;
+      const inner = start > 0 && end < text.length;
       if (inner) tokens.push({ kind: 'ws', start, text: spaces });
     } else if (digits !== undefined) {
       if (digits.length > MAX_DIGITS) return err({ code: 'TOO_LARGE', offset: start });
       tokens.push({ kind: 'uint', start, text: digits });
+    } else if (start === abbreviationDot) {
+      continue;
     } else {
+      const glued = word === undefined ? null : gluedFeet(word, start, text, end, tokens);
+      if (glued !== null) {
+        if (!glued.ok) return glued;
+        tokens.push(...glued.value);
+        continue;
+      }
       const token =
         word === undefined ? markOrPunctuationToken(lexeme, start) : wordToken(word, start, tokens);
       if (!token.ok) return token;
       tokens.push(token.value);
+      if (word !== undefined && text[end] === '.') abbreviationDot = end;
     }
   }
   return ok(tokens);
