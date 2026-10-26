@@ -278,8 +278,9 @@ export const mount = (): void => {
   ui.form.addEventListener('submit', (event) => {
     event.preventDefault();
   });
+  // Enter in a field would submit the form; on a button it is the press itself, so it stays
   ui.form.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') event.preventDefault();
+    if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault();
   });
 
   for (const control of findAll(ui.form, ':disabled')) {
