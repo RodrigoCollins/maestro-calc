@@ -10,7 +10,6 @@ import type {
   AreaField,
   ChoiceItemView,
   CalculatorPageView,
-  ConcretePageView,
   FillSplit,
   Field,
   FieldItemView,
@@ -18,7 +17,6 @@ import type {
   ResultView,
 } from '../components/calculator/model.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
-import { answerValues } from '../calculator/concrete/present.ts';
 import { required, mustBeOk, type Messages } from '../calculator/controller.ts';
 import { formOf } from '../calculator/form-layout.ts';
 import {
@@ -31,9 +29,7 @@ import {
 } from '../calculator/page-module.ts';
 import { fillMessage, outputText } from '../calculator/present.ts';
 import { textsOf } from '../calculator/texts.ts';
-import { SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
-import { concrete } from './concrete.ts';
 
 const CATALOGS: Record<Locale, Messages> = {
   en: { ...enCommon, ...enConcrete, ...enSite },
@@ -337,62 +333,6 @@ export const pageViewOf = (
   };
 };
 
-/** Everything the concrete calculator page shows, resolved for `locale` from the engine and the catalogs. */
-export const concreteView = (locale: Locale): ConcretePageView => {
-  const messages = CATALOGS[locale];
-  const text = (key: string): string => messageOf(messages, concrete.id, key);
-
-  const raw = concrete.run({});
-  const checked = concrete.validate({});
-  if (!raw.ok || !checked.ok) throw new Error('the default state of concrete must run');
-  const result = resultViewOf(concretePage, locale, messages);
-  const templates = {
-    volumeYd3: text('calc.concrete.page.volumeYd3'),
-    volumeM3: text('calc.concrete.page.volumeM3'),
-  };
-  const sentence = fillMessage(
-    text(`calc.concrete.page.answer.${checked.value.shape}`),
-    answerValues(
-      {
-        system: SYSTEM,
-        choices: { shape: checked.value.shape, bag: checked.value.bag },
-        valid: checked.value,
-        result: raw.value,
-      },
-      fillMessage(templates.volumeYd3, { value: result.primary.value }),
-    ),
-  );
-  const form = formViewOf(concretePage, messages);
-
-  return {
-    id: concrete.id,
-    title: text('calc.concrete.title'),
-    breadcrumb: {
-      label: text('site.calculator.breadcrumb'),
-      homeLabel: text('site.calculator.breadcrumbHome'),
-      homeHref: pathOf('home', locale),
-      current: text('calc.concrete.title'),
-    },
-    answer: sentence,
-    notRunning: `${text('site.calculator.noscript')} ${text('calc.concrete.page.example')}`,
-    form,
-    result,
-    templates: {
-      errors: Object.fromEntries(ALL_ERROR_CODES.map((code) => [code, text(`errors.${code}`)])),
-      answers: Object.fromEntries(
-        SHAPES.map((id) => [id, text(`calc.concrete.page.answer.${id}`)]),
-      ),
-      copy: {
-        copied: text('site.calculator.linkCopied'),
-        failed: text('site.calculator.copyFailed'),
-      },
-      volumes: { yd3: templates.volumeYd3, m3: templates.volumeM3 },
-      hints: {
-        ft: text('site.calculator.hintFt'),
-        in: text('site.calculator.hintIn'),
-        m: text('site.calculator.hintM'),
-        cm: text('site.calculator.hintCm'),
-      },
-    },
-  };
-};
+/** The concrete page for `locale`, from the registry calculator and its two catalogs. */
+export const concreteView = (locale: Locale): CalculatorPageView =>
+  pageViewOf(concretePage, locale, CATALOGS[locale]);

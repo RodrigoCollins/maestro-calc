@@ -1,7 +1,5 @@
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
-import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
-import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { describe, expect, it, vi } from 'vitest';
 import { concreteView } from '../../lib/page-view.ts';
 import { err, Rational } from '@maestro-calc/core';
@@ -34,19 +32,8 @@ vi.mock('../../lib/concrete.ts', async (importOriginal) => {
 });
 
 /** The messages the page carries as templates, by name, for a locale (the script reads them from the DOM). */
-const messagesOf = (locale: 'en' | 'es'): Messages => {
-  const { templates } = concreteView(locale);
-  const concrete = locale === 'en' ? enConcrete : esConcrete;
-  return {
-    ...Object.fromEntries(Object.entries(templates.errors).map(([k, v]) => [`errors.${k}`, v])),
-    ...Object.fromEntries(Object.entries(templates.answers).map(([k, v]) => [`answer.${k}`, v])),
-    'copy.copied': templates.copy.copied,
-    'copy.failed': templates.copy.failed,
-    ...Object.fromEntries(Object.entries(templates.hints).map(([k, v]) => [`hint.${k}`, v])),
-    'volume.yd3': concrete['calc.concrete.page.volumeYd3'],
-    'volume.m3': concrete['calc.concrete.page.volumeM3'],
-  };
-};
+const messagesOf = (locale: 'en' | 'es'): Messages =>
+  Object.fromEntries(concreteView(locale).messages);
 
 const EN: Environment = {
   messages: messagesOf('en'),

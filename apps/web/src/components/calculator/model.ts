@@ -117,32 +117,6 @@ export interface BreadcrumbView {
   readonly current: string;
 }
 
-/** Messages the script uses, written into inert `<template>` elements. */
-export interface ConcreteTemplatesView {
-  /** The user-facing error messages by code, with their `{min}` / `{max}` placeholders. */
-  readonly errors: Readonly<Record<string, string>>;
-  /** The short-answer sentences by shape. */
-  readonly answers: Readonly<Record<string, string>>;
-  /** The copy states: `copied` and `failed`. */
-  readonly copy: { readonly copied: string; readonly failed: string };
-  /** The unit hints by unit id (`ft`, `in`, `m`, `cm`), for the script to write on a unit change. */
-  readonly hints: Readonly<Record<'ft' | 'in' | 'm' | 'cm', string>>;
-  /** The volume sentences with `{value}`: the large figure and the short answer use them in either system. */
-  readonly volumes: Readonly<Record<'yd3' | 'm3', string>>;
-}
-
-/** Everything the concrete container renders from the engine and the catalogs (until the generic view replaces it). */
-export interface ConcretePageView {
-  readonly id: string;
-  readonly title: string;
-  readonly breadcrumb: BreadcrumbView;
-  readonly answer: string;
-  readonly notRunning: string;
-  readonly form: FormView;
-  readonly result: ResultView;
-  readonly templates: ConcreteTemplatesView;
-}
-
 /** Everything the container renders from the engine and the catalogs. */
 export interface CalculatorPageView {
   readonly id: string;

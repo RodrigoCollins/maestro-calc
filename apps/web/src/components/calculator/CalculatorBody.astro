@@ -3,33 +3,25 @@ import Breadcrumb from './Breadcrumb.astro';
 import CalculatorForm from './CalculatorForm.astro';
 import ResultPanel from './ResultPanel.astro';
 import SourceList from './SourceList.astro';
-import type { CalculatorContent, ConcretePageView } from './model.ts';
+import type { CalculatorContent, CalculatorPageView } from './model.ts';
 import '../../styles/calculator.css';
 
 interface Props {
-  view: ConcretePageView;
+  view: CalculatorPageView;
   content: CalculatorContent;
 }
 const { view, content } = Astro.props;
-const { templates } = view;
-// Inert messages the script reads, one entry each in one template: `errors.<CODE>`,
-// `answer.<shape>`, the copy states, the unit hints and the two volume sentences.
-const messages = [
-  ...Object.entries(templates.errors).map(([code, text]) => [`errors.${code}`, text] as const),
-  ...Object.entries(templates.answers).map(([shape, text]) => [`answer.${shape}`, text] as const),
-  ['copy.copied', templates.copy.copied] as const,
-  ['copy.failed', templates.copy.failed] as const,
-  ...Object.entries(templates.hints).map(([unit, text]) => [`hint.${unit}`, text] as const),
-  ...Object.entries(templates.volumes).map(([unit, text]) => [`volume.${unit}`, text] as const),
-];
+const { messages } = view;
 ---
 
 <div class="calculator" data-calculator={view.id}>
   <Breadcrumb breadcrumb={view.breadcrumb} />
   <h1>{view.title}</h1>
-  <p class="calc-answer" data-answer data-reserved="answer" aria-live="polite">
-    {view.answer}
-  </p>
+  {view.answer !== undefined && (
+    <p class="calc-answer" data-answer data-reserved="answer" aria-live="polite">
+      {view.answer}
+    </p>
+  )}
   <div class="calc-notice" data-reserved="notice">
     <p data-not-running>{view.notRunning}</p>
   </div>
