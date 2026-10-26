@@ -1,4 +1,5 @@
 ---
+import { helpId, hintId, inputId } from '../../calculator/layout.ts';
 import type { Field } from './model.ts';
 
 interface Props {
@@ -8,11 +9,14 @@ interface Props {
   hidden?: boolean;
 }
 const { field, shapes, hidden = false } = Astro.props;
-const id = `calc-${field.key}`;
+const id = inputId(field.key);
 const { hint, help } = field;
 // The input is described by its unit hint and its help text; a message for an error uses the same
 // attribute, so the script swaps it in (calculator-page › Errors without a button).
-const describedBy = [hint === undefined ? '' : `${id}-hint`, help === undefined ? '' : `${id}-help`]
+const describedBy = [
+  hint === undefined ? '' : hintId(field.key),
+  help === undefined ? '' : helpId(field.key),
+]
   .filter((part) => part !== '')
   .join(' ');
 ---
@@ -29,9 +33,9 @@ const describedBy = [hint === undefined ? '' : `${id}-hint`, help === undefined 
     aria-describedby={describedBy === '' ? undefined : describedBy}
     disabled
   />
-  {hint !== undefined && <small id={`${id}-hint`}>{hint}</small>}
+  {hint !== undefined && <small id={hintId(field.key)}>{hint}</small>}
   {help !== undefined && (
-    <p class="calc-help" id={`${id}-help`}>
+    <p class="calc-help" id={helpId(field.key)}>
       {help}
     </p>
   )}
