@@ -22,6 +22,12 @@ describe('client engine size (site-quality › [SQ27], design C17)', () => {
     expect(size).toBeLessThanOrEqual(ENGINE_BUDGET);
   });
 
+  // spec: site-quality › [SQ27]: the size is the one the browser downloads, whitespace removed
+  it('measures the bundle minified with no indentation or line breaks left', async () => {
+    const { code } = await buildClient(ENGINE_ENTRY);
+    expect(code).not.toMatch(/\n\t|\n\n/);
+  });
+
   // spec: site-quality › [SQ27]: the bundle carries no source text and no foreign origin
   it('carries no source name, no source link and no absolute url', async () => {
     const { code } = await buildClient(ENGINE_ENTRY);
