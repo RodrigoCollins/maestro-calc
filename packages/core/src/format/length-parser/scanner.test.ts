@@ -216,6 +216,8 @@ describe('scan tokens (fraction-format › Length text grammar)', () => {
     expect(scan('5ft2 3in')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
     expect(scan('ft6in')).toStrictEqual(failure('MALFORMED', 0));
     expect(scan('5 ft6in')).toStrictEqual(failure('UNKNOWN_UNIT', 2));
+    expect(scan('5ftx"')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('5feetx"')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
   });
 
   // spec: fraction-format delta › Length text grammar [FPX2]: a period glued to a unit word
