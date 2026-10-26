@@ -345,6 +345,11 @@ describe('calculator page scripts (site-shell › [SS20])', () => {
       'script',
     ],
     [
+      'a script that climbs out of _astro',
+      (h: string) => h.replace(`/${ENTRY_FILE}`, '/_astro/../other/a.js'),
+      'script',
+    ],
+    [
       'a protocol-relative script',
       (h: string) => h.replace(`/${ENTRY_FILE}`, '//example.com/a.js'),
       'script',
@@ -404,6 +409,12 @@ describe('JavaScript files in dist (site-shell › Client JavaScript only on cal
   it.each([
     ['a file outside _astro', 'js/a.js', 'JavaScript is only allowed under _astro/'],
     ['an .mjs file outside _astro', 'a.mjs', 'JavaScript is only allowed under _astro/'],
+    ['a .cjs file outside _astro', 'a.cjs', 'JavaScript is only allowed under _astro/'],
+    [
+      'a .cjs file nobody loads',
+      '_astro/chunks/lonely.cjs',
+      'JavaScript must be reachable from a calculator page',
+    ],
     [
       'a file nobody loads',
       '_astro/orphan.js',
@@ -419,6 +430,15 @@ describe('JavaScript files in dist (site-shell › Client JavaScript only on cal
       { file, rule: 'js-file', message },
     ]);
   });
+
+  it.each(['_astro/engine.wasm', 'engine.wasm'])(
+    'fails the WebAssembly file %s, naming it',
+    (file) => {
+      expect(calcProblemsAfter({}, (dist) => dist.set(file, 'x'))).toEqual([
+        { file, rule: 'js-file', message: 'WebAssembly is not allowed' },
+      ]);
+    },
+  );
 
   it('follows a static import of the entry but not a dynamic one', () => {
     const imported = '_astro/chunks/second.js';

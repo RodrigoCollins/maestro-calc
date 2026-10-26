@@ -24,7 +24,7 @@ export const LIMITS = {
 export const CALCULATOR_LIMITS = { js: 49_152, weight: 196_608 } as const;
 
 const DIST = '(dist)';
-const JS_FILE = /\.m?js$/;
+const JS_FILE = /\.[cm]?js$/;
 
 /** The size of `file`, or 0 for a file the build does not hold (another rule names it). */
 const sizeOf = (sizes: Sizes, file: string): number => sizes.get(file) ?? 0;

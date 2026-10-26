@@ -10,6 +10,7 @@ describe('static imports of a built script (site-shell › Client JavaScript onl
     ['a parent path', 'import"../f.js";', ['f.js']],
     ['an absolute path', 'import"/_astro/g.js";', ['_astro/g.js']],
     ['an .mjs file', 'import"./h.mjs";', ['_astro/h.mjs']],
+    ['a .cjs file', 'import"./h.cjs";', ['_astro/h.cjs']],
     ['a nested path with dots', 'import"./sub/../sub/i.js";', ['_astro/sub/i.js']],
   ])('reads %s', (_name, text, files) => {
     expect(staticImportsOf('_astro/entry.js', text)).toEqual(files);
