@@ -52,7 +52,7 @@ Core stays pure: `createConcrete(bags)` returns a `defineCalculator` definition;
 | D7 | Yields from `data`, injected (`createConcrete`) | Constants in core | PLAN §6.1 data separation; future brands/regions |
 | D8 | Prices default `$0` = "add your price" (cost hidden until > 0); no built-in prices | Seeded prices | Defaults are permanent URL contract; prices rot; no invented numbers |
 | D9 | Ready-mix shown as exact yd³ incl. waste; no order rounding | Quarter-yard rounding (mockup) | No citable rule; supplier-specific |
-| D10 | Slugs `/concrete-calculator`, `/es/calculadora-de-concreto`; titles "Concrete Calculator: Cubic Yards and Bags \| Maestro Calc" / "Calculadora de Concreto en Yardas y Bolsas \| Maestro Calc" | `hormigón`, `/es/concreto` | §6.4/§7.2; "concreto" is the US Latino term |
+| D10 | Slugs `/concrete-calculator`, `/es/calculadora-de-concreto`; titles "Concrete Calculator: Cubic Yards and Bags \| Maestro Calc" / "Calculadora de concreto en yardas y bolsas \| Maestro Calc" | `hormigón`, `/es/concreto` | §6.4/§7.2; "concreto" is the US Latino term |
 | D11 | Calculator page in `ROUTES` + catch-all branch | Explicit `.astro` files per locale (W2 option) | One table drives every derived check; no file/table drift |
 | D12 | Long copy in a `calculators` content collection; frontmatter `sources[]` (name, url, retrieved) + `updated`, `ownerReview`; a contract test runs the worked example through core | Copy in catalogs | Prose stays editable; numbers in copy cannot drift from code |
 | D13 | Lighthouse: one URL per template per locale (home, methodology, calculator); 6 runs | Add 2 more runs | RES-3; Actions minutes |

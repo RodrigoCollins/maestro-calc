@@ -157,7 +157,7 @@ Note: 16 keys is the end-of-change state of the concrete-calculator change (it w
 #### Scenario: [ICW16] Concrete page metadata
 - GIVEN `page.concrete.title` and `page.concrete.description` in each locale
 - WHEN resolved
-- THEN they are exactly `Concrete Calculator: Cubic Yards and Bags | Maestro Calc` (56 characters) and `Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.` (125 characters) in `en`; and `Calculadora de Concreto en Yardas y Bolsas | Maestro Calc` (57) and `Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.` (144) in `es`
+- THEN they are exactly `Concrete Calculator: Cubic Yards and Bags | Maestro Calc` (56 characters) and `Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.` (125 characters) in `en`; and `Calculadora de concreto en yardas y bolsas | Maestro Calc` (57) and `Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.` (144) in `es`
 
 #### Scenario: [ICW17] Calculator-page UI keys
 - GIVEN the `site.calculator.*` keys of each locale

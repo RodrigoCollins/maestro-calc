@@ -11,7 +11,7 @@ The calculator pages MUST carry the metadata of `ICW16`, read from `page.concret
 #### Scenario: [SE16] Titles and descriptions
 - GIVEN built `/concrete-calculator` and `/es/calculadora-de-concreto`
 - WHEN the head is parsed
-- THEN the titles are `Concrete Calculator: Cubic Yards and Bags | Maestro Calc` (56 characters) and `Calculadora de Concreto en Yardas y Bolsas | Maestro Calc` (57), the descriptions are the 125 and 144 character strings of `ICW16`, and all four are unique in the site
+- THEN the titles are `Concrete Calculator: Cubic Yards and Bags | Maestro Calc` (56 characters) and `Calculadora de concreto en yardas y bolsas | Maestro Calc` (57), the descriptions are the 125 and 144 character strings of `ICW16`, and all four are unique in the site
 
 #### Scenario: [SE17] hreflang and canonical
 - GIVEN the same pages
