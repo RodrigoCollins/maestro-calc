@@ -26,7 +26,7 @@ export interface Field {
   readonly help?: string;
 }
 
-/** A dimension input: held once in the page, visible while the pressed shape uses it (`concrete-layout.ts`). */
+/** A dimension input: held once in the page, visible while the pressed shape uses it (the choice slot, `calculator/slots/choices.ts`). */
 export interface ShapeField extends Field {
   readonly visible: boolean;
 }
