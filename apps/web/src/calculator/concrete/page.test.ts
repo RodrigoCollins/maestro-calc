@@ -66,4 +66,14 @@ describe('the concrete page module (calculator-web-core › [CWC2])', () => {
     expect(concretePage.costs?.hint).toBe('priceHint');
     expect(concretePage.costs?.note).toBe('readyMixNote');
   });
+
+  // spec: calculator-web-core › [CWC2] the answer follows the shape
+  it('picks the answer template by shape', () => {
+    expect(concretePage.answer?.templates).toEqual([
+      'answer.slab',
+      'answer.footing',
+      'answer.column',
+      'answer.steps',
+    ]);
+  });
 });

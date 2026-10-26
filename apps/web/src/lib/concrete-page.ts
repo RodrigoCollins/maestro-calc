@@ -15,7 +15,7 @@ import type {
   ConcreteFormView,
   ConcreteResultView,
 } from '../components/calculator/model.ts';
-import { answerValues, figuresOf } from '../calculator/concrete/present.ts';
+import { answerValuesOf, figuresOf } from '../calculator/concrete/present.ts';
 import { fieldText, fillMessage, percentText } from '../calculator/present.ts';
 import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -114,7 +114,7 @@ export const concreteView = (locale: Locale): ConcretePageView => {
   };
   const sentence = fillMessage(
     text(`calc.concrete.page.answer.${checked.value.shape}`),
-    answerValues(checked.value, raw.value, SYSTEM, templates),
+    answerValuesOf(checked.value, raw.value, SYSTEM, templates),
   );
   const [before = '', after = ''] = templates.volumeYd3.split('{value}');
   const around = (template: string, name: string, value: string): Split => {

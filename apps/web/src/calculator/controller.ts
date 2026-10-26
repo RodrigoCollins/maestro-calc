@@ -14,7 +14,7 @@ import {
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { concrete } from '../lib/concrete.ts';
 import {
-  answerValues,
+  answerValuesOf,
   figuresOf,
   type ConcreteResult,
   type ConcreteState,
@@ -376,7 +376,7 @@ const answerOf = (
     ? DASH
     : fillMessage(
         message(env, `answer.${valid.shape}`),
-        answerValues(valid, result, state.system, {
+        answerValuesOf(valid, result, state.system, {
           volumeYd3: message(env, 'volume.yd3'),
           volumeM3: message(env, 'volume.m3'),
         }),

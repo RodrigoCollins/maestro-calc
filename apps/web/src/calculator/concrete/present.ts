@@ -8,7 +8,7 @@ import {
   type UnitSystem,
 } from '@maestro-calc/core';
 import type { concrete } from '../../lib/concrete.ts';
-import type { Moment } from '../page-module.ts';
+import type { Moment, Ready } from '../page-module.ts';
 import {
   DASH,
   fillMessage,
@@ -126,25 +126,19 @@ export interface VolumeTemplates {
 
 /**
  * The placeholder values of the short answer of the state's shape (i18n-catalog ICW13): the
- * dimensions of that shape as `dimensionText`, the volume with its unit word (cubic yards in the
- * US system, cubic meters in the metric one), the extra, the bag size and the bags.
+ * dimensions of that shape as `dimensionText`, the volume as the primary sentence (`1.63 cubic
+ * yards` in the US system, `1.25 cubic meters` in the metric one), the extra, the bag size and the
+ * bags.
  */
-export const answerValues = (
+const valuesOf = (
   state: ConcreteState,
   result: ConcreteResult,
   system: UnitSystem,
-  templates: VolumeTemplates,
+  volume: string,
 ): Record<string, string> => {
   const text = (length: Length) => dimensionText(length, system);
   const common = {
-    volume:
-      system === 'imperial'
-        ? fillMessage(templates.volumeYd3, {
-            value: volumeText(volumeOutput(result, 'volumeYd3'), yd3),
-          })
-        : fillMessage(templates.volumeM3, {
-            value: volumeText(volumeOutput(result, 'volumeM3'), m3),
-          }),
+    volume,
     waste: percentText(state.waste),
     bagLb: state.bag,
     bags: groupedInteger(bagsOf(result)),
@@ -182,6 +176,32 @@ export const answerValues = (
       };
   }
 };
+
+/** The answer values of the answer slot: the moment of the page and the primary text it shows. */
+export const answerValues = (
+  moment: Ready<typeof concrete>,
+  primary: string,
+): Record<string, string> => valuesOf(moment.valid, moment.result, moment.system, primary);
+
+/** The same values from a state and its templates, until the controller reads the answer slot (S5). */
+export const answerValuesOf = (
+  state: ConcreteState,
+  result: ConcreteResult,
+  system: UnitSystem,
+  templates: VolumeTemplates,
+): Record<string, string> =>
+  valuesOf(
+    state,
+    result,
+    system,
+    system === 'imperial'
+      ? fillMessage(templates.volumeYd3, {
+          value: volumeText(volumeOutput(result, 'volumeYd3'), yd3),
+        })
+      : fillMessage(templates.volumeM3, {
+          value: volumeText(volumeOutput(result, 'volumeM3'), m3),
+        }),
+  );
 
 /**
  * The placeholders of the bag line: the pounds of the pressed bag (they follow the choice even
