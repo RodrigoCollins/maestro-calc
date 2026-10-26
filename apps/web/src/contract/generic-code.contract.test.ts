@@ -23,6 +23,15 @@ const genericFiles = (): string[] =>
     (file) => !IDS.some((id) => file.startsWith(`apps/web/src/calculator/${id}/`)),
   );
 
+/** The generic components and the page builder: they name no calculator either (the builder takes its catalog as an argument). */
+const pageFiles = (): string[] => [
+  ...globSync('apps/web/src/components/calculator/*.astro', { cwd: fromRoot('.') }).sort(),
+  'apps/web/src/lib/page-view.ts',
+];
+
+/** An Astro file without its markup comments, then without its script comments. */
+const stripMarkupComments = (source: string): string => source.replaceAll(/<!--[\s\S]*?-->/g, '');
+
 /** The source with its comments removed; the quotes are tracked so `https://` in a string stays. */
 const stripComments = (source: string): string => {
   let out = '';
@@ -102,6 +111,24 @@ describe('generic code names no calculator and no browser API (calculator-web-co
   it.each(files)('%s names no registry calculator in a string or a path', (file) => {
     expect(idProblems(stripComments(readFileSync(fromRoot(file), 'utf8')), IDS)).toEqual([]);
   });
+
+  // spec: calculator-web-core › [CWC34] the generic components and the page builder join the scan
+  it('scans the generic components and the page builder for ids', () => {
+    expect(pageFiles()).toEqual(
+      expect.arrayContaining([
+        'apps/web/src/components/calculator/CalculatorBody.astro',
+        'apps/web/src/components/calculator/CalculatorForm.astro',
+        'apps/web/src/components/calculator/ResultPanel.astro',
+        'apps/web/src/components/calculator/ShoppingLine.astro',
+        'apps/web/src/lib/page-view.ts',
+      ]),
+    );
+  });
+
+  it.each(pageFiles())('%s names no registry calculator in a string or a path', (file) => {
+    const code = stripComments(stripMarkupComments(readFileSync(fromRoot(file), 'utf8')));
+    expect(idProblems(code, IDS)).toEqual([]);
+  });
 });
 
 describe('the scan finds what it forbids (seeded)', () => {
@@ -133,6 +160,14 @@ describe('the scan finds what it forbids (seeded)', () => {
     ],
   ])('flags a registry id in %s', (_what, code, problem) => {
     expect(idProblems(stripComments(code), IDS)).toContain(problem);
+  });
+
+  it('does not flag an id in a markup comment of a component', () => {
+    const markup = '<!-- the concrete page -->\n<p class="calc-note">Text</p>';
+    expect(idProblems(stripComments(stripMarkupComments(markup)), IDS)).toEqual([]);
+    expect(
+      idProblems(stripComments(`<p data-calculator="concrete">x</p>\nconst a = 'concrete';`), IDS),
+    ).toContain('names concrete in "concrete"');
   });
 
   it('does not flag an id in a comment, a longer id or a plain word', () => {

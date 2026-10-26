@@ -2,7 +2,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import CalculatorBody from '../../components/calculator/CalculatorBody.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { concreteView } from '../../lib/page-view.ts';
+import { pageView } from '../../lib/pages.ts';
 import { siteText } from '../../lib/site-text.ts';
 import { headFor } from '../../seo/head.ts';
 import { ROUTES } from '../../routing/routes.ts';
@@ -15,7 +15,7 @@ export const getStaticPaths = () => [{ params: { locale: 'en' } }, { params: { l
 const locale: Locale = Astro.params['locale'] === 'es' ? 'es' : 'en';
 const extra = Number(process.env[`BUDGET_EXTRA_${locale.toUpperCase()}`] ?? '0');
 const text = siteText(locale);
-const view = concreteView(locale);
+const view = pageView('concrete', locale);
 // The real builder with the real serializer, over the full-length FAQ. The concrete route is not
 // routed yet (G3), so the table gets the paths it will have, which fixes the length of the URLs.
 const routes = {

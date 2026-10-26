@@ -7,7 +7,7 @@ import { calculatorSchema } from '../content/schema.ts';
 import { faqOf } from '../content/faq.ts';
 import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
 import { concrete } from '../lib/concrete.ts';
-import { concreteView } from '../lib/page-view.ts';
+import { pageView } from '../lib/pages.ts';
 import { calculators } from '../lib/calculators.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord } from '../site-check/dom.ts';
@@ -45,7 +45,7 @@ const frontmatterOf = (entry: CalculatorEntry) => calculatorSchema(['concrete'])
 
 /** The default state through the page builder, which runs the registry calculator. */
 const engineExample = () => {
-  const { result } = concreteView('en');
+  const { result } = pageView('concrete', 'en');
   const [shopping] = result.shopping;
   if (shopping === undefined) throw new Error('the concrete page declares a shopping line');
   return {
@@ -265,7 +265,7 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
           .filter((input) => input.kind === 'length' && input.defaultUnit === 'ft')
           .map((input) => input.key),
       );
-      const labels = fieldsOf(concreteView(locale).form)
+      const labels = fieldsOf(pageView('concrete', locale).form)
         .filter((field) => long.has(field.key))
         .map((field) => field.label.toLowerCase());
       // the list is the labels in form order, the last one joined with "and"

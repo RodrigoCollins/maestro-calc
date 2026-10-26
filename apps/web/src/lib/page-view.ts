@@ -1,11 +1,5 @@
 import { ALL_ERROR_CODES, type OutputDescriptor, type UnitSystem } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
-import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
-import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
-import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
-import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
-import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
-import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
   AreaField,
   ChoiceItemView,
@@ -16,7 +10,6 @@ import type {
   FormView,
   ResultView,
 } from '../components/calculator/model.ts';
-import { concretePage } from '../calculator/concrete/page.ts';
 import { required, mustBeOk, type Messages } from '../calculator/controller.ts';
 import { formOf } from '../calculator/form-layout.ts';
 import {
@@ -30,11 +23,6 @@ import {
 import { fillMessage, outputText } from '../calculator/present.ts';
 import { textsOf } from '../calculator/texts.ts';
 import { pathOf } from '../routing/routes.ts';
-
-const CATALOGS: Record<Locale, Messages> = {
-  en: { ...enCommon, ...enConcrete, ...enSite },
-  es: { ...esCommon, ...esConcrete, ...esSite },
-};
 
 /** A page message by key, or the `PAGE_KEY` error that names the key the catalog lacks. */
 const messageOf = (catalog: Messages, id: string, key: string): string =>
@@ -332,7 +320,3 @@ export const pageViewOf = (
     messages: messagesOf(module, catalog),
   };
 };
-
-/** The concrete page for `locale`, from the registry calculator and its two catalogs. */
-export const concreteView = (locale: Locale): CalculatorPageView =>
-  pageViewOf(concretePage, locale, CATALOGS[locale]);

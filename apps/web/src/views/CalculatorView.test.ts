@@ -7,7 +7,7 @@ import { renderComponent } from '../__testing__/render-component.ts';
 import { faqOf } from '../content/faq.ts';
 import { h2Ids } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
-import { concreteView } from '../lib/page-view.ts';
+import { pageView } from '../lib/pages.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import CatchAll from '../pages/[...path].astro';
@@ -80,7 +80,7 @@ describe('CalculatorView body (calculator-page › [CP5], [CP8], [CP17]; site-se
   it.each(['en', 'es'] as const)('has one h1 equal to the title in %s', async (locale) => {
     const document = await render(locale);
     expect(document.querySelectorAll('h1')).toHaveLength(1);
-    expect(document.querySelector('main h1')?.text).toBe(concreteView(locale).title);
+    expect(document.querySelector('main h1')?.text).toBe(pageView('concrete', locale).title);
   });
 
   // spec: calculator-page › [CP5] the result h2, then the five content sections with their ids
@@ -123,7 +123,7 @@ describe('CalculatorView body (calculator-page › [CP5], [CP8], [CP17]; site-se
       expect(blocks).toHaveLength(1);
       const expected = serializeJsonLd(
         calculatorJsonLd(
-          { id: 'concrete', name: concreteView(locale).title },
+          { id: 'concrete', name: pageView('concrete', locale).title },
           locale,
           faqOf(entryOf(locale).body),
         ),
