@@ -12,9 +12,9 @@ import { SITE } from '../src/site.config.ts';
 import {
   budgetSummary,
   checkSite,
+  contextOf,
   countPending,
   pageCount,
-  pagesOf,
   sourceUrlsOf,
   updatedOf,
 } from '../src/site-check/checks.ts';
@@ -107,8 +107,7 @@ if (problems.length > 0) {
 }
 
 console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
-for (const line of budgetSummary(pagesOf(built, ROUTES), buildBytes.sizes, built, site))
-  console.log(line);
+for (const line of budgetSummary(contextOf(built, site, buildBytes.sizes))) console.log(line);
 console.log(
   `pending ownerReview entries: ${String(countPending([...entries, ...calculatorEntries].map(([, text]) => text)))}`,
 );

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { headProblems } from './head.ts';
-import { pagesOf } from './files.ts';
-import { FIXTURE_ROUTES, fixtureSite, validDist } from './__testing__/page-fixture.ts';
+import { contextOf, fixtureSite, validDist } from './__testing__/page-fixture.ts';
 import type { Site } from './types.ts';
 
 /** Head problems of a valid dist after `edit` changed a page's HTML (and optionally the catalog). */
@@ -16,7 +15,7 @@ const problemsAfter = (
   };
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
-  return headProblems(pagesOf(dist, FIXTURE_ROUTES), site);
+  return headProblems(contextOf(dist, site));
 };
 
 const rulesOf = (problems: ReturnType<typeof problemsAfter>, file: string): string[] =>
@@ -151,7 +150,7 @@ describe('title (site-seo › [SE1], [SE2])', () => {
     );
     const site: Site = { ...base, catalogs: { ...base.catalogs, en: rest } };
     expect(
-      headProblems(pagesOf(validDist(base), FIXTURE_ROUTES), site).filter(
+      headProblems(contextOf(validDist(base), site)).filter(
         (entry) => entry.rule === 'title-catalog',
       ),
     ).toEqual([
@@ -217,7 +216,7 @@ describe('description (site-seo › [SE1], [SE2], [SE3])', () => {
     );
     const site: Site = { ...base, catalogs: { ...base.catalogs, en: rest } };
     expect(
-      headProblems(pagesOf(validDist(base), FIXTURE_ROUTES), site).filter(
+      headProblems(contextOf(validDist(base), site)).filter(
         (entry) => entry.rule === 'description-catalog',
       ),
     ).toEqual([

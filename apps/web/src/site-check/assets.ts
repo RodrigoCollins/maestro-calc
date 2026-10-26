@@ -1,10 +1,7 @@
 import { attr, attrsOf, urlsIn } from './dom.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
-import type { Dist, Page, Problem, Site } from './types.ts';
-
-/** What the asset rules need to know of the site: which pages are calculator pages. */
-type Templates = Pick<Site, 'calculatorPages'>;
+import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** `docs/design/direction.md`: the seven palette values every build must carry. */
 const PALETTE = ['#0E2240', '#1D4ED8', '#F06A1D', '#56616B', '#EEF1EF', '#FFFFFF', '#1FAF5A'];
@@ -145,7 +142,7 @@ export const scriptRootsOf = (page: Page): string[] =>
     .map((ref) => ref.slice(1));
 
 /** Both locales of a calculator load the same entry file (site-shell › [SS20]). */
-const sharedEntryProblems = (pages: readonly Page[], site: Templates): Problem[] => {
+const sharedEntryProblems = (pages: readonly Page[], site: Site): Problem[] => {
   const first = new Map<string, { file: string; entry: string }>();
   return pages
     .filter((page) => isCalculatorPage(page, site))
@@ -230,7 +227,7 @@ const cssProblems = (pages: readonly Page[], dist: Dist): Problem[] => {
   return [...found.values()];
 };
 
-const distProblems = (pages: readonly Page[], dist: Dist, site: Templates): Problem[] => {
+const distProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[] => {
   const woff2 = [...dist.keys()].filter((file) => file.endsWith('.woff2')).length;
   const loaded = new Set(
     graphOf(pages.filter((page) => isCalculatorPage(page, site)).flatMap(scriptRootsOf), dist),
@@ -253,11 +250,7 @@ const distProblems = (pages: readonly Page[], dist: Dist, site: Templates): Prob
 };
 
 /** Script, same-origin, palette and font rules over the built pages and files, per template. */
-export const assetProblems = (
-  pages: readonly Page[],
-  dist: Dist,
-  site: Templates = {},
-): Problem[] => [
+export const assetProblems = ({ pages, dist, site }: CheckContext): Problem[] => [
   ...pages.flatMap((page) => {
     const css = cssOf(page, dist);
     return [

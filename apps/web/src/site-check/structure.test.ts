@@ -1,11 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { SITE } from '../site.config.ts';
-import { pagesOf } from './files.ts';
 import { structureProblems } from './structure.ts';
 import {
-  CALC_ROUTES,
   calculatorSite,
-  FIXTURE_ROUTES,
+  contextOf,
   fixtureSite,
   NIST_URL,
   QUIKRETE_URL,
@@ -19,7 +17,7 @@ const problemsAfter = (edits: Edits = {}) => {
   const site = fixtureSite();
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
-  return structureProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist);
+  return structureProblems(contextOf(dist, site));
 };
 
 const rulesOf = (edits: Edits, file: string): string[] =>
@@ -271,10 +269,7 @@ describe('favicon (site-shell › [SS17])', () => {
     if (content === undefined) dist.delete('favicon.svg');
     else dist.set('favicon.svg', content);
     expect(
-      structureProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist).map((entry) => [
-        entry.file,
-        entry.rule,
-      ]),
+      structureProblems(contextOf(dist, site)).map((entry) => [entry.file, entry.rule]),
     ).toEqual([['favicon.svg', 'favicon']]);
   });
 
@@ -287,9 +282,7 @@ describe('favicon (site-shell › [SS17])', () => {
       html.replace(`mailto:${SITE.contactEmail}`, 'mailto:other@example.test'),
     );
     expect(
-      structureProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist).filter(
-        (entry) => entry.file === 'about.html',
-      ),
+      structureProblems(contextOf(dist, site)).filter((entry) => entry.file === 'about.html'),
     ).toEqual([]);
   });
 
@@ -307,7 +300,7 @@ const ES_PAGE = 'es/calculadora-de-concreto.html';
 const calcProblemsAfter = (edits: Edits = {}, site = calculatorSite()) => {
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
-  return structureProblems(pagesOf(dist, CALC_ROUTES), site, dist);
+  return structureProblems(contextOf(dist, site));
 };
 
 const calcRulesOf = (edits: Edits, file: string): string[] =>

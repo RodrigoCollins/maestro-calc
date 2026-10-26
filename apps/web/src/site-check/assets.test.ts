@@ -1,12 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { assetProblems } from './assets.ts';
-import { pagesOf } from './files.ts';
 import {
-  CALC_ROUTES,
   calculatorSite,
   CHUNK_FILE,
+  contextOf,
   ENTRY_FILE,
-  FIXTURE_ROUTES,
   fixtureSite,
   VALID_CSS,
   validDist,
@@ -22,7 +20,7 @@ const problemsAfter = (
   const dist = validDist(fixtureSite());
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
   mutate(dist);
-  return assetProblems(pagesOf(dist, FIXTURE_ROUTES), dist);
+  return assetProblems(contextOf(dist));
 };
 
 const rulesOf = (problems: ReturnType<typeof problemsAfter>, file: string): string[] =>
@@ -299,7 +297,7 @@ const calcProblemsAfter = (
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
   mutate(dist);
-  return assetProblems(pagesOf(dist, CALC_ROUTES), dist, site);
+  return assetProblems(contextOf(dist, site));
 };
 
 const ENTRY_TAG = `<script type="module" src="/${ENTRY_FILE}"></script>`;

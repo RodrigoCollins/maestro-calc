@@ -2,7 +2,7 @@ import { parse } from 'node-html-parser';
 import { LOCALES, NOT_FOUND_ID, notFoundPathOf, pathOf, urlOf } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
 import { problem } from './types.ts';
-import type { Dist, Page, Problem, Site } from './types.ts';
+import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** The built file of a table path: `/` is `index.html`, `/es/x` is `es/x.html`. */
 export const fileOf = (path: string): string =>
@@ -44,8 +44,8 @@ export const expectedFiles = (routes: RouteTable): string[] =>
 export const pageCount = (routes: RouteTable): number => expectedFiles(routes).length;
 
 /** Orphan HTML files and missing pages, each named (site-routing-i18n › [SR1]). */
-export const fileSetProblems = (dist: Dist, routes: RouteTable): Problem[] => {
-  const expected = new Set(expectedFiles(routes));
+export const fileSetProblems = ({ dist, site }: CheckContext): Problem[] => {
+  const expected = new Set(expectedFiles(site.routes));
   const built = [...dist.keys()].filter((file) => file.endsWith('.html'));
   return [
     ...built

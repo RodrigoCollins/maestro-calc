@@ -3,7 +3,7 @@ import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
 import { attr, attrsOf } from './dom.ts';
 import { isCalculatorPage, problem } from './types.ts';
-import type { Dist, Page, Problem, Site } from './types.ts';
+import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 const FIRST_FOCUSABLE = 'a[href], button, input, select, textarea, [tabindex]';
 const FAVICON_PATH = '/favicon.svg';
@@ -108,7 +108,7 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
   );
   const mailto = `mailto:${site.config.contactEmail}`;
   // a calculator page may link the sources of its entry; nothing else leaves the site
-  const sources = site.externalLinks?.[page.id] ?? [];
+  const sources = site.externalLinks[page.id] ?? [];
   const idsOf = (target: Page): Set<string> => new Set(attrsOf(target.root, '[id]', 'id'));
   return attrsOf(page.root, 'a[href]', 'href').flatMap((href) => {
     if (href === mailto || href === FAVICON_PATH || sources.includes(href)) return [];
@@ -179,7 +179,7 @@ const faviconProblems = (dist: Dist): Problem[] => {
 };
 
 /** Landmarks, headings, skip link, links, language switch, navigation and favicon rules. */
-export const structureProblems = (pages: readonly Page[], site: Site, dist: Dist): Problem[] => [
+export const structureProblems = ({ pages, site, dist }: CheckContext): Problem[] => [
   ...pages.flatMap((page) => [
     ...landmarkProblems(page),
     ...h1Problems(page),

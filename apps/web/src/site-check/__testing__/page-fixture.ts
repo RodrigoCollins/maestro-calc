@@ -16,8 +16,9 @@ import { sitemapXml } from '../../seo/sitemap.ts';
 import { homeJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { switchFor } from '../../routing/switch.ts';
 import { SITE } from '../../site.config.ts';
+import { contextOf as buildContext } from '../checks.ts';
 import { fileOf } from '../files.ts';
-import type { BuildBytes, Dist, Site } from '../types.ts';
+import type { BuildBytes, CheckContext, Dist, Site } from '../types.ts';
 
 /** The `updated` date every fixture entry carries. */
 export const UPDATED = '2026-10-23';
@@ -74,8 +75,17 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
     config: SITE,
     catalogs: { en: catalogOf('en'), es: catalogOf('es') },
     updates,
+    calculatorPages: [],
+    externalLinks: {},
   };
 };
+
+/** The context a rule group reads: the pages of `dist` for the site's routes, and the byte sizes. */
+export const contextOf = (
+  dist: Dist,
+  site: Site = fixtureSite(),
+  sizes: BuildBytes['sizes'] = new Map(),
+): CheckContext => buildContext(dist, site, sizes);
 
 /** A site whose table has a calculator page `concrete`, listed in `calculatorPages`. */
 export const calculatorSite = (): Site => ({
@@ -194,7 +204,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
   const headerLinks = links(HEADER_PAGES);
   const footerLinks = links(FOOTER_PAGES);
   const catalog = site.catalogs[locale];
-  const calculator = site.calculatorPages?.includes(id) === true;
+  const calculator = site.calculatorPages.includes(id);
   return [
     `<!DOCTYPE html><html lang="${LOCALE_TAGS[locale]}"><head>`,
     '<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">',
@@ -244,7 +254,7 @@ export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
   for (const locale of LOCALES) {
     dist.set(fileOf(notFoundPathOf(locale)), validPage(NOT_FOUND_ID, locale, site));
   }
-  if ((site.calculatorPages ?? []).length > 0) {
+  if (site.calculatorPages.length > 0) {
     dist.set(ENTRY_FILE, 'import"./chunks/rational.js";const a=1;export{a};');
     dist.set(CHUNK_FILE, 'export const r=1;');
   }

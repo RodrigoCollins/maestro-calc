@@ -1,14 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { contentProblems, countPending, OLD_ADDRESS, sourceUrlsOf, updatedOf } from './content.ts';
 import { SITE } from '../site.config.ts';
-import { pagesOf } from './files.ts';
-import {
-  CALC_ROUTES,
-  calculatorSite,
-  FIXTURE_ROUTES,
-  fixtureSite,
-  validDist,
-} from './__testing__/page-fixture.ts';
+import { calculatorSite, contextOf, fixtureSite, validDist } from './__testing__/page-fixture.ts';
 
 type Edit = (text: string) => string;
 
@@ -20,7 +13,7 @@ const problemsAfter = (
   const dist = validDist(site);
   for (const [file, edit] of Object.entries(edits)) dist.set(file, edit(dist.get(file) ?? ''));
   mutate(dist);
-  return contentProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist);
+  return contentProblems(contextOf(dist, site));
 };
 
 const rulesOf = (problems: ReturnType<typeof problemsAfter>, file: string): string[] =>
@@ -398,9 +391,7 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
       );
     }
     expect(
-      contentProblems(pagesOf(dist, FIXTURE_ROUTES), site, dist).filter(
-        (entry) => entry.rule === 'json-ld',
-      ),
+      contentProblems(contextOf(dist, site)).filter((entry) => entry.rule === 'json-ld'),
     ).toEqual([]);
   });
 
@@ -457,7 +448,7 @@ describe('trust page update date (trust-pages › [TP6] built side)', () => {
       Object.entries(site.updates).filter(([key]) => key !== 'en/about'),
     );
     expect(
-      contentProblems(pagesOf(dist, FIXTURE_ROUTES), { ...site, updates }, dist).filter(
+      contentProblems(contextOf(dist, { ...site, updates })).filter(
         ({ file }) => file === 'about.html',
       ),
     ).toEqual([{ file: 'about.html', rule: 'updated', message: 'no content entry for en/about' }]);
@@ -509,7 +500,7 @@ const calcProblemsAfter = (
     );
   }
   for (const [file, edit] of Object.entries(html)) dist.set(file, edit(dist.get(file) ?? ''));
-  return contentProblems(pagesOf(dist, CALC_ROUTES), site, dist);
+  return contentProblems(contextOf(dist, site));
 };
 
 const messagesOf = (problems: ReturnType<typeof calcProblemsAfter>, file: string): string[] =>
@@ -931,7 +922,7 @@ describe('other pages stay free of calculator types (site-seo › [SE23])', () =
       ),
     );
     expect(
-      contentProblems(pagesOf(dist, CALC_ROUTES), site, dist)
+      contentProblems(contextOf(dist, site))
         .filter((entry) => entry.file === 'privacy.html')
         .map((entry) => entry.message),
     ).toEqual([`${type} is not allowed on this page`]);

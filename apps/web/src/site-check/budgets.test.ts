@@ -26,12 +26,12 @@ const build = (
   );
   for (const font of FONTS) sizes.set(font, 20_000);
   edit(dist, sizes);
-  return { pages: pagesOf(dist, FIXTURE_ROUTES), sizes: sizes as Sizes, dist };
+  const site = fixtureSite();
+  return { pages: pagesOf(dist, FIXTURE_ROUTES), sizes: sizes as Sizes, dist, site };
 };
 
 const problemsAfter = (edit?: Parameters<typeof build>[0]) => {
-  const { pages, sizes, dist } = build(edit);
-  return budgetProblems(pages, sizes, dist);
+  return budgetProblems(build(edit));
 };
 
 const withLinkedCss =
@@ -237,11 +237,11 @@ describe('page weight of a preloaded font that no CSS names (site-quality › [S
 
 describe('budget summary (site-quality › [SQ6])', () => {
   it('prints the largest page and its size per category', () => {
-    const { pages, sizes, dist } = build((_dist, mutable) => {
+    const context = build((_dist, mutable) => {
       mutable.set('about.html', 12_345);
       mutable.set(FONTS[1] ?? '', 23_040);
     });
-    expect(budgetSummary(pages, sizes, dist)).toEqual([
+    expect(budgetSummary(context)).toEqual([
       'budget html: largest /about.html 12,345 B (limit 40,960)',
       `budget css: largest /index.html ${INLINE_CSS.toLocaleString('en-US')} B (limit 20,480)`,
       'budget font: largest /_astro/fonts/b.woff2 23,040 B (limit 30,720)',
@@ -252,7 +252,7 @@ describe('budget summary (site-quality › [SQ6])', () => {
   });
 
   it('adds up the referenced JavaScript, which has no budget', () => {
-    const { pages, sizes, dist } = build((mutable, bytes) => {
+    const context = build((mutable, bytes) => {
       mutable.set(
         'index.html',
         (mutable.get('index.html') ?? '').replace(
@@ -262,7 +262,7 @@ describe('budget summary (site-quality › [SQ6])', () => {
       );
       bytes.set('_astro/x.js', 1_234);
     });
-    expect(budgetSummary(pages, sizes, dist)[4]).toBe('budget js: 1,234 B referenced (limit 0)');
+    expect(budgetSummary(context)[4]).toBe('budget js: 1,234 B referenced (limit 0)');
   });
 });
 
@@ -289,8 +289,7 @@ const calcBuild = (
 };
 
 const calcProblems = (...args: Parameters<typeof calcBuild>) => {
-  const { pages, sizes, dist, site } = calcBuild(...args);
-  return budgetProblems(pages, sizes, dist, site);
+  return budgetProblems(calcBuild(...args));
 };
 
 describe('calculator JavaScript budget (site-quality › [SQ22], [SQ23])', () => {
@@ -439,8 +438,7 @@ describe('page weight per template (site-quality › [SQ24])', () => {
 // spec: site-quality › [SQ6] the summary names the largest page per category, calculator JavaScript included
 describe('budget summary with a calculator page (site-quality › [SQ6])', () => {
   it('adds the calculator lines and keeps the static ones for the static pages', () => {
-    const { pages, sizes, dist, site } = calcBuild(28_457, 3_000);
-    const lines = budgetSummary(pages, sizes, dist, site);
+    const lines = budgetSummary(calcBuild(28_457, 3_000));
     expect(lines.slice(0, 5)).toEqual([
       expect.stringMatching(/^budget html: largest \/.+\.html [\d,]+ B \(limit 40,960\)$/),
       expect.stringMatching(/^budget css: /),

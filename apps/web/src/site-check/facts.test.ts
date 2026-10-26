@@ -1,10 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { factProblems } from './facts.ts';
-import { pagesOf } from './files.ts';
 import {
-  CALC_ROUTES,
   calculatorSite,
   CHUNK_FILE,
+  contextOf,
   ENTRY_FILE,
   fixtureSite,
   QUIKRETE_URL,
@@ -15,7 +14,7 @@ const problemsAfter = (mutate: (dist: Map<string, string>) => void = () => undef
   const site = fixtureSite();
   const dist = validDist(site);
   mutate(dist);
-  return factProblems(site, dist);
+  return factProblems(contextOf(dist, site));
 };
 
 // spec: trust-pages › [TP12] — what the privacy page says must match what the build does
@@ -110,7 +109,7 @@ const calcProblemsAfter = (mutate: (dist: Map<string, string>) => void = () => u
   const site = calculatorSite();
   const dist = validDist(site);
   mutate(dist);
-  return factProblems(site, dist, pagesOf(dist, CALC_ROUTES));
+  return factProblems(contextOf(dist, site));
 };
 
 const appended = (file: string, text: string) => (dist: Map<string, string>) =>

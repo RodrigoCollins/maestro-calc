@@ -26,10 +26,22 @@ export interface Site {
   readonly catalogs: Readonly<Record<Locale, Readonly<Record<string, string>>>>;
   /** The `updated` date of each content entry, keyed `<locale>/<id>` (`en/about`). */
   readonly updates: Readonly<Record<string, string>>;
-  /** The route ids rendered with the calculator template (`CALCULATOR_PAGES`); none when absent. */
-  readonly calculatorPages?: readonly string[];
+  /** The route ids rendered with the calculator template (`CALCULATOR_PAGES`); empty when none. */
+  readonly calculatorPages: readonly string[];
   /** The outbound `https` links each calculator page may carry (its `sources[].url`), by page id. */
-  readonly externalLinks?: Readonly<Record<string, readonly string[]>>;
+  readonly externalLinks: Readonly<Record<string, readonly string[]>>;
+}
+
+/**
+ * What every rule group reads: the parsed pages, the text of the build, the site it is compared
+ * with and the byte size of every file. One value, built once by `checkSite`, so a rule never
+ * needs a defaulted argument.
+ */
+export interface CheckContext {
+  readonly pages: readonly Page[];
+  readonly dist: Dist;
+  readonly site: Site;
+  readonly sizes: BuildBytes['sizes'];
 }
 
 /** A built HTML page, parsed once, with the id and locale the route table gives its file. */
@@ -53,5 +65,5 @@ export const problem = (file: string, rule: string, message: string): Problem =>
 /** Whether the route table's calculator list gives this page the calculator template. */
 export const isCalculatorPage = (
   page: Page,
-  { calculatorPages = [] }: Pick<Site, 'calculatorPages'>,
+  { calculatorPages }: Pick<Site, 'calculatorPages'>,
 ): boolean => templateOf(page.id, calculatorPages) === 'calculator';

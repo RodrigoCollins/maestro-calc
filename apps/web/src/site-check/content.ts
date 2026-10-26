@@ -2,7 +2,7 @@ import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { alternatesIn, attr, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
 import { isCalculatorPage, problem } from './types.ts';
-import type { Dist, Page, Problem, Site } from './types.ts';
+import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** Whole words that mean a page still carries review state (a bare `pending` is allowed). */
 export const OWNER_REVIEW_MARKERS = ['ownerReview', 'draft', 'borrador', 'pending review'];
@@ -394,7 +394,7 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
 };
 
 /** Content, placeholder, robots, sitemap and structured-data rules. */
-export const contentProblems = (pages: readonly Page[], site: Site, dist: Dist): Problem[] => [
+export const contentProblems = ({ pages, site, dist }: CheckContext): Problem[] => [
   ...pages.flatMap((page) => [
     ...reviewProblems(page),
     ...messageKeyProblems(page),
