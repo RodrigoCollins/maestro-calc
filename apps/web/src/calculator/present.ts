@@ -1,7 +1,9 @@
 import {
   cm,
+  findUnit,
   formatFeetInches,
   inch,
+  isQuantity,
   m,
   mm,
   quantity,
@@ -10,9 +12,11 @@ import {
   toDecimalParts,
   usd,
   valueIn,
+  type DimensionName,
   type InputDescriptor,
   type LengthDescriptor,
   type Money,
+  type OutputDescriptor,
   type Quantity,
   type Unit,
   type UnitSystem,
@@ -55,6 +59,13 @@ export const volumeText = (volume: Quantity<'volume'>, unit: Unit<'volume'>): st
 export const moneyText = (money: Money): string => {
   const { negative, integer, fraction } = toCents(money);
   return `${negative ? '-' : ''}$${groupedInteger(integer)}.${fraction}`;
+};
+
+/** A price as a person types it: dollars and cents, nothing for zero (the field shows its placeholder). */
+export const priceText = (money: Money): string => {
+  if (money.amount.isZero()) return '';
+  const { integer, fraction } = toCents(money);
+  return `${String(integer)}.${fraction}`;
 };
 
 /** A percent as its canonical decimal: `10`, `12.5` (two places at most, no trailing zeros). */
@@ -192,4 +203,23 @@ export const boundText = (field: InputDescriptor, bound: string, system: UnitSys
     default:
       throw new TypeError(`${field.kind} has no bounds`);
   }
+};
+
+/**
+ * The figure of an output for its row: money through `moneyText`, a quantity in the unit of its
+ * display hint at the hint's places, thousands grouped. A fraction hint has no calculator yet and
+ * fails loudly rather than guessing a format.
+ */
+export const outputText = (
+  output: OutputDescriptor,
+  value: Money | Quantity<DimensionName>,
+): string => {
+  if (!isQuantity(value)) return moneyText(value);
+  const { key, measure, display } = output;
+  if (display === undefined || measure === 'money')
+    throw new TypeError(`${key} has no display hint`);
+  if (display.format === 'fraction') throw new TypeError(`${key} asks for a fraction display`);
+  const unit = findUnit(measure, display.unit);
+  if (unit === undefined) throw new TypeError(`${key} has no unit ${display.unit}`);
+  return decimalText(valueIn(value, unit), display.places, true);
 };

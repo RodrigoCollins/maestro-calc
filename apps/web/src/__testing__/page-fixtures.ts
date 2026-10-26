@@ -1,4 +1,4 @@
-import { defineCalculator, inch, quantity, Rational } from '@maestro-calc/core';
+import { defineCalculator, inch, quantity, Rational, usd } from '@maestro-calc/core';
 import { PageModuleError } from '../calculator/page-module.ts';
 
 /*
@@ -105,4 +105,26 @@ export const shoppingCalculator = defineCalculator({
     shopping: size === 2 ? [beta] : [beta, alpha],
     warnings: [],
   }),
+});
+
+/** One input of each kind a page types into or chooses from, so the texts can be derived for all. */
+export const mixedCalculator = defineCalculator({
+  id: 'mixed-fixture',
+  inputs: [
+    {
+      kind: 'length',
+      key: 'span',
+      urlKey: 'l1',
+      default: quantity(120, inch),
+      defaultUnit: 'ft',
+      metricDefaultUnit: 'm',
+    },
+    count('pieces', 'c1'),
+    { kind: 'percent', key: 'rate', urlKey: 'p1', default: Rational.of(5) },
+    { kind: 'money', key: 'price', urlKey: 'm1', default: usd(0) },
+    { kind: 'boolean', key: 'flag', urlKey: 'b1', default: false },
+    { kind: 'select', key: 'mode', urlKey: 's1', options: ['one', 'two'], default: 'one' },
+  ],
+  outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+  compute: () => unused,
 });
