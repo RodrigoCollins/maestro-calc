@@ -15,9 +15,9 @@ import type {
   ConcreteFormView,
   ConcreteResultView,
 } from '../components/calculator/model.ts';
-import { answerValues, figuresOf } from '../calculator/concrete-present.ts';
+import { answerValues, figuresOf } from '../calculator/concrete/present.ts';
 import { fieldText, fillMessage, percentText } from '../calculator/present.ts';
-import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/concrete-shapes.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
 

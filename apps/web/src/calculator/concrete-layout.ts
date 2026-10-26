@@ -1,4 +1,4 @@
-import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES, type Shape } from './concrete-shapes.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES, type Shape } from './concrete/shapes.ts';
 
 /** The fields shown after the shape fields, whatever the shape (calculator-page › Form controls). */
 export const ALWAYS_VISIBLE = ['waste', 'bag', 'bagPrice', 'readyMixPrice'] as const;
@@ -17,9 +17,3 @@ export const layoutOf = (shape: Shape) => ({
   tail: ALWAYS_VISIBLE,
   rows: RESERVED_ROWS,
 });
-
-/** The ids that tie a field to its parts, shared by the markup and the script. */
-export const inputId = (key: string): string => `calc-${key}`;
-export const hintId = (key: string): string => `${inputId(key)}-hint`;
-export const helpId = (key: string): string => `${inputId(key)}-help`;
-export const errorId = (key: string): string => `${inputId(key)}-error`;

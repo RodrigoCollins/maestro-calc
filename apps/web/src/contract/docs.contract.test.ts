@@ -122,6 +122,8 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the concrete-only view', 'concreteView'],
     ['the hand-kept browser pages', 'tooling/site-browser/e2e/concrete-pages.ts'],
     ['the concrete mount', 'apps/web/src/client/concrete-mount.ts'],
+    ['the controller', 'apps/web/src/calculator/controller.ts'],
+    ['the concrete web folder', 'apps/web/src/calculator/concrete/'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),

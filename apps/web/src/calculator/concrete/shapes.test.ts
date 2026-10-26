@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { concrete } from '../lib/concrete.ts';
-import { DIMENSION_ORDER, SHAPE_FIELDS } from './concrete-shapes.ts';
+import { concrete } from '../../lib/concrete.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS } from './shapes.ts';
 
 describe('visible fields per shape (calculator-page › Form controls, [CP11])', () => {
   // spec: calculator-page › [CP11] the table of visible fields, in order
