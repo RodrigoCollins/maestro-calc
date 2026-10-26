@@ -14,6 +14,7 @@ import {
   shoppingLinesOf,
   type AnyCalculator,
   type AnyPageModule,
+  type Moment,
   type OutputKey,
   type PageModule,
   type PercentKey,
@@ -208,7 +209,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     const raw = rawOf(state);
     const options = { unitSystem: state.system };
     const checked = calculator.validate(raw, options);
-    const momentOf = (valid: StateOf<Calc>, result: ResultOf<Calc> | undefined) => ({
+    const momentOf = (valid: StateOf<Calc>, result: ResultOf<Calc> | undefined): Moment<Calc> => ({
       system: state.system,
       choices: state.choices,
       valid,
@@ -216,11 +217,12 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     });
     if (!checked.ok) return { errors: checked.errors, moment: momentOf(state.valid, undefined) };
     const result = mustBeOk(calculator.run(raw, options), 'run of a valid state');
-    shoppingLinesOf(calculator.id, declared, result.shopping);
+    // a page with a shopping slot is checked, with its units, by `shopping.view`; one without must
+    // still match an empty declared list, so the engine cannot return a line the page never shows
+    if (shopping === undefined) shoppingLinesOf(calculator.id, declared, result.shopping);
     return { errors: [], moment: momentOf(checked.value, result) };
   };
   type Evaluation = ReturnType<typeof evaluate>;
-  type Moment = Evaluation['moment'];
 
   /** The state with one text parsed on its own, in the unit system now; `undefined` while it is invalid. */
   const parsedWith = (state: State<Calc>, key: string, text: string) => {
@@ -269,7 +271,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     });
   };
 
-  const panelOf = (env: Environment, moment: Moment) => {
+  const panelOf = (env: Environment, moment: Moment<Calc>) => {
     const { system, valid, result } = moment;
     const output = primaryOf(system);
     const name =
@@ -297,12 +299,12 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     };
   };
 
-  const answerOf = (env: Environment, { valid, result, ...rest }: Moment, primary: string) => {
+  const answerOf = (env: Environment, moment: Moment<Calc>, primary: string) => {
     if (answer === undefined) return undefined;
-    if (result === undefined) return DASH;
+    if (moment.result === undefined) return DASH;
     return fillMessage(
-      message(env, answer.template(valid)),
-      answer.values({ ...rest, valid, result }, primary),
+      message(env, answer.template(moment.valid)),
+      answer.values({ ...moment, result: moment.result }, primary),
     );
   };
 
