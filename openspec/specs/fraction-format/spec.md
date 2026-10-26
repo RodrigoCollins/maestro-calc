@@ -209,6 +209,10 @@ Pre-processing and lexical rules:
 - Unit words are case-insensitive.
 - A unit token is a maximal run `[A-Za-z]+[0-9]*`. When such a token directly follows a digit (no whitespace) and is `e`/`E` or `x`/`X` followed by a digit, it is numeric notation (exponent or hex) and fails `MALFORMED`. Any other unit token that follows a number and is not in the lists above (for example `furlongs`, `sq`, `ft2`, `m2`, `yd3`) fails `UNKNOWN_UNIT`. Input with no number at all (for example `abc`, `ft`) is `MALFORMED`.
 
+- A word feet mark (`ft`, `foot`, `feet`) that directly follows a number (no whitespace) and is glued to digits (`ft6`) that are followed, with optional whitespace in between, by an inch mark (`in`, `inch`, `inches`, `"`, `″`, `”`) that is not itself followed by a letter or digit, is read as the feet mark and the inches digits: `12ft6in` is `12 ft 6 in`. Any other `ft`, `m` or `yd` word with trailing digits (`ft2`, `5ft2`, `m2`, `yd3`) stays an unknown unit.
+- A period glued to a unit word (`ft.`, `in.`, `m.`) is an abbreviation mark and is ignored, whatever follows it: `12 ft. 6 in.` is `12 ft 6 in`, `12 ft.6 in.` is the same, and `5 m.` is `5 m`. A decimal point never follows a unit word, so no valid text changes its meaning; a second period (`5 ft..`) is still a decimal point with no digits.
+(Amended by concrete-calculator, REL-5: the two rules above, glued feet-inches and abbreviation periods, were added with scenarios FPX1 to FPX3 at the end of this requirement; the canonical result, the error codes and the URL contract do not change.)
+
 Grammar (EBNF; `ws*` is zero or more `ws`, `ws+` is one or more):
 
 ```
@@ -314,6 +318,21 @@ Semantics and constraints:
 - GIVEN `"` , `'`, `ft`, `abc`, `5' 3 1/2 1/2"`, `5.5' 3"`, `5' -3"`, `5" 3'`, `3//4`, `1 / 2`, `1e3`, `1E9`, `0x10`, `５'`, `5'3'`, `5'3''`, `--5`, `- 5`, `5 3 1/2`, `.`, `1.`, `5'-`, `3.5 1/2`, `1/2.5`, `1 yd 2 ft`, `5 ft 2`, and an input containing a newline
 - WHEN each is parsed
 - THEN each fails `MALFORMED` and none throws
+
+#### Scenario: [FPX1] Glued feet and inches
+- GIVEN `12ft6in`, `12ft6 in`, `12ft 6in`, `12FT6IN` and `12ft6"`
+- WHEN each is parsed
+- THEN each is exactly 150 inches, the same quantity as `12 ft 6 in`
+
+#### Scenario: [FPX2] Abbreviation periods
+- GIVEN `12 ft. 6 in.`, `12 ft.6 in.`, `5 in.` and `5 m.`
+- WHEN each is parsed
+- THEN they are 150 in, 150 in, 5 in and 5 m
+
+#### Scenario: [FPX3] Unchanged failures
+- GIVEN `5ft2`, `5 ft2 in`, `12ft6inx`, `5 in.5` and `5 ft..`
+- WHEN each is parsed
+- THEN `5ft2` and `5 ft2 in` fail `UNKNOWN_UNIT`, and `12ft6inx` fails `UNKNOWN_UNIT`, and `5 in.5` and `5 ft..` fail `MALFORMED`
 
 ### Requirement: Format/parse round trip
 
