@@ -1,12 +1,9 @@
 import {
   decode,
   encode,
-  parseLength,
   Rational,
-  toCents,
   type FieldError,
   type InputDescriptor,
-  type Money,
   type Result,
   type UnitSystem,
   type UrlIssue,
@@ -19,9 +16,12 @@ import {
   type ConcreteResult,
   type ConcreteState,
 } from './concrete/present.ts';
-import { layoutOf, type TextKey } from './concrete-layout.ts';
+import { SHAPE_FIELDS } from './concrete/shapes.ts';
 import { errorId, helpId, hintId } from './ids.ts';
-import { boundText, fieldText, fillMessage, percentText } from './present.ts';
+import { choiceSlot } from './slots/choices.ts';
+import type { TextKey as KeyOf } from './page-module.ts';
+import { boundText, DASH, fillMessage, percentText } from './present.ts';
+import { baseOf, byTextKey, keptText, rawTextOf, textKeysOf, textsOf } from './texts.ts';
 import { SHAPES, type Shape } from './concrete/shapes.ts';
 
 /*
@@ -35,6 +35,9 @@ import { SHAPES, type Shape } from './concrete/shapes.ts';
 /** The page's inert messages by name: `errors.<CODE>`, `answer.<shape>`, `volume.yd3`, `hint.ft`... */
 export type Messages = Readonly<Record<string, string>>;
 
+/** The text fields of the concrete form, by key. */
+export type TextKey = KeyOf<typeof concrete>;
+
 export interface Environment {
   readonly messages: Messages;
   /** `https://maestrocalc.com`: the origin copied links start with. */
@@ -43,6 +46,8 @@ export interface Environment {
   readonly path: string;
   /** The same calculator in the other language, query-free. */
   readonly switchPath: string;
+  /** The text fields that have a help element: the mount finds them in the markup (K7). */
+  readonly helps: ReadonlySet<string>;
 }
 
 export type UiEvent =
@@ -57,6 +62,8 @@ export interface FieldView {
   /** The unit a plain number is read in, written for the unit system (length fields only). */
   readonly hint: string | undefined;
   readonly invalid: boolean;
+  /** True for a field a choice group drives and its pressed option does not show. */
+  readonly hidden: boolean;
   /** The error message with its bounds in the unit of the field, empty while the field is valid. */
   readonly message: string;
   readonly messageId: string;
@@ -121,8 +128,6 @@ export interface Output {
   readonly write: string | undefined;
 }
 
-const DASH = '—';
-
 /** Where the waste steps stop and how far one press moves it. */
 const WASTE_STEP = Rational.of(5);
 
@@ -149,72 +154,26 @@ const optionsOf = (key: string): readonly string[] =>
 
 const message = (env: Environment, name: string): string => env.messages[name] ?? '';
 
-/** A price as a person types it: dollars and cents, nothing for zero (the field shows its placeholder). */
-const priceText = (money: Money): string => {
-  if (money.amount.isZero()) return '';
-  const { integer, fraction } = toCents(money);
-  return `${String(integer)}.${fraction}`;
+const TEXT_KEYS = textKeysOf(concrete);
+
+/** The choice groups of the page: what each option of a select shows (K4). */
+const { groups: GROUPS } = choiceSlot(concrete, [{ select: 'shape', shows: SHAPE_FIELDS }]);
+
+/** The fields a choice group drives: hidden unless the pressed option shows them. */
+const DRIVEN: ReadonlySet<string> = new Set(GROUPS.flatMap((group) => group.driven));
+
+/** The option pressed in each select. */
+const choicesOf = (state: State) => ({ shape: state.shape, bag: state.bag });
+
+/** The fields the pressed options show, in group order. */
+const shownOf = (state: State): readonly TextKey[] =>
+  GROUPS.flatMap((group) => group.shown(choicesOf(state)[group.select]));
+
+/** The fields a state reads from the page: those that are always there and those the options show. */
+const readFields = (state: State): readonly TextKey[] => {
+  const shown = new Set(shownOf(state));
+  return TEXT_KEYS.filter((key) => !DRIVEN.has(key) || shown.has(key));
 };
-
-const [
-  ,
-  LENGTH,
-  WIDTH,
-  THICKNESS,
-  FOOTING_WIDTH,
-  FOOTING_DEPTH,
-  DIAMETER,
-  HEIGHT,
-  STEP_WIDTH,
-  RISE,
-  RUN,
-] = concrete.inputs;
-
-/** The ten length inputs by key; their keys are the literal types of the descriptors. */
-const LENGTHS = {
-  [LENGTH.key]: LENGTH,
-  [WIDTH.key]: WIDTH,
-  [THICKNESS.key]: THICKNESS,
-  [FOOTING_WIDTH.key]: FOOTING_WIDTH,
-  [FOOTING_DEPTH.key]: FOOTING_DEPTH,
-  [DIAMETER.key]: DIAMETER,
-  [HEIGHT.key]: HEIGHT,
-  [STEP_WIDTH.key]: STEP_WIDTH,
-  [RISE.key]: RISE,
-  [RUN.key]: RUN,
-};
-
-type LengthKey = keyof typeof LENGTHS;
-
-/** The text of each text field for a state, as the form shows it. */
-const textsOf = (state: ConcreteState, system: UnitSystem): Record<TextKey, string> => {
-  const length = (key: LengthKey) => fieldText(state[key], LENGTHS[key], system);
-  return {
-    length: length('length'),
-    width: length('width'),
-    thickness: length('thickness'),
-    footingWidth: length('footingWidth'),
-    footingDepth: length('footingDepth'),
-    diameter: length('diameter'),
-    height: length('height'),
-    stepWidth: length('stepWidth'),
-    rise: length('rise'),
-    run: length('run'),
-    stepCount: String(state.stepCount),
-    count: String(state.count),
-    waste: percentText(state.waste),
-    bagPrice: priceText(state.bagPrice),
-    readyMixPrice: priceText(state.readyMixPrice),
-  };
-};
-
-/** The fields a state reads from the page: the shape's dimensions, the waste and the two prices. */
-const readFields = (shape: Shape): readonly TextKey[] => [
-  ...layoutOf(shape).fields,
-  'waste',
-  'bagPrice',
-  'readyMixPrice',
-];
 
 /**
  * The raw record the engine validates: the last valid state, overridden by the texts of the visible
@@ -222,19 +181,13 @@ const readFields = (shape: Shape): readonly TextKey[] => [
  * empty price is set explicitly to `undefined` on its own key: that overrides the spread, and the
  * engine reads it as the default (DR-11).
  */
-const rawOf = (state: State): Record<string, unknown> => {
-  const typed = Object.fromEntries(readFields(state.shape).map((key) => [key, state.texts[key]]));
-  const price = (key: 'bagPrice' | 'readyMixPrice') =>
-    state.texts[key].trim() === '' ? undefined : state.texts[key];
-  return {
-    ...state.valid,
-    ...typed,
-    shape: state.shape,
-    bag: state.bag,
-    bagPrice: price('bagPrice'),
-    readyMixPrice: price('readyMixPrice'),
-  };
-};
+const rawOf = (state: State): Record<string, unknown> => ({
+  ...baseOf(concrete, state.valid),
+  ...Object.fromEntries(
+    readFields(state).map((key) => [key, rawTextOf(descriptorOf(key), state.texts[key])]),
+  ),
+  ...choicesOf(state),
+});
 
 interface Evaluation {
   readonly errors: readonly FieldError[];
@@ -255,17 +208,10 @@ const evaluate = (state: State): Evaluation => {
   };
 };
 
-const isPrice = (key: TextKey): boolean => key === 'bagPrice' || key === 'readyMixPrice';
-
 /** The state with one text parsed on its own, in the unit system now; `undefined` while that text is invalid. */
 const parsedWith = (state: State, key: TextKey, text: string): ConcreteState | undefined => {
   const checked = concrete.validate(
-    {
-      ...state.valid,
-      // the engine reads a percent from text only, so the valid waste goes back as text
-      waste: percentText(state.valid.waste),
-      [key]: isPrice(key) && text.trim() === '' ? undefined : text,
-    },
+    { ...baseOf(concrete, state.valid), [key]: rawTextOf(descriptorOf(key), text) },
     { unitSystem: state.system },
   );
   return checked.ok ? checked.value : undefined;
@@ -292,15 +238,17 @@ const fieldViews = (
   state: State,
   errors: readonly FieldError[],
 ): Record<TextKey, FieldView> => {
+  const shown = new Set(shownOf(state));
   const view = (key: TextKey): FieldView => {
     const error = errors.find((found) => found.field === key);
     const hint = hintOf(env, key, state.system);
-    // the unit hint of a length, the help of the waste; the message takes over while invalid
-    const resting = hint === undefined ? (key === 'waste' ? helpId(key) : '') : hintId(key);
+    // the unit hint of a length, else the help it has; the message takes over while invalid
+    const resting = hint !== undefined ? hintId(key) : env.helps.has(key) ? helpId(key) : '';
     return {
       text: state.texts[key],
       hint,
       invalid: error !== undefined,
+      hidden: DRIVEN.has(key) && !shown.has(key),
       message:
         error === undefined
           ? ''
@@ -309,23 +257,7 @@ const fieldViews = (
       describedBy: error === undefined ? resting : errorId(key),
     };
   };
-  return {
-    length: view('length'),
-    width: view('width'),
-    thickness: view('thickness'),
-    footingWidth: view('footingWidth'),
-    footingDepth: view('footingDepth'),
-    diameter: view('diameter'),
-    height: view('height'),
-    stepWidth: view('stepWidth'),
-    rise: view('rise'),
-    run: view('run'),
-    stepCount: view('stepCount'),
-    count: view('count'),
-    waste: view('waste'),
-    bagPrice: view('bagPrice'),
-    readyMixPrice: view('readyMixPrice'),
-  };
+  return byTextKey(concrete, view);
 };
 
 const dashes = {
@@ -386,7 +318,7 @@ const viewOf = (env: Environment, state: State, evaluation: Evaluation): View =>
   system: state.system,
   shape: state.shape,
   bag: state.bag,
-  visible: layoutOf(state.shape).fields,
+  visible: shownOf(state),
   fields: fieldViews(env, state, evaluation.errors),
   answer: answerOf(env, state, evaluation.valid, evaluation.result),
   panel: panelOf(env, state, evaluation.valid, evaluation.result),
@@ -425,7 +357,7 @@ export const start = (env: Environment, search: string): Output => {
     system: decoded.unitSystem,
     shape: decoded.state.shape,
     bag: decoded.state.bag,
-    texts: textsOf(decoded.state, decoded.unitSystem),
+    texts: textsOf(concrete, decoded.state, decoded.unitSystem),
     valid: decoded.state,
     search,
     notice: noticeOf(env, decoded.issues),
@@ -433,44 +365,15 @@ export const start = (env: Environment, search: string): Output => {
   return unchanged(env, state);
 };
 
-/**
- * A text that is not valid, kept through a unit change. A bare number (`150`, out of range) is
- * written with the unit it was typed in (`150 in`): left bare, the other system would read it in
- * its own default unit and turn an invalid entry into a valid one that nobody typed. A text that
- * already has a unit, or that is not a length at all, does not take the unit and is kept as typed.
- */
-const keptText = (state: State, key: TextKey): string => {
-  const text = state.texts[key];
-  const field = descriptorOf(key);
-  if (field.kind !== 'length') return text;
-  const unit = state.system === 'metric' ? field.metricDefaultUnit : field.defaultUnit;
-  const qualified = `${text} ${unit}`;
-  return parseLength(qualified).ok ? qualified : text;
-};
-
 /** Every text re-written for another unit system, each parsed in the one it was typed in. */
 const convertedTexts = (state: State, system: UnitSystem): Record<TextKey, string> => {
   const converted = (key: TextKey): string => {
     const parsed = parsedWith(state, key, state.texts[key]);
-    return parsed === undefined ? keptText(state, key) : textsOf(parsed, system)[key];
+    return parsed === undefined
+      ? keptText(descriptorOf(key), state.texts[key], state.system)
+      : textsOf(concrete, parsed, system)[key];
   };
-  return {
-    length: converted('length'),
-    width: converted('width'),
-    thickness: converted('thickness'),
-    footingWidth: converted('footingWidth'),
-    footingDepth: converted('footingDepth'),
-    diameter: converted('diameter'),
-    height: converted('height'),
-    stepWidth: converted('stepWidth'),
-    rise: converted('rise'),
-    run: converted('run'),
-    stepCount: converted('stepCount'),
-    count: converted('count'),
-    waste: converted('waste'),
-    bagPrice: converted('bagPrice'),
-    readyMixPrice: converted('readyMixPrice'),
-  };
+  return byTextKey(concrete, converted);
 };
 
 /** The waste range of the engine and the points one press moves it. */

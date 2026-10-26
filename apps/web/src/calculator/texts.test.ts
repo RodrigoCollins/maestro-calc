@@ -2,7 +2,7 @@ import { quantity, inch, Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { mixedCalculator, unwrap } from '../__testing__/page-fixtures.ts';
 import { concrete } from '../lib/concrete.ts';
-import { baseOf, keptText, rawTextOf, textKeysOf, textOf, textsOf } from './texts.ts';
+import { baseOf, byTextKey, keptText, rawTextOf, textKeysOf, textOf, textsOf } from './texts.ts';
 
 const valid = (raw: Readonly<Record<string, unknown>> = {}) => unwrap(concrete.validate(raw));
 const input = (key: string) => {
@@ -31,6 +31,12 @@ describe('texts from the definition (calculator-web-core › Generic controller 
       'bagPrice',
       'readyMixPrice',
     ]);
+  });
+
+  it('builds a record with one value per text key', () => {
+    const lengths = byTextKey(mixedCalculator, (key) => key.length);
+    expect(lengths).toEqual({ span: 4, pieces: 6, rate: 4, price: 5 });
+    expect(Object.keys(lengths)).toEqual(textKeysOf(mixedCalculator));
   });
 
   // spec: calculator-web-core › [CWC5] texts from the definition
