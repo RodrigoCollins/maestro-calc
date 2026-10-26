@@ -114,18 +114,28 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
 
   // spec: calculator-page › [CP43] raw messages for the templates, placeholders kept
   it('carries the twelve error messages, the four sentences and the copy states raw', () => {
-    const { templates } = concreteView('en');
-    expect(Object.keys(templates.errors)).toEqual([...ALL_ERROR_CODES]);
-    expect(templates.errors['BELOW_MIN']).toBe(enCommon['errors.BELOW_MIN']);
-    expect(templates.errors['BELOW_MIN']).toContain('{min}');
-    expect(templates.errors['ABOVE_MAX']).toContain('{max}');
-    expect(Object.keys(templates.answers)).toEqual(['slab', 'footing', 'column', 'steps']);
-    expect(templates.answers['slab']).toContain('{bags}');
-    expect(templates.copy).toEqual({
-      copied: 'Link copied',
-      failed: 'Could not copy. Select the link and copy it.',
-    });
-    expect(concreteView('es').templates.errors['MALFORMED']).toBe(esCommon['errors.MALFORMED']);
+    const messages = Object.fromEntries(concreteView('en').messages);
+    const names = Object.keys(messages);
+    expect(names.filter((name) => name.startsWith('errors.'))).toEqual(
+      ALL_ERROR_CODES.map((code) => `errors.${code}`),
+    );
+    expect(messages['errors.BELOW_MIN']).toBe(enCommon['errors.BELOW_MIN']);
+    expect(messages['errors.BELOW_MIN']).toContain('{min}');
+    expect(messages['errors.ABOVE_MAX']).toContain('{max}');
+    expect(names.filter((name) => name.startsWith('answer.'))).toEqual([
+      'answer.slab',
+      'answer.footing',
+      'answer.column',
+      'answer.steps',
+    ]);
+    expect(messages['answer.slab']).toContain('{bags}');
+    expect([messages['copy.copied'], messages['copy.failed']]).toEqual([
+      'Link copied',
+      'Could not copy. Select the link and copy it.',
+    ]);
+    expect(Object.fromEntries(concreteView('es').messages)['errors.MALFORMED']).toBe(
+      esCommon['errors.MALFORMED'],
+    );
   });
 
   // spec: calculator-page › [CP51] the unit hint of the US system on every length field
@@ -155,21 +165,28 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
 
   // spec: calculator-page › [CP51] the four hints travel as inert messages for the unit toggle
   it('carries the four unit hints in both locales for the script', () => {
-    expect(concreteView('en').templates.hints).toEqual({
-      ft: 'feet',
-      in: 'inches',
-      m: 'meters',
-      cm: 'centimeters',
+    const hints = (locale: 'en' | 'es') =>
+      Object.fromEntries(
+        concreteView(locale).messages.filter(([name]) => name.startsWith('hint.')),
+      );
+    expect(hints('en')).toEqual({
+      'hint.ft': 'feet',
+      'hint.in': 'inches',
+      'hint.m': 'meters',
+      'hint.cm': 'centimeters',
     });
-    expect(concreteView('en').templates.volumes).toEqual({
-      yd3: '{value} cubic yards',
-      m3: '{value} cubic meters',
+    const volumes = Object.fromEntries(
+      concreteView('en').messages.filter(([name]) => name.startsWith('volume.')),
+    );
+    expect(volumes).toEqual({
+      'volume.yd3': '{value} cubic yards',
+      'volume.m3': '{value} cubic meters',
     });
-    expect(concreteView('es').templates.hints).toEqual({
-      ft: 'pies',
-      in: 'pulgadas',
-      m: 'metros',
-      cm: 'centímetros',
+    expect(hints('es')).toEqual({
+      'hint.ft': 'pies',
+      'hint.in': 'pulgadas',
+      'hint.m': 'metros',
+      'hint.cm': 'centímetros',
     });
   });
 
@@ -693,10 +710,10 @@ describe('concreteView guards (calculator-web-core › Page-view builder)', () =
   it('refuses a definition whose default state does not run or validate', async () => {
     const failure = { ok: false, error: { code: 'MALFORMED' } };
     expect(await viewOf((real) => ({ ...real, run: () => failure }))).toThrow(
-      'the default state of concrete must run',
+      'the default run of concrete failed',
     );
     expect(await viewOf((real) => ({ ...real, validate: () => failure }))).toThrow(
-      'the default state of concrete must run',
+      'the default state of concrete failed',
     );
   });
 

@@ -9,10 +9,13 @@ import {
   type Rational,
 } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { concreteView } from '../../lib/page-view.ts';
+import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
+import { concreteView, pageViewOf } from '../../lib/page-view.ts';
 import { calculators } from '../../lib/calculators.ts';
 import CalculatorBody from './CalculatorBody.astro';
 import type { CalculatorContent } from './model.ts';
@@ -258,5 +261,27 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     expect(byName['copy.failed']).toBe('Could not copy. Select the link and copy it.');
     expect(root.querySelectorAll('template [data-output], template input')).toHaveLength(0);
     expect(messagesOf(await render('es'))['errors.MALFORMED']).toBe(esCommon['errors.MALFORMED']);
+  });
+
+  // spec: calculator-web-core › Page-view builder: the answer region exists only with an answer
+  it('renders the answer region only for a view that has an answer', async () => {
+    expect((await render('en')).querySelectorAll('[data-answer]')).toHaveLength(1);
+    const view = pageViewOf(rectangleAreaPage, 'en', {
+      ...enCommon,
+      ...enRectangleArea,
+      ...enSite,
+    });
+    const root = await renderComponent(CalculatorBody, { view, content: CONTENT });
+    expect(root.querySelectorAll('[data-answer], [data-reserved="answer"]')).toHaveLength(0);
+    expect(root.querySelector('[data-calculator]')?.getAttribute('data-calculator')).toBe(
+      'rectangle-area',
+    );
+    // the messages are the view's list, in order: the errors first, then the copy states and the hints
+    expect(Object.keys(messagesOf(root)).slice(12)).toEqual([
+      'copy.copied',
+      'copy.failed',
+      'hint.ft',
+      'hint.m',
+    ]);
   });
 });
