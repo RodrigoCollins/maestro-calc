@@ -4,11 +4,12 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { describe, expect, it, vi } from 'vitest';
 import {
   controllerOf,
+  type Controller,
   type Environment,
   type Output as ControllerOutput,
   type UiEvent as ControllerEvent,
 } from '../controller.ts';
-import { definePage } from '../page-module.ts';
+import { definePage, type AnyCalculator } from '../page-module.ts';
 import { rectangleAreaPage } from './page.ts';
 
 type Output = ControllerOutput<typeof rectangleArea>;
@@ -115,6 +116,21 @@ describe('rectangle-area through the generic controller (calculator-web-core ›
       '13.89',
       '11.61',
     ]);
+  });
+
+  // spec: calculator-web-core › [CWC16] a stepper press on a module with no stepper changes nothing
+  it('ignores a step event because the module declares no stepper', () => {
+    // widened to the any-calculator controller: the event union of this one has no percent key
+    const controller: Controller<AnyCalculator> = controllerOf(rectangleAreaPage);
+    const start = controller.start(ENV, '?v=1&l=150');
+    const out = controller.applyEvent(ENV, start.state, {
+      type: 'step',
+      key: 'length',
+      direction: 'more',
+    });
+    expect(out.state).toBe(start.state);
+    expect(out.write).toBeUndefined();
+    expect(out.view).toEqual(start.view);
   });
 
   // spec: calculator-web-core › [CWC6] the raw record holds the inputs of the definition and nothing else
