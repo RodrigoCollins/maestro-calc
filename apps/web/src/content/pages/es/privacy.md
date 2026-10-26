@@ -15,7 +15,11 @@ Maestro Calc se aloja en Cloudflare. Cuando cargas una página, Cloudflare proce
 
 ## Cookies y seguimiento
 
-Maestro Calc no usa cookies. El sitio no tiene analítica, publicidad, cuentas ni formularios, y no guarda nada sobre ti en tu navegador. Tu navegador puede enviar la señal No rastrear (Do Not Track). El sitio no hace seguimiento, así que esa señal no cambia nada.
+Maestro Calc no usa cookies. El sitio no tiene analítica, publicidad ni cuentas, y no guarda nada sobre ti en tu navegador. Tu navegador puede enviar la señal No rastrear (Do Not Track). El sitio no hace seguimiento, así que esa señal no cambia nada.
+
+## Calculadoras
+
+Las calculadoras funcionan en tu navegador. Nada de lo que escribes se nos envía. Los valores que ingresas quedan en la dirección de la página, así que puedes copiar el enlace y compartirlo. Al abrir o compartir esa dirección, se envía como cualquier solicitud de página, por lo que puede aparecer en los registros de solicitudes de Cloudflare.
 
 ## Correo
 
