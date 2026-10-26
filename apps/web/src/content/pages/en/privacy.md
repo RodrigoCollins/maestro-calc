@@ -15,7 +15,11 @@ Maestro Calc is hosted on Cloudflare. When you load a page, Cloudflare processes
 
 ## Cookies and tracking
 
-Maestro Calc does not use cookies. The site has no analytics, no advertising, no accounts and no forms, and it does not keep anything about you in your browser. Your browser may send a Do Not Track signal. The site does no tracking, so the signal changes nothing.
+Maestro Calc does not use cookies. The site has no analytics, no advertising and no accounts, and it does not keep anything about you in your browser. Your browser may send a Do Not Track signal. The site does no tracking, so the signal changes nothing.
+
+## Calculators
+
+Calculators run in your browser. Nothing you type is sent to us. The values you enter sit in the page address, so you can copy the link and share it. Opening or sharing that address sends it like any page request, so it can appear in Cloudflare's request logs.
 
 ## Email
 

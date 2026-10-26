@@ -141,6 +141,32 @@ describe('calculator bundle facts (site-shell › [SS23], calculator-page › [C
     }
   });
 
+  // spec: trust-pages › [TP12] the privacy claims hold for the calculator JavaScript too
+  it.each([
+    [
+      'a cookie',
+      ';document.cookie="a=1"',
+      'storage',
+      'document.cookie must not appear in a built file',
+    ],
+    [
+      'local storage',
+      ';localStorage.setItem("a","1")',
+      'storage',
+      'localStorage must not appear in a built file',
+    ],
+    [
+      'another origin',
+      ';u("https://example.com/x")',
+      'third-party-origin',
+      'a built asset references another origin',
+    ],
+  ])('reports %s in the entry, naming the file', (_name, code, rule, message) => {
+    expect(calcProblemsAfter(appended(ENTRY_FILE, code))).toEqual([
+      { file: ENTRY_FILE, rule, message },
+    ]);
+  });
+
   it('leaves the storage APIs to the sitewide storage rule', () => {
     expect(
       calcProblemsAfter(

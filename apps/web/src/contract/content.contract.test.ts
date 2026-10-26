@@ -143,9 +143,11 @@ describe('methodology (trust-pages › [TP9])', () => {
     ).toEqual([]);
   });
 
-  it('words the Spanish commitment as a promise about publication, not a list to follow', () => {
+  it('words the Spanish commitment as a promise about what is published, not a list to follow', () => {
     expect(bodyOf('es/methodology.md')).not.toContain('seguirá todo lo que sigue');
-    expect(bodyOf('es/methodology.md')).toContain('cumplirá estas reglas cuando se publique');
+    expect(bodyOf('es/methodology.md')).toContain(
+      'Cada calculadora que publiquemos cumplirá estas reglas',
+    );
   });
 
   it('keeps the corrections links on real paths of the table', () => {
@@ -278,6 +280,54 @@ describe('privacy (trust-pages › [TP13], [TP14])', () => {
 
   it.each(LOCALES)('names none of the services the site does not use in %s', (locale) => {
     expect(present(bodyOf(`${locale}/privacy.md`), forbidden)).toEqual([]);
+  });
+});
+
+describe('privacy: calculators (trust-pages › [TP27], [TP12])', () => {
+  const heading = { en: '## Calculators', es: '## Calculadoras' } as const;
+  const copy = {
+    en: "Calculators run in your browser. Nothing you type is sent to us. The values you enter sit in the page address, so you can copy the link and share it. Opening or sharing that address sends it like any page request, so it can appear in Cloudflare's request logs.",
+    es: 'Las calculadoras funcionan en tu navegador. Nada de lo que escribes se nos envía. Los valores que ingresas quedan en la dirección de la página, así que puedes copiar el enlace y compartirlo. Al abrir o compartir esa dirección, se envía como cualquier solicitud de página, por lo que puede aparecer en los registros de solicitudes de Cloudflare.',
+  } as const;
+  const cookies = {
+    en: 'Maestro Calc does not use cookies. The site has no analytics, no advertising and no accounts, and it does not keep anything about you in your browser.',
+    es: 'Maestro Calc no usa cookies. El sitio no tiene analítica, publicidad ni cuentas, y no guarda nada sobre ti en tu navegador.',
+  } as const;
+
+  /** The paragraph under the `## ` heading `title`, up to the next heading; empty when the heading is absent. */
+  const under = (body: string, title: string): string[] => {
+    const start = body.indexOf(`\n${title}\n`);
+    if (start === -1) return [];
+    const rest = body.slice(start + title.length + 2);
+    const next = rest.indexOf('\n## ');
+    return rest
+      .slice(0, next === -1 ? undefined : next)
+      .split('\n\n')
+      .map((part) => part.trim())
+      .filter((part) => part !== '');
+  };
+
+  // spec: trust-pages › [TP27] the section exists exactly once with the exact copy
+  it.each(LOCALES)(
+    'has the calculators section exactly once, with the exact copy, in %s',
+    (locale) => {
+      const body = bodyOf(`${locale}/privacy.md`);
+      expect(body.split(`\n${heading[locale]}\n`)).toHaveLength(2);
+      expect(under(body, heading[locale])).toEqual([copy[locale]]);
+    },
+  );
+
+  // spec: trust-pages › [TP27] the cookies sentence, and the words that must and must not appear
+  it.each(LOCALES)('keeps the cookies sentence and says no forms nowhere in %s', (locale) => {
+    const body = bodyOf(`${locale}/privacy.md`);
+    expect(body).toContain(cookies[locale]);
+    expect(present(body, locale === 'en' ? ['no forms'] : ['ni formularios'])).toEqual([]);
+    expect(present(body, locale === 'en' ? ['no accounts'] : ['ni cuentas'])).toHaveLength(1);
+  });
+
+  it('reads a section that is absent as empty', () => {
+    expect(under('# T\n\n## A\n\ntext', '## B')).toEqual([]);
+    expect(under('# T\n\n## A\n\ntext\n\n## B\n\nmore', '## A')).toEqual(['text']);
   });
 });
 
