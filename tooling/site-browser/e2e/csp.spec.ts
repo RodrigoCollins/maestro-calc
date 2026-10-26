@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { PAGES } from './calculator-pages.ts';
+import { CONCRETE_PAGES } from './concrete-pages.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
 /** Collects the console messages that report a Content-Security-Policy violation. */
@@ -22,7 +22,7 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
     });
   }
 
-  for (const calculator of PAGES) {
+  for (const calculator of CONCRETE_PAGES) {
     test(`reports no CSP violation while ${calculator.path} is used`, async ({ page, context }) => {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       const violations = watchCsp(page);

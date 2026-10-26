@@ -8,9 +8,9 @@ import {
   type State,
   type UiEvent,
   type View,
-} from '../calculator/controller.ts';
-import { errorId, hintId, TEXT_KEYS, type TextKey } from '../calculator/layout.ts';
-import { DIMENSION_ORDER } from '../calculator/shapes.ts';
+} from '../calculator/concrete-controller.ts';
+import { errorId, hintId, TEXT_KEYS, type TextKey } from '../calculator/concrete-layout.ts';
+import { DIMENSION_ORDER } from '../calculator/concrete-shapes.ts';
 
 /*
  * The thin DOM glue of the concrete page (design C11, C13): it collects the elements the server
