@@ -1,6 +1,16 @@
-import { ft3, quantity, Rational, usd, yd3 } from '@maestro-calc/core';
+import { ft3, inch, quantity, Rational, usd, yd3, type OutputDescriptor } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { fillMessage, groupedInteger, moneyText, percentText, volumeText } from './present.ts';
+import { concrete } from '../lib/concrete.ts';
+import {
+  DASH,
+  fillMessage,
+  groupedInteger,
+  moneyText,
+  outputText,
+  percentText,
+  priceText,
+  volumeText,
+} from './present.ts';
 
 describe('numbers (calculator-page › Display conventions)', () => {
   // spec: calculator-page › [CP15] `,` groups thousands and `.` marks decimals, in both locales
@@ -51,5 +61,66 @@ describe('numbers (calculator-page › Display conventions)', () => {
 
   it('fills the placeholders of a message and leaves the others', () => {
     expect(fillMessage('Max {max} of {max} and {min}', { max: '5' })).toBe('Max 5 of 5 and {min}');
+  });
+});
+
+describe('prices and output figures (calculator-web-core › [CWC5], K5)', () => {
+  it('shows a figure that is not there as a dash', () => {
+    expect(DASH).toBe('—');
+  });
+
+  // spec: calculator-page › [CP12] a price is dollars and cents as a person types it; zero is empty
+  it.each([
+    [usd(0), ''],
+    [usd(Rational.of(13, 2)), '6.50'],
+    [usd(150), '150.00'],
+    [usd(Rational.of(1, 200)), '0.01'],
+  ])('writes price #%# as its text', (money, text) => {
+    expect(priceText(money)).toBe(text);
+  });
+
+  const output = (key: string): OutputDescriptor => {
+    const found = concrete.outputs.find((candidate) => candidate.key === key);
+    if (found === undefined) throw new Error(`no output ${key}`);
+    return found;
+  };
+
+  // spec: calculator-web-core › [CWC5] the figures come from the display hints
+  it.each([
+    ['volumeYd3', quantity(44, ft3), '1.63'],
+    ['volumeFt3', quantity(44, ft3), '44.00'],
+    ['volumeM3', quantity(44, ft3), '1.25'],
+    ['netVolume', quantity(40, ft3), '40.00'],
+    ['volumeYd3', quantity(10_000_000, ft3), '370,370.37'],
+  ])('shows %s as %s', (key, value, text) => {
+    expect(outputText(output(key), value)).toBe(text);
+  });
+
+  it('shows a money output through moneyText', () => {
+    expect(outputText(output('bagCost'), usd(481))).toBe('$481.00');
+  });
+
+  it('fails loudly for a fraction display, which no calculator asks for yet', () => {
+    const hinted: OutputDescriptor = {
+      key: 'len',
+      measure: 'length',
+      role: 'secondary',
+      display: { unit: 'in', format: 'fraction', denominator: 8 },
+    };
+    expect(() => outputText(hinted, quantity(Rational.of(25, 2), inch))).toThrow(
+      'len asks for a fraction display',
+    );
+  });
+
+  it('throws for a quantity with no display hint and for an unknown unit', () => {
+    const bare: OutputDescriptor = { key: 'len', measure: 'length', role: 'secondary' };
+    expect(() => outputText(bare, quantity(1, inch))).toThrow('len has no display hint');
+    const unknown: OutputDescriptor = {
+      key: 'len',
+      measure: 'length',
+      role: 'secondary',
+      display: { unit: 'ft2', format: 'decimal', places: 2 },
+    };
+    expect(() => outputText(unknown, quantity(1, inch))).toThrow('len has no unit ft2');
   });
 });
