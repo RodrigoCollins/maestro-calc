@@ -2,7 +2,7 @@
 id: concrete
 locale: es
 updated: 2026-10-25
-ownerReview: pending
+ownerReview: approved
 sources:
   - name: QUIKRETE Concrete Mix No. 1101 data sheet (product nos. 1101-40, 1101-60, 1101-80), revised October 2022
     url: https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf

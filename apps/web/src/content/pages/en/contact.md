@@ -2,7 +2,7 @@
 id: contact
 locale: en
 updated: 2026-10-23
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Contact
