@@ -77,10 +77,10 @@ export interface PanelView<C extends AnyCalculator> {
     readonly value: string;
     readonly after: string;
   };
-  /** The text of each output that has a display hint, and of each money output. */
-  readonly figures: Readonly<Record<OutputKey<C>, string>>;
-  /** Whether each cost row shows: its price is above zero. */
-  readonly costs: Readonly<Record<OutputKey<C>, boolean>>;
+  /** The text of each output that has a display hint, and of each money output; no other key is present. */
+  readonly figures: Readonly<Partial<Record<OutputKey<C>, string>>>;
+  /** Whether each cost row shows (its price is above zero); empty for a module with no cost slot. */
+  readonly costs: Readonly<Partial<Record<OutputKey<C>, boolean>>>;
   readonly shopping: readonly ShoppingLineView[];
 }
 
