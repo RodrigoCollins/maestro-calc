@@ -54,7 +54,7 @@ export const esSite = {
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
-  'page.concrete.title': 'Calculadora de Concreto en Yardas y Bolsas | Maestro Calc',
+  'page.concrete.title': 'Calculadora de concreto en yardas y bolsas | Maestro Calc',
   'page.concrete.description':
     'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
   'page.notFound.heading': 'Página no encontrada',
