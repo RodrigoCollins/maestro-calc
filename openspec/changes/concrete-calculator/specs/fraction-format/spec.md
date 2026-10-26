@@ -9,7 +9,7 @@ Package: `@maestro-calc/core`. Two forgiving spellings of lengths that people ty
 Everything in the existing requirement holds, with these two additions to the lexical rules. The canonical result, the error codes and the URL contract do not change.
 
 - A word feet mark (`ft`, `foot`, `feet`) that directly follows a number (no whitespace) and is glued to digits (`ft6`) that are followed, with optional whitespace in between, by an inch mark (`in`, `inch`, `inches`, `"`, `″`, `”`) that is not itself followed by a letter or digit, is read as the feet mark and the inches digits: `12ft6in` is `12 ft 6 in`. Any other `ft`, `m` or `yd` word with trailing digits (`ft2`, `5ft2`, `m2`, `yd3`) stays an unknown unit.
-- A period glued to a unit word (`ft.`, `in.`, `m.`) and not followed by a digit is an abbreviation mark and is ignored: `12 ft. 6 in.` is `12 ft 6 in`, and `5 m.` is `5 m`. A period followed by a digit (`5 in.5`) keeps its meaning (a decimal point) and fails as before.
+- A period glued to a unit word (`ft.`, `in.`, `m.`) is an abbreviation mark and is ignored, whatever follows it: `12 ft. 6 in.` is `12 ft 6 in`, `12 ft.6 in.` is the same, and `5 m.` is `5 m`. A decimal point never follows a unit word, so no valid text changes its meaning; a second period (`5 ft..`) is still a decimal point with no digits.
 
 #### Scenario: [FPX1] Glued feet and inches
 - GIVEN `12ft6in`, `12ft6 in`, `12ft 6in`, `12FT6IN` and `12ft6"`
@@ -24,4 +24,4 @@ Everything in the existing requirement holds, with these two additions to the le
 #### Scenario: [FPX3] Unchanged failures
 - GIVEN `5ft2`, `5 ft2 in`, `12ft6inx`, `5 in.5` and `5 ft..`
 - WHEN each is parsed
-- THEN `5ft2` and `5 ft2 in` fail `UNKNOWN_UNIT`, and `12ft6inx` fails `UNKNOWN_UNIT`, `5 in.5` and `5 ft..` fail `MALFORMED`
+- THEN `5ft2` and `5 ft2 in` fail `UNKNOWN_UNIT`, and `12ft6inx` fails `UNKNOWN_UNIT`, and `5 in.5` and `5 ft..` fail `MALFORMED`

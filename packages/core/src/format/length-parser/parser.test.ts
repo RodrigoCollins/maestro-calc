@@ -199,6 +199,40 @@ describe('parseLength compound forms (fraction-format › Length text grammar)',
     expect(parsed(text)).toBe('127/2');
   });
 
+  // spec: fraction-format delta › Length text grammar [FPX1]: feet and inches typed together
+  it.each(['12ft6in', '12ft6 in', '12ft 6in', '12FT6IN', '12feet6inches', '12ft6"', '12ft6″'])(
+    'reads %j as 150 in',
+    (text) => {
+      expect(parsed(text)).toBe('150');
+    },
+  );
+
+  // spec: fraction-format delta › Length text grammar [FPX2]: abbreviation periods
+  it.each([
+    ['12 ft. 6 in.', '150'],
+    ['12 ft.6 in.', '150'],
+    ['12ft.6in.', '150'],
+    ['5 in.', '5'],
+    ['5 m.', '5000/127'],
+    ['5 ft.', '60'],
+  ])('reads %j as %s in', (text, inches) => {
+    expect(parsed(text)).toBe(inches);
+  });
+
+  // spec: fraction-format delta › Length text grammar [FPX3]: what stays a failure
+  it.each([
+    ['5ft2', 'UNKNOWN_UNIT', 1],
+    ['5 ft2 in', 'UNKNOWN_UNIT', 2],
+    ['5 m2', 'UNKNOWN_UNIT', 2],
+    ['12ft6inx', 'UNKNOWN_UNIT', 2],
+    ['12ft6in2', 'UNKNOWN_UNIT', 2],
+    ['5 in.5', 'MALFORMED', 6],
+    ['5 ft..', 'MALFORMED', 5],
+    ['5 ft. .', 'MALFORMED', 6],
+  ] as const)('keeps %j a %s failure at %i', (text, code, offset) => {
+    expect(parsed(text)).toStrictEqual(failure(code, offset));
+  });
+
   // spec: Feet only, inches only, bare numbers [FP2b]
   it.each([
     [`5'3"`, '63'],
