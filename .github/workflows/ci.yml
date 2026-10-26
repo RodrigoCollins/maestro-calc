@@ -286,7 +286,7 @@ jobs:
   site-browser:
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     env:
       WRANGLER_SEND_METRICS: 'false'
     steps:
@@ -304,15 +304,22 @@ jobs:
           path: apps/web/dist
       - run: npm ci --prefix tooling/site-browser
       - run: npm run typecheck --prefix tooling/site-browser
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      - uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
-      # The OS packages (apt) took 4m18s on every run. They install only when the browser cache
+      # The OS packages (apt) take four to twelve minutes. They install only when the browser cache
       # missed, that is when the tooling lockfile or the runner image changed; a hit restores the headless shell.
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx --prefix tooling/site-browser playwright install --with-deps --only-shell chromium
+      # Saved before the suites: `main` cannot read the caches of pull-request branches, and a
+      # timeout or a failed suite after a cold install must not lose the browser for the next run.
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
       - run: npm run test:e2e
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.

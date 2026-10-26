@@ -339,10 +339,11 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
 
   // A warm browser cache runs the job in about five minutes; `main` cannot read the caches that PR
   // branches save, so its first run after a cache-key change installs Chromium and its OS packages
-  // cold (about seven minutes on the hosted runner) before the suites, and a ten-minute bound
-  // killed it before the step that saves the cache (run 40328577005, 2026-10-26).
-  it('is bounded to fifteen minutes and sends no telemetry', () => {
-    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(15);
+  // cold (seven to twelve minutes on the hosted runner, apt is the variable part) before the
+  // suites; a ten-minute bound killed run 40328577005 and a fifteen-minute bound killed run
+  // 40330882184 (2026-10-26), both before the cache was saved.
+  it('is bounded to twenty minutes and sends no telemetry', () => {
+    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(20);
     expect(job?.['timeout-minutes']).toBeGreaterThan(0);
     expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
       WRANGLER_SEND_METRICS: 'false',
@@ -365,7 +366,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
   });
 
   it('caches the browser by the tooling lockfile and installs Chromium only', () => {
-    const cache = step('actions/cache@');
+    const cache = step('actions/cache/restore@');
     expect(cache?.with?.['path']).toBe('~/.cache/ms-playwright');
     expect(String(cache?.with?.['key'])).toContain(
       "hashFiles('tooling/site-browser/package-lock.json')",
@@ -379,7 +380,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
   // The cached browser needs the OS packages of the runner image it was installed on: a new image
   // version must miss the cache and reinstall them, not restore a browser that cannot start.
   it('keys the browser cache by the runner image identity too', () => {
-    const key = String(step('actions/cache@')?.with?.['key']);
+    const key = String(step('actions/cache/restore@')?.with?.['key']);
     expect(key).toContain('${{ env.ImageOS }}');
     expect(key).toContain('${{ env.ImageVersion }}');
   });
@@ -399,13 +400,28 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
   // lockfile, so the install, with its packages, runs on a cache miss only; a hit restores the
   // headless shell and the runner image already carries the libraries Chrome needs.
   it('installs Chromium and its OS packages only when the browser cache missed', () => {
-    const cache = step('actions/cache@');
+    const cache = step('actions/cache/restore@');
     const id = cache?.id ?? '';
     expect(id).not.toBe('');
     const install = steps.find((candidate) => candidate.run?.includes('playwright install'));
     expect(install?.if).toBe(`steps.${id}.outputs.cache-hit != 'true'`);
     expect(install?.run).toContain('--with-deps');
     expect(steps.indexOf(install ?? {})).toBeGreaterThan(steps.indexOf(cache ?? {}));
+  });
+
+  // The two runs above show why the save cannot wait for the end of the job: a timeout or a failed
+  // suite after a cold install would skip the implicit post-job save, and `main` would reinstall
+  // cold on every run. The save runs right after the install, before any suite, on a miss only.
+  it('saves the browser cache right after the install, before the suites', () => {
+    const restore = step('actions/cache/restore@');
+    const save = step('actions/cache/save@');
+    const id = restore?.id ?? '';
+    expect(save?.with).toEqual(restore?.with);
+    expect(save?.if).toBe(`steps.${id}.outputs.cache-hit != 'true'`);
+    const install = steps.find((candidate) => candidate.run?.includes('playwright install'));
+    const e2e = steps.find((candidate) => candidate.run === 'npm run test:e2e');
+    expect(steps.indexOf(save ?? {})).toBe(steps.indexOf(install ?? {}) + 1);
+    expect(steps.indexOf(save ?? {})).toBeLessThan(steps.indexOf(e2e ?? {}));
   });
 
   it('typechecks the tooling package before it runs the browser tests', () => {
