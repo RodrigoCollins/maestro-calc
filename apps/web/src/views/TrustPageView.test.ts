@@ -4,11 +4,12 @@ import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { LOCALE_TAGS, LOCALES, ROUTES, urlOf, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
+import { templateOf } from '../routing/templates.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord, visibleText } from '../site-check/dom.ts';
 import TrustPageView from './TrustPageView.astro';
 
-const trustIds = Object.keys(ROUTES).filter((id): id is PageId => id !== 'home');
+const trustIds = Object.keys(ROUTES).filter((id): id is PageId => templateOf(id) === 'trust');
 const entries = readEntries(fromRoot('apps/web/src/content/pages'));
 const pages = trustIds.flatMap((id) => LOCALES.map((locale) => ({ id, locale })));
 const render = ({ id, locale }: { id: PageId; locale: 'en' | 'es' }) =>

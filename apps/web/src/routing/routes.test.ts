@@ -65,6 +65,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES.privacy).toEqual({ en: '/privacy', es: '/es/privacidad' });
     expect(ROUTES.terms).toEqual({ en: '/terms', es: '/es/terminos' });
     expect(ROUTES.contact).toEqual({ en: '/contact', es: '/es/contacto' });
+    expect(ROUTES.concrete).toEqual({
+      en: '/concrete-calculator',
+      es: '/es/calculadora-de-concreto',
+    });
   });
 
   // spec: site-routing-i18n › Table invariants hold
@@ -142,6 +146,11 @@ describe('route helpers (site-routing-i18n › Paths, URLs and alternates)', () 
       { params: { path: 'es/terminos' }, props: { id: 'terms', locale: 'es' } },
       { params: { path: 'contact' }, props: { id: 'contact', locale: 'en' } },
       { params: { path: 'es/contacto' }, props: { id: 'contact', locale: 'es' } },
+      { params: { path: 'concrete-calculator' }, props: { id: 'concrete', locale: 'en' } },
+      {
+        params: { path: 'es/calculadora-de-concreto' },
+        props: { id: 'concrete', locale: 'es' },
+      },
     ]);
     expect(staticPaths()).toHaveLength(2 * Object.keys(ROUTES).length);
     expect(staticPaths(fixture).map(({ params }) => params.path)).toEqual([

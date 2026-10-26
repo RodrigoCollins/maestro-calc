@@ -18,6 +18,8 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
       'es/terminos.html',
       'contact.html',
       'es/contacto.html',
+      'concrete-calculator.html',
+      'es/calculadora-de-concreto.html',
       '404.html',
       'es/404.html',
     ]);

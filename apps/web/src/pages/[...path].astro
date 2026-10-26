@@ -2,6 +2,8 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { staticPaths } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
+import { isCalculatorPage } from '../routing/templates.ts';
+import CalculatorView from '../views/CalculatorView.astro';
 import HomeView from '../views/HomeView.astro';
 import TrustPageView from '../views/TrustPageView.astro';
 
@@ -15,5 +17,11 @@ interface Props {
 const { id, locale } = Astro.props;
 ---
 
-{/* The home page composes catalog copy; every other id is a Markdown trust page. */}
-{id === 'home' ? <HomeView {locale} /> : <TrustPageView {id} {locale} />}
+{/* The home page composes catalog copy; a calculator id has its own template; every other id is a Markdown trust page. */}
+{id === 'home' ? (
+  <HomeView {locale} />
+) : isCalculatorPage(id) ? (
+  <CalculatorView {id} {locale} />
+) : (
+  <TrustPageView {id} {locale} />
+)}

@@ -1,0 +1,58 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import { getEntry, render } from 'astro:content';
+import CalculatorBody from '../components/calculator/CalculatorBody.astro';
+import type { CalculatorContent } from '../components/calculator/model.ts';
+import { faqOf } from '../content/faq.ts';
+import ConcreteScript from '../islands/ConcreteScript.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { concreteView } from '../lib/concrete-page.ts';
+import { siteText } from '../lib/site-text.ts';
+import { LOCALE_TAGS } from '../routing/routes.ts';
+import type { CalculatorPageId } from '../routing/templates.ts';
+import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
+import { headFor } from '../seo/head.ts';
+
+interface Props {
+  id: CalculatorPageId;
+  locale: Locale;
+}
+
+// The one script component of each calculator page (design C10). A calculator page without a row
+// here is a type error, and `CalculatorView.test.ts` checks that each row has its island file.
+const SCRIPTS = {
+  concrete: ConcreteScript,
+} as const satisfies Record<CalculatorPageId, AstroComponentFactory>;
+const { id, locale } = Astro.props;
+const text = siteText(locale);
+const entry = await getEntry('calculators', `${locale}/${id}`);
+if (entry === undefined) throw new Error(`no calculator entry for ${locale}/${id}`);
+const { Content } = await render(entry);
+const view = concreteView(locale);
+// Calendar days are formatted in UTC, so no timezone can move them.
+const day = (iso: string): string =>
+  new Intl.DateTimeFormat(LOCALE_TAGS[locale], { dateStyle: 'long', timeZone: 'UTC' }).format(
+    new Date(`${iso}T00:00:00Z`),
+  );
+const { updated, sources } = entry.data;
+const content: CalculatorContent = {
+  updatedLabel: text('site.trust.updated'),
+  updated,
+  updatedText: day(updated),
+  sources: sources.map(({ name, url, retrieved }) => ({ name, url, retrieved: day(retrieved) })),
+};
+const jsonLd = serializeJsonLd(
+  calculatorJsonLd({ id, name: view.title }, locale, faqOf(entry.body ?? '')),
+);
+const Script = SCRIPTS[id];
+---
+
+<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
+  <CalculatorBody {view} {content}>
+    <div class="prose">
+      <Content />
+    </div>
+  </CalculatorBody>
+  <Script />
+</BaseLayout>

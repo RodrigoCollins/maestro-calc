@@ -51,6 +51,9 @@ export const enSite = {
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
+  'page.concrete.title': 'Concrete Calculator: Cubic Yards and Bags | Maestro Calc',
+  'page.concrete.description':
+    'Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

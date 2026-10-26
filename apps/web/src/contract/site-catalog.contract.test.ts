@@ -61,3 +61,43 @@ describe('site modules stay independent (i18n-catalog › [ICW6] groundwork)', (
     expect(specifiers.filter((specifier) => !allowed.includes(specifier))).toEqual([]);
   });
 });
+
+describe('concrete page metadata (i18n-catalog › [ICW16], site-seo › [SE1])', () => {
+  const EXPECTED = {
+    en: {
+      title: ['Concrete Calculator: Cubic Yards and Bags | Maestro Calc', 56],
+      description: [
+        'Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.',
+        125,
+      ],
+    },
+    es: {
+      title: ['Calculadora de Concreto en Yardas y Bolsas | Maestro Calc', 57],
+      description: [
+        'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
+        144,
+      ],
+    },
+  } as const;
+
+  // spec: i18n-catalog › [ICW16] exact strings and lengths
+  it.each(['en', 'es'] as const)('writes the %s title and description exactly', (locale) => {
+    const catalog = catalogs[locale];
+    for (const field of ['title', 'description'] as const) {
+      const [text, length] = EXPECTED[locale][field];
+      expect(catalog[`page.concrete.${field}`]).toBe(text);
+      expect(text).toHaveLength(length);
+    }
+  });
+
+  // spec: i18n-catalog › [ICW16], site-seo › [SE1] all four values are unique among the pages of the locale
+  it.each(['en', 'es'] as const)(
+    'keeps every page title and description unique in %s',
+    (locale) => {
+      const values = Object.entries(catalogs[locale])
+        .filter(([key]) => /^page\.[^.]+\.(title|description)$/.test(key))
+        .map(([, value]) => value);
+      expect(new Set(values).size).toBe(values.length);
+    },
+  );
+});
