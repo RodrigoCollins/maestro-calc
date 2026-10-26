@@ -235,6 +235,16 @@ On load, the script MUST read the query with the URL codec of the engine (`url-s
 - WHEN each is opened
 - THEN the first shows the default state with the notice `A value in the link was not valid and was replaced by the default.` (ES `errors.INVALID_VALUE`), the second the default state with the `errors.UNSUPPORTED_VERSION` notice, the third the 20 ft state with no notice, and the fourth keeps `?utm_source=x` in the address bar until the first edit
 
+#### Scenario: [CP52] The link notice goes with the rewritten address
+- GIVEN the page opened from `?v=1&sh=Slab&bg=50&ws=51`, which shows the `errors.INVALID_VALUE` notice
+- WHEN a valid edit rewrites the address
+- THEN the notice is gone; an invalid edit, which writes nothing, leaves it
+
+#### Scenario: [CP53] Switching units never changes what was typed
+- GIVEN thickness `150` typed in inches (more than the 10 ft maximum, so invalid) and then the metric toggle
+- WHEN the view is re-rendered
+- THEN the field keeps its unit as `150 in`, stays invalid, and nothing is written; the same holds for a metric entry such as `400` (cm) switched back to US (`400 cm`)
+
 ### Requirement: Errors without a button
 
 When a field is invalid the script MUST mark it `aria-invalid="true"`, show the catalog message of its error code in an element tied to the input with `aria-describedby`, replace the short answer and every figure by `—`, leave the URL as it was, and keep the layout size unchanged. Bounds in messages are formatted in the unit of the field: `errors.ABOVE_MAX` with `max` `1,000 ft` for `length`. Fixing the field clears the error and restores the figures. An empty price field is not an error. Messages come from the catalog of the page locale (the page carries them as inert HTML).
