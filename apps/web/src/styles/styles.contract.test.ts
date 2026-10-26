@@ -251,6 +251,12 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     },
   );
 
+  // spec: calculator-page › Layout stability: the answer is sized for its longest shape sentence (JD-4)
+  it('reserves five lines for the short answer, the most a sentence needs at 320 px', () => {
+    // 5 lines of the h3 size at the 1.42 line height of the base stylesheet, in px
+    expect(rem(declared('.calc-answer', 'min-height'))).toBeGreaterThanOrEqual(170);
+  });
+
   // The shape area is a grid with a gap, so its reserved height is four rows plus three gaps.
   it('reserves the height of the tallest shape, four rows and three gaps, for the shape area', () => {
     const row = declared('.calc-field', 'min-height');
