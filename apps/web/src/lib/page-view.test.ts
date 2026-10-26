@@ -1,8 +1,9 @@
 import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
-import { describe, expect, it } from 'vitest';
-import { concreteView } from './concrete-page.ts';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { concreteView } from './page-view.ts';
+import type { concrete } from './concrete.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
@@ -182,5 +183,71 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       ['bagPrice', '', '0.00'],
       ['readyMixPrice', '', '0.00'],
     ]);
+  });
+});
+
+/**
+ * The builder reads the concrete definition once; these cases swap it for a broken copy (the real
+ * one with one fact changed) to reach the guards that name a drifted definition or catalog.
+ */
+describe('concreteView guards (calculator-web-core › Page-view builder)', () => {
+  const viewOf = async (change: (real: typeof concrete) => unknown) => {
+    vi.resetModules();
+    const real = await vi.importActual<{ concrete: typeof concrete }>('./concrete.ts');
+    vi.doMock('./concrete.ts', () => ({ concrete: change(real.concrete) }));
+    const { concreteView: broken } = await import('./page-view.ts');
+    return () => broken('en');
+  };
+  const without = (key: string) => (real: typeof concrete) => ({
+    ...real,
+    inputs: real.inputs.filter((input) => input.key !== key),
+  });
+  const replacing = (key: string, input: object) => (real: typeof concrete) => ({
+    ...real,
+    inputs: real.inputs.map((found) => (found.key === key ? input : found)),
+  });
+
+  afterEach(() => {
+    vi.doUnmock('./concrete.ts');
+    vi.doUnmock('@maestro-calc/i18n/catalogs/en/concrete');
+    vi.resetModules();
+  });
+
+  it('names the input a definition lacks', async () => {
+    expect(await viewOf(without('bagPrice'))).toThrow('concrete has no input bagPrice');
+  });
+
+  it('names a select that is not one, whichever of its two reads meets it first', async () => {
+    const count = (key: string) => ({ kind: 'count', key, urlKey: 'zz', default: 1 });
+    expect(await viewOf(replacing('shape', count('shape')))).toThrow('shape is not a select');
+    expect(await viewOf(replacing('bag', count('bag')))).toThrow('bag is not a select');
+  });
+
+  it('names a length unit that has no hint message', async () => {
+    expect(
+      await viewOf((real) => ({
+        ...real,
+        inputs: real.inputs.map((input) =>
+          input.key === 'length' ? { ...input, defaultUnit: 'yd' } : input,
+        ),
+      })),
+    ).toThrow('no unit hint for yd');
+  });
+
+  it('refuses a definition whose default state does not run or validate', async () => {
+    const failure = { ok: false, error: { code: 'MALFORMED' } };
+    expect(await viewOf((real) => ({ ...real, run: () => failure }))).toThrow(
+      'the default state of concrete must run',
+    );
+    expect(await viewOf((real) => ({ ...real, validate: () => failure }))).toThrow(
+      'the default state of concrete must run',
+    );
+  });
+
+  it('names a message the catalog lacks', async () => {
+    vi.resetModules();
+    vi.doMock('@maestro-calc/i18n/catalogs/en/concrete', () => ({ enConcrete: {} }));
+    const { concreteView: broken } = await import('./page-view.ts');
+    expect(() => broken('en')).toThrow('missing message calc.concrete.page.volumeYd3 for en');
   });
 });

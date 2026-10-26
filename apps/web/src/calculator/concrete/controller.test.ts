@@ -3,7 +3,7 @@ import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { describe, expect, it, vi } from 'vitest';
-import { concreteView } from '../../lib/concrete-page.ts';
+import { concreteView } from '../../lib/page-view.ts';
 import { err, Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
 import {

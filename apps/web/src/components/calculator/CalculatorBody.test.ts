@@ -12,7 +12,7 @@ import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { concreteView } from '../../lib/concrete-page.ts';
+import { concreteView } from '../../lib/page-view.ts';
 import { calculators } from '../../lib/calculators.ts';
 import CalculatorBody from './CalculatorBody.astro';
 import type { CalculatorContent } from './model.ts';

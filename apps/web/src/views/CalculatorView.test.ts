@@ -7,7 +7,7 @@ import { renderComponent } from '../__testing__/render-component.ts';
 import { faqOf } from '../content/faq.ts';
 import { h2Ids } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
-import { concreteView } from '../lib/concrete-page.ts';
+import { concreteView } from '../lib/page-view.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import CatchAll from '../pages/[...path].astro';

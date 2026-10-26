@@ -6,7 +6,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { importFromRoot } from '../../contract/root.ts';
 import { ROUTES } from '../../routing/routes.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
-import { concreteView } from '../../lib/concrete-page.ts';
+import { concreteView } from '../../lib/page-view.ts';
 import {
   FAQ_ANSWER_LENGTH,
   FAQ_ITEMS,
