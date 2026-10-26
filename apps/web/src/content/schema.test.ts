@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculatorSchema, pageSchema, TRUST_IDS } from './schema.ts';
+import { calculatorSchema, pageSchema, registryIds, TRUST_IDS } from './schema.ts';
 
 const valid = {
   id: 'about',
@@ -149,5 +149,16 @@ describe('calculatorSchema', () => {
   it('accepts only the ids of the registry it is built from', () => {
     expect(calculatorSchema(['rectangle-area']).safeParse(calculator).success).toBe(false);
     expect(calculatorSchema(['concrete']).safeParse(calculator).success).toBe(true);
+  });
+});
+
+describe('registryIds', () => {
+  it('returns the ids as a non-empty tuple', () => {
+    expect(registryIds(['concrete'])).toEqual(['concrete']);
+    expect(registryIds(['rectangle-area', 'concrete'])).toEqual(['rectangle-area', 'concrete']);
+  });
+
+  it('throws on an empty registry instead of building an enum that accepts nothing', () => {
+    expect(() => registryIds([])).toThrow('registry is empty');
   });
 });

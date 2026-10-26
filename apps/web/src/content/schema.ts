@@ -50,6 +50,13 @@ const source = z.strictObject({
   retrieved: isoDate,
 });
 
+/** The registry ids as a non-empty tuple (`z.enum` needs one); an empty registry is a build error. */
+export const registryIds = (ids: readonly string[]): [string, ...string[]] => {
+  const [first, ...others] = ids;
+  if (first === undefined) throw new Error('the calculator registry is empty');
+  return [first, ...others];
+};
+
 /**
  * Frontmatter of one calculator entry (calculator-page › Page anatomy and content collection):
  * strict, with the calculator id limited to the registry's (`ids`), at least one source and the
