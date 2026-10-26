@@ -44,16 +44,44 @@ const FORBIDDEN = [
   'estrellas',
 ];
 
-describe('HomeView links (trust-pages › [TP7])', () => {
+describe('HomeView links (trust-pages › [TP7], [TP21])', () => {
+  // spec: trust-pages › [TP7] the methodology and about pages are still linked
   it.each([
     ['en', ['/methodology', '/about'], ['How we calculate', 'About Maestro Calc']],
     ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Cómo calculamos', 'Sobre Maestro Calc']],
   ] as const)(
     'links the methodology and about pages from the %s home',
     async (locale, hrefs, labels) => {
-      const links = (await render(locale)).querySelectorAll('main a[href]');
+      const links = (await render(locale)).querySelectorAll('main a[href]').slice(1);
       expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
       expect(links.map((link) => link.text.trim())).toEqual(labels);
+    },
+  );
+
+  // spec: trust-pages › [TP21] the calculator link, with text from the catalog, inside the introduction
+  it.each([
+    ['en', enSite, '/concrete-calculator'],
+    ['es', esSite, '/es/calculadora-de-concreto'],
+  ] as const)(
+    'links the concrete calculator from the %s introduction',
+    async (locale, catalog, href) => {
+      const main = (await render(locale)).querySelector('main');
+      const links = main?.querySelectorAll('a[href]') ?? [];
+      expect(links[0]?.getAttribute('href')).toBe(href);
+      expect(links[0]?.text.trim()).toBe(catalog['page.home.links.concrete']);
+      expect(links[0]?.closest('p')).toBe(main?.querySelector('p'));
+      expect(links.filter((link) => link.getAttribute('href') === href)).toHaveLength(1);
+    },
+  );
+
+  // spec: trust-pages › [TP21] no other calculator is named on the home page
+  it.each(['en', 'es'] as const)(
+    'names no calculator but the concrete one on the %s home',
+    async (locale) => {
+      const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
+      for (const other of ['rectangle', 'rectángulo', 'roofing', 'techado', 'paint', 'pintura']) {
+        expect(text, other).not.toContain(other);
+      }
     },
   );
 });
@@ -65,8 +93,21 @@ describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
   ] as const)('opens the %s home with the site tagline verbatim', async (locale, catalog) => {
     const main = (await render(locale)).querySelector('main');
     expect(main?.querySelector('p')?.text).toContain(catalog['site.tagline']);
-    expect(main?.querySelector('p')?.text).toBe(catalog['page.home.intro']);
+    // the introduction, then the calculator link in the same paragraph
+    expect(main?.querySelector('p')?.text.replaceAll(/\s+/g, ' ').trim()).toBe(
+      `${catalog['page.home.intro']} ${catalog['page.home.links.concrete']}`,
+    );
   });
+
+  it.each(['en', 'es'] as const)(
+    'says nothing is still being built on the %s home',
+    async (locale) => {
+      const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
+      for (const stale of ['still being built', 'estamos preparando', 'primeras calculadoras']) {
+        expect(text, stale).not.toContain(stale);
+      }
+    },
+  );
 
   it.each(['en', 'es'] as const)('lists no upcoming calculators on the %s home', async (locale) => {
     const main = (await render(locale)).querySelector('main');

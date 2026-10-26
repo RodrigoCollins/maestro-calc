@@ -38,6 +38,14 @@ describe('methodology: the concrete section (trust-pages › [TP22], [TP26], [TP
     expect(entry).toContain(link);
   });
 
+  // the section opens with a link to the page, which the route table now holds
+  it.each([
+    ['en', '[concrete calculator](/concrete-calculator)'],
+    ['es', '[calculadora de concreto](/es/calculadora-de-concreto)'],
+  ] as const)('links the calculator page from the %s section', (locale, link) => {
+    expect(concreteSection(locale)).toContain(link);
+  });
+
   // spec: trust-pages › [TP26] the methodology no longer says that nothing is published
   it.each(LOCALES)('does not say that no calculator is published in %s', (locale) => {
     const body = bodyOf(locale).toLowerCase();

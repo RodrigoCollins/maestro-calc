@@ -32,8 +32,8 @@ export const esSite = {
   'site.calculator.hintM': 'metros',
   'site.calculator.hintCm': 'centímetros',
   'page.home.heading': 'Maestro Calc',
-  'page.home.intro':
-    'Calcula tu obra y sabe qué comprar. Estamos preparando las primeras calculadoras y explicaremos cómo sale cada número.',
+  'page.home.intro': 'Calcula tu obra y sabe qué comprar. Explicamos cómo sale cada número.',
+  'page.home.links.concrete': 'Prueba la calculadora de concreto',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',

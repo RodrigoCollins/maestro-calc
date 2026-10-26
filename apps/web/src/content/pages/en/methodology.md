@@ -25,7 +25,7 @@ Each calculator page names its sources and shows the date we last reviewed them.
 
 <h2 id="concrete">Concrete calculator</h2>
 
-The concrete calculator estimates the concrete for a slab, a footing, a column or a set of steps, and the bags of mix to buy. Every length is kept as an exact number, and the result is rounded only when it is shown.
+The [concrete calculator](/concrete-calculator) estimates the concrete for a slab, a footing, a column or a set of steps, and the bags of mix to buy. Every length is kept as an exact number, and the result is rounded only when it is shown.
 
 Each shape starts from a volume:
 
