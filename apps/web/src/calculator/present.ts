@@ -207,17 +207,21 @@ export const boundText = (field: InputDescriptor, bound: string, system: UnitSys
 
 /**
  * The figure of an output for its row: money through `moneyText`, a quantity in the unit of its
- * display hint at the hint's places, thousands grouped. A fraction hint has no calculator yet and
- * fails loudly rather than guessing a format.
+ * display hint at the hint's places, thousands grouped. A value of the other kind than the
+ * descriptor's measure, or a fraction hint (no calculator asks for one yet), fails loudly naming
+ * the output rather than rendering a wrong figure.
  */
 export const outputText = (
   output: OutputDescriptor,
   value: Money | Quantity<DimensionName>,
 ): string => {
-  if (!isQuantity(value)) return moneyText(value);
   const { key, measure, display } = output;
-  if (display?.format !== 'decimal' || measure === 'money')
-    throw new TypeError(`${key} has no decimal hint`);
+  if (measure === 'money') {
+    if (isQuantity(value)) throw new TypeError(`${key} is money, not a quantity`);
+    return moneyText(value);
+  }
+  if (!isQuantity(value)) throw new TypeError(`${key} is a ${measure}, not money`);
+  if (display?.format !== 'decimal') throw new TypeError(`${key} has no decimal hint`);
   const unit = findUnit(measure, display.unit);
   if (unit === undefined) throw new TypeError(`${key} has no unit ${display.unit}`);
   return decimalText(valueIn(value, unit), display.places, true);
