@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { fromRoot, importFromRoot } from './root.ts';
 
 interface Step {
+  id?: string;
   name?: string;
   uses?: string;
   run?: string;
@@ -21,6 +22,7 @@ interface Job {
   'paths-ignore'?: unknown;
   permissions?: unknown;
   'timeout-minutes'?: number;
+  id?: string;
   name?: string;
   strategy?: { 'fail-fast'?: boolean; matrix?: { include?: { shard: string; inputs: string }[] } };
   'continue-on-error'?: unknown;
@@ -368,6 +370,19 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(install).toHaveLength(1);
     expect(install[0]).toContain('chromium');
     expect(install[0]).not.toMatch(/firefox|webkit/);
+  });
+
+  // The install with OS packages took 4m18s (apt) on every run. The browser is cached by the
+  // lockfile, so the install, with its packages, runs on a cache miss only; a hit restores the
+  // headless shell and the runner image already carries the libraries Chrome needs.
+  it('installs Chromium and its OS packages only when the browser cache missed', () => {
+    const cache = step('actions/cache@');
+    const id = cache?.id ?? '';
+    expect(id).not.toBe('');
+    const install = steps.find((candidate) => candidate.run?.includes('playwright install'));
+    expect(install?.if).toBe(`steps.${id}.outputs.cache-hit != 'true'`);
+    expect(install?.run).toContain('--with-deps');
+    expect(steps.indexOf(install ?? {})).toBeGreaterThan(steps.indexOf(cache ?? {}));
   });
 
   it('typechecks the tooling package before it runs the browser tests', () => {
