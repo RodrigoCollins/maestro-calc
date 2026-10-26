@@ -20,7 +20,7 @@
 
 /* Reserved areas: the script fills them without moving anything below (CP44). */
 .calc-answer {
-  min-height: 7.5rem;
+  min-height: 10.75rem;
   font-size: var(--text-h3);
   font-weight: 600;
 }
