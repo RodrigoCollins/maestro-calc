@@ -4,6 +4,9 @@ import { join, resolve } from 'node:path';
 import type { AstroInlineConfig } from 'astro';
 import { afterAll, describe, expect, it } from 'vitest';
 import { importFromRoot } from '../../contract/root.ts';
+import { ROUTES } from '../../routing/routes.ts';
+import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
+import { concreteView } from '../../lib/concrete-page.ts';
 import {
   FAQ_ANSWER_LENGTH,
   FAQ_ITEMS,
@@ -22,18 +25,24 @@ afterAll(() => {
   rmSync(out, { recursive: true, force: true });
 });
 
+type Locales = Record<'en' | 'es', number>;
+
+/** The bytes the injected `<p></p>` of the seeded copy adds around its text. */
+const PARAGRAPH = '<p></p>'.length;
+
 /**
  * Builds the site with the production pipeline plus one injected route, the placeholder page, and
- * returns its two HTML files in bytes. `extra` characters of copy are added to the page.
+ * returns its two HTML files. `extra` characters of copy are added to each page, by locale.
  */
-const measure = async (name: string, extra = 0): Promise<Record<'en' | 'es', number>> => {
+const build = async (name: string, extra: Locales = { en: 0, es: 0 }) => {
   // `astro` must load as the Node package, not through the test bundler
-  const { build } = await importFromRoot<{ build: (config: AstroInlineConfig) => Promise<void> }>(
-    'node_modules/astro/dist/index.js',
-  );
-  process.env['BUDGET_EXTRA'] = String(extra);
+  const { build: astroBuild } = await importFromRoot<{
+    build: (config: AstroInlineConfig) => Promise<void>;
+  }>('node_modules/astro/dist/index.js');
+  process.env['BUDGET_EXTRA_EN'] = String(extra.en);
+  process.env['BUDGET_EXTRA_ES'] = String(extra.es);
   const outDir = join(out, name);
-  await build({
+  await astroBuild({
     root: WEB_ROOT,
     outDir,
     logLevel: 'silent',
@@ -48,16 +57,20 @@ const measure = async (name: string, extra = 0): Promise<Record<'en' | 'es', num
       },
     ],
   });
-  const bytes = (locale: string) =>
-    readFileSync(join(outDir, 'zz-budget', `${locale}.html`)).length;
-  return { en: bytes('en'), es: bytes('es') };
+  const read = (locale: 'en' | 'es') => readFileSync(join(outDir, 'zz-budget', `${locale}.html`));
+  return { en: read('en'), es: read('es') };
 };
 
+const sizesOf = (files: Record<'en' | 'es', Buffer>): Locales => ({
+  en: files.en.length,
+  es: files.es.length,
+});
+
 describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7]; design C18, DR-16)', () => {
-  // spec: site-quality › [SQ7] with full-length copy: 1,500 words, 8 FAQ answers of 600 characters,
+  // spec: site-quality › [SQ7] with full-length copy: 1,500 words, 8 FAQ answers of 450 characters,
   // the JSON-LD, every template and the inline CSS, built by the real pipeline, in both locales
   it('fits the HTML budget with full-length copy, the JSON-LD and the inlined CSS', async () => {
-    const sizes = await measure('base');
+    const sizes = sizesOf(await build('base'));
     console.info(
       `calculator page HTML with full-length copy: en ${String(sizes.en)} B, es ${String(sizes.es)} B of ${String(HTML_BUDGET)} B`,
     );
@@ -65,13 +78,38 @@ describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-qua
     expect(sizes.es).toBeLessThanOrEqual(HTML_BUDGET);
   }, 120_000);
 
-  // seeded: the assertion bites, so a copy that is too long cannot pass unnoticed
-  it('exceeds the budget once 2,000 more characters of copy are added past the headroom', async () => {
-    const { es, en } = await measure('seeded', 2_000 + HTML_BUDGET);
-    expect(Math.min(en, es)).toBeGreaterThan(HTML_BUDGET);
+  // the JSON-LD of the proof is the real builder's, serialized by the real serializer
+  it('carries the JSON-LD graph of calculatorJsonLd for the full-length FAQ', async () => {
+    const files = await build('jsonld');
+    for (const locale of ['en', 'es'] as const) {
+      const routes = {
+        ...ROUTES,
+        concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
+      } as const;
+      const view = concreteView(locale);
+      const expected = serializeJsonLd(
+        calculatorJsonLd({ id: 'concrete', name: view.title }, locale, faqOf(locale), routes),
+      );
+      expect(files[locale].toString('utf8')).toContain(
+        `<script type="application/ld+json">${expected}</script>`,
+      );
+    }
   }, 120_000);
 
-  it('uses the sizes the spec fixes: 8 answers of 600 characters and 1,500 words', () => {
+  // seeded: one byte past the measured headroom fails, so a copy that is too long cannot pass unnoticed
+  it('is exactly one byte over the budget once the measured headroom plus one byte is added', async () => {
+    const base = sizesOf(await build('base-again'));
+    const headroom = (locale: 'en' | 'es') => HTML_BUDGET - base[locale];
+    const seeded = sizesOf(
+      await build('seeded', {
+        en: headroom('en') + 1 - PARAGRAPH,
+        es: headroom('es') + 1 - PARAGRAPH,
+      }),
+    );
+    expect(seeded).toEqual({ en: HTML_BUDGET + 1, es: HTML_BUDGET + 1 });
+  }, 120_000);
+
+  it('uses the sizes the spec fixes: 8 answers of 450 characters and 1,500 words', () => {
     for (const locale of ['en', 'es'] as const) {
       const faq = faqOf(locale);
       expect(faq).toHaveLength(FAQ_ITEMS);
