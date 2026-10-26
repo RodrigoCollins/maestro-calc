@@ -1,3 +1,4 @@
+import { FAQ_SECTION_IDS } from '../content/faq-shape.ts';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
@@ -52,7 +53,6 @@ const SECTION_IDS = {
   en: ['how-to-use', 'formulas', 'tips', 'faq', 'sources'],
   es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
 } as const;
-const FAQ_IDS = ['faq', 'preguntas-frecuentes'];
 
 const breadcrumbProblems = (page: Page): Problem[] => {
   const first = page.root.querySelector('main ol[aria-label], main h1');
@@ -83,7 +83,7 @@ const faqHeadingProblems = (page: Page): Problem[] => {
       section = attr(heading, 'id');
       return [];
     }
-    return FAQ_IDS.includes(section)
+    return (FAQ_SECTION_IDS as readonly string[]).includes(section)
       ? []
       : [
           problem(
