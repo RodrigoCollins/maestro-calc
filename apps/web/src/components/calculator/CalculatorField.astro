@@ -1,0 +1,25 @@
+---
+import type { Field } from './model.ts';
+
+interface Props {
+  field: Field;
+  /** The shapes a dimension input belongs to, joined into `data-shapes`; absent for the others. */
+  shapes?: readonly string[];
+  hidden?: boolean;
+}
+const { field, shapes, hidden = false } = Astro.props;
+---
+
+<div class="calc-field" data-shapes={shapes?.join(' ')} hidden={hidden}>
+  <label for={`calc-${field.key}`}>{field.label}</label>
+  <input
+    id={`calc-${field.key}`}
+    name={field.key}
+    inputmode={field.mode}
+    autocomplete="off"
+    value={field.value}
+    placeholder={field.placeholder}
+    disabled
+  />
+  <slot />
+</div>
