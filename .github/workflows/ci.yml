@@ -305,10 +305,14 @@ jobs:
       - run: npm ci --prefix tooling/site-browser
       - run: npm run typecheck --prefix tooling/site-browser
       - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
-      - run: npx --prefix tooling/site-browser playwright install --with-deps --only-shell chromium
+      # The OS packages (apt) took 4m18s on every run. They install only when the browser cache
+      # missed, that is when the tooling lockfile changed; a hit restores the headless shell.
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx --prefix tooling/site-browser playwright install --with-deps --only-shell chromium
       - run: npm run test:e2e
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.
