@@ -308,9 +308,9 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
+          key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
       # The OS packages (apt) took 4m18s on every run. They install only when the browser cache
-      # missed, that is when the tooling lockfile changed; a hit restores the headless shell.
+      # missed, that is when the tooling lockfile or the runner image changed; a hit restores the headless shell.
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx --prefix tooling/site-browser playwright install --with-deps --only-shell chromium
       - run: npm run test:e2e
