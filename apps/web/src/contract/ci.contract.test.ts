@@ -337,8 +337,12 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(job?.['continue-on-error']).toBeUndefined();
   });
 
-  it('is bounded to ten minutes and sends no telemetry', () => {
-    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(10);
+  // A warm browser cache runs the job in about five minutes; `main` cannot read the caches that PR
+  // branches save, so its first run after a cache-key change installs Chromium and its OS packages
+  // cold (about seven minutes on the hosted runner) before the suites, and a ten-minute bound
+  // killed it before the step that saves the cache (run 40328577005, 2026-10-26).
+  it('is bounded to fifteen minutes and sends no telemetry', () => {
+    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(15);
     expect(job?.['timeout-minutes']).toBeGreaterThan(0);
     expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
       WRANGLER_SEND_METRICS: 'false',
