@@ -1,4 +1,4 @@
-import { defineCalculator, inch, quantity } from '@maestro-calc/core';
+import { defineCalculator, inch, quantity, Rational } from '@maestro-calc/core';
 import { PageModuleError } from '../calculator/page-module.ts';
 
 /*
@@ -49,3 +49,42 @@ export const choiceCalculator = defineCalculator({
   outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
   compute: () => unused,
 });
+
+/** The value of a successful result; a failure fails the test that asked for it. */
+export const unwrap = <T>(
+  result: { readonly ok: true; readonly value: T } | { readonly ok: false },
+): T => {
+  if (!result.ok) throw new Error('the result is an error');
+  return result.value;
+};
+
+/**
+ * Percent inputs for the stepper slot: `tip` runs from 0 to `max`; `open` has no bounds, `floor`
+ * has no minimum, `ceil` has no maximum; `qty` is not a percent.
+ */
+export const percentCalculator = (max: number) =>
+  defineCalculator({
+    id: 'percent-fixture',
+    inputs: [
+      {
+        kind: 'percent',
+        key: 'tip',
+        urlKey: 'p1',
+        default: Rational.of(5),
+        min: Rational.ZERO,
+        max: Rational.of(max),
+      },
+      { kind: 'percent', key: 'open', urlKey: 'p2', default: Rational.of(5) },
+      {
+        kind: 'percent',
+        key: 'floor',
+        urlKey: 'p3',
+        default: Rational.of(5),
+        max: Rational.of(10),
+      },
+      { kind: 'percent', key: 'ceil', urlKey: 'p4', default: Rational.of(5), min: Rational.ZERO },
+      count('qty', 'c1'),
+    ],
+    outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+    compute: () => unused,
+  });
