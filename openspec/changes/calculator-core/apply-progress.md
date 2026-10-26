@@ -116,3 +116,7 @@ A commit above 400 changed lines carries a body that gives the reason. A per-cal
 - `npm run format && npm run lint && npm run typecheck && npm run test:coverage` green; 189 files, 3,452 tests (round start: 3,436), coverage thresholds met, `apps/web/src/calculator/**` at 100 percent.
 - `npm run verify` exit 0. `check:site`: JS graph of the concrete calculator page 38,137 B (limit 49,152; the round added 289 B, mostly the creation check in `controller.ts`; the G1 target of 38,500 B still holds), largest HTML 34,073 B, CSS 7,358 B, calculator page weight 162,220 B.
 - Dist diff against `main` (HTML normalised with `sd '/_astro/[A-Za-z0-9_.-]+\.(js|css)' '/_astro/ASSET.$1'`, then `diff -r -x '*.js'`): empty.
+
+## G1 Judgment Day
+
+Both blind judges returned no severe finding on `a77cd56..0ead3c1` (judge B recomputed the slab, `l=240`, footing and rectangle-area figures by hand; both traced the replace-only write, the hidden-field read, the own `undefined` money key, the unit toggle, the stepper clamp and the shopping checks). **JUDGMENT: APPROVED.** Info items folded in the exit commit: the stale `concrete-layout.ts` reference in `components/calculator/model.ts` (both judges) and `sessionStorage` added to the calculator-layer `no-restricted-globals` set (judge A). Follow-ups: the lint message reuses the core wording ("packages/core must stay host-independent"); `FORM_ORDER` and `PAGE_KEY` are declared ahead of G2 (tasks 8.x). G1.4 (push, CI, PR, merge) is the orchestrator's.

@@ -63,6 +63,7 @@ const pageGlobalNames = new Set([
   'location',
   'history',
   'localStorage',
+  'sessionStorage',
   'fetch',
   'self',
   'globalThis',
