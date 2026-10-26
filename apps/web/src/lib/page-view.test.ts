@@ -2,6 +2,8 @@ import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
+import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
@@ -11,13 +13,17 @@ import {
   formCalculator,
   lengthCalculator,
   pageModuleErrorOf,
+  shoppingCalculator,
 } from '../__testing__/page-fixtures.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
 import { definePage } from '../calculator/page-module.ts';
 import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { choiceSlot } from '../calculator/slots/choices.ts';
+import { costSlot } from '../calculator/slots/costs.ts';
+import { shoppingSlot } from '../calculator/slots/shopping.ts';
+import { concrete as concreteCalculator } from './concrete.ts';
 import type { concrete } from './concrete.ts';
-import { concreteView, formViewOf } from './page-view.ts';
+import { concreteView, formViewOf, resultViewOf } from './page-view.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
@@ -197,11 +203,17 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
   });
 });
 
-/** A catalog that answers every key with the key itself, except the keys `lacking` accepts. */
-const catalogOf = (lacking: (key: string) => boolean = () => false) =>
+/** A catalog that answers every key with the key itself, except `overrides` and the keys `lacking` accepts. */
+const catalogOf = (
+  lacking: (key: string) => boolean = () => false,
+  overrides: Readonly<Record<string, string>> = {},
+) =>
   new Proxy<Record<string, string>>(
     {},
-    { get: (_target, key) => (typeof key === 'string' && !lacking(key) ? key : undefined) },
+    {
+      get: (_target, key) =>
+        typeof key !== 'string' || lacking(key) ? undefined : (overrides[key] ?? key),
+    },
   );
 
 describe('formViewOf (calculator-web-core › [CWC5], [CWC24], [CWC28]; calculator-page › [CP11], [CP12], [CP51], [CP58])', () => {
@@ -379,6 +391,138 @@ describe('formViewOf (calculator-web-core › [CWC5], [CWC24], [CWC28]; calculat
     ).toBe('FORM_ORDER');
   });
 });
+describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calculator-page › [CP1], [CP2], [CP15], [CP54], [CP56])', () => {
+  const enCatalog: Record<string, string> = { ...enCommon, ...enConcrete, ...enSite };
+  const enRectangle: Record<string, string> = { ...enCommon, ...enRectangleArea, ...enSite };
+
+  // spec: calculator-web-core › [CWC24] the rows are the outputs with a display hint, the primary hidden
+  it('lists the outputs that have a display hint in declaration order with the primary hidden', () => {
+    const { rows } = resultViewOf(concretePage, 'en', enCatalog);
+    expect(rows.map(({ key, value, hidden }) => [key, value, hidden])).toEqual([
+      ['volumeYd3', '1.63', true],
+      ['volumeFt3', '44.00', undefined],
+      ['volumeM3', '1.25', undefined],
+      ['netVolume', '40.00', undefined],
+    ]);
+    expect(rows.map(({ label }) => label)).toEqual([
+      'Concrete needed (cubic yards)',
+      'Concrete needed (cubic feet)',
+      'Concrete needed (cubic meters)',
+      'Volume before extra (cubic feet)',
+    ]);
+  });
+
+  // spec: calculator-web-core › [CWC24] rectangle-area has its three area rows and nothing else
+  it('gives rectangle-area its three area rows, the bare primary value and no shopping or cost', () => {
+    const result = resultViewOf(rectangleAreaPage, 'en', enRectangle);
+    expect(result.rows.map(({ key, label, value, hidden }) => [key, label, value, hidden])).toEqual(
+      [
+        ['areaFt2', 'Area (square feet)', '100.00', true],
+        ['areaYd2', 'Area (square yards)', '11.11', undefined],
+        ['areaM2', 'Area (square meters)', '9.29', undefined],
+      ],
+    );
+    expect(result.primary).toEqual({ key: 'areaFt2', before: '', value: '100.00', after: '' });
+    expect(result.shopping).toEqual([]);
+    expect(result.costs).toEqual([]);
+    expect('costsNote' in result).toBe(false);
+  });
+
+  // spec: calculator-web-core › [CWC3] and calculator-page › [CP54] one shopping line, its two fills named
+  it('splits the concrete bag line and its note on the fills the slot declares', () => {
+    const [line, ...others] = resultViewOf(concretePage, 'en', enCatalog).shopping;
+    expect(others).toEqual([]);
+    expect(line).toEqual({
+      unit: 'bag-80',
+      qty: '74',
+      label: { name: 'bagLb', before: 'Concrete mix, ', value: '80', after: ' lb bags' },
+      note: { name: 'yield', before: 'About ', value: '0.60', after: ' cubic feet per bag' },
+    });
+  });
+
+  // spec: calculator-web-core › [CWC3] a list of lines in the order the module declared
+  it('keeps the declared order of two lines the engine returns the other way round', () => {
+    const page = definePage({
+      calculator: shoppingCalculator,
+      shopping: shoppingSlot(shoppingCalculator, [
+        {
+          material: 'alpha',
+          label: 'alphaLine',
+          note: 'alphaNote',
+          parts: () => ({ unit: 'box-a', fills: { n: '5' } }),
+        },
+        { material: 'beta', label: 'betaLine', parts: () => ({ unit: 'bag-b', fills: {} }) },
+      ]),
+    });
+    const catalog = catalogOf(() => false, {
+      'calc.shopping-fixture.page.alphaLine': 'Boxes of {n}',
+      'calc.shopping-fixture.page.alphaNote': 'Holds {n} pieces each',
+      'calc.shopping-fixture.page.betaLine': 'Bags',
+    });
+    expect(resultViewOf(page, 'en', catalog).shopping).toEqual([
+      {
+        unit: 'box-a',
+        qty: '1,234',
+        label: { name: 'n', before: 'Boxes of ', value: '5', after: '' },
+        note: { name: 'n', before: 'Holds ', value: '5', after: ' pieces each' },
+      },
+      { unit: 'bag-b', qty: '7', label: { before: 'Bags', value: '', after: '' } },
+    ]);
+  });
+
+  // spec: calculator-page › [CP16] the cost rows with their hint and the note under them
+  it('gives the cost rows a hint and the note of the slot, hidden while the price is zero', () => {
+    const { costs, costsNote } = resultViewOf(concretePage, 'en', enCatalog);
+    expect(
+      costs.map(({ key, label, value, visible, hint }) => [key, label, value, visible, hint]),
+    ).toEqual([
+      ['bagCost', 'Cost of the bags', '$0.00', false, 'Add your price to see the cost'],
+      ['readyMixCost', 'Cost of ready-mix', '$0.00', false, 'Add your price to see the cost'],
+    ]);
+    expect(costsNote).toBe(
+      'Ready-mix: order the volume above; your supplier sets the minimum and the increments.',
+    );
+  });
+
+  it('omits the note when the cost slot has none', () => {
+    const page = definePage({
+      calculator: concreteCalculator,
+      costs: costSlot(concreteCalculator, [{ output: 'bagCost', price: 'bagPrice' }], {
+        hint: 'priceHint',
+      }),
+    });
+    const result = resultViewOf(page, 'en', enCatalog);
+    expect(result.costs.map(({ key }) => key)).toEqual(['bagCost']);
+    expect('costsNote' in result).toBe(false);
+  });
+
+  // spec: calculator-page › [CP15], [CP17] the heading, the estimate note and the terms link by locale
+  it('carries the heading, the estimate note and the terms link of the locale', () => {
+    const en = resultViewOf(concretePage, 'en', enCatalog);
+    expect([en.heading, en.termsLabel, en.termsHref]).toEqual(['Result', 'Terms', '/terms']);
+    expect(en.estimateNote).toBe(
+      'Estimates only. Check quantities with your supplier and the local building code.',
+    );
+    expect(
+      resultViewOf(concretePage, 'es', { ...esCommon, ...esConcrete, ...esSite }).termsHref,
+    ).toBe('/es/terminos');
+  });
+
+  // spec: calculator-web-core › Page-view builder: the primary sentence key is optional, a missing page key names itself
+  it('splits the primary sentence on its value and names a page key the catalog lacks', () => {
+    expect(resultViewOf(concretePage, 'en', enCatalog).primary).toEqual({
+      key: 'volumeYd3',
+      before: '',
+      value: '1.63',
+      after: ' cubic yards',
+    });
+    const catalog = catalogOf((key) => key === 'calc.concrete.page.shoppingLine');
+    const error = pageModuleErrorOf(() => resultViewOf(concretePage, 'en', catalog));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.page.shoppingLine' });
+  });
+});
+
 /**
  * The builder reads the concrete definition once; these cases swap it for a broken copy (the real
  * one with one fact changed) to reach the guards that name a drifted definition or catalog.
