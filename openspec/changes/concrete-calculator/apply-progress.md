@@ -267,3 +267,38 @@ Commits: `d3eb0e2` the collection and `calculatorSchema` (177), `f5a2d36` `faqOf
 - Mutation: `calculators` shard 183 mutants, 100.00 after JD-1 and again after JD-2's config change (concrete.ts 144 mutants); no other core or data source changed in G2.
 - HTML budget (calculator page, production pipeline): 39,268 B (EN), 39,517 B (ES) of 40,960 B.
 - Remaining for the orchestrator: G2.2 / GX1 to GX5 (push, CI, four reviewers, Judgment Day, PR against `main`).
+
+## G2 correction round 1
+
+All four lenses passed; these are the folded findings. Thirteen commits on top of `10db593` (52 files, 661 insertions, 323 deletions; the check-context refactor `35f2b8c` is mechanical and above 400 lines). No core or data source changed, so no mutation run. `npm run verify`: exit 0, 170 files, 3,025 tests (was 168 and 2,983), site-check coverage 100. `npm run build && npm run test:e2e`: 110 passed, the built site is unchanged (14 pages, `concrete` and `calc-result` absent from `dist`). `CALCULATOR_PAGES` is still empty and `concrete` stays in `PAGELESS`.
+
+### Finding to commit
+
+| Finding | Commit |
+|---|---|
+| REL-1 (`12 ft 1/64 in`, kills the `<= 32n` mutant), REL-2 (`1/8192 in` and the 12-place `0.006201171875 mm` boundary), REL-8 (`<1/64 in`, `<0.01 cm`, `1.00 m` from 0.995 m) | `4bd2382` |
+| RD-8 (`lib/calculator-page.ts` is now `lib/concrete-page.ts`; `registryIds` throws on an empty registry) | `d1d2ceb` |
+| RD-2 (JSON-LD home name from `site.calculator.breadcrumbHome`), RD-3 (home link uses `routes`), RD-4 (`content/faq-shape.ts`: limits, section ids, one `FaqItem`), REL-9 (faqOf straightens quotes) | `2936c80` |
+| RD-1 (`CheckContext { pages, dist, site, sizes }` to every rule group and `budgetSummary`; `calculatorPages` and `externalLinks` required on `Site`) | `35f2b8c` |
+| REL-9 (parity folds quotes, ellipsis and dashes on both sides), RD-2 (site-check keeps `HOME_NAME` as a documented oracle), RD-4, RD-5, RD-14 | `ca8fedf`, `323f618` |
+| REL-3 (budget page uses the real `calculatorJsonLd` and a test asserts the built JSON-LD equals it), REL-4 (seeded failure is exactly budget + 1 byte per locale), REL-5 (non-ASCII inline CSS counted in bytes; the `.length` mutant fails), REL-6 (stale 600 comments) | `355522f` |
+| REL-7 (worked-example figures must be whole tokens in Formulas) | `132c33d` |
+| RD-7 error colour: `--color-error` `#B42318` (4.5:1 on Plan paper and Sheet white) in `docs/design/direction.md` | `9fca03f` |
+| RD-7 CSS (dead `.calc-fields` removed, `.calc-shape-area` is a grid with the gap its reserved height counts, `aria-invalid` uses the token) | `c5b6909` |
+| R1-5 (`rel="external noreferrer"`, no `target`, pinned) | `753d92b` |
+| RD-6 (`CalculatorField.astro`) | `ba0d107` |
+| RD-9 copy, R1-2 NIST pin (`^NIST SP 811, Appendix B`) | `f65106c` |
+
+### Decisions and deviations
+
+- REL-8: tiny nonzero lengths read `<1/64 in` (US) and `<0.01 cm` (metric); zero stays `0 in` and `0.00 cm`. The metric unit is chosen from the rounded value: from 0.995 m the text is metres.
+- REL-9: smartypants stays on (the live trust pages keep their typography). `faqOf` writes quotes straight, and the parity check compares both sides after undoing smartypants (`sourceTypography`: quotes, ellipsis, `--` and `---`). Visible text is quoted in messages.
+- REL-3: no `page.concrete.*` head keys exist before G3 routes the page, so the proof keeps `about`'s head and uses the real builder with the concrete paths added to the route table; the real head arrives with the route. The JSON-LD grew by about 65 B (real canonical URLs).
+- RD-1: `glyphProblems` still takes the font map (fonts are not in the four-field context named by the review). `contextOf` lives in `checks.ts` and the CLI uses it too.
+- RD-9: the answer templates read `Footing (...) × {count}: ...`, `Column (...) × {count}`, `Steps (...) × {stepCount}`, and the Spanish counterparts; for the owner: `banquetas` is kept in the Spanish copy (regional, owner to confirm), and the `×` forms are copy for review.
+- HTML budget after the copy (production pipeline, 1,500 words, 8 FAQ answers): **39,353 B (EN), 39,601 B (ES)** of 40,960 B; headroom 1,607 B and 1,359 B. Budget not raised.
+- R1-2: the orchestrator verified the sources on 2026-10-25: the QUIKRETE data sheet PDF shows "Revised October 2022" and the NIST SP 811 landing page lists "Appendix B – Conversion Factors". `retrieved: 2026-10-25` stays; the NIST name is `NIST SP 811, Appendix B (...)` in both locales.
+
+### Follow-ups (out of scope)
+
+RES-1 (one build with two injected routes; reconsider in G3 if test time grows), RES-2, R1-1 (CSP flip before the script; production verified clean by the orchestrator: no `/cdn-cgi` or scripts on `/`, `/contact`, `/es/contacto`, `/privacy`), R1-3, R1-4 (add `caches.`, `cookieStore` and `EventSource` bans in G3 with the bundle), RD-10, RD-11, RD-12, RD-13 (the breadcrumb `ol[aria-label]` is spec'd because of SS1), RD-15. Owner review: `banquetas`, the `×` answer wording and the `<1/64 in` texts.
