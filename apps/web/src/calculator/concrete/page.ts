@@ -20,8 +20,7 @@ export const concretePage: PageModule<typeof concrete> = definePage({
     {
       material: 'concrete-mix',
       label: 'shoppingLine',
-      fill: 'bagLb',
-      note: { key: 'bagYield', fill: 'yield' },
+      note: 'bagYield',
       parts: (moment) => ({
         unit: `bag-${moment.choices.bag}`,
         fills: bagFills(moment, CONCRETE_MIX_YIELDS),

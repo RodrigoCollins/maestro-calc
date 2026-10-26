@@ -24,7 +24,6 @@ const ENV: Environment = {
 const line = (material: string, unit: string) => ({
   material,
   label: 'line',
-  fill: 'unit',
   parts: () => ({ unit, fills: {} }),
 });
 

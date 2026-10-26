@@ -35,8 +35,7 @@ describe('the concrete page module (calculator-web-core › [CWC2])', () => {
     expect(line).toMatchObject({
       material: 'concrete-mix',
       label: 'shoppingLine',
-      fill: 'bagLb',
-      note: { key: 'bagYield', fill: 'yield' },
+      note: 'bagYield',
     });
   });
 

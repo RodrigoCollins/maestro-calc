@@ -21,14 +21,12 @@ const slot = (units = { alpha: 'box-a', beta: 'bag-b' }) =>
     {
       material: 'alpha',
       label: 'alphaLine',
-      fill: 'unit',
-      note: { key: 'alphaNote', fill: 'size' },
+      note: 'alphaNote',
       parts: () => ({ unit: units.alpha, fills: { unit: 'box', size: '12' } }),
     },
     {
       material: 'beta',
       label: 'betaLine',
-      fill: 'unit',
       parts: () => ({ unit: units.beta, fills: {} }),
     },
   ]);
