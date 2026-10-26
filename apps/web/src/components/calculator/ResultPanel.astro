@@ -21,15 +21,15 @@ const {
 <section class="calc-result" aria-labelledby="calc-result-heading">
   <h2 id="calc-result-heading">{heading}</h2>
   <p class="calc-primary">
-    {primary.before}
-    <span class="calc-figure" data-output={primary.key}>
+    {primary.before !== '' && <span data-primary-before>{primary.before}</span>}
+    <span class="calc-figure" data-primary={primary.key}>
       {primary.value}
     </span>
-    {primary.after}
+    <span data-primary-after>{primary.after}</span>
   </p>
   <dl class="calc-rows">
-    {rows.map(({ key, label, value }) => (
-      <div class="calc-row">
+    {rows.map(({ key, label, value, hidden }) => (
+      <div class="calc-row" hidden={hidden === true}>
         <dt>{label}</dt>
         <dd class="calc-figure" data-output={key}>
           {value}

@@ -34,11 +34,11 @@ const outputs = (root: Root): [string, string][] =>
     .querySelectorAll('[data-output]')
     .map((el) => [el.getAttribute('data-output') ?? '', el.text]);
 
-/** The inert messages of the page, by `data-message`. */
+/** The inert messages of the page: the entries of its one template, by id. */
 const messagesOf = (root: Root): Record<string, string> => {
   const found: Record<string, string> = {};
-  for (const template of root.querySelectorAll('template')) {
-    found[template.getAttribute('data-message') ?? ''] = template.innerHTML;
+  for (const entry of root.querySelectorAll('template[data-messages] > p')) {
+    found[entry.getAttribute('id') ?? ''] = entry.innerHTML;
   }
   return found;
 };
@@ -229,8 +229,8 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   it('keeps the twelve errors, the four sentences, the copy states and the unit hints in templates', async () => {
     const root = await render('en');
     const byName = messagesOf(root);
-    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 4);
-    expect(root.querySelectorAll('template')).toHaveLength(12 + 4 + 2 + 4);
+    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 4 + 2);
+    expect(root.querySelectorAll('template')).toHaveLength(1);
     expect(Object.keys(byName).filter((name) => name.startsWith('hint.'))).toEqual([
       'hint.ft',
       'hint.in',
@@ -238,6 +238,8 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
       'hint.cm',
     ]);
     expect(byName['hint.cm']).toBe('centimeters');
+    expect(byName['volume.yd3']).toBe('{value} cubic yards');
+    expect(byName['volume.m3']).toBe('{value} cubic meters');
     for (const code of ALL_ERROR_CODES) {
       expect(byName[`errors.${code}`], code).toBe(enCommon[`errors.${code}`]);
     }

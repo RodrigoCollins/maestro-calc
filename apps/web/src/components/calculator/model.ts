@@ -46,11 +46,20 @@ export interface ConcreteFormView {
   readonly copyLabel: string;
 }
 
+/** Text around a value the script rewrites: `{before}<value>{after}`, for example `About 0.60 cubic feet per bag`. */
+export interface Split {
+  readonly before: string;
+  readonly value: string;
+  readonly after: string;
+}
+
 /** A labelled figure of the panel, addressed by its output key. */
 export interface Row {
   readonly key: string;
   readonly label: string;
   readonly value: string;
+  /** Hidden while the large figure shows the same volume (the script swaps it with the unit system). */
+  readonly hidden?: boolean;
 }
 
 /** A cost row: visible only when its price is above zero, else the hint shows. */
@@ -62,20 +71,17 @@ export interface CostRow extends Row {
 export interface ShoppingView {
   /** The purchase unit id shown, `bag-80`: the value of `data-shopping`. */
   readonly unit: string;
-  readonly label: string;
   readonly qty: string;
-  readonly bagYield: string;
+  /** `Concrete mix, <80> lb bags`: the value is the bag size. */
+  readonly label: Split;
+  /** `About <0.60> cubic feet per bag`. */
+  readonly bagYield: Split;
 }
 
 export interface ConcreteResultView {
   readonly heading: string;
   /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
-  readonly primary: {
-    readonly key: string;
-    readonly before: string;
-    readonly value: string;
-    readonly after: string;
-  };
+  readonly primary: Split & { readonly key: string };
   readonly rows: readonly Row[];
   readonly shopping: ShoppingView;
   readonly costs: readonly CostRow[];
@@ -102,6 +108,8 @@ export interface ConcreteTemplatesView {
   readonly copy: { readonly copied: string; readonly failed: string };
   /** The unit hints by unit id (`ft`, `in`, `m`, `cm`), for the script to write on a unit change. */
   readonly hints: Readonly<Record<'ft' | 'in' | 'm' | 'cm', string>>;
+  /** The volume sentences with `{value}`: the large figure and the short answer use them in either system. */
+  readonly volumes: Readonly<Record<'yd3' | 'm3', string>>;
 }
 
 /** Everything the container renders from the engine and the catalogs. */
