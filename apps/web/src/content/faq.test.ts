@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { FAQ_MAX_ANSWER, FAQ_MIN_ITEMS, faqOf } from './faq.ts';
+import { faqOf } from './faq.ts';
+import { FAQ_MAX_ANSWER, FAQ_MIN_ITEMS } from './faq-shape.ts';
 
 const item = (n: number, answer = `Answer ${String(n)} is plain text.`) =>
   `### Question ${String(n)}?\n\n${answer}\n`;
@@ -69,6 +70,17 @@ describe('faqOf (calculator-page › [CP10]; design C16)', () => {
   it('allows the characters of plain prose: a percent, a dash, a slash, an apostrophe', () => {
     const answer = "10% extra, 12 ft x 10 ft / 4 in - it's 1.63 yd3 (about 44/27).";
     expect(faqOf(body(four.replace('Answer 1 is plain text.', answer)))[0]?.answer).toBe(answer);
+  });
+
+  // The page renders the body through smartypants, so curly quotes may reach the reader's side.
+  it('writes the apostrophes and quotes of a question and an answer straight', () => {
+    const items = four
+      .replace('Question 1?', 'What\u2019s a \u201Cyard\u201D?')
+      .replace('Answer 1 is plain text.', 'It\u2019s 27 ft\u00B3, a \u2018cubic\u2019 yard.');
+    expect(faqOf(body(items))[0]).toEqual({
+      question: 'What\'s a "yard"?',
+      answer: "It's 27 ft\u00B3, a 'cubic' yard.",
+    });
   });
 
   it('throws on fewer than four items', () => {
