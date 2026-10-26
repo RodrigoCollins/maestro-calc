@@ -267,18 +267,25 @@ The builder (not the controller) also derives the input modes and the money plac
 
 ## DOM contract (D4, D10)
 
+The key of a choice group or a stepper block sits on the block, and each button carries its option as its native `value` (G2 correction round, deviation 10: the G2 tip put the key and the option on every button, which cost the ES page its HTML headroom).
+
 | Today | After |
 |---|---|
-| `data-shape-button="<v>"` | `data-choice="shape" data-value="<v>"` |
-| `data-bag="<v>"` | `data-choice="bag" data-value="<v>"` |
-| `data-waste-step="<d>"` | `data-step="waste" data-direction="<d>"` |
+| `<div class="calc-group" …>` around `data-shape-button` buttons | the group gains `data-choice="shape"` |
+| `data-shape-button="<v>"` | `value="<v>"` |
+| `<div class="calc-group" …>` around `data-bag` buttons | the group gains `data-choice="bag"` |
+| `data-bag="<v>"` | `value="<v>"` |
+| `data-reserved="steppers"` on `div.calc-steppers` | `data-step="waste"` |
+| `data-waste-step="<d>"` | `value="<d>"` (`less` or `more`) |
 | `data-bag-lb` | `data-fill="bagLb"` |
 | `data-yield` | `data-fill="yield"` |
 | `data-bag-yield` | `data-line-note="0"` |
-| `class="calc-shape-area"` | `class="calc-choice-area"` plus `style="--calc-rows:4"` after `data-reserved` |
+| `class="calc-shape-area" data-reserved="shape"` | `class="calc-choice-area" style="--calc-rows:4"` (no `data-reserved`) |
 | (none) | `data-line="0"` on `p.calc-shopping` |
 
-**Unchanged hooks:** `data-unit`, `data-copy`, `data-copy-status`, `data-output`, `data-primary` (with `data-primary-before`, `data-primary-after`), `data-shopping`, `data-cost-row`, `data-hint-row`, `data-price-hint`, `data-reserved` (the choice area keeps `data-reserved="shape"`), `data-answer`, `data-not-running`, `data-messages`, `data-calculator`; the ids `calc-<key>`, `-hint`, `-help`, `-error`, `calc-<select>-label`; `aria-pressed`. `ResultPanel` maps the shopping lines with no wrapper element, so one line's markup is today's plus `data-line`.
+The mount resolves a click through the block around the button (`closest('[data-choice]')`, `closest('[data-step]')`) and the button's `value`; it collects the groups once at mount and reveals the stepper buttons with `[data-step] [hidden]`. A selector reads `[data-choice="shape"] [value="footing"]`, `[data-step="waste"] [value="more"]`, `[data-step="waste"] button`.
+
+**Unchanged hooks:** `data-unit`, `data-copy`, `data-copy-status`, `data-output`, `data-primary` (with `data-primary-before`, `data-primary-after`), `data-shopping`, `data-cost-row`, `data-hint-row`, `data-price-hint`, `data-reserved` (`notice`, `copy` and `answer` only: the mount reads the first two, nothing read `shape` or `steppers`), `data-answer`, `data-not-running`, `data-messages`, `data-calculator`; the ids `calc-<key>`, `-hint`, `-help`, `-error`, `calc-<select>-label`; `aria-pressed`. `ResultPanel` maps the shopping lines with no wrapper element, so one line's markup is today's plus `data-line`.
 
 **The 57 references in 11 files** (verified with `rg`): `e2e/calculator.spec.ts` 22, `e2e/a11y.spec.ts` 3, `e2e/csp.spec.ts` 1, `CalculatorForm.test.ts` 5, `ShoppingLine.test.ts` 3, `CalculatorBody.test.ts` 3, `styles.contract.test.ts` 3, `concrete-mount.ts` 8, `CalculatorForm.astro` 5, `ShoppingLine.astro` 3, `calculator.css` 1. **Rule:** the rename, every selector edit and the CSS change ship in one slice (S7); assertions do not change (SQ31).
 
