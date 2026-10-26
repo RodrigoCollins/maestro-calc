@@ -55,6 +55,25 @@ const restrictedGlobals = restrictedGlobalGroups.flatMap(({ names, reason }) =>
   names.map((name) => ({ name, message: `\`${name}\` ${reason}` })),
 );
 
+/** The page and storage globals the calculator web layer must not read (calculator-web-core [CWC9]). */
+const pageGlobalNames = new Set([
+  'document',
+  'window',
+  'navigator',
+  'location',
+  'history',
+  'localStorage',
+  'fetch',
+  'self',
+  'globalThis',
+]);
+
+const pageGlobals = restrictedGlobalGroups.flatMap(({ names, reason }) =>
+  names
+    .filter((name) => pageGlobalNames.has(name))
+    .map((name) => ({ name, message: `\`${name}\` ${reason}` })),
+);
+
 const floatFormatters = '/^(toFixed|toPrecision|toExponential|toLocaleString)$/';
 
 const ambientSyntax = [
@@ -272,6 +291,12 @@ export default defineConfig(
     files: [...inPackages('src/**/*.{ts,mts,cts,tsx}'), 'apps/web/src/**/*.{ts,mts,cts,tsx}'],
     ignores: testGlobs,
     rules: { '@typescript-eslint/no-unsafe-type-assertion': 'error' },
+  },
+  {
+    // The calculator web layer is pure state and text: the script and the mount own every browser API.
+    files: ['apps/web/src/calculator/**/*.ts'],
+    ignores: [...testGlobs, '**/*.d.ts', '**/__testing__/**'],
+    rules: { 'no-restricted-globals': ['error', ...pageGlobals] },
   },
   { files: ['packages/i18n/**/*.{ts,mts,cts,tsx}'], rules: layerImports.i18n },
   { files: ['packages/data/**/*.{ts,mts,cts,tsx}'], rules: layerImports.data },
