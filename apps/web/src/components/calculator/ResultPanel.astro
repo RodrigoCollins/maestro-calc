@@ -12,7 +12,7 @@ const { heading, primary, rows, shopping, costs, costsNote, estimateNote, termsL
 <section class="calc-result" aria-labelledby="calc-result-heading">
   <h2 id="calc-result-heading">{heading}</h2>
   <p class="calc-primary">
-    {primary.before !== '' && <span data-primary-before>{primary.before}</span>}
+    {primary.prefixed && <span data-primary-before>{primary.before}</span>}
     <span class="calc-figure" data-primary={primary.key}>
       {primary.value}
     </span>

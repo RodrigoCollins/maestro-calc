@@ -5,7 +5,7 @@ import type { ResultView } from './model.ts';
 
 const result: ResultView = {
   heading: 'Result',
-  primary: { key: 'volumeYd3', before: '', value: '1.63', after: ' cubic yards' },
+  primary: { key: 'volumeYd3', prefixed: false, before: '', value: '1.63', after: ' cubic yards' },
   rows: [
     { key: 'volumeYd3', label: 'Concrete needed (cubic yards)', value: '1.63', hidden: true },
     { key: 'volumeFt3', label: 'Concrete needed (cubic feet)', value: '44.00' },
@@ -91,11 +91,22 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
     ]);
     const metric = {
       ...result,
-      primary: { key: 'volumeM3', before: 'Total ', value: '1.25', after: ' m3' },
+      primary: { key: 'volumeM3', prefixed: true, before: 'Total ', value: '1.25', after: ' m3' },
     };
     const swapped = await renderComponent(ResultPanel, { result: metric });
     expect(swapped.querySelector('[data-primary-before]')?.text).toBe('Total ');
     expect(swapped.querySelector('[data-primary]')?.getAttribute('data-primary')).toBe('volumeM3');
+  });
+
+  // the script writes the prefix of the other unit system into the span, so the page holds it empty
+  it('renders the prefix span empty when a unit system has a prefix the imperial sentence lacks', async () => {
+    const root = await renderComponent(ResultPanel, { result });
+    expect(root.querySelector('[data-primary-before]')).toBeNull();
+    const prefixed = await renderComponent(ResultPanel, {
+      result: { ...result, primary: { ...result.primary, prefixed: true } },
+    });
+    expect(prefixed.querySelector('[data-primary-before]')?.text).toBe('');
+    expect(prefixed.querySelector('.calc-primary')?.text.trim()).toBe('1.63 cubic yards');
   });
 
   // spec: calculator-page › [CP1] cost rows are hidden at a price of zero and the hint shows
