@@ -1,4 +1,5 @@
 import { encode, ft3, quantity, usd, type ValidateOptions } from '@maestro-calc/core';
+import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../../lib/concrete.ts';
@@ -146,14 +147,20 @@ describe('a result the presenter cannot read is a programming error', () => {
 });
 
 describe('answer sentences (calculator-page › [CP1], [CP2], [CP33]; i18n-catalog › [ICW13])', () => {
-  const templates = { volumeYd3: '{value} cubic yards', volumeM3: '{value} cubic meters' };
-  const values = (raw: Readonly<Record<string, unknown>>, system: 'imperial' | 'metric') => {
+  const values = (
+    raw: Readonly<Record<string, unknown>>,
+    system: 'imperial' | 'metric',
+    primary: string,
+  ) => {
     const { state, result } = runOf(raw, { unitSystem: system });
-    return answerValues(state, result, system, templates);
+    return answerValues(
+      { system, choices: { shape: state.shape, bag: state.bag }, valid: state, result },
+      primary,
+    );
   };
 
   it('gives the placeholders of the slab sentence', () => {
-    expect(values({}, 'imperial')).toEqual({
+    expect(values({}, 'imperial', '1.63 cubic yards')).toEqual({
       length: '12 ft',
       width: '10 ft',
       thickness: '4 in',
@@ -164,9 +171,17 @@ describe('answer sentences (calculator-page › [CP1], [CP2], [CP33]; i18n-catal
     });
   });
 
+  // spec: calculator-page › [CP1] the default sentence, from the catalog template
+  it('fills the English slab template into the sentence of the default page', () => {
+    const template = enConcrete['calc.concrete.page.answer.slab'];
+    expect(fillMessage(template, values({}, 'imperial', '1.63 cubic yards'))).toBe(
+      'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
+    );
+  });
+
   // spec: calculator-page › [CP33] the metric sentence
-  it('gives the metric text and cubic meters under the metric system', () => {
-    expect(values({}, 'metric')).toMatchObject({
+  it('gives the metric text and the primary text under the metric system', () => {
+    expect(values({}, 'metric', '1.25 cubic meters')).toMatchObject({
       length: '3.66 m',
       width: '3.05 m',
       thickness: '10.16 cm',
@@ -176,7 +191,7 @@ describe('answer sentences (calculator-page › [CP1], [CP2], [CP33]; i18n-catal
   });
 
   it('gives the placeholders of the other three shapes', () => {
-    expect(values({ shape: 'footing', count: '3' }, 'imperial')).toEqual({
+    expect(values({ shape: 'footing', count: '3' }, 'imperial', '1.30 cubic yards')).toEqual({
       count: '3',
       length: '12 ft',
       width: '1 ft 4 in',
@@ -186,12 +201,12 @@ describe('answer sentences (calculator-page › [CP1], [CP2], [CP33]; i18n-catal
       bagLb: '80',
       bags: '59',
     });
-    expect(values({ shape: 'column' }, 'imperial')).toMatchObject({
+    expect(values({ shape: 'column' }, 'imperial', 'x')).toMatchObject({
       count: '1',
       diameter: '1 ft',
       height: '8 ft',
     });
-    expect(values({ shape: 'steps' }, 'imperial')).toMatchObject({
+    expect(values({ shape: 'steps' }, 'imperial', 'x')).toMatchObject({
       stepCount: '3',
       stepWidth: '4 ft',
       rise: '7 in',

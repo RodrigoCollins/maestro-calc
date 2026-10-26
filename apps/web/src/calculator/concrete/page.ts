@@ -3,10 +3,11 @@ import { Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
 import { definePage, type PageModule } from '../page-module.ts';
 import { choiceSlot } from '../slots/choices.ts';
+import { answerSlot } from '../slots/answer.ts';
 import { costSlot } from '../slots/costs.ts';
 import { shoppingSlot } from '../slots/shopping.ts';
 import { stepperSlot } from '../slots/steppers.ts';
-import { bagFills } from './present.ts';
+import { answerValues, bagFills } from './present.ts';
 import { SHAPE_FIELDS } from './shapes.ts';
 
 /** The concrete page: module #1 of the generic web layer. Language-free, so the client may import it. */
@@ -35,4 +36,5 @@ export const concretePage: PageModule<typeof concrete> = definePage({
     ],
     { hint: 'priceHint', note: 'readyMixNote' },
   ),
+  answer: answerSlot(concrete, { by: 'shape', values: answerValues }),
 });
