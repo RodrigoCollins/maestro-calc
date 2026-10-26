@@ -216,9 +216,8 @@ export const outputText = (
 ): string => {
   if (!isQuantity(value)) return moneyText(value);
   const { key, measure, display } = output;
-  if (display === undefined || measure === 'money')
-    throw new TypeError(`${key} has no display hint`);
-  if (display.format === 'fraction') throw new TypeError(`${key} asks for a fraction display`);
+  if (display?.format !== 'decimal' || measure === 'money')
+    throw new TypeError(`${key} has no decimal hint`);
   const unit = findUnit(measure, display.unit);
   if (unit === undefined) throw new TypeError(`${key} has no unit ${display.unit}`);
   return decimalText(valueIn(value, unit), display.places, true);

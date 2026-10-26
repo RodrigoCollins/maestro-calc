@@ -22,8 +22,8 @@ type Value = ValueOf<InputDescriptor> | undefined;
 const isMoneyValue = (value: Value): value is Money =>
   typeof value === 'object' && !isQuantity(value) && !(value instanceof Rational);
 
-const mismatch = (input: InputDescriptor): never => {
-  throw new TypeError(`${input.key} holds no ${input.kind} value`);
+const mismatch = ({ key, kind }: InputDescriptor): never => {
+  throw new TypeError(`${key} holds no ${kind} value`);
 };
 
 /**
@@ -32,18 +32,11 @@ const mismatch = (input: InputDescriptor): never => {
  * text, and a value of the wrong kind is a programming error.
  */
 export const textOf = (input: InputDescriptor, value: Value, system: UnitSystem): string => {
-  switch (input.kind) {
-    case 'length':
-      return isQuantity(value) ? fieldText(value, input, system) : mismatch(input);
-    case 'count':
-      return typeof value === 'number' ? String(value) : mismatch(input);
-    case 'percent':
-      return value instanceof Rational ? percentText(value) : mismatch(input);
-    case 'money':
-      return isMoneyValue(value) ? priceText(value) : mismatch(input);
-    default:
-      return mismatch(input);
-  }
+  if (typeof value === 'number') return String(value);
+  if (value instanceof Rational) return percentText(value);
+  if (isQuantity(value))
+    return input.kind === 'length' ? fieldText(value, input, system) : mismatch(input);
+  return isMoneyValue(value) ? priceText(value) : mismatch(input);
 };
 
 export function textKeysOf<C extends AnyCalculator>(calculator: C): readonly TextKey<C>[];

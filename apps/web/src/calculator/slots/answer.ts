@@ -1,5 +1,6 @@
 import {
-  PageModuleError,
+  optionOf,
+  fail,
   type AnswerSlot,
   type AnyCalculator,
   type SelectKey,
@@ -22,15 +23,11 @@ export function answerSlot(
   if (by === undefined) return { templates: ['answer'], template: () => 'answer', values };
   const select = calculator.inputs.find((input) => input.key === by);
   if (select?.kind !== 'select') {
-    throw new PageModuleError('CHOICE_OPTIONS', { cause: { id: calculator.id, by } });
+    return fail('CHOICE_OPTIONS', calculator.id, by);
   }
   return {
     templates: select.options.map((option) => `answer.${option}`),
-    template: (valid) => {
-      const option = valid[by];
-      if (typeof option !== 'string') throw new TypeError(`${by} holds no option`);
-      return `answer.${option}`;
-    },
+    template: (valid) => `answer.${optionOf(valid, by)}`,
     values,
   };
 }

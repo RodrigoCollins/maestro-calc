@@ -47,7 +47,7 @@ describe('answerSlot (calculator-web-core › Page-module contract: answer value
   it('throws CHOICE_OPTIONS when the key that drives it is not a select input', () => {
     const error = pageModuleErrorOf(() => answerSlot(concrete, { by: 'waste' as never, values }));
     expect(error.code).toBe('CHOICE_OPTIONS');
-    expect(error.cause).toEqual({ id: 'concrete', by: 'waste' });
+    expect(error.cause).toEqual({ id: 'concrete', at: 'waste' });
   });
 
   it('throws when the driving select holds no option text', () => {

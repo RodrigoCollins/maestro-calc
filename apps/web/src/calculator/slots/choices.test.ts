@@ -70,7 +70,7 @@ describe('choiceSlot (calculator-web-core › Reserved height from the choice gr
       choiceSlot(concrete, [{ select: 'shape', shows: { slab: ['length'] } }]),
     );
     expect(error.code).toBe('CHOICE_OPTIONS');
-    expect(error.cause).toEqual({ id: 'concrete', select: 'shape' });
+    expect(error.cause).toEqual({ id: 'concrete', at: 'shape' });
   });
 
   it('throws CHOICE_OPTIONS for a key that is not a select input', () => {
@@ -92,7 +92,7 @@ describe('choiceSlot (calculator-web-core › Reserved height from the choice gr
         ]),
       );
       expect(error.code).toBe('CHOICE_OPTIONS');
-      expect(error.cause).toEqual({ id: 'choice-fixture', select: 'mode', key });
+      expect(error.cause).toEqual({ id: 'choice-fixture', at: key });
     },
   );
 });

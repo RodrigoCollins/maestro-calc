@@ -138,6 +138,11 @@ export class PageModuleError extends Error {
   }
 }
 
+/** Throws the `PageModuleError` of `code` for the calculator `id`; `at` names the culprit input or output. */
+export const fail = (code: PageModuleCode, id: string, at?: string): never => {
+  throw new PageModuleError(code, { cause: { id, at } });
+};
+
 export type TextInput = Extract<
   InputDescriptor,
   { readonly kind: 'length' | 'count' | 'percent' | 'money' }
@@ -152,6 +157,13 @@ export function definePage(spec: PageSpec<AnyCalculator>): AnyPageModule {
   return Object.freeze({ ...spec, id: spec.calculator.id });
 }
 
+/** The option a select holds in a valid state; a state that holds none breaks an invariant. */
+export const optionOf = (valid: StateOf<AnyCalculator>, key: string): string => {
+  const option = valid[key];
+  if (typeof option !== 'string') throw new TypeError(`${key} holds no option`);
+  return option;
+};
+
 /**
  * The engine lines in declared order. Throws `SHOPPING_LINES` unless the engine has exactly one
  * line per declared material (any order, no extra, no duplicate) and, when `units` is given, each
@@ -164,15 +176,14 @@ export const shoppingLinesOf = (
   engine: readonly ShoppingLine[],
   units?: readonly string[],
 ): readonly ShoppingLine[] => {
-  const fail = (): never => {
-    throw new PageModuleError('SHOPPING_LINES', { cause: { id } });
-  };
-  if (engine.length !== declared.length) return fail();
+  if (engine.length !== declared.length) return fail('SHOPPING_LINES', id);
   return declared.map((material, index) => {
     const matches = engine.filter((line) => line.materialId === material);
     const [line] = matches;
-    if (line === undefined || matches.length !== 1) return fail();
-    if (units !== undefined && line.purchaseUnit !== units[index]) return fail();
-    return line;
+    return line === undefined ||
+      matches.length !== 1 ||
+      (units !== undefined && line.purchaseUnit !== units[index])
+      ? fail('SHOPPING_LINES', id)
+      : line;
   });
 };

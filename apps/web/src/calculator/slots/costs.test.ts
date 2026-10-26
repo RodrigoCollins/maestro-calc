@@ -37,13 +37,13 @@ describe('costSlot (calculator-page › [CP16])', () => {
   });
 
   it.each([
-    ['an output that is not money', [{ output: 'volumeYd3', price: 'bagPrice' }]],
-    ['a price that is not money', [{ output: 'bagCost', price: 'waste' }]],
-    ['an unknown output', [{ output: 'nope', price: 'bagPrice' }]],
-    ['an unknown price', [{ output: 'bagCost', price: 'nope' }]],
-  ])('throws COST_KINDS for %s', (_what, bad) => {
-    const error = pageModuleErrorOf(() => costSlot(concrete, bad as never, copy));
+    ['an output that is not money', 'volumeYd3', 'bagPrice'],
+    ['a price that is not money', 'bagCost', 'waste'],
+    ['an unknown output', 'nope', 'bagPrice'],
+    ['an unknown price', 'bagCost', 'nope'],
+  ])('throws COST_KINDS for %s', (_what, output, price) => {
+    const error = pageModuleErrorOf(() => costSlot(concrete, [{ output, price }] as never, copy));
     expect(error.code).toBe('COST_KINDS');
-    expect(error.cause).toEqual({ id: 'concrete', ...bad[0] });
+    expect(error.cause).toEqual({ id: 'concrete', at: `${output}:${price}` });
   });
 });

@@ -49,7 +49,7 @@ describe('stepperSlot (calculator-page › [CP22], [CP57])', () => {
     (key) => {
       const error = pageModuleErrorOf(() => stepperSlot(percentCalculator(20), { [key]: five }));
       expect(error.code).toBe('STEPPER_BOUNDS');
-      expect(error.cause).toEqual({ id: 'percent-fixture', key });
+      expect(error.cause).toEqual({ id: 'percent-fixture', at: key });
     },
   );
 });

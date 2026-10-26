@@ -1,6 +1,6 @@
 import { Rational } from '@maestro-calc/core';
 import {
-  PageModuleError,
+  fail,
   type AnyCalculator,
   type CostSlot,
   type OutputKey,
@@ -33,7 +33,7 @@ export function costSlot(
     const output = calculator.outputs.find(({ key }) => key === row.output);
     const price = calculator.inputs.find(({ key }) => key === row.price);
     if (output?.measure !== 'money' || price?.kind !== 'money') {
-      throw new PageModuleError('COST_KINDS', { cause: { id: calculator.id, ...row } });
+      fail('COST_KINDS', calculator.id, `${row.output}:${row.price}`);
     }
   }
   return {

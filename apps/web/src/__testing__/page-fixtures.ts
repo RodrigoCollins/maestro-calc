@@ -21,6 +21,14 @@ export const pageModuleErrorOf = (call: () => unknown): PageModuleError => {
 const zero = quantity(0, inch);
 const unused = { outputs: { total: zero }, shopping: [], warnings: [] } as const;
 
+/** The one output every fixture has: its primary, shown in feet to two places. */
+const total = {
+  key: 'total',
+  measure: 'length',
+  role: 'primary',
+  display: { unit: 'ft', format: 'decimal', places: 2 },
+} as const;
+
 const count = <const K extends string, const U extends string>(key: K, urlKey: U) =>
   ({ kind: 'count', key, urlKey, default: 1 }) as const;
 
@@ -46,7 +54,7 @@ export const choiceCalculator = defineCalculator({
     { kind: 'boolean', key: 'flag', urlKey: 'b1', default: false },
     { kind: 'select', key: 'other', urlKey: 'm2', options: ['x', 'y'], default: 'x' },
   ],
-  outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+  outputs: [total],
   compute: () => unused,
 });
 
@@ -85,7 +93,7 @@ export const percentCalculator = (max: number) =>
       { kind: 'percent', key: 'ceil', urlKey: 'p4', default: Rational.of(5), min: Rational.ZERO },
       count('qty', 'c1'),
     ],
-    outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+    outputs: [total],
     compute: () => unused,
   });
 
@@ -99,7 +107,7 @@ const beta = { materialId: 'beta', purchaseUnit: 'bag-b', qty: 7n } as const;
 export const shoppingCalculator = defineCalculator({
   id: 'shopping-fixture',
   inputs: [{ kind: 'count', key: 'size', urlKey: 'c1', default: 1, min: 1, max: 3 }],
-  outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+  outputs: [total],
   compute: ({ size }) => ({
     outputs: { total: zero },
     shopping: size === 2 ? [beta] : [beta, alpha],
@@ -125,6 +133,14 @@ export const mixedCalculator = defineCalculator({
     { kind: 'boolean', key: 'flag', urlKey: 'b1', default: false },
     { kind: 'select', key: 'mode', urlKey: 's1', options: ['one', 'two'], default: 'one' },
   ],
-  outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+  outputs: [total],
   compute: () => unused,
+});
+
+/** A calculator whose primary output is money, which has no display hint. */
+export const moneyCalculator = defineCalculator({
+  id: 'money-fixture',
+  inputs: [count('qty', 'c1')],
+  outputs: [{ key: 'cost', measure: 'money', role: 'primary' }],
+  compute: () => ({ outputs: { cost: usd(5) }, shopping: [], warnings: [] }),
 });
