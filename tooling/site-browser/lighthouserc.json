@@ -6,8 +6,8 @@
         "http://127.0.0.1:8787/es",
         "http://127.0.0.1:8787/methodology",
         "http://127.0.0.1:8787/es/metodologia",
-        "http://127.0.0.1:8787/privacy",
-        "http://127.0.0.1:8787/es/privacidad"
+        "http://127.0.0.1:8787/concrete-calculator",
+        "http://127.0.0.1:8787/es/calculadora-de-concreto"
       ],
       "numberOfRuns": 1,
       "startServerCommand": "WRANGLER_SEND_METRICS=false npx wrangler dev --config wrangler.e2e.jsonc --port 8787 --ip 127.0.0.1",
