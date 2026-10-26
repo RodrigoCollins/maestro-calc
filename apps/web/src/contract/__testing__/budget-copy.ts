@@ -1,9 +1,11 @@
 import type { Locale } from '@maestro-calc/i18n';
+import { FAQ_MAX_ANSWER } from '../../content/faq-shape.ts';
+import type { FaqItem } from '../../content/faq-shape.ts';
 
 /** What the full-length placeholder page holds (calculator-page › Page anatomy; design C18, DR-16). */
 export const WORDS = 1_500;
 export const FAQ_ITEMS = 8;
-export const FAQ_ANSWER_LENGTH = 450;
+export const FAQ_ANSWER_LENGTH = FAQ_MAX_ANSWER;
 
 /**
  * Running prose: every other word is a short function word, the rest are longer content words, as
@@ -48,12 +50,7 @@ export const words = (locale: Locale, count: number, offset = 0): string => {
   }).join(' ');
 };
 
-export interface FaqItem {
-  readonly question: string;
-  readonly answer: string;
-}
-
-/** Exactly 8 items whose answers are exactly 600 characters. */
+/** Exactly 8 items whose answers are exactly as long as the cap (450 characters). */
 export const faqOf = (locale: Locale): FaqItem[] =>
   Array.from({ length: FAQ_ITEMS }, (_, index) => ({
     question: `Placeholder question number ${String(index + 1)} about concrete?`,

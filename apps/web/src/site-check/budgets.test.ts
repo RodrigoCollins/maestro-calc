@@ -91,6 +91,31 @@ describe('CSS budget, inline plus linked (site-quality › [SQ6])', () => {
     ]);
   });
 
+  // The inline style is measured in bytes, not characters: 'é' is two bytes in UTF-8.
+  const withInlineAccents = (count: number) => (dist: Map<string, string>) => {
+    const html = dist.get('about.html') ?? '';
+    dist.set(
+      'about.html',
+      html.replace(/<style>.*?<\/style>/s, `<style>/*${'é'.repeat(count)}*/</style>`),
+    );
+  };
+
+  it('counts the bytes of non-ASCII inline CSS: 20,480 bytes pass', () => {
+    // 10,238 accents are 20,476 bytes plus the four bytes of `/**/`
+    expect(problemsAfter(withInlineAccents(10_238))).toEqual([]);
+  });
+
+  it('fails non-ASCII inline CSS whose bytes, not whose characters, pass the limit', () => {
+    // 10,239 accents are 10,243 characters but 20,482 bytes
+    expect(problemsAfter(withInlineAccents(10_239))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'css-budget',
+        message: '20,482 B of CSS exceeds the limit of 20,480 B',
+      },
+    ]);
+  });
+
   it('counts a stylesheet that is not in the build as empty (another rule names it)', () => {
     expect(
       problemsAfter((dist) => {
