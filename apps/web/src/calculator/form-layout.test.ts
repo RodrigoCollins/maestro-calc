@@ -1,3 +1,4 @@
+import { defineCalculator, Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import {
   choiceCalculator,
@@ -7,6 +8,7 @@ import {
 import { concretePage } from './concrete/page.ts';
 import { formOf } from './form-layout.ts';
 import { definePage } from './page-module.ts';
+import { stepperSlot } from './slots/steppers.ts';
 import { rectangleAreaPage } from './rectangle-area/page.ts';
 import { choiceSlot } from './slots/choices.ts';
 
@@ -77,5 +79,33 @@ describe('formOf (calculator-web-core › [CWC30], [CWC28])', () => {
     const error = pageModuleErrorOf(() => formOf(definePage({ calculator: choiceCalculator })));
     expect(error.code).toBe('FORM_ORDER');
     expect(error.cause).toEqual({ id: 'choice-fixture', at: 'flag' });
+  });
+
+  // spec: calculator-web-core › Page-view builder: a stepper belongs to a field the page renders as a plain field
+  it('throws FORM_ORDER for a stepper on a field a choice drives, which has no stepper control', () => {
+    const calculator = defineCalculator({
+      id: 'driven-stepper-fixture',
+      inputs: [
+        { kind: 'select', key: 'mode', urlKey: 'm1', options: ['a', 'b'], default: 'a' },
+        {
+          kind: 'percent',
+          key: 'rate',
+          urlKey: 'p1',
+          default: Rational.of(5),
+          min: Rational.ZERO,
+          max: Rational.of(10),
+        },
+      ],
+      outputs: [{ key: 'total', measure: 'money', role: 'primary' }],
+      compute: () => ({ outputs: { total: usd(0) }, shopping: [], warnings: [] }),
+    });
+    const page = definePage({
+      calculator,
+      choices: choiceSlot(calculator, [{ select: 'mode', shows: { a: ['rate'], b: ['rate'] } }]),
+      steppers: stepperSlot(calculator, { rate: Rational.of(1) }),
+    });
+    const error = pageModuleErrorOf(() => formOf(page));
+    expect(error.code).toBe('FORM_ORDER');
+    expect(error.cause).toEqual({ id: 'driven-stepper-fixture', at: 'rate' });
   });
 });
