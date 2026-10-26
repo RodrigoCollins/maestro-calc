@@ -38,13 +38,13 @@ El extra por desperdicio se suma al volumen antes de contar las bolsas: volumen 
 
 Una bolsa rinde aproximadamente 0.30 pies cúbicos (40 lb), 0.45 pies cúbicos (60 lb) o 0.60 pies cúbicos (80 lb). Estos rendimientos vienen de la ficha técnica del fabricante: QUIKRETE Concrete Mix No. 1101 data sheet (product nos. 1101-40, 1101-60, 1101-80), revised October 2022, `https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf`, consultada el 2026-10-25. Los rendimientos reales varían según el producto y la mezcla, así que toma la cantidad de bolsas como una estimación.
 
-La columna usa π = 3.14159265358979323846264338327950288. Es una aproximación, y su error es menor que 10^-35.
+La columna usa π = 3.14159265358979323846264338327950288. Es una aproximación, y su error es menor que 10⁻³⁵.
 
 Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado. Los volúmenes están en pies cúbicos, y las bolsas son de 80 lb.
 
 | Caso                                                                                                       | Volumen sin extra | Volumen con 10% de extra | Yardas cúbicas | Bolsas |
 | ---------------------------------------------------------------------------------------------------------- | ----------------- | ------------------------ | -------------- | ------ |
-| Losa, 12 ft × 10 ft × 4 in (`default`)                                                                     | 40.00             | 44.00                    | 1.63           | 74     |
+| Losa, 12 ft × 10 ft × 4 in (valores iniciales)                                                             | 40.00             | 44.00                    | 1.63           | 74     |
 | Zapata, 18 ft × 16 in × 8 in, 3 piezas (`?v=1&sh=footing&l=216&n=3`)                                       | 48.00             | 52.80                    | 1.96           | 88     |
 | Columna, 12 in de diámetro × 8 ft, 1 pieza (`?v=1&sh=column`)                                              | 6.28              | 6.91                     | 0.26           | 12     |
 | Escalones, 3 escalones, 4 ft de ancho, 7 in de altura (rise), 11 in de profundidad (run) (`?v=1&sh=steps`) | 12.83             | 14.12                    | 0.52           | 24     |
