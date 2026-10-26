@@ -6,15 +6,16 @@ const result = {
   heading: 'Result',
   primary: { key: 'volumeYd3', before: '', value: '1.63', after: ' cubic yards' },
   rows: [
+    { key: 'volumeYd3', label: 'Concrete needed (cubic yards)', value: '1.63', hidden: true },
     { key: 'volumeFt3', label: 'Concrete needed (cubic feet)', value: '44.00' },
     { key: 'volumeM3', label: 'Concrete needed (cubic meters)', value: '1.25' },
     { key: 'netVolume', label: 'Volume before extra (cubic feet)', value: '40.00' },
   ],
   shopping: {
     unit: 'bag-80',
-    label: 'Concrete mix, 80 lb bags',
     qty: '74',
-    bagYield: 'About 0.60 cubic feet per bag',
+    label: { before: 'Concrete mix, ', value: '80', after: ' lb bags' },
+    bagYield: { before: 'About ', value: '0.60', after: ' cubic feet per bag' },
   },
   costs: [
     {
@@ -61,6 +62,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
     const root = await renderComponent(ResultPanel, { result });
     expect(root.querySelector('.calc-primary')?.text.trim()).toBe('1.63 cubic yards');
     expect(root.querySelectorAll('.calc-row dt').map((el) => el.text)).toEqual([
+      'Concrete needed (cubic yards)',
       'Concrete needed (cubic feet)',
       'Concrete needed (cubic meters)',
       'Volume before extra (cubic feet)',
@@ -69,6 +71,28 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
     expect(root.querySelector('section')?.getAttribute('aria-labelledby')).toBe(
       root.querySelector('h2')?.getAttribute('id'),
     );
+  });
+
+  // the large figure mirrors the row of its volume; the script swaps the system and the hidden row
+  it('mirrors the primary volume in the large figure and hides its own row', async () => {
+    const root = await renderComponent(ResultPanel, { result });
+    expect(root.querySelector('[data-primary]')?.text).toBe('1.63');
+    expect(root.querySelector('[data-primary]')?.getAttribute('data-primary')).toBe('volumeYd3');
+    expect(root.querySelector('[data-primary]')?.hasAttribute('data-output')).toBe(false);
+    expect(root.querySelector('[data-primary-after]')?.text).toBe(' cubic yards');
+    expect(root.querySelectorAll('.calc-row').map((el) => el.hasAttribute('hidden'))).toEqual([
+      true,
+      false,
+      false,
+      false,
+    ]);
+    const metric = {
+      ...result,
+      primary: { key: 'volumeM3', before: 'Total ', value: '1.25', after: ' m3' },
+    };
+    const swapped = await renderComponent(ResultPanel, { result: metric });
+    expect(swapped.querySelector('[data-primary-before]')?.text).toBe('Total ');
+    expect(swapped.querySelector('[data-primary]')?.getAttribute('data-primary')).toBe('volumeM3');
   });
 
   // spec: calculator-page › [CP1] cost rows are hidden at a price of zero and the hint shows

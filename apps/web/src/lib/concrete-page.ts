@@ -9,6 +9,7 @@ import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
   ConcretePageView,
+  Split,
   Choice,
   Field,
   ConcreteFormView,
@@ -116,6 +117,10 @@ export const concreteView = (locale: Locale): ConcretePageView => {
     answerValues(checked.value, raw.value, SYSTEM, templates),
   );
   const [before = '', after = ''] = templates.volumeYd3.split('{value}');
+  const around = (template: string, name: string, value: string): Split => {
+    const [head = '', tail = ''] = template.split(`{${name}}`);
+    return { before: head, value, after: tail };
+  };
 
   const defaultShape = defaultOf('shape');
   const form: ConcreteFormView = {
@@ -147,15 +152,16 @@ export const concreteView = (locale: Locale): ConcretePageView => {
     heading: text('site.calculator.resultHeading'),
     primary: { key: 'volumeYd3', before, value: figures.volumeYd3, after },
     rows: [
+      { key: 'volumeYd3', label: output('volumeYd3'), value: figures.volumeYd3, hidden: true },
       { key: 'volumeFt3', label: output('volumeFt3'), value: figures.volumeFt3 },
       { key: 'volumeM3', label: output('volumeM3'), value: figures.volumeM3 },
       { key: 'netVolume', label: output('netVolume'), value: figures.netVolume },
     ],
     shopping: {
       unit: `bag-${figures.bagLb}`,
-      label: fillMessage(text('calc.concrete.page.shoppingLine'), { bagLb: figures.bagLb }),
       qty: figures.bags,
-      bagYield: fillMessage(text('calc.concrete.page.bagYield'), { yield: figures.bagYield }),
+      label: around(text('calc.concrete.page.shoppingLine'), 'bagLb', figures.bagLb),
+      bagYield: around(text('calc.concrete.page.bagYield'), 'yield', figures.bagYield),
     },
     costs: [
       {
@@ -201,6 +207,7 @@ export const concreteView = (locale: Locale): ConcretePageView => {
         copied: text('site.calculator.linkCopied'),
         failed: text('site.calculator.copyFailed'),
       },
+      volumes: { yd3: templates.volumeYd3, m3: templates.volumeM3 },
       hints: {
         ft: text('site.calculator.hintFt'),
         in: text('site.calculator.hintIn'),

@@ -18,16 +18,19 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       value: '1.63',
       after: ' cubic yards',
     });
-    expect(view.result.rows.map(({ key, value }) => [key, value])).toEqual([
-      ['volumeFt3', '44.00'],
-      ['volumeM3', '1.25'],
-      ['netVolume', '40.00'],
+    expect(view.result.rows[0]?.label).toBe('Concrete needed (cubic yards)');
+    // the cubic yards row is there for the metric system, hidden while the large figure is cubic yards
+    expect(view.result.rows.map(({ key, value, hidden }) => [key, value, hidden])).toEqual([
+      ['volumeYd3', '1.63', true],
+      ['volumeFt3', '44.00', undefined],
+      ['volumeM3', '1.25', undefined],
+      ['netVolume', '40.00', undefined],
     ]);
     expect(view.result.shopping).toEqual({
       unit: 'bag-80',
-      label: 'Concrete mix, 80 lb bags',
       qty: '74',
-      bagYield: 'About 0.60 cubic feet per bag',
+      label: { before: 'Concrete mix, ', value: '80', after: ' lb bags' },
+      bagYield: { before: 'About ', value: '0.60', after: ' cubic feet per bag' },
     });
     expect(view.result.costs.map(({ key, visible }) => [key, visible])).toEqual([
       ['bagCost', false],
@@ -44,10 +47,18 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
     );
     expect(view.result.primary.after).toBe(' yardas cúbicas');
-    expect(view.result.shopping.label).toBe('Mezcla de concreto, bolsas de 80 lb');
-    expect(view.result.shopping.bagYield).toBe('Unos 0.60 pies cúbicos por bolsa');
+    expect(view.result.shopping.label).toEqual({
+      before: 'Mezcla de concreto, bolsas de ',
+      value: '80',
+      after: ' lb',
+    });
+    expect(view.result.shopping.bagYield).toEqual({
+      before: 'Unos ',
+      value: '0.60',
+      after: ' pies cúbicos por bolsa',
+    });
     expect(view.result.costs[0]?.hint).toBe('Agrega tu precio para ver el costo');
-    expect(view.result.rows.map(({ value }) => value)).toEqual(['44.00', '1.25', '40.00']);
+    expect(view.result.rows.map(({ value }) => value)).toEqual(['1.63', '44.00', '1.25', '40.00']);
   });
 
   // spec: calculator-page › [CP40] static: the "not running" note, then the example sentence
@@ -125,6 +136,10 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
       in: 'inches',
       m: 'meters',
       cm: 'centimeters',
+    });
+    expect(concreteView('en').templates.volumes).toEqual({
+      yd3: '{value} cubic yards',
+      m3: '{value} cubic meters',
     });
     expect(concreteView('es').templates.hints).toEqual({
       ft: 'pies',

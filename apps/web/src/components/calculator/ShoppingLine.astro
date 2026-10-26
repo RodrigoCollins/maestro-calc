@@ -4,15 +4,21 @@ import type { ShoppingView } from './model.ts';
 interface Props {
   shopping: ShoppingView;
 }
-const { unit, label, qty, bagYield } = Astro.props.shopping;
+const { unit, qty, label, bagYield } = Astro.props.shopping;
 ---
 
 <p class="calc-shopping">
-  <span class="calc-label">{label}</span>
+  <span class="calc-label">
+    {label.before}
+    <span data-bag-lb>{label.value}</span>
+    {label.after}
+  </span>
   <span class="calc-figure calc-qty" data-shopping={unit}>
     {qty}
   </span>
 </p>
 <p class="calc-note" data-bag-yield>
-  {bagYield}
+  {bagYield.before}
+  <span data-yield>{bagYield.value}</span>
+  {bagYield.after}
 </p>

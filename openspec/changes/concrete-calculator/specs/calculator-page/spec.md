@@ -46,6 +46,7 @@ Cost rows (`bagCost`, `readyMixCost`) are not visible while their price is `$0` 
 - GIVEN the default page
 - WHEN `[data-output]` elements are listed
 - THEN there is exactly one per output key in the order `volumeYd3`, `volumeFt3`, `volumeM3`, `netVolume`, `bagCost`, `readyMixCost`, and one `[data-shopping]`
+- AND the large figure is a mirror of one of the volume rows (`[data-primary]`, naming its output key); the row of the volume it mirrors is `hidden`, so cubic yards (US) or cubic meters (metric) is never shown twice
 
 ### Requirement: Page anatomy and content collection
 
@@ -349,7 +350,7 @@ Each calculator MUST have one client entry module of its own (`apps/web/src/clie
 #### Scenario: [CP43] Message templates are inert HTML
 - GIVEN the built page
 - WHEN the message templates are read
-- THEN the 12 user-facing error messages (with their `{min}` / `{max}` placeholders), the four answer sentences and the notice texts are present in the page's locale in `<template>` elements, and none of them is rendered until the script uses it
+- THEN the 12 user-facing error messages (with their `{min}` / `{max}` placeholders), the four answer sentences, the copy states, the four unit hints and the two volume sentences (`{value} cubic yards`, `{value} cubic meters`) are present in the page's locale as entries (`<p id="errors.BELOW_MIN">`) of one inert `<template>` element, and none of them is rendered until the script uses it
 
 ### Requirement: Layout stability
 

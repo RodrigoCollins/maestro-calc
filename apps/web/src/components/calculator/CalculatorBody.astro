@@ -12,13 +12,15 @@ interface Props {
 }
 const { view, content } = Astro.props;
 const { templates } = view;
-// Inert messages the script reads: `errors.<CODE>`, `answer.<shape>` and the copy states.
+// Inert messages the script reads, one entry each in one template: `errors.<CODE>`,
+// `answer.<shape>`, the copy states, the unit hints and the two volume sentences.
 const messages = [
   ...Object.entries(templates.errors).map(([code, text]) => [`errors.${code}`, text] as const),
   ...Object.entries(templates.answers).map(([shape, text]) => [`answer.${shape}`, text] as const),
   ['copy.copied', templates.copy.copied] as const,
   ['copy.failed', templates.copy.failed] as const,
   ...Object.entries(templates.hints).map(([unit, text]) => [`hint.${unit}`, text] as const),
+  ...Object.entries(templates.volumes).map(([unit, text]) => [`volume.${unit}`, text] as const),
 ];
 ---
 
@@ -33,9 +35,11 @@ const messages = [
   </div>
   <CalculatorForm form={view.form} />
   <ResultPanel result={view.result} />
-  {messages.map(([name, text]) => (
-    <template data-message={name}>{text}</template>
-  ))}
+  <template data-messages>
+    {messages.map(([name, text]) => (
+      <p id={name}>{text}</p>
+    ))}
+  </template>
   <div class="calc-content">
     <slot />
     <SourceList {content} />
