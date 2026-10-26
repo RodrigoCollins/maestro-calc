@@ -61,7 +61,7 @@ The controller MUST be a pure state machine in `apps/web/src/calculator/`, with 
 #### Scenario: [CWC7] Invalid text blocks everything
 - GIVEN the rectangle-area controller
 - WHEN `abc` is entered in `length`
-- THEN `length` is invalid with the `MALFORMED` message, every figure is `—`, no URL write is requested, and entering `150` restores `125.00` ft², `13.89` yd², `11.61` m² (the width stays `10 ft`)
+- THEN `length` is invalid with the `MALFORMED` message, every figure is `—`, no URL write is requested, and entering `150 in` restores `125.00` ft², `13.89` yd², `11.61` m² (the width stays `10 ft`); a bare `150` is read in the field's default unit, feet, and gives `1,500.00` ft², `166.67` yd², `139.35` m²
 
 #### Scenario: [CWC8] Bounds formatted in the field unit
 - GIVEN the concrete controller
