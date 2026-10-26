@@ -302,3 +302,18 @@ All four lenses passed; these are the folded findings. Thirteen commits on top o
 ### Follow-ups (out of scope)
 
 RES-1 (one build with two injected routes; reconsider in G3 if test time grows), RES-2, R1-1 (CSP flip before the script; production verified clean by the orchestrator: no `/cdn-cgi` or scripts on `/`, `/contact`, `/es/contacto`, `/privacy`), R1-3, R1-4 (add `caches.`, `cookieStore` and `EventSource` bans in G3 with the bundle), RD-10, RD-11, RD-12, RD-13 (the breadcrumb `ol[aria-label]` is spec'd because of SS1), RD-15. Owner review: `banquetas`, the `×` answer wording and the `<1/64 in` texts.
+
+## G2 Judgment Day
+
+Both blind judges returned **APPROVED** on `1691d83..39c994b` (no CRITICAL or MAJOR; judge B completed its sweep on request). Both recomputed the default slab figures (74 bags, $481.00, $244.44) and tried to bypass the CSP and `check:site` rules without success. The AGENTS.md recipe gains step 7 (`PAGELESS`) in the same commit as this note (JD-A-6).
+
+### Follow-ups for group 3 (do first)
+
+- **JD-1 (A, B)**: the copy says a bare number is read in inches for "thickness, depth and rise"; footing width, diameter and run are inch fields too. Name every small field (or refer to the unit shown in each field) in EN/ES Step 2 and the metric FAQ, with a pin.
+- **JD-2 (A)**: the spec asks for the active unit hint on every field (calculator-page, Form controls) and it is not rendered; add it (new ICW keys or `aria-describedby` text) before G3 enables the inputs, or amend the spec.
+- **JD-3 (A, B)**: tie the waste help to its input with `aria-describedby` through `CalculatorField` (the same slot errors will use).
+- **JD-4 (A, B)**: measure the reserved answer height at 320/390 px for the longest EN/ES sentence in the G3 e2e and size to it (CP44, CLS ≤ 0.01).
+- **JD-5 (A, B)**: the "generic" calculator model and presenter are concrete-shaped; rename to concrete-scoped names or split a generic core before calculator 2 (record as a change-level follow-up if not done in G3).
+- **JD-6 (B)**: `check:site` should require `rel~=noreferrer` on allowlisted source links (now pinned only by the SourceList unit test).
+- **JD-7 (A, B)**: live-site smoke for `/cdn-cgi/` and scripts on static pages after G3 deploys (F.4); the CSP flip in G2 was verified clean in production by the orchestrator.
+- Minor: `CalculatorBody.test.ts` picks `calculators[1]` (use `find`), the budget test leaves `BUDGET_EXTRA_*` set and runs four builds (RES-1), regression tests for `/_astro/../x.js` and `&amp;` in FAQ parity, storage/network ban list (`caches.`, `cookieStore`, `EventSource`, `navigator.storage`) and `.cjs`/`.wasm` in the js-file rule, "banquetas" for owner review.
