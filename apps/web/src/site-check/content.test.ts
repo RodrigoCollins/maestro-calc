@@ -863,6 +863,47 @@ describe('calculator structured data (site-seo › [SE19], [SE20], [SE21], [SE22
     ).toEqual([]);
   });
 
+  // Astro's smartypants curls the quotes of the rendered body, while faqOf feeds the JSON-LD straight.
+  it('treats curly and straight quotes, ellipses and dashes as the same text', () => {
+    expect(
+      calcProblemsAfter(
+        {
+          [CALC_PAGE]: (graph) => {
+            const [first] = listOf(graph, 'FAQPage', 'mainEntity');
+            if (first === undefined) throw new Error('no question');
+            first['name'] = 'What\'s a "yard"?';
+            first['acceptedAnswer'] = {
+              '@type': 'Answer',
+              text: 'It\'s a \'cubic\' yard... 27 ft3 --- or 27--28.',
+            };
+            return graph;
+          },
+        },
+        {
+          [CALC_PAGE]: (h) =>
+            h
+              .replace('Question 1 in en?', 'What\u2019s a \u201Cyard\u201D?')
+              .replace(
+                'Answer 1 in en.',
+                'It\u2019s a \u2018cubic\u2019 yard\u2026 27 ft3 \u2014 or 27\u201328.',
+              ),
+        },
+      ),
+    ).toEqual([]);
+  });
+
+  it('still fails a different word behind the same quotes', () => {
+    expect(
+      messagesOf(
+        calcProblemsAfter(
+          {},
+          { [CALC_PAGE]: (h) => h.replace('Answer 1 in en.', 'It\u2019s another answer.') },
+        ),
+        CALC_PAGE,
+      ),
+    ).toEqual(['FAQ answer 1 of the page differs from the FAQPage']);
+  });
+
   it('requires at least four visible FAQ items', () => {
     const three = (h: string) =>
       h.replace(/<h3>Question 4 in en\?<\/h3><p>Answer 4 in en\.<\/p>/, '');
