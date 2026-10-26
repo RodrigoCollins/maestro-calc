@@ -226,11 +226,18 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   });
 
   // spec: calculator-page › [CP43] messages are inert template elements, none rendered
-  it('keeps the twelve errors, the four sentences and the copy states in templates', async () => {
+  it('keeps the twelve errors, the four sentences, the copy states and the unit hints in templates', async () => {
     const root = await render('en');
     const byName = messagesOf(root);
-    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2);
-    expect(root.querySelectorAll('template')).toHaveLength(12 + 4 + 2);
+    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 4);
+    expect(root.querySelectorAll('template')).toHaveLength(12 + 4 + 2 + 4);
+    expect(Object.keys(byName).filter((name) => name.startsWith('hint.'))).toEqual([
+      'hint.ft',
+      'hint.in',
+      'hint.m',
+      'hint.cm',
+    ]);
+    expect(byName['hint.cm']).toBe('centimeters');
     for (const code of ALL_ERROR_CODES) {
       expect(byName[`errors.${code}`], code).toBe(enCommon[`errors.${code}`]);
     }

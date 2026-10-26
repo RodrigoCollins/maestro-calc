@@ -24,6 +24,10 @@ export const enSite = {
     'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
   'site.calculator.estimateNote':
     'Estimates only. Check quantities with your supplier and the local building code.',
+  'site.calculator.hintFt': 'feet',
+  'site.calculator.hintIn': 'inches',
+  'site.calculator.hintM': 'meters',
+  'site.calculator.hintCm': 'centimeters',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
     'Jobsite calculators that estimate what to buy. The first calculators are still being built, and we will explain how every number is worked out.',

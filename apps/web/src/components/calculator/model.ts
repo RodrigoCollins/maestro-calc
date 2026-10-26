@@ -17,6 +17,10 @@ export interface Field {
   readonly value: string;
   readonly mode: 'decimal' | 'numeric';
   readonly placeholder?: string;
+  /** The unit a plain number is read in, written for the active unit system (length fields only). */
+  readonly hint?: string;
+  /** A sentence that describes the input (the waste help). */
+  readonly help?: string;
 }
 
 /** A dimension input: held once in the page, shown when the pressed shape is one of `shapes`. */
@@ -93,6 +97,8 @@ export interface TemplatesView {
   readonly answers: Readonly<Record<string, string>>;
   /** The copy states: `copied` and `failed`. */
   readonly copy: { readonly copied: string; readonly failed: string };
+  /** The unit hints by unit id (`ft`, `in`, `m`, `cm`), for the script to write on a unit change. */
+  readonly hints: Readonly<Record<'ft' | 'in' | 'm' | 'cm', string>>;
 }
 
 /** Everything the container renders from the engine and the catalogs. */

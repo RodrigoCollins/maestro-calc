@@ -18,6 +18,7 @@ const messages = [
   ...Object.entries(templates.answers).map(([shape, text]) => [`answer.${shape}`, text] as const),
   ['copy.copied', templates.copy.copied] as const,
   ['copy.failed', templates.copy.failed] as const,
+  ...Object.entries(templates.hints).map(([unit, text]) => [`hint.${unit}`, text] as const),
 ];
 ---
 

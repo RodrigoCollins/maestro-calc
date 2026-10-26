@@ -49,9 +49,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       <CalculatorField {field} shapes={field.shapes} hidden={!field.visible} />
     ))}
   </div>
-  <CalculatorField field={waste}>
-    <p class="calc-help">{waste.help}</p>
-  </CalculatorField>
+  <CalculatorField field={waste} />
   <div class="calc-steppers" data-reserved="steppers">
     <button class="calc-choice" type="button" data-waste-step="less" hidden disabled>
       {waste.less}

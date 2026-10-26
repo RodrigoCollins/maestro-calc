@@ -27,6 +27,10 @@ export const esSite = {
     'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
   'site.calculator.estimateNote':
     'Son estimaciones. Confirma las cantidades con tu proveedor y el código de construcción local.',
+  'site.calculator.hintFt': 'pies',
+  'site.calculator.hintIn': 'pulgadas',
+  'site.calculator.hintM': 'metros',
+  'site.calculator.hintCm': 'centímetros',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro':
     'Calcula tu obra y sabe qué comprar. Estamos preparando las primeras calculadoras y explicaremos cómo sale cada número.',

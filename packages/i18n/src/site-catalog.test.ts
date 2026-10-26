@@ -170,6 +170,10 @@ const CALCULATOR_ROWS = [
     'Estimates only. Check quantities with your supplier and the local building code.',
     'Son estimaciones. Confirma las cantidades con tu proveedor y el código de construcción local.',
   ],
+  ['site.calculator.hintFt', 'feet', 'pies'],
+  ['site.calculator.hintIn', 'inches', 'pulgadas'],
+  ['site.calculator.hintM', 'meters', 'metros'],
+  ['site.calculator.hintCm', 'centimeters', 'centímetros'],
 ] as const;
 
 describe('site catalog: calculator page UI (i18n-catalog › [ICW17])', () => {
@@ -178,7 +182,7 @@ describe('site catalog: calculator page UI (i18n-catalog › [ICW17])', () => {
     expect(esSite[key]).toBe(es);
   });
 
-  it('holds exactly the eleven keys in both locales, and they have no placeholder', () => {
+  it('holds exactly the fifteen keys in both locales, and they have no placeholder', () => {
     const keys = CALCULATOR_ROWS.map(([key]) => key);
     for (const module of [enSite, esSite]) {
       expect(Object.keys(module).filter((key) => key.startsWith('site.calculator.'))).toEqual(keys);

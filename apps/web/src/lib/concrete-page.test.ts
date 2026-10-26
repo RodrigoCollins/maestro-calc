@@ -90,6 +90,50 @@ describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], 
     expect(concreteView('es').templates.errors['MALFORMED']).toBe(esCommon['errors.MALFORMED']);
   });
 
+  // spec: calculator-page › [CP51] the unit hint of the US system on every length field
+  it('gives each length field the hint of the unit it is read in, and the others none', () => {
+    const hints = Object.fromEntries(
+      concreteView('en').form.fields.map(({ key, hint }) => [key, hint]),
+    );
+    expect(hints).toEqual({
+      length: 'feet',
+      width: 'feet',
+      thickness: 'inches',
+      footingWidth: 'inches',
+      footingDepth: 'inches',
+      diameter: 'inches',
+      height: 'feet',
+      stepWidth: 'feet',
+      rise: 'inches',
+      run: 'inches',
+      stepCount: undefined,
+      count: undefined,
+    });
+    expect(concreteView('es').form.fields.find(({ key }) => key === 'rise')?.hint).toBe('pulgadas');
+    const { form } = concreteView('en');
+    expect([form.waste.hint, ...form.prices.map(({ hint }) => hint)]).toEqual([
+      undefined,
+      undefined,
+      undefined,
+    ]);
+  });
+
+  // spec: calculator-page › [CP51] the four hints travel as inert messages for the unit toggle
+  it('carries the four unit hints in both locales for the script', () => {
+    expect(concreteView('en').templates.hints).toEqual({
+      ft: 'feet',
+      in: 'inches',
+      m: 'meters',
+      cm: 'centimeters',
+    });
+    expect(concreteView('es').templates.hints).toEqual({
+      ft: 'pies',
+      in: 'pulgadas',
+      m: 'metros',
+      cm: 'centímetros',
+    });
+  });
+
   it('presses the defaults: US units, slab, 80 lb bags, and describes the groups', () => {
     const { form } = concreteView('en');
     expect(form.units.filter(({ pressed }) => pressed).map(({ id }) => id)).toEqual(['imperial']);
