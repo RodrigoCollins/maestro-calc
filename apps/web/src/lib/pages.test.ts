@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { concretePage } from '../calculator/concrete/page.ts';
+import { controllerOf } from '../calculator/controller.ts';
 import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { PAGES, pageView } from './pages.ts';
@@ -20,6 +21,12 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
     const view = pageView('concrete', locale);
     expect(view.id).toBe('concrete');
     expect(view.title).toBe(locale === 'en' ? 'Concrete Calculator' : 'Calculadora de Concreto');
+  });
+
+  // every module the site builds a page for passes the creation checks of the controller (K15,
+  // OUTPUT_HINT), the ones the mount runs before the page comes alive
+  it.each(Object.entries(PAGES))('builds the controller of %s without an error', (_id, entry) => {
+    expect(() => controllerOf(entry.module)).not.toThrow();
   });
 });
 

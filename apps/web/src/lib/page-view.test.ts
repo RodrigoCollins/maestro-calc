@@ -722,6 +722,34 @@ describe('pageViewOf guards (calculator-web-core › Page-view builder)', () => 
     expect(error.code).toBe('PAGE_KEY');
     expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.outputs.volumeYd3' });
   });
+
+  // the builder replays the creation checks of the controller (K15, OUTPUT_HINT), so a module that
+  // would build a static page and die at mount fails `astro build` instead
+  it('refuses a module with no shopping slot whose engine returns a line, as the controller does', () => {
+    const module = definePage({ calculator: shoppingCalculator });
+    const error = pageModuleErrorOf(() => pageViewOf(module, 'en', catalogOf()));
+    expect(error.code).toBe('SHOPPING_LINES');
+    expect(error.cause).toEqual({ id: 'shopping-fixture', at: undefined });
+    expect(() => controllerOf(module)).toThrow(error.message);
+  });
+
+  const ft = { unit: 'ft', format: 'decimal', places: 2 } as const;
+  it.each([
+    ['imperial', { edge: ft }, 'span'],
+    ['metric', { span: ft }, 'edge'],
+  ] as const)(
+    'refuses a %s primary that has no display hint and is not money, naming it as the controller does',
+    (_system, hints, key) => {
+      const module = definePage({
+        calculator: hintedCalculator(hints),
+        primary: { imperial: 'span', metric: 'edge' },
+      });
+      const error = pageModuleErrorOf(() => pageViewOf(module, 'en', catalogOf()));
+      expect(error.code).toBe('OUTPUT_HINT');
+      expect(error.cause).toEqual({ id: 'hinted-fixture', at: key });
+      expect(() => controllerOf(module)).toThrow(error.message);
+    },
+  );
 });
 
 describe('the primary sentence protocol (the builder writes what the controller reads)', () => {
