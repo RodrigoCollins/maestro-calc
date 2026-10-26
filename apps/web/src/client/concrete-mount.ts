@@ -1,18 +1,24 @@
+import { concretePage } from '../calculator/concrete/page.ts';
 import {
-  applyEvent,
+  controllerOf,
   copyAddress,
   copyOutcome,
-  start,
   type Environment,
-  type Output,
-  type State,
-  type TextKey,
-  type UiEvent,
-  type View,
+  type Output as ControllerOutput,
+  type State as ControllerState,
+  type UiEvent as ControllerEvent,
+  type View as ControllerView,
 } from '../calculator/controller.ts';
 import { errorId, helpId, hintId } from '../calculator/ids.ts';
+import type { TextKey as KeyOf } from '../calculator/page-module.ts';
 import { textKeysOf } from '../calculator/texts.ts';
-import { concrete } from '../lib/concrete.ts';
+
+type Concrete = typeof concretePage.calculator;
+type TextKey = KeyOf<Concrete>;
+type Output = ControllerOutput<Concrete>;
+type State = ControllerState<Concrete>;
+type UiEvent = ControllerEvent<Concrete>;
+type View = ControllerView<Concrete>;
 
 /*
  * The thin DOM glue of the concrete page (design C11, C13): it collects the elements the server
@@ -58,7 +64,8 @@ const messagesOf = (root: ParentNode): Record<string, string> => {
   );
 };
 
-const TEXT_KEYS = textKeysOf(concrete);
+const controller = controllerOf(concretePage);
+const TEXT_KEYS = textKeysOf(concretePage.calculator);
 
 /** The elements of the page the script reads and writes, collected once. */
 interface Ui {
@@ -142,34 +149,27 @@ const renderPanel = (ui: Ui, view: View): void => {
   ui.primary.figure.setAttribute('data-primary', panel.primary.key);
   setText(ui.primary.after, panel.primary.after);
   if (ui.primary.before !== null) setText(ui.primary.before, panel.primary.before);
-  const output = (key: string): Element => find(root, `[data-output="${key}"]`);
-  for (const key of ['volumeYd3', 'volumeFt3', 'volumeM3'] as const) {
-    setText(output(key), panel.volumes[key]);
-    output(key)
-      .closest('.calc-row')
-      ?.toggleAttribute('hidden', key === panel.primary.key);
+  for (const [key, text] of Object.entries(panel.figures)) {
+    const output = find(root, `[data-output="${key}"]`);
+    setText(output, text);
+    output.closest('.calc-row')?.toggleAttribute('hidden', key === panel.primary.key);
   }
-  setText(output('netVolume'), panel.netVolume);
-  setText(output('bagCost'), panel.bagCost);
-  setText(output('readyMixCost'), panel.readyMixCost);
-  for (const [key, visible] of [
-    ['bagCost', panel.bagCostVisible],
-    ['readyMixCost', panel.readyMixCostVisible],
-  ] as const) {
+  for (const [key, visible] of Object.entries(panel.costs)) {
     find(root, `[data-cost-row="${key}"]`).toggleAttribute('hidden', !visible);
     find(root, `[data-hint-row="${key}"]`).toggleAttribute('hidden', visible);
   }
-  setText(ui.shopping.qty, panel.bags);
-  ui.shopping.qty.setAttribute('data-shopping', `bag-${panel.bagLb}`);
-  setText(ui.shopping.bagLb, panel.bagLb);
-  setText(ui.shopping.yield, panel.bagYield);
+  const [line] = panel.shopping;
+  setText(ui.shopping.qty, line?.qty ?? '');
+  ui.shopping.qty.setAttribute('data-shopping', line?.unit ?? '');
+  setText(ui.shopping.bagLb, line?.fills['bagLb'] ?? '');
+  setText(ui.shopping.yield, line?.fills['yield'] ?? '');
 };
 
 const renderChoices = (ui: Ui, view: View): void => {
   const groups: [string, string][] = [
     ['data-unit', view.system],
-    ['data-shape-button', view.shape],
-    ['data-bag', view.bag],
+    ['data-shape-button', view.choices.shape],
+    ['data-bag', view.choices.bag],
   ];
   for (const [attribute, chosen] of groups) {
     for (const button of findAll(ui.form, `[${attribute}]`)) {
@@ -183,7 +183,7 @@ const renderChoices = (ui: Ui, view: View): void => {
 
 const render = (ui: Ui, { view }: Output): void => {
   for (const key of TEXT_KEYS) renderField(ui, key, view);
-  setText(ui.answer, view.answer);
+  setText(ui.answer, view.answer ?? '');
   const notice = paragraph(ui.noticeArea, 'calc-notice', '');
   setText(notice, view.notice);
   notice.hidden = view.notice === '';
@@ -200,11 +200,11 @@ const eventOf = (button: Element): UiEvent | undefined => {
   const unit = button.getAttribute('data-unit');
   if (unit === 'imperial' || unit === 'metric') return { type: 'units', system: unit };
   const shape = button.getAttribute('data-shape-button');
-  if (shape !== null) return { type: 'shape', shape };
+  if (shape !== null) return { type: 'choice', select: 'shape', option: shape };
   const bag = button.getAttribute('data-bag');
-  if (bag !== null) return { type: 'bag', bag };
+  if (bag !== null) return { type: 'choice', select: 'bag', option: bag };
   const step = button.getAttribute('data-waste-step');
-  if (step === 'less' || step === 'more') return { type: 'waste', direction: step };
+  if (step === 'less' || step === 'more') return { type: 'step', key: 'waste', direction: step };
   return undefined;
 };
 
@@ -247,10 +247,10 @@ export const mount = (): void => {
     }
   };
   const dispatch = (event: UiEvent): void => {
-    show(applyEvent(env, current, event));
+    show(controller.applyEvent(env, current, event));
   };
 
-  show(start(env, location.search));
+  show(controller.start(env, location.search));
   ui.form.addEventListener('input', (event) => {
     const input = event.target;
     const key = input instanceof HTMLInputElement ? textKeyOf(input.name) : undefined;
