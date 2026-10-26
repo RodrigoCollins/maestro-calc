@@ -2,8 +2,8 @@ import { concreteMix } from '@maestro-calc/data';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { decode, ft3, PI, type Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { figuresOf } from '../calculator/concrete/present.ts';
-import { volumeText } from '../calculator/present.ts';
+import { required } from '../calculator/controller.ts';
+import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
 import { concrete } from '../lib/concrete.ts';
 import { hasWord } from '../site-check/dom.ts';
 import { h1Count, h2Count, h2Ids, readEntries, sectionOf } from './content.ts';
@@ -187,12 +187,22 @@ const engineFigures = (query: string) => {
   const raw = { ...decoded.state, waste: (decoded.state.waste satisfies Rational).toString() };
   const result = concrete.run(raw);
   if (!result.ok) throw new Error('the case does not run');
-  const figures = figuresOf(decoded.state, result.value, CONCRETE_MIX_YIELDS, 'imperial');
+  const shown = (key: string): string =>
+    outputText(
+      required(
+        concrete.outputs.find((output) => output.key === key),
+        key,
+      ),
+      required(
+        result.value.outputs.find((output) => output.key === key),
+        key,
+      ).value,
+    );
   return {
-    net: figures.netVolume,
-    total: figures.volumeFt3,
-    yards: figures.volumeYd3,
-    bags: figures.bags,
+    net: shown('netVolume'),
+    total: shown('volumeFt3'),
+    yards: shown('volumeYd3'),
+    bags: groupedInteger(required(result.value.shopping[0], 'shopping line').qty),
   };
 };
 
