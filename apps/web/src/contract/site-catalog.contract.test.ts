@@ -72,7 +72,7 @@ describe('concrete page metadata (i18n-catalog › [ICW16], site-seo › [SE1])'
       ],
     },
     es: {
-      title: ['Calculadora de Concreto en Yardas y Bolsas | Maestro Calc', 57],
+      title: ['Calculadora de concreto en yardas y bolsas | Maestro Calc', 57],
       description: [
         'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
         144,
