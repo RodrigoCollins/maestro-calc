@@ -26,11 +26,6 @@ export interface Field {
   readonly help?: string;
 }
 
-/** A dimension input: held once in the page, visible while the pressed shape uses it (the choice slot, `calculator/slots/choices.ts`). */
-export interface ShapeField extends Field {
-  readonly visible: boolean;
-}
-
 /** An input a choice drives: held once in the page, visible while the pressed option shows it (the choice slot, `calculator/slots/choices.ts`). */
 export interface AreaField extends Field {
   readonly visible: boolean;
@@ -59,20 +54,6 @@ export interface FormView {
   readonly units: readonly Choice[];
   /** The items in the one order of the form (the definition's), between the units and the copy button. */
   readonly items: readonly (ChoiceItemView | FieldItemView)[];
-  readonly copyLabel: string;
-}
-
-export interface ConcreteFormView {
-  readonly unitsLabel: string;
-  readonly units: readonly Choice[];
-  readonly shapeLabel: string;
-  readonly shapes: readonly Choice[];
-  /** Every dimension input once, in the one order of the form (`DIMENSION_ORDER`). */
-  readonly fields: readonly ShapeField[];
-  readonly waste: Field & { readonly help: string; readonly less: string; readonly more: string };
-  readonly bagLabel: string;
-  readonly bags: readonly Choice[];
-  readonly prices: readonly Field[];
   readonly copyLabel: string;
 }
 
@@ -149,7 +130,7 @@ export interface ConcretePageView {
   readonly breadcrumb: BreadcrumbView;
   readonly answer: string;
   readonly notRunning: string;
-  readonly form: ConcreteFormView;
+  readonly form: FormView;
   readonly result: ConcreteResultView;
   readonly templates: ConcreteTemplatesView;
 }

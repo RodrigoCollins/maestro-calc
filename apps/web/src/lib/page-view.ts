@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES, type InputDescriptor } from '@maestro-calc/core';
+import { ALL_ERROR_CODES } from '@maestro-calc/core';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
@@ -9,9 +9,7 @@ import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
   AreaField,
-  Choice,
   ChoiceItemView,
-  ConcreteFormView,
   ConcretePageView,
   ConcreteResultView,
   Field,
@@ -19,8 +17,9 @@ import type {
   FormView,
   Split,
 } from '../components/calculator/model.ts';
+import { concretePage } from '../calculator/concrete/page.ts';
 import { answerValues, figuresOf } from '../calculator/concrete/present.ts';
-import { required, mustBeOk } from '../calculator/controller.ts';
+import { required, mustBeOk, type Messages } from '../calculator/controller.ts';
 import { formOf } from '../calculator/form-layout.ts';
 import {
   fail,
@@ -28,65 +27,15 @@ import {
   type AnyPageModule,
   type TextInput,
 } from '../calculator/page-module.ts';
-import { fieldText, fillMessage, percentText } from '../calculator/present.ts';
+import { fillMessage } from '../calculator/present.ts';
 import { textsOf } from '../calculator/texts.ts';
-import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/concrete/shapes.ts';
+import { SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
-
-type Messages = Readonly<Record<string, string>>;
 
 const CATALOGS: Record<Locale, Messages> = {
   en: { ...enCommon, ...enConcrete, ...enSite },
   es: { ...esCommon, ...esConcrete, ...esSite },
-};
-
-/** The catalog key of the hint of the unit a plain number is read in (US system). */
-const HINTS: Readonly<Record<string, string>> = {
-  ft: 'site.calculator.hintFt',
-  in: 'site.calculator.hintIn',
-};
-
-const hintKeyOf = (unit: string): string => {
-  const key = HINTS[unit];
-  if (key === undefined) throw new Error(`no unit hint for ${unit}`);
-  return key;
-};
-
-/** The page is built from the default state of the engine, with no query and the US unit system. */
-const SYSTEM = 'imperial';
-
-/** An input of the calculator by key; the completeness tests keep the keys and the engine equal. */
-const inputOf = (key: string): InputDescriptor => {
-  const found = concrete.inputs.find((input) => input.key === key);
-  if (found === undefined) throw new Error(`concrete has no input ${key}`);
-  return found;
-};
-
-const optionsOf = (key: string): readonly string[] => {
-  const input = inputOf(key);
-  if (input.kind !== 'select') throw new Error(`${key} is not a select`);
-  return input.options;
-};
-
-const defaultOf = (key: string): string => {
-  const input = inputOf(key);
-  if (input.kind !== 'select') throw new Error(`${key} is not a select`);
-  return input.default;
-};
-
-/** The default text of a field, as the script restores it: the unit the field is read in. */
-const defaultText = (input: InputDescriptor): string => {
-  switch (input.kind) {
-    case 'length':
-      return fieldText(input.default, input, SYSTEM);
-    case 'count':
-      return String(input.default);
-    case 'percent':
-      return percentText(input.default);
-    default:
-      return '';
-  }
 };
 
 /** A page message by key, or the `PAGE_KEY` error that names the key the catalog lacks. */
@@ -94,8 +43,11 @@ const messageOf = (catalog: Messages, id: string, key: string): string =>
   catalog[key] ?? fail('PAGE_KEY', id, key);
 
 /** The catalog key of the hint of a length unit (`ft` is `site.calculator.hintFt`). */
-const unitHintKeyOf = (unit: string): string =>
+const hintKeyOf = (unit: string): string =>
   `site.calculator.hint${unit.charAt(0).toUpperCase()}${unit.slice(1)}`;
+
+/** The page is built from the default state of the engine, with no query and the US unit system. */
+const SYSTEM = 'imperial';
 
 /**
  * The form of a module, resolved from its definition and the catalog: the unit toggle, then the
@@ -131,7 +83,7 @@ export const formViewOf = (module: AnyPageModule, catalog: Messages): FormView =
       value: required(texts[key], key),
       mode: input.kind === 'count' ? 'numeric' : 'decimal',
       ...(input.kind === 'money' ? { placeholder: '0.00' } : {}),
-      ...(input.kind === 'length' ? { hint: text(unitHintKeyOf(input.defaultUnit)) } : {}),
+      ...(input.kind === 'length' ? { hint: text(hintKeyOf(input.defaultUnit)) } : {}),
       ...(help === undefined ? {} : { help }),
     };
   };
@@ -193,30 +145,7 @@ export const formViewOf = (module: AnyPageModule, catalog: Messages): FormView =
 /** Everything the concrete calculator page shows, resolved for `locale` from the engine and the catalogs. */
 export const concreteView = (locale: Locale): ConcretePageView => {
   const messages = CATALOGS[locale];
-  const text = (key: string): string => {
-    const message = messages[key];
-    if (message === undefined) throw new Error(`missing message ${key} for ${locale}`);
-    return message;
-  };
-  const label = (key: string) => text(`calc.concrete.inputs.${key}`);
-  const choices = (key: string): Choice[] =>
-    optionsOf(key).map((id) => ({
-      id,
-      label: text(`calc.concrete.options.${key}.${id}`),
-      pressed: id === defaultOf(key),
-    }));
-  const field = (key: string): Field => {
-    const input = inputOf(key);
-    const isCount = input.kind === 'count';
-    return {
-      key,
-      label: label(key),
-      value: defaultText(input),
-      mode: isCount ? 'numeric' : 'decimal',
-      ...(input.kind === 'money' ? { placeholder: '0.00' } : {}),
-      ...(input.kind === 'length' ? { hint: text(hintKeyOf(input.defaultUnit)) } : {}),
-    };
-  };
+  const text = (key: string): string => messageOf(messages, concrete.id, key);
 
   const raw = concrete.run({});
   const checked = concrete.validate({});
@@ -244,30 +173,7 @@ export const concreteView = (locale: Locale): ConcretePageView => {
     return { before: head, value, after: tail };
   };
 
-  const defaultShape = defaultOf('shape');
-  const form: ConcreteFormView = {
-    unitsLabel: text('site.calculator.unitsLabel'),
-    units: [
-      { id: 'imperial', label: text('site.calculator.unitsUs'), pressed: true },
-      { id: 'metric', label: text('site.calculator.unitsMetric'), pressed: false },
-    ],
-    shapeLabel: label('shape'),
-    shapes: choices('shape'),
-    fields: DIMENSION_ORDER.map((key) => {
-      const shapes = SHAPES.filter((shape) => SHAPE_FIELDS[shape].some((used) => used === key));
-      return { ...field(key), visible: shapes.some((shape) => shape === defaultShape) };
-    }),
-    waste: {
-      ...field('waste'),
-      help: text('calc.concrete.page.wasteHelp'),
-      less: text('calc.concrete.page.wasteLess'),
-      more: text('calc.concrete.page.wasteMore'),
-    },
-    bagLabel: label('bag'),
-    bags: choices('bag'),
-    prices: ['bagPrice', 'readyMixPrice'].map(field),
-    copyLabel: text('site.calculator.copyLink'),
-  };
+  const form = formViewOf(concretePage, messages);
 
   const output = (key: string) => text(`calc.concrete.outputs.${key}`);
   const result: ConcreteResultView = {

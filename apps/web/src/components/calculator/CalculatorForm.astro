@@ -1,13 +1,12 @@
 ---
+import { labelId } from '../../calculator/ids.ts';
 import CalculatorField from './CalculatorField.astro';
-import type { Choice, ConcreteFormView } from './model.ts';
+import type { Choice, FormView } from './model.ts';
 
 interface Props {
-  form: ConcreteFormView;
+  form: FormView;
 }
-const { form } = Astro.props;
-const { unitsLabel, units, shapeLabel, shapes, fields, waste, bagLabel, bags, prices, copyLabel } =
-  form;
+const { unitsLabel, units, items, copyLabel } = Astro.props.form;
 const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' : 'false');
 ---
 
@@ -28,71 +27,68 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       </button>
     ))}
   </div>
-  <div class="calc-group" role="group" aria-labelledby="calc-shape-label">
-    <span class="calc-legend" id="calc-shape-label">
-      {shapeLabel}
-    </span>
-    {shapes.map((choice) => (
-      <button
-        class="calc-choice"
-        type="button"
-        data-choice="shape"
-        data-value={choice.id}
-        aria-pressed={pressed(choice)}
-        disabled
-      >
-        {choice.label}
-      </button>
-    ))}
-  </div>
-  <div class="calc-choice-area" data-reserved="shape" style="--calc-rows:4">
-    {fields.map((field) => (
-      <CalculatorField {field} hidden={!field.visible} />
-    ))}
-  </div>
-  <CalculatorField field={waste} />
-  <div class="calc-steppers" data-reserved="steppers">
-    <button
-      class="calc-choice"
-      type="button"
-      data-step="waste"
-      data-direction="less"
-      hidden
-      disabled
-    >
-      {waste.less}
-    </button>
-    <button
-      class="calc-choice"
-      type="button"
-      data-step="waste"
-      data-direction="more"
-      hidden
-      disabled
-    >
-      {waste.more}
-    </button>
-  </div>
-  <div class="calc-group" role="group" aria-labelledby="calc-bag-label">
-    <span class="calc-legend" id="calc-bag-label">
-      {bagLabel}
-    </span>
-    {bags.map((choice) => (
-      <button
-        class="calc-choice"
-        type="button"
-        data-choice="bag"
-        data-value={choice.id}
-        aria-pressed={pressed(choice)}
-        disabled
-      >
-        {choice.label}
-      </button>
-    ))}
-  </div>
-  {prices.map((field) => (
-    <CalculatorField {field} />
-  ))}
+  {items.map((item) =>
+    item.kind === 'choice' ? (
+      <Fragment>
+        <div class="calc-group" role="group" aria-labelledby={labelId(item.key)}>
+          <span class="calc-legend" id={labelId(item.key)}>
+            {item.label}
+          </span>
+          {item.choices.map((choice) => (
+            <button
+              class="calc-choice"
+              type="button"
+              data-choice={item.key}
+              data-value={choice.id}
+              aria-pressed={pressed(choice)}
+              disabled
+            >
+              {choice.label}
+            </button>
+          ))}
+        </div>
+        {item.area !== undefined && (
+          <div
+            class="calc-choice-area"
+            data-reserved={item.key}
+            style={`--calc-rows:${String(item.area.rows)}`}
+          >
+            {item.area.fields.map((field) => (
+              <CalculatorField {field} hidden={!field.visible} />
+            ))}
+          </div>
+        )}
+      </Fragment>
+    ) : (
+      <Fragment>
+        <CalculatorField field={item.field} />
+        {item.stepper !== undefined && (
+          <div class="calc-steppers" data-reserved="steppers">
+            <button
+              class="calc-choice"
+              type="button"
+              data-step={item.stepper.key}
+              data-direction="less"
+              hidden
+              disabled
+            >
+              {item.stepper.less}
+            </button>
+            <button
+              class="calc-choice"
+              type="button"
+              data-step={item.stepper.key}
+              data-direction="more"
+              hidden
+              disabled
+            >
+              {item.stepper.more}
+            </button>
+          </div>
+        )}
+      </Fragment>
+    ),
+  )}
   <div class="calc-copy" data-reserved="copy">
     <button class="calc-choice" type="button" data-copy hidden disabled>
       {copyLabel}

@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
 import { concreteView } from '../../lib/page-view.ts';
 import CalculatorForm from './CalculatorForm.astro';
+import type { AreaField, FormView } from './model.ts';
 
 const render = (locale: 'en' | 'es') =>
   renderComponent(CalculatorForm, { form: concreteView(locale).form });
@@ -216,5 +217,101 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     expect(root.querySelector('.calc-help')?.text.trim()).toBe(
       enConcrete['calc.concrete.page.wasteHelp'],
     );
+  });
+
+  // spec: calculator-web-core › [CWC29] and calculator-page › [CP58]: the form view, not a constant, sets the rows
+  it('renders the reserved rows of the area the form view carries, five for a taller option', async () => {
+    const field = (key: string, visible: boolean): AreaField => ({
+      key,
+      label: key.toUpperCase(),
+      value: '1',
+      mode: 'numeric',
+      visible,
+    });
+    const form: FormView = {
+      unitsLabel: 'Units',
+      units: [{ id: 'imperial', label: 'US', pressed: true }],
+      items: [
+        {
+          kind: 'choice',
+          key: 'mode',
+          label: 'Mode',
+          choices: [
+            { id: 'small', label: 'Small', pressed: true },
+            { id: 'huge', label: 'Huge', pressed: false },
+          ],
+          area: {
+            rows: 5,
+            fields: [
+              field('a', true),
+              field('b', false),
+              field('c', false),
+              field('d', false),
+              field('e', false),
+            ],
+          },
+        },
+        {
+          kind: 'field',
+          field: { key: 'rate', label: 'Rate', value: '5', mode: 'decimal' },
+          stepper: { key: 'rate', less: 'Less', more: 'More' },
+        },
+        {
+          kind: 'choice',
+          key: 'other',
+          label: 'Other',
+          choices: [{ id: 'x', label: 'X', pressed: true }],
+        },
+      ],
+      copyLabel: 'Copy',
+    };
+    const root = await renderComponent(CalculatorForm, { form });
+    const area = root.querySelector('.calc-choice-area');
+    expect(area?.getAttribute('data-reserved')).toBe('mode');
+    expect(area?.getAttribute('style')).toBe('--calc-rows:5');
+    expect(
+      area
+        ?.querySelectorAll('.calc-field')
+        .map((row) => [
+          row.querySelector('input')?.getAttribute('name'),
+          row.hasAttribute('hidden'),
+        ]),
+    ).toEqual([
+      ['a', false],
+      ['b', true],
+      ['c', true],
+      ['d', true],
+      ['e', true],
+    ]);
+    // the item order of the view is the order of the markup: choice with its area, field with its stepper, choice
+    expect(
+      root
+        .querySelectorAll('[data-choice], [data-step], .calc-choice-area, input')
+        .map(
+          (el) =>
+            el.getAttribute('data-choice') ??
+            el.getAttribute('data-step') ??
+            el.getAttribute('name') ??
+            el.getAttribute('class'),
+        ),
+    ).toEqual([
+      'mode',
+      'mode',
+      'calc-choice-area',
+      'a',
+      'b',
+      'c',
+      'd',
+      'e',
+      'rate',
+      'rate',
+      'rate',
+      'other',
+    ]);
+    // a choice with no area and a field with no stepper render neither
+    expect(root.querySelectorAll('.calc-choice-area')).toHaveLength(1);
+    expect(root.querySelectorAll('.calc-steppers')).toHaveLength(1);
+    expect(root.querySelector('[data-choice="other"]')?.getAttribute('data-value')).toBe('x');
+    expect(root.querySelector('#calc-other-label')?.text.trim()).toBe('Other');
   });
 });
