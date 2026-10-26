@@ -257,15 +257,16 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(rem(declared('.calc-answer', 'min-height'))).toBeGreaterThanOrEqual(170);
   });
 
-  // The shape area is a grid with a gap, so its reserved height is four rows plus three gaps.
-  it('reserves the height of the tallest shape, four rows and three gaps, for the shape area', () => {
+  // The choice area is a grid with a gap; its reserved height is the row count of the page
+  // (`style="--calc-rows:N"`, one row without it) times a row, plus one gap fewer than the rows (m-6).
+  it('reserves the height of the tallest option, `--calc-rows` rows and the gaps between them, for the choice area', () => {
     const row = declared('.calc-field', 'min-height');
     expect(rem(row)).toBeGreaterThanOrEqual(96);
-    expect(declared('.calc-shape-area', 'display')).toBe('grid');
-    const gap = rules.get('.calc-shape-area')?.['gap'];
+    expect(declared('.calc-choice-area', 'display')).toBe('grid');
+    const gap = rules.get('.calc-choice-area')?.['gap'];
     expect(gap).toBe('var(--space-3)');
-    expect(declared('.calc-shape-area', 'min-height')).toBe(
-      `calc(4 * ${row} + 3 * ${resolve(gap)})`,
+    expect(declared('.calc-choice-area', 'min-height')).toBe(
+      `calc(var(--calc-rows, 1) * ${row} + (var(--calc-rows, 1) - 1) * ${resolve(gap)})`,
     );
   });
 

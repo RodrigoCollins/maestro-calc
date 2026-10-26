@@ -65,7 +65,7 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
         .map((el) => [el.getAttribute('data-shopping'), el.text]),
     ).toEqual([['bag-80', '74']]);
     expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe('Concrete mix, 80 lb bags');
-    expect(root.querySelector('[data-bag-yield]')?.text).toBe('About 0.60 cubic feet per bag');
+    expect(root.querySelector('[data-line-note="0"]')?.text).toBe('About 0.60 cubic feet per bag');
     for (const key of ['bagCost', 'readyMixCost']) {
       expect(root.querySelector(`[data-output="${key}"]`)?.closest('[hidden]'), key).not.toBeNull();
       const hint = root.querySelector(`[data-price-hint="${key}"]`);
@@ -93,7 +93,9 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
     expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe(
       'Mezcla de concreto, bolsas de 80 lb',
     );
-    expect(root.querySelector('[data-bag-yield]')?.text).toBe('Unos 0.60 pies cúbicos por bolsa');
+    expect(root.querySelector('[data-line-note="0"]')?.text).toBe(
+      'Unos 0.60 pies cúbicos por bolsa',
+    );
     expect(root.querySelector('[data-price-hint="bagCost"]')?.text).toBe(
       'Agrega tu precio para ver el costo',
     );
@@ -207,7 +209,7 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     ).toBe(true);
     expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
     expect(
-      root.querySelectorAll('[data-waste-step]').every((step) => step.hasAttribute('hidden')),
+      root.querySelectorAll('[data-step="waste"]').every((step) => step.hasAttribute('hidden')),
     ).toBe(true);
     expect(root.querySelectorAll('input[name]')).toHaveLength(15);
   });

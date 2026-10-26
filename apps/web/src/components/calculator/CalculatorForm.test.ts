@@ -14,7 +14,7 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
   it('holds each input once, in the order of the form, with only the slab visible', async () => {
     const root = await render('en');
     const rows = root
-      .querySelectorAll('.calc-shape-area .calc-field')
+      .querySelectorAll('.calc-choice-area .calc-field')
       .map((row) => [row.querySelector('input')?.getAttribute('name'), row.hasAttribute('hidden')]);
     expect(rows).toEqual([
       ['length', false],
@@ -32,6 +32,13 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     ]);
     const names = root.querySelectorAll('input').map((input) => input.getAttribute('name'));
     expect(new Set(names).size).toBe(names.length);
+  });
+
+  // spec: calculator-page › [CP14], [CP55]: the choice area reserves its rows through `--calc-rows`
+  it('renders the choice area with its reserved shape and four reserved rows', async () => {
+    const area = (await render('en')).querySelector('.calc-choice-area');
+    expect(area?.getAttribute('data-reserved')).toBe('shape');
+    expect(area?.getAttribute('style')).toBe('--calc-rows:4');
   });
 
   // spec: calculator-page › Form controls: the default text of each input
@@ -165,13 +172,13 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
       ['US (ft, in)', 'true'],
       ['Metric (m, cm)', 'false'],
     ]);
-    expect(pressed('[data-shape-button]')).toEqual([
+    expect(pressed('[data-choice="shape"]')).toEqual([
       ['Slab', 'true'],
       ['Footing', 'false'],
       ['Column', 'false'],
       ['Steps', 'false'],
     ]);
-    expect(pressed('[data-bag]')).toEqual([
+    expect(pressed('[data-choice="bag"]')).toEqual([
       ['40 lb', 'false'],
       ['60 lb', 'false'],
       ['80 lb', 'true'],
@@ -191,11 +198,13 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     expect(controls.length).toBeGreaterThan(20);
     expect(controls.every((control) => control.hasAttribute('disabled'))).toBe(true);
     expect(
-      root.querySelectorAll('[data-waste-step]').map((button) => button.hasAttribute('hidden')),
+      root.querySelectorAll('[data-step="waste"]').map((button) => button.hasAttribute('hidden')),
     ).toEqual([true, true]);
     expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
     expect(root.querySelector('[data-copy]')?.text.trim()).toBe('Copy link');
-    expect(root.querySelector('[data-waste-step="less"]')?.text.trim()).toBe('Less extra');
+    expect(root.querySelector('[data-step="waste"][data-direction="less"]')?.text.trim()).toBe(
+      'Less extra',
+    );
   });
 
   it('keeps the reserved areas of the form (shape area, copy status)', async () => {

@@ -36,7 +36,8 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       <button
         class="calc-choice"
         type="button"
-        data-shape-button={choice.id}
+        data-choice="shape"
+        data-value={choice.id}
         aria-pressed={pressed(choice)}
         disabled
       >
@@ -44,17 +45,31 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       </button>
     ))}
   </div>
-  <div class="calc-shape-area" data-reserved="shape">
+  <div class="calc-choice-area" data-reserved="shape" style="--calc-rows:4">
     {fields.map((field) => (
       <CalculatorField {field} hidden={!field.visible} />
     ))}
   </div>
   <CalculatorField field={waste} />
   <div class="calc-steppers" data-reserved="steppers">
-    <button class="calc-choice" type="button" data-waste-step="less" hidden disabled>
+    <button
+      class="calc-choice"
+      type="button"
+      data-step="waste"
+      data-direction="less"
+      hidden
+      disabled
+    >
       {waste.less}
     </button>
-    <button class="calc-choice" type="button" data-waste-step="more" hidden disabled>
+    <button
+      class="calc-choice"
+      type="button"
+      data-step="waste"
+      data-direction="more"
+      hidden
+      disabled
+    >
       {waste.more}
     </button>
   </div>
@@ -66,7 +81,8 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       <button
         class="calc-choice"
         type="button"
-        data-bag={choice.id}
+        data-choice="bag"
+        data-value={choice.id}
         aria-pressed={pressed(choice)}
         disabled
       >

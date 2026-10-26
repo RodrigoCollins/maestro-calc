@@ -67,11 +67,12 @@
   opacity: 0.6;
 }
 
-/* The tallest shape has four rows; every shape reserves that block, rows and gaps (CP14). */
-.calc-shape-area {
+/* The tallest option has `--calc-rows` rows (one without the attribute); every option reserves
+   that block, rows and gaps (CP14). */
+.calc-choice-area {
   display: grid;
   gap: var(--space-3);
-  min-height: calc(4 * 6rem + 3 * var(--space-3));
+  min-height: calc(var(--calc-rows, 1) * 6rem + (var(--calc-rows, 1) - 1) * var(--space-3));
 }
 
 .calc-field {
