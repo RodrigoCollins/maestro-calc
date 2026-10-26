@@ -100,7 +100,7 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     expect(outputText(output('bagCost'), usd(481))).toBe('$481.00');
   });
 
-  it('fails loudly for a fraction display, which no calculator asks for yet', () => {
+  it('fails loudly for a fraction hint, which no calculator asks for yet', () => {
     const hinted: OutputDescriptor = {
       key: 'len',
       measure: 'length',
@@ -108,13 +108,13 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
       display: { unit: 'in', format: 'fraction', denominator: 8 },
     };
     expect(() => outputText(hinted, quantity(Rational.of(25, 2), inch))).toThrow(
-      'len asks for a fraction display',
+      'len has no decimal hint',
     );
   });
 
   it('throws for a quantity with no display hint and for an unknown unit', () => {
     const bare: OutputDescriptor = { key: 'len', measure: 'length', role: 'secondary' };
-    expect(() => outputText(bare, quantity(1, inch))).toThrow('len has no display hint');
+    expect(() => outputText(bare, quantity(1, inch))).toThrow('len has no decimal hint');
     const unknown: OutputDescriptor = {
       key: 'len',
       measure: 'length',

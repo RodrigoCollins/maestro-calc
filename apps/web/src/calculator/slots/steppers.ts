@@ -1,10 +1,5 @@
 import { Rational } from '@maestro-calc/core';
-import {
-  PageModuleError,
-  type AnyCalculator,
-  type PercentKey,
-  type StepperSlot,
-} from '../page-module.ts';
+import { fail, type AnyCalculator, type PercentKey, type StepperSlot } from '../page-module.ts';
 
 /**
  * A stepper on each percent input it is given a step for. The bounds are the descriptor's, never
@@ -24,7 +19,7 @@ export function stepperSlot(
     if (step === undefined) continue;
     const input = calculator.inputs.find((found) => found.key === key);
     if (input?.kind !== 'percent' || input.min === undefined || input.max === undefined) {
-      throw new PageModuleError('STEPPER_BOUNDS', { cause: { id: calculator.id, key } });
+      return fail('STEPPER_BOUNDS', calculator.id, key);
     }
     ranges.set(key, { min: input.min, max: input.max, step });
   }

@@ -89,8 +89,8 @@ describe('texts from the definition (calculator-web-core › Generic controller 
   it.each([
     ['a length that is not a quantity', input('length'), 'x'],
     ['a count that is not a number', input('count'), 'x'],
-    ['a percent that is not a rational', input('waste'), 1],
     ['a price that is not money', input('bagPrice'), 'x'],
+    ['a quantity for a count', input('count'), quantity(1, inch)],
     ['a select', input('shape'), 'slab'],
     ['a boolean', mixedCalculator.inputs[4], true],
   ])('refuses to write %s', (_what, subject, value) => {

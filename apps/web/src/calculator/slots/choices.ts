@@ -1,6 +1,6 @@
 import {
+  fail,
   isTextInput,
-  PageModuleError,
   type AnyCalculator,
   type ChoiceGroup,
   type ChoiceSlot,
@@ -28,17 +28,13 @@ export function choiceSlot(
   }[],
 ): ChoiceSlot<AnyCalculator> {
   const textKeys = new Set(calculator.inputs.filter(isTextInput).map(({ key }) => key));
-  const fail = (select: string, key?: string): never => {
-    const cause =
-      key === undefined ? { id: calculator.id, select } : { id: calculator.id, select, key };
-    throw new PageModuleError('CHOICE_OPTIONS', { cause });
-  };
+  const refuse = (at: string): never => fail('CHOICE_OPTIONS', calculator.id, at);
   const groupOf = ({ select, shows }: (typeof groups)[number]): ChoiceGroup<AnyCalculator> => {
     const input = calculator.inputs.find((found) => found.key === select);
-    if (input?.kind !== 'select') return fail(select);
-    const sets = input.options.map((option) => shows[option] ?? fail(select));
+    if (input?.kind !== 'select') return refuse(select);
+    const sets = input.options.map((option) => shows[option] ?? refuse(select));
     const used = new Set(sets.flat());
-    for (const key of used) if (!textKeys.has(key)) fail(select, key);
+    for (const key of used) if (!textKeys.has(key)) refuse(key);
     return {
       select,
       driven: calculator.inputs.map(({ key }) => key).filter((key) => used.has(key)),
