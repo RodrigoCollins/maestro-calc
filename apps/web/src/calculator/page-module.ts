@@ -132,6 +132,7 @@ export type PageModuleCode =
   | 'COST_KINDS'
   | 'SHOPPING_LINES'
   | 'ANSWER_SELECT'
+  | 'OUTPUT_HINT'
   | 'FORM_ORDER'
   | 'PAGE_KEY';
 

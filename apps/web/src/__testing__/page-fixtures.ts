@@ -1,4 +1,11 @@
-import { defineCalculator, inch, quantity, Rational, usd } from '@maestro-calc/core';
+import {
+  defineCalculator,
+  inch,
+  quantity,
+  Rational,
+  usd,
+  type OutputDescriptor,
+} from '@maestro-calc/core';
 import { PageModuleError } from '../calculator/page-module.ts';
 
 /*
@@ -144,3 +151,32 @@ export const moneyCalculator = defineCalculator({
   outputs: [{ key: 'cost', measure: 'money', role: 'primary' }],
   compute: () => ({ outputs: { cost: usd(5) }, shopping: [], warnings: [] }),
 });
+
+/** A calculator with a primary `span` and a secondary `edge`, both lengths, with the given hints. */
+export const hintedCalculator = (hints: {
+  readonly span?: OutputDescriptor['display'];
+  readonly edge?: OutputDescriptor['display'];
+}) =>
+  defineCalculator({
+    id: 'hinted-fixture',
+    inputs: [count('qty', 'c1')],
+    outputs: [
+      {
+        key: 'span',
+        measure: 'length',
+        role: 'primary',
+        ...(hints.span && { display: hints.span }),
+      },
+      {
+        key: 'edge',
+        measure: 'length',
+        role: 'secondary',
+        ...(hints.edge && { display: hints.edge }),
+      },
+    ],
+    compute: () => ({
+      outputs: { span: quantity(12, inch), edge: quantity(6, inch) },
+      shopping: [],
+      warnings: [],
+    }),
+  });
