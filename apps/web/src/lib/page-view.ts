@@ -157,12 +157,26 @@ const formViewAt = (
 export const formViewOf = (module: AnyPageModule, catalog: Messages): FormView =>
   formViewAt(module, catalog, defaultMomentOf(module));
 
-/** `before<value>after` around the first placeholder the fills name; plain text when none occurs. */
-const fillSplitOf = (template: string, fills: Readonly<Record<string, string>>): FillSplit => {
-  const name = Object.keys(fills).find((key) => template.includes(`{${key}}`));
+/**
+ * `before<value>after` around the one placeholder of the page text `suffix` that the fills name;
+ * plain text when none occurs. A text that carries a second placeholder (another fill, or the same
+ * one again) would render it as literal `{name}` text with no `data-fill` element, so it throws
+ * `SHOPPING_LINES` naming the page-key suffix.
+ */
+const fillSplitOf = (
+  id: string,
+  suffix: string,
+  template: string,
+  fills: Readonly<Record<string, string>>,
+): FillSplit => {
+  const names = Object.keys(fills);
+  const name = names.find((key) => template.includes(`{${key}}`));
   if (name === undefined) return { before: template, value: '', after: '' };
-  const [before = '', after = ''] = template.split(`{${name}}`);
-  return { name, before, value: required(fills[name], name), after };
+  const [before = '', after = '', ...again] = template.split(`{${name}}`);
+  const leftover = `${before}${after}`;
+  return again.length > 0 || names.some((key) => leftover.includes(`{${key}}`))
+    ? fail('SHOPPING_LINES', id, suffix)
+    : { name, before, value: required(fills[name], name), after };
 };
 
 /** The result panel of a module at `moment`, the default state (see `resultViewOf`). */
@@ -209,8 +223,8 @@ const resultViewAt = (
             return {
               unit,
               qty,
-              label: fillSplitOf(page(label), fills),
-              ...(note === undefined ? {} : { note: fillSplitOf(page(note), fills) }),
+              label: fillSplitOf(id, label, page(label), fills),
+              ...(note === undefined ? {} : { note: fillSplitOf(id, note, page(note), fills) }),
             };
           }),
     costs:

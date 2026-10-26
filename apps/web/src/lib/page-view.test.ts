@@ -500,6 +500,63 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
     ]);
   });
 
+  const twoFills = definePage({
+    calculator: shoppingCalculator,
+    shopping: shoppingSlot(shoppingCalculator, [
+      {
+        material: 'alpha',
+        label: 'alphaLine',
+        note: 'alphaNote',
+        parts: () => ({ unit: 'box-a', fills: { n: '5', m: '12' } }),
+      },
+      { material: 'beta', label: 'betaLine', parts: () => ({ unit: 'bag-b', fills: {} }) },
+    ]),
+  });
+  const twoFillsCatalog = (texts: Readonly<Record<string, string>>) =>
+    catalogOf(() => false, {
+      'calc.shopping-fixture.page.alphaLine': 'Boxes of {n}',
+      'calc.shopping-fixture.page.alphaNote': 'Holds {n} pieces',
+      'calc.shopping-fixture.page.betaLine': 'Bags',
+      ...texts,
+    });
+
+  // a text is split around one placeholder; the fills may differ between the label and the note
+  it('splits a label and a note that each carry one of two fills, with text on both sides', () => {
+    const catalog = twoFillsCatalog({
+      'calc.shopping-fixture.page.alphaLine': 'Boxes of {n} pieces',
+      'calc.shopping-fixture.page.alphaNote': 'About {m} lb each',
+    });
+    expect(resultViewOf(twoFills, 'en', catalog).shopping[0]).toEqual({
+      unit: 'box-a',
+      qty: '1,234',
+      label: { name: 'n', before: 'Boxes of ', value: '5', after: ' pieces' },
+      note: { name: 'm', before: 'About ', value: '12', after: ' lb each' },
+    });
+  });
+
+  // a second placeholder would render as literal `{name}` text with no `data-fill` element
+  it.each([
+    [
+      'two fills in the label',
+      'alphaLine',
+      { 'calc.shopping-fixture.page.alphaLine': 'Boxes of {n}, {m} lb' },
+    ],
+    [
+      'the same fill twice in the label',
+      'alphaLine',
+      { 'calc.shopping-fixture.page.alphaLine': '{n} boxes of {n}' },
+    ],
+    [
+      'two fills in the note',
+      'alphaNote',
+      { 'calc.shopping-fixture.page.alphaNote': 'Holds {n} of {m}' },
+    ],
+  ] as const)('refuses a text with %s, naming the page key', (_what, suffix, texts) => {
+    const error = pageModuleErrorOf(() => resultViewOf(twoFills, 'en', twoFillsCatalog(texts)));
+    expect(error.code).toBe('SHOPPING_LINES');
+    expect(error.cause).toEqual({ id: 'shopping-fixture', at: suffix });
+  });
+
   // spec: calculator-page › [CP16] the cost rows with their hint and the note under them
   it('gives the cost rows a hint and the note of the slot, hidden while the price is zero', () => {
     const { costs, costsNote } = resultViewOf(concretePage, 'en', enCatalog);
