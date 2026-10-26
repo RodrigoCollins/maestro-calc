@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES, type OutputDescriptor, type UnitSystem } from '@maestro-calc/core';
+import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import type {
   AreaField,
@@ -15,6 +15,8 @@ import { formOf } from '../calculator/form-layout.ts';
 import {
   fail,
   isTextInput,
+  primaryOutputOf,
+  sentenceNameOf,
   type AnyCalculator,
   type AnyPageModule,
   type Ready,
@@ -145,15 +147,6 @@ const defaultMomentOf = (module: AnyPageModule): Ready<AnyCalculator> => {
   };
 };
 
-/** The output the large figure shows for a unit system: the module's choice, else the one with the primary role. */
-const primaryOutputOf = (module: AnyPageModule, system: UnitSystem): OutputDescriptor =>
-  required(
-    module.calculator.outputs.find(({ key, role }) =>
-      module.primary === undefined ? role === 'primary' : key === module.primary[system],
-    ),
-    'primary output',
-  );
-
 /** `before<value>after` around the first placeholder the fills name; plain text when none occurs. */
 const fillSplitOf = (template: string, fills: Readonly<Record<string, string>>): FillSplit => {
   const name = Object.keys(fills).find((key) => template.includes(`{${key}}`));
@@ -259,11 +252,9 @@ const messagesOf = (
   ]);
   const primaries = new Map(
     UNIT_SYSTEMS.flatMap((system) => {
-      const { key, measure, display } = primaryOutputOf(module, system);
-      const sentence = catalog[`calc.${id}.page.${key}`];
-      return sentence === undefined
-        ? []
-        : [[display === undefined ? measure : `${measure}.${display.unit}`, sentence] as const];
+      const output = primaryOutputOf(module, system);
+      const sentence = catalog[`calc.${id}.page.${output.key}`];
+      return sentence === undefined ? [] : [[sentenceNameOf(output), sentence] as const];
     }),
   );
   return [

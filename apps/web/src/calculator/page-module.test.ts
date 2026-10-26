@@ -1,9 +1,16 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import type { ShoppingLine } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { pageModuleErrorOf } from '../__testing__/page-fixtures.ts';
+import { hintedCalculator, pageModuleErrorOf } from '../__testing__/page-fixtures.ts';
 import { concrete } from '../lib/concrete.ts';
-import { definePage, PageModuleError, shoppingLinesOf } from './page-module.ts';
+import {
+  definePage,
+  PageModuleError,
+  primaryOutputOf,
+  sentenceNameOf,
+  shoppingLinesOf,
+  type AnyPageModule,
+} from './page-module.ts';
 
 const line = (materialId: string, purchaseUnit = 'bag-80', qty = 1n): ShoppingLine => ({
   materialId,
@@ -71,5 +78,40 @@ describe('shoppingLinesOf (calculator-web-core › [CWC3])', () => {
     );
     expect(error.code).toBe('SHOPPING_LINES');
     expect(error.cause).toEqual({ id: 'x' });
+  });
+});
+
+describe('primaryOutputOf and sentenceNameOf (calculator-web-core › Page-module contract: primary output)', () => {
+  const inch = { unit: 'in', format: 'decimal', places: 2 } as const;
+  const calculator = hintedCalculator({ edge: inch });
+
+  it('takes the output the module names for each unit system', () => {
+    const module = definePage({ calculator, primary: { imperial: 'span', metric: 'edge' } });
+    expect(primaryOutputOf(module, 'imperial').key).toBe('span');
+    expect(primaryOutputOf(module, 'metric').key).toBe('edge');
+  });
+
+  it('falls back to the output with the primary role when the module names none', () => {
+    const module = definePage({ calculator });
+    expect(primaryOutputOf(module, 'imperial').key).toBe('span');
+    expect(primaryOutputOf(module, 'metric').key).toBe('span');
+  });
+
+  it('fails for a unit system whose named output the calculator lacks', () => {
+    const drifted: AnyPageModule = {
+      id: calculator.id,
+      calculator,
+      primary: { imperial: 'span', metric: 'nope' },
+    };
+    expect(primaryOutputOf(drifted, 'imperial').key).toBe('span');
+    expect(() => primaryOutputOf(drifted, 'metric')).toThrow(
+      new TypeError('missing primary output'),
+    );
+  });
+
+  it('names the sentence by the measure, with the display unit when the output has one', () => {
+    const [span, edge] = calculator.outputs;
+    expect(sentenceNameOf(span)).toBe('length');
+    expect(sentenceNameOf(edge)).toBe('length.in');
   });
 });

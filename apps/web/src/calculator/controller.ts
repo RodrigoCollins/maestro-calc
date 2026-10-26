@@ -12,6 +12,8 @@ import { errorId, helpId, hintId } from './ids.ts';
 import {
   fail,
   optionOf,
+  primaryOutputOf,
+  sentenceNameOf,
   shoppingLinesOf,
   type AnyCalculator,
   type AnyPageModule,
@@ -173,13 +175,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   const figured = calculator.outputs.filter(
     ({ display, measure }) => display !== undefined || measure === 'money',
   );
-  const primaryOf = (system: UnitSystem) =>
-    required(
-      calculator.outputs.find(({ key, role }) =>
-        module.primary === undefined ? role === 'primary' : key === module.primary[system],
-      ),
-      'primary output',
-    );
+  const primaryOf = (system: UnitSystem) => primaryOutputOf(module, system);
 
   // every figure the panel shows must be writable, so a bad hint fails here and not at `start`
   const figuredKeys = new Set(figured.map(({ key }) => key));
@@ -290,8 +286,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   const panelOf = (env: Environment, moment: Moment<Calc>) => {
     const { system, valid, result } = moment;
     const output = primaryOf(system);
-    const name =
-      output.display === undefined ? output.measure : `${output.measure}.${output.display.unit}`;
+    const name = sentenceNameOf(output);
     const [before = '', after = ''] = message(env, name).split('{value}');
     const figures = Object.fromEntries(
       figured.map((descriptor) => [

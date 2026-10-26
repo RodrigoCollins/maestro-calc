@@ -11,6 +11,7 @@ import {
   choiceCalculator,
   fieldsOf,
   formCalculator,
+  hintedCalculator,
   lengthCalculator,
   lengthsCalculator,
   moneyCalculator,
@@ -18,7 +19,13 @@ import {
   shoppingCalculator,
 } from '../__testing__/page-fixtures.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
-import { definePage } from '../calculator/page-module.ts';
+import { controllerOf, type Environment, type Messages } from '../calculator/controller.ts';
+import {
+  definePage,
+  primaryOutputOf,
+  sentenceNameOf,
+  type AnyPageModule,
+} from '../calculator/page-module.ts';
 import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { choiceSlot } from '../calculator/slots/choices.ts';
 import { costSlot } from '../calculator/slots/costs.ts';
@@ -715,4 +722,57 @@ describe('pageViewOf guards (calculator-web-core › Page-view builder)', () => 
     expect(error.code).toBe('PAGE_KEY');
     expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.outputs.volumeYd3' });
   });
+});
+
+describe('the primary sentence protocol (the builder writes what the controller reads)', () => {
+  const ft = { unit: 'ft', format: 'decimal', places: 2 } as const;
+  const inch = { unit: 'in', format: 'decimal', places: 2 } as const;
+  const env = (messages: Readonly<Record<string, string>>): Environment => ({
+    messages,
+    origin: 'https://example.test',
+    path: '/fixture',
+    switchPath: '/otro',
+    helps: new Set(),
+  });
+  const pages: readonly (readonly [string, AnyPageModule, Messages])[] = [
+    ['concrete, English', concretePage, { ...enCommon, ...enConcrete, ...enSite }],
+    ['concrete, Spanish', concretePage, { ...esCommon, ...esConcrete, ...esSite }],
+    [
+      'a hinted primary per unit system',
+      definePage({
+        calculator: hintedCalculator({ span: ft, edge: inch }),
+        primary: { imperial: 'span', metric: 'edge' },
+      }),
+      catalogOf(() => false, {
+        'calc.hinted-fixture.page.span': 'Span {value} feet',
+        'calc.hinted-fixture.page.edge': 'Edge {value} inches',
+      }),
+    ],
+    [
+      'a primary with no hint',
+      definePage({ calculator: moneyCalculator }),
+      catalogOf(() => false, { 'calc.money-fixture.page.cost': 'Total {value} dollars' }),
+    ],
+  ];
+
+  // one rule, two readers: the name the builder gives a sentence is the name the controller looks up
+  it.each(pages)(
+    'gives the controller the sentence the builder wrote for each unit system: %s',
+    (_what, module, catalog) => {
+      const messages = Object.fromEntries(pageViewOf(module, 'en', catalog).messages);
+      const controller = controllerOf(module);
+      for (const system of ['imperial', 'metric'] as const) {
+        const output = primaryOutputOf(module, system);
+        const sentence = catalog[`calc.${module.id}.page.${output.key}`] ?? '{value}';
+        expect(messages[sentenceNameOf(output)] ?? '{value}').toBe(sentence);
+        const start = controller.start(env(messages), '');
+        const { view } = controller.applyEvent(env(messages), start.state, {
+          type: 'units',
+          system,
+        });
+        const [before = '', after = ''] = sentence.split('{value}');
+        expect([view.panel.primary.before, view.panel.primary.after]).toEqual([before, after]);
+      }
+    },
+  );
 });
