@@ -67,14 +67,11 @@
   opacity: 0.6;
 }
 
-/* The tallest shape has four rows; every shape reserves that block (CP14). */
+/* The tallest shape has four rows; every shape reserves that block, rows and gaps (CP14). */
 .calc-shape-area {
-  min-height: calc(4 * 6rem + 3 * var(--space-3));
-}
-
-.calc-fields {
   display: grid;
   gap: var(--space-3);
+  min-height: calc(4 * 6rem + 3 * var(--space-3));
 }
 
 .calc-field {
@@ -98,7 +95,7 @@
 }
 
 .calc-field input[aria-invalid='true'] {
-  border-color: var(--color-link);
+  border-color: var(--color-error);
 }
 
 .calc-help {
