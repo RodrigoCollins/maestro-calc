@@ -9,9 +9,9 @@ import {
 } from '@maestro-calc/core';
 import type { concrete } from '../../lib/concrete.ts';
 import type { Moment, Ready } from '../page-module.ts';
+import { SHAPE_FIELDS } from './shapes.ts';
 import {
   DASH,
-  fillMessage,
   groupedInteger,
   moneyText,
   percentText,
@@ -32,8 +32,6 @@ export type ConcreteResult = Extract<RunOutcome, { readonly ok: true }>['value']
 
 /** The bag yields by purchase unit id (`bag-<pounds>`). */
 export type Yields = Readonly<Record<string, Quantity<'volume'>>>;
-
-type Length = Quantity<'length'>;
 
 const VOLUME_UNITS = { volumeYd3: yd3, volumeFt3: ft3, volumeM3: m3, netVolume: ft3 } as const;
 
@@ -118,90 +116,36 @@ export const figuresOf = (
   };
 };
 
-/** The sentence templates the volume text is built from: `{value} cubic yards` and `{value} cubic meters`. */
-export interface VolumeTemplates {
-  readonly volumeYd3: string;
-  readonly volumeM3: string;
-}
-
-/**
- * The placeholder values of the short answer of the state's shape (i18n-catalog ICW13): the
- * dimensions of that shape as `dimensionText`, the volume as the primary sentence (`1.63 cubic
- * yards` in the US system, `1.25 cubic meters` in the metric one), the extra, the bag size and the
- * bags.
- */
-const valuesOf = (
-  state: ConcreteState,
-  result: ConcreteResult,
-  system: UnitSystem,
-  volume: string,
-): Record<string, string> => {
-  const text = (length: Length) => dimensionText(length, system);
-  const common = {
-    volume,
-    waste: percentText(state.waste),
-    bagLb: state.bag,
-    bags: groupedInteger(bagsOf(result)),
-  };
-  switch (state.shape) {
-    case 'slab':
-      return {
-        length: text(state.length),
-        width: text(state.width),
-        thickness: text(state.thickness),
-        ...common,
-      };
-    case 'footing':
-      return {
-        count: String(state.count),
-        length: text(state.length),
-        width: text(state.footingWidth),
-        depth: text(state.footingDepth),
-        ...common,
-      };
-    case 'column':
-      return {
-        count: String(state.count),
-        diameter: text(state.diameter),
-        height: text(state.height),
-        ...common,
-      };
-    case 'steps':
-      return {
-        stepCount: String(state.stepCount),
-        stepWidth: text(state.stepWidth),
-        rise: text(state.rise),
-        run: text(state.run),
-        ...common,
-      };
-  }
+/** The placeholder of a footing field in the answer sentence, where it is not the key itself (ICW13). */
+const PLACEHOLDERS: Readonly<Record<string, string>> = {
+  footingWidth: 'width',
+  footingDepth: 'depth',
 };
 
-/** The answer values of the answer slot: the moment of the page and the primary text it shows. */
+/**
+ * The placeholder values of the short answer of the state's shape (i18n-catalog ICW13): the fields
+ * of that shape (a length as `dimensionText`, a count as it is), the volume as the primary
+ * sentence (`1.63 cubic yards` in the US system, `1.25 cubic meters` in the metric one), the extra,
+ * the bag size and the bags.
+ */
 export const answerValues = (
-  moment: Ready<typeof concrete>,
+  { valid, result, system }: Ready<typeof concrete>,
   primary: string,
-): Record<string, string> => valuesOf(moment.valid, moment.result, moment.system, primary);
-
-/** The same values from a state and its templates, until the controller reads the answer slot (S5). */
-export const answerValuesOf = (
-  state: ConcreteState,
-  result: ConcreteResult,
-  system: UnitSystem,
-  templates: VolumeTemplates,
-): Record<string, string> =>
-  valuesOf(
-    state,
-    result,
-    system,
-    system === 'imperial'
-      ? fillMessage(templates.volumeYd3, {
-          value: volumeText(volumeOutput(result, 'volumeYd3'), yd3),
-        })
-      : fillMessage(templates.volumeM3, {
-          value: volumeText(volumeOutput(result, 'volumeM3'), m3),
-        }),
-  );
+): Record<string, string> => ({
+  ...Object.fromEntries(
+    SHAPE_FIELDS[valid.shape].map((key) => {
+      const value = valid[key];
+      return [
+        PLACEHOLDERS[key] ?? key,
+        isQuantity(value) ? dimensionText(value, system) : String(value),
+      ];
+    }),
+  ),
+  volume: primary,
+  waste: percentText(valid.waste),
+  bagLb: valid.bag,
+  bags: groupedInteger(bagsOf(result)),
+});
 
 /**
  * The placeholders of the bag line: the pounds of the pressed bag (they follow the choice even

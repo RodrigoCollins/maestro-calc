@@ -7,17 +7,25 @@ import { concreteView } from '../../lib/concrete-page.ts';
 import { err, Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
 import {
-  applyEvent,
+  controllerOf,
   copyAddress,
   copyOutcome,
   mustBeOk,
   required,
-  start,
   type Environment,
   type Messages,
-  type Output,
-  type UiEvent,
+  type Output as ControllerOutput,
+  type UiEvent as ControllerEvent,
 } from '../controller.ts';
+import { concretePage } from './page.ts';
+
+type Output = ControllerOutput<typeof concrete>;
+type UiEvent = ControllerEvent<typeof concrete>;
+
+const controller = controllerOf(concretePage);
+const start = (env: Environment, search: string): Output => controller.start(env, search);
+const applyEvent = (env: Environment, state: Output['state'], event: UiEvent): Output =>
+  controller.applyEvent(env, state, event);
 
 // The engine is called through a spy that still computes, so the raw record can be read (CWC6).
 vi.mock('../../lib/concrete.ts', async (importOriginal) => {
@@ -78,25 +86,25 @@ const type = (key: Extract<UiEvent, { type: 'text' }>['key'], text: string): UiE
   key,
   text,
 });
-const shape = (id: string): UiEvent => ({ type: 'shape', shape: id });
-const bag = (id: string): UiEvent => ({ type: 'bag', bag: id });
+const shape = (id: string): UiEvent => ({ type: 'choice', select: 'shape', option: id });
+const bag = (id: string): UiEvent => ({ type: 'choice', select: 'bag', option: id });
 const units = (system: 'imperial' | 'metric'): UiEvent => ({ type: 'units', system });
-const waste = (direction: 'less' | 'more'): UiEvent => ({ type: 'waste', direction });
+const waste = (direction: 'less' | 'more'): UiEvent => ({ type: 'step', key: 'waste', direction });
 
 /** The figures of the panel as the page shows them: yd3, ft3, m3, net, bags. */
 const figures = ({ view }: Output) => [
-  view.panel.volumes.volumeYd3,
-  view.panel.volumes.volumeFt3,
-  view.panel.volumes.volumeM3,
-  view.panel.netVolume,
-  view.panel.bags,
+  view.panel.figures.volumeYd3,
+  view.panel.figures.volumeFt3,
+  view.panel.figures.volumeM3,
+  view.panel.figures.netVolume,
+  view.panel.shopping[0]?.qty,
 ];
 
 describe('controller: load (calculator-page › URL state, [CP25], [CP29])', () => {
   // spec: calculator-page › the default page equals the build-time render
   it('starts from the defaults with no notice and no write', () => {
     const out = last('');
-    expect(out.view.shape).toBe('slab');
+    expect(out.view.choices.shape).toBe('slab');
     expect(out.view.answer).toBe(
       'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
     );
@@ -112,7 +120,7 @@ describe('controller: load (calculator-page › URL state, [CP25], [CP29])', () 
   // spec: calculator-page › [CP25] restore from a shared link
   it('restores a footing from its link', () => {
     const out = last('?v=1&sh=footing&l=216&n=3');
-    expect(out.view.shape).toBe('footing');
+    expect(out.view.choices.shape).toBe('footing');
     expect(out.view.fields.length.text).toBe('18 ft');
     expect(out.view.fields.count.text).toBe('3');
     expect(figures(out)).toEqual(['1.96', '52.80', '1.50', '48.00', '88']);
@@ -173,8 +181,8 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
   ] as const)('shows the %s defaults', (id, expected, start_) => {
     const out = last('', [shape(id)]);
     expect(figures(out)).toEqual(expected);
-    expect(out.view.answer.startsWith(start_)).toBe(true);
-    expect(out.view.shape).toBe(id);
+    expect(out.view.answer?.startsWith(start_)).toBe(true);
+    expect(out.view.choices.shape).toBe(id);
   });
 
   // spec: calculator-page › [CP21] bag size
@@ -182,12 +190,12 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
     const sixty = last('', [bag('60')]);
     const forty = last('', [bag('60'), bag('40')]);
     expect(figures(sixty)).toEqual(['1.63', '44.00', '1.25', '40.00', '98']);
-    expect(sixty.view.panel.bagYield).toBe('0.45');
-    expect(sixty.view.panel.bagLb).toBe('60');
-    expect(sixty.view.answer.endsWith('Bags of 60 lb: 98.')).toBe(true);
+    expect(sixty.view.panel.shopping[0]?.fills['yield']).toBe('0.45');
+    expect(sixty.view.panel.shopping[0]?.fills['bagLb']).toBe('60');
+    expect(sixty.view.answer?.endsWith('Bags of 60 lb: 98.')).toBe(true);
     expect(figures(forty)).toEqual(['1.63', '44.00', '1.25', '40.00', '147']);
-    expect(forty.view.panel.bagYield).toBe('0.30');
-    expect(forty.view.answer.endsWith('Bags of 40 lb: 147.')).toBe(true);
+    expect(forty.view.panel.shopping[0]?.fills['yield']).toBe('0.30');
+    expect(forty.view.answer?.endsWith('Bags of 40 lb: 147.')).toBe(true);
   });
 
   // spec: calculator-page › [CP22] waste field and steppers
@@ -232,18 +240,18 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
   // spec: calculator-page › [CP16], [CP18] costs
   it('shows the bag cost with a bag price and the ready-mix cost with its price', () => {
     const priced = last('', [type('bagPrice', '6.50')]);
-    expect(priced.view.panel.bagCost).toBe('$481.00');
-    expect(priced.view.panel.bagCostVisible).toBe(true);
-    expect(priced.view.panel.readyMixCostVisible).toBe(false);
+    expect(priced.view.panel.figures.bagCost).toBe('$481.00');
+    expect(priced.view.panel.costs.bagCost).toBe(true);
+    expect(priced.view.panel.costs.readyMixCost).toBe(false);
     const both = last('', [type('bagPrice', '6.50'), type('readyMixPrice', '150')]);
-    expect(both.view.panel.readyMixCost).toBe('$244.44');
-    expect(both.view.panel.readyMixCostVisible).toBe(true);
+    expect(both.view.panel.figures.readyMixCost).toBe('$244.44');
+    expect(both.view.panel.costs.readyMixCost).toBe(true);
   });
 
   it('does not round the ready-mix volume to a truck increment', () => {
     const out = last('', [type('length', '20'), type('readyMixPrice', '150')]);
-    expect(out.view.panel.volumes.volumeYd3).toBe('2.72');
-    expect(out.view.panel.readyMixCost).toBe('$407.41');
+    expect(out.view.panel.figures.volumeYd3).toBe('2.72');
+    expect(out.view.panel.figures.readyMixCost).toBe('$407.41');
   });
 
   // spec: calculator-page › DR-11: an empty price is an explicit undefined that overrides the last valid state
@@ -251,8 +259,8 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
     const typed = last('', [type('bagPrice', '6.50')]);
     const cleared = last('', [type('bagPrice', '6.50'), type('bagPrice', '')]);
     expect(typed.write).toBe('?v=1&bp=13/2');
-    expect(cleared.view.panel.bagCostVisible).toBe(false);
-    expect(cleared.view.panel.bagCost).toBe('$0.00');
+    expect(cleared.view.panel.costs.bagCost).toBe(false);
+    expect(cleared.view.panel.figures.bagCost).toBe('$0.00');
     expect(cleared.write).toBe('?v=1');
     expect(cleared.view.fields.bagPrice.invalid).toBe(false);
   });
@@ -261,7 +269,7 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
     const out = last('?v=1&bp=13/2&rp=150');
     expect(out.view.fields.bagPrice.text).toBe('6.50');
     expect(out.view.fields.readyMixPrice.text).toBe('150.00');
-    expect(out.view.panel.bagCost).toBe('$481.00');
+    expect(out.view.panel.figures.bagCost).toBe('$481.00');
   });
 });
 
@@ -308,12 +316,12 @@ describe('controller: errors (calculator-page › Errors without a button, [CP30
     });
     expect(bad.view.answer).toBe('—');
     expect(figures(bad)).toEqual(['—', '—', '—', '—', '—']);
-    expect(bad.view.panel.bagYield).toBe('—');
+    expect(bad.view.panel.shopping[0]?.fills['yield']).toBe('—');
     expect(bad.write).toBeUndefined();
     expect(fixed.view.fields.length.invalid).toBe(false);
     expect(fixed.view.fields.length.describedBy).toBe('calc-length-hint');
     expect(figures(fixed)).toEqual(['2.72', '73.33', '2.08', '66.67', '123']);
-    expect(fixed.view.panel.bags).toBe('123');
+    expect(fixed.view.panel.shopping[0]?.qty).toBe('123');
   });
 
   // spec: calculator-page › [CP31] bounds with formatted limits
@@ -342,7 +350,7 @@ describe('controller: errors (calculator-page › Errors without a button, [CP30
 
   it('never lets a hidden field block the visible shape', () => {
     const column = last('', [type('length', 'abc'), shape('column')]);
-    expect(column.view.answer.startsWith('Column (')).toBe(true);
+    expect(column.view.answer?.startsWith('Column (')).toBe(true);
     expect(column.view.fields.length.invalid).toBe(false);
     expect(column.write).toBe('?v=1&sh=column');
     const returned = last('', [type('length', 'abc'), shape('column'), shape('slab')]);
@@ -374,9 +382,9 @@ describe('controller: units (calculator-page › Unit system toggle, [CP33]–[C
       value: '1.25',
       after: ' cubic meters',
     });
-    expect(metric.view.panel.volumes.volumeYd3).toBe('1.63');
-    expect(metric.view.panel.volumes.volumeFt3).toBe('44.00');
-    expect(metric.view.panel.bags).toBe('74');
+    expect(metric.view.panel.figures.volumeYd3).toBe('1.63');
+    expect(metric.view.panel.figures.volumeFt3).toBe('44.00');
+    expect(metric.view.panel.shopping[0]?.qty).toBe('74');
     expect(metric.view.answer).toBe(
       'Slab (3.66 m × 3.05 m, 10.16 cm thick): 1.25 cubic meters with 10% extra. Bags of 80 lb: 74.',
     );
@@ -397,10 +405,10 @@ describe('controller: units (calculator-page › Unit system toggle, [CP33]–[C
       type('thickness', '10'),
     ]);
     expect(out.view.panel.primary.value).toBe('1.32');
-    expect(out.view.panel.volumes.volumeYd3).toBe('1.73');
-    expect(out.view.panel.volumes.volumeFt3).toBe('46.62');
-    expect(out.view.panel.netVolume).toBe('42.38');
-    expect(out.view.panel.bags).toBe('78');
+    expect(out.view.panel.figures.volumeYd3).toBe('1.73');
+    expect(out.view.panel.figures.volumeFt3).toBe('46.62');
+    expect(out.view.panel.figures.netVolume).toBe('42.38');
+    expect(out.view.panel.shopping[0]?.qty).toBe('78');
     expect(out.write).toBe('?v=1&u=m&l=20000/127&w=15000/127&t=500/127');
   });
 
@@ -414,7 +422,7 @@ describe('controller: units (calculator-page › Unit system toggle, [CP33]–[C
     const metric = last('', [units('metric'), type('length', '4')]);
     const us = last('', [units('metric'), type('length', '4'), units('imperial')]);
     expect(us.view.fields.length.text).toBe('20000/127 in');
-    expect(us.view.panel.volumes.volumeYd3).toBe(metric.view.panel.volumes.volumeYd3);
+    expect(us.view.panel.figures.volumeYd3).toBe(metric.view.panel.figures.volumeYd3);
     expect(us.write).toBe('?v=1&l=20000/127');
     const again = last('', [
       units('metric'),
