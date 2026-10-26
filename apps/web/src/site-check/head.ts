@@ -2,7 +2,7 @@ import { alternatesOf, LOCALE_TAGS } from '../routing/routes.ts';
 import { alternatesIn, attrsOf } from './dom.ts';
 import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
-import type { Page, Problem, Site } from './types.ts';
+import type { CheckContext, Page, Problem, Site } from './types.ts';
 
 const VIEWPORT = 'width=device-width, initial-scale=1';
 const TITLE_LENGTH = { min: 10, max: 60 } as const;
@@ -189,7 +189,7 @@ const reciprocityProblems = (pages: readonly Page[], site: Site): Problem[] => {
 };
 
 /** Head rules of site-seo and site-routing-i18n over the parsed pages. */
-export const headProblems = (pages: readonly Page[], site: Site): Problem[] => [
+export const headProblems = ({ pages, site }: CheckContext): Problem[] => [
   ...pages.flatMap((page) => [
     ...languageProblems(page),
     ...titleProblems(page, site),

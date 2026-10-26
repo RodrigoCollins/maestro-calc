@@ -1,7 +1,7 @@
 import { scriptRootsOf } from './assets.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
-import type { Dist, Page, Problem, Site } from './types.ts';
+import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** Browser APIs the privacy page says the site never uses. */
 const STORAGE_APIS = ['document.cookie', 'localStorage', 'sessionStorage', 'indexedDB'];
@@ -89,7 +89,7 @@ const injectionProblems = (pages: readonly Page[]): Problem[] =>
     .map((page) => problem(page.file, 'cdn-cgi', 'a page must not reference a /cdn-cgi/ script'));
 
 /** The facts the privacy page states, checked against the build (trust-pages › [TP12]), and the calculator bundle. */
-export const factProblems = (site: Site, dist: Dist, pages: readonly Page[] = []): Problem[] => [
+export const factProblems = ({ pages, site, dist }: CheckContext): Problem[] => [
   ...cookieProblems(dist),
   ...storageProblems(dist),
   ...originProblems(site, dist),

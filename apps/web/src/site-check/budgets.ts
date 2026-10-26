@@ -2,7 +2,7 @@ import { scriptRootsOf } from './assets.ts';
 import { attrsOf, urlsIn } from './dom.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
-import type { BuildBytes, Dist, Page, Problem, Site } from './types.ts';
+import type { BuildBytes, CheckContext, Dist, Page, Problem } from './types.ts';
 
 /** The byte size of every file under `dist`, by posix path (text and binary alike). */
 export type Sizes = BuildBytes['sizes'];
@@ -22,9 +22,6 @@ export const LIMITS = {
  * its entry, its module preloads and their static imports, and it counts toward the page weight.
  */
 export const CALCULATOR_LIMITS = { js: 49_152, weight: 196_608 } as const;
-
-/** What the budget rules need to know of the site: which pages are calculator pages. */
-type Templates = Pick<Site, 'calculatorPages'>;
 
 const DIST = '(dist)';
 const JS_FILE = /\.m?js$/;
@@ -96,12 +93,7 @@ const over = (what: string, bytes: number, limit: number): string =>
   `${fmt(bytes)} B${what} exceeds the limit of ${fmt(limit)} B`;
 
 /** Pages, fonts and scripts over their byte budget, each named with its limit. */
-export const budgetProblems = (
-  pages: readonly Page[],
-  sizes: Sizes,
-  dist: Dist,
-  site: Templates = {},
-): Problem[] => {
+export const budgetProblems = ({ pages, sizes, dist, site }: CheckContext): Problem[] => {
   const fonts = fontFiles(sizes);
   const fontTotal = sum(fonts.map((file) => sizeOf(sizes, file)));
   return [
@@ -160,12 +152,7 @@ const largest = (
 };
 
 /** One line per category with the largest page or file and its size (site-quality › [SQ6]). */
-export const budgetSummary = (
-  pages: readonly Page[],
-  sizes: Sizes,
-  dist: Dist,
-  site: Templates = {},
-): string[] => {
+export const budgetSummary = ({ pages, sizes, dist, site }: CheckContext): string[] => {
   const measures = pages.map(
     (page) => [page, measure(page, sizes, dist, isCalculatorPage(page, site))] as const,
   );

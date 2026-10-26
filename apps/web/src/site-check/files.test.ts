@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ROUTES } from '../routing/routes.ts';
 import { expectedFiles, fileSetProblems, pageCount, pagesOf } from './files.ts';
-import { FIXTURE_ROUTES, validDist } from './__testing__/page-fixture.ts';
+import { contextOf, FIXTURE_ROUTES, validDist } from './__testing__/page-fixture.ts';
 
 describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
   it('lists the routable pages in both locales and the two not-found pages', () => {
@@ -41,13 +41,13 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
 
 describe('file set problems (site-routing-i18n › [SR1])', () => {
   it('has none for a complete dist', () => {
-    expect(fileSetProblems(validDist(), FIXTURE_ROUTES)).toEqual([]);
+    expect(fileSetProblems(contextOf(validDist()))).toEqual([]);
   });
 
   it('reports an orphan HTML file by name', () => {
     const dist = validDist();
     dist.set('extra.html', '<html></html>');
-    expect(fileSetProblems(dist, FIXTURE_ROUTES)).toEqual([
+    expect(fileSetProblems(contextOf(dist))).toEqual([
       { file: 'extra.html', rule: 'file-set', message: 'orphan page: no route builds this file' },
     ]);
   });
@@ -55,7 +55,7 @@ describe('file set problems (site-routing-i18n › [SR1])', () => {
   it('reports a missing page by name', () => {
     const dist = validDist();
     dist.delete('es/privacidad.html');
-    expect(fileSetProblems(dist, FIXTURE_ROUTES)).toEqual([
+    expect(fileSetProblems(contextOf(dist))).toEqual([
       {
         file: 'es/privacidad.html',
         rule: 'file-set',
@@ -67,7 +67,7 @@ describe('file set problems (site-routing-i18n › [SR1])', () => {
   it('ignores files that are not HTML', () => {
     const dist = validDist();
     dist.set('notes.txt', 'x');
-    expect(fileSetProblems(dist, FIXTURE_ROUTES)).toEqual([]);
+    expect(fileSetProblems(contextOf(dist))).toEqual([]);
   });
 });
 

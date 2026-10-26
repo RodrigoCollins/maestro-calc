@@ -46,6 +46,8 @@ const site = {
   updates: Object.fromEntries(
     entries.map((entry) => [entry.path.replace(/\.md$/, ''), entry.fields['updated'] ?? '']),
   ),
+  calculatorPages: [],
+  externalLinks: {},
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {
