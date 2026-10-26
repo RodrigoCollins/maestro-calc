@@ -146,7 +146,7 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     `<h2 id="${tips}">Tips</h2><p>Text.</p>`,
     `<h2 id="${faqId}">FAQ</h2>${faq}`,
     `<h2 id="${sources}">Sources</h2>`,
-    `<ul><li><a href="${QUIKRETE_URL}">QUIKRETE</a></li><li><a href="${NIST_URL}">NIST</a></li></ul>`,
+    `<ul><li><a href="${QUIKRETE_URL}" rel="external noreferrer">QUIKRETE</a></li><li><a href="${NIST_URL}" rel="external noreferrer">NIST</a></li></ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
     '</main>',
   ].join('');
