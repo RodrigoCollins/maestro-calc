@@ -122,7 +122,7 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the page builder', 'apps/web/src/lib/page-view.ts'],
     ['the per-id page table', 'apps/web/src/lib/pages.ts'],
     ['the hand-kept browser pages', 'tooling/site-browser/e2e/concrete-pages.ts'],
-    ['the concrete mount', 'apps/web/src/client/concrete-mount.ts'],
+    ['the mount', 'apps/web/src/client/mount.ts'],
     ['the controller', 'apps/web/src/calculator/controller.ts'],
     ['the concrete web folder', 'apps/web/src/calculator/concrete/'],
   ])('names %s in a step', (_what, token) => {

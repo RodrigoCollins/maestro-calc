@@ -31,7 +31,7 @@ const found = (text: string): string[] => BANNED.filter((word) => text.includes(
 
 describe('client sources (calculator-page › Client script contract; design C11, C13)', () => {
   it('holds the entry and the mount', () => {
-    expect(files).toEqual(['concrete-mount.ts', 'entries/concrete.ts']);
+    expect(files).toEqual(['entries/concrete.ts', 'mount.ts']);
   });
 
   // spec: calculator-page › the DOM is written with textContent, value, attributes and hidden only
