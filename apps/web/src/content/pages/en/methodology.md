@@ -2,7 +2,7 @@
 id: methodology
 locale: en
 updated: 2026-10-26
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How we calculate

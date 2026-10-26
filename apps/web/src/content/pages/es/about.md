@@ -2,7 +2,7 @@
 id: about
 locale: es
 updated: 2026-10-23
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Sobre Maestro Calc

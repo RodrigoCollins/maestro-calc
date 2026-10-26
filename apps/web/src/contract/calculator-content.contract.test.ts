@@ -124,7 +124,7 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
     expect(front.id).toBe('concrete');
     expect(front.locale).toBe(locale);
     expect(front.updated).toBe('2026-10-25');
-    expect(front.ownerReview).toBe('pending');
+    expect(front.ownerReview).toBe('approved');
   });
 
   // spec: calculator-page › [CP5] source side: five h2 ids in order
