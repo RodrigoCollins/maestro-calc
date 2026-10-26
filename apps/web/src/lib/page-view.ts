@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES } from '@maestro-calc/core';
+import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
@@ -14,7 +14,9 @@ import type {
   ConcreteResultView,
   Field,
   FieldItemView,
+  FillSplit,
   FormView,
+  ResultView,
   Split,
 } from '../components/calculator/model.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
@@ -24,10 +26,12 @@ import { formOf } from '../calculator/form-layout.ts';
 import {
   fail,
   isTextInput,
+  type AnyCalculator,
   type AnyPageModule,
+  type Ready,
   type TextInput,
 } from '../calculator/page-module.ts';
-import { fillMessage } from '../calculator/present.ts';
+import { fillMessage, outputText } from '../calculator/present.ts';
 import { textsOf } from '../calculator/texts.ts';
 import { SHAPES } from '../calculator/concrete/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -139,6 +143,110 @@ export const formViewOf = (module: AnyPageModule, catalog: Messages): FormView =
         : fieldItemOf(item.key, item.stepper),
     ),
     copyLabel: text('site.calculator.copyLink'),
+  };
+};
+
+/** The state of a fresh page: no query, the US system, every select at its default, the engine run on it. */
+const defaultMomentOf = (module: AnyPageModule): Ready<AnyCalculator> => {
+  const { calculator } = module;
+  return {
+    system: SYSTEM,
+    choices: Object.fromEntries(
+      calculator.inputs.flatMap((input) =>
+        input.kind === 'select' ? [[input.key, input.default]] : [],
+      ),
+    ),
+    valid: mustBeOk(calculator.validate({}), `the default state of ${calculator.id}`),
+    result: mustBeOk(calculator.run({}), `the default run of ${calculator.id}`),
+  };
+};
+
+/** `before<value>after` around the first placeholder the fills name; plain text when none occurs. */
+const fillSplitOf = (template: string, fills: Readonly<Record<string, string>>): FillSplit => {
+  const name = Object.keys(fills).find((key) => template.includes(`{${key}}`));
+  if (name === undefined) return { before: template, value: '', after: '' };
+  const [before = '', after = ''] = template.split(`{${name}}`);
+  return { name, before, value: required(fills[name], name), after };
+};
+
+/**
+ * The result panel of a module for the default state: the primary figure, a row for every output
+ * that has a display hint, one entry per declared shopping line, and the cost rows. Money outputs
+ * show only through the cost slot. Labels are `calc.<id>.outputs.*`; the primary sentence is
+ * `calc.<id>.page.<outputKey>` when the catalog has it (else the bare value); line, hint and note
+ * texts are the page keys the slots name.
+ */
+export const resultViewOf = (
+  module: AnyPageModule,
+  locale: Locale,
+  catalog: Messages,
+): ResultView => {
+  const { calculator, shopping, costs } = module;
+  const { id, outputs } = calculator;
+  const text = (key: string): string => messageOf(catalog, id, key);
+  const page = (suffix: string): string => text(`calc.${id}.page.${suffix}`);
+  const moment = defaultMomentOf(module);
+  const figureOf = (descriptor: OutputDescriptor): string =>
+    outputText(
+      descriptor,
+      required(
+        moment.result.outputs.find(({ key }) => key === descriptor.key),
+        descriptor.key,
+      ).value,
+    );
+  const primary = required(
+    outputs.find(({ key, role }) =>
+      module.primary === undefined ? role === 'primary' : key === module.primary[SYSTEM],
+    ),
+    'primary output',
+  );
+  const [before = '', after = ''] = (catalog[`calc.${id}.page.${primary.key}`] ?? '{value}').split(
+    '{value}',
+  );
+  const views = shopping === undefined ? [] : shopping.view(moment);
+
+  return {
+    heading: text('site.calculator.resultHeading'),
+    primary: { key: primary.key, before, value: figureOf(primary), after },
+    rows: outputs
+      .filter(({ display }) => display !== undefined)
+      .map((descriptor) => ({
+        key: descriptor.key,
+        label: text(`calc.${id}.outputs.${descriptor.key}`),
+        value: figureOf(descriptor),
+        ...(descriptor.key === primary.key ? { hidden: true } : {}),
+      })),
+    shopping:
+      shopping === undefined
+        ? []
+        : shopping.lines.map(({ label, note }, index) => {
+            const { unit, qty, fills } = required(views[index], 'shopping line');
+            return {
+              unit,
+              qty,
+              label: fillSplitOf(page(label), fills),
+              ...(note === undefined ? {} : { note: fillSplitOf(page(note), fills) }),
+            };
+          }),
+    costs:
+      costs === undefined
+        ? []
+        : costs.rows.map(({ output }) => ({
+            key: output,
+            label: text(`calc.${id}.outputs.${output}`),
+            value: figureOf(
+              required(
+                outputs.find(({ key }) => key === output),
+                output,
+              ),
+            ),
+            visible: costs.visible(moment.valid)[output] === true,
+            hint: page(costs.hint),
+          })),
+    ...(costs?.note === undefined ? {} : { costsNote: page(costs.note) }),
+    estimateNote: text('site.calculator.estimateNote'),
+    termsLabel: text('site.footer.terms'),
+    termsHref: pathOf('terms', locale),
   };
 };
 

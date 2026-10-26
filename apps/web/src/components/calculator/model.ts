@@ -89,6 +89,37 @@ export interface ShoppingView {
   readonly bagYield: Split;
 }
 
+/** A text around a value the script rewrites, with the name of that value (`data-fill`) when it has one. */
+export interface FillSplit extends Split {
+  readonly name?: string;
+}
+
+/** One shopping line: the label and the optional note each carry their own fill. */
+export interface ShoppingLineView {
+  /** The purchase unit id shown, `bag-80`: the value of `data-shopping`. */
+  readonly unit: string;
+  readonly qty: string;
+  /** `Concrete mix, <80> lb bags`: the value is the bag size. */
+  readonly label: FillSplit;
+  /** `About <0.60> cubic feet per bag`. */
+  readonly note?: FillSplit;
+}
+
+export interface ResultView {
+  readonly heading: string;
+  /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
+  readonly primary: Split & { readonly key: string };
+  readonly rows: readonly Row[];
+  /** One entry per line the module declares, in declared order; empty for a module with none. */
+  readonly shopping: readonly ShoppingLineView[];
+  readonly costs: readonly CostRow[];
+  /** The note under the cost rows, when the cost slot has one. */
+  readonly costsNote?: string;
+  readonly estimateNote: string;
+  readonly termsLabel: string;
+  readonly termsHref: string;
+}
+
 export interface ConcreteResultView {
   readonly heading: string;
   /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
