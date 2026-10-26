@@ -13,8 +13,8 @@ Archived on 2026-10-26 from `main` e8cf809.
 ## Owner decisions and open owner items
 
 - Recorded during the change: OA1 yields from the QUIKRETE No. 1101 data sheet (0.30 / 0.45 / 0.60 ft³ per 40 / 60 / 80 lb bag); OA2 the 17 URL keys and defaults are permanent from the group 1 merge (`RELEASED`); OA3 10 percent waste is a rule of thumb the user can change; budgets raised once (engine graph 49,152 B, probe 40,960 B); FAQ answers capped at 450 characters for the HTML budget; one PR per group.
-- Open (F.3): 12 content entries still `ownerReview: pending` (the concrete EN/ES entries and the trust pages); copy for the owner to confirm: `banquetas`, the `×` answer wording, the `<1/64 in` texts, the ready-mix price per m³ question.
-- Open (F.4): Cloudflare still auto-injects the Web Analytics beacon for real browsers; the CSP blocks it, but the owner must turn the injection off (and keep Email Address Obfuscation and Rocket Loader off). Automated post-deploy smoke stays a follow-up.
+- F.3 done 2026-10-26 (after the archive, PR #91): the owner reviewed the 12 entries and approved all of them, keeping `banquetas`, the `×` answer wording and the `<1/64 in` texts. The ready-mix price per m³ question stays a follow-up.
+- F.4 done 2026-10-26: the owner turned the Cloudflare Web Analytics injection off; a Chromium probe of six production pages shows no beacon and no console error. Automated post-deploy smoke stays a follow-up.
 
 ## Specs promoted
 
