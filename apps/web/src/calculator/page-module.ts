@@ -166,6 +166,23 @@ export function definePage(spec: PageSpec<AnyCalculator>): AnyPageModule {
   return Object.freeze({ ...spec, id: spec.calculator.id });
 }
 
+/**
+ * The output the large figure shows for a unit system: the module's choice, else the one with the
+ * primary role. One rule for the two readers (the builder writes the sentence, the controller reads
+ * it), so a module whose primary has no such output fails the same way in both.
+ */
+export const primaryOutputOf = (module: AnyPageModule, system: UnitSystem): OutputDescriptor => {
+  const output = module.calculator.outputs.find(({ key, role }) =>
+    module.primary === undefined ? role === 'primary' : key === module.primary[system],
+  );
+  if (output === undefined) throw new TypeError('missing primary output');
+  return output;
+};
+
+/** The name of the primary sentence in the page messages: the measure, with the display unit when it has one. */
+export const sentenceNameOf = ({ measure, display }: OutputDescriptor): string =>
+  display === undefined ? measure : `${measure}.${display.unit}`;
+
 /** The option a select holds in a valid state; a state that holds none breaks an invariant. */
 export const optionOf = (valid: StateOf<AnyCalculator>, key: string): string => {
   const option = valid[key];
