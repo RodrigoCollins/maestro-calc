@@ -23,6 +23,8 @@ const out = mkdtempSync(join(tmpdir(), 'calculator-budget-'));
 
 afterAll(() => {
   rmSync(out, { recursive: true, force: true });
+  delete process.env['BUDGET_EXTRA_EN'];
+  delete process.env['BUDGET_EXTRA_ES'];
 });
 
 type Locales = Record<'en' | 'es', number>;

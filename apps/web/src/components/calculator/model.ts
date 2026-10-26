@@ -1,6 +1,9 @@
 /*
- * What the calculator parts are given. The route-free container and the parts below it read no
- * catalog, route table or content collection: the caller resolves every text and passes it in.
+ * What the calculator parts are given. The shapes below the generic ones (`Choice`, `Field`, the
+ * breadcrumb, the sources) are the concrete calculator's own (`Concrete*`: waste, bag size, prices,
+ * one shopping line); a second calculator either brings its own or extracts a generic core from
+ * them. The route-free container and the parts below it read no catalog, route table or content
+ * collection: the caller resolves every text and passes it in.
  */
 
 /** One button of a single-choice group (shape, unit system, bag size). */
@@ -29,7 +32,7 @@ export interface ShapeField extends Field {
   readonly visible: boolean;
 }
 
-export interface FormView {
+export interface ConcreteFormView {
   readonly unitsLabel: string;
   readonly units: readonly Choice[];
   readonly shapeLabel: string;
@@ -64,7 +67,7 @@ export interface ShoppingView {
   readonly bagYield: string;
 }
 
-export interface ResultView {
+export interface ConcreteResultView {
   readonly heading: string;
   /** The large figure: `{before}<value>{after}`, for example `1.63 cubic yards`. */
   readonly primary: {
@@ -90,7 +93,7 @@ export interface BreadcrumbView {
 }
 
 /** Messages the script uses, written into inert `<template>` elements. */
-export interface TemplatesView {
+export interface ConcreteTemplatesView {
   /** The user-facing error messages by code, with their `{min}` / `{max}` placeholders. */
   readonly errors: Readonly<Record<string, string>>;
   /** The short-answer sentences by shape. */
@@ -102,15 +105,15 @@ export interface TemplatesView {
 }
 
 /** Everything the container renders from the engine and the catalogs. */
-export interface CalculatorView {
+export interface ConcretePageView {
   readonly id: string;
   readonly title: string;
   readonly breadcrumb: BreadcrumbView;
   readonly answer: string;
   readonly notRunning: string;
-  readonly form: FormView;
-  readonly result: ResultView;
-  readonly templates: TemplatesView;
+  readonly form: ConcreteFormView;
+  readonly result: ConcreteResultView;
+  readonly templates: ConcreteTemplatesView;
 }
 
 export interface SourceView {

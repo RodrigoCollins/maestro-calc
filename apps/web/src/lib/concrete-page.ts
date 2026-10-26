@@ -8,19 +8,14 @@ import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
-  CalculatorView,
+  ConcretePageView,
   Choice,
   Field,
-  FormView,
-  ResultView,
+  ConcreteFormView,
+  ConcreteResultView,
 } from '../components/calculator/model.ts';
-import {
-  answerValues,
-  fieldText,
-  figuresOf,
-  fillMessage,
-  percentText,
-} from '../calculator/present.ts';
+import { answerValues, figuresOf } from '../calculator/concrete-present.ts';
+import { fieldText, fillMessage, percentText } from '../calculator/present.ts';
 import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES } from '../calculator/shapes.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
@@ -81,7 +76,7 @@ const defaultText = (input: InputDescriptor): string => {
 };
 
 /** Everything the concrete calculator page shows, resolved for `locale` from the engine and the catalogs. */
-export const concreteView = (locale: Locale): CalculatorView => {
+export const concreteView = (locale: Locale): ConcretePageView => {
   const messages = CATALOGS[locale];
   const text = (key: string): string => {
     const message = messages[key];
@@ -123,7 +118,7 @@ export const concreteView = (locale: Locale): CalculatorView => {
   const [before = '', after = ''] = templates.volumeYd3.split('{value}');
 
   const defaultShape = defaultOf('shape');
-  const form: FormView = {
+  const form: ConcreteFormView = {
     unitsLabel: text('site.calculator.unitsLabel'),
     units: [
       { id: 'imperial', label: text('site.calculator.unitsUs'), pressed: true },
@@ -148,7 +143,7 @@ export const concreteView = (locale: Locale): CalculatorView => {
   };
 
   const output = (key: string) => text(`calc.concrete.outputs.${key}`);
-  const result: ResultView = {
+  const result: ConcreteResultView = {
     heading: text('site.calculator.resultHeading'),
     primary: { key: 'volumeYd3', before, value: figures.volumeYd3, after },
     rows: [

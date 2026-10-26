@@ -2,7 +2,8 @@ import { encode, ft3, quantity, usd, type ValidateOptions } from '@maestro-calc/
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
-import { answerValues, fieldText, figuresOf, fillMessage } from './present.ts';
+import { answerValues, figuresOf } from './concrete-present.ts';
+import { fieldText, fillMessage } from './present.ts';
 
 /** The state and the result of the concrete calculator for form strings; a failed run fails the test. */
 const runOf = (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) => {

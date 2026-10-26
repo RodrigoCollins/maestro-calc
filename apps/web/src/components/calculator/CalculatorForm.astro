@@ -1,9 +1,9 @@
 ---
 import CalculatorField from './CalculatorField.astro';
-import type { Choice, FormView } from './model.ts';
+import type { Choice, ConcreteFormView } from './model.ts';
 
 interface Props {
-  form: FormView;
+  form: ConcreteFormView;
 }
 const { form } = Astro.props;
 const { unitsLabel, units, shapeLabel, shapes, fields, waste, bagLabel, bags, prices, copyLabel } =
