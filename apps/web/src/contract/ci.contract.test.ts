@@ -372,6 +372,25 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(install[0]).not.toMatch(/firefox|webkit/);
   });
 
+  // The cached browser needs the OS packages of the runner image it was installed on: a new image
+  // version must miss the cache and reinstall them, not restore a browser that cannot start.
+  it('keys the browser cache by the runner image identity too', () => {
+    const key = String(step('actions/cache@')?.with?.['key']);
+    expect(key).toContain('${{ env.ImageOS }}');
+    expect(key).toContain('${{ env.ImageVersion }}');
+  });
+
+  // The traces and screenshots of a failed test live in test-results, which the failure upload keeps.
+  it('keeps the traces and screenshots of failed tests and uploads them', () => {
+    const config = readFileSync(fromRoot('tooling/site-browser/playwright.config.ts'), 'utf8');
+    expect(config).toContain("trace: 'retain-on-failure'");
+    expect(config).toContain("screenshot: 'only-on-failure'");
+    const upload = steps.find(
+      (candidate) => candidate.with?.['path'] === 'tooling/site-browser/test-results',
+    );
+    expect(upload?.if).toBe('failure()');
+  });
+
   // The install with OS packages took 4m18s (apt) on every run. The browser is cached by the
   // lockfile, so the install, with its packages, runs on a cache miss only; a hit restores the
   // headless shell and the runner image already carries the libraries Chrome needs.

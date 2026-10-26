@@ -14,7 +14,8 @@ export default defineConfig({
   forbidOnly: true,
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
-  use: { baseURL: origin },
+  // A failed test keeps its trace and screenshot in `test-results`, which CI uploads on failure.
+  use: { baseURL: origin, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
   projects: [
     {
       name: 'phone',
