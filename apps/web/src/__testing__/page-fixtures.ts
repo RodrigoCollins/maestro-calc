@@ -111,6 +111,24 @@ export const lengthCalculator = (
     compute: () => unused,
   });
 
+/** A calculator with one length input per pair, read in the imperial then the metric unit of its pair. */
+export const lengthsCalculator = (
+  ...units: readonly (readonly ['in' | 'ft' | 'yd', 'mm' | 'cm' | 'm'])[]
+) =>
+  defineCalculator({
+    id: 'lengths-fixture',
+    inputs: units.map(([defaultUnit, metricDefaultUnit], index) => ({
+      kind: 'length',
+      key: `span${String(index)}`,
+      urlKey: `l${String(index)}`,
+      default: quantity(120, inch),
+      defaultUnit,
+      metricDefaultUnit,
+    })),
+    outputs: [total],
+    compute: () => unused,
+  });
+
 /** The value of a successful result; a failure fails the test that asked for it. */
 export const unwrap = <T>(
   result: { readonly ok: true; readonly value: T } | { readonly ok: false },

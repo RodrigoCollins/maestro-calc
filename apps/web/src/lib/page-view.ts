@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
+import { ALL_ERROR_CODES, type OutputDescriptor, type UnitSystem } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
@@ -9,6 +9,7 @@ import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type {
   AreaField,
   ChoiceItemView,
+  CalculatorPageView,
   ConcretePageView,
   FillSplit,
   Field,
@@ -49,6 +50,8 @@ const hintKeyOf = (unit: string): string =>
 
 /** The page is built from the default state of the engine, with no query and the US unit system. */
 const SYSTEM = 'imperial';
+
+const UNIT_SYSTEMS = ['imperial', 'metric'] as const;
 
 /**
  * The form of a module, resolved from its definition and the catalog: the unit toggle, then the
@@ -158,6 +161,15 @@ const defaultMomentOf = (module: AnyPageModule): Ready<AnyCalculator> => {
   };
 };
 
+/** The output the large figure shows for a unit system: the module's choice, else the one with the primary role. */
+const primaryOutputOf = (module: AnyPageModule, system: UnitSystem): OutputDescriptor =>
+  required(
+    module.calculator.outputs.find(({ key, role }) =>
+      module.primary === undefined ? role === 'primary' : key === module.primary[system],
+    ),
+    'primary output',
+  );
+
 /** `before<value>after` around the first placeholder the fills name; plain text when none occurs. */
 const fillSplitOf = (template: string, fills: Readonly<Record<string, string>>): FillSplit => {
   const name = Object.keys(fills).find((key) => template.includes(`{${key}}`));
@@ -191,12 +203,7 @@ export const resultViewOf = (
         descriptor.key,
       ).value,
     );
-  const primary = required(
-    outputs.find(({ key, role }) =>
-      module.primary === undefined ? role === 'primary' : key === module.primary[SYSTEM],
-    ),
-    'primary output',
-  );
+  const primary = primaryOutputOf(module, SYSTEM);
   const [before = '', after = ''] = (catalog[`calc.${id}.page.${primary.key}`] ?? '{value}').split(
     '{value}',
   );
@@ -244,6 +251,89 @@ export const resultViewOf = (
     estimateNote: text('site.calculator.estimateNote'),
     termsLabel: text('site.footer.terms'),
     termsHref: pathOf('terms', locale),
+  };
+};
+
+/**
+ * The messages the script reads, in the order of the page's one template: the user-facing errors,
+ * the answer templates of the slot, the copy states, one hint per length unit (the distinct default
+ * units in input order, then the distinct metric ones) and the sentence of each primary figure that
+ * has a page key. A name is the id of its `<template>` entry; the primary sentence is named
+ * `<measure>.<unit>`, as the controller looks it up.
+ */
+const messagesOf = (
+  module: AnyPageModule,
+  catalog: Messages,
+): readonly (readonly [string, string])[] => {
+  const { calculator, answer } = module;
+  const { id } = calculator;
+  const text = (key: string): string => messageOf(catalog, id, key);
+  const lengths = calculator.inputs.flatMap((input) => (input.kind === 'length' ? [input] : []));
+  const units = new Set([
+    ...lengths.map(({ defaultUnit }) => defaultUnit),
+    ...lengths.map(({ metricDefaultUnit }) => metricDefaultUnit),
+  ]);
+  const primaries = new Map(
+    UNIT_SYSTEMS.flatMap((system) => {
+      const { key, measure, display } = primaryOutputOf(module, system);
+      const sentence = catalog[`calc.${id}.page.${key}`];
+      return sentence === undefined
+        ? []
+        : [[display === undefined ? measure : `${measure}.${display.unit}`, sentence] as const];
+    }),
+  );
+  return [
+    ...ALL_ERROR_CODES.map((code) => [`errors.${code}`, text(`errors.${code}`)] as const),
+    ...(answer?.templates ?? []).map((name) => [name, text(`calc.${id}.page.${name}`)] as const),
+    ['copy.copied', text('site.calculator.linkCopied')] as const,
+    ['copy.failed', text('site.calculator.copyFailed')] as const,
+    ...[...units].map((unit) => [`hint.${unit}`, text(hintKeyOf(unit))] as const),
+    ...primaries,
+  ];
+};
+
+/**
+ * Everything the page of a module shows, resolved for `locale` from the definition, the slots and
+ * the catalog: the title and breadcrumb, the short answer (only with an answer slot), the no-JS
+ * note (with the example sentence when the catalog has one), the form, the result panel and the
+ * inert messages.
+ */
+export const pageViewOf = (
+  module: AnyPageModule,
+  locale: Locale,
+  catalog: Messages,
+): CalculatorPageView => {
+  const { calculator, answer } = module;
+  const { id } = calculator;
+  const text = (key: string): string => messageOf(catalog, id, key);
+  const result = resultViewOf(module, locale, catalog);
+  const example = catalog[`calc.${id}.page.example`];
+  const { before, value, after } = result.primary;
+  const moment = defaultMomentOf(module);
+  return {
+    id,
+    title: text(`calc.${id}.title`),
+    breadcrumb: {
+      label: text('site.calculator.breadcrumb'),
+      homeLabel: text('site.calculator.breadcrumbHome'),
+      homeHref: pathOf('home', locale),
+      current: text(`calc.${id}.title`),
+    },
+    ...(answer === undefined
+      ? {}
+      : {
+          answer: fillMessage(
+            text(`calc.${id}.page.${answer.template(moment.valid)}`),
+            answer.values(moment, `${before}${value}${after}`),
+          ),
+        }),
+    notRunning:
+      example === undefined
+        ? text('site.calculator.noscript')
+        : `${text('site.calculator.noscript')} ${example}`,
+    form: formViewOf(module, catalog),
+    result,
+    messages: messagesOf(module, catalog),
   };
 };
 

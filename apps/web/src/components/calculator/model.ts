@@ -131,7 +131,7 @@ export interface ConcreteTemplatesView {
   readonly volumes: Readonly<Record<'yd3' | 'm3', string>>;
 }
 
-/** Everything the container renders from the engine and the catalogs. */
+/** Everything the concrete container renders from the engine and the catalogs (until the generic view replaces it). */
 export interface ConcretePageView {
   readonly id: string;
   readonly title: string;
@@ -141,6 +141,20 @@ export interface ConcretePageView {
   readonly form: FormView;
   readonly result: ResultView;
   readonly templates: ConcreteTemplatesView;
+}
+
+/** Everything the container renders from the engine and the catalogs. */
+export interface CalculatorPageView {
+  readonly id: string;
+  readonly title: string;
+  readonly breadcrumb: BreadcrumbView;
+  /** The short answer of the default state; present only for a module with an answer slot. */
+  readonly answer?: string;
+  readonly notRunning: string;
+  readonly form: FormView;
+  readonly result: ResultView;
+  /** The messages the script uses, in order, written into one inert `<template>`: `[name, text]`. */
+  readonly messages: readonly (readonly [string, string])[];
 }
 
 export interface SourceView {

@@ -12,6 +12,8 @@ import {
   fieldsOf,
   formCalculator,
   lengthCalculator,
+  lengthsCalculator,
+  moneyCalculator,
   pageModuleErrorOf,
   shoppingCalculator,
 } from '../__testing__/page-fixtures.ts';
@@ -23,7 +25,7 @@ import { costSlot } from '../calculator/slots/costs.ts';
 import { shoppingSlot } from '../calculator/slots/shopping.ts';
 import type { concrete } from './concrete.ts';
 import { concrete as concreteCalculator } from './concrete.ts';
-import { concreteView, formViewOf, resultViewOf } from './page-view.ts';
+import { concreteView, formViewOf, pageViewOf, resultViewOf } from './page-view.ts';
 
 describe('concreteView (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
@@ -524,6 +526,149 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
     const error = pageModuleErrorOf(() => resultViewOf(concretePage, 'en', catalog));
     expect(error.code).toBe('PAGE_KEY');
     expect(error.cause).toEqual({ id: 'concrete', at: 'calc.concrete.page.shoppingLine' });
+  });
+});
+
+describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calculator-page › [CP43], [CP40]; design m-2, R7)', () => {
+  const enCatalog: Record<string, string> = { ...enCommon, ...enConcrete, ...enSite };
+  const enRectangle: Record<string, string> = { ...enCommon, ...enRectangleArea, ...enSite };
+  const names = (view: { readonly messages: readonly (readonly [string, string])[] }) =>
+    view.messages.map(([name]) => name);
+
+  // spec: calculator-page › [CP43] the exact order of the template of the concrete page
+  it('lists the errors, the answers, the copy states, the unit hints and the primary templates in order', () => {
+    const view = pageViewOf(concretePage, 'en', enCatalog);
+    expect(names(view)).toEqual([
+      ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
+      'answer.slab',
+      'answer.footing',
+      'answer.column',
+      'answer.steps',
+      'copy.copied',
+      'copy.failed',
+      'hint.ft',
+      'hint.in',
+      'hint.m',
+      'hint.cm',
+      'volume.yd3',
+      'volume.m3',
+    ]);
+    const byName = Object.fromEntries(view.messages);
+    expect(byName['errors.BELOW_MIN']).toBe(enCommon['errors.BELOW_MIN']);
+    expect(byName['answer.steps']).toBe(enConcrete['calc.concrete.page.answer.steps']);
+    expect(byName['copy.failed']).toBe('Could not copy. Select the link and copy it.');
+    expect([byName['hint.ft'], byName['hint.in'], byName['hint.m'], byName['hint.cm']]).toEqual([
+      'feet',
+      'inches',
+      'meters',
+      'centimeters',
+    ]);
+    expect([byName['volume.yd3'], byName['volume.m3']]).toEqual([
+      '{value} cubic yards',
+      '{value} cubic meters',
+    ]);
+  });
+
+  // design K6: the sentence of a primary with no display hint is named by its measure, as the controller reads it
+  it('names the primary sentence by the measure when the output has no display hint', () => {
+    const page = definePage({ calculator: moneyCalculator });
+    const view = pageViewOf(
+      page,
+      'en',
+      catalogOf(() => false, { 'calc.money-fixture.page.cost': 'Total: {value} dollars' }),
+    );
+    expect(view.messages.at(-1)).toEqual(['money', 'Total: {value} dollars']);
+    expect(view.result.primary).toEqual({
+      key: 'cost',
+      before: 'Total: ',
+      value: '$5.00',
+      after: ' dollars',
+    });
+    expect(view.result.rows).toEqual([]);
+  });
+
+  // spec: calculator-web-core › [CWC24] no answer, no primary template for a module with neither
+  it('lists only the errors, the copy states and the hints for rectangle-area', () => {
+    const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
+    expect(names(view)).toEqual([
+      ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
+      'copy.copied',
+      'copy.failed',
+      'hint.ft',
+      'hint.m',
+    ]);
+    expect('answer' in view).toBe(false);
+  });
+
+  // design m-2: the distinct default units in input order, then the distinct metric units
+  it('derives the unit hints from the length inputs, the imperial units first', () => {
+    const page = definePage({
+      calculator: lengthsCalculator(['in', 'cm'], ['ft', 'cm'], ['in', 'm']),
+    });
+    expect(
+      names(pageViewOf(page, 'en', catalogOf())).filter((name) => name.startsWith('hint.')),
+    ).toEqual(['hint.in', 'hint.ft', 'hint.cm', 'hint.m']);
+  });
+
+  it.each([
+    ['yd', 'mm', 'site.calculator.hintYd'],
+    ['ft', 'mm', 'site.calculator.hintMm'],
+  ] as const)(
+    'throws PAGE_KEY for the unit %s or %s that has no hint message',
+    (imperial, metric, key) => {
+      const page = definePage({ calculator: lengthsCalculator([imperial, metric]) });
+      const catalog = catalogOf((name) => name === key);
+      const error = pageModuleErrorOf(() => pageViewOf(page, 'en', catalog));
+      expect(error.code).toBe('PAGE_KEY');
+      expect(error.cause).toEqual({ id: 'lengths-fixture', at: key });
+    },
+  );
+
+  // spec: calculator-page › [CP40] the example is joined with one space, no trailing space without it (R7)
+  it('joins the no-JS note and the example with one space, and has no trailing space without one', () => {
+    const page = definePage({ calculator: lengthCalculator('ft', 'm') });
+    const withExample = pageViewOf(
+      page,
+      'en',
+      catalogOf(() => false, {
+        'site.calculator.noscript': 'Needs JavaScript.',
+        'calc.length-fixture.page.example': 'Example: 10 ft.',
+      }),
+    );
+    expect(withExample.notRunning).toBe('Needs JavaScript. Example: 10 ft.');
+    const without = pageViewOf(
+      page,
+      'en',
+      catalogOf((key) => key === 'calc.length-fixture.page.example', {
+        'site.calculator.noscript': 'Needs JavaScript.',
+      }),
+    );
+    expect(without.notRunning).toBe('Needs JavaScript.');
+    expect(pageViewOf(concretePage, 'en', enCatalog).notRunning).toBe(
+      `${enSite['site.calculator.noscript']} ${enConcrete['calc.concrete.page.example']}`,
+    );
+  });
+
+  // spec: calculator-page › [CP1] the answer sentence is set only for a module with an answer slot
+  it('sets the answer sentence of the default state for concrete and none for a module without a slot', () => {
+    const view = pageViewOf(concretePage, 'en', enCatalog);
+    expect(view.answer).toBe(
+      'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
+    );
+    expect('answer' in pageViewOf(rectangleAreaPage, 'en', enRectangle)).toBe(false);
+  });
+
+  it('describes the page of a module from its id, title, breadcrumb and parts', () => {
+    const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
+    expect([view.id, view.title]).toEqual(['rectangle-area', 'Rectangle Area']);
+    expect(view.breadcrumb).toEqual({
+      label: 'Breadcrumb',
+      homeLabel: 'Home',
+      homeHref: '/',
+      current: 'Rectangle Area',
+    });
+    expect(view.result.primary).toEqual({ key: 'areaFt2', before: '', value: '100.00', after: '' });
+    expect(view.form.items.map((item) => item.kind)).toEqual(['field', 'field']);
   });
 });
 
