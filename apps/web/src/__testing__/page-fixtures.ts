@@ -7,6 +7,7 @@ import {
   type OutputDescriptor,
 } from '@maestro-calc/core';
 import { PageModuleError } from '../calculator/page-module.ts';
+import type { Field, FormView } from '../components/calculator/model.ts';
 
 /*
  * Synthetic calculators for the generic web layer (calculator-web-core): each one is built with
@@ -24,6 +25,12 @@ export const pageModuleErrorOf = (call: () => unknown): PageModuleError => {
   }
   throw new Error('the call did not throw');
 };
+
+/** The fields of a form in page order: the fields a choice drives where its area sits, then the plain ones. */
+export const fieldsOf = (form: FormView): readonly Field[] =>
+  form.items.flatMap((item): readonly Field[] =>
+    item.kind === 'field' ? [item.field] : (item.area?.fields ?? []),
+  );
 
 const zero = quantity(0, inch);
 const unused = { outputs: { total: zero }, shopping: [], warnings: [] } as const;
@@ -66,8 +73,8 @@ export const choiceCalculator = defineCalculator({
 });
 
 /**
- * A select `mode` followed by four count fields: a choice slot may show any of them, so a test can
- * place the driven fields right after the select or leave a gap, and `c` and `d` stay plain fields.
+ * A select `mode` followed by five count fields: a choice slot may show any of them, so a test can
+ * place the driven fields right after the select or leave a gap, and the rest stay plain fields.
  */
 export const formCalculator = defineCalculator({
   id: 'form-fixture',
@@ -77,10 +84,32 @@ export const formCalculator = defineCalculator({
     count('b', 'c2'),
     count('c', 'c3'),
     count('d', 'c4'),
+    count('e', 'c5'),
   ],
   outputs: [total],
   compute: () => unused,
 });
+
+/** A calculator with one length input read in `defaultUnit` (imperial) and `metricDefaultUnit`. */
+export const lengthCalculator = (
+  defaultUnit: 'in' | 'ft' | 'yd',
+  metricDefaultUnit: 'mm' | 'cm' | 'm',
+) =>
+  defineCalculator({
+    id: 'length-fixture',
+    inputs: [
+      {
+        kind: 'length',
+        key: 'span',
+        urlKey: 'l1',
+        default: quantity(120, inch),
+        defaultUnit,
+        metricDefaultUnit,
+      },
+    ],
+    outputs: [total],
+    compute: () => unused,
+  });
 
 /** The value of a successful result; a failure fails the test that asked for it. */
 export const unwrap = <T>(

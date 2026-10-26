@@ -31,6 +31,37 @@ export interface ShapeField extends Field {
   readonly visible: boolean;
 }
 
+/** An input a choice drives: held once in the page, visible while the pressed option shows it (the choice slot, `calculator/slots/choices.ts`). */
+export interface AreaField extends Field {
+  readonly visible: boolean;
+}
+
+/** A single-choice group built from a select input, and the block of fields it drives, if any. */
+export interface ChoiceItemView {
+  readonly kind: 'choice';
+  /** The select key: the value of `data-choice`, of `data-reserved` and of the legend id. */
+  readonly key: string;
+  readonly label: string;
+  readonly choices: readonly Choice[];
+  /** The driven fields in definition order and the rows the block reserves (`--calc-rows`). */
+  readonly area?: { readonly rows: number; readonly fields: readonly AreaField[] };
+}
+
+/** A text input, with the two buttons of its stepper when the module has one for it. */
+export interface FieldItemView {
+  readonly kind: 'field';
+  readonly field: Field;
+  readonly stepper?: { readonly key: string; readonly less: string; readonly more: string };
+}
+
+export interface FormView {
+  readonly unitsLabel: string;
+  readonly units: readonly Choice[];
+  /** The items in the one order of the form (the definition's), between the units and the copy button. */
+  readonly items: readonly (ChoiceItemView | FieldItemView)[];
+  readonly copyLabel: string;
+}
+
 export interface ConcreteFormView {
   readonly unitsLabel: string;
   readonly units: readonly Choice[];
