@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, globSync, readFileSync } from 'node:fs';
 import { parse } from 'yaml';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from './root.ts';
@@ -50,5 +50,89 @@ describe('docs reflect the site scripts (monorepo-workspace › [MWW5])', () => 
     expect(agents).toContain('npm ci --prefix tooling/site-browser');
     expect(agents).toContain('playwright install');
     expect(agents).toContain('tooling/site-browser');
+  });
+});
+
+/** The text of the "Adding a calculator" section of AGENTS.md: from its heading to the next one. */
+const recipeOf = (text: string): string => {
+  const start = text.indexOf('## Adding a calculator');
+  const rest = text.slice(start);
+  const next = rest.indexOf('\n## ', 4);
+  return rest.slice(0, next === -1 ? undefined : next);
+};
+
+/** The numbered steps of the recipe: each from its number to the next one. */
+const stepsOf = (recipe: string): string[] =>
+  recipe.split('\n').filter((line) => /^\d+\. /.test(line));
+
+/** The repository paths a text names in backticks, with `<id>` and `{en,es}` filled in for concrete. */
+const pathsIn = (text: string): string[] =>
+  Array.from(text.matchAll(/`([\w@./{},<>*-]+)`/g), ([, token = '']) => token)
+    .filter((token) => /^(?:apps|packages|tooling|openspec|\.github)\//.test(token))
+    .flatMap((token) => {
+      const filled = token
+        .replaceAll('<id>', 'concrete')
+        .replaceAll('<Id>', 'Concrete')
+        .replaceAll('<material>', 'concrete-mix');
+      return filled.includes('{en,es}')
+        ? [filled.replace('{en,es}', 'en'), filled.replace('{en,es}', 'es')]
+        : [filled];
+    });
+
+const exists = (path: string): boolean =>
+  path.includes('*')
+    ? globSync(path, { cwd: fromRoot('.') }).length > 0
+    : existsSync(fromRoot(path));
+
+describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', () => {
+  const recipe = recipeOf(agents);
+  const steps = stepsOf(recipe);
+
+  // concrete is the example of a calculator that needs injected data: the factory pattern
+  it('numbers its steps from 1 without a gap and covers the factory calculator', () => {
+    expect(steps.map((step) => Number(/^(\d+)\./.exec(step)?.[1]))).toEqual(
+      steps.map((_, index) => index + 1),
+    );
+    expect(steps.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it.each([
+    ['the core directory', 'packages/core/src/calculators/<id>/'],
+    ['the released tuples', 'RELEASED'],
+    ['the registry row', 'REGISTRY'],
+    ['the catalogs', 'packages/i18n/src/catalogs/{en,es}/<id>.ts'],
+    ['the web list', 'apps/web/src/lib/calculators.ts'],
+    ['the English key union', 'apps/web/src/lib/i18n-contract.test-d.ts'],
+    ['the page templates', 'apps/web/src/routing/templates.ts'],
+    ['the factory for injected data', 'create<Id>'],
+    ['the yields-only data subpath', 'packages/data/package.json'],
+    ['the composition root', 'apps/web/src/lib/<id>.ts'],
+    ['the test-support subpath', 'packages/core/package.json'],
+    ['the explicit subpath list', 'apps/web/src/contract/manifest.contract.test.ts'],
+    ['the content entries', 'apps/web/src/content/calculators/{en,es}/<id>.md'],
+    ['the client entry', 'apps/web/src/client/entries/<id>.ts'],
+    ['the script island', 'apps/web/src/islands/<Id>Script.astro'],
+    ['the methodology section', 'apps/web/src/content/pages/{en,es}/methodology.md'],
+  ])('names %s in a step', (_what, token) => {
+    expect(
+      steps.some((step) => step.includes(token)),
+      token,
+    ).toBe(true);
+  });
+
+  it('names only paths that exist in the repository', () => {
+    const missing = pathsIn(recipe).filter((path) => !exists(path));
+    expect(missing).toEqual([]);
+  });
+
+  it('lists what is still kept by hand instead of claiming that nothing is', () => {
+    expect(recipe).not.toContain('Nothing else is kept by hand');
+    expect(recipe).toContain('Kept by hand');
+  });
+
+  it('flags a path that does not exist', () => {
+    expect(
+      pathsIn('see `apps/web/src/nope/<id>.ts` and `AGENTS.md`').filter((p) => !exists(p)),
+    ).toEqual(['apps/web/src/nope/concrete.ts']);
   });
 });
