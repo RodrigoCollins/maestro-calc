@@ -1,11 +1,13 @@
-import { encode, ft3, quantity, usd, type ValidateOptions } from '@maestro-calc/core';
+import { encode, type ValidateOptions } from '@maestro-calc/core';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../../lib/concrete.ts';
+import { required } from '../controller.ts';
 import type { Moment } from '../page-module.ts';
-import { DASH, fieldText, fillMessage } from '../present.ts';
-import { answerValues, bagFills, figuresOf } from './present.ts';
+import { DASH, fieldText, fillMessage, groupedInteger, outputText } from '../present.ts';
+import { concretePage } from './page.ts';
+import { answerValues, bagFills } from './present.ts';
 
 /** The state and the result of the concrete calculator for form strings; a failed run fails the test. */
 const runOf = (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) => {
@@ -15,32 +17,51 @@ const runOf = (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions
   return { state: state.value, result: result.value };
 };
 
-/** The figures of a state in the US unit system. */
-const figures = (raw: Readonly<Record<string, unknown>>) => {
-  const { state, result } = runOf(raw);
-  return figuresOf(state, result, CONCRETE_MIX_YIELDS, 'imperial');
+/**
+ * The figures of a state in the US unit system, through the display hints of the definition and
+ * the cost slot: what the page builder and the controller show for it.
+ */
+const figures = (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) => {
+  const { state, result } = runOf(raw, options);
+  const text = (key: string): string =>
+    outputText(
+      required(
+        concrete.outputs.find((output) => output.key === key),
+        key,
+      ),
+      required(
+        result.outputs.find((output) => output.key === key),
+        key,
+      ).value,
+    );
+  const visible = required(concretePage.costs, 'costs').visible(state);
+  return {
+    volumeYd3: text('volumeYd3'),
+    volumeFt3: text('volumeFt3'),
+    volumeM3: text('volumeM3'),
+    netVolume: text('netVolume'),
+    bags: groupedInteger(required(result.shopping[0], 'line').qty),
+    bagCost: text('bagCost'),
+    readyMixCost: text('readyMixCost'),
+    bagCostVisible: visible.bagCost,
+    readyMixCostVisible: visible.readyMixCost,
+  };
 };
 
 describe('figures (calculator-page › [CP1], [CP2], [CP3], [CP15])', () => {
   // spec: calculator-page › [CP1] [CP3] [CP15] the default result
-  it('gives the default figures and the bag yield line from the template', () => {
-    const found = figures({});
-    expect(found).toMatchObject({
+  it('gives the default figures', () => {
+    expect(figures({})).toEqual({
       volumeYd3: '1.63',
       volumeFt3: '44.00',
       volumeM3: '1.25',
       netVolume: '40.00',
       bags: '74',
-      bagLb: '80',
-      bagYield: '0.60',
       bagCost: '$0.00',
       readyMixCost: '$0.00',
       bagCostVisible: false,
       readyMixCostVisible: false,
     });
-    expect(fillMessage('About {yield} cubic feet per bag', { yield: found.bagYield })).toBe(
-      'About 0.60 cubic feet per bag',
-    );
   });
 
   // spec: calculator-page › [CP19]-[CP22] the live table, through the engine
@@ -69,14 +90,6 @@ describe('figures (calculator-page › [CP1], [CP2], [CP3], [CP15])', () => {
     });
   });
 
-  // spec: calculator-page › [CP21] the yield line follows the bag
-  it.each([
-    ['60', '0.45'],
-    ['40', '0.30'],
-  ])('reads the yield of the %s lb bag as %s', (bag, bagYield) => {
-    expect(figures({ bag })).toMatchObject({ bagLb: bag, bagYield });
-  });
-
   // spec: calculator-page › [CP16] costs appear with a price
   it('shows the costs of the prices that are above zero', () => {
     expect(figures({ bagPrice: '6.50' })).toMatchObject({
@@ -98,69 +111,9 @@ describe('figures (calculator-page › [CP1], [CP2], [CP3], [CP15])', () => {
     });
   });
 
-  // spec: calculator-page › [CP33] the unit system picks the large figure and the order
-  it('orders the volumes by the unit system', () => {
-    const { state, result } = runOf({});
-    expect(figuresOf(state, result, CONCRETE_MIX_YIELDS, 'imperial').order).toEqual([
-      'volumeYd3',
-      'volumeFt3',
-      'volumeM3',
-    ]);
-    expect(figuresOf(state, result, CONCRETE_MIX_YIELDS, 'metric').order).toEqual([
-      'volumeM3',
-      'volumeYd3',
-      'volumeFt3',
-    ]);
-  });
-
   it('shows a zero-bag line and groups a very large bag count', () => {
     expect(figures({ length: '0' })).toMatchObject({ bags: '0', volumeYd3: '0.00' });
     expect(figures({ length: '1000', width: '1000', thickness: '10' }).bags).toBe('1,527,778');
-  });
-});
-
-describe('a result the presenter cannot read is a programming error', () => {
-  const { state, result } = runOf({});
-  const without = (key: string) => ({
-    ...result,
-    outputs: result.outputs.filter((output) => output.key !== key),
-  });
-  const swapped = (key: string, value: unknown) => ({
-    ...result,
-    outputs: result.outputs.map((output) => (output.key === key ? { ...output, value } : output)),
-  });
-  const read = (broken: unknown) => () =>
-    figuresOf(state, broken as typeof result, CONCRETE_MIX_YIELDS, 'imperial');
-
-  it.each([
-    ['an output is missing', without('netVolume'), 'no output netVolume'],
-    ['a volume holds money', swapped('volumeFt3', usd(1)), 'volumeFt3 is not a volume'],
-    ['a cost holds a volume', swapped('bagCost', quantity(1, ft3)), 'bagCost is not money'],
-    ['the shopping line is missing', { ...result, shopping: [] }, 'no shopping line'],
-    [
-      'the shopping line is another material',
-      { ...result, shopping: result.shopping.map((line) => ({ ...line, materialId: 'other' })) },
-      'no shopping line',
-    ],
-  ])('throws when %s', (_name, broken, message) => {
-    expect(read(broken)).toThrow(message);
-  });
-
-  it('reads the bags from the concrete-mix line, not from the first line', () => {
-    const [mix] = result.shopping;
-    if (mix === undefined) throw new TypeError('the defaults have a mix line');
-    const extra = { ...mix, materialId: 'other', qty: 1n };
-    const figures = figuresOf(
-      state,
-      { ...result, shopping: [extra, mix] },
-      CONCRETE_MIX_YIELDS,
-      'imperial',
-    );
-    expect(figures.bags).toBe(figuresOf(state, result, CONCRETE_MIX_YIELDS, 'imperial').bags);
-  });
-
-  it('throws when the yield of the chosen bag is missing', () => {
-    expect(() => figuresOf(state, result, {}, 'imperial')).toThrow('no yield for the 80 lb bag');
   });
 });
 
@@ -206,6 +159,42 @@ describe('answer sentences (calculator-page › [CP1], [CP2], [CP33]; i18n-catal
       volume: '1.25 cubic meters',
       bags: '74',
     });
+  });
+
+  it('reads the bags from the concrete-mix line, not from the first line', () => {
+    const { state, result } = runOf({});
+    const [mix] = result.shopping;
+    if (mix === undefined) throw new TypeError('the defaults have a mix line');
+    const extra = { ...mix, materialId: 'other', qty: 1n };
+    const moment = {
+      system: 'imperial',
+      choices: { shape: state.shape, bag: state.bag },
+      valid: state,
+    } as const;
+    expect(
+      answerValues({ ...moment, result: { ...result, shopping: [extra, mix] } }, 'x')['bags'],
+    ).toBe('74');
+  });
+
+  it.each([
+    ['the shopping line is missing', []],
+    [
+      'the shopping line is another material',
+      [{ materialId: 'other', purchaseUnit: 'u', qty: 1n }],
+    ],
+  ])('throws when %s', (_name, shopping) => {
+    const { state, result } = runOf({});
+    expect(() =>
+      answerValues(
+        {
+          system: 'imperial',
+          choices: { shape: state.shape, bag: state.bag },
+          valid: state,
+          result: { ...result, shopping },
+        },
+        'x',
+      ),
+    ).toThrow('no shopping line');
   });
 
   it('gives the placeholders of the other three shapes', () => {
@@ -256,13 +245,11 @@ describe('metric entry (calculator-page › [CP34], [CP50])', () => {
   // spec: calculator-page › [CP33] the toggle never changes the state, only its text
   it('computes the same volumes whichever system the text is written in', () => {
     const us = figures({ length: '12', width: '10', thickness: '4in' });
-    const { state, result } = runOf(
+    const metric = figures(
       { length: '3.6576', width: '3.048', thickness: '10.16' },
-      {
-        unitSystem: 'metric',
-      },
+      { unitSystem: 'metric' },
     );
-    expect(figuresOf(state, result, CONCRETE_MIX_YIELDS, 'metric')).toMatchObject({
+    expect(metric).toMatchObject({
       volumeYd3: us.volumeYd3,
       volumeM3: us.volumeM3,
       bags: us.bags,
