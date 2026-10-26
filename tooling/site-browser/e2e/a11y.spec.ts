@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { formatViolations } from './axe-report.ts';
-import { PAGES } from './calculator-pages.ts';
+import { CONCRETE_PAGES } from './concrete-pages.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -82,7 +82,7 @@ const stateProblems = async (page: Page, name: string, state: string): Promise<s
 };
 
 test.describe('axe on the interactive calculator states (site-quality › [SQ17], [SQ20])', () => {
-  for (const calculator of PAGES) {
+  for (const calculator of CONCRETE_PAGES) {
     for (const state of STATES) {
       test(`has no violation on ${calculator.path} in the ${state.name} state`, async ({
         page,
@@ -99,7 +99,7 @@ test.describe('axe on the interactive calculator states (site-quality › [SQ17]
   test('fails a copy whose error message lost its association, naming the page, the state and the rule', async ({
     page,
   }) => {
-    const [calculator] = PAGES;
+    const [calculator] = CONCRETE_PAGES;
     await page.route('**/_astro/*.js', async (route) => {
       const response = await route.fetch();
       const body = (await response.text()).replaceAll('aria-describedby', 'data-lost-association');

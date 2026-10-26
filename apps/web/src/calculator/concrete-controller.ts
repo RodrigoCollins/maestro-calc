@@ -18,9 +18,9 @@ import {
   type ConcreteResult,
   type ConcreteState,
 } from './concrete-present.ts';
-import { errorId, helpId, hintId, layoutOf, type TextKey } from './layout.ts';
+import { errorId, helpId, hintId, layoutOf, type TextKey } from './concrete-layout.ts';
 import { boundText, fieldText, fillMessage, percentText } from './present.ts';
-import { SHAPES, type Shape } from './shapes.ts';
+import { SHAPES, type Shape } from './concrete-shapes.ts';
 
 /*
  * The state machine of the concrete page: pure, with no DOM and no `window`. The script feeds it

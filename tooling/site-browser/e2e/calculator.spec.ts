@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
-import { PAGES, SHAPE_FIELDS, STATES } from './calculator-pages.ts';
-import type { CalculatorPage, Figures } from './calculator-pages.ts';
+import { CONCRETE_PAGES, SHAPE_FIELDS, STATES } from './concrete-pages.ts';
+import type { ConcretePage, Figures } from './concrete-pages.ts';
 
 const ORANGE = 'rgb(240, 106, 29)';
 
@@ -11,7 +11,7 @@ const shapeButton = (page: Page, shape: string): Locator =>
   page.locator(`[data-shape-button="${shape}"]`);
 
 /** Opens the page and waits for the script: the controls are enabled and the note is gone. */
-const open = async (page: Page, calculator: CalculatorPage, query = ''): Promise<void> => {
+const open = async (page: Page, calculator: ConcretePage, query = ''): Promise<void> => {
   await page.goto(`${calculator.path}${query}`);
   await expect(page.locator('[data-not-running]')).toBeHidden();
   await expect(input(page, 'length')).toBeEnabled();
@@ -37,7 +37,7 @@ const visibleFields = (page: Page): Promise<string[]> =>
 
 const query = (page: Page): string => new URL(page.url()).search;
 
-for (const calculator of PAGES) {
+for (const calculator of CONCRETE_PAGES) {
   test.describe(`${calculator.path} with scripts (calculator-page, ${calculator.locale})`, () => {
     // spec: calculator-page › [CP41] after the mount nothing is disabled and the note is gone
     test('enables every control, reveals "Copy link" and hides the "not running" note', async ({

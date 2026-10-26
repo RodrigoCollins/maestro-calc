@@ -17,7 +17,7 @@ import {
   type Messages,
   type Output,
   type UiEvent,
-} from './controller.ts';
+} from './concrete-controller.ts';
 
 /** The messages the page carries as templates, by name, for a locale (the script reads them from the DOM). */
 const messagesOf = (locale: 'en' | 'es'): Messages => {

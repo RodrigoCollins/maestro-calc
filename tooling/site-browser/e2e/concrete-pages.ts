@@ -6,7 +6,7 @@ import { esConcrete } from '../../../packages/i18n/src/catalogs/es/concrete.ts';
 import { esSite } from '../../../packages/i18n/src/catalogs/es/site.ts';
 
 /** What differs between the two calculator pages: the paths and the words (taken from the catalogs). */
-export interface CalculatorPage {
+export interface ConcretePage {
   readonly locale: 'en' | 'es';
   readonly path: string;
   readonly other: string;
@@ -24,7 +24,7 @@ export interface CalculatorPage {
   readonly yieldLine: (value: string) => string;
 }
 
-export const PAGES: readonly CalculatorPage[] = [
+export const CONCRETE_PAGES: readonly ConcretePage[] = [
   {
     locale: 'en',
     path: '/concrete-calculator',

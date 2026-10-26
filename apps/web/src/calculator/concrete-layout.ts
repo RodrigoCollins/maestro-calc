@@ -1,4 +1,4 @@
-import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES, type Shape } from './shapes.ts';
+import { DIMENSION_ORDER, SHAPE_FIELDS, SHAPES, type Shape } from './concrete-shapes.ts';
 
 /** The fields shown after the shape fields, whatever the shape (calculator-page › Form controls). */
 export const ALWAYS_VISIBLE = ['waste', 'bag', 'bagPrice', 'readyMixPrice'] as const;

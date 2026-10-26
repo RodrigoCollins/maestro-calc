@@ -9,8 +9,8 @@ import {
   hintId,
   inputId,
   layoutOf,
-} from './layout.ts';
-import { DIMENSION_ORDER, SHAPES } from './shapes.ts';
+} from './concrete-layout.ts';
+import { DIMENSION_ORDER, SHAPES } from './concrete-shapes.ts';
 
 describe('layout (calculator-page › Form controls, [CP11] data, [CP14] logic)', () => {
   // spec: calculator-page › [CP11] the visible fields per shape, in the order of the table
