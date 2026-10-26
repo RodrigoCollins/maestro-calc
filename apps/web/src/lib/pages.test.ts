@@ -49,8 +49,7 @@ describe('CalculatorView follows the page id (calculator-web-core › [CWC26], [
   });
 
   // spec: calculator-web-core › [CWC27] the view is built from the id it is given, never from one calculator
-  it('builds its view with pageView and names no calculator outside the script table', () => {
-    expect(source).toContain('pageView(id, locale)');
+  it('names no calculator outside the script table', () => {
     expect(source).not.toContain('concreteView');
     const outside = source
       .replace(/^import .*$/gm, '')

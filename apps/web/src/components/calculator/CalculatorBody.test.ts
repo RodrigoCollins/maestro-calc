@@ -280,7 +280,7 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
       'rectangle-area',
     );
     // the messages are the view's list, in order: the errors first, then the copy states and the hints
-    expect(Object.keys(messagesOf(root)).slice(12)).toEqual([
+    expect(Object.keys(messagesOf(root)).slice(ALL_ERROR_CODES.length)).toEqual([
       'copy.copied',
       'copy.failed',
       'hint.ft',

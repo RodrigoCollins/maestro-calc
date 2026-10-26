@@ -1,9 +1,10 @@
 /*
- * What the calculator parts are given. The shapes below the generic ones (`Choice`, `Field`, the
- * breadcrumb, the sources) are the concrete calculator's own (`Concrete*`: waste, bag size, prices,
- * one shopping line); a second calculator either brings its own or extracts a generic core from
- * them. The route-free container and the parts below it read no catalog, route table or content
- * collection: the caller resolves every text and passes it in.
+ * What the calculator parts are given: the view of one page, built by `lib/page-view.ts` from the
+ * module's definition, its slots and the catalog. The form is a list of items (choice groups with
+ * the block they drive, fields with their stepper), the result a primary figure, rows, shopping
+ * lines and cost rows; nothing here names a calculator. The route-free container and the parts
+ * below it read no catalog, route table or content collection: the caller resolves every text and
+ * passes it in.
  */
 
 /** One button of a single-choice group (shape, unit system, bag size). */
