@@ -317,3 +317,28 @@ Both blind judges returned **APPROVED** on `1691d83..39c994b` (no CRITICAL or MA
 - **JD-6 (B)**: `check:site` should require `rel~=noreferrer` on allowlisted source links (now pinned only by the SourceList unit test).
 - **JD-7 (A, B)**: live-site smoke for `/cdn-cgi/` and scripts on static pages after G3 deploys (F.4); the CSP flip in G2 was verified clean in production by the orchestrator.
 - Minor: `CalculatorBody.test.ts` picks `calculators[1]` (use `find`), the budget test leaves `BUDGET_EXTRA_*` set and runs four builds (RES-1), regression tests for `/_astro/../x.js` and `&amp;` in FAQ parity, storage/network ban list (`caches.`, `cookieStore`, `EventSource`, `navigator.storage`) and `.cjs`/`.wasm` in the js-file rule, "banquetas" for owner review.
+
+## S13b: JS end-to-end, axe states, CLS, CSP console (group 3)
+
+Commits: `a43f3a3` test(e2e) drive the calculator with scripts enabled; `c0006db` fix(web) reserve five lines for the short answer; `3381099` test(e2e) axe states, layout shift, CSP console. 7 files, +922/-1 lines (forecast ~350: the data-driven EN/ES spec over 17 states and 40 scenarios is the bulk; no split taken because the work was already written when this agent took over).
+
+### What was added
+- `calculator.spec.ts` (CP11-CP50, SS21, SR7, SR20-22), `calculator-pages.ts` (per-locale data: strings, states, shape fields), `a11y.spec.ts` (8 states x 2 pages, plus the seeded lost-association run [SQ20]), `layout.spec.ts` (CLS <= 0.01 per locale with and without a state; reserved answer height at 320 and 390 px; notice block), `csp.spec.ts` (0 CSP messages on the 16 pages and while typing, shape, copy, language switch; injected inline script blocked [SQ26]).
+- SS19 (static pages load no script) stays pinned by the existing smoke and `no-js` projects.
+
+### App defect found (JD-4)
+`.calc-answer` reserved 7.5rem (four lines); the longest shape sentence wraps to five at 320 px. Fixed to 10.75rem with a pin in `styles.contract.test.ts` (`fix(web)`, `c0006db`). No spec change needed.
+
+### Results (local)
+- `npm run verify` exit 0: 177 files, 3230 tests (G2 tip had 2983).
+- `npm run build && npm run test:e2e`: 281 passed (phone 273: smoke 125, calculator 83, a11y 34, csp 19, layout 12; no-js 8), wall time 30.0 s (CI limit 10 min).
+- `npm run lighthouse`: exit 0, all six URLs (`/`, `/es`, `/methodology`, `/es/metodologia`, `/concrete-calculator`, `/es/calculadora-de-concreto`) performance 100, accessibility 100, best practices 100, SEO 100; CLS 0.0000 on each.
+- Budgets (build): JS graph of the concrete entry 35,712 B / 49,152 B; calculator page weight largest (ES) 159,795 B / 196,608 B; HTML EN 32,070 B, ES 34,073 B / 40,960 B. No budget raised.
+
+### Negative proofs (temporary, reverted, tree clean)
+1. `aria-describedby` removed in `mount.ts`: CP46 test and the axe error state fail on both pages (description "" instead of the message). Red as intended.
+2. `.calc-answer` reserved size cut to 2rem: the reserved-size tests of `layout.spec.ts` fail (answer 102 to 136 px vs 32 px) on both locales at both widths. Deviation: the on-load CLS tests stayed green, because the static HTML already renders the same default sentence, so they do not catch it alone; the reserved-size test is the guard that does.
+3. Entry throws at load: the CP49 path still shows the note and the default result; every mount-dependent test (CP41, CP24 states) fails. Red as intended.
+
+### Group 3 summary and G3.1
+`git log main..HEAD` shows S11a to S13b (route, templates, methodology, privacy, home, tooling all present). G3.2 (GX1-GX6, PR) belongs to the orchestrator. Nothing pushed.
