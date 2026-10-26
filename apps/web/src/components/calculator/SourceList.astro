@@ -10,7 +10,7 @@ const { updatedLabel, updated, updatedText, sources } = Astro.props.content;
 <ul class="calc-sources">
   {sources.map(({ name, url, retrieved }) => (
     <li>
-      <a href={url} rel="noopener">
+      <a href={url} rel="external noreferrer">
         {name}
       </a>
       , {retrieved}
