@@ -210,6 +210,17 @@ describe('controller: edits (calculator-page › Live recalculation, [CP19]–[C
     expect(out.view.fields.waste.invalid).toBe(false);
   });
 
+  // spec: calculator-page › [CP22]: the step starts from the typed waste even while another field is invalid
+  it('steps from a valid typed waste while another field is invalid', () => {
+    const out = last('', [type('width', 'abc'), type('waste', '20'), waste('more')]);
+    expect(out.view.fields.waste.text).toBe('25');
+    expect(out.view.fields.waste.invalid).toBe(false);
+    expect(out.view.fields.width.invalid).toBe(true);
+    expect(out.write).toBeUndefined();
+    const less = last('', [type('width', 'abc'), type('waste', '20'), waste('less')]);
+    expect(less.view.fields.waste.text).toBe('15');
+  });
+
   // spec: calculator-page › [CP16], [CP18] costs
   it('shows the bag cost with a bag price and the ready-mix cost with its price', () => {
     const priced = last('', [type('bagPrice', '6.50')]);
@@ -414,10 +425,63 @@ describe('controller: units (calculator-page › Unit system toggle, [CP33]–[C
     expect(out.write).toBeUndefined();
   });
 
+  // spec: calculator-page › [CP53] switching units never changes what was typed
+  it('keeps a bare number that is out of range in the unit it was typed in', () => {
+    const metric = last('', [type('thickness', '150'), units('metric')]);
+    expect(metric.view.fields.thickness.text).toBe('150 in');
+    expect(metric.view.fields.thickness.invalid).toBe(true);
+    expect(metric.write).toBeUndefined();
+    expect(metric.state.search).toBe('');
+    expect(metric.view.answer).toBe('—');
+    const back = last('', [type('thickness', '150'), units('metric'), units('imperial')]);
+    expect(back.view.fields.thickness.text).toBe('150 in');
+    expect(back.view.fields.thickness.invalid).toBe(true);
+    expect(back.write).toBeUndefined();
+  });
+
+  it('keeps a metric bare number that is out of range in centimeters back in US', () => {
+    const us = last('?v=1&u=m', [type('thickness', '400'), units('imperial')]);
+    expect(us.view.fields.thickness.text).toBe('400 cm');
+    expect(us.view.fields.thickness.invalid).toBe(true);
+    expect(us.write).toBeUndefined();
+    const meters = last('?v=1&u=m', [type('length', '5000'), units('imperial')]);
+    expect(meters.view.fields.length.text).toBe('5000 m');
+    expect(meters.view.fields.length.invalid).toBe(true);
+  });
+
+  it('leaves a text with its own unit and an unreadable text as typed', () => {
+    const text = (value: string) =>
+      last('', [type('thickness', value), units('metric')]).view.fields.thickness.text;
+    expect(text('150 in')).toBe('150 in');
+    expect(text('5 yd')).toBe('5 yd');
+    expect(text('5 furlongs')).toBe('5 furlongs');
+    expect(text('1,5')).toBe('1,5');
+    expect(text('150')).toBe('150 in');
+  });
+
   it('restores a metric link in metric', () => {
     const out = last('?v=1&u=m&l=240');
     expect(out.view.fields.length.text).toBe('6.096 m');
     expect(out.view.panel.primary.key).toBe('volumeM3');
+  });
+});
+
+describe('controller: link notice (calculator-page › [CP52])', () => {
+  const BAD = '?v=1&sh=Slab&bg=50&ws=51';
+
+  it('goes with the first valid edit, which rewrites the address', () => {
+    const start = last(BAD);
+    expect(start.view.notice).toBe(EN.messages['errors.INVALID_VALUE']);
+    const edited = last(BAD, [type('length', '20')]);
+    expect(edited.write).toBe('?v=1&l=240');
+    expect(edited.view.notice).toBe('');
+    expect(edited.state.notice).toBe('');
+  });
+
+  it('stays while an edit is invalid and writes nothing', () => {
+    const edited = last(BAD, [type('length', 'abc')]);
+    expect(edited.write).toBeUndefined();
+    expect(edited.view.notice).toBe(EN.messages['errors.INVALID_VALUE']);
   });
 });
 
