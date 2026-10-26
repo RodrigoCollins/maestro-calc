@@ -125,7 +125,13 @@ export type PageSpec<C extends AnyCalculator> = Omit<PageModule<C>, 'id'>;
 export type AnyPageModule = PageModule<AnyCalculator>;
 
 export type PageModuleCode =
-  'CHOICE_OPTIONS' | 'STEPPER_BOUNDS' | 'COST_KINDS' | 'SHOPPING_LINES' | 'FORM_ORDER' | 'PAGE_KEY';
+  | 'CHOICE_OPTIONS'
+  | 'STEPPER_BOUNDS'
+  | 'COST_KINDS'
+  | 'SHOPPING_LINES'
+  | 'ANSWER_SELECT'
+  | 'FORM_ORDER'
+  | 'PAGE_KEY';
 
 /** A programming error in a page module: a code and the identifiers of the culprit, never prose. */
 export class PageModuleError extends Error {

@@ -150,7 +150,7 @@ export type PageSpec<C extends AnyCalculator> = Omit<PageModule<C>, 'id'>;
 export type AnyPageModule = PageModule<AnyCalculator>;
 
 export type PageModuleCode = 'CHOICE_OPTIONS' | 'STEPPER_BOUNDS' | 'COST_KINDS'
-  | 'SHOPPING_LINES' | 'FORM_ORDER' | 'PAGE_KEY';
+  | 'SHOPPING_LINES' | 'ANSWER_SELECT' | 'FORM_ORDER' | 'PAGE_KEY';
 export class PageModuleError extends Error {   // name 'PageModuleError'; cause { id, ... }
   constructor(readonly code: PageModuleCode, options: { readonly cause: object });
 }
@@ -200,7 +200,7 @@ Every slot factory takes the calculator first, so `C` is inferred from it.
 | `calculator/slots/steppers.ts` | `stepperSlot<C>(c: C, steps: Readonly<Partial<Record<PercentKey<C>, Rational>>>): StepperSlot<C>`; throws `STEPPER_BOUNDS` |
 | `calculator/slots/shopping.ts` | `shoppingSlot<C>(c: C, lines: readonly ShoppingLineSpec<C>[]): ShoppingSlot<C>`. `view` calls `shoppingLinesOf` with the declared units from `parts`, writes `qty` as `groupedInteger(line.qty)` (`concrete-present.ts:108` today), or `DASH` without a result |
 | `calculator/slots/costs.ts` | `costSlot<C>(c: C, rows: CostSlot<C>['rows'], copy: { hint: string; note?: string }): CostSlot<C>`; throws `COST_KINDS` when an output or price is not money |
-| `calculator/slots/answer.ts` | `answerSlot<C>(c: C, spec: { by?: SelectKey<C>; values: AnswerSlot<C>['values'] }): AnswerSlot<C>` |
+| `calculator/slots/answer.ts` | `answerSlot<C>(c: C, spec: { by?: SelectKey<C>; values: AnswerSlot<C>['values'] }): AnswerSlot<C>` | Throws `ANSWER_SELECT` when `by` is not a select input |
 | `calculator/controller.ts` | `Messages`; `Environment { messages; origin; path; switchPath; helps: ReadonlySet<string> }`; `UiEvent<C>`, `FieldView` (adds `hidden`), `PanelView`, `State<C>`, `View<C>`, `Output<C>`, `Controller<C> { start(env, search): Output<C>; applyEvent(env, state, event): Output<C> }`; `controllerOf` (above); `copyAddress`, `copyOutcome`, `required`, `mustBeOk` (unchanged) |
 | `calculator/form-layout.ts` | `FormItem = { kind: 'choice'; select: string; area?: { fields: readonly string[]; rows: number } } \| { kind: 'field'; key: string; stepper: boolean }`; `formOf(m: AnyPageModule): readonly FormItem[]`. Throws `FORM_ORDER` when driven fields do not directly follow their select, or on a boolean input |
 | `calculator/concrete/page.ts` | `concretePage: PageModule<typeof concrete>` |

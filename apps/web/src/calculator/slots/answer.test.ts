@@ -44,9 +44,9 @@ describe('answerSlot (calculator-web-core › Page-module contract: answer value
     expect(byShape.values(moment, '1.63 cubic yards')).toEqual({ primary: '1.63 cubic yards' });
   });
 
-  it('throws CHOICE_OPTIONS when the key that drives it is not a select input', () => {
+  it('throws ANSWER_SELECT when the key that drives it is not a select input', () => {
     const error = pageModuleErrorOf(() => answerSlot(concrete, { by: 'waste' as never, values }));
-    expect(error.code).toBe('CHOICE_OPTIONS');
+    expect(error.code).toBe('ANSWER_SELECT');
     expect(error.cause).toEqual({ id: 'concrete', at: 'waste' });
   });
 
