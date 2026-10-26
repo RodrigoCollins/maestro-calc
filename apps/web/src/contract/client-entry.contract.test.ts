@@ -4,6 +4,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { buildClient } from './__testing__/client-build.ts';
+import { reaches } from './__testing__/client-graph.ts';
 import { fromRoot } from './root.ts';
 
 const ENTRY_SOURCE = `import '${fromRoot('apps/web/src/client/entries/concrete.ts')}';`;
@@ -55,6 +56,21 @@ describe('concrete client entry: built bundle (calculator-page › [CP42], [CP47
   it('holds no storage or network API, no catalog message and no foreign origin', async () => {
     const { code } = await buildClient(ENTRY_SOURCE);
     expect(problemsOf(code)).toEqual([]);
+  });
+
+  // spec: calculator-web-core › [CWC25] the page builder and the catalogs are not in the graph of the entry
+  it('does not carry the page builder, the page table or a catalog in its graph', async () => {
+    const { modules } = await buildClient(ENTRY_SOURCE);
+    for (const server of ['lib/page-view.ts', 'lib/pages.ts', 'calculator/form-layout.ts']) {
+      expect(reaches(modules, `/apps/web/src/${server}`), server).toBe(false);
+    }
+  });
+
+  it('finds the page builder when the entry imports it', async () => {
+    const { modules } = await buildClient(
+      `${ENTRY_SOURCE}\nexport { pageViewOf } from '${fromRoot('apps/web/src/lib/page-view.ts')}';`,
+    );
+    expect(reaches(modules, '/apps/web/src/lib/page-view.ts')).toBe(true);
   });
 
   // seeded: the check finds each offence

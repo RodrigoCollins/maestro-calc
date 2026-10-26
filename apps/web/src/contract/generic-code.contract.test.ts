@@ -23,10 +23,11 @@ const genericFiles = (): string[] =>
     (file) => !IDS.some((id) => file.startsWith(`apps/web/src/calculator/${id}/`)),
   );
 
-/** The generic components and the page builder: they name no calculator either (the builder takes its catalog as an argument). */
+/** The generic components, the page builder and the generic mount: they name no calculator either (the builder takes its catalog as an argument, the mount its page module). */
 const pageFiles = (): string[] => [
   ...globSync('apps/web/src/components/calculator/*.astro', { cwd: fromRoot('.') }).sort(),
   'apps/web/src/lib/page-view.ts',
+  'apps/web/src/client/mount.ts',
 ];
 
 /** An Astro file without its markup comments, then without its script comments. */
@@ -112,8 +113,8 @@ describe('generic code names no calculator and no browser API (calculator-web-co
     expect(idProblems(stripComments(readFileSync(fromRoot(file), 'utf8')), IDS)).toEqual([]);
   });
 
-  // spec: calculator-web-core › [CWC34] the generic components and the page builder join the scan
-  it('scans the generic components and the page builder for ids', () => {
+  // spec: calculator-web-core › [CWC34] the generic components, the page builder and the mount join the scan
+  it('scans the generic components, the page builder and the mount for ids', () => {
     expect(pageFiles()).toEqual(
       expect.arrayContaining([
         'apps/web/src/components/calculator/CalculatorBody.astro',
@@ -121,6 +122,7 @@ describe('generic code names no calculator and no browser API (calculator-web-co
         'apps/web/src/components/calculator/ResultPanel.astro',
         'apps/web/src/components/calculator/ShoppingLine.astro',
         'apps/web/src/lib/page-view.ts',
+        'apps/web/src/client/mount.ts',
       ]),
     );
   });

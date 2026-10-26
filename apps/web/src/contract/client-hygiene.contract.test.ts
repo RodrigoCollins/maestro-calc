@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { fromRoot } from './root.ts';
 
 const CLIENT = fromRoot('apps/web/src/client');
@@ -30,8 +31,9 @@ const files = globSync('**/*.ts', { cwd: CLIENT }).sort();
 const found = (text: string): string[] => BANNED.filter((word) => text.includes(word));
 
 describe('client sources (calculator-page › Client script contract; design C11, C13)', () => {
-  it('holds the entry and the mount', () => {
-    expect(files).toEqual(['entries/concrete.ts', 'mount.ts']);
+  // spec: calculator-web-core › [CWC37] one entry per calculator page, scanned with no hand list
+  it('holds the mount and one entry for each calculator page id', () => {
+    expect(files).toEqual([...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`), 'mount.ts'].sort());
   });
 
   // spec: calculator-page › the DOM is written with textContent, value, attributes and hidden only

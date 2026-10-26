@@ -1,4 +1,3 @@
-import { concretePage } from '../calculator/concrete/page.ts';
 import {
   controllerOf,
   copyAddress,
@@ -7,24 +6,24 @@ import {
   type Output as ControllerOutput,
   type State as ControllerState,
   type UiEvent as ControllerEvent,
-  type View as ControllerView,
 } from '../calculator/controller.ts';
-import { errorId, helpId, hintId } from '../calculator/ids.ts';
-import type { TextKey as KeyOf } from '../calculator/page-module.ts';
+import { errorId, helpId, hintId, inputId } from '../calculator/ids.ts';
+import type { AnyCalculator, AnyPageModule } from '../calculator/page-module.ts';
 import { textKeysOf } from '../calculator/texts.ts';
 
-type Concrete = typeof concretePage.calculator;
-type TextKey = KeyOf<Concrete>;
-type Output = ControllerOutput<Concrete>;
-type State = ControllerState<Concrete>;
-type UiEvent = ControllerEvent<Concrete>;
-type View = ControllerView<Concrete>;
+/** The controller types of any calculator: keys are plain strings here, the module decides which exist. */
+type Output = ControllerOutput<AnyCalculator>;
+type State = ControllerState<AnyCalculator>;
+type UiEvent = ControllerEvent<AnyCalculator>;
 
 /*
- * The thin DOM glue of the concrete page (design C11, C13): it collects the elements the server
+ * The thin DOM glue of a calculator page (design C11, C13): it collects the elements the server
  * rendered, feeds the controller what the person does and writes what it returns, with
  * `textContent`, `value`, attributes and `hidden` only. No HTML is built from a string. The unit
- * tests cover the controller; this file is covered by the browser tests.
+ * tests cover the controller; this file is covered by the browser tests. It names no calculator:
+ * the page module it is given decides which fields, choices and lines exist, and the slot elements
+ * (choices, steppers, shopping lines, cost rows) are looked up as lists that may be empty, so a
+ * page without a slot runs the same code over nothing (K12).
  */
 
 const find = (root: ParentNode, selector: string): Element => {
@@ -64,14 +63,19 @@ const messagesOf = (root: ParentNode): Record<string, string> => {
   );
 };
 
-const controller = controllerOf(concretePage);
-const TEXT_KEYS = textKeysOf(concretePage.calculator);
+/** One shopping line of the page and the elements the script rewrites in it. */
+interface Line {
+  readonly qty: readonly Element[];
+  /** The fills of the label and of the note, each named by `data-fill`. */
+  readonly fills: readonly Element[];
+}
 
 /** The elements of the page the script reads and writes, collected once. */
 interface Ui {
   readonly form: HTMLFormElement;
-  readonly inputs: ReadonlyMap<TextKey, HTMLInputElement>;
-  readonly answer: Element;
+  readonly inputs: ReadonlyMap<string, HTMLInputElement>;
+  /** Absent for a page with no answer slot. */
+  readonly answer: Element | null;
   readonly note: HTMLElement;
   readonly noticeArea: Element;
   readonly switchLink: Element;
@@ -80,18 +84,22 @@ interface Ui {
     readonly before: Element | null;
     readonly after: Element;
   };
-  readonly shopping: { readonly qty: Element; readonly bagLb: Element; readonly yield: Element };
+  /** The slot elements: empty lists for a page that declares no such slot. */
+  readonly lines: readonly Line[];
+  readonly figures: readonly Element[];
+  readonly costRows: readonly Element[];
+  readonly hintRows: readonly Element[];
   readonly copyButton: HTMLElement;
   readonly copyStatus: Element;
   readonly copyArea: Element;
 }
 
-const collect = (root: Document): Ui => ({
+const collect = (root: Document, keys: readonly string[]): Ui => ({
   form: findAs(root, 'form.calc-form', HTMLFormElement),
   inputs: new Map(
-    TEXT_KEYS.map((key) => [key, findAs(root, `input[name="${key}"]`, HTMLInputElement)]),
+    keys.map((key) => [key, findAs(root, `#${inputId(key)}`, HTMLInputElement)] as const),
   ),
-  answer: find(root, '[data-answer]'),
+  answer: root.querySelector('[data-answer]'),
   note: findAs(root, '[data-not-running]', HTMLElement),
   noticeArea: find(root, '[data-reserved="notice"]'),
   switchLink: find(root, 'header a[hreflang]'),
@@ -100,11 +108,16 @@ const collect = (root: Document): Ui => ({
     before: root.querySelector('[data-primary-before]'),
     after: find(root, '[data-primary-after]'),
   },
-  shopping: {
-    qty: find(root, '[data-shopping]'),
-    bagLb: find(root, '[data-fill="bagLb"]'),
-    yield: find(root, '[data-fill="yield"]'),
-  },
+  lines: findAll(root, '[data-line]').map((row) => ({
+    qty: findAll(row, '[data-shopping]'),
+    fills: [
+      ...findAll(row, '[data-fill]'),
+      ...findAll(root, `[data-line-note="${row.getAttribute('data-line') ?? ''}"] [data-fill]`),
+    ],
+  })),
+  figures: findAll(root, '[data-output]'),
+  costRows: findAll(root, '[data-cost-row]'),
+  hintRows: findAll(root, '[data-hint-row]'),
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
   copyArea: find(root, '[data-reserved="copy"]'),
@@ -121,10 +134,12 @@ const paragraph = (parent: Element, id: string, className: string): HTMLElement 
   return created;
 };
 
-const renderField = (ui: Ui, key: TextKey, view: View): void => {
+type View = Output['view'];
+
+const renderField = (ui: Ui, key: string, view: View): void => {
   const input = ui.inputs.get(key);
-  if (input === undefined) return;
   const field = view.fields[key];
+  if (input === undefined || field === undefined) return;
   const box = input.closest('.calc-field');
   if (input.value !== field.text) input.value = field.text;
   setAttribute(input, 'aria-invalid', field.invalid ? 'true' : undefined);
@@ -144,46 +159,52 @@ const renderField = (ui: Ui, key: TextKey, view: View): void => {
 
 const renderPanel = (ui: Ui, view: View): void => {
   const { panel } = view;
-  const root = ui.form.ownerDocument;
   setText(ui.primary.figure, panel.primary.value);
   ui.primary.figure.setAttribute('data-primary', panel.primary.key);
   setText(ui.primary.after, panel.primary.after);
   if (ui.primary.before !== null) setText(ui.primary.before, panel.primary.before);
-  for (const [key, text] of Object.entries(panel.figures)) {
-    const output = find(root, `[data-output="${key}"]`);
-    setText(output, text);
+  for (const output of ui.figures) {
+    const key = output.getAttribute('data-output') ?? '';
+    const figure = panel.figures[key];
+    if (figure === undefined) continue;
+    setText(output, figure);
     output.closest('.calc-row')?.toggleAttribute('hidden', key === panel.primary.key);
   }
-  for (const [key, visible] of Object.entries(panel.costs)) {
-    find(root, `[data-cost-row="${key}"]`).toggleAttribute('hidden', !visible);
-    find(root, `[data-hint-row="${key}"]`).toggleAttribute('hidden', visible);
+  for (const row of ui.costRows) {
+    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-cost-row') ?? ''] !== true);
   }
-  const [line] = panel.shopping;
-  setText(ui.shopping.qty, line?.qty ?? '');
-  ui.shopping.qty.setAttribute('data-shopping', line?.unit ?? '');
-  setText(ui.shopping.bagLb, line?.fills['bagLb'] ?? '');
-  setText(ui.shopping.yield, line?.fills['yield'] ?? '');
-};
-
-const renderChoices = (ui: Ui, view: View): void => {
-  const groups: [string, string, string][] = [
-    ['[data-unit]', 'data-unit', view.system],
-    ['[data-choice="shape"]', 'data-value', view.choices.shape],
-    ['[data-choice="bag"]', 'data-value', view.choices.bag],
-  ];
-  for (const [selector, attribute, chosen] of groups) {
-    for (const button of findAll(ui.form, selector)) {
-      button.setAttribute(
-        'aria-pressed',
-        button.getAttribute(attribute) === chosen ? 'true' : 'false',
-      );
+  for (const row of ui.hintRows) {
+    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-hint-row') ?? ''] === true);
+  }
+  for (const [index, row] of ui.lines.entries()) {
+    const line = panel.shopping[index];
+    for (const qty of row.qty) {
+      setText(qty, line?.qty ?? '');
+      qty.setAttribute('data-shopping', line?.unit ?? '');
+    }
+    for (const fill of row.fills) {
+      setText(fill, line?.fills[fill.getAttribute('data-fill') ?? ''] ?? '');
     }
   }
 };
 
-const render = (ui: Ui, { view }: Output): void => {
-  for (const key of TEXT_KEYS) renderField(ui, key, view);
-  setText(ui.answer, view.answer ?? '');
+const renderChoices = (ui: Ui, view: View): void => {
+  for (const button of findAll(ui.form, '[data-unit]')) {
+    setPressed(button, button.getAttribute('data-unit') === view.system);
+  }
+  for (const button of findAll(ui.form, '[data-choice]')) {
+    const chosen = view.choices[button.getAttribute('data-choice') ?? ''];
+    setPressed(button, button.getAttribute('data-value') === chosen);
+  }
+};
+
+const setPressed = (button: Element, pressed: boolean): void => {
+  button.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+};
+
+const render = (ui: Ui, keys: readonly string[], { view }: Output): void => {
+  for (const key of keys) renderField(ui, key, view);
+  if (ui.answer !== null) setText(ui.answer, view.answer ?? '');
   const notice = paragraph(ui.noticeArea, 'calc-notice', '');
   setText(notice, view.notice);
   notice.hidden = view.notice === '';
@@ -192,24 +213,17 @@ const render = (ui: Ui, { view }: Output): void => {
   ui.switchLink.setAttribute('href', view.switchHref);
 };
 
-/** The name of an `<input>` when it is one of the text fields of the form. */
-const textKeyOf = (name: string): TextKey | undefined => TEXT_KEYS.find((key) => key === name);
-
 /** The event a click on `button` stands for, when it is one of the form's controls. */
 const eventOf = (button: Element): UiEvent | undefined => {
   const unit = button.getAttribute('data-unit');
   if (unit === 'imperial' || unit === 'metric') return { type: 'units', system: unit };
-  const option = button.getAttribute('data-value');
   const select = button.getAttribute('data-choice');
-  if (option !== null && (select === 'shape' || select === 'bag')) {
-    return { type: 'choice', select, option };
-  }
+  const option = button.getAttribute('data-value');
+  if (select !== null && option !== null) return { type: 'choice', select, option };
+  const step = button.getAttribute('data-step');
   const direction = button.getAttribute('data-direction');
-  if (
-    button.getAttribute('data-step') === 'waste' &&
-    (direction === 'less' || direction === 'more')
-  ) {
-    return { type: 'step', key: 'waste', direction };
+  if (step !== null && (direction === 'less' || direction === 'more')) {
+    return { type: 'step', key: step, direction };
   }
   return undefined;
 };
@@ -234,20 +248,25 @@ const showCopy = (ui: Ui, env: Environment, address: string, copied: boolean): v
   field.select();
 };
 
-/** Turns the server-rendered form into the live calculator. A failure before the end leaves the static page. */
-export const mount = (): void => {
-  const ui = collect(document);
+/**
+ * Turns the server-rendered form of `module` into the live calculator. A failure before the end
+ * leaves the static page.
+ */
+export const mount = (module: AnyPageModule): void => {
+  const controller = controllerOf(module);
+  const keys = textKeysOf(module.calculator);
+  const ui = collect(document, keys);
   const env: Environment = {
     messages: messagesOf(document),
     origin: location.origin,
     path: location.pathname,
     switchPath: ui.switchLink.getAttribute('href') ?? '',
-    helps: new Set(TEXT_KEYS.filter((key) => document.getElementById(helpId(key)) !== null)),
+    helps: new Set(keys.filter((key) => document.getElementById(helpId(key)) !== null)),
   };
   let current: State;
   const show = (output: Output): void => {
     current = output.state;
-    render(ui, output);
+    render(ui, keys, output);
     if (output.write !== undefined) {
       history.replaceState(history.state, '', `${location.pathname}${output.write}`);
     }
@@ -259,9 +278,8 @@ export const mount = (): void => {
   show(controller.start(env, location.search));
   ui.form.addEventListener('input', (event) => {
     const input = event.target;
-    const key = input instanceof HTMLInputElement ? textKeyOf(input.name) : undefined;
-    if (input instanceof HTMLInputElement && key !== undefined) {
-      dispatch({ type: 'text', key, text: input.value });
+    if (input instanceof HTMLInputElement && keys.includes(input.name)) {
+      dispatch({ type: 'text', key: input.name, text: input.value });
     }
   });
   ui.form.addEventListener('click', (event) => {
