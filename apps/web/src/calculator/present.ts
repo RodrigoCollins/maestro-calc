@@ -130,17 +130,29 @@ const exactMetricText = (
   return places === undefined ? undefined : decimalText(value, places, grouped);
 };
 
+/** Below this a US length rounds to zero at 1/64 in. */
+const TINY_US = '<1/64 in';
+/** Below this a metric length rounds to `0.00 cm`. */
+const TINY_METRIC = '<0.01 cm';
+/** From here a metric length rounds to `1.00 m`: the unit is chosen from the rounded value. */
+const METRE_FROM = Rational.of(995, 1000);
+
 /**
  * A length inside a sentence, rounded for display: US as `12 ft`, `4 in`, `12 ft 6 in`,
- * `5 ft 3 1/2 in` (to 1/64 in); metric with two places, metres from one metre up, else centimetres.
- * Lengths are never negative here (the engine bounds them at zero).
+ * `5 ft 3 1/2 in` (to 1/64 in); metric with two places, metres from 0.995 m (which rounds to
+ * `1.00 m`), else centimetres. A nonzero length that rounds to nothing reads `<1/64 in` or
+ * `<0.01 cm`, never a zero. Lengths are never negative here (the engine bounds them at zero).
  */
 export const dimensionText = (length: Length, system: UnitSystem): string => {
-  if (system === 'imperial') return usText(length, 64, { inchesOnly: false, grouped: true });
+  const zero = valueIn(length, inch).isZero();
+  if (system === 'imperial') {
+    const text = usText(length, 64, { inchesOnly: false, grouped: true });
+    return text === '0 in' && !zero ? TINY_US : text;
+  }
   const metres = valueIn(length, m);
-  return metres.compare(Rational.ONE) === -1
-    ? `${decimalText(valueIn(length, cm), 2, true)} cm`
-    : `${decimalText(metres, 2, true)} m`;
+  if (metres.compare(METRE_FROM) !== -1) return `${decimalText(metres, 2, true)} m`;
+  const centimetres = decimalText(valueIn(length, cm), 2, true);
+  return centimetres === '0.00' && !zero ? TINY_METRIC : `${centimetres} cm`;
 };
 
 /** What a length field needs to know about its descriptor to write its text. */

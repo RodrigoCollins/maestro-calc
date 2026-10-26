@@ -1,4 +1,4 @@
-import { inch, m, quantity, Rational } from '@maestro-calc/core';
+import { cm, inch, m, quantity, Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
 import { boundText, dimensionText, fieldText } from './present.ts';
@@ -21,6 +21,10 @@ describe('dimension text (calculator-page › [CP33])', () => {
     [inches(767, 64), '11 63/64 in'],
     [inches(3071, 256), '1 ft'],
     [inches(20000, 127), '13 ft 1 31/64 in'],
+    // rounding never shows a nonzero length as zero, and rounds before it picks the unit
+    [inches(1, 256), '<1/64 in'],
+    [inches(1, 129), '<1/64 in'],
+    [inches(1, 128), '1/64 in'],
   ])('writes length %# in the US system as %s', (length, text) => {
     expect(dimensionText(length, 'imperial')).toBe(text);
   });
@@ -34,6 +38,12 @@ describe('dimension text (calculator-page › [CP33])', () => {
     [quantity(1, m), '1.00 m'],
     [quantity(Rational.of(99, 100), m), '99.00 cm'],
     [quantity(1000, m), '1,000.00 m'],
+    [quantity(Rational.of(99999, 100000), m), '1.00 m'],
+    [quantity(Rational.of(995, 1000), m), '1.00 m'],
+    [quantity(Rational.of(994, 1000), m), '99.40 cm'],
+    [quantity(Rational.of(1, 10000), cm), '<0.01 cm'],
+    [quantity(Rational.of(1, 200), cm), '0.01 cm'],
+    [quantity(Rational.of(1, 201), cm), '<0.01 cm'],
   ])('writes length %# in the metric system as %s', (length, text) => {
     expect(dimensionText(length, 'metric')).toBe(text);
   });
@@ -42,6 +52,7 @@ describe('dimension text (calculator-page › [CP33])', () => {
 describe('field text (calculator-page › [CP33], [CP50])', () => {
   const big = { defaultUnit: 'ft', metricDefaultUnit: 'm' } as const;
   const small = { defaultUnit: 'in', metricDefaultUnit: 'cm' } as const;
+  const millimetres = { defaultUnit: 'in', metricDefaultUnit: 'mm' } as const;
 
   // spec: calculator-page › Form controls: the default texts and [CP25] the restored text
   it.each([
@@ -54,6 +65,10 @@ describe('field text (calculator-page › [CP33], [CP50])', () => {
     [inches(127, 2), big, '5 ft 3 1/2 in'],
     [inches(127, 3), big, '3 ft 6 1/3 in'],
     [inches(1, 2), big, '1/2 in'],
+    // a 1/64 in fraction above a whole foot keeps its denominator 64 (the limit is inclusive)
+    [inches(144 * 64 + 1, 64), big, '12 ft 1/64 in'],
+    [inches(1, 64), big, '1/64 in'],
+    [inches(65, 64), small, '1 1/64 in'],
     [inches(4), small, '4 in'],
     [inches(16), small, '16 in'],
     [inches(12), small, '12 in'],
@@ -75,6 +90,10 @@ describe('field text (calculator-page › [CP33], [CP50])', () => {
     [inches(5), big, '0.127 m'],
     [inches(127, 3), small, '127/3 in'],
     [inches(1, 3), big, '1/3 in'],
+    // the decimal is exact up to 12 places (2^12 in mm: 12 places) and falls back beyond it
+    [inches(1, 4096), millimetres, '0.006201171875 mm'],
+    [inches(1, 8192), millimetres, '1/8192 in'],
+    [inches(1, 8192), small, '1/8192 in'],
   ])('writes length %# of a field in the metric system as %s', (length, field, text) => {
     expect(fieldText(length, field, 'metric')).toBe(text);
   });
