@@ -120,3 +120,88 @@ A commit above 400 changed lines carries a body that gives the reason. A per-cal
 ## G1 Judgment Day
 
 Both blind judges returned no severe finding on `a77cd56..0ead3c1` (judge B recomputed the slab, `l=240`, footing and rectangle-area figures by hand; both traced the replace-only write, the hidden-field read, the own `undefined` money key, the unit toggle, the stepper clamp and the shopping checks). **JUDGMENT: APPROVED.** Info items folded in the exit commit: the stale `concrete-layout.ts` reference in `components/calculator/model.ts` (both judges) and `sessionStorage` added to the calculator-layer `no-restricted-globals` set (judge A). Follow-ups: the lint message reuses the core wording ("packages/core must stay host-independent"); `FORM_ORDER` and `PAGE_KEY` are declared ahead of G2 (tasks 8.x). G1.4 (push, CI, PR, merge) is the orchestrator's.
+
+## G2: page parts
+
+Branch `feat/calculator-core-g2-page-parts` (from `main` 4fb7848, which holds the merged G1). Mode: strict TDD (`npm test`, vitest). Slices S7 to S14 as work-unit commits; G2.5 (push, CI, the four reviewers, Judgment Day, PR) belongs to the orchestrator. Nothing was pushed. The hygiene rule of "G1 correction round 1" held: a commit over 400 changed lines carries a body with its reason (one: `6075a7d`), no per-calculator rewrite shares a commit with a generic rewrite, one change per subject. Mapping tools used for the dist diff are in the scratchpad (`g2/map.py`, `g2/norm.sh`), not in the repository.
+
+### Commits (oldest first, `git diff --shortstat -M`)
+
+| Slice | Commit | Subject | Changed lines |
+|---|---|---|---|
+| S7 | 0ef9577 | refactor(web): rename the calculator DOM hooks to the generic scheme | 115+ / 69- (184) |
+| S8 | e9b6d88 | refactor(web): rename the concrete page builder to page-view | 82+ / 11- (93), rename shown as `=>` |
+| S8 | 31440b4 | feat(calculator): add the form layout the page builder will read | 150+ |
+| S9 | 703a2c8 | feat(web): add the generic form view the page builder derives from a module | 377+ / 6- (383) |
+| S9 | 6075a7d | refactor(web): render the calculator form from the generic form view | 207+ / 250- (457, body gives the reason) |
+| S10 | 5920e77 | feat(web): add the generic result view the page builder derives from a module | 289+ / 6- (295) |
+| S10 | e63bc2f | refactor(web): render the result panel from the generic result view | 141+ / 132- (273) |
+| S10 | c7bcb8a | refactor(calculator): drop figuresOf now the panel is built from the definition | 95+ / 191- (286) |
+| S11 | f701c24 | feat(web): add the generic page view builder with the messages list | 276+ / 9- (285) |
+| S11 | 4e73499 | refactor(web): write the page messages from the generic page view | 83+ / 148- (231) |
+| S12 | 945f08d | feat(web): add the per-id page table | 84+ |
+| S12 | 7a69964 | feat(web): choose the page module by id in CalculatorView | 199+ / 97- (296) |
+| S13 | 574f9f8 | refactor(client): rename the concrete mount to the generic mount | 4+ / 4-, `concrete-mount.ts => mount.ts` at 100 percent similarity |
+| S14 | 3408f86 | refactor(client): mount every calculator page through the generic mount | 162+ / 82- (244) |
+
+### Forecast vs actual
+
+| Slice | Forecast | Actual | Note |
+|---|---|---|---|
+| S7 | ~130 | 184 | eleven files, the form test for `--calc-rows` and the m-6 pin |
+| S8 | ~150 | 243 (93 + 150) | the rename carries the guard tests that bring `page-view.ts` to 100 percent (see Deviations 3); the layout is its own commit |
+| S9 | ~330 | 840 (383 + 457) | additive builder first, then the component switch; the switch is over 400 and its body says why |
+| S10 | ~320 | 854 (295 + 273 + 286) | additive builder, component switch, then `figuresOf` removal (its table of hand-verified figures was kept) |
+| S11 | ~220 | 516 (285 + 231) | additive `pageViewOf`, then the template switch |
+| S12 | ~270 | 380 (84 + 296) | table first, then the view, callers, scan and docs |
+| S13 | ~30 | 8 | pure rename |
+| S14 | ~300 | 244 | one commit (the entry call-site is one line of the new signature) |
+| Group | ~1,750 | 3,269 | forecast was low for test volume (fixtures for both locales and every absent branch) and Prettier expansion, as in G1 |
+
+### Group tip evidence (G2.1 to G2.4)
+
+- `git log main..HEAD --oneline` shows the 14 commits above (this progress commit follows). `git diff --stat main -- packages/ .github/` is empty; `git diff --stat main -- apps/web/src/contract/mutation* apps/web/src/lib/released.contract.test.ts apps/web/src/lib/i18n-contract.test.ts 'packages/*/stryker.config.mjs'` is empty.
+- `npm run verify` exit 0: 192 test files, 3,517 tests (G1 tip 3,452 in 189 files), coverage 100 percent statements, branches, functions and lines (2,435 / 1,360 / 774 / 2,099), including `apps/web/src/lib/page-view.ts` from S8.
+- `npm run check:site` (real build): JS graph of the concrete calculator page 38,378 B (G1 tip 38,137 B, +241 B; target at most 38,500 B, gate 49,152 B), largest HTML 34,314 B (`/es/calculadora-de-concreto`, G1 tip 34,073 B), CSS 7,399 B, page weight of the calculator 162,702 B (limit 196,608 B), no JavaScript elsewhere.
+- Full-length HTML proof (`CalculatorBody.budget.test`): EN 40,557 B, ES 40,834 B of 40,960 B. The baseline in the S7 task (39,268 / 39,517 B) was stale: on the G1 tip it was 40,316 / 40,593 B, so S7 added +227 B (forecast +~200 B) and the whole group +241 B. **ES headroom is now 126 B**, not the 1,250 B the brief assumed: the next calculator page or any markup growth needs a budget decision first.
+- `npm run test:e2e`: 283 passed (39.3 to 40.2 s of Playwright wall time locally), run after S7, S11, S12, S13 and S14 and at the tip; the S7 negative run (one hook renamed in the form only) failed 22 and passed 261. `npm run lighthouse`: exit 0, six pages, performance, accessibility, best practices and SEO all 1, CLS 0 on every page including both calculator pages.
+- Dist diff (G2.4), baseline `dist` built from `main` (the G1 tip build, which was already proven identical to the pre-G1 build): the mapping is applied to a copy of the calculator pages, `/_astro/` names are normalised in both trees, `diff -r -x '*.js'` is **empty**; a one-attribute edit in the copy is reported, so the check can fail. Per-mapping match counts, identical on `/concrete-calculator` and `/es/calculadora-de-concreto`: `data-shape-button` 4, `data-bag` 3, `data-waste-step` 2, `data-bag-yield` 1, `data-bag-lb` 1, `data-yield` 1, `calc-shape-area` area 1, `<p class="calc-shopping">` 1. The inline CSS rule `.calc-shape-area{...}` maps to the G2 `.calc-choice-area{gap:var(--space-3);min-height:calc(var(--calc-rows,1) * 6rem + (var(--calc-rows,1) - 1) * var(--space-3));display:grid}` (the m-6 expression, minifier spacing aside) in 14 pages, 1 on each calculator page. The intermediate builds after S9, S10, S11 and S12 were diffed the same way (empty each time).
+- GX2 hygiene: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
+
+### Scenario ids proven, and negative proofs (each run, then reverted; `git status --porcelain` clean afterwards)
+
+S7: [CP54] (rename part), [CP55], [CWC28] (CSS side), [CWC36] (HTML size print), SQ31 part (assertions unchanged: the e2e diff holds selector text only). Negative proofs: form renamed to `data-choice="shapeX"` without the mount (e2e 22 failed), CSS back to `calc(4 * 6rem + 3 * gap)` (styles contract pin failed).
+
+S8: [CWC30], K13 (AGENTS step 11 sentence, `docs.contract` row), coverage entry for `lib/page-view.ts` (`coverage.contract` first). Negative proofs: the `FORM_ORDER` check replaced by `if (false)` (the gap fixture failed), the coverage entry lowered to 99 (`coverage.contract` failed).
+
+S9: [CWC5] (builder side), [CWC24] (form part), [CWC28], [CWC29] (render), [CP11], [CP12], [CP14], [CP51], [CP58]; `PAGE_KEY` for a missing stepper key and for a unit with no hint. Negative proofs: rows hard-coded to 4 in the builder (the five-row fixture failed), `--calc-rows:4` hard-coded in the component (the render fixture failed), count input given `decimal` (the input-mode case failed).
+
+S10: [CWC3] (render, declared order), [CWC24] (rows), [CP54] (line hooks), [CP15], [CP16], [CP1], [CP2] through the unchanged concrete assertions, K5/K6 (rows from display hints, bare primary value). Negative proofs: shopping lines reversed (the two-line fixture failed), `data-line` dropped (three component cases failed).
+
+S11: [CWC23] (messages part), [CWC25] (builder side), [CP43], [CP40] and R7 (the no-JS note with and without the example), design m-2 (the unit-hint rule). Negative proofs: two messages swapped (order tests failed), hint key made optional (the `mm` case failed), a trailing space on the bare note (the R7 case failed).
+
+S12: [CWC23], [CWC24], [CWC26] (type test, `astro check` fails naming the table and the id when a `SCRIPTS` row is deleted), [CWC27], [CWC34] (components, builder and, from S14, the mount join the id scan), [CP54] (full list), [CP56], K13 (AGENTS step 14, `docs.contract`). Negative proofs: the `SCRIPTS` row deleted (`npm run typecheck` failed with two errors), `pageView('concrete', locale)` back in the view (the `pageView(id, locale)` source test failed).
+
+S13: K13 (AGENTS step 12 path, `docs.contract` and `client-hygiene` lists). Negative proof: the entry pointed at `../mounts.ts` (the entry contracts failed to build).
+
+S14: [CWC18] to [CWC22] (generic mount, proved by the unchanged e2e: ids and `aria-describedby`, Enter, `replaceState` count, clipboard fallback, controls enabled), [CWC25], [CWC34] (mount joins the scan), [CWC36], [CWC37] (hygiene scan derived from `CALCULATOR_PAGES`), [CP42], [CP43], [CP47], [CP48], [CP55]. Negative proofs: `fetch(` appended to `mount.ts` (hygiene failed), `lib/pages.ts` imported by the entry (the graph and size contracts failed), `rg` of the slot selectors in `find(`/`findAs(` is clean after moving the one `find(row, '[data-shopping]')` to a list lookup.
+
+### Deviations from the design and tasks
+
+1. **Slices split into an additive commit and a switch commit** (S9, S10, S11, S12): every slice but S7, S13 and S14 went over 400 on the rewrite, so each builder (`formViewOf`, `resultViewOf`, `pageViewOf`, `PAGES`) landed first, with its tests and nothing rendering it, and the component or caller switch followed. The tree is green at each commit and no commit is above 400 except `6075a7d` (457), whose body says why. S10 took a third commit for the `figuresOf` removal.
+2. **`pageViewOf` arrives in S11, not S12.** The S11 tests (answer only with an answer slot, the no-JS note, messages for a module with no slot) need a builder that accepts any module, so `pageViewOf(module, locale, catalog)` is complete in S11 and `concreteView` is a one-line wrapper until S12 re-points its callers and deletes it.
+3. **S8 carries guard tests that S12 later replaces.** The 100 percent entry for `lib/page-view.ts` is in S8 as the owner rule says; the renamed builder was at 91 percent statements and 79 percent branches (its throws for a drifted definition or catalog), covered with mocked-module tests. S9 removed the helpers they covered and S12 rewrote the rest as direct `pageViewOf` calls on a broken copy of the definition, with no module mock.
+4. **The dist-diff mapping needed one change:** the calculator stylesheet is inlined in every HTML file, so the `.calc-shape-area` rule maps in all 14 pages (counts above), not only the two calculator pages; the attribute mappings apply to the calculator pages only, as written. The m-6 assertion compares the minified rule without whitespace (the minifier writes `var(--calc-rows,1)`).
+5. **K13 rows were added, not replaced, in S8 and S13:** `docs.contract` had no row for the builder path, so S8 added `apps/web/src/lib/page-view.ts`; S12 replaced the `concreteView` row with `apps/web/src/lib/pages.ts` and added "the recipe does not contain `concreteView`"; S13 replaced the concrete-mount row.
+6. **`figuresOf` removal kept its evidence.** The hand-verified table (default, length 20, bags 40 and 60, waste 0 and 15, footing F1, column, steps, prices, zero and very large bag counts) now runs through the display hints and the cost slot in `concrete/present.test.ts`, the methodology contract reads the engine through `outputText`, and the bag-count guards moved to `answerValues`, which still reads the mix line. Only the error-path tests of the removed function went away.
+7. **The primary-output rule is in two places** (`controller.ts` and `page-view.ts`): the module's `primary[system]`, else the output with the primary role. Both are covered and the concrete figures agree; a shared helper in `page-module.ts` would touch the controller's closure and was left out of this group.
+8. **Test-support additions:** `formCalculator` (five count fields), `lengthCalculator`, `lengthsCalculator` and `fieldsOf` in `apps/web/src/__testing__/page-fixtures.ts`.
+9. **Strict TDD order:** RED was seen for every new module and changed assertion (the S7 unit run failed 9 tests; its e2e RED was the 22 failures of the wrong-hook proof rather than a separate run against the old build). Pure renames (S13, the S8 rename) have the recorded exception: the moved tests keep their assertions. Spot checks instead of RED, for behaviour that already held: the graph-reach assertions of S14 and the derived hygiene list (proven by the negative proofs above).
+
+### Test and coverage numbers
+
+G1 tip: 189 files, 3,452 tests. G2 tip: 192 files, 3,517 tests; coverage thresholds all met; `apps/web/src/calculator/**` and `apps/web/src/lib/page-view.ts` at 100 percent in the four counters.
+
+### Remaining for the orchestrator (G2.5, GX1 to GX6)
+
+Push the branch, CI (`verify`, `mutation` matrix and gate, `site-browser`), the four reviewers, Judgment Day, the PR body from G2.5 and the `site-browser` job wall time. G3 branches from this tip (or from `main` once G2 merges).
