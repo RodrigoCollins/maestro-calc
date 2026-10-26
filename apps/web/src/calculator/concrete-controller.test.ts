@@ -459,6 +459,20 @@ describe('controller: units (calculator-page › Unit system toggle, [CP33]–[C
     expect(text('150')).toBe('150 in');
   });
 
+  it('keeps an invalid text of a field that is not a length as typed', () => {
+    const out = last('', [
+      shape('footing'),
+      type('waste', '51'),
+      type('count', 'abc'),
+      units('metric'),
+    ]);
+    expect(out.view.fields.waste.text).toBe('51');
+    expect(out.view.fields.waste.invalid).toBe(true);
+    expect(out.view.fields.count.text).toBe('abc');
+    expect(out.view.fields.count.invalid).toBe(true);
+    expect(out.write).toBeUndefined();
+  });
+
   it('restores a metric link in metric', () => {
     const out = last('?v=1&u=m&l=240');
     expect(out.view.fields.length.text).toBe('6.096 m');
