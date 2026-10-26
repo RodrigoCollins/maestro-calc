@@ -10,6 +10,7 @@ import {
 } from '@maestro-calc/core';
 import { errorId, helpId, hintId } from './ids.ts';
 import {
+  fail,
   optionOf,
   shoppingLinesOf,
   type AnyCalculator,
@@ -157,11 +158,8 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   type Calc = AnyCalculator;
   const { calculator, choices, steppers, shopping, costs, answer } = module;
   const declared = shopping?.lines.map(({ material }) => material) ?? [];
-  shoppingLinesOf(
-    calculator.id,
-    declared,
-    mustBeOk(calculator.run({}), 'run of the defaults').shopping,
-  );
+  const defaults = mustBeOk(calculator.run({}), 'run of the defaults');
+  shoppingLinesOf(calculator.id, declared, defaults.shopping);
 
   const descriptorOf = (key: string): InputDescriptor =>
     required(
@@ -182,6 +180,24 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
       ),
       'primary output',
     );
+
+  // every figure the panel shows must be writable, so a bad hint fails here and not at `start`
+  const figuredKeys = new Set(figured.map(({ key }) => key));
+  for (const descriptor of figured) {
+    const output = required(
+      defaults.outputs.find(({ key }) => key === descriptor.key),
+      'output',
+    );
+    try {
+      outputText(descriptor, output.value);
+    } catch {
+      fail('OUTPUT_HINT', calculator.id, descriptor.key);
+    }
+  }
+  for (const system of ['imperial', 'metric'] as const) {
+    const { key } = primaryOf(system);
+    if (!figuredKeys.has(key)) fail('OUTPUT_HINT', calculator.id, key);
+  }
 
   const textAt = (state: State<Calc>, key: string): string => required(state.texts[key], 'text');
   const shownOf = (state: State<Calc>): readonly string[] =>

@@ -150,7 +150,7 @@ export type PageSpec<C extends AnyCalculator> = Omit<PageModule<C>, 'id'>;
 export type AnyPageModule = PageModule<AnyCalculator>;
 
 export type PageModuleCode = 'CHOICE_OPTIONS' | 'STEPPER_BOUNDS' | 'COST_KINDS'
-  | 'SHOPPING_LINES' | 'ANSWER_SELECT' | 'FORM_ORDER' | 'PAGE_KEY';
+  | 'SHOPPING_LINES' | 'ANSWER_SELECT' | 'OUTPUT_HINT' | 'FORM_ORDER' | 'PAGE_KEY';
 export class PageModuleError extends Error {   // name 'PageModuleError'; cause { id, ... }
   constructor(readonly code: PageModuleCode, options: { readonly cause: object });
 }
@@ -174,7 +174,8 @@ export const shoppingLinesOf: (id: string, declared: readonly string[],
 // calculator/controller.ts
 export function controllerOf<C extends AnyCalculator>(module: PageModule<C>): Controller<C>;
 export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
-  // creation: run the defaults once and call shoppingLinesOf (K15), so a mismatch fails at start
+  // creation: run the defaults once and call shoppingLinesOf (K15), so a mismatch fails at start;
+  // also write every figured output and check both primaries are figured (OUTPUT_HINT)
 }
 // calculator/slots/choices.ts (steppers, shopping, costs, answer follow the same shape)
 export function choiceSlot<C extends AnyCalculator>(

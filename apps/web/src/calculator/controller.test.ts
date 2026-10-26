@@ -2,6 +2,7 @@ import { Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import {
   choiceCalculator,
+  hintedCalculator,
   moneyCalculator,
   pageModuleErrorOf,
   percentCalculator,
@@ -202,5 +203,44 @@ describe('a choice group of a fixture (calculator-web-core › [CWC28], [CWC29])
     expect(large.view.fields.four.hidden).toBe(true);
     expect(large.write).toBe('?v=1&m1=large');
     expect(large.view.choices).toEqual({ mode: 'large', other: 'x' });
+  });
+});
+
+describe('the output check at creation (calculator-web-core › [CWC3])', () => {
+  const decimal = { unit: 'ft', format: 'decimal', places: 2 } as const;
+  const fraction = { unit: 'in', format: 'fraction', denominator: 16 } as const;
+
+  it('creates a controller when every figured output has a decimal hint', () => {
+    const module = definePage({ calculator: hintedCalculator({ span: decimal, edge: decimal }) });
+    expect(controllerOf(module).start(ENV, '').view.panel.figures).toEqual({
+      span: '1.00',
+      edge: '0.50',
+    });
+  });
+
+  it.each([
+    ['a fraction hint on a secondary output', { span: decimal, edge: fraction }, 'edge'],
+    ['a fraction hint on the primary output', { span: fraction, edge: decimal }, 'span'],
+    ['a primary output with no hint', { edge: decimal }, 'span'],
+  ] as const)('throws OUTPUT_HINT at creation for %s', (_what, hints, at) => {
+    const module = definePage({ calculator: hintedCalculator(hints) });
+    const error = pageModuleErrorOf(() => controllerOf(module));
+    expect(error.code).toBe('OUTPUT_HINT');
+    expect(error.cause).toEqual({ id: 'hinted-fixture', at });
+  });
+
+  it('checks the primary of each unit system', () => {
+    const calculator = hintedCalculator({ span: decimal, edge: decimal });
+    const module = definePage({ calculator, primary: { imperial: 'span', metric: 'edge' } });
+    expect(() => controllerOf(module)).not.toThrow();
+    const unhinted = hintedCalculator({ span: decimal });
+    const broken = definePage({
+      calculator: unhinted,
+      primary: { imperial: 'span', metric: 'edge' },
+    });
+    expect(pageModuleErrorOf(() => controllerOf(broken)).cause).toEqual({
+      id: 'hinted-fixture',
+      at: 'edge',
+    });
   });
 });
