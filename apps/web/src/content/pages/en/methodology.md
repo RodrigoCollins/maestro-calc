@@ -38,13 +38,13 @@ The extra for waste is added to the volume before the bags are counted: total vo
 
 A bag makes approximately 0.30 cubic feet (40 lb), 0.45 cubic feet (60 lb) or 0.60 cubic feet (80 lb). These yields come from the manufacturer's data sheet: QUIKRETE Concrete Mix No. 1101 data sheet (product nos. 1101-40, 1101-60, 1101-80), revised October 2022, `https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf`, retrieved 2026-10-25. Real yields vary with the product and the mix, so treat the bag count as an estimate.
 
-The column uses π = 3.14159265358979323846264338327950288. It is an approximation, and its error is less than 10^-35.
+The column uses π = 3.14159265358979323846264338327950288. It is an approximation, and its error is less than 10⁻³⁵.
 
 Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result. Volumes are in cubic feet, and bags are 80 lb bags.
 
 | Case                                                                  | Volume before extra | Volume with 10% extra | Cubic yards | Bags |
 | --------------------------------------------------------------------- | ------------------- | --------------------- | ----------- | ---- |
-| Slab, 12 ft × 10 ft × 4 in (`default`)                                | 40.00               | 44.00                 | 1.63        | 74   |
+| Slab, 12 ft × 10 ft × 4 in (starting values)                          | 40.00               | 44.00                 | 1.63        | 74   |
 | Footing, 18 ft × 16 in × 8 in, 3 pieces (`?v=1&sh=footing&l=216&n=3`) | 48.00               | 52.80                 | 1.96        | 88   |
 | Column, 12 in diameter × 8 ft, 1 piece (`?v=1&sh=column`)             | 6.28                | 6.91                  | 0.26        | 12   |
 | Steps, 3 steps, 4 ft wide, 7 in rise, 11 in run (`?v=1&sh=steps`)     | 12.83               | 14.12                 | 0.52        | 24   |

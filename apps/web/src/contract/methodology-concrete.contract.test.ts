@@ -152,7 +152,8 @@ describe('methodology: formulas, yields and pi (trust-pages › [TP23])', () => 
     const digits = String((PI.num * 10n ** 35n) / PI.den).replace(/^(\d)/, '$1.');
     expect(digits).toBe('3.14159265358979323846264338327950288');
     expect(section).toContain(digits);
-    expect(section).toContain('10^-35');
+    expect(section).toContain('10⁻³⁵');
+    expect(section).not.toContain('10^-35');
   });
 });
 
@@ -165,16 +166,19 @@ interface Case {
   readonly bags: string;
 }
 
-/** The rows of the first table of a section: a query in backticks, then net, total, yards and bags. */
+/** The row of the page's starting values carries no query: its label ends in this marker. */
+const STARTING = /^\|.*\((starting values|valores iniciales)\)/;
+
+/** The rows of the first table of a section: a query in backticks (or the starting values), then net, total, yards and bags. */
 const casesOf = (section: string): Case[] =>
   section
     .split('\n')
-    .filter((line) => /^\|.*`\?v=1[^`]*`/.test(line) || /^\|.*`default`/.test(line))
+    .filter((line) => /^\|.*`\?v=1[^`]*`/.test(line) || STARTING.test(line))
     .map((line) => {
       const cells = line.split('|').map((cell) => cell.trim());
-      const query = /`(\?v=1[^`]*|default)`/.exec(cells[1] ?? '')?.[1] ?? '';
+      const query = /`(\?v=1[^`]*)`/.exec(cells[1] ?? '')?.[1] ?? '';
       const [, , net = '', total = '', yards = '', bags = ''] = cells;
-      return { query: query === 'default' ? '' : query, net, total, yards, bags };
+      return { query, net, total, yards, bags };
     });
 
 /** What the engine shows for a case at the displayed precision: net and total ft³, yd³ and bags. */
