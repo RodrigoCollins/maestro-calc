@@ -171,6 +171,58 @@ describe('scan tokens (fraction-format › Length text grammar)', () => {
     }
   });
 
+  // spec: fraction-format delta › Length text grammar [FPX1]: a feet word glued to the inches digits
+  it.each([
+    ['12ft6in', 'ft', 'in'],
+    ['12FT6 IN', 'FT', 'IN'],
+    ['12feet6inches', 'feet', 'inches'],
+  ])('splits the feet word and the inches digits of %j', (text, feetWord, inchWord) => {
+    const tokens = tokensOf(text);
+    expect(tokens.map((token) => [token.kind, token.text])).toEqual(
+      text.includes(' ')
+        ? [
+            ['uint', '12'],
+            ['unit', feetWord],
+            ['uint', '6'],
+            ['ws', ' '],
+            ['unit', inchWord],
+          ]
+        : [
+            ['uint', '12'],
+            ['unit', feetWord],
+            ['uint', '6'],
+            ['unit', inchWord],
+          ],
+    );
+    expect(tokens[1]).toMatchObject({ unit: ft, symbol: false, start: 2 });
+    expect(tokens[2]).toMatchObject({ start: 2 + feetWord.length });
+  });
+
+  it('splits the feet word before an inch mark and keeps the unknown unit otherwise', () => {
+    expect(tokensOf('1ft2"').map((token) => token.text)).toEqual(['1', 'ft', '2', '"']);
+    expect(scan('5ft2')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('5 ft2 in')).toStrictEqual(failure('UNKNOWN_UNIT', 2));
+    expect(scan('5ft2 inx')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('5ft2 in2')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('5m2in')).toStrictEqual(failure('UNKNOWN_UNIT', 1));
+    expect(scan('1ft1234567890123456789in')).toStrictEqual(failure('TOO_LARGE', 3));
+  });
+
+  // spec: fraction-format delta › Length text grammar [FPX2]: a period glued to a unit word
+  it('drops a period glued to a unit word and keeps every other period', () => {
+    expect(tokensOf('5 ft.').map((token) => token.text)).toEqual(['5', ' ', 'ft']);
+    expect(tokensOf('5 in.5').map((token) => token.text)).toEqual(['5', ' ', 'in', '5']);
+    expect(tokensOf('5 m. 2').map((token) => token.text)).toEqual(['5', ' ', 'm', ' ', '2']);
+    expect(tokensOf('5 ft..').map((token) => [token.kind, token.start])).toEqual([
+      ['uint', 0],
+      ['ws', 1],
+      ['unit', 2],
+      ['dot', 5],
+    ]);
+    expect(tokensOf('5. ').map((token) => token.kind)).toEqual(['uint', 'dot']);
+    expect(tokensOf(`5' .`).map((token) => token.kind)).toEqual(['uint', 'unit', 'ws', 'dot']);
+  });
+
   // spec: Unknown unit [FP11]: the unit token is the maximal [A-Za-z]+[0-9]* run
   it.each([
     ['5 furlongs', 2],

@@ -171,8 +171,10 @@ describe('parseLength simple forms (fraction-format › Length text grammar)', (
   it('rejects an unknown unit word with the offset of the word', () => {
     expect(parsed('5 furlongs')).toEqual(failure('UNKNOWN_UNIT', 2));
     expect(parsed('5ft2')).toEqual(failure('UNKNOWN_UNIT', 1));
-    // the unit token is the maximal [A-Za-z]+[0-9]* run, so `ft3` is one (unknown) word
-    expect(parsed('5ft3in')).toEqual(failure('UNKNOWN_UNIT', 1));
+    // the unit token is the maximal [A-Za-z]+[0-9]* run, so `ft3` is one (unknown) word, except
+    // before an inch mark, where it is the feet mark and the inches (`5ft3in`, [FPX1])
+    expect(parsed('5ft3')).toEqual(failure('UNKNOWN_UNIT', 1));
+    expect(parsed('5ft3in')).toBe('63');
   });
 
   // spec: Length text grammar: a decimal point consumes the next token whether or not digits
@@ -213,7 +215,7 @@ describe('parseLength compound forms (fraction-format › Length text grammar)',
     ['12 ft.6 in.', '150'],
     ['12ft.6in.', '150'],
     ['5 in.', '5'],
-    ['5 m.', '5000/127'],
+    ['5 m.', '25000/127'],
     ['5 ft.', '60'],
   ])('reads %j as %s in', (text, inches) => {
     expect(parsed(text)).toBe(inches);
@@ -226,9 +228,9 @@ describe('parseLength compound forms (fraction-format › Length text grammar)',
     ['5 m2', 'UNKNOWN_UNIT', 2],
     ['12ft6inx', 'UNKNOWN_UNIT', 2],
     ['12ft6in2', 'UNKNOWN_UNIT', 2],
-    ['5 in.5', 'MALFORMED', 6],
-    ['5 ft..', 'MALFORMED', 5],
-    ['5 ft. .', 'MALFORMED', 6],
+    ['5 in.5', 'MALFORMED', 5],
+    ['5 ft..', 'MALFORMED', 6],
+    ['5 ft. .', 'MALFORMED', 7],
   ] as const)('keeps %j a %s failure at %i', (text, code, offset) => {
     expect(parsed(text)).toStrictEqual(failure(code, offset));
   });
