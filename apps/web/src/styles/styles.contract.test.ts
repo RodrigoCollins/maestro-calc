@@ -57,6 +57,7 @@ const GROUND = '#EEF1EF';
 const SURFACE = '#FFFFFF';
 const WHATSAPP = '#1FAF5A';
 const ON_WHATSAPP = '#06210F';
+const ERROR = '#B42318';
 
 describe('Blueprint tokens (site-shell › Design tokens)', () => {
   // spec: site-shell › [SS5]
@@ -78,6 +79,7 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
     ['--color-surface', SURFACE, 'Sheet white'],
     ['--color-whatsapp', WHATSAPP, 'WhatsApp'],
     ['--color-on-whatsapp', ON_WHATSAPP, 'WhatsApp'],
+    ['--color-error', ERROR, 'Error red'],
   ])('names %s by role with the %s swatch comment', (name, hex, swatch) => {
     expect(colour(name)).toBe(hex);
     const line = tokens.split('\n').find((text) => text.includes(`${name}:`));
@@ -127,6 +129,11 @@ describe('contrast (site-shell › [SS7, SS14, SS16])', () => {
   it('keeps the WhatsApp label legible: near-black text on the WhatsApp green', () => {
     expect(contrast(ON_WHATSAPP, WHATSAPP)).toBeGreaterThanOrEqual(4.5);
     expect(contrast('#FFFFFF', WHATSAPP)).toBeLessThan(4.5);
+  });
+
+  it('keeps the error red legible on the ground and on the white tool surface', () => {
+    expect(contrast(ERROR, GROUND)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(ERROR, SURFACE)).toBeGreaterThanOrEqual(4.5);
   });
 
   it('keeps text at 4.5:1 or more on the page ground', () => {
@@ -244,10 +251,27 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     },
   );
 
-  it('reserves the height of the tallest shape, four rows, for the shape area', () => {
-    const row = rem(declared('.calc-field', 'min-height'));
-    expect(row).toBeGreaterThanOrEqual(96);
-    expect(declared('.calc-shape-area', 'min-height')).toContain('4 *');
+  // The shape area is a grid with a gap, so its reserved height is four rows plus three gaps.
+  it('reserves the height of the tallest shape, four rows and three gaps, for the shape area', () => {
+    const row = declared('.calc-field', 'min-height');
+    expect(rem(row)).toBeGreaterThanOrEqual(96);
+    expect(declared('.calc-shape-area', 'display')).toBe('grid');
+    const gap = rules.get('.calc-shape-area')?.['gap'];
+    expect(gap).toBe('var(--space-3)');
+    expect(declared('.calc-shape-area', 'min-height')).toBe(
+      `calc(4 * ${row} + 3 * ${resolve(gap)})`,
+    );
+  });
+
+  it('has no rule for a class that no part renders', () => {
+    expect([...rules.keys()]).not.toContain('.calc-fields');
+  });
+
+  // spec: calculator-page › Form controls: an invalid input says so in the error colour
+  it('draws an invalid input in the error colour token, not the link colour', () => {
+    expect(rules.get(".calc-field input[aria-invalid='true']")?.['border-color']).toBe(
+      'var(--color-error)',
+    );
   });
 
   // spec: calculator-page › Accessibility of the interactive page: no animation, ring untouched

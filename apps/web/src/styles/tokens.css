@@ -10,6 +10,7 @@
   --color-surface: #ffffff; /* Sheet white */
   --color-whatsapp: #1faf5a; /* WhatsApp */
   --color-on-whatsapp: #06210f; /* WhatsApp: near-black text, white fails contrast */
+  --color-error: #b42318; /* Error red */
 
   /* Type scale: 17 px body, condensed display sizes for headings. */
   --text-base: 1.0625rem;
