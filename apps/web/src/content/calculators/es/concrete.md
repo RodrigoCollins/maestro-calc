@@ -72,11 +72,11 @@ Son estimaciones. Confirma las cantidades con tu proveedor y con el código de c
 
 ### ¿Cuántas bolsas de 80 lb de concreto necesito para una losa de 12 ft por 10 ft y 4 in de espesor?
 
-Aproximadamente 74 bolsas con 10 por ciento de extra. La losa son 40 pies cúbicos, 44 pies cúbicos con el extra, y una bolsa de 80 lb rinde aproximadamente 0.60 pies cúbicos. Sin extra necesitas 67 bolsas.
+Aproximadamente 74 bolsas con 10 por ciento de extra. La losa tiene 40 pies cúbicos, 44 pies cúbicos con el extra, y una bolsa de 80 lb rinde aproximadamente 0.60 pies cúbicos. Sin extra necesitas 67 bolsas.
 
-### ¿Cuántas yardas cúbicas de concreto es una losa de 4 in?
+### ¿Cuántas yardas cúbicas de concreto lleva una losa de 4 in?
 
-Multiplica el largo por el ancho en pies, multiplica por 1/3 para 4 pulgadas y divide entre 27. Una losa de 12 ft por 10 ft son 40 pies cúbicos, es decir 1.48 yardas cúbicas antes del extra y 1.63 yardas cúbicas con 10 por ciento de extra.
+Multiplica el largo por el ancho en pies, multiplica por 1/3 para 4 pulgadas y divide entre 27. Una losa de 12 ft por 10 ft tiene 40 pies cúbicos, es decir 1.48 yardas cúbicas antes del extra y 1.63 yardas cúbicas con 10 por ciento de extra.
 
 ### ¿Cuánto concreto rinde una bolsa de mezcla?
 
@@ -96,7 +96,7 @@ Usa el área del círculo por la altura. Con los valores iniciales de 12 in de d
 
 ### ¿Cómo calculo el concreto de unos escalones?
 
-Elige Escalones y escribe el ancho, la altura (rise), la profundidad (run) y la cantidad de escalones. Cada escalón es un bloque desde el suelo, así que el volumen crece con cada uno. Los tres escalones iniciales son aproximadamente 12.83 pies cúbicos, o 24 bolsas de 80 lb con 10 por ciento de extra.
+Elige Escalones y escribe el ancho, la altura (rise), la profundidad (run) y la cantidad de escalones. Cada escalón es un bloque desde el suelo, así que el volumen crece con cada uno. Los tres escalones iniciales son aproximadamente 12.83 pies cúbicos antes del extra. Con 10 por ciento de extra, son 24 bolsas de 80 lb.
 
 ### ¿Puedo usar metros y centímetros?
 

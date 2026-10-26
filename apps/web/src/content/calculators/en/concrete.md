@@ -96,7 +96,7 @@ Use the area of the circle times the height. With the default 12 in diameter and
 
 ### How do I calculate concrete for steps?
 
-Pick Steps, then enter the step width, the rise, the run and the number of steps. Each step is a block from the ground up, so the volume grows with every step. The default three steps are about 12.83 cubic feet, or 24 bags of 80 lb with 10 percent extra.
+Pick Steps, then enter the step width, the rise, the run and the number of steps. Each step is a block from the ground up, so the volume grows with every step. The default three steps are about 12.83 cubic feet before the extra. With 10 percent extra, that is 24 bags of 80 lb.
 
 ### Can I use meters and centimeters?
 

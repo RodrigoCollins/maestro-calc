@@ -101,18 +101,18 @@ const ROWS = [
   ],
   [
     'calc.concrete.page.answer.footing',
-    'Footing ({length} long, {width} wide, {depth} deep, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
-    'Zapata ({length} de largo, {width} de ancho, {depth} de profundidad, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Footing ({length} long, {width} wide, {depth} deep) × {count}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Zapata ({length} de largo, {width} de ancho, {depth} de profundidad) × {count}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   ],
   [
     'calc.concrete.page.answer.column',
-    'Column ({diameter} diameter, {height} tall, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
-    'Columna ({diameter} de diámetro, {height} de alto, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Column ({diameter} diameter, {height} tall) × {count}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Columna ({diameter} de diámetro, {height} de alto) × {count}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   ],
   [
     'calc.concrete.page.answer.steps',
-    'Steps (count {stepCount}, {stepWidth} wide, {rise} rise, {run} run): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
-    'Escalones (cantidad {stepCount}, {stepWidth} de ancho, {rise} de altura, {run} de profundidad): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Steps ({stepWidth} wide, {rise} rise, {run} run) × {stepCount}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Escalones ({stepWidth} de ancho, {rise} de altura, {run} de profundidad) × {stepCount}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   ],
 ] as const;
 

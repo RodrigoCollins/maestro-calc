@@ -50,9 +50,9 @@ export const enConcrete = {
   'calc.concrete.page.answer.slab':
     'Slab ({length} × {width}, {thickness} thick): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.footing':
-    'Footing ({length} long, {width} wide, {depth} deep, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Footing ({length} long, {width} wide, {depth} deep) × {count}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.column':
-    'Column ({diameter} diameter, {height} tall, count {count}): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Column ({diameter} diameter, {height} tall) × {count}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.steps':
-    'Steps (count {stepCount}, {stepWidth} wide, {rise} rise, {run} run): {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+    'Steps ({stepWidth} wide, {rise} rise, {run} run) × {stepCount}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
 } as const;

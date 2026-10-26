@@ -53,9 +53,9 @@ export const esConcrete = {
   'calc.concrete.page.answer.slab':
     'Losa ({length} × {width}, {thickness} de espesor): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.footing':
-    'Zapata ({length} de largo, {width} de ancho, {depth} de profundidad, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Zapata ({length} de largo, {width} de ancho, {depth} de profundidad) × {count}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.column':
-    'Columna ({diameter} de diámetro, {height} de alto, cantidad {count}): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Columna ({diameter} de diámetro, {height} de alto) × {count}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.steps':
-    'Escalones (cantidad {stepCount}, {stepWidth} de ancho, {rise} de altura, {run} de profundidad): {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+    'Escalones ({stepWidth} de ancho, {rise} de altura, {run} de profundidad) × {stepCount}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
 } as const satisfies CatalogOf<typeof enConcrete>;

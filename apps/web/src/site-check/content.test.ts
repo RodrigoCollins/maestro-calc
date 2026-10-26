@@ -874,7 +874,7 @@ describe('calculator structured data (site-seo › [SE19], [SE20], [SE21], [SE22
             first['name'] = 'What\'s a "yard"?';
             first['acceptedAnswer'] = {
               '@type': 'Answer',
-              text: 'It\'s a \'cubic\' yard... 27 ft3 --- or 27--28.',
+              text: "It's a 'cubic' yard... 27 ft3 --- or 27--28.",
             };
             return graph;
           },
