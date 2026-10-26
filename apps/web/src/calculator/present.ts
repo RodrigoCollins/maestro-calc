@@ -26,6 +26,9 @@ import {
 
 type Length = Quantity<'length'>;
 
+/** What a figure shows while its field is invalid or the page has no result. */
+export const DASH = '—';
+
 /** The largest denominator of a feet-and-inches fraction (1/64 of an inch). */
 const FRACTION_LIMIT = 64n;
 /** `toDecimalParts` rounds to at most this many places. */

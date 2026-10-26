@@ -88,3 +88,21 @@ export const percentCalculator = (max: number) =>
     outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
     compute: () => unused,
   });
+
+const alpha = { materialId: 'alpha', purchaseUnit: 'box-a', qty: 1234n } as const;
+const beta = { materialId: 'beta', purchaseUnit: 'bag-b', qty: 7n } as const;
+
+/**
+ * Two shopping lines that the engine returns in the opposite order of the page's (`beta` first).
+ * With `size` 2 the engine drifts and returns only `beta`.
+ */
+export const shoppingCalculator = defineCalculator({
+  id: 'shopping-fixture',
+  inputs: [{ kind: 'count', key: 'size', urlKey: 'c1', default: 1, min: 1, max: 3 }],
+  outputs: [{ key: 'total', measure: 'length', role: 'primary' }],
+  compute: ({ size }) => ({
+    outputs: { total: zero },
+    shopping: size === 2 ? [beta] : [beta, alpha],
+    warnings: [],
+  }),
+});
