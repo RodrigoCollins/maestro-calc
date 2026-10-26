@@ -1,10 +1,35 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildClient } from './__testing__/client-build.ts';
-import { graphViolations, reaches } from './__testing__/client-graph.ts';
+import { graphViolations, reaches, shortPath } from './__testing__/client-graph.ts';
 import { fromRoot } from './root.ts';
 
 const ENTRY = fromRoot('apps/web/src/client/entries/concrete.ts');
 const ENTRY_SOURCE = `import '${ENTRY}';`;
+
+/** The module specifiers a source imports, sorted (`import … from 'x'` and `import 'x'`). */
+const importsOf = (source: string): string[] =>
+  Array.from(
+    source.matchAll(/^\s*import\b[^'"]*['"]([^'"]+)['"]/gm),
+    ([, specifier = '']) => specifier,
+  ).sort();
+
+describe('concrete client entry: its own imports (calculator-page › [CP48]; calculator-web-core › [CWC25])', () => {
+  // spec: calculator-page › [CP48] the entry imports the generic mount and its page module, nothing else
+  it('imports exactly the generic mount and the concrete page module', () => {
+    expect(importsOf(readFileSync(ENTRY, 'utf8'))).toEqual([
+      '../../calculator/concrete/page.ts',
+      '../mount.ts',
+    ]);
+  });
+
+  it('reads the specifiers of an entry, whatever the import form', () => {
+    expect(importsOf(`import { a } from './a.ts';\nimport './b.ts';\nconst c = 'x';`)).toEqual([
+      './a.ts',
+      './b.ts',
+    ]);
+  });
+});
 
 describe('concrete client entry: source graph (calculator-page › [CP48])', () => {
   // spec: calculator-page › [CP48] the entry never reaches the registry, another calculator or the data root
@@ -15,6 +40,22 @@ describe('concrete client entry: source graph (calculator-page › [CP48])', () 
     expect(reaches(modules, '/packages/data/src/yields/concrete-mix.ts')).toBe(true);
     expect(reaches(modules, '/packages/core/src/calculators/concrete/concrete.ts')).toBe(true);
     expect(graphViolations(modules)).toEqual([]);
+  });
+
+  // spec: calculator-web-core › [CWC2], [CWC25] the slots and the concrete files come in through the page module, the builder never
+  it('reaches the slots and the concrete files through the page module and no builder or catalog', async () => {
+    const { modules } = await buildClient(ENTRY_SOURCE);
+    for (const file of ['page', 'shapes', 'present']) {
+      expect(reaches(modules, `/apps/web/src/calculator/concrete/${file}.ts`), file).toBe(true);
+    }
+    for (const slot of ['choices', 'steppers', 'shopping', 'costs', 'answer']) {
+      expect(reaches(modules, `/apps/web/src/calculator/slots/${slot}.ts`), slot).toBe(true);
+    }
+    expect(reaches(modules, '/apps/web/src/client/mount.ts')).toBe(true);
+    expect(modules.filter((id) => id.includes('/apps/web/src/lib/')).map(shortPath)).toEqual([
+      'apps/web/src/lib/concrete.ts',
+    ]);
+    expect(modules.some((id) => id.includes('/packages/i18n/'))).toBe(false);
   });
 
   // seeded graphs: each violation is found and named by its path
