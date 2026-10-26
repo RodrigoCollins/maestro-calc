@@ -177,6 +177,10 @@ Note: 16 keys is the end-of-change state of the concrete-calculator change (it w
 | `site.calculator.copyFailed` | Could not copy. Select the link and copy it. | No se pudo copiar. Selecciona el enlace y cópialo. |
 | `site.calculator.noscript` | This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example. | Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo. |
 | `site.calculator.estimateNote` | Estimates only. Check quantities with your supplier and the local building code. | Son estimaciones. Confirma las cantidades con tu proveedor y el código de construcción local. |
+| `site.calculator.hintFt` | feet | pies |
+| `site.calculator.hintIn` | inches | pulgadas |
+| `site.calculator.hintM` | meters | metros |
+| `site.calculator.hintCm` | centimeters | centímetros |
 
 #### Scenario: [ICW18] Concrete register
 - GIVEN every Spanish message of the `concrete` module and of `site.calculator.*`

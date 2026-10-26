@@ -39,15 +39,41 @@ describe('CalculatorField (calculator-page › Form controls, [CP12], [CP41] sta
     expect(wrapper?.hasAttribute('hidden')).toBe(true);
   });
 
-  it('is visible and untagged by default, and renders its slot after the input', async () => {
-    const root = await renderComponent(
-      CalculatorField,
-      { field },
-      { slots: { default: '<p class="calc-help">Help</p>' } },
-    );
+  it('is visible and untagged by default, and has no description without a hint or help', async () => {
+    const root = await renderComponent(CalculatorField, { field });
     const wrapper = root.querySelector('.calc-field');
     expect(wrapper?.hasAttribute('data-shapes')).toBe(false);
     expect(wrapper?.hasAttribute('hidden')).toBe(false);
-    expect(wrapper?.querySelector('input + .calc-help')?.text).toBe('Help');
+    expect(root.querySelector('input')?.hasAttribute('aria-describedby')).toBe(false);
+    expect(root.querySelector('small')).toBeNull();
+    expect(root.querySelector('.calc-help')).toBeNull();
+  });
+
+  // spec: calculator-page › [CP51] the unit hint is visible text the input is described by
+  it('renders the unit hint after the input and describes the input by it', async () => {
+    const root = await renderComponent(CalculatorField, { field: { ...field, hint: 'feet' } });
+    const hint = root.querySelector('input + small');
+    expect(hint?.text).toBe('feet');
+    expect(hint?.getAttribute('id')).toBe('calc-length-hint');
+    expect(hint?.hasAttribute('hidden')).toBe(false);
+    expect(root.querySelector('input')?.getAttribute('aria-describedby')).toBe('calc-length-hint');
+  });
+
+  // spec: calculator-page › Form controls: the waste help is tied to its input (the slot errors use)
+  it('renders the help text after the input and describes the input by it', async () => {
+    const root = await renderComponent(CalculatorField, { field: { ...field, help: 'Help' } });
+    const help = root.querySelector('input + .calc-help');
+    expect(help?.text).toBe('Help');
+    expect(help?.getAttribute('id')).toBe('calc-length-help');
+    expect(root.querySelector('input')?.getAttribute('aria-describedby')).toBe('calc-length-help');
+  });
+
+  it('describes the input by the hint, then the help', async () => {
+    const root = await renderComponent(CalculatorField, {
+      field: { ...field, hint: 'feet', help: 'Help' },
+    });
+    expect(root.querySelector('input')?.getAttribute('aria-describedby')).toBe(
+      'calc-length-hint calc-length-help',
+    );
   });
 });

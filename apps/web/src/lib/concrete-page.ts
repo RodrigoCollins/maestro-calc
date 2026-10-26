@@ -32,6 +32,18 @@ const CATALOGS: Record<Locale, Messages> = {
   es: { ...esCommon, ...esConcrete, ...esSite },
 };
 
+/** The catalog key of the hint of the unit a plain number is read in (US system). */
+const HINTS: Readonly<Record<string, string>> = {
+  ft: 'site.calculator.hintFt',
+  in: 'site.calculator.hintIn',
+};
+
+const hintKeyOf = (unit: string): string => {
+  const key = HINTS[unit];
+  if (key === undefined) throw new Error(`no unit hint for ${unit}`);
+  return key;
+};
+
 /** The page is built from the default state of the engine, with no query and the US unit system. */
 const SYSTEM = 'imperial';
 
@@ -92,6 +104,7 @@ export const concreteView = (locale: Locale): CalculatorView => {
       value: defaultText(input),
       mode: isCount ? 'numeric' : 'decimal',
       ...(input.kind === 'money' ? { placeholder: '0.00' } : {}),
+      ...(input.kind === 'length' ? { hint: text(hintKeyOf(input.defaultUnit)) } : {}),
     };
   };
 
@@ -192,6 +205,12 @@ export const concreteView = (locale: Locale): CalculatorView => {
       copy: {
         copied: text('site.calculator.linkCopied'),
         failed: text('site.calculator.copyFailed'),
+      },
+      hints: {
+        ft: text('site.calculator.hintFt'),
+        in: text('site.calculator.hintIn'),
+        m: text('site.calculator.hintM'),
+        cm: text('site.calculator.hintCm'),
       },
     },
   };

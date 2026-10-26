@@ -111,6 +111,12 @@ Always visible, after the shape fields: `waste` (with `wasteHelp` text, a "Less 
 - WHEN the controls are inspected
 - THEN every input has a label whose text is the `calc.concrete.inputs.<key>` catalog value of the locale, length/percent/money inputs have `inputmode="decimal"`, count inputs `inputmode="numeric"`, and there is no submit button
 
+#### Scenario: [CP51] Unit hint on every length field
+- GIVEN the default page (US system)
+- WHEN the ten length fields are read
+- THEN each has a visible hint after its input, `site.calculator.hintFt` (`length`, `width`, `height`, `stepWidth`) or `site.calculator.hintIn` (the other six), and its input is described by it (`aria-describedby`); the count, waste and price inputs have no unit hint, and the waste input is described by its help text
+- AND under `metric` the hints read `site.calculator.hintM` (the four long fields) and `site.calculator.hintCm` (the six others), written by the script from inert messages in the page
+
 #### Scenario: [CP13] Touch targets on a phone
 - GIVEN Chromium at 390x844
 - WHEN the bounding boxes of the visible buttons and inputs are measured

@@ -8,18 +8,31 @@ interface Props {
   hidden?: boolean;
 }
 const { field, shapes, hidden = false } = Astro.props;
+const id = `calc-${field.key}`;
+const { hint, help } = field;
+// The input is described by its unit hint and its help text; a message for an error uses the same
+// attribute, so the script swaps it in (calculator-page › Errors without a button).
+const describedBy = [hint === undefined ? '' : `${id}-hint`, help === undefined ? '' : `${id}-help`]
+  .filter((part) => part !== '')
+  .join(' ');
 ---
 
 <div class="calc-field" data-shapes={shapes?.join(' ')} hidden={hidden}>
-  <label for={`calc-${field.key}`}>{field.label}</label>
+  <label for={id}>{field.label}</label>
   <input
-    id={`calc-${field.key}`}
+    id={id}
     name={field.key}
     inputmode={field.mode}
     autocomplete="off"
     value={field.value}
     placeholder={field.placeholder}
+    aria-describedby={describedBy === '' ? undefined : describedBy}
     disabled
   />
-  <slot />
+  {hint !== undefined && <small id={`${id}-hint`}>{hint}</small>}
+  {help !== undefined && (
+    <p class="calc-help" id={`${id}-help`}>
+      {help}
+    </p>
+  )}
 </div>

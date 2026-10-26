@@ -76,6 +76,50 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     ]);
   });
 
+  // spec: calculator-page › [CP51] a visible unit hint on every length field, tied to its input
+  it.each([
+    ['en', { ft: 'feet', in: 'inches' }],
+    ['es', { ft: 'pies', in: 'pulgadas' }],
+  ] as const)(
+    'shows the %s unit hint beside every length field and describes it',
+    async (locale, words) => {
+      const root = await render(locale);
+      const feet = ['length', 'width', 'height', 'stepWidth'];
+      const inches = ['thickness', 'footingWidth', 'footingDepth', 'diameter', 'rise', 'run'];
+      for (const [keys, word] of [
+        [feet, words.ft],
+        [inches, words.in],
+      ] as const) {
+        for (const key of keys) {
+          const hint = root.querySelector(`#calc-${key}-hint`);
+          expect(hint?.text, key).toBe(word);
+          expect(hint?.tagName, key).toBe('SMALL');
+          expect(
+            root.querySelector(`input[name="${key}"]`)?.getAttribute('aria-describedby'),
+            key,
+          ).toBe(`calc-${key}-hint`);
+        }
+      }
+      expect(root.querySelectorAll('small')).toHaveLength(10);
+      for (const key of ['stepCount', 'count', 'bagPrice', 'readyMixPrice']) {
+        expect(
+          root.querySelector(`input[name="${key}"]`)?.hasAttribute('aria-describedby'),
+          key,
+        ).toBe(false);
+      }
+    },
+  );
+
+  // spec: calculator-page › Form controls: the waste help is tied to the waste input
+  it('describes the waste input by its help text', async () => {
+    const root = await render('en');
+    const input = root.querySelector('input[name="waste"]');
+    expect(input?.getAttribute('aria-describedby')).toBe('calc-waste-help');
+    expect(root.querySelector('#calc-waste-help')?.text.trim()).toBe(
+      enConcrete['calc.concrete.page.wasteHelp'],
+    );
+  });
+
   it('leaves the prices empty with the 0.00 placeholder', async () => {
     const root = await render('en');
     for (const name of ['bagPrice', 'readyMixPrice']) {
