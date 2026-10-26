@@ -126,12 +126,14 @@ Lighthouse CI MUST run in the `site-browser` job on exactly one page per templat
 
 ### Requirement: CI job shape and cost limits
 
-The browser checks MUST run in one job named `site-browser`, `needs: verify`, Chromium only, with the Playwright browser directory cached keyed on the Playwright version, `timeout-minutes` <= 10, `permissions: contents: read`, no `continue-on-error`. Playwright reports and Lighthouse output MUST be uploaded as artifacts only on failure. The job MUST run on every pull request and push to `main` (no path filter).
+The browser checks MUST run in one job named `site-browser`, `needs: verify`, Chromium only, with the Playwright browser directory cached keyed on the Playwright version and the runner image, `timeout-minutes` <= 15, `permissions: contents: read`, no `continue-on-error`. Playwright reports and Lighthouse output MUST be uploaded as artifacts only on failure. The job MUST run on every pull request and push to `main` (no path filter).
 
 #### Scenario: [SQ15] Job definition
 - GIVEN `.github/workflows/ci.yml`
 - WHEN parsed
-- THEN job `site-browser` has `needs: verify`, `timeout-minutes` <= 10, installs only `chromium`, has a cache step for the browser directory, and no `continue-on-error`
+- THEN job `site-browser` has `needs: verify`, `timeout-minutes` <= 15, installs only `chromium`, has a cache step for the browser directory, and no `continue-on-error`
+
+(Amended 2026-10-26 after the concrete-calculator archive: the bound was 10. A warm cache runs the job in about five minutes, but `main` cannot read the caches saved by pull-request branches, so its first run after a cache-key change installs Chromium and its OS packages cold, about seven minutes, and a ten-minute bound killed run 40328577005 before the step that saves the cache. The measured target stays about five minutes warm.)
 
 #### Scenario: [SQ16] Not skipped
 - GIVEN a pull request changing only documentation
