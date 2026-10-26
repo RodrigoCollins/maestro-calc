@@ -3,7 +3,14 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
 import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
-import { langOf, notFoundSamples, routable, unknown } from './urls.ts';
+import {
+  calculatorPaths,
+  langOf,
+  notFoundSamples,
+  routable,
+  staticPaths,
+  unknown,
+} from './urls.ts';
 
 const headersFile = readFileSync(
   new URL('../../../apps/web/public/_headers', import.meta.url),
@@ -15,7 +22,8 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
-const MAX_TABS = 30;
+// A calculator page has about twenty controls between the header and the footer.
+const MAX_TABS = 40;
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
@@ -74,12 +82,38 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         expect(font).toBeGreaterThanOrEqual(17);
       });
 
-      test('loads nothing from another origin, no script and no CSP violation', async ({
-        page,
-        baseURL,
-      }) => {
-        expect(await loadedFromElsewhere(page, baseURL, path)).toEqual(CLEAN);
-      });
+      if (calculatorPaths.includes(path)) {
+        // spec: site-quality › [SQ5], site-shell › [SS21] one module script from /_astro/, nothing foreign
+        test('loads only same-origin files, its own module script and no CSP violation', async ({
+          page,
+          baseURL,
+        }) => {
+          const { foreign, scripts, violations } = await loadedFromElsewhere(page, baseURL, path);
+          expect({ foreign, violations }).toEqual({ foreign: [], violations: [] });
+          expect(scripts.length).toBeGreaterThanOrEqual(1);
+          for (const script of scripts) {
+            expect(new URL(script).pathname, script).toMatch(/^\/_astro\/.+\.js$/);
+          }
+        });
+
+        // spec: site-routing-i18n › [SR16] a state in the query answers 200 with the page of the clean path
+        test('answers a link with a state in its query with the body of the clean path', async ({
+          request,
+        }) => {
+          const clean = await request.get(path);
+          const withState = await request.get(`${path}?v=1&l=240`);
+          expect(clean.status()).toBe(200);
+          expect(withState.status()).toBe(200);
+          expect(await withState.text()).toBe(await clean.text());
+        });
+      } else {
+        test('loads nothing from another origin, no script and no CSP violation', async ({
+          page,
+          baseURL,
+        }) => {
+          expect(await loadedFromElsewhere(page, baseURL, path)).toEqual(CLEAN);
+        });
+      }
 
       test('shows a skip link on the first Tab and Enter jumps to main', async ({ page }) => {
         await page.goto(path);
@@ -151,6 +185,24 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         expect(await hop()).toBe(200);
         expect(pathOf()).toBe(path);
       });
+    });
+  }
+});
+
+// spec: site-quality › [SQ28]: Cloudflare features that inject scripts stay off. The same test runs as
+// the post-deploy smoke of tasks F.4 with BASE_URL set to the production site.
+test.describe('pages without a script (site-quality › [SQ28], site-shell › [SS19])', () => {
+  for (const path of [...staticPaths, ...notFoundSamples]) {
+    test(`${path} requests no script and references no /cdn-cgi/ file`, async ({
+      page,
+      baseURL,
+    }) => {
+      const { scripts } = await loadedFromElsewhere(page, baseURL, path);
+      expect(scripts).toEqual([]);
+      expect(await page.content()).not.toContain('/cdn-cgi/');
+      expect(
+        await (await page.request.get(path, { failOnStatusCode: false })).text(),
+      ).not.toContain('/cdn-cgi/');
     });
   }
 });

@@ -113,6 +113,12 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the client entry', 'apps/web/src/client/entries/<id>.ts'],
     ['the script island', 'apps/web/src/islands/<Id>Script.astro'],
     ['the methodology section', 'apps/web/src/content/pages/{en,es}/methodology.md'],
+    ['the route', 'apps/web/src/routing/routes.ts'],
+    ['the route metadata', 'packages/i18n/src/catalogs/{en,es}/site.ts'],
+    ['the script row', 'apps/web/src/views/CalculatorView.astro'],
+    ['the home link', 'apps/web/src/views/HomeView.astro'],
+    ['the pinned counts', 'apps/web/src/contract/end-state.contract.test.ts'],
+    ['the Lighthouse representative', 'tooling/site-browser/e2e/representative.ts'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),
