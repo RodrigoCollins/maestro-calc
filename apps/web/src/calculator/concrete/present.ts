@@ -8,7 +8,9 @@ import {
   type UnitSystem,
 } from '@maestro-calc/core';
 import type { concrete } from '../../lib/concrete.ts';
+import type { Moment } from '../page-module.ts';
 import {
+  DASH,
   fillMessage,
   groupedInteger,
   moneyText,
@@ -179,4 +181,19 @@ export const answerValues = (
         ...common,
       };
   }
+};
+
+/**
+ * The placeholders of the bag line: the pounds of the pressed bag (they follow the choice even
+ * while a field is invalid) and the cubic feet one bag yields, two places, or a dash without a
+ * result. `yields` are the bag yields of the composition root.
+ */
+export const bagFills = (
+  moment: Moment<typeof concrete>,
+  yields: Yields,
+): Readonly<Record<string, string>> => {
+  const bag = moment.choices.bag;
+  const bagYield = yields[`bag-${bag}`];
+  if (bagYield === undefined) throw new TypeError(`no yield for the ${bag} lb bag`);
+  return { bagLb: bag, yield: moment.result === undefined ? DASH : volumeText(bagYield, ft3) };
 };

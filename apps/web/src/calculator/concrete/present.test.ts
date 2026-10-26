@@ -2,8 +2,9 @@ import { encode, ft3, quantity, usd, type ValidateOptions } from '@maestro-calc/
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../../lib/concrete.ts';
-import { fieldText, fillMessage } from '../present.ts';
-import { answerValues, figuresOf } from './present.ts';
+import type { Moment } from '../page-module.ts';
+import { DASH, fieldText, fillMessage } from '../present.ts';
+import { answerValues, bagFills, figuresOf } from './present.ts';
 
 /** The state and the result of the concrete calculator for form strings; a failed run fails the test. */
 const runOf = (raw: Readonly<Record<string, unknown>>, options?: ValidateOptions) => {
@@ -233,5 +234,41 @@ describe('metric entry (calculator-page › [CP34], [CP50])', () => {
       volumeM3: us.volumeM3,
       bags: us.bags,
     });
+  });
+});
+
+describe('the bag line of the shopping slot (calculator-page › [CP21], [CP54])', () => {
+  const momentOf = (bag: string, withResult: boolean): Moment<typeof concrete> => {
+    const { state, result } = runOf({ bag });
+    return {
+      system: 'imperial',
+      choices: { shape: 'slab', bag },
+      valid: state,
+      result: withResult ? result : undefined,
+    };
+  };
+
+  // spec: calculator-page › [CP21] the pounds and the yield follow the bag
+  it.each([
+    ['80', '0.60'],
+    ['60', '0.45'],
+    ['40', '0.30'],
+  ])('fills the %s lb bag with a yield of %s cubic feet', (bag, bagYield) => {
+    expect(bagFills(momentOf(bag, true), CONCRETE_MIX_YIELDS)).toEqual({
+      bagLb: bag,
+      yield: bagYield,
+    });
+  });
+
+  // spec: calculator-page › [CP30] every figure is a dash while a field is invalid
+  it('keeps the pounds and shows a dash for the yield without a result', () => {
+    expect(bagFills(momentOf('60', false), CONCRETE_MIX_YIELDS)).toEqual({
+      bagLb: '60',
+      yield: DASH,
+    });
+  });
+
+  it('throws when the yield of the chosen bag is missing', () => {
+    expect(() => bagFills(momentOf('80', true), {})).toThrow('no yield for the 80 lb bag');
   });
 });

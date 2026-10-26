@@ -1,9 +1,12 @@
+import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { Rational } from '@maestro-calc/core';
 import { concrete } from '../../lib/concrete.ts';
 import { definePage, type PageModule } from '../page-module.ts';
 import { choiceSlot } from '../slots/choices.ts';
 import { costSlot } from '../slots/costs.ts';
+import { shoppingSlot } from '../slots/shopping.ts';
 import { stepperSlot } from '../slots/steppers.ts';
+import { bagFills } from './present.ts';
 import { SHAPE_FIELDS } from './shapes.ts';
 
 /** The concrete page: module #1 of the generic web layer. Language-free, so the client may import it. */
@@ -12,6 +15,18 @@ export const concretePage: PageModule<typeof concrete> = definePage({
   primary: { imperial: 'volumeYd3', metric: 'volumeM3' },
   choices: choiceSlot(concrete, [{ select: 'shape', shows: SHAPE_FIELDS }]),
   steppers: stepperSlot(concrete, { waste: Rational.of(5) }),
+  shopping: shoppingSlot(concrete, [
+    {
+      material: 'concrete-mix',
+      label: 'shoppingLine',
+      fill: 'bagLb',
+      note: { key: 'bagYield', fill: 'yield' },
+      parts: (moment) => ({
+        unit: `bag-${moment.choices.bag}`,
+        fills: bagFills(moment, CONCRETE_MIX_YIELDS),
+      }),
+    },
+  ]),
   costs: costSlot(
     concrete,
     [
