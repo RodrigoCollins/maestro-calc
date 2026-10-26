@@ -54,6 +54,10 @@ const engineExample = () => {
   };
 };
 
+/** Whether `figure` stands alone in `text`: not inside a longer number (`1.63` is not in `11.635`). */
+const hasFigure = (text: string, figure: string): boolean =>
+  new RegExp(`(?<![\\d.,])${figure.replaceAll('.', '\\.')}(?!\\d|[.,]\\d)`).test(text);
+
 /** What is wrong with a worked example: it differs from the engine, or a figure is not in Formulas. */
 const exampleProblems = (
   example: Readonly<Record<string, unknown>>,
@@ -65,7 +69,7 @@ const exampleProblems = (
     : ['the worked example differs from the engine']),
   ...Object.values(example)
     .map(String)
-    .filter((figure) => !formulas.includes(figure))
+    .filter((figure) => !hasFigure(formulas, figure))
     .map((figure) => `${figure} is missing from the Formulas section`),
 ];
 
@@ -184,6 +188,22 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
   });
 
   // spec: calculator-page › [CP10] length and parity
+  it('reads a figure as a whole token, not as part of a longer number', () => {
+    const entry = entryOf('en');
+    const { workedExample } = frontmatterOf(entry);
+    const engine = engineExample();
+    const only = (text: string) => exampleProblems(workedExample, engine, text);
+    const all = '40.00 44.00 1.63 74 80';
+    expect(only(all)).toEqual([]);
+    expect(only('40.00 44.00 1.63, then 74. Use 80!')).toEqual([]);
+    expect(only('40.00 44.00 11.63 74 80')).toEqual(['1.63 is missing from the Formulas section']);
+    expect(only('40.00 44.00 1.635 74 80')).toEqual(['1.63 is missing from the Formulas section']);
+    expect(only('40.00 44.00 1.63 1074 80')).toEqual(['74 is missing from the Formulas section']);
+    expect(only('40.00 44.00 1.63 74.5 80')).toEqual(['74 is missing from the Formulas section']);
+    expect(only('40.00 44.00 1.63 74 8000')).toEqual(['80 is missing from the Formulas section']);
+    expect(only('140.00 44.00 1.63 74 80')).toEqual(['40.00 is missing from the Formulas section']);
+  });
+
   it.each(LOCALES)('has between 800 and 1,500 words in the %s entry', (locale) => {
     const words = wordsOf(entryOf(locale).body);
     expect(words).toBeGreaterThanOrEqual(800);
