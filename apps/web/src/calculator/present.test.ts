@@ -100,6 +100,17 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     expect(outputText(output('bagCost'), usd(481))).toBe('$481.00');
   });
 
+  // a value of the wrong kind names its output instead of rendering as if it fit (the core types
+  // make this unreachable from a definition; the guard is for a drifted call)
+  it('refuses money for a volume output and a quantity for a money output, naming the key', () => {
+    expect(() => outputText(output('volumeYd3'), usd(481))).toThrow(
+      new TypeError('volumeYd3 is a volume, not money'),
+    );
+    expect(() => outputText(output('bagCost'), quantity(44, ft3))).toThrow(
+      new TypeError('bagCost is money, not a quantity'),
+    );
+  });
+
   it('fails loudly for a fraction hint, which no calculator asks for yet', () => {
     const hinted: OutputDescriptor = {
       key: 'len',
