@@ -78,7 +78,11 @@ export interface ShoppingLineSpec<C extends AnyCalculator> {
   readonly label: string;
   /** The page-key suffix of the note under the line, if it has one. */
   readonly note?: string;
-  /** The placeholders each text carries are the keys of `fills`, so a line may have any number. */
+  /**
+   * The fills by name. The label and the note each carry at most one placeholder `{<name>}` (the
+   * script rewrites one value per text), so a line fills the label with one name and the note with
+   * another, or the same; a text with two placeholders fails the build.
+   */
   parts(moment: Moment<C>): {
     readonly unit: string;
     readonly fills: Readonly<Record<string, string>>;
