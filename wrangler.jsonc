@@ -7,6 +7,8 @@
   "build": {
     "command": "npm run build",
   },
+  // Workers Builds deploys a non-production branch with `wrangler preview`, which needs this block.
+  "previews": {},
   "assets": {
     "directory": "./apps/web/dist",
     // Astro builds with `trailingSlash: 'never'` and `build.format: 'file'`, so `/about` is `about.html`.
