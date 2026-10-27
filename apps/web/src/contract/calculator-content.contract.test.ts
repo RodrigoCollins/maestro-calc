@@ -103,11 +103,12 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
     ).toEqual(['missing entry concrete/es']);
   });
 
-  // seeded: a routed calculator with no entry is named in both locales
+  // seeded: a routed calculator with no entry is named in both locales (a synthetic id, so the case
+  // holds whichever calculator goes live next)
   it('names a routed calculator that has no entry', () => {
-    expect(setProblems(entries, [...CALCULATOR_PAGES, 'rectangle-area'], LOCALES)).toEqual([
-      'missing entry rectangle-area/en',
-      'missing entry rectangle-area/es',
+    expect(setProblems(entries, [...CALCULATOR_PAGES, 'seeded-calculator'], LOCALES)).toEqual([
+      'missing entry seeded-calculator/en',
+      'missing entry seeded-calculator/es',
     ]);
   });
 
