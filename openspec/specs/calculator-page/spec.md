@@ -1,6 +1,6 @@
 # calculator-page
 
-The calculator page template in `apps/web`: server-rendered form and default result, a small same-origin module script for live results, URL state, errors, unit system, language switch and "Copy link", the calculator content collection (copy, sources, review date) and the page checks. First instance: `concrete` at `/concrete-calculator` and `/es/calculadora-de-concreto`. Implements PLAN.md §4.2 (partially), §4.3, §5.1 to §5.3, §6.4, §7.1, §7.2, §8.1 (no ad slots yet). Prefix: CP. Numbers come from `calc-concrete` (cases S1, F1, C1, T1 and the bag tables); the default is the approved mockup: slab 12 ft x 10 ft x 4 in, 10 % extra, 80 lb bags. Out of scope: WhatsApp share, print, PWA, embed, live drawing, ready-mix order increments, IRC warnings, hubs, related calculators, analytics events, ads.
+The calculator page template in `apps/web`: server-rendered form and default result, a small same-origin module script for live results, URL state, errors, unit system, language switch and "Copy link", the calculator content collection (copy, sources, review date) and the page checks. First instance: `concrete` at `/concrete-calculator` and `/es/calculadora-de-concreto`; every later calculator uses the same template through the generic core (`calculator-web-core`). Implements PLAN.md §4.2 (partially), §4.3, §5.1 to §5.3, §6.4, §7.1, §7.2, §8.1 (no ad slots yet). Prefix: CP. Numbers come from `calc-concrete` (cases S1, F1, C1, T1 and the bag tables); the default is the approved mockup: slab 12 ft x 10 ft x 4 in, 10 % extra, 80 lb bags. Out of scope: WhatsApp share, print, PWA, embed, live drawing, ready-mix order increments, IRC warnings, hubs, related calculators, analytics events, ads.
 
 Display conventions (both locales, a US audience): decimal point `.`, thousands separator `,`; volumes 2 decimal places; bags whole numbers; money `$` and 2 decimals (rounded for display only, `money`); percent as the canonical decimal (`10`, `12.5`). Dimension text in sentences: US as `12 ft`, `4 in`, `12 ft 6 in`, `5 ft 3 1/2 in`; metric to 2 places as `3.66 m` (144 in), `3.05 m` (120 in), `10.16 cm` (4 in).
 
@@ -89,9 +89,55 @@ The worked example figures live in `workedExample`, are shown in the Formulas se
 - WHEN words, `h2` and FAQ items are counted
 - THEN each body has 800 to 1,500 words and the counts of `h2` and of FAQ items are equal across locales
 
+### Requirement: Public DOM hooks
+
+The markup of every calculator page MUST expose these hooks, which the browser suites and the script depend on; renaming one is a contract change:
+
+| hook | where | meaning |
+|---|---|---|
+| `data-calculator="<id>"` | the calculator body | the id of the calculator the page renders |
+| `data-unit="<system>"` | each unit-system button | the unit system it selects; the pressed button has `aria-pressed="true"` |
+| `data-choice="<selectKey>"` | the group element around the buttons of a single-choice group | the select key of the descriptor; each button carries the option it sets in its `value` and the pressed one has `aria-pressed="true"` |
+| `data-step="<inputKey>"` | the block around the two stepper buttons | the input they change; each button carries `less` or `more` in its `value` |
+| `data-reserved="<area>"` | each block whose size is reserved in the server HTML and the script fills | the area: `copy`, `answer`, `notice` |
+| `data-copy` | the "Copy link" button | copies the current address |
+| `data-copy-status` | the polite status element | the copy outcome text |
+| `data-answer` | the short answer | the polite live region the script rewrites |
+| `data-not-running` | the "not running" note | hidden by the script once it runs |
+| `data-messages` | the one inert `<template>` | holds the message entries the script reads |
+| `data-primary="<outputKey>"` | the large figure | names the output key it mirrors |
+| `data-primary-before`, `data-primary-after` | the text around the large figure | the two parts of the primary sentence |
+| `data-output="<outputKey>"` | each result value | one per output the page shows (`calculator-page` [CP4]) |
+| `data-line="<index>"` | each shopping line | its position in the declared list, from `0` |
+| `data-shopping="<purchaseUnit>"` | each shopping quantity | one per shopping line |
+| `data-fill="<placeholder>"` | each value inside a shopping label or note | the placeholder of the split template it fills |
+| `data-line-note="<index>"` | the note of a shopping line | the line it belongs to |
+| `data-cost-row="<outputKey>"` | each cost row | shown once its price is above zero |
+| `data-hint-row="<outputKey>"` + `data-price-hint="<outputKey>"` | the price hint of a cost row | shown while its price is zero |
+
+The hooks are derived from the descriptor and the module (never typed per calculator in a generic component), and the concrete names `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield` and `data-yield` no longer exist. The visible markup, ids, aria and text of the concrete pages are unchanged by the rename.
+
+#### Scenario: [CP54] Hooks on the concrete page
+- GIVEN built `/concrete-calculator`
+- WHEN the hooks are listed
+- THEN the `data-choice="shape"` group holds four buttons (values `slab`, `footing`, `column`, `steps`), the `data-choice="bag"` group three, the `data-step="waste"` block two buttons (values `less` and `more`), one `data-copy`, one `data-copy-status`, six `data-output` elements in the order of [CP4], one `data-shopping="bag-80"` and one `data-primary`
+- AND one `data-line="0"` with `data-fill="bagLb"` in its label, one `data-line-note="0"` with `data-fill="yield"`, and the shape-driven block `calc-choice-area` with `style="--calc-rows:4"`
+- AND none of `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield`, `data-yield`, `data-value`, `data-direction`, `data-reserved="shape"` or `data-reserved="steppers"` is present
+
+#### Scenario: [CP55] Hooks drive behaviour
+- GIVEN the default page with scripts running
+- WHEN the `value="footing"` button of the `data-choice="shape"` group is pressed, then the `value="more"` button of the `data-step="waste"` block once
+- THEN the footing fields show with `aria-pressed="true"` on that button, `waste` reads `15`, and `data-copy-status` stays empty until `data-copy` is pressed
+
+#### Scenario: [CP56] Absent features have no hooks
+- GIVEN a calculator whose module has no choice group, stepper or shopping line (rectangle-area), its page view rendered through the real components with the Astro container
+- WHEN its page markup is read
+- THEN no `data-choice`, `data-step` or `data-shopping` element exists and `data-output`, `data-primary`, `data-copy` and `data-copy-status` follow the table
+
 ### Requirement: Form controls
 
-The form MUST show only the fields of the selected shape, in this order, each with a visible `<label>` and the unit hint of the active unit system. Hidden fields keep their values and are neither visible nor focusable.
+The form MUST show only the fields the selected option of its choice group shows (concrete: the shape), in this order, each with a visible `<label>` and the unit hint of the active unit system. Hidden fields keep their values and are neither visible nor focusable. A calculator with no choice group shows all its fields.
+(Previously: "the fields of the selected shape"; the stepper bounds were stated as 0 to 50 and the reserved area as the four-row constant.)
 
 | shape | visible fields |
 |---|---|
@@ -100,7 +146,7 @@ The form MUST show only the fields of the selected shape, in this order, each wi
 | `column` | `diameter`, `height`, `count` |
 | `steps` | `stepWidth`, `rise`, `run`, `stepCount` |
 
-Always visible, after the shape fields: `waste` (with `wasteHelp` text, a "Less extra" and a "More extra" button changing it by 5 points within 0 to 50), the bag size (three buttons), `bagPrice`, `readyMixPrice`. The shape (four buttons) and the unit system (two buttons) come first. Single-choice buttons form a labelled group and expose their state with `aria-pressed`. Length, percent and money inputs use `inputmode="decimal"`, counts `inputmode="numeric"`, all `autocomplete="off"`; the form has no submit button. Number inputs are at least 56 CSS px tall and every other control (buttons, toggles) at least 44 by 44 px on a 390 px viewport. Every input has an associated visible label, and the focus ring is the orange ring of `site-shell`. Default text of inputs: `12 ft`, `10 ft`, `4 in`, `16 in`, `8 in`, `12 in`, `8 ft`, `4 ft`, `7 in`, `11 in`, `3`, `1`, `10`; the price inputs are empty with the placeholder `0.00`, and an empty price means `$0` (no error): the script passes an empty price to the engine as an explicitly `undefined` field, which validation reads as the default. The block size of the shape-dependent area is the same for all four shapes (it reserves the tallest, four rows), so switching shape or restoring a shared link shifts nothing below it.
+Always visible, after the shape fields: `waste` (with `wasteHelp` text, a "Less extra" and a "More extra" button changing it by 5 points within the `min` and `max` of the `waste` descriptor, 0 to 50), the bag size (three buttons), `bagPrice`, `readyMixPrice`. The shape (four buttons) and the unit system (two buttons) come first. Single-choice buttons form a labelled group and expose their state with `aria-pressed`. Length, percent and money inputs use `inputmode="decimal"`, counts `inputmode="numeric"`, all `autocomplete="off"`; the form has no submit button. Number inputs are at least 56 CSS px tall and every other control (buttons, toggles) at least 44 by 44 px on a 390 px viewport. Every input has an associated visible label, and the focus ring is the orange ring of `site-shell`. Default text of inputs: `12 ft`, `10 ft`, `4 in`, `16 in`, `8 in`, `12 in`, `8 ft`, `4 ft`, `7 in`, `11 in`, `3`, `1`, `10`; the price inputs are empty with the placeholder `0.00`, and an empty price means `$0` (no error): the script passes an empty price to the engine as an explicitly `undefined` field, which validation reads as the default. The block size of the area a choice group drives is the same for every option of the group (it reserves the tallest visibility set of the group, four rows for the concrete shapes), so switching the option or restoring a shared link shifts nothing below it.
 
 #### Scenario: [CP11] Visible fields per shape
 - GIVEN the page with scripts running
@@ -155,7 +201,8 @@ The result panel shows, in order: the primary volume (cubic yards in the US unit
 
 ### Requirement: Live recalculation
 
-With scripts running, every edit MUST update the short answer, the figures and the shopping quantity without a button and without a page load, using the same validation and arithmetic as the engine (no second formula implementation). Updates happen on every `input` event and on every button press. The short answer is a polite live region. Pressing Enter in a field MUST NOT navigate or reload.
+With scripts running, every edit MUST update the short answer, the figures and the shopping quantity without a button and without a page load, using the same validation and arithmetic as the engine (no second formula implementation). Updates happen on every `input` event and on every button press. The short answer is a polite live region. Pressing Enter in a field MUST NOT navigate or reload. A stepper clamps at the `min` and `max` of the descriptor of its input, never at a constant of the page code.
+(Previously: the waste steppers were stated as "within 0 to 50"; the bounds were constants duplicated from the engine.)
 
 Hand-verified states (US unit system, defaults otherwise):
 
@@ -194,7 +241,7 @@ Hand-verified states (US unit system, defaults otherwise):
 - GIVEN the default page
 - WHEN `0` is typed in the waste field, and separately "More extra" is pressed once
 - THEN the figures equal the rows `waste` = `0` and `waste` = `15`
-- AND "Less extra" at `0` and "More extra" at `50` leave the value unchanged
+- AND "Less extra" at `0` and "More extra" at `50` leave the value unchanged, and the bounds are those of the `waste` descriptor
 
 #### Scenario: [CP23] Enter does not navigate
 - GIVEN focus in any input
@@ -205,6 +252,11 @@ Hand-verified states (US unit system, defaults otherwise):
 - GIVEN the states of the table and the cases S2, S3 (metric), F1, C2, T1, H of `calc-concrete`
 - WHEN each is loaded through its query in Chromium
 - THEN every displayed figure equals the engine output rounded for display (the same strings the build-time render produces for that state)
+
+#### Scenario: [CP57] Stepper bounds follow the descriptor
+- GIVEN a calculator whose stepper input has descriptor bounds `min` 0 and `max` 20, a fixture, with the stepper at 20
+- WHEN "More" is pressed
+- THEN the value stays 20, and changing the descriptor bound to 30 lets it reach 25 with no change to page code
 
 ### Requirement: URL state
 
@@ -340,7 +392,8 @@ Controls that only work with the script (shape, unit and bag buttons, steppers, 
 
 ### Requirement: Client script contract
 
-Each calculator MUST have one client entry module of its own (`apps/web/src/client/entries/<id>.ts`), shared by both locales of that calculator, produced by the web build and loaded with `<script type="module" src>` from the page. The entry MAY statically import same-origin hashed chunks; the entry plus its whole static import graph MUST be at most 49,152 bytes (`site-quality`). The entry imports only its own calculator (never the registry `apps/web/src/lib/calculators.ts`) and builds it from the yields-only module of `@maestro-calc/data` (`material-data-contract`), never from the material record, so no source name, URL or other metadata reaches the bundle. It uses the engine's validation, arithmetic and URL codec from the workspace packages (no copy of a formula). It MUST contain no message text (strings arrive as inert HTML templates in the page: error messages for the 12 user-facing codes, the answer sentences, labels), no storage or network API, no third-party code, and no `https://` URL other than the site origin. The same figures MUST come out of the build-time render and of the script for any state (shared formatting).
+Each calculator MUST have one client entry module of its own (`apps/web/src/client/entries/<id>.ts`), shared by both locales of that calculator, produced by the web build and loaded with `<script type="module" src>` from the page. The entry MAY statically import same-origin hashed chunks, including the generic mount and controller; the entry plus its whole static import graph MUST be at most 49,152 bytes (`site-quality`). The entry imports only its own calculator and page module (never the registry `apps/web/src/lib/calculators.ts`) and builds it from the yields-only module of `@maestro-calc/data` (`material-data-contract`) when it needs yields, never from the material record, so no source name, URL or other metadata reaches the bundle. It uses the engine's validation, arithmetic and URL codec from the workspace packages (no copy of a formula). It MUST contain no message text (strings arrive as inert HTML templates in the page: error messages for the 12 user-facing codes, the answer sentences, labels), no storage or network API, no third-party code, and no `https://` URL other than the site origin. The same figures MUST come out of the build-time render and of the script for any state (shared formatting). These rules, and the contract tests that enforce them, hold for EVERY entry of `CALCULATOR_PAGES`, not only the concrete one.
+(Previously: the entry rules were written for the concrete entry, and CP48 named `entries/concrete.ts`.)
 
 #### Scenario: [CP42] One entry per calculator, shared by both locales
 - GIVEN the built `dist`
@@ -353,9 +406,9 @@ Each calculator MUST have one client entry module of its own (`apps/web/src/clie
 - THEN the only match allowed is the site origin `https://maestrocalc.com`, and the QUIKRETE source URL appears only in the HTML (as an allowlisted outbound link), never in JavaScript
 
 #### Scenario: [CP48] Entry does not import the registry
-- GIVEN the module graph of `apps/web/src/client/entries/concrete.ts`
+- GIVEN the module graph of every `apps/web/src/client/entries/<id>.ts` for each id in `CALCULATOR_PAGES` (today `concrete`)
 - WHEN the contract test walks its imports
-- THEN neither `apps/web/src/lib/calculators.ts`, nor another calculator directory of core, nor the root entry of `@maestro-calc/data` is reached
+- THEN neither `apps/web/src/lib/calculators.ts`, nor the directory of another calculator of core (the forbidden pattern is derived from that entry's own id), nor the root entry of `@maestro-calc/data` is reached
 
 #### Scenario: [CP43] Message templates are inert HTML
 - GIVEN the built page
@@ -364,12 +417,18 @@ Each calculator MUST have one client entry module of its own (`apps/web/src/clie
 
 ### Requirement: Layout stability
 
-The page MUST NOT shift layout when scripts run: the result panel and the form reserve their final block size in the server HTML, figures use fixed-width cells, and the shape-dependent area has the size of its tallest shape. The elements the script reveals or rewrites also reserve their size in the server HTML: the "Copy link" button and its status line, the waste steppers, the notice area (the "not running" note, then URL notices), and the short answer (sized for its longest shape sentence at the phone width, so a footing or steps sentence does not add a line).
+The page MUST NOT shift layout when scripts run: the result panel and the form reserve their final block size in the server HTML, figures use fixed-width cells, and the area driven by a choice group has the size of its tallest visibility set (derived from the module, `calculator-web-core`). The elements the script reveals or rewrites also reserve their size in the server HTML: the "Copy link" button and its status line, the steppers, the notice area (the "not running" note, then URL notices), and the short answer (sized for its longest sentence at the phone width, so a footing or steps sentence does not add a line).
+(Previously: "the shape-dependent area has the size of its tallest shape", a hand constant of four rows.)
 
 #### Scenario: [CP44] Load shift
 - GIVEN Chromium on the phone profile opening `/concrete-calculator` and `/es/calculadora-de-concreto`, with and without a query
 - WHEN the load settles
 - THEN cumulative layout shift is at most 0.01
+
+#### Scenario: [CP58] Reservation is derived
+- GIVEN the concrete page
+- WHEN the reserved row count of the shape-driven area is read from the build
+- THEN it equals the largest number of fields shown for any shape (four), and a fixture group with a five-field option reserves five
 
 ### Requirement: Accessibility of the interactive page
 
