@@ -145,6 +145,10 @@ export const CONCRETE: E2eSpec = {
     },
     { key: 'count', text: '0', code: 'BELOW_MIN', bound: '1' },
   ],
+  // The states whose sentences are the longest in use: each shape at its defaults and at the
+  // hand-verified link values, in US and metric units. The reserved block holds five lines (10.75rem),
+  // the most any of them needs at 320 px; a value typed with every field at its maximum can add a line
+  // (calculator-page › Layout stability, record JD-4).
   layoutQueries: [
     '?v=1',
     '?v=1&sh=footing',

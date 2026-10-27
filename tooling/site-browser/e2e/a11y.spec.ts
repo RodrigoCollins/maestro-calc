@@ -3,6 +3,8 @@ import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { formatViolations } from './axe-report.ts';
 import { calculatorPages } from './calculator-pages.ts';
+import type { E2ePage } from './calculator-pages.ts';
+import { choiceButton, input } from './locators.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -26,44 +28,58 @@ test.describe('axe (site-quality › [SQ1], [SQ2])', () => {
   });
 });
 
-/** The interactive states of a calculator page that axe scans (site-quality › [SQ17]). */
-const STATES: readonly { name: string; drive: (page: Page) => Promise<void> }[] = [
-  { name: 'default', drive: async () => undefined },
-  {
-    name: 'footing',
-    drive: (page) => page.locator('[data-choice="shape"] [value="footing"]').click(),
-  },
-  {
-    name: 'column',
-    drive: (page) => page.locator('[data-choice="shape"] [value="column"]').click(),
-  },
-  {
-    name: 'steps',
-    drive: (page) => page.locator('[data-choice="shape"] [value="steps"]').click(),
-  },
-  { name: 'error', drive: (page) => page.locator('#calc-length').fill('abc') },
-  { name: 'metric', drive: (page) => page.locator('[data-unit="metric"]').click() },
-  {
-    name: 'cost rows visible',
-    drive: async (page) => {
-      await page.locator('#calc-bagPrice').fill('6.50');
-      await page.locator('#calc-readyMixPrice').fill('150');
-    },
-  },
-  {
-    name: 'copy failed',
-    drive: async (page) => {
-      await page.evaluate(() => {
-        Object.defineProperty(navigator, 'clipboard', {
-          configurable: true,
-          value: { writeText: () => Promise.reject(new Error('denied')) },
+/** One interactive state of a calculator page and how to reach it. */
+interface AxeState {
+  readonly name: string;
+  readonly drive: (page: Page) => Promise<void>;
+}
+
+/**
+ * The interactive states of a calculator page that axe scans (site-quality › [SQ17]): the default
+ * state, one state per option of each choice group the record declares, an invalid field, the
+ * metric system, the cost rows when the page has prices, and the failed copy.
+ */
+const statesOf = (calculator: E2ePage): readonly AxeState[] => {
+  const { spec } = calculator;
+  return [
+    { name: 'default', drive: async () => undefined },
+    ...(spec.choices ?? []).flatMap((choice) =>
+      choice.options
+        .filter((option) => option.value !== choice.initial)
+        .map((option) => ({
+          name: option.value,
+          drive: (page: Page) => choiceButton(page, choice.key, option.value).click(),
+        })),
+    ),
+    { name: 'error', drive: (page) => input(page, spec.typed.key).fill('abc') },
+    { name: 'metric', drive: (page) => page.locator('[data-unit="metric"]').click() },
+    ...(spec.prices === undefined
+      ? []
+      : [
+          {
+            name: 'cost rows visible',
+            drive: async (page: Page) => {
+              for (const price of spec.prices ?? []) {
+                await input(page, price.input).fill(price.text);
+              }
+            },
+          },
+        ]),
+    {
+      name: 'copy failed',
+      drive: async (page) => {
+        await page.evaluate(() => {
+          Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: () => Promise.reject(new Error('denied')) },
+          });
         });
-      });
-      await page.locator('[data-copy]').click();
-      await expect(page.locator('#calc-fallback')).toBeVisible();
+        await page.locator('[data-copy]').click();
+        await expect(page.locator('#calc-fallback')).toBeVisible();
+      },
     },
-  },
-];
+  ];
+};
 
 /** The invalid inputs whose accessible description is not the text of their message (calculator-page › [CP46]). */
 const associationProblems = (page: Page): Promise<string[]> =>
@@ -92,12 +108,12 @@ const stateProblems = async (page: Page, name: string, state: string): Promise<s
 
 test.describe('axe on the interactive calculator states (site-quality › [SQ17], [SQ20])', () => {
   for (const calculator of calculatorPages) {
-    for (const state of STATES) {
+    for (const state of statesOf(calculator)) {
       test(`has no violation on ${calculator.path} in the ${state.name} state`, async ({
         page,
       }) => {
         await page.goto(calculator.path);
-        await expect(page.locator('#calc-length')).toBeEnabled();
+        await expect(input(page, calculator.spec.ready)).toBeEnabled();
         await state.drive(page);
         expect(await stateProblems(page, calculator.path, state.name)).toEqual([]);
       });
@@ -114,12 +130,14 @@ test.describe('axe on the interactive calculator states (site-quality › [SQ17]
       const body = (await response.text()).replaceAll('aria-describedby', 'data-lost-association');
       await route.fulfill({ response, body });
     });
-    await page.goto(calculator?.path ?? '/');
-    await expect(page.locator('#calc-length')).toBeEnabled();
-    await page.locator('#calc-length').fill('abc');
-    const problems = await stateProblems(page, calculator?.path ?? '', 'error');
+    if (calculator === undefined) throw new Error('the record has no calculator page');
+    const { ready, typed } = calculator.spec;
+    await page.goto(calculator.path);
+    await expect(input(page, ready)).toBeEnabled();
+    await input(page, typed.key).fill('abc');
+    const problems = await stateProblems(page, calculator.path, 'error');
     expect(problems.join('\n')).toContain(
-      '/concrete-calculator (error): error-association: calc-length',
+      `${calculator.path} (error): error-association: calc-${typed.key}`,
     );
   });
 });

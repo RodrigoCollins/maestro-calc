@@ -47,7 +47,22 @@ describe('the typed browser record (site-quality › [SQ29], [SQ30])', () => {
 });
 
 /** The generic suites: they read the record and name no calculator, path or group of its own. */
-const SUITES = ['calculator.spec.ts'];
+const SUITES = [
+  'calculator.spec.ts',
+  'a11y.spec.ts',
+  'layout.spec.ts',
+  'csp.spec.ts',
+  'locators.ts',
+];
+
+/** The suites that take their pages from the record alone: no page path of any kind. */
+const PAGE_SUITES = ['a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
+
+/** A string literal that is a page path or a route glob (an asset glob such as `**\/_astro/*.js` is not). */
+const pathProblems = (code: string): string[] =>
+  stringsIn(stripComments(code))
+    .filter((text) => /^(?:\*\*)?\/(?!_astro)\S/.test(text))
+    .map((text) => `holds the path "${text}"`);
 
 /** What a string literal of a generic suite may not hold: a calculator's name, path or group. */
 const suiteProblems = (code: string): string[] =>
@@ -91,5 +106,66 @@ describe('the generic suites hold no calculator literal (site-quality › [SQ30]
       'const label = calculator.catalog[`calc.${calculator.id}.inputs.${name}`];',
     ].join('\n');
     expect(suiteProblems(code)).toEqual([]);
+  });
+});
+
+describe('the axe, layout and CSP suites run over the record (site-quality › [SQ17], [SQ19], [SQ32])', () => {
+  it.each(PAGE_SUITES)('%s imports the page list and holds no page path', (file) => {
+    const source = read(file);
+    expect(source).toMatch(
+      /import \{[^}]*\bcalculatorPages\b[^}]*\} from '\.\/calculator-pages\.ts'/,
+    );
+    expect(pathProblems(source)).toEqual([]);
+  });
+
+  it.each([
+    ['holds a page path', "await page.goto('/concrete-calculator');", '/concrete-calculator'],
+    [
+      'holds a route glob',
+      "await page.route('**/concrete-calculator', run);",
+      '**/concrete-calculator',
+    ],
+  ])('flags a suite that %s', (_what, code, path) => {
+    expect(pathProblems(code)).toEqual([`holds the path "${path}"`]);
+  });
+
+  it('does not flag an asset glob, a template path or a lone slash', () => {
+    expect(
+      pathProblems(
+        "await page.route('**/_astro/*.js', run); const a = `${path}${query}`; const b = '/';",
+      ),
+    ).toEqual([]);
+  });
+
+  // spec: site-quality › [SQ32] the CSP suite loops the record: typing, a choice press, the copy, the language switch
+  it('loops the CSP suite over the record and uses the choices, the copy and the language switch', () => {
+    const source = read('csp.spec.ts');
+    expect(source).toMatch(/for \(const calculator of calculatorPages\)/);
+    expect(source).toMatch(/\bchoices\b/);
+    expect(source).toContain('[data-copy]');
+    expect(source).toContain('header a[hreflang]');
+    expect(source).toContain('representativePaths');
+  });
+
+  // spec: site-quality › [SQ19] the layout queries come from the record
+  it('reads the layout queries and the link state from the record', () => {
+    const source = read('layout.spec.ts');
+    expect(source).toContain('.layoutQueries');
+    expect(source).not.toMatch(/\?v=1&sh=/);
+  });
+
+  // spec: site-quality › [SQ17] one axe state per option of each choice group, the invalid field, metric, prices
+  it('derives the axe states from the record', () => {
+    const source = read('a11y.spec.ts');
+    for (const part of [
+      '.choices',
+      '.prices',
+      '.initial',
+      "'error'",
+      "'metric'",
+      "'copy failed'",
+    ]) {
+      expect(source, part).toContain(part);
+    }
   });
 });

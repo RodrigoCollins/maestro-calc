@@ -2,21 +2,9 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { calculatorPages, pressSelector, typedQuery } from './calculator-pages.ts';
 import type { E2ePage, Figures } from './calculator-pages.ts';
+import { choiceButton, figureAt, input, output, stepButton } from './locators.ts';
 
 const ORANGE = 'rgb(240, 106, 29)';
-
-const input = (page: Page, key: string): Locator => page.locator(`#calc-${key}`);
-const output = (page: Page, key: string): Locator => page.locator(`[data-output="${key}"]`);
-const choiceButton = (page: Page, key: string, value: string): Locator =>
-  page.locator(pressSelector({ hook: 'choice', key, value }));
-const stepButton = (page: Page, key: string, value: string): Locator =>
-  page.locator(pressSelector({ hook: 'step', key, value }));
-
-/** A figure of the record: a `data-output` key, or `shopping:<i>` for the i-th shopping line. */
-const figureAt = (page: Page, key: string): Locator =>
-  key.startsWith('shopping:')
-    ? page.locator('[data-shopping]').nth(Number(key.slice('shopping:'.length)))
-    : output(page, key);
 
 /** The text of a figure list at a position. */
 const figure = (figures: Figures, index: number): string => figures[index] ?? '';
