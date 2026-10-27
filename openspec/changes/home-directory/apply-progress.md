@@ -402,3 +402,7 @@ Gates: `npm run format`, `npm run verify` exit 0 (3,699 unit tests), `npm run ty
 ### Judgment Day (PR 3)
 
 Two blind judges on `main..50f4be5`: both **APPROVED**, no CRITICAL or WARNING. Folded: the answer probe restored the block with `textContent`, which would flatten child elements; it now saves the child nodes and restores them with `replaceChildren` (both judges, SUGGESTION). Noted: the width sweep samples both edges of each breakpoint plus the seven widths, not every pixel; the fit check between edges relies on the text height not growing within a step (judge A, INFO). After the fold: `npm run test:e2e` 324 passed.
+
+### Dist diff (P3.2)
+
+`apps/web/dist` of `origin/main` (`2faad57`) against the PR 3 tip: no `.js` file differs; all 16 HTML pages differ. Normalised (the `<style>` blocks removed, the `astro-*` scope classes and the whitespace they leave stripped) every page is identical, so the markup change is the K9-style class drop alone. Sizes: both homes and both 404 pages −393 B (the shell CSS shrinks, no calculator sheet); the 2 calculator pages and the 10 trust pages −197 B (they carry `calculator.css` through the shared catch-all chunk, follow-up recorded above, so they also gain the six media blocks).
