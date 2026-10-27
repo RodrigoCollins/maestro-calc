@@ -387,7 +387,7 @@ Negative proofs of the round (each applied, run, reverted; `git status --porcela
 | A 300 px element prepended 50 ms after `load` (init script) | load-shift test: `320 px` expected ≤ 0.01, received 0.3555. The previous `getEntriesByType` probe passed the same injection (4 passed) |
 | Probe lookup `data-reserved` renamed | fit test: `answer probes at 320 px` expected length 2, received 0 (before: an empty probe list passed) |
 | Mounted page given `min-height: 20rem` on the copy block | boxes test: `en at 320 px`, copy box differs |
-| `--answer-lines: 1` at 45.625rem (rebuilt) | fit test: `answer en at 1024 px: content fits`, 68.19 > 34.14 |
+| `--answer-lines: 1` at 45.625rem (rebuilt) | fit test: `answer en at 730 px: content fits`. First run (at `96a2cf1`) went red only at 1024 px: the probe read the box height as the reserve, and the box grows with the text it holds, so 730 and 768 passed with a 34.1 px reserve under 68.19 px of text. The probe now reads the computed `min-height` (orchestrator fix after the round); the table above is unchanged, since with the real CSS the box height equals the `min-height` at every width |
 | `mediaBlocksOf` without its count check | 2 seeded nested-`@supports` cases |
 | `@media (hover: hover)` added to `calculator.css` | edge test: `(hover: hover) has no length` |
 | `/dataset\.reserved/` pattern broken | seeded `dataset.reserved` case: expected [] to include the pattern |

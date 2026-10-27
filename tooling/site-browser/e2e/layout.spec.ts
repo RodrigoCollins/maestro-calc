@@ -13,6 +13,7 @@ const WIDTHS = [
 type Block = 'answer' | 'notice' | 'copy';
 interface Probe {
   readonly natural: number;
+  /** The computed `min-height` of the block (border box), in px. */
   readonly reserved: number;
   /** The computed line height of the block's text: its own unit (Terms of calculator-page). */
   readonly line: number;
@@ -70,7 +71,9 @@ const probeBlocks = async (page: Page, variants: Variants): Promise<Probes> => {
           document.querySelector<HTMLElement>(`[data-reserved="${block}"]`);
         const probe = (element: HTMLElement, heights: number[]): Probe => ({
           natural: Math.max(...heights),
-          reserved: element.getBoundingClientRect().height,
+          // the computed min-height, not the box: the box grows with the content it holds now, so
+          // reading it would let a reserve smaller than the current text pass the fit check
+          reserved: Number.parseFloat(getComputedStyle(element).minHeight),
           line: Number.parseFloat(getComputedStyle(element).lineHeight),
         });
         const result: Probes = {};
