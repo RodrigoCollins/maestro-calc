@@ -2,6 +2,8 @@
 
 Turns the home from a placeholder into a calculator directory generated from the route table. Only the "Home page" requirement changes; every other trust-pages requirement is unchanged. Continues the prefix TP (next free id: TP28). Kept as written: [TP7], [TP8]. Generalised: [TP21]. Added: [TP28] to [TP37].
 
+[TP26] (methodology, in the main spec) is not modified by this change. Only its row in `apps/web/src/contract/content.contract.test.ts` changes, as a test edit in slice H3a: the row that read the home's `page.home.links.<id>` key now reads the card keys `page.home.cards.<id>.{title,summary}` and asserts that they exist exactly for the ids of `CALCULATOR_PAGES` in both locales (no key for a `PAGELESS` id, no routed id without its keys). The methodology text of [TP26] is unaffected.
+
 Placeholder-shape assertions removed. The unit test `HomeView.test.ts` pinned the placeholder (exactly two paragraphs, no `ul`/`ol`, the first link being concrete inside the intro paragraph, `rectangle`/`rectángulo` absent, intro text equal to `intro` + `links.concrete`). None of them is a scenario of the main spec, so they are removed with the rewrite of that test, and each guard that still matters is carried by a scenario below:
 
 | Removed assertion | Replaced by |
@@ -50,9 +52,9 @@ The home MUST ship no client JavaScript (`site-shell` [SS18]), its HTML MUST sta
 - THEN there is one `h1` inside `main` whose text equals `page.home.heading`, followed by the text of `site.tagline`, both from the catalog of the locale, and the hero holds no link and no other heading (unit test on the rendered view)
 
 #### Scenario: [TP30] Order follows the route table
-- GIVEN a fixture route table with two routed calculators (a unit test over the view with injected `CALCULATOR_PAGES` and `ROUTES`, with catalog keys for both)
-- WHEN the directory is rendered
-- THEN the cards appear in `ROUTES` order, not alphabetical order, and each link is the route path of the current locale (`/es/...` paths for `es`)
+- GIVEN the data module `apps/web/src/lib/home-directory.ts` and a fixture route table whose key order differs from the order of a fixture page list (two routed calculators, `b` before `a` in the table, `['a', 'b']` in the list, plus a trust id in the table)
+- WHEN `directoryOrder(routes, pages)` is called with the fixture, and `homeCards(locale, routes, pages)` is called with it for `en` and for `es` with catalogs that hold keys for both ids
+- THEN `directoryOrder` returns the calculator ids in the table's order (`['b', 'a']`), never the list's or alphabetical order, and omits the trust id; each card's `href` is the route path of the requested locale (`/es/...` for `es`); and the rendered view lists the cards in that same order (a unit test on the data module, with the real `ROUTES` and `CALCULATOR_PAGES` as the defaults the view passes, repeated once on the rendered view with the real tables)
 
 #### Scenario: [TP31] A calculator with no route has no card
 - GIVEN the live build in which `rectangle-area` is in `PAGELESS` and `concrete` in `CALCULATOR_PAGES`
@@ -60,9 +62,9 @@ The home MUST ship no client JavaScript (`site-shell` [SS18]), its HTML MUST sta
 - THEN there is no match
 
 #### Scenario: [TP32] A routed id without card keys fails the build
-- GIVEN a type-level fixture (a `.test-d.ts` check) in which an id is in `CALCULATOR_PAGES` and `page.home.cards.<id>` is missing from the English catalog, and separately only from the Spanish one
+- GIVEN the type test `apps/web/src/views/home.test-d.ts`, which asserts that `` `page.home.cards.${id}.title` `` and `` `page.home.cards.${id}.summary` `` are keys of the English site catalog for every `id` of `CalculatorPageId`, and under `@ts-expect-error` that they are not keys for a non-routed id (`rectangle-area` today)
 - WHEN `npm run typecheck` runs
-- THEN it fails naming the missing key, and removing the fixture makes it pass
+- THEN it passes, and it fails naming the key if a routed id has no card keys in the English catalog or if the `@ts-expect-error` line stops erroring (a non-routed id gained card keys); a Spanish-only gap is already a compile error because `esSite` is declared `satisfies CatalogOf<typeof enSite>` (a type test; no manual fixture)
 
 #### Scenario: [TP33] Methodology and about links come after the directory
 - GIVEN built `/` and `/es`

@@ -1,6 +1,6 @@
 # Delta for site-shell
 
-Adds the Blueprint identity primitives and square corners, and states where the identity may appear. Continues the prefix SS (next free id: SS24). Kept as written: [SS5], [SS6], [SS7]. Every other SS requirement is unchanged. The sheets are still the three global ones (`tokens`, `base`, `calculator`); the home-specific styles are not a new global sheet.
+Adds the Blueprint identity primitives and square corners, states where the identity may appear, and pins that every page inlines all of its CSS. Continues the prefix SS (next free id: SS24). Kept as written: [SS5], [SS6], [SS7]. Added: [SS24] to [SS32]. Every other SS requirement is unchanged. The sheets are still the three global ones (`tokens`, `base`, `calculator`); the home-specific styles are not a new global sheet. Selectors in the scenarios below name the hero and the cards by their own classes (`home-hero`, `home-card`); they hold whatever scoping attribute or class Astro adds (design K9).
 
 ## MODIFIED Requirements
 
@@ -10,8 +10,8 @@ The global stylesheet MUST declare the Blueprint palette as CSS custom propertie
 
 It MUST also declare, on `:root`, the identity primitives of the home hero:
 - a display size `--text-display`, a fluid `clamp()` with `rem` bounds, larger than the page H1 size (`--text-h1`) at every viewport width and reserved for the H1 of the home;
-- a grid size `--grid-size` of `16px`;
-- the dimension-tick primitives (a tick length and a tick thickness, in the safety orange) from which the hero draws the end ticks of its dimension line.
+- a grid size `--grid-size` of `1rem` (16 px at the default size; it follows the user's text zoom);
+- the dimension-tick primitive `--tick-weight` (the thickness of the dimension line and of its end ticks, a positive length, drawn in the safety orange). The tick length is not a token of its own: a tick is one grid cell tall, `var(--grid-size)`.
 
 Corners MUST be square: no non-zero `border-radius` and no radius token exists in the shipped CSS of any page. No other new token is introduced by this change.
 (Previously: the palette, the light theme and the page ground only; no display size, grid or tick primitive; nothing stated about corners.)
@@ -39,7 +39,7 @@ Corners MUST be square: no non-zero `border-radius` and no radius token exists i
 #### Scenario: [SS25] Grid and tick primitives are pinned
 - GIVEN `tokens.css` read by the styles contract test
 - WHEN the primitives are collected
-- THEN `--grid-size` equals `16px`, the tick length and thickness tokens exist with positive lengths, and the stale "1.42 line height" comment of the test now states the real body leading (a unit test: removing or renaming any one of the primitives fails it)
+- THEN `--grid-size` equals `1rem`, `--tick-weight` exists with a positive length, no `--tick-length` or other tick token exists (the tick length is `var(--grid-size)` in the hero rule), no token name contains `radius`, and the stale "1.42 line height" comment of the test now states the real body leading, 1.55 (a unit test: removing or renaming either primitive fails it)
 
 #### Scenario: [SS26] Square corners everywhere
 - GIVEN the built CSS of every page
@@ -50,22 +50,22 @@ Corners MUST be square: no non-zero `border-radius` and no radius token exists i
 
 ### Requirement: The identity is spent once and scoped to the home
 
-The Blueprint grid and the orange dimension tick MUST appear only in the home hero, on the Blueprint ink ground. They MUST NOT appear on the header, the footer, the cards or any page other than the home. The grid is drawn in pure CSS and the dimension line with borders or pseudo-elements: no SVG, image or font is added for them and no request is added. The home-specific styles MUST ship only on the home pages, so the other pages, in particular the Spanish concrete page whose HTML is near its budget, do not pay for them. The set of global sheets stays `tokens`, `base` and `calculator`, and the CSS budget of `site-quality` [SQ6] is unchanged (20,480 bytes per page).
+The Blueprint grid and the orange dimension tick MUST appear only in the home hero, on the Blueprint ink ground. They MUST NOT appear on the header, the footer, the cards or any page other than the home. The grid is drawn in pure CSS and the dimension line with borders or pseudo-elements: no SVG, image or font is added for them and no request is added. The home-specific styles MUST ship only on the home pages (the home renders from its own route files, `site-routing-i18n` [SR23]), so the other pages, in particular the Spanish concrete page whose HTML is near its budget, do not pay for them. Every page MUST inline all of its CSS (`build.inlineStylesheets: 'always'`): no page links a stylesheet, so the size of a CSS chunk never moves it between inline and a render-blocking link, and the inlined CSS of a page is bounded by [SQ6]. The set of global sheets stays `tokens`, `base` and `calculator`, and the CSS budget of `site-quality` [SQ6] is unchanged (20,480 bytes per page).
 
 #### Scenario: [SS27] The hero carries the grid and the tick
 - GIVEN Chromium on `/` and `/es` at 390 and 1280 px
-- WHEN the hero band is inspected
-- THEN its computed `background-image` contains a `linear-gradient` whose repeat size equals the `--grid-size` value, its ground is the ink color `rgb(14, 34, 64)`, and a dimension line with two end ticks in `rgb(240, 106, 29)` is visible inside it (an e2e test; the grid and the ticks also appear at 320 px without overflow)
+- WHEN the element with the class `home-hero` inside `main` is inspected (selected by that class only, not by a scoping attribute or hash class)
+- THEN its computed `background-image` contains two `linear-gradient` layers and its computed `background-size` equals the computed value of `--grid-size` (16 px at the default size) in both axes, its computed `background-color` is the ink color `rgb(14, 34, 64)`, and the `::after` pseudo-element of its `h1` is rendered with a computed height equal to `--grid-size` and `border-inline` of `--tick-weight` in `rgb(240, 106, 29)` (an e2e test; at 320 px the hero and its `h1` fit the viewport, `scrollWidth <= innerWidth`)
 
 #### Scenario: [SS28] The identity does not leak
-- GIVEN every built page other than the two home pages (the trust pages, the calculator pages, the two 404 pages)
-- WHEN each page's HTML (inline CSS included) and linked CSS are searched for the hero selectors, the grid gradient and the tick rules, and its elements are scanned for a `background-image` of `linear-gradient`
-- THEN there is no match on any of those pages, and the hero selectors are found only in the home pages (a contract test over the build)
+- GIVEN every built page other than the two home pages (the trust pages, the calculator pages, the two 404 pages), read as text after `npm run build`
+- WHEN each page's HTML, inline `<style>` blocks included, is searched for the substrings `.home-` and `linear-gradient`
+- THEN there is no match on any of those pages, no page has a `link[rel="stylesheet"]` to search besides, and `dist/index.html` and `dist/es/index.html` both match `.home-hero`, `.home-card` and `linear-gradient` (a contract test over the build; class scoping keeps `.home-hero` as a substring of the scoped selector)
 
-#### Scenario: [SS29] Home styles ship on the home only
+#### Scenario: [SS29] The other pages carry no home rule and their CSS size is recorded
 - GIVEN a clean build
-- WHEN the CSS size (inline plus linked) of `/concrete-calculator`, `/es/calculadora-de-concreto` and `/methodology` is compared with the sizes measured before this change
-- THEN it grew by at most the bytes of the three new token groups of [SS24] and [SS25], and the home pages carry the additional hero and card CSS (measured and recorded in the apply progress)
+- WHEN the inline CSS of `/concrete-calculator`, `/es/calculadora-de-concreto` and `/methodology` is read
+- THEN it carries no rule whose selector contains `.home-` (today every catch-all page carries `.home-links{…}`, 83 bytes, which is gone), its size is measured and recorded in the apply progress next to the size before this change, and the home pages carry the hero and card CSS (a contract test for the absence; a recorded measurement for the sizes, which may fall under the trims of design K9 and K10)
 
 #### Scenario: [SS30] Same three global sheets and the CSS budget
 - GIVEN the styles contract test and `npm run check:site` on the build
@@ -76,3 +76,8 @@ The Blueprint grid and the orange dimension tick MUST appear only in the home he
 - GIVEN the hero H1 and tagline text colors and the ink ground with the grid line color
 - WHEN contrast ratios are computed against the ink ground and against the lightest grid line color
 - THEN each is at least 4.5:1 (a unit test on the token values, with axe `color-contrast` reporting 0 violations on `/` and `/es`)
+
+#### Scenario: [SS32] Every page inlines its CSS
+- GIVEN `apps/web/astro.config.mjs` and `dist` after `npm run build`
+- WHEN the config is read and every built page is parsed
+- THEN `build.inlineStylesheets` is `'always'`, no page has a `link[rel="stylesheet"]`, every page's CSS is in `<style>` elements of its `<head>`, no `/_astro/*.css` file exists in `dist`, and `npm run check:site` reports the largest CSS size per page at most 20,480 bytes ([SQ6]) with the measured value recorded in the apply progress (a contract test over the config and the build, plus the `check:site` gate)
