@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { calculatorPages, typedQuery } from './calculator-pages.ts';
+import { answer, open } from './locators.ts';
 
 /** Sums the layout-shift entries that no input caused, from the start of the load. */
 const shiftOf = (page: Page): Promise<number> =>
@@ -30,8 +31,7 @@ for (const calculator of calculatorPages) {
             buffered: true,
           });
         });
-        await page.goto(`${calculator.path}${query}`);
-        await expect(page.locator('[data-not-running]')).toBeHidden();
+        await open(page, calculator, query);
         await page.waitForLoadState('networkidle');
         await page.waitForTimeout(500);
         expect(await shiftOf(page)).toBeLessThanOrEqual(0.01);
@@ -40,33 +40,32 @@ for (const calculator of calculatorPages) {
 
     // spec: calculator-page › [CP44], DR-13 the short answer keeps its reserved block for the longest sentences
     for (const width of [320, 390]) {
-      test(`keeps the answer block at its reserved size at ${String(width)} px`, async ({
-        page,
-      }) => {
-        await page.setViewportSize({ width, height: 844 });
-        await page.goto(calculator.path);
-        await expect(page.locator('[data-not-running]')).toBeHidden();
-        const reserved = await page
-          .locator('[data-answer]')
-          .evaluate((element) => Number.parseFloat(getComputedStyle(element).minHeight));
-        const heights: Record<string, number> = {};
-        for (const query of calculator.spec.layoutQueries) {
-          await page.goto(`${calculator.path}${query}`);
-          await expect(page.locator('[data-not-running]')).toBeHidden();
-          const box = await page.locator('[data-answer]').boundingBox();
-          heights[query] = Math.round(box?.height ?? 0);
-        }
-        for (const [query, height] of Object.entries(heights)) {
-          expect(height, query).toBeLessThanOrEqual(reserved);
-        }
-      });
+      if (calculator.spec.answer !== undefined) {
+        test(`keeps the answer block at its reserved size at ${String(width)} px`, async ({
+          page,
+        }) => {
+          await page.setViewportSize({ width, height: 844 });
+          await open(page, calculator);
+          const reserved = await answer(page).evaluate((element) =>
+            Number.parseFloat(getComputedStyle(element).minHeight),
+          );
+          const heights: Record<string, number> = {};
+          for (const query of calculator.spec.layoutQueries) {
+            await open(page, calculator, query);
+            const box = await answer(page).boundingBox();
+            heights[query] = Math.round(box?.height ?? 0);
+          }
+          for (const [query, height] of Object.entries(heights)) {
+            expect(height, query).toBeLessThanOrEqual(reserved);
+          }
+        });
+      }
 
       test(`keeps the notice, shape and copy areas at their reserved size at ${String(width)} px`, async ({
         page,
       }) => {
         await page.setViewportSize({ width, height: 844 });
-        await page.goto(calculator.path);
-        await expect(page.locator('[data-not-running]')).toBeHidden();
+        await open(page, calculator);
         const before = await page.evaluate(() => document.documentElement.scrollHeight);
         await page.goto(`${calculator.path}?v=2&${calculator.spec.typed.param}`);
         await expect(page.locator('#calc-notice')).toBeVisible();

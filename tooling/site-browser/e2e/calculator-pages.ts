@@ -28,10 +28,6 @@ export interface E2eLocale {
   readonly catalog: Readonly<Record<string, string>>;
   readonly site: Readonly<Record<string, string>>;
   readonly common: Readonly<Record<string, string>>;
-  /** The short answer after `typed` is entered. */
-  readonly typedAnswer?: string;
-  /** The short answer of the default state in the metric system. */
-  readonly metricAnswer?: string;
 }
 
 export interface E2eState {
@@ -157,6 +153,13 @@ export interface E2eSpec {
   readonly bounds: readonly E2eBound[];
   /** The links whose answer is the longest and must not shift the layout. */
   readonly layoutQueries: readonly string[];
+  /** The short answer (`[data-answer]`), per language: a page without the answer slot leaves it out. */
+  readonly answer?: {
+    /** The answer after `typed` is entered. */
+    readonly typed: Readonly<Record<E2eLanguage, string>>;
+    /** The answer of the default state in the metric system. */
+    readonly metric: Readonly<Record<E2eLanguage, string>>;
+  };
   readonly choices?: readonly E2eChoice[];
   readonly steppers?: readonly E2eStepper[];
   /** One entry per shopping line. */

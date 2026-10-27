@@ -67,24 +67,8 @@ const DEFAULTS: Figures = ['1.63', '44.00', '1.25', '40.00', '74'];
 /** Concrete's record: the strings, states and shape fields the generic suites drive. */
 export const CONCRETE: E2eSpec = {
   locales: {
-    en: {
-      catalog: enConcrete,
-      site: enSite,
-      common: enCommon,
-      typedAnswer:
-        'Slab (20 ft × 10 ft, 4 in thick): 2.72 cubic yards with 10% extra. Bags of 80 lb: 123.',
-      metricAnswer:
-        'Slab (3.66 m × 3.05 m, 10.16 cm thick): 1.25 cubic meters with 10% extra. Bags of 80 lb: 74.',
-    },
-    es: {
-      catalog: esConcrete,
-      site: esSite,
-      common: esCommon,
-      typedAnswer:
-        'Losa (20 ft × 10 ft, 4 in de espesor): 2.72 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 123.',
-      metricAnswer:
-        'Losa (3.66 m × 3.05 m, 10.16 cm de espesor): 1.25 metros cúbicos con 10% de extra. Bolsas de 80 lb: 74.',
-    },
+    en: { catalog: enConcrete, site: enSite, common: enCommon },
+    es: { catalog: esConcrete, site: esSite, common: esCommon },
   },
   ready: 'length',
   inputs: 15,
@@ -160,6 +144,16 @@ export const CONCRETE: E2eSpec = {
     '?v=1&u=m&sh=footing&l=216&n=3',
     '?v=1&u=m&sh=steps',
   ],
+  answer: {
+    typed: {
+      en: 'Slab (20 ft × 10 ft, 4 in thick): 2.72 cubic yards with 10% extra. Bags of 80 lb: 123.',
+      es: 'Losa (20 ft × 10 ft, 4 in de espesor): 2.72 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 123.',
+    },
+    metric: {
+      en: 'Slab (3.66 m × 3.05 m, 10.16 cm thick): 1.25 cubic meters with 10% extra. Bags of 80 lb: 74.',
+      es: 'Losa (3.66 m × 3.05 m, 10.16 cm de espesor): 1.25 metros cúbicos con 10% de extra. Bolsas de 80 lb: 74.',
+    },
+  },
   choices: [
     {
       key: 'shape',

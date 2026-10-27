@@ -2,19 +2,24 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { calculatorPages, pressSelector, typedQuery } from './calculator-pages.ts';
 import type { E2ePage, Figures } from './calculator-pages.ts';
-import { choiceButton, figureAt, input, output, stepButton } from './locators.ts';
+import {
+  answer,
+  choiceButton,
+  copyButton,
+  denyClipboard,
+  figureAt,
+  input,
+  languageSwitch,
+  notRunning,
+  open,
+  output,
+  stepButton,
+} from './locators.ts';
 
 const ORANGE = 'rgb(240, 106, 29)';
 
 /** The text of a figure list at a position. */
 const figure = (figures: Figures, index: number): string => figures[index] ?? '';
-
-/** Opens the page and waits for the script: the controls are enabled and the note is gone. */
-const open = async (page: Page, calculator: E2ePage, query = ''): Promise<void> => {
-  await page.goto(`${calculator.path}${query}`);
-  await expect(page.locator('[data-not-running]')).toBeHidden();
-  await expect(input(page, calculator.spec.ready)).toBeEnabled();
-};
 
 /** The figures of the panel, in the order of the record. */
 const figuresOf = async (page: Page, calculator: E2ePage): Promise<string[]> => {
@@ -52,7 +57,7 @@ const driveCopyState = async (page: Page, calculator: E2ePage): Promise<void> =>
 
 for (const calculator of calculatorPages) {
   const { spec } = calculator;
-  const { typed } = spec;
+  const { typed, choices, steppers, prices, restored, variant, rejects, hints } = spec;
   const shoppingKeys = spec.figures.filter((key) => key.startsWith('shopping:'));
   const headline = spec.figures[0] ?? '';
 
@@ -63,13 +68,13 @@ for (const calculator of calculatorPages) {
     }) => {
       await open(page, calculator);
       await expect(page.locator('form :disabled')).toHaveCount(0);
-      await expect(page.locator('[data-copy]')).toBeVisible();
+      await expect(copyButton(page)).toBeVisible();
       for (const stepper of spec.steppers ?? []) {
         const buttons = page.locator(`[data-step="${stepper.key}"] button`);
         await expect(buttons).toHaveCount(2);
         await expect(buttons.first()).toBeVisible();
       }
-      await expect(page.locator('[data-not-running]')).toBeHidden();
+      await expect(notRunning(page)).toBeHidden();
     });
 
     // spec: calculator-page › [CP49] a module that fails to load leaves the static page
@@ -79,9 +84,9 @@ for (const calculator of calculatorPages) {
       await page.route('**/_astro/*.js', (route) => route.abort());
       await page.goto(calculator.path);
       await page.waitForLoadState('networkidle');
-      await expect(page.locator('[data-not-running]')).toBeVisible();
+      await expect(notRunning(page)).toBeVisible();
       await expect(input(page, spec.ready)).toBeDisabled();
-      await expect(page.locator('[data-copy]')).toBeHidden();
+      await expect(copyButton(page)).toBeHidden();
       await expect(figureAt(page, headline)).toHaveText(figure(spec.defaults, 0));
       for (const key of shoppingKeys) {
         await expect(figureAt(page, key)).toHaveText(
@@ -91,12 +96,12 @@ for (const calculator of calculatorPages) {
     });
 
     // spec: calculator-page › [CP11] the visible fields of each option, in order, and aria-pressed
-    if (spec.choices !== undefined) {
+    if (choices !== undefined) {
       test('shows the fields of each shape in order and marks the pressed shape', async ({
         page,
       }) => {
         await open(page, calculator);
-        for (const choice of spec.choices ?? []) {
+        for (const choice of choices) {
           for (const option of choice.options) {
             await choiceButton(page, choice.key, option.value).click();
             expect(await visibleFields(page), option.value).toEqual([...option.fields]);
@@ -153,11 +158,11 @@ for (const calculator of calculatorPages) {
     });
 
     // spec: calculator-page › [CP14] the option area has one height for every option
-    if (spec.choices !== undefined) {
+    if (choices !== undefined) {
       test('keeps one height for the shape area whatever the shape', async ({ page }) => {
         await open(page, calculator);
         const heights = new Set<number>();
-        for (const choice of spec.choices ?? []) {
+        for (const choice of choices) {
           for (const option of choice.options) {
             await choiceButton(page, choice.key, option.value).click();
             const box = await page.locator('.calc-choice-area').boundingBox();
@@ -172,51 +177,58 @@ for (const calculator of calculatorPages) {
     test('recalculates while typing and when the shape changes', async ({ page }) => {
       await open(page, calculator);
       await input(page, typed.key).fill(typed.text);
-      if (calculator.typedAnswer !== undefined) {
-        await expect(page.locator('[data-answer]')).toHaveText(calculator.typedAnswer);
+      if (spec.answer !== undefined) {
+        await expect(answer(page)).toHaveText(spec.answer.typed[calculator.locale]);
       }
       await expectFigures(page, calculator, typed.figures);
       await input(page, typed.key).fill(typed.back);
-      for (const choice of spec.choices ?? []) {
+      for (const choice of choices ?? []) {
         for (const option of choice.options) {
           if (option.figures === undefined) continue;
           await choiceButton(page, choice.key, option.value).click();
           await expectFigures(page, calculator, option.figures);
-          expect(await page.locator('[data-answer]').textContent()).toMatch(
-            new RegExp(`^${option.starts?.[calculator.locale]?.replace('(', '\\(') ?? ''}`),
-          );
+          if (spec.answer !== undefined && option.starts !== undefined) {
+            expect(await answer(page).textContent()).toMatch(
+              new RegExp(`^${option.starts[calculator.locale].replace('(', '\\(')}`),
+            );
+          }
         }
       }
     });
 
     // spec: calculator-page › [CP21] the size on a shopping line
-    if (spec.shopping?.some((line) => line.sizes !== undefined) === true) {
+    const sizedLines = (spec.shopping ?? []).flatMap((line, index) =>
+      line.sizes === undefined ? [] : [{ index, sizes: line.sizes }],
+    );
+    if (sizedLines.length > 0) {
       test('changes the bags and the yield line with the bag size, not the volumes', async ({
         page,
       }) => {
         await open(page, calculator);
-        for (const [index, line] of (spec.shopping ?? []).entries()) {
-          for (const option of line.sizes?.options ?? []) {
-            await choiceButton(page, line.sizes?.key ?? '', option.value).click();
+        for (const { index, sizes } of sizedLines) {
+          for (const option of sizes.options) {
+            await choiceButton(page, sizes.key, option.value).click();
             await expectFigures(page, calculator, option.figures);
             await expect(page.locator(`[data-line-note="${String(index)}"]`)).toHaveText(
               option.note[calculator.locale],
             );
-            expect(await page.locator('[data-answer]').textContent()).toMatch(
-              new RegExp(`${option.end[calculator.locale].replace('.', '\\.')}$`),
-            );
+            if (spec.answer !== undefined) {
+              expect(await answer(page).textContent()).toMatch(
+                new RegExp(`${option.end[calculator.locale].replace('.', '\\.')}$`),
+              );
+            }
           }
         }
       });
     }
 
     // spec: calculator-page › [CP22] the stepped field and its steppers
-    if (spec.steppers !== undefined) {
+    if (steppers !== undefined) {
       test('takes the waste from the field and the steppers and stops at 0 and 50', async ({
         page,
       }) => {
         await open(page, calculator);
-        for (const stepper of spec.steppers ?? []) {
+        for (const stepper of steppers) {
           await input(page, stepper.key).fill(stepper.min);
           await expectFigures(page, calculator, stepper.minFigures);
           await input(page, stepper.key).fill(stepper.base);
@@ -234,12 +246,12 @@ for (const calculator of calculatorPages) {
     }
 
     // spec: calculator-page › [CP16], [CP18] costs
-    if (spec.prices !== undefined) {
+    if (prices !== undefined) {
       test('shows the costs once a price is typed and does not round the ready-mix volume', async ({
         page,
       }) => {
         await open(page, calculator);
-        for (const price of spec.prices ?? []) {
+        for (const price of prices) {
           await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeHidden();
           if (price.hinted === true) {
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeVisible();
@@ -252,7 +264,7 @@ for (const calculator of calculatorPages) {
         }
         await input(page, typed.key).fill(typed.text);
         await expect(figureAt(page, headline)).toHaveText(figure(typed.figures, 0));
-        for (const price of spec.prices ?? []) {
+        for (const price of prices) {
           if (price.afterTyped !== undefined) {
             await expect(output(page, price.output)).toHaveText(price.afterTyped);
           }
@@ -276,14 +288,17 @@ for (const calculator of calculatorPages) {
     });
 
     // spec: calculator-page › [CP23] Enter does not navigate, and still presses the button it is on
-    if (spec.choices !== undefined) {
+    if (choices !== undefined) {
       test('activates a focused button with Enter, like Space', async ({ page }) => {
         await open(page, calculator);
-        const [choice] = spec.choices ?? [];
-        const [first, second] = (choice?.options ?? []).filter(
-          ({ value }) => value !== choice?.initial,
-        );
-        if (choice === undefined || first === undefined) return;
+        const [choice] = choices;
+        if (choice === undefined) throw new Error('the record declares an empty choices list');
+        const [first, second] = choice.options.filter(({ value }) => value !== choice.initial);
+        if (first === undefined) {
+          throw new Error(
+            `the choice group "${choice.key}" has no option besides its initial "${choice.initial}"`,
+          );
+        }
         await choiceButton(page, choice.key, first.value).focus();
         await page.keyboard.press('Enter');
         await expect(choiceButton(page, choice.key, first.value)).toHaveAttribute(
@@ -291,13 +306,14 @@ for (const calculator of calculatorPages) {
           'true',
         );
         await expect.poll(() => query(page)).toBe(`?v=1&${first.param ?? ''}`);
-        if (second === undefined) return;
-        await choiceButton(page, choice.key, second.value).focus();
-        await page.keyboard.press('Space');
-        await expect(choiceButton(page, choice.key, second.value)).toHaveAttribute(
-          'aria-pressed',
-          'true',
-        );
+        if (second !== undefined) {
+          await choiceButton(page, choice.key, second.value).focus();
+          await page.keyboard.press('Space');
+          await expect(choiceButton(page, choice.key, second.value)).toHaveAttribute(
+            'aria-pressed',
+            'true',
+          );
+        }
       });
     }
 
@@ -312,11 +328,10 @@ for (const calculator of calculatorPages) {
     }
 
     // spec: calculator-page › [CP25], [CP28] restoring from a shared link and reloading
-    if (spec.restored !== undefined) {
+    if (restored !== undefined) {
       test('restores a footing from its link and keeps its state on reload', async ({ page }) => {
-        const restored = spec.restored;
-        if (restored === undefined) return;
         const [first] = Object.entries(restored.values);
+        if (first === undefined) throw new Error('the restored state declares no value');
         await open(page, calculator, restored.query);
         await expect(
           choiceButton(page, restored.pressed.key, restored.pressed.value),
@@ -327,19 +342,17 @@ for (const calculator of calculatorPages) {
         await expectFigures(page, calculator, restored.figures);
         await page.reload();
         await expect(input(page, spec.ready)).toBeEnabled();
-        await expect(input(page, first?.[0] ?? '')).toHaveValue(first?.[1] ?? '');
+        await expect(input(page, first[0])).toHaveValue(first[1]);
         await expectFigures(page, calculator, restored.figures);
         expect(query(page)).toBe(restored.query);
       });
     }
 
     // spec: calculator-page › [CP26], [CP27], [CP28] the query writes and the history
-    if (spec.variant !== undefined) {
+    if (variant !== undefined) {
       test('writes the query after each valid change, without adding to the history', async ({
         page,
       }) => {
-        const variant = spec.variant;
-        if (variant === undefined) return;
         const withPress = `${typedQuery(spec)}${variant.suffix}`;
         const withPrice = `${withPress}${variant.price.suffix}`;
         await open(page, calculator);
@@ -404,7 +417,7 @@ for (const calculator of calculatorPages) {
         'aria-describedby',
         `calc-${typed.key}-error`,
       );
-      await expect(page.locator('[data-answer]')).toHaveText('—');
+      if (spec.answer !== undefined) await expect(answer(page)).toHaveText('—');
       await expect(figureAt(page, headline)).toHaveText('—');
       expect(query(page)).toBe(typedQuery(spec));
       await input(page, typed.key).fill(typed.text);
@@ -426,10 +439,10 @@ for (const calculator of calculatorPages) {
       }
     });
 
-    if (spec.rejects !== undefined) {
+    if (rejects !== undefined) {
       test('names the decimal comma and the unknown unit', async ({ page }) => {
         await open(page, calculator);
-        for (const reject of spec.rejects ?? []) {
+        for (const reject of rejects) {
           await input(page, reject.key).fill(reject.text);
           await expect(page.locator(`#calc-${reject.key}-error`)).toHaveText(
             calculator.common[`errors.${reject.code}`] ?? '',
@@ -448,8 +461,8 @@ for (const calculator of calculatorPages) {
       }
       await expect.poll(() => query(page)).toBe(spec.metric.query);
       await expect(page.locator('[data-primary]')).toHaveText(spec.metric.primary);
-      if (calculator.metricAnswer !== undefined) {
-        await expect(page.locator('[data-answer]')).toHaveText(calculator.metricAnswer);
+      if (spec.answer !== undefined) {
+        await expect(answer(page)).toHaveText(spec.answer.metric[calculator.locale]);
       }
       for (const key of shoppingKeys) {
         await expect(figureAt(page, key)).toHaveText(
@@ -495,13 +508,13 @@ for (const calculator of calculatorPages) {
       page,
     }) => {
       await open(page, calculator, typedQuery(spec));
-      const toggle = page.locator('header a[hreflang]');
+      const toggle = languageSwitch(page);
       await expect(toggle).toHaveAttribute('href', `${calculator.other}${typedQuery(spec)}`);
-      if (spec.variant !== undefined) {
-        await page.locator(pressSelector(spec.variant.press)).click();
+      if (variant !== undefined) {
+        await page.locator(pressSelector(variant.press)).click();
         await expect(toggle).toHaveAttribute(
           'href',
-          `${calculator.other}${typedQuery(spec)}${spec.variant.suffix}`,
+          `${calculator.other}${typedQuery(spec)}${variant.suffix}`,
         );
       }
       await expect(page.locator('link[rel=canonical]')).toHaveAttribute(
@@ -515,11 +528,11 @@ for (const calculator of calculatorPages) {
 
     test('opens the other language with the same numbers', async ({ page }) => {
       await open(page, calculator, typedQuery(spec));
-      await page.locator('header a[hreflang]').click();
+      await languageSwitch(page).click();
       await expect(page).toHaveURL(
         new RegExp(`${calculator.other}\\?${typedQuery(spec).slice(1)}$`),
       );
-      await expect(page.locator('[data-not-running]')).toBeHidden();
+      await expect(notRunning(page)).toBeHidden();
       await expectFigures(page, calculator, typed.figures);
       await expect(input(page, typed.key)).toHaveValue(typed.shown);
     });
@@ -529,7 +542,7 @@ for (const calculator of calculatorPages) {
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       await open(page, calculator);
       await driveCopyState(page, calculator);
-      await page.locator('[data-copy]').click();
+      await copyButton(page).click();
       await expect(page.locator('[data-copy-status]')).toHaveText(
         calculator.site['site.calculator.linkCopied'] ?? '',
       );
@@ -540,13 +553,8 @@ for (const calculator of calculatorPages) {
 
     test('shows a read-only field with the address when the copy is rejected', async ({ page }) => {
       await open(page, calculator, copyQuery(calculator));
-      await page.evaluate(() => {
-        Object.defineProperty(navigator, 'clipboard', {
-          configurable: true,
-          value: { writeText: () => Promise.reject(new Error('denied')) },
-        });
-      });
-      await page.locator('[data-copy]').click();
+      await denyClipboard(page);
+      await copyButton(page).click();
       await expect(page.locator('[data-copy-status]')).toHaveText(
         calculator.site['site.calculator.copyFailed'] ?? '',
       );
@@ -593,18 +601,18 @@ for (const calculator of calculatorPages) {
     });
 
     // spec: calculator-page › Form controls: the unit hint is tied to the input
-    if (spec.hints !== undefined) {
+    if (hints !== undefined) {
       test('shows the unit hint beside every length field and describes the input by it', async ({
         page,
       }) => {
         await open(page, calculator);
-        for (const hint of spec.hints ?? []) {
+        for (const hint of hints) {
           if (hint.site === undefined) continue;
           await expect(page.locator(`#calc-${hint.key}-hint`)).toHaveText(
             calculator.site[hint.site] ?? '',
           );
         }
-        for (const hint of spec.hints ?? []) {
+        for (const hint of hints) {
           await expect(input(page, hint.key)).toHaveAttribute('aria-describedby', hint.describedBy);
         }
       });
@@ -633,8 +641,8 @@ for (const calculator of calculatorPages) {
 // spec: site-routing-i18n › [SR7] the language switch keeps working on a static page
 test('switches language on /privacy and back (site-routing-i18n › [SR7])', async ({ page }) => {
   await page.goto('/privacy');
-  await page.locator('header a[hreflang]').click();
+  await languageSwitch(page).click();
   await expect(page).toHaveURL(/\/es\/privacidad$/);
-  await page.locator('header a[hreflang]').click();
+  await languageSwitch(page).click();
   await expect(page).toHaveURL(/\/privacy$/);
 });
