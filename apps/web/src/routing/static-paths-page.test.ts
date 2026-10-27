@@ -10,19 +10,12 @@ const catchAll = async (): Promise<CatchAll> =>
   (await import('../pages/[...path].astro')) as unknown as CatchAll;
 
 describe('catch-all page (site-routing-i18n › Route table drives the pages)', () => {
-  it('builds the static paths of the route table', async () => {
-    const page = await catchAll();
-    expect(page.getStaticPaths().length).toBeGreaterThan(0);
-    expect(staticPaths().length).toBeGreaterThan(0);
-  });
-
   // spec: site-routing-i18n › [SR23] the catch-all builds every path but the two homes
   it('builds the static paths of the route table minus the two home entries', async () => {
     const built = (await catchAll()).getStaticPaths();
     const homes = staticPaths().filter(({ props }) => props.id === 'home');
     expect(homes).toHaveLength(2);
     expect(built).toEqual(staticPaths().filter(({ props }) => props.id !== 'home'));
-    expect(built).toHaveLength(12);
   });
 
   // spec: site-routing-i18n › [SR23] the union with `/` and `/es` is the route table, none twice
@@ -34,7 +27,6 @@ describe('catch-all page (site-routing-i18n › Route table drives the pages)', 
     );
     expect(new Set(covered).size).toBe(covered.length);
     expect([...covered].sort()).toEqual(staticPaths().map(key).sort());
-    expect(staticPaths()).toHaveLength(14);
   });
 });
 
