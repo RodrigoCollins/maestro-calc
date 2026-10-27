@@ -282,3 +282,72 @@ Two blind judges on `da0c0e2` (the correction-round tip) returned no severe find
 - GX6: `site-browser` wall time 3 min 36 s (00:00:57 to 00:04:33 UTC; limit 15 minutes, SQ15).
 - The native Gentle AI review could not run from the Claude Code runtime (its lens agents expose no shell there and return incomplete by design); the owner disabled receipt-driven development for this delivery and the four GX3 reviewers plus Judgment Day stand as the review.
 
+
+## G3: browser record, entry contracts, docs
+
+Branch `feat/calculator-core-g3-browser-record-docs` (from `main` 15e4eeb, which holds the merged G2). Mode: strict TDD (`npm test`, vitest; `npm run typecheck --prefix tooling/site-browser` for the browser package). Slices S15 to S18 as work-unit commits; G3.4 (push, CI, the four reviewers, Judgment Day, PR, the `site-browser` wall time) belongs to the orchestrator. Nothing was pushed. G3 ships no production code: tests, e2e, contracts and docs only. Owner decisions that applied: `main` is the baseline (no e2e re-run for it), the intermediate `build && test:e2e` runs of the slices were skipped and the browser suite ran once at the group tip, and the mount's no-slot paths were taken into S17.
+
+### Commits (oldest first, `git diff --shortstat -M`)
+
+| Slice | Commit | Subject | Changed lines |
+|---|---|---|---|
+| S15 | eafcabf | test(site-browser): add the typed per-id e2e record type | 234+ |
+| S15 | b6c01bf | test(site-browser): add concrete's record and the table of calculator pages | 298+ |
+| S15 | 0ef74f7 | refactor(web): share the comment-stripping scan helpers | 33+ / 33- (66) |
+| S15 | e7b7393 | test(site-browser): drive the calculator suite from the record | 449+ / 361- (810, body gives the reason) |
+| S16 | 14999b5 | test(site-browser): run the axe, layout and CSP suites for every calculator | 194+ / 89- (283) |
+| S17 | a41b278 | test(web): run the entry contracts per page | 211+ / 90- (301) |
+| S17 | ca587e6 | test(web): prove the slot-free markup and the proof entry | 190+ |
+| S18 | 38b3a71 | docs(agents): rewrite the adding-a-calculator recipe for the generic core | 25+ / 8- (33) |
+| this section | this commit | docs(openspec): record the G3 apply progress | |
+
+### Forecast vs actual
+
+| Slice | Forecast | Actual | Note |
+|---|---|---|---|
+| S15 | ~350 | 1,408 (234 + 298 + 66 + 810) | the named split (record, then suite) became four commits: the type, concrete's spec and the table, the helper move, the suite. `calculator.spec.ts` alone is 685 changed lines (every test body now reads the record); it cannot be split without a file that names concrete in half of its tests |
+| S16 | ~160 | 283 | three suites rewritten over the record, plus `locators.ts` (shared locators) |
+| S17 | ~250 | 491 (301 + 190) | the contracts per page are 301 (the new `client-graph.contract.test.ts` is 86 of them), the proof contract and the entry 190 |
+| S18 | ~140 | 33 | the recipe lines are long, so few lines changed |
+| Group | ~900 | 2,215 | the forecast counted the suite rewrite as an edit; it is a rewrite of a 567-line file |
+
+### Group tip evidence (G3.1 to G3.3)
+
+- `git log main..HEAD --oneline`: the eight commits above (this record follows). `git diff --stat main -- packages/ .github/` is empty; `git diff --stat main -- .github/workflows/ci.yml 'packages/*/stryker.config.mjs' apps/web/src/contract/mutation* apps/web/src/lib/released.contract.test.ts apps/web/src/lib/i18n-contract.test.ts` is empty.
+- `npm run verify` exit 0: 195 test files, 3,587 tests (G2 tip 3,537 in 192 files), coverage 100 percent statements, branches, functions and lines (2,464 / 1,368 / 784 / 2,119), `check:site` and `check:dist` green.
+- Budgets from `check:site` (real build, unchanged from the G2 correction round because no shipped code changed): JS graph of the concrete calculator page **38,778 B** (limit 49,152; the G1 soft target of 38,500 B stays exceeded by 278 B, only recorded as the owner asked), largest HTML 34,100 B (`/es/calculadora-de-concreto`), CSS 7,399 B, largest font 22,772 B, calculator page weight **162,888 B** (limit 196,608), no JavaScript elsewhere.
+- Entry sizes of the library build the contracts print (whitespace removed): concrete 39,674 B, rectangle-area proof entry **33,355 B** (limit 49,152; smaller than concrete by 6,319 B). The design forecast for the proof entry was 31,000 to 33,000 B with a mount, so it is 355 B over the top of that range; the cost is the mount and the controller, with no slot and no concrete file in its graph.
+- `npm run test:e2e`: **283 passed** (38.4 s of Playwright wall time), first run on the rewritten suites. `npx playwright test --list` of the parent tree and of this tree gave 276 titles on the phone project each, identical once the line numbers are stripped, and 283 in all (6 files) on both. `npm run lighthouse`: exit 0, six URLs, every assertion passed. The `site-browser` CI wall time is the orchestrator's.
+- Dist diff (G3.3): `apps/web/dist` copied from the G2-tip build (`main` 15e4eeb) before the first change and from the G3-tip build, `/_astro/` names normalised in the HTML, XML, text and JSON files with `sd '/_astro/[A-Za-z0-9_.-]+\.(js|css)' '/_astro/ASSET.$1'`, then `diff -r -x '*.js'`: **empty** (25 files in each tree). Sanity: a line appended to `index.html` of one copy is reported, so the check can fail. `rg -l rectangle-area apps/web/dist` finds no file [CWC32].
+- GX2 hygiene: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
+
+### Scenario ids proven, and negative proofs (each run, then reverted; `git status --porcelain` clean afterwards)
+
+S15: [SQ29] (`calculator-pages.test-d.ts`: a `{}` table is a type error, and the E2E table is complete), [SQ30] (a minimal spec with no choice group, stepper, shopping line or price compiles; `browser-record.contract.test.ts` pins the `satisfies` clause, the type-only page id import, no `@maestro-calc/*` runtime import, and no concrete literal, path or `shape` literal in the generic suites, with five seeded lines), [SQ31] (283 titles identical, assertions kept; see Deviations 2), [CWC34] (the suites join the scan), K13 (AGENTS sentence and `docs.contract` rows). Negative proofs: concrete's row deleted from `E2E` (`npm run typecheck --prefix tooling/site-browser` fails with `Property 'concrete' is missing in type '{}' but required in type 'Record<"concrete", E2eSpec>'`), `await Promise.resolve('/concrete-calculator')` appended to `calculator.spec.ts` (the contract names the file and the literal).
+
+S16: [SQ32] (the CSP suite loops `calculatorPages`, presses the first non-initial option of the first choice group, copies the link, switches language, and takes the injected-script page from `representativePaths`), [SQ17] (axe states derived: default, one per non-initial option of each choice group, error, metric, cost rows when prices are declared, copy failed), [SQ19] (`layoutQueries` and the restored link from the record), [SQ20] (the existing built-copy test, now `calc-${typed.key}`, passed in the e2e run). Negative proof: `page.goto('/concrete-calculator')` in `csp.spec.ts` (two contract tests flag it, "names the concrete calculator" and "holds the path"). The other proof the task names (the association removed in a built copy) is the unchanged test "fails a copy whose error message lost its association", which ran green at the tip.
+
+S17: [CWC4], [CWC32], [CWC33], [CWC36], [CWC37] and [CP48]. Negative proofs: `export { answerSlot } from '../slots/answer.ts'` appended to the rectangle-area page (the proof contract names `calculator/slots/answer.ts`), `probe: find(root, '[data-choice]')` added to `collect` in `mount.ts` (the lookup check fails with `[data-choice]`), a `rectangle-area` row added to `ROUTES` (the CWC32 test fails). The markup, lookup and exclusion tests were written against code that already held, so the three proofs above are their break-the-code spot checks; only the graph and size tests were red first (the proof entry was missing, then added).
+
+S18: [CWC35]. Negative proofs: a path that does not exist in the recipe (`docs.contract` names `apps/web/src/calculator/nope/concrete.ts`), the word "generalise" put back (the CWC35 test fails).
+
+### Deviations from the design and tasks
+
+1. **The record is richer than the design sketch.** `E2eChoice` holds only the groups that drive the form (shape) and its options are an array (`value`, `fields`, `figures`, `starts`, `param`), because an object keyed by `'40'`, `'60'` would reorder the presses. The bag size group sits under `shopping[].sizes` (it changes a line's quantity, not the fields), which also keeps the axe states at 8 per page (a choice group for the bag would have added three). New optional groups: `rejects`, `invalidLink`, `restored`, `variant`, `hints`; `E2ePress` names a button of a `data-choice` or `data-step` group; `E2eLocale` has no `locale` (`E2ePage` has it). Strings per language live in `locales`.
+2. **Assertions unchanged (SQ31), with these exact mappings:** the abort and metric tests check the headline figure and the shopping figures only, as before; the reload test checks the first restored value only, as before; the copy tests press the first stepper (`upQuery`) and fall back to the typed value only for a record with no stepper. The defaults check of the invalid-link test now reads `defaults` (the same five figures).
+3. **`STATES`, `SHAPE_FIELDS` and the five-tuple `Figures` stay exported from `concrete-pages.ts`** (the design says unchanged); `CONCRETE_PAGES` and `ConcretePage` are gone.
+4. **Extra files:** `e2e/locators.ts` (the `input`, `output`, `choiceButton`, `stepButton` and `figureAt` locators, shared by the four suites and covered by the scan), `contract/__testing__/source-text.ts` (the two scan helpers moved out of `generic-code.contract.test.ts`, which keeps its assertions), `contract/client-graph.contract.test.ts` (the seeded virtual graphs for the per-id helper, which had no test file of its own).
+5. **The G1 stand-in for the proof entry is gone.** `entry-graph.contract.test.ts` no longer builds `controllerOf(rectangleAreaPage)`; the real `mount(rectangleAreaPage)` entry (`contract/__testing__/rectangle-area-entry.ts`) replaces it and weighs 33,355 B.
+6. **Follow-up 1 of G2 (the mount's no-slot paths).** There is no DOM test environment in the unit suite and none was installed, so the branches of `mount.ts` that run on a page with no `answer`, no `[data-line]`, no `[data-primary-before]` and no choice group are still not executed by any test. What is proved: the entry graph reaches no slot or concrete file, the rectangle-area markup (through the real `CalculatorBody`) has none of the slot elements, every throwing lookup of the mount resolves on that markup (the language switch excepted, by name), the per-key lookups resolve for each text key, and a slot selector inside a throwing lookup is caught (seeded). A DOM-level run would need a jsdom-class environment and a routed slot-free page; that belongs to the second live calculator.
+7. **The concrete page's JS graph is 38,778 B** (G2 correction round value): no client code changed, so the soft target of 38,500 B stays exceeded by 278 B and nothing was golfed.
+8. **Strict TDD order:** RED seen for the type test (module missing), the record contract (file missing), the generic-suite scan (concrete literals), the per-id helper (flags the wrong folder), the proof entry (module missing) and the docs rows (four failures). Spot checks instead of RED, for work that already held: the per-page loops in `entry-graph`, `client-entry` and `templates` (green on the single page; the seeded `entryPathOf` ids and the negative proofs above show a new id is covered), and the three S17 contracts named above. The suite rewrites have no RED of their own (recorded exception: same titles, same assertions, 283 tests).
+9. **Commit sizes.** `e7b7393` is above 400 (810) and its body gives the reason; the commit message says 685 of 876 lines because it was written before the helper commit was split off (685 for `calculator.spec.ts`, 810 in all). No other commit is above 400.
+10. **A transient `.claude/worktrees/agent-*` directory** appeared inside the repository during S15 and broke `eslint` (two `tsconfigRootDir` candidates) for one run; it was empty on the next run, untracked and never committed.
+
+### Test and coverage numbers
+
+G2 tip: 192 files, 3,537 tests. G3 tip: 195 files, 3,587 tests; coverage thresholds all met; `apps/web/src/calculator/**` and `apps/web/src/lib/page-view.ts` at 100 percent. e2e: 283.
+
+### Remaining for the orchestrator (G3.4, GX1 to GX6)
+
+Push the branch, CI (`verify`, `mutation` matrix and gate, `site-browser`), the four reviewers, Judgment Day, the PR body from G3.4 and the `site-browser` job wall time. After G3 merges: the final checks F.1 and F.2 (the three `site-browser` wall times and the pre-change `packages/` diff).
