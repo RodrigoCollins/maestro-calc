@@ -51,7 +51,24 @@ Not included: the authored sum is 464, already over 400.
 | e2e (Chromium) | 283 | **283 passed** (38.3 s) | |
 | Lighthouse (6 pages) | | assertions passed (exit 0) | |
 
-Vitest: 198 files, 3,659 tests at the tip (baseline 196 files, 3,632). `rg -l '\.home-' apps/web/dist` lists `index.html` and `es.html` only. `site-browser` CI wall time: not measurable locally (CI only).
+Vitest: 198 files, 3,659 tests at the tip (baseline 196 files, 3,632). `rg -l '\.home-' apps/web/dist` lists `index.html` and `es.html` only. `site-browser` CI baseline wall time: **3 min 12 s** (run 40495578751, the last green run before PR 1).
+
+### Baseline and build records of tasks 1.1 and 1.9
+
+- Astro **7.4.2** (`node_modules/astro/package.json`), unchanged by the PR.
+- Concrete client entry (`client-entry.contract`, library build): **39,674 B** of 49,152 B at the tip; the PR touches no client code.
+- Inline CSS per page (bytes of each `<style>` element, `dist-main` against the PR 1 tip build; no page links a stylesheet in either):
+
+| Page | main | PR 1 tip |
+|---|---|---|
+| `concrete-calculator.html` | 888 + 1,026 + 5,485 = 7,399 B | 888 + 1,026 + 5,425 = 7,339 B |
+| `es/calculadora-de-concreto.html` | 888 + 1,026 + 5,485 = 7,399 B | 888 + 1,026 + 5,425 = 7,339 B |
+| `methodology.html` | 888 + 1,026 + 5,485 = 7,399 B | 888 + 1,026 + 5,425 = 7,339 B |
+| `index.html` / `es.html` | 888 + 1,026 + 5,485 = 7,399 B | 888 + 1,026 + 2,667 = 4,581 B |
+| `404.html` | 888 + 1,026 + 2,568 = 4,482 B | 888 + 1,026 + 2,592 = 4,506 B |
+
+  The two font-face blocks are 888 B and 1,026 B. The third block is the shared chunk merged with the page's own chunk; the 404 page carries the shared chunk alone (2,568 B on main, 2,592 B at the tip: +84 B of tokens, -60 B of class scoping). Catch-all chunk: **2,917 B** on main (5,485 - 2,568) and **2,833 B** at the tip (5,425 - 2,592), 1 B under the 2,834 B task 1.9 expected.
+- Importers (`rg -n "home-links|HomeView" apps tooling`). On main: `pages/[...path].astro` (import and render), `views/HomeView.astro` (the `.home-links` markup and rule), `views/HomeView.test.ts`, `views/CalculatorView.test.ts` (the `home` row with `p.home-links`), `routing/routes.ts` (the recipe comment) and `contract/docs.contract.test.ts` (the AGENTS.md home-link row). At the tip: `pages/index.astro` and `pages/es.astro` (import and render), `views/HomeView.astro`, `views/HomeView.test.ts`, and the K9 comment in `astro.config.mjs`. `tooling/` has none either way.
 
 ### Dist diff against `dist-main` (P1.2, normalised: asset names, scoping markup)
 
@@ -67,4 +84,38 @@ H1: home back in the catch-all paths (2 SR23 cases red); `index.astro` removed (
 
 ### What remains for the orchestrator
 
-Push; CI; four reviewers and Judgment Day on the frozen candidate; decision on deviation 2 (split PR 1 at the commit boundary); PR body from this file; `site-browser` CI wall time. Next apply: PR 2 (H3b + H3c), which starts from a tree where K9 is already on.
+Push; CI; four reviewers and Judgment Day on the frozen candidate; decision on deviation 2 (split PR 1 at the commit boundary); PR body from this file. Next apply: PR 2 (H3b + H3c), which starts from a tree where K9 is already on.
+
+## PR 1 correction round
+
+The four lens reviews (spec conformance SC, types and boundaries TB, test quality TQ, maintainability and performance MP) found no blocker. Each finding and what was done, in the commits below (oldest first):
+
+| Commit | Subject |
+|---|---|
+| 243b7fe | test(web): guard every built page but the homes and read the resolved Astro config |
+| 2596a70 | test(web): derive the routing and directory expectations from the route table |
+| 66953d5 | refactor(web): type the home cards by their page id and check each pageless card key |
+| 82cc961 | test(web): scan every radius property and keep one sheet-list assertion |
+
+| Finding | What was done |
+|---|---|
+| SC-leak-scan-covers-three-pages-not-every-page, TQ-leak-guard-samples-three-pages | `CalculatorBody.budget.test.ts` globs `**/*.html` of the production build minus `index.html`, `es.html` and `zz-budget/*`; the leak, SS32 and K9 guards run over that list, both 404 pages included (a test asserts they are in it). The literal list is gone. Negative proof: a global `.home-x` rule in `NotFoundView.astro` fails the leak guard naming `404.html`. |
+| TQ suggestion: positive control | `index.html` and `es.html` each carry `.home-`. |
+| TQ-inline-css-config-pin-is-text-only | The test imports `apps/web/astro.config.mjs` (as `astro-config.contract` does) and asserts `build.inlineStylesheets === 'always'` and `scopedStyleStrategy === 'class'`; the source regexes are gone. Negative proof: `'auto'` fails it. |
+| TQ-build-memo-ignores-extra | The memo stores `extra` and throws when a name is reused with another `extra`. |
+| TQ/MP-static-paths-literal-counts | The 12 and 14 pins are dropped: the `toEqual` against `staticPaths()` minus the homes and the sorted-set equality of the union already prove them, and `end-state.contract` stays the only pinned count. |
+| TQ suggestion: weakened first test | Dropped: the [SR23] `toEqual` test subsumes it. |
+| TQ-non-calculator-throw-matches-one-letter | `toThrow(new Error('b is not a calculator page'))`. Negative proof: another message fails it. |
+| MP-real-card-golden-unnamed | The real cards are matched with `toContainEqual` and their ids against `directoryOrder(ROUTES, CALCULATOR_PAGES)`; the real order test checks it is `CALCULATOR_PAGES` in route table order. A second routed calculator needs no edit to this file. |
+| SC/TB-homecard-id-widened-to-string | `HomeCard<Id extends string = CalculatorPageId>`, `CardCopy<Id>`, `directoryOrder<Id>` and `homeCards` overloads (the `pathOf` pattern): `homeCards(locale)` yields `HomeCard<CalculatorPageId>[]`, a fixture yields its own ids, no cast. `directoryOrder` filters `pages` per route key, so it needs no type guard either. Pinned in `home.test-d.ts` (red first: `HomeCard` was not generic). No deviation to record: the design's `id: CalculatorPageId` holds. |
+| TB-test-d-negative-case-needs-both-keys | `home.test-d.ts` has one `@ts-expect-error` case for `.title` and one for `.summary`. |
+| TB suggestion via content.contract | `content.contract` checks `page.home.cards.<id>.summary` absent for every `PAGELESS` id, as it does `title`. |
+| TB-messages-type-from-calculator-controller | `lib/pages.ts` re-exports `Messages`; `lib/home-directory.ts` imports nothing from `calculator/`. |
+| SC-radius-scan-source-sheets-only (partly), TQ suggestion: radius long-hands | The square-corner scan matches `/[\w-]*radius\s*:/`, long-hands included. Negative proof: `border-top-left-radius: 4px` in `base.css` fails it. The scoped `<style>` blocks of the shell components are not scanned by a test: left as it was, because the tasks split [SS26] into this global-sheet test, the home view style tests of H3b and H3c, and the manual `rg border-radius` over source and `dist` (task 1.8). That `rg` finds no `radius` in any `.astro`, `.css` or built `.html` file at the tip. |
+| MP-three-sheets-asserted-twice | The dark-theme test no longer lists the sheets; the [SS30] test owns it. |
+| SC-ticked-tasks-1-1-and-1-9-records-missing | Written above: Astro version, entry size, per-page inline CSS before and after, the catch-all chunk, the importer list and the `site-browser` baseline wall time. |
+| TQ suggestion: `content.contract` links-key tie | Not changed: H3b replaces `page.home.links.concrete` with the cards, so the tie is handled there. |
+| TB-catch-all-exclusion-runtime-only | Not changed: the runtime filter through `templateOf` is design K1. |
+
+CP66 after the round: Spanish full-length proof **40,770 B** of 40,836 B (EN 40,501 B); the built pages are unchanged (the round touches tests and types only).
+Vitest after the round: 198 files, 3,662 tests (`npm run verify` exit 0, which ends `build`, `check:site`, `check:dist`).
