@@ -274,8 +274,9 @@ for (const id of ids) {
             const tallest = Math.max(...probes.map(({ natural }) => natural));
             for (const { locale, reserved, line, natural } of probes) {
               const label = `${block} ${locale} at ${String(width)} px`;
-              expect(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
-              expect(reserved - tallest, `${label}: unused reserve`).toBeLessThan(line);
+              // soft: one run reports every width and block that misses, not the first one
+              expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
+              expect.soft(reserved - tallest, `${label}: unused reserve`).toBeLessThan(line);
             }
           }
         }
