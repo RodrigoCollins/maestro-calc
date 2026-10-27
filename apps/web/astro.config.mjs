@@ -41,7 +41,14 @@ const assetsInlineLimit = (file) => (file.endsWith('.js') ? false : undefined);
 export default defineConfig({
   site: SITE.url,
   trailingSlash: 'never',
-  build: { format: 'file' },
+  // 'always' keeps every page's CSS inline whatever the chunk sizes: Astro would otherwise turn a
+  // chunk of 4,096 B or more into a render-blocking <link> (the catch-all's own chunk is 2.9 KB today).
+  build: { format: 'file', inlineStylesheets: 'always' },
+  // Scoping by class instead of `data-astro-cid-*` attributes saves about 150 B on the Spanish
+  // concrete page. It is here, not in a later slice, because the full-length proof page never
+  // carried the home's `.home-links` rule: the three new tokens (84 B) need these bytes to keep
+  // the proof at 40,836 B or less (CP66). Specificity is the same (+1 class or attribute).
+  scopedStyleStrategy: 'class',
   vite: { build: { assetsInlineLimit } },
   fonts: [
     {
