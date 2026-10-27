@@ -1,7 +1,7 @@
 import { globSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import type { AstroInlineConfig } from 'astro';
+import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { afterAll, describe, expect, it } from 'vitest';
 import { importFromRoot } from '../../contract/root.ts';
 import { ROUTES } from '../../routing/routes.ts';
@@ -41,13 +41,18 @@ const PARAGRAPH = '<p></p>'.length;
 const build = async (name: string, extra: Locales = { en: 0, es: 0 }) => {
   // the production site is built once per name: the built-HTML assertions below read the same output
   const cached = built.get(name);
-  if (cached !== undefined) return cached;
+  if (cached !== undefined) {
+    if (cached.extra.en !== extra.en || cached.extra.es !== extra.es) {
+      throw new Error(`build '${name}' was already made with other extra copy`);
+    }
+    return cached.result;
+  }
   const result = buildSite(name, extra);
-  built.set(name, result);
+  built.set(name, { extra, result });
   return result;
 };
 
-const built = new Map<string, ReturnType<typeof buildSite>>();
+const built = new Map<string, { extra: Locales; result: ReturnType<typeof buildSite> }>();
 
 const buildSite = async (name: string, extra: Locales) => {
   // `astro` must load as the Node package, not through the test bundler
@@ -81,27 +86,47 @@ const sizesOf = (files: Record<'en' | 'es', Buffer>): Locales => ({
   es: files.es.length,
 });
 
-/** Built pages (the production pipeline) that carry no home rule: both concrete pages and a trust page. */
-const PAGES_WITHOUT_HOME = [
-  'concrete-calculator.html',
-  'es/calculadora-de-concreto.html',
-  'methodology.html',
-] as const;
+/** The resolved Astro config: the same object the build reads, not the text of the file. */
+const { default: config } = await importFromRoot<{ default: AstroUserConfig }>(
+  'apps/web/astro.config.mjs',
+);
+
+/** The home pages: the only built pages that may carry the home's rules. */
+const HOMES = ['index.html', 'es.html'];
+
+/**
+ * Every page of the production build but the two homes and the injected budget route: the
+ * calculator, trust and not-found pages of both locales, whatever the route table holds.
+ */
+const pagesWithoutHome = async (): Promise<string[]> => {
+  await build('base');
+  return globSync('**/*.html', { cwd: join(out, 'base') })
+    .filter((name) => !HOMES.includes(name) && !name.startsWith('zz-budget/'))
+    .sort();
+};
+
+const builtPage = (name: string): string => readFileSync(join(out, 'base', name), 'utf8');
 
 describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])', () => {
   // spec: site-shell › [SS32] the config pins every page to inline CSS
-  it("sets build.inlineStylesheets to 'always' in the Astro config", () => {
-    const config = readFileSync(join(WEB_ROOT, 'astro.config.mjs'), 'utf8');
-    expect(config).toMatch(/build:\s*\{[^}]*inlineStylesheets:\s*'always'/);
+  it("sets build.inlineStylesheets to 'always' in the resolved Astro config", () => {
+    expect(config.build?.inlineStylesheets).toBe('always');
   });
+
+  // the guards below glob the build: the list is every page but the homes, both 404 pages included
+  it('guards every built page but the two homes, both not-found pages included', async () => {
+    const pages = await pagesWithoutHome();
+    expect(pages).toEqual(expect.arrayContaining(['404.html', 'es/404.html']));
+    expect(pages).toEqual(expect.arrayContaining(['concrete-calculator.html', 'methodology.html']));
+    expect(pages.some((name) => HOMES.includes(name) || name.startsWith('zz-budget/'))).toBe(false);
+  }, 120_000);
 
   // spec: site-shell › [SS32] no page links a stylesheet and no CSS file is emitted
   it('links no stylesheet, keeps the CSS in the head and emits no CSS file', async () => {
-    await build('base');
-    const dir = join(out, 'base');
-    expect(globSync('_astro/**/*.css', { cwd: dir })).toEqual([]);
-    for (const name of PAGES_WITHOUT_HOME) {
-      const html = readFileSync(join(dir, name), 'utf8');
+    const pages = await pagesWithoutHome();
+    expect(globSync('_astro/**/*.css', { cwd: join(out, 'base') })).toEqual([]);
+    for (const name of [...HOMES, ...pages]) {
+      const html = builtPage(name);
       const head = html.slice(html.indexOf('<head'), html.indexOf('</head>'));
       expect(/<link[^>]+rel=["']?stylesheet/.test(html), `${name} links a stylesheet`).toBe(false);
       expect(head.includes('<style'), `${name} has no <style> in the head`).toBe(true);
@@ -114,29 +139,34 @@ describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])
 
   // design K9, [CP66]: class scoping saves bytes on every scoped element, which pays for the tokens
   it("sets scopedStyleStrategy to 'class' and builds no data-astro-cid attribute", async () => {
-    const config = readFileSync(join(WEB_ROOT, 'astro.config.mjs'), 'utf8');
-    expect(/scopedStyleStrategy:\s*'class'/.test(config), 'config strategy').toBe(true);
-    await build('base');
-    for (const name of PAGES_WITHOUT_HOME) {
-      const html = readFileSync(join(out, 'base', name), 'utf8');
-      expect(html.includes('data-astro-cid-'), `${name} has an attribute-scoped element`).toBe(
-        false,
-      );
+    expect(config.scopedStyleStrategy).toBe('class');
+    for (const name of [...HOMES, ...(await pagesWithoutHome())]) {
+      expect(
+        builtPage(name).includes('data-astro-cid-'),
+        `${name} has an attribute-scoped element`,
+      ).toBe(false);
     }
   }, 120_000);
 
-  // spec: site-shell › [SS28], [SS29] the identity does not leak onto the calculator and trust pages
-  it.each(PAGES_WITHOUT_HOME)(
-    'carries no .home- selector and no gradient on %s',
+  // positive control: the home rules exist in the build, so their absence below means something
+  it.each(HOMES)(
+    'carries the .home- rules on the home %s',
     async (name) => {
       await build('base');
-      const html = readFileSync(join(out, 'base', name), 'utf8');
-      // booleans, so a failure does not print the whole page
-      expect(html.includes('.home-'), `${name} carries a .home- selector`).toBe(false);
-      expect(html.includes('linear-gradient'), `${name} carries a gradient`).toBe(false);
+      expect(builtPage(name).includes('.home-'), `${name} carries no .home- selector`).toBe(true);
     },
     120_000,
   );
+
+  // spec: site-shell › [SS28], [SS29] the identity does not leak onto any other built page
+  it('carries no .home- selector and no gradient on any page but the homes', async () => {
+    for (const name of await pagesWithoutHome()) {
+      const html = builtPage(name);
+      // booleans, so a failure does not print the whole page
+      expect(html.includes('.home-'), `${name} carries a .home- selector`).toBe(false);
+      expect(html.includes('linear-gradient'), `${name} carries a gradient`).toBe(false);
+    }
+  }, 120_000);
 });
 
 describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7]; design C18, DR-16)', () => {
