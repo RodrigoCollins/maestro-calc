@@ -272,3 +272,13 @@ Two blind judges on `da0c0e2` (the correction-round tip) returned no severe find
 - Full-length HTML proof with the faithful fixture after both units: **EN 40,567 B, ES 40,836 B** of 40,960 B, the same two numbers as after the correction round (the concrete page did not grow by a byte).
 - `npm run typecheck` 0 errors, `npm run lint` clean and the relevant vitest files green before each commit (`page-view.test.ts` 50, `ResultPanel.test.ts` 8, `CalculatorBody.test.ts` and `CalculatorBody.budget.test.ts` unchanged and green).
 - `npm run verify` exit 0 at the tip: 192 test files, 3,537 tests (correction round 3,531: four for the placeholder guard, two for the prefix span); coverage thresholds all met, `apps/web/src/calculator/**` and `apps/web/src/lib/page-view.ts` at 100 percent; `check:site` unchanged (largest HTML 34,100 B, JS graph of the concrete page 38,778 B, calculator page weight 162,888 B)..
+
+## G2 exit (GX1 to GX6)
+
+- GX1: `npm run verify` exit 0 on the tip `572dd08`; CI run 40420681908 on that tip green: `verify` 2 min 20 s, the eight `mutation` shards 1 to 4 min each (cache hits, `packages/` untouched), `mutation-gate` green, `site-browser` green. The first three runs of PR #93 never started: the private repository had used up the free plan's Actions minutes; the owner made the repository public on 2026-10-26 and the rerun went through.
+- GX2: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing (27 commits).
+- GX3 and GX4: see "G2 correction round" and "G2 Judgment Day" above.
+- GX5: PR #93 `refactor(web): generic page parts, per-id tables and mount (calculator-core group 2)`, opened as a draft on `d77fb9d` and marked ready on `572dd08` with the body of task G2.5.
+- GX6: `site-browser` wall time 3 min 36 s (00:00:57 to 00:04:33 UTC; limit 15 minutes, SQ15).
+- The native Gentle AI review could not run from the Claude Code runtime (its lens agents expose no shell there and return incomplete by design); the owner disabled receipt-driven development for this delivery and the four GX3 reviewers plus Judgment Day stand as the review.
+
