@@ -398,3 +398,7 @@ Gates: `npm run format`, `npm run verify` exit 0 (3,699 unit tests), `npm run ty
 
 - `calculator.css`, with its new `:root` media blocks, reaches the trust pages through the shared catch-all CSS chunk (pre-existing).
 - The `style` prop of `CalculatorBody` accepts any string; it could narrow to the two line-count custom properties later.
+
+### Judgment Day (PR 3)
+
+Two blind judges on `main..50f4be5`: both **APPROVED**, no CRITICAL or WARNING. Folded: the answer probe restored the block with `textContent`, which would flatten child elements; it now saves the child nodes and restores them with `replaceChildren` (both judges, SUGGESTION). Noted: the width sweep samples both edges of each breakpoint plus the seven widths, not every pixel; the fit check between edges relies on the text height not growing within a step (judge A, INFO). After the fold: `npm run test:e2e` 324 passed.
