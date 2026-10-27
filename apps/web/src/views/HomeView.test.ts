@@ -1,16 +1,15 @@
 import { readFileSync } from 'node:fs';
-import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
-import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type { HTMLElement } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
+import { pagelessTitles } from '../__testing__/pageless-titles.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { fromRoot } from '../contract/root.ts';
 import { directoryOrder, homeCards } from '../lib/home-directory.ts';
 import { PAGES } from '../lib/pages.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
-import { CALCULATOR_PAGES, isCalculatorPage, PAGELESS } from '../routing/templates.ts';
+import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import HomeView from './HomeView.astro';
 import NotFoundView from './NotFoundView.astro';
@@ -88,7 +87,8 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
     async (locale) => {
       const items = (await render(locale)).querySelectorAll('main ul.home-cards li');
       const ids = directoryOrder(ROUTES, CALCULATOR_PAGES).filter(isCalculatorPage);
-      expect(ids).toEqual(['concrete']);
+      // the route table is the source; at least one routed card keeps the loop below meaningful
+      expect(ids.length).toBeGreaterThan(0);
       expect(items).toHaveLength(ids.length);
       ids.forEach((id, index) => {
         const links = items[index]?.querySelectorAll('a[href]') ?? [];
@@ -109,19 +109,27 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
       const document = await render(locale);
       const list = document.querySelector('main ul.home-cards');
       expect(list?.getAttribute('role')).toBe('list');
-      expect(list?.querySelectorAll(':scope > li')).toHaveLength(CALCULATOR_PAGES.length);
-      const card = document.querySelector('li.home-card');
-      expect(card?.querySelectorAll('a')).toHaveLength(1);
-      expect(card?.children.map((child) => child.tagName)).toEqual(['H2', 'P', 'P']);
-      expect(card?.querySelector('h2 > a.tap-target')?.text.trim()).toBe(
-        catalog['page.home.cards.concrete.title'],
-      );
-      expect(card?.querySelector('h2 + p')?.text.trim()).toBe(
-        catalog['page.home.cards.concrete.summary'],
-      );
-      expect(card?.querySelector('p.home-example')?.text.trim()).toBe(
-        PAGES.concrete.catalogs[locale]['calc.concrete.page.example'],
-      );
+      const items = list?.querySelectorAll(':scope > li.home-card') ?? [];
+      const cards = homeCards(locale);
+      expect(cards.length).toBeGreaterThan(0);
+      expect(items).toHaveLength(cards.length);
+      cards.forEach(({ id }, index) => {
+        const card = items[index];
+        expect(card?.querySelectorAll('a'), id).toHaveLength(1);
+        expect(
+          card?.children.map((child) => child.tagName),
+          id,
+        ).toEqual(['H2', 'P', 'P']);
+        expect(card?.querySelector('h2 > a.tap-target')?.text.trim(), id).toBe(
+          catalog[`page.home.cards.${id}.title`],
+        );
+        expect(card?.querySelector('h2 + p')?.text.trim(), id).toBe(
+          catalog[`page.home.cards.${id}.summary`],
+        );
+        expect(card?.querySelector('p.home-example')?.text.trim(), id).toBe(
+          PAGES[id].catalogs[locale][`calc.${id}.page.example`],
+        );
+      });
     },
   );
 
@@ -149,22 +157,9 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
   // spec: trust-pages › [TP31] no calculator without a route is named, in either locale
   it.each(['en', 'es'] as const)('names no pageless calculator on the %s home', async (locale) => {
     const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
-    const pageless = PAGELESS.flatMap((id) => [
-      enRectangleArea[`calc.${id}.title` as keyof typeof enRectangleArea],
-      esRectangleArea[`calc.${id}.title` as keyof typeof esRectangleArea],
-    ]);
-    expect(pageless.length).toBeGreaterThan(1);
-    const words = [
-      'rectangle',
-      'rectángulo',
-      'square footage',
-      'pies cuadrados',
-      'roofing',
-      'techado',
-      'paint',
-      'pintura',
-    ];
-    for (const other of [...pageless, ...words])
+    // the titles of PAGELESS in both locales: none once every calculator has a page
+    const words = ['roofing', 'techado', 'paint', 'pintura'];
+    for (const other of [...(await pagelessTitles()), ...words])
       expect(text, other).not.toContain(other.toLowerCase());
   });
 });

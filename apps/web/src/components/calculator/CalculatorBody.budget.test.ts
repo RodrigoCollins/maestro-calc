@@ -4,6 +4,7 @@ import { join, resolve } from 'node:path';
 import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
+import { pagelessTitles } from '../../__testing__/pageless-titles.ts';
 import { importFromRoot } from '../../contract/root.ts';
 import { pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
@@ -198,8 +199,9 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
       expect(/<[^>]+\son[a-z]+=/i.test(html)).toBe(false);
       const text = parse(html).querySelector('main')?.text.toLowerCase() ?? '';
       expect(text).toContain('maestro');
-      for (const word of ['rectangle', 'rectángulo', 'square footage', 'pies cuadrados']) {
-        expect(text.includes(word), word).toBe(false);
+      // the titles of PAGELESS in both locales: none once every calculator has a page
+      for (const title of await pagelessTitles()) {
+        expect(text.includes(title.toLowerCase()), title).toBe(false);
       }
       const bytes = Buffer.byteLength(html);
       console.info(`[TP35] ${name}: ${String(bytes)} B of ${String(HOME_BUDGET)} B`);
