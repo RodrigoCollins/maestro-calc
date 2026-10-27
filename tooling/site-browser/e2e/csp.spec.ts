@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { calculatorPages } from './calculator-pages.ts';
+import { choiceButton, figureAt, input } from './locators.ts';
+import { representativePaths } from './representative.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
 /** Collects the console messages that report a Content-Security-Policy violation. */
@@ -24,19 +26,27 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
 
   for (const calculator of calculatorPages) {
     test(`reports no CSP violation while ${calculator.path} is used`, async ({ page, context }) => {
+      const { ready, typed, figures, choices } = calculator.spec;
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       const violations = watchCsp(page);
       await page.goto(calculator.path);
-      await expect(page.locator('#calc-length')).toBeEnabled();
-      await page.locator('#calc-length').fill('20');
-      await expect(page.locator('[data-shopping]')).toHaveText('123');
-      await page.locator('[data-choice="shape"] [value="footing"]').click();
-      await expect(page.locator('[data-shopping]')).not.toHaveText('123');
+      await expect(input(page, ready)).toBeEnabled();
+      await input(page, typed.key).fill(typed.text);
+      const watched = figures.findIndex((key) => key.startsWith('shopping:'));
+      const watchedKey = figures[watched] ?? '';
+      const watchedText = typed.figures[watched] ?? '';
+      if (watched >= 0) await expect(figureAt(page, watchedKey)).toHaveText(watchedText);
+      const [choice] = choices ?? [];
+      const option = choice?.options.find((candidate) => candidate.value !== choice.initial);
+      if (choice !== undefined && option !== undefined) {
+        await choiceButton(page, choice.key, option.value).click();
+        if (watched >= 0) await expect(figureAt(page, watchedKey)).not.toHaveText(watchedText);
+      }
       await page.locator('[data-copy]').click();
       await expect(page.locator('[data-copy-status]')).not.toHaveText('');
       await page.locator('header a[hreflang]').click();
       await expect(page).toHaveURL(new RegExp(`${calculator.other}\\?`));
-      await expect(page.locator('#calc-length')).toBeEnabled();
+      await expect(input(page, ready)).toBeEnabled();
       await expect(page.locator('[data-not-running]')).toBeHidden();
       await page.waitForLoadState('networkidle');
       expect(violations).toEqual([]);
@@ -48,7 +58,12 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
     page,
   }) => {
     const violations = watchCsp(page);
-    await page.route('**/concrete-calculator', async (route) => {
+    const [path] = representativePaths;
+    const calculator = calculatorPages.find((candidate) => candidate.path === path);
+    if (path === undefined || calculator === undefined) {
+      throw new Error('the Lighthouse representative is not a page of the record');
+    }
+    await page.route(`**${path}`, async (route) => {
       const response = await route.fetch();
       const body = (await response.text()).replace(
         '</body>',
@@ -56,11 +71,11 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
       );
       await route.fulfill({ response, body });
     });
-    await page.goto('/concrete-calculator');
+    await page.goto(path);
     await page.waitForLoadState('networkidle');
     expect(await page.evaluate(() => 'injected' in window || '__injected' in window)).toBe(false);
     expect(violations.length).toBeGreaterThan(0);
     // the calculator itself still works
-    await expect(page.locator('#calc-length')).toBeEnabled();
+    await expect(input(page, calculator.spec.ready)).toBeEnabled();
   });
 });
