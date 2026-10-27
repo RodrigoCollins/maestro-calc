@@ -87,6 +87,8 @@ const exists = (path: string): boolean =>
 describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', () => {
   const recipe = recipeOf(agents);
   const steps = stepsOf(recipe);
+  const step = (number: number): string =>
+    steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
 
   // concrete is the example of a calculator that needs injected data: the factory pattern
   it('numbers its steps from 1 without a gap and covers the factory calculator', () => {
@@ -153,16 +155,12 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
   // spec: calculator-web-core › [CWC35] no "generalise first" paragraph; a language-free page-module step and a typed browser-record step
   it('has no "generalise" paragraph, a language-free page-module step and an E2eSpec step', () => {
     expect(recipe).not.toContain('generalise');
-    const step = (number: number): string =>
-      steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
     expect(step(11)).toContain('language-free');
     expect(step(14)).toContain('E2eSpec');
   });
 
   // review G3 R3-agents-proof-overclaim, R2-recipe-omits-proof-retirement, R2-recipe-misdescribes-record
   it('says what the proof contract proves, that the go-live retires it, and what the record holds', () => {
-    const step = (number: number): string =>
-      steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
     expect(step(12)).toContain('not executed by any test');
     expect(step(12)).not.toContain('proves it on the unrouted');
     expect(step(14)).toContain('retires');
@@ -171,6 +169,12 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     for (const group of ['`answer`', '`choices`', '`steppers`', '`shopping`', '`prices`']) {
       expect(step(14), group).toContain(group);
     }
+  });
+
+  // judgment G3: this contract requires every named path to exist, so retiring the proof files edits the recipe too
+  it('says that the go-live merge of rectangle-area rewrites steps 12 and 14, and why', () => {
+    expect(step(14)).toContain('steps 12 and 14');
+    expect(step(14)).toContain('`apps/web/src/contract/docs.contract.test.ts`');
   });
 
   it('names the three tables that are a Record over the page ids', () => {
