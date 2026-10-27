@@ -1,3 +1,8 @@
+import { ROUTES } from '../../../apps/web/src/routing/routes.ts';
+import { CALCULATOR_PAGES } from '../../../apps/web/src/routing/templates.ts';
+import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
+import { CONCRETE } from './concrete-pages.ts';
+
 /**
  * The typed per-calculator record the generic suites run over (site-quality › [SQ29], [SQ30]).
  * A calculator adds one `E2eSpec` and one row of `E2E`; no suite names a calculator. The groups
@@ -189,3 +194,37 @@ export interface E2eSpec {
     readonly describedBy: string;
   }[];
 }
+
+/** One spec per calculator page: a missing row is a type error naming the id. */
+export const E2E = { concrete: CONCRETE } as const satisfies Record<CalculatorPageId, E2eSpec>;
+
+/** One page of the record: a calculator in one language. */
+export interface E2ePage extends E2eLocale {
+  readonly id: CalculatorPageId;
+  readonly locale: E2eLanguage;
+  readonly path: string;
+  /** The path of the same page in the other language. */
+  readonly other: string;
+  readonly spec: E2eSpec;
+}
+
+const LANGUAGES = ['en', 'es'] as const satisfies readonly E2eLanguage[];
+
+/** Every calculator page in both languages, with the paths taken from the route table. */
+export const calculatorPages: readonly E2ePage[] = CALCULATOR_PAGES.flatMap((id) =>
+  LANGUAGES.map((locale) => ({
+    ...E2E[id].locales[locale],
+    id,
+    locale,
+    path: ROUTES[id][locale],
+    other: ROUTES[id][locale === 'en' ? 'es' : 'en'],
+    spec: E2E[id],
+  })),
+);
+
+/** The selector of the button of a press. */
+export const pressSelector = ({ hook, key, value }: E2ePress): string =>
+  `[data-${hook}="${key}"] [value="${value}"]`;
+
+/** The link of the `typed` state. */
+export const typedQuery = (spec: E2eSpec): string => `?v=1&${spec.typed.param}`;
