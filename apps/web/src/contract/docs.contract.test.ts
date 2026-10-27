@@ -121,11 +121,13 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the Lighthouse representative', 'tooling/site-browser/e2e/representative.ts'],
     ['the page builder', 'apps/web/src/lib/page-view.ts'],
     ['the per-id page table', 'apps/web/src/lib/pages.ts'],
-    ["concrete's browser record", 'tooling/site-browser/e2e/concrete-pages.ts'],
-    ['the browser record table', 'tooling/site-browser/e2e/calculator-pages.ts'],
-    ['the mount', 'apps/web/src/client/mount.ts'],
+    ['the page module', 'apps/web/src/calculator/<id>/page.ts'],
+    ['the slots', 'apps/web/src/calculator/slots/'],
+    ['the page module test', 'apps/web/src/calculator/<id>/controller.test.ts'],
     ['the controller', 'apps/web/src/calculator/controller.ts'],
-    ['the concrete web folder', 'apps/web/src/calculator/concrete/'],
+    ['the mount', 'apps/web/src/client/mount.ts'],
+    ['the browser record of a calculator', 'tooling/site-browser/e2e/<id>-pages.ts'],
+    ['the browser record table', 'tooling/site-browser/e2e/calculator-pages.ts'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),
@@ -141,6 +143,20 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
   // spec: calculator-web-core › [CWC35] the recipe no longer says that CalculatorView renders concrete for every id
   it('does not claim that CalculatorView renders the concrete view for every id', () => {
     expect(recipe).not.toContain('concreteView');
+  });
+
+  // spec: calculator-web-core › [CWC35] no "generalise first" paragraph; a language-free page-module step and a typed browser-record step
+  it('has no "generalise" paragraph, a language-free page-module step and an E2eSpec step', () => {
+    expect(recipe).not.toContain('generalise');
+    const step = (number: number): string =>
+      steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
+    expect(step(11)).toContain('language-free');
+    expect(step(14)).toContain('E2eSpec');
+  });
+
+  it('names the three tables that are a Record over the page ids', () => {
+    for (const table of ['PAGES', 'SCRIPTS', 'E2E'])
+      expect(recipe, table).toContain(`\`${table}\``);
   });
 
   it('lists what is still kept by hand instead of claiming that nothing is', () => {
