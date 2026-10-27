@@ -186,7 +186,7 @@ Tasks 3.1-3.8 and 3.11 done. 3.9: the full e2e suite was run once at the PR tip 
 
 #### Scenario ids proven (H3b)
 
-[TP7], [TP8], [TP21] (unit, order and link), [TP29], [TP31] (unit and built HTML), [TP33] (partial), [TP34] (script scan on the built HTML, request log in `home.spec.ts`), [TP35] (measured above), [SS24] (use scan and computed sizes), [SS26] (view style), [SS27], [SS28] home side (hero and gradient), [SS31] (unit; axe 0 violations on `/` and `/es` in the a11y suite), JSON-LD guard kept (D7).
+[TP7], [TP8], [TP21] (unit, order and link), [TP29], [TP31] (unit and built HTML), [TP33] (partial), [TP34] (script scan on the built HTML, request log in `home.spec.ts`), [TP35] (measured above), [SS24] (use scan and computed sizes; the use scan reads the sources, `apps/web/src/**/*.{astro,css,ts}` without tests, as task 3.3 asked, which is narrower than the spec's built-CSS wording), [SS26] (view style), [SS27], [SS28] home side (hero and gradient), [SS31] (unit; axe 0 violations on `/` and `/es` in the a11y suite), JSON-LD guard kept (D7).
 
 #### Negative proofs (H3b; each run, then reverted; `git status --porcelain` clean afterwards)
 
@@ -235,7 +235,7 @@ RED order: 4.1 the card-structure case in `HomeView.test.ts` (2 red: summary and
 
 #### Scenario ids proven (H3c)
 
-[TP21] built (card targets equal the route paths of `CALCULATOR_PAGES` per locale, no other calculator link), [TP28] (unit and built HTML: `ul[role=list]` item count, title link, summary, example, one link), [TP30] on the view (real tables, order), [TP33] (every card link before methodology, then about), [TP34], [TP35] (9,708 / 9,818 B), [TP36] (axe 0, Lighthouse), [TP37] (320, 390, 1280 px, 44 by 44 links), [SS26] (card style: no `box-shadow`, radius, transform, transition, animation), [SS28] home side (the `.home-card` rule on both homes, on no other page), [SS30] (largest CSS 7,339 B).
+[TP21] built (card targets equal the route paths of `CALCULATOR_PAGES` per locale; corrected below: at `63a14c6` the built check was the item count and the first `a` of each item only, and "no other calculator link" was a unit proof), [TP28] (unit: `ul[role=list]`, item count, the first card's title link, summary, example and one link; corrected below: the built HTML held only the item count and the first href until the correction round), [TP30] on the view (real tables, order), [TP33] (every card link before methodology, then about), [TP34], [TP35] (9,708 / 9,818 B), [TP36] (axe 0, Lighthouse), [TP37] (320, 390, 1280 px, 44 by 44 links), [SS26] (card style: no `box-shadow`, radius, `text-transform`, transition, animation; corrected below: `transform` itself was added in the correction round), [SS28] home side (the `.home-card` rule on both homes, on no other page), [SS30] (largest CSS 7,339 B).
 
 #### Screenshots (4.8)
 
@@ -248,3 +248,25 @@ A second link inside the card summary (4 red: one-link and structure); an arrow 
 ### PR 2 and PR 2b group tasks
 
 Tip checks, dist diffs, `npm run verify`, `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`, the ES full-length proof (40,770 B, 66 B under the 40,836 pin) and the home bytes are recorded above for both tips. The `site-browser` CI wall time is CI only. **P2.4 (GX1-GX6: CI, the four reviewers, Judgment Day, the PR bodies with their Chain Context, the merge) belongs to the orchestrator.** PR body inputs: the guard ledger and the H3b section above (PR 2); this section, the forecast versus actual (H3b 190-230 forecast, 384 actual; H3c 190-210 forecast, 118 actual), the screenshots and the Lighthouse and axe results (PR 2b). Rollback: revert PR 2b alone (card markup, card CSS, card tests, `home.spec.ts` card case), then PR 2 (the hero, the heading reword and the `links.concrete` removal come back as one unit).
+
+---
+
+## PR 2 correction round (`feat/home-directory-p2b-cards`, from `fe83905`)
+
+Two lens reviews of the PR 2 and PR 2b tip found no blocker (spec and tests: ST; design, accessibility and bytes: DA). Strict TDD: each widened guard was shown red by a negative proof, then reverted. Tests and docs only: the build of the round's tip is byte-identical to the `fe83905` build (`diff -r` of the two `dist` trees, homes included, prints nothing).
+
+| Finding | What was done | Commit |
+|---|---|---|
+| ST-literal-routed-set-pin | `HomeView.test.ts` reads the routed set from `directoryOrder(ROUTES, CALCULATOR_PAGES)` with a `> 0` non-vacuity floor; the literal `['concrete']` is gone | `81df1f5` |
+| DA-pageless-words-break-go-live, ST-tp31-pageless-lookup-fragile | New test support `apps/web/src/__testing__/pageless-titles.ts`: `calc.<id>.title` of every `PAGELESS` id in both locales, read from `packages/i18n/src/catalogs/<locale>/<id>.ts` with no cast, throwing naming the key and the locale when the module or the key is missing; empty (so the checks hold vacuously) when `PAGELESS` is empty, with no count floor. `HomeView.test.ts` and `CalculatorBody.budget.test.ts` use it; `rectangle`, `rectángulo`, `square footage` and `pies cuadrados` are removed. Negative proof: `Rectangle Area` in the card heading (4 red: both units, both built homes) | `81df1f5` |
+| ST-tp28-first-card-only | The [TP28] unit case loops over `homeCards(locale)` and checks each card with its own `page.home.cards.<id>.*` and `calc.<id>.page.example` keys | `81df1f5` |
+| ST-built-tp21-tp28-overclaimed | On both built homes: one `ul[role=list]` in `main`, one `li` per routed card in route table order, exactly one link per card which is the `h2 > a` title link with href `pathOf(id, locale)` and the catalog title, then the summary and the example from the catalogs; the calculator paths linked from `main a[href]` equal the card hrefs ([TP21]). Negative proofs: a second link in the summary (2 red), a concrete link in `.home-links` (2 red), `role="list"` removed (2 red), example before summary (2 red). The H3c record above is corrected where it claimed these on the build | `ad16ddc` |
+| ST-arrow-glyph-set-narrow | The glyph guard is the Unicode arrow blocks `U+2190-21FF`, `U+27F0-27FF`, `U+2900-297F` plus `›` and `»`, on the rendered text and on every `content:` value of the view style with CSS escapes decoded; a unit case pins the range. Negative proofs: `⇒` after the summary (4 red), `content: '\2192'` (1 red) | `1b961d0` |
+| ST-records-overstate-ss24-ss26 | SS26: the card-style case also forbids `transform` (negative proof: 1 red). Hero: no `h2` to `h6` (negative proof: an `h4`, 2 red). SS24: recorded as a source scan (above), as task 3.3 asked; it is narrower than the spec's built-CSS wording | `1b961d0`, this record |
+| DA-tick-overshoots-wrapped-h1 | Design call, no CSS change: K7 now says the dimension line spans the heading box (the heading line on a single-line heading, the column on a wrapped one), the owner-accepted behaviour, decided by the orchestrator on 2026-10-27 | this record |
+| DA-lonely-card-1280 | Follow-up, no change: one card in three `auto-fill` tracks at 1280 px is transient until Square footage ships | — |
+| DA-links-footer-gap | Follow-up, no change: the ~110-130 px between the home links and the footer is pre-existing, from the footer margin (plus the `main` padding and the tap-target line) | — |
+
+Left as it was: `roofing`, `techado`, `paint` and `pintura` stay in the [TP31] unit word list (they name no calculator of the registry, so no go-live turns them red); `smoke.spec.ts` "fits the phone width" keeps its blind `innerWidth` comparison (H3c deviation 1, outside this change).
+
+Measurements at the round's tip: EN home 9,708 B, ES home 9,818 B (of 24,576 B); ES full-length proof 40,770 B (of the 40,836 B pin), EN 40,501 B; largest HTML 33,950 B (ES concrete), largest CSS 7,339 B (`/methodology.html`). `npm run verify` exit 0: Vitest 199 files, 3,679 tests. `npm run build && npm run test:e2e`: 293 passed.
