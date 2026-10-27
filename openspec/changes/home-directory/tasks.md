@@ -83,12 +83,12 @@ At-risk items and where the cut goes: H3b (the `HomeView.test.ts` rewrite is the
 
 ### Group Exit Criteria (GX): once per PR, before merge
 
-- [ ] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and `mutation-gate`, `site-browser`).
-- [ ] GX2 History hygiene: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
-- [ ] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`): spec conformance, types and package boundaries, test quality, maintainability and performance. All three PRs ship production code, so four lenses apply to each. Only candidate-caused blocking findings gate.
-- [ ] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again on the corrected tree.
-- [ ] GX5 PR opened against `main` (the stacked base retargeted after the parent merges) with the body contents listed in the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
-- [ ] GX6 `site-browser` job green and its wall time recorded in `apply-progress.md` (limit 15 minutes, SQ15).
+- [x] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and `mutation-gate`, `site-browser`). Evidence: CI green on `5604ced`; `npm run verify` exit 0 (200 files, 3,699 tests).
+- [x] GX2 History hygiene: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing. Evidence: no attribution lines in `git log a77cd56..HEAD`.
+- [x] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`): spec conformance, types and package boundaries, test quality, maintainability and performance. All three PRs ship production code, so four lenses apply to each. Only candidate-caused blocking findings gate.
+- [x] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again on the corrected tree.
+- [x] GX5 PR opened against `main` (the stacked base retargeted after the parent merges) with the body contents listed in the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
+- [x] GX6 `site-browser` job green and its wall time recorded in `apply-progress.md` (limit 15 minutes, SQ15). Evidence: PR 1 baseline 3m12s, PR 3 3m53s (limit 15 min); PR 2 time not located (verify-report.md).
 
 ---
 
@@ -224,13 +224,13 @@ Planned commit: `fix(web): size the answer and notice reserves per breakpoint`.
 - [x] P3.1 Tip checks: `git log main..HEAD --oneline` shows H2 only; `git diff --stat main -- packages/` is empty; the CI/stryker paths are unchanged; record the authored `--shortstat main..HEAD`.
 - [x] P3.2 Dist diff of the PR 3 tip against `<scratch>/dist-pr2` (normalised as in P1.2; the scoping strip removes the K9 markup change on every page): only the 2 calculator pages differ, and only in the old reserve declarations, the two trimmed declarations and the rules of any taken rung being replaced by the K10 rule, its media blocks and the merged rules. Record the result.
 - [x] P3.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; the ES full-length proof at most 40,836 B (exact figure, headroom and every rung taken recorded); the e2e count; the `site-browser` wall time (the seven widths plus the breakpoint edges add runs: record the delta against the PR 2 tip).
-- [ ] P3.4 Exit: GX1–GX6. PR body: scope (class scoping, reservations per breakpoint, trims, `layout.spec.ts` widths, the CP65 fixture test), forecast vs actual (H2 ~170–200), scenario ids covered (CP59–CP66, CP44, CP58 regression, SS30), the sweep results (breakpoints, line counts, notice decision), the unused reserve per block and width, the trim rungs taken with measured savings, the ES full-length size against 40,836 B, the dist-diff result, negative-proof evidence, rollback (this PR reverts alone). Chain Context: PR 3 of 3, start state the PR 2 tip, end state the gap fix, follow-ups the two recorded in `design.md` (hub-era card keys; trust pages carry the catch-all chunk), out of scope square-footage. **Pushing, CI, review, the PR and the merge belong to the orchestrator.**
+- [x] P3.4 Exit: GX1–GX6. PR body: scope (class scoping, reservations per breakpoint, trims, `layout.spec.ts` widths, the CP65 fixture test), forecast vs actual (H2 ~170–200), scenario ids covered (CP59–CP66, CP44, CP58 regression, SS30), the sweep results (breakpoints, line counts, notice decision), the unused reserve per block and width, the trim rungs taken with measured savings, the ES full-length size against 40,836 B, the dist-diff result, negative-proof evidence, rollback (this PR reverts alone). Chain Context: PR 3 of 3, start state the PR 2 tip, end state the gap fix, follow-ups the two recorded in `design.md` (hub-era card keys; trust pages carry the catch-all chunk), out of scope square-footage. **Pushing, CI, review, the PR and the merge belong to the orchestrator.** Evidence: PR #100 merged 2026-10-27 19:41 UTC after four lenses, one correction round and Judgment Day APPROVED; CI green on `5604ced` (site-browser 3m53s, 324 tests).
 
 ---
 
 ## Final — Change-level checks
 
-- [ ] F.1 After PR 3 merges: `git diff --stat <pre-change main> -- packages/` lists only `packages/i18n/src/catalogs/{en,es}/site.ts`; `ROUTES`, `staticPaths()` (14), the sitemap and the pinned counts are unchanged; no budget was raised.
+- [x] F.1 After PR 3 merges: `git diff --stat <pre-change main> -- packages/` lists only `packages/i18n/src/catalogs/{en,es}/site.ts`; `ROUTES`, `staticPaths()` (14), the sitemap and the pinned counts are unchanged; no budget was raised. Evidence: `git diff --stat a77cd56 HEAD -- packages/` lists only the two `site.ts` catalogs; `npm run verify` and `check:site` pass with pinned counts unchanged (verify-report.md).
 - [ ] F.2 `apply-progress.md` lists, per slice, forecast vs actual lines, the scenario ids proven, each negative proof run and reverted, the measured sizes (ES full-length per PR tip, home bytes, chunks, CSS per page, e2e count) and the three `site-browser` wall times.
 - [ ] F.3 Archive-ready: the delta specs are synced to `openspec/specs/` at archive time (SR23, SS24–SS32, CP59–CP66, TP28–TP37; the main-spec text of TP26 is untouched).
 
