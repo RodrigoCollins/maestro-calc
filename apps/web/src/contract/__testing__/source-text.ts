@@ -15,7 +15,9 @@ export const stripComments = (source: string): string => {
       while (at < source.length && source.charAt(at) !== '\n') at += 1;
       out += '\n';
     } else if (char === '/' && next === '*') {
-      at = source.indexOf('*/', at + 2) + 1;
+      const end = source.indexOf('*/', at + 2);
+      if (end === -1) break; // unterminated: the rest of the source is the comment
+      at = end + 1;
     } else {
       if (char === "'" || char === '"' || char === '`') quote = char;
       out += char;
