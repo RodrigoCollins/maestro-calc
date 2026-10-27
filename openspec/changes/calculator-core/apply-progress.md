@@ -429,3 +429,13 @@ Round total 107+ / 17- over 6 files before this record; no commit above 400.
 - `npm run verify` exit 0 at `e0ab7ba`: 196 test files, **3,632 tests** (correction round 3,621 at `f9e1566`: six for the comment scan and `stringsIn`, four for the lookups, one for the recipe), coverage 100 percent statements, branches, functions and lines (2,464 / 1,368 / 784 / 2,119); `check:site` unchanged: JS graph of the concrete page 38,778 B, largest HTML 34,100 B, calculator page weight 162,888 B, no JavaScript elsewhere. Entry sizes printed by the contracts: concrete 39,674 B, rectangle-area proof entry 33,355 B of 49,152 B (no shipped code moved).
 - `npm run lint` clean and `npm run typecheck` 0 errors before `e0ab7ba`; the relevant vitest files green at each commit (`source-text.test.ts` 6, `generic-code.contract` and `browser-record.contract` unchanged and green, `calculator-content.contract` 29, `rectangle-area-proof.contract` 17, `docs.contract` 52).
 - GX2 hygiene: `git log 3f6dbd6..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
+
+## G3 exit (GX1 to GX6)
+
+- GX1: `npm run verify` exit 0 on the tip `704a560` (196 files, 3,632 tests, coverage 100); CI run 40495578751 on that tip green: `verify`, the eight `mutation` shards and `mutation-gate`, `site-browser`, and the Cloudflare Workers Builds preview.
+- GX2: `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing (19 commits).
+- GX3 and GX4: two lenses (reliability and readability, the owner's rule for a group with no production code) and the correction round, then Judgment Day and its fold; see the sections above.
+- GX5: PR #94 `test(web): typed browser record, per-id entry contracts and the recipe (calculator-core group 3)`, opened as a draft on `6724024` and marked ready on `704a560` with the body of task G3.4.
+- GX6: `site-browser` wall time 3 min 12 s (limit 15 minutes, SQ15).
+- Rollback order stays: this group first, then G2, then G1.
+

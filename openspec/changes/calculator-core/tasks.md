@@ -365,7 +365,7 @@ Planned commits: `docs(agents): rewrite the adding-a-calculator recipe for the g
 - [x] G3.1 Group tip checks: `git log main..HEAD --oneline` shows S15 to S18; `git diff --stat main -- packages/` is empty; the CI/stryker/contract paths of the group rules are unchanged.
 - [x] G3.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; record entry sizes (concrete and the proof entry), page weight and the `site-browser` wall time.
 - [x] G3.3 Dist diff at the G3 tip: normalise `/_astro/` names in the G2-tip build and the G3-tip build, then `diff -r -x '*.js' <scratch>/dist-g2 apps/web/dist` is empty (G3 changes only tests and docs). Record it.
-- [ ] G3.4 Exit: GX1–GX6. PR body: scope (typed browser record, generic suites, per-id entry contracts, slot-free proof, recipe), per-slice forecast vs actual (S15 ~350, S16 ~160, S17 ~250, S18 ~140; group ~900), scenario ids covered (CWC4, 32, 33, 34, 35, 36, 37, SQ29–32, CP48), negative-proof evidence, the dist-diff and packages-empty results, rollback: revert the group merge first (newest first), then G2, then G1. **Pushing, CI, review, the PR and the merge belong to the orchestrator.**
+- [x] G3.4 Exit: GX1–GX6. PR body: scope (typed browser record, generic suites, per-id entry contracts, slot-free proof, recipe), per-slice forecast vs actual (S15 ~350, S16 ~160, S17 ~250, S18 ~140; group ~900), scenario ids covered (CWC4, 32, 33, 34, 35, 36, 37, SQ29–32, CP48), negative-proof evidence, the dist-diff and packages-empty results, rollback: revert the group merge first (newest first), then G2, then G1. **Pushing, CI, review, the PR and the merge belong to the orchestrator.**
 
 ---
 
