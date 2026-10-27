@@ -128,6 +128,11 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the mount', 'apps/web/src/client/mount.ts'],
     ['the browser record of a calculator', 'tooling/site-browser/e2e/<id>-pages.ts'],
     ['the browser record table', 'tooling/site-browser/e2e/calculator-pages.ts'],
+    ['the slot-free record fixture', 'tooling/site-browser/e2e/calculator-pages.test-d.ts'],
+    ['the proof contract', 'apps/web/src/contract/rectangle-area-proof.contract.test.ts'],
+    ['the proof entry', 'apps/web/src/contract/__testing__/rectangle-area-entry.ts'],
+    ['the entry import contract', 'apps/web/src/contract/entry-graph.contract.test.ts'],
+    ['the entry budget contract', 'apps/web/src/contract/client-entry.contract.test.ts'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),
@@ -152,6 +157,20 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
       steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
     expect(step(11)).toContain('language-free');
     expect(step(14)).toContain('E2eSpec');
+  });
+
+  // review G3 R3-agents-proof-overclaim, R2-recipe-omits-proof-retirement, R2-recipe-misdescribes-record
+  it('says what the proof contract proves, that the go-live retires it, and what the record holds', () => {
+    const step = (number: number): string =>
+      steps.find((line) => line.startsWith(`${String(number)}. `)) ?? '';
+    expect(step(12)).toContain('not executed by any test');
+    expect(step(12)).not.toContain('proves it on the unrouted');
+    expect(step(14)).toContain('retires');
+    expect(step(14)).toContain('`minimal`');
+    expect(step(14)).not.toContain('default answer per locale');
+    for (const group of ['`answer`', '`choices`', '`steppers`', '`shopping`', '`prices`']) {
+      expect(step(14), group).toContain(group);
+    }
   });
 
   it('names the three tables that are a Record over the page ids', () => {
