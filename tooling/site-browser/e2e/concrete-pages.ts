@@ -4,65 +4,48 @@ import { enSite } from '../../../packages/i18n/src/catalogs/en/site.ts';
 import { esCommon } from '../../../packages/i18n/src/catalogs/es/common.ts';
 import { esConcrete } from '../../../packages/i18n/src/catalogs/es/concrete.ts';
 import { esSite } from '../../../packages/i18n/src/catalogs/es/site.ts';
-import type { E2eSpec } from './calculator-pages.ts';
+import type { E2eSpec, E2eState } from './calculator-pages.ts';
 
-/** The figures of a state: cubic yards, cubic feet, cubic meters, before the extra, bags. */
-export type Figures = readonly [string, string, string, string, string];
+/** The figures of a concrete state: cubic yards, cubic feet, cubic meters, before the extra, bags. */
+type Figures = readonly [string, string, string, string, string];
+
+/** The hand-verified figures of calculator-page › Live recalculation, one constant per state. */
+const DEFAULTS: Figures = ['1.63', '44.00', '1.25', '40.00', '74'];
+const SLAB_20: Figures = ['2.72', '73.33', '2.08', '66.67', '123'];
+const BAG_60: Figures = ['1.63', '44.00', '1.25', '40.00', '98'];
+const BAG_40: Figures = ['1.63', '44.00', '1.25', '40.00', '147'];
+const WASTE_0: Figures = ['1.48', '40.00', '1.13', '40.00', '67'];
+const WASTE_15: Figures = ['1.70', '46.00', '1.30', '40.00', '77'];
+const FOOTING: Figures = ['0.43', '11.73', '0.33', '10.67', '20'];
+const FOOTING_F1: Figures = ['1.96', '52.80', '1.50', '48.00', '88'];
+const COLUMN: Figures = ['0.26', '6.91', '0.20', '6.28', '12'];
+const COLUMN_C2: Figures = ['1.02', '27.65', '0.78', '25.13', '47'];
+const STEPS: Figures = ['0.52', '14.12', '0.40', '12.83', '24'];
+const METRIC_S3: Figures = ['1.73', '46.62', '1.32', '42.38', '78'];
 
 /** The hand-verified states of calculator-page › Live recalculation, and their links. */
-export const STATES: readonly { name: string; query: string; figures: Figures }[] = [
-  { name: 'default', query: '', figures: ['1.63', '44.00', '1.25', '40.00', '74'] },
-  { name: 'length 20 ft', query: '?v=1&l=240', figures: ['2.72', '73.33', '2.08', '66.67', '123'] },
-  { name: 'bag 60 lb', query: '?v=1&bg=60', figures: ['1.63', '44.00', '1.25', '40.00', '98'] },
-  { name: 'bag 40 lb', query: '?v=1&bg=40', figures: ['1.63', '44.00', '1.25', '40.00', '147'] },
-  { name: 'waste 0', query: '?v=1&ws=0', figures: ['1.48', '40.00', '1.13', '40.00', '67'] },
-  { name: 'waste 15', query: '?v=1&ws=15', figures: ['1.70', '46.00', '1.30', '40.00', '77'] },
-  {
-    name: 'footing defaults',
-    query: '?v=1&sh=footing',
-    figures: ['0.43', '11.73', '0.33', '10.67', '20'],
-  },
-  {
-    name: 'footing F1',
-    query: '?v=1&sh=footing&l=216&n=3',
-    figures: ['1.96', '52.80', '1.50', '48.00', '88'],
-  },
-  {
-    name: 'column defaults',
-    query: '?v=1&sh=column',
-    figures: ['0.26', '6.91', '0.20', '6.28', '12'],
-  },
-  {
-    name: 'column C2',
-    query: '?v=1&sh=column&n=4',
-    figures: ['1.02', '27.65', '0.78', '25.13', '47'],
-  },
-  {
-    name: 'steps defaults',
-    query: '?v=1&sh=steps',
-    figures: ['0.52', '14.12', '0.40', '12.83', '24'],
-  },
-  {
-    name: 'metric S3',
-    query: '?v=1&u=m&l=20000/127&w=15000/127&t=500/127',
-    figures: ['1.73', '46.62', '1.32', '42.38', '78'],
-  },
+const STATES: readonly E2eState[] = [
+  { name: 'default', query: '', figures: DEFAULTS },
+  { name: 'length 20 ft', query: '?v=1&l=240', figures: SLAB_20 },
+  { name: 'bag 60 lb', query: '?v=1&bg=60', figures: BAG_60 },
+  { name: 'bag 40 lb', query: '?v=1&bg=40', figures: BAG_40 },
+  { name: 'waste 0', query: '?v=1&ws=0', figures: WASTE_0 },
+  { name: 'waste 15', query: '?v=1&ws=15', figures: WASTE_15 },
+  { name: 'footing defaults', query: '?v=1&sh=footing', figures: FOOTING },
+  { name: 'footing F1', query: '?v=1&sh=footing&l=216&n=3', figures: FOOTING_F1 },
+  { name: 'column defaults', query: '?v=1&sh=column', figures: COLUMN },
+  { name: 'column C2', query: '?v=1&sh=column&n=4', figures: COLUMN_C2 },
+  { name: 'steps defaults', query: '?v=1&sh=steps', figures: STEPS },
+  { name: 'metric S3', query: '?v=1&u=m&l=20000/127&w=15000/127&t=500/127', figures: METRIC_S3 },
 ];
 
 /** The shapes and their visible dimension fields, in the order of the form (calculator-page › [CP11]). */
-export const SHAPE_FIELDS: Record<string, readonly string[]> = {
+const SHAPE_FIELDS = {
   slab: ['length', 'width', 'thickness'],
   footing: ['length', 'footingWidth', 'footingDepth', 'count'],
   column: ['diameter', 'height', 'count'],
   steps: ['stepWidth', 'rise', 'run', 'stepCount'],
-};
-
-const FOOTING: Figures = ['0.43', '11.73', '0.33', '10.67', '20'];
-const COLUMN: Figures = ['0.26', '6.91', '0.20', '6.28', '12'];
-const STEPS: Figures = ['0.52', '14.12', '0.40', '12.83', '24'];
-const SLAB_20: Figures = ['2.72', '73.33', '2.08', '66.67', '123'];
-const FOOTING_F1: Figures = ['1.96', '52.80', '1.50', '48.00', '88'];
-const DEFAULTS: Figures = ['1.63', '44.00', '1.25', '40.00', '74'];
+} as const;
 
 /** Concrete's record: the strings, states and shape fields the generic suites drive. */
 export const CONCRETE: E2eSpec = {
@@ -93,7 +76,7 @@ export const CONCRETE: E2eSpec = {
     bare: {
       texts: { length: '4', width: '3', thickness: '10' },
       query: '?v=1&u=m&l=20000/127&w=15000/127&t=500/127',
-      figures: ['1.73', '46.62', '1.32', '42.38', '78'],
+      figures: METRIC_S3,
       back: { key: 'length', shown: '20000/127 in', param: 'l=20000/127' },
     },
   },
@@ -161,27 +144,27 @@ export const CONCRETE: E2eSpec = {
       options: [
         {
           value: 'slab',
-          fields: SHAPE_FIELDS['slab'] ?? [],
+          fields: SHAPE_FIELDS.slab,
           starts: { en: 'Slab (', es: 'Losa (' },
         },
         {
           value: 'footing',
           param: 'sh=footing',
-          fields: SHAPE_FIELDS['footing'] ?? [],
+          fields: SHAPE_FIELDS.footing,
           figures: FOOTING,
           starts: { en: 'Footing (', es: 'Zapata (' },
         },
         {
           value: 'column',
           param: 'sh=column',
-          fields: SHAPE_FIELDS['column'] ?? [],
+          fields: SHAPE_FIELDS.column,
           figures: COLUMN,
           starts: { en: 'Column (', es: 'Columna (' },
         },
         {
           value: 'steps',
           param: 'sh=steps',
-          fields: SHAPE_FIELDS['steps'] ?? [],
+          fields: SHAPE_FIELDS.steps,
           figures: STEPS,
           starts: { en: 'Steps (', es: 'Escalones (' },
         },
@@ -195,8 +178,8 @@ export const CONCRETE: E2eSpec = {
       max: '50',
       base: '10',
       up: '15',
-      minFigures: ['1.48', '40.00', '1.13', '40.00', '67'],
-      upFigures: ['1.70', '46.00', '1.30', '40.00', '77'],
+      minFigures: WASTE_0,
+      upFigures: WASTE_15,
       upQuery: '?v=1&ws=15',
     },
   ],
@@ -207,13 +190,13 @@ export const CONCRETE: E2eSpec = {
         options: [
           {
             value: '60',
-            figures: ['1.63', '44.00', '1.25', '40.00', '98'],
+            figures: BAG_60,
             note: { en: 'About 0.45 cubic feet per bag', es: 'Unos 0.45 pies cúbicos por bolsa' },
             end: { en: 'Bags of 60 lb: 98.', es: 'Bolsas de 60 lb: 98.' },
           },
           {
             value: '40',
-            figures: ['1.63', '44.00', '1.25', '40.00', '147'],
+            figures: BAG_40,
             note: { en: 'About 0.30 cubic feet per bag', es: 'Unos 0.30 pies cúbicos por bolsa' },
             end: { en: 'Bags of 40 lb: 147.', es: 'Bolsas de 40 lb: 147.' },
           },

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { stringsIn, stripComments } from './__testing__/source-text.ts';
-import { fromRoot } from './root.ts';
+import { fromRoot, importFromRoot } from './root.ts';
 
 /**
  * The browser suites run over a typed per-calculator record (site-quality › [SQ29], [SQ30]). The
@@ -38,11 +38,50 @@ describe('the typed browser record (site-quality › [SQ29], [SQ30])', () => {
     }
   });
 
+  it('documents the record on E2eSpec and on the E2E table', () => {
+    const doc = String.raw`/\*\*(?:(?!\*/)[\s\S])*\[SQ29\](?:(?!\*/)[\s\S])*\*/\n`;
+    expect(table).toMatch(new RegExp(`${doc}export interface E2eSpec\\b`));
+    expect(table).toMatch(new RegExp(`${doc}export const E2E\\b`));
+    expect(table).not.toMatch(new RegExp(`${doc}export type E2eLanguage\\b`));
+  });
+
+  it('exports concrete as one spec and nothing else', () => {
+    const exported = read('concrete-pages.ts')
+      .split('\n')
+      .filter((line) => line.startsWith('export '));
+    expect(exported).toEqual(['export const CONCRETE: E2eSpec = {']);
+  });
+
   it('derives the page paths from ROUTES for both locales', () => {
     expect(table).toContain("from '../../../apps/web/src/routing/routes.ts'");
     expect(table).toContain('CALCULATOR_PAGES');
     expect(table).toMatch(/ROUTES\[id\]/);
     expect(CALCULATOR_PAGES.every((id) => id in ROUTES)).toBe(true);
+  });
+});
+
+/** The shape of the record module the tests load (its own types stay in the browser package). */
+interface RecordModule {
+  readonly paramOf: (
+    choice: { readonly key: string; readonly initial: string },
+    option: { readonly value: string; readonly param?: string },
+  ) => string;
+}
+
+const record = await importFromRoot<RecordModule>(`${E2E_DIR}/calculator-pages.ts`);
+
+describe('the query parameter of an option (site-quality › [SQ30])', () => {
+  const shape = { key: 'shape', initial: 'slab' };
+
+  it('is the param the option declares', () => {
+    expect(record.paramOf(shape, { value: 'footing', param: 'sh=footing' })).toBe('sh=footing');
+  });
+
+  // only the initial option may leave it out: its link is `?v=1`
+  it('names the option and the group when a non-initial option declares none', () => {
+    expect(() => record.paramOf(shape, { value: 'footing' })).toThrow(
+      'the option "footing" of the choice group "shape" declares no param (only the initial option "slab" may leave it out)',
+    );
   });
 });
 
