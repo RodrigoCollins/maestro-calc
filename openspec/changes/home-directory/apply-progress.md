@@ -124,13 +124,13 @@ Push; CI; four reviewers and Judgment Day on the frozen candidate; decision on d
 
 ---
 
-## PR 2 (`feat/home-directory-p2-hero-and-cards`, from `feat/home-directory-p1b-cards` at bc54012): H3b and H3c
+## PR 2 (`feat/home-directory-p2-hero-and-cards`, from `feat/home-directory-p1b-cards` at 7958a05 after two rebases, see deviation 1): H3b and H3c
 
 Mode: strict TDD (`npm test`). Nothing was pushed.
 
 ### Baseline (3.1)
 
-Branch created from the PR 1b tip; `npm ci` (root and `tooling/site-browser`) and the Chromium shell installed in the worktree. Build at the tip copied to `<worktree>/../dist-p1b` for the P2.2 dist diff. EN home 7,552 B, ES home 7,640 B (the ES home file is `dist/es.html`, not `dist/es/index.html`: the route is `/es`). Safety net before touching the views and styles: `npx vitest run apps/web/src/views apps/web/src/styles` 166 passed.
+Branch created from the PR 1b tip (then `bc54012`); `npm ci` (root and `tooling/site-browser`) and the Chromium shell installed in the worktree. Build at the tip copied to `<worktree>/../dist-p1b` for the P2.2 dist diff. EN home 7,552 B, ES home 7,640 B (the ES home file is `dist/es.html`, not `dist/es/index.html`: the route is `/es`). Safety net before touching the views and styles: `npx vitest run apps/web/src/views apps/web/src/styles` 166 passed.
 
 ### Guard ledger of `HomeView.test.ts` (3.2; written before the rewrite)
 
@@ -151,15 +151,15 @@ Branch created from the PR 1b tip; `npm ci` (root and `tooling/site-browser`) an
 | JSON-LD graph, one `script`; NotFound has none | kept | D7; the single `script` also proves zero JavaScript |
 | (new) no `→ › »` in `main`; no `text-transform`, `border-radius`, `transition`, `animation` in the view style | added | [SS26] |
 
-### H3b: hero band and view skeleton (commit `d0e07dd`)
+### H3b: hero band and view skeleton (commit `f9aeace`)
 
-`feat(web): add the home hero and render the directory skeleton`: 7 files, 312 insertions and 72 deletions = **384** changed lines against the PR 1b tip `2596a70` (forecast 190-230; see deviations). The H3b RED order was 3.2 `HomeView.test.ts` (6 red for the right reasons: hero, list, links), 3.3 the two `styles.contract` tests (red: `--text-display` unread, no grid line to mix), 3.4 `home.spec.ts` (8 tests: 6 red on the missing hero, 2 green on arrival), 3.5 the built-home contract in `CalculatorBody.budget.test.ts` (red on the hero match), then GREEN 3.6 and 3.7. The grid-size assertion first failed against my own test, not the code: the computed `background-size` of two gradient layers is `16px 16px, 16px 16px`; the test now expects the cell per layer.
+`feat(web): add the home hero and render the directory skeleton`: 7 files, 312 insertions and 72 deletions = **384** changed lines against the PR 1b tip `7958a05` (forecast 190-230; see deviations). The H3b RED order was 3.2 `HomeView.test.ts` (6 red for the right reasons: hero, list, links), 3.3 the two `styles.contract` tests (red: `--text-display` unread, no grid line to mix), 3.4 `home.spec.ts` (8 tests: 6 red on the missing hero, 2 green on arrival), 3.5 the built-home contract in `CalculatorBody.budget.test.ts` (red on the hero match), then GREEN 3.6 and 3.7. The grid-size assertion first failed against my own test, not the code: the computed `background-size` of two gradient layers is `16px 16px, 16px 16px`; the test now expects the cell per layer.
 
 Tasks 3.1-3.8 and 3.11 done. 3.9: the full e2e suite was run once at the PR tip (below), not at the slice tip (owner rule).
 
 #### Deviations (H3b)
 
-1. **The PR 1b branch moved while this apply ran.** The apply started from `bc54012`; `feat/home-directory-p1b-cards` is now `2596a70` (two test commits from the review corrections: `243b7fe` and `2596a70`). The H3b commit was rebased onto `2596a70` with one conflict in `CalculatorBody.budget.test.ts`: the new tip already holds the positive `.home-` control on the homes and the leak guard over every built page but the homes (`HOMES`, `builtPage`, `pagesWithoutHome`), so the conflict was resolved by taking that file and adding only the home-specific describe (hero and gradient, JSON-LD only, no `on*`, no pageless name, 24,576 B), which uses those helpers. All sizes below were measured after the rebase.
+1. **The PR 1b branch moved twice while this apply ran, and its history was rewritten.** The apply started from `bc54012`. The branch then held two review-correction test commits (`243b7fe`, `2596a70`), and was finally rewritten to `7958a05` (the same commits under new hashes, plus `c1a676e` typing the cards by page id and `1d65647` scanning every radius property). The H3b commit was rebased onto each tip. The first rebase had one conflict in `CalculatorBody.budget.test.ts`: the corrected file already holds the positive `.home-` control on the homes and the leak guard over every built page but the homes (`HOMES`, `builtPage`, `pagesWithoutHome`), so the conflict was resolved by taking that file and adding only the home-specific describe (hero and gradient, JSON-LD only, no `on*`, no pageless name, 24,576 B), which uses those helpers. The second rebase had no code conflict, only this file. Every size and gate below was re-measured on the final base `7958a05`. If the branch moves again, rebase with `git rebase --onto <new tip> 7958a05 feat/home-directory-p2-hero-and-cards` (and the same for `feat/home-directory-p2b-cards`).
 2. **The ES home file is `dist/es.html`**, not `dist/es/index.html` (the route is `/es`); the contract reads `index.html` and `es.html`.
 3. **H3b is 384 lines against a forecast of 190-230.** `home.spec.ts` is 85 and the `HomeView.test.ts` rewrite 173 (112 added, 61 removed); the budget test needed only 30 after the rebase. The slice stays under 400 only after merging the built-home assertions into one parameterised case, so H3c cannot join: **task 4.7 fires and H3c is its own PR** (`feat/home-directory-p2b-cards`, from the H3b tip).
 4. **`HomeView.test.ts` pins the heading copy** ("From measurements to a shopping list" / "De tus medidas a la lista de compras") as its own case, because reading the heading from the catalog alone is green before the reword.
@@ -174,7 +174,7 @@ Tasks 3.1-3.8 and 3.11 done. 3.9: the full e2e suite was run once at the PR tip 
 | EN full-length proof | 40,501 B | 40,501 B | 40,960 |
 | Largest CSS per page | 7,339 B (`/methodology.html`) | 7,339 B | 20,480 |
 | Largest HTML per page | 33,950 B (ES concrete) | 33,950 B | 40,960 |
-| Vitest | 198 files, 3,659 tests | 198 files, 3,663 tests | |
+| Vitest | 198 files, 3,662 tests | 198 files, 3,666 tests | |
 | e2e (Chromium) | 283 | **291 passed** (283 + 8 `home.spec.ts`; 46 s) | |
 | Lighthouse (6 pages) | assertions passed | assertions passed (exit 0) | 0.95 / CLS 0.01 |
 
