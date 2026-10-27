@@ -232,7 +232,7 @@ Planned commit: `fix(web): size the answer and notice reserves per breakpoint`.
 
 - [x] F.1 After PR 3 merges: `git diff --stat <pre-change main> -- packages/` lists only `packages/i18n/src/catalogs/{en,es}/site.ts`; `ROUTES`, `staticPaths()` (14), the sitemap and the pinned counts are unchanged; no budget was raised. Evidence: `git diff --stat a77cd56 HEAD -- packages/` lists only the two `site.ts` catalogs; `npm run verify` and `check:site` pass with pinned counts unchanged (verify-report.md).
 - [x] F.2 `apply-progress.md` lists, per slice, forecast vs actual lines, the scenario ids proven, each negative proof run and reverted, the measured sizes (ES full-length per PR tip, home bytes, chunks, CSS per page, e2e count) and the three `site-browser` wall times. _(Done: per-slice records in `apply-progress.md`; site-browser times in its "CI wall times" section.)_
-- [ ] F.3 Archive-ready: the delta specs are synced to `openspec/specs/` at archive time (SR23, SS24–SS32, CP59–CP66, TP28–TP37; the main-spec text of TP26 is untouched).
+- [x] F.3 Archive-ready: the delta specs are synced to `openspec/specs/` at archive time (SR23, SS24–SS32, CP59–CP66, TP28–TP37; the main-spec text of TP26 is untouched). _(Done 2026-10-27: four delta specs merged into `openspec/specs/{calculator-page,site-routing-i18n,site-shell,trust-pages}/spec.md`; TP26 untouched; see `archive-report.md`.)_
 
 ---
 

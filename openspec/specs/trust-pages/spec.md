@@ -48,8 +48,14 @@ Each trust page MUST show its `updated` date as `<time datetime="YYYY-MM-DD">` w
 
 ### Requirement: Home page
 
-Both home pages MUST have one H1, a short honest introduction of what Maestro Calc is, and links to methodology, about and the published calculator (`concrete`) in the current locale. They MAY name and describe the calculators that are published (today the concrete calculator) and MUST NOT contain a list of upcoming calculators, "coming soon" / "próximamente" / "pronto" wording, names of calculators not yet published, usage numbers, testimonials or ratings. The introduction MUST use the PLAN.md §3 tagline from `site.tagline` (ICW8), not the removed `SITE.tagline` placeholder.
-(Previously: links to methodology and about only, and no calculator names at all. The quoted EN tagline of the old text, "tell you exactly what to buy", was out of date: `i18n-catalog` ICW8 pins "estimate what to buy".)
+Both home pages (`/`, `/es`) MUST have exactly one H1 in a hero band, the site tagline `site.tagline` (ICW8, PLAN.md §3) as its supporting line, and a calculator directory. The H1 states what the site does and the supporting line adds no claim, number or promise.
+
+The directory MUST list exactly the calculators of `CALCULATOR_PAGES`, in `ROUTES` order, as one card per calculator. A card shows, from the catalogs of the current locale: the title (`page.home.cards.<id>.title`), a one-line summary (`page.home.cards.<id>.summary`) and the worked example line of the calculator (`calc.<id>.page.example`) as its evidence. Its link points to the route path of the current locale. A calculator with no route has no card. A routed calculator without `page.home.cards.<id>.{title,summary}` in both locales MUST fail the build at the type level, and adding a routed calculator MUST need no edit of the home view.
+
+The methodology and about links stay on the home, in the current locale, after the directory. The pages MUST NOT contain a list of upcoming calculators, "coming soon" / "próximamente" / "pronto" wording, names of calculators that are not routed, usage numbers, testimonials or ratings.
+
+The home MUST ship no client JavaScript (`site-shell` [SS18]), its HTML MUST stay within the byte budget of `site-quality` [SQ7] with the headroom of [TP35], and it MUST pass axe with 0 violations in both locales ([SQ1]). Card copy in Spanish uses the neutral tú register.
+(Previously: one H1, a short introduction and links to methodology, about and the single published calculator; the link list was not a directory and the pages "list no other calculator".)
 
 #### Scenario: [TP7] Home links
 - GIVEN built `/` and `/es`
@@ -61,10 +67,60 @@ Both home pages MUST have one H1, a short honest introduction of what Maestro Ca
 - WHEN the text is searched case-insensitively for `coming soon`, `próximamente`, `pronto`, `trusted by`, `miles de`, `stars`, `estrellas`
 - THEN there is no match
 
-#### Scenario: [TP21] Home links the calculator
+#### Scenario: [TP21] Home lists exactly the routed calculators
+- GIVEN built `/` and `/es`, and `CALCULATOR_PAGES` with the route table (today `concrete` only)
+- WHEN the card links of `main` are collected
+- THEN the set of card link targets equals the route paths of `CALCULATOR_PAGES` in the current locale (`/concrete-calculator` EN, `/es/calculadora-de-concreto` ES), each with link text taken from the catalog, and no other calculator link exists (contract test over the built HTML)
+
+#### Scenario: [TP28] One card per calculator with catalog copy
 - GIVEN built `/` and `/es`
-- WHEN `main a[href]` is collected
-- THEN `/concrete-calculator` (EN) and `/es/calculadora-de-concreto` (ES) are present, each with link text taken from the catalog, and the home pages list no other calculator
+- WHEN each card is read
+- THEN it holds, in this order, the `page.home.cards.<id>.title` text, the `page.home.cards.<id>.summary` text and the `calc.<id>.page.example` text of that locale, exactly one link per card, and the cards sit in a list (`ul`) whose item count equals the number of ids of `CALCULATOR_PAGES` (unit test on the rendered view, repeated on the built HTML)
+
+#### Scenario: [TP29] Hero band
+- GIVEN built `/` and `/es`
+- WHEN the hero is read
+- THEN there is one `h1` inside `main` whose text equals `page.home.heading`, followed by the text of `site.tagline`, both from the catalog of the locale, and the hero holds no link and no other heading (unit test on the rendered view)
+
+#### Scenario: [TP30] Order follows the route table
+- GIVEN the data module `apps/web/src/lib/home-directory.ts` and a fixture route table whose key order differs from the order of a fixture page list (two routed calculators, `b` before `a` in the table, `['a', 'b']` in the list, plus a trust id in the table)
+- WHEN `directoryOrder(routes, pages)` is called with the fixture, and `homeCards(locale, routes, pages)` is called with it for `en` and for `es` with catalogs that hold keys for both ids
+- THEN `directoryOrder` returns the calculator ids in the table's order (`['b', 'a']`), never the list's or alphabetical order, and omits the trust id; each card's `href` is the route path of the requested locale (`/es/...` for `es`); and the rendered view lists the cards in that same order (a unit test on the data module, with the real `ROUTES` and `CALCULATOR_PAGES` as the defaults the view passes, repeated once on the rendered view with the real tables)
+
+#### Scenario: [TP31] A calculator with no route has no card
+- GIVEN the live build in which `rectangle-area` is in `PAGELESS` and `concrete` in `CALCULATOR_PAGES`
+- WHEN built `/` and `/es` are searched for the id, the English or the Spanish name of every pageless calculator (`rectangle`, `rectángulo`, `square footage`, `pies cuadrados`)
+- THEN there is no match
+
+#### Scenario: [TP32] A routed id without card keys fails the build
+- GIVEN the type test `apps/web/src/views/home.test-d.ts`, which asserts that `` `page.home.cards.${id}.title` `` and `` `page.home.cards.${id}.summary` `` are keys of the English site catalog for every `id` of `CalculatorPageId`, and under `@ts-expect-error` that they are not keys for a non-routed id (`rectangle-area` today)
+- WHEN `npm run typecheck` runs
+- THEN it passes, and it fails naming the key if a routed id has no card keys in the English catalog or if the `@ts-expect-error` line stops erroring (a non-routed id gained card keys); a Spanish-only gap is already a compile error because `esSite` is declared `satisfies CatalogOf<typeof enSite>` (a type test; no manual fixture)
+
+#### Scenario: [TP33] Methodology and about links come after the directory
+- GIVEN built `/` and `/es`
+- WHEN `main a[href]` is read in document order
+- THEN every card link precedes the methodology link, which precedes the about link ([TP7] still holds)
+
+#### Scenario: [TP34] No JavaScript on the home, directory included
+- GIVEN built `/` and `/es`
+- WHEN parsed, and then loaded in Chromium with request logging
+- THEN the only `script` elements are `application/ld+json`, no `on*=` attribute exists, and no request has type `script` (`site-shell` [SS18], [SS19]; `site-quality` [SQ8], [SQ28])
+
+#### Scenario: [TP35] Home HTML budget with recorded headroom
+- GIVEN a clean `npm run build`
+- WHEN `npm run check:site` measures `dist/index.html` and `dist/es/index.html`
+- THEN each is at most 24,576 bytes (a headroom of at least 16,384 bytes under the 40,960 limit of [SQ7]), the home CSS (inline plus linked) is within 20,480 bytes ([SQ6]), and both measured sizes are recorded in the apply progress (a recorded measurement; the 24,576 ceiling is a stated bound for this change, not a new global budget)
+
+#### Scenario: [TP36] Home passes axe and keeps contrast
+- GIVEN the built site served locally and a phone-profile Chromium
+- WHEN axe runs on `/` and `/es` with the tags of `site-quality`
+- THEN each reports 0 violations (the hero text over the Blueprint ground, the card summary and the evidence line pass `color-contrast`), and Lighthouse on `/` and `/es` keeps accessibility, SEO and best practices at 0.95 or higher and layout shift at 0.01 or lower ([SQ9])
+
+#### Scenario: [TP37] Cards are usable on a phone and do not overflow
+- GIVEN Chromium at 320, 390 and 1280 px wide on `/` and `/es`
+- WHEN the document width and the card link boxes are measured
+- THEN `document.documentElement.scrollWidth <= window.innerWidth` at every width, and each card link has a hit area of at least 44 by 44 CSS px (an e2e test at three widths)
 
 ### Requirement: Methodology page
 
