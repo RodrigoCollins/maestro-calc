@@ -270,3 +270,32 @@ Two lens reviews of the PR 2 and PR 2b tip found no blocker (spec and tests: ST;
 Left as it was: `roofing`, `techado`, `paint` and `pintura` stay in the [TP31] unit word list (they name no calculator of the registry, so no go-live turns them red); `smoke.spec.ts` "fits the phone width" keeps its blind `innerWidth` comparison (H3c deviation 1, outside this change).
 
 Measurements at the round's tip: EN home 9,708 B, ES home 9,818 B (of 24,576 B); ES full-length proof 40,770 B (of the 40,836 B pin), EN 40,501 B; largest HTML 33,950 B (ES concrete), largest CSS 7,339 B (`/methodology.html`). `npm run verify` exit 0: Vitest 199 files, 3,679 tests. `npm run build && npm run test:e2e`: 293 passed.
+
+---
+
+## PR 3 (`feat/home-directory-p3-reserves`, H2)
+
+Commits: `dda2486` (CP65 body style forwarding, CP63 entry contract), `3db6dda` (shell styles global), `1339949` (K10 reserves per breakpoint, trims, layout spec). Authored `--shortstat origin/main..HEAD`: 11 files, +502 / −76.
+
+### Sweep result (5.2) and K10
+
+The sweep raw output was not kept in the repository; its result is pinned in `STEPS` of `styles.contract.test.ts` and in the edges of `WIDTHS` in `layout.spec.ts`:
+
+| Block | Fallback (narrowest) | Steps (min-width → lines) |
+|---|---|---|
+| answer (`--answer-lines`, h3 line) | 5 | 24.125rem → 4, 30.0625rem → 3, 45.625rem → 2 |
+| notice (`--notice-lines`, body line) | 6 | 22.25rem → 5, 29rem → 4, 41.6875rem → 3 |
+
+The notice needs its own count (K10 decision): its steps fall at other widths than the answer's. Six `@media (min-width: …rem) { :root { … } }` blocks; `.calc-copy` keeps `min-height: 5rem`.
+
+### Size gate (5.9) and deviation
+
+With the six blocks and rungs 1–3 (shared flex rule, shared control rule, shared `.calc-error, .calc-help`), the ES full-length proof measured **40,966 B**, 130 B over the 40,836 B pin. Rung 4 (merging adjacent ranges) cannot apply: no two adjacent steps can share a width without leaving a line or more unused at the narrower edge. Following the owner rule (trim markup before touching a budget), **deviation**: `SiteHeader`, `SiteFooter` and `Wordmark` styles became `is:global` with explicit selectors (`.site-header nav`, `.site-header ul`, `.site-footer ul`), so no shell element carries an `astro-*` class. Measured saving: −393 B. Result: **ES 40,573 B** (263 B under the pin), EN 40,304 B. Consequence for P3.2: the dist diff touches every page (the shell markup and its CSS), not only the two calculator pages.
+
+### Measurements (5.11)
+
+`npm run verify` exit 0. `npm run check:site` exit 0 (largest CSS 7,484 B `/methodology.html`; calculator JS 38,778 B; largest calculator page weight 162,541 B). `npm run test:e2e`: **324 passed**. `npm run lighthouse`: 6 URLs, every category 1.0, CLS 0 on both concrete pages. Built HTML: `/` 9,315 B, `/es` 9,425 B, `/concrete-calculator` 31,750 B, `/es/calculadora-de-concreto` 33,753 B. Source sheets: base 1,655 B, calculator 4,449 B, tokens 1,257 B.
+
+### Negative proofs (5.12, run and reverted)
+
+`min-height: 10.75rem` back on `.calc-answer`: the layout spec fails (`answer en at 386 px: unused reserve`) and the formula pin fails. The other proofs of 5.12 were not run in this session.
