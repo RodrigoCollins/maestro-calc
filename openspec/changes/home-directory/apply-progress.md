@@ -292,9 +292,57 @@ The notice needs its own count (K10 decision): its steps fall at other widths th
 
 With the six blocks and rungs 1–3 (shared flex rule, shared control rule, shared `.calc-error, .calc-help`), the ES full-length proof measured **40,966 B**, 130 B over the 40,836 B pin. Rung 4 (merging adjacent ranges) cannot apply: no two adjacent steps can share a width without leaving a line or more unused at the narrower edge. Following the owner rule (trim markup before touching a budget), **deviation**: `SiteHeader`, `SiteFooter` and `Wordmark` styles became `is:global` with explicit selectors (`.site-header nav`, `.site-header ul`, `.site-footer ul`), so no shell element carries an `astro-*` class. Measured saving: −393 B. Result: **ES 40,573 B** (263 B under the pin), EN 40,304 B. Consequence for P3.2: the dist diff touches every page (the shell markup and its CSS), not only the two calculator pages.
 
+### Fit table (CP60, CP61)
+
+Measured by the probe of the fit test in `layout.spec.ts` against the built site (phone project, one run, temporary logging not committed). Per width: reserved px, tallest natural px over both locales, unused px (reserved − tallest), line px (the block's own line unit). Every unused value is under one line; every content fits (natural ≤ reserved + 0.05).
+
+| Width (px) | Answer reserved / tallest / unused / line | Notice reserved / tallest / unused / line | Copy reserved / tallest / unused / line |
+|---:|---|---|---|
+| 320 | 170.5 / 170.47 / 0.03 / 34.1 | 158.09 / 147.72 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 355 | 170.5 / 170.47 / 0.03 / 34.1 | 158.09 / 147.72 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 356 | 170.5 / 170.47 / 0.03 / 34.1 | 131.75 / 121.38 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 385 | 170.5 / 170.47 / 0.03 / 34.1 | 131.75 / 121.38 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 386 | 136.39 / 136.38 / 0.02 / 34.1 | 131.75 / 121.38 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 390 | 136.39 / 136.38 / 0.02 / 34.1 | 131.75 / 121.38 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 463 | 136.39 / 136.38 / 0.02 / 34.1 | 131.75 / 121.38 / 10.38 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 464 | 136.39 / 136.38 / 0.02 / 34.1 | 105.39 / 95.03 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 480 | 136.39 / 136.38 / 0.02 / 34.1 | 105.39 / 95.03 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 481 | 102.3 / 102.28 / 0.02 / 34.1 | 105.39 / 95.03 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 640 | 102.3 / 102.28 / 0.02 / 34.1 | 105.39 / 95.03 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 666 | 102.3 / 102.28 / 0.02 / 34.1 | 105.39 / 95.03 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 667 | 102.3 / 102.28 / 0.02 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 729 | 102.3 / 102.28 / 0.02 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 730 | 68.19 / 68.19 / 0 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 768 | 68.19 / 68.19 / 0 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 1024 | 68.19 / 68.19 / 0 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+| 1280 | 68.19 / 68.19 / 0 / 34.1 | 79.05 / 68.69 / 10.36 / 26.35 | 80 / 74.34 / 5.66 / 26.35 |
+
+The answer reserve is a whole number of h3 lines and the tallest answer fills it to within 0.03 px; the notice leaves 10.4 px (the note's paragraph margin is outside the line count); the copy block keeps its fixed 5rem (80 px) for 74.3 px of content.
+
+### Per-rung savings (5.9)
+
+Each rung reverted alone at the tip (`CalculatorBody.budget` full-length proof, ES / EN):
+
+| Rung | Saving ES (EN) |
+|---|---|
+| 1 shared flex rule (`.calc-row, .calc-shopping, .calc-cost, .calc-hint`; also dropped `.calc-row dt`) | −112 B (−112 B) |
+| 2 shared control rule (`.calc-choice, .calc-field input, .calc-fallback`; also dropped `box-sizing`) | −80 B (−80 B) |
+| 3 shared `.calc-error, .calc-help` | −31 B (−31 B) |
+| `is:global` shell styles (`3db6dda`, reverted whole) | −393 B (−393 B) |
+
+Tip: ES 40,573 B, EN 40,304 B. Rungs 1–3 alone: −223 B; without the `is:global` trim ES is 40,966 B (130 B over the pin), as recorded above.
+
+### Deviation: breakpoints not rounded (5.2) and six blocks (K10)
+
+Task 5.2 asked for breakpoints rounded up to 0.5rem; they stay at the exact rem of the sweep (22.25, 24.125, 29, 30.0625, 41.6875, 45.625). Both edges of each exact breakpoint are in `WIDTHS`, and rounding would move a step: rounded up, the narrower count stays on widths where the content already lost a line, so a line or more is unused near the edge; rounded down, the smaller count starts on widths where the content still needs the extra line, so it does not fit. K10's three blocks became six because the answer and the notice step at different widths (no shared breakpoint).
+
 ### Measurements (5.11)
 
 `npm run verify` exit 0. `npm run check:site` exit 0 (largest CSS 7,484 B `/methodology.html`; calculator JS 38,778 B; largest calculator page weight 162,541 B). `npm run test:e2e`: **324 passed**. `npm run lighthouse`: 6 URLs, every category 1.0, CLS 0 on both concrete pages. Built HTML: `/` 9,315 B, `/es` 9,425 B, `/concrete-calculator` 31,750 B, `/es/calculadora-de-concreto` 33,753 B. Source sheets: base 1,655 B, calculator 4,449 B, tokens 1,257 B.
+
+### Scenarios proven
+
+CP44, CP58 (regression), CP59, CP60, CP61, CP62, CP63, CP64, CP65, CP66, SS30 (largest CSS 7,484 B, `/methodology.html`).
 
 ### Negative proofs (5.12, run and reverted)
 
@@ -314,3 +362,39 @@ Each was applied, run and reverted; `git status --porcelain` clean afterwards.
 ### Exit (5.13)
 
 SX1: `npm run verify` exit 0, coverage gates as in CI. SX2: authored shortstat +502 / −76 over 11 files, over the 400 forecast (H2 ~170–200): the layout spec rewrite (+226) and the style contract (+113) carry most of it; renames none. SX3: conventional subjects, tree green at each commit. SX5: this section.
+
+### PR 3 correction round
+
+| # | Finding | Done | Commit |
+|---|---|---|---|
+| 1 | CLS probe read `getEntriesByType('layout-shift')`, which Chrome leaves empty | The init script's `PerformanceObserver` (buffered) collects every shift into `window.layoutShifts`; `shiftOf` sums it and fails if the observer did not run. Shifts are not filtered on `hadRecentInput`: in this harness a shift forced 50 ms after `load` came back flagged (0.3555, `hadRecentInput: true`), so the filter would hide load shifts; the test makes no input | `74f263f` |
+| 2 | 18-width load test near the 30 s timeout | `test.slow()` (90 s): 18 loads at ~0.8 s each run about 15 s locally | `74f263f` |
+| 3 | Probe contexts never closed; comment said desktop | `withPages` closes every context in `finally`; comment now says the contexts take the project's phone options (verified: 390 × 844, DPR 3, touch) | `74f263f` |
+| 4 | Note handle not disposed | Disposed in `finally` after the evaluate | `74f263f` |
+| 5 | Vacuous passes in the fit and box tests | Fit: probe count per block equals the locale pages (answer only where `spec.answer !== undefined`). Boxes: more than 0 blocks and an element after each block, no `?? 0`. This exposed a real hole: the copy block is a last child, so its "below" was always 0; the lookup now takes the next sibling of the nearest ancestor that has one | `74f263f` |
+| 6 | Missing negative proofs | Recorded below | — |
+| 7 | WIDTHS edge test tag | `calculator-page › [CP64], design K13` | `31c6195` |
+| 8 | Edge loop checked only the first length | Non-empty `WIDTHS`, every length of each condition, a clear failure on a condition with no length | `31c6195` |
+| 9 | `property as keyof typeof STEPS` cast | Typed key iteration | `31c6195` |
+| 10 | Media parser dropped blocks silently | `mediaBlocksOf` strips comments and throws when it parses fewer blocks than the `@media` count (`mediaCountOf`); the source and built-CSS tests assert the counts match; seeded cases for flat, commented-out and nested `@supports` blocks | `31c6195` |
+| 11 | `dataset.reserved` branch unproven | Seeded case; each seeded case now names the pattern it must hit | `31c6195` |
+| 12–17 | Docs | This section and the fit table, scenarios, rung savings and deviation above | this commit |
+
+Negative proofs of the round (each applied, run, reverted; `git status --porcelain` clean afterwards):
+
+| Proof | Red |
+|---|---|
+| A 300 px element prepended 50 ms after `load` (init script) | load-shift test: `320 px` expected ≤ 0.01, received 0.3555. The previous `getEntriesByType` probe passed the same injection (4 passed) |
+| Probe lookup `data-reserved` renamed | fit test: `answer probes at 320 px` expected length 2, received 0 (before: an empty probe list passed) |
+| Mounted page given `min-height: 20rem` on the copy block | boxes test: `en at 320 px`, copy box differs |
+| `--answer-lines: 1` at 45.625rem (rebuilt) | fit test: `answer en at 1024 px: content fits`, 68.19 > 34.14 |
+| `mediaBlocksOf` without its count check | 2 seeded nested-`@supports` cases |
+| `@media (hover: hover)` added to `calculator.css` | edge test: `(hover: hover) has no length` |
+| `/dataset\.reserved/` pattern broken | seeded `dataset.reserved` case: expected [] to include the pattern |
+
+Gates: `npm run format`, `npm run verify` exit 0 (3,699 unit tests), `npm run typecheck --prefix tooling/site-browser` exit 0, `npm run build && npm run test:e2e` **324 passed** in 1.1 m (69 s wall). ES full-length proof 40,573 B (pin 40,836 B). No budget raised.
+
+### Follow-ups (no change in this PR)
+
+- `calculator.css`, with its new `:root` media blocks, reaches the trust pages through the shared catch-all CSS chunk (pre-existing).
+- The `style` prop of `CalculatorBody` accepts any string; it could narrow to the two line-count custom properties later.
