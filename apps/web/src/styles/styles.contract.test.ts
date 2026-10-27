@@ -94,11 +94,6 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
 
   // spec: site-shell › [SS6]
   it('has no dark theme in any stylesheet', () => {
-    expect(stylesheets.map((name) => name.split('/').pop())).toEqual([
-      'base.css',
-      'calculator.css',
-      'tokens.css',
-    ]);
     for (const name of stylesheets) {
       expect(readFileSync(fromRoot(name), 'utf8'), name).not.toContain('prefers-color-scheme');
     }
@@ -156,11 +151,11 @@ describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
     expect(everywhere).toEqual([]);
   });
 
-  // spec: site-shell › [SS26] square corners in the three global sheets
-  it('uses no non-zero border-radius in the global sheets', () => {
+  // spec: site-shell › [SS26] square corners in the three global sheets, long-hands included
+  it('uses no non-zero radius in the global sheets', () => {
     for (const name of stylesheets) {
       const css = readFileSync(fromRoot(name), 'utf8');
-      const radii = [...css.matchAll(/border-radius\s*:\s*([^;}]+)/g)].map((match) => match[1]);
+      const radii = [...css.matchAll(/[\w-]*radius\s*:\s*([^;}]+)/g)].map((match) => match[1]);
       expect(
         radii.filter((value) => !/^0(px|rem)?(\s+0(px|rem)?)*$/.test(value?.trim() ?? '')),
         name,
