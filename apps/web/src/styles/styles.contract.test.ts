@@ -131,6 +131,32 @@ describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
     expect(Number(bounds?.[2])).toBeGreaterThan(Number(bounds?.[1]));
   });
 
+  // spec: site-shell › [SS24] only the home hero reads the display size
+  it('reads --text-display in HomeView.astro and nowhere else', () => {
+    const readers = globSync('apps/web/src/**/*.{astro,css,ts}', { cwd: fromRoot() }).filter(
+      (name) =>
+        !/\.test(-d)?\.ts$/.test(name) &&
+        readFileSync(fromRoot(name), 'utf8').includes('var(--text-display)'),
+    );
+    expect(readers).toEqual(['apps/web/src/views/HomeView.astro']);
+  });
+
+  // spec: site-shell › [SS31] hero text over the ink and over the lightest grid line
+  it('keeps the hero text at 4.5:1 over the ink ground and over the lightest grid line', () => {
+    const hero = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
+    const mixed = /color-mix\(in srgb, var\(--color-surface\) (\d+)%, transparent\)/.exec(hero);
+    expect(mixed, 'the grid line is a surface mix over transparent').not.toBeNull();
+    const share = Number(mixed?.[1]) / 100;
+    // Sheet white at that share over the ink, per channel
+    const line = `#${[1, 3, 5]
+      .map((at) => Number.parseInt(INK.slice(at, at + 2), 16) * (1 - share) + 255 * share)
+      .map((value) => Math.round(value).toString(16).padStart(2, '0'))
+      .join('')}`;
+    expect(line).not.toBe(INK.toLowerCase());
+    expect(contrast(SURFACE, INK)).toBeGreaterThanOrEqual(4.5);
+    expect(contrast(SURFACE, line)).toBeGreaterThanOrEqual(4.5);
+  });
+
   // spec: site-shell › [SS25] one grid cell, one tick weight, no tick length, no radius token
   it('pins --grid-size to 1rem and --tick-weight to a positive length', () => {
     expect(root['--grid-size']).toBe('1rem');

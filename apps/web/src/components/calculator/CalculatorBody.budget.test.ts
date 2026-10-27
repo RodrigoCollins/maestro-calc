@@ -2,6 +2,7 @@ import { globSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import type { AstroInlineConfig, AstroUserConfig } from 'astro';
+import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
 import { importFromRoot } from '../../contract/root.ts';
 import { ROUTES } from '../../routing/routes.ts';
@@ -167,6 +168,35 @@ describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])
       expect(html.includes('linear-gradient'), `${name} carries a gradient`).toBe(false);
     }
   }, 120_000);
+});
+
+/** The bound of [TP35] on each built home, in bytes. */
+const HOME_BUDGET = 24_576;
+
+describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34], [TP35])', () => {
+  // spec: site-shell › [SS28], trust-pages › [TP31], [TP34], [TP35]
+  it.each(HOMES)(
+    'carries the hero, no script but JSON-LD, no pageless name and fits on %s',
+    async (name) => {
+      await build('base');
+      const html = builtPage(name);
+      expect(html.includes('.home-hero') && html.includes('linear-gradient')).toBe(true);
+      const types = parse(html)
+        .querySelectorAll('script')
+        .map((tag) => tag.getAttribute('type'));
+      expect(types).toEqual(['application/ld+json']);
+      expect(/<[^>]+\son[a-z]+=/i.test(html)).toBe(false);
+      const text = parse(html).querySelector('main')?.text.toLowerCase() ?? '';
+      expect(text).toContain('maestro');
+      for (const word of ['rectangle', 'rectángulo', 'square footage', 'pies cuadrados']) {
+        expect(text.includes(word), word).toBe(false);
+      }
+      const bytes = Buffer.byteLength(html);
+      console.info(`[TP35] ${name}: ${String(bytes)} B of ${String(HOME_BUDGET)} B`);
+      expect(bytes).toBeLessThanOrEqual(HOME_BUDGET);
+    },
+    120_000,
+  );
 });
 
 describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7]; design C18, DR-16)', () => {

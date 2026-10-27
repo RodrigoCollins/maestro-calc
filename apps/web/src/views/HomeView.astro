@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '@maestro-calc/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { homeCards } from '../lib/home-directory.ts';
 import { siteText } from '../lib/site-text.ts';
 import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
@@ -11,6 +12,7 @@ interface Props {
 }
 const { locale } = Astro.props;
 const text = siteText(locale);
+const cards = homeCards(locale);
 ---
 
 <BaseLayout
@@ -18,13 +20,21 @@ const text = siteText(locale);
   id="home"
   head={{ ...headFor('home', locale, text), jsonLd: serializeJsonLd(homeJsonLd(locale)) }}
 >
-  <h1>{text('page.home.heading')}</h1>
-  <p>
-    {text('page.home.intro')}{' '}
-    <a class="tap-target" href={pathOf('concrete', locale)}>
-      {text('page.home.links.concrete')}
-    </a>
-  </p>
+  <div class="home-hero">
+    <h1>{text('page.home.heading')}</h1>
+    <p>{text('page.home.intro')}</p>
+  </div>
+  <ul class="home-cards" role="list">
+    {cards.map((card) => (
+      <li class="home-card">
+        <h2>
+          <a class="tap-target" href={card.href}>
+            {card.title}
+          </a>
+        </h2>
+      </li>
+    ))}
+  </ul>
   <p class="home-links">
     <a class="tap-target" href={pathOf('methodology', locale)}>
       {text('page.home.links.methodology')}
@@ -36,6 +46,46 @@ const text = siteText(locale);
 </BaseLayout>
 
 <style>
+  /* The one place the Blueprint identity is spent: the grid on the ink and one dimension line. */
+  .home-hero {
+    --grid-line: color-mix(in srgb, var(--color-surface) 12%, transparent);
+    margin: 0 calc(-1 * var(--space-3)) var(--space-5);
+    padding: var(--space-5) var(--space-3);
+    background: var(--color-text);
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 0),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 0);
+    background-size: var(--grid-size) var(--grid-size);
+    color: var(--color-surface);
+  }
+
+  .home-hero h1 {
+    width: fit-content;
+    font-size: var(--text-display);
+  }
+
+  /* The dimension line measures the heading: two end ticks one grid cell tall and a centre line. */
+  .home-hero h1::after {
+    content: '';
+    display: block;
+    height: var(--grid-size);
+    margin-top: var(--space-2);
+    border-inline: var(--tick-weight) solid var(--color-accent);
+    background: linear-gradient(var(--color-accent), var(--color-accent)) center / 100%
+      var(--tick-weight) no-repeat;
+  }
+
+  .home-hero p {
+    max-width: var(--measure);
+    margin: 0;
+  }
+
+  .home-cards {
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
   .home-links {
     display: flex;
     flex-wrap: wrap;

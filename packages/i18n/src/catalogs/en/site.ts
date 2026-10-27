@@ -28,12 +28,11 @@ export const enSite = {
   'site.calculator.hintIn': 'inches',
   'site.calculator.hintM': 'meters',
   'site.calculator.hintCm': 'centimeters',
-  'page.home.heading': 'Maestro Calc',
+  'page.home.heading': 'From measurements to a shopping list',
   'page.home.intro':
     'Jobsite calculators that estimate what to buy. We explain how every number is worked out.',
   'page.home.cards.concrete.title': 'Concrete calculator',
   'page.home.cards.concrete.summary': 'Cubic yards and bags for a slab, footing, column or steps.',
-  'page.home.links.concrete': 'Try the concrete calculator',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',

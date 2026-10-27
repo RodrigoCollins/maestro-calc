@@ -1,7 +1,15 @@
+import { readFileSync } from 'node:fs';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
+import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
+import type { HTMLElement } from 'node-html-parser';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { fromRoot } from '../contract/root.ts';
+import { directoryOrder, homeCards } from '../lib/home-directory.ts';
+import { pathOf, ROUTES } from '../routing/routes.ts';
+import { CALCULATOR_PAGES, isCalculatorPage, PAGELESS } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import HomeView from './HomeView.astro';
 import NotFoundView from './NotFoundView.astro';
@@ -19,13 +27,14 @@ describe('HomeView (trust-pages › Home page; site-routing-i18n › [SR4])', ()
     expect(document.querySelector('link[rel=canonical]')?.getAttribute('href')).toBe(url);
   });
 
-  it('has one h1 inside main with the page heading', async () => {
-    for (const locale of ['en', 'es'] as const) {
-      const document = await render(locale);
-      expect(document.querySelectorAll('h1')).toHaveLength(1);
-      expect(document.querySelectorAll('main h1')).toHaveLength(1);
-      expect(document.querySelector('main h1')?.text).toBe('Maestro Calc');
-    }
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)('has one h1, inside main, with the %s page heading', async (locale, catalog) => {
+    const document = await render(locale);
+    expect(document.querySelectorAll('h1')).toHaveLength(1);
+    expect(document.querySelectorAll('main h1')).toHaveLength(1);
+    expect(document.querySelector('main h1')?.text).toBe(catalog['page.home.heading']);
   });
 
   it('points the language switch at the other home page', async () => {
@@ -44,61 +53,96 @@ const FORBIDDEN = [
   'estrellas',
 ];
 
-describe('HomeView links (trust-pages › [TP7], [TP21])', () => {
-  // spec: trust-pages › [TP7] the methodology and about pages are still linked
-  it.each([
-    ['en', ['/methodology', '/about'], ['How we calculate', 'About Maestro Calc']],
-    ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Cómo calculamos', 'Sobre Maestro Calc']],
-  ] as const)(
-    'links the methodology and about pages from the %s home',
-    async (locale, hrefs, labels) => {
-      const links = (await render(locale)).querySelectorAll('main a[href]').slice(1);
-      expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
-      expect(links.map((link) => link.text.trim())).toEqual(labels);
-    },
-  );
+describe('HomeView hero (trust-pages › [TP29])', () => {
+  // proposal D8 copy: the heading says what the site does and makes no claim
+  it('words the heading as the owner chose it, in both locales', () => {
+    expect(enSite['page.home.heading']).toBe('From measurements to a shopping list');
+    expect(esSite['page.home.heading']).toBe('De tus medidas a la lista de compras');
+  });
 
-  // spec: trust-pages › [TP21] the calculator link, with text from the catalog, inside the introduction
   it.each([
-    ['en', enSite, '/concrete-calculator'],
-    ['es', esSite, '/es/calculadora-de-concreto'],
+    ['en', enSite],
+    ['es', esSite],
   ] as const)(
-    'links the concrete calculator from the %s introduction',
-    async (locale, catalog, href) => {
+    'opens the %s home with the heading, then the intro that starts with the tagline',
+    async (locale, catalog) => {
       const main = (await render(locale)).querySelector('main');
-      const links = main?.querySelectorAll('a[href]') ?? [];
-      expect(links[0]?.getAttribute('href')).toBe(href);
-      expect(links[0]?.text.trim()).toBe(catalog['page.home.links.concrete']);
-      expect(links[0]?.closest('p')).toBe(main?.querySelector('p'));
-      expect(links.filter((link) => link.getAttribute('href') === href)).toHaveLength(1);
-    },
-  );
-
-  // spec: trust-pages › [TP21] no other calculator is named on the home page
-  it.each(['en', 'es'] as const)(
-    'names no calculator but the concrete one on the %s home',
-    async (locale) => {
-      const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
-      for (const other of ['rectangle', 'rectángulo', 'roofing', 'techado', 'paint', 'pintura']) {
-        expect(text, other).not.toContain(other);
-      }
+      const hero = main?.querySelector('.home-hero');
+      expect(hero?.querySelector('h1')?.nextElementSibling?.text.trim()).toBe(
+        catalog['page.home.intro'],
+      );
+      expect(catalog['page.home.intro'].startsWith(catalog['site.tagline'])).toBe(true);
+      expect(hero?.querySelectorAll('a, h2, h3')).toHaveLength(0);
     },
   );
 });
 
-describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
-  it.each([
-    ['en', enSite],
-    ['es', esSite],
-  ] as const)('opens the %s home with the site tagline verbatim', async (locale, catalog) => {
-    const main = (await render(locale)).querySelector('main');
-    expect(main?.querySelector('p')?.text).toContain(catalog['site.tagline']);
-    // the introduction, then the calculator link in the same paragraph
-    expect(main?.querySelector('p')?.text.replaceAll(/\s+/g, ' ').trim()).toBe(
-      `${catalog['page.home.intro']} ${catalog['page.home.links.concrete']}`,
-    );
-  });
+describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', () => {
+  const cardLinks = (document: HTMLElement) =>
+    document.querySelectorAll('main ul.home-cards li a[href]');
 
+  // spec: trust-pages › [TP21] one item per routed calculator, in route table order, one link each
+  it.each([['en'], ['es']] as const)(
+    'lists the routed calculators of the %s home in route table order, one titled link each',
+    async (locale) => {
+      const items = (await render(locale)).querySelectorAll('main ul.home-cards li');
+      const ids = directoryOrder(ROUTES, CALCULATOR_PAGES).filter(isCalculatorPage);
+      expect(ids).toEqual(['concrete']);
+      expect(items).toHaveLength(ids.length);
+      ids.forEach((id, index) => {
+        const links = items[index]?.querySelectorAll('a[href]') ?? [];
+        expect(links).toHaveLength(1);
+        expect(links[0]?.getAttribute('href')).toBe(pathOf(id, locale));
+        expect(links[0]?.text.trim()).toBe(homeCards(locale)[index]?.title);
+      });
+    },
+  );
+
+  // spec: trust-pages › [TP7], [TP33] the methodology and about links follow every card link
+  it.each([
+    ['en', ['/methodology', '/about'], ['How we calculate', 'About Maestro Calc']],
+    ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Cómo calculamos', 'Sobre Maestro Calc']],
+  ] as const)(
+    'links the methodology and about pages after the cards of the %s home',
+    async (locale, hrefs, labels) => {
+      const document = await render(locale);
+      const links = document.querySelectorAll('main .home-links a[href]');
+      expect(links.map((link) => link.getAttribute('href'))).toEqual(hrefs);
+      expect(links.map((link) => link.text.trim())).toEqual(labels);
+      const all = document
+        .querySelectorAll('main a[href]')
+        .map((link) => link.getAttribute('href'));
+      expect(all).toEqual([
+        ...cardLinks(document).map((link) => link.getAttribute('href')),
+        ...hrefs,
+      ]);
+    },
+  );
+
+  // spec: trust-pages › [TP31] no calculator without a route is named, in either locale
+  it.each(['en', 'es'] as const)('names no pageless calculator on the %s home', async (locale) => {
+    const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
+    const pageless = PAGELESS.flatMap((id) => [
+      enRectangleArea[`calc.${id}.title` as keyof typeof enRectangleArea],
+      esRectangleArea[`calc.${id}.title` as keyof typeof esRectangleArea],
+    ]);
+    expect(pageless.length).toBeGreaterThan(1);
+    const words = [
+      'rectangle',
+      'rectángulo',
+      'square footage',
+      'pies cuadrados',
+      'roofing',
+      'techado',
+      'paint',
+      'pintura',
+    ];
+    for (const other of [...pageless, ...words])
+      expect(text, other).not.toContain(other.toLowerCase());
+  });
+});
+
+describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-shell › [SS26])', () => {
   it.each(['en', 'es'] as const)(
     'says nothing is still being built on the %s home',
     async (locale) => {
@@ -109,28 +153,35 @@ describe('HomeView introduction (trust-pages › Home page, [TP8])', () => {
     },
   );
 
-  it.each(['en', 'es'] as const)('lists no upcoming calculators on the %s home', async (locale) => {
-    const main = (await render(locale)).querySelector('main');
-    // the introduction, then one line with the two trust-page links
-    expect(main?.querySelectorAll('p')).toHaveLength(2);
-    expect(main?.querySelectorAll('ul, ol')).toHaveLength(0);
-  });
-
-  it.each(['en', 'es'] as const)('makes no promise or claim on the %s home', async (locale) => {
-    const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
-    expect(text).toContain('maestro');
-    for (const term of FORBIDDEN) expect(text, term).not.toContain(term);
-  });
+  it.each(['en', 'es'] as const)(
+    'makes no promise or claim and uses no arrow glyph on the %s home',
+    async (locale) => {
+      const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
+      expect(text).toContain('maestro');
+      for (const term of FORBIDDEN) expect(text, term).not.toContain(term);
+      expect(text).not.toMatch(/[→›»]/);
+    },
+  );
 
   it.each([
     ['en', enSite],
     ['es', esSite],
   ] as const)('keeps the claims out of every page.home value in %s', (locale, catalog) => {
     const values = Object.entries(catalog).filter(([key]) => key.startsWith('page.home.'));
-    expect(values.length, locale).toBeGreaterThanOrEqual(4);
+    expect(values.length, locale).toBeGreaterThanOrEqual(6);
     for (const [key, value] of values) {
       for (const term of FORBIDDEN)
         expect(value.toLowerCase(), `${key} ${term}`).not.toContain(term);
+    }
+  });
+
+  // spec: site-shell › [SS26] the view style is square, flat and still
+  it('declares no text-transform, border-radius, transition or animation in its style', () => {
+    const source = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
+    const style = source.slice(source.indexOf('<style>'));
+    expect(style.length).toBeGreaterThan('<style></style>'.length);
+    for (const property of ['text-transform', 'border-radius', 'transition', 'animation']) {
+      expect(style, property).not.toContain(property);
     }
   });
 });

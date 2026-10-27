@@ -31,12 +31,11 @@ export const esSite = {
   'site.calculator.hintIn': 'pulgadas',
   'site.calculator.hintM': 'metros',
   'site.calculator.hintCm': 'centímetros',
-  'page.home.heading': 'Maestro Calc',
+  'page.home.heading': 'De tus medidas a la lista de compras',
   'page.home.intro': 'Calcula tu obra y sabe qué comprar. Explicamos cómo sale cada número.',
   'page.home.cards.concrete.title': 'Calculadora de concreto',
   'page.home.cards.concrete.summary':
     'Yardas cúbicas y bolsas para una losa, zapata, columna o escalones.',
-  'page.home.links.concrete': 'Prueba la calculadora de concreto',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
