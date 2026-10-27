@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 import { formatViolations } from './axe-report.ts';
 import { calculatorPages } from './calculator-pages.ts';
 import type { E2ePage } from './calculator-pages.ts';
-import { choiceButton, input } from './locators.ts';
+import { choiceButton, copyButton, denyClipboard, input, open } from './locators.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
@@ -68,13 +68,8 @@ const statesOf = (calculator: E2ePage): readonly AxeState[] => {
     {
       name: 'copy failed',
       drive: async (page) => {
-        await page.evaluate(() => {
-          Object.defineProperty(navigator, 'clipboard', {
-            configurable: true,
-            value: { writeText: () => Promise.reject(new Error('denied')) },
-          });
-        });
-        await page.locator('[data-copy]').click();
+        await denyClipboard(page);
+        await copyButton(page).click();
         await expect(page.locator('#calc-fallback')).toBeVisible();
       },
     },
@@ -112,8 +107,7 @@ test.describe('axe on the interactive calculator states (site-quality › [SQ17]
       test(`has no violation on ${calculator.path} in the ${state.name} state`, async ({
         page,
       }) => {
-        await page.goto(calculator.path);
-        await expect(input(page, calculator.spec.ready)).toBeEnabled();
+        await open(page, calculator);
         await state.drive(page);
         expect(await stateProblems(page, calculator.path, state.name)).toEqual([]);
       });

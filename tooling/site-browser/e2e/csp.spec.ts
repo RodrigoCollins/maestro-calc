@@ -1,7 +1,15 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { calculatorPages } from './calculator-pages.ts';
-import { choiceButton, figureAt, input } from './locators.ts';
+import {
+  choiceButton,
+  copyButton,
+  figureAt,
+  input,
+  languageSwitch,
+  notRunning,
+  open,
+} from './locators.ts';
 import { representativePaths } from './representative.ts';
 import { notFoundSamples, routable } from './urls.ts';
 
@@ -29,25 +37,26 @@ test.describe('CSP does not break the pages (site-quality › [SQ14])', () => {
       const { ready, typed, figures, choices } = calculator.spec;
       await context.grantPermissions(['clipboard-read', 'clipboard-write']);
       const violations = watchCsp(page);
-      await page.goto(calculator.path);
-      await expect(input(page, ready)).toBeEnabled();
+      await open(page, calculator);
       await input(page, typed.key).fill(typed.text);
-      const watched = figures.findIndex((key) => key.startsWith('shopping:'));
-      const watchedKey = figures[watched] ?? '';
-      const watchedText = typed.figures[watched] ?? '';
-      if (watched >= 0) await expect(figureAt(page, watchedKey)).toHaveText(watchedText);
+      // The first shopping figure is the one both the typed value and a choice press change, so
+      // waiting on it proves each handler ran (and tripped no policy) before the next step.
+      const shopping = figures.findIndex((key) => key.startsWith('shopping:'));
+      const shoppingKey = figures[shopping] ?? '';
+      const shoppingText = typed.figures[shopping] ?? '';
+      if (shopping >= 0) await expect(figureAt(page, shoppingKey)).toHaveText(shoppingText);
       const [choice] = choices ?? [];
       const option = choice?.options.find((candidate) => candidate.value !== choice.initial);
       if (choice !== undefined && option !== undefined) {
         await choiceButton(page, choice.key, option.value).click();
-        if (watched >= 0) await expect(figureAt(page, watchedKey)).not.toHaveText(watchedText);
+        if (shopping >= 0) await expect(figureAt(page, shoppingKey)).not.toHaveText(shoppingText);
       }
-      await page.locator('[data-copy]').click();
+      await copyButton(page).click();
       await expect(page.locator('[data-copy-status]')).not.toHaveText('');
-      await page.locator('header a[hreflang]').click();
+      await languageSwitch(page).click();
       await expect(page).toHaveURL(new RegExp(`${calculator.other}\\?`));
       await expect(input(page, ready)).toBeEnabled();
-      await expect(page.locator('[data-not-running]')).toBeHidden();
+      await expect(notRunning(page)).toBeHidden();
       await page.waitForLoadState('networkidle');
       expect(violations).toEqual([]);
     });

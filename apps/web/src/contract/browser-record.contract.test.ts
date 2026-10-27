@@ -58,6 +58,16 @@ const SUITES = [
 /** The suites that take their pages from the record alone: no page path of any kind. */
 const PAGE_SUITES = ['a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
 
+/** The four generic suites: every one opens a page of the record. */
+const SPEC_SUITES = ['calculator.spec.ts', 'a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
+
+/** The names a source imports from `./locators.ts`. */
+const importsFromLocators = (source: string): string[] =>
+  (/import \{([^}]*)\} from '\.\/locators\.ts'/.exec(source)?.[1] ?? '')
+    .split(',')
+    .map((name) => name.trim())
+    .filter(Boolean);
+
 /** A string literal that is a page path or a route glob (an asset glob such as `**\/_astro/*.js` is not). */
 const pathProblems = (code: string): string[] =>
   stringsIn(stripComments(code))
@@ -142,8 +152,11 @@ describe('the axe, layout and CSP suites run over the record (site-quality › [
     const source = read('csp.spec.ts');
     expect(source).toMatch(/for \(const calculator of calculatorPages\)/);
     expect(source).toMatch(/\bchoices\b/);
-    expect(source).toContain('[data-copy]');
-    expect(source).toContain('header a[hreflang]');
+    expect(importsFromLocators(source)).toEqual(
+      expect.arrayContaining(['copyButton', 'languageSwitch']),
+    );
+    expect(source).toContain('copyButton(page)');
+    expect(source).toContain('languageSwitch(page)');
     expect(source).toContain('representativePaths');
   });
 
@@ -167,5 +180,82 @@ describe('the axe, layout and CSP suites run over the record (site-quality › [
     ]) {
       expect(source, part).toContain(part);
     }
+  });
+});
+
+/** The page knowledge the suites share, held once in `locators.ts`: a locator name and its selector. */
+const SHARED_LOCATORS = {
+  copyButton: '[data-copy]',
+  languageSwitch: 'header a[hreflang]',
+  notRunning: '[data-not-running]',
+  answer: '[data-answer]',
+} as const;
+
+/** The literals of the shared helpers that no suite spells again (the denied clipboard, the readiness). */
+const SHARED_LITERALS = [...Object.values(SHARED_LOCATORS), 'denied'];
+
+/** The shared literals a suite holds, each named (exact string literals only). */
+const sharedProblems = (code: string): string[] =>
+  stringsIn(stripComments(code))
+    .filter((text) => SHARED_LITERALS.includes(text))
+    .map((text) => `spells the shared literal "${text}"`);
+
+describe('the shared page knowledge lives in locators.ts (site-quality › [SQ31])', () => {
+  const locators = read('locators.ts');
+
+  it.each(Object.entries(SHARED_LOCATORS))('defines the %s locator as %s', (name, selector) => {
+    const escaped = selector.replaceAll(/[[\]]/g, '\\$&');
+    expect(locators).toMatch(new RegExp(`export const ${name} = [^\\n]*'${escaped}'`));
+  });
+
+  it('opens a page with one readiness signal: the note hidden and the ready input enabled', () => {
+    const open = /export const open = [\s\S]*?\n\};/.exec(locators)?.[0] ?? '';
+    expect(open).toContain('notRunning(page)).toBeHidden()');
+    expect(open).toContain('toBeEnabled()');
+    expect(locators).toMatch(/export const denyClipboard = /);
+  });
+
+  it.each(SPEC_SUITES)(
+    '%s opens its pages through the shared helper and spells no shared literal',
+    (file) => {
+      const source = read(file);
+      expect(importsFromLocators(source)).toContain('open');
+      expect(source).not.toMatch(/^const open = /m);
+      expect(sharedProblems(source)).toEqual([]);
+    },
+  );
+
+  it.each(['calculator.spec.ts', 'a11y.spec.ts'])(
+    '%s denies the clipboard through the shared helper',
+    (file) => {
+      expect(importsFromLocators(read(file))).toContain('denyClipboard');
+    },
+  );
+
+  it.each(['calculator.spec.ts', 'layout.spec.ts'])(
+    '%s reads the answer only when the record declares it',
+    (file) => {
+      expect(read(file)).toMatch(/answer !== undefined/);
+    },
+  );
+
+  it.each([
+    ['the copy button', "await page.locator('[data-copy]').click();", '[data-copy]'],
+    ['the language switch', "page.locator('header a[hreflang]')", 'header a[hreflang]'],
+    [
+      'the not-running note',
+      "expect(page.locator('[data-not-running]')).toBeHidden()",
+      '[data-not-running]',
+    ],
+    ['the answer', "page.locator('[data-answer]')", '[data-answer]'],
+    ['the denied clipboard', "Promise.reject(new Error('denied'))", 'denied'],
+  ])('flags a suite that spells %s', (_what, code, literal) => {
+    expect(sharedProblems(code)).toEqual([`spells the shared literal "${literal}"`]);
+  });
+
+  it('does not flag a longer selector or a record read', () => {
+    expect(
+      sharedProblems("page.locator('[data-copy-status]'); const key = `calc-${typed.key}`;"),
+    ).toEqual([]);
   });
 });
