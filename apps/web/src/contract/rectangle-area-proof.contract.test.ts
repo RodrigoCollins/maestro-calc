@@ -81,24 +81,45 @@ type Root = Awaited<ReturnType<typeof render>>;
 const LAYOUT_SELECTORS = ['header a[hreflang]'];
 
 /**
+ * The source without the definition of `findAs`, whose body forwards its `selector` to `find`: the
+ * one lookup whose selector is not written at the call.
+ */
+const withoutFindAs = (source: string): string =>
+  source.replace(/^const findAs = [\s\S]*?^};$/m, '');
+
+/** A throwing lookup: its receiver, then a string selector (groups 1 to 3) or anything else (4). */
+const LOOKUP = /\b(?:find|findAs)\(\s*[\w.]+,\s*(?:'([^']*)'|"([^"]*)"|`([^`]*)`|([^,)]+))/g;
+
+/**
  * The string selector of every throwing lookup (`find(` and `findAs(`) of a source, with the per-key
- * lookups through `ids.ts` filled in for each text key. A selector that is not a plain string is
- * reported as such.
+ * lookups through `ids.ts` filled in for each text key. A selector that is not a plain string
+ * (`non-literal lookup: <argument>`) or a template that is not the per-key one (`unresolved:`) is a
+ * problem by itself, so no lookup is skipped.
  */
 const throwingSelectors = (source: string, keys: readonly string[]): string[] =>
-  Array.from(
-    source.matchAll(/\b(?:find|findAs)\(\s*[\w.]+,\s*(?:'([^']*)'|"([^"]*)"|`([^`]*)`)/g),
-    (found) => found[1] ?? found[2] ?? found[3] ?? '',
+  Array.from(withoutFindAs(source).matchAll(LOOKUP), (found) =>
+    found[4] === undefined
+      ? (found[1] ?? found[2] ?? found[3] ?? '')
+      : `non-literal lookup: ${found[4].trim()}`,
   ).flatMap((selector) => {
     if (!selector.includes('${')) return [selector];
     if (selector === '#${inputId(key)}') return keys.map((key) => `#${inputId(key)}`);
     return [`unresolved:${selector}`];
   });
 
-/** The throwing selectors of a source that match nothing in the markup (the layout ones excepted). */
+/** Whether an entry of `throwingSelectors` is a problem by itself rather than a selector to try. */
+const isUncheckable = (selector: string): boolean =>
+  selector.startsWith('non-literal lookup: ') || selector.startsWith('unresolved:');
+
+/**
+ * The throwing lookups of a source that cannot be checked or match nothing in the markup (the
+ * layout ones excepted).
+ */
 const lookupProblems = (source: string, root: Root, keys: readonly string[]): string[] =>
   throwingSelectors(source, keys).filter(
-    (selector) => !LAYOUT_SELECTORS.includes(selector) && root.querySelector(selector) === null,
+    (selector) =>
+      isUncheckable(selector) ||
+      (!LAYOUT_SELECTORS.includes(selector) && root.querySelector(selector) === null),
   );
 
 describe('rectangle-area markup (calculator-web-core › [CWC33])', () => {
@@ -153,6 +174,30 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     ['a key that is not a text input', 'find(root, `#calc-ghost`);', '#calc-ghost'],
   ])('names %s in a failing lookup', async (_what, code, selector) => {
     expect(lookupProblems(`${mount}\n${code}`, await render(), keys)).toEqual([selector]);
+  });
+
+  // judgment G3: a lookup whose selector is not written at the call is reported, never skipped
+  it.each([
+    ['a variable', 'find(root, SELECTOR);', 'non-literal lookup: SELECTOR'],
+    [
+      'a forwarded parameter outside findAs',
+      'findAs(root, selector, HTMLElement);',
+      'non-literal lookup: selector',
+    ],
+    ['a template that is not the per-key one', 'find(root, `#${other}`);', 'unresolved:#${other}'],
+  ])('reports %s in a failing lookup', async (_what, code, problem) => {
+    expect(lookupProblems(`${mount}\n${code}`, await render(), keys)).toEqual([problem]);
+  });
+
+  it('skips the one forwarding call, the `find` inside `findAs`, and no other', () => {
+    expect(mount).toContain('const found = find(root, selector);');
+    expect(throwingSelectors(mount, keys).filter((s) => s.startsWith('non-literal'))).toEqual([]);
+    expect(
+      throwingSelectors(
+        'const findAs = (root, selector) => {\n  return find(root, selector);\n};\nfind(root, other);',
+        keys,
+      ),
+    ).toEqual(['non-literal lookup: other']);
   });
 
   it('does not flag a list lookup of a slot element', async () => {
