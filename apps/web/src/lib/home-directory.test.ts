@@ -20,8 +20,11 @@ describe('directoryOrder (trust-pages › [TP30])', () => {
     expect(directoryOrder(routes, [])).toEqual([]);
   });
 
-  it('gives the real calculator pages', () => {
-    expect(directoryOrder(ROUTES, CALCULATOR_PAGES)).toEqual(['concrete']);
+  // derived, not pinned: a new routed calculator needs no edit here
+  it('gives every real calculator page once, in route table order', () => {
+    const order = directoryOrder(ROUTES, CALCULATOR_PAGES);
+    expect([...order].sort()).toEqual([...CALCULATOR_PAGES].sort());
+    expect(order).toEqual(Object.keys(ROUTES).filter((id) => order.some((page) => page === id)));
   });
 });
 
@@ -62,10 +65,11 @@ describe('homeCards (trust-pages › [TP30], [TP28])', () => {
   });
 
   it('throws for a page id that is not a calculator page when it reads the real catalogs', () => {
-    expect(() => homeCards('en', routes, pages)).toThrow('b');
+    expect(() => homeCards('en', routes, pages)).toThrow(new Error('b is not a calculator page'));
   });
 
-  // spec: trust-pages › [TP30] the real tables give exactly the concrete card, with the real copy
+  // spec: trust-pages › [TP30] the real tables give one card per routed calculator, the concrete one
+  // with the real copy
   it.each([
     [
       'en',
@@ -87,7 +91,9 @@ describe('homeCards (trust-pages › [TP30], [TP28])', () => {
         example: 'Ejemplo: una losa de 12 ft por 10 ft, de 4 in de espesor.',
       },
     ],
-  ] as const)('gives the real %s card', (locale, card) => {
-    expect(homeCards(locale)).toEqual([card]);
+  ] as const)('gives the real %s cards, the concrete card among them', (locale, card) => {
+    const cards = homeCards(locale);
+    expect(cards.map(({ id }) => id)).toEqual(directoryOrder(ROUTES, CALCULATOR_PAGES));
+    expect(cards).toContainEqual(card);
   });
 });
