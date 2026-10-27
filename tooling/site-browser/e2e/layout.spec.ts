@@ -10,6 +10,15 @@ const WIDTHS = [
   320, 355, 356, 385, 386, 390, 463, 464, 480, 481, 640, 666, 667, 729, 730, 768, 1024, 1280,
 ] as const;
 
+/**
+ * The last width before each breakpoint. Text wraps a few pixels earlier on some platforms (Linux
+ * Chromium) than where the breakpoints were measured (macOS), so there the block may hold one line
+ * less than its reserve: up to one line more is allowed at these widths only. The fit check stays
+ * strict at every width, and the breakpoints follow the latest drop, so the content fits everywhere.
+ */
+const SWEPT: ReadonlySet<number> = new Set(WIDTHS);
+const BEFORE_EDGE: ReadonlySet<number> = new Set(WIDTHS.filter((width) => SWEPT.has(width + 1)));
+
 type Block = 'answer' | 'notice' | 'copy';
 interface Probe {
   readonly natural: number;
@@ -276,7 +285,9 @@ for (const id of ids) {
               const label = `${block} ${locale} at ${String(width)} px`;
               // soft: one run reports every width and block that misses, not the first one
               expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
-              expect.soft(reserved - tallest, `${label}: unused reserve`).toBeLessThan(line);
+              expect
+                .soft(reserved - tallest, `${label}: unused reserve`)
+                .toBeLessThan(BEFORE_EDGE.has(width) ? 2 * line : line);
             }
           }
         }
