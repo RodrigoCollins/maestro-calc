@@ -298,4 +298,19 @@ With the six blocks and rungs 1–3 (shared flex rule, shared control rule, shar
 
 ### Negative proofs (5.12, run and reverted)
 
-`min-height: 10.75rem` back on `.calc-answer`: the layout spec fails (`answer en at 386 px: unused reserve`) and the formula pin fails. The other proofs of 5.12 were not run in this session.
+Each was applied, run and reverted; `git status --porcelain` clean afterwards.
+
+| Proof | Red |
+|---|---|
+| `min-height: 10.75rem` back on `.calc-answer` | layout spec (`answer en at 386 px: unused reserve`) and the formula pin |
+| breakpoint `22.25rem` written as `356px` | 4: rem-only source, built-CSS rem set, `WIDTHS` edges, notice steps |
+| breakpoint moved to `22.3125rem` (357 px) | 2: `WIDTHS` edges cross-check, notice steps |
+| notice count one too high (`5` → `6` at 22.25rem) | notice steps pin; layout spec (`notice en at 356 px: unused reserve`) |
+| `display: flow-root` dropped from the probe | layout spec (`notice en at 320 px: unused reserve`: the note margin is not counted) |
+| `.calc-copy` at `3rem` | the copy reserve pin |
+| body `style` not forwarded | 2 of `CalculatorBody.override.test.ts` (CP65) |
+| 260 B of HTML added to the ES fixture | the 40,836 B pin (the one-byte case is the standing "headroom plus one byte" test) |
+
+### Exit (5.13)
+
+SX1: `npm run verify` exit 0, coverage gates as in CI. SX2: authored shortstat +502 / −76 over 11 files, over the 400 forecast (H2 ~170–200): the layout spec rewrite (+226) and the style contract (+113) carry most of it; renames none. SX3: conventional subjects, tree green at each commit. SX5: this section.
