@@ -5,7 +5,8 @@ import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
 import { importFromRoot } from '../../contract/root.ts';
-import { ROUTES } from '../../routing/routes.ts';
+import { pathOf, ROUTES } from '../../routing/routes.ts';
+import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { pageView } from '../../lib/pages.ts';
 import {
@@ -181,6 +182,15 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
       await build('base');
       const html = builtPage(name);
       expect(html.includes('.home-hero') && html.includes('linear-gradient')).toBe(true);
+      // [TP21], [TP28]: one card per routed calculator, linking its route path in this locale
+      // a rule for the card itself, not only for the `.home-cards` list
+      expect(/\.home-card(?![\w-])/.test(html)).toBe(true);
+      const locale = name === 'es.html' ? 'es' : 'en';
+      const cards = parse(html).querySelectorAll('main ul.home-cards li');
+      expect(cards).toHaveLength(CALCULATOR_PAGES.length);
+      expect(cards.map((card) => card.querySelector('a')?.getAttribute('href'))).toEqual(
+        CALCULATOR_PAGES.map((id) => pathOf(id, locale)),
+      );
       const types = parse(html)
         .querySelectorAll('script')
         .map((tag) => tag.getAttribute('type'));

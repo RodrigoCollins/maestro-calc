@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { fromRoot } from '../contract/root.ts';
 import { directoryOrder, homeCards } from '../lib/home-directory.ts';
+import { PAGES } from '../lib/pages.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage, PAGELESS } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -98,6 +99,32 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
     },
   );
 
+  // spec: trust-pages › [TP28] a card holds the title link, the summary and the worked example, in order
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
+    'shows the title, summary and example of each card on the %s home',
+    async (locale, catalog) => {
+      const document = await render(locale);
+      const list = document.querySelector('main ul.home-cards');
+      expect(list?.getAttribute('role')).toBe('list');
+      expect(list?.querySelectorAll(':scope > li')).toHaveLength(CALCULATOR_PAGES.length);
+      const card = document.querySelector('li.home-card');
+      expect(card?.querySelectorAll('a')).toHaveLength(1);
+      expect(card?.children.map((child) => child.tagName)).toEqual(['H2', 'P', 'P']);
+      expect(card?.querySelector('h2 > a.tap-target')?.text.trim()).toBe(
+        catalog['page.home.cards.concrete.title'],
+      );
+      expect(card?.querySelector('h2 + p')?.text.trim()).toBe(
+        catalog['page.home.cards.concrete.summary'],
+      );
+      expect(card?.querySelector('p.home-example')?.text.trim()).toBe(
+        PAGES.concrete.catalogs[locale]['calc.concrete.page.example'],
+      );
+    },
+  );
+
   // spec: trust-pages › [TP7], [TP33] the methodology and about links follow every card link
   it.each([
     ['en', ['/methodology', '/about'], ['How we calculate', 'About Maestro Calc']],
@@ -180,7 +207,13 @@ describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-s
     const source = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
     const style = source.slice(source.indexOf('<style>'));
     expect(style.length).toBeGreaterThan('<style></style>'.length);
-    for (const property of ['text-transform', 'border-radius', 'transition', 'animation']) {
+    for (const property of [
+      'box-shadow',
+      'text-transform',
+      'border-radius',
+      'transition',
+      'animation',
+    ]) {
       expect(style, property).not.toContain(property);
     }
   });

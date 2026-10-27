@@ -60,12 +60,11 @@ for (const path of HOMES) {
         const h1 = await page.locator('main h1').evaluate((element) => ({
           size: Number.parseFloat(getComputedStyle(element).fontSize),
           scroll: document.documentElement.scrollWidth,
-          inner: window.innerWidth,
           hero: element.closest('.home-hero')?.scrollWidth ?? Infinity,
         }));
         expect(h1.size).toBeGreaterThan(await pixels(page, '--text-h1'));
-        expect(h1.scroll).toBeLessThanOrEqual(h1.inner);
-        expect(h1.hero).toBeLessThanOrEqual(h1.inner);
+        expect(h1.scroll).toBeLessThanOrEqual(width);
+        expect(h1.hero).toBeLessThanOrEqual(width);
         sizes.push(h1.size);
       }
       expect(sizes[1]).toBeGreaterThan(sizes[0] ?? Infinity);
@@ -81,5 +80,25 @@ for (const path of HOMES) {
       await page.waitForLoadState('networkidle');
       expect(scripts).toEqual([]);
     });
+  });
+}
+
+for (const path of HOMES) {
+  // spec: trust-pages › [TP37] cards fit a phone and each link is a 44 px target
+  test(`${path} fits 320, 390 and 1280 px with 44 px card links`, async ({ page }) => {
+    for (const width of [320, 390, 1280]) {
+      await openAt(page, path, width);
+      const links = page.locator('main .home-card a');
+      expect(await links.count(), `${String(width)} px has a card link`).toBeGreaterThan(0);
+      // against the width we set: on a phone profile `innerWidth` itself grows to fit wide content
+      const scroll = await page.evaluate(() => document.documentElement.scrollWidth);
+      expect(scroll, `${String(width)} px overflow`).toBeLessThanOrEqual(width);
+      for (const box of await links.evaluateAll((all) =>
+        all.map((link) => link.getBoundingClientRect()),
+      )) {
+        expect(box.width).toBeGreaterThanOrEqual(44);
+        expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+    }
   });
 }
