@@ -195,3 +195,56 @@ Hard-coded card href in the view (1 red, the directory case); `border-radius: 4p
 #### PR 2 tip checks (P2.1-P2.3)
 
 `git log feat/home-directory-p1b-cards..HEAD` lists H3b and this record only. The authored `--shortstat feat/home-directory-p1b-cards -- . ':!openspec'` is 384 changed lines (7 files). The `site-browser` CI wall time is not measurable locally (CI only). Pushing, CI, the four reviewers, Judgment Day, the PR and the merge (P2.4) belong to the orchestrator; the split rule moved H3c to `feat/home-directory-p2b-cards` (tasks 4.1-4.10 and a second tip check), so PR 2 is H3b alone.
+
+---
+
+## PR 2b (`feat/home-directory-p2b-cards`, from the H3b tip `618ac91`): H3c cards
+
+The split rule of task 4.7 fired (H3b alone is 384 lines; with H3c the authored sum is 490 against the PR 1b tip). H3c is its own PR, stacked on PR 2; H2 stays PR 3 (the tasks file names it PR 4 after a split; the orchestrator keeps the numbering). There is no `state.yaml` in this change, so there was nothing to update there.
+
+### H3c: cards (commit `63a14c6`)
+
+`feat(web): render the calculator cards on the home`: 4 files, 113 insertions and 5 deletions = **118** changed lines against the H3b tip (forecast 190-210: the H3b skeleton had already added the list, the title link and the 44 px target, so H3c is the summary and example lines, the card CSS and the card proofs). H3b + H3c against `7958a05`: 490.
+
+RED order: 4.1 the card-structure case in `HomeView.test.ts` (2 red: summary and example missing); 4.2 the built-home assertions (first written as `.home-card`, which already matched `.home-cards`, so it was green on arrival: tightened to `/\.home-card(?![\w-])/`, then red on both homes); 4.3 the `home.spec.ts` card case (green on arrival: the H3b skeleton already links each card title with `.tap-target`, 44 px tall, and has no overflow). GREEN 4.4.
+
+#### Deviations (H3c)
+
+1. **The overflow proof was blind on the phone profile.** The first version of the 4.3 case compared `scrollWidth` with `window.innerWidth`. On the `phone` project (`isMobile`), wide content makes `innerWidth` grow to fit it, so a `min-width: 30rem` grid at 320 px still passed (negative proof D, 10 passed). Both overflow checks of `home.spec.ts` (the H3b hero at 320 px and the H3c card case) now compare `scrollWidth` with the width the test sets; the same proof then fails for the right reason (4 red) and the unmutated tree is green. **Finding, not fixed (outside this change):** `smoke.spec.ts` "fits the phone width" has the same `innerWidth` comparison and is blind to overflow on the same profile.
+2. The card summary and example reuse `homeCards`; the view only renders. No new key and no catalog edit in H3c.
+
+#### Measurements at the PR 2b tip
+
+| Item | H3b tip | H3c tip | Limit |
+|---|---|---|---|
+| EN home / ES home HTML | 8,705 / 8,791 B | **9,708 / 9,818 B** | 24,576 (TP35) |
+| Home inline CSS | 5,546 B | **6,375 B** | 20,480 |
+| ES full-length proof | 40,770 B | **40,770 B** (66 B headroom) | 40,836 pin |
+| EN full-length proof | 40,501 B | 40,501 B | 40,960 |
+| Largest CSS per page | 7,339 B (`/methodology.html`) | 7,339 B | 20,480 |
+| Largest HTML per page | 33,950 B (ES concrete) | 33,950 B | 40,960 |
+| Vitest | 198 files, 3,666 tests | 198 files, 3,668 tests | |
+| e2e (Chromium) | 291 | **293 passed** (283 + 10 `home.spec.ts`; 42 s) | |
+| Lighthouse (6 pages, both homes included) | assertions passed | assertions passed (exit 0); accessibility, best practices, SEO and performance 1.00 and CLS 0 on `/` and `/es` | 0.95 / CLS 0.01 |
+
+`npm run verify` green at the tip (38 s wall). Axe: 0 violations on `/` and `/es` in the a11y suite (card summary and example pass `color-contrast`). `git diff --stat 7958a05 -- packages` lists only `packages/i18n/src/catalogs/{en,es}/site.ts` (2 insertions, 4 deletions, all H3b); the CI and stryker paths are unchanged. `git log --format=%B 7958a05..HEAD | rg -i 'co-authored|claude|anthropic|generated with'` is empty.
+
+#### Dist diff of the PR 2b tip against the PR 2 tip build (normalised)
+
+`diff -r -x '*.js'` lists exactly `index.html` and `es.html`. The PR 2 tip against the PR 1b tip build (`7958a05`) lists the same two files.
+
+#### Scenario ids proven (H3c)
+
+[TP21] built (card targets equal the route paths of `CALCULATOR_PAGES` per locale, no other calculator link), [TP28] (unit and built HTML: `ul[role=list]` item count, title link, summary, example, one link), [TP30] on the view (real tables, order), [TP33] (every card link before methodology, then about), [TP34], [TP35] (9,708 / 9,818 B), [TP36] (axe 0, Lighthouse), [TP37] (320, 390, 1280 px, 44 by 44 links), [SS26] (card style: no `box-shadow`, radius, transform, transition, animation), [SS28] home side (the `.home-card` rule on both homes, on no other page), [SS30] (largest CSS 7,339 B).
+
+#### Screenshots (4.8)
+
+Built site, saved to the scratchpad directory of this session: `home-en-390.png`, `home-en-1280.png`, `home-es-390.png`, `home-es-1280.png`.
+
+#### Negative proofs (H3c; each run, then reverted; `git status --porcelain` clean afterwards)
+
+A second link inside the card summary (4 red: one-link and structure); an arrow glyph after the summary (4 red: glyph guard); a global `.home-card` rule appended to `base.css` (1 red: leak guard, naming the page); the card link forced to 20 px tall (2 red: TP37, both homes); `min-width: 30rem` on the grid (4 red after deviation 1: TP37 at 320 px and the H3b hero overflow case; green before the fix, which is how the blind spot was found).
+
+### PR 2 and PR 2b group tasks
+
+Tip checks, dist diffs, `npm run verify`, `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`, the ES full-length proof (40,770 B, 66 B under the 40,836 pin) and the home bytes are recorded above for both tips. The `site-browser` CI wall time is CI only. **P2.4 (GX1-GX6: CI, the four reviewers, Judgment Day, the PR bodies with their Chain Context, the merge) belongs to the orchestrator.** PR body inputs: the guard ledger and the H3b section above (PR 2); this section, the forecast versus actual (H3b 190-230 forecast, 384 actual; H3c 190-210 forecast, 118 actual), the screenshots and the Lighthouse and axe results (PR 2b). Rollback: revert PR 2b alone (card markup, card CSS, card tests, `home.spec.ts` card case), then PR 2 (the hero, the heading reword and the `links.concrete` removal come back as one unit).
