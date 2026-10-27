@@ -1,6 +1,8 @@
 import { globSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
+import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
@@ -9,7 +11,8 @@ import { importFromRoot } from '../../contract/root.ts';
 import { pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
-import { pageView } from '../../lib/pages.ts';
+import { directoryOrder } from '../../lib/home-directory.ts';
+import { PAGES, pageView } from '../../lib/pages.ts';
 import {
   FAQ_ANSWER_LENGTH,
   FAQ_ITEMS,
@@ -206,6 +209,60 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
       const bytes = Buffer.byteLength(html);
       console.info(`[TP35] ${name}: ${String(bytes)} B of ${String(HOME_BUDGET)} B`);
       expect(bytes).toBeLessThanOrEqual(HOME_BUDGET);
+    },
+    120_000,
+  );
+
+  // spec: trust-pages › [TP28] each card is a list item: one title link, the summary, the example
+  it.each([
+    ['index.html', 'en', enSite],
+    ['es.html', 'es', esSite],
+  ] as const)(
+    'renders each card on %s as an item of a list with its title link, summary and example',
+    async (name, locale, catalog) => {
+      await build('base');
+      const main = parse(builtPage(name)).querySelector('main');
+      const lists = main?.querySelectorAll('ul[role=list]') ?? [];
+      expect(lists).toHaveLength(1);
+      const items = lists[0]?.querySelectorAll(':scope > li') ?? [];
+      const ids = directoryOrder(ROUTES, CALCULATOR_PAGES);
+      expect(ids.length).toBeGreaterThan(0);
+      expect(items).toHaveLength(ids.length);
+      ids.forEach((id, index) => {
+        const item = items[index];
+        const links = item?.querySelectorAll('a') ?? [];
+        expect(links, id).toHaveLength(1);
+        expect(item?.querySelector('h2 > a')).toBe(links[0]);
+        expect(links[0]?.getAttribute('href'), id).toBe(pathOf(id, locale));
+        expect(links[0]?.text.trim(), id).toBe(catalog[`page.home.cards.${id}.title`]);
+        const texts = item?.querySelectorAll(':scope > p').map((p) => p.text.trim());
+        expect(texts, id).toEqual([
+          catalog[`page.home.cards.${id}.summary`],
+          PAGES[id].catalogs[locale][`calc.${id}.page.example`],
+        ]);
+      });
+    },
+    120_000,
+  );
+
+  // spec: trust-pages › [TP21] the cards are the only way main links a calculator page
+  it.each([
+    ['index.html', 'en'],
+    ['es.html', 'es'],
+  ] as const)(
+    'links a calculator page from main on %s only through its card',
+    async (name, locale) => {
+      await build('base');
+      const calculatorPaths = new Set(
+        CALCULATOR_PAGES.flatMap((id) => [pathOf(id, 'en'), pathOf(id, 'es')]),
+      );
+      const linked = parse(builtPage(name))
+        .querySelectorAll('main a[href]')
+        .map((link) => link.getAttribute('href') ?? '')
+        .filter((href) => calculatorPaths.has(href));
+      expect(linked).toEqual(
+        directoryOrder(ROUTES, CALCULATOR_PAGES).map((id) => pathOf(id, locale)),
+      );
     },
     120_000,
   );
