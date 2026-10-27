@@ -2,7 +2,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { pathOf, ROUTES } from '../routing/routes.ts';
-import { templateOf } from '../routing/templates.ts';
+import { CALCULATOR_PAGES, PAGELESS, templateOf } from '../routing/templates.ts';
 import { SITE } from '../site.config.ts';
 import {
   emailsIn,
@@ -297,9 +297,20 @@ describe('the copy follows the route table (trust-pages › [TP26], [TP21], [TP2
     }
   });
 
-  it('links the concrete calculator from the home page exactly when it is routed', () => {
-    expect('page.home.links.concrete' in enSite).toBe(routed);
-    expect('page.home.links.concrete' in esSite).toBe(routed);
+  it('gives the home a card exactly for the calculators that are routed', () => {
+    for (const [name, site] of [
+      ['en', enSite],
+      ['es', esSite],
+    ] as const) {
+      const cardIds = (part: 'title' | 'summary'): string[] =>
+        Object.keys(site)
+          .map((key) => new RegExp(String.raw`^page\.home\.cards\.(.+)\.${part}$`).exec(key)?.[1])
+          .filter((id): id is string => id !== undefined)
+          .sort();
+      expect(cardIds('title'), `${name} titles`).toEqual([...CALCULATOR_PAGES].sort());
+      expect(cardIds('summary'), `${name} summaries`).toEqual([...CALCULATOR_PAGES].sort());
+      for (const id of PAGELESS) expect(`page.home.cards.${id}.title` in site, id).toBe(false);
+    }
   });
 
   it('has the calculators section of the privacy page exactly when a calculator page is routed', () => {

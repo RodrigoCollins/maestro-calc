@@ -33,6 +33,9 @@ export const esSite = {
   'site.calculator.hintCm': 'centímetros',
   'page.home.heading': 'Maestro Calc',
   'page.home.intro': 'Calcula tu obra y sabe qué comprar. Explicamos cómo sale cada número.',
+  'page.home.cards.concrete.title': 'Calculadora de concreto',
+  'page.home.cards.concrete.summary':
+    'Yardas cúbicas y bolsas para una losa, zapata, columna o escalones.',
   'page.home.links.concrete': 'Prueba la calculadora de concreto',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
