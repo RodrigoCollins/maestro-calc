@@ -13,7 +13,7 @@ The live home is a placeholder: one H1, a tagline paragraph with the concrete li
 
 ### In
 - Home directory: one card per id of `CALCULATOR_PAGES`, in `ROUTES` order. Each card links to the route path of the current locale. Its copy comes from `page.home.cards.<id>.{title,summary}` in `packages/i18n/src/catalogs/{en,es}/site.ts`, and its evidence line is the existing `calc.<id>.page.example`. No JavaScript.
-- Hero band on Blueprint ink: a 16 px grid in pure CSS and one orange dimension-line motif (end ticks drawn with borders or pseudo-elements, no SVG per id). The H1 is set in `--text-display`.
+- Hero band on Blueprint ink: a `1rem` (16 px) grid in pure CSS and one orange dimension-line motif (end ticks drawn with borders or pseudo-elements, no SVG per id). The H1 is set in `--text-display`.
 - Tokens in `apps/web/src/styles/tokens.css`: `--text-display` (fluid `clamp`), `--grid-size`, and the tick primitives. Each one is pinned in `styles.contract.test.ts`, which also gets its stale "1.42 line height" comment corrected. Corners stay square, with no radius token.
 - A rewrite of `HomeView.test.ts`, plus a test that the directory equals `CALCULATOR_PAGES` in `ROUTES` order.
 - Answer-gap fix: the reservations for `.calc-answer`, `.calc-notice` and `.calc-copy` become CSS-only and set per rem breakpoint, through line-count custom properties. The proof is `layout.spec.ts` at 320, 390, 480, 640, 768, 1024 and 1280 px, in both directions: the content fits, and the unused reserve is less than one line.
@@ -47,19 +47,21 @@ None.
 - `trust-pages`: the "Home page" requirement. The calculator link list becomes "one card per routed calculator, in `ROUTES` order, with catalog copy". [TP21] is generalised from "lists no other calculator" to "lists exactly `CALCULATOR_PAGES`". [TP7] and [TP8] are kept.
 - `site-shell`: "Blueprint design tokens" gains `--text-display`, the grid and tick primitives, and square corners (no radius).
 - `calculator-page`: "Layout stability". The answer, notice and copy reservations are sized per breakpoint (not only at phone width). New scenarios cover the wide widths: no gap of a full line or more, and CLS ≤ 0.01.
+- `site-routing-i18n`: "Calculator pages in the route table". The home renders from its own route files (`pages/index.astro`, `pages/es.astro`) and the catch-all builds `staticPaths()` minus `home`, so the home's scoped CSS ships on the home only (design K1). The URL set, the sitemap and the pinned counts are unchanged.
 - `site-quality`: None (budgets, the Lighthouse list and the smoke test are unchanged).
 - `site-seo`: None (D7).
 
 ## Approach
 
-H1 adds and pins the tokens first (red contract tests). H2 replaces the fixed reservations, with `layout.spec.ts` widened first and run red against today's 10.75rem reserve on desktop. H3 rewrites `HomeView.test.ts` to the directory contract, then builds the view and the keys. Every size is measured on the real build (`npm run build && npm run check:site`) and recorded in apply progress, replacing the exploration's estimates.
+Slice order, by owner decision: the visible home ships first, and the desktop gap, a small live defect, waits one PR. H1 gives the home its own route files and adds and pins the tokens first (red contract tests). H3 follows as three slices: H3a adds the card keys and the data module `home-directory.ts` with its tests, H3b rewrites `HomeView.test.ts` to the hero and the kept guards and builds the hero and the view skeleton, H3c adds the cards and their tests. H2 comes last: it replaces the fixed reservations, with `layout.spec.ts` widened first and run red against today's 10.75rem reserve on desktop. Every size is measured on the real build (`npm run build && npm run check:site`) and recorded in apply progress, replacing the exploration's estimates.
 
 ## Affected Areas
 
 | Area | Impact |
 |---|---|
+| `apps/web/src/pages/{index,es,[...path]}.astro`, `astro.config.mjs` | Home route files; the catch-all minus `home`; `build.inlineStylesheets: 'always'`; `scopedStyleStrategy: 'class'` |
 | `apps/web/src/styles/{tokens,calculator}.css`, `styles.contract.test.ts` | Tokens; per-breakpoint reservations |
-| `apps/web/src/views/HomeView.astro`, `HomeView.test.ts` | Directory, hero band, scoped CSS |
+| `apps/web/src/views/HomeView.astro`, `HomeView.test.ts`, `apps/web/src/lib/home-directory.ts` | Directory data, hero band, scoped CSS |
 | `packages/i18n/src/catalogs/{en,es}/site.ts` | `page.home.cards.concrete.*`; intro keys adjusted |
 | `tooling/site-browser/e2e/layout.spec.ts` | Seven widths, lower bound |
 
@@ -67,7 +69,8 @@ H1 adds and pins the tokens first (red contract tests). H2 replaces the fixed re
 
 | Risk | Likelihood | Mitigation |
 |---|---|---|
-| ES concrete has 124 B of HTML headroom. Any shared CSS growth (tokens, reservations) costs it first. Astro inlines a CSS chunk under 4,096 B, so a size change can move a chunk between inline and linked. | High | D4 keeps the home CSS scoped. D8 makes the reservation net-zero or negative. `CalculatorBody.budget.test.ts` and `check:site` run after H1 and after H2. |
+| ES concrete has 124 B of HTML headroom. Any shared CSS growth (tokens, reservations) costs it first. | High | D4 keeps the home CSS scoped and K1 gives the home its own route files so the scoping holds. D8 makes the reservation net-zero or negative. `CalculatorBody.budget.test.ts` and `check:site` run after H1 and after H2. |
+| Astro inlines a CSS chunk only under 4,096 B per chunk, so a size change could move a chunk from inline to a linked, render-blocking stylesheet. | Med | `build.inlineStylesheets: 'always'` (design K2) removes the flip; [SQ6] still bounds the CSS at 20,480 B per page, and a leak guard asserts no `.home-` rule on the other pages. |
 | The `HomeView.test.ts` rewrite drops a guard (no promises, tagline, links) | Med | Port each current assertion explicitly or record why it goes. [TP8] stays in `check:site`. |
 | Hand-set line counts drift and a gap or overflow comes back at an untested width | Med | Both-direction assertions at seven widths on the real build |
 | Fallback-font metrics change a wrap before the woff2 loads | Low | Metric-adjusted fallback already ships. The e2e runs on the built fonts, and the CLS gate covers the swap. |
@@ -78,14 +81,19 @@ Each PR reverts as one merge commit. Nothing changes in URLs, data or core, so a
 
 ## Review Workload Forecast (authored lines, `git diff --shortstat`)
 
+`git diff --shortstat` counts insertions plus deletions, so a rewritten line counts twice (the `HomeView.test.ts` rewrite is 163 lines today and `HomeView.astro` 44; both are mostly replaced). Every slice stays under 400 by that count, measured before its commit. The order is the owner's: visible product progress first; the desktop gap is a small live defect that can wait one PR.
+
 | PR | Slices | Forecast |
 |---|---|---|
-| PR 1 | H1 tokens and primitives (~150–200) + H2 reservations and layout widths (~110–140) | ~260–340 |
-| PR 2 | H3 directory: view, EN/ES keys, test rewrite | ~280–340 |
+| PR 1 | H1 home route files, tokens and primitives (~100–130) + H3a card keys EN/ES, `home-directory.ts` with its test, `home.test-d.ts`, the `content.contract` row, the AGENTS.md and `docs.contract` rows (~170–210); H3b joins only if the measured sum stays under 400 | ~270–340 |
+| PR 2 | H3b hero, view skeleton and the kept `HomeView.test.ts` guards (~190–230) + H3c cards, card CSS and the card tests (~190–210) | ~380–440 |
+| PR 3 | H2 reservations, class scoping, layout widths and the [CP65] fixture test | ~170–200 |
+
+H3 in total is about 550–650. PR 2 is the one at risk: if H3b plus H3c measure over 400, H3c becomes a PR of its own and H2 moves one PR later, with no change to the slices.
 
 - Decision needed before apply: No
 - Chained PRs recommended: Yes
-- 400-line budget risk: Medium (PR 1 reaches about 340 at the top of the range; if H1 grows, H2 moves to its own PR)
+- 400-line budget risk: Medium (PR 2 reaches about 440 at the top of the range; the split rule above keeps every PR under 400 without a decision)
 
 ## Success Criteria
 
