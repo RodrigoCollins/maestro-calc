@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { ROUTES } from '../routing/routes.ts';
+import { calculators } from '../lib/calculators.ts';
+import { LOCALES, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { stringsIn, stripComments } from './__testing__/source-text.ts';
 import { fromRoot, importFromRoot } from './root.ts';
@@ -11,6 +12,22 @@ import { fromRoot, importFromRoot } from './root.ts';
  */
 const E2E_DIR = 'tooling/site-browser/e2e';
 const read = (file: string): string => readFileSync(fromRoot(E2E_DIR, file), 'utf8');
+
+/** The shape of the record module the tests load (its own types stay in the browser package). */
+interface RecordModule {
+  readonly calculatorPages: readonly {
+    readonly id: string;
+    readonly locale: string;
+    readonly path: string;
+    readonly other: string;
+  }[];
+  readonly paramOf: (
+    choice: { readonly key: string; readonly initial: string },
+    option: { readonly value: string; readonly param?: string },
+  ) => string;
+}
+
+const record = await importFromRoot<RecordModule>(`${E2E_DIR}/calculator-pages.ts`);
 
 describe('the typed browser record (site-quality › [SQ29], [SQ30])', () => {
   const table = read('calculator-pages.ts');
@@ -53,22 +70,20 @@ describe('the typed browser record (site-quality › [SQ29], [SQ30])', () => {
   });
 
   it('derives the page paths from ROUTES for both locales', () => {
-    expect(table).toContain("from '../../../apps/web/src/routing/routes.ts'");
-    expect(table).toContain('CALCULATOR_PAGES');
-    expect(table).toMatch(/ROUTES\[id\]/);
-    expect(CALCULATOR_PAGES.every((id) => id in ROUTES)).toBe(true);
+    expect(
+      record.calculatorPages.map(({ id, locale, path, other }) => ({ id, locale, path, other })),
+    ).toEqual(
+      CALCULATOR_PAGES.flatMap((id) =>
+        LOCALES.map((locale) => ({
+          id,
+          locale,
+          path: ROUTES[id][locale],
+          other: ROUTES[id][locale === 'en' ? 'es' : 'en'],
+        })),
+      ),
+    );
   });
 });
-
-/** The shape of the record module the tests load (its own types stay in the browser package). */
-interface RecordModule {
-  readonly paramOf: (
-    choice: { readonly key: string; readonly initial: string },
-    option: { readonly value: string; readonly param?: string },
-  ) => string;
-}
-
-const record = await importFromRoot<RecordModule>(`${E2E_DIR}/calculator-pages.ts`);
 
 describe('the query parameter of an option (site-quality › [SQ30])', () => {
   const shape = { key: 'shape', initial: 'slab' };
@@ -94,11 +109,15 @@ const SUITES = [
   'locators.ts',
 ];
 
-/** The suites that take their pages from the record alone: no page path of any kind. */
-const PAGE_SUITES = ['a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
-
-/** The four generic suites: every one opens a page of the record. */
+/** The four generic suites: every one opens a page of the record and holds no page path. */
 const SPEC_SUITES = ['calculator.spec.ts', 'a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
+
+/** Every calculator of the registry, routed or not: no suite may name one. */
+const IDS = calculators.map(({ id }) => id);
+
+/** The path of every calculator page in both locales: no suite may hold one. */
+const PATHS = CALCULATOR_PAGES.flatMap((id) => LOCALES.map((locale) => ROUTES[id][locale]));
+const [firstPath = ''] = PATHS;
 
 /** The names a source imports from `./locators.ts`. */
 const importsFromLocators = (source: string): string[] =>
@@ -113,10 +132,15 @@ const pathProblems = (code: string): string[] =>
     .filter((text) => /^(?:\*\*)?\/(?!_astro)\S/.test(text))
     .map((text) => `holds the path "${text}"`);
 
-/** What a string literal of a generic suite may not hold: a calculator's name, path or group. */
+/** What a string literal of a generic suite may not hold: a registry id, a page path or concrete's group. */
 const suiteProblems = (code: string): string[] =>
   stringsIn(stripComments(code)).flatMap((text) => [
-    ...(/concret[eo]/i.test(text) ? [`names the concrete calculator in "${text}"`] : []),
+    ...IDS.filter((id) => text.includes(id)).map(
+      (id) => `names the calculator "${id}" in "${text}"`,
+    ),
+    ...PATHS.filter((path) => text.includes(path)).map(
+      (path) => `holds the calculator path "${path}" in "${text}"`,
+    ),
     ...(text.includes('data-choice="shape"') ? [`names the shape group in "${text}"`] : []),
     ...(text === 'shape' ? ['names the shape group as a literal'] : []),
   ]);
@@ -127,16 +151,26 @@ describe('the generic suites hold no calculator literal (site-quality › [SQ30]
   });
 
   it.each([
-    ['a calculator id', "const id = 'concrete';", 'names the concrete calculator in "concrete"'],
+    ['a calculator id', "const id = 'concrete';", 'names the calculator "concrete" in "concrete"'],
+    [
+      'the id of a pageless calculator',
+      "const id = 'rectangle-area';",
+      'names the calculator "rectangle-area" in "rectangle-area"',
+    ],
     [
       'an English path',
       "await page.goto('/concrete-calculator');",
-      'names the concrete calculator in "/concrete-calculator"',
+      'holds the calculator path "/concrete-calculator" in "/concrete-calculator"',
     ],
     [
       'a Spanish path',
       "await page.goto('/es/calculadora-de-concreto');",
-      'names the concrete calculator in "/es/calculadora-de-concreto"',
+      'holds the calculator path "/es/calculadora-de-concreto" in "/es/calculadora-de-concreto"',
+    ],
+    [
+      'the first path of the route table',
+      `await page.route('**${firstPath}', run);`,
+      `holds the calculator path "${firstPath}" in "**${firstPath}"`,
     ],
     [
       'the shape selector',
@@ -150,16 +184,22 @@ describe('the generic suites hold no calculator literal (site-quality › [SQ30]
 
   it('does not flag a comment, a longer word or a record read', () => {
     const code = [
-      '// the concrete page, shape by shape',
+      '// the concrete page, shape by shape, next to rectangle-area',
       "const title = 'shows the fields of each shape';",
       'const label = calculator.catalog[`calc.${calculator.id}.inputs.${name}`];',
     ].join('\n');
     expect(suiteProblems(code)).toEqual([]);
   });
+
+  it('scans for every registry id and every calculator path of both locales', () => {
+    expect(IDS).toEqual(expect.arrayContaining(['concrete', 'rectangle-area']));
+    expect(PATHS).toEqual(expect.arrayContaining([ROUTES.concrete.en, ROUTES.concrete.es]));
+    expect(PATHS).toHaveLength(CALCULATOR_PAGES.length * LOCALES.length);
+  });
 });
 
 describe('the axe, layout and CSP suites run over the record (site-quality › [SQ17], [SQ19], [SQ32])', () => {
-  it.each(PAGE_SUITES)('%s imports the page list and holds no page path', (file) => {
+  it.each(SPEC_SUITES)('%s imports the page list and holds no page path', (file) => {
     const source = read(file);
     expect(source).toMatch(
       /import \{[^}]*\bcalculatorPages\b[^}]*\} from '\.\/calculator-pages\.ts'/,

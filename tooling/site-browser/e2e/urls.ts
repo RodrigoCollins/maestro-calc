@@ -15,6 +15,9 @@ export const staticPaths: string[] = Object.entries(ROUTES).flatMap(([id, { en, 
   templateOf(id) === 'calculator' ? [] : [en, es],
 );
 
+/** The trust page the language-switch test starts from (site-routing-i18n › [SR7]), in both locales. */
+export const trustSample = ROUTES.privacy;
+
 /** Paths no route builds: the nearest 404 page answers, by the language of the path prefix. */
 export const unknown = {
   en: ['/does-not-exist', '/essay'],
