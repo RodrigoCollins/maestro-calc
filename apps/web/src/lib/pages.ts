@@ -12,6 +12,8 @@ import type { CalculatorPageView } from '../components/calculator/model.ts';
 import type { CalculatorPageId } from '../routing/templates.ts';
 import { pageViewOf } from './page-view.ts';
 
+export type { Messages };
+
 /** What a calculator page is built from: its module and the catalogs of both locales. */
 export interface PageEntry {
   readonly module: AnyPageModule;
