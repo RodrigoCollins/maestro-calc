@@ -79,12 +79,12 @@ const probeBlocks = async (page: Page, variants: Variants): Promise<Probes> => {
         const result: Probes = {};
         const answerBlock = find('answer');
         if (answerBlock !== null) {
-          const text = answerBlock.textContent;
+          const children = [...answerBlock.childNodes];
           const heights = v.answers.map((sentence) => {
             answerBlock.textContent = sentence;
             return natural(answerBlock);
           });
-          answerBlock.textContent = text;
+          answerBlock.replaceChildren(...children);
           result.answer = probe(answerBlock, heights);
         }
         const noticeBlock = find('notice');
