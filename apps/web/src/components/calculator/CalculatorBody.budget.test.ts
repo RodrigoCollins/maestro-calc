@@ -6,7 +6,7 @@ import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
-import { lengthsOf, mediaBlocksOf } from '../../__testing__/css-media.ts';
+import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../../__testing__/css-media.ts';
 import { pagelessTitles } from '../../__testing__/pageless-titles.ts';
 import { importFromRoot } from '../../contract/root.ts';
 import { pathOf, ROUTES } from '../../routing/routes.ts';
@@ -167,6 +167,8 @@ describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])
       mediaBlocksOf(css)
         .flatMap(([query]) => lengthsOf(query))
         .map(([value, unit]) => `${String(value)}${unit}`);
+    expect(mediaBlocksOf(source).length).toBe(mediaCountOf(source));
+    expect(mediaBlocksOf(built).length).toBe(mediaCountOf(built));
     expect(lengths(source).length).toBeGreaterThan(0);
     expect(lengths(built).filter((length) => !length.endsWith('rem'))).toEqual([]);
     expect(new Set(lengths(built))).toEqual(new Set(lengths(source)));

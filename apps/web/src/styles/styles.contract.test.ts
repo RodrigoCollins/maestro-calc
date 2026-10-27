@@ -8,7 +8,7 @@ import SkipLink from '../components/SkipLink.astro';
 import Wordmark from '../components/Wordmark.astro';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
-import { lengthsOf, mediaBlocksOf } from '../__testing__/css-media.ts';
+import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../__testing__/css-media.ts';
 
 const stylesheets = globSync('apps/web/src/styles/*.css', { cwd: fromRoot() }).sort();
 const read = (name: string): string => readFileSync(fromRoot('apps/web/src/styles', name), 'utf8');
@@ -367,18 +367,17 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     );
   });
 
-  it.each(Object.entries(STEPS))(
+  it.each(Object.keys(STEPS) as (keyof typeof STEPS)[])(
     'steps %s down at the measured rem widths',
-    (property, { steps }) => {
+    (property) => {
+      const { fallback, steps } = STEPS[property];
       expect(stepsOf(calculator, property)).toEqual(steps);
       const found = stepsOf(calculator, property);
       expect(found.map(([width]) => width)).toEqual(
         found.map(([width]) => width).toSorted((a, b) => a - b),
       );
       for (const [at, [, count = 0]] of found.entries()) {
-        expect(count).toBeLessThan(
-          at === 0 ? STEPS[property as keyof typeof STEPS].fallback : (found[at - 1]?.[1] ?? 0),
-        );
+        expect(count).toBeLessThan(at === 0 ? fallback : (found[at - 1]?.[1] ?? 0));
       }
     },
   );
@@ -392,7 +391,27 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(lengthsOf(query)).toEqual(expected);
   });
 
+  // seeded: the parser reads every block it can and throws on one it cannot, never drops it
+  it.each([
+    ['two flat blocks', '@media (width>=1rem){a{b:c}}@media (width>=2rem){d{e:f}}', 2],
+    ['a commented-out block', '/* @media (width>=1rem){a{b:c}} */@media (width>=2rem){d{e:f}}', 1],
+  ])('parses %s', (_name, css, count) => {
+    expect(mediaCountOf(css)).toBe(count);
+    expect(mediaBlocksOf(css)).toHaveLength(count);
+  });
+
+  it.each([
+    ['a nested @supports', '@media (width>=1rem){@supports (display:grid){a{b:c}}}'],
+    [
+      'a nested @supports after a flat rule',
+      '@media (width>=1rem){a{b:c} @supports (display:grid){d{e:f}}}@media (width>=2rem){g{h:i}}',
+    ],
+  ])('throws on a block with %s inside @media', (_name, css) => {
+    expect(() => mediaBlocksOf(css)).toThrow(/@media blocks/);
+  });
+
   it('uses rem and never px in any media condition', () => {
+    expect(mediaBlocksOf(calculator).length).toBe(mediaCountOf(calculator));
     const queries = mediaBlocksOf(calculator).map(([query]) => query);
     expect(queries.length).toBeGreaterThan(0);
     for (const query of queries) {
@@ -403,17 +422,24 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     }
   });
 
-  // spec: site-quality › [CP61] every breakpoint has both its edges among the e2e widths
+  // spec: calculator-page › [CP64], design K13: every breakpoint has both its edges among the e2e widths
   it('puts both edges of every breakpoint in the WIDTHS of layout.spec.ts', () => {
     const spec = readFileSync(fromRoot('tooling/site-browser/e2e/layout.spec.ts'), 'utf8');
     const widths = (/const WIDTHS = \[([^\]]+)\]/.exec(spec)?.[1] ?? '')
       .split(',')
       .map((width) => Number(width.trim()))
       .filter((width) => width > 0);
+    expect(widths.length, 'WIDTHS of layout.spec.ts').toBeGreaterThan(0);
     for (const [query] of mediaBlocksOf(calculator)) {
-      const value = lengthsOf(query)[0]?.[0] ?? NaN;
-      const first = Math.ceil(value * 16);
-      expect(widths, query).toEqual(expect.arrayContaining([first - 1, first]));
+      const lengths = lengthsOf(query);
+      expect(lengths.length, `${query} has no length`).toBeGreaterThan(0);
+      for (const [value, unit] of lengths) {
+        expect(unit, query).toBe('rem');
+        const first = Math.ceil(value * 16);
+        expect(widths, `${query}: ${String(value)}${unit}`).toEqual(
+          expect.arrayContaining([first - 1, first]),
+        );
+      }
     }
   });
 
