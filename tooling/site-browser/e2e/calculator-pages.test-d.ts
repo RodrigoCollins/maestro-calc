@@ -1,9 +1,13 @@
 import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
+import { E2E } from './calculator-pages.ts';
 import type { E2eSpec } from './calculator-pages.ts';
 
 // spec: site-quality › [SQ29] a calculator page with no record is a type error naming the id
 // @ts-expect-error -- the record has no row for 'concrete'
 export const missing = {} as const satisfies Record<CalculatorPageId, E2eSpec>;
+
+/** The record table is complete: one spec per calculator page id. */
+export const complete: Record<CalculatorPageId, E2eSpec> = E2E;
 
 const words = { catalog: {}, site: {}, common: {} };
 
