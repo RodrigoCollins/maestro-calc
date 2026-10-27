@@ -119,3 +119,79 @@ The four lens reviews (spec conformance SC, types and boundaries TB, test qualit
 
 CP66 after the round: Spanish full-length proof **40,770 B** of 40,836 B (EN 40,501 B); the built pages are unchanged (the round touches tests and types only).
 Vitest after the round: 198 files, 3,662 tests (`npm run verify` exit 0, which ends `build`, `check:site`, `check:dist`).
+
+Push; CI; four reviewers and Judgment Day on the frozen candidate; decision on deviation 2 (split PR 1 at the commit boundary); PR body from this file; `site-browser` CI wall time. Next apply: PR 2 (H3b + H3c), which starts from a tree where K9 is already on.
+
+---
+
+## PR 2 (`feat/home-directory-p2-hero-and-cards`, from `feat/home-directory-p1b-cards` at bc54012): H3b and H3c
+
+Mode: strict TDD (`npm test`). Nothing was pushed.
+
+### Baseline (3.1)
+
+Branch created from the PR 1b tip; `npm ci` (root and `tooling/site-browser`) and the Chromium shell installed in the worktree. Build at the tip copied to `<worktree>/../dist-p1b` for the P2.2 dist diff. EN home 7,552 B, ES home 7,640 B (the ES home file is `dist/es.html`, not `dist/es/index.html`: the route is `/es`). Safety net before touching the views and styles: `npx vitest run apps/web/src/views apps/web/src/styles` 166 passed.
+
+### Guard ledger of `HomeView.test.ts` (3.2; written before the rewrite)
+
+| Current assertion | Fate | Reason |
+|---|---|---|
+| whole document, `lang`, title, canonical (en, es) | kept | unchanged |
+| one h1, in `main`, text `Maestro Calc` | replaced | the text is now `page.home.heading` read from the catalog; one h1 and in `main` kept |
+| language switch points at the other home | kept | unchanged |
+| [TP7] `main a[href]` `.slice(1)` equals methodology and about | replaced | the `main` links outside the list (`.home-links a`) equal them, so no positional slice; hrefs and labels kept |
+| [TP21] first link is the concrete link inside the first `p` (`links.concrete`) | replaced | one `li` per `directoryOrder(ROUTES, CALCULATOR_PAGES)` id, in order, each with exactly one `a[href]` equal to `pathOf(id, locale)` and the title as text; `links.concrete` is retired |
+| [TP21] names no other calculator (rectangle, rectángulo, roofing, techado, paint, pintura) | generalised | `calc.<id>.title` of every `PAGELESS` id in both locales, plus the same words, plus `square footage` and `pies cuadrados` [TP31] |
+| [TP8] tagline verbatim in the first paragraph | kept | the hero paragraph equals `page.home.intro` and starts with `site.tagline` [TP29] |
+| [TP8] paragraph equals `intro + links.concrete` | dropped | the concrete link moved to the card; the equality is now "the hero paragraph equals `page.home.intro`" |
+| nothing "still being built" | kept | unchanged |
+| exactly 2 `<p>`, no `ul`/`ol` | dropped | the directory is a list by design; upcoming calculators are excluded by the equality with `directoryOrder`, the `PAGELESS` names absent and `FORBIDDEN` |
+| no promise or claim in `main` | kept | unchanged |
+| `FORBIDDEN` absent from every `page.home.*` value | kept | now covers the card keys too (the count floor rises) |
+| JSON-LD graph, one `script`; NotFound has none | kept | D7; the single `script` also proves zero JavaScript |
+| (new) no `→ › »` in `main`; no `text-transform`, `border-radius`, `transition`, `animation` in the view style | added | [SS26] |
+
+### H3b: hero band and view skeleton (commit `d0e07dd`)
+
+`feat(web): add the home hero and render the directory skeleton`: 7 files, 312 insertions and 72 deletions = **384** changed lines against the PR 1b tip `2596a70` (forecast 190-230; see deviations). The H3b RED order was 3.2 `HomeView.test.ts` (6 red for the right reasons: hero, list, links), 3.3 the two `styles.contract` tests (red: `--text-display` unread, no grid line to mix), 3.4 `home.spec.ts` (8 tests: 6 red on the missing hero, 2 green on arrival), 3.5 the built-home contract in `CalculatorBody.budget.test.ts` (red on the hero match), then GREEN 3.6 and 3.7. The grid-size assertion first failed against my own test, not the code: the computed `background-size` of two gradient layers is `16px 16px, 16px 16px`; the test now expects the cell per layer.
+
+Tasks 3.1-3.8 and 3.11 done. 3.9: the full e2e suite was run once at the PR tip (below), not at the slice tip (owner rule).
+
+#### Deviations (H3b)
+
+1. **The PR 1b branch moved while this apply ran.** The apply started from `bc54012`; `feat/home-directory-p1b-cards` is now `2596a70` (two test commits from the review corrections: `243b7fe` and `2596a70`). The H3b commit was rebased onto `2596a70` with one conflict in `CalculatorBody.budget.test.ts`: the new tip already holds the positive `.home-` control on the homes and the leak guard over every built page but the homes (`HOMES`, `builtPage`, `pagesWithoutHome`), so the conflict was resolved by taking that file and adding only the home-specific describe (hero and gradient, JSON-LD only, no `on*`, no pageless name, 24,576 B), which uses those helpers. All sizes below were measured after the rebase.
+2. **The ES home file is `dist/es.html`**, not `dist/es/index.html` (the route is `/es`); the contract reads `index.html` and `es.html`.
+3. **H3b is 384 lines against a forecast of 190-230.** `home.spec.ts` is 85 and the `HomeView.test.ts` rewrite 173 (112 added, 61 removed); the budget test needed only 30 after the rebase. The slice stays under 400 only after merging the built-home assertions into one parameterised case, so H3c cannot join: **task 4.7 fires and H3c is its own PR** (`feat/home-directory-p2b-cards`, from the H3b tip).
+4. **`HomeView.test.ts` pins the heading copy** ("From measurements to a shopping list" / "De tus medidas a la lista de compras") as its own case, because reading the heading from the catalog alone is green before the reword.
+
+#### Measurements at the H3b tip (the PR 2 tip)
+
+| Item | PR 1b tip | H3b tip | Limit |
+|---|---|---|---|
+| EN home / ES home HTML | 7,552 / 7,640 B | **8,705 / 8,791 B** | 24,576 (TP35) |
+| Home inline CSS | 4,581 B | 5,546 B | 20,480 |
+| ES full-length proof | 40,770 B | **40,770 B** (66 B headroom) | 40,836 pin |
+| EN full-length proof | 40,501 B | 40,501 B | 40,960 |
+| Largest CSS per page | 7,339 B (`/methodology.html`) | 7,339 B | 20,480 |
+| Largest HTML per page | 33,950 B (ES concrete) | 33,950 B | 40,960 |
+| Vitest | 198 files, 3,659 tests | 198 files, 3,663 tests | |
+| e2e (Chromium) | 283 | **291 passed** (283 + 8 `home.spec.ts`; 46 s) | |
+| Lighthouse (6 pages) | assertions passed | assertions passed (exit 0) | 0.95 / CLS 0.01 |
+
+`npm run verify` green at the tip (40 s wall). `git diff --stat feat/home-directory-p1b-cards -- packages` lists only `packages/i18n/src/catalogs/{en,es}/site.ts` (2 insertions, 4 deletions); the CI and stryker paths are unchanged. `rg "links.concrete" apps packages` is empty.
+
+#### Dist diff against the PR 1b tip build (P2.2, normalised: asset names, scoping markup)
+
+`diff -r -x '*.js'` of the two normalised trees lists exactly `index.html` and `es.html`; every other file (calculator and trust pages, both 404 pages, `_astro` fonts, sitemap, robots, `_headers`) is byte-identical.
+
+#### Scenario ids proven (H3b)
+
+[TP7], [TP8], [TP21] (unit, order and link), [TP29], [TP31] (unit and built HTML), [TP33] (partial), [TP34] (script scan on the built HTML, request log in `home.spec.ts`), [TP35] (measured above), [SS24] (use scan and computed sizes), [SS26] (view style), [SS27], [SS28] home side (hero and gradient), [SS31] (unit; axe 0 violations on `/` and `/es` in the a11y suite), JSON-LD guard kept (D7).
+
+#### Negative proofs (H3b; each run, then reverted; `git status --porcelain` clean afterwards)
+
+Hard-coded card href in the view (1 red, the directory case); `border-radius: 4px` in the view style (1 red, SS26); `var(--text-display)` appended to `base.css` (1 red, SS24 use scan); grid line mix raised from 12% to 90% (1 red, SS31); `home-hero` renamed in the view (the budget contract: 2 red, one per home; `home.spec.ts`: the 6 hero cases red); a `<script>` added to the view (`requests no script`: red on both homes, which also spot-checks that case, green on arrival).
+
+#### PR 2 tip checks (P2.1-P2.3)
+
+`git log feat/home-directory-p1b-cards..HEAD` lists H3b and this record only. The authored `--shortstat feat/home-directory-p1b-cards -- . ':!openspec'` is 384 changed lines (7 files). The `site-browser` CI wall time is not measurable locally (CI only). Pushing, CI, the four reviewers, Judgment Day, the PR and the merge (P2.4) belong to the orchestrator; the split rule moved H3c to `feat/home-directory-p2b-cards` (tasks 4.1-4.10 and a second tip check), so PR 2 is H3b alone.
