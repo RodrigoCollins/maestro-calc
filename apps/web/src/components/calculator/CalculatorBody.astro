@@ -9,12 +9,14 @@ import '../../styles/calculator.css';
 interface Props {
   view: CalculatorPageView;
   content: CalculatorContent;
+  /** Inline custom properties of the body: a page sets `--answer-lines` or `--notice-lines` here. */
+  style?: string;
 }
-const { view, content } = Astro.props;
+const { view, content, style } = Astro.props;
 const { messages } = view;
 ---
 
-<div class="calculator" data-calculator={view.id}>
+<div class="calculator" data-calculator={view.id} style={style}>
   <Breadcrumb breadcrumb={view.breadcrumb} />
   <h1>{view.title}</h1>
   {view.answer !== undefined && (
