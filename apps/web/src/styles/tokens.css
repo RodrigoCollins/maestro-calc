@@ -18,6 +18,7 @@
   --text-h3: 1.375rem;
   --text-h2: 1.75rem;
   --text-h1: 2.25rem;
+  --text-display: clamp(2.5rem, 1.5rem + 5vw, 4rem); /* the home hero H1 only */
   --leading-body: 1.55;
   --leading-heading: 1.15;
 
@@ -26,6 +27,10 @@
   --space-3: 1rem;
   --space-4: 1.5rem;
   --space-5: 2.5rem;
+
+  /* Blueprint grid cell, also the length of a dimension-line tick, and the tick weight. */
+  --grid-size: 1rem;
+  --tick-weight: 2px;
 
   /* WCAG 2.2 target size with room to spare: 44 px. */
   --target-size: 2.75rem;

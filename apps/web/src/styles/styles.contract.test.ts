@@ -125,6 +125,59 @@ describe('Blueprint tokens (site-shell › Design tokens)', () => {
   });
 });
 
+describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
+  // spec: site-shell › [SS24] the display size is a fluid clamp above the H1 size
+  it('declares --text-display as a clamp with rem bounds, its minimum above --text-h1', () => {
+    const display = root['--text-display'] ?? '';
+    const bounds = /^clamp\(\s*([\d.]+)rem\s*,[^,]+,\s*([\d.]+)rem\s*\)$/.exec(display);
+    expect(display, '--text-display').toMatch(/^clamp\(/);
+    expect(bounds, '--text-display bounds are rem').not.toBeNull();
+    expect(Number(bounds?.[1])).toBeGreaterThan(Number.parseFloat(root['--text-h1'] ?? '0'));
+    expect(Number(bounds?.[2])).toBeGreaterThan(Number(bounds?.[1]));
+  });
+
+  // spec: site-shell › [SS25] one grid cell, one tick weight, no tick length, no radius token
+  it('pins --grid-size to 1rem and --tick-weight to a positive length', () => {
+    expect(root['--grid-size']).toBe('1rem');
+    expect(root['--tick-weight']).toMatch(/^\d*\.?\d+(px|rem)$/);
+    expect(Number.parseFloat(root['--tick-weight'] ?? '0')).toBeGreaterThan(0);
+  });
+
+  // spec: site-shell › [SS25] the tick length is the grid cell, so no second token carries it
+  it('declares no tick-length token and no custom property named after a radius', () => {
+    expect(Object.keys(root).filter((name) => /tick-length|^--tick(?!-weight)/.test(name))).toEqual(
+      [],
+    );
+    const everywhere = stylesheets.flatMap((name) =>
+      [...readFileSync(fromRoot(name), 'utf8').matchAll(/(--[\w-]*radius[\w-]*)\s*:/g)].map(
+        (match) => match[1],
+      ),
+    );
+    expect(everywhere).toEqual([]);
+  });
+
+  // spec: site-shell › [SS26] square corners in the three global sheets
+  it('uses no non-zero border-radius in the global sheets', () => {
+    for (const name of stylesheets) {
+      const css = readFileSync(fromRoot(name), 'utf8');
+      const radii = [...css.matchAll(/border-radius\s*:\s*([^;}]+)/g)].map((match) => match[1]);
+      expect(
+        radii.filter((value) => !/^0(px|rem)?(\s+0(px|rem)?)*$/.test(value?.trim() ?? '')),
+        name,
+      ).toEqual([]);
+    }
+  });
+
+  // spec: site-shell › [SS30] the global sheets stay tokens, base and calculator
+  it('keeps exactly the three global sheets', () => {
+    expect(stylesheets.map((name) => name.split('/').pop())).toEqual([
+      'base.css',
+      'calculator.css',
+      'tokens.css',
+    ]);
+  });
+});
+
 describe('contrast (site-shell › [SS7, SS14, SS16])', () => {
   it('keeps the WhatsApp label legible: near-black text on the WhatsApp green', () => {
     expect(contrast(ON_WHATSAPP, WHATSAPP)).toBeGreaterThanOrEqual(4.5);
@@ -253,7 +306,7 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
 
   // spec: calculator-page › Layout stability: the answer is sized for its longest shape sentence (JD-4)
   it('reserves five lines for the short answer, the most a sentence needs at 320 px', () => {
-    // 5 lines of the h3 size at the 1.42 line height of the base stylesheet, in px
+    // 5 lines of the h3 size at the 1.55 body leading of the tokens, in px
     expect(rem(declared('.calc-answer', 'min-height'))).toBeGreaterThanOrEqual(170);
   });
 

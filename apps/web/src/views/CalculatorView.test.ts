@@ -192,12 +192,14 @@ describe('catch-all page (site-routing-i18n › [SR18])', () => {
     expect(document.querySelector('.calculator')).not.toBeNull();
   });
 
-  it.each([
-    ['about', 'article.prose'],
-    ['home', 'p.home-links'],
-  ] as const)('still renders %s with its own template', async (id, selector) => {
-    const document = await renderComponent(CatchAll, { id, locale: 'en' }, { partial: false });
-    expect(document.querySelector(selector)).not.toBeNull();
+  // the home renders from pages/index.astro and pages/es.astro ([SR23], static-paths-page.test.ts)
+  it('still renders about with its own template', async () => {
+    const document = await renderComponent(
+      CatchAll,
+      { id: 'about', locale: 'en' },
+      { partial: false },
+    );
+    expect(document.querySelector('article.prose')).not.toBeNull();
     expect(document.querySelector('.calculator')).toBeNull();
   });
 });
