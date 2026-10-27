@@ -12,6 +12,7 @@ export default defineConfig({
       include: [
         'packages/*/src/**',
         'apps/web/src/calculator/**',
+        'apps/web/src/lib/home-directory.ts',
         'apps/web/src/lib/page-view.ts',
         'apps/web/src/routing/**',
         'apps/web/src/seo/**',
@@ -24,6 +25,7 @@ export default defineConfig({
         'packages/data/src/**': ninety,
         'packages/i18n/src/**': ninety,
         'apps/web/src/calculator/**': full,
+        'apps/web/src/lib/home-directory.ts': full,
         'apps/web/src/lib/page-view.ts': full,
         'apps/web/src/routing/**': full,
         'apps/web/src/seo/**': full,
