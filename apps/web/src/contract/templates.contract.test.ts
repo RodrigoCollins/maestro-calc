@@ -12,14 +12,14 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
     expect(templateProblems(ROUTES, CALCULATOR_PAGES, PAGELESS, registry)).toEqual([]);
   });
 
-  // spec: site-routing-i18n › [SR17] concrete has its page; rectangle-area is a registry calculator without one
+  // spec: site-routing-i18n › [SR17] a registry calculator has its page or is pageless, derived from the registry
   it('keeps every registry calculator in exactly one list', () => {
     expect(registry.length).toBeGreaterThan(1);
     for (const id of registry) {
       expect([pageIds.includes(id), PAGELESS.includes(id)].filter(Boolean), id).toHaveLength(1);
     }
-    expect(CALCULATOR_PAGES).toEqual(['concrete']);
-    expect(PAGELESS).toEqual(['rectangle-area']);
+    expect([...CALCULATOR_PAGES, ...PAGELESS].toSorted()).toEqual(registry.toSorted());
+    expect(CALCULATOR_PAGES.length).toBeGreaterThan(0);
   });
 
   // spec: site-routing-i18n › [SR17] each failure names the id
@@ -47,14 +47,14 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
   });
 
   // spec: site-routing-i18n › [SR18] the template of every routable id, from the table
-  it('gives home, the calculator and each trust page their template', () => {
+  it('gives home, each calculator page and each trust page their template', () => {
     const templates = Object.keys(ROUTES).map((id) => [id, templateOf(id)]);
-    expect(templates.filter(([, template]) => template === 'calculator')).toEqual([
-      ['concrete', 'calculator'],
-    ]);
+    expect(templates.filter(([, template]) => template === 'calculator')).toEqual(
+      CALCULATOR_PAGES.map((id) => [id, 'calculator']),
+    );
     expect(templates.find(([id]) => id === 'home')?.[1]).toBe('home');
     expect(templates.filter(([, template]) => template === 'trust')).toHaveLength(
-      Object.keys(ROUTES).length - 2,
+      Object.keys(ROUTES).length - 1 - CALCULATOR_PAGES.length,
     );
   });
 

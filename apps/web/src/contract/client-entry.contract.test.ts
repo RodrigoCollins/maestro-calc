@@ -3,11 +3,14 @@ import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
+import { ROUTES } from '../routing/routes.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { buildClient } from './__testing__/client-build.ts';
-import { reaches } from './__testing__/client-graph.ts';
+import { entrySourceOf, reaches } from './__testing__/client-graph.ts';
 import { fromRoot } from './root.ts';
 
-const ENTRY_SOURCE = `import '${fromRoot('apps/web/src/client/entries/concrete.ts')}';`;
+const FIRST = CALCULATOR_PAGES[0];
+const ENTRY_SOURCE = entrySourceOf(FIRST);
 
 /** The most the entry and its whole static graph may weigh (site-quality › the JavaScript budget). */
 const GRAPH_BUDGET = 49_152;
@@ -41,31 +44,38 @@ const problemsOf = (code: string): string[] => [
   ...(/quikrete/i.test(code) ? ['names the source'] : []),
 ];
 
-describe('concrete client entry: built bundle (calculator-page › [CP42], [CP47]; site-shell › [SS23])', () => {
-  // spec: calculator-page › [CP42] the entry plus its static graph fit the JavaScript budget
-  it('weighs at most 49,152 bytes, entry and graph together, and prints the size', async () => {
-    const { size } = await buildClient(ENTRY_SOURCE);
-    console.info(
-      `concrete client entry (library build): ${size.toLocaleString('en-US')} B of ${GRAPH_BUDGET.toLocaleString('en-US')} B`,
-    );
-    expect(size).toBeGreaterThan(10_000);
-    expect(size).toBeLessThanOrEqual(GRAPH_BUDGET);
-  });
+describe.each(CALCULATOR_PAGES)(
+  '%s client entry: built bundle (calculator-page › [CP42], [CP47]; site-shell › [SS23]; calculator-web-core › [CWC36], [CWC37])',
+  (id) => {
+    const source = entrySourceOf(id);
 
-  // spec: site-shell › [SS23], calculator-page › [CP47] no storage, network, message text or foreign origin
-  it('holds no storage or network API, no catalog message and no foreign origin', async () => {
-    const { code } = await buildClient(ENTRY_SOURCE);
-    expect(problemsOf(code)).toEqual([]);
-  });
+    // spec: calculator-page › [CP42] the entry plus its static graph fit the JavaScript budget
+    it('weighs at most 49,152 bytes, entry and graph together, and prints the size', async () => {
+      const { size } = await buildClient(source);
+      console.info(
+        `${id} client entry (library build): ${size.toLocaleString('en-US')} B of ${GRAPH_BUDGET.toLocaleString('en-US')} B`,
+      );
+      expect(size).toBeGreaterThan(10_000);
+      expect(size).toBeLessThanOrEqual(GRAPH_BUDGET);
+    });
 
-  // spec: calculator-web-core › [CWC25] the page builder and the catalogs are not in the graph of the entry
-  it('does not carry the page builder, the page table or a catalog in its graph', async () => {
-    const { modules } = await buildClient(ENTRY_SOURCE);
-    for (const server of ['lib/page-view.ts', 'lib/pages.ts', 'calculator/form-layout.ts']) {
-      expect(reaches(modules, `/apps/web/src/${server}`), server).toBe(false);
-    }
-  });
+    // spec: site-shell › [SS23], calculator-page › [CP47] no storage, network, message text or foreign origin
+    it('holds no storage or network API, no catalog message and no foreign origin', async () => {
+      const { code } = await buildClient(source);
+      expect(problemsOf(code)).toEqual([]);
+    });
 
+    // spec: calculator-web-core › [CWC25] the page builder and the catalogs are not in the graph of the entry
+    it('does not carry the page builder, the page table or a catalog in its graph', async () => {
+      const { modules } = await buildClient(source);
+      for (const server of ['lib/page-view.ts', 'lib/pages.ts', 'calculator/form-layout.ts']) {
+        expect(reaches(modules, `/apps/web/src/${server}`), server).toBe(false);
+      }
+    });
+  },
+);
+
+describe('the bundle check finds what it forbids (seeded)', () => {
   it('finds the page builder when the entry imports it', async () => {
     const { modules } = await buildClient(
       `${ENTRY_SOURCE}\nexport { pageViewOf } from '${fromRoot('apps/web/src/lib/page-view.ts')}';`,
@@ -100,7 +110,7 @@ describe('concrete client entry: built bundle (calculator-page › [CP42], [CP47
 
   it('allows the site origin', async () => {
     const { code } = await buildClient(
-      `${ENTRY_SOURCE}\nexport const u = 'https://maestrocalc.com/concrete-calculator';`,
+      `${ENTRY_SOURCE}\nexport const u = 'https://maestrocalc.com${ROUTES[FIRST].en}';`,
     );
     expect(problemsOf(code)).toEqual([]);
   });
