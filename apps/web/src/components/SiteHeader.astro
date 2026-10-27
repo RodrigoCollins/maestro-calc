@@ -29,7 +29,7 @@ const { homeHref, navLabel, links, language } = Astro.props;
   </nav>
 </header>
 
-<style>
+<style is:global>
   .site-header {
     display: flex;
     flex-wrap: wrap;
@@ -41,14 +41,14 @@ const { homeHref, navLabel, links, language } = Astro.props;
     padding: var(--space-2) var(--space-3);
   }
 
-  nav {
+  .site-header nav {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2) var(--space-4);
   }
 
-  ul {
+  .site-header ul {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-4);
