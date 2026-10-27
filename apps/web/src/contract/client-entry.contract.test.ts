@@ -121,15 +121,21 @@ describe('the bundle check finds what it forbids (seeded)', () => {
 
   // seeded: the reserve check finds each way a script could set a reserved height
   it.each([
-    ['a min-height write', `export const r = (e) => { e.style.minHeight = '10rem'; };`],
+    ['a min-height write', `export const r = (e) => { e.style.minHeight = '10rem'; };`, 0],
     [
       'a line-count property',
       `export const r = (e) => e.style.setProperty('--answer-lines', '3');`,
+      1,
     ],
-    ['a data-reserved write', `export const r = (e) => e.setAttribute('data-reserved', 'x');`],
-  ])('flags %s in the bundle', async (_name, extra) => {
+    ['a dataset.reserved write', `export const r = (e) => { e.dataset.reserved = 'x'; };`, 3],
+    [
+      'a data-reserved attribute write',
+      `export const r = (e) => e.setAttribute('data-reserved', 'x');`,
+      4,
+    ],
+  ])('flags %s in the bundle', async (_name, extra, index) => {
     const { code } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);
-    expect(reserveWritesIn(code)).not.toEqual([]);
+    expect(reserveWritesIn(code)).toContain(String(RESERVE_WRITES[index]));
   });
 
   it('allows the site origin', async () => {
