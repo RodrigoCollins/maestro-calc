@@ -43,6 +43,23 @@ describe('HomeView (trust-pages › Home page; site-routing-i18n › [SR4])', ()
   });
 });
 
+/** The Unicode arrow blocks (arrows, supplemental arrows A and B) and the angle quotes. */
+const ARROW = /[\u2190-\u21FF\u27F0-\u27FF\u2900-\u297F›»]/u;
+
+/** The scoped style of the view, from its opening tag. */
+const viewStyle = (): string => {
+  const source = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
+  return source.slice(source.indexOf('<style>'));
+};
+
+/** A CSS string value with its escapes (`\2192 `, `\"`) decoded. */
+const decodeCss = (value: string): string =>
+  value.replaceAll(
+    /\\([0-9a-f]{1,6})\s?|\\(.)/giu,
+    (_, hex: string | undefined, char: string | undefined) =>
+      hex === undefined ? (char ?? '') : String.fromCodePoint(Number.parseInt(hex, 16)),
+  );
+
 const FORBIDDEN = [
   'coming soon',
   'próximamente',
@@ -72,7 +89,7 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
         catalog['page.home.intro'],
       );
       expect(catalog['page.home.intro'].startsWith(catalog['site.tagline'])).toBe(true);
-      expect(hero?.querySelectorAll('a, h2, h3')).toHaveLength(0);
+      expect(hero?.querySelectorAll('a, h2, h3, h4, h5, h6')).toHaveLength(0);
     },
   );
 });
@@ -181,9 +198,26 @@ describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-s
       const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
       expect(text).toContain('maestro');
       for (const term of FORBIDDEN) expect(text, term).not.toContain(term);
-      expect(text).not.toMatch(/[→›»]/);
+      expect(text).not.toMatch(ARROW);
     },
   );
+
+  // spec: site-shell › [SS26] no arrow drawn by a pseudo-element either
+  it('puts no arrow glyph in any content value of the view style', () => {
+    const values = [...viewStyle().matchAll(/content:\s*([^;]+);/gu)].map(
+      ([, value]) => value ?? '',
+    );
+    expect(values.length).toBeGreaterThan(0);
+    for (const value of values) expect(decodeCss(value), value).not.toMatch(ARROW);
+  });
+
+  it('matches every arrow block and the angle quotes, also as a CSS escape', () => {
+    for (const glyph of ['←', '→', '⇒', '⇿', '⟶', '⤴', '⥿', '›', '»'])
+      expect(glyph, glyph).toMatch(ARROW);
+    expect(decodeCss(String.raw`'\2192 '`)).toMatch(ARROW);
+    expect(decodeCss(String.raw`'\21D2'`)).toMatch(ARROW);
+    expect(decodeCss("''")).not.toMatch(ARROW);
+  });
 
   it.each([
     ['en', enSite],
@@ -198,12 +232,12 @@ describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-s
   });
 
   // spec: site-shell › [SS26] the view style is square, flat and still
-  it('declares no text-transform, border-radius, transition or animation in its style', () => {
-    const source = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
-    const style = source.slice(source.indexOf('<style>'));
+  it('declares no transform, text-transform, border-radius, transition or animation in its style', () => {
+    const style = viewStyle();
     expect(style.length).toBeGreaterThan('<style></style>'.length);
     for (const property of [
       'box-shadow',
+      'transform',
       'text-transform',
       'border-radius',
       'transition',
