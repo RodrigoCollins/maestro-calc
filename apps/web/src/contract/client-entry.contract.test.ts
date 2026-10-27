@@ -42,6 +42,17 @@ const problemsOf = (code: string): string[] => [
   ...(/quikrete/i.test(code) ? ['names the source'] : []),
 ];
 
+/** What sets a reserved height from script: a size, a line-count property or a `data-reserved` write. */
+const RESERVE_WRITES = [
+  /min-?height/i,
+  /--(?:answer|notice)-lines/,
+  /setProperty/,
+  /dataset\.reserved/,
+  /setAttribute\(\s*["'`]data-reserved/,
+];
+const reserveWritesIn = (code: string): string[] =>
+  RESERVE_WRITES.filter((pattern) => pattern.test(code)).map((pattern) => String(pattern));
+
 describe.each(CALCULATOR_PAGES)(
   '%s client entry: built bundle (calculator-page › [CP42], [CP47]; site-shell › [SS23]; calculator-web-core › [CWC36], [CWC37])',
   (id) => {
@@ -57,6 +68,12 @@ describe.each(CALCULATOR_PAGES)(
     it('holds no storage or network API, no catalog message and no foreign origin', async () => {
       const { code } = await buildClient(source);
       expect(problemsOf(code)).toEqual([]);
+    });
+
+    // spec: calculator-page › [CP63] the reserve is CSS only, no code sets a reserved height
+    it('holds no code that sets a reserved height', async () => {
+      const { code } = await buildClient(source);
+      expect(reserveWritesIn(code)).toEqual([]);
     });
 
     // spec: calculator-web-core › [CWC25] the page builder and the catalogs are not in the graph of the entry
@@ -100,6 +117,19 @@ describe('the bundle check finds what it forbids (seeded)', () => {
   ])('flags %s in the bundle', async (_name, extra, expected) => {
     const { code } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);
     expect(problemsOf(code)).toContain(expected);
+  });
+
+  // seeded: the reserve check finds each way a script could set a reserved height
+  it.each([
+    ['a min-height write', `export const r = (e) => { e.style.minHeight = '10rem'; };`],
+    [
+      'a line-count property',
+      `export const r = (e) => e.style.setProperty('--answer-lines', '3');`,
+    ],
+    ['a data-reserved write', `export const r = (e) => e.setAttribute('data-reserved', 'x');`],
+  ])('flags %s in the bundle', async (_name, extra) => {
+    const { code } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);
+    expect(reserveWritesIn(code)).not.toEqual([]);
   });
 
   it('allows the site origin', async () => {
