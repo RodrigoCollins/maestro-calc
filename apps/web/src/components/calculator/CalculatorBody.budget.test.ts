@@ -6,6 +6,7 @@ import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import type { AstroInlineConfig, AstroUserConfig } from 'astro';
 import { parse } from 'node-html-parser';
 import { afterAll, describe, expect, it } from 'vitest';
+import { lengthsOf, mediaBlocksOf } from '../../__testing__/css-media.ts';
 import { pagelessTitles } from '../../__testing__/pageless-titles.ts';
 import { importFromRoot } from '../../contract/root.ts';
 import { pathOf, ROUTES } from '../../routing/routes.ts';
@@ -152,6 +153,23 @@ describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])
         `${name} has an attribute-scoped element`,
       ).toBe(false);
     }
+  }, 120_000);
+
+  // spec: calculator-page › [CP64] the built breakpoints are the source breakpoints, all rem, whatever the syntax
+  it('keeps every media length of the built concrete CSS in rem, the same set as the source', async () => {
+    await build('base');
+    const source = readFileSync(join(WEB_ROOT, 'src/styles/calculator.css'), 'utf8');
+    const built = parse(builtPage('concrete-calculator.html'))
+      .querySelectorAll('style')
+      .map((style) => style.text)
+      .join('\n');
+    const lengths = (css: string) =>
+      mediaBlocksOf(css)
+        .flatMap(([query]) => lengthsOf(query))
+        .map(([value, unit]) => `${String(value)}${unit}`);
+    expect(lengths(source).length).toBeGreaterThan(0);
+    expect(lengths(built).filter((length) => !length.endsWith('rem'))).toEqual([]);
+    expect(new Set(lengths(built))).toEqual(new Set(lengths(source)));
   }, 120_000);
 
   // positive control: the home rules exist in the build, so their absence below means something

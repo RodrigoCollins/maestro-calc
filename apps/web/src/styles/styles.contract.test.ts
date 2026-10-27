@@ -8,6 +8,7 @@ import SkipLink from '../components/SkipLink.astro';
 import Wordmark from '../components/Wordmark.astro';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { lengthsOf, mediaBlocksOf } from '../__testing__/css-media.ts';
 
 const stylesheets = globSync('apps/web/src/styles/*.css', { cwd: fromRoot() }).sort();
 const read = (name: string): string => readFileSync(fromRoot('apps/web/src/styles', name), 'utf8');
@@ -21,6 +22,7 @@ const rulesOf = (css: string): Map<string, Declarations> => {
   const rules = new Map<string, Declarations>();
   for (const [, selectors = '', body = ''] of css
     .replaceAll(/\/\*[\s\S]*?\*\//g, '')
+    .replaceAll(/@media[^{]+\{(?:[^{}]*\{[^{}]*\})*\s*\}/g, '')
     .matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const declarations = Object.fromEntries(
       body
@@ -37,6 +39,13 @@ const rulesOf = (css: string): Map<string, Declarations> => {
   }
   return rules;
 };
+
+/** Each `@media` block as `[condition, its flat rules]`; `rulesOf` skips them. */
+const mediaRulesOf = (css: string): [string, Map<string, Declarations>][] =>
+  mediaBlocksOf(css.replaceAll(/\/\*[\s\S]*?\*\//g, '')).map(([query, inner]) => [
+    query,
+    rulesOf(inner),
+  ]);
 
 const tokenRules = rulesOf(tokens);
 const baseRules = rulesOf(base);
@@ -317,18 +326,104 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(declared('.calc-figure', 'min-width')).toMatch(/^\d+ch$/);
   });
 
-  // spec: calculator-page › [CP14], [CP44] and DR-13: every area the script rewrites keeps its size
-  it.each(['.calc-answer', '.calc-notice', '.calc-steppers', '.calc-copy'])(
-    'reserves a block size for %s',
-    (selector) => {
-      expect(rem(declared(selector, 'min-height')), selector).toBeGreaterThanOrEqual(44);
+  // spec: calculator-page › [CP14], [CP44]: the stepper and copy areas keep a fixed reserve
+  it.each(['.calc-steppers'])('reserves a block size for %s', (selector) => {
+    expect(rem(declared(selector, 'min-height')), selector).toBeGreaterThanOrEqual(44);
+  });
+
+  // spec: calculator-page › [CP64], design K13: the line counts the sweep measured, per range
+  const STEPS = {
+    '--answer-lines': {
+      fallback: 5,
+      steps: [
+        [24.125, 4],
+        [30.0625, 3],
+        [45.625, 2],
+      ],
+    },
+    '--notice-lines': {
+      fallback: 6,
+      steps: [
+        [22.25, 5],
+        [29, 4],
+        [41.6875, 3],
+      ],
+    },
+  } as const;
+  const stepsOf = (css: string, property: string): [number, number][] =>
+    mediaRulesOf(css).flatMap(([query, blockRules]) => {
+      const count = blockRules.get(':root')?.[property];
+      const width = lengthsOf(query)[0]?.[0] ?? NaN;
+      return count === undefined ? [] : [[width, Number(count)]];
+    });
+
+  // spec: calculator-page › [CP59]-[CP61] the answer and the notice reserve a line count in their own unit
+  it.each([
+    ['.calc-answer', '--answer-lines', '--text-h3'],
+    ['.calc-notice', '--notice-lines', '--text-base'],
+  ] as const)('sizes %s as a line count times its own line unit', (selector, property, size) => {
+    expect(rules.get(selector)?.['min-height']).toBe(
+      `calc(var(${property}, ${String(STEPS[property].fallback)}) * var(${size}) * var(--leading-body))`,
+    );
+  });
+
+  it.each(Object.entries(STEPS))(
+    'steps %s down at the measured rem widths',
+    (property, { steps }) => {
+      expect(stepsOf(calculator, property)).toEqual(steps);
+      const found = stepsOf(calculator, property);
+      expect(found.map(([width]) => width)).toEqual(
+        found.map(([width]) => width).toSorted((a, b) => a - b),
+      );
+      for (const [at, [, count = 0]] of found.entries()) {
+        expect(count).toBeLessThan(
+          at === 0 ? STEPS[property as keyof typeof STEPS].fallback : (found[at - 1]?.[1] ?? 0),
+        );
+      }
     },
   );
 
-  // spec: calculator-page › Layout stability: the answer is sized for its longest shape sentence (JD-4)
-  it('reserves five lines for the short answer, the most a sentence needs at 320 px', () => {
-    // 5 lines of the h3 size at the 1.55 body leading of the tokens, in px
-    expect(rem(declared('.calc-answer', 'min-height'))).toBeGreaterThanOrEqual(170);
+  // spec: calculator-page › [CP64] breakpoints are rem, whatever the syntax of the condition
+  it.each([
+    ['min-width', '(min-width: 30rem)', [[30, 'rem']]],
+    ['range syntax', '(width>=30rem)', [[30, 'rem']]],
+    ['px', '(min-width: 480px)', [[480, 'px']]],
+  ])('reads the lengths of a %s condition', (_name, query, expected) => {
+    expect(lengthsOf(query)).toEqual(expected);
+  });
+
+  it('uses rem and never px in any media condition', () => {
+    const queries = mediaBlocksOf(calculator).map(([query]) => query);
+    expect(queries.length).toBeGreaterThan(0);
+    for (const query of queries) {
+      expect(
+        lengthsOf(query).filter(([, unit]) => unit !== 'rem'),
+        query,
+      ).toEqual([]);
+    }
+  });
+
+  // spec: site-quality › [CP61] every breakpoint has both its edges among the e2e widths
+  it('puts both edges of every breakpoint in the WIDTHS of layout.spec.ts', () => {
+    const spec = readFileSync(fromRoot('tooling/site-browser/e2e/layout.spec.ts'), 'utf8');
+    const widths = (/const WIDTHS = \[([^\]]+)\]/.exec(spec)?.[1] ?? '')
+      .split(',')
+      .map((width) => Number(width.trim()))
+      .filter((width) => width > 0);
+    for (const [query] of mediaBlocksOf(calculator)) {
+      const value = lengthsOf(query)[0]?.[0] ?? NaN;
+      const first = Math.ceil(value * 16);
+      expect(widths, query).toEqual(expect.arrayContaining([first - 1, first]));
+    }
+  });
+
+  // spec: calculator-page › [CP61] the copy reserve holds the mounted content, under one body line more
+  it('reserves for the copy block its mounted content and less than one body line more', () => {
+    const content = 4.6;
+    const line = Number.parseFloat(resolve(`var(--text-base)`)) * Number(root['--leading-body']);
+    const reserved = Number.parseFloat(declared('.calc-copy', 'min-height'));
+    expect(reserved).toBeGreaterThanOrEqual(content);
+    expect(reserved).toBeLessThan(content + line);
   });
 
   // The choice area is a grid with a gap; its reserved height is the row count of the page
