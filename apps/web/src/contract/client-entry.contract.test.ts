@@ -7,13 +7,11 @@ import { ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { buildClient } from './__testing__/client-build.ts';
 import { entrySourceOf, reaches } from './__testing__/client-graph.ts';
+import { expectWithinJsBudget } from './__testing__/js-budget.ts';
 import { fromRoot } from './root.ts';
 
 const FIRST = CALCULATOR_PAGES[0];
 const ENTRY_SOURCE = entrySourceOf(FIRST);
-
-/** The most the entry and its whole static graph may weigh (site-quality › the JavaScript budget). */
-const GRAPH_BUDGET = 49_152;
 
 /** What no client bundle may hold: storage and network APIs, catalog messages, any other origin. */
 const FORBIDDEN_CODE = [
@@ -50,13 +48,9 @@ describe.each(CALCULATOR_PAGES)(
     const source = entrySourceOf(id);
 
     // spec: calculator-page › [CP42] the entry plus its static graph fit the JavaScript budget
-    it('weighs at most 49,152 bytes, entry and graph together, and prints the size', async () => {
+    it('weighs at most the calculator JavaScript budget, entry and graph together, and prints the size', async () => {
       const { size } = await buildClient(source);
-      console.info(
-        `${id} client entry (library build): ${size.toLocaleString('en-US')} B of ${GRAPH_BUDGET.toLocaleString('en-US')} B`,
-      );
-      expect(size).toBeGreaterThan(10_000);
-      expect(size).toBeLessThanOrEqual(GRAPH_BUDGET);
+      expectWithinJsBudget(`${id} client entry`, size);
     });
 
     // spec: site-shell › [SS23], calculator-page › [CP47] no storage, network, message text or foreign origin

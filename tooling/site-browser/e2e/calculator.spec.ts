@@ -15,6 +15,7 @@ import {
   output,
   stepButton,
 } from './locators.ts';
+import { trustSample } from './urls.ts';
 
 const ORANGE = 'rgb(240, 106, 29)';
 
@@ -640,7 +641,7 @@ for (const calculator of calculatorPages) {
 
 // spec: site-routing-i18n › [SR7] the language switch keeps working on a static page
 test('switches language on /privacy and back (site-routing-i18n › [SR7])', async ({ page }) => {
-  await page.goto('/privacy');
+  await page.goto(trustSample.en);
   await languageSwitch(page).click();
   await expect(page).toHaveURL(/\/es\/privacidad$/);
   await languageSwitch(page).click();

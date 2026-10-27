@@ -15,6 +15,7 @@ import { ROUTES } from '../routing/routes.ts';
 import { sitemapXml } from '../seo/sitemap.ts';
 import { buildClient } from './__testing__/client-build.ts';
 import { entrySourceOf, graphViolations, reaches } from './__testing__/client-graph.ts';
+import { expectWithinJsBudget } from './__testing__/js-budget.ts';
 import { fromRoot } from './root.ts';
 
 /**
@@ -24,9 +25,6 @@ import { fromRoot } from './root.ts';
  */
 const PROOF = fromRoot('apps/web/src/contract/__testing__/rectangle-area-entry.ts');
 const PROOF_SOURCE = `import '${PROOF}';`;
-
-/** The most the entry and its whole static graph may weigh (site-quality › the JavaScript budget). */
-const GRAPH_BUDGET = 49_152;
 
 describe('rectangle-area proof entry: source graph and size (calculator-web-core › [CWC4], [CWC36])', () => {
   // spec: calculator-web-core › [CWC4] no slot file and no concrete file is reached
@@ -52,15 +50,15 @@ describe('rectangle-area proof entry: source graph and size (calculator-web-core
   });
 
   // spec: calculator-web-core › [CWC36] smaller than the concrete entry, within the budget; the size is printed
-  it('weighs less than the concrete entry and at most 49,152 bytes, and prints the size', async () => {
+  it('weighs less than the concrete entry and at most the calculator JavaScript budget, and prints the size', async () => {
     const proof = await buildClient(PROOF_SOURCE);
     const concrete = await buildClient(entrySourceOf('concrete'));
-    console.info(
-      `rectangle-area proof entry (library build): ${proof.size.toLocaleString('en-US')} B of ${GRAPH_BUDGET.toLocaleString('en-US')} B (concrete entry ${concrete.size.toLocaleString('en-US')} B)`,
+    expectWithinJsBudget(
+      'rectangle-area proof entry',
+      proof.size,
+      ` (concrete entry ${concrete.size.toLocaleString('en-US')} B)`,
     );
-    expect(proof.size).toBeGreaterThan(10_000);
     expect(proof.size).toBeLessThan(concrete.size);
-    expect(proof.size).toBeLessThanOrEqual(GRAPH_BUDGET);
   });
 });
 

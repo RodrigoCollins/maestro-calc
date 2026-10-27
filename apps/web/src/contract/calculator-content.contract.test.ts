@@ -9,6 +9,7 @@ import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
 import { concrete } from '../lib/concrete.ts';
 import { pageView } from '../lib/pages.ts';
 import { calculators } from '../lib/calculators.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord } from '../site-check/dom.ts';
 import { h2Ids, sectionOf, setProblems } from './content.ts';
@@ -91,15 +92,23 @@ const wordsOf = (body: string): number =>
 
 describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-contract › [MDC4])', () => {
   // spec: calculator-page › [CP7] a missing counterpart fails, naming the calculator and the locale
-  it('has one entry per calculator and locale, and names a missing counterpart', () => {
-    expect(setProblems(entries, ['concrete'], LOCALES)).toEqual([]);
+  it('has one entry per calculator page and locale, and names a missing counterpart', () => {
+    expect(setProblems(entries, CALCULATOR_PAGES, LOCALES)).toEqual([]);
     expect(
       setProblems(
         entries.filter((entry) => entry.path !== 'es/concrete.md'),
-        ['concrete'],
+        CALCULATOR_PAGES,
         LOCALES,
       ),
     ).toEqual(['missing entry concrete/es']);
+  });
+
+  // seeded: a routed calculator with no entry is named in both locales
+  it('names a routed calculator that has no entry', () => {
+    expect(setProblems(entries, [...CALCULATOR_PAGES, 'rectangle-area'], LOCALES)).toEqual([
+      'missing entry rectangle-area/en',
+      'missing entry rectangle-area/es',
+    ]);
   });
 
   // spec: calculator-page › [CP7] a duplicate (id, locale) fails
@@ -116,8 +125,10 @@ describe('calculator entries (calculator-page › [CP5]–[CP10]; material-data-
   });
 
   it('lists a calculator id of the registry for every entry', () => {
-    expect(IDS).toContain('concrete');
-    expect(entries.map((entry) => entry.path)).toEqual(['en/concrete.md', 'es/concrete.md']);
+    expect(IDS).toEqual(expect.arrayContaining([...CALCULATOR_PAGES]));
+    expect(entries.map((entry) => entry.path)).toEqual(
+      LOCALES.flatMap((locale) => CALCULATOR_PAGES.map((id) => `${locale}/${id}.md`)).sort(),
+    );
   });
 
   // spec: calculator-page › [CP6] the frontmatter parses with the strict schema and agrees with its path
