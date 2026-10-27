@@ -3,13 +3,6 @@ import { CALCULATOR_PAGES } from '../../../apps/web/src/routing/templates.ts';
 import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
 import { CONCRETE } from './concrete-pages.ts';
 
-/**
- * The typed per-calculator record the generic suites run over (site-quality › [SQ29], [SQ30]).
- * A calculator adds one `E2eSpec` and one row of `E2E`; no suite names a calculator. The groups
- * a page may not have (`choices`, `steppers`, `shopping`, `prices`, `variant`, ...) are optional
- * and their tests are skipped when a record leaves them out. The record reaches `apps/web` only
- * by relative path: the browser job has no root install.
- */
 export type E2eLanguage = 'en' | 'es';
 
 /** The values of the figures of a state, in the order of `E2eSpec.figures`. */
@@ -45,7 +38,10 @@ export interface E2eOption {
   readonly figures?: Figures;
   /** The start of the short answer once it is pressed. */
   readonly starts?: Readonly<Record<E2eLanguage, string>>;
-  /** The query parameter that records it, once the page has written the link. */
+  /**
+   * The query parameter that records it, once the page has written the link. Required for every
+   * option but the initial one, whose link is `?v=1`: `paramOf` throws for any other option without it.
+   */
   readonly param?: string;
 }
 
@@ -107,6 +103,13 @@ export interface E2eBound {
   readonly press?: E2ePress;
 }
 
+/**
+ * The typed per-calculator record the generic suites run over (site-quality › [SQ29], [SQ30]).
+ * A calculator adds one `E2eSpec` and one row of `E2E`; no suite names a calculator. The groups
+ * a page may not have (`answer`, `choices`, `steppers`, `shopping`, `prices`, `variant`, ...) are
+ * optional and their tests are skipped when a record leaves them out. The record reaches
+ * `apps/web` only by relative path: the browser job has no root install.
+ */
 export interface E2eSpec {
   readonly locales: Readonly<Record<E2eLanguage, E2eLocale>>;
   /** The input whose enabled state shows that the script has mounted. */
@@ -200,7 +203,10 @@ export interface E2eSpec {
   }[];
 }
 
-/** One spec per calculator page: a missing row is a type error naming the id. */
+/**
+ * One spec per calculator page (site-quality › [SQ29]): a missing row is a type error naming the
+ * id, and the generic suites run over every row.
+ */
 export const E2E = { concrete: CONCRETE } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */
@@ -233,3 +239,14 @@ export const pressSelector = ({ hook, key, value }: E2ePress): string =>
 
 /** The link of the `typed` state. */
 export const typedQuery = (spec: E2eSpec): string => `?v=1&${spec.typed.param}`;
+
+/** The query parameter of a non-initial option; a record that leaves it out is named, not skipped. */
+export const paramOf = (
+  { key, initial }: Pick<E2eChoice, 'key' | 'initial'>,
+  { value, param }: Pick<E2eOption, 'value' | 'param'>,
+): string => {
+  if (param !== undefined) return param;
+  throw new Error(
+    `the option "${value}" of the choice group "${key}" declares no param (only the initial option "${initial}" may leave it out)`,
+  );
+};

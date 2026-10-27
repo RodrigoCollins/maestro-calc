@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
-import { calculatorPages, pressSelector, typedQuery } from './calculator-pages.ts';
+import { calculatorPages, paramOf, pressSelector, typedQuery } from './calculator-pages.ts';
 import type { E2ePage, Figures } from './calculator-pages.ts';
 import {
   answer,
@@ -305,7 +305,7 @@ for (const calculator of calculatorPages) {
           'aria-pressed',
           'true',
         );
-        await expect.poll(() => query(page)).toBe(`?v=1&${first.param ?? ''}`);
+        await expect.poll(() => query(page)).toBe(`?v=1&${paramOf(choice, first)}`);
         if (second !== undefined) {
           await choiceButton(page, choice.key, second.value).focus();
           await page.keyboard.press('Space');
