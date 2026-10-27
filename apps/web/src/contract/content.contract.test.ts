@@ -309,7 +309,10 @@ describe('the copy follows the route table (trust-pages › [TP26], [TP21], [TP2
           .sort();
       expect(cardIds('title'), `${name} titles`).toEqual([...CALCULATOR_PAGES].sort());
       expect(cardIds('summary'), `${name} summaries`).toEqual([...CALCULATOR_PAGES].sort());
-      for (const id of PAGELESS) expect(`page.home.cards.${id}.title` in site, id).toBe(false);
+      for (const id of PAGELESS) {
+        expect(`page.home.cards.${id}.title` in site, `${name} ${id} title`).toBe(false);
+        expect(`page.home.cards.${id}.summary` in site, `${name} ${id} summary`).toBe(false);
+      }
     }
   });
 

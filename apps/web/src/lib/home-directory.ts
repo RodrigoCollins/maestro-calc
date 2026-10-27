@@ -1,14 +1,15 @@
 import type { Locale } from '@maestro-calc/i18n';
-import type { Messages } from '../calculator/controller.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
+import type { CalculatorPageId } from '../routing/templates.ts';
 import { PAGES } from './pages.ts';
+import type { Messages } from './pages.ts';
 import { siteText } from './site-text.ts';
 
-/** One calculator card of the home directory. */
-export interface HomeCard {
-  readonly id: string;
+/** One calculator card of the home directory; `Id` is a calculator page id outside the tests. */
+export interface HomeCard<Id extends string = CalculatorPageId> {
+  readonly id: Id;
   readonly href: string;
   readonly title: string;
   readonly summary: string;
@@ -16,14 +17,14 @@ export interface HomeCard {
 }
 
 /** The copy of a card; the real one reads the site and calculator catalogs. */
-export type CardCopy = (
+export type CardCopy<Id extends string = string> = (
   locale: Locale,
-  id: string,
-) => Pick<HomeCard, 'title' | 'summary' | 'example'>;
+  id: Id,
+) => Pick<HomeCard<Id>, 'title' | 'summary' | 'example'>;
 
-/** The ids of `routes` that are calculator pages, in `routes` order. */
-export const directoryOrder = (routes: RouteTable, pages: readonly string[]): string[] =>
-  Object.keys(routes).filter((id) => pages.includes(id));
+/** The ids of `routes` that are in `pages`, in `routes` order, typed as the ids of `pages`. */
+export const directoryOrder = <Id extends string>(routes: RouteTable, pages: readonly Id[]): Id[] =>
+  Object.keys(routes).flatMap((key) => pages.filter((page) => page === key));
 
 /** `calc.<id>.page.example` of a catalog; throws naming the key and the locale when it is missing. */
 export const exampleOf = (catalog: Messages, id: string, locale: Locale): string => {
@@ -45,17 +46,26 @@ const catalogCopy: CardCopy = (locale, id) => {
 };
 
 /**
- * The cards of the home directory in route table order. The tables default to the real ones; they
- * and `copy` are parameters so the order can be proved with a fixture.
+ * The cards of the home directory in route table order. The tables default to the real ones, whose
+ * cards carry a `CalculatorPageId`; they and `copy` are parameters so the order can be proved with a
+ * fixture, whose cards carry the fixture ids.
  */
-export const homeCards = (
+export function homeCards(locale: Locale): readonly HomeCard[];
+export function homeCards<Id extends string>(
+  locale: Locale,
+  routes: RouteTable,
+  pages: readonly Id[],
+  copy?: CardCopy<Id>,
+): readonly HomeCard<Id>[];
+export function homeCards(
   locale: Locale,
   routes: RouteTable = ROUTES,
   pages: readonly string[] = CALCULATOR_PAGES,
   copy: CardCopy = catalogCopy,
-): readonly HomeCard[] =>
-  directoryOrder(routes, pages).map((id) => ({
+): readonly HomeCard<string>[] {
+  return directoryOrder(routes, pages).map((id) => ({
     id,
     href: pathOf(id, locale, routes),
     ...copy(locale, id),
   }));
+}
