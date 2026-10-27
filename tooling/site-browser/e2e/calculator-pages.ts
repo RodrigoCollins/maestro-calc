@@ -49,6 +49,8 @@ export interface E2eOption {
   readonly figures?: Figures;
   /** The start of the short answer once it is pressed. */
   readonly starts?: Readonly<Record<E2eLanguage, string>>;
+  /** The query parameter that records it, once the page has written the link. */
+  readonly param?: string;
 }
 
 /** A choice group whose options change the fields shown (`data-choice`). */

@@ -6,58 +6,6 @@ import { esConcrete } from '../../../packages/i18n/src/catalogs/es/concrete.ts';
 import { esSite } from '../../../packages/i18n/src/catalogs/es/site.ts';
 import type { E2eSpec } from './calculator-pages.ts';
 
-/** What differs between the two calculator pages: the paths and the words (taken from the catalogs). */
-export interface ConcretePage {
-  readonly locale: 'en' | 'es';
-  readonly path: string;
-  readonly other: string;
-  readonly concrete: Record<string, string>;
-  readonly site: Record<string, string>;
-  readonly common: Record<string, string>;
-  /** The short answer of the slab at 20 ft x 10 ft x 4 in. */
-  readonly slab20: string;
-  /** The short answer of the default slab in the metric system. */
-  readonly metric: string;
-  /** The start of the short answer of each shape. */
-  readonly starts: Record<string, string>;
-  /** The end of the short answer for a bag size. */
-  readonly bagEnd: (lb: number, bags: number) => string;
-  readonly yieldLine: (value: string) => string;
-}
-
-export const CONCRETE_PAGES: readonly ConcretePage[] = [
-  {
-    locale: 'en',
-    path: '/concrete-calculator',
-    other: '/es/calculadora-de-concreto',
-    concrete: enConcrete,
-    site: enSite,
-    common: enCommon,
-    slab20:
-      'Slab (20 ft × 10 ft, 4 in thick): 2.72 cubic yards with 10% extra. Bags of 80 lb: 123.',
-    metric:
-      'Slab (3.66 m × 3.05 m, 10.16 cm thick): 1.25 cubic meters with 10% extra. Bags of 80 lb: 74.',
-    starts: { slab: 'Slab (', footing: 'Footing (', column: 'Column (', steps: 'Steps (' },
-    bagEnd: (lb, bags) => `Bags of ${String(lb)} lb: ${String(bags)}.`,
-    yieldLine: (value) => `About ${value} cubic feet per bag`,
-  },
-  {
-    locale: 'es',
-    path: '/es/calculadora-de-concreto',
-    other: '/concrete-calculator',
-    concrete: esConcrete,
-    site: esSite,
-    common: esCommon,
-    slab20:
-      'Losa (20 ft × 10 ft, 4 in de espesor): 2.72 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 123.',
-    metric:
-      'Losa (3.66 m × 3.05 m, 10.16 cm de espesor): 1.25 metros cúbicos con 10% de extra. Bolsas de 80 lb: 74.',
-    starts: { slab: 'Losa (', footing: 'Zapata (', column: 'Columna (', steps: 'Escalones (' },
-    bagEnd: (lb, bags) => `Bolsas de ${String(lb)} lb: ${String(bags)}.`,
-    yieldLine: (value) => `Unos ${value} pies cúbicos por bolsa`,
-  },
-];
-
 /** The figures of a state: cubic yards, cubic feet, cubic meters, before the extra, bags. */
 export type Figures = readonly [string, string, string, string, string];
 
@@ -220,18 +168,21 @@ export const CONCRETE: E2eSpec = {
         },
         {
           value: 'footing',
+          param: 'sh=footing',
           fields: SHAPE_FIELDS['footing'] ?? [],
           figures: FOOTING,
           starts: { en: 'Footing (', es: 'Zapata (' },
         },
         {
           value: 'column',
+          param: 'sh=column',
           fields: SHAPE_FIELDS['column'] ?? [],
           figures: COLUMN,
           starts: { en: 'Column (', es: 'Columna (' },
         },
         {
           value: 'steps',
+          param: 'sh=steps',
           fields: SHAPE_FIELDS['steps'] ?? [],
           figures: STEPS,
           starts: { en: 'Steps (', es: 'Escalones (' },

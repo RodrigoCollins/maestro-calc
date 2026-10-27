@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { CONCRETE_PAGES } from './concrete-pages.ts';
+import { calculatorPages } from './calculator-pages.ts';
 
 /**
  * The states whose sentences are the longest in use: each shape at its defaults and at the hand-verified
@@ -35,7 +35,7 @@ const shiftOf = (page: Page): Promise<number> =>
       }),
   );
 
-for (const calculator of CONCRETE_PAGES) {
+for (const calculator of calculatorPages) {
   test.describe(`${calculator.path} layout (calculator-page › Layout stability, ${calculator.locale})`, () => {
     // spec: calculator-page › [CP44], site-quality › [SQ19] the load shifts nothing, with and without a state
     for (const query of ['', '?v=1&sh=footing&l=216&n=3']) {
