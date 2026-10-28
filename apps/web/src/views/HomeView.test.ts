@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { pagelessTitles } from '../__testing__/pageless-titles.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { fromRoot } from '../contract/root.ts';
-import { directoryOrder, homeCards } from '../lib/home-directory.ts';
+import { directoryOrder, exampleOf, homeCards } from '../lib/home-directory.ts';
 import { PAGES } from '../lib/pages.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
@@ -144,7 +144,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
           catalog[`page.home.cards.${id}.summary`],
         );
         expect(card?.querySelector('p.home-example')?.text.trim(), id).toBe(
-          PAGES[id].catalogs[locale][`calc.${id}.page.example`],
+          exampleOf(PAGES[id].catalogs[locale], id, locale),
         );
       });
     },

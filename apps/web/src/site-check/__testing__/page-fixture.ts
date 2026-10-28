@@ -40,6 +40,10 @@ export const CALC_ROUTES = {
 /** The outbound links a calculator page may carry: the sources of its entry. */
 export const QUIKRETE_URL = 'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf';
 export const NIST_URL = 'https://www.nist.gov/pml/special-publication-811';
+const SOURCE_NAMES: Readonly<Record<string, string>> = {
+  [QUIKRETE_URL]: 'QUIKRETE',
+  [NIST_URL]: 'NIST',
+};
 
 /** The entry and the chunk that every valid calculator fixture loads (language-free, no network). */
 export const ENTRY_FILE = '_astro/concrete.js';
@@ -128,7 +132,10 @@ const SECTION_IDS = {
   es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
 } as const;
 
-/** The body of a valid calculator page: breadcrumb, h1, result, five sections, sources and date. */
+/**
+ * The body of a valid calculator page: breadcrumb, h1, result, five sections, the sources the site
+ * lists for it (both fixture sources when it lists none) and the date.
+ */
 const calculatorMain = (id: string, locale: Locale, site: Site): string => {
   const home = pathOf('home', locale, site.routes);
   const faq = faqOf(locale)
@@ -146,7 +153,7 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     `<h2 id="${tips}">Tips</h2><p>Text.</p>`,
     `<h2 id="${faqId}">FAQ</h2>${faq}`,
     `<h2 id="${sources}">Sources</h2>`,
-    `<ul><li><a href="${QUIKRETE_URL}" rel="external noreferrer">QUIKRETE</a></li><li><a href="${NIST_URL}" rel="external noreferrer">NIST</a></li></ul>`,
+    `<ul>${(site.externalLinks[id] ?? [QUIKRETE_URL, NIST_URL]).map((url) => `<li><a href="${url}" rel="external noreferrer">${SOURCE_NAMES[url] ?? url}</a></li>`).join('')}</ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
     '</main>',
   ].join('');
