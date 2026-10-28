@@ -379,3 +379,109 @@ One scoped round on `feat/square-footage-content` after the four-lens review of 
 - `npm run typecheck --prefix tooling/site-browser` clean.
 - Dist diff: `diff -r apps/web/dist` against the PR 2+3 baseline build is empty (the CSS comment is stripped by the build).
 - ES concrete full-length proof: 40,678 B of 40,836 B (EN 40,389 B), unchanged.
+
+## PR 4 (`feat/square-footage-live`): S4a and S4b done
+
+Branch `feat/square-footage-live`, created from `origin/feat/square-footage-content` (6fd9830) and rebased onto `origin/main` 889af79 (PR 2+3 merged as #103, with its correction round) after the first S4a commit. Strict TDD; every new test seen red for the right reason first. Nothing pushed. Worktree `.claude/worktrees/agent-a46898f42c1fd4900`.
+
+PR 2+3 review record (from the orchestrator): Judgment Day APPROVED by both judges, with one cosmetic suggestion (two sentences merged on one line of the `reserveCss` doc comment in `apps/web/src/lib/reserve.ts`), folded here as f8f0167. CI on #103 green; `site-browser` 3m51s.
+
+### Owner gate (6.8, 7.1)
+
+The section "Owner approval (K12)" above holds the record: 2026-10-28, the Claude Code chat with the owner, both entries, with the `se superpongan` change. The `ownerReview: approved` flip (1d3db73) is the last commit of S4a and comes after the commit that recorded the approval (befd9ac) in `git log`. Gate proven by reading: without that section apply stops at 6.8 and edits neither entry (no approval was simulated in the repository). The entries changed after the frozen 7434baa only by the two `se superpongan` edits the record names, so the owner review artifact was not regenerated.
+
+### Commits and size (`git diff -M --shortstat`, lockfiles and `openspec/` excluded)
+
+| Slice | Commit | Lines | Forecast |
+|---|---|---|---|
+| S4a-1 | a456572 `test(e2e): pin the square footage reserve and its layout edges` | 77 (71 + 6) | 25-45 (S4a) |
+| JD fold | f8f0167 `docs(web): split the reserve builder comment into its two sentences` | 6 (4 + 2) | - |
+| S4a-2 | d994508 `test(web): read each calculator page's sources, example and no-script state from its row` | 88 (58 + 30) | - |
+| S4a-3 | 1d3db73 `docs(content): approve the square footage entries` | 10 (8 + 2) | - |
+| S4b | 1383264 `feat(web): publish the square footage calculator` | 385 (315 + 70) | 210-290 |
+
+PR 4 total: 40 files, 455 + 109 = 564 lines against 235-335. S4b measured 563 in its first form; the split rule moved staged-legal test work to S4a (S4a-2: the per-page sources of the site-check fixture, the `exampleOf` lookups of `HomeView.test.ts` and the budget test, the `PageEntry` typing of `pages.test.ts`, the [TP31] fixture case, and `no-js.spec.ts` read from each `E2E` record), the methodology fixture block was kept instead of deleted, and the built-page test was trimmed to what `check:site` does not already check. Overrun causes: the forecast missed the built-page test (89), the pinned lists outside `end-state` (`routes.test.ts`, `files.test.ts`, `templates.test.ts`, `site-catalog.test.ts`), the concrete-only `no-js.spec.ts`, and the site-check fixture that linked QUIKRETE from every calculator page.
+
+### Sweep (6.3, macOS, K11)
+
+Scratch worktree at 6fd9830 with the route wiring applied and never committed (`ROUTES` row, `CALCULATOR_PAGES`, `PAGES` row without reserve, `SCRIPTS` row, entry, island, site keys), built and served with `wrangler dev`; removed afterwards (`git worktree list` has no sweep entry). Chromium of Playwright 1.64.1 with the phone profile (DPR 3, mobile, touch), 320-1280 px in 1 px steps, both locales. Answer content: the `—` state and the sentences of all eight `layoutQueries` (four cases, imperial and metric). Notice content: the "not running" note (`noscript` + `calc.rectangle-area.page.example`) and both URL notices (`INVALID_VALUE`, `UNSUPPORTED_VERSION`), the variants `layout.spec.ts` measures. Natural height with `min-height: 0` and `display: flow-root`. Answer line 34.10 px, body line 26.35 px.
+
+Tallest natural height per range (both locales), and where each locale drops:
+
+| Block | Range (px) | Tallest (px) | Lines |
+|---|---|---|---|
+| answer | 320 | 102.28 | 3 |
+| answer | 321-597 | 68.19 | 2 |
+| answer | 598-1280 | 34.09 | 1 |
+| notice | 320-385 | 147.72 | 6 |
+| notice | 386-485 | 121.38 | 5 |
+| notice | 486-704 | 95.03 | 4 |
+| notice | 705-1280 | 68.69 | 3 |
+
+Per locale: answer en 2 lines from 320, 1 from 480; es 3 at 320, 2 from 321, 1 from 598. Notice en 6 at 320-326, 5 from 327, 4 from 399, 3 from 597; es 6 to 385, 5 from 386, 4 from 486, 3 from 705. Spanish sets every latest drop. At the seven widths (tallest en / es): answer 320: 68.19 / 102.28; 390: 68.19 / 68.19; 480: 34.09 / 68.19; 640 to 1280: 34.09 / 34.09. Notice 320: 147.72 / 147.72; 390: 121.38 / 121.38; 480: 95.03 / 121.38; 640: 68.69 / 95.03; 768 to 1280: 68.69 / 68.69.
+
+Chosen reserve (`apps/web/src/calculator/rectangle-area/reserve.ts`, at the latest drop, rounded up to 0.5rem):
+
+- answer `[3, [20.5, 2], [37.5, 1]]`: drop to 2 at 321 px, breakpoint 20.5rem (328 px, edges 327/328); drop to 1 at 598 px, breakpoint 37.5rem (600 px, edges 599/600).
+- notice `[6, [24.1875, 5], [30.5, 4], [44.5, 3]]`: drop to 5 at 386 px, breakpoint 24.1875rem (387 px, edges 386/387; not 0.5rem, deviation 1); drop to 4 at 486 px, 30.5rem (488 px, edges 487/488); drop to 3 at 705 px, 44.5rem (712 px, edges 711/712).
+- New `WIDTHS`: 327, 328, 387, 487, 488, 599, 600, 711, 712 (386 was already there); 27 widths in all.
+
+Unused reserve at every e2e width (macOS sweep): answer 0.0 px everywhere except 34.1 px at 327 and 599 (before-edge widths, two lines allowed); notice 10.4 px everywhere except 36.7 px at 386, 487 and 711 (before-edge widths). At 1280 px the gap under the answer is 0.0 px. The head style `.calculator{--answer-lines:3;--notice-lines:6}` and its five media blocks replace the shared ladder for both properties at every width.
+
+Linux (6.4): not run by apply (no Linux runner here). The orchestrator confirms on the PR 4 `site-browser` CI job; if Linux Chromium wraps later than these drops, the breakpoints move to the later drop. Room before an e2e width would fail: answer 3 to 2 up to 356 px, 2 to 1 up to 641 px; notice 5 to 4 up to 640 px, 4 to 3 up to 730 px; the notice 6 to 5 step has 1 px (387) because 386 px is an e2e width (a concrete edge).
+
+### TDD cycle evidence
+
+| Task | RED (seen failing) | GREEN | REFACTOR |
+|---|---|---|---|
+| 6.2, 6.5 | `reserve.test.ts`: module missing; then `20.5rem: expected [...] to include 327` | `reserve.ts`, nine `WIDTHS` | format, lint, typecheck (+ tooling), `npm test` 3,841 green |
+| 6.7 | green on arrival; spot check: `page.home.cards.fixture-unrouted.title` in the English catalog gives `home.test-d.ts(19,5): Unused '@ts-expect-error'` | fixture id | typecheck |
+| 6.9 | `expected 'pending' to be 'approved'` (en, es) | flip both entries | content contract 67 green |
+| S4a-2 | green on arrival (behaviour-preserving); spot check: the [TP31] case with `['a', 'b']` fails | moved from S4b | lint, typecheck, unit, `no-js.spec` 8 passed |
+| 7.2-7.6 | 22 red: end-state (5), SR24, the styles flip, TP41 (2), docs, built page (10) | route, templates, catalogs, `PAGES`/`SCRIPTS`/`E2E` rows, entry, island, methodology EN/ES and its row, AGENTS steps 12/14, CWC32 block deleted | format, lint, typecheck (+ tooling), `npm test` 3,884 green |
+| 7.7 | `tsc`: `pages.ts` `TS1360` (missing row), `methodology-rows.ts` `TS1360`, `home-directory.ts` card keys; tooling: `calculator-pages.ts` `TS1360`, test-d `Property '"rectangle-area"' is missing`; `astro check`: `scripts.ts` `TS1360`, `Property '"rectangle-area"' is missing` | rows added | - |
+
+Pins found red outside the plan and updated in S4b: `routes.test.ts` (static paths), `files.test.ts` (expected files), `templates.test.ts` ([SR17] lists), `packages/i18n/src/site-catalog.test.ts` (page ids), `cli.test.ts` (its fixture linked QUIKRETE from the square footage page), and the e2e `no-js.spec.ts` (concrete-only expectations; 6 tests failed on the first full e2e run, fixed in S4a-2 and S4b).
+
+### Scenarios proven
+
+SR17 (end-state, templates), SR19 (end-state: 8 ids, 16 paths, 18 pages, 18 keys, 16 `<loc>`, 10 + 4 entries), SR23 (static-paths test derived, end-state), SR24 (`routes.test.ts`), SR25 (built page: one module script from its island; the type tables). TP21, TP28, TP30 (HomeView and home-directory tests derived from `CALCULATOR_PAGES` in `ROUTES` order; e2e home), TP31 (fixture case), TP32 (fixture id), TP22, TP24, TP26 (methodology rows for both ids), TP25, TP38 (formulas, honesty patterns, no yield, no π), TP39 (the section is only in 1383264, both locales), TP40 (published cases equal the page controller), TP41 (intro test). CP64 (reserve test, `styles.contract` over the `PAGES` row), CP65 built (one head style equal to `headStyleOf(PAGES['rectangle-area'])` with both properties, none in the body, no `style` attribute; concrete none in `CalculatorView.reserve.test.ts`), CP67, CP70 (approved; Formulas figures; methodology link; markers by `check:site`), CP5 and CP68 (by `check:site` structure rules on both pages), CP71-CP74 (e2e: states, metric, layout at 27 widths, no-js), CP75 (sizes below). CWC38 (slot-free entry), CWC39 (entry contracts walk `client/entries/rectangle-area.ts` with no test edit), CWC40 (docs contract, block deleted). SQ33, SQ34 (budget fixture builds `/zz-budget/rectangle-area/{en,es}`), SQ35, SQ36, SQ37 (`E2E` row, generic suites). RAP2 built. RAP8: `git diff --stat origin/main -- packages/core packages/data .github/workflows/ci.yml` empty.
+
+### Negative proofs (applied, run red, reverted; `git status --porcelain` clean after each)
+
+S4a: (1) breakpoint 30.5 to 30.5625rem without edges: `30.5625rem: expected [...] to include 489`. (2) a notice count of 0: `--notice-lines: the count 0 is not a positive integer` (a `px` breakpoint is not expressible: `LineSteps` holds rem numbers and the builder writes `rem`). (3) `ownerReview: pending`: the 6.9 case red (its RED run).
+S4b: (4) route row before `concrete`: SR24, the static-paths list and end-state red (the home order follows `ROUTES`, so it moves with the row). (5) `SCRIPTS` row removed: `astro check` `scripts.ts` `TS1360` plus the `SCRIPTS[id]` lookups. (6) `rectangle-area` also in `PAGELESS`: `id is in both the page list and PAGELESS` and the [SR17] pins red. (7) methodology section removed in both locales: 10 methodology tests red. (8) ES entry back to `pending`: the routed-must-be-approved set check and the 6.9 case red. (9) head reserve dropped from the row: both CP65 built tests and the `styles.contract` row check red. (10) `WIDTHS` edge 711 dropped: `(min-width:44.5rem): no width 711` and the reserve test red. (11) old methodology intro: TP41 red.
+
+### Measurements
+
+- ES concrete full-length proof: 40,678 B of 40,836 B (282 B to 40,960 B), EN 40,389 B; unchanged by PR 4.
+- Square footage full-length proof (`/zz-budget/rectangle-area`): EN 34,122 B, ES 34,159 B of 40,960 B (headroom 6,838 B and 6,801 B).
+- Built pages: `/square-footage-calculator.html` 25,155 B, `/es/calculadora-de-pies-cuadrados.html` 26,593 B; entry static graph 33,803 B (2 files) of 49,152 B; page weight about 150,400 B of 196,608 B (HTML, 89,720 B of fonts, icons, JS; `check:site` passes and prints concrete ES as the heaviest calculator page, 162,927 B). Largest CSS `/square-footage-calculator.html` 7,813 B of 20,480 B.
+- Concrete entry graph 38,778 to 39,164 B (2 files: Vite splits a shared `mount` chunk once two entries exist); the concrete HTML differs only in the hashed script name.
+- Homes 9,671 B (en) and 9,807 B (es), under 24,576 B ([TP35]).
+- Sitemap 16 `<loc>`; `pending ownerReview entries: 0`.
+- Dist diff against the PR 3 tip build: the two new pages, both homes, both methodology pages, the sitemap, the two concrete pages (script hash only), and in `_astro` the two island scripts and the shared `mount` chunk. S4a alone: dist identical.
+- Layout suite: `layout.spec.ts` alone 61 tests in 1.7 min at S4a (concrete only, 27 widths).
+
+### Gates
+
+- `npm run verify` exit 0 at 1383264 (212 files, 3,884 tests; build 18 pages; check:site and check:dist pass).
+- `npm run typecheck --prefix tooling/site-browser` clean.
+- `npm run test:e2e`: 489 passed (3.3 min); 324 at the start. `layout.spec.ts` passes for both calculators at all 27 widths on macOS.
+- `npm run lighthouse`: all 6 URLs pass the assertions (representative unchanged).
+- SX4: nothing changed under `packages/core`, `packages/data`, `.github/workflows/ci.yml`, `packages/*/stryker.config.mjs`. GX2: `git log origin/main..HEAD --format=%B` has no attribution line.
+
+### Deviations
+
+1. Notice breakpoint 24.1875rem (387 px), not a 0.5rem rounding: 386 px is an e2e width (a concrete edge), and a breakpoint above 387 px leaves more than one notice line unused there on this page. 1 px of Linux room at that step.
+2. Breakpoints pinned from the macOS sweep only; the Linux confirmation (6.4) is the orchestrator's PR 4 CI run.
+3. S4a has four commits (reserve and edges, the Judgment Day fold, staged-legal tests moved out of S4b, the flip) against two planned; S4b 385 lines against 210-290 (over the forecast, under 400).
+4. The [CP65], [CP67], [CP70] "build tests" render the real view through the Astro container (the unit suite runs before the build); the built `dist` is checked by `check:site` and the e2e suites.
+5. The methodology fixture block ([TP40] on a slot-free module) stays; the real row covers the same cases on the real page module.
+6. `no-js.spec.ts` reads its figures, note and copy label from each `E2E` record and its answer and large figure from a table by id; the concrete floor of more than 20 controls became at least `spec.inputs`.
+7. Both methodology entries now say `updated: 2026-10-28` (their content changed).
+
+### For the orchestrator
+
+- Linux sweep or CI confirmation of the breakpoints (6.4, 7.14).
+- PR 4 group tasks P4.1-P4.4 (push, CI, reviews, PR, merge).
