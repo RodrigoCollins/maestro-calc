@@ -149,3 +149,61 @@ Scratchpad of the session: `sqft-final-{en,es}-{390,1280}.png` (default), `sqft-
 ### Linux gate (task 4.8, orchestrator-owned)
 
 Request: run the `site-browser` CI job on the PR 1 tip; `drawing.spec.ts` ([BD14] both font runs, [BD20]) and `layout.spec.ts` ([BD21]) must pass on Linux Chromium. Local command: `npm run build && npm run test:e2e -- drawing.spec layout.spec`. Not confirmed until the orchestrator records the run id here. Watch item: the fallback-font run assumes Linux resolves the metric-adjusted Arial fallback or Liberation Sans; a DejaVu fallback would be wider than 0.56 sizes per character for digit-heavy labels.
+
+## PR 1 correction round (on `575475f`)
+
+One scoped round after the owner's screenshots and the review. Strict TDD (each test seen red first), no history rewritten, nothing pushed.
+
+| Finding | Done | Commit |
+|---|---|---|
+| MAJOR desktop: at 1280 px the drawing is a 24rem box on the left of a wide panel | From 48rem the panel is a grid in the square footage head CSS (`drawingCss`, `reserve.ts`): `minmax(0,1fr) minmax(0,1.25fr)`, rows `auto auto auto 1fr`, the box in column 2 across rows 1-4 (`grid-row:1/-1`), so the slack goes to the last row and the left column keeps its spacing. `calculator.css` is untouched. 767 px added to `WIDTHS` of `layout.spec.ts` and `drawing.spec.ts`; the styles contract now checks the whole head style of every row (reserve and drawing) for both edges. New e2e: beside the rows and wider than them at 768 and 1280 px, under the large figure at 767 px. The server box equals the mounted box at every width (the [BD20] sweep, now 8 widths) | 4cdf54e |
+| MAJOR primary figure indented by `min-width:8ch;text-align:right` | `display:inline-block` removed from `.calc-figure`: the row, cost and shopping figures are flex items (blockified), so they keep the fixed right-aligned cell; the large figure is inline, where `min-width` does not apply, so it sits flush. Byte-negative (−21 B). Contract and a new e2e on every page (figure width equals its digits) | a86c953 |
+| Fallback font wider than the 0.56 estimate; font runs could pass vacuously; CI fallback set not deterministic | `CHAR` 0.67, from measured advances: DejaVu Sans Bold worst label `<0.01 cm` 0.661, `1.00 m` 0.643; Liberation Sans Bold / Arial Bold 0.536; Barlow Condensed 600 0.412. A unit test runs every label the page writes (both systems, zero to the longest) through the DejaVu Sans Bold and Liberation Sans Bold advance tables. The [BD14] runs assert the Barlow Condensed 600 face: `loaded` and `document.fonts.check` true with the web fonts, `error` and false in the fallback run. CI installs `fonts-dejavu-core fonts-liberation` on every run before the browser tests (contract test). Hand tables re-derived | ab002f8 |
+| Unit toggle could move the area note | `RectangleSpec.others` (the texts of the other system) replaces `widest`: the gutter, the inside-or-below decision and the fitted `x` of the top label and the note all use the longest text of either system. Unit: 32 ft square (1,024.00 ft² below, 95.13 m² alone would fit) and 25 ft × 40 ft; e2e: both links toggled, label positions now part of the compared shape | e9b134f |
+| Label colour from `size === 17` | `PlanLabel.tone: 'dimension' \| 'note'`, the writer's `FILLS` by tone (a seeded 15-unit dimension label proves it) | e9b134f |
+| Shared area helper for PR 3 | `areaLabel(frame, box, text, room?)` in `slots/drawing.ts`, with its own table | e9b134f |
+| Grid rebuilt on every redraw | The grid path stays the first child; a redraw removes and appends only the nodes after it (e2e: same node, old label detached) | 6bfb496 |
+| `checkModule` did not check the plan's messages | The default plan's name and labels that are messages must be in `drawing.messages`, else `PAGE_KEY` naming the message at creation (and so at build) | 19e05be, 9a214a8 |
+| [CP77] four hand-verified cases | Gap recorded: the server renders the default state only, so the unit test stays on the default (EN, ES, byte-equal without the box). The four states with the box present are proven by `calculator.spec.ts` "loads the state …" (4 states × 2 locales) | — |
+| [BD16] the answer is the only live region | e2e: the live regions of the page are exactly `.calc-answer` and the copy status, none inside `.calc-result` | 4a23ad1 |
+| Rename count after the poll | Still 2 after 500 ms idle | 4a23ad1 |
+| Exact `x` of the long top label | `179.8` (the label fits centred at 0.67, so it is not moved) with the rectangle at `163.4`, `32.8` | ab002f8 |
+| Area note font (Barlow Condensed 600 vs mockup Barlow 500) | Deviation kept: Barlow 500 has no font file on the site (Barlow 400 and 600, Barlow Condensed 600 and 700 are the four woff2), a fifth file would cost a request and up to 30 KB for one note; the note keeps the label face at 15 units in the helper colour | — |
+
+Commit note: 19e05be alone passes every test but misses the 100 % branch threshold of `apps/web/src/calculator/**` (the select branch of the new check, 99.68 %); 9a214a8 shares `choicesOf` with `start` and restores 100 %. History was not rewritten.
+
+### Negative proofs (applied, run red, reverted; `git status --porcelain` clean after each)
+
+1. `display:inline-block` restored on `.calc-figure` (rebuilt): the new e2e failed on all four pages (`Expected: 67.94, Received: 163.58`); the styles contract failed first (`expected 'inline-block' to be undefined`).
+2. Head CSS without the 48rem block (the build before 4cdf54e): the placement e2e failed at `768 px` in both locales; 767 missing from `WIDTHS`: `(min-width:48rem): no width 767`.
+3. `CHAR = 0.56`: the DejaVu Sans Bold table test failed with 16 labels over (`<1/64 in`, `0.00 cm`, `1,000,000.00 ft²`, …); fallback run with the fonts not blocked: the face assertion failed (`loaded`, not `error`).
+4. Geometry before e9b134f (stashed): `keeps every coordinate on the toggle at 32 ft by 32 ft` failed; on the build before it, the e2e toggle failed at `?v=1&l=384&w=384`. 25 ft × 40 ft no longer discriminates at 0.67 (both systems put the note below); it stays as the owner's case.
+5. Writer before 6bfb496: the grid identity e2e failed.
+6. Without the plan message check: both `throws PAGE_KEY at creation …` cases failed (`the call did not throw`).
+7. `aria-live="polite"` on `.calc-rows` (rebuilt): the [BD16] e2e failed naming `panel`.
+8. CI step absent: `installs the fallback fonts on every run, before the browser tests` failed.
+
+### Measurements (tip 9a214a8)
+
+| Measure | Before (575475f) | After | Budget |
+|---|---|---|---|
+| ES concrete full-length ([CP66]) | 40,678 B | **40,657 B** (−21) | pin 40,836 B |
+| EN concrete full-length | 40,389 B | 40,368 B | 40,960 B |
+| rectangle-area full-length EN / ES | 34,380 / 34,419 B | 34,654 / 34,693 B | 40,960 B |
+| Square footage head CSS (drawing part) | 140 B | 435 B (whole head style 779 B) | — |
+| Built square footage HTML EN / ES | 25,413 / 26,853 B | 25,687 / 27,127 B | 40,960 B |
+| Built concrete HTML EN / ES | 31,750 / 33,753 B | 31,729 / 33,732 B | 40,960 B |
+| Concrete JS graph (built) | 39,620 B | 39,992 B (`checkModule` plan check, shared controller) | 49,152 B |
+| CSS (largest, square footage) | 7,953 B | 8,227 B | 20,480 B |
+| e2e | 522 passed | **534 passed** (3.5 min) | |
+
+### Gates (tip 9a214a8)
+
+- `npm run format`: no change. `npm run verify`: exit 0 (217 files, 4,013 tests, coverage thresholds met, `check:site`, `check:dist` green).
+- `npm run build && npm run check:site && npm run test:e2e`: exit 0, 534 passed.
+
+### Screenshots (macOS Chromium, `astro preview`)
+
+Session scratchpad: `bp-fix-sqft-{en,es}-{390,768,1280}.png`, `bp-fix-concrete-{en,es}-{390,1280}.png`, and `bp-before-*-1280.png`. From 768 px the drawing fills the right column beside the figures; the large figure is flush left on every page. The wider estimate leaves more room left of the width label (the rectangle sits about 6 units further right than before), the price of never overlapping in DejaVu Sans.
+
+Linux gate (task 4.8) still pending; the watch item above is now covered by the 0.67 estimate and the font install.
