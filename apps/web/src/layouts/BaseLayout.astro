@@ -10,6 +10,7 @@ import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
 import type { ShellPageId } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
+import type { ReserveCss } from '../lib/reserve.ts';
 import type { NotFoundHead, PageHead } from '../seo/head.ts';
 import { SITE } from '../site.config.ts';
 import '../styles/tokens.css';
@@ -20,8 +21,8 @@ interface Props {
   /** The route id of the page, or `notFound`: it decides where the language switch points. */
   id: ShellPageId;
   head: PageHead | NotFoundHead;
-  /** CSS for this page only, rendered as one `<style>` in the head (a calculator page's line reserve). */
-  style?: string | undefined;
+  /** CSS for this page only, rendered as one `<style>` in the head: a calculator page's line reserve, as `reserveCss` wrote it. */
+  style?: ReserveCss | undefined;
 }
 const { locale, id, head, style } = Astro.props;
 const text = siteText(locale);

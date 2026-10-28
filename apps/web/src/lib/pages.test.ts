@@ -40,6 +40,11 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
     expect(headStyleOf(PAGES.concrete)).toBeUndefined();
   });
 
+  // an empty reserve writes no CSS, so the head carries no empty `<style></style>`
+  it('is nothing for a row whose reserve is empty', () => {
+    expect(headStyleOf({ ...PAGES.concrete, reserve: {} })).toBeUndefined();
+  });
+
   it('gives the concrete row no reserve, so its pages carry no extra byte', () => {
     expect('reserve' in PAGES.concrete).toBe(false);
   });

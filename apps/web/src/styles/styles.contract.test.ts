@@ -62,10 +62,10 @@ const widths = (
 /**
  * What is wrong with the breakpoints of a stylesheet: a length that is not `rem`, and a rem
  * breakpoint whose edges (the first pixel width where it applies and the one before) are not among
- * `widths`. Each problem names the media condition.
+ * `widths`. Each problem names the media condition. Nothing for no CSS (an empty reserve).
  */
-const breakpointProblems = (css: string, edges: readonly number[]): string[] =>
-  mediaBlocksOf(css).flatMap(([query]) =>
+const breakpointProblems = (css: string | undefined, edges: readonly number[]): string[] =>
+  mediaBlocksOf(css ?? '').flatMap(([query]) =>
     lengthsOf(query).flatMap(([value, unit]) => {
       if (unit !== 'rem') return [`${query}: ${unit}`];
       const first = Math.ceil(value * 16);

@@ -22,8 +22,9 @@ describe('reserveCss (calculator-page › [CP64], design K6)', () => {
     );
   });
 
-  it('returns an empty string for an empty reserve', () => {
-    expect(reserveCss({})).toBe('');
+  // an empty reserve has nothing to write, so no empty `<style>` reaches a head
+  it('returns nothing for an empty reserve', () => {
+    expect(reserveCss({})).toBeUndefined();
   });
 
   // spec: calculator-page › [CP64] the builder throws on a breakpoint that is not increasing rem
