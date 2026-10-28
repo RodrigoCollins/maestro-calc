@@ -65,15 +65,17 @@ const widths = (
  * `widths`. Each problem names the media condition. Nothing for no CSS (an empty reserve).
  */
 const breakpointProblems = (css: string | undefined, edges: readonly number[]): string[] =>
-  mediaBlocksOf(css ?? '').flatMap(([query]) =>
-    lengthsOf(query).flatMap(([value, unit]) => {
+  mediaBlocksOf(css ?? '').flatMap(([query]) => {
+    const lengths = lengthsOf(query);
+    if (lengths.length === 0) return [`${query}: no length`];
+    return lengths.flatMap(([value, unit]) => {
       if (unit !== 'rem') return [`${query}: ${unit}`];
       const first = Math.ceil(value * 16);
       return [first - 1, first]
         .filter((width) => !edges.includes(width))
         .map((width) => `${query}: no width ${String(width)}`);
-    }),
-  );
+    });
+  });
 
 const tokenRules = rulesOf(tokens);
 const baseRules = rulesOf(base);
@@ -457,15 +459,23 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(breakpointProblems(calculator, widths)).toEqual([]);
   });
 
+  // The rows of the page table that declare a reserve. None does yet, so the loop below checks
+  // nothing: this flips at PR 4 (S4b), when the square-footage row goes live with its own reserve.
+  const reserved = Object.entries(PAGES).flatMap(([id, entry]) => {
+    const { reserve } = entry as PageEntry;
+    return reserve === undefined ? [] : [[id, reserve] as const];
+  });
+
+  it('has no page row with a reserve before PR 4 (S4b), so the reserve check below runs over none', () => {
+    expect(reserved.map(([id]) => id)).toEqual([]);
+  });
+
   // spec: calculator-page › [CP64] the CSS of every reserve of the page table passes the same checks
-  it.each(Object.entries(PAGES))(
-    'keeps the reserve of %s in rem with both edges in WIDTHS',
-    (_id, entry) => {
-      const { reserve } = entry as PageEntry;
-      if (reserve === undefined) return;
-      expect(breakpointProblems(reserveCss(reserve), widths)).toEqual([]);
-    },
-  );
+  it('keeps the reserve of every row that declares one in rem with both edges in WIDTHS', () => {
+    for (const [id, reserve] of reserved) {
+      expect(breakpointProblems(reserveCss(reserve), widths), id).toEqual([]);
+    }
+  });
 
   // seeded: a px breakpoint and an edge missing from WIDTHS are each flagged, a clean reserve is not
   it.each([
@@ -478,6 +488,12 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
       'an edge missing from WIDTHS',
       reserveCss({ answer: [5, [31, 4]] }),
       ['(min-width:31rem): no width 495', '(min-width:31rem): no width 496'],
+    ],
+    // spec: calculator-page › [CP64] a condition with no length is no breakpoint the e2e widths can hold
+    [
+      'a condition with no length',
+      '@media(prefers-reduced-motion:reduce){.calculator{--answer-lines:2}}',
+      ['(prefers-reduced-motion:reduce): no length'],
     ],
     ['a clean breakpoint', reserveCss({ answer: [5, [30.0625, 4]] }), []],
   ])('flags %s', (_name, css, expected) => {
