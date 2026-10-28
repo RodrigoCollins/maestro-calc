@@ -1,10 +1,14 @@
 import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
 import { E2E } from './calculator-pages.ts';
 import type { E2eSpec } from './calculator-pages.ts';
+import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
 
 // spec: site-quality › [SQ29] a calculator page with no record is a type error naming the id
 // @ts-expect-error -- the record has no row for 'concrete'
 export const missing = {} as const satisfies Record<CalculatorPageId, E2eSpec>;
+
+// spec: site-quality › [SQ37] the record of the staged calculator is a complete spec before its E2E row exists
+export const staged: E2eSpec = RECTANGLE_AREA;
 
 /** The record table is complete: one spec per calculator page id. */
 export const complete: Record<CalculatorPageId, E2eSpec> = E2E;

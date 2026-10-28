@@ -29,3 +29,31 @@ export const lengthsOf = (condition: string): [number, string][] =>
     Number(value),
     unit,
   ]);
+
+/** The flat rules of a block's inner text as `[selectors, declarations]`. */
+const rulesIn = (inner: string): [string[], string][] =>
+  Array.from(inner.matchAll(/([^{}]+)\{([^{}]*)\}/g), ([, selectors = '', body = '']) => [
+    selectors.split(',').map((selector) => selector.trim()),
+    body,
+  ]);
+
+/**
+ * The `@media` breakpoints, in rem and ascending, at which a page's CSS changes a custom property.
+ * A property set on `.calculator` takes the breakpoints of those rules (a page's head style);
+ * otherwise it takes those of the `:root` rules (`calculator.css`). Empty when no block sets it.
+ */
+export const edgesOf = (css: string, property: string): number[] => {
+  const blocks = mediaBlocksOf(css);
+  const setBy = (selector: string): number[] =>
+    blocks.flatMap(([condition, inner]) =>
+      rulesIn(inner).some(
+        ([selectors, body]) =>
+          selectors.includes(selector) &&
+          body.split(';').some((declaration) => declaration.split(':')[0]?.trim() === property),
+      )
+        ? lengthsOf(condition).map(([value]) => value)
+        : [],
+    );
+  const own = setBy('.calculator');
+  return [...new Set(own.length > 0 ? own : setBy(':root'))].toSorted((a, b) => a - b);
+};
