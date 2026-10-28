@@ -15,6 +15,12 @@ import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { directoryOrder } from '../../lib/home-directory.ts';
 import { PAGES, pageView } from '../../lib/pages.ts';
 import {
+  budgetPaths,
+  entryOrThrow,
+  extraKey,
+  extraOf,
+} from '../../contract/__testing__/budget-paths.ts';
+import {
   FAQ_ANSWER_LENGTH,
   FAQ_ITEMS,
   WORDS,
@@ -29,27 +35,35 @@ const ES_FULL_LENGTH_PIN = 40_836;
 const WEB_ROOT = resolve(import.meta.dirname, '../../..');
 const PAGE = join(WEB_ROOT, 'src/contract/__testing__/budget-page.astro');
 const out = mkdtempSync(join(tmpdir(), 'calculator-budget-'));
+const LOCALES = ['en', 'es'] as const;
+/** The page ids as plain strings: the seeded build pads `concrete`, the others must keep their size. */
+const ALL_IDS: readonly string[] = CALCULATOR_PAGES;
+
+/** Every environment key a build set: `afterAll` deletes them all, so no padding leaks to a later file. */
+const envKeys = new Set<string>();
 
 afterAll(() => {
   rmSync(out, { recursive: true, force: true });
-  delete process.env['BUDGET_EXTRA_EN'];
-  delete process.env['BUDGET_EXTRA_ES'];
+  for (const key of envKeys) Reflect.deleteProperty(process.env, key);
 });
 
 type Locales = Record<'en' | 'es', number>;
+/** Extra characters of copy by calculator id and locale; a missing id or locale is not padded. */
+type Extra = Readonly<Record<string, Partial<Locales>>>;
 
 /** The bytes the injected `<p></p>` of the seeded copy adds around its text. */
 const PARAGRAPH = '<p></p>'.length;
 
 /**
- * Builds the site with the production pipeline plus one injected route, the placeholder page, and
- * returns its two HTML files. `extra` characters of copy are added to each page, by locale.
+ * Builds the site with the production pipeline plus one injected route, the placeholder page of
+ * every calculator page id, and returns their HTML files by id and locale. `extra` characters of
+ * copy are added to the pages named by id and locale.
  */
-const build = async (name: string, extra: Locales = { en: 0, es: 0 }) => {
+const build = async (name: string, extra: Extra = {}) => {
   // the production site is built once per name: the built-HTML assertions below read the same output
   const cached = built.get(name);
   if (cached !== undefined) {
-    if (cached.extra.en !== extra.en || cached.extra.es !== extra.es) {
+    if (JSON.stringify(cached.extra) !== JSON.stringify(extra)) {
       throw new Error(`build '${name}' was already made with other extra copy`);
     }
     return cached.result;
@@ -59,15 +73,20 @@ const build = async (name: string, extra: Locales = { en: 0, es: 0 }) => {
   return result;
 };
 
-const built = new Map<string, { extra: Locales; result: ReturnType<typeof buildSite> }>();
+const built = new Map<string, { extra: Extra; result: ReturnType<typeof buildSite> }>();
 
-const buildSite = async (name: string, extra: Locales) => {
+const buildSite = async (name: string, extra: Extra) => {
   // `astro` must load as the Node package, not through the test bundler
   const { build: astroBuild } = await importFromRoot<{
     build: (config: AstroInlineConfig) => Promise<void>;
   }>('node_modules/astro/dist/index.js');
-  process.env['BUDGET_EXTRA_EN'] = String(extra.en);
-  process.env['BUDGET_EXTRA_ES'] = String(extra.es);
+  for (const id of CALCULATOR_PAGES) {
+    for (const locale of LOCALES) {
+      const key = extraKey(id, locale);
+      envKeys.add(key);
+      process.env[key] = String(extra[id]?.[locale] ?? 0);
+    }
+  }
   const outDir = join(out, name);
   await astroBuild({
     root: WEB_ROOT,
@@ -78,20 +97,36 @@ const buildSite = async (name: string, extra: Locales) => {
         name: 'budget-page',
         hooks: {
           'astro:config:setup': ({ injectRoute }) => {
-            injectRoute({ pattern: '/zz-budget/[locale]', entrypoint: PAGE, prerender: true });
+            injectRoute({
+              pattern: '/zz-budget/[id]/[locale]',
+              entrypoint: PAGE,
+              prerender: true,
+            });
           },
         },
       },
     ],
   });
-  const read = (locale: 'en' | 'es') => readFileSync(join(outDir, 'zz-budget', `${locale}.html`));
-  return { en: read('en'), es: read('es') };
+  const read = (id: string, locale: 'en' | 'es') =>
+    readFileSync(join(outDir, 'zz-budget', id, `${locale}.html`));
+  return Object.fromEntries(
+    CALCULATOR_PAGES.map((id) => [id, { en: read(id, 'en'), es: read(id, 'es') }]),
+  );
 };
 
-const sizesOf = (files: Record<'en' | 'es', Buffer>): Locales => ({
-  en: files.en.length,
-  es: files.es.length,
-});
+/** The sizes of the pages of one id, by locale. */
+const sizeOf = async (name: string, id: string, extra?: Extra): Promise<Locales> => {
+  const files = Object.entries(await build(name, extra)).find(([key]) => key === id)?.[1];
+  if (files === undefined) throw new Error(`no budget page was built for ${id}`);
+  return { en: files.en.length, es: files.es.length };
+};
+
+/** The built HTML of one budget page. */
+const pageOf = async (name: string, id: string, locale: 'en' | 'es'): Promise<string> => {
+  const files = Object.entries(await build(name)).find(([key]) => key === id)?.[1];
+  if (files === undefined) throw new Error(`no budget page was built for ${id}`);
+  return files[locale].toString('utf8');
+};
 
 /** The resolved Astro config: the same object the build reads, not the text of the file. */
 const { default: config } = await importFromRoot<{ default: AstroUserConfig }>(
@@ -288,22 +323,67 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
   );
 });
 
-describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7]; design C18, DR-16)', () => {
-  // spec: site-quality › [SQ7] with full-length copy: 1,500 words, 8 FAQ answers of 450 characters,
-  // the JSON-LD, every template, the inline CSS, the real head and the script island, built by the
-  // real pipeline, in both locales
-  it('fits the HTML budget with full-length copy, the JSON-LD and the inlined CSS', async () => {
-    const sizes = sizesOf(await build('base'));
-    console.info(
-      `calculator page HTML with full-length copy: en ${String(sizes.en)} B, es ${String(sizes.es)} B of ${String(HTML_BUDGET)} B`,
-    );
-    expect(sizes.en).toBeLessThanOrEqual(HTML_BUDGET);
-    expect(sizes.es).toBeLessThanOrEqual(HTML_BUDGET);
-  }, 120_000);
+describe('the budget fixture by id (site-quality › [SQ33], [SQ36])', () => {
+  // spec: site-quality › [SQ33] the pages are derived from the calculator page ids and the locales
+  it('builds one page per id and locale, and a seeded second id adds two', () => {
+    expect(budgetPaths(['concrete'], LOCALES)).toEqual([
+      { params: { id: 'concrete', locale: 'en' } },
+      { params: { id: 'concrete', locale: 'es' } },
+    ]);
+    expect(
+      budgetPaths(['concrete', 'rectangle-area'], LOCALES).map(({ params }) => params),
+    ).toEqual([
+      { id: 'concrete', locale: 'en' },
+      { id: 'concrete', locale: 'es' },
+      { id: 'rectangle-area', locale: 'en' },
+      { id: 'rectangle-area', locale: 'es' },
+    ]);
+  });
+
+  // spec: site-quality › [SQ36] the padding is keyed by id and locale
+  it('names the padding variable by id and locale', () => {
+    expect(extraKey('concrete', 'es')).toBe('BUDGET_EXTRA_CONCRETE_ES');
+    expect(extraKey('rectangle-area', 'es')).toBe('BUDGET_EXTRA_RECTANGLE_AREA_ES');
+  });
+
+  it('pads only the page its variable names', () => {
+    const env = { BUDGET_EXTRA_RECTANGLE_AREA_ES: '12' };
+    expect(extraOf(env, 'rectangle-area', 'es')).toBe(12);
+    expect(extraOf(env, 'rectangle-area', 'en')).toBe(0);
+    expect(extraOf(env, 'concrete', 'es')).toBe(0);
+    expect(extraOf({}, 'concrete', 'es')).toBe(0);
+  });
+
+  it('throws naming the id when a page id has no entry', () => {
+    expect(entryOrThrow({ data: 1 }, 'concrete', 'es')).toEqual({ data: 1 });
+    expect(() => {
+      entryOrThrow(undefined, 'rectangle-area', 'es');
+    }).toThrow('no calculator entry for es/rectangle-area');
+  });
+});
+
+describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-quality › [SQ7], [SQ33], [SQ34]; design C18, DR-16)', () => {
+  // spec: site-quality › [SQ7], [SQ34] with full-length copy: 1,500 words, 8 FAQ answers of 450
+  // characters, the JSON-LD, every template, the inline CSS, the real head and the script island,
+  // built by the real pipeline, in both locales, for every calculator page id
+  it.each(CALCULATOR_PAGES)(
+    'fits the HTML budget with full-length copy, the JSON-LD and the inlined CSS: %s',
+    async (id) => {
+      const sizes = await sizeOf('base', id);
+      for (const locale of LOCALES) {
+        const headroom = HTML_BUDGET - sizes[locale];
+        console.info(
+          `[SQ34] ${id} ${locale} full-length: ${String(sizes[locale])} B of ${String(HTML_BUDGET)} B (headroom ${String(headroom)} B)`,
+        );
+        expect(sizes[locale]).toBeLessThanOrEqual(HTML_BUDGET);
+      }
+    },
+    120_000,
+  );
 
   // spec: calculator-page › [CP66] the Spanish full-length proof stays at or under 40,836 B at every PR tip
   it('keeps the Spanish full-length proof at 40,836 B or less', async () => {
-    const { es } = sizesOf(await build('base'));
+    const { es } = await sizeOf('base', 'concrete');
     console.info(
       `[CP66] Spanish full-length proof: ${String(es)} B of ${String(ES_FULL_LENGTH_PIN)} B`,
     );
@@ -312,29 +392,34 @@ describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-qua
 
   // the JSON-LD of the proof is the real builder's, serialized by the real serializer
   it('carries the JSON-LD graph of calculatorJsonLd for the full-length FAQ', async () => {
-    const files = await build('jsonld');
+    await build('jsonld');
     for (const locale of ['en', 'es'] as const) {
       const view = pageView('concrete', locale);
       const expected = serializeJsonLd(
         calculatorJsonLd({ id: 'concrete', name: view.title }, locale, faqOf(locale), ROUTES),
       );
-      expect(files[locale].toString('utf8')).toContain(
+      expect(await pageOf('jsonld', 'concrete', locale)).toContain(
         `<script type="application/ld+json">${expected}</script>`,
       );
     }
   }, 120_000);
 
-  // seeded: one byte past the measured headroom fails, so a copy that is too long cannot pass unnoticed
+  // seeded: one byte past the measured headroom fails, so a copy that is too long cannot pad unnoticed
+  // (spec: site-quality › [SQ36] the seeded build pads concrete only, and the other ids stay at their size)
   it('is exactly one byte over the budget once the measured headroom plus one byte is added', async () => {
-    const base = sizesOf(await build('base-again'));
+    const base = await sizeOf('base-again', 'concrete');
     const headroom = (locale: 'en' | 'es') => HTML_BUDGET - base[locale];
-    const seeded = sizesOf(
-      await build('seeded', {
+    const seeded = await sizeOf('seeded', 'concrete', {
+      concrete: {
         en: headroom('en') + 1 - PARAGRAPH,
         es: headroom('es') + 1 - PARAGRAPH,
-      }),
-    );
+      },
+    });
     expect(seeded).toEqual({ en: HTML_BUDGET + 1, es: HTML_BUDGET + 1 });
+    // no other id of the table is padded by the concrete variables
+    for (const id of ALL_IDS.filter((page) => page !== 'concrete')) {
+      expect(await sizeOf('seeded', id)).toEqual(await sizeOf('base-again', id));
+    }
   }, 120_000);
 
   it('uses the sizes the spec fixes: 8 answers of 450 characters and 1,500 words', () => {

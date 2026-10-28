@@ -53,7 +53,7 @@ export const words = (locale: Locale, count: number, offset = 0): string => {
 /** Exactly 8 items whose answers are exactly as long as the cap (450 characters). */
 export const faqOf = (locale: Locale): FaqItem[] =>
   Array.from({ length: FAQ_ITEMS }, (_, index) => ({
-    question: `Placeholder question number ${String(index + 1)} about concrete?`,
+    question: `Placeholder question number ${String(index + 1)} about the page?`,
     answer: `${words(locale, 150, index).slice(0, FAQ_ANSWER_LENGTH - 1)}.`,
   }));
 

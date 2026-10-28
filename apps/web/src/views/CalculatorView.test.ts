@@ -12,6 +12,7 @@ import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import CatchAll from '../pages/[...path].astro';
 import CalculatorView from './CalculatorView.astro';
+import { pascalOf } from './scripts.ts';
 
 const render = (locale: 'en' | 'es') =>
   renderComponent(CalculatorView, { id: 'concrete', locale }, { partial: false });
@@ -172,9 +173,17 @@ describe('CalculatorView script (site-shell › [SS20])', () => {
     },
   );
 
+  // the recipe and the proof name the island of a hyphenated id in Pascal case
+  it.each([
+    ['concrete', 'Concrete'],
+    ['rectangle-area', 'RectangleArea'],
+  ])('writes the id %s in Pascal case as %s', (id, pascal) => {
+    expect(pascalOf(id)).toBe(pascal);
+  });
+
   it('has an island file named after every calculator page id', () => {
     for (const id of CALCULATOR_PAGES) {
-      const island = `${id.charAt(0).toUpperCase()}${id.slice(1)}Script.astro`;
+      const island = `${pascalOf(id)}Script.astro`;
       expect(existsSync(fromRoot(`apps/web/src/islands/${island}`)), island).toBe(true);
     }
   });

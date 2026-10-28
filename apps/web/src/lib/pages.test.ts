@@ -4,6 +4,7 @@ import { concretePage } from '../calculator/concrete/page.ts';
 import { controllerOf } from '../calculator/controller.ts';
 import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
+import { SCRIPTS } from '../views/scripts.ts';
 import { PAGES, pageView } from './pages.ts';
 
 describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC27])', () => {
@@ -32,28 +33,16 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
 
 describe('CalculatorView follows the page id (calculator-web-core › [CWC26], [CWC27])', () => {
   const source = readFileSync(fromRoot('apps/web/src/views/CalculatorView.astro'), 'utf8');
-  /** The keys of the `SCRIPTS` table, one row per page id. */
-  const scriptIds = (code: string): string[] =>
-    Array.from(
-      /const SCRIPTS[^=]*=\s*\{([^}]*)\}/s.exec(code)?.[1]?.matchAll(/^\s*([\w-]+):/gm) ?? [],
-      ([, id = '']) => id,
-    );
 
-  // spec: calculator-web-core › [CWC26] one script row for each calculator page id
+  // spec: calculator-web-core › [CWC26] one script row for each calculator page id, a quoted key included
   it('has a SCRIPTS row for each calculator page id and no other', () => {
-    expect(scriptIds(source)).toEqual([...CALCULATOR_PAGES]);
-  });
-
-  it('reads the ids of a table from its keys', () => {
-    expect(scriptIds('const SCRIPTS = {\n  a: A,\n  b: B,\n} as const;')).toEqual(['a', 'b']);
+    expect(Object.keys(SCRIPTS)).toEqual([...CALCULATOR_PAGES]);
   });
 
   // spec: calculator-web-core › [CWC27] the view is built from the id it is given, never from one calculator
-  it('names no calculator outside the script table', () => {
+  it('names no calculator in the view and reads its script from the table', () => {
     expect(source).not.toContain('concreteView');
-    const outside = source
-      .replace(/^import .*$/gm, '')
-      .replace(/const SCRIPTS[\s\S]*?\n\}[^\n]*\n/, '');
-    expect(outside).not.toMatch(/concrete/i);
+    expect(source.replace(/^import .*$/gm, '')).not.toMatch(/concrete/i);
+    expect(source).toContain("from './scripts.ts'");
   });
 });
