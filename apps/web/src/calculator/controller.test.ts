@@ -12,6 +12,7 @@ import {
 import { controllerOf, type Environment, type UiEvent } from './controller.ts';
 import { definePage, type Ready } from './page-module.ts';
 import { choiceSlot } from './slots/choices.ts';
+import type { Plan } from './slots/drawing.ts';
 import { shoppingSlot } from './slots/shopping.ts';
 import { stepperSlot } from './slots/steppers.ts';
 
@@ -316,6 +317,37 @@ describe('the plan of each ready moment (calculator-web-core › [CWC41]; bluepr
   it('reads a missing message as empty, so a label never shows its key', () => {
     const controller = controllerOf(drawn(stub));
     expect(controller.start(ENV, '').view.plan?.name).toBe('');
+  });
+
+  // The page writes only the declared messages into its inert template, so a plan naming another
+  // one would mount with an empty name or label: creation fails instead (calculator-web-core › [CWC3])
+  /** The stub with its one label a page message instead of a text, and a plain-text name. */
+  const labelled = (moment: Moment): Plan => ({
+    ...stub(moment),
+    name: { text: 'plan' },
+    labels: stub(moment).labels.map((label) => ({
+      ...label,
+      label: { message: 'side', fills: {} },
+    })),
+  });
+  it.each<[string, (moment: Moment) => Plan, string]>([
+    ['the name', stub, 'drawing'],
+    ['a label', labelled, 'side'],
+  ])(
+    'throws PAGE_KEY at creation when %s of the default plan is an undeclared message',
+    (_what, plan, at) => {
+      const module = definePage({
+        calculator: rectangleArea,
+        drawing: { frame: FRAME, messages: ['other'], plan },
+      });
+      const error = pageModuleErrorOf(() => controllerOf(module));
+      expect(error.code).toBe('PAGE_KEY');
+      expect(error.cause).toEqual({ id: 'rectangle-area', at });
+    },
+  );
+
+  it('creates the controller when every message of the default plan is declared', () => {
+    expect(() => controllerOf(drawn(stub))).not.toThrow();
   });
 
   // spec: blueprint-drawing › [BD19] input: a state with no plan gives null, so the box empties
