@@ -98,8 +98,8 @@ interface Ui {
   /** The slot elements: empty lists for a page that declares no such slot. */
   readonly lines: readonly Line[];
   readonly figures: readonly Element[];
-  readonly costRows: readonly Element[];
-  readonly hintRows: readonly Element[];
+  /** The cost figures and their price hints, two spans of each cost row that the script swaps. */
+  readonly costs: readonly Element[];
   readonly copyButton: HTMLElement;
   readonly copyStatus: Element;
   readonly copyArea: Element;
@@ -134,8 +134,7 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
     ],
   })),
   figures: findAll(root, '[data-output]'),
-  costRows: findAll(root, '[data-cost-row]'),
-  hintRows: findAll(root, '[data-hint-row]'),
+  costs: findAll(root, '[data-cost-row], [data-price-hint]'),
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
   copyArea: find(root, '[data-reserved="copy"]'),
@@ -189,11 +188,11 @@ const renderPanel = (ui: Ui, view: View): void => {
     setText(output, figure);
     output.closest('.calc-row')?.toggleAttribute('hidden', key === panel.primary.key);
   }
-  for (const row of ui.costRows) {
-    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-cost-row') ?? ''] !== true);
-  }
-  for (const row of ui.hintRows) {
-    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-hint-row') ?? ''] === true);
+  // the figure shows once its price is above zero, the hint while it is zero
+  for (const span of ui.costs) {
+    const figure = span.getAttribute('data-cost-row');
+    const shown = panel.costs[figure ?? span.getAttribute('data-price-hint') ?? ''] === true;
+    span.toggleAttribute('hidden', figure === null ? shown : !shown);
   }
   for (const [index, row] of ui.lines.entries()) {
     const line = panel.shopping[index];

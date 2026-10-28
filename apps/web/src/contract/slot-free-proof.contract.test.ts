@@ -209,6 +209,12 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     ).toEqual([]);
   });
 
+  // trim C of blueprint-panel: the cost row holds its hint, so the hint-row hook is gone
+  it('looks up no hint row: the cost figure and its hint are spans of one row', () => {
+    expect(mount).not.toContain('data-hint-row');
+    expect(mount).toContain("'[data-cost-row], [data-price-hint]'");
+  });
+
   it('does not flag a list lookup of a slot element', async () => {
     expect(
       lookupProblems(`${mount}\nfindAll(root, '[data-choice]');`, await render(), keys),

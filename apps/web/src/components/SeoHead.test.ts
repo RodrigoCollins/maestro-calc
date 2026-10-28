@@ -53,6 +53,11 @@ describe('SeoHead (site-seo › Document head)', () => {
     expect(head.querySelector('meta[name=robots]')).toBeNull();
   });
 
+  // trim E of blueprint-panel: the generator meta is gone (site-quality › [SQ39])
+  it('names no generator', async () => {
+    expect((await render(indexable)).querySelectorAll('meta[name=generator]')).toHaveLength(0);
+  });
+
   // spec: site-shell › [SS17] icon link
   it('links the SVG favicon and no .ico', async () => {
     const head = await render(indexable);

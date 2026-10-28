@@ -68,7 +68,11 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
         .querySelectorAll('[data-shopping]')
         .map((el) => [el.getAttribute('data-shopping'), el.text]),
     ).toEqual([['bag-80', '74']]);
-    expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe('Concrete mix, 80 lb bags');
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text).toBe(
+      'Concrete mix, 80 lb bags',
+    );
+    // trims C and D of blueprint-panel: no label class, no separate hint row
+    expect(root.querySelectorAll('.calc-label, .calc-hint, [data-hint-row]')).toHaveLength(0);
     expect(root.querySelector('[data-line-note="0"]')?.text).toBe('About 0.60 cubic feet per bag');
     for (const key of ['bagCost', 'readyMixCost']) {
       expect(root.querySelector(`[data-output="${key}"]`)?.closest('[hidden]'), key).not.toBeNull();
@@ -94,7 +98,7 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
       ['readyMixCost', '$0.00'],
     ]);
     expect(root.querySelector('[data-shopping="bag-80"]')?.text).toBe('74');
-    expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe(
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text).toBe(
       'Mezcla de concreto, bolsas de 80 lb',
     );
     expect(root.querySelector('[data-line-note="0"]')?.text).toBe(

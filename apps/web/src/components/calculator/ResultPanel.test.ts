@@ -111,30 +111,38 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
   });
 
   // spec: calculator-page › [CP1] cost rows are hidden at a price of zero and the hint shows
+  // trim C of blueprint-panel: the cost and its hint are one row, the two spans swap (site-quality › [SQ39])
   it('hides a cost row without a price and shows its hint, and the reverse with one', async () => {
+    type Root = Awaited<ReturnType<typeof renderComponent>>;
+    const hidden = (root: Root, selector: string): boolean | undefined =>
+      root.querySelector(selector)?.hasAttribute('hidden');
     const without = await renderComponent(ResultPanel, { result });
+    const rows = without.querySelectorAll('p.calc-cost');
+    expect(rows.map((row) => row.hasAttribute('hidden'))).toEqual([false, false]);
     expect(
-      without.querySelectorAll('[data-cost-row]').map((el) => el.hasAttribute('hidden')),
-    ).toEqual([true, true]);
-    expect(
-      without.querySelectorAll('[data-hint-row]').map((el) => el.hasAttribute('hidden')),
-    ).toEqual([false, false]);
+      rows.map((row) => [
+        row.querySelector('span:first-child')?.text,
+        row.querySelector('[data-output][data-cost-row]')?.getAttribute('data-cost-row'),
+        row.querySelector('[data-price-hint]')?.getAttribute('data-price-hint'),
+      ]),
+    ).toEqual([
+      ['Cost of the bags', 'bagCost', 'bagCost'],
+      ['Cost of ready-mix', 'readyMixCost', 'readyMixCost'],
+    ]);
+    expect(without.querySelectorAll('[data-hint-row], .calc-hint')).toHaveLength(0);
+    expect(hidden(without, '[data-cost-row="bagCost"]')).toBe(true);
+    expect(hidden(without, '[data-price-hint="bagCost"]')).toBe(false);
     expect(without.querySelector('[data-price-hint="bagCost"]')?.text).toBe(
       'Add your price to see the cost',
     );
 
     const costs = [{ ...result.costs[0], value: '$481.00', visible: true }, result.costs[1]];
     const withPrice = await renderComponent(ResultPanel, { result: { ...result, costs } });
-    expect(withPrice.querySelector('[data-cost-row="bagCost"]')?.hasAttribute('hidden')).toBe(
-      false,
-    );
-    expect(withPrice.querySelector('[data-hint-row="bagCost"]')?.hasAttribute('hidden')).toBe(true);
-    expect(withPrice.querySelector('[data-cost-row="readyMixCost"]')?.hasAttribute('hidden')).toBe(
-      true,
-    );
-    expect(withPrice.querySelector('[data-cost-row="bagCost"] [data-output]')?.text).toBe(
-      '$481.00',
-    );
+    expect(hidden(withPrice, '[data-cost-row="bagCost"]')).toBe(false);
+    expect(hidden(withPrice, '[data-price-hint="bagCost"]')).toBe(true);
+    expect(hidden(withPrice, '[data-cost-row="readyMixCost"]')).toBe(true);
+    expect(hidden(withPrice, '[data-price-hint="readyMixCost"]')).toBe(false);
+    expect(withPrice.querySelector('[data-cost-row="bagCost"]')?.text).toBe('$481.00');
   });
 
   // spec: calculator-page › [CP17] the estimate note and the terms link

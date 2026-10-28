@@ -346,8 +346,20 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   // spec: calculator-page › Form controls: inputs at least 56 px, every other control the target size
   it('makes the text inputs 56 px tall and the buttons the 44 px target in both directions', () => {
     expect(rem(declared('.calc-field input', 'min-height'))).toBe(56);
-    expect(declared('.calc-choice', 'min-height')).toBe('2.75rem');
-    expect(declared('.calc-choice', 'min-width')).toBe('2.75rem');
+    expect(declared('.calc-form button', 'min-height')).toBe('2.75rem');
+    expect(declared('.calc-form button', 'min-width')).toBe('2.75rem');
+  });
+
+  // trim B of blueprint-panel: every button of the form is a choice, so the selector names the
+  // element and no button carries a class for it (site-quality › [SQ39])
+  it('styles the form buttons by element, with no calc-choice class left in CSS or markup', () => {
+    expect([...rules.keys()].filter((selector) => /\.calc-choice(?![\w-])/.test(selector))).toEqual(
+      [],
+    );
+    const markup = globSync('apps/web/src/**/*.astro', { cwd: fromRoot() }).filter((path) =>
+      readFileSync(fromRoot(path), 'utf8').includes('class="calc-choice"'),
+    );
+    expect(markup).toEqual([]);
   });
 
   // spec: calculator-page › Layout stability: figures in fixed-width cells with tabular digits

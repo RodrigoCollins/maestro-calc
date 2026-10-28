@@ -16,13 +16,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       {unitsLabel}
     </span>
     {units.map((choice) => (
-      <button
-        class="calc-choice"
-        type="button"
-        data-unit={choice.id}
-        aria-pressed={pressed(choice)}
-        disabled
-      >
+      <button type="button" data-unit={choice.id} aria-pressed={pressed(choice)} disabled>
         {choice.label}
       </button>
     ))}
@@ -40,13 +34,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
             {item.label}
           </span>
           {item.choices.map((choice) => (
-            <button
-              class="calc-choice"
-              type="button"
-              value={choice.id}
-              aria-pressed={pressed(choice)}
-              disabled
-            >
+            <button type="button" value={choice.id} aria-pressed={pressed(choice)} disabled>
               {choice.label}
             </button>
           ))}
@@ -64,10 +52,10 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
         <CalculatorField field={item.field} />
         {item.stepper !== undefined && (
           <div class="calc-steppers" data-step={item.stepper.key}>
-            <button class="calc-choice" type="button" value="less" hidden disabled>
+            <button type="button" value="less" hidden disabled>
               {item.stepper.less}
             </button>
-            <button class="calc-choice" type="button" value="more" hidden disabled>
+            <button type="button" value="more" hidden disabled>
               {item.stepper.more}
             </button>
           </div>
@@ -76,7 +64,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
     ),
   )}
   <div class="calc-copy" data-reserved="copy">
-    <button class="calc-choice" type="button" data-copy hidden disabled>
+    <button type="button" data-copy hidden disabled>
       {copyLabel}
     </button>
     <p class="calc-status" data-copy-status role="status"></p>

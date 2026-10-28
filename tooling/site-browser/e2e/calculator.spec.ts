@@ -134,8 +134,10 @@ for (const calculator of calculatorPages) {
           'inputmode',
           spec.numeric.includes(name) ? 'numeric' : 'decimal',
         );
-        await expect(field, name).toHaveAttribute('autocomplete', 'off');
+        // the input inherits the form's autocomplete state: it sets none of its own
+        await expect(field, name).not.toHaveAttribute('autocomplete');
       }
+      await expect(page.locator('form.calc-form')).toHaveAttribute('autocomplete', 'off');
       await expect(page.locator('form button[type=submit], form input[type=submit]')).toHaveCount(
         0,
       );
@@ -273,7 +275,14 @@ for (const calculator of calculatorPages) {
           }
           await input(page, price.input).fill(price.text);
           await expect(output(page, price.output)).toHaveText(price.value);
+          await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeVisible();
           if (price.hinted === true) {
+            // the figure and its hint are two spans of one row; the mount swaps them
+            await expect(
+              page.locator(
+                `p.calc-cost:has(> [data-cost-row="${price.output}"]):has(> [data-price-hint="${price.output}"])`,
+              ),
+            ).toHaveCount(1);
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeHidden();
           }
         }

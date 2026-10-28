@@ -16,7 +16,11 @@ describe('ShoppingLine (calculator-page › Result panel, [CP4], [CP15], [CP54])
     const root = await renderComponent(ShoppingLine, { line, index: 0 });
     expect(root.querySelectorAll('[data-shopping]')).toHaveLength(1);
     expect(root.querySelector('[data-shopping="bag-80"]')?.text).toBe('74');
-    expect(root.querySelector('.calc-label')?.text).toBe('Concrete mix, 80 lb bags');
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text).toBe(
+      'Concrete mix, 80 lb bags',
+    );
+    // trim D of blueprint-panel: no CSS rule reads a label class, so the span carries none
+    expect(root.querySelectorAll('.calc-label')).toHaveLength(0);
     expect(root.querySelector('[data-line-note="0"]')?.text).toBe('About 0.60 cubic feet per bag');
   });
 
@@ -24,7 +28,9 @@ describe('ShoppingLine (calculator-page › Result panel, [CP4], [CP15], [CP54])
   it('numbers the line and its note and names the fill of each', async () => {
     const root = await renderComponent(ShoppingLine, { line, index: 0 });
     expect(root.querySelectorAll('[data-line="0"]')).toHaveLength(1);
-    expect(root.querySelector('[data-line="0"] .calc-label [data-fill="bagLb"]')?.text).toBe('80');
+    expect(root.querySelector('[data-line="0"] > span:first-child [data-fill="bagLb"]')?.text).toBe(
+      '80',
+    );
     expect(root.querySelector('[data-line-note="0"] [data-fill="yield"]')?.text).toBe('0.60');
   });
 
@@ -44,7 +50,7 @@ describe('ShoppingLine (calculator-page › Result panel, [CP4], [CP15], [CP54])
       line: { unit: 'bag-b', qty: '7', label: { before: 'Bags', value: '', after: '' } },
       index: 1,
     });
-    expect(root.querySelector('.calc-label')?.text.trim()).toBe('Bags');
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text.trim()).toBe('Bags');
     expect(root.querySelectorAll('[data-fill]')).toHaveLength(0);
     expect(root.querySelectorAll('[data-line-note]')).toHaveLength(0);
     const plain = await renderComponent(ShoppingLine, {

@@ -86,7 +86,7 @@
   font-weight: 600;
 }
 
-.calc-choice,
+.calc-form button,
 .calc-field input,
 .calc-fallback {
   border: 2px solid var(--color-text);
@@ -95,19 +95,19 @@
   font: inherit;
 }
 
-.calc-choice {
+.calc-form button {
   min-height: var(--target-size);
   min-width: var(--target-size);
   padding: 0 var(--space-3);
   cursor: pointer;
 }
 
-.calc-choice[aria-pressed='true'] {
+.calc-form button[aria-pressed='true'] {
   background: var(--color-text);
   color: var(--color-surface);
 }
 
-.calc-choice:disabled {
+.calc-form button:disabled {
   cursor: default;
   opacity: 0.6;
 }
@@ -207,8 +207,7 @@
 
 .calc-row,
 .calc-shopping,
-.calc-cost,
-.calc-hint {
+.calc-cost {
   display: flex;
   justify-content: space-between;
   gap: var(--space-3);

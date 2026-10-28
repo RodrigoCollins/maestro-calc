@@ -149,11 +149,13 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
         expect(label?.text.trim(), name).toBe(
           catalog[`calc.concrete.inputs.${name}` as keyof typeof catalog],
         );
-        expect(input.getAttribute('autocomplete'), name).toBe('off');
+        // the form owns autocomplete="off" and every input inherits it: none sets its own
+        expect(input.hasAttribute('autocomplete'), name).toBe(false);
         expect(input.getAttribute('inputmode'), name).toBe(
           name === 'count' || name === 'stepCount' ? 'numeric' : 'decimal',
         );
       }
+      expect(root.querySelector('form')?.getAttribute('autocomplete')).toBe('off');
       expect(new Set(inputs.map((input) => input.getAttribute('id'))).size).toBe(inputs.length);
       expect(root.querySelectorAll('button[type=submit], input[type=submit]')).toHaveLength(0);
       expect(
