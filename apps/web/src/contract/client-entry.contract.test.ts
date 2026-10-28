@@ -2,6 +2,7 @@ import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
@@ -143,5 +144,63 @@ describe('the bundle check finds what it forbids (seeded)', () => {
       `${ENTRY_SOURCE}\nexport const u = 'https://maestrocalc.com${ROUTES[FIRST].en}';`,
     );
     expect(problemsOf(code)).toEqual([]);
+  });
+});
+
+/** What a graph that draws may not hold: HTML parsing, dynamic code, or a namespace literal (blueprint-drawing › [BD24]). */
+const WRITER_BANNED = [
+  'innerHTML',
+  'outerHTML',
+  'insertAdjacentHTML',
+  'DOMParser',
+  'eval(',
+  'new Function',
+  'w3.org',
+];
+const writerProblems = (code: string): string[] =>
+  WRITER_BANNED.filter((word) => code.includes(word)).map((word) => `uses ${word}`);
+
+const WRITER = fromRoot('apps/web/src/client/draw.ts');
+
+describe('the drawing writer builds nodes with DOM calls only (blueprint-drawing › [BD24]; site-quality › [SQ41])', () => {
+  // spec: blueprint-drawing › [BD24] the writer's bundle holds no HTML parsing, dynamic code or namespace literal
+  it('holds no HTML string, dynamic code, namespace or foreign URL in its build', async () => {
+    const { code } = await buildClient(`export * from '${WRITER}';`);
+    expect(code).toContain('createElementNS');
+    expect(writerProblems(code)).toEqual([]);
+    expect(problemsOf(code)).toEqual([]);
+  });
+
+  it.each(CALCULATOR_PAGES)('%s client entry holds none of them either', async (id) => {
+    const { code } = await buildClient(entrySourceOf(id));
+    expect(writerProblems(code)).toEqual([]);
+  });
+
+  // spec: blueprint-drawing › [BD24] the namespace is the box's own
+  it('creates every node in the namespace of the box', () => {
+    const calls = Array.from(
+      readFileSync(WRITER, 'utf8').matchAll(/createElementNS\(([^,)]*)/g),
+      ([, namespace = '']) => namespace.trim(),
+    );
+    expect(calls.length).toBeGreaterThan(0);
+    expect(new Set(calls)).toEqual(new Set(['box.namespaceURI']));
+  });
+
+  // seeded: each banned use is found in a build
+  it.each([
+    [
+      'an innerHTML write',
+      `export const w = (e) => { e.innerHTML = '<b>x</b>'; };`,
+      'uses innerHTML',
+    ],
+    ['a parser', `export const p = () => new DOMParser();`, 'uses DOMParser'],
+    [
+      'a namespace literal',
+      `export const n = (d) => d.createElementNS('svg-in-w3.org', 'g');`,
+      'uses w3.org',
+    ],
+  ])('flags %s next to the writer', async (_what, extra, expected) => {
+    const { code } = await buildClient(`export * from '${WRITER}';\n${extra}`);
+    expect(writerProblems(code)).toContain(expected);
   });
 });

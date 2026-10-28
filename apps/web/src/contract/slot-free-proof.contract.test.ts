@@ -35,6 +35,8 @@ describe('slot-free proof entry: source graph and size (calculator-web-core › 
     expect(
       modules.filter((id) => /\/apps\/web\/src\/calculator\/(slots|concrete)\//.test(id)),
     ).toEqual([]);
+    // spec: calculator-web-core › [CWC43] the proof entry reaches no drawing writer either
+    expect(reaches(modules, '/apps/web/src/client/draw.ts')).toBe(false);
     expect(graphViolations(modules, 'rectangle-area')).toEqual([]);
   });
 
@@ -118,13 +120,13 @@ const lookupProblems = (source: string, root: Root, keys: readonly string[]): st
       (!LAYOUT_SELECTORS.includes(selector) && root.querySelector(selector) === null),
   );
 
-describe('slot-free markup (calculator-web-core › [CWC33])', () => {
+describe('slot-free markup (calculator-web-core › [CWC33], [CWC45])', () => {
   // spec: calculator-web-core › [CWC33] no slot element, and the elements every page has
   it('has no slot element and the elements of a page with two fields and three outputs', async () => {
     const root = await render();
     expect(
       root.querySelectorAll(
-        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint]',
+        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint], [data-drawing]',
       ),
     ).toHaveLength(0);
     expect(root.querySelector('#calc-length')).not.toBeNull();
@@ -168,6 +170,8 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     ['a stepper', "findAs(root, '[data-step]', HTMLElement);", '[data-step]'],
     ['a cost row', 'find(document, "[data-cost-row]");', '[data-cost-row]'],
     ['a key that is not a text input', 'find(root, `#calc-ghost`);', '#calc-ghost'],
+    // spec: calculator-web-core › [CWC44] a throwing lookup of the drawing box is found
+    ['the drawing box', "find(root, '[data-drawing]');", '[data-drawing]'],
   ])('names %s in a failing lookup', async (_what, code, selector) => {
     expect(lookupProblems(`${mount}\n${code}`, await render(), keys)).toEqual([selector]);
   });
@@ -194,6 +198,15 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
         keys,
       ),
     ).toEqual(['non-literal lookup: other']);
+  });
+
+  // spec: calculator-web-core › [CWC44], [CWC47] the box and the share link are looked up as lists
+  it('looks up neither the drawing box nor the share link with a throwing lookup', () => {
+    expect(
+      throwingSelectors(mount, keys).filter((selector) =>
+        ['[data-drawing]', '[data-share]'].includes(selector),
+      ),
+    ).toEqual([]);
   });
 
   it('does not flag a list lookup of a slot element', async () => {
