@@ -26,14 +26,18 @@ const BANNED = [
   'navigator.storage',
 ];
 
-const files = globSync('**/*.ts', { cwd: CLIENT }).sort();
+const files = globSync('**/*.ts', { cwd: CLIENT })
+  .filter((file) => !file.endsWith('.test.ts'))
+  .sort();
 
 const found = (text: string): string[] => BANNED.filter((word) => text.includes(word));
 
 describe('client sources (calculator-page › Client script contract; design C11, C13)', () => {
   // spec: calculator-web-core › [CWC37] one entry per calculator page, scanned with no hand list
-  it('holds the mount and one entry for each calculator page id', () => {
-    expect(files).toEqual([...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`), 'mount.ts'].sort());
+  it('holds the mount, the drawing writer and one entry for each calculator page id', () => {
+    expect(files).toEqual(
+      [...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`), 'draw.ts', 'mount.ts'].sort(),
+    );
   });
 
   // spec: calculator-page › the DOM is written with textContent, value, attributes and hidden only

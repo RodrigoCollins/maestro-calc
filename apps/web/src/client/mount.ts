@@ -10,6 +10,7 @@ import {
 import { errorId, helpId, hintId, inputId } from '../calculator/ids.ts';
 import type { AnyCalculator, AnyPageModule } from '../calculator/page-module.ts';
 import { textKeysOf } from '../calculator/texts.ts';
+import type { Draw } from './draw.ts';
 
 /** The controller types of any calculator: keys are plain strings here, the module decides which exist. */
 type Output = ControllerOutput<AnyCalculator>;
@@ -102,6 +103,8 @@ interface Ui {
   readonly copyButton: HTMLElement;
   readonly copyStatus: Element;
   readonly copyArea: Element;
+  /** The drawing boxes: an empty list for a page that declares no drawing slot. */
+  readonly drawings: readonly Element[];
 }
 
 const collect = (root: Document, keys: readonly string[]): Ui => ({
@@ -136,6 +139,7 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
   copyArea: find(root, '[data-reserved="copy"]'),
+  drawings: findAll(root, '[data-drawing]'),
 });
 
 /** A paragraph the script adds under `parent` (an error message, the link notice), made once. */
@@ -219,7 +223,15 @@ const setPressed = (button: Element, pressed: boolean): void => {
   button.setAttribute('aria-pressed', pressed ? 'true' : 'false');
 };
 
-const render = (ui: Ui, keys: readonly string[], { view }: Output): void => {
+/**
+ * What the entry of a page may hand the mount besides its module: the drawing writer, which only
+ * the entry of a page that declares the drawing slot imports (calculator-web-core › [CWC42]).
+ */
+export interface Hooks {
+  readonly draw?: Draw;
+}
+
+const render = (ui: Ui, keys: readonly string[], { view }: Output, hooks: Hooks): void => {
   for (const key of keys) renderField(ui, key, view);
   if (ui.answer !== null) setText(ui.answer, view.answer ?? '');
   const notice = paragraph(ui.noticeArea, 'calc-notice', '');
@@ -228,6 +240,11 @@ const render = (ui: Ui, keys: readonly string[], { view }: Output): void => {
   renderPanel(ui, view);
   renderChoices(ui, view);
   ui.switchLink.setAttribute('href', view.switchHref);
+  // an invalid state has no plan: the drawing keeps the last one (blueprint-drawing › [BD10])
+  const { plan } = view;
+  if (hooks.draw !== undefined && plan !== undefined) {
+    for (const box of ui.drawings) hooks.draw(box, plan);
+  }
 };
 
 /** The value of `hook` on the nearest group around `button`, `undefined` outside one. */
@@ -274,10 +291,10 @@ const showCopy = (ui: Ui, env: Environment, address: string, copied: boolean): v
 };
 
 /**
- * Turns the server-rendered form of `module` into the live calculator. A failure before the end
- * leaves the static page.
+ * Turns the server-rendered form of `module` into the live calculator, drawing with `hooks.draw`
+ * when the entry passes it. A failure before the end leaves the static page.
  */
-export const mount = (module: AnyPageModule): void => {
+export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   const controller = controllerOf(module);
   const keys = textKeysOf(module.calculator);
   const ui = collect(document, keys);
@@ -291,7 +308,7 @@ export const mount = (module: AnyPageModule): void => {
   let current: State;
   const show = (output: Output): void => {
     current = output.state;
-    render(ui, keys, output);
+    render(ui, keys, output, hooks);
     if (output.write !== undefined) {
       history.replaceState(history.state, '', `${location.pathname}${output.write}`);
     }
