@@ -68,23 +68,49 @@ const source = z.strictObject({
   retrieved: isoDate,
 });
 
-/** The registry ids as a non-empty tuple (`z.enum` needs one); an empty registry is a build error. */
-export const registryIds = (ids: readonly string[]): [string, ...string[]] => {
-  const [first, ...others] = ids;
-  if (first === undefined) throw new Error('the calculator registry is empty');
+/** `items` as a non-empty tuple, or an error naming what is empty. */
+const nonEmpty = <T>(items: readonly T[], what: string): [T, ...T[]] => {
+  const [first, ...others] = items;
+  if (first === undefined) throw new Error(`the ${what} is empty`);
   return [first, ...others];
 };
 
-/** The frontmatter of the entries of one calculator id. */
-const entryOf = <const Id extends ExampleId>(id: Id) =>
-  z.strictObject({
-    id: z.literal(id),
-    locale: z.enum(LOCALES),
-    updated: isoDate,
-    ownerReview: z.enum(['pending', 'approved']),
-    sources: z.array(source).min(1),
-    workedExample: WORKED_EXAMPLES[id],
-  });
+/** The registry ids as a non-empty tuple (`z.enum` needs one); an empty registry is a build error. */
+export const registryIds = (ids: readonly string[]): [string, ...string[]] =>
+  nonEmpty(ids, 'calculator registry');
+
+/** The fields every calculator entry shares, whatever its id. */
+const ENTRY_FIELDS = {
+  locale: z.enum(LOCALES),
+  updated: isoDate,
+  ownerReview: z.enum(['pending', 'approved']),
+  sources: z.array(source).min(1),
+};
+
+/** The schema of the entries of the calculator `Id`: its own literal id and its own example. */
+type EntrySchema<Id extends ExampleId> = z.ZodObject<
+  typeof ENTRY_FIELDS & {
+    id: z.ZodLiteral<Id>;
+    workedExample: (typeof WORKED_EXAMPLES)[Id];
+  },
+  z.core.$strict
+>;
+
+/**
+ * The entry schema of each id of `Ids`, by id. Indexed by `Ids` itself it is one schema for one
+ * id, and the union of their own schemas for a union of ids, which is what keeps each id with its
+ * own example in the union below.
+ */
+type EntrySchemas<Ids extends ExampleId> = { [Id in Ids]: EntrySchema<Id> };
+
+/**
+ * The frontmatter of the entries of one calculator id. Typed through `EntrySchemas` so that
+ * mapping a list of ids gives the union of their own schemas (a correlated union, without a cast).
+ */
+const entryOf = <Id extends ExampleId>(id: Id): EntrySchemas<Id>[Id] =>
+  z.strictObject({ ...ENTRY_FIELDS, id: z.literal(id), workedExample: WORKED_EXAMPLES[id] });
+
+const isExampleId = (id: string): id is ExampleId => Object.hasOwn(WORKED_EXAMPLES, id);
 
 /**
  * Frontmatter of one calculator entry (calculator-page › Page anatomy and content collection):
@@ -97,7 +123,9 @@ export const calculatorSchema = (ids: readonly [string, ...string[]]) => {
   if (stray !== undefined) {
     throw new Error(`worked example for an id outside the registry: ${stray}`);
   }
-  return z.discriminatedUnion('id', [entryOf('concrete'), entryOf('rectangle-area')]);
+  // one member per row of the table: calculator N+1 needs its row and nothing else here
+  const rows = Object.keys(WORKED_EXAMPLES).filter(isExampleId);
+  return z.discriminatedUnion('id', nonEmpty(rows.map(entryOf), 'worked-example table'));
 };
 
 export type CalculatorFrontmatter = z.infer<ReturnType<typeof calculatorSchema>>;
