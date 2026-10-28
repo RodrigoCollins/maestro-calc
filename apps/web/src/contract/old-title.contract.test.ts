@@ -1,4 +1,5 @@
-import { globSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { fromRoot } from './root.ts';
 
@@ -11,21 +12,20 @@ const OLD_TITLES = [
   ['Área de un', 'rectángulo'].join(' '),
 ] as const;
 
-/** Every source of the apps, the packages and the tooling, archived changes and build output aside. */
-const sourceFiles = (): string[] =>
-  globSync(['apps/**/*', 'packages/**/*', 'tooling/**/*'], {
-    cwd: fromRoot('.'),
-    exclude: (name) =>
-      [
-        'node_modules',
-        'dist',
-        '.astro',
-        '.wrangler',
-        '.lighthouseci',
-        'coverage',
-        '.stryker-tmp',
-      ].includes(name),
-  }).filter((file) => /\.(?:ts|astro|md|mjs|json|css)$/.test(file));
+/**
+ * Every source of the apps, the packages and the tooling as git sees it: tracked files and new
+ * untracked ones, never an ignored file (build output, mutation reports, browser test results) and
+ * nothing outside the three trees (`.claude/` worktrees), so a local run reads what CI reads.
+ */
+const sourceFiles = (): string[] => {
+  const git = spawnSync(
+    'git',
+    ['ls-files', '-z', '--cached', '--others', '--exclude-standard', 'apps', 'packages', 'tooling'],
+    { cwd: fromRoot('.'), encoding: 'utf8' },
+  );
+  if (git.status !== 0) throw new Error(`git ls-files failed: ${git.stderr}`);
+  return git.stdout.split('\0').filter((file) => /\.(?:ts|astro|md|mjs|json|css)$/.test(file));
+};
 
 describe('the old rectangle-area title is gone (calc-rectangle-area › [RAP7])', () => {
   // spec: calc-rectangle-area › [RAP7] no match in code, tests or catalogs outside archived changes
