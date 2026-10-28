@@ -9,6 +9,7 @@ Canvas: https://claude.ai/artifact/3eoGcWjiAKpc6XDm58HKsA · Mockup sources: `do
 | Blueprint ink | `#0E2240` | Text, result panel |
 | Chalk line | `#1D4ED8` | Links |
 | Safety orange | `#F06A1D` | What to buy, dimension ticks, focus ring (dark text only on orange) |
+| Helper line | `#B9C6DA` | Dimension and extension lines and notes of the result-panel drawing, on Blueprint ink only (SVG presentation attributes; no `tokens.css` property) |
 | Form gray | `#56616B` | Secondary text |
 | Plan paper | `#EEF1EF` | Page ground |
 | Sheet white | `#FFFFFF` | Tool surfaces |
