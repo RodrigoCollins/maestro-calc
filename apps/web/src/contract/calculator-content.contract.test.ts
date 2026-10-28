@@ -207,6 +207,12 @@ describe('calculator entries (calculator-page › [CP5]–[CP10], [CP69]; materi
     if (ROUTED.some((page) => page === id)) expect(front.ownerReview).toBe('approved');
   });
 
+  // spec: calculator-page › [CP70] the owner approved both square footage entries (apply progress,
+  // "Owner approval (K12)"), so they are approved before the page is routed
+  it.each(LOCALES)('marks the rectangle-area entry of %s as approved by the owner', (locale) => {
+    expect(frontmatterOf(entryOf('rectangle-area', locale)).ownerReview).toBe('approved');
+  });
+
   // spec: calculator-page › [CP5] source side: five h2 ids in order
   it.each(PAIRS)('has the five section ids of %s/%s in order', (id, locale) => {
     expect(h2Ids(entryOf(id, locale).body)).toEqual(SECTION_IDS[locale]);

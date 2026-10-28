@@ -2,7 +2,7 @@
 id: rectangle-area
 locale: es
 updated: 2026-10-27
-ownerReview: pending
+ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (factores de conversión)
     url: https://www.nist.gov/pml/special-publication-811
