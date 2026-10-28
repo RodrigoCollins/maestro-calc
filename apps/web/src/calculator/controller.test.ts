@@ -1,4 +1,5 @@
-import { Rational } from '@maestro-calc/core';
+import { inch, Rational, valueIn } from '@maestro-calc/core';
+import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { describe, expect, it } from 'vitest';
 import {
   choiceCalculator,
@@ -8,8 +9,8 @@ import {
   percentCalculator,
   shoppingCalculator,
 } from '../__testing__/page-fixtures.ts';
-import { controllerOf, type Environment } from './controller.ts';
-import { definePage } from './page-module.ts';
+import { controllerOf, type Environment, type UiEvent } from './controller.ts';
+import { definePage, type Ready } from './page-module.ts';
 import { choiceSlot } from './slots/choices.ts';
 import { shoppingSlot } from './slots/shopping.ts';
 import { stepperSlot } from './slots/steppers.ts';
@@ -242,5 +243,90 @@ describe('the output check at creation (calculator-web-core › [CWC3])', () => 
       id: 'hinted-fixture',
       at: 'edge',
     });
+  });
+});
+
+describe('the plan of each ready moment (calculator-web-core › [CWC41]; blueprint-drawing › [BD10], [BD19])', () => {
+  const FRAME = { width: 300, height: 200 };
+  const PLAN_ENV: Environment = { ...ENV, messages: { drawing: 'Plan of {length}' } };
+  type Moment = Ready<typeof rectangleArea>;
+  const inches = ({ valid }: Moment): string =>
+    `${String(valueIn(valid.length, inch).toNumber())} in`;
+  /** A stub geometry: one label with the length in inches, and the name as a page message. */
+  const drawn = (plan: (moment: Moment) => ReturnType<typeof stub> | null) =>
+    definePage({
+      calculator: rectangleArea,
+      drawing: { frame: FRAME, messages: ['drawing'], plan },
+    });
+  const stub = (moment: Moment) => ({
+    name: { message: 'drawing', fills: { length: inches(moment) } },
+    outline: [{ kind: 'rect' as const, x: 1, y: 2, w: 3, h: 4 }],
+    lines: [{ d: 'M1 2L3 4', tone: 'helper' as const }],
+    labels: [
+      { x: 5, y: 6, anchor: 'middle' as const, size: 17 as const, label: { text: inches(moment) } },
+    ],
+  });
+  const length = (text: string): UiEvent<typeof rectangleArea> => ({
+    type: 'text',
+    key: 'length',
+    text,
+  });
+
+  /** The plans of the start and of each event in turn, as the mount hands them to the writer. */
+  const plans = (module: ReturnType<typeof drawn>, events: readonly string[]) => {
+    const controller = controllerOf(module);
+    let output = controller.start(PLAN_ENV, '');
+    const seen = [output.view.plan];
+    for (const text of events) {
+      output = controller.applyEvent(PLAN_ENV, output.state, length(text));
+      seen.push(output.view.plan);
+    }
+    return seen;
+  };
+
+  // spec: calculator-web-core › [CWC41], blueprint-drawing › [BD10] a plan per valid moment, none for abc
+  it('gives a plan for the default, 20 ft and 15 ft, and none while abc is typed', () => {
+    const seen = plans(drawn(stub), ['20 ft', 'abc', '15 ft']);
+    expect(seen.map((plan) => plan?.labels.map(({ text }) => text))).toEqual([
+      ['120 in'],
+      ['240 in'],
+      undefined,
+      ['180 in'],
+    ]);
+  });
+
+  it('resolves the labels and the name to text through the page messages, with the frame', () => {
+    const [plan] = plans(drawn(stub), []);
+    expect(plan).toEqual({
+      frame: FRAME,
+      name: 'Plan of 120 in',
+      outline: [{ kind: 'rect', x: 1, y: 2, w: 3, h: 4 }],
+      lines: [{ d: 'M1 2L3 4', tone: 'helper' }],
+      labels: [{ x: 5, y: 6, anchor: 'middle', size: 17, text: '120 in' }],
+    });
+  });
+
+  it('reads a missing message as empty, so a label never shows its key', () => {
+    const controller = controllerOf(drawn(stub));
+    expect(controller.start(ENV, '').view.plan?.name).toBe('');
+  });
+
+  // spec: blueprint-drawing › [BD19] input: a state with no plan gives null, so the box empties
+  it('gives null for a state the page does not draw', () => {
+    expect(
+      plans(
+        drawn(() => null),
+        ['20 ft', 'abc'],
+      ),
+    ).toEqual([null, null, undefined]);
+  });
+
+  // spec: calculator-web-core › [CWC44] a module with no drawing slot runs no drawing code
+  it('gives no plan at all to a module with no drawing slot', () => {
+    expect(plans(definePage({ calculator: rectangleArea }), ['20 ft', 'abc'])).toEqual([
+      undefined,
+      undefined,
+      undefined,
+    ]);
   });
 });

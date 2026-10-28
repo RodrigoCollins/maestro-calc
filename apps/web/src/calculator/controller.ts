@@ -29,6 +29,7 @@ import {
   type TextKey,
 } from './page-module.ts';
 import { boundText, DASH, fillMessage, outputText, percentText } from './present.ts';
+import type { Label, ResolvedPlan } from './slots/drawing.ts';
 import { baseOf, byTextKey, keptText, rawTextOf, textKeysOf, textOf, textsOf } from './texts.ts';
 
 /*
@@ -102,6 +103,12 @@ export interface View<C extends AnyCalculator> {
   readonly notice: string;
   /** Where the language switch points: the counterpart path and the current query. */
   readonly switchHref: string;
+  /**
+   * The drawing of a valid state with its labels in words; `null` for a state the page does not
+   * draw; `undefined` while a field is invalid (the drawing keeps the last plan) and for a page
+   * with no drawing slot, so the writer is not called.
+   */
+  readonly plan: ResolvedPlan | null | undefined;
 }
 
 /** What the controller remembers between events. */
@@ -193,7 +200,7 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
 export function controllerOf<C extends AnyCalculator>(module: PageModule<C>): Controller<C>;
 export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   type Calc = AnyCalculator;
-  const { calculator, choices, steppers, shopping, costs, answer } = module;
+  const { calculator, choices, steppers, shopping, costs, answer, drawing } = module;
   const declared = shopping?.lines.map(({ material }) => material) ?? [];
   checkModule(module, mustBeOk(calculator.run({}), 'run of the defaults'));
 
@@ -333,6 +340,23 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     );
   };
 
+  /** The plan of a ready moment, its labels filled from the page messages (K: no words in code). */
+  const planOf = (env: Environment, moment: Moment<Calc>): ResolvedPlan | null | undefined => {
+    const { result } = moment;
+    if (drawing === undefined || result === undefined) return undefined;
+    const plan = drawing.plan({ ...moment, result });
+    if (plan === null) return null;
+    const text = (label: Label): string =>
+      'text' in label ? label.text : fillMessage(message(env, label.message), label.fills);
+    return {
+      frame: drawing.frame,
+      name: text(plan.name),
+      outline: plan.outline,
+      lines: plan.lines,
+      labels: plan.labels.map(({ label, ...at }) => ({ ...at, text: text(label) })),
+    };
+  };
+
   const viewOf = (env: Environment, state: State<Calc>, evaluation: Evaluation): View<Calc> => {
     const { moment, errors } = evaluation;
     const panel = panelOf(env, moment);
@@ -346,6 +370,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
       panel,
       notice: state.notice,
       switchHref: `${env.switchPath}${state.search}`,
+      plan: planOf(env, moment),
     };
   };
 

@@ -46,6 +46,16 @@ export interface Plan {
   readonly labels: readonly PlanLabel[];
 }
 
+/** A label the controller has resolved: its text in the page's language. */
+export type ResolvedLabel = Omit<PlanLabel, 'label'> & { readonly text: string };
+
+/** What the writer draws: the plan of a moment with every label resolved, and the frame it fills. */
+export interface ResolvedPlan extends Omit<Plan, 'name' | 'labels'> {
+  readonly frame: Frame;
+  readonly name: string;
+  readonly labels: readonly ResolvedLabel[];
+}
+
 export interface Point {
   readonly x: number;
   readonly y: number;
