@@ -229,6 +229,22 @@ for (const { calculator, group } of drawn) {
           (box) => box.closest('[aria-live], [role="status"], [role="alert"]') === null,
         ),
       ).toBe(true);
+      // the answer sentence stays the only live region of the result: none inside the panel
+      expect(
+        await page.evaluate(() =>
+          [
+            ...document.querySelectorAll(
+              '.calc-result, .calc-result *, [aria-live], [role="status"], [role="alert"]',
+            ),
+          ]
+            .filter(
+              (node) =>
+                node.hasAttribute('aria-live') ||
+                ['status', 'alert'].includes(node.getAttribute('role') ?? ''),
+            )
+            .map((node) => (node.closest('.calc-result') === null ? node.className : 'panel')),
+        ),
+      ).toEqual(['calc-answer', 'calc-status']);
       await drawing(page).evaluate((box) => {
         const names: string[] = [];
         (window as Window & { names?: string[] }).names = names;
@@ -241,9 +257,12 @@ for (const { calculator, group } of drawn) {
       await field.pressSequentially('15');
       await expect(field).toHaveValue('15');
       // '' is invalid (no plan), then '1' and '15' are two valid states: two renames, no other
-      await expect
-        .poll(() => page.evaluate(() => (window as Window & { names?: string[] }).names?.length))
-        .toBe(2);
+      const count = () =>
+        page.evaluate(() => (window as Window & { names?: string[] }).names?.length);
+      await expect.poll(count).toBe(2);
+      // and stays two once the page is idle: no late rename
+      await page.waitForTimeout(500);
+      expect(await count()).toBe(2);
     });
 
     // spec: blueprint-drawing › [BD25] no CSP violation and no inline style while drawing
