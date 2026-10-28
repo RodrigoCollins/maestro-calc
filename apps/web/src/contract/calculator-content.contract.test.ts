@@ -11,6 +11,7 @@ import { FAQ_MAX_ANSWER } from '../content/faq-shape.ts';
 import { concrete } from '../lib/concrete.ts';
 import { pageView } from '../lib/pages.ts';
 import { calculators } from '../lib/calculators.ts';
+import { LOCALES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, PAGELESS } from '../routing/templates.ts';
 import { OWNER_REVIEW_MARKERS } from '../site-check/content.ts';
 import { hasWord } from '../site-check/dom.ts';
@@ -22,7 +23,6 @@ import { registerProblems } from './register.ts';
 
 const DIRECTORY = fromRoot('apps/web/src/content/calculators');
 const IDS = calculators.map(({ id }) => id);
-const LOCALES = ['en', 'es'] as const;
 type Locale = (typeof LOCALES)[number];
 
 /** One calculator entry: its path, its parsed frontmatter and its Markdown body. */

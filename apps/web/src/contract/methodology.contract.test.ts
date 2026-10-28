@@ -5,6 +5,7 @@ import { ft3, PI } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { definePage } from '../calculator/page-module.ts';
 import { volumeText } from '../calculator/present.ts';
+import { LOCALES } from '../routing/routes.ts';
 import { hasWord } from '../site-check/dom.ts';
 import { CONTENT_ROWS, rowOf } from './__testing__/calculator-rows.ts';
 import { METHODOLOGY_ROWS, type MethodologyRow } from './__testing__/methodology-rows.ts';
@@ -12,7 +13,6 @@ import { shownFigures } from './__testing__/shown-figures.ts';
 import { h1Count, h2Count, h2Ids, readEntries, sectionOf } from './content.ts';
 import { fromRoot } from './root.ts';
 
-const LOCALES = ['en', 'es'] as const;
 type Locale = (typeof LOCALES)[number];
 const entries = readEntries(fromRoot('apps/web/src/content/pages'));
 const bodyOf = (locale: Locale): string =>
