@@ -163,6 +163,17 @@ const noticeOf = (env: Environment, issues: readonly UrlIssue[]): string => {
 const figuredOf = (calculator: AnyCalculator): readonly OutputDescriptor[] =>
   calculator.outputs.filter(({ display, measure }) => display !== undefined || measure === 'money');
 
+/** The option of each select of a valid state, by select key. */
+const choicesOf = (
+  calculator: AnyCalculator,
+  valid: StateOf<AnyCalculator>,
+): Record<string, string> =>
+  Object.fromEntries(
+    calculator.inputs.flatMap((input) =>
+      input.kind === 'select' ? [[input.key, optionOf(valid, input.key)]] : [],
+    ),
+  );
+
 /**
  * The checks a module passes once, with the result of its defaults, before a controller runs it:
  * the engine's shopping lines match the declared ones (K15; an empty list for a module with no
@@ -196,11 +207,7 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
   const { drawing } = module;
   if (drawing === undefined) return;
   const valid = mustBeOk(calculator.validate({}), 'validation of the defaults');
-  const choices = Object.fromEntries(
-    calculator.inputs.flatMap((input) =>
-      input.kind === 'select' ? [[input.key, optionOf(valid, input.key)]] : [],
-    ),
-  );
+  const choices = choicesOf(calculator, valid);
   const plan = drawing.plan({ system: 'imperial', choices, valid, result: defaults });
   const messages: ReadonlySet<string> = new Set(drawing.messages);
   for (const label of [plan?.name, ...(plan?.labels.map(({ label: each }) => each) ?? [])]) {
@@ -441,7 +448,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
       const decoded = decode(calculator, search);
       return unchanged(env, {
         system: decoded.unitSystem,
-        choices: Object.fromEntries(selects.map(({ key }) => [key, optionOf(decoded.state, key)])),
+        choices: choicesOf(calculator, decoded.state),
         texts: textsOf(calculator, decoded.state, decoded.unitSystem),
         valid: decoded.state,
         search,
