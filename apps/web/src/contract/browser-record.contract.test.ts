@@ -108,6 +108,7 @@ const SUITES = [
   'csp.spec.ts',
   'no-js.spec.ts',
   'drawing.spec.ts',
+  'share.spec.ts',
   'locators.ts',
 ];
 
@@ -118,6 +119,7 @@ const SPEC_SUITES = [
   'layout.spec.ts',
   'csp.spec.ts',
   'drawing.spec.ts',
+  'share.spec.ts',
 ];
 
 /** Every calculator of the registry, routed or not: no suite may name one. */
@@ -276,6 +278,7 @@ const SHARED_LOCATORS = {
   languageSwitch: 'header a[hreflang]',
   notRunning: '[data-not-running]',
   answer: '[data-answer]',
+  shareLink: '[data-share]',
 } as const;
 
 /** The literals of the shared helpers that no suite spells again (the denied clipboard, the readiness). */

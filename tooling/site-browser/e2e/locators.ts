@@ -26,6 +26,9 @@ export const figureAt = (page: Page, key: string): Locator =>
 /** The "Copy link" button. */
 export const copyButton = (page: Page): Locator => page.locator('[data-copy]');
 
+/** The WhatsApp share link of the copy area: hidden until the script writes its href. */
+export const shareLink = (page: Page): Locator => page.locator('[data-share]');
+
 /** The link to the same page in the other language, in the header. */
 export const languageSwitch = (page: Page): Locator => page.locator('header a[hreflang]');
 
