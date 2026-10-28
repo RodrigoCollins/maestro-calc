@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import type { Browser, Page } from '@playwright/test';
 // the character width the geometry estimates a label with, in font sizes (design B5)
-import { CHAR } from '../../../apps/web/src/calculator/slots/drawing.ts';
+import { CHAR } from '../../../apps/web/src/calculator/slots/label-metrics.ts';
 import { formatViolations } from './axe-report.ts';
 import { calculatorPages } from './calculator-pages.ts';
 import { answer, drawing, input, open } from './locators.ts';
