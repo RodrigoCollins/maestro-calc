@@ -1,13 +1,13 @@
 ---
 id: methodology
 locale: en
-updated: 2026-10-26
+updated: 2026-10-28
 ownerReview: approved
 ---
 
 # How we calculate
 
-Maestro Calc builds jobsite calculators. This page describes the rules every calculator follows, and it lists the formulas, the yields and the test cases of the calculator we publish today, the concrete calculator. Every calculator we publish follows everything below.
+Maestro Calc builds jobsite calculators. This page describes the rules every calculator follows, and it lists the formulas, the constants and the test cases of every calculator we publish. Every calculator we publish follows everything below.
 
 ## Exact calculations
 
@@ -48,6 +48,27 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | Footing, 18 ft × 16 in × 8 in, 3 pieces (`?v=1&sh=footing&l=216&n=3`) | 48.00               | 52.80                 | 1.96        | 88   |
 | Column, 12 in diameter × 8 ft, 1 piece (`?v=1&sh=column`)             | 6.28                | 6.91                  | 0.26        | 12   |
 | Steps, 3 steps, 4 ft wide, 7 in rise, 11 in run (`?v=1&sh=steps`)     | 12.83               | 14.12                 | 0.52        | 24   |
+
+<h2 id="square-footage">Square footage calculator</h2>
+
+The [square footage calculator](/square-footage-calculator) finds the area of a rectangle, such as a room, a floor or a slab, from its length and its width. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formula and its two conversions:
+
+- Area in square feet = length × width, with both sides in feet.
+- Area in square yards = area in square feet ÷ 9, because one square foot is exactly 1/9 of a square yard.
+- Area in square meters = area in square feet × 0.09290304, because one square foot is exactly 0.09290304 square meters.
+
+Both constants are exact. The international foot is exactly 0.3048 meters (NIST SP 811, Appendix B), so a square foot is 0.3048 × 0.3048 = 0.09290304 square meters, and a yard is 3 feet, so a square yard is 9 square feet. The conversions use these exact values, and the figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                               | Square feet | Square yards | Square meters |
+| ---------------------------------- | ----------- | ------------ | ------------- |
+| 12 ft × 10 ft (`?v=1&l=144`)       | 120.00      | 13.33        | 11.15         |
+| 10 ft × 10 ft (starting values)    | 100.00      | 11.11        | 9.29          |
+| 12 ft 6 in × 10 ft (`?v=1&l=150`)  | 125.00      | 13.89        | 11.61         |
+| 20 ft × 15 ft (`?v=1&l=240&w=180`) | 300.00      | 33.33        | 27.87         |
 
 ## Corrections
 

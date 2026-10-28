@@ -3,10 +3,10 @@ import { NOT_FOUND_ID, ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, PAGELESS, templateOf, templateProblems } from './templates.ts';
 
 describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
-  // spec: site-routing-i18n › [SR17] concrete is the one calculator page; rectangle-area has none
-  it('lists concrete as the calculator page and keeps rectangle-area pageless', () => {
-    expect(CALCULATOR_PAGES).toEqual(['concrete']);
-    expect(PAGELESS).toEqual(['rectangle-area']);
+  // spec: site-routing-i18n › [SR17] both calculators have a page; none is pageless
+  it('lists concrete and rectangle-area as the calculator pages and leaves none pageless', () => {
+    expect(CALCULATOR_PAGES).toEqual(['concrete', 'rectangle-area']);
+    expect(PAGELESS).toEqual([]);
   });
 
   // spec: site-routing-i18n › [SR18] the template of home, a trust id and the not-found page
@@ -15,6 +15,7 @@ describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
     ['methodology', 'trust'],
     ['privacy', 'trust'],
     ['concrete', 'calculator'],
+    ['rectangle-area', 'calculator'],
     [NOT_FOUND_ID, 'notFound'],
   ] as const)('gives %s the %s template', (id, template) => {
     expect(templateOf(id)).toBe(template);

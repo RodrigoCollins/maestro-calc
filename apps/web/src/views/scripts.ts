@@ -1,5 +1,6 @@
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import ConcreteScript from '../islands/ConcreteScript.astro';
+import RectangleAreaScript from '../islands/RectangleAreaScript.astro';
 import type { CalculatorPageId } from '../routing/templates.ts';
 
 /**
@@ -8,4 +9,5 @@ import type { CalculatorPageId } from '../routing/templates.ts';
  */
 export const SCRIPTS = {
   concrete: ConcreteScript,
+  'rectangle-area': RectangleAreaScript,
 } as const satisfies Record<CalculatorPageId, AstroComponentFactory>;

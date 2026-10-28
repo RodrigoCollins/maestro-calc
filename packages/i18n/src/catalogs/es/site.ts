@@ -36,6 +36,9 @@ export const esSite = {
   'page.home.cards.concrete.title': 'Calculadora de concreto',
   'page.home.cards.concrete.summary':
     'Yardas cúbicas y bolsas para una losa, zapata, columna o escalones.',
+  'page.home.cards.rectangle-area.title': 'Calculadora de pies cuadrados',
+  'page.home.cards.rectangle-area.summary':
+    'Pies, yardas y metros cuadrados para un cuarto, piso o losa.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -59,6 +62,9 @@ export const esSite = {
   'page.concrete.title': 'Calculadora de concreto en yardas y bolsas | Maestro Calc',
   'page.concrete.description':
     'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
+  'page.rectangle-area.title': 'Calculadora de pies cuadrados de un cuarto | Maestro Calc',
+  'page.rectangle-area.description':
+    'Calcula los pies cuadrados de un cuarto, piso o losa con su largo y ancho, más yardas y metros cuadrados. Gratis, al instante, en pies, pulgadas o metros.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

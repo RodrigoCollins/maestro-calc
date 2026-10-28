@@ -1,13 +1,13 @@
 ---
 id: methodology
 locale: es
-updated: 2026-10-26
+updated: 2026-10-28
 ownerReview: approved
 ---
 
 # Cómo calculamos
 
-Maestro Calc crea calculadoras de obra. Esta página describe las reglas que sigue cada calculadora, y lista las fórmulas, los rendimientos y los casos de prueba de la calculadora que publicamos hoy, la calculadora de concreto. Cada calculadora que publiquemos cumplirá estas reglas.
+Maestro Calc crea calculadoras de obra. Esta página describe las reglas que sigue cada calculadora, y lista las fórmulas, las constantes y los casos de prueba de cada calculadora que publicamos. Cada calculadora que publiquemos cumplirá estas reglas.
 
 ## Cálculos exactos
 
@@ -48,6 +48,27 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | Zapata, 18 ft × 16 in × 8 in, 3 piezas (`?v=1&sh=footing&l=216&n=3`)                                       | 48.00             | 52.80                    | 1.96           | 88     |
 | Columna, 12 in de diámetro × 8 ft, 1 pieza (`?v=1&sh=column`)                                              | 6.28              | 6.91                     | 0.26           | 12     |
 | Escalones, 3 escalones, 4 ft de ancho, 7 in de altura (rise), 11 in de profundidad (run) (`?v=1&sh=steps`) | 12.83             | 14.12                    | 0.52           | 24     |
+
+<h2 id="pies-cuadrados">Calculadora de pies cuadrados</h2>
+
+La [calculadora de pies cuadrados](/es/calculadora-de-pies-cuadrados) calcula el área de un rectángulo, como un cuarto, un piso o una losa, a partir de su largo y su ancho. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+La fórmula y sus dos conversiones:
+
+- Área en pies cuadrados = largo × ancho, con los dos lados en pies.
+- Área en yardas cuadradas = área en pies cuadrados ÷ 9, porque un pie cuadrado es exactamente 1/9 de yarda cuadrada.
+- Área en metros cuadrados = área en pies cuadrados × 0.09290304, porque un pie cuadrado es exactamente 0.09290304 metros cuadrados.
+
+Las dos constantes son exactas. El pie internacional mide exactamente 0.3048 metros (NIST SP 811, apéndice B), así que un pie cuadrado son 0.3048 × 0.3048 = 0.09290304 metros cuadrados, y una yarda mide 3 pies, así que una yarda cuadrada son 9 pies cuadrados. Las conversiones usan estos valores exactos, y las cifras se redondean a dos decimales solo cuando te las mostramos.
+
+Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                               | Pies cuadrados | Yardas cuadradas | Metros cuadrados |
+| ---------------------------------- | -------------- | ---------------- | ---------------- |
+| 12 ft × 10 ft (`?v=1&l=144`)       | 120.00         | 13.33            | 11.15            |
+| 10 ft × 10 ft (valores iniciales)  | 100.00         | 11.11            | 9.29             |
+| 12 ft 6 in × 10 ft (`?v=1&l=150`)  | 125.00         | 13.89            | 11.61            |
+| 20 ft × 15 ft (`?v=1&l=240&w=180`) | 300.00         | 33.33            | 27.87            |
 
 ## Correcciones
 

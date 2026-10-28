@@ -71,6 +71,17 @@ describe('route table (site-routing-i18n › Route table)', () => {
     });
   });
 
+  // spec: site-routing-i18n › [SR24] the square footage row comes right after concrete (its title and
+  // description keys are required by routes.test-d.ts, its URL keys by the released contract)
+  it('lists square footage after concrete', () => {
+    expect(ROUTES['rectangle-area']).toEqual({
+      en: '/square-footage-calculator',
+      es: '/es/calculadora-de-pies-cuadrados',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('rectangle-area')).toBe(ids.indexOf('concrete') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);
@@ -150,6 +161,14 @@ describe('route helpers (site-routing-i18n › Paths, URLs and alternates)', () 
       {
         params: { path: 'es/calculadora-de-concreto' },
         props: { id: 'concrete', locale: 'es' },
+      },
+      {
+        params: { path: 'square-footage-calculator' },
+        props: { id: 'rectangle-area', locale: 'en' },
+      },
+      {
+        params: { path: 'es/calculadora-de-pies-cuadrados' },
+        props: { id: 'rectangle-area', locale: 'es' },
       },
     ]);
     expect(staticPaths()).toHaveLength(2 * Object.keys(ROUTES).length);

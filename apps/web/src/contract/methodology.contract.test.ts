@@ -59,6 +59,16 @@ describe('methodology: one section per row (trust-pages › [TP22], [TP26], [TP9
     expect(body).not.toMatch(/no calculator (is|has been) (published|live)/);
   });
 
+  // spec: trust-pages › [TP41] the first paragraph speaks of every calculator, not of one
+  it.each([
+    ['en', /formulas, the constants and the test cases of every calculator we publish\./],
+    ['es', /fórmulas, las constantes y los casos de prueba de cada calculadora que publicamos\./],
+  ] as const)('introduces every published calculator in %s', (locale, every) => {
+    const intro = /^# .+\n+(.+)$/m.exec(bodyOf(locale))?.[1] ?? '';
+    expect(intro).toMatch(every);
+    expect(intro).not.toMatch(/the calculator we publish today|la calculadora que publicamos hoy/);
+  });
+
   // spec: trust-pages › [TP25] the methodology names no unpublished calculator
   it.each(LOCALES)('names no calculator other than the published ones in %s', (locale) => {
     const others = [
@@ -220,7 +230,16 @@ describe('methodology: published cases (trust-pages › [TP24], [TP40])', () => 
   });
 });
 
-// spec: trust-pages › [TP40] the rectangle-area cases, as data: a changed figure fails before the row exists
+// spec: trust-pages › [TP38] the square footage section states exact conversions: no yield, no pi
+describe('methodology: square footage constants (trust-pages › [TP38])', () => {
+  it.each(LOCALES)('names no yield and no pi in the square footage section in %s', (locale) => {
+    const section = sectionFor('rectangle-area', locale);
+    expect(section).not.toContain('π');
+    expect(section).not.toMatch(/\byields?\b|rendimiento/i);
+  });
+});
+
+// spec: trust-pages › [TP40] the rectangle-area cases, as data: a changed figure fails on the slot-free module too
 describe('methodology: the rectangle-area cases as a fixture (trust-pages › [TP24], [TP40])', () => {
   const area = definePage({ calculator: rectangleArea });
   const fixture: MethodologyRow = {

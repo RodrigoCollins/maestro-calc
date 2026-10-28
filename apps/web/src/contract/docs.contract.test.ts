@@ -171,10 +171,9 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
   });
 
   // review G3 R3-agents-proof-overclaim, R2-recipe-omits-proof-retirement, R2-recipe-misdescribes-record
-  it('says what the proof contract proves, that the go-live retires it, and what the record holds', () => {
+  it('says what the proof contract proves and what the record holds', () => {
     expect(step(12)).toContain('not executed by any test');
     expect(step(12)).not.toContain('proves it on the unrouted');
-    expect(step(14)).toContain('retires');
     expect(step(14)).toContain('`minimal`');
     expect(step(14)).not.toContain('default answer per locale');
     for (const group of ['`answer`', '`choices`', '`steppers`', '`shopping`', '`prices`']) {
@@ -182,10 +181,14 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     }
   });
 
-  // judgment G3: this contract requires every named path to exist, so retiring the proof files edits the recipe too
-  it('says that the go-live merge of rectangle-area rewrites steps 12 and 14, and why', () => {
-    expect(step(14)).toContain('steps 12 and 14');
-    expect(step(14)).toContain('`apps/web/src/contract/docs.contract.test.ts`');
+  // spec: calculator-web-core › [CWC40] after the go-live the slot-free files are test support, and no
+  // step still waits for rectangle-area to go live
+  it('names the slot-free files as test support and no longer waits for the rectangle-area go-live', () => {
+    expect(step(12)).toContain('test support');
+    expect(step(12)).toContain('No routed page is slot-free');
+    expect(step(12)).not.toContain('covered by its browser record alone');
+    expect(step(14)).not.toContain('steps 12 and 14');
+    expect(step(14)).not.toContain('When the calculator that goes live is `rectangle-area`');
   });
 
   it('names the three tables that are a Record over the page ids', () => {

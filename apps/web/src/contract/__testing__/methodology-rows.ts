@@ -83,4 +83,43 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&sh=steps', figures: ['12.83', '14.12', '0.52', '24'] },
     ],
   },
+  'rectangle-area': {
+    anchor: { en: 'square-footage', es: 'pies-cuadrados' },
+    pageLink: {
+      en: '[square footage calculator](/square-footage-calculator)',
+      es: '[calculadora de pies cuadrados](/es/calculadora-de-pies-cuadrados)',
+    },
+    formulas: {
+      en: ['length × width', 'area in square feet ÷ 9', 'area in square feet × 0.09290304'],
+      es: ['largo × ancho', 'área en pies cuadrados ÷ 9', 'área en pies cuadrados × 0.09290304'],
+    },
+    honesty: {
+      en: [
+        /one square foot is exactly 1\/9 of a square yard/,
+        /one square foot is exactly 0\.09290304 square meters/,
+        /0\.3048 meters \(NIST SP 811, Appendix B\)/,
+        /constants are exact/i,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /un pie cuadrado es exactamente 1\/9 de yarda cuadrada/,
+        /un pie cuadrado es exactamente 0\.09290304 metros cuadrados/,
+        /0\.3048 metros \(NIST SP 811, apéndice B\)/,
+        /constantes son exactas/i,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['ft2', 'yd2', 'm2'],
+    figuresOf: (shown) => [
+      figure(shown, 'areaFt2'),
+      figure(shown, 'areaYd2'),
+      figure(shown, 'areaM2'),
+    ],
+    published: [
+      { query: '?v=1&l=144', figures: ['120.00', '13.33', '11.15'] },
+      { query: '', figures: ['100.00', '11.11', '9.29'] },
+      { query: '?v=1&l=150', figures: ['125.00', '13.89', '11.61'] },
+      { query: '?v=1&l=240&w=180', figures: ['300.00', '33.33', '27.87'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;
