@@ -3,7 +3,7 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { required } from '../controller.ts';
 import type { Frame, Ready } from '../page-module.ts';
 import { dimensionText, outputText } from '../present.ts';
-import { rectanglePlan, type Plan } from '../slots/drawing.ts';
+import { rectanglePlan, type Plan, type RectangleTexts } from '../slots/drawing.ts';
 
 /*
  * The plan of the square footage page (blueprint-drawing › [BD1]): the rectangle of the last valid
@@ -37,20 +37,23 @@ const areaText = ({ system, result }: Ready<typeof rectangleArea>): string => {
   return `${outputText(descriptor, output.value)} ${symbol}`;
 };
 
+/** The three label texts of a moment in a unit system. */
+const textsIn = (moment: Ready<typeof rectangleArea>, system: UnitSystem): RectangleTexts => ({
+  length: dimensionText(moment.valid.length, system),
+  width: dimensionText(moment.valid.width, system),
+  area: areaText({ ...moment, system }),
+});
+
 /** The plan of a ready moment. */
 export const planOf = (moment: Ready<typeof rectangleArea>): Plan => {
   const { valid, system } = moment;
-  const texts = {
-    length: dimensionText(valid.length, system),
-    width: dimensionText(valid.width, system),
-    area: areaText(moment),
-  };
+  const texts = textsIn(moment, system);
   return rectanglePlan(FRAME, {
     length: valueIn(valid.length, inch).toNumber(),
     width: valueIn(valid.width, inch).toNumber(),
     texts,
-    // the gutter holds the width label of either system, so the unit toggle moves nothing ([BD11])
-    widest: SYSTEMS.map((each) => dimensionText(valid.width, each)),
-    name: { message: 'drawing', fills: texts },
+    // the layout keeps room for the texts of the other system, so the toggle moves nothing ([BD11])
+    others: SYSTEMS.filter((each) => each !== system).map((each) => textsIn(moment, each)),
+    name: { message: 'drawing', fills: { ...texts } },
   });
 };

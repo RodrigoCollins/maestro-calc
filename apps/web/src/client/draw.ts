@@ -1,5 +1,5 @@
 import type { Frame } from '../calculator/page-module.ts';
-import type { PlanLine, ResolvedPlan } from '../calculator/slots/drawing.ts';
+import type { PlanLine, ResolvedLabel, ResolvedPlan } from '../calculator/slots/drawing.ts';
 
 /*
  * The SVG writer of the drawing slot (blueprint-drawing). Only the entry of a page that declares
@@ -37,6 +37,12 @@ const SHAPE = {
   'fill-opacity': '0.08',
   stroke: COLOURS.white,
   'stroke-width': '2',
+};
+
+/** The colour of a label by its tone: white for a dimension, the helper colour for a note. */
+const FILLS: Readonly<Record<ResolvedLabel['tone'], string>> = {
+  dimension: COLOURS.white,
+  note: COLOURS.helper,
 };
 
 const STROKES: Readonly<Record<PlanLine['tone'], Readonly<Record<string, string>>>> = {
@@ -83,7 +89,7 @@ export const nodesOf = (plan: ResolvedPlan): readonly SvgNode[] => [
     tag: 'path',
     attrs: { d, fill: 'none', ...STROKES[tone] },
   })),
-  ...plan.labels.map(({ x, y, anchor, size, text }): SvgNode => ({
+  ...plan.labels.map(({ x, y, anchor, size, tone, text }): SvgNode => ({
     tag: 'text',
     attrs: {
       x: String(x),
@@ -91,7 +97,7 @@ export const nodesOf = (plan: ResolvedPlan): readonly SvgNode[] => [
       'text-anchor': anchor,
       'dominant-baseline': 'central',
       'font-size': String(size),
-      fill: size === 17 ? COLOURS.white : COLOURS.helper,
+      fill: FILLS[tone],
     },
     text,
   })),

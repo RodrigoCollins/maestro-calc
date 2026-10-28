@@ -119,6 +119,8 @@ export const RECTANGLE_AREA: E2eSpec = {
     },
     kept: { key: 'length', text: '20 ft', labels: ['20 ft', '10 ft', '200.00 ft²'] },
     metric: ['3.05 m', '3.05 m', '9.29 m²'],
+    // 32 ft square: 1,024.00 ft² goes below, 95.13 m² alone would fit inside; 25 ft by 40 ft
+    toggles: ['?v=1&l=384&w=384', '?v=1&l=300&w=480'],
     // the longest labels the fields accept (99,999 ft 11 63/64 in, 30,479.97 m) and both clamps
     longest: [
       '?v=1&l=76799999/64&w=76799999/64',

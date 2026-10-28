@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  areaLabel,
   CHAR,
   CLAMP,
   clampedRatio,
@@ -71,7 +72,9 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M50 47L50 29M294 47L294 29', tone: 'extension' },
         { d: 'M45 38L55 28M289 38L299 28', tone: 'tick' },
       ],
-      labels: [{ x: 172, y: 16.4, anchor: 'middle', size: 17, label: text('20 ft') }],
+      labels: [
+        { x: 172, y: 16.4, anchor: 'middle', size: 17, tone: 'dimension', label: text('20 ft') },
+      ],
     });
   });
 
@@ -82,7 +85,7 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M50 47L32 47M50 169L32 169', tone: 'extension' },
         { d: 'M31 52L41 42M31 174L41 164', tone: 'tick' },
       ],
-      labels: [{ x: 30, y: 108, anchor: 'end', size: 17, label: text('10 ft') }],
+      labels: [{ x: 30, y: 108, anchor: 'end', size: 17, tone: 'dimension', label: text('10 ft') }],
     });
   });
 
@@ -93,7 +96,9 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M10 100L10 118M110 100L110 118', tone: 'extension' },
         { d: 'M5 119L15 109M105 119L115 109', tone: 'tick' },
       ],
-      labels: [{ x: 60, y: 130.6, anchor: 'middle', size: 17, label: text('7 in') }],
+      labels: [
+        { x: 60, y: 130.6, anchor: 'middle', size: 17, tone: 'dimension', label: text('7 in') },
+      ],
     });
   });
 
@@ -104,7 +109,9 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M200 20L218 20M200 80L218 80', tone: 'extension' },
         { d: 'M209 25L219 15M209 85L219 75', tone: 'tick' },
       ],
-      labels: [{ x: 220, y: 50, anchor: 'start', size: 17, label: text('11 in') }],
+      labels: [
+        { x: 220, y: 50, anchor: 'start', size: 17, tone: 'dimension', label: text('11 in') },
+      ],
     });
   });
 });
@@ -118,7 +125,13 @@ describe('label sizes (design B5)', () => {
   });
 
   it('boxes a label by its anchor, 1.25 sizes tall around its centre line', () => {
-    const at = { x: 100, y: 50, size: 17 as const, label: text('10 ft') };
+    const at = {
+      x: 100,
+      y: 50,
+      size: 17 as const,
+      tone: 'dimension' as const,
+      label: text('10 ft'),
+    };
     expect(labelBox({ ...at, anchor: 'middle' })).toEqual({ x: 71.5, y: 39.4, w: 57, h: 21.3 });
     expect(labelBox({ ...at, anchor: 'start' })).toEqual({ x: 100, y: 39.4, w: 57, h: 21.3 });
     expect(labelBox({ ...at, anchor: 'end' })).toEqual({ x: 43, y: 39.4, w: 57, h: 21.3 });
@@ -126,19 +139,84 @@ describe('label sizes (design B5)', () => {
 
   it('boxes a message label by the longest text it may hold: none, so zero wide', () => {
     expect(
-      labelBox({ x: 10, y: 10, size: 15, anchor: 'start', label: { message: 'm', fills: {} } }),
+      labelBox({
+        x: 10,
+        y: 10,
+        size: 15,
+        anchor: 'start',
+        tone: 'note',
+        label: { message: 'm', fills: {} },
+      }),
     ).toEqual({ x: 10, y: 0.6, w: 0, h: 18.8 });
   });
 
   it('moves a centred label inside the frame and leaves one that fits', () => {
-    const label = { y: 10, size: 17 as const, anchor: 'middle' as const, label: text('10 ft') };
+    const label = {
+      y: 10,
+      size: 17 as const,
+      anchor: 'middle' as const,
+      tone: 'dimension' as const,
+      label: text('10 ft'),
+    };
     expect(fitLabel({ ...label, x: 10 }, FRAME).x).toBe(28.5);
     expect(fitLabel({ ...label, x: 290 }, FRAME).x).toBe(271.5);
     expect(fitLabel({ ...label, x: 150 }, FRAME).x).toBe(150);
   });
 
+  // spec: blueprint-drawing › [BD11] the fit keeps the room of the longest text the label takes
+  it('fits a centred label by the room of a longer text when it is given one', () => {
+    const label = {
+      y: 10,
+      size: 17 as const,
+      anchor: 'middle' as const,
+      tone: 'dimension' as const,
+      label: text('10 ft'),
+    };
+    // `10.00 m`: 7 × 17 × 0.67 = 79.7, half 39.85
+    expect(fitLabel({ ...label, x: 10 }, FRAME, '10.00 m').x).toBe(39.9);
+    expect(fitLabel({ ...label, x: 150 }, FRAME, '10.00 m').x).toBe(150);
+  });
+
   it('reserves the top row, the bottom row, a right margin and the width label on the left', () => {
     expect(rectangleGutters('10 ft')).toEqual({ top: 41.3, right: 6, bottom: 27.3, left: 77 });
+  });
+});
+
+describe('areaLabel (blueprint-drawing › [BD1], [BD2], [BD11])', () => {
+  const box = { x: 100, y: 50, w: 120, h: 80 };
+
+  it('centres the note inside a box it fits with 6 units each side', () => {
+    // 8 × 15 × 0.67 = 80.4, at most 120 − 12
+    expect(areaLabel(FRAME, box, '95.13 m²')).toEqual({
+      x: 160,
+      y: 90,
+      anchor: 'middle',
+      size: 15,
+      tone: 'note',
+      label: text('95.13 m²'),
+    });
+  });
+
+  // spec: blueprint-drawing › [BD11] the longest text of either system decides inside or below
+  it('puts the note below when its room does not fit, even where its own text would', () => {
+    // room 12 × 15 × 0.67 = 120.6, over 108: the row below, at 50 + 80 + 6 + 9.375 = 145.375
+    expect(areaLabel(FRAME, box, '95.13 m²', '1,024.00 ft²')).toEqual({
+      x: 160,
+      y: 145.4,
+      anchor: 'middle',
+      size: 15,
+      tone: 'note',
+      label: text('95.13 m²'),
+    });
+  });
+
+  it('puts the note below a box shorter than 29', () => {
+    expect(areaLabel(FRAME, { ...box, h: 28 }, 'a').y).toBe(93.4);
+  });
+
+  it('keeps the note in the frame by the width of its room', () => {
+    // room 10 × 15 × 0.67 = 100.5: x = 300 − 50.25
+    expect(areaLabel(FRAME, { x: 280, y: 150, w: 20, h: 10 }, 'a', 'aaaaaaaaaa').x).toBe(249.8);
   });
 });
 
@@ -166,9 +244,9 @@ describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
         { d: 'M100.8 46.3L110.8 36.3M100.8 177.7L110.8 167.7', tone: 'tick' },
       ],
       labels: [
-        { x: 185.5, y: 10.7, anchor: 'middle', size: 17, label: text('10 ft') },
-        { x: 99.8, y: 107, anchor: 'end', size: 17, label: text('10 ft') },
-        { x: 185.5, y: 107, anchor: 'middle', size: 15, label: text('100.00 ft²') },
+        { x: 185.5, y: 10.7, anchor: 'middle', size: 17, tone: 'dimension', label: text('10 ft') },
+        { x: 99.8, y: 107, anchor: 'end', size: 17, tone: 'dimension', label: text('10 ft') },
+        { x: 185.5, y: 107, anchor: 'middle', size: 15, tone: 'note', label: text('100.00 ft²') },
       ],
     });
   });
@@ -188,6 +266,7 @@ describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
       y: 188.1,
       anchor: 'middle',
       size: 15,
+      tone: 'note',
       label: text('200.00 ft²'),
     });
   });

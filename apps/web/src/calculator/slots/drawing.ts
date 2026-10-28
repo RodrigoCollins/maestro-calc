@@ -12,12 +12,16 @@ export type Label =
   | { readonly text: string }
   | { readonly message: string; readonly fills: Readonly<Record<string, string>> };
 
-/** A text of the drawing, centred on `y`: a dimension label (17, white) or a note (15, helper colour). */
+/**
+ * A text of the drawing, centred on `y`: a dimension label (17 units, white) or a note (15 units,
+ * the helper colour). The writer takes the colour from the tone, never from the size.
+ */
 export interface PlanLabel {
   readonly x: number;
   readonly y: number;
   readonly anchor: 'start' | 'middle' | 'end';
   readonly size: 15 | 17;
+  readonly tone: 'dimension' | 'note';
   readonly label: Label;
 }
 
@@ -169,7 +173,7 @@ export const dimensionLine = (
       },
       { d: `${tick(from)}${tick(to)}`, tone: 'tick' },
     ],
-    labels: [{ x: round(at.x), y: round(at.y), anchor, size: LABEL, label }],
+    labels: [{ x: round(at.x), y: round(at.y), anchor, size: LABEL, tone: 'dimension', label }],
   };
 };
 
@@ -180,10 +184,36 @@ export const labelBox = ({ x, y, anchor, size, label }: PlanLabel): Box => {
   return { x: round(start), y: round(y - (LINE * size) / 2), w, h: round(LINE * size) };
 };
 
-/** A centred label moved across, if it must, so that its estimated box stays inside the frame. */
-export const fitLabel = (label: PlanLabel, frame: Frame): PlanLabel => {
-  const { w } = labelBox(label);
+/**
+ * A centred label moved across, if it must, so that its estimated box stays inside the frame.
+ * `room` is the text whose width it keeps (the longest the label takes in any unit system), so
+ * the label sits at the same `x` whichever of them it shows.
+ */
+export const fitLabel = (label: PlanLabel, frame: Frame, room?: string): PlanLabel => {
+  const { w } = labelBox(room === undefined ? label : { ...label, label: { text: room } });
   return { ...label, x: round(Math.min(Math.max(label.x, w / 2), frame.width - w / 2)) };
+};
+
+/** The longest of some texts (the first of equals). */
+const longest = (texts: readonly string[]): string =>
+  texts.reduce((a, b) => (b.length > a.length ? b : a), '');
+
+/**
+ * The area note of an outline box: centred inside when `room` (the longest text it takes, `text`
+ * by default) leaves 6 units each side and the box is 29 tall, else centred in the row below it,
+ * fitted to the frame. Shared by every plan that writes an area under or in its shape.
+ */
+export const areaLabel = (frame: Frame, box: Box, text: string, room: string = text): PlanLabel => {
+  const inside = textWidth(room, NOTE) <= box.w - INSET && box.h >= INSIDE_HEIGHT;
+  const label: PlanLabel = {
+    x: round(box.x + box.w / 2),
+    y: round(inside ? box.y + box.h / 2 : box.y + box.h + PAD + (LINE * NOTE) / 2),
+    anchor: 'middle',
+    size: NOTE,
+    tone: 'note',
+    label: { text },
+  };
+  return fitLabel(label, frame, room);
 };
 
 /** The gutters of a rectangle plan: the top label row, the bottom row, a margin and the width label. */
@@ -194,13 +224,23 @@ export const rectangleGutters = (widthText: string): Gutters => ({
   left: round(OFFSET + PAD + textWidth(widthText, LABEL)),
 });
 
+/** The three texts of a rectangle plan in one unit system. */
+export interface RectangleTexts {
+  readonly length: string;
+  readonly width: string;
+  readonly area: string;
+}
+
 /** What a rectangle plan is drawn from: the two sides (any unit, only their ratio counts) and the texts. */
 export interface RectangleSpec {
   readonly length: number;
   readonly width: number;
-  readonly texts: { readonly length: string; readonly width: string; readonly area: string };
-  /** Other width texts the left gutter must hold (the other unit system), so a toggle moves nothing. */
-  readonly widest?: readonly string[];
+  readonly texts: RectangleTexts;
+  /**
+   * The texts of the same moment in the other unit systems. The layout keeps room for the longest
+   * of each (the left gutter, the area inside or below, the fitted `x`), so a toggle moves nothing.
+   */
+  readonly others?: readonly RectangleTexts[];
   readonly name: Label;
 }
 
@@ -211,10 +251,9 @@ export interface RectangleSpec {
  */
 export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
   const { texts } = spec;
-  const gutter = [texts.width, ...(spec.widest ?? [])].reduce((a, b) =>
-    b.length > a.length ? b : a,
-  );
-  const rect = fitRectangle(frame, rectangleGutters(gutter), spec.length, spec.width);
+  const all = [texts, ...(spec.others ?? [])];
+  const room = (key: keyof RectangleTexts) => longest(all.map((each) => each[key]));
+  const rect = fitRectangle(frame, rectangleGutters(room('width')), spec.length, spec.width);
   const [x2, y2] = [rect.x + rect.w, rect.y + rect.h];
   const top = dimensionLine({ x: rect.x, y: rect.y }, { x: x2, y: rect.y }, 'top', {
     text: texts.length,
@@ -222,22 +261,14 @@ export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
   const left = dimensionLine({ x: rect.x, y: rect.y }, { x: rect.x, y: y2 }, 'left', {
     text: texts.width,
   });
-  const inside = textWidth(texts.area, NOTE) <= rect.w - INSET && rect.h >= INSIDE_HEIGHT;
-  const area: PlanLabel = {
-    x: round(rect.x + rect.w / 2),
-    y: round(inside ? rect.y + rect.h / 2 : y2 + PAD + (LINE * NOTE) / 2),
-    anchor: 'middle',
-    size: NOTE,
-    label: { text: texts.area },
-  };
   return {
     name: spec.name,
     outline: [{ kind: 'rect', ...rect }],
     lines: [...top.lines, ...left.lines],
     labels: [
-      ...top.labels.map((label) => fitLabel(label, frame)),
+      ...top.labels.map((label) => fitLabel(label, frame, room('length'))),
       ...left.labels,
-      fitLabel(area, frame),
+      areaLabel(frame, rect, texts.area, room('area')),
     ],
   };
 };

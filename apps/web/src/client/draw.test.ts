@@ -20,8 +20,10 @@ const PLAN: ResolvedPlan = {
     { d: 'M9 9L10 10', tone: 'tick' },
   ],
   labels: [
-    { x: 1, y: 2, anchor: 'middle', size: 17, text: '10 ft' },
-    { x: 3, y: 4.5, anchor: 'end', size: 15, text: '100.00 ft²' },
+    { x: 1, y: 2, anchor: 'middle', size: 17, tone: 'dimension', text: '10 ft' },
+    { x: 3, y: 4.5, anchor: 'end', size: 15, tone: 'note', text: '100.00 ft²' },
+    // the colour follows the tone, not the size
+    { x: 5, y: 6, anchor: 'start', size: 15, tone: 'dimension', text: '7 in' },
   ],
 };
 
@@ -85,6 +87,18 @@ describe('the nodes of a plan (blueprint-drawing › [BD19], [BD24]; design B6, 
           fill: '#B9C6DA',
         },
         text: '100.00 ft²',
+      },
+      {
+        tag: 'text',
+        attrs: {
+          x: '5',
+          y: '6',
+          'text-anchor': 'start',
+          'dominant-baseline': 'central',
+          'font-size': '15',
+          fill: '#FFFFFF',
+        },
+        text: '7 in',
       },
     ]);
   });

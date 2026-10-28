@@ -46,9 +46,23 @@ describe('the square footage plan (blueprint-drawing › [BD1], [BD2], [BD11], [
         { d: 'M106.5 46.3L116.5 36.3M106.5 177.7L116.5 167.7', tone: 'tick' },
       ],
       labels: [
-        { x: 191.2, y: 10.7, anchor: 'middle', size: 17, label: { text: '10 ft' } },
-        { x: 105.5, y: 107, anchor: 'end', size: 17, label: { text: '10 ft' } },
-        { x: 191.2, y: 107, anchor: 'middle', size: 15, label: { text: '100.00 ft²' } },
+        {
+          x: 191.2,
+          y: 10.7,
+          anchor: 'middle',
+          size: 17,
+          tone: 'dimension',
+          label: { text: '10 ft' },
+        },
+        { x: 105.5, y: 107, anchor: 'end', size: 17, tone: 'dimension', label: { text: '10 ft' } },
+        {
+          x: 191.2,
+          y: 107,
+          anchor: 'middle',
+          size: 15,
+          tone: 'note',
+          label: { text: '100.00 ft²' },
+        },
       ],
     });
   });
@@ -67,6 +81,42 @@ describe('the square footage plan (blueprint-drawing › [BD1], [BD2], [BD11], [
     });
   });
 
+  // spec: blueprint-drawing › [BD11] the toggle moves nothing where the area text of one system
+  // fits inside and the other does not: 32 ft square is 1,024.00 ft² (12 × 15 × 0.67 = 120.6) or
+  // 95.13 m² (80.4) in a 131.4 square (119.4 of room), so both put it below; 25 ft by 40 ft too
+  it.each([
+    [
+      '32 ft by 32 ft',
+      '32',
+      '32',
+      ['32 ft', '32 ft', '1,024.00 ft²'],
+      ['9.75 m', '9.75 m', '95.13 m²'],
+    ],
+    [
+      '25 ft by 40 ft',
+      '25',
+      '40',
+      ['25 ft', '40 ft', '1,000.00 ft²'],
+      ['7.62 m', '12.19 m', '92.90 m²'],
+    ],
+  ])(
+    'keeps every coordinate on the toggle at %s, the area below in both',
+    (_, l, w, us, metric) => {
+      // the toggle keeps the valid state and changes the system
+      const typed = momentOf({ length: l, width: w });
+      const toggled = { ...typed, system: 'metric' as const };
+      const [imperial, other] = [planOf(typed), planOf(toggled)];
+      expect(texts(typed)).toEqual(us);
+      expect(texts(toggled)).toEqual(metric);
+      expect(other.outline).toEqual(imperial.outline);
+      expect(other.lines).toEqual(imperial.lines);
+      expect(other.labels.map(({ x, y }) => [x, y])).toEqual(
+        imperial.labels.map(({ x, y }) => [x, y]),
+      );
+      expect(imperial.labels[2]?.y).toBe(188.1);
+    },
+  );
+
   // spec: blueprint-drawing › [BD2] 20 by 10: 205.7 by 102.85, y = 41.3 + (131.4 − 102.85) / 2 = 55.575
   it('draws 20 ft by 10 ft twice as wide as tall', () => {
     expect(planOf(momentOf({ length: '20' })).outline).toEqual([
@@ -84,6 +134,7 @@ describe('the square footage plan (blueprint-drawing › [BD1], [BD2], [BD11], [
       y: 188.1,
       anchor: 'middle',
       size: 15,
+      tone: 'note',
       label: { text: '200.00 ft²' },
     });
   });
