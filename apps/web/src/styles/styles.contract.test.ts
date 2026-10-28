@@ -351,10 +351,18 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   });
 
   // spec: calculator-page › Layout stability: figures in fixed-width cells with tabular digits
-  it('sets the figures in tabular numerals inside cells of a fixed width', () => {
+  // A flex item is blockified, so the row, cost and shopping figures keep the fixed cell; the
+  // large figure stays inline, where `min-width` does not apply, so its digits start flush (mockup)
+  it('sets the figures in tabular numerals, the row figures inside cells of a fixed width', () => {
     expect(declared('.calc-figure', 'font-variant-numeric')).toBe('tabular-nums');
-    expect(declared('.calc-figure', 'display')).toBe('inline-block');
     expect(declared('.calc-figure', 'min-width')).toMatch(/^\d+ch$/);
+    expect(declared('.calc-figure', 'text-align')).toBe('right');
+    expect(rules.get('.calc-figure')?.['display']).toBeUndefined();
+    expect(rules.get('.calc-primary .calc-figure')?.['display']).toBeUndefined();
+    expect(rules.get('.calc-primary')?.['display']).toBeUndefined();
+    for (const row of ['.calc-row', '.calc-shopping', '.calc-cost']) {
+      expect(declared(row, 'display'), row).toBe('flex');
+    }
   });
 
   // spec: calculator-page › [CP14], [CP44]: the stepper and copy areas keep a fixed reserve
