@@ -55,8 +55,10 @@ const stepsOf = (property: string, [base, ...steps]: LineSteps): [number, number
 /**
  * The minified CSS of a reserve: the base counts on `.calculator`, then one `min-width` block per
  * distinct breakpoint, ascending, that sets the properties stepping there. Nothing for an empty
- * reserve, so no empty `<style>` reaches a head. Throws on a count that is not a positive integer and on a breakpoint that is not an
- * increasing `rem` value, so a `px` breakpoint never reaches a page.
+ * reserve, so no empty `<style>` reaches a head.
+ *
+ * Throws on a count that is not a positive integer and on a breakpoint that is not an increasing
+ * `rem` value, so a `px` breakpoint never reaches a page.
  */
 export const reserveCss = (reserve: Reserve): ReserveCss | undefined => {
   const present = RESERVE_PROPERTIES.flatMap(([name, property]) => {
