@@ -7,6 +7,8 @@ import {
   fitLabel,
   fitRectangle,
   labelBox,
+  rectangleGutters,
+  rectanglePlan,
   textWidth,
   type Gutters,
 } from './drawing.ts';
@@ -132,5 +134,95 @@ describe('label sizes (design B5)', () => {
     expect(fitLabel({ ...label, x: 10 }, FRAME).x).toBe(23.8);
     expect(fitLabel({ ...label, x: 290 }, FRAME).x).toBe(276.2);
     expect(fitLabel({ ...label, x: 150 }, FRAME).x).toBe(150);
+  });
+
+  it('reserves the top row, the bottom row, a right margin and the width label on the left', () => {
+    expect(rectangleGutters('10 ft')).toEqual({ top: 40.4, right: 6, bottom: 26.4, left: 67.6 });
+  });
+});
+
+describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
+  const name = { message: 'drawing', fills: { length: '10 ft' } };
+
+  // spec: blueprint-drawing › [BD1] hand-verified: 226.4 by 133.2 available, a 133.2 square centred
+  it('draws the default square with the length on top, the width on the left and the area inside', () => {
+    const plan = rectanglePlan(FRAME, {
+      length: 10,
+      width: 10,
+      texts: { length: '10 ft', width: '10 ft', area: '100.00 ft²' },
+      name,
+    });
+    expect(plan).toEqual({
+      name,
+      outline: [{ kind: 'rect', x: 114.2, y: 40.4, w: 133.2, h: 133.2 }],
+      lines: [
+        { d: 'M114.2 26.4L247.4 26.4', tone: 'helper' },
+        { d: 'M114.2 40.4L114.2 22.4M247.4 40.4L247.4 22.4', tone: 'extension' },
+        { d: 'M109.2 31.4L119.2 21.4M242.4 31.4L252.4 21.4', tone: 'tick' },
+        { d: 'M100.2 40.4L100.2 173.6', tone: 'helper' },
+        { d: 'M114.2 40.4L96.2 40.4M114.2 173.6L96.2 173.6', tone: 'extension' },
+        { d: 'M95.2 45.4L105.2 35.4M95.2 178.6L105.2 168.6', tone: 'tick' },
+      ],
+      labels: [
+        { x: 180.8, y: 10.2, anchor: 'middle', size: 17, label: text('10 ft') },
+        { x: 94.2, y: 107, anchor: 'end', size: 17, label: text('10 ft') },
+        { x: 180.8, y: 107, anchor: 'middle', size: 15, label: text('100.00 ft²') },
+      ],
+    });
+  });
+
+  // spec: blueprint-drawing › [BD2] a portrait rectangle too narrow for the area puts it in the bottom row
+  it('puts the area in the bottom row when it does not fit inside', () => {
+    const plan = rectanglePlan(FRAME, {
+      length: 10,
+      width: 20,
+      texts: { length: '10 ft', width: '20 ft', area: '200.00 ft²' },
+      name,
+    });
+    expect(plan.outline).toEqual([{ kind: 'rect', x: 147.5, y: 40.4, w: 66.6, h: 133.2 }]);
+    expect(plan.labels[2]).toEqual({
+      x: 180.8,
+      y: 188.6,
+      anchor: 'middle',
+      size: 15,
+      label: text('200.00 ft²'),
+    });
+  });
+
+  it('puts the area in the bottom row when the rectangle is too short for it', () => {
+    const plan = rectanglePlan(
+      { width: 300, height: 95 },
+      { length: 4, width: 1, texts: { length: 'a', width: 'b', area: 'c' }, name },
+    );
+    expect(plan.outline[0]).toMatchObject({ y: 40.4, h: 28.2 });
+    expect(plan.labels[2]?.y).toBe(83.6);
+  });
+
+  // spec: blueprint-drawing › [BD12] 100 by 1 is drawn at the clamp and its labels carry the true values
+  it('draws 100 ft by 1 ft at the clamp with the true labels', () => {
+    const plan = rectanglePlan(FRAME, {
+      length: 100,
+      width: 1,
+      texts: { length: '100 ft', width: '1 ft', area: '100.00 ft²' },
+      name,
+    });
+    expect(plan.outline).toEqual([{ kind: 'rect', x: 58.1, y: 77.5, w: 235.9, h: 59 }]);
+    expect(plan.labels.map(({ label }) => label)).toEqual([
+      text('100 ft'),
+      text('1 ft'),
+      text('100.00 ft²'),
+    ]);
+  });
+
+  it('keeps a long length label inside the frame over a narrow rectangle', () => {
+    const plan = rectanglePlan(FRAME, {
+      length: 1,
+      width: 100,
+      texts: { length: '99,999 ft 11 63/64 in', width: '1 ft', area: '1.00 ft²' },
+      name,
+    });
+    const [top] = plan.labels;
+    expect(top?.x).toBeGreaterThanOrEqual(100);
+    expect(top?.x).toBeLessThanOrEqual(200);
   });
 });
