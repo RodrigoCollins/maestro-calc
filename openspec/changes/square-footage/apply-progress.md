@@ -517,4 +517,8 @@ One scoped round on `feat/square-footage-live` after the four-lens review of PR 
 - `npm run format`: no change. `npm run verify` exit 0 at e4bb81a (212 files, 3,906 tests; build, check:site, check:dist pass); this commit adds only openspec text.
 - `npm run typecheck --prefix tooling/site-browser` clean.
 - `npm run test:e2e -- no-js.spec calculator.spec layout.spec`: 271 passed (3.3 min, macOS); `layout.spec.ts` alone 122 passed.
-- Task 6.4: Linux confirmed by CI with the widened window: fit strict at every width; the rerun after this round is the confirmation.
+- Task 6.4: Linux confirmed by CI run 40718266723 on 6aac898 (`site-browser` green, 6m48s): every layout test passed on Linux Chromium with the 0.5rem window, fit strict at every width. Before that, run 40714831996 on 2f0c119 failed only the unused-reserve bound (8 misses, no fit miss).
+
+### Judgment Day (PR 4)
+
+Two blind judges on `6aac898`: both **APPROVED**, no CRITICAL. Both raised one WARNING, the record above claiming the Linux confirmation before the rerun existed; fixed by naming the runs (40714831996 failed the unused bound only; 40718266723 green). Noted, no change: the 0.5rem window has no margin left against the observed Linux drops (320 and 480 px sit 8 px below their breakpoints), so a Linux drop 9 px early would fail CI again; the fit check stays strict, so such a failure is a reserve-calibration signal, never a hidden overflow.
