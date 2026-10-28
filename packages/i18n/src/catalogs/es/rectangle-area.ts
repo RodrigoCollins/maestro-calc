@@ -14,4 +14,5 @@ export const esRectangleArea = {
   'calc.rectangle-area.page.areaFt2': '{value} pies cuadrados',
   'calc.rectangle-area.page.areaM2': '{value} metros cuadrados',
   'calc.rectangle-area.page.answer': 'Un área de {length} por {width} mide {area}.',
+  'calc.rectangle-area.page.drawing': 'Plano: {length} por {width}, {area}',
 } as const satisfies CatalogOf<typeof enRectangleArea>;

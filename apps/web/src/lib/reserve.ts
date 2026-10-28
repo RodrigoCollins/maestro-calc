@@ -1,3 +1,5 @@
+import type { Frame } from '../calculator/page-module.ts';
+
 /**
  * The line counts one page reserves for a block, as the base count and then one step per
  * breakpoint: `[base, [rem, lines], ...]`. Breakpoints are `rem` (they follow text zoom) and
@@ -19,7 +21,7 @@ export interface Reserve {
   readonly notice?: LineSteps;
 }
 
-/** The CSS of a reserve, written by `reserveCss` only: the one string a page head renders as a style. */
+/** The CSS of a reserve, written by the builders of this module only: the one string a page head renders as a style. */
 export type ReserveCss = string & { readonly __brand: 'ReserveCss' };
 
 /**
@@ -82,4 +84,20 @@ export const reserveCss = (reserve: Reserve): ReserveCss | undefined => {
   // The one place a string becomes `ReserveCss`: the brand marks what this builder wrote.
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- a string brand has no constructor
   return `.calculator{${base}}${blocks.join('')}` as ReserveCss;
+};
+
+/**
+ * The rule of the drawing box of a page that declares the drawing slot (blueprint-drawing ›
+ * [BD22]): a block as wide as the panel up to 24rem, its height from the frame's aspect ratio, so
+ * the box has its size before the script draws. The labels inherit the display font at 17 units.
+ */
+export const drawingCss = ({ width, height }: Frame): ReserveCss =>
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- a string brand has no constructor
+  `[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:${String(width)}/${String(height)};margin-bottom:var(--space-3);font:600 17px var(--font-display)}` as ReserveCss;
+
+/** The rule sets of a page head in order, joined; nothing when there is none. */
+export const joinCss = (...parts: readonly (ReserveCss | undefined)[]): ReserveCss | undefined => {
+  const present = parts.filter((part) => part !== undefined);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- joined builder outputs stay builder output
+  return present.length === 0 ? undefined : (present.join('') as ReserveCss);
 };

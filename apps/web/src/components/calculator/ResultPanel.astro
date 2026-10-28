@@ -5,8 +5,18 @@ import type { ResultView } from './model.ts';
 interface Props {
   result: ResultView;
 }
-const { heading, primary, rows, shopping, costs, costsNote, estimateNote, termsLabel, termsHref } =
-  Astro.props.result;
+const {
+  heading,
+  primary,
+  drawing,
+  rows,
+  shopping,
+  costs,
+  costsNote,
+  estimateNote,
+  termsLabel,
+  termsHref,
+} = Astro.props.result;
 ---
 
 <section class="calc-result" aria-labelledby="calc-result-heading">
@@ -18,6 +28,13 @@ const { heading, primary, rows, shopping, costs, costsNote, estimateNote, termsL
     </span>
     <span data-primary-after>{primary.after}</span>
   </p>
+  {drawing !== undefined && (
+    <svg
+      data-drawing
+      viewBox={`0 0 ${String(drawing.width)} ${String(drawing.height)}`}
+      aria-hidden="true"
+    />
+  )}
   <dl class="calc-rows">
     {rows.map(({ key, label, value, hidden }) => (
       <div class="calc-row" hidden={hidden === true}>

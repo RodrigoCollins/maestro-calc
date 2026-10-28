@@ -8,6 +8,7 @@ const PAGE_KEYS = [
   'calc.rectangle-area.page.answer',
   'calc.rectangle-area.page.areaFt2',
   'calc.rectangle-area.page.areaM2',
+  'calc.rectangle-area.page.drawing',
   'calc.rectangle-area.page.example',
 ] as const;
 
@@ -18,7 +19,7 @@ const pageKeysOf = (module: Readonly<Record<string, string>>): string[] =>
 
 describe('rectangle-area page copy (calc-rectangle-area › Page copy and hand-verified display cases)', () => {
   // spec: calc-rectangle-area › [RAP1] exactly the four page keys in both locales
-  it('holds exactly the four page keys in both locales', () => {
+  it('holds exactly the five page keys in both locales', () => {
     expect(pageKeysOf(enRectangleArea)).toEqual(PAGE_KEYS);
     expect(pageKeysOf(esRectangleArea)).toEqual(PAGE_KEYS);
   });
@@ -28,6 +29,8 @@ describe('rectangle-area page copy (calc-rectangle-area › Page copy and hand-v
     ['calc.rectangle-area.page.answer', ['area', 'length', 'width']],
     ['calc.rectangle-area.page.areaFt2', ['value']],
     ['calc.rectangle-area.page.areaM2', ['value']],
+    // spec: i18n-catalog › [ICW20], [ICW21] the name of the drawing, the same placeholders in both locales
+    ['calc.rectangle-area.page.drawing', ['area', 'length', 'width']],
     ['calc.rectangle-area.page.example', []],
   ] as const)('gives %s its placeholders in both locales', (key, names) => {
     expect([...placeholdersOf(enRectangleArea[key])].sort()).toEqual(names);
@@ -66,5 +69,22 @@ describe('rectangle-area page copy (calc-rectangle-area › Page copy and hand-v
     );
     expect(esRectangleArea['calc.rectangle-area.page.areaFt2']).toContain('pies cuadrados');
     expect(esRectangleArea['calc.rectangle-area.outputs.areaYd2']).toContain('yardas cuadradas');
+  });
+});
+
+describe('the name of the drawing (i18n-catalog › [ICW20], [ICW21]; blueprint-drawing › [BD15])', () => {
+  // spec: blueprint-drawing › [BD15] the accessible name of the plan, in each language
+  it('names the plan with its two dimensions and its area', () => {
+    expect(enRectangleArea['calc.rectangle-area.page.drawing']).toBe(
+      'Plan: {length} by {width}, {area}',
+    );
+    expect(esRectangleArea['calc.rectangle-area.page.drawing']).toBe(
+      'Plano: {length} por {width}, {area}',
+    );
+  });
+
+  // spec: i18n-catalog › [ICW21] no unit symbol in the words: the fills bring them
+  it.each([enRectangleArea, esRectangleArea])('carries no unit symbol of its own', (catalog) => {
+    expect(catalog['calc.rectangle-area.page.drawing']).not.toMatch(/\b(ft|in|m|cm)\b|²/);
   });
 });

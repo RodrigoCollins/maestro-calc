@@ -37,6 +37,7 @@ type RectangleAreaPageKeys =
   | 'calc.rectangle-area.page.answer'
   | 'calc.rectangle-area.page.areaFt2'
   | 'calc.rectangle-area.page.areaM2'
+  | 'calc.rectangle-area.page.drawing'
   | 'calc.rectangle-area.page.example';
 
 /** The keys core derives for every calculator of the registry, one calculator at a time. */

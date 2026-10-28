@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
+import { pageView } from '../../lib/pages.ts';
 import ResultPanel from './ResultPanel.astro';
 import type { ResultView } from './model.ts';
 
@@ -191,4 +192,65 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
       'Estimates only. Check quantities with your supplier and the local building code. Terms',
     ]);
   });
+});
+
+describe('the drawing box (calculator-page › [CP76], [CP77]; blueprint-drawing › [BD16], [BD19])', () => {
+  const drawn: ResultView = { ...result, drawing: { width: 300, height: 200 } };
+
+  // spec: calculator-page › [CP76], blueprint-drawing › [BD19] one empty, hidden box after the large figure
+  it('renders one empty aria-hidden svg box between the large figure and the rows', async () => {
+    const root = await renderComponent(ResultPanel, { result: drawn });
+    const boxes = root.querySelectorAll('[data-drawing]');
+    expect(boxes).toHaveLength(1);
+    const [box] = boxes;
+    expect(box?.tagName).toBe('SVG');
+    expect(box?.getAttribute('viewBox')).toBe('0 0 300 200');
+    expect(box?.getAttribute('aria-hidden')).toBe('true');
+    expect(box?.hasAttribute('role')).toBe(false);
+    expect(box?.childNodes).toHaveLength(0);
+    const children = root.querySelector('section')?.childNodes ?? [];
+    const order = children
+      .map((node) => node.toString().trim())
+      .filter((text) => text !== '')
+      .map((text) => /^<(\w+)(?: class="([^"]*)")?/.exec(text)?.slice(1).join('.') ?? text);
+    expect(order.slice(1, 4)).toEqual(['p.calc-primary', 'svg.', 'dl.calc-rows']);
+  });
+
+  // spec: blueprint-drawing › [BD16] neither the box nor an ancestor up to the panel is a live region
+  it('puts the box in no live region', async () => {
+    const root = await renderComponent(ResultPanel, { result: drawn });
+    for (let node = root.querySelector('[data-drawing]'); node !== null; node = node.parentNode) {
+      expect(node.getAttribute('aria-live')).toBeUndefined();
+      expect(['status', 'alert']).not.toContain(node.getAttribute('role'));
+      if (node.tagName === 'SECTION') break;
+    }
+  });
+
+  it('renders no box for a module without the drawing slot', async () => {
+    const root = await renderComponent(ResultPanel, { result });
+    expect(root.querySelectorAll('[data-drawing]')).toHaveLength(0);
+  });
+
+  // spec: calculator-page › [CP77] the figures are those of the page without the box
+  it.each(['en', 'es'] as const)(
+    'keeps the square footage figures of the default state with the box (%s)',
+    async (locale) => {
+      const view = pageView('rectangle-area', locale).result;
+      expect(view.drawing).toEqual({ width: 300, height: 200 });
+      const root = await renderComponent(ResultPanel, { result: view });
+      const plain: ResultView = { ...view };
+      delete (plain as { drawing?: unknown }).drawing;
+      const without = await renderComponent(ResultPanel, { result: plain });
+      expect(root.querySelectorAll('[data-drawing]')).toHaveLength(1);
+      expect(root.querySelectorAll('[data-output]').map((el) => el.text)).toEqual([
+        '100.00',
+        '11.11',
+        '9.29',
+      ]);
+      // byte for byte once the box is taken out
+      expect(root.toString().replace(/<svg data-drawing[^>]*><\/svg>/, '')).toBe(
+        without.toString(),
+      );
+    },
+  );
 });

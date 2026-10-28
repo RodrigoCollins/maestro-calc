@@ -191,6 +191,8 @@ export interface RectangleSpec {
   readonly length: number;
   readonly width: number;
   readonly texts: { readonly length: string; readonly width: string; readonly area: string };
+  /** Other width texts the left gutter must hold (the other unit system), so a toggle moves nothing. */
+  readonly widest?: readonly string[];
   readonly name: Label;
 }
 
@@ -201,7 +203,10 @@ export interface RectangleSpec {
  */
 export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
   const { texts } = spec;
-  const rect = fitRectangle(frame, rectangleGutters(texts.width), spec.length, spec.width);
+  const gutter = [texts.width, ...(spec.widest ?? [])].reduce((a, b) =>
+    b.length > a.length ? b : a,
+  );
+  const rect = fitRectangle(frame, rectangleGutters(gutter), spec.length, spec.width);
   const [x2, y2] = [rect.x + rect.w, rect.y + rect.h];
   const top = dimensionLine({ x: rect.x, y: rect.y }, { x: x2, y: rect.y }, 'top', {
     text: texts.length,

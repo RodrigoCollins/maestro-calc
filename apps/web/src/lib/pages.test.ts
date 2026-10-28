@@ -6,7 +6,7 @@ import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { SCRIPTS } from '../views/scripts.ts';
 import { PAGES, headStyleOf, pageView, type PageEntry } from './pages.ts';
-import { reserveCss } from './reserve.ts';
+import { drawingCss, reserveCss } from './reserve.ts';
 
 describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC27])', () => {
   // spec: calculator-web-core › [CWC27] the view follows the id
@@ -48,6 +48,27 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
 
   it('gives the concrete row no reserve, so its pages carry no extra byte', () => {
     expect('reserve' in PAGES.concrete).toBe(false);
+  });
+  // spec: blueprint-drawing › [BD22] the box rule is per page: in the head of a page that draws only
+  it('adds the drawing box rule after the reserve of a page that draws, and nothing to one that does not', () => {
+    const rectangle = PAGES['rectangle-area'];
+    expect(drawingCss({ width: 300, height: 200 })).toBe(
+      '[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:300/200;margin-bottom:var(--space-3);font:600 17px var(--font-display)}',
+    );
+    expect(headStyleOf(rectangle)).toBe(
+      `${String(reserveCss(rectangle.reserve))}${drawingCss({ width: 300, height: 200 })}`,
+    );
+    expect(headStyleOf({ module: rectangle.module, catalogs: rectangle.catalogs })).toBe(
+      drawingCss({ width: 300, height: 200 }),
+    );
+    expect(headStyleOf(PAGES.concrete)).toBeUndefined();
+  });
+
+  // spec: blueprint-drawing › [BD22] the shared stylesheet carries no drawing rule
+  it('leaves the drawing rule out of the shared calculator stylesheet', () => {
+    expect(readFileSync(fromRoot('apps/web/src/styles/calculator.css'), 'utf8')).not.toContain(
+      'data-drawing',
+    );
   });
 });
 

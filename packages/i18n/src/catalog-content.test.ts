@@ -59,10 +59,11 @@ describe('rectangle-area labels (i18n-catalog › Exact labels)', () => {
     ]);
   });
 
-  // spec: calc-rectangle-area › [RAP1] six derived labels and the four page keys, nothing else
+  // spec: calc-rectangle-area › [RAP1] six derived labels and the five page keys (the drawing
+  // name of blueprint-drawing › [BD15] included), nothing else
   it('holds no other key in the calculator module', () => {
-    expect(Object.keys(enRectangleArea)).toHaveLength(10);
-    expect(Object.keys(esRectangleArea)).toHaveLength(10);
+    expect(Object.keys(enRectangleArea)).toHaveLength(11);
+    expect(Object.keys(esRectangleArea)).toHaveLength(11);
   });
 });
 
