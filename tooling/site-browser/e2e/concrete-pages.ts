@@ -58,6 +58,8 @@ export const CONCRETE: E2eSpec = {
   numeric: ['count', 'stepCount'],
   figures: ['volumeYd3', 'volumeFt3', 'volumeM3', 'netVolume', 'shopping:0'],
   defaults: DEFAULTS,
+  primary: { en: '1.63 cubic yards', es: '1.63 yardas cúbicas' },
+  controls: 27,
   typed: {
     key: 'length',
     text: '20',
@@ -128,6 +130,10 @@ export const CONCRETE: E2eSpec = {
     '?v=1&u=m&sh=steps',
   ],
   answer: {
+    default: {
+      en: 'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
+      es: 'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
+    },
     typed: {
       en: 'Slab (20 ft × 10 ft, 4 in thick): 2.72 cubic yards with 10% extra. Bags of 80 lb: 123.',
       es: 'Losa (20 ft × 10 ft, 4 in de espesor): 2.72 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 123.',

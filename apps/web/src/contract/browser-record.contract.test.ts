@@ -106,6 +106,7 @@ const SUITES = [
   'a11y.spec.ts',
   'layout.spec.ts',
   'csp.spec.ts',
+  'no-js.spec.ts',
   'locators.ts',
 ];
 
@@ -311,7 +312,7 @@ describe('the shared page knowledge lives in locators.ts (site-quality › [SQ31
     },
   );
 
-  it.each(['calculator.spec.ts', 'layout.spec.ts'])(
+  it.each(['calculator.spec.ts', 'layout.spec.ts', 'no-js.spec.ts'])(
     '%s reads the answer only when the record declares it',
     (file) => {
       expect(read(file)).toMatch(/answer !== undefined/);

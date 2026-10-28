@@ -1,67 +1,49 @@
 import { expect, test } from '@playwright/test';
-import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
 import { calculatorPages } from './calculator-pages.ts';
 import type { E2eLanguage } from './calculator-pages.ts';
-import { figureAt } from './locators.ts';
+import { answer, figureAt, notRunning } from './locators.ts';
+
+/** A catalog string the record must hold: a missing key fails with its name, never as an empty match. */
+const textOf = (catalog: Readonly<Record<string, string>>, key: string): string => {
+  const text = catalog[key];
+  if (text === undefined) throw new Error(`the catalog has no key "${key}"`);
+  return text;
+};
 
 /**
  * The short answer and the large figure a reader whose browser runs no script sees (calculator-page
- * › [CP40], [CP74]): the default state of each page, as the server wrote it.
+ * › [CP40], [CP74]): the default state of each page, as the server wrote it, read from its record.
  */
-const EXPECTED = {
-  concrete: {
-    en: {
-      answer:
-        'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
-      primary: '1.63 cubic yards',
-    },
-    es: {
-      answer:
-        'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
-      primary: '1.63 yardas cúbicas',
-    },
-  },
-  'rectangle-area': {
-    en: { answer: 'A 10 ft by 10 ft area is 100.00 square feet.', primary: '100.00 square feet' },
-    es: {
-      answer: 'Un área de 10 ft por 10 ft mide 100.00 pies cuadrados.',
-      primary: '100.00 pies cuadrados',
-    },
-  },
-} as const satisfies Record<
-  CalculatorPageId,
-  Record<E2eLanguage, { readonly answer: string; readonly primary: string }>
->;
-
 test.describe('calculator pages with JavaScript off (site-quality › [SQ18], calculator-page › [CP40])', () => {
   for (const calculator of calculatorPages) {
     const { id, locale, path, spec, site, catalog } = calculator;
-    const expected = EXPECTED[id][locale];
     test.describe(path, () => {
       test('answers 200 and shows the default result', async ({ page }) => {
         const response = await page.goto(path);
         expect(response?.status()).toBe(200);
-        await expect(page.locator('[data-answer]')).toHaveText(expected.answer);
-        await expect(page.locator('.calc-primary')).toHaveText(expected.primary);
+        if (spec.answer !== undefined)
+          await expect(answer(page)).toHaveText(spec.answer.default[locale]);
+        await expect(page.locator('.calc-primary')).toHaveText(spec.primary[locale]);
+        expect(spec.defaults).toHaveLength(spec.figures.length);
         for (const [index, key] of spec.figures.entries())
-          await expect(figureAt(page, key), key).toHaveText(spec.defaults[index] ?? '');
+          await expect(figureAt(page, key), key).toHaveText(String(spec.defaults[index]));
       });
 
       test('says in the "not running" note that the page needs JavaScript', async ({ page }) => {
         await page.goto(path);
-        await expect(page.locator('[data-not-running]')).toBeVisible();
-        await expect(page.locator('[data-not-running]')).toHaveText(
-          `${site['site.calculator.noscript'] ?? ''} ${catalog[`calc.${id}.page.example`] ?? ''}`,
+        await expect(notRunning(page)).toBeVisible();
+        await expect(notRunning(page)).toHaveText(
+          `${textOf(site, 'site.calculator.noscript')} ${textOf(catalog, `calc.${id}.page.example`)}`,
         );
       });
 
       test('hides "Copy link" and disables every control of the form', async ({ page }) => {
         await page.goto(path);
         await expect(
-          page.getByRole('button', { name: site['site.calculator.copyLink'] ?? '' }),
+          page.getByRole('button', { name: textOf(site, 'site.calculator.copyLink') }),
         ).toBeHidden();
         const controls = page.locator('form input, form button');
-        expect(await controls.count()).toBeGreaterThanOrEqual(spec.inputs);
+        expect(await controls.count()).toBe(spec.controls);
         for (const control of await controls.all()) await expect(control).toBeDisabled();
       });
 
