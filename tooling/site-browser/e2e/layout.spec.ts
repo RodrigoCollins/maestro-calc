@@ -9,7 +9,7 @@ import { answer, notRunning, open } from './locators.ts';
 // it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
 const WIDTHS = [
   320, 327, 328, 355, 356, 385, 386, 387, 390, 463, 464, 480, 481, 487, 488, 599, 600, 640, 666,
-  667, 711, 712, 729, 730, 768, 1024, 1280,
+  667, 711, 712, 729, 730, 767, 768, 1024, 1280,
 ] as const;
 
 type Block = 'answer' | 'notice' | 'copy';

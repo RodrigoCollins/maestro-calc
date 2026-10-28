@@ -9,7 +9,7 @@ import Wordmark from '../components/Wordmark.astro';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../__testing__/css-media.ts';
-import { PAGES, type PageEntry } from '../lib/pages.ts';
+import { headStyleOf, PAGES, type PageEntry } from '../lib/pages.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { reserveCss } from '../lib/reserve.ts';
 
@@ -485,6 +485,17 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     for (const [id, reserve] of reserved) {
       expect(breakpointProblems(reserveCss(reserve), widths), id).toEqual([]);
     }
+  });
+
+  // spec: blueprint-drawing › [BD20], [BD22] the head style of a page (reserve and drawing box)
+  // passes the same checks, so the two-column panel from 48rem has both its edges in WIDTHS
+  it('keeps the whole head style of every row in rem with both edges in WIDTHS', () => {
+    const styled = Object.entries(PAGES).flatMap(([id, entry]) => {
+      const css = headStyleOf(entry);
+      return css === undefined ? [] : [[id, css] as const];
+    });
+    expect(styled.length).toBeGreaterThan(0);
+    for (const [id, css] of styled) expect(breakpointProblems(css, widths), id).toEqual([]);
   });
 
   // seeded: a px breakpoint and an edge missing from WIDTHS are each flagged, a clean reserve is not

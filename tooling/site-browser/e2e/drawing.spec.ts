@@ -16,8 +16,8 @@ import { answer, drawing, input, open } from './locators.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
-/** The widths of blueprint-drawing › [BD20], those of calculator-page › [CP59]. */
-const WIDTHS = [320, 390, 480, 640, 768, 1024, 1280] as const;
+/** The widths of blueprint-drawing › [BD20], those of calculator-page › [CP59], with 767 px below the 48rem two-column edge. */
+const WIDTHS = [320, 390, 480, 640, 767, 768, 1024, 1280] as const;
 
 const drawn = calculatorPages.flatMap((calculator) =>
   calculator.spec.drawing === undefined ? [] : [{ calculator, group: calculator.spec.drawing }],
@@ -250,6 +250,44 @@ for (const { calculator, group } of drawn) {
         }
       });
     }
+
+    // spec: blueprint-drawing › [BD20] from 48rem the panel is two columns, the drawing on the
+    // right and wider than the rows; below 48rem it sits between the large figure and the rows
+    test('sits beside the figures from 48rem and under the large figure below it', async ({
+      page,
+    }) => {
+      await open(page, calculator);
+      for (const width of [767, 768, 1280]) {
+        await page.setViewportSize({ width, height: 844 });
+        const { box, primary, rows } = await page.evaluate(() => {
+          const rect = (selector: string) => {
+            const found = document.querySelector(selector)?.getBoundingClientRect();
+            if (found === undefined) throw new Error(`no ${selector}`);
+            return found.toJSON() as {
+              top: number;
+              bottom: number;
+              left: number;
+              right: number;
+              width: number;
+            };
+          };
+          return {
+            box: rect('[data-drawing]'),
+            primary: rect('.calc-primary'),
+            rows: rect('.calc-rows'),
+          };
+        });
+        const at = `${String(width)} px`;
+        if (width < 768) {
+          expect(box.top, at).toBeGreaterThanOrEqual(primary.bottom);
+          expect(rows.top, at).toBeGreaterThanOrEqual(box.bottom);
+        } else {
+          expect(box.left, at).toBeGreaterThanOrEqual(rows.right);
+          expect(box.top, at).toBeLessThan(primary.bottom);
+          expect(box.width, at).toBeGreaterThan(rows.width);
+        }
+      }
+    });
 
     // spec: blueprint-drawing › [BD23] with no script: present, empty, plain ink, hidden from AT
     // (the page script is refused, as a browser that blocks it would; axe itself needs JavaScript)
