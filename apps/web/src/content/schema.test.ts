@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { calculators } from '../lib/calculators.ts';
 import { calculatorSchema, pageSchema, registryIds, TRUST_IDS, WORKED_EXAMPLES } from './schema.ts';
 
 const valid = {
@@ -217,8 +218,17 @@ describe('calculatorSchema', () => {
     );
   });
 
-  it('keeps one row per id of the table', () => {
-    expect(Object.keys(WORKED_EXAMPLES)).toEqual(['concrete', 'rectangle-area']);
+  // the table is the one list: its keys are registry ids, and the union has one member per row
+  it('keys the table by registry ids only', () => {
+    const ids: readonly string[] = calculators.map(({ id }) => id);
+    expect(Object.keys(WORKED_EXAMPLES).filter((id) => !ids.includes(id))).toEqual([]);
+  });
+
+  it('selects one member of the union per row of the table, in its order', () => {
+    const union = calculatorSchema(registryIds(calculators.map(({ id }) => id)));
+    expect(union.options.map((option) => option.shape.id.value)).toEqual(
+      Object.keys(WORKED_EXAMPLES),
+    );
   });
 });
 
