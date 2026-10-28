@@ -115,9 +115,16 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the client entry', 'apps/web/src/client/entries/<id>.ts'],
     ['the script island', 'apps/web/src/islands/<Id>Script.astro'],
     ['the methodology section', 'apps/web/src/content/pages/{en,es}/methodology.md'],
+    ['the worked-example table', 'WORKED_EXAMPLES'],
+    ['the schema module', 'apps/web/src/content/schema.ts'],
+    ['the content rows', 'CONTENT_ROWS'],
+    ['the content rows module', 'apps/web/src/contract/__testing__/calculator-rows.ts'],
+    ['the methodology contract', 'apps/web/src/contract/methodology.contract.test.ts'],
+    ['the methodology rows', 'METHODOLOGY_ROWS'],
+    ['the methodology rows module', 'apps/web/src/contract/__testing__/methodology-rows.ts'],
     ['the route', 'apps/web/src/routing/routes.ts'],
     ['the route metadata', 'packages/i18n/src/catalogs/{en,es}/site.ts'],
-    ['the script row', 'apps/web/src/views/CalculatorView.astro'],
+    ['the script row', 'apps/web/src/views/scripts.ts'],
     ['the home card keys', 'page.home.cards.<id>'],
     ['the pinned counts', 'apps/web/src/contract/end-state.contract.test.ts'],
     ['the Lighthouse representative', 'tooling/site-browser/e2e/representative.ts'],
@@ -185,6 +192,20 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
   it('lists what is still kept by hand instead of claiming that nothing is', () => {
     expect(recipe).not.toContain('Nothing else is kept by hand');
     expect(recipe).toContain('Kept by hand');
+  });
+
+  // K13: the per-id tables are named where they are edited, and the renamed contract is not
+  it('names each per-id table in the step that edits it and in the list kept by hand', () => {
+    expect(step(11)).toContain('`WORKED_EXAMPLES`');
+    expect(step(11)).toContain('`CONTENT_ROWS`');
+    expect(step(13)).toContain('`METHODOLOGY_ROWS`');
+    expect(step(14)).toContain('`SCRIPTS`');
+    const kept = recipe.slice(recipe.indexOf('Kept by hand'));
+    for (const table of ['WORKED_EXAMPLES', 'CONTENT_ROWS', 'METHODOLOGY_ROWS'])
+      expect(kept, table).toContain(`\`${table}\``);
+    expect(kept).toContain('apps/web/src/views/scripts.ts');
+    expect(recipe).not.toContain('methodology-concrete');
+    expect(recipe).not.toContain('views/CalculatorView.astro');
   });
 
   it('flags a path that does not exist', () => {
