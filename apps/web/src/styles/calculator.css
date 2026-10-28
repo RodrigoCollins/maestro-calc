@@ -20,8 +20,9 @@
 
 /* Reserved areas: the script fills them without moving anything below (CP44). Each reserve is a
    line count in the block's own line unit, stepped down where the sweep of design K13 (320 to
-   1280 px, both languages) found the tallest content loses a line. A page may set the counts on its
-   own body (CP65). */
+   1280 px, both languages) found the tallest content loses a line. A page that needs other counts
+   sets them in the head `<style>` built from its `PAGES[id].reserve` (CP65): a count set there on
+   `.calculator` replaces this whole ladder for that property, at every width. */
 .calc-answer {
   min-height: calc(var(--answer-lines, 5) * var(--text-h3) * var(--leading-body));
   font-size: var(--text-h3);
