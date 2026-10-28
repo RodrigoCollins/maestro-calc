@@ -35,7 +35,7 @@ describe('rectangle-area labels (i18n-catalog › Exact labels)', () => {
       en('calc.rectangle-area.outputs.areaYd2'),
       en('calc.rectangle-area.outputs.areaM2'),
     ]).toEqual([
-      'Rectangle Area',
+      'Square Footage Calculator',
       'Length',
       'Width',
       'Area (square feet)',
@@ -50,7 +50,7 @@ describe('rectangle-area labels (i18n-catalog › Exact labels)', () => {
       es('calc.rectangle-area.outputs.areaYd2'),
       es('calc.rectangle-area.outputs.areaM2'),
     ]).toEqual([
-      'Área de un rectángulo',
+      'Calculadora de pies cuadrados',
       'Largo',
       'Ancho',
       'Área (pies cuadrados)',
@@ -59,9 +59,10 @@ describe('rectangle-area labels (i18n-catalog › Exact labels)', () => {
     ]);
   });
 
+  // spec: calc-rectangle-area › [RAP1] six derived labels and the four page keys, nothing else
   it('holds no other key in the calculator module', () => {
-    expect(Object.keys(enRectangleArea)).toHaveLength(6);
-    expect(Object.keys(esRectangleArea)).toHaveLength(6);
+    expect(Object.keys(enRectangleArea)).toHaveLength(10);
+    expect(Object.keys(esRectangleArea)).toHaveLength(10);
   });
 });
 

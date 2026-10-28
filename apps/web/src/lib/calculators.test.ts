@@ -19,12 +19,12 @@ describe('web smoke (calc-rectangle-area › Web smoke import)', () => {
     expect(primary === undefined ? undefined : valueIn(primary.value, ft2).toString()).toBe('125');
 
     const t = createTranslator({ ...esCommon, ...esRectangleArea });
-    expect(t('calc.rectangle-area.title')).toBe('Área de un rectángulo');
+    expect(t('calc.rectangle-area.title')).toBe('Calculadora de pies cuadrados');
   });
 });
 
 describe('calculator registry (calc-rectangle-area › Bilingual labels)', () => {
-  it('lists rectangle-area, the proof calculator, as the very object core exports', () => {
+  it('lists rectangle-area, the second calculator, as the very object core exports', () => {
     expect(calculators).toContain(rectangleArea);
   });
 

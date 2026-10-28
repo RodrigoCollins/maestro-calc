@@ -32,6 +32,13 @@ type ConcretePageKeys =
   | 'calc.concrete.page.priceHint'
   | 'calc.concrete.page.readyMixNote';
 
+/** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
+type RectangleAreaPageKeys =
+  | 'calc.rectangle-area.page.answer'
+  | 'calc.rectangle-area.page.areaFt2'
+  | 'calc.rectangle-area.page.areaM2'
+  | 'calc.rectangle-area.page.example';
+
 /** The keys core derives for every calculator of the registry, one calculator at a time. */
 type DerivedKeys<C = (typeof calculators)[number]> = C extends Parameters<typeof messageKeysOf>[0]
   ? MessageKeysOf<C>
@@ -50,7 +57,11 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
   // the other direction: the English modules hold nothing the calculator does not use
   it('holds no English key beyond the derived keys, the error codes, the material keys and the page keys', () => {
     expectTypeOf<EnglishKeys>().toExtend<
-      DerivedKeys | `errors.${AllErrorCode}` | MaterialKeys<typeof concreteMix> | ConcretePageKeys
+      | DerivedKeys
+      | `errors.${AllErrorCode}`
+      | MaterialKeys<typeof concreteMix>
+      | ConcretePageKeys
+      | RectangleAreaPageKeys
     >();
   });
 
@@ -59,5 +70,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enConcrete, `calc.concrete.page.${string}`>
     >().toEqualTypeOf<ConcretePageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enRectangleArea, `calc.rectangle-area.page.${string}`>
+    >().toEqualTypeOf<RectangleAreaPageKeys>();
   });
 });

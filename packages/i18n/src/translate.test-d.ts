@@ -2,7 +2,7 @@ import { describe, expectTypeOf, it } from 'vitest';
 import { createTranslator, type ParamsOf } from './translate.ts';
 
 const t = createTranslator({
-  'calc.rectangle-area.title': 'Rectangle Area',
+  'calc.rectangle-area.title': 'Square Footage Calculator',
   'errors.BELOW_MIN': 'The value must be at least {min}.',
   'test.range': 'From {low} to {high}',
 } as const);

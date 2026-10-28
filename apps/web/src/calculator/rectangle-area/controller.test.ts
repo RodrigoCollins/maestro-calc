@@ -10,6 +10,12 @@ import {
   type UiEvent as ControllerEvent,
 } from '../controller.ts';
 import { definePage, type AnyCalculator } from '../page-module.ts';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
+import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
+import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
+import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
+import { pageViewOf } from '../../lib/page-view.ts';
 import { rectangleAreaPage } from './page.ts';
 
 type Output = ControllerOutput<typeof rectangleArea>;
@@ -28,11 +34,7 @@ const ENV: Environment = {
 };
 
 /** Applies the events in order from the page loaded with `search`; the last output. */
-const last = (
-  search: string,
-  events: readonly UiEvent[] = [],
-  page = rectangleAreaPage,
-): Output => {
+const last = (search: string, events: readonly UiEvent[] = [], page = slotFreePage): Output => {
   const controller = controllerOf(page);
   let output = controller.start(ENV, search);
   for (const event of events) output = controller.applyEvent(ENV, output.state, event);
@@ -49,7 +51,7 @@ const figures = ({ view }: Output) => [
   view.panel.figures.areaM2,
 ];
 
-describe('rectangle-area through the generic controller (calculator-web-core › Rectangle-area headless proof)', () => {
+describe('a slot-free rectangle-area through the generic controller (calculator-web-core › Slot-free headless proof)', () => {
   // spec: calculator-web-core › [CWC1] a minimal module
   it('starts from the defaults with no choice, stepper, shopping or cost data', () => {
     const out = last('');
@@ -67,7 +69,7 @@ describe('rectangle-area through the generic controller (calculator-web-core ›
     });
     expect(out.view.answer).toBeUndefined();
     expect(out.write).toBeUndefined();
-    expect(rectangleAreaPage.steppers).toBeUndefined();
+    expect(slotFreePage.steppers).toBeUndefined();
   });
 
   // spec: calculator-web-core › [CWC7] an invalid text blocks everything; 150 is read in feet
@@ -121,7 +123,7 @@ describe('rectangle-area through the generic controller (calculator-web-core ›
   // spec: calculator-web-core › [CWC16] a stepper press on a module with no stepper changes nothing
   it('ignores a step event because the module declares no stepper', () => {
     // widened to the any-calculator controller: the event union of this one has no percent key
-    const controller: Controller<AnyCalculator> = controllerOf(rectangleAreaPage);
+    const controller: Controller<AnyCalculator> = controllerOf(slotFreePage);
     const start = controller.start(ENV, '?v=1&l=150');
     const out = controller.applyEvent(ENV, start.state, {
       type: 'step',
@@ -140,5 +142,64 @@ describe('rectangle-area through the generic controller (calculator-web-core ›
     last('', [type('length', '20')], page);
     const [raw] = validate.mock.calls.at(-1) ?? [];
     expect(Object.keys(raw ?? {}).sort()).toEqual(['length', 'width']);
+  });
+});
+
+/** The environment of the real page in a locale: the messages are the page view's own templates. */
+const envOf = (locale: 'en' | 'es'): Environment => {
+  const catalog: Record<string, string> =
+    locale === 'en'
+      ? { ...enCommon, ...enRectangleArea, ...enSite }
+      : { ...esCommon, ...esRectangleArea, ...esSite };
+  return {
+    ...ENV,
+    messages: Object.fromEntries(pageViewOf(rectangleAreaPage, locale, catalog).messages),
+  };
+};
+
+const answerOf = (locale: 'en' | 'es', search: string): Output => {
+  const controller = controllerOf(rectangleAreaPage);
+  return controller.start(envOf(locale), search);
+};
+
+/** The four hand-verified cases: query, [ft², yd², m²], the dimensions in each locale. */
+const CASES = [
+  ['v=1&l=144', ['120.00', '13.33', '11.15'], '12 ft by 10 ft', '12 ft por 10 ft'],
+  ['v=1', ['100.00', '11.11', '9.29'], '10 ft by 10 ft', '10 ft por 10 ft'],
+  ['v=1&l=150', ['125.00', '13.89', '11.61'], '12 ft 6 in by 10 ft', '12 ft 6 in por 10 ft'],
+  ['v=1&l=240&w=180', ['300.00', '33.33', '27.87'], '20 ft by 15 ft', '20 ft por 15 ft'],
+] as const;
+
+describe('rectangle-area page: the answer through the controller (calc-rectangle-area)', () => {
+  // spec: calc-rectangle-area › [RAP2] the default sentence per unit system and locale
+  it.each([
+    ['en', '', 'A 10 ft by 10 ft area is 100.00 square feet.'],
+    ['es', '', 'Un área de 10 ft por 10 ft mide 100.00 pies cuadrados.'],
+    ['en', '&u=m', 'A 3.05 m by 3.05 m area is 9.29 square meters.'],
+    ['es', '&u=m', 'Un área de 3.05 m por 3.05 m mide 9.29 metros cuadrados.'],
+  ] as const)('says the default %s sentence%s', (locale, units, sentence) => {
+    expect(answerOf(locale, `?v=1${units}`).view.answer).toBe(sentence);
+  });
+
+  // spec: calc-rectangle-area › [RAP3] four cases, imperial: figures, large figure and the dimensions
+  it.each(CASES)('gives %s the figures %j and names the dimensions', (query, shown, en, es) => {
+    const out = answerOf('en', `?${query}`);
+    expect(figures(out)).toEqual(shown);
+    expect(out.view.panel.primary).toMatchObject({ key: 'areaFt2', value: shown[0] });
+    expect(out.view.answer).toBe(`A ${en} area is ${shown[0]} square feet.`);
+    expect(answerOf('es', `?${query}`).view.answer).toBe(
+      `Un área de ${es} mide ${shown[0]} pies cuadrados.`,
+    );
+  });
+
+  // spec: calc-rectangle-area › [RAP4] metric: the large figure is the m² value and the sentence ends with its unit
+  it.each(CASES)('headlines the m² of %s under u=m with its unit', (query, shown) => {
+    const en = answerOf('en', `?${query}&u=m`);
+    expect(en.view.panel.primary).toMatchObject({ key: 'areaM2', value: shown[2] });
+    expect(en.view.answer).toMatch(/square meters\.$/);
+    expect(en.view.answer).toContain(`${shown[2]} square meters.`);
+    const es = answerOf('es', `?${query}&u=m`);
+    expect(es.view.answer).toMatch(/metros cuadrados\.$/);
+    expect(es.view.answer).toContain(`${shown[2]} metros cuadrados.`);
   });
 });

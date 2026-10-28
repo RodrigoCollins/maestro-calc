@@ -14,7 +14,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
+import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
 import { pageViewOf } from '../../lib/page-view.ts';
 import { pageView } from '../../lib/pages.ts';
 import { calculators } from '../../lib/calculators.ts';
@@ -269,11 +269,11 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   // spec: calculator-web-core › Page-view builder: the answer region exists only with an answer
   it('renders the answer region only for a view that has an answer', async () => {
     expect((await render('en')).querySelectorAll('[data-answer]')).toHaveLength(1);
-    const view = pageViewOf(rectangleAreaPage, 'en', {
-      ...enCommon,
-      ...enRectangleArea,
-      ...enSite,
-    });
+    // the catalog of a page with neither an answer nor a primary sentence: no page copy
+    const copy = Object.fromEntries(
+      Object.entries(enRectangleArea).filter(([key]) => !key.includes('.page.')),
+    );
+    const view = pageViewOf(slotFreePage, 'en', { ...enCommon, ...copy, ...enSite });
     const root = await renderComponent(CalculatorBody, { view, content: CONTENT });
     expect(root.querySelectorAll('[data-answer], [data-reserved="answer"]')).toHaveLength(0);
     expect(root.querySelector('[data-calculator]')?.getAttribute('data-calculator')).toBe(
@@ -329,7 +329,7 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
 
   // spec: calculator-web-core › [CWC24], [CWC33] and calculator-page › [CP56]: a module with no slot renders no slot hook
   it('renders rectangle-area through the real components with two fields and no slot element', async () => {
-    const view = pageViewOf(rectangleAreaPage, 'en', {
+    const view = pageViewOf(slotFreePage, 'en', {
       ...enCommon,
       ...enRectangleArea,
       ...enSite,

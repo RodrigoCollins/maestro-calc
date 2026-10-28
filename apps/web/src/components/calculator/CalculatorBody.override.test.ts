@@ -3,7 +3,7 @@ import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
-import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
+import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
 import { pageViewOf } from '../../lib/page-view.ts';
 import { pageView } from '../../lib/pages.ts';
 import CalculatorBody from './CalculatorBody.astro';
@@ -41,8 +41,8 @@ describe('CalculatorBody line-count override (calculator-page › [CP65])', () =
   });
 
   // spec: calculator-page › [CP65] a module with no answer slot reserves nothing for it
-  it('renders no answer block, and so no answer reserve, for rectangle-area', async () => {
-    const view = pageViewOf(rectangleAreaPage, 'en', {
+  it('renders no answer block, and so no answer reserve, for a slot-free page', async () => {
+    const view = pageViewOf(slotFreePage, 'en', {
       ...enCommon,
       ...enRectangleArea,
       ...enSite,
