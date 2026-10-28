@@ -1,0 +1,6 @@
+import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
+import { mount } from '../mount.ts';
+
+// The one script of the square footage page, shared by both languages. It enables the form and
+// keeps the result and the answer in step with it; every word it shows comes from the page.
+mount(rectangleAreaPage);

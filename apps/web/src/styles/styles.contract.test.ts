@@ -459,15 +459,15 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(breakpointProblems(calculator, widths)).toEqual([]);
   });
 
-  // The rows of the page table that declare a reserve. None does yet, so the loop below checks
-  // nothing: this flips at PR 4 (S4b), when the square-footage row goes live with its own reserve.
+  // The rows of the page table that declare a reserve: the square footage page (calculator-page ›
+  // [CP73]); concrete keeps the shared counts of `calculator.css`.
   const reserved = Object.entries(PAGES).flatMap(([id, entry]) => {
     const { reserve } = entry as PageEntry;
     return reserve === undefined ? [] : [[id, reserve] as const];
   });
 
-  it('has no page row with a reserve before PR 4 (S4b), so the reserve check below runs over none', () => {
-    expect(reserved.map(([id]) => id)).toEqual([]);
+  it('has a reserve on the square footage row only, so the reserve check below runs over it', () => {
+    expect(reserved.map(([id]) => id)).toEqual(['rectangle-area']);
   });
 
   // spec: calculator-page › [CP64] the CSS of every reserve of the page table passes the same checks

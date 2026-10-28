@@ -52,7 +52,7 @@ const site = {
     ]),
   ),
   calculatorPages: CALCULATOR_PAGES,
-  externalLinks: { concrete: [QUIKRETE_URL, NIST_URL] },
+  externalLinks: { concrete: [QUIKRETE_URL, NIST_URL], 'rectangle-area': [NIST_URL] },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {

@@ -108,6 +108,7 @@ describe('site catalog: page metadata (site-seo › Titles and descriptions)', (
       'terms',
       'contact',
       'concrete',
+      'rectangle-area',
       'notFound',
     ];
     expect(pageIds(enSite)).toEqual(ids);

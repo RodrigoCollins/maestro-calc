@@ -1,8 +1,7 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
-import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { inputId } from '../calculator/ids.ts';
@@ -10,8 +9,6 @@ import { textKeysOf } from '../calculator/texts.ts';
 import CalculatorBody from '../components/calculator/CalculatorBody.astro';
 import type { CalculatorContent } from '../components/calculator/model.ts';
 import { pageViewOf } from '../lib/page-view.ts';
-import { ROUTES } from '../routing/routes.ts';
-import { sitemapXml } from '../seo/sitemap.ts';
 import { buildClient } from './__testing__/client-build.ts';
 import { entrySourceOf, graphViolations, reaches } from './__testing__/client-graph.ts';
 import { expectWithinJsBudget } from './__testing__/js-budget.ts';
@@ -21,8 +18,8 @@ import { fromRoot } from './root.ts';
 /**
  * The slot-free proof: a test-only page module (the rectangle-area calculator with no slot) is
  * mounted by the generic mount. The proof is a test-only entry, its rendered markup and the lookups
- * of the mount (calculator-web-core › [CWC4], [CWC33], [CWC36]); the [CWC32] block at the end
- * retires with the go-live.
+ * of the mount (calculator-web-core › [CWC4], [CWC33], [CWC36]). No routed page is slot-free, so
+ * the no-slot branches of the mount are covered here alone.
  */
 const PROOF = fromRoot('apps/web/src/contract/__testing__/slot-free-entry.ts');
 const PROOF_SOURCE = `import '${PROOF}';`;
@@ -203,23 +200,5 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     expect(
       lookupProblems(`${mount}\nfindAll(root, '[data-choice]');`, await render(), keys),
     ).toEqual([]);
-  });
-});
-
-describe('rectangle-area stays unrouted (calculator-web-core › [CWC32])', () => {
-  // spec: calculator-web-core › [CWC32] not in the route table, the sitemap, the catalogs or the entries
-  it('is in no route, no sitemap row, no site catalog key and has no entry or island', () => {
-    expect(Object.keys(ROUTES)).not.toContain('rectangle-area');
-    expect(JSON.stringify(ROUTES)).not.toContain('rectangle-area');
-    expect(sitemapXml()).not.toContain('rectangle-area');
-    for (const catalog of [enSite, esSite]) {
-      expect(Object.keys(catalog).filter((key) => key.includes('rectangle-area'))).toEqual([]);
-    }
-    expect(existsSync(fromRoot('apps/web/src/client/entries/rectangle-area.ts'))).toBe(false);
-    expect(existsSync(fromRoot('apps/web/src/islands/RectangleAreaScript.astro'))).toBe(false);
-  });
-
-  it('keeps the proof entry among the test files', () => {
-    expect(existsSync(PROOF)).toBe(true);
   });
 });

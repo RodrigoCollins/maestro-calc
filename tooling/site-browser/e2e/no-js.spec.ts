@@ -21,6 +21,13 @@ const EXPECTED = {
       primary: '1.63 yardas cúbicas',
     },
   },
+  'rectangle-area': {
+    en: { answer: 'A 10 ft by 10 ft area is 100.00 square feet.', primary: '100.00 square feet' },
+    es: {
+      answer: 'Un área de 10 ft por 10 ft mide 100.00 pies cuadrados.',
+      primary: '100.00 pies cuadrados',
+    },
+  },
 } as const satisfies Record<
   CalculatorPageId,
   Record<E2eLanguage, { readonly answer: string; readonly primary: string }>

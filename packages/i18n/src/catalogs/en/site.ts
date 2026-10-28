@@ -33,6 +33,9 @@ export const enSite = {
     'Jobsite calculators that estimate what to buy. We explain how every number is worked out.',
   'page.home.cards.concrete.title': 'Concrete calculator',
   'page.home.cards.concrete.summary': 'Cubic yards and bags for a slab, footing, column or steps.',
+  'page.home.cards.rectangle-area.title': 'Square footage calculator',
+  'page.home.cards.rectangle-area.summary':
+    'Square feet, yards and meters for a room, floor or slab.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -56,6 +59,9 @@ export const enSite = {
   'page.concrete.title': 'Concrete Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.concrete.description':
     'Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.',
+  'page.rectangle-area.title': 'Square Footage Calculator: Area of a Room | Maestro Calc',
+  'page.rectangle-area.description':
+    'Find the square footage of a room, floor or slab from its length and width, with square yards and meters. Free, instant, in feet, inches or meters.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

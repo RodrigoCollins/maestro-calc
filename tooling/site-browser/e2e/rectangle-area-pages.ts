@@ -20,8 +20,7 @@ const METRIC_BARE: Figures = ['129.17', '14.35', '12.00'];
 
 /**
  * The record of the square footage page (site-quality › [SQ37]): the strings, states and sentences
- * the generic suites drive. The page has an answer and nothing else of the optional groups. Its
- * row in `E2E` is added by the go-live; until then this record is only type-checked.
+ * the generic suites drive. The page has an answer and nothing else of the optional groups.
  */
 export const RECTANGLE_AREA: E2eSpec = {
   locales: {

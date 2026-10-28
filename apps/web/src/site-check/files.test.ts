@@ -20,6 +20,8 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
       'es/contacto.html',
       'concrete-calculator.html',
       'es/calculadora-de-concreto.html',
+      'square-footage-calculator.html',
+      'es/calculadora-de-pies-cuadrados.html',
       '404.html',
       'es/404.html',
     ]);

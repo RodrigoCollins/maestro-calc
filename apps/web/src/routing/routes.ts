@@ -25,6 +25,10 @@ export const ROUTES = {
   terms: { en: '/terms', es: '/es/terminos' },
   contact: { en: '/contact', es: '/es/contacto' },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
+  'rectangle-area': {
+    en: '/square-footage-calculator',
+    es: '/es/calculadora-de-pies-cuadrados',
+  },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;
