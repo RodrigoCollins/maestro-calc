@@ -72,20 +72,20 @@ Split rules (applied by measurement, no exception is requested):
 
 ### Standard Exit Criteria per slice (SX)
 
-- [ ] SX1 Slice gates green in the order above.
-- [ ] SX2 Size: shortstat recorded (renames as renames), at most 400, forecast vs actual in `apply-progress.md`.
-- [ ] SX3 Commits: conventional subjects, tree green at each commit, no attribution.
-- [ ] SX4 Mutation: N/A, `git diff --stat main -- packages/core packages/data` empty (stated per slice, proof recorded).
-- [ ] SX5 Traceability: `apply-progress.md` lists the scenario ids proven, each negative proof run and reverted (`git status --porcelain` clean), and the measured sizes.
+- [x] SX1 Slice gates green in the order above.
+- [x] SX2 Size: shortstat recorded (renames as renames), at most 400, forecast vs actual in `apply-progress.md`.
+- [x] SX3 Commits: conventional subjects, tree green at each commit, no attribution.
+- [x] SX4 Mutation: N/A, `git diff --stat main -- packages/core packages/data` empty (stated per slice, proof recorded).
+- [x] SX5 Traceability: `apply-progress.md` lists the scenario ids proven, each negative proof run and reverted (`git status --porcelain` clean), and the measured sizes.
 
 ### Group Exit Criteria (GX): once per PR, before merge
 
-- [ ] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and `mutation-gate`, `site-browser`).
-- [ ] GX2 `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
-- [ ] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`): spec conformance, types and package boundaries, test quality, maintainability and performance. Only candidate-caused blocking findings gate.
-- [ ] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again.
-- [ ] GX5 PR opened against `main` with the body contents of the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
-- [ ] GX6 `site-browser` job green and its wall time recorded (limit 15 minutes).
+- [x] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and `mutation-gate`, `site-browser`).
+- [x] GX2 `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
+- [x] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`): spec conformance, types and package boundaries, test quality, maintainability and performance. Only candidate-caused blocking findings gate.
+- [x] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again.
+- [x] GX5 PR opened against `main` with the body contents of the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
+- [x] GX6 `site-browser` job green and its wall time recorded (limit 15 minutes).
 
 ---
 
@@ -132,8 +132,8 @@ Commit: `test(web): run the methodology and budget proofs per id`.
 
 - [x] P1.1 Tip checks: `git log main..HEAD --oneline` shows the planning commits, then S1a and S1b; `git diff --stat main -- packages/core packages/data` is empty and `git diff --stat main -- packages/` is empty; CI/stryker paths unchanged. Record `git diff -M --shortstat main..HEAD -- . ':(exclude)package-lock.json' ':(exclude)tooling/site-browser/package-lock.json' ':(exclude)openspec/'` and the `openspec/` lines on a separate line.
 - [x] P1.2 Dist diff of the PR 1 tip against `<scratch>/dist-prev` (the `main` build): empty (rule in Group rules). Record the result.
-- [ ] P1.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B (exact figure and headroom); e2e count; `site-browser` wall time.
-- [ ] P1.4 Exit: GX1–GX6. PR body: scope (per-id schema, `CONTENT_ROWS`, `shownFigures`, `METHODOLOGY_ROWS` and the rename, budget fixture by id, `views/scripts.ts`, recipe steps 11/13/14), forecast vs actual per slice, scenario ids covered (CP6, CP7, CP9, CP69, TP22, TP24, SQ33–SQ36, CP66 pin), negative-proof evidence, the dist-diff result, the ES full-length size, rollback. Chain Context: PR 1 of 4, start state `main`, end state contracts that take a second calculator as rows while only concrete has one, follow-ups PR 2 (entries), PR 3 (page, reserve), PR 4 (go-live), out of scope the entries and any page change. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P1.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B (exact figure and headroom); e2e count; `site-browser` wall time.
+- [x] P1.4 Exit: GX1–GX6. PR body: scope (per-id schema, `CONTENT_ROWS`, `shownFigures`, `METHODOLOGY_ROWS` and the rename, budget fixture by id, `views/scripts.ts`, recipe steps 11/13/14), forecast vs actual per slice, scenario ids covered (CP6, CP7, CP9, CP69, TP22, TP24, SQ33–SQ36, CP66 pin), negative-proof evidence, the dist-diff result, the ES full-length size, rollback. Chain Context: PR 1 of 4, start state `main`, end state contracts that take a second calculator as rows while only concrete has one, follow-ups PR 2 (entries), PR 3 (page, reserve), PR 4 (go-live), out of scope the entries and any page change. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
@@ -157,10 +157,10 @@ Commit: `docs(content): draft the square footage entries for review`.
 
 ### PR 2 group tasks
 
-- [ ] P2.1 Tip checks: `git log main..HEAD --oneline` shows S2 only; `git diff --stat main -- packages/` is empty; record `--shortstat main..HEAD`.
-- [ ] P2.2 Dist diff of the PR 2 tip against `<scratch>/dist-prev` (the PR 1 tip build): empty. Record the result.
-- [ ] P2.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; e2e count; `site-browser` wall time.
-- [ ] P2.4 Exit: GX1–GX6. PR body: scope (two `pending` entries, one content row, end-state 2→4), forecast vs actual (200–240), scenario ids (CP6–CP10, CP69, CP70 content side), the owner review artifact reference (the orchestrator presents it to the owner), negative-proof evidence, the dist-diff result, rollback. Chain Context: PR 2 of 4, start state the PR 1 tip, end state staged entries (`pending`), follow-ups PR 3 and PR 4 (blocked on the owner gate K12), out of scope the page and the route. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P2.1 Tip checks: `git log main..HEAD --oneline` shows S2 only; `git diff --stat main -- packages/` is empty; record `--shortstat main..HEAD`.
+- [x] P2.2 Dist diff of the PR 2 tip against `<scratch>/dist-prev` (the PR 1 tip build): empty. Record the result.
+- [x] P2.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; e2e count; `site-browser` wall time.
+- [x] P2.4 Exit: GX1–GX6. PR body: scope (two `pending` entries, one content row, end-state 2→4), forecast vs actual (200–240), scenario ids (CP6–CP10, CP69, CP70 content side), the owner review artifact reference (the orchestrator presents it to the owner), negative-proof evidence, the dist-diff result, rollback. Chain Context: PR 2 of 4, start state the PR 1 tip, end state staged entries (`pending`), follow-ups PR 3 and PR 4 (blocked on the owner gate K12), out of scope the page and the route. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
@@ -211,10 +211,10 @@ Commit: `test(e2e): stage the square footage record and the per-page reserve`.
 
 ### PR 3 group tasks
 
-- [ ] P3.1 Tip checks: `git log main..HEAD --oneline` shows S3a and S3b only; `git diff --stat main -- packages/core packages/data` empty; CI/stryker paths unchanged; record `--shortstat main..HEAD`.
-- [ ] P3.2 Dist diff of the PR 3 tip against `<scratch>/dist-prev` (the PR 2 tip build): empty. Record the result.
-- [ ] P3.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; e2e count; `site-browser` wall time and its delta.
-- [ ] P3.4 Exit: GX1–GX6. PR body: scope (page module, four sentences, retitle, proof move, reserve mechanism, head style, per-page `BEFORE_EDGE`, staged record), forecast vs actual (S3a 265–315, S3b 300–350), scenario ids (RAP1–RAP8, CWC33, CWC38, CWC40 prep, CP64, CP65, CP60/CP61 mechanism, SQ37 staged), negative-proof evidence, dist-diff result, ES full-length, rollback (reverts only before PR 4). Chain Context: PR 3 of 4, start state the PR 2 tip, end state an unrouted but complete page module with the reserve mechanism, follow-up PR 4 (go-live, owner-gated), out of scope the measured counts, the route, the `approved` flip. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P3.1 Tip checks: `git log main..HEAD --oneline` shows S3a and S3b only; `git diff --stat main -- packages/core packages/data` empty; CI/stryker paths unchanged; record `--shortstat main..HEAD`.
+- [x] P3.2 Dist diff of the PR 3 tip against `<scratch>/dist-prev` (the PR 2 tip build): empty. Record the result.
+- [x] P3.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; e2e count; `site-browser` wall time and its delta.
+- [x] P3.4 Exit: GX1–GX6. PR body: scope (page module, four sentences, retitle, proof move, reserve mechanism, head style, per-page `BEFORE_EDGE`, staged record), forecast vs actual (S3a 265–315, S3b 300–350), scenario ids (RAP1–RAP8, CWC33, CWC38, CWC40 prep, CP64, CP65, CP60/CP61 mechanism, SQ37 staged), negative-proof evidence, dist-diff result, ES full-length, rollback (reverts only before PR 4). Chain Context: PR 3 of 4, start state the PR 2 tip, end state an unrouted but complete page module with the reserve mechanism, follow-up PR 4 (go-live, owner-gated), out of scope the measured counts, the route, the `approved` flip. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
@@ -266,18 +266,18 @@ Commit: `feat(web): publish the square footage calculator`.
 
 ### PR 4 group tasks
 
-- [ ] P4.1 Tip checks: `git log main..HEAD --oneline` shows S4a and S4b only; `git diff --stat main -- packages/core packages/data` is empty ([RAP8], SX4: the `calculators` shard is not affected); `git diff --stat main -- .github/workflows/ci.yml 'packages/*/stryker.config.mjs'` is empty; record `--shortstat main..HEAD`. Confirm the owner record (date and place) exists before the `approved` commit in `git log`.
-- [ ] P4.2 [TP39] check on the final diff: the square footage methodology section appears only in the S4b commit, in both locales.
-- [ ] P4.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; rectangle-area HTML sizes and headroom; the `site-browser` wall time (limit 15 minutes).
-- [ ] P4.4 Exit: GX1–GX6. PR body: scope (reserve values, `WIDTHS`, owner approval, the go-live), forecast vs actual (S4a 25–45, S4b 210–290), the owner approval record (date, place), the sweep tables from macOS and Linux with the breakpoints chosen, scenario ids (SR17, SR19, SR23–SR25, TP21, TP22, TP24–TP26, TP28, TP31, TP32, TP38–TP41, CP60–CP65, CP67–CP75, CWC38–CWC40, SQ33–SQ37), negative-proof evidence, the dist-diff file list, sizes against budgets, rollback (revert PR 4 restores `PAGELESS = ['rectangle-area']`, two URLs 404). Chain Context: PR 4 of 4, start state the PR 3 tip, end state the second live calculator, prior dependencies PR 1–3, follow-ups (concrete `:root` counts into its own `reserve`; neutral budget vocabulary), out of scope other shapes, hubs, waste, costs. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P4.1 Tip checks: `git log main..HEAD --oneline` shows S4a and S4b only; `git diff --stat main -- packages/core packages/data` is empty ([RAP8], SX4: the `calculators` shard is not affected); `git diff --stat main -- .github/workflows/ci.yml 'packages/*/stryker.config.mjs'` is empty; record `--shortstat main..HEAD`. Confirm the owner record (date and place) exists before the `approved` commit in `git log`.
+- [x] P4.2 [TP39] check on the final diff: the square footage methodology section appears only in the S4b commit, in both locales.
+- [x] P4.3 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES full-length at most 40,836 B; rectangle-area HTML sizes and headroom; the `site-browser` wall time (limit 15 minutes).
+- [x] P4.4 Exit: GX1–GX6. PR body: scope (reserve values, `WIDTHS`, owner approval, the go-live), forecast vs actual (S4a 25–45, S4b 210–290), the owner approval record (date, place), the sweep tables from macOS and Linux with the breakpoints chosen, scenario ids (SR17, SR19, SR23–SR25, TP21, TP22, TP24–TP26, TP28, TP31, TP32, TP38–TP41, CP60–CP65, CP67–CP75, CWC38–CWC40, SQ33–SQ37), negative-proof evidence, the dist-diff file list, sizes against budgets, rollback (revert PR 4 restores `PAGELESS = ['rectangle-area']`, two URLs 404). Chain Context: PR 4 of 4, start state the PR 3 tip, end state the second live calculator, prior dependencies PR 1–3, follow-ups (concrete `:root` counts into its own `reserve`; neutral budget vocabulary), out of scope other shapes, hubs, waste, costs. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
 ## Final — Change-level checks
 
-- [ ] F.1 After PR 4 merges: `git diff --stat <pre-change main> -- packages/core packages/data` is empty; `RELEASED` and `REGISTRY` untouched; no budget raised; `end-state.contract.test.ts` is the only place with pinned counts.
-- [ ] F.2 `apply-progress.md` lists per slice the forecast vs actual lines, scenario ids proven, each negative proof run and reverted, the measured sizes (ES concrete full-length per PR tip, each `rectangle-area` HTML, entry graph, page weight, e2e count, both sweeps) and the four `site-browser` wall times.
-- [ ] F.3 Archive-ready: delta specs synced to `openspec/specs/` at archive time (calculator-page, calc-rectangle-area, calculator-web-core, site-quality, site-routing-i18n, trust-pages, i18n-catalog); `reviewGate` and the owner record present for the archive report.
+- [x] F.1 After PR 4 merges: `git diff --stat <pre-change main> -- packages/core packages/data` is empty; `RELEASED` and `REGISTRY` untouched; no budget raised; `end-state.contract.test.ts` is the only place with pinned counts.
+- [x] F.2 `apply-progress.md` lists per slice the forecast vs actual lines, scenario ids proven, each negative proof run and reverted, the measured sizes (ES concrete full-length per PR tip, each `rectangle-area` HTML, entry graph, page weight, e2e count, both sweeps) and the four `site-browser` wall times.
+- [x] F.3 Archive-ready: delta specs synced to `openspec/specs/` at archive time (calculator-page, calc-rectangle-area, calculator-web-core, site-quality, site-routing-i18n, trust-pages, i18n-catalog); `reviewGate` and the owner record present for the archive report.
 
 ---
 
