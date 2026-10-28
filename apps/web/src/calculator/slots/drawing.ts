@@ -73,8 +73,11 @@ export interface Box {
 export const CLAMP = 4;
 /** The estimated width of a character, in sizes: a conservative em for Barlow Condensed 600. */
 export const CHAR = 0.56;
-/** The height of a label box, in sizes: the ascent and descent of the font. */
-const LINE = 1.2;
+/**
+ * The height of a label box, in sizes: the ascent and descent of Barlow Condensed, which Chromium
+ * measures at 1.24 sizes (`getBBox`, 21.1 at 17), centred on the label's `y`.
+ */
+const LINE = 1.25;
 /** From the outline to its dimension line. */
 const OFFSET = 14;
 /** From a dimension line to its label, and from the outline to the bottom row. */
