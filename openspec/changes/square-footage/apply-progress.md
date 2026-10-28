@@ -167,7 +167,7 @@ Forecast 200-240, actual **245** (`git diff -M --shortstat 9aac302..7434baa -- .
 | Item | PR 1 tip (9aac302) | S2 tip | Limit |
 |---|---|---|---|
 | Words (contract's `wordsOf`) | | EN **1,290**, ES **1,346** | 800-1,500 |
-| FAQ answers (characters) | | EN 289, 227, 241, 194, 229, 306, 229, 230; ES 297, 268, 290, 227, 250 (254 after befd9ac), 372, 269, 237 | 450 |
+| FAQ answers (characters) | | EN 289, 227, 241, 194, 229, 306, 229, 230; ES 297, 268, 290, 227, 250 (254 after 478c3e0), 372, 269, 237 | 450 |
 | ES full-length proof (`[CP66]`) | 40,678 B | **40,678 B** (EN 40,389 B) | 40,836 pin, 40,960 |
 | Real pages (`dist`) | | byte-identical (`diff -r` empty, no normalisation needed) | |
 | `check:site` | pending 0 | pending **2**; largest HTML 33,753 B, calculator JS 38,778 B, calculator weight 162,541 B (unchanged) | |
@@ -188,7 +188,7 @@ Forecast 200-240, actual **245** (`git diff -M --shortstat 9aac302..7434baa -- .
 
 Prepared for the orchestrator to present (K12). It does not wait for the owner. Entries frozen at commit **7434baacad54827889f163a937bb05f9f25fd18d** (`docs(content): draft the square footage entries for review`).
 
-Changed after the freeze, at the owner's request: befd9ac (`docs(content): record the owner approval of the square footage entries`) replaced the Spanish `se encimen` with `se superpongan` in two places of the ES entry (the Methodology paragraph on L-shaped rooms and FAQ 5). The text below shows the approved wording; ES FAQ 5 is 254 characters after the change (250 at 7434baa), still under 450. Nothing else changed.
+Changed after the freeze, at the owner's request: 478c3e0 on `main` (befd9ac before the rebase; `docs(content): record the owner approval of the square footage entries`) replaced the Spanish `se encimen` with `se superpongan` in two places of the ES entry (the Methodology paragraph on L-shaped rooms and FAQ 5). The text below shows the approved wording; ES FAQ 5 is 254 characters after the change (250 at 7434baa), still under 450. Nothing else changed.
 
 - `apps/web/src/content/calculators/en/rectangle-area.md`
 - `apps/web/src/content/calculators/es/rectangle-area.md`
@@ -286,7 +286,7 @@ Not approved yet. `ownerReview` stays `pending` until the owner's approval is re
 
 ## Owner approval (K12)
 
-- **Date:** 2026-10-27 local time (America, UTC−3; the owner's message came shortly before befd9ac, committed 2026-10-27 22:07:22 −0300), which is 2026-10-28 UTC. Both dates refer to the same message.
+- **Date:** 2026-10-27 local time (America, UTC−3; the owner's message came shortly before 478c3e0, committed 2026-10-27 22:07:22 −0300), which is 2026-10-28 UTC. Both dates refer to the same message.
 - **Place:** the Claude Code chat with the owner (Rodrigo Collins), in reply to the review summary above. His words: "si, apruebo con se superpongan".
 - **Approved entries:** `apps/web/src/content/calculators/en/rectangle-area.md` and `apps/web/src/content/calculators/es/rectangle-area.md`, both, with one change he asked for: the Spanish `se encimen` (Mexican-leaning) becomes the neutral `se superpongan` (two places in the ES entry), applied on `feat/square-footage-content` in the same commit as this record.
 - **Recorded by:** the orchestrator, from the owner's message. The `ownerReview: approved` flip itself stays task 6.9 (S4a), which may now proceed.
@@ -388,7 +388,7 @@ PR 2+3 review record (from the orchestrator): Judgment Day APPROVED by both judg
 
 ### Owner gate (6.8, 7.1)
 
-The section "Owner approval (K12)" above holds the record: 2026-10-28, the Claude Code chat with the owner, both entries, with the `se superpongan` change. The `ownerReview: approved` flip (1d3db73) is the last commit of S4a and comes after the commit that recorded the approval (befd9ac) in `git log`. Gate proven by reading: without that section apply stops at 6.8 and edits neither entry (no approval was simulated in the repository). The entries changed after the frozen 7434baa only by the two `se superpongan` edits the record names, so the owner review artifact was not regenerated.
+The section "Owner approval (K12)" above holds the record: 2026-10-27 local time (UTC−3), which is 2026-10-28 UTC, the Claude Code chat with the owner, both entries, with the `se superpongan` change. The `ownerReview: approved` flip (1d3db73) is the last commit of S4a and comes after the commit that recorded the approval (478c3e0 on `main`) in `git log`. Gate proven by reading: without that section apply stops at 6.8 and edits neither entry (no approval was simulated in the repository). The entries changed after the frozen 7434baa only by the two `se superpongan` edits the record names, so the owner review artifact was not regenerated.
 
 ### Commits and size (`git diff -M --shortstat`, lockfiles and `openspec/` excluded)
 
@@ -428,7 +428,7 @@ Chosen reserve (`apps/web/src/calculator/rectangle-area/reserve.ts`, at the late
 
 Unused reserve at every e2e width (macOS sweep): answer 0.0 px everywhere except 34.1 px at 327 and 599 (before-edge widths, two lines allowed); notice 10.4 px everywhere except 36.7 px at 386, 487 and 711 (before-edge widths). At 1280 px the gap under the answer is 0.0 px. The head style `.calculator{--answer-lines:3;--notice-lines:6}` and its five media blocks replace the shared ladder for both properties at every width.
 
-Linux (6.4): not run by apply (no Linux runner here). The orchestrator confirms on the PR 4 `site-browser` CI job; if Linux Chromium wraps later than these drops, the breakpoints move to the later drop. Room before an e2e width would fail: answer 3 to 2 up to 356 px, 2 to 1 up to 641 px; notice 5 to 4 up to 640 px, 4 to 3 up to 730 px; the notice 6 to 5 step has 1 px (387) because 386 px is an e2e width (a concrete edge).
+Linux (6.4): not run by apply (no Linux runner here); closed by the PR 4 correction round below (the widened window). The orchestrator confirms on the PR 4 `site-browser` CI job; if Linux Chromium wraps later than these drops, the breakpoints move to the later drop. Room before an e2e width would fail: answer 3 to 2 up to 356 px, 2 to 1 up to 641 px; notice 5 to 4 up to 640 px, 4 to 3 up to 730 px; the notice 6 to 5 step has 1 px (387) because 386 px is an e2e width (a concrete edge).
 
 ### TDD cycle evidence
 
@@ -478,10 +478,43 @@ S4b: (4) route row before `concrete`: SR24, the static-paths list and end-state 
 3. S4a has four commits (reserve and edges, the Judgment Day fold, staged-legal tests moved out of S4b, the flip) against two planned; S4b 385 lines against 210-290 (over the forecast, under 400).
 4. The [CP65], [CP67], [CP70] "build tests" render the real view through the Astro container (the unit suite runs before the build); the built `dist` is checked by `check:site` and the e2e suites.
 5. The methodology fixture block ([TP40] on a slot-free module) stays; the real row covers the same cases on the real page module.
-6. `no-js.spec.ts` reads its figures, note and copy label from each `E2E` record and its answer and large figure from a table by id; the concrete floor of more than 20 controls became at least `spec.inputs`.
+6. ~~`no-js.spec.ts` reads its answer and large figure from a table by id; the concrete floor became at least `spec.inputs`.~~ Superseded by the PR 4 correction round: everything comes from the `E2E` record, with an exact control count.
 7. Both methodology entries now say `updated: 2026-10-28` (their content changed).
 
 ### For the orchestrator
 
 - Linux sweep or CI confirmation of the breakpoints (6.4, 7.14).
 - PR 4 group tasks P4.1-P4.4 (push, CI, reviews, PR, merge).
+
+## PR 4 correction round
+
+One scoped round on `feat/square-footage-live` after the four-lens review of PR #104 (all four lenses PASS; these are their findings), plus item 7 from the PR #104 Linux CI run. Strict TDD; nothing pushed.
+
+| # | Finding | Done | Commit |
+|---|---|---|---|
+| 1 | MAJOR: `no-js.spec.ts` kept `EXPECTED`, a table by id outside the `E2E` record and the recipe, and always checked `[data-answer]` (a slot-free page would fail) | `E2eSpec` gains `primary` (per language), `controls` and `answer.default`; `EXPECTED` deleted; the answer is checked only when the record declares one; both records and the `minimal` fixture updated; `browser-record.contract.test.ts` now holds `no-js.spec.ts` to the generic-suite rules (no id, no path; answer read only when declared) | 35ed4e2 |
+| 2 | `?? ''` fallbacks on catalog lookups; concrete control floor weakened from `> 20` to `>= spec.inputs` | `textOf` names a missing key; exact `controls` per record (concrete 27, square footage 5, counted in the built HTML) | 35ed4e2 |
+| 3 | Pinned lists outside end-state: `routes.test.ts`, `files.test.ts`, `templates.test.ts`, `site-catalog.test.ts`, `styles.contract.test.ts` | Static paths and expected files derived from `ROUTES` (mapping kept on fixtures); the templates pins removed (the registry lists are `templates.contract.test.ts`), every `CALCULATOR_PAGES` id checked for the calculator template; the i18n page ids checked by property (same in both locales, home first, not-found last; the exact set stays in the web `site-catalog.contract.test.ts`); the reserve rows asserted non-empty and routed. The URL literals of `routes.test.ts` stay (a public contract), named in AGENTS.md step 14 and "Kept by hand" | 86c8c96 |
+| 4 | AGENTS.md step 12 "both live calculators"; step 14 claimed the no-js project derives its pages | "every routed calculator declares a slot"; step 14 lists `primary` and `controls` and says `no-js.spec.ts` reads its values from the `E2E` row | 35ed4e2 |
+| 5 | The rectangle-area-approved case duplicated routed-must-be-approved | Removed; [CP70] named on the routed check | 86c8c96 |
+| 6 | apply-progress: approval SHA befd9ac (pre-rebase), one date | 478c3e0 on `main`; 2026-10-27 local (UTC−3), 2026-10-28 UTC | this commit |
+| 7 | PR #104 `site-browser` CI (run 40714831996) failed on unused reserve only, never on fit, rectangle-area: answer en/es at 320 px (34.11 px, line 34.1), notice en/es at 385 px (36.72), at 480 px and 481 px (36.72; body line 26.35): 8 misses. Linux Chromium drops a line up to about 8 px before the macOS breakpoints 20.5rem (328 px), 24.1875rem (387 px), 30.5rem (488 px) | Decision (orchestrator): breakpoints stay at the macOS (later) drop and the fit stays strict; the second-line allowance widens from the last pixel width before a breakpoint to any width within 0.5rem (8 px) below a breakpoint of that page and block (`nearBreakpoint` in `apps/web/src/__testing__/css-media.ts`, used per page and per block by `layout.spec.ts`); [CP60], [CP61], [CP73] and the tasks note amended 2026-10-28 | e4bb81a |
+
+### Negative proofs of the round (applied, run red, reverted; `git status --porcelain` clean)
+
+1. Before the fix, `no-js.spec.ts` added to the contract suites: `× no-js.spec.ts names no calculator, path or shape` ("rectangle-area") and `× … reads the answer only when the record declares it`. `E2eSpec` extended before the records: tooling `tsc` `TS2741` (`default` missing) and `TS1360` on the `minimal` fixture.
+2. Concrete `controls: 26`: no-js red on both concrete pages (`Expected: 26, Received: 27`).
+3. `textOf(site, 'site.calculator.copyLinkGone')`: four no-js tests red with `the catalog has no key "site.calculator.copyLinkGone"`.
+4. Square footage `answer.default.en` changed to `100.01`: `× /square-footage-calculator › answers 200 and shows the default result`.
+5. `staticPaths` giving `''` for the root: both static-path tests red. `expectedFiles` sorted: three `files.test.ts` tests red.
+6. Reserve removed from the square footage `PAGES` row: `× has at least one reserve, each on the row of a routed calculator page`.
+7. `page.about.title` removed from the ES site catalog: `× has the same pages in both locales …` (and three title/description checks).
+8. ES entry back to `pending`: `× parses the frontmatter of rectangle-area/es …` and the per-row entry check.
+9. `nearBreakpoint` first run: missing export (`TypeError: nearBreakpoint is not a function`, 23 red). Window shrunk to 1 px (0.0625rem): `× holds 320 px`, `379`, `385`, `480`, `481` (the Linux miss pattern). On macOS the layout spec stays green with a 1 px window (its drops sit at the last pixel), so the unit test is the proof.
+
+### Gates after the round
+
+- `npm run format`: no change. `npm run verify` exit 0 at e4bb81a (212 files, 3,906 tests; build, check:site, check:dist pass); this commit adds only openspec text.
+- `npm run typecheck --prefix tooling/site-browser` clean.
+- `npm run test:e2e -- no-js.spec calculator.spec layout.spec`: 271 passed (3.3 min, macOS); `layout.spec.ts` alone 122 passed.
+- Task 6.4: Linux confirmed by CI with the widened window: fit strict at every width; the rerun after this round is the confirmation.
