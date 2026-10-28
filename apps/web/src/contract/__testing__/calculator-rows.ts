@@ -1,8 +1,7 @@
-import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { concreteMix } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
-import { definePage } from '../../calculator/page-module.ts';
+import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -62,12 +61,9 @@ const concreteDefault = (): WorkedExample<'concrete'> => {
   };
 };
 
-// the real page module of rectangle-area arrives with its page change; the figures need none of it
-const rectangleAreaModule = definePage({ calculator: rectangleArea });
-
 /** The areas the page shows for the example's link, read from the page's own controller. */
 const rectangleAreaShown = ({ query }: WorkedExample<'rectangle-area'>) => {
-  const { figures } = shownFigures(rectangleAreaModule, query);
+  const { figures } = shownFigures(rectangleAreaPage, query);
   const shown = (key: string): string => {
     const value = figures[key];
     if (value === undefined) throw new Error(`the rectangle-area page shows no ${key}`);
@@ -87,7 +83,7 @@ export const CONTENT_ROWS = {
     methodologyLink: { en: '/methodology#concrete', es: '/es/metodologia#concreto' },
   },
   'rectangle-area': {
-    module: rectangleAreaModule,
+    module: rectangleAreaPage,
     updated: '2026-10-27',
     sources: () => [NIST],
     engine: rectangleAreaShown,
