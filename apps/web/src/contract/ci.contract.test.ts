@@ -424,6 +424,18 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(steps.indexOf(save ?? {})).toBeLessThan(steps.indexOf(e2e ?? {}));
   });
 
+  // The fallback-font run of drawing.spec.ts (blueprint-drawing › [BD14]) measures what the font
+  // stack falls back to: Liberation Sans for Arial, DejaVu Sans for sans-serif. The cold install
+  // brings them and a warm cache does not, so they install on every run, whatever the cache did.
+  it('installs the fallback fonts on every run, before the browser tests', () => {
+    const fonts = steps.find((candidate) => candidate.run?.includes('fonts-dejavu-core') ?? false);
+    expect(fonts?.run).toContain('fonts-liberation');
+    expect(fonts?.if).toBeUndefined();
+    const e2e = steps.find((candidate) => candidate.run === 'npm run test:e2e');
+    expect(steps.indexOf(fonts ?? {})).toBeGreaterThan(-1);
+    expect(steps.indexOf(fonts ?? {})).toBeLessThan(steps.indexOf(e2e ?? {}));
+  });
+
   it('typechecks the tooling package before it runs the browser tests', () => {
     const typecheck = runs.indexOf('npm run typecheck --prefix tooling/site-browser');
     expect(typecheck).toBeGreaterThan(runs.indexOf('npm ci --prefix tooling/site-browser'));
