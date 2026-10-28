@@ -9,6 +9,8 @@ import Wordmark from '../components/Wordmark.astro';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../__testing__/css-media.ts';
+import { PAGES, type PageEntry } from '../lib/pages.ts';
+import { reserveCss } from '../lib/reserve.ts';
 
 const stylesheets = globSync('apps/web/src/styles/*.css', { cwd: fromRoot() }).sort();
 const read = (name: string): string => readFileSync(fromRoot('apps/web/src/styles', name), 'utf8');
@@ -46,6 +48,32 @@ const mediaRulesOf = (css: string): [string, Map<string, Declarations>][] =>
     query,
     rulesOf(inner),
   ]);
+
+/** The e2e widths: the numbers of `const WIDTHS = [...]` in `layout.spec.ts`. */
+const widths = (
+  /const WIDTHS = \[([^\]]+)\]/.exec(
+    readFileSync(fromRoot('tooling/site-browser/e2e/layout.spec.ts'), 'utf8'),
+  )?.[1] ?? ''
+)
+  .split(',')
+  .map((width) => Number(width.trim()))
+  .filter((width) => width > 0);
+
+/**
+ * What is wrong with the breakpoints of a stylesheet: a length that is not `rem`, and a rem
+ * breakpoint whose edges (the first pixel width where it applies and the one before) are not among
+ * `widths`. Each problem names the media condition.
+ */
+const breakpointProblems = (css: string, edges: readonly number[]): string[] =>
+  mediaBlocksOf(css).flatMap(([query]) =>
+    lengthsOf(query).flatMap(([value, unit]) => {
+      if (unit !== 'rem') return [`${query}: ${unit}`];
+      const first = Math.ceil(value * 16);
+      return [first - 1, first]
+        .filter((width) => !edges.includes(width))
+        .map((width) => `${query}: no width ${String(width)}`);
+    }),
+  );
 
 const tokenRules = rulesOf(tokens);
 const baseRules = rulesOf(base);
@@ -424,23 +452,36 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
 
   // spec: calculator-page › [CP64], design K13: every breakpoint has both its edges among the e2e widths
   it('puts both edges of every breakpoint in the WIDTHS of layout.spec.ts', () => {
-    const spec = readFileSync(fromRoot('tooling/site-browser/e2e/layout.spec.ts'), 'utf8');
-    const widths = (/const WIDTHS = \[([^\]]+)\]/.exec(spec)?.[1] ?? '')
-      .split(',')
-      .map((width) => Number(width.trim()))
-      .filter((width) => width > 0);
     expect(widths.length, 'WIDTHS of layout.spec.ts').toBeGreaterThan(0);
-    for (const [query] of mediaBlocksOf(calculator)) {
-      const lengths = lengthsOf(query);
-      expect(lengths.length, `${query} has no length`).toBeGreaterThan(0);
-      for (const [value, unit] of lengths) {
-        expect(unit, query).toBe('rem');
-        const first = Math.ceil(value * 16);
-        expect(widths, `${query}: ${String(value)}${unit}`).toEqual(
-          expect.arrayContaining([first - 1, first]),
-        );
-      }
-    }
+    expect(mediaBlocksOf(calculator).length).toBeGreaterThan(0);
+    expect(breakpointProblems(calculator, widths)).toEqual([]);
+  });
+
+  // spec: calculator-page › [CP64] the CSS of every reserve of the page table passes the same checks
+  it.each(Object.entries(PAGES))(
+    'keeps the reserve of %s in rem with both edges in WIDTHS',
+    (_id, entry) => {
+      const { reserve } = entry as PageEntry;
+      if (reserve === undefined) return;
+      expect(breakpointProblems(reserveCss(reserve), widths)).toEqual([]);
+    },
+  );
+
+  // seeded: a px breakpoint and an edge missing from WIDTHS are each flagged, a clean reserve is not
+  it.each([
+    [
+      'a px breakpoint',
+      '@media(min-width:480px){.calculator{--answer-lines:2}}',
+      ['(min-width:480px): px'],
+    ],
+    [
+      'an edge missing from WIDTHS',
+      reserveCss({ answer: [5, [31, 4]] }),
+      ['(min-width:31rem): no width 495', '(min-width:31rem): no width 496'],
+    ],
+    ['a clean breakpoint', reserveCss({ answer: [5, [30.0625, 4]] }), []],
+  ])('flags %s', (_name, css, expected) => {
+    expect(breakpointProblems(css, widths)).toEqual(expected);
   });
 
   // spec: calculator-page › [CP61] the copy reserve holds the mounted content, under one body line more

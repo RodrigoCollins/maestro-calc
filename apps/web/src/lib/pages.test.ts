@@ -5,7 +5,8 @@ import { controllerOf } from '../calculator/controller.ts';
 import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { SCRIPTS } from '../views/scripts.ts';
-import { PAGES, pageView } from './pages.ts';
+import { PAGES, headStyleOf, pageView } from './pages.ts';
+import { reserveCss } from './reserve.ts';
 
 describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC27])', () => {
   // spec: calculator-web-core › [CWC27] the view follows the id
@@ -28,6 +29,19 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
   // OUTPUT_HINT), the ones the mount runs before the page comes alive
   it.each(Object.entries(PAGES))('builds the controller of %s without an error', (_id, entry) => {
     expect(() => controllerOf(entry.module)).not.toThrow();
+  });
+});
+
+describe('the head style of a page row (calculator-page › [CP65], design K6)', () => {
+  // spec: calculator-page › [CP65] a row with a reserve yields the builder output, one without yields nothing
+  it('is the reserve builder output for a row that has a reserve and nothing for one that has none', () => {
+    const reserve = { answer: [5, [30, 4]], notice: [6] } as const;
+    expect(headStyleOf({ ...PAGES.concrete, reserve })).toBe(reserveCss(reserve));
+    expect(headStyleOf(PAGES.concrete)).toBeUndefined();
+  });
+
+  it('gives the concrete row no reserve, so its pages carry no extra byte', () => {
+    expect('reserve' in PAGES.concrete).toBe(false);
   });
 });
 

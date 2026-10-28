@@ -5,7 +5,7 @@ import CalculatorBody from '../../components/calculator/CalculatorBody.astro';
 import type { CalculatorContent } from '../../components/calculator/model.ts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { calendarDay } from '../../lib/calendar-day.ts';
-import { pageView } from '../../lib/pages.ts';
+import { PAGES, headStyleOf, pageView } from '../../lib/pages.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../../routing/templates.ts';
 import { siteText } from '../../lib/site-text.ts';
 import { headFor } from '../../seo/head.ts';
@@ -32,6 +32,7 @@ const jsonLd = serializeJsonLd(
 // The real head, the real island and the dates as the view writes them: the measured page differs
 // from the routed one only in its copy.
 const Script = SCRIPTS[id];
+const style = headStyleOf(PAGES[id]);
 const { updated, sources } = entry.data;
 const content: CalculatorContent = {
   updatedLabel: text('site.trust.updated'),
@@ -45,7 +46,7 @@ const content: CalculatorContent = {
 };
 ---
 
-<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
+<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }} {style}>
   <CalculatorBody {view} {content}>
     <Fragment set:html={copyOf(locale, extra)} />
   </CalculatorBody>

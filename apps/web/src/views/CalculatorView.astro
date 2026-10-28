@@ -6,7 +6,7 @@ import type { CalculatorContent } from '../components/calculator/model.ts';
 import { faqOf } from '../content/faq.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { calendarDay } from '../lib/calendar-day.ts';
-import { pageView } from '../lib/pages.ts';
+import { PAGES, headStyleOf, pageView } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
 import type { CalculatorPageId } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -36,9 +36,10 @@ const jsonLd = serializeJsonLd(
   calculatorJsonLd({ id, name: view.title }, locale, faqOf(entry.body ?? '')),
 );
 const Script = SCRIPTS[id];
+const style = headStyleOf(PAGES[id]);
 ---
 
-<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
+<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }} {style}>
   <CalculatorBody {view} {content}>
     <div class="prose">
       <Content />
