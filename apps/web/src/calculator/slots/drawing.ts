@@ -73,6 +73,12 @@ const PAD = 6;
 const EXTEND = 4;
 const TICK = 5;
 const LABEL = 17;
+const NOTE = 15;
+/** The right margin of a rectangle plan. */
+const MARGIN = 6;
+/** The area goes inside when it leaves this much room across and the rectangle is this tall. */
+const INSET = 12;
+const INSIDE_HEIGHT = 29;
 
 /** `n` rounded to a tenth, the precision of every coordinate. */
 const round = (n: number): number => Math.round(n * 10) / 10;
@@ -160,4 +166,55 @@ export const labelBox = ({ x, y, anchor, size, label }: PlanLabel): Box => {
 export const fitLabel = (label: PlanLabel, frame: Frame): PlanLabel => {
   const { w } = labelBox(label);
   return { ...label, x: round(Math.min(Math.max(label.x, w / 2), frame.width - w / 2)) };
+};
+
+/** The gutters of a rectangle plan: the top label row, the bottom row, a margin and the width label. */
+export const rectangleGutters = (widthText: string): Gutters => ({
+  top: round(OFFSET + PAD + LINE * LABEL),
+  right: MARGIN,
+  bottom: round(PAD + LINE * LABEL),
+  left: round(OFFSET + PAD + textWidth(widthText, LABEL)),
+});
+
+/** What a rectangle plan is drawn from: the two sides (any unit, only their ratio counts) and the texts. */
+export interface RectangleSpec {
+  readonly length: number;
+  readonly width: number;
+  readonly texts: { readonly length: string; readonly width: string; readonly area: string };
+  readonly name: Label;
+}
+
+/**
+ * A rectangle in plan: the length along the top, the width on the left (a deliberate departure from
+ * the mockup's right-hand line, which keeps the reading order length then width), and the area
+ * inside when it fits with 6 units each side and the rectangle is 29 tall, else in the bottom row.
+ */
+export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
+  const { texts } = spec;
+  const rect = fitRectangle(frame, rectangleGutters(texts.width), spec.length, spec.width);
+  const [x2, y2] = [rect.x + rect.w, rect.y + rect.h];
+  const top = dimensionLine({ x: rect.x, y: rect.y }, { x: x2, y: rect.y }, 'top', {
+    text: texts.length,
+  });
+  const left = dimensionLine({ x: rect.x, y: rect.y }, { x: rect.x, y: y2 }, 'left', {
+    text: texts.width,
+  });
+  const inside = textWidth(texts.area, NOTE) <= rect.w - INSET && rect.h >= INSIDE_HEIGHT;
+  const area: PlanLabel = {
+    x: round(rect.x + rect.w / 2),
+    y: round(inside ? rect.y + rect.h / 2 : y2 + PAD + (LINE * NOTE) / 2),
+    anchor: 'middle',
+    size: NOTE,
+    label: { text: texts.area },
+  };
+  return {
+    name: spec.name,
+    outline: [{ kind: 'rect', ...rect }],
+    lines: [...top.lines, ...left.lines],
+    labels: [
+      ...top.labels.map((label) => fitLabel(label, frame)),
+      ...left.labels,
+      fitLabel(area, frame),
+    ],
+  };
 };
