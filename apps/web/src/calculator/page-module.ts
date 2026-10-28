@@ -8,6 +8,7 @@ import type {
   ShoppingLine,
   UnitSystem,
 } from '@maestro-calc/core';
+import type { Plan } from './slots/drawing.ts';
 
 /*
  * The contract of a page module: the language-free data a calculator page needs beyond its
@@ -116,6 +117,19 @@ export interface AnswerSlot<C extends AnyCalculator> {
   values(moment: Ready<C>, primary: string): Readonly<Record<string, string>>;
 }
 
+/** The viewBox of a drawing, the same for every state of a page: the box keeps its size. */
+export interface Frame {
+  readonly width: number;
+  readonly height: number;
+}
+export interface DrawingSlot<C extends AnyCalculator> {
+  readonly frame: Frame;
+  /** The page-key suffixes of the messages its labels name (`drawing`), resolved by the controller. */
+  readonly messages: readonly string[];
+  /** The plan of a ready moment; `null` for a state the page does not draw (the box stays empty). */
+  plan(moment: Ready<C>): Plan | null;
+}
+
 export interface PageModule<C extends AnyCalculator> {
   /** The id of the registry calculator, taken from its definition. */
   readonly id: C['id'];
@@ -126,6 +140,7 @@ export interface PageModule<C extends AnyCalculator> {
   readonly shopping?: ShoppingSlot<C>;
   readonly costs?: CostSlot<C>;
   readonly answer?: AnswerSlot<C>;
+  readonly drawing?: DrawingSlot<C>;
 }
 export type PageSpec<C extends AnyCalculator> = Omit<PageModule<C>, 'id'>;
 export type AnyPageModule = PageModule<AnyCalculator>;
