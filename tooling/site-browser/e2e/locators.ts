@@ -32,6 +32,9 @@ export const languageSwitch = (page: Page): Locator => page.locator('header a[hr
 /** The note that says the script is not running: visible on the static page, hidden once mounted. */
 export const notRunning = (page: Page): Locator => page.locator('[data-not-running]');
 
+/** The drawing box of the result panel: present only when the record declares `drawing`. */
+export const drawing = (page: Page): Locator => page.locator('svg[data-drawing]');
+
 /** The short answer of the page: present only when the record declares `answer`. */
 export const answer = (page: Page): Locator => page.locator('[data-answer]');
 
