@@ -428,7 +428,7 @@ Chosen reserve (`apps/web/src/calculator/rectangle-area/reserve.ts`, at the late
 
 Unused reserve at every e2e width (macOS sweep): answer 0.0 px everywhere except 34.1 px at 327 and 599 (before-edge widths, two lines allowed); notice 10.4 px everywhere except 36.7 px at 386, 487 and 711 (before-edge widths). At 1280 px the gap under the answer is 0.0 px. The head style `.calculator{--answer-lines:3;--notice-lines:6}` and its five media blocks replace the shared ladder for both properties at every width.
 
-Linux (6.4): not run by apply (no Linux runner here); closed by the PR 4 correction round below (the widened window). The orchestrator confirms on the PR 4 `site-browser` CI job; if Linux Chromium wraps later than these drops, the breakpoints move to the later drop. Room before an e2e width would fail: answer 3 to 2 up to 356 px, 2 to 1 up to 641 px; notice 5 to 4 up to 640 px, 4 to 3 up to 730 px; the notice 6 to 5 step has 1 px (387) because 386 px is an e2e width (a concrete edge).
+Linux (6.4): not run by apply (no Linux runner here); the first Linux run (CI 40714831996, on 2f0c119) missed only the unused-reserve bound at 320, 385, 480 and 481 px (no fit miss), which the PR 4 correction round answered with the 0.5rem window; the rerun on 6aac898 (CI 40718266723, `site-browser` 6m48s) passed every layout test on Linux Chromium, fit strict at every width, which is the Linux confirmation; if Linux Chromium wraps later than these drops, the breakpoints move to the later drop. Room before an e2e width would fail: answer 3 to 2 up to 356 px, 2 to 1 up to 641 px; notice 5 to 4 up to 640 px, 4 to 3 up to 730 px; the notice 6 to 5 step has 1 px (387) because 386 px is an e2e width (a concrete edge).
 
 ### TDD cycle evidence
 
