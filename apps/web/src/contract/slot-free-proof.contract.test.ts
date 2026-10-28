@@ -5,7 +5,6 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
-import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { inputId } from '../calculator/ids.ts';
 import { textKeysOf } from '../calculator/texts.ts';
 import CalculatorBody from '../components/calculator/CalculatorBody.astro';
@@ -16,26 +15,26 @@ import { sitemapXml } from '../seo/sitemap.ts';
 import { buildClient } from './__testing__/client-build.ts';
 import { entrySourceOf, graphViolations, reaches } from './__testing__/client-graph.ts';
 import { expectWithinJsBudget } from './__testing__/js-budget.ts';
+import { slotFreePage } from './__testing__/slot-free-page.ts';
 import { fromRoot } from './root.ts';
 
 /**
- * The rectangle-area proof: the second calculator is mounted by the generic mount with no slot, and
- * it is not routed. The proof is a test-only entry, its rendered markup and the lookups of the mount
- * (calculator-web-core › [CWC4], [CWC32], [CWC33], [CWC36]).
+ * The slot-free proof: a test-only page module (the rectangle-area calculator with no slot) is
+ * mounted by the generic mount. The proof is a test-only entry, its rendered markup and the lookups
+ * of the mount (calculator-web-core › [CWC4], [CWC33], [CWC36]); the [CWC32] block at the end
+ * retires with the go-live.
  */
-const PROOF = fromRoot('apps/web/src/contract/__testing__/rectangle-area-entry.ts');
+const PROOF = fromRoot('apps/web/src/contract/__testing__/slot-free-entry.ts');
 const PROOF_SOURCE = `import '${PROOF}';`;
 
-describe('rectangle-area proof entry: source graph and size (calculator-web-core › [CWC4], [CWC36])', () => {
+describe('slot-free proof entry: source graph and size (calculator-web-core › [CWC4], [CWC36])', () => {
   // spec: calculator-web-core › [CWC4] no slot file and no concrete file is reached
   it('mounts the page module and reaches no slot file and no concrete file', async () => {
     const { modules } = await buildClient(PROOF_SOURCE);
-    expect(reaches(modules, '/apps/web/src/contract/__testing__/rectangle-area-entry.ts')).toBe(
-      true,
-    );
+    expect(reaches(modules, '/apps/web/src/contract/__testing__/slot-free-entry.ts')).toBe(true);
     expect(reaches(modules, '/apps/web/src/client/mount.ts')).toBe(true);
     expect(reaches(modules, '/apps/web/src/calculator/controller.ts')).toBe(true);
-    expect(reaches(modules, '/apps/web/src/calculator/rectangle-area/page.ts')).toBe(true);
+    expect(reaches(modules, '/apps/web/src/contract/__testing__/slot-free-page.ts')).toBe(true);
     expect(
       modules.filter((id) => /\/apps\/web\/src\/calculator\/(slots|concrete)\//.test(id)),
     ).toEqual([]);
@@ -54,7 +53,7 @@ describe('rectangle-area proof entry: source graph and size (calculator-web-core
     const proof = await buildClient(PROOF_SOURCE);
     const concrete = await buildClient(entrySourceOf('concrete'));
     expectWithinJsBudget(
-      'rectangle-area proof entry',
+      'slot-free proof entry',
       proof.size,
       ` (concrete entry ${concrete.size.toLocaleString('en-US')} B)`,
     );
@@ -71,7 +70,7 @@ const CONTENT: CalculatorContent = {
 
 const render = async () =>
   renderComponent(CalculatorBody, {
-    view: pageViewOf(rectangleAreaPage, 'en', { ...enCommon, ...enRectangleArea, ...enSite }),
+    view: pageViewOf(slotFreePage, 'en', { ...enCommon, ...enRectangleArea, ...enSite }),
     content: CONTENT,
   });
 
@@ -122,7 +121,7 @@ const lookupProblems = (source: string, root: Root, keys: readonly string[]): st
       (!LAYOUT_SELECTORS.includes(selector) && root.querySelector(selector) === null),
   );
 
-describe('rectangle-area markup (calculator-web-core › [CWC33])', () => {
+describe('slot-free markup (calculator-web-core › [CWC33])', () => {
   // spec: calculator-web-core › [CWC33] no slot element, and the elements every page has
   it('has no slot element and the elements of a page with two fields and three outputs', async () => {
     const root = await render();
@@ -149,10 +148,10 @@ describe('rectangle-area markup (calculator-web-core › [CWC33])', () => {
 
 describe('the lookups of the generic mount (calculator-web-core › [CWC33])', () => {
   const mount = readFileSync(fromRoot('apps/web/src/client/mount.ts'), 'utf8');
-  const keys = textKeysOf(rectangleAreaPage.calculator);
+  const keys = textKeysOf(slotFreePage.calculator);
 
-  // spec: calculator-web-core › [CWC33] every failing lookup matches the rectangle-area markup
-  it('finds, in the rectangle-area markup, every element a failing lookup of the mount needs', async () => {
+  // spec: calculator-web-core › [CWC33] every failing lookup matches the slot-free markup
+  it('finds, in the slot-free markup, every element a failing lookup of the mount needs', async () => {
     const selectors = throwingSelectors(mount, keys);
     expect(selectors).toEqual(
       expect.arrayContaining(['[data-primary]', '[data-copy]', '#calc-length', '#calc-width']),

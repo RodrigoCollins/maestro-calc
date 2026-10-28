@@ -30,9 +30,17 @@ import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { choiceSlot } from '../calculator/slots/choices.ts';
 import { costSlot } from '../calculator/slots/costs.ts';
 import { shoppingSlot } from '../calculator/slots/shopping.ts';
+import { slotFreePage } from '../contract/__testing__/slot-free-page.ts';
 import { concrete as concreteCalculator } from './concrete.ts';
 import { formViewOf, pageViewOf, resultViewOf } from './page-view.ts';
 import { pageView } from './pages.ts';
+
+/** The rectangle-area catalog without its page copy: what a page with no answer and no primary sentence is built from. */
+const enSlotFree: Record<string, string> = Object.fromEntries(
+  Object.entries({ ...enCommon, ...enRectangleArea, ...enSite }).filter(
+    ([key]) => !key.includes('.page.'),
+  ),
+);
 
 describe('the concrete page view (calculator-page › [CP1], [CP2], [CP3], [CP4], [CP15], [CP17], [CP43])', () => {
   // spec: calculator-page › [CP1] the default render, English
@@ -424,7 +432,6 @@ describe('formViewOf (calculator-web-core › [CWC5], [CWC24], [CWC28]; calculat
 });
 describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calculator-page › [CP1], [CP2], [CP15], [CP54], [CP56])', () => {
   const enCatalog: Record<string, string> = { ...enCommon, ...enConcrete, ...enSite };
-  const enRectangle: Record<string, string> = { ...enCommon, ...enRectangleArea, ...enSite };
 
   // spec: calculator-web-core › [CWC24] the rows are the outputs with a display hint, the primary hidden
   it('lists the outputs that have a display hint in declaration order with the primary hidden', () => {
@@ -445,7 +452,7 @@ describe('resultViewOf (calculator-web-core › [CWC3], [CWC24], [CWC27]; calcul
 
   // spec: calculator-web-core › [CWC24] rectangle-area has its three area rows and nothing else
   it('gives rectangle-area its three area rows, the bare primary value and no shopping or cost', () => {
-    const result = resultViewOf(rectangleAreaPage, 'en', enRectangle);
+    const result = resultViewOf(slotFreePage, 'en', enSlotFree);
     expect(result.rows.map(({ key, label, value, hidden }) => [key, label, value, hidden])).toEqual(
       [
         ['areaFt2', 'Area (square feet)', '100.00', true],
@@ -701,7 +708,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
 
   // spec: calculator-web-core › [CWC24] no answer, no primary template for a module with neither
   it('lists only the errors, the copy states and the hints for rectangle-area', () => {
-    const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
+    const view = pageViewOf(slotFreePage, 'en', enSlotFree);
     expect(names(view)).toEqual([
       ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
       'copy.copied',
@@ -767,24 +774,34 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     expect(view.answer).toBe(
       'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
     );
-    expect('answer' in pageViewOf(rectangleAreaPage, 'en', enRectangle)).toBe(false);
+    expect('answer' in pageViewOf(slotFreePage, 'en', enSlotFree)).toBe(false);
+  });
+
+  // spec: calc-rectangle-area › [RAP2] the answer of the real rectangle-area page, and its not-running note
+  it('sets the rectangle-area answer from the one template and joins the example to the no-JS note', () => {
+    const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
+    expect(view.answer).toBe('A 10 ft by 10 ft area is 100.00 square feet.');
+    expect(view.notRunning).toBe(
+      `${enSite['site.calculator.noscript']} ${enRectangleArea['calc.rectangle-area.page.example']}`,
+    );
+    expect(names(view)).toContain('answer');
   });
 
   it('describes the page of a module from its id, title, breadcrumb and parts', () => {
     const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
-    expect([view.id, view.title]).toEqual(['rectangle-area', 'Rectangle Area']);
+    expect([view.id, view.title]).toEqual(['rectangle-area', 'Square Footage Calculator']);
     expect(view.breadcrumb).toEqual({
       label: 'Breadcrumb',
       homeLabel: 'Home',
       homeHref: '/',
-      current: 'Rectangle Area',
+      current: 'Square Footage Calculator',
     });
     expect(view.result.primary).toEqual({
       key: 'areaFt2',
       prefixed: false,
       before: '',
       value: '100.00',
-      after: '',
+      after: ' square feet',
     });
     expect(view.form.items.map((item) => item.kind)).toEqual(['field', 'field']);
   });
