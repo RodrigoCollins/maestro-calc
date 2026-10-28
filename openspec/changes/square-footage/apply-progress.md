@@ -167,7 +167,7 @@ Forecast 200-240, actual **245** (`git diff -M --shortstat 9aac302..7434baa -- .
 | Item | PR 1 tip (9aac302) | S2 tip | Limit |
 |---|---|---|---|
 | Words (contract's `wordsOf`) | | EN **1,290**, ES **1,346** | 800-1,500 |
-| FAQ answers (characters) | | EN 289, 227, 241, 194, 229, 306, 229, 230; ES 297, 268, 290, 227, 250, 372, 269, 237 | 450 |
+| FAQ answers (characters) | | EN 289, 227, 241, 194, 229, 306, 229, 230; ES 297, 268, 290, 227, 250 (254 after befd9ac), 372, 269, 237 | 450 |
 | ES full-length proof (`[CP66]`) | 40,678 B | **40,678 B** (EN 40,389 B) | 40,836 pin, 40,960 |
 | Real pages (`dist`) | | byte-identical (`diff -r` empty, no normalisation needed) | |
 | `check:site` | pending 0 | pending **2**; largest HTML 33,753 B, calculator JS 38,778 B, calculator weight 162,541 B (unchanged) | |
@@ -186,7 +186,9 @@ Forecast 200-240, actual **245** (`git diff -M --shortstat 9aac302..7434baa -- .
 
 ## Owner review artifact
 
-Prepared for the orchestrator to present (K12). It does not wait for the owner. Entries frozen at commit **7434baacad54827889f163a937bb05f9f25fd18d** (`docs(content): draft the square footage entries for review`):
+Prepared for the orchestrator to present (K12). It does not wait for the owner. Entries frozen at commit **7434baacad54827889f163a937bb05f9f25fd18d** (`docs(content): draft the square footage entries for review`).
+
+Changed after the freeze, at the owner's request: befd9ac (`docs(content): record the owner approval of the square footage entries`) replaced the Spanish `se encimen` with `se superpongan` in two places of the ES entry (the Methodology paragraph on L-shaped rooms and FAQ 5). The text below shows the approved wording; ES FAQ 5 is 254 characters after the change (250 at 7434baa), still under 450. Nothing else changed.
 
 - `apps/web/src/content/calculators/en/rectangle-area.md`
 - `apps/web/src/content/calculators/es/rectangle-area.md`
@@ -270,7 +272,7 @@ Claims the owner should check: the waste allowance ("installers commonly add abo
 2. **¿Cómo paso pies cuadrados a yardas cuadradas?** Divide entre 9, porque una yarda cuadrada mide 3 ft por 3 ft. Un cuarto de 120 pies cuadrados tiene 120 ÷ 9 = 13.33 yardas cuadradas. La calculadora muestra las yardas cuadradas junto a los pies cuadrados, lo que ayuda cuando te cotizan la alfombra por yarda cuadrada. (268 characters)
 3. **¿Cómo paso pies cuadrados a metros cuadrados?** Multiplica por 0.09290304, el número exacto de metros cuadrados que tiene un pie cuadrado. Un cuarto de 120 pies cuadrados tiene aproximadamente 11.15 metros cuadrados. Para ir al revés, divide los metros cuadrados entre 0.09290304, o presiona Métrico (m, cm) y escribe los lados en metros. (290 characters)
 4. **¿Cómo escribo pies y pulgadas?** Escríbelos como los lees en la cinta: 12 ft 6 in, o 12 ft 6 1/2 in para una fracción. Un número solo se lee en pies, así que escribe 150 in para decir 150 pulgadas. Un cuarto de 12 ft 6 in por 10 ft tiene 125.00 pies cuadrados. (227 characters)
-5. **¿Cómo calculo los pies cuadrados de un cuarto en forma de L?** Divídelo en dos rectángulos que no se superpongan y suma sus áreas. Por ejemplo, un área principal de 12 ft por 10 ft con un nicho de 6 ft por 4 ft tiene 120 + 24 = 144 pies cuadrados. Usa la calculadora una vez por cada rectángulo y suma los resultados. (250 characters)
+5. **¿Cómo calculo los pies cuadrados de un cuarto en forma de L?** Divídelo en dos rectángulos que no se superpongan y suma sus áreas. Por ejemplo, un área principal de 12 ft por 10 ft con un nicho de 6 ft por 4 ft tiene 120 + 24 = 144 pies cuadrados. Usa la calculadora una vez por cada rectángulo y suma los resultados. (254 characters; 250 at 7434baa with `se encimen`)
 6. **¿Cuánto piso de más debo comprar?** La calculadora no agrega nada por desperdicio. Los instaladores suelen agregar aproximadamente 10 por ciento por los cortes en una colocación sencilla, y más en una diagonal o con patrón. Para un cuarto de 120 pies cuadrados, 10 por ciento de más son 132 pies cuadrados. Revisa lo que recomiendan tu producto y tu instalador, y luego redondea hacia arriba a cajas enteras. (372 characters)
 7. **¿Cómo calculo los pies cuadrados de una pared?** Multiplica el ancho de la pared por su altura. Una pared de 12 ft de ancho y 8 ft de alto tiene 96 pies cuadrados. Para pintar, resta cada puerta y cada ventana como su propio rectángulo, y luego compara el resultado con la cobertura que trae la etiqueta de la pintura. (269 characters)
 8. **¿Puedo usar metros y centímetros?** Sí. Presiona Métrico (m, cm) y escribe metros o centímetros, por ejemplo 3.5 m o 350 cm. Un número solo se lee en metros, y el resultado empieza por los metros cuadrados. Cambiar de unidad nunca cambia tus números, solo cómo se escriben. (237 characters)
@@ -284,22 +286,22 @@ Not approved yet. `ownerReview` stays `pending` until the owner's approval is re
 
 ## Owner approval (K12)
 
-- **Date:** 2026-10-28.
+- **Date:** 2026-10-27 local time (America, UTC−3; the owner's message came shortly before befd9ac, committed 2026-10-27 22:07:22 −0300), which is 2026-10-28 UTC. Both dates refer to the same message.
 - **Place:** the Claude Code chat with the owner (Rodrigo Collins), in reply to the review summary above. His words: "si, apruebo con se superpongan".
 - **Approved entries:** `apps/web/src/content/calculators/en/rectangle-area.md` and `apps/web/src/content/calculators/es/rectangle-area.md`, both, with one change he asked for: the Spanish `se encimen` (Mexican-leaning) becomes the neutral `se superpongan` (two places in the ES entry), applied on `feat/square-footage-content` in the same commit as this record.
 - **Recorded by:** the orchestrator, from the owner's message. The `ownerReview: approved` flip itself stays task 6.9 (S4a), which may now proceed.
 
-## PR 3 (`feat/square-footage-page`): S3a and S3b done
+## PR 3 (on `feat/square-footage-content`): S3a and S3b done
 
-Branch `feat/square-footage-page`, created from `main` (9aac302, PR 1 included; PR 2 is not in the base). Strict TDD; every test seen red for the right reason first. Nothing pushed. Worktree `.claude/worktrees/agent-ae75461ed96ba2c82`.
+Written on branch `feat/square-footage-page`, created from `main` (9aac302, PR 1 included; PR 2 not in that base), in the worktree `.claude/worktrees/agent-ae75461ed96ba2c82`. The orchestrator then cherry-picked the four commits onto PR 2 on `feat/square-footage-content`; the SHAs below are the cherry-picked ones (pre-rebase: a9a8bbe, 7506044, 6f0fb4b and the progress commit), and PR 2 + PR 3 ship together (candidate 9aac302..6fd9830). Strict TDD; every test seen red for the right reason first. Nothing pushed.
 
 ### Commits and size (`git diff -M --shortstat`, lockfiles and `openspec/` excluded)
 
 | Slice | Commit | Lines | Forecast |
 |---|---|---|---|
-| S3a | a9a8bbe `feat(web): give the square footage page its answer and unit sentences` | 409 (347 + 62) | 265-315 |
-| S3b-1 | 7506044 `feat(web): reserve the answer and notice lines per page in the head` | 404 (353 + 51) | (half of 300-350) |
-| S3b-2 | 6f0fb4b `test(e2e): stage the square footage record and the per-page edges` | 233 (217 + 16) | (half of 300-350) |
+| S3a | c715c04 `feat(web): give the square footage page its answer and unit sentences` | 409 (347 + 62) | 265-315 |
+| S3b-1 | ba87276 `feat(web): reserve the answer and notice lines per page in the head` | 404 (353 + 51) | (half of 300-350) |
+| S3b-2 | 3f7efa3 `test(e2e): stage the square footage record and the per-page edges` | 233 (217 + 16) | (half of 300-350) |
 
 S3b measured 637 as one commit, so the split rule (over 400: move the tests-only half to its own slice inside the same PR) was applied: S3b-1 is the mechanism with its unit tests, S3b-2 is the e2e side (`edgesOf`, per-page `BEFORE_EDGE`, the staged record and the recipe/docs tokens). Both are green on their own. PR 3 total: 36 files, 915 + 127 = 1,042 lines against 565-665 forecast.
 
@@ -308,12 +310,13 @@ Overrun causes: S3a 409 (9 over the line): tests carry most of it (the RAP table
 ### Tasks
 
 - 4.1 done (branch from `main`; `npm ci`; baseline build copied to a scratch dir).
-- 4.2-4.9, 4.11-4.14 done. 4.10 DEFERRED by instruction: the `rectangle-area` row of `calculator-rows.ts` is PR 2's and is not in this base. The orchestrator swaps its local `definePage` module for `rectangleAreaPage` after rebasing onto PR 2 and runs `npm test -- apps/web/src/contract/calculator-content`.
+- 4.2-4.9, 4.11-4.14 done (progress recorded in b97e3c6).
+- 4.10 done by the orchestrator in 6fd9830 (`test(web): read the square footage content row from its real page module`), after the cherry-pick onto PR 2: the `rectangle-area` row of `calculator-rows.ts` reads `rectangleAreaPage` instead of the local `definePage` of 3.2.
 - 5.1-5.15 done. e2e and Lighthouse run (below).
 
 ### Scenarios proven
 
-RAP1 (`rectangle-area-catalog.test.ts`, `catalog-content.test.ts`, `i18n-contract.test-d.ts` exact union), RAP2 (controller default sentences, 4 of them; `page-view.test.ts` answer and not-running note), RAP3 (`present.test.ts` and the four cases in both locales), RAP4 (metric headline and sentence end, four cases, both locales), RAP5, RAP6, RAP7 (`contract/old-title.contract.test.ts`: no match of either old title in apps, packages, tooling), RAP8 (`git diff --stat main -- packages/core packages/data` empty). CWC33 and CWC38 on the slot-free module (`slot-free-proof.contract.test.ts`, entry `slot-free-entry.ts`, page `slot-free-page.ts`; the CWC32 block untouched), CWC40 prep (AGENTS steps 12 and 14, docs.contract rows). CP65 (no-answer case on the slot-free module; head-style fixture; `CalculatorView.reserve.test.ts` with a mocked `PAGES` row; concrete emits none), CP64 (`reserve.test.ts` builder and throws; `styles.contract` over every `PAGES.reserve` plus seeded px and missing-edge cases), CP60/CP61 mechanism (`edgesOf`, `layout.spec.ts` per-page and per-block `BEFORE_EDGE` through `edgesOf` on the served CSS), SQ37 staged (`rectangle-area-pages.ts`, `staged: E2eSpec`), SS32 (BaseLayout test: one head style, none in the body). The e2e record's figures were checked against the page controller (200.00/22.22/18.58, 129.17/14.35/12.00 for 4 m by 3 m).
+RAP1 (`packages/i18n/src/rectangle-area-catalog.test.ts`, `catalog-content.test.ts`, `i18n-contract.test-d.ts` exact union), RAP2 (controller default sentences, 4 of them; `page-view.test.ts` answer and not-running note), RAP3 (`present.test.ts` and the four cases in both locales), RAP4 (metric headline and sentence end, four cases, both locales), RAP5, RAP6, RAP7 (`contract/old-title.contract.test.ts`: no match of either old title in apps, packages, tooling), RAP8 (`git diff --stat main -- packages/core packages/data` empty). CWC33 and CWC38 on the slot-free module (`slot-free-proof.contract.test.ts`, entry `slot-free-entry.ts`, page `slot-free-page.ts`; the CWC32 block untouched), CWC40 prep (AGENTS steps 12 and 14, docs.contract rows). CP65 (no-answer case on the slot-free module; head-style fixture; `CalculatorView.reserve.test.ts` with a mocked `PAGES` row; concrete emits none), CP64 (`reserve.test.ts` builder and throws; `styles.contract` over every `PAGES.reserve` plus seeded px and missing-edge cases), CP60/CP61 mechanism (`edgesOf`, `layout.spec.ts` per-page and per-block `BEFORE_EDGE` through `edgesOf` on the served CSS), SQ37 staged (`rectangle-area-pages.ts`, `staged: E2eSpec`), SS32 (BaseLayout test: one head style, none in the body). The e2e record's figures were checked against the page controller (200.00/22.22/18.58, 129.17/14.35/12.00 for 4 m by 3 m).
 
 ### Negative proofs (applied, run red, reverted; `git status --porcelain` clean)
 
@@ -335,10 +338,44 @@ S3b: (6) style emitted in `<body>`: 2 BaseLayout tests and the override test red
 3. `PageEntry.reserve` is read through `headStyleOf(entry)` (new, `lib/pages.ts`) so the view and the budget page share one rule and the view test can mock `PAGES`.
 4. The existing headless `rectangle-area/controller.test.ts` cases moved to the slot-free module in the same file instead of a second controller test file; the RAP cases are added to it.
 5. `BaseLayout` prop typed `style?: string | undefined` (exactOptionalPropertyTypes).
-6. The staged record's `bounds` use 100,001 ft (the descriptor max is 100,000 ft) and `hints` list both inputs; neither is exercised until the `E2E` row exists (S4b), so they are checked only by type until then.
+6. RAP1's catalog test lives in `packages/i18n/src/rectangle-area-catalog.test.ts`, beside the catalogs it pins, not in `apps/web`. Task 4.2 lists the i18n tests among its files, so the location matches the tasks.
+7. The staged record's `bounds` use 100,001 ft (the descriptor max is 100,000 ft) and `hints` list both inputs; neither is exercised until the `E2E` row exists (S4b), so they are checked only by type until then.
 
 ### For the orchestrator
 
-- Task 4.10 (swap the content row's module) after rebasing onto PR 2.
+- Task 4.10: done in 6fd9830.
 - Rebase note: PR 2 edits `calculator-rows.ts` and `end-state.contract.test.ts` and adds the two entries; this branch touches neither. `AGENTS.md` and `docs.contract.test.ts` are edited here (steps 12, 14, Kept by hand).
 - Not done by design: measured counts, the `reserve.ts` values, the `PAGES`/`SCRIPTS`/`E2E` rows, the route (PR 4).
+
+## PR 2+3 correction round
+
+One scoped round on `feat/square-footage-content` after the four-lens review of 9aac302..6fd9830 (all four lenses PASS; these are its minors). Strict TDD for the code and test fixes; nothing pushed.
+
+| # | Finding | Done | Commit |
+|---|---|---|---|
+| 1 | `headStyleOf` gave `''` for `reserve: {}`, so `BaseLayout` rendered an empty `<style></style>` | `reserveCss` returns `undefined` for an empty reserve; new cases in `reserve.test.ts` and `pages.test.ts` (a row with `reserve: {}` has no head style) | a9fc19a |
+| 2 | `BaseLayout` `style?: string` rendered any string with `set:html` | Branded `ReserveCss` (`lib/reserve.ts`), returned by `reserveCss` and `headStyleOf` only; `BaseLayout` takes `style?: ReserveCss`; the one assertion sits in `reserve.ts` with a reasoned lint disable; `reserve.test-d.ts` refuses a plain string | a9fc19a |
+| 3 | `PROPERTIES` was not checked against `keyof Reserve` | `RESERVE_PROPERTIES` `satisfies readonly (readonly [keyof Reserve, \`--${string}\`])[]`, and `reserve.test-d.ts` requires its keys to equal `keyof Reserve` | a9fc19a |
+| 4 | The reserve doc comment and AGENTS.md step 14 did not say a page reserve replaces the shared ladder | Both now say a property set on `.calculator` replaces, at every width, the `:root` ladder of `calculator.css` for that property | a9fc19a, fccc760 |
+| 5 | `calculator.css` comment "on its own body (CP65)" was stale | Points to the head `<style>` built from `PAGES[id].reserve` | fccc760 |
+| 6a | The `PAGES` reserve loop of `styles.contract.test.ts` checked nothing | The rows with a reserve are listed and asserted empty ("flips at PR 4 (S4b)"); the check runs over that list | 77d284d |
+| 6b | The [CP64] "a condition with no length fails" check was dropped with the shared helper | `breakpointProblems` reports `no length`; seeded `prefers-reduced-motion` case | 77d284d |
+| 7 | `layout.spec.ts` imports `apps/web/src/__testing__/css-media.ts`, a rule AGENTS.md did not state | Documented (smaller than moving the helper, which `styles.contract.test.ts` shares): the browser-tests paragraph names what the specs import from `apps/web` | fccc760 |
+| 8 | `old-title.contract.test.ts` globbed the working tree (ignored mutation reports and browser test results counted locally) | Reads `git ls-files --cached --others --exclude-standard` under `apps`, `packages`, `tooling`: ignored files and `.claude/` worktrees never count, a new untracked source still does | bf7dbff |
+| 9 | apply-progress: stale PR 3 SHAs and branch, 4.10 marked deferred, artifact frozen at 7434baa without the later wording change, one approval date, RAP1 location | Updated above (PR 3 SHAs c715c04/ba87276/3f7efa3/b97e3c6 on `feat/square-footage-content`, 4.10 done in 6fd9830, `se superpongan` note and ES FAQ 5 = 254 characters, both approval dates, deviation 6) | this commit |
+
+### Negative proofs of the round (applied, run red, reverted; `git status --porcelain` clean apart from the foreign `.claude/` worktree)
+
+1. Before the fix: `reserveCss({})` and `headStyleOf({ ...concrete, reserve: {} })` returned `''`: `× returns nothing for an empty reserve`, `× is nothing for a row whose reserve is empty`. After it, putting `return '' as ReserveCss` back reds the same two.
+2. `ReserveCss` made a plain `string`: `× is returned by reserveCss and refuses a plain string` (`Unused '@ts-expect-error' directive`). `CalculatorView.astro` passing a `string | undefined` style: `astro check` `ts(2322)` (`Type 'string | undefined' is not assignable to type 'ReserveCss | undefined'`).
+3. `Reserve` given a `hint?: LineSteps` key with no row: `× gives every key of a reserve its custom property` in `reserve.test-d.ts`.
+4. The `no length` line removed from `breakpointProblems`: `× flags a condition with no length`.
+5. The concrete row given `reserve: { answer: [5] }`: `× has no page row with a reserve before PR 4 (S4b), …`.
+6. Before the fix, an ignored `packages/core/reports/zz-probe.json` holding the old English title: `× is found in no source, test or catalog`. After it the ignored probe passes, and an untracked `apps/web/src/zz-probe.ts` with the same title is still red.
+
+### Gates after the round
+
+- `npm run format`: no change. `npm run verify` exit 0 (210 files, 3,843 tests; build, check:site, check:dist pass), run at fccc760; this commit adds only this file.
+- `npm run typecheck --prefix tooling/site-browser` clean.
+- Dist diff: `diff -r apps/web/dist` against the PR 2+3 baseline build is empty (the CSS comment is stripped by the build).
+- ES concrete full-length proof: 40,678 B of 40,836 B (EN 40,389 B), unchanged.
