@@ -1,25 +1,47 @@
 import { expect, test } from '@playwright/test';
 import type { Browser, BrowserContext, Page } from '@playwright/test';
+import { edgesOf } from '../../../apps/web/src/__testing__/css-media.ts';
 import { calculatorPages, typedQuery } from './calculator-pages.ts';
 import { answer, notRunning, open } from './locators.ts';
 
 // The seven widths of calculator-page › [CP59] plus both edges of every breakpoint of calculator.css
-// (the first width where a rule applies and the one before it). `styles.contract.test.ts` reads this
-// literal and fails when a breakpoint has an edge missing here.
+// and of every `reserve` of the page table (the first width where a rule applies and the one before
+// it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
 const WIDTHS = [
   320, 355, 356, 385, 386, 390, 463, 464, 480, 481, 640, 666, 667, 729, 730, 768, 1024, 1280,
 ] as const;
 
-/**
- * The last width before each breakpoint. Text wraps a few pixels earlier on some platforms (Linux
- * Chromium) than where the breakpoints were measured (macOS), so there the block may hold one line
- * less than its reserve: up to one line more is allowed at these widths only. The fit check stays
- * strict at every width, and the breakpoints follow the latest drop, so the content fits everywhere.
- */
-const SWEPT: ReadonlySet<number> = new Set(WIDTHS);
-const BEFORE_EDGE: ReadonlySet<number> = new Set(WIDTHS.filter((width) => SWEPT.has(width + 1)));
-
 type Block = 'answer' | 'notice' | 'copy';
+
+/**
+ * The last width before each breakpoint of a block, for the page that is open. Text wraps a few
+ * pixels earlier on some platforms (Linux Chromium) than where the breakpoints were measured
+ * (macOS), so there the block may hold one line less than its reserve: up to one line more is
+ * allowed at these widths only. The fit check stays strict at every width, and the breakpoints
+ * follow the latest drop, so the content fits everywhere. The edges are read from the CSS the page
+ * ships (its head `<style>` and its stylesheets) through `edgesOf`, so one page's breakpoints never
+ * loosen another page's check; the copy block, whose height does not step, takes both.
+ */
+type BeforeEdges = Readonly<Record<Block, ReadonlySet<number>>>;
+
+const cssOf = (page: Page): Promise<string> =>
+  page.evaluate(async () => {
+    const inline = [...document.querySelectorAll('style')].map((style) => style.textContent ?? '');
+    const linked = await Promise.all(
+      [...document.querySelectorAll<HTMLLinkElement>('link[rel=stylesheet]')].map(async (link) =>
+        (await fetch(link.href)).text(),
+      ),
+    );
+    return [...inline, ...linked].join('\n');
+  });
+
+const beforeEdgesOf = (css: string): BeforeEdges => {
+  const before = (property: string): Set<number> =>
+    new Set(edgesOf(css, property).map((rem) => Math.ceil(rem * 16) - 1));
+  const answer = before('--answer-lines');
+  const notice = before('--notice-lines');
+  return { answer, notice, copy: new Set([...answer, ...notice]) };
+};
 interface Probe {
   readonly natural: number;
   /** The computed `min-height` of the block (border box), in px. */
@@ -245,7 +267,7 @@ for (const id of ids) {
     }) => {
       await withPages(browser, [true], async ([page]) => {
         if (page === undefined) throw new Error('no page');
-        const measured = new Map<number, [string, Probes][]>();
+        const measured = new Map<number, [string, Probes, BeforeEdges][]>();
         for (const calculator of pages) {
           await open(page, calculator);
           const sentences: string[] = ['—'];
@@ -255,6 +277,7 @@ for (const id of ids) {
               sentences.push((await answer(page).textContent()) ?? '');
             }
           }
+          const before = beforeEdgesOf(await cssOf(page));
           const variants: Variants = {
             answers: sentences,
             notices: [
@@ -267,27 +290,29 @@ for (const id of ids) {
             await page.setViewportSize({ width, height: 900 });
             measured.set(width, [
               ...(measured.get(width) ?? []),
-              [calculator.locale, await probeBlocks(page, variants)],
+              [calculator.locale, await probeBlocks(page, variants), before],
             ]);
           }
         }
         for (const [width, rows] of measured) {
           for (const block of ['answer', 'notice', 'copy'] as const) {
-            const probes = rows.flatMap(([locale, probes]) =>
-              probes[block] === undefined ? [] : [{ locale, ...probes[block] }],
+            const probes = rows.flatMap(([locale, probes, before]) =>
+              probes[block] === undefined
+                ? []
+                : [{ locale, before: before[block], ...probes[block] }],
             );
             const expected = pages.filter(
               ({ spec }) => block !== 'answer' || spec.answer !== undefined,
             ).length;
             expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(expected);
             const tallest = Math.max(...probes.map(({ natural }) => natural));
-            for (const { locale, reserved, line, natural } of probes) {
+            for (const { locale, before, reserved, line, natural } of probes) {
               const label = `${block} ${locale} at ${String(width)} px`;
               // soft: one run reports every width and block that misses, not the first one
               expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
               expect
                 .soft(reserved - tallest, `${label}: unused reserve`)
-                .toBeLessThan(BEFORE_EDGE.has(width) ? 2 * line : line);
+                .toBeLessThan(before.has(width) ? 2 * line : line);
             }
           }
         }
