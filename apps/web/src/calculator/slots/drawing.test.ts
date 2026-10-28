@@ -71,7 +71,7 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M50 47L50 29M294 47L294 29', tone: 'extension' },
         { d: 'M45 38L55 28M289 38L299 28', tone: 'tick' },
       ],
-      labels: [{ x: 172, y: 16.8, anchor: 'middle', size: 17, label: text('20 ft') }],
+      labels: [{ x: 172, y: 16.4, anchor: 'middle', size: 17, label: text('20 ft') }],
     });
   });
 
@@ -93,7 +93,7 @@ describe('dimensionLine (blueprint-drawing › [BD1], design B6)', () => {
         { d: 'M10 100L10 118M110 100L110 118', tone: 'extension' },
         { d: 'M5 119L15 109M105 119L115 109', tone: 'tick' },
       ],
-      labels: [{ x: 60, y: 130.2, anchor: 'middle', size: 17, label: text('7 in') }],
+      labels: [{ x: 60, y: 130.6, anchor: 'middle', size: 17, label: text('7 in') }],
     });
   });
 
@@ -116,17 +116,17 @@ describe('label sizes (design B5)', () => {
     expect(textWidth('100.00 ft²', 15)).toBe(84);
   });
 
-  it('boxes a label by its anchor, 1.2 sizes tall around its centre line', () => {
+  it('boxes a label by its anchor, 1.25 sizes tall around its centre line', () => {
     const at = { x: 100, y: 50, size: 17 as const, label: text('10 ft') };
-    expect(labelBox({ ...at, anchor: 'middle' })).toEqual({ x: 76.2, y: 39.8, w: 47.6, h: 20.4 });
-    expect(labelBox({ ...at, anchor: 'start' })).toEqual({ x: 100, y: 39.8, w: 47.6, h: 20.4 });
-    expect(labelBox({ ...at, anchor: 'end' })).toEqual({ x: 52.4, y: 39.8, w: 47.6, h: 20.4 });
+    expect(labelBox({ ...at, anchor: 'middle' })).toEqual({ x: 76.2, y: 39.4, w: 47.6, h: 21.3 });
+    expect(labelBox({ ...at, anchor: 'start' })).toEqual({ x: 100, y: 39.4, w: 47.6, h: 21.3 });
+    expect(labelBox({ ...at, anchor: 'end' })).toEqual({ x: 52.4, y: 39.4, w: 47.6, h: 21.3 });
   });
 
   it('boxes a message label by the longest text it may hold: none, so zero wide', () => {
     expect(
       labelBox({ x: 10, y: 10, size: 15, anchor: 'start', label: { message: 'm', fills: {} } }),
-    ).toEqual({ x: 10, y: 1, w: 0, h: 18 });
+    ).toEqual({ x: 10, y: 0.6, w: 0, h: 18.8 });
   });
 
   it('moves a centred label inside the frame and leaves one that fits', () => {
@@ -137,14 +137,14 @@ describe('label sizes (design B5)', () => {
   });
 
   it('reserves the top row, the bottom row, a right margin and the width label on the left', () => {
-    expect(rectangleGutters('10 ft')).toEqual({ top: 40.4, right: 6, bottom: 26.4, left: 67.6 });
+    expect(rectangleGutters('10 ft')).toEqual({ top: 41.3, right: 6, bottom: 27.3, left: 67.6 });
   });
 });
 
 describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
   const name = { message: 'drawing', fills: { length: '10 ft' } };
 
-  // spec: blueprint-drawing › [BD1] hand-verified: 226.4 by 133.2 available, a 133.2 square centred
+  // spec: blueprint-drawing › [BD1] hand-verified: 226.4 by 131.4 available, a 131.4 square centred
   it('draws the default square with the length on top, the width on the left and the area inside', () => {
     const plan = rectanglePlan(FRAME, {
       length: 10,
@@ -154,18 +154,18 @@ describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
     });
     expect(plan).toEqual({
       name,
-      outline: [{ kind: 'rect', x: 114.2, y: 40.4, w: 133.2, h: 133.2 }],
+      outline: [{ kind: 'rect', x: 115.1, y: 41.3, w: 131.4, h: 131.4 }],
       lines: [
-        { d: 'M114.2 26.4L247.4 26.4', tone: 'helper' },
-        { d: 'M114.2 40.4L114.2 22.4M247.4 40.4L247.4 22.4', tone: 'extension' },
-        { d: 'M109.2 31.4L119.2 21.4M242.4 31.4L252.4 21.4', tone: 'tick' },
-        { d: 'M100.2 40.4L100.2 173.6', tone: 'helper' },
-        { d: 'M114.2 40.4L96.2 40.4M114.2 173.6L96.2 173.6', tone: 'extension' },
-        { d: 'M95.2 45.4L105.2 35.4M95.2 178.6L105.2 168.6', tone: 'tick' },
+        { d: 'M115.1 27.3L246.5 27.3', tone: 'helper' },
+        { d: 'M115.1 41.3L115.1 23.3M246.5 41.3L246.5 23.3', tone: 'extension' },
+        { d: 'M110.1 32.3L120.1 22.3M241.5 32.3L251.5 22.3', tone: 'tick' },
+        { d: 'M101.1 41.3L101.1 172.7', tone: 'helper' },
+        { d: 'M115.1 41.3L97.1 41.3M115.1 172.7L97.1 172.7', tone: 'extension' },
+        { d: 'M96.1 46.3L106.1 36.3M96.1 177.7L106.1 167.7', tone: 'tick' },
       ],
       labels: [
-        { x: 180.8, y: 10.2, anchor: 'middle', size: 17, label: text('10 ft') },
-        { x: 94.2, y: 107, anchor: 'end', size: 17, label: text('10 ft') },
+        { x: 180.8, y: 10.7, anchor: 'middle', size: 17, label: text('10 ft') },
+        { x: 95.1, y: 107, anchor: 'end', size: 17, label: text('10 ft') },
         { x: 180.8, y: 107, anchor: 'middle', size: 15, label: text('100.00 ft²') },
       ],
     });
@@ -179,10 +179,10 @@ describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
       texts: { length: '10 ft', width: '20 ft', area: '200.00 ft²' },
       name,
     });
-    expect(plan.outline).toEqual([{ kind: 'rect', x: 147.5, y: 40.4, w: 66.6, h: 133.2 }]);
+    expect(plan.outline).toEqual([{ kind: 'rect', x: 148, y: 41.3, w: 65.7, h: 131.4 }]);
     expect(plan.labels[2]).toEqual({
-      x: 180.8,
-      y: 188.6,
+      x: 180.9,
+      y: 188.1,
       anchor: 'middle',
       size: 15,
       label: text('200.00 ft²'),
@@ -194,8 +194,8 @@ describe('rectanglePlan (blueprint-drawing › [BD1], [BD2], [BD12])', () => {
       { width: 300, height: 95 },
       { length: 4, width: 1, texts: { length: 'a', width: 'b', area: 'c' }, name },
     );
-    expect(plan.outline[0]).toMatchObject({ y: 40.4, h: 28.2 });
-    expect(plan.labels[2]?.y).toBe(83.6);
+    expect(plan.outline[0]).toMatchObject({ y: 41.3, h: 26.4 });
+    expect(plan.labels[2]?.y).toBe(83.1);
   });
 
   // spec: blueprint-drawing › [BD12] 100 by 1 is drawn at the clamp and its labels carry the true values
