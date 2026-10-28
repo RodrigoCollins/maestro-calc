@@ -125,13 +125,16 @@ Error messages MAY use placeholders: `errors.BELOW_MIN` MUST contain `{min}` and
 
 | key | en | es |
 |---|---|---|
-| `calc.rectangle-area.title` | Rectangle Area | Área de un rectángulo |
+| `calc.rectangle-area.title` | Square Footage Calculator | Calculadora de pies cuadrados |
 | `calc.rectangle-area.inputs.length` | Length | Largo |
 | `calc.rectangle-area.inputs.width` | Width | Ancho |
 | `calc.rectangle-area.outputs.areaFt2` | Area (square feet) | Área (pies cuadrados) |
 | `calc.rectangle-area.outputs.areaYd2` | Area (square yards) | Área (yardas cuadradas) |
 | `calc.rectangle-area.outputs.areaM2` | Area (square meters) | Área (metros cuadrados) |
 | `errors.DECIMAL_COMMA` | Use a period for decimals and no thousands separator (for example 1250.5). | Usa punto para los decimales y no uses separador de miles (por ejemplo 1250.5). |
+
+(A unit test over the catalogs; the same strings are the H1 of the calculator page, `calculator-page` [CP67].)
+(Previously: the first row was `Rectangle Area` / `Área de un rectángulo`.)
 
 Spanish register (spec delta, PR 12 correction round 1): every Spanish message addresses the reader as tú (Ingresa, Usa, Elige), never as usted, because the approved visual direction (`docs/design/direction.md`: "Spanish UI copy: neutral Spanish (tú)") is the product owner's decision. The first draft of this table said `Use punto … no use` and the other messages said Ingrese and Elija; a catalog test rejects the formal imperatives.
 
