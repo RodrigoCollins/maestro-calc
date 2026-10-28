@@ -2,8 +2,17 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { describe, expectTypeOf, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
 import { controllerOf, type Controller, type FieldView } from './controller.ts';
-import type { AnyPageModule, PageModule, SelectKey, TextKey } from './page-module.ts';
+import type {
+  AnyPageModule,
+  DrawingSlot,
+  Frame,
+  PageModule,
+  Ready,
+  SelectKey,
+  TextKey,
+} from './page-module.ts';
 import { rectangleAreaPage } from './rectangle-area/page.ts';
+import type { Plan } from './slots/drawing.ts';
 
 describe('the page-module types (calculator-web-core › Page-module contract, K10, K11)', () => {
   it('derives the text keys of concrete from its definition', () => {
@@ -49,5 +58,20 @@ describe('the page-module types (calculator-web-core › Page-module contract, K
     );
     // @ts-expect-error the rectangle-area page has no waste field
     expectTypeOf(view.fields.waste).toBeNever();
+  });
+
+  // spec: calculator-web-core › Page-module contract, the drawing row: a frame and a plan per ready moment
+  it('declares the drawing slot as a frame, its messages and a plan of a ready moment, or none', () => {
+    expectTypeOf<DrawingSlot<typeof rectangleArea>['frame']>().toEqualTypeOf<Frame>();
+    expectTypeOf<Frame>().toEqualTypeOf<{ readonly width: number; readonly height: number }>();
+    expectTypeOf<DrawingSlot<typeof rectangleArea>['messages']>().toEqualTypeOf<
+      readonly string[]
+    >();
+    expectTypeOf<DrawingSlot<typeof rectangleArea>['plan']>().toEqualTypeOf<
+      (moment: Ready<typeof rectangleArea>) => Plan | null
+    >();
+    expectTypeOf<PageModule<typeof rectangleArea>['drawing']>().toEqualTypeOf<
+      DrawingSlot<typeof rectangleArea> | undefined
+    >();
   });
 });
