@@ -47,3 +47,23 @@ export const minimal = {
   bounds: [{ key: 'length', text: '1001 ft', code: 'ABOVE_MAX', bound: '1,000 ft', restore: '10' }],
   layoutQueries: ['?v=1'],
 } as const satisfies E2eSpec;
+
+// spec: site-quality › [SQ42] a record of a page that draws declares the drawing group
+export const drawn = {
+  ...minimal,
+  drawing: {
+    labels: ['10 ft', '10 ft', '100.00 ft²'],
+    name: { en: 'Plan: 10 ft by 10 ft', es: 'Plano: 10 ft por 10 ft' },
+    typed: {
+      key: 'length',
+      text: '20',
+      labels: ['20 ft', '10 ft', '200.00 ft²'],
+      name: { en: 'Plan: 20 ft by 10 ft', es: 'Plano: 20 ft por 10 ft' },
+      ratio: 2,
+    },
+    kept: { key: 'length', text: '20', labels: ['20 ft', '10 ft', '200.00 ft²'] },
+    metric: ['3.05 m', '3.05 m', '9.29 m²'],
+    longest: ['?v=1&l=1200'],
+    queries: ['?v=1&l=240'],
+  },
+} as const satisfies E2eSpec;

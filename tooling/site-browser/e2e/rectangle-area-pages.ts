@@ -20,7 +20,8 @@ const METRIC_BARE: Figures = ['129.17', '14.35', '12.00'];
 
 /**
  * The record of the square footage page (site-quality › [SQ37]): the strings, states and sentences
- * the generic suites drive. The page has an answer and nothing else of the optional groups.
+ * the generic suites drive. The page has an answer and a drawing, and nothing else of the optional
+ * groups.
  */
 export const RECTANGLE_AREA: E2eSpec = {
   locales: {
@@ -97,6 +98,35 @@ export const RECTANGLE_AREA: E2eSpec = {
       en: 'A 3.05 m by 3.05 m area is 9.29 square meters.',
       es: 'Un área de 3.05 m por 3.05 m mide 9.29 metros cuadrados.',
     },
+  },
+  // The plan of blueprint-drawing: the labels are language-free (`dimensionText` and the panel
+  // figure with its symbol), the name is the page message of each language.
+  drawing: {
+    labels: ['10 ft', '10 ft', '100.00 ft²'],
+    name: {
+      en: 'Plan: 10 ft by 10 ft, 100.00 ft²',
+      es: 'Plano: 10 ft por 10 ft, 100.00 ft²',
+    },
+    typed: {
+      key: 'length',
+      text: '12\' 6"',
+      labels: ['12 ft 6 in', '10 ft', '125.00 ft²'],
+      name: {
+        en: 'Plan: 12 ft 6 in by 10 ft, 125.00 ft²',
+        es: 'Plano: 12 ft 6 in por 10 ft, 125.00 ft²',
+      },
+      ratio: 1.25,
+    },
+    kept: { key: 'length', text: '20 ft', labels: ['20 ft', '10 ft', '200.00 ft²'] },
+    metric: ['3.05 m', '3.05 m', '9.29 m²'],
+    // the longest labels the fields accept (99,999 ft 11 63/64 in, 30,479.97 m) and both clamps
+    longest: [
+      '?v=1&l=76799999/64&w=76799999/64',
+      '?v=1&u=m&l=1199999&w=1199999',
+      '?v=1&l=1200&w=12',
+      '?v=1&l=12&w=1200',
+    ],
+    queries: ['?v=1&l=240&w=180', '?v=1&l=1200&w=12'],
   },
   hints: [
     { key: 'length', site: 'site.calculator.hintFt', describedBy: 'calc-length-hint' },

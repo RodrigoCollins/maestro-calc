@@ -104,10 +104,43 @@ export interface E2eBound {
   readonly press?: E2ePress;
 }
 
+/** A value typed in a field and the plan it draws. */
+export interface E2eDrawn {
+  readonly key: string;
+  readonly text: string;
+  /** The texts of the labels, in drawing order. */
+  readonly labels: readonly string[];
+}
+
+/**
+ * The live plan of the result panel (blueprint-drawing), declared exactly when the page module
+ * declares the drawing slot (site-quality › [SQ42], enforced by
+ * `apps/web/src/contract/drawing-record.contract.test.ts`). `drawing.spec.ts` runs over it.
+ */
+export interface E2eDrawing {
+  /** The label texts of the default plan, in drawing order (language-free). */
+  readonly labels: readonly string[];
+  /** The accessible name of the default plan, per language. */
+  readonly name: Readonly<Record<E2eLanguage, string>>;
+  /** A typed value: its labels, its name and the width over height of its outline. */
+  readonly typed: E2eDrawn & {
+    readonly name: Readonly<Record<E2eLanguage, string>>;
+    readonly ratio: number;
+  };
+  /** A valid value whose plan stays while `abc` is typed after it. */
+  readonly kept: E2eDrawn;
+  /** The label texts of the default plan in the metric system. */
+  readonly metric: readonly string[];
+  /** Links with the longest labels the fields accept, measured at 320 px. */
+  readonly longest: readonly string[];
+  /** Links whose box is measured with and without the script, besides the bare page. */
+  readonly queries: readonly string[];
+}
+
 /**
  * The typed per-calculator record the generic suites run over (site-quality › [SQ29], [SQ30]).
  * A calculator adds one `E2eSpec` and one row of `E2E`; no suite names a calculator. The groups
- * a page may not have (`answer`, `choices`, `steppers`, `shopping`, `prices`, `variant`, ...) are
+ * a page may not have (`answer`, `choices`, `steppers`, `shopping`, `prices`, `variant`, `drawing`, ...) are
  * optional and their tests are skipped when a record leaves them out. The record reaches
  * `apps/web` only by relative path: the browser job has no root install.
  */
@@ -202,6 +235,8 @@ export interface E2eSpec {
       readonly value: string;
     };
   };
+  /** The live plan of the result panel: a page whose module declares no drawing slot leaves it out. */
+  readonly drawing?: E2eDrawing;
   /** The unit hints and the descriptions of the inputs. `site` is the key of the hint text. */
   readonly hints?: readonly {
     readonly key: string;

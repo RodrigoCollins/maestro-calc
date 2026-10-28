@@ -146,6 +146,10 @@ describe('the "Adding a calculator" recipe (monorepo-workspace › AGENTS.md)', 
     ['the proof entry', 'apps/web/src/contract/__testing__/slot-free-entry.ts'],
     ['the entry import contract', 'apps/web/src/contract/entry-graph.contract.test.ts'],
     ['the entry budget contract', 'apps/web/src/contract/client-entry.contract.test.ts'],
+    ['the drawing geometry', 'apps/web/src/calculator/slots/drawing.ts'],
+    ['the drawing writer', 'apps/web/src/client/draw.ts'],
+    ['the drawing record contract', 'apps/web/src/contract/drawing-record.contract.test.ts'],
+    ['the injected writer', 'mount(page, { draw })'],
   ])('names %s in a step', (_what, token) => {
     expect(
       steps.some((step) => step.includes(token)),
