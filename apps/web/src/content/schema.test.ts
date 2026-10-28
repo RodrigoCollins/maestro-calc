@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculatorSchema, pageSchema, registryIds, TRUST_IDS } from './schema.ts';
+import { calculatorSchema, pageSchema, registryIds, TRUST_IDS, WORKED_EXAMPLES } from './schema.ts';
 
 const valid = {
   id: 'about',
@@ -146,9 +146,79 @@ describe('calculatorSchema', () => {
     },
   );
 
-  it('accepts only the ids of the registry it is built from', () => {
-    expect(calculatorSchema(['rectangle-area']).safeParse(calculator).success).toBe(false);
-    expect(calculatorSchema(['concrete']).safeParse(calculator).success).toBe(true);
+  // spec: calculator-page › [CP6] the shape of the example is selected by the id
+  const rectangle = {
+    ...calculator,
+    id: 'rectangle-area',
+    workedExample: { query: 'v=1&l=144', ft2: '120.00', yd2: '13.33', m2: '11.15' },
+  } as const;
+
+  it('parses a rectangle-area entry with its own example', () => {
+    expect(schema.parse(rectangle)).toEqual(rectangle);
+  });
+
+  it.each([
+    ["concrete's example", { workedExample: calculator.workedExample }, 'workedExample'],
+    [
+      'an example without its query',
+      { workedExample: { ft2: '120.00', yd2: '13.33', m2: '11.15' } },
+      'workedExample.query',
+    ],
+    [
+      'a misspelled figure name',
+      { workedExample: { ...rectangle.workedExample, yd: '13.33', yd2: undefined } },
+      'workedExample.yd2',
+    ],
+    [
+      'a query that is not a v=1 link',
+      { workedExample: { ...rectangle.workedExample, query: 'l=144' } },
+      'workedExample.query',
+    ],
+    [
+      'a query with a space',
+      { workedExample: { ...rectangle.workedExample, query: 'v=1&l=12 ft' } },
+      'workedExample.query',
+    ],
+    [
+      'a figure that is not a decimal text',
+      { workedExample: { ...rectangle.workedExample, m2: 11.15 } },
+      'workedExample.m2',
+    ],
+  ])('rejects a rectangle-area entry with %s, naming the field', (_name, change, field) => {
+    const result = schema.safeParse({ ...rectangle, ...change });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map((issue) => issue.path.join('.'));
+      expect(paths).toContain(field);
+    }
+  });
+
+  it('rejects a concrete entry that carries the rectangle-area example', () => {
+    const result = schema.safeParse({ ...calculator, workedExample: rectangle.workedExample });
+    expect(result.success).toBe(false);
+  });
+
+  // spec: calculator-page › [CP6] an id outside the table fails the parse on `id`
+  it('rejects an entry whose id has no worked-example row, naming id', () => {
+    const open = calculatorSchema(['concrete', 'rectangle-area', 'asphalt']);
+    const result = open.safeParse({ ...calculator, id: 'asphalt' });
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(result.error.issues.map((issue) => issue.path.join('.'))).toContain('id');
+  });
+
+  // spec: calculator-page › [CP6] a row for an id outside the registry is a build error
+  it('throws when the table has a row for an id outside the registry', () => {
+    expect(() => calculatorSchema(['concrete'])).toThrow(
+      'worked example for an id outside the registry: rectangle-area',
+    );
+    expect(() => calculatorSchema(['rectangle-area'])).toThrow(
+      'worked example for an id outside the registry: concrete',
+    );
+  });
+
+  it('keeps one row per id of the table', () => {
+    expect(Object.keys(WORKED_EXAMPLES)).toEqual(['concrete', 'rectangle-area']);
   });
 });
 
