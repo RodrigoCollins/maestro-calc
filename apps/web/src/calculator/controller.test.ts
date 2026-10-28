@@ -263,7 +263,14 @@ describe('the plan of each ready moment (calculator-web-core › [CWC41]; bluepr
     outline: [{ kind: 'rect' as const, x: 1, y: 2, w: 3, h: 4 }],
     lines: [{ d: 'M1 2L3 4', tone: 'helper' as const }],
     labels: [
-      { x: 5, y: 6, anchor: 'middle' as const, size: 17 as const, label: { text: inches(moment) } },
+      {
+        x: 5,
+        y: 6,
+        anchor: 'middle' as const,
+        size: 17 as const,
+        tone: 'dimension' as const,
+        label: { text: inches(moment) },
+      },
     ],
   });
   const length = (text: string): UiEvent<typeof rectangleArea> => ({
@@ -302,7 +309,7 @@ describe('the plan of each ready moment (calculator-web-core › [CWC41]; bluepr
       name: 'Plan of 120 in',
       outline: [{ kind: 'rect', x: 1, y: 2, w: 3, h: 4 }],
       lines: [{ d: 'M1 2L3 4', tone: 'helper' }],
-      labels: [{ x: 5, y: 6, anchor: 'middle', size: 17, text: '120 in' }],
+      labels: [{ x: 5, y: 6, anchor: 'middle', size: 17, tone: 'dimension', text: '120 in' }],
     });
   });
 

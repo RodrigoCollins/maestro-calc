@@ -40,11 +40,17 @@ const ratioOf = (page: Page): Promise<number> =>
     .locator('rect')
     .evaluate((rect) => Number(rect.getAttribute('width')) / Number(rect.getAttribute('height')));
 
-/** The outline and line coordinates of the plan, to compare two states. */
+/** The outline and line coordinates of the plan and the position of each label, to compare two states. */
 const shapeOf = (page: Page): Promise<string[]> =>
   drawing(page)
-    .locator('rect, path')
-    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('d') ?? node.outerHTML));
+    .locator('rect, path, text')
+    .evaluateAll((nodes) =>
+      nodes.map((node) =>
+        node.tagName === 'text'
+          ? `text ${String(node.getAttribute('x'))} ${String(node.getAttribute('y'))}`
+          : (node.getAttribute('d') ?? node.outerHTML),
+      ),
+    );
 
 /** Each label's measured box and estimated width, in viewBox units, and the viewBox itself. */
 const measure = (page: Page) =>
@@ -180,13 +186,21 @@ for (const { calculator, group } of drawn) {
       expect(await shapeOf(page)).toEqual(before);
     });
 
-    // spec: blueprint-drawing › [BD11] the unit toggle relabels and moves nothing
+    // spec: blueprint-drawing › [BD11] the unit toggle relabels and moves nothing, the labels included
     test('relabels on the unit toggle and keeps every coordinate', async ({ page }) => {
       await open(page, calculator);
       const before = await shapeOf(page);
       await page.locator('[data-unit="metric"]').click();
       await expect(drawing(page).locator('text')).toHaveText([...group.metric]);
       expect(await shapeOf(page)).toEqual(before);
+      for (const query of group.toggles) {
+        await open(page, calculator, query);
+        const shown = await labelsOf(page);
+        const shape = await shapeOf(page);
+        await page.locator('[data-unit="metric"]').click();
+        await expect(drawing(page).locator('text').first()).not.toHaveText(shown[0] ?? '');
+        expect(await shapeOf(page), query).toEqual(shape);
+      }
     });
 
     // spec: blueprint-drawing › [BD16], [BD17] no live region; the name changes once per valid change

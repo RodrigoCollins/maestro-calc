@@ -131,6 +131,11 @@ export interface E2eDrawing {
   readonly kept: E2eDrawn;
   /** The label texts of the default plan in the metric system. */
   readonly metric: readonly string[];
+  /**
+   * Links whose plan the unit toggle must not move either: the area text of one system fits
+   * inside and the other's does not, so the layout keeps the room of the longer.
+   */
+  readonly toggles: readonly string[];
   /** Links with the longest labels the fields accept, measured at 320 px. */
   readonly longest: readonly string[];
   /** Links whose box is measured with and without the script, besides the bare page. */
