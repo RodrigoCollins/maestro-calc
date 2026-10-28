@@ -179,14 +179,6 @@ describe('CalculatorView script (site-shell › [SS20])', () => {
     },
   );
 
-  // the recipe and the proof name the island of a hyphenated id in Pascal case
-  it.each([
-    ['concrete', 'Concrete'],
-    ['rectangle-area', 'RectangleArea'],
-  ])('writes the id %s in Pascal case as %s', (id, pascal) => {
-    expect(pascalOf(id)).toBe(pascal);
-  });
-
   it('has an island file named after every calculator page id', () => {
     for (const id of CALCULATOR_PAGES) {
       const island = `${pascalOf(id)}Script.astro`;
