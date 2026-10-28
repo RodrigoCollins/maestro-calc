@@ -1,6 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { globSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { calculators } from '../lib/calculators.ts';
+import { PAGES } from '../lib/pages.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { buildClient } from './__testing__/client-build.ts';
 import {
@@ -19,18 +20,40 @@ const importsOf = (source: string): string[] =>
     ([, specifier = '']) => specifier,
   ).sort();
 
+/** Whether the module of a page declares the drawing slot. */
+const draws = (id: (typeof CALCULATOR_PAGES)[number]): boolean =>
+  PAGES[id].module.drawing !== undefined;
+
+/** The imports an entry must have: the mount, its page module, and the writer exactly when its module draws. */
+const expectedImports = (id: string, drawing: boolean): string[] =>
+  [`../../calculator/${id}/page.ts`, ...(drawing ? ['../draw.ts'] : []), '../mount.ts'].sort();
+
 describe.each(CALCULATOR_PAGES)(
-  '%s client entry: its own imports (calculator-page › [CP48]; calculator-web-core › [CWC25], [CWC37])',
+  '%s client entry: its own imports (calculator-page › [CP48]; calculator-web-core › [CWC25], [CWC37], [CWC42])',
   (id) => {
-    // spec: calculator-page › [CP48] the entry imports the generic mount and its page module, nothing else
-    it('imports exactly the generic mount and its own page module', () => {
-      expect(importsOf(readFileSync(entryPathOf(id), 'utf8'))).toEqual([
-        `../../calculator/${id}/page.ts`,
-        '../mount.ts',
-      ]);
+    // spec: calculator-page › [CP48] the mount and its page module, plus the writer exactly when the module draws
+    it('imports exactly the generic mount, its own page module and the writer when it draws', () => {
+      expect(importsOf(readFileSync(entryPathOf(id), 'utf8'))).toEqual(
+        expectedImports(id, draws(id)),
+      );
     });
   },
 );
+
+describe('the entry import rule finds what it forbids (seeded, calculator-page › [CP48])', () => {
+  const [id] = CALCULATOR_PAGES;
+  const source = `import { page } from '../../calculator/${id}/page.ts';\nimport { mount } from '../mount.ts';`;
+
+  it('fails an entry of a page without the slot that imports the writer', () => {
+    expect(importsOf(`${source}\nimport { draw } from '../draw.ts';`)).not.toEqual(
+      expectedImports(id, false),
+    );
+  });
+
+  it('fails an entry of a page with the slot that does not pass the writer', () => {
+    expect(importsOf(source)).not.toEqual(expectedImports(id, true));
+  });
+});
 
 describe('the import reader', () => {
   it('reads the specifiers of an entry, whatever the import form', () => {
@@ -52,6 +75,13 @@ describe.each(CALCULATOR_PAGES)(
       expect(reaches(modules, '/apps/web/src/client/mount.ts')).toBe(true);
       expect(reaches(modules, `/packages/core/src/calculators/${id}/${id}.ts`)).toBe(true);
       expect(graphViolations(modules, id)).toEqual([]);
+    });
+
+    // spec: calculator-web-core › [CWC43] the writer and the geometry only in the graph of a page that draws
+    it('reaches the drawing writer and the drawing geometry exactly when its module draws', async () => {
+      const { modules } = await buildClient(entrySourceOf(id));
+      expect(reaches(modules, '/apps/web/src/client/draw.ts')).toBe(draws(id));
+      expect(reaches(modules, '/apps/web/src/calculator/slots/drawing.ts')).toBe(draws(id));
     });
 
     // spec: calculator-web-core › [CWC25] no builder, no catalog and no lib file but its own composition root
@@ -123,5 +153,49 @@ describe('the source graph check finds what it forbids (seeded)', () => {
   ])('names %s when the entry imports it', async (_name, extra, expected) => {
     const { modules } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);
     expect(graphViolations(modules, FIRST)).toContain(expected);
+  });
+});
+
+/** The modules a source loads at run time: its value imports and re-exports, never `import type`. */
+const valueImportsOf = (source: string): string[] =>
+  Array.from(
+    source.matchAll(/^\s*(?:import|export)\s+(?!type\b)[^'";]*?from\s+['"]([^'"]+)['"]/gm),
+    ([, specifier = '']) => specifier,
+  );
+
+const WRITER = fromRoot('apps/web/src/client/draw.ts');
+
+describe('the drawing writer is injected, never imported (calculator-web-core › [CWC42])', () => {
+  // spec: calculator-web-core › [CWC42] the generic mount does not reach the writer
+  it('is not reached from the generic mount', async () => {
+    const { modules } = await buildClient(`import '${fromRoot('apps/web/src/client/mount.ts')}';`);
+    expect(reaches(modules, '/apps/web/src/client/mount.ts')).toBe(true);
+    expect(reaches(modules, '/apps/web/src/client/draw.ts')).toBe(false);
+  });
+
+  // spec: calculator-web-core › [CWC42] no source outside the entries imports it
+  it('is imported by no source but the entries', () => {
+    const importers = globSync('apps/web/src/**/*.{ts,astro}', { cwd: fromRoot('.') }).filter(
+      (file) =>
+        !/\.test(-d)?\.ts$/.test(file) &&
+        !file.startsWith('apps/web/src/client/entries/') &&
+        valueImportsOf(readFileSync(fromRoot(file), 'utf8')).some((specifier) =>
+          /(^|\/)draw\.ts$/.test(specifier),
+        ),
+    );
+    expect(importers).toEqual([]);
+  });
+
+  it('reads value imports and re-exports, and skips a type import', () => {
+    expect(
+      valueImportsOf(
+        `import type { Draw } from './draw.ts';\nimport { a } from './a.ts';\nexport { b } from './b.ts';`,
+      ),
+    ).toEqual(['./a.ts', './b.ts']);
+  });
+
+  it('is found in a graph that imports it (seeded)', async () => {
+    const { modules } = await buildClient(`export { draw } from '${WRITER}';`);
+    expect(reaches(modules, '/apps/web/src/client/draw.ts')).toBe(true);
   });
 });
