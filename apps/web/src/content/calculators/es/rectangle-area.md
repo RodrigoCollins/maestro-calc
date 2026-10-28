@@ -54,7 +54,7 @@ Revisa la unidad de cada número antes de leer la respuesta. El error más comú
 
 No pases a mano a pies decimales una medida que la cinta da en pies y pulgadas. 12 ft 6 in son 12.5 ft, no 12.6 ft. Escribe la medida como la lees y deja que la calculadora la convierta.
 
-Para un cuarto que no es un rectángulo, como un cuarto en forma de L, divide el piso en rectángulos que no se encimen. Usa la calculadora una vez por cada rectángulo y suma los resultados. Un clóset o un nicho que lleva el mismo piso se mide como su propio rectángulo y se suma.
+Para un cuarto que no es un rectángulo, como un cuarto en forma de L, divide el piso en rectángulos que no se superpongan. Usa la calculadora una vez por cada rectángulo y suma los resultados. Un clóset o un nicho que lleva el mismo piso se mide como su propio rectángulo y se suma.
 
 Deja fuera las áreas que el material no va a cubrir. Si el piso termina en la base de una isla de cocina o de unos gabinetes fijos, resta su huella. Para una pared, mide el ancho y la altura de la pared, y luego resta cada puerta y cada ventana como su propio rectángulo.
 
@@ -86,7 +86,7 @@ Escríbelos como los lees en la cinta: 12 ft 6 in, o 12 ft 6 1/2 in para una fra
 
 ### ¿Cómo calculo los pies cuadrados de un cuarto en forma de L?
 
-Divídelo en dos rectángulos que no se encimen y suma sus áreas. Por ejemplo, un área principal de 12 ft por 10 ft con un nicho de 6 ft por 4 ft tiene 120 + 24 = 144 pies cuadrados. Usa la calculadora una vez por cada rectángulo y suma los resultados.
+Divídelo en dos rectángulos que no se superpongan y suma sus áreas. Por ejemplo, un área principal de 12 ft por 10 ft con un nicho de 6 ft por 4 ft tiene 120 + 24 = 144 pies cuadrados. Usa la calculadora una vez por cada rectángulo y suma los resultados.
 
 ### ¿Cuánto piso de más debo comprar?
 
