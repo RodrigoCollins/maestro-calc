@@ -1,4 +1,5 @@
 import type { Frame } from '../page-module.ts';
+import { CHAR } from './label-metrics.ts';
 
 /*
  * The geometry of the drawing slot (blueprint-drawing): pure numbers in one fixed viewBox, with no
@@ -75,13 +76,6 @@ export interface Box {
 
 /** The largest aspect ratio drawn, either way: 100 ft by 1 ft is drawn 4 to 1, its labels true. */
 export const CLAMP = 4;
-/**
- * The estimated width of a character, in sizes: wide enough for the widest common fallback the
- * font stack can reach before or without Barlow Condensed (DejaVu Sans Bold, whose widest label,
- * `<0.01 cm`, averages 0.661 sizes), so the labels never meet in any of them. Barlow Condensed 600
- * itself stays under 0.42.
- */
-export const CHAR = 0.67;
 /**
  * The height of a label box, in sizes: the ascent and descent of Barlow Condensed, which Chromium
  * measures at 1.24 sizes (`getBBox`, 21.1 at 17), centred on the label's `y`.
@@ -272,3 +266,5 @@ export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
     ],
   };
 };
+
+export { CHAR };
