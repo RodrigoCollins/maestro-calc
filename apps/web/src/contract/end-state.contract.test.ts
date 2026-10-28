@@ -46,9 +46,10 @@ describe('end state of the concrete calculator change (site-routing-i18n › [SR
   });
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  it('has ten trust entries and two calculator entries', () => {
+  // the two rectangle-area entries are staged (PAGELESS, pending): fourteen content entries in all
+  it('has ten trust entries and four calculator entries', () => {
     expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(10);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(2);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(4);
   });
 
   // spec: site-seo › [SE10]

@@ -1,11 +1,14 @@
+import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { concreteMix } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
+import { definePage } from '../../calculator/page-module.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
 import { LOCALES } from '../../routing/routes.ts';
 import type { CalculatorPageId } from '../../routing/templates.ts';
+import { shownFigures } from './shown-figures.ts';
 
 /*
  * The calculator content contract as a table by id (calculator-page › Page anatomy, design K2).
@@ -59,6 +62,20 @@ const concreteDefault = (): WorkedExample<'concrete'> => {
   };
 };
 
+// the real page module of rectangle-area arrives with its page change; the figures need none of it
+const rectangleAreaModule = definePage({ calculator: rectangleArea });
+
+/** The areas the page shows for the example's link, read from the page's own controller. */
+const rectangleAreaShown = ({ query }: WorkedExample<'rectangle-area'>) => {
+  const { figures } = shownFigures(rectangleAreaModule, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the rectangle-area page shows no ${key}`);
+    return value;
+  };
+  return { query, ft2: shown('areaFt2'), yd2: shown('areaYd2'), m2: shown('areaM2') };
+};
+
 export const CONTENT_ROWS = {
   concrete: {
     module: concretePage,
@@ -68,6 +85,15 @@ export const CONTENT_ROWS = {
     figures: ({ netFt3, totalFt3, yd3, bags, bagLb }) =>
       [netFt3, totalFt3, yd3, bags, bagLb].map(String),
     methodologyLink: { en: '/methodology#concrete', es: '/es/metodologia#concreto' },
+  },
+  'rectangle-area': {
+    module: rectangleAreaModule,
+    updated: '2026-10-27',
+    sources: () => [NIST],
+    engine: rectangleAreaShown,
+    // the example's link is 144 in by the 120 in default: Formulas names both sides as written
+    figures: ({ ft2, yd2, m2 }) => [ft2, yd2, m2, '12 ft', '10 ft'],
+    methodologyLink: { en: '/methodology#square-footage', es: '/es/metodologia#pies-cuadrados' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 
