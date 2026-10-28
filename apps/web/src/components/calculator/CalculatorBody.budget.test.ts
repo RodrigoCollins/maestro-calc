@@ -9,7 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../../__testing__/css-media.ts';
 import { pagelessTitles } from '../../__testing__/pageless-titles.ts';
 import { importFromRoot } from '../../contract/root.ts';
-import { pathOf, ROUTES } from '../../routing/routes.ts';
+import { LOCALES, pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { directoryOrder } from '../../lib/home-directory.ts';
@@ -38,7 +38,6 @@ const ES_FULL_LENGTH_PIN = 40_836;
 const WEB_ROOT = resolve(import.meta.dirname, '../../..');
 const PAGE = join(WEB_ROOT, 'src/contract/__testing__/budget-page.astro');
 const out = mkdtempSync(join(tmpdir(), 'calculator-budget-'));
-const LOCALES = ['en', 'es'] as const;
 /** The page ids as plain strings: the seeded build pads `concrete`, the others must keep their size. */
 const ALL_IDS: readonly string[] = CALCULATOR_PAGES;
 

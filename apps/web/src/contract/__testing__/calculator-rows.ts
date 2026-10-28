@@ -4,6 +4,7 @@ import { concretePage } from '../../calculator/concrete/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
+import { LOCALES } from '../../routing/routes.ts';
 import type { CalculatorPageId } from '../../routing/templates.ts';
 
 /*
@@ -92,8 +93,6 @@ export interface EntryRecord {
   readonly locale: string;
   readonly ownerReview: string;
 }
-
-const LOCALES = ['en', 'es'] as const;
 
 /**
  * What is wrong with the entry set against the table: `rows` names the expected ids, `routed` the
