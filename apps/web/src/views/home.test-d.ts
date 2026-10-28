@@ -14,15 +14,15 @@ describe('home card keys (trust-pages › [TP32])', () => {
     expectTypeOf<CardKey<CalculatorPageId>>().toExtend<SiteKey>();
   });
 
-  // one case per key, so a stray title or summary key alone for a pageless id is caught
+  // one case per key, so a stray title or summary key alone for an unrouted id is caught
   it('has no title key for a calculator that is not routed', () => {
-    // @ts-expect-error rectangle-area is pageless, so its card title is not in the catalog
-    expectTypeOf<CardKey<'rectangle-area', 'title'>>().toExtend<SiteKey>();
+    // @ts-expect-error a calculator with no route has no card title in the catalog
+    expectTypeOf<CardKey<'fixture-unrouted', 'title'>>().toExtend<SiteKey>();
   });
 
   it('has no summary key for a calculator that is not routed', () => {
-    // @ts-expect-error rectangle-area is pageless, so its card summary is not in the catalog
-    expectTypeOf<CardKey<'rectangle-area', 'summary'>>().toExtend<SiteKey>();
+    // @ts-expect-error a calculator with no route has no card summary in the catalog
+    expectTypeOf<CardKey<'fixture-unrouted', 'summary'>>().toExtend<SiteKey>();
   });
 });
 
