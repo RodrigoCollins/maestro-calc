@@ -109,10 +109,19 @@ export type Draw = (box: Element, plan: ResolvedPlan | null) => void;
 /** The last plan drawn in each box, so a render that changes nothing leaves the DOM alone. */
 const drawn = new WeakMap<Element, string>();
 
+/** The element of a node, in the box's own namespace. */
+const elementOf = (box: Element, { tag, attrs, text }: SvgNode): Element => {
+  const node = box.ownerDocument.createElementNS(box.namespaceURI, tag);
+  for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value);
+  if (text !== undefined) node.textContent = text;
+  return node;
+};
+
 /**
- * Draws `plan` in `box`, replacing what it held, and names it (`role="img"`, `aria-label`); a
- * `null` plan empties the box and hides it from assistive technology again. The size of the box is
- * the server's: nothing here sets one.
+ * Draws `plan` in `box` and names it (`role="img"`, `aria-label`); a `null` plan empties the box
+ * and hides it from assistive technology again. The grid, the first node, depends on the frame
+ * only: once drawn it stays the box's first child and a redraw replaces the nodes after it. The
+ * size of the box is the server's: nothing here sets one.
  */
 export const draw: Draw = (box, plan) => {
   const key = JSON.stringify(plan);
@@ -125,14 +134,14 @@ export const draw: Draw = (box, plan) => {
     box.setAttribute('aria-hidden', 'true');
     return;
   }
-  box.replaceChildren(
-    ...nodesOf(plan).map(({ tag, attrs, text }) => {
-      const node = box.ownerDocument.createElementNS(box.namespaceURI, tag);
-      for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value);
-      if (text !== undefined) node.textContent = text;
-      return node;
-    }),
-  );
+  const nodes = nodesOf(plan);
+  const kept = box.firstElementChild;
+  if (kept !== null && kept.getAttribute('d') === nodes[0]?.attrs['d']) {
+    while (kept.nextSibling !== null) kept.nextSibling.remove();
+    box.append(...nodes.slice(1).map((node) => elementOf(box, node)));
+  } else {
+    box.replaceChildren(...nodes.map((node) => elementOf(box, node)));
+  }
   box.setAttribute('role', 'img');
   if (box.getAttribute('aria-label') !== plan.name) box.setAttribute('aria-label', plan.name);
   box.removeAttribute('aria-hidden');
