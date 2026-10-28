@@ -143,41 +143,29 @@ describe('route helpers (site-routing-i18n › Paths, URLs and alternates)', () 
     ]);
   });
 
-  it('maps the table to static paths, the root with an undefined segment', () => {
-    expect(staticPaths()).toEqual([
+  it('maps a table to static paths, the root with an undefined segment', () => {
+    expect(staticPaths({ home: { en: '/', es: '/es' }, ...fixture })).toEqual([
       { params: { path: undefined }, props: { id: 'home', locale: 'en' } },
       { params: { path: 'es' }, props: { id: 'home', locale: 'es' } },
-      { params: { path: 'methodology' }, props: { id: 'methodology', locale: 'en' } },
-      { params: { path: 'es/metodologia' }, props: { id: 'methodology', locale: 'es' } },
       { params: { path: 'about' }, props: { id: 'about', locale: 'en' } },
       { params: { path: 'es/sobre-nosotros' }, props: { id: 'about', locale: 'es' } },
-      { params: { path: 'privacy' }, props: { id: 'privacy', locale: 'en' } },
-      { params: { path: 'es/privacidad' }, props: { id: 'privacy', locale: 'es' } },
-      { params: { path: 'terms' }, props: { id: 'terms', locale: 'en' } },
-      { params: { path: 'es/terminos' }, props: { id: 'terms', locale: 'es' } },
-      { params: { path: 'contact' }, props: { id: 'contact', locale: 'en' } },
-      { params: { path: 'es/contacto' }, props: { id: 'contact', locale: 'es' } },
-      { params: { path: 'concrete-calculator' }, props: { id: 'concrete', locale: 'en' } },
-      {
-        params: { path: 'es/calculadora-de-concreto' },
-        props: { id: 'concrete', locale: 'es' },
-      },
-      {
-        params: { path: 'square-footage-calculator' },
-        props: { id: 'rectangle-area', locale: 'en' },
-      },
-      {
-        params: { path: 'es/calculadora-de-pies-cuadrados' },
-        props: { id: 'rectangle-area', locale: 'es' },
-      },
+      { params: { path: 'methodology' }, props: { id: 'methodology', locale: 'en' } },
+      { params: { path: 'es/metodologia' }, props: { id: 'methodology', locale: 'es' } },
     ]);
+  });
+
+  // spec: site-routing-i18n › [SR23] derived: one static path per id and locale of the real table, in
+  // table order, each the path of its row without the leading slash (the URLs are pinned above)
+  it('maps every row of the route table to its two static paths', () => {
+    expect(staticPaths()).toEqual(
+      Object.entries(ROUTES).flatMap(([id, paths]) =>
+        LOCALES.map((locale) => ({
+          params: { path: id === 'home' && locale === 'en' ? undefined : paths[locale].slice(1) },
+          props: { id, locale },
+        })),
+      ),
+    );
     expect(staticPaths()).toHaveLength(2 * Object.keys(ROUTES).length);
-    expect(staticPaths(fixture).map(({ params }) => params.path)).toEqual([
-      'about',
-      'es/sobre-nosotros',
-      'methodology',
-      'es/metodologia',
-    ]);
   });
 
   it('imports the i18n package for types only, so Node can strip the file', () => {

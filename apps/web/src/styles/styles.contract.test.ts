@@ -10,6 +10,7 @@ import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../__testing__/css-media.ts';
 import { PAGES, type PageEntry } from '../lib/pages.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { reserveCss } from '../lib/reserve.ts';
 
 const stylesheets = globSync('apps/web/src/styles/*.css', { cwd: fromRoot() }).sort();
@@ -459,15 +460,16 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(breakpointProblems(calculator, widths)).toEqual([]);
   });
 
-  // The rows of the page table that declare a reserve: the square footage page (calculator-page ›
-  // [CP73]); concrete keeps the shared counts of `calculator.css`.
+  // The rows of the page table that declare a reserve (calculator-page › [CP73]); a page without one
+  // keeps the shared counts of `calculator.css`.
   const reserved = Object.entries(PAGES).flatMap(([id, entry]) => {
     const { reserve } = entry as PageEntry;
     return reserve === undefined ? [] : [[id, reserve] as const];
   });
 
-  it('has a reserve on the square footage row only, so the reserve check below runs over it', () => {
-    expect(reserved.map(([id]) => id)).toEqual(['rectangle-area']);
+  it('has at least one reserve, each on the row of a routed calculator page, so the check below runs', () => {
+    expect(reserved.length).toBeGreaterThan(0);
+    for (const [id] of reserved) expect(CALCULATOR_PAGES, id).toContain(id);
   });
 
   // spec: calculator-page › [CP64] the CSS of every reserve of the page table passes the same checks

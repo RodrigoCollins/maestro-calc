@@ -5,7 +5,7 @@ import { contextOf, FIXTURE_ROUTES, validDist } from './__testing__/page-fixture
 
 describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
   it('lists the routable pages in both locales and the two not-found pages', () => {
-    expect(expectedFiles(ROUTES)).toEqual([
+    expect(expectedFiles(FIXTURE_ROUTES)).toEqual([
       'index.html',
       'es.html',
       'methodology.html',
@@ -14,16 +14,20 @@ describe('expected built files (site-routing-i18n › [SR1] derived)', () => {
       'es/sobre-nosotros.html',
       'privacy.html',
       'es/privacidad.html',
-      'terms.html',
-      'es/terminos.html',
-      'contact.html',
-      'es/contacto.html',
-      'concrete-calculator.html',
-      'es/calculadora-de-concreto.html',
-      'square-footage-calculator.html',
-      'es/calculadora-de-pies-cuadrados.html',
       '404.html',
       'es/404.html',
+    ]);
+  });
+
+  // derived: the real table gives, in table order, the files of each row on its own, then the two
+  // not-found pages (the URLs themselves are pinned in routing/routes.test.ts)
+  it('lists the files of every row of the route table, then the two not-found pages', () => {
+    const notFound = ['404.html', 'es/404.html'];
+    expect(expectedFiles(ROUTES)).toEqual([
+      ...Object.entries(ROUTES).flatMap(([id, paths]) =>
+        expectedFiles({ [id]: paths }).filter((file) => !notFound.includes(file)),
+      ),
+      ...notFound,
     ]);
   });
 
