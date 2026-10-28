@@ -16,9 +16,12 @@ import { directoryOrder } from '../../lib/home-directory.ts';
 import { PAGES, pageView } from '../../lib/pages.ts';
 import {
   budgetPaths,
+  buildCache,
   entryOrThrow,
   extraKey,
   extraOf,
+  leakedPadding,
+  type Extra,
 } from '../../contract/__testing__/budget-paths.ts';
 import {
   FAQ_ANSWER_LENGTH,
@@ -48,8 +51,6 @@ afterAll(() => {
 });
 
 type Locales = Record<'en' | 'es', number>;
-/** Extra characters of copy by calculator id and locale; a missing id or locale is not padded. */
-type Extra = Readonly<Record<string, Partial<Locales>>>;
 
 /** The bytes the injected `<p></p>` of the seeded copy adds around its text. */
 const PARAGRAPH = '<p></p>'.length;
@@ -59,22 +60,6 @@ const PARAGRAPH = '<p></p>'.length;
  * every calculator page id, and returns their HTML files by id and locale. `extra` characters of
  * copy are added to the pages named by id and locale.
  */
-const build = async (name: string, extra: Extra = {}) => {
-  // the production site is built once per name: the built-HTML assertions below read the same output
-  const cached = built.get(name);
-  if (cached !== undefined) {
-    if (JSON.stringify(cached.extra) !== JSON.stringify(extra)) {
-      throw new Error(`build '${name}' was already made with other extra copy`);
-    }
-    return cached.result;
-  }
-  const result = buildSite(name, extra);
-  built.set(name, { extra, result });
-  return result;
-};
-
-const built = new Map<string, { extra: Extra; result: ReturnType<typeof buildSite> }>();
-
 const buildSite = async (name: string, extra: Extra) => {
   // `astro` must load as the Node package, not through the test bundler
   const { build: astroBuild } = await importFromRoot<{
@@ -113,6 +98,9 @@ const buildSite = async (name: string, extra: Extra) => {
     CALCULATOR_PAGES.map((id) => [id, { en: read(id, 'en'), es: read(id, 'es') }]),
   );
 };
+
+/** The production site is built once per name: the built-HTML assertions below read the same output. */
+const build = buildCache(buildSite);
 
 /** The sizes of the pages of one id, by locale. */
 const sizeOf = async (name: string, id: string, extra?: Extra): Promise<Locales> => {
@@ -340,7 +328,7 @@ describe('the budget fixture by id (site-quality › [SQ33], [SQ36])', () => {
     ]);
   });
 
-  // spec: site-quality › [SQ36] the padding is keyed by id and locale
+  // spec: site-quality › [SQ33] the padding variables are named by id and locale
   it('names the padding variable by id and locale', () => {
     expect(extraKey('concrete', 'es')).toBe('BUDGET_EXTRA_CONCRETE_ES');
     expect(extraKey('rectangle-area', 'es')).toBe('BUDGET_EXTRA_RECTANGLE_AREA_ES');
@@ -352,6 +340,57 @@ describe('the budget fixture by id (site-quality › [SQ33], [SQ36])', () => {
     expect(extraOf(env, 'rectangle-area', 'en')).toBe(0);
     expect(extraOf(env, 'concrete', 'es')).toBe(0);
     expect(extraOf({}, 'concrete', 'es')).toBe(0);
+  });
+
+  it('makes a name once and throws when it is asked again with other padding', () => {
+    let made = 0;
+    const cached = buildCache((name, extra) => {
+      made += 1;
+      return { name, extra };
+    });
+    const padded = { concrete: { es: 3 } };
+    expect(cached('seeded', padded)).toBe(cached('seeded', { concrete: { es: 3 } }));
+    expect(cached('base')).toBe(cached('base', {}));
+    expect(made).toBe(2);
+    expect(() => cached('seeded')).toThrow("build 'seeded' was already made with other extra copy");
+  });
+
+  // spec: site-quality › [SQ36] the seeded build pads its id only, whatever other ids the table holds
+  describe('with a seeded second id', () => {
+    const IDS = ['concrete', 'rectangle-area'];
+    const PADDING = { concrete: { en: 5, es: 7 } };
+    const NAMES = { seeded: 'seeded', base: 'base' };
+    /** A fake build of every id of `IDS`: 100 B per page plus its padding, or the largest padding when it leaks. */
+    const sizesBy = (leaks: boolean) => {
+      const cached = buildCache((_name, extra: Extra) =>
+        Object.fromEntries(
+          IDS.map((id) => {
+            const pad = (locale: 'en' | 'es') =>
+              leaks
+                ? Math.max(0, ...Object.values(extra).map((row) => row[locale] ?? 0))
+                : (extra[id]?.[locale] ?? 0);
+            return [id, { en: 100 + pad('en'), es: 100 + pad('es') }];
+          }),
+        ),
+      );
+      return async (name: string, id: string, extra?: Extra) => {
+        const sizes = cached(name, extra)[id];
+        if (sizes === undefined) throw new Error(`no fixture page for ${id}`);
+        return Promise.resolve(sizes);
+      };
+    };
+
+    it('reads every other id from the seeded build and finds no leak', async () => {
+      const sizeOf = sizesBy(false);
+      expect(await sizeOf(NAMES.seeded, 'concrete', PADDING)).toEqual({ en: 105, es: 107 });
+      expect(await leakedPadding(IDS, PADDING, sizeOf, NAMES)).toEqual([]);
+    });
+
+    it('names the id a build pads by another id’s variable', async () => {
+      const sizeOf = sizesBy(true);
+      expect(await sizeOf(NAMES.seeded, 'concrete', PADDING)).toEqual({ en: 105, es: 107 });
+      expect(await leakedPadding(IDS, PADDING, sizeOf, NAMES)).toEqual(['rectangle-area']);
+    });
   });
 
   it('throws naming the id when a page id has no entry', () => {
@@ -409,17 +448,19 @@ describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-qua
   it('is exactly one byte over the budget once the measured headroom plus one byte is added', async () => {
     const base = await sizeOf('base-again', 'concrete');
     const headroom = (locale: 'en' | 'es') => HTML_BUDGET - base[locale];
-    const seeded = await sizeOf('seeded', 'concrete', {
+    // the one padding of the seeded build: every read of 'seeded' passes it
+    const padding: Extra = {
       concrete: {
         en: headroom('en') + 1 - PARAGRAPH,
         es: headroom('es') + 1 - PARAGRAPH,
       },
-    });
+    };
+    const seeded = await sizeOf('seeded', 'concrete', padding);
     expect(seeded).toEqual({ en: HTML_BUDGET + 1, es: HTML_BUDGET + 1 });
     // no other id of the table is padded by the concrete variables
-    for (const id of ALL_IDS.filter((page) => page !== 'concrete')) {
-      expect(await sizeOf('seeded', id)).toEqual(await sizeOf('base-again', id));
-    }
+    expect(
+      await leakedPadding(ALL_IDS, padding, sizeOf, { seeded: 'seeded', base: 'base-again' }),
+    ).toEqual([]);
   }, 120_000);
 
   it('uses the sizes the spec fixes: 8 answers of 450 characters and 1,500 words', () => {
