@@ -71,8 +71,13 @@ export interface Box {
 
 /** The largest aspect ratio drawn, either way: 100 ft by 1 ft is drawn 4 to 1, its labels true. */
 export const CLAMP = 4;
-/** The estimated width of a character, in sizes: a conservative em for Barlow Condensed 600. */
-export const CHAR = 0.56;
+/**
+ * The estimated width of a character, in sizes: wide enough for the widest common fallback the
+ * font stack can reach before or without Barlow Condensed (DejaVu Sans Bold, whose widest label,
+ * `<0.01 cm`, averages 0.661 sizes), so the labels never meet in any of them. Barlow Condensed 600
+ * itself stays under 0.42.
+ */
+export const CHAR = 0.67;
 /**
  * The height of a label box, in sizes: the ascent and descent of Barlow Condensed, which Chromium
  * measures at 1.24 sizes (`getBBox`, 21.1 at 17), centred on the label's `y`.
@@ -97,7 +102,7 @@ const INSIDE_HEIGHT = 29;
 const round = (n: number): number => Math.round(n * 10) / 10;
 const num = (n: number): string => String(round(n));
 
-/** The estimated width of `text` at `size`: `chars × size × 0.56`. */
+/** The estimated width of `text` at `size`: `chars × size × CHAR`. */
 export const textWidth = (text: string, size: number): number => round(text.length * size * CHAR);
 
 /** The ratio drawn for `length` by `width`, in [1/4, 4]; a zero side is the extreme, two make a square. */

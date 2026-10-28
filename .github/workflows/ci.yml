@@ -320,6 +320,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ env.ImageOS }}-${{ env.ImageVersion }}-${{ hashFiles('tooling/site-browser/package-lock.json') }}
+      # The fallback fonts the drawing labels are measured in when the web fonts are blocked
+      # (Liberation Sans for Arial, DejaVu Sans for sans-serif), on every run, warm cache or cold.
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-dejavu-core fonts-liberation
       - run: npm run test:e2e
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.

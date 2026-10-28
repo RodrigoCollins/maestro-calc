@@ -95,6 +95,25 @@ const labelProblems = ({ view, labels }: Measured): string[] => [
   ),
 ];
 
+/**
+ * The Barlow Condensed 600 face of the labels: its load status, and whether `document.fonts.check`
+ * finds it ready. The two font runs assert it, so neither measures another font than it claims.
+ */
+const displayFaceOf = (page: Page) =>
+  page.evaluate(() =>
+    [...document.fonts]
+      .filter(
+        (face) =>
+          face.family.includes('Barlow Condensed') &&
+          !face.family.includes('fallback') &&
+          face.weight === '600',
+      )
+      .map((face) => ({
+        status: face.status,
+        ready: document.fonts.check(`600 17px "${face.family.replaceAll('"', '')}"`),
+      })),
+  );
+
 /** Opens the page with or without its script, at a width, in a context of its own. */
 const withPage = async (
   browser: Browser,
@@ -315,6 +334,9 @@ for (const { calculator, group } of drawn) {
             await open(page, calculator, query);
             await expect(drawing(page)).toHaveAttribute('role', 'img');
             await page.evaluate(() => document.fonts.ready);
+            expect(await displayFaceOf(page), `${query}: the font measured`).toEqual([
+              fonts ? { status: 'loaded', ready: true } : { status: 'error', ready: false },
+            ]);
             expect(labelProblems(await measure(page)), query).toEqual([]);
           }
         });
