@@ -123,6 +123,10 @@ export interface E2eSpec {
   readonly figures: readonly string[];
   /** The figures of the default state, also those of the unmounted page. */
   readonly defaults: Figures;
+  /** The large figure (`.calc-primary`) of the default state with its unit, per language: what a reader with no script sees. */
+  readonly primary: Readonly<Record<E2eLanguage, string>>;
+  /** The inputs and buttons of the form, all disabled while no script runs. */
+  readonly controls: number;
   /** A value typed in a field, in the field's default unit, and the state it produces. */
   readonly typed: {
     readonly key: string;
@@ -159,6 +163,8 @@ export interface E2eSpec {
   readonly layoutQueries: readonly string[];
   /** The short answer (`[data-answer]`), per language: a page without the answer slot leaves it out. */
   readonly answer?: {
+    /** The answer of the default state, also that of the unmounted page. */
+    readonly default: Readonly<Record<E2eLanguage, string>>;
     /** The answer after `typed` is entered. */
     readonly typed: Readonly<Record<E2eLanguage, string>>;
     /** The answer of the default state in the metric system. */

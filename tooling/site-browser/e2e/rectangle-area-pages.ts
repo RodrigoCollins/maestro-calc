@@ -32,6 +32,8 @@ export const RECTANGLE_AREA: E2eSpec = {
   numeric: [],
   figures: ['areaFt2', 'areaYd2', 'areaM2'],
   defaults: DEFAULTS,
+  primary: { en: '100.00 square feet', es: '100.00 pies cuadrados' },
+  controls: 5,
   typed: {
     key: 'length',
     text: '20',
@@ -83,6 +85,10 @@ export const RECTANGLE_AREA: E2eSpec = {
     '?v=1&u=m&l=240&w=180',
   ],
   answer: {
+    default: {
+      en: 'A 10 ft by 10 ft area is 100.00 square feet.',
+      es: 'Un área de 10 ft por 10 ft mide 100.00 pies cuadrados.',
+    },
     typed: {
       en: 'A 20 ft by 10 ft area is 200.00 square feet.',
       es: 'Un área de 20 ft por 10 ft mide 200.00 pies cuadrados.',

@@ -19,6 +19,8 @@ export const minimal = {
   numeric: [],
   figures: ['area'],
   defaults: ['100.00'],
+  primary: { en: '100.00 square feet', es: '100.00 pies cuadrados' },
+  controls: 5,
   typed: {
     key: 'length',
     text: '20',
