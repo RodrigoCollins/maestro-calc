@@ -15,7 +15,7 @@ import type { AnyPageModule } from '../calculator/page-module.ts';
 import type { CalculatorPageView } from '../components/calculator/model.ts';
 import type { CalculatorPageId } from '../routing/templates.ts';
 import { pageViewOf } from './page-view.ts';
-import { reserveCss, type Reserve, type ReserveCss } from './reserve.ts';
+import { drawingCss, joinCss, reserveCss, type Reserve, type ReserveCss } from './reserve.ts';
 
 export type { Messages };
 
@@ -27,9 +27,15 @@ export interface PageEntry {
   readonly reserve?: Reserve;
 }
 
-/** The CSS a page row adds to its `<head>`: the reserve as one rule set, or nothing without one or for an empty one. */
-export const headStyleOf = ({ reserve }: PageEntry): ReserveCss | undefined =>
-  reserve === undefined ? undefined : reserveCss(reserve);
+/**
+ * The CSS a page row adds to its `<head>`: the reserve as one rule set, then the drawing box rule
+ * of a module with the drawing slot; nothing for a row with neither (or an empty reserve).
+ */
+export const headStyleOf = ({ reserve, module }: PageEntry): ReserveCss | undefined =>
+  joinCss(
+    reserve === undefined ? undefined : reserveCss(reserve),
+    module.drawing === undefined ? undefined : drawingCss(module.drawing.frame),
+  );
 
 /**
  * The page table, the one place the pages meet their catalogs. A page id without a row is a type

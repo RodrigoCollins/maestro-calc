@@ -104,6 +104,8 @@ export interface ResultView {
    * `data-primary-before` span (empty when the US sentence has none) for the script to write.
    */
   readonly primary: Split & { readonly key: string; readonly prefixed: boolean };
+  /** The viewBox of the drawing box after the large figure, for a module with the drawing slot. */
+  readonly drawing?: { readonly width: number; readonly height: number };
   readonly rows: readonly Row[];
   /** One entry per line the module declares, in declared order; empty for a module with none. */
   readonly shopping: readonly ShoppingLineView[];

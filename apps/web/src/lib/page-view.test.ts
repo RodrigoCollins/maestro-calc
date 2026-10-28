@@ -787,6 +787,33 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     expect(names(view)).toContain('answer');
   });
 
+  // spec: i18n-catalog › [ICW20], blueprint-drawing › [BD15] the drawing's name travels as an inert message
+  it('carries the drawing name as a message, after the answer, and the frame in the result view', () => {
+    const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
+    expect(names(view)).toEqual([
+      ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
+      'answer',
+      'drawing',
+      'copy.copied',
+      'copy.failed',
+      'hint.ft',
+      'hint.m',
+      'area.ft2',
+      'area.m2',
+    ]);
+    expect(Object.fromEntries(view.messages)['drawing']).toBe('Plan: {length} by {width}, {area}');
+    expect(view.result.drawing).toEqual({ width: 300, height: 200 });
+    expect('drawing' in pageViewOf(slotFreePage, 'en', enSlotFree).result).toBe(false);
+  });
+
+  // spec: i18n-catalog › [ICW20] a catalog without the drawing name fails the build, naming the key
+  it('throws PAGE_KEY naming the drawing key a catalog lacks', () => {
+    const lacking = { ...enRectangle };
+    delete lacking['calc.rectangle-area.page.drawing'];
+    const error = pageModuleErrorOf(() => pageViewOf(rectangleAreaPage, 'es', lacking));
+    expect(error.cause).toEqual({ id: 'rectangle-area', at: 'calc.rectangle-area.page.drawing' });
+  });
+
   it('describes the page of a module from its id, title, breadcrumb and parts', () => {
     const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
     expect([view.id, view.title]).toEqual(['rectangle-area', 'Square Footage Calculator']);

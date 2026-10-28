@@ -10,4 +10,5 @@ export const enRectangleArea = {
   'calc.rectangle-area.page.areaFt2': '{value} square feet',
   'calc.rectangle-area.page.areaM2': '{value} square meters',
   'calc.rectangle-area.page.answer': 'A {length} by {width} area is {area}.',
+  'calc.rectangle-area.page.drawing': 'Plan: {length} by {width}, {area}',
 } as const;

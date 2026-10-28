@@ -190,7 +190,7 @@ const resultViewAt = (
   catalog: Messages,
   moment: Ready<AnyCalculator>,
 ): ResultView => {
-  const { calculator, shopping, costs } = module;
+  const { calculator, shopping, costs, drawing } = module;
   const { id, outputs } = calculator;
   const text = (key: string): string => messageOf(catalog, id, key);
   const page = (suffix: string): string => text(pageKey(id, suffix));
@@ -212,6 +212,7 @@ const resultViewAt = (
   return {
     heading: text('site.calculator.resultHeading'),
     primary: { key: primary.key, prefixed, before, value: figureOf(primary), after },
+    ...(drawing === undefined ? {} : { drawing: drawing.frame }),
     rows: outputs
       .filter(({ display }) => display !== undefined)
       .map((descriptor) => ({
@@ -269,7 +270,7 @@ export const resultViewOf = (
 
 /**
  * The messages the script reads, in the order of the page's one template: the user-facing errors,
- * the answer templates of the slot, the copy states, one hint per length unit (the distinct default
+ * the answer templates of the slot, the messages of the drawing slot, the copy states, one hint per length unit (the distinct default
  * units in input order, then the distinct metric ones) and the sentence of each primary figure that
  * has a page key. A name is the id of its `<template>` entry; the primary sentence is named
  * `<measure>.<unit>`, as the controller looks it up.
@@ -278,7 +279,7 @@ const messagesOf = (
   module: AnyPageModule,
   catalog: Messages,
 ): readonly (readonly [string, string])[] => {
-  const { calculator, answer } = module;
+  const { calculator, answer, drawing } = module;
   const { id } = calculator;
   const text = (key: string): string => messageOf(catalog, id, key);
   const lengths = calculator.inputs.flatMap((input) => (input.kind === 'length' ? [input] : []));
@@ -296,6 +297,7 @@ const messagesOf = (
   return [
     ...ALL_ERROR_CODES.map((code) => [`errors.${code}`, text(`errors.${code}`)] as const),
     ...(answer?.templates ?? []).map((name) => [name, text(pageKey(id, name))] as const),
+    ...(drawing?.messages ?? []).map((name) => [name, text(pageKey(id, name))] as const),
     ['copy.copied', text('site.calculator.linkCopied')] as const,
     ['copy.failed', text('site.calculator.copyFailed')] as const,
     ...[...units].map((unit) => [`hint.${unit}`, text(hintKeyOf(unit))] as const),

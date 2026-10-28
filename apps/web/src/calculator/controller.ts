@@ -340,7 +340,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     );
   };
 
-  /** The plan of a ready moment, its labels filled from the page messages (K: no words in code). */
+  /** The plan of a ready moment, its labels filled from the page messages (this module holds no words). */
   const planOf = (env: Environment, moment: Moment<Calc>): ResolvedPlan | null | undefined => {
     const { result } = moment;
     if (drawing === undefined || result === undefined) return undefined;
