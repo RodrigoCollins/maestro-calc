@@ -286,7 +286,7 @@ describe('calculator entries (calculator-page › [CP5]–[CP10], [CP69]; materi
     },
   );
 
-  // spec: calculator-page › [CP10] length and parity
+  // spec: calculator-page › [CP9] each figure appears in the Formulas section as a whole token
   it('reads a figure as a whole token, not as part of a longer number', () => {
     const entry = entryOf('concrete', 'en');
     const { workedExample } = frontmatterOf(entry);

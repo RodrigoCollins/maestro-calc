@@ -60,7 +60,7 @@ describe('methodology: one section per row (trust-pages › [TP22], [TP26], [TP9
   });
 
   // spec: trust-pages › [TP25] the methodology names no unpublished calculator
-  it.each(LOCALES)('names no calculator other than the concrete one in %s', (locale) => {
+  it.each(LOCALES)('names no calculator other than the published ones in %s', (locale) => {
     const others = [
       'roofing',
       'drywall',
@@ -204,14 +204,19 @@ describe('methodology: published cases (trust-pages › [TP24], [TP40])', () => 
 
   it.each(IDS)('fails when one figure of %s changes in the engine alone', (id) => {
     const row = rowFor(id);
+    // the starting values are published, and the first case drifts, whatever its query
+    expect(row.published.some(({ query }) => query === '')).toBe(true);
+    const [first] = row.published;
+    if (first === undefined) throw new Error('no published case');
+    const last = row.columns.length - 1;
     const drifted = (query: string): readonly string[] =>
-      figuresOfCase(id, row, query).map((figure, index, all) =>
-        query === '' && index === all.length - 1 ? `${figure}9` : figure,
+      figuresOfCase(id, row, query).map((figure, index) =>
+        query === first.query && index === last ? `${figure}9` : figure,
       );
-    const [last = ''] = row.columns.slice(-1);
-    const problems = caseProblems(row.published, row, drifted);
-    expect(problems).toHaveLength(row.published.filter(({ query }) => query === '').length);
-    expect(problems.every((problem) => problem.startsWith(`default: ${last} `))).toBe(true);
+    const figure = first.figures[last] ?? '';
+    expect(caseProblems(row.published, row, drifted)).toEqual([
+      `${first.query || 'default'}: ${row.columns[last] ?? ''} ${figure} is ${figure}9`,
+    ]);
   });
 });
 
