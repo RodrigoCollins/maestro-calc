@@ -11,6 +11,7 @@ import type { AnyPageModule } from '../calculator/page-module.ts';
 import type { CalculatorPageView } from '../components/calculator/model.ts';
 import type { CalculatorPageId } from '../routing/templates.ts';
 import { pageViewOf } from './page-view.ts';
+import { reserveCss, type Reserve } from './reserve.ts';
 
 export type { Messages };
 
@@ -18,7 +19,13 @@ export type { Messages };
 export interface PageEntry {
   readonly module: AnyPageModule;
   readonly catalogs: Readonly<Record<Locale, Messages>>;
+  /** The line counts this page reserves for its answer and notice; none means the shared stylesheet's. */
+  readonly reserve?: Reserve;
 }
+
+/** The CSS a page row adds to its `<head>`: the reserve as one rule set, or nothing without a reserve. */
+export const headStyleOf = ({ reserve }: PageEntry): string | undefined =>
+  reserve === undefined ? undefined : reserveCss(reserve);
 
 /**
  * The page table, the one place the pages meet their catalogs. A page id without a row is a type

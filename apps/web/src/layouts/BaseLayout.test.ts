@@ -129,6 +129,40 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(document.querySelector('footer')?.text).toContain('contacto@maestrocalc.com');
   });
 
+  // spec: calculator-page › [CP65], site-shell › [SS32] a page style is one <style> in the head, never in the body
+  it('renders the style prop as one <style> in the head and none in the body', async () => {
+    const style = '.calculator{--answer-lines:5}';
+    const plain = await render('en');
+    const styled = await renderComponent(
+      BaseLayout,
+      { locale: 'en', id: 'home', head, style },
+      { partial: false, slots: { default: '<h1>Body</h1>' } },
+    );
+    const inHead = (document: typeof styled) =>
+      document.querySelectorAll('head style').map((element) => element.text);
+    expect(inHead(styled)).toHaveLength(inHead(plain.document).length + 1);
+    expect(inHead(styled).filter((text) => text === style)).toHaveLength(1);
+    expect(styled.querySelectorAll('body style')).toHaveLength(0);
+    expect(styled.querySelector('head')?.lastChild?.text).toBe(style);
+  });
+
+  // spec: calculator-page › [CP65] without the prop the document is what it was
+  it('is byte-equal without the style prop, and one style element longer with it', async () => {
+    const { html } = await render('en');
+    const explicit = await renderComponent(
+      BaseLayout,
+      { locale: 'en', id: 'home', head, style: undefined },
+      { partial: false, slots: { default: '<h1>Body</h1>' } },
+    );
+    expect(explicit.toString()).toBe(html);
+    const styled = await renderComponent(
+      BaseLayout,
+      { locale: 'en', id: 'home', head, style: 'a{b:c}' },
+      { partial: false, slots: { default: '<h1>Body</h1>' } },
+    );
+    expect(styled.toString().replace('<style>a{b:c}</style>', '')).toBe(html);
+  });
+
   // spec: site-shell › [SS13] contact text
   it('shows the configured contact address in the footer', async () => {
     const { document } = await render('es');

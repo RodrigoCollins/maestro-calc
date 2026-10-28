@@ -20,8 +20,10 @@ interface Props {
   /** The route id of the page, or `notFound`: it decides where the language switch points. */
   id: ShellPageId;
   head: PageHead | NotFoundHead;
+  /** CSS for this page only, rendered as one `<style>` in the head (a calculator page's line reserve). */
+  style?: string | undefined;
 }
-const { locale, id, head } = Astro.props;
+const { locale, id, head, style } = Astro.props;
 const text = siteText(locale);
 const language = { ...switchFor(id, locale), label: text('site.switch.label') };
 const headerLinks = linksFor(HEADER_PAGES, locale).map((link) => ({
@@ -40,6 +42,7 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
     <SeoHead {...head} />
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+    {style !== undefined && <style is:inline set:html={style} />}
   </head>
   <body>
     <SkipLink label={text('site.skipLink')} />
