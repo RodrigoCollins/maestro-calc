@@ -288,3 +288,57 @@ Not approved yet. `ownerReview` stays `pending` until the owner's approval is re
 - **Place:** the Claude Code chat with the owner (Rodrigo Collins), in reply to the review summary above. His words: "si, apruebo con se superpongan".
 - **Approved entries:** `apps/web/src/content/calculators/en/rectangle-area.md` and `apps/web/src/content/calculators/es/rectangle-area.md`, both, with one change he asked for: the Spanish `se encimen` (Mexican-leaning) becomes the neutral `se superpongan` (two places in the ES entry), applied on `feat/square-footage-content` in the same commit as this record.
 - **Recorded by:** the orchestrator, from the owner's message. The `ownerReview: approved` flip itself stays task 6.9 (S4a), which may now proceed.
+
+## PR 3 (`feat/square-footage-page`): S3a and S3b done
+
+Branch `feat/square-footage-page`, created from `main` (9aac302, PR 1 included; PR 2 is not in the base). Strict TDD; every test seen red for the right reason first. Nothing pushed. Worktree `.claude/worktrees/agent-ae75461ed96ba2c82`.
+
+### Commits and size (`git diff -M --shortstat`, lockfiles and `openspec/` excluded)
+
+| Slice | Commit | Lines | Forecast |
+|---|---|---|---|
+| S3a | a9a8bbe `feat(web): give the square footage page its answer and unit sentences` | 409 (347 + 62) | 265-315 |
+| S3b-1 | 7506044 `feat(web): reserve the answer and notice lines per page in the head` | 404 (353 + 51) | (half of 300-350) |
+| S3b-2 | 6f0fb4b `test(e2e): stage the square footage record and the per-page edges` | 233 (217 + 16) | (half of 300-350) |
+
+S3b measured 637 as one commit, so the split rule (over 400: move the tests-only half to its own slice inside the same PR) was applied: S3b-1 is the mechanism with its unit tests, S3b-2 is the e2e side (`edgesOf`, per-page `BEFORE_EDGE`, the staged record and the recipe/docs tokens). Both are green on their own. PR 3 total: 36 files, 915 + 127 = 1,042 lines against 565-665 forecast.
+
+Overrun causes: S3a 409 (9 over the line): tests carry most of it (the RAP table, the catalog test, the RAP7 contract test, the proof move edits). S3b 637 against 300-350: the test side was under-forecast (reserve builder cases 56, CalculatorView mock test 55, override rewrite about 85, styles contract +60, BaseLayout +40, css-media test 40) plus the 112-line e2e record.
+
+### Tasks
+
+- 4.1 done (branch from `main`; `npm ci`; baseline build copied to a scratch dir).
+- 4.2-4.9, 4.11-4.14 done. 4.10 DEFERRED by instruction: the `rectangle-area` row of `calculator-rows.ts` is PR 2's and is not in this base. The orchestrator swaps its local `definePage` module for `rectangleAreaPage` after rebasing onto PR 2 and runs `npm test -- apps/web/src/contract/calculator-content`.
+- 5.1-5.15 done. e2e and Lighthouse run (below).
+
+### Scenarios proven
+
+RAP1 (`rectangle-area-catalog.test.ts`, `catalog-content.test.ts`, `i18n-contract.test-d.ts` exact union), RAP2 (controller default sentences, 4 of them; `page-view.test.ts` answer and not-running note), RAP3 (`present.test.ts` and the four cases in both locales), RAP4 (metric headline and sentence end, four cases, both locales), RAP5, RAP6, RAP7 (`contract/old-title.contract.test.ts`: no match of either old title in apps, packages, tooling), RAP8 (`git diff --stat main -- packages/core packages/data` empty). CWC33 and CWC38 on the slot-free module (`slot-free-proof.contract.test.ts`, entry `slot-free-entry.ts`, page `slot-free-page.ts`; the CWC32 block untouched), CWC40 prep (AGENTS steps 12 and 14, docs.contract rows). CP65 (no-answer case on the slot-free module; head-style fixture; `CalculatorView.reserve.test.ts` with a mocked `PAGES` row; concrete emits none), CP64 (`reserve.test.ts` builder and throws; `styles.contract` over every `PAGES.reserve` plus seeded px and missing-edge cases), CP60/CP61 mechanism (`edgesOf`, `layout.spec.ts` per-page and per-block `BEFORE_EDGE` through `edgesOf` on the served CSS), SQ37 staged (`rectangle-area-pages.ts`, `staged: E2eSpec`), SS32 (BaseLayout test: one head style, none in the body). The e2e record's figures were checked against the page controller (200.00/22.22/18.58, 129.17/14.35/12.00 for 4 m by 3 m).
+
+### Negative proofs (applied, run red, reverted; `git status --porcelain` clean)
+
+S3a: (1) `{value} sq ft` for en `areaFt2`: catalog test and 5 controller cases red. (2) `answerSlot` dropped: 13 red (page-view answer, 4 default sentences, RAP3/RAP4 cases). (3) ES template `Un área de {length} pies por {width}`: catalog tests and ES sentences red (8). (4) `slot-free-page.ts` pointed at the real page: CWC4 graph test, the override no-answer case and the body test red. (5) Old Spanish title back in the catalog: RAP6 title test and RAP7 contract red.
+S3b: (6) style emitted in `<body>`: 2 BaseLayout tests and the override test red. (7) concrete row given a `reserve`: the CalculatorView 0-B case, both pages tests and the built-CSS rem-set test red. (8) unit check removed from the breakpoint helper: `flags a px breakpoint` red. (9) `edgesOf` ignoring `.calculator`: 3 css-media tests red. (10) `RECTANGLE_AREA.answer` renamed: `tsc` in `tooling/site-browser` fails (`'answered' does not exist in type 'E2eSpec'`).
+
+### Gates
+
+- `npm run verify` exit 0 (209 files, 3,817 tests; check:site and check:dist pass).
+- Dist diff against the base build (`main`/PR 1 tip): `diff -r` empty, at the S3a tip and at the PR tip. Nothing hashed changed.
+- ES concrete full-length proof: 40,678 B of 40,836 B (EN 40,389 B); unchanged by S3a and S3b (K6 adds 0 B on concrete).
+- `npm run test:e2e`: 324 passed (1.2 min). The suite has no new test; `layout.spec.ts` now reads its before-edge widths per page and block from the served CSS and passes for concrete with the same bounds. `npm run lighthouse`: all 6 URLs pass. `npm run typecheck --prefix tooling/site-browser` clean.
+- SX4: `git diff --stat main -- packages/core packages/data .github/workflows/ci.yml` empty.
+
+### Deviations
+
+1. S3b split in two commits (above).
+2. [CP65] "CalculatorBody rejects a `style` prop at type level (`@ts-expect-error`)" is not expressible: `.astro` components are typed through a `*.astro` shim in the test program. Replaced with a source assertion (no `style` in `CalculatorBody.astro`) and a runtime one (a passed `style` renders no attribute); `astro check` types the real call sites.
+3. `PageEntry.reserve` is read through `headStyleOf(entry)` (new, `lib/pages.ts`) so the view and the budget page share one rule and the view test can mock `PAGES`.
+4. The existing headless `rectangle-area/controller.test.ts` cases moved to the slot-free module in the same file instead of a second controller test file; the RAP cases are added to it.
+5. `BaseLayout` prop typed `style?: string | undefined` (exactOptionalPropertyTypes).
+6. The staged record's `bounds` use 100,001 ft (the descriptor max is 100,000 ft) and `hints` list both inputs; neither is exercised until the `E2E` row exists (S4b), so they are checked only by type until then.
+
+### For the orchestrator
+
+- Task 4.10 (swap the content row's module) after rebasing onto PR 2.
+- Rebase note: PR 2 edits `calculator-rows.ts` and `end-state.contract.test.ts` and adds the two entries; this branch touches neither. `AGENTS.md` and `docs.contract.test.ts` are edited here (steps 12, 14, Kept by hand).
+- Not done by design: measured counts, the `reserve.ts` values, the `PAGES`/`SCRIPTS`/`E2E` rows, the route (PR 4).
