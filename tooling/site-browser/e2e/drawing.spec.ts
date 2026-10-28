@@ -203,6 +203,24 @@ for (const { calculator, group } of drawn) {
       }
     });
 
+    // design B7: the grid depends on the frame only, so a redraw keeps it and replaces what follows
+    test('keeps the grid node across a redraw and replaces the nodes after it', async ({
+      page,
+    }) => {
+      await open(page, calculator);
+      await drawing(page).evaluate((box) => {
+        (window as Window & { grid?: Element | null }).grid = box.firstElementChild;
+      });
+      const label = await drawing(page).locator('text').first().elementHandle();
+      await typeAndWait(page, group.typed.key, group.typed.text, group.typed.labels);
+      expect(
+        await drawing(page).evaluate(
+          (box) => box.firstElementChild === (window as Window & { grid?: Element | null }).grid,
+        ),
+      ).toBe(true);
+      expect(await label?.evaluate((node) => node.isConnected)).toBe(false);
+    });
+
     // spec: blueprint-drawing › [BD16], [BD17] no live region; the name changes once per valid change
     test('is no live region and renames only on a valid change while typing', async ({ page }) => {
       await open(page, calculator);
