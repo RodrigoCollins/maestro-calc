@@ -68,6 +68,13 @@ describe('homeCards (trust-pages › [TP30], [TP28])', () => {
     expect(() => homeCards('en', routes, pages)).toThrow(new Error('b is not a calculator page'));
   });
 
+  // spec: trust-pages › [TP31] a calculator with no route has no card and is not named
+  it('gives no card to a registry calculator that has no page', () => {
+    const cards = homeCards('en', routes, ['a'], read);
+    expect(cards.map((card) => card.id)).toEqual(['a']);
+    expect(JSON.stringify(cards)).not.toMatch(/b-calculator|T b/);
+  });
+
   // spec: trust-pages › [TP30] the real tables give one card per routed calculator, the concrete one
   // with the real copy
   it.each([

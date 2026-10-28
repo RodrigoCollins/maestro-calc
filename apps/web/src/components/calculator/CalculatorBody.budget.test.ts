@@ -12,7 +12,7 @@ import { importFromRoot } from '../../contract/root.ts';
 import { LOCALES, pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
-import { directoryOrder } from '../../lib/home-directory.ts';
+import { directoryOrder, exampleOf } from '../../lib/home-directory.ts';
 import { PAGES, pageView } from '../../lib/pages.ts';
 import {
   budgetPaths,
@@ -280,7 +280,7 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
         const texts = item?.querySelectorAll(':scope > p').map((p) => p.text.trim());
         expect(texts, id).toEqual([
           catalog[`page.home.cards.${id}.summary`],
-          PAGES[id].catalogs[locale][`calc.${id}.page.example`],
+          exampleOf(PAGES[id].catalogs[locale], id, locale),
         ]);
       });
     },

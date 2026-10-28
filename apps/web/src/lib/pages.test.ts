@@ -5,7 +5,7 @@ import { controllerOf } from '../calculator/controller.ts';
 import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { SCRIPTS } from '../views/scripts.ts';
-import { PAGES, headStyleOf, pageView } from './pages.ts';
+import { PAGES, headStyleOf, pageView, type PageEntry } from './pages.ts';
 import { reserveCss } from './reserve.ts';
 
 describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC27])', () => {
@@ -28,7 +28,8 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
   // every module the site builds a page for passes the creation checks of the controller (K15,
   // OUTPUT_HINT), the ones the mount runs before the page comes alive
   it.each(Object.entries(PAGES))('builds the controller of %s without an error', (_id, entry) => {
-    expect(() => controllerOf(entry.module)).not.toThrow();
+    const { module }: PageEntry = entry;
+    expect(() => controllerOf(module)).not.toThrow();
   });
 });
 
