@@ -107,3 +107,13 @@ Guards still without a negative proof of their own: `setProblems` unexpected and
 ### Gates after the round
 
 `npm run format` no change; `npm run verify` exit 0 (202 files, 3,754 tests); `npm run build` then `diff -r <scratch>/dist-main-sf apps/web/dist` empty. ES full-length proof **40,645 B** of 40,836 B (EN 40,371 B), unchanged by the round.
+
+### Judgment Day (PR 1)
+
+Two blind judges on `10c744a..eb4b6e0`: both **APPROVED**, no CRITICAL or WARNING. Folded:
+
+- The budget fixture passed the entry dates as raw ISO text (`2026-10-25`), while the view writes them in the long form of the locale (`25 de octubre de 2026`), so the proof measured about 11 B less per date than the routed page (pre-existing: the old fixture hard-coded the same ISO text). The formatter is now `apps/web/src/lib/calendar-day.ts` (unit test, red before the module existed), used by `CalculatorView.astro` and the fixture. **ES full-length proof: 40,678 B** (+33 B, three dates; 158 B to the 40,836 B pin), EN 40,379 B. The built site is unchanged (the view's output is the same string).
+- The "writes the id in Pascal case" test checked a helper defined in the test file itself; removed. The island-file test that uses `pascalOf` against the files on disk stays.
+- Task 2.6's stale "unchanged (40,573 B)" now carries the measured figures.
+
+Noted, no change: the real-build isolation loop of [SQ36] runs over zero ids until a second id is routed (the seeded fixture proves its logic, as recorded); `buildCache` compares the padding with `JSON.stringify`, so the same padding in another key order fails loudly (a false positive, never a silent pass); PR 1 is 1,424 lines against a 400-line slice budget (accepted by the orchestrator, like calculator-core G1).
