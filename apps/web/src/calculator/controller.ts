@@ -191,6 +191,22 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
     const { key } = primaryOutputOf(module, system);
     if (!figuredKeys.has(key)) fail('OUTPUT_HINT', calculator.id, key);
   }
+  // the page writes only the declared messages into its template: a plan that names another
+  // would mount with an empty name or label, so the default plan must name declared ones only
+  const { drawing } = module;
+  if (drawing === undefined) return;
+  const valid = mustBeOk(calculator.validate({}), 'validation of the defaults');
+  const choices = Object.fromEntries(
+    calculator.inputs.flatMap((input) =>
+      input.kind === 'select' ? [[input.key, optionOf(valid, input.key)]] : [],
+    ),
+  );
+  const plan = drawing.plan({ system: 'imperial', choices, valid, result: defaults });
+  const messages: ReadonlySet<string> = new Set(drawing.messages);
+  for (const label of [plan?.name, ...(plan?.labels.map(({ label: each }) => each) ?? [])]) {
+    if (label !== undefined && 'message' in label && !messages.has(label.message))
+      fail('PAGE_KEY', calculator.id, label.message);
+  }
 };
 
 /**
