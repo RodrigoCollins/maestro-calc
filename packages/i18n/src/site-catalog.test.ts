@@ -170,6 +170,8 @@ const CALCULATOR_ROWS = [
     'Could not copy. Select the link and copy it.',
     'No se pudo copiar. Selecciona el enlace y cópialo.',
   ],
+  ['site.calculator.shareWhatsApp', 'Send on WhatsApp', 'Enviar por WhatsApp'],
+  ['site.calculator.shareText', 'Check this calculation:', 'Mira este cálculo:'],
   [
     'site.calculator.noscript',
     'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
@@ -192,10 +194,26 @@ describe('site catalog: calculator page UI (i18n-catalog › [ICW17])', () => {
     expect(esSite[key]).toBe(es);
   });
 
-  it('holds exactly the fifteen keys in both locales, and they have no placeholder', () => {
+  it('holds exactly the seventeen keys in both locales, and they have no placeholder', () => {
     const keys = CALCULATOR_ROWS.map(([key]) => key);
     for (const module of [enSite, esSite]) {
       expect(Object.keys(module).filter((key) => key.startsWith('site.calculator.'))).toEqual(keys);
     }
   });
+
+  // spec: i18n-catalog › [ICW19], [ICW21] the share text is one short sentence before the link
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
+    'keeps the %s share text one short sentence with no URL and no placeholder',
+    (_, site) => {
+      const text = site['site.calculator.shareText'];
+      expect(text.length).toBeGreaterThan(0);
+      expect(text.length).toBeLessThanOrEqual(40);
+      expect(text).toMatch(/^[^.!?]+:$/);
+      expect(text).not.toMatch(/https?:|www\.|\{/);
+      expect(site['site.calculator.shareWhatsApp']).toContain('WhatsApp');
+    },
+  );
 });

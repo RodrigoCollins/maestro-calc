@@ -134,6 +134,8 @@ describe('slot-free markup (calculator-web-core › [CWC33], [CWC45])', () => {
     expect(root.querySelectorAll('[data-unit]')).toHaveLength(2);
     expect(root.querySelectorAll('[data-copy]')).toHaveLength(1);
     expect(root.querySelectorAll('[data-copy-status]')).toHaveLength(1);
+    // spec: calculator-web-core › [CWC47] the share anchor is generic: every page has it
+    expect(root.querySelectorAll('a[data-share][hidden]:not([href])')).toHaveLength(1);
     expect(root.querySelectorAll('[data-primary]')).toHaveLength(1);
     expect(
       root.querySelectorAll('[data-output]').map((el) => [el.getAttribute('data-output'), el.text]),
@@ -207,6 +209,21 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
         ['[data-drawing]', '[data-share]'].includes(selector),
       ),
     ).toEqual([]);
+  });
+
+  // spec: calculator-web-core › [CWC47], calculator-page › [CP81] the share anchor is a list, revealed
+  // with the copy button; the mount writes its href and nothing else, and listens on the form only
+  it('reveals the share anchor with the copy button and writes only its href', () => {
+    expect(mount).toContain("shares: findAll(root, '[data-share]')");
+    expect(mount).toContain("'[data-copy][hidden], [data-share][hidden], [data-step] [hidden]'");
+    expect(Array.from(mount.matchAll(/\bshare\.(\w+)\(/g), ([, member]) => member)).toEqual([
+      'setAttribute',
+      'getAttribute',
+    ]);
+    expect(mount).toMatch(/share\.setAttribute\('href', shareHref\(/);
+    expect(
+      Array.from(mount.matchAll(/([\w.]+)\.addEventListener\(/g), ([, target]) => target),
+    ).toEqual(['ui.form', 'ui.form', 'ui.form', 'ui.form']);
   });
 
   // trim C of blueprint-panel: the cost row holds its hint, so the hint-row hook is gone

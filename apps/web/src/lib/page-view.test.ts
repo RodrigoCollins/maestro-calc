@@ -145,9 +145,10 @@ describe('the concrete page view (calculator-page › [CP1], [CP2], [CP3], [CP4]
       'answer.steps',
     ]);
     expect(messages['answer.slab']).toContain('{bags}');
-    expect([messages['copy.copied'], messages['copy.failed']]).toEqual([
+    expect([messages['copy.copied'], messages['copy.failed'], messages['share.text']]).toEqual([
       'Link copied',
       'Could not copy. Select the link and copy it.',
+      'Check this calculation:',
     ]);
     expect(Object.fromEntries(pageView('concrete', 'es').messages)['errors.MALFORMED']).toBe(
       esCommon['errors.MALFORMED'],
@@ -274,6 +275,7 @@ describe('formViewOf (calculator-web-core › [CWC5], [CWC24], [CWC28]; calculat
       'readyMixPrice',
     ]);
     expect(form.copyLabel).toBe('Copy link');
+    expect(form.shareLabel).toBe('Send on WhatsApp');
   });
 
   // spec: calculator-web-core › [CWC5] the labels come from `calc.<id>.inputs.<key>`
@@ -664,6 +666,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
       'answer.steps',
       'copy.copied',
       'copy.failed',
+      'share.text',
       'hint.ft',
       'hint.in',
       'hint.m',
@@ -713,6 +716,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
       ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
       'copy.copied',
       'copy.failed',
+      'share.text',
       'hint.ft',
       'hint.m',
     ]);
@@ -796,6 +800,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
       'drawing',
       'copy.copied',
       'copy.failed',
+      'share.text',
       'hint.ft',
       'hint.m',
       'area.ft2',
