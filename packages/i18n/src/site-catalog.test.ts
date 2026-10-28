@@ -99,20 +99,20 @@ describe('site catalog: shell strings (i18n-catalog › Site scope)', () => {
 });
 
 describe('site catalog: page metadata (site-seo › Titles and descriptions)', () => {
-  it('has the routable pages and the not-found page in both locales', () => {
-    const ids = [
-      'home',
-      'methodology',
-      'about',
-      'privacy',
-      'terms',
-      'contact',
-      'concrete',
-      'rectangle-area',
-      'notFound',
-    ];
-    expect(pageIds(enSite)).toEqual(ids);
+  // The exact set is the route table plus the not-found page: the web contract
+  // (apps/web/src/contract/site-catalog.contract.test.ts) holds it, since this package cannot read
+  // the route table. Here: both locales name the same pages in the same order, home first, the
+  // not-found page last, and every page has its description.
+  it('has the same pages in both locales, home first and the not-found page last', () => {
+    const ids = pageIds(enSite);
+    expect(ids.length).toBeGreaterThan(2);
     expect(pageIds(esSite)).toEqual(ids);
+    expect(ids[0]).toBe('home');
+    expect(ids.at(-1)).toBe('notFound');
+    for (const [locale, module] of Object.entries(modules)) {
+      for (const id of ids)
+        expect(module[`page.${id}.description`], `${locale} ${id}`).toBeDefined();
+    }
   });
 
   // spec: site-seo › [SE1]

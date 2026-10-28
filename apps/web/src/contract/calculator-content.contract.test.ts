@@ -198,19 +198,14 @@ describe('calculator entries (calculator-page › [CP5]–[CP10], [CP69]; materi
     );
   });
 
-  // spec: calculator-page › [CP6] the frontmatter parses with the strict schema and agrees with its path
+  // spec: calculator-page › [CP6] the frontmatter parses with the strict schema and agrees with its path;
+  // [CP70] a routed entry is approved by the owner (rectangle-area: apply progress, "Owner approval (K12)")
   it.each(PAIRS)('parses the frontmatter of %s/%s and agrees with the path', (id, locale) => {
     const front = frontmatterOf(entryOf(id, locale));
     expect(front.id).toBe(id);
     expect(front.locale).toBe(locale);
     expect(front.updated).toBe(rowFor(id).updated);
     if (ROUTED.some((page) => page === id)) expect(front.ownerReview).toBe('approved');
-  });
-
-  // spec: calculator-page › [CP70] the owner approved both square footage entries (apply progress,
-  // "Owner approval (K12)"), so they are approved before the page is routed
-  it.each(LOCALES)('marks the rectangle-area entry of %s as approved by the owner', (locale) => {
-    expect(frontmatterOf(entryOf('rectangle-area', locale)).ownerReview).toBe('approved');
   });
 
   // spec: calculator-page › [CP5] source side: five h2 ids in order
