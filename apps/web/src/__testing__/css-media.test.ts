@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { edgesOf } from './css-media.ts';
+import { edgesOf, nearBreakpoint } from './css-media.ts';
 
 /** The stylesheet `calculator.css` sets the counts on `:root`, in rem breakpoints. */
 const ROOT =
@@ -35,5 +35,28 @@ describe('edgesOf (calculator-page › [CP60], design K11)', () => {
     expect(
       edgesOf('@media(min-width:9rem){.a,.calculator{--answer-lines:2}}', '--answer-lines'),
     ).toEqual([9]);
+  });
+});
+
+// calculator-page › [CP60], [CP61], [CP73] (amended 2026-10-28 after the Linux CI run of PR #104):
+// the widths within 0.5rem (8 px at a 16 px root) below a breakpoint, where a block may hold one
+// line less than its reserve on a platform that wraps a few pixels earlier
+describe('nearBreakpoint (calculator-page › [CP60], [CP61], [CP73])', () => {
+  // the breakpoints of the square footage answer and notice: 328, 387, 488, 600 and 712 px
+  const edges = [20.5, 24.1875, 30.5, 37.5, 44.5];
+
+  it.each([320, 327, 379, 385, 386, 480, 481, 487, 599, 711])('holds %s px', (width) => {
+    expect(nearBreakpoint(edges, width)).toBe(true);
+  });
+
+  it.each([319, 328, 356, 378, 387, 390, 479, 488, 591, 600, 712, 1280])(
+    'does not hold %s px (more than 0.5rem below, or at or above, every breakpoint)',
+    (width) => {
+      expect(nearBreakpoint(edges, width)).toBe(false);
+    },
+  );
+
+  it('holds nothing without a breakpoint', () => {
+    expect(nearBreakpoint([], 320)).toBe(false);
   });
 });

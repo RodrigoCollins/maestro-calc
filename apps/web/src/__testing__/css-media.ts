@@ -57,3 +57,13 @@ export const edgesOf = (css: string, property: string): number[] => {
   const own = setBy('.calculator');
   return [...new Set(own.length > 0 ? own : setBy(':root'))].toSorted((a, b) => a - b);
 };
+
+/** How far below a breakpoint a width counts as near it, in rem (8 px at a 16 px root). */
+const NEAR_BREAKPOINT_REM = 0.5;
+
+/**
+ * Whether a width, in px at a 16 px root, is within `NEAR_BREAKPOINT_REM` below one of the
+ * breakpoints (in rem): at or above `edge − 0.5rem` and below the edge, where its rule applies.
+ */
+export const nearBreakpoint = (edges: readonly number[], width: number): boolean =>
+  edges.some((rem) => width < rem * 16 && width >= (rem - NEAR_BREAKPOINT_REM) * 16);
