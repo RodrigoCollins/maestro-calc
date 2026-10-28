@@ -12,7 +12,13 @@ import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import CatchAll from '../pages/[...path].astro';
 import CalculatorView from './CalculatorView.astro';
-import { pascalOf } from './scripts.ts';
+
+/** `rectangle-area` as `RectangleArea`: the name of the island file `<Id>Script.astro`. */
+const pascalOf = (id: string): string =>
+  id
+    .split('-')
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join('');
 
 const render = (locale: 'en' | 'es') =>
   renderComponent(CalculatorView, { id: 'concrete', locale }, { partial: false });

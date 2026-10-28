@@ -5,6 +5,7 @@
     "types": ["node"]
   },
   "include": [
+    "src/env.d.ts",
     "src/contract",
     "src/**/__testing__",
     "src/**/*.test.ts",
