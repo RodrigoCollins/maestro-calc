@@ -323,4 +323,4 @@ Commit: `feat(web): publish the square footage calculator`.
 5. **S4a is two commits** (reserve and edges, then the `approved` flip) so the flip stays isolated after the owner gate; the design names one S4a subject.
 6. **The entries link to `/methodology#square-footage` before the anchor exists** (TP39 forbids the section earlier). Nothing renders the entries until S4b, and the staged contract must not check anchor existence until then.
 7. **The owner gate (K12) can delay PR 4 indefinitely.** Apply never fabricates or infers the approval.
-8. **Linux Chromium may wrap earlier than macOS** (home-directory PR 3 lesson): breakpoints follow the later drop, the fit is strict, two lines are allowed only at the last pixel width before a breakpoint of that page and block.
+8. **Linux Chromium may wrap earlier than macOS** (home-directory PR 3 lesson): breakpoints follow the later drop, the fit is strict, two lines are allowed only at a width within 0.5rem below a breakpoint of that page and block (widened from the last pixel width on 2026-10-28 after the Linux CI run of PR #104).

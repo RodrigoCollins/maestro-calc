@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Browser, BrowserContext, Page } from '@playwright/test';
-import { edgesOf } from '../../../apps/web/src/__testing__/css-media.ts';
+import { edgesOf, nearBreakpoint } from '../../../apps/web/src/__testing__/css-media.ts';
 import { calculatorPages, typedQuery } from './calculator-pages.ts';
 import { answer, notRunning, open } from './locators.ts';
 
@@ -15,15 +15,17 @@ const WIDTHS = [
 type Block = 'answer' | 'notice' | 'copy';
 
 /**
- * The last width before each breakpoint of a block, for the page that is open. Text wraps a few
- * pixels earlier on some platforms (Linux Chromium) than where the breakpoints were measured
- * (macOS), so there the block may hold one line less than its reserve: up to one line more is
- * allowed at these widths only. The fit check stays strict at every width, and the breakpoints
- * follow the latest drop, so the content fits everywhere. The edges are read from the CSS the page
- * ships (its head `<style>` and its stylesheets) through `edgesOf`, so one page's breakpoints never
- * loosen another page's check; the copy block, whose height does not step, takes both.
+ * The breakpoints (rem) of each block, for the page that is open. Text wraps a few pixels earlier
+ * on some platforms (Linux Chromium drops a line up to about 8 px earlier) than where the
+ * breakpoints were measured (macOS), so at a width within 0.5rem below a breakpoint
+ * (`nearBreakpoint`) the block may hold one line less than its reserve: up to one line more is
+ * allowed there only (calculator-page › [CP60], [CP61], [CP73], amended 2026-10-28 after the Linux
+ * CI run of PR #104). The fit check stays strict at every width, and the breakpoints follow the
+ * latest drop, so the content fits everywhere. The edges are read from the CSS the page ships (its
+ * head `<style>` and its stylesheets) through `edgesOf`, so one page's breakpoints never loosen
+ * another page's check; the copy block, whose height does not step, takes both.
  */
-type BeforeEdges = Readonly<Record<Block, ReadonlySet<number>>>;
+type BlockEdges = Readonly<Record<Block, readonly number[]>>;
 
 const cssOf = (page: Page): Promise<string> =>
   page.evaluate(async () => {
@@ -36,12 +38,10 @@ const cssOf = (page: Page): Promise<string> =>
     return [...inline, ...linked].join('\n');
   });
 
-const beforeEdgesOf = (css: string): BeforeEdges => {
-  const before = (property: string): Set<number> =>
-    new Set(edgesOf(css, property).map((rem) => Math.ceil(rem * 16) - 1));
-  const answer = before('--answer-lines');
-  const notice = before('--notice-lines');
-  return { answer, notice, copy: new Set([...answer, ...notice]) };
+const blockEdgesOf = (css: string): BlockEdges => {
+  const answer = edgesOf(css, '--answer-lines');
+  const notice = edgesOf(css, '--notice-lines');
+  return { answer, notice, copy: [...answer, ...notice] };
 };
 interface Probe {
   readonly natural: number;
@@ -262,13 +262,13 @@ for (const id of ids) {
   const pages = calculatorPages.filter((calculator) => calculator.id === id);
 
   test.describe(`${id} reserved blocks (calculator-page › Layout stability, both locales)`, () => {
-    // spec: calculator-page › [CP59], [CP60], [CP61] the content fits and under one line of its own unit is unused
+    // spec: calculator-page › [CP59], [CP60], [CP61] the content fits and under one line of its own unit is unused (two within 0.5rem below a breakpoint)
     test('fits every reserved block at every width with less than one line unused', async ({
       browser,
     }) => {
       await withPages(browser, [true], async ([page]) => {
         if (page === undefined) throw new Error('no page');
-        const measured = new Map<number, [string, Probes, BeforeEdges][]>();
+        const measured = new Map<number, [string, Probes, BlockEdges][]>();
         for (const calculator of pages) {
           await open(page, calculator);
           const sentences: string[] = ['—'];
@@ -278,7 +278,7 @@ for (const id of ids) {
               sentences.push((await answer(page).textContent()) ?? '');
             }
           }
-          const before = beforeEdgesOf(await cssOf(page));
+          const edges = blockEdgesOf(await cssOf(page));
           const variants: Variants = {
             answers: sentences,
             notices: [
@@ -291,29 +291,29 @@ for (const id of ids) {
             await page.setViewportSize({ width, height: 900 });
             measured.set(width, [
               ...(measured.get(width) ?? []),
-              [calculator.locale, await probeBlocks(page, variants), before],
+              [calculator.locale, await probeBlocks(page, variants), edges],
             ]);
           }
         }
         for (const [width, rows] of measured) {
           for (const block of ['answer', 'notice', 'copy'] as const) {
-            const probes = rows.flatMap(([locale, probes, before]) =>
+            const probes = rows.flatMap(([locale, probes, edges]) =>
               probes[block] === undefined
                 ? []
-                : [{ locale, before: before[block], ...probes[block] }],
+                : [{ locale, edges: edges[block], ...probes[block] }],
             );
             const expected = pages.filter(
               ({ spec }) => block !== 'answer' || spec.answer !== undefined,
             ).length;
             expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(expected);
             const tallest = Math.max(...probes.map(({ natural }) => natural));
-            for (const { locale, before, reserved, line, natural } of probes) {
+            for (const { locale, edges, reserved, line, natural } of probes) {
               const label = `${block} ${locale} at ${String(width)} px`;
               // soft: one run reports every width and block that misses, not the first one
               expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
               expect
                 .soft(reserved - tallest, `${label}: unused reserve`)
-                .toBeLessThan(before.has(width) ? 2 * line : line);
+                .toBeLessThan(nearBreakpoint(edges, width) ? 2 * line : line);
             }
           }
         }
