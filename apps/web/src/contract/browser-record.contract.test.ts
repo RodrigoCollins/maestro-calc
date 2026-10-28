@@ -107,11 +107,18 @@ const SUITES = [
   'layout.spec.ts',
   'csp.spec.ts',
   'no-js.spec.ts',
+  'drawing.spec.ts',
   'locators.ts',
 ];
 
-/** The four generic suites: every one opens a page of the record and holds no page path. */
-const SPEC_SUITES = ['calculator.spec.ts', 'a11y.spec.ts', 'layout.spec.ts', 'csp.spec.ts'];
+/** The generic suites: every one opens a page of the record and holds no page path. */
+const SPEC_SUITES = [
+  'calculator.spec.ts',
+  'a11y.spec.ts',
+  'layout.spec.ts',
+  'csp.spec.ts',
+  'drawing.spec.ts',
+];
 
 /** Every calculator of the registry, routed or not: no suite may name one. */
 const IDS = calculators.map(({ id }) => id);
