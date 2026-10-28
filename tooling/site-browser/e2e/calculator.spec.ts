@@ -158,6 +158,20 @@ for (const calculator of calculatorPages) {
       }
     });
 
+    // design: the large figure starts where its words do (the mockup); only the row figures keep
+    // a fixed right-aligned cell
+    test('sets the large figure as wide as its digits, with no cell before them', async ({
+      page,
+    }) => {
+      await open(page, calculator);
+      const [figure, digits] = await page.locator('[data-primary]').evaluate((element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return [element.getBoundingClientRect().width, range.getBoundingClientRect().width];
+      });
+      expect(figure).toBeCloseTo(digits, 0);
+    });
+
     // spec: calculator-page › [CP14] the option area has one height for every option
     if (choices !== undefined) {
       test('keeps one height for the shape area whatever the shape', async ({ page }) => {

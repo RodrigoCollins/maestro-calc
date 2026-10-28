@@ -222,8 +222,9 @@
   margin: 0;
 }
 
+/* The fixed cell holds in the rows, whose flex layout blockifies the figure; the large figure stays
+   inline, where `min-width` does not apply, so its digits start flush with the panel. */
 .calc-figure {
-  display: inline-block;
   min-width: 8ch;
   font-variant-numeric: tabular-nums;
   text-align: right;
