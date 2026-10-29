@@ -223,6 +223,8 @@ export default defineConfig(
     '**/node_modules/**',
     // The browser tooling is its own package with its own install, lint-free by design.
     'tooling/site-browser/**',
+    // A plain browser script served as is, outside every TypeScript project; its unit test runs it.
+    'apps/web/public/analytics.js',
   ]),
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   {

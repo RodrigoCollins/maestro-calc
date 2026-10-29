@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { isAnalyticsLoader, isAnalyticsTraffic } from './analytics.ts';
 import type { Locator, Page } from '@playwright/test';
 import { calculatorPages, paramOf, pressSelector, typedQuery } from './calculator-pages.ts';
 import type { E2ePage, Figures } from './calculator-pages.ts';
@@ -657,7 +658,10 @@ for (const calculator of calculatorPages) {
       const origin = new URL(baseURL ?? '').origin;
       const found: { type: string; url: string }[] = [];
       page.on('request', (request) => {
-        found.push({ type: request.resourceType(), url: request.url() });
+        const url = request.url();
+        // the analytics loader of every page and, against production, its Google requests (analytics-gtm)
+        if (isAnalyticsLoader(url) || isAnalyticsTraffic(url, origin)) return;
+        found.push({ type: request.resourceType(), url });
       });
       await open(page, calculator);
       await input(page, typed.key).fill(typed.text);

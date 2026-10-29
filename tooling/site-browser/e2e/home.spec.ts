@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { isAnalyticsLoader } from './analytics.ts';
 import type { Page } from '@playwright/test';
 
 const HOMES = ['/', '/es'];
@@ -70,11 +71,14 @@ for (const path of HOMES) {
       expect(sizes[1]).toBeGreaterThan(sizes[0] ?? Infinity);
     });
 
-    // spec: trust-pages › [TP34] the home requests no script
+    // spec: trust-pages › [TP34] the home requests no script of its own (the analytics loader of every
+    // page aside, analytics-gtm)
     test('requests no script', async ({ page }) => {
       const scripts: string[] = [];
       page.on('request', (request) => {
-        if (request.resourceType() === 'script') scripts.push(request.url());
+        if (request.resourceType() === 'script' && !isAnalyticsLoader(request.url())) {
+          scripts.push(request.url());
+        }
       });
       await page.goto(path);
       await page.waitForLoadState('networkidle');

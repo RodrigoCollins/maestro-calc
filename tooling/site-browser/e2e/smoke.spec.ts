@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
 import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
+import { ANALYTICS_PATH, isAnalyticsLoader, isAnalyticsTraffic } from './analytics.ts';
 import {
   calculatorPaths,
   langOf,
@@ -27,15 +28,21 @@ const MAX_TABS = 40;
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
-/** Visits `path` and reports every request to another origin, every script and every CSP message. */
+/**
+ * Visits `path` and reports every request to another origin, every script and every CSP message,
+ * leaving out the analytics loader of every page and, against production only, the Google requests
+ * it causes (analytics-gtm). `loader` counts the requests for the loader itself.
+ */
 const loadedFromElsewhere = async (page: Page, baseURL: string | undefined, path: string) => {
   const origin = new URL(baseURL ?? '').origin;
   const foreign: string[] = [];
   const scripts: string[] = [];
   const violations: string[] = [];
   page.on('request', (request) => {
-    if (new URL(request.url()).origin !== origin) foreign.push(request.url());
-    if (request.resourceType() === 'script') scripts.push(request.url());
+    const url = request.url();
+    if (isAnalyticsLoader(url) || isAnalyticsTraffic(url, origin)) return;
+    if (new URL(url).origin !== origin) foreign.push(url);
+    if (request.resourceType() === 'script') scripts.push(url);
   });
   page.on('console', (message) => {
     if (/content security policy/i.test(message.text())) violations.push(message.text());
@@ -199,6 +206,29 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
 
 // spec: site-quality › [SQ28]: Cloudflare features that inject scripts stay off. The same test runs as
 // the post-deploy smoke of tasks F.4 with BASE_URL set to the production site.
+// analytics-gtm: every page asks for the same-origin loader once; off production it reaches no Google host
+test.describe('the analytics loader (analytics-gtm)', () => {
+  for (const path of [...staticPaths, ...calculatorPaths]) {
+    test(`${path} loads the analytics loader once and nothing from Google off production`, async ({
+      page,
+      baseURL,
+    }) => {
+      const origin = new URL(baseURL ?? '').origin;
+      const loads: string[] = [];
+      const google: string[] = [];
+      page.on('request', (request) => {
+        const url = request.url();
+        if (isAnalyticsLoader(url)) loads.push(url);
+        if (/google/.test(new URL(url).hostname)) google.push(url);
+      });
+      await page.goto(path);
+      await page.waitForLoadState('networkidle');
+      expect(loads).toEqual([`${origin}${ANALYTICS_PATH}`]);
+      if (new URL(origin).hostname !== 'maestrocalc.com') expect(google).toEqual([]);
+    });
+  }
+});
+
 test.describe('pages without a script (site-quality › [SQ28], site-shell › [SS19])', () => {
   for (const path of [...staticPaths, ...notFoundSamples]) {
     test(`${path} requests no script and references no /cdn-cgi/ file`, async ({

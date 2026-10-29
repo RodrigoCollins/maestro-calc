@@ -44,6 +44,15 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
     {style !== undefined && <style is:inline set:html={style} />}
+    {SITE.gtmId !== '' && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-gtm={SITE.gtmId}
+        data-host={new URL(SITE.url).hostname}
+        defer
+      />
+    )}
   </head>
   <body>
     <SkipLink label={text('site.skipLink')} />

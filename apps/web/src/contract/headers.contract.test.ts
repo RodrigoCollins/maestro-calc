@@ -7,7 +7,7 @@ const rules = parseHeaders(readFileSync(fromRoot('apps/web/public/_headers'), 'u
 const block = (pattern: string) => rules.find((rule) => rule.pattern === pattern);
 
 const CSP =
-  "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+  "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
 
 describe('_headers parser', () => {
   it('reads path lines, indented headers and comments', () => {
@@ -43,11 +43,11 @@ describe('security headers (site-quality › [SQ12])', () => {
     expect(all?.headers['content-security-policy']).toBe(CSP);
   });
 
-  // spec: site-quality › [SQ12] script-src is exactly 'self' and appears once in the file
-  it("allows scripts from the page origin only: script-src is exactly 'self'", () => {
+  // spec: site-quality › [SQ12] script-src is the page origin and the one Tag Manager host (analytics-gtm), once in the file
+  it('allows scripts from the page origin and the Tag Manager host only, with no inline or eval', () => {
     const directives = (block('/*')?.headers['content-security-policy'] ?? '').split('; ');
     expect(directives.filter((directive) => directive.startsWith('script-src'))).toEqual([
-      "script-src 'self'",
+      "script-src 'self' https://www.googletagmanager.com",
     ]);
     const text = readFileSync(fromRoot('apps/web/public/_headers'), 'utf8');
     expect(text.match(/script-src/g)).toHaveLength(1);
@@ -59,20 +59,21 @@ describe('security headers (site-quality › [SQ12])', () => {
       "'nonce-",
       "'sha256-",
       'data:',
-      'http',
-      '.',
+      'http:',
+      '*',
     ]) {
       expect(scriptSrc, forbidden).not.toContain(forbidden);
     }
   });
 
-  // spec: site-quality › [SQ12] the other directives are unchanged
-  it('keeps the other directives as they were before the script rule changed', () => {
+  // spec: site-quality › [SQ12] the other directives: as before, plus the Google hosts GA4 needs for its beacons
+  it('keeps the other directives, adding only the GA4 image and connect hosts', () => {
     const directives = (block('/*')?.headers['content-security-policy'] ?? '').split('; ');
     expect(directives.filter((directive) => !directive.startsWith('script-src'))).toEqual([
       "default-src 'self'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data:",
+      "img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com",
+      "connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com",
       "font-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { SITE } from '../site.config.ts';
 import BaseLayout from './BaseLayout.astro';
 
 const head = {
@@ -143,7 +144,26 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(inHead(styled)).toHaveLength(inHead(plain.document).length + 1);
     expect(inHead(styled).filter((text) => text === style)).toHaveLength(1);
     expect(styled.querySelectorAll('body style')).toHaveLength(0);
-    expect(styled.querySelector('head')?.lastChild?.text).toBe(style);
+    // the page style is the last style; only the analytics tag follows it
+    expect(styled.querySelectorAll('head style').at(-1)?.text).toBe(style);
+  });
+
+  // analytics-gtm: one deferred same-origin tag ends the head on every page, with the container id
+  // and the production host as data; it has no body (the CSP allows no inline script)
+  it('ends the head with the one analytics tag', async () => {
+    const { document } = await render('en');
+    const tags = document.querySelectorAll('script[src="/analytics.js"]');
+    expect(tags).toHaveLength(1);
+    expect(tags[0]?.attributes).toEqual({
+      src: '/analytics.js',
+      'data-gtm': SITE.gtmId,
+      'data-host': 'maestrocalc.com',
+      defer: '',
+    });
+    expect(tags[0]?.text).toBe('');
+    expect(tags[0]?.parentNode?.tagName).toBe('HEAD');
+    expect(document.querySelector('head')?.lastChild).toBe(tags[0]);
+    expect(SITE.gtmId).toMatch(/^GTM-[A-Z0-9]+$/);
   });
 
   // spec: calculator-page › [CP65] without the prop the document is what it was
