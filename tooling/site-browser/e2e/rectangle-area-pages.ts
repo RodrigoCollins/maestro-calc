@@ -67,6 +67,7 @@ export const RECTANGLE_AREA: E2eSpec = {
     '[data-unit="metric"]',
     '#calc-length',
     '#calc-width',
+    '.calc-result a',
     '[data-copy]',
     '[data-share]',
   ],

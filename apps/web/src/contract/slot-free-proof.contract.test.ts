@@ -215,7 +215,8 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
   // with the copy button; the mount writes its href and nothing else, and listens on the form only
   it('reveals the share anchor with the copy button and writes only its href', () => {
     expect(mount).toContain("shares: findAll(root, '[data-share]')");
-    expect(mount).toContain("'[data-copy][hidden], [data-share][hidden], [data-step] [hidden]'");
+    expect(mount).toContain("findAll(ui.copyArea, '[data-copy][hidden], [data-share][hidden]')");
+    expect(mount).toContain("findAll(ui.form, '[data-step] [hidden]')");
     expect(Array.from(mount.matchAll(/\bshare\.(\w+)\(/g), ([, member]) => member)).toEqual([
       'setAttribute',
       'getAttribute',
@@ -223,7 +224,7 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     expect(mount).toMatch(/share\.setAttribute\('href', shareHref\(/);
     expect(
       Array.from(mount.matchAll(/([\w.]+)\.addEventListener\(/g), ([, target]) => target),
-    ).toEqual(['ui.form', 'ui.form', 'ui.form', 'ui.form']);
+    ).toEqual(['ui.form', 'ui.form', 'ui.copyButton', 'ui.form', 'ui.form']);
   });
 
   // trim C of blueprint-panel: the cost row holds its hint, so the hint-row hook is gone

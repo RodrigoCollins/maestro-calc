@@ -100,6 +100,7 @@ export const CONCRETE: E2eSpec = {
     '[data-choice="bag"] [value="80"]',
     '#calc-bagPrice',
     '#calc-readyMixPrice',
+    '.calc-result a',
     '[data-copy]',
     '[data-share]',
   ],

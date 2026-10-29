@@ -22,12 +22,26 @@ const { messages } = view;
       {view.answer}
     </p>
   )}
-  <CalculatorForm form={view.form}>
-    <div class="calc-notice" data-reserved="notice">
-      <p data-not-running>{view.notRunning}</p>
-    </div>
-  </CalculatorForm>
+  <CalculatorForm form={view.form} />
   <ResultPanel result={view.result} />
+  <div class="calc-copy" data-reserved="copy">
+    <button type="button" data-copy hidden disabled>
+      {view.form.copyLabel}
+    </button>
+    <a
+      class="calc-share"
+      data-share="https://wa.me/"
+      target="_blank"
+      rel="noopener noreferrer"
+      hidden
+    >
+      {view.form.shareLabel}
+    </a>
+    <p class="calc-status" data-copy-status role="status"></p>
+  </div>
+  <div class="calc-notice" data-reserved="notice">
+    <p data-not-running>{view.notRunning}</p>
+  </div>
   <template data-messages>
     {messages.map(([name, text]) => (
       <p id={name}>{text}</p>

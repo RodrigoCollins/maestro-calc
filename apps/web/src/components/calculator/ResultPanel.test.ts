@@ -156,7 +156,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
   });
 
   // spec: calculator-web-core › [CWC3] two lines render in the declared order, one hook set each
-  it('renders each shopping line with its own index, in order, with no wrapper element', async () => {
+  it('renders each shopping line with its own index, in order, directly in the shopping list', async () => {
     const second = {
       unit: 'box-a',
       qty: '1,234',
@@ -178,7 +178,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
       ['box-a', '1,234'],
     ]);
     expect(
-      root.querySelectorAll('[data-line]').every((el) => el.parentNode?.tagName === 'SECTION'),
+      root.querySelectorAll('[data-line]').every((el) => el.parentNode?.classNames === 'calc-list'),
     ).toBe(true);
     expect(root.querySelectorAll('[data-line-note]')).toHaveLength(1);
   });

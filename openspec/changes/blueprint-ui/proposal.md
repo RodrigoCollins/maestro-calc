@@ -82,3 +82,12 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - The notice block (no-JS note, URL notices) moved from under the answer to the end of the form card, after the copy and share actions (`CalculatorForm` takes it as its slot). Its reserve now reads as the card's footer; the first screen loses the empty block under the answer.
 - The card is about 35 px narrower than the page, so the notice ladder was swept again 320–1100 px in 1 px steps, both pages, both locales, web and fallback font: 4 → 3 at 23.5rem → 2 at 31.5rem → 1 at 57.5rem (both pages; `rectangle-area/reserve.ts` follows). New `WIDTHS` edges 503/504 and 919/920.
 - `verify` 0, e2e 708 passed.
+
+## Slice 4 — order and actions (branch `feat/blueprint-ui-order`)
+
+- Mockup order: form card (inputs only) → result panel → shopping list → actions → notice.
+- The shopping lines, the cost rows and the costs note left the ink panel for a sheet-white card (`.calc-list`) right after it; the quantity is ink condensed 700 (orange text on white would be under 3:1 at body size). The panel keeps the figure, the drawing, the rows and the estimate note.
+- The copy area (copy button, WhatsApp link, status) and the notice moved out of the form, after the shopping list. The mount gives the copy button its own listener and enables and reveals it outside the form; the slot-free proof follows.
+- The notice is at the page width again, so its ladder returns to the slice 2b values (21.5/29.5/55rem); the 2c card-width ladder is superseded.
+- Deviations: the price inputs stay in the form (moving them into the list would take inputs out of `<form>`), the list has no heading (no new catalog key), and the WhatsApp link stays after the copy button (CP80/CP81 order).
+- `verify` 0, e2e 708 passed.

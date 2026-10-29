@@ -34,8 +34,8 @@
   min-height: calc(var(--answer-lines, 4) * var(--text-base) * var(--leading-body));
 }
 
-/* The notice closes the form card, below the actions: its reserve reads as the card's footer, not
-   as a gap under the answer. Its paragraphs carry no margin, so the block alone sets its height. */
+/* The notice follows the actions, after the result: its reserve sits below the tools, not as a gap
+   under the answer. Its paragraphs carry no margin, so the block alone sets its height. */
 .calc-notice {
   min-height: calc(var(--notice-lines, 4) * var(--text-base) * var(--leading-body));
 }
@@ -44,7 +44,7 @@
   margin: 0;
 }
 
-@media (min-width: 23.5rem) {
+@media (min-width: 21.5rem) {
   :root {
     --notice-lines: 3;
   }
@@ -56,7 +56,7 @@
   }
 }
 
-@media (min-width: 31.5rem) {
+@media (min-width: 29.5rem) {
   :root {
     --notice-lines: 2;
   }
@@ -68,7 +68,7 @@
   }
 }
 
-@media (min-width: 57.5rem) {
+@media (min-width: 55rem) {
   :root {
     --notice-lines: 1;
   }
@@ -93,6 +93,7 @@
 }
 
 .calc-form button,
+.calc-copy button,
 .calc-field input,
 .calc-fallback {
   border: 2px solid var(--color-text);
@@ -102,7 +103,8 @@
   font: inherit;
 }
 
-.calc-form button {
+.calc-form button,
+.calc-copy button {
   min-height: var(--target-size);
   min-width: var(--target-size);
   padding: 0 var(--space-3);
@@ -150,7 +152,8 @@
   color: var(--color-surface);
 }
 
-.calc-form button:disabled {
+.calc-form button:disabled,
+.calc-copy button:disabled {
   cursor: default;
   opacity: 0.6;
 }
@@ -374,9 +377,20 @@
   font-weight: 600;
 }
 
+/* The shopping list: a sheet-white card after the result panel (Blueprint mockups), the quantity
+   in ink condensed figures. */
+.calc-list {
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3);
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
 .calc-qty {
-  color: var(--color-accent);
+  font-family: var(--font-display);
   font-size: var(--text-h1);
+  font-weight: 700;
 }
 
 .calc-note {

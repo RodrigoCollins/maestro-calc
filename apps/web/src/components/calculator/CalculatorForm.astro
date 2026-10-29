@@ -6,7 +6,7 @@ import type { Choice, FormView } from './model.ts';
 interface Props {
   form: FormView;
 }
-const { unitsLabel, units, items, copyLabel, shareLabel } = Astro.props.form;
+const { unitsLabel, units, items } = Astro.props.form;
 const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' : 'false');
 ---
 
@@ -55,20 +55,4 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
       <CalculatorField field={item.field} stepper={item.stepper} />
     ),
   )}
-  <div class="calc-copy" data-reserved="copy">
-    <button type="button" data-copy hidden disabled>
-      {copyLabel}
-    </button>
-    <a
-      class="calc-share"
-      data-share="https://wa.me/"
-      target="_blank"
-      rel="noopener noreferrer"
-      hidden
-    >
-      {shareLabel}
-    </a>
-    <p class="calc-status" data-copy-status role="status"></p>
-  </div>
-  <slot />
 </form>

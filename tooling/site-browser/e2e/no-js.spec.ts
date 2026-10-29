@@ -40,7 +40,8 @@ test.describe('calculator pages with JavaScript off (site-quality › [SQ18], ca
         await expect(
           page.getByRole('button', { name: textOf(site, 'site.calculator.copyLink') }),
         ).toBeHidden();
-        const controls = page.locator('form input, form button');
+        // the copy button follows the result, outside the form (blueprint-ui slice 4)
+        const controls = page.locator('form input, form button, [data-copy]');
         expect(await controls.count()).toBe(spec.controls);
         for (const control of await controls.all()) await expect(control).toBeDisabled();
       });
