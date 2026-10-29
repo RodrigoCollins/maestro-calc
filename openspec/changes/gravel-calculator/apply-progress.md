@@ -17,7 +17,7 @@ Applied in the main thread on 2026-10-28 night while the owner was away ("seguí
 - No material record: gravel has no shopping line, and the record exists for purchase units. The source is cited in the page and the methodology instead (design D1).
 - The fixture is named `gravel-yields.ts`, so the existing `*-yields.ts` pattern of the mutation shard and CI inputs covers it with no config edit.
 
-**Gates:** `npm run verify` exit 0 (4,112 tests, coverage thresholds met, build and `check:site`). Mutation shard `calculators`: see below.
+**Gates:** `npm run verify` exit 0 (4,112 tests, coverage thresholds met, build and `check:site`). Mutation shard `calculators`: 293 mutants, score 100 % (gravel 110 killed, 0 survived).
 
 **Owner review needed before any page:**
 - The densities: compacted 1.83, loose 1.29 t/yd³, from WisDOT WHRP G22-05, Table E2.

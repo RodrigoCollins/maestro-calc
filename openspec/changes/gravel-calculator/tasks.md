@@ -12,4 +12,4 @@ PR 1 (`feat/gravel-core`): the calculator without a page. Strict TDD, each test 
 
 - [x] 2.1 `packages/i18n/src/catalogs/{en,es}/gravel.ts` (the derived keys, nothing else).
 - [x] 2.2 `apps/web/src/lib/gravel.ts` (composition root), `calculators.ts`, `i18n-contract.test-d.ts`, `PAGELESS`.
-- [ ] 2.3 Gates: `npm run verify`; mutation shard `calculators` passes.
+- [x] 2.3 Gates: `npm run verify`; mutation shard `calculators` passes.
