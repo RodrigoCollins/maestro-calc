@@ -81,6 +81,8 @@ const breakpointProblems = (css: string | undefined, edges: readonly number[]): 
 const tokenRules = rulesOf(tokens);
 const baseRules = rulesOf(base);
 const root = tokenRules.get(':root') ?? {};
+/** The corners of the mockups (site-shell › [SS26]): cards, controls, segments. */
+const RADII = ['--radius-card', '--radius-control', '--radius-segment'] as const;
 
 /** A declared value with `var(--x)` replaced by the token it names. */
 const resolve = (value: string | undefined): string =>
@@ -197,7 +199,7 @@ describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
     expect(contrast(SURFACE, line)).toBeGreaterThanOrEqual(4.5);
   });
 
-  // spec: site-shell › [SS25] one grid cell, one tick weight, no tick length, no radius token
+  // spec: site-shell › [SS25] one grid cell, one tick weight, no tick length
   it('pins --grid-size to 1rem and --tick-weight to a positive length', () => {
     expect(root['--grid-size']).toBe('1rem');
     expect(root['--tick-weight']).toMatch(/^\d*\.?\d+(px|rem)$/);
@@ -205,25 +207,34 @@ describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
   });
 
   // spec: site-shell › [SS25] the tick length is the grid cell, so no second token carries it
-  it('declares no tick-length token and no custom property named after a radius', () => {
+  it('declares no tick-length token', () => {
     expect(Object.keys(root).filter((name) => /tick-length|^--tick(?!-weight)/.test(name))).toEqual(
       [],
     );
-    const everywhere = stylesheets.flatMap((name) =>
-      [...readFileSync(fromRoot(name), 'utf8').matchAll(/(--[\w-]*radius[\w-]*)\s*:/g)].map(
-        (match) => match[1],
-      ),
-    );
-    expect(everywhere).toEqual([]);
   });
 
-  // spec: site-shell › [SS26] square corners in the three global sheets, long-hands included
-  it('uses no non-zero radius in the global sheets', () => {
+  // spec: site-shell › [SS26] the corners of the mockups are three rem tokens, declared in tokens.css only
+  it('declares the three radius tokens in rem, and no other custom property named after a radius', () => {
+    const declared = stylesheets.flatMap((name) =>
+      [...readFileSync(fromRoot(name), 'utf8').matchAll(/(--[\w-]*radius[\w-]*)\s*:/g)].map(
+        (match) => `${name.split('/').pop() ?? ''} ${match[1] ?? ''}`,
+      ),
+    );
+    expect(declared).toEqual(RADII.map((token) => `tokens.css ${token}`));
+    for (const token of RADII) expect(root[token], token).toMatch(/^\d*\.?\d+rem$/);
+  });
+
+  // spec: site-shell › [SS26] every corner of the global sheets is square or one of the tokens, long-hands included
+  it('takes every non-zero radius of the global sheets from a radius token', () => {
+    const tokens = new Set(RADII.map((token) => `var(${token})`));
     for (const name of stylesheets) {
       const css = readFileSync(fromRoot(name), 'utf8');
       const radii = [...css.matchAll(/[\w-]*radius\s*:\s*([^;}]+)/g)].map((match) => match[1]);
       expect(
-        radii.filter((value) => !/^0(px|rem)?(\s+0(px|rem)?)*$/.test(value?.trim() ?? '')),
+        radii.filter((value) => {
+          const trimmed = value?.trim() ?? '';
+          return !/^0(px|rem)?(\s+0(px|rem)?)*$/.test(trimmed) && !tokens.has(trimmed);
+        }),
         name,
       ).toEqual([]);
     }
@@ -240,6 +251,13 @@ describe('Blueprint primitives (site-shell › [SS24], [SS25], [SS26])', () => {
 });
 
 describe('contrast (site-shell › [SS7, SS14, SS16])', () => {
+  // WCAG 1.4.11: the edge that shows where an input is reaches 3:1 on the card it sits on
+  it('keeps the input edge at 3:1 or more on Sheet white', () => {
+    expect(
+      contrast(colour('--color-control-line'), colour('--color-surface')),
+    ).toBeGreaterThanOrEqual(3);
+  });
+
   it('keeps the WhatsApp label legible: near-black text on the WhatsApp green', () => {
     expect(contrast(ON_WHATSAPP, WHATSAPP)).toBeGreaterThanOrEqual(4.5);
     expect(contrast('#FFFFFF', WHATSAPP)).toBeLessThan(4.5);

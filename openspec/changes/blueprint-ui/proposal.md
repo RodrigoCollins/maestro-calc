@@ -39,6 +39,12 @@ Every slice keeps CLS 0 (layout-stability e2e), axe 0, the 44 px targets and the
 
 HTML budget 40,960 → 49,152 B (48 KiB); the ES concrete pin ([CP66]) follows it to 49,152 B. The page weight budgets are sums of their parts, so they rise by the same 8 KiB: 163,840 → 172,032 B (home and trust) and 196,608 → 204,800 B (calculator pages). CSS, fonts and the calculator JS graph keep their limits. The `site-quality` [SQ7] and `calculator-page` [CP66] figures in `openspec/specs/` are updated at archive.
 
+## Decision (2026-10-29): rounded corners
+
+Rodrigo said "seguimos" to the corners question, so the implementer chose the mockup corners: the approved direction wins over the earlier square choice. Three tokens in `tokens.css`: `--radius-card` 1rem, `--radius-control` 0.75rem, `--radius-segment` 0.5625rem. Going back to square is one edit per token. Spec changes at archive:
+- site-shell [SS25]: drop "no token name contains `radius`".
+- site-shell [SS26] "Corners from the radius tokens": every non-zero `border-radius` of the global sheets is `var(--radius-card|control|segment)`, those three are the only custom properties named after a radius, declared in `tokens.css` in rem.
+
 ## Progress
 
 - Slice 1 (header): #117, with the follow-up #118 (CLS at 320 px on Linux).
@@ -54,3 +60,11 @@ HTML budget 40,960 → 49,152 B (48 KiB); the ES concrete pin ([CP66]) follows i
 - The CLS of 0.0105 from 472 px up was the note's paragraph margin collapsing through `.calc-notice`: the script swaps the note for the (hidden) notice, the 16 px margin went away and the form rose. `.calc-notice` now owns a 1rem bottom margin and its paragraphs have none.
 - `layout.spec.ts` "fits every reserved block" measures both fonts: the fit check reads the web font (stable across platforms), the unused check takes the tallest of both.
 - `WIDTHS` holds both edges of every step. `verify` 0, e2e 668 passed.
+
+## Slice 3a — form card (branch `feat/blueprint-ui-form`)
+
+- The form is a Sheet white card (1.5px `--color-line` edge, `--radius-card`, 1rem padding).
+- Choice groups (units, shape, bag size) are segmented controls: a `.calc-segments` wrapper around the buttons, plan-paper track, ink pressed segment, 15 px labels; four options sit two by two below 22.5rem.
+- Inputs: 56 px, `--radius-control`, condensed 600 figures at the H3 size, edge `--color-control-line` `#7A848C` (3.8:1 on white, WCAG 1.4.11; the mockup's `#C3CBC7` is 1.7:1).
+- Deviation: the unit stays on the label row, not inside the input. The input value carries its own unit ("12 ft", mixed input like 5′ 3 1/2″ is accepted), so a suffix would repeat it.
+- Next (3b): two fields per row from 22rem, inline −/+ stepper, smaller field reserve.

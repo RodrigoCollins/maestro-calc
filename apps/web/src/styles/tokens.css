@@ -11,6 +11,8 @@
   --color-whatsapp: #1faf5a; /* WhatsApp */
   --color-on-whatsapp: #06210f; /* WhatsApp: near-black text, white fails contrast */
   --color-error: #b42318; /* Error red */
+  --color-line: #d5dbd8; /* card edges, decorative */
+  --color-control-line: #7a848c; /* input edges: 3.8:1 on Sheet white (WCAG 1.4.11) */
 
   /* Type scale: 17 px body, condensed display sizes for headings. */
   --text-base: 1.0625rem;
@@ -34,6 +36,11 @@
 
   /* WCAG 2.2 target size with room to spare: 44 px. */
   --target-size: 2.75rem;
+
+  /* Corners of the mockups: cards, controls, and the segments inside a segmented control. */
+  --radius-card: 1rem;
+  --radius-control: 0.75rem;
+  --radius-segment: 0.5625rem;
   --measure: 42rem;
   --page-width: 64rem;
 }
