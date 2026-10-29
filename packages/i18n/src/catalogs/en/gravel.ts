@@ -1,4 +1,4 @@
-/** Copy of the `gravel` calculator, English: the keys core derives from its descriptors. */
+/** Copy of the `gravel` calculator, English: the keys core derives from its descriptors and the page copy. */
 export const enGravel = {
   'calc.gravel.title': 'Gravel Calculator',
   'calc.gravel.inputs.length': 'Length',
@@ -15,4 +15,12 @@ export const enGravel = {
   'calc.gravel.outputs.orderM3': 'Volume to order (cubic meters)',
   'calc.gravel.outputs.placedYd3': 'Volume in place (cubic yards)',
   'calc.gravel.outputs.cost': 'Gravel cost',
+  'calc.gravel.page.tons': '{value} tons',
+  'calc.gravel.page.tonnes': '{value} metric tonnes',
+  'calc.gravel.page.priceHint': 'Add your price to see the cost',
+  'calc.gravel.page.answer.compacted':
+    'A {length} by {width} area, {depth} deep and compacted, needs {tons} of gravel.',
+  'calc.gravel.page.answer.loose':
+    'A {length} by {width} area, {depth} deep and loose, needs {tons} of gravel.',
+  'calc.gravel.page.drawing.note': '{depth} deep',
 } as const;
