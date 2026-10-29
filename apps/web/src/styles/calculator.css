@@ -110,11 +110,11 @@
   cursor: pointer;
 }
 
-/* A segmented control: the options share one plan-paper track and the pressed one is ink. They
-   wrap to a second row when the labels do not fit one. */
+/* A segmented control: the options share one plan-paper track and the pressed one is ink. The
+   track never wraps and a label never breaks, so its height does not depend on the font: a wider
+   fallback font clips a label for a moment instead of moving the page when the web font swaps in. */
 .calc-segments {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--space-1);
   padding: var(--space-1);
   border-radius: var(--radius-control);
@@ -129,15 +129,18 @@
   background: transparent;
   font-size: var(--text-small);
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-/* Four options split two by two until one row holds them all (the Spanish shapes need 22.5rem). */
+/* Four options split two by two until one row holds them all: the Spanish shapes need 22.5rem, and
+   24rem leaves room for text that renders a few pixels wider on another platform. */
 .calc-segments:has(> :nth-child(4)) {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-@media (min-width: 22.5rem) {
+@media (min-width: 24rem) {
   .calc-segments:has(> :nth-child(4)) {
     display: flex;
   }

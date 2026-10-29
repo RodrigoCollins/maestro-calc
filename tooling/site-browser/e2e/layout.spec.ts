@@ -8,7 +8,7 @@ import { answer, notRunning, open } from './locators.ts';
 // and of every `reserve` of the page table (the first width where a rule applies and the one before
 // it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
 const WIDTHS = [
-  320, 327, 328, 343, 344, 355, 356, 359, 360, 375, 376, 385, 386, 387, 390, 391, 392, 463, 464,
+  320, 327, 328, 343, 344, 355, 356, 375, 376, 383, 384, 385, 386, 387, 390, 391, 392, 463, 464,
   471, 472, 479, 480, 481, 487, 488, 567, 568, 583, 584, 599, 600, 640, 666, 667, 711, 712, 729,
   730, 767, 768, 879, 880, 1023, 1024, 1280,
 ] as const;
@@ -255,6 +255,22 @@ for (const calculator of calculatorPages) {
         expect(withNotice).toBe(before);
       });
     }
+
+    // A segment label never wraps (its track keeps one height whatever the font), so with the web
+    // font it must fit its button at every width: a clipped label is a step set too narrow.
+    test('fits every segment label in its button at every width', async ({ page }) => {
+      await open(page, calculator);
+      await page.evaluate(() => document.fonts.ready);
+      for (const width of WIDTHS) {
+        await page.setViewportSize({ width, height: 844 });
+        const clipped = await page.evaluate(() =>
+          [...document.querySelectorAll('.calc-segments button')]
+            .filter((button) => button.scrollWidth > button.clientWidth)
+            .map((button) => button.textContent.trim()),
+        );
+        expect(clipped, `${String(width)} px`).toEqual([]);
+      }
+    });
   });
 }
 
