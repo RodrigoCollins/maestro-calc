@@ -322,6 +322,70 @@ export const circleShape = (frame: Frame, r: number, label: Label): Shape => {
   };
 };
 
+/** The two texts of a stair profile in one unit system. */
+export interface StairTexts {
+  readonly rise: string;
+  readonly run: string;
+}
+
+/**
+ * A stair in side view, rising to the right: `count` treads, each `run` long and `rise` tall, the
+ * whole profile clamped like a rectangle of `count · run` by `count · rise` (so its ratio is the
+ * step's). The rise is measured on the left of the first riser and the run under the first tread;
+ * the top row is left for a note. `all` holds the texts of every unit system, the active one first.
+ */
+export const stairShape = (
+  frame: Frame,
+  { run, rise, count }: { readonly run: number; readonly rise: number; readonly count: number },
+  all: readonly [StairTexts, ...StairTexts[]],
+): Shape => {
+  const [texts] = all;
+  const room = (key: keyof StairTexts) => longest(all.map((each) => each[key]));
+  const gutters: Gutters = {
+    top: round(PAD + LINE * NOTE),
+    right: MARGIN,
+    bottom: round(OFFSET + PAD + LINE * LABEL),
+    left: round(OFFSET + PAD + textWidth(room('rise'), LABEL)),
+  };
+  const box = fitRectangle(frame, gutters, count * run, count * rise);
+  const [tread, riser] = [box.w / count, box.h / count];
+  const ground = box.y + box.h;
+  // each corner once, so a riser is vertical whatever the rounding of its two treads
+  const across = (k: number): string => num(box.x + k * tread);
+  const steps = Array.from({ length: count }, (_, k) => {
+    const y = num(ground - (k + 1) * riser);
+    return `L${across(k)} ${y}L${across(k + 1)} ${y}`;
+  });
+  const first = { x: box.x, y: round(ground - riser) };
+  const runEnd = { x: round(box.x + tread), y: ground };
+  const riseLine = dimensionLine({ x: box.x, y: ground }, first, 'left', { text: texts.rise });
+  const runLine = dimensionLine({ x: box.x, y: ground }, runEnd, 'bottom', { text: texts.run });
+  return {
+    box,
+    outline: [
+      {
+        kind: 'path',
+        d: `M${num(box.x)} ${num(ground)}${steps.join('')}L${across(count)} ${num(ground)}Z`,
+      },
+    ],
+    lines: [...riseLine.lines, ...runLine.lines],
+    labels: [
+      ...riseLine.labels,
+      ...runLine.labels.map((label) => fitLabel(label, frame, room('run'))),
+    ],
+  };
+};
+
+/** A note in the row above a box, centred on it: the step count of a stair profile. */
+export const noteAbove = (box: Box, label: Label): PlanLabel => ({
+  x: round(box.x + box.w / 2),
+  y: round(box.y - PAD - (LINE * NOTE) / 2),
+  anchor: 'middle',
+  size: NOTE,
+  tone: 'note',
+  label,
+});
+
 /** A note in the row under a box, centred on it: the thickness, depth, height or steps of a plan. */
 export const noteBelow = (box: Box, label: Label): PlanLabel => ({
   x: round(box.x + box.w / 2),

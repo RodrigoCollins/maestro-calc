@@ -5,12 +5,15 @@ import { dimensionText } from '../present.ts';
 import {
   circleShape,
   markLabel,
+  noteAbove,
   noteBelow,
   rectangleShape,
+  stairShape,
   type Box,
   type Plan,
   type Shape,
   type SideTexts,
+  type StairTexts,
 } from '../slots/drawing.ts';
 import { SHAPES } from './shapes.ts';
 
@@ -39,13 +42,10 @@ type Valid = Moment['valid'];
 const SYSTEMS: readonly UnitSystem[] = ['imperial', 'metric'];
 const inches = (length: Valid['length']): number => valueIn(length, inch).toNumber();
 
-/** The side texts of a rectangle plan, the active unit system first, so a toggle moves nothing. */
-const sidesOf = (
-  moment: Moment,
-  sides: (valid: Valid, system: UnitSystem) => SideTexts,
-): readonly [SideTexts, ...SideTexts[]] => [
-  sides(moment.valid, moment.system),
-  ...SYSTEMS.filter((each) => each !== moment.system).map((each) => sides(moment.valid, each)),
+/** Texts in every unit system, the active one first: the layout keeps room for all, so a toggle moves nothing. */
+const inSystems = <T>(moment: Moment, texts: (system: UnitSystem) => T): readonly [T, ...T[]] => [
+  texts(moment.system),
+  ...SYSTEMS.filter((each) => each !== moment.system).map(texts),
 ];
 
 /** The count mark `× n` of `n` pieces, none for one. */
@@ -67,9 +67,9 @@ const planWith = (
 
 const slab = (moment: Moment): Plan => {
   const { valid, system } = moment;
-  const all = sidesOf(moment, (state, each) => ({
-    length: dimensionText(state.length, each),
-    width: dimensionText(state.width, each),
+  const all = inSystems<SideTexts>(moment, (each) => ({
+    length: dimensionText(valid.length, each),
+    width: dimensionText(valid.width, each),
   }));
   const thickness = dimensionText(valid.thickness, system);
   // the slab's volume does not use the count, so the plan does not mark it
@@ -82,9 +82,9 @@ const slab = (moment: Moment): Plan => {
 
 const footing = (moment: Moment): Plan => {
   const { valid, system } = moment;
-  const all = sidesOf(moment, (state, each) => ({
-    length: dimensionText(state.length, each),
-    width: dimensionText(state.footingWidth, each),
+  const all = inSystems<SideTexts>(moment, (each) => ({
+    length: dimensionText(valid.length, each),
+    width: dimensionText(valid.footingWidth, each),
   }));
   const depth = dimensionText(valid.footingDepth, system);
   const shape = rectangleShape(FRAME, inches(valid.length), inches(valid.footingWidth), all);
@@ -117,7 +117,31 @@ const column = (moment: Moment): Plan => {
   );
 };
 
-/** The plan of a ready moment, by the shape of its valid state; `null` for one not drawn yet. */
+const steps = (moment: Moment): Plan | null => {
+  const { valid } = moment;
+  if (valid.stepCount === 0) return null;
+  const all = inSystems<StairTexts>(moment, (each) => ({
+    rise: dimensionText(valid.rise, each),
+    run: dimensionText(valid.run, each),
+  }));
+  const shape = stairShape(
+    FRAME,
+    { run: inches(valid.run), rise: inches(valid.rise), count: valid.stepCount },
+    all,
+  );
+  const count = String(valid.stepCount);
+  return {
+    name: { message: 'drawing.steps', fills: { ...all[0], count } },
+    outline: shape.outline,
+    lines: shape.lines,
+    labels: [
+      ...shape.labels,
+      noteAbove(shape.box, { message: 'drawing.steps.note', fills: { count } }),
+    ],
+  };
+};
+
+/** The plan of a ready moment, by the shape of its valid state; `null` for a stair of no steps. */
 export const planOf = (moment: Moment): Plan | null => {
   switch (moment.valid.shape) {
     case 'slab':
@@ -127,6 +151,6 @@ export const planOf = (moment: Moment): Plan | null => {
     case 'column':
       return column(moment);
     default:
-      return null;
+      return steps(moment);
   }
 };

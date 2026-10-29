@@ -165,8 +165,65 @@ describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () =>
   });
 });
 
-describe('the concrete plans before the steps profile', () => {
-  it('draws no steps yet: the module does not declare the drawing until every shape has a plan', () => {
-    expect(planOf(momentOf({ shape: 'steps' }))).toBeNull();
+// spec: blueprint-drawing › [BD7] 4 steps, rise 7 in, run 11 in: the profile is 44 by 28 (11:7). Gutters:
+// top 6 + 18.75 = 24.8 (the note row), bottom 14 + 6 + 21.25 = 41.3, right 6, left 14 + 6 + `17.78 cm`
+// (8 × 17 × 0.67 = 91.1) = 111.1. Across 182.9 sets the width, so the height is 182.9 × 7 / 11 =
+// 116.4 at y = 24.8 + (133.9 − 116.4) / 2 = 33.6: treads of 45.7, risers of 29.1, ground at 150
+describe('the concrete steps profile (blueprint-drawing › [BD7], [BD8])', () => {
+  const steps = { shape: 'steps', rise: '7 in', run: '11 in', stepCount: '4' };
+
+  it('draws 4 treads rising to the right with the rise, the run and the step count', () => {
+    const plan = drawn(momentOf(steps));
+    expect(plan.name).toEqual({
+      message: 'drawing.steps',
+      fills: { rise: '7 in', run: '11 in', count: '4' },
+    });
+    expect(plan.outline).toEqual([
+      {
+        kind: 'path',
+        d: 'M111.1 150L111.1 120.9L156.8 120.9L156.8 91.8L202.6 91.8L202.6 62.7L248.3 62.7L248.3 33.6L294 33.6L294 150Z',
+      },
+    ]);
+    expect(plan.lines[0]).toEqual({ d: 'M97.1 150L97.1 120.9', tone: 'helper' });
+    expect(plan.lines[3]).toEqual({ d: 'M111.1 164L156.8 164', tone: 'helper' });
+    expect(labels(plan)).toEqual([
+      [91.1, 135.5, 'end', '7 in'],
+      [134, 180.6, 'middle', '11 in'],
+      [202.6, 18.2, 'middle', 'drawing.steps.note'],
+    ]);
+    expect(plan.labels[2]?.label).toEqual({
+      message: 'drawing.steps.note',
+      fills: { count: '4' },
+    });
+  });
+
+  it('relabels the steps in metric and keeps every coordinate', () => {
+    const us = drawn(momentOf(steps));
+    const metric = drawn(momentOf(steps, 'metric'));
+    expect(metric.outline).toEqual(us.outline);
+    expect(labels(metric).map(([x, y]) => [x, y])).toEqual(labels(us).map(([x, y]) => [x, y]));
+    expect(
+      labels(metric)
+        .slice(0, 2)
+        .map(([, , , text]) => text),
+    ).toEqual(['17.78 cm', '27.94 cm']);
+  });
+
+  it('keeps 50 steps and their labels inside the frame', () => {
+    const plan = drawn(momentOf({ ...steps, stepCount: '50' }));
+    const corners = (plan.outline[0] as { d: string }).d.match(/[\d.]+/g)?.map(Number) ?? [];
+    expect(corners.length).toBe(2 + 50 * 4 + 2);
+    expect(Math.min(...corners)).toBeGreaterThanOrEqual(0);
+    expect(Math.max(...corners)).toBeLessThanOrEqual(300);
+    for (const { x } of plan.labels) expect(x).toBeGreaterThanOrEqual(0);
+  });
+
+  it('draws nothing for no steps: there is no profile to show', () => {
+    expect(planOf(momentOf({ ...steps, stepCount: '0' }))).toBeNull();
+  });
+
+  // spec: blueprint-drawing › [BD8] the unit half: every shape the select offers has a plan
+  it.each(['slab', 'footing', 'column', 'steps'])('has a plan for the %s default', (shape) => {
+    expect(planOf(momentOf({ shape }))).not.toBeNull();
   });
 });
