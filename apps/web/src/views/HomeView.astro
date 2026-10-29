@@ -82,6 +82,14 @@ const cards = homeCards(locale);
     margin: 0;
   }
 
+  /* Once the hero no longer reaches the screen edges (the page width plus its two gutters), it takes
+     the card corners of the mockups. */
+  @media (min-width: 66rem) {
+    .home-hero {
+      border-radius: var(--radius-card);
+    }
+  }
+
   .home-cards {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
@@ -95,7 +103,8 @@ const cards = homeCards(locale);
   .home-card {
     position: relative;
     padding: var(--space-3);
-    border: 2px solid var(--color-surface);
+    border: 2px solid var(--color-line);
+    border-radius: var(--radius-card);
     background: var(--color-surface);
   }
 
@@ -108,7 +117,9 @@ const cards = homeCards(locale);
     margin: 0 0 var(--space-2);
   }
 
+  /* The title is ink, as the mockup cards; the whole card is the link and it underlines on hover. */
   .home-card a {
+    color: var(--color-text);
     text-decoration: none;
   }
 
