@@ -24,3 +24,14 @@ Applied in the main thread on 2026-10-28 night while the owner was away ("seguí
 - The default placement (compacted).
 - The 5 % default extra.
 - The Spanish labels.
+
+## PR 2 — page module without a route (`feat/gravel-page-module`)
+
+Every figure in the tests was checked by hand before the code existed, and every test passed on the first green run. The page reuses the square footage rectangle plan, adds the depth note centred on the frame, and names the drawing by the answer sentence (`ANSWER`), as concrete does. The answer has one template per placement, so the Spanish agrees in gender ("compactada", "suelta"). The page copy to review, six keys per locale:
+
+- the primary sentences `{value} tons` / `{value} toneladas`;
+- the price hint;
+- the two answers;
+- the depth note.
+
+Gates: typecheck, lint, `npm run test:coverage` (4,128 tests, thresholds met). No route, so nothing visible changes.

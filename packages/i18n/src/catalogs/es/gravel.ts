@@ -18,4 +18,12 @@ export const esGravel = {
   'calc.gravel.outputs.orderM3': 'Volumen a pedir (metros cúbicos)',
   'calc.gravel.outputs.placedYd3': 'Volumen colocado (yardas cúbicas)',
   'calc.gravel.outputs.cost': 'Costo de la grava',
+  'calc.gravel.page.tons': '{value} toneladas',
+  'calc.gravel.page.tonnes': '{value} toneladas métricas',
+  'calc.gravel.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.gravel.page.answer.compacted':
+    'Un área de {length} por {width}, de {depth} de profundidad y compactada, lleva {tons} de grava.',
+  'calc.gravel.page.answer.loose':
+    'Un área de {length} por {width}, de {depth} de profundidad y suelta, lleva {tons} de grava.',
+  'calc.gravel.page.drawing.note': '{depth} de profundidad',
 } as const satisfies CatalogOf<typeof enGravel>;

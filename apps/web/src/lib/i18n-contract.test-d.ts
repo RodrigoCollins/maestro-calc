@@ -41,6 +41,15 @@ type ConcretePageKeys =
   | 'calc.concrete.page.drawing.column.note'
   | 'calc.concrete.page.drawing.steps.note';
 
+/** The page copy of the gravel calculator (`calc.gravel.page.*`), exactly: a new key is added here. */
+type GravelPageKeys =
+  | 'calc.gravel.page.tons'
+  | 'calc.gravel.page.tonnes'
+  | 'calc.gravel.page.priceHint'
+  | 'calc.gravel.page.answer.compacted'
+  | 'calc.gravel.page.answer.loose'
+  | 'calc.gravel.page.drawing.note';
+
 /** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
 type RectangleAreaPageKeys =
   | 'calc.rectangle-area.page.answer'
@@ -71,6 +80,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | `errors.${AllErrorCode}`
       | MaterialKeys<typeof concreteMix>
       | ConcretePageKeys
+      | GravelPageKeys
       | RectangleAreaPageKeys
     >();
   });
@@ -80,6 +90,9 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enConcrete, `calc.concrete.page.${string}`>
     >().toEqualTypeOf<ConcretePageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enGravel, `calc.gravel.page.${string}`>
+    >().toEqualTypeOf<GravelPageKeys>();
     expectTypeOf<
       Extract<keyof typeof enRectangleArea, `calc.rectangle-area.page.${string}`>
     >().toEqualTypeOf<RectangleAreaPageKeys>();
