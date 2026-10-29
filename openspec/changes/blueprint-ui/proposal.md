@@ -43,3 +43,20 @@ HTML budget 40,960 → 49,152 B (48 KiB); the ES concrete pin ([CP66]) follows i
 
 - Slice 1 (header): #117, with the follow-up #118 (CLS at 320 px on Linux).
 - Slice 2 (answer): body text at weight 400. Answer reserve measured again 320–1280 px, both locales, every layout query: concrete 4 → 3 lines at 23.5rem → 2 at 35.5rem → 1 at 64rem (was 5 large lines); square footage 2 → 1 at 29rem.
+
+## Slice 2b — work in progress (branch `feat/blueprint-ui-notice`, not merged)
+
+Done on the branch:
+- The no-JS note no longer repeats the example (`page-view.ts`; unit tests and `no-js.spec.ts` updated).
+- Answer and notice ladders measured again with the web font **and** the fallback font (fonts blocked), keeping the larger count:
+  - Notice 4 → 3 at 21.5rem → 2 at 30.5rem → 1 at 55rem (both pages).
+  - Concrete answer 4 → 3 at 24.5rem → 2 at 36.5rem. With the fallback font it never fits on one line.
+  - Square footage answer 2 → 1 at 30rem.
+- `WIDTHS` holds both edges of every new step.
+
+Still failing locally: `layout.spec.ts` "shifts the layout by at most 0.01 on load" reports exactly 0.0105 at every width from 472 px up, on both concrete locales, and "keeps the notice … at their reserved size" (the `?v=2` notice) fails from 472 px. The constant value points at one element, not the ladders. Next steps:
+1. Log the layout-shift entries' `sources` in the failing test to name the node.
+2. Check that the `v=2` notice and the no-JS note sit in the same reserved block in both states.
+3. Measure the reserve that test needs.
+
+The measurement spec used (temporary, deleted) iterated `calculatorPages`, every state, 320 to 1280 px, `Math.ceil(rangeHeight / (fontSize × 1.55) − 0.05)`, with and without `.woff2`.

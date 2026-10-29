@@ -9,6 +9,6 @@ import type { Reserve } from '../../lib/reserve.ts';
  * the concrete page). The values live here, outside the page module, so no client bundle carries them.
  */
 export const rectangleAreaReserve = {
-  answer: [2, [29, 1]],
-  notice: [6, [24.1875, 5], [30.5, 4], [44.5, 3]],
+  answer: [2, [30, 1]],
+  notice: [4, [21.5, 3], [30.5, 2], [55, 1]],
 } as const satisfies Reserve;

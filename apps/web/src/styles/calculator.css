@@ -35,42 +35,36 @@
 }
 
 .calc-notice {
-  min-height: calc(var(--notice-lines, 6) * var(--text-base) * var(--leading-body));
+  min-height: calc(var(--notice-lines, 4) * var(--text-base) * var(--leading-body));
 }
 
-@media (min-width: 22.25rem) {
-  :root {
-    --notice-lines: 5;
-  }
-}
-
-@media (min-width: 23.5rem) {
-  :root {
-    --answer-lines: 3;
-  }
-}
-
-@media (min-width: 29rem) {
-  :root {
-    --notice-lines: 4;
-  }
-}
-
-@media (min-width: 35.5rem) {
-  :root {
-    --answer-lines: 2;
-  }
-}
-
-@media (min-width: 41.6875rem) {
+@media (min-width: 21.5rem) {
   :root {
     --notice-lines: 3;
   }
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 24.5rem) {
   :root {
-    --answer-lines: 1;
+    --answer-lines: 3;
+  }
+}
+
+@media (min-width: 29.5rem) {
+  :root {
+    --notice-lines: 2;
+  }
+}
+
+@media (min-width: 36.5rem) {
+  :root {
+    --answer-lines: 2;
+  }
+}
+
+@media (min-width: 55rem) {
+  :root {
+    --notice-lines: 1;
   }
 }
 

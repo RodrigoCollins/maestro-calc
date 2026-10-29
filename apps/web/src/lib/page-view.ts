@@ -326,7 +326,6 @@ export const pageViewOf = (
   const moment = defaultMomentOf(module);
   checkModule(module, moment.result);
   const result = resultViewAt(module, locale, catalog, moment);
-  const example = catalog[pageKey(id, 'example')];
   const { before, value, after } = result.primary;
   return {
     id,
@@ -345,10 +344,9 @@ export const pageViewOf = (
             answer.values(moment, `${before}${value}${after}`),
           ),
         }),
-    notRunning:
-      example === undefined
-        ? text('site.calculator.noscript')
-        : `${text('site.calculator.noscript')} ${example}`,
+    // the note says the result below is the example, so it does not repeat the example sentence
+    // (blueprint-ui: its reserve was the gap under the answer)
+    notRunning: text('site.calculator.noscript'),
     form: formViewAt(module, catalog, moment),
     result,
     messages: messagesOf(module, catalog),
