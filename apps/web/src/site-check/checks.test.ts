@@ -24,7 +24,7 @@ describe('checkSite', () => {
     );
     dist.set('_astro/x.js', '');
     const buildBytes = validBuildBytes(dist);
-    const sizes = new Map(buildBytes.sizes).set('index.html', 40_961);
+    const sizes = new Map(buildBytes.sizes).set('index.html', 49_153);
     const fonts = new Map(buildBytes.fonts).set(
       '_astro/fonts/a.woff2',
       latinFont().subarray(0, 10),

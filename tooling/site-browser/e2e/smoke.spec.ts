@@ -57,6 +57,12 @@ const tabTo = async (page: Page, target: Locator): Promise<void> => {
 /** Everything the keyboard can reach in the shell: skip link, header, footer. */
 const shellLinks = (page: Page) => page.locator('a.skip-link, header a, footer a');
 
+/** On a phone the header links sit in the menu (a popover): open it, as a visitor would. */
+const openMenu = async (page: Page): Promise<void> => {
+  const button = page.locator('.menu-button');
+  if (await button.isVisible()) await button.click();
+};
+
 test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-i18n › [SR3])', () => {
   for (const path of routable) {
     test.describe(path, () => {
@@ -132,6 +138,7 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         page,
       }) => {
         await page.goto(path);
+        await openMenu(page);
         const count = await shellLinks(page).count();
         expect(count).toBeGreaterThanOrEqual(3);
         const locale = localeOfPath(path);
@@ -155,6 +162,7 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
 
       test('gives every shell link a 44 by 44 target', async ({ page }) => {
         await page.goto(path);
+        await openMenu(page);
         const links = await shellLinks(page).all();
         expect(links.length).toBeGreaterThanOrEqual(3);
         for (const link of links) {

@@ -9,19 +9,19 @@ export type Sizes = BuildBytes['sizes'];
 
 /** Design budgets (site-quality): bytes on disk, uncompressed. JavaScript has none (`js: 0`). */
 export const LIMITS = {
-  html: 40_960,
+  html: 49_152,
   css: 20_480,
   font: 30_720,
   fonts: 92_160,
   js: 0,
-  weight: 163_840,
+  weight: 172_032,
 } as const;
 
 /**
  * The calculator template's own ceilings (site-quality › Byte budgets): the JavaScript of a page is
  * its entry, its module preloads and their static imports, and it counts toward the page weight.
  */
-export const CALCULATOR_LIMITS = { js: 49_152, weight: 196_608 } as const;
+export const CALCULATOR_LIMITS = { js: 49_152, weight: 204_800 } as const;
 
 const DIST = '(dist)';
 const JS_FILE = /\.[cm]?js$/;

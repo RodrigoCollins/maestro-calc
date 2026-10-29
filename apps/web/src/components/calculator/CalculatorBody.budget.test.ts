@@ -32,9 +32,9 @@ import {
 } from '../../contract/__testing__/budget-copy.ts';
 
 /** The page HTML budget of site-quality (SQ7), in bytes. */
-const HTML_BUDGET = 40_960;
+const HTML_BUDGET = 49_152;
 /** The Spanish full-length proof must not grow past the size it had when the home-directory change began ([CP66]). */
-const ES_FULL_LENGTH_PIN = 40_836;
+const ES_FULL_LENGTH_PIN = 49_152;
 const WEB_ROOT = resolve(import.meta.dirname, '../../..');
 const PAGE = join(WEB_ROOT, 'src/contract/__testing__/budget-page.astro');
 const out = mkdtempSync(join(tmpdir(), 'calculator-budget-'));
@@ -420,8 +420,9 @@ describe('CalculatorBody HTML budget (calculator-page › Page anatomy; site-qua
     120_000,
   );
 
-  // spec: calculator-page › [CP66] the Spanish full-length proof stays at or under 40,836 B at every PR tip
-  it('keeps the Spanish full-length proof at 40,836 B or less', async () => {
+  // spec: calculator-page › [CP66] the Spanish full-length proof stays under the pin at every PR tip;
+  // blueprint-ui (owner, 2026-10-29) raised the HTML budget and the pin to 49,152 B for the redesign
+  it('keeps the Spanish full-length proof at 49,152 B or less', async () => {
     const { es } = await sizeOf('base', 'concrete');
     console.info(
       `[CP66] Spanish full-length proof: ${String(es)} B of ${String(ES_FULL_LENGTH_PIN)} B`,

@@ -100,24 +100,24 @@ describe('check:site byte budgets and glyphs (site-quality › [SQ6], [SQ7], [SQ
   it('prints the largest page and size per category on a green build [SQ6]', () => {
     const { code, out } = run(writeDist());
     expect(code).toBe(0);
-    expect(out).toMatch(/^budget html: largest \/[\w/.-]+\.html [\d,]+ B \(limit 40,960\)$/m);
+    expect(out).toMatch(/^budget html: largest \/[\w/.-]+\.html [\d,]+ B \(limit 49,152\)$/m);
     expect(out).toMatch(/^budget css: largest \/[\w/.-]+\.html [\d,]+ B \(limit 20,480\)$/m);
     expect(out).toMatch(
       /^budget font: largest \/_astro\/fonts\/[a-d]\.woff2 [\d,]+ B \(limit 30,720\)$/m,
     );
     expect(out).toMatch(/^budget fonts: total [\d,]+ B in 4 files \(limit 92,160\)$/m);
     expect(out).toMatch(/^budget js: 0 B referenced \(limit 0\)$/m);
-    expect(out).toMatch(/^budget weight: largest \/[\w/.-]+\.html [\d,]+ B \(limit 163,840\)$/m);
+    expect(out).toMatch(/^budget weight: largest \/[\w/.-]+\.html [\d,]+ B \(limit 172,032\)$/m);
   });
 
-  it('exits 1 for an HTML file of 40,961 bytes, naming the file and the limit [SQ7]', () => {
+  it('exits 1 for an HTML file of 49,153 bytes, naming the file and the limit [SQ7]', () => {
     const grow = edited('index.html', (html) => {
-      const pad = 40_961 - Buffer.byteLength(html) - '<!---->'.length;
+      const pad = 49_153 - Buffer.byteLength(html) - '<!---->'.length;
       return `${html}<!--${'x'.repeat(pad)}-->`;
     });
     const { code, err } = run(writeDist(grow));
     expect(code).toBe(1);
-    expect(err).toContain('index.html: html-budget: 40,961 B exceeds the limit of 40,960 B');
+    expect(err).toContain('index.html: html-budget: 49,153 B exceeds the limit of 49,152 B');
   });
 
   it('exits 1 for a referenced JavaScript file, naming it [SQ8]', () => {

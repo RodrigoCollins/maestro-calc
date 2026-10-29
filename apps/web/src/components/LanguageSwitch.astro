@@ -11,3 +11,15 @@ const { href, lang, hreflang, label } = Astro.props;
 <a class="lang-switch tap-target" {href} {lang} {hreflang}>
   {label}
 </a>
+
+<style is:global>
+  /* The other language as a pill, the mockup's EN/ES toggle. */
+  .lang-switch {
+    padding: 0 var(--space-3);
+    border: 2px solid var(--color-text);
+    border-radius: 999px;
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

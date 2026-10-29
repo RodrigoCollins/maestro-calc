@@ -15,43 +15,94 @@ const { homeHref, navLabel, links, language } = Astro.props;
   <Wordmark href={homeHref} />
   <nav aria-label={navLabel}>
     {links.length > 0 && (
-      <ul>
-        {links.map(({ href, label }) => (
-          <li>
-            <a class="tap-target" {href}>
-              {label}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <>
+        <button
+          class="menu-button tap-target"
+          type="button"
+          popovertarget="site-menu"
+          aria-label={navLabel}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 7h16M4 12h16M4 17h16"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <ul id="site-menu" popover>
+          {links.map(({ href, label }) => (
+            <li>
+              <a class="tap-target" {href}>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
     )}
     <LanguageSwitch {...language} />
   </nav>
 </header>
 
 <style is:global>
+  /* A white bar across the window, its content in the page column (the Blueprint header). */
   .site-header {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2) var(--space-4);
+    gap: var(--space-2);
     max-width: var(--page-width);
     margin: 0 auto;
     padding: var(--space-2) var(--space-3);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 100vmax var(--color-surface);
+    clip-path: inset(0 -100vmax);
   }
 
-  .site-header nav,
-  .site-header ul {
+  .site-header nav {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-2) var(--space-4);
+    gap: var(--space-2);
   }
 
-  .site-header ul {
+  .menu-button {
+    justify-content: center;
+    border: 0;
+    background: none;
+    color: var(--color-text);
+  }
+
+  /* On a phone the links open from the menu button, with no script (the popover API). */
+  #site-menu {
+    inset: 3.5rem var(--space-3) auto auto;
     margin: 0;
-    padding: 0;
+    padding: var(--space-2);
+    border: 2px solid var(--color-text);
+    border-radius: 12px;
+    background: var(--color-surface);
     list-style: none;
+  }
+
+  #site-menu a {
+    padding: 0 var(--space-3);
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  @media (min-width: 48rem) {
+    .site-header .menu-button {
+      display: none;
+    }
+
+    #site-menu {
+      display: flex;
+      position: static;
+      gap: var(--space-2);
+      padding: 0;
+      border: 0;
+    }
   }
 </style>
