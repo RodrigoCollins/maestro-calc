@@ -6,6 +6,7 @@ import { compareReleased, type ReleasedCalculator } from '../url/released-harnes
 import { createConcrete } from './concrete/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
+import { topsoil } from './topsoil/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
 /** Every calculator of core that has been released; the web registry is checked in `apps/web`. */
@@ -14,6 +15,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   createConcrete(CONCRETE_YIELDS),
   createGravel(GRAVEL_DENSITIES),
   mulch,
+  topsoil,
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -99,6 +101,22 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['d', 'depth', 'length', '3'],
         ['ws', 'waste', 'percent', '5'],
         ['bg', 'bag', 'select', '2'],
+        ['bp', 'bagPrice', 'money', '0'],
+        ['yp', 'yardPrice', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-topsoil › [TS4] the seven inputs of topsoil, appended in the order of the spec
+  it('records the 7 inputs of topsoil in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'topsoil');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '120'],
+        ['w', 'width', 'length', '120'],
+        ['d', 'depth', 'length', '4'],
+        ['ws', 'waste', 'percent', '10'],
+        ['bg', 'bag', 'select', '0-75'],
         ['bp', 'bagPrice', 'money', '0'],
         ['yp', 'yardPrice', 'money', '0'],
       ],

@@ -1,0 +1,20 @@
+/** Copy of the `topsoil` calculator, English: the keys core derives from its descriptors. */
+export const enTopsoil = {
+  'calc.topsoil.title': 'Topsoil Calculator',
+  'calc.topsoil.inputs.length': 'Length',
+  'calc.topsoil.inputs.width': 'Width',
+  'calc.topsoil.inputs.depth': 'Depth',
+  'calc.topsoil.inputs.waste': 'Extra for settling (%)',
+  'calc.topsoil.inputs.bag': 'Bag size',
+  'calc.topsoil.inputs.bagPrice': 'Price per bag ($)',
+  'calc.topsoil.inputs.yardPrice': 'Bulk price per cubic yard ($)',
+  'calc.topsoil.options.bag.0-75': '0.75 cu ft',
+  'calc.topsoil.options.bag.1': '1 cu ft',
+  'calc.topsoil.options.bag.1-5': '1.5 cu ft',
+  'calc.topsoil.outputs.volumeYd3': 'Topsoil needed (cubic yards)',
+  'calc.topsoil.outputs.volumeFt3': 'Topsoil needed (cubic feet)',
+  'calc.topsoil.outputs.volumeM3': 'Topsoil needed (cubic meters)',
+  'calc.topsoil.outputs.netVolume': 'Volume before extra (cubic feet)',
+  'calc.topsoil.outputs.bagCost': 'Cost in bags',
+  'calc.topsoil.outputs.bulkCost': 'Cost in bulk',
+} as const;
