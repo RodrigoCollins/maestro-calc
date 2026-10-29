@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../../lib/concrete.ts';
 import type { Ready } from '../page-module.ts';
-import type { Plan, PlanLabel } from '../slots/drawing.ts';
+import { ANSWER, type Plan, type PlanLabel } from '../slots/drawing.ts';
 import { FRAME, MESSAGES, planOf } from './plan.ts';
 
 /** The moment of form strings in a unit system; a failed run fails the test. */
@@ -36,19 +36,22 @@ const labels = (plan: Plan): [number, number, PlanLabel['anchor'], string][] =>
  * character). A rectangle plan's gutters: top 14 + 6 + 21.25 = 41.3, bottom 6 + 21.25 = 27.3,
  * right 6, left 14 + 6 + the widest width label of both unit systems; 131.4 down is left.
  */
+// A note is centred on the frame, not on its shape: its words are filled later and differ by
+// language and unit system, and at most 300 wide (the longest is 29 characters, 291) it fits there
+// whatever its text, so a toggle never moves it.
 describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () => {
-  it('draws in the 300 by 200 frame and names one message and one note per shape', () => {
+  // spec: blueprint-drawing › [BD15] the answer sentence names each plan: it names the shape and its
+  // dimensions already, so the only words of a plan are its note
+  it('draws in the 300 by 200 frame, named by the answer, with one note message per shape', () => {
     expect(FRAME).toEqual({ width: 300, height: 200 });
     expect(MESSAGES).toEqual([
-      'drawing.slab',
       'drawing.slab.note',
-      'drawing.footing',
       'drawing.footing.note',
-      'drawing.column',
       'drawing.column.note',
-      'drawing.steps',
       'drawing.steps.note',
     ]);
+    for (const shape of ['slab', 'footing', 'column', 'steps'])
+      expect(drawn(momentOf({ shape })).name).toBe(ANSWER);
   });
 
   // spec: blueprint-drawing › [BD4] the default slab, 12 ft by 10 ft: the left gutter holds `3.05 m`
@@ -56,17 +59,13 @@ describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () =>
   // x = 88.3 + (205.7 − 157.7) / 2 = 112.3
   it('draws the default slab at 12:10 with its sides, the thickness note and no count', () => {
     const plan = drawn(momentOf({}));
-    expect(plan.name).toEqual({
-      message: 'drawing.slab',
-      fills: { length: '12 ft', width: '10 ft', thickness: '4 in' },
-    });
     expect(plan.outline).toEqual([{ kind: 'rect', x: 112.3, y: 41.3, w: 157.7, h: 131.4 }]);
     expect(plan.lines[0]).toEqual({ d: 'M112.3 27.3L270 27.3', tone: 'helper' });
     expect(plan.lines[3]).toEqual({ d: 'M98.3 41.3L98.3 172.7', tone: 'helper' });
     expect(labels(plan)).toEqual([
       [191.2, 10.7, 'middle', '12 ft'],
       [92.3, 107, 'end', '10 ft'],
-      [191.1, 188.1, 'middle', 'drawing.slab.note'],
+      [150, 188.1, 'middle', 'drawing.slab.note'],
     ]);
     expect(plan.labels[2]?.label).toEqual({
       message: 'drawing.slab.note',
@@ -85,10 +84,6 @@ describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () =>
     expect(metric.outline).toEqual(us.outline);
     expect(metric.lines).toEqual(us.lines);
     expect(labels(metric).map(([x, y]) => [x, y])).toEqual(labels(us).map(([x, y]) => [x, y]));
-    expect(metric.name).toEqual({
-      message: 'drawing.slab',
-      fills: { length: '3.66 m', width: '3.05 m', thickness: '10.16 cm' },
-    });
   });
 
   // spec: blueprint-drawing › [BD5] `?sh=footing&l=216&n=3`: 18 ft by 16 in is 13.5:1, drawn 4:1.
@@ -96,15 +91,11 @@ describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () =>
   // is 171.5 by 42.9 at y = 41.3 + (131.4 − 42.875) / 2 = 85.6
   it('draws the footing link at the clamped ratio with the depth note and the count mark inside', () => {
     const plan = drawn(momentOf({ shape: 'footing', length: '18 ft', count: '3' }));
-    expect(plan.name).toEqual({
-      message: 'drawing.footing',
-      fills: { length: '18 ft', width: '1 ft 4 in', depth: '8 in', count: '3' },
-    });
     expect(plan.outline).toEqual([{ kind: 'rect', x: 122.5, y: 85.6, w: 171.5, h: 42.9 }]);
     expect(labels(plan)).toEqual([
       [208.3, 55, 'middle', '18 ft'],
       [102.5, 107.1, 'end', '1 ft 4 in'],
-      [208.3, 143.9, 'middle', 'drawing.footing.note'],
+      [150, 143.9, 'middle', 'drawing.footing.note'],
       [208.3, 107.1, 'middle', '× 3'],
     ]);
     expect(plan.labels[2]?.label).toEqual({
@@ -137,10 +128,6 @@ describe('the concrete plans (blueprint-drawing › [BD4], [BD5], [BD6])', () =>
   // note 6 + 9.4 under the circle
   it('draws a column as a circle of fixed radius with its diameter, the height note and the count', () => {
     const plan = drawn(momentOf({ shape: 'column', count: '2' }));
-    expect(plan.name).toEqual({
-      message: 'drawing.column',
-      fills: { diameter: '1 ft', height: '8 ft', count: '2' },
-    });
     expect(plan.outline).toEqual([{ kind: 'circle', cx: 150, cy: 87.6, r: 60 }]);
     expect(plan.lines).toEqual([
       { d: 'M90 87.6L210 87.6', tone: 'helper' },
@@ -174,10 +161,6 @@ describe('the concrete steps profile (blueprint-drawing › [BD7], [BD8])', () =
 
   it('draws 4 treads rising to the right with the rise, the run and the step count', () => {
     const plan = drawn(momentOf(steps));
-    expect(plan.name).toEqual({
-      message: 'drawing.steps',
-      fills: { rise: '7 in', run: '11 in', count: '4' },
-    });
     expect(plan.outline).toEqual([
       {
         kind: 'path',
@@ -189,7 +172,7 @@ describe('the concrete steps profile (blueprint-drawing › [BD7], [BD8])', () =
     expect(labels(plan)).toEqual([
       [91.1, 135.5, 'end', '7 in'],
       [134, 180.6, 'middle', '11 in'],
-      [202.6, 18.2, 'middle', 'drawing.steps.note'],
+      [150, 18.2, 'middle', 'drawing.steps.note'],
     ]);
     expect(plan.labels[2]?.label).toEqual({
       message: 'drawing.steps.note',

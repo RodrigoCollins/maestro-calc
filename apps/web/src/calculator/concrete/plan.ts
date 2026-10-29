@@ -3,6 +3,7 @@ import type { concrete } from '../../lib/concrete.ts';
 import type { Frame, Ready } from '../page-module.ts';
 import { dimensionText } from '../present.ts';
 import {
+  ANSWER,
   circleShape,
   markLabel,
   noteAbove,
@@ -10,6 +11,7 @@ import {
   rectangleShape,
   stairShape,
   type Box,
+  type Label,
   type Plan,
   type Shape,
   type SideTexts,
@@ -20,18 +22,15 @@ import { SHAPES } from './shapes.ts';
 /*
  * The plans of the concrete page (blueprint-drawing › [BD4]-[BD8]), selected by the shape of the
  * last valid state. Pure and language-free: dimensions are the texts of the answer, the count mark
- * `× n` is a symbol, and the words (the name and the note of each shape) are page messages the
- * controller fills from these texts.
+ * `× n` is a symbol, the note of each shape is a page message the controller fills, and the name is
+ * the answer sentence, which names the shape and its dimensions already (no second template).
  */
 
 /** The viewBox of the drawing, the same in every state. */
 export const FRAME: Frame = { width: 300, height: 200 };
 
-/** The page messages the plans name: the accessible name and the note of each shape. */
-export const MESSAGES: readonly string[] = SHAPES.flatMap((shape) => [
-  `drawing.${shape}`,
-  `drawing.${shape}.note`,
-]);
+/** The page messages the plans name: the note of each shape (the answer sentence is the name). */
+export const MESSAGES: readonly string[] = SHAPES.map((shape) => `drawing.${shape}.note`);
 
 /** A column is drawn at one size: its diameter is a label, not a scale. */
 const RADIUS = 60;
@@ -53,16 +52,11 @@ const countMarks = (box: Box, count: number) =>
   count > 1 ? [markLabel(box, `× ${String(count)}`)] : [];
 
 /** A shape's plan: its outline and lines, its labels, its note under it and any count mark. */
-const planWith = (
-  shape: Shape,
-  name: Plan['name'],
-  note: Plan['name'],
-  marks: Plan['labels'] = [],
-): Plan => ({
-  name,
+const planWith = (shape: Shape, note: Label, marks: Plan['labels'] = []): Plan => ({
+  name: ANSWER,
   outline: shape.outline,
   lines: shape.lines,
-  labels: [...shape.labels, noteBelow(shape.box, note), ...marks],
+  labels: [...shape.labels, noteBelow(FRAME, shape.box, note), ...marks],
 });
 
 const slab = (moment: Moment): Plan => {
@@ -73,11 +67,10 @@ const slab = (moment: Moment): Plan => {
   }));
   const thickness = dimensionText(valid.thickness, system);
   // the slab's volume does not use the count, so the plan does not mark it
-  return planWith(
-    rectangleShape(FRAME, inches(valid.length), inches(valid.width), all),
-    { message: 'drawing.slab', fills: { ...all[0], thickness } },
-    { message: 'drawing.slab.note', fills: { thickness } },
-  );
+  return planWith(rectangleShape(FRAME, inches(valid.length), inches(valid.width), all), {
+    message: 'drawing.slab.note',
+    fills: { thickness },
+  });
 };
 
 const footing = (moment: Moment): Plan => {
@@ -90,7 +83,6 @@ const footing = (moment: Moment): Plan => {
   const shape = rectangleShape(FRAME, inches(valid.length), inches(valid.footingWidth), all);
   return planWith(
     shape,
-    { message: 'drawing.footing', fills: { ...all[0], depth, count: String(valid.count) } },
     { message: 'drawing.footing.note', fills: { depth } },
     countMarks(shape.box, valid.count),
   );
@@ -111,7 +103,6 @@ const column = (moment: Moment): Plan => {
   };
   return planWith(
     shape,
-    { message: 'drawing.column', fills: { diameter, height, count: String(valid.count) } },
     { message: 'drawing.column.note', fills: { height } },
     countMarks(lower, valid.count),
   );
@@ -131,12 +122,12 @@ const steps = (moment: Moment): Plan | null => {
   );
   const count = String(valid.stepCount);
   return {
-    name: { message: 'drawing.steps', fills: { ...all[0], count } },
+    name: ANSWER,
     outline: shape.outline,
     lines: shape.lines,
     labels: [
       ...shape.labels,
-      noteAbove(shape.box, { message: 'drawing.steps.note', fills: { count } }),
+      noteAbove(FRAME, shape.box, { message: 'drawing.steps.note', fills: { count } }),
     ],
   };
 };

@@ -43,9 +43,15 @@ export interface PlanLine {
   readonly tone: 'helper' | 'extension' | 'tick';
 }
 
+/**
+ * The name of a plan that is the page's answer sentence, which already names the shape and its
+ * dimensions: the page then carries no second template for the drawing (a page with an answer).
+ */
+export const ANSWER = { answer: true } as const;
+
 /** What a page draws for one moment: its accessible name, the outline, the lines and the labels. */
 export interface Plan {
-  readonly name: Label;
+  readonly name: Label | typeof ANSWER;
   readonly outline: readonly Outline[];
   readonly lines: readonly PlanLine[];
   readonly labels: readonly PlanLabel[];
@@ -376,9 +382,13 @@ export const stairShape = (
   };
 };
 
-/** A note in the row above a box, centred on it: the step count of a stair profile. */
-export const noteAbove = (box: Box, label: Label): PlanLabel => ({
-  x: round(box.x + box.w / 2),
+/**
+ * A note in words in the row above a box, centred on the frame: its text is filled later and differs
+ * by language and unit system, and centred there any text up to the frame's width fits, so a toggle
+ * never moves it. The step count of a stair profile.
+ */
+export const noteAbove = (frame: Frame, box: Box, label: Label): PlanLabel => ({
+  x: round(frame.width / 2),
   y: round(box.y - PAD - (LINE * NOTE) / 2),
   anchor: 'middle',
   size: NOTE,
@@ -386,9 +396,9 @@ export const noteAbove = (box: Box, label: Label): PlanLabel => ({
   label,
 });
 
-/** A note in the row under a box, centred on it: the thickness, depth, height or steps of a plan. */
-export const noteBelow = (box: Box, label: Label): PlanLabel => ({
-  x: round(box.x + box.w / 2),
+/** A note in words in the row under a box, centred on the frame like `noteAbove`: a thickness, depth or height. */
+export const noteBelow = (frame: Frame, box: Box, label: Label): PlanLabel => ({
+  x: round(frame.width / 2),
   y: round(box.y + box.h + PAD + (LINE * NOTE) / 2),
   anchor: 'middle',
   size: NOTE,
