@@ -3,6 +3,7 @@ import type { concreteMix } from '@maestro-calc/data';
 import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
+import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { calculators } from './calculators.ts';
@@ -14,6 +15,7 @@ type EnglishKeys =
   | keyof typeof enCommon
   | keyof typeof enConcrete
   | keyof typeof enGravel
+  | keyof typeof enMulch
   | keyof typeof enRectangleArea;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */

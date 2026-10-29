@@ -1,3 +1,4 @@
+import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { concrete } from './concrete.ts';
 import { gravel } from './gravel.ts';
@@ -8,4 +9,4 @@ import { gravel } from './gravel.ts';
  * list: labels in every catalog (`i18n-contract.test.ts`), the released URL snapshot
  * (`released.contract.test.ts`) and language-free results (`language-free.contract.test.ts`).
  */
-export const calculators = [rectangleArea, concrete, gravel] as const;
+export const calculators = [rectangleArea, concrete, gravel, mulch] as const;

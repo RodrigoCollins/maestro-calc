@@ -5,6 +5,7 @@ import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createGravel } from './gravel/index.ts';
+import { mulch } from './mulch/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
 /** Every calculator of core that has been released; the web registry is checked in `apps/web`. */
@@ -12,6 +13,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   rectangleArea,
   createConcrete(CONCRETE_YIELDS),
   createGravel(GRAVEL_DENSITIES),
+  mulch,
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -85,5 +87,21 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
       ],
     );
     expect(tuples.find(({ urlKey }) => urlKey === 'pl')?.options).toEqual(['compacted', 'loose']);
+  });
+
+  // spec: calc-mulch › [MU4] the seven inputs of mulch, appended in the order of the spec
+  it('records the 7 inputs of mulch in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'mulch');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '240'],
+        ['w', 'width', 'length', '48'],
+        ['d', 'depth', 'length', '3'],
+        ['ws', 'waste', 'percent', '5'],
+        ['bg', 'bag', 'select', '2'],
+        ['bp', 'bagPrice', 'money', '0'],
+        ['yp', 'yardPrice', 'money', '0'],
+      ],
+    );
   });
 });
