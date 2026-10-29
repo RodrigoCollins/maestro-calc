@@ -456,9 +456,9 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     '--notice-lines': {
       fallback: 4,
       steps: [
-        [21.5, 3],
-        [29.5, 2],
-        [55, 1],
+        [23.5, 3],
+        [31.5, 2],
+        [57.5, 1],
       ],
     },
   } as const;

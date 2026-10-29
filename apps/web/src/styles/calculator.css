@@ -34,18 +34,17 @@
   min-height: calc(var(--answer-lines, 4) * var(--text-base) * var(--leading-body));
 }
 
-/* The block keeps its own bottom margin: a paragraph's margin would collapse through it, and the
-   script swaps the no-JS note for a notice that is often hidden, which would move the form. */
+/* The notice closes the form card, below the actions: its reserve reads as the card's footer, not
+   as a gap under the answer. Its paragraphs carry no margin, so the block alone sets its height. */
 .calc-notice {
   min-height: calc(var(--notice-lines, 4) * var(--text-base) * var(--leading-body));
-  margin-bottom: var(--space-3);
 }
 
 .calc-notice p {
   margin: 0;
 }
 
-@media (min-width: 21.5rem) {
+@media (min-width: 23.5rem) {
   :root {
     --notice-lines: 3;
   }
@@ -57,7 +56,7 @@
   }
 }
 
-@media (min-width: 29.5rem) {
+@media (min-width: 31.5rem) {
   :root {
     --notice-lines: 2;
   }
@@ -69,7 +68,7 @@
   }
 }
 
-@media (min-width: 55rem) {
+@media (min-width: 57.5rem) {
   :root {
     --notice-lines: 1;
   }
