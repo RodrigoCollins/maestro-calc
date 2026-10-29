@@ -19,4 +19,11 @@ export const esMulch = {
   'calc.mulch.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
   'calc.mulch.outputs.bagCost': 'Costo en bolsas',
   'calc.mulch.outputs.bulkCost': 'Costo a granel',
+  'calc.mulch.page.volumeYd3': '{value} yardas cúbicas',
+  'calc.mulch.page.volumeM3': '{value} metros cúbicos',
+  'calc.mulch.page.shoppingLine': 'Mulch, bolsas de {size} cu ft',
+  'calc.mulch.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.mulch.page.answer':
+    'Un área de {length} por {width}, de {depth} de profundidad, lleva {volume} de mulch: {bags} bolsas de {size} cu ft.',
+  'calc.mulch.page.drawing.note': '{depth} de profundidad',
 } as const satisfies CatalogOf<typeof enMulch>;

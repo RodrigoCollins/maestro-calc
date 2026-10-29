@@ -1,4 +1,4 @@
-/** Copy of the `mulch` calculator, English: the keys core derives from its descriptors. */
+/** Copy of the `mulch` calculator, English: the keys core derives from its descriptors and the page copy. */
 export const enMulch = {
   'calc.mulch.title': 'Mulch Calculator',
   'calc.mulch.inputs.length': 'Length',
@@ -16,4 +16,11 @@ export const enMulch = {
   'calc.mulch.outputs.netVolume': 'Volume before extra (cubic feet)',
   'calc.mulch.outputs.bagCost': 'Cost in bags',
   'calc.mulch.outputs.bulkCost': 'Cost in bulk',
+  'calc.mulch.page.volumeYd3': '{value} cubic yards',
+  'calc.mulch.page.volumeM3': '{value} cubic meters',
+  'calc.mulch.page.shoppingLine': 'Mulch, {size} cu ft bags',
+  'calc.mulch.page.priceHint': 'Add your price to see the cost',
+  'calc.mulch.page.answer':
+    'A {length} by {width} bed, {depth} deep, needs {volume} of mulch: {bags} bags of {size} cu ft.',
+  'calc.mulch.page.drawing.note': '{depth} deep',
 } as const;

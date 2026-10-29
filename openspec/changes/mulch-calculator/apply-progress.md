@@ -9,3 +9,7 @@ Applied in the main thread on 2026-10-29 (owner away). Strict TDD: each test was
 Gates: `npm run verify` exit 0 (4,144 tests). Mutation shard `calculators`: 376 mutants, 100 % (mulch 83/83).
 
 **Watch:** the shard is now close to the ~400-mutant split rule of `AGENTS.md`. The next calculator splits it into `calculators-<group>` shards (with the CI matrix entry and the exactly-once contract).
+
+## PR 2 — page module without a route (`feat/mulch-page-module`)
+
+Every figure was checked by hand first, and every test passed on the first green run. The 100 % branch gate caught an unreachable fallback for a missing bag line, which is now `required(...)` as rectangle-area does. Gates: typecheck, lint, `npm run test:coverage` (4,157 tests, thresholds met).
