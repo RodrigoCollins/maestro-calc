@@ -226,10 +226,74 @@
   color: var(--color-text-secondary);
 }
 
+/* Two fields per row from 22rem (Blueprint form card). A length, or any field a choice drives, takes
+   one column; every other part (groups, the waste field with its help, prices, copy) spans the row.
+   Such a half field stacks a label row of a fixed two lines, the input and its unit below, so the
+   two inputs of a row line up and no font changes a height: a label longer than two lines in a
+   wider fallback font overflows its row for a moment instead of moving the page. The choice area
+   reserves its rows two by two. */
+@media (min-width: 22rem) {
+  .calc-form,
+  .calc-choice-area {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .calc-form > * {
+    grid-column: 1 / -1;
+  }
+
+  .calc-form > .calc-field:has(> small),
+  .calc-choice-area > .calc-field {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: calc(2 * var(--text-small) * var(--leading-body)) auto auto;
+    min-height: var(--half-row);
+  }
+
+  .calc-form > .calc-field:has(> small) label,
+  .calc-choice-area > .calc-field label {
+    align-self: end;
+    font-size: var(--text-small);
+  }
+
+  .calc-form > .calc-field:has(> small) > small,
+  .calc-choice-area > .calc-field > small {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: start;
+  }
+
+  .calc-choice-area {
+    --pairs: round(up, var(--calc-rows, 1) / 2, 1);
+
+    min-height: calc(var(--pairs) * var(--half-row) + (var(--pairs) - 1) * var(--space-3));
+  }
+}
+
+/* The stepper sits after the input on its row, in the focus order: input, less, more. The field has
+   no unit hint, so its label takes the whole row. */
+.calc-field:has(> .calc-steppers) input {
+  grid-column: 1;
+}
+
+.calc-field:has(> .calc-steppers) label {
+  grid-column: 1 / -1;
+}
+
 .calc-steppers {
   display: flex;
+  grid-column: 2;
+  grid-row: 2;
   gap: var(--space-2);
-  min-height: var(--target-size);
+}
+
+.calc-form .calc-steppers button {
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  border-color: transparent;
+  background: var(--color-ground);
+  font-size: var(--text-h3);
+  font-weight: 600;
 }
 
 /* The copy button, the full-width share link on a row of its own and the status line (CP84). */

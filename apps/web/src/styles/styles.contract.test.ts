@@ -432,9 +432,13 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     }
   });
 
-  // spec: calculator-page › [CP14], [CP44]: the stepper and copy areas keep a fixed reserve
-  it.each(['.calc-steppers'])('reserves a block size for %s', (selector) => {
-    expect(rem(declared(selector, 'min-height')), selector).toBeGreaterThanOrEqual(44);
+  // spec: calculator-page › [CP14], [CP44]: the steppers sit on the input row, so showing them moves nothing
+  it('puts the steppers on the input row, each a target of 44 px or more', () => {
+    expect(declared('.calc-steppers', 'grid-row')).toBe('2');
+    expect(declared('.calc-field input', 'grid-row')).toBe('2');
+    const button = '.calc-form .calc-steppers button';
+    expect(rem(declared(button, 'min-height'))).toBeGreaterThanOrEqual(44);
+    expect(rem(declared(button, 'min-width'))).toBeGreaterThanOrEqual(44);
   });
 
   // spec: calculator-page › [CP64], design K13: the line counts the sweep measured, per range

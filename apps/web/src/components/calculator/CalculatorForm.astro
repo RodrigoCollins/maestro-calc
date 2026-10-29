@@ -52,19 +52,7 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
         )}
       </Fragment>
     ) : (
-      <Fragment>
-        <CalculatorField field={item.field} />
-        {item.stepper !== undefined && (
-          <div class="calc-steppers" data-step={item.stepper.key}>
-            <button type="button" value="less" hidden disabled>
-              {item.stepper.less}
-            </button>
-            <button type="button" value="more" hidden disabled>
-              {item.stepper.more}
-            </button>
-          </div>
-        )}
-      </Fragment>
+      <CalculatorField field={item.field} stepper={item.stepper} />
     ),
   )}
   <div class="calc-copy" data-reserved="copy">

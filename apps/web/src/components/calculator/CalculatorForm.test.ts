@@ -217,9 +217,9 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     ).toEqual([true, true]);
     expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
     expect(root.querySelector('[data-copy]')?.text.trim()).toBe('Copy link');
-    expect(root.querySelector('[data-step="waste"] [value="less"]')?.text.trim()).toBe(
-      'Less extra',
-    );
+    const less = root.querySelector('[data-step="waste"] [value="less"]');
+    expect(less?.getAttribute('aria-label')).toBe('Less extra');
+    expect(less?.text.trim()).toBe('−');
     expect(root.querySelectorAll('button[data-step], button[data-direction]')).toHaveLength(0);
   });
 
