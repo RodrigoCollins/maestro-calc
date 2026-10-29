@@ -43,3 +43,14 @@ HTML budget 40,960 → 49,152 B (48 KiB); the ES concrete pin ([CP66]) follows i
 
 - Slice 1 (header): #117, with the follow-up #118 (CLS at 320 px on Linux).
 - Slice 2 (answer): body text at weight 400. Answer reserve measured again 320–1280 px, both locales, every layout query: concrete 4 → 3 lines at 23.5rem → 2 at 35.5rem → 1 at 64rem (was 5 large lines); square footage 2 → 1 at 29rem.
+
+## Slice 2b — notice block (branch `feat/blueprint-ui-notice`)
+
+- The no-JS note no longer repeats the example (`page-view.ts`; unit tests and `no-js.spec.ts` updated).
+- Answer and notice ladders hold the taller of the web font and the fallback font (fonts blocked):
+  - Notice 4 → 3 at 21.5rem → 2 at 29.5rem → 1 at 55rem (both pages).
+  - Concrete answer 4 → 3 at 24.5rem → 2 at 36.5rem. With the fallback font it never fits on one line.
+  - Square footage answer 2 → 1 at 30rem.
+- The CLS of 0.0105 from 472 px up was the note's paragraph margin collapsing through `.calc-notice`: the script swaps the note for the (hidden) notice, the 16 px margin went away and the form rose. `.calc-notice` now owns a 1rem bottom margin and its paragraphs have none.
+- `layout.spec.ts` "fits every reserved block" measures both fonts: the fit check reads the web font (stable across platforms), the unused check takes the tallest of both.
+- `WIDTHS` holds both edges of every step. `verify` 0, e2e 668 passed.

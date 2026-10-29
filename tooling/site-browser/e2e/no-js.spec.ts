@@ -32,9 +32,7 @@ test.describe('calculator pages with JavaScript off (site-quality › [SQ18], ca
       test('says in the "not running" note that the page needs JavaScript', async ({ page }) => {
         await page.goto(path);
         await expect(notRunning(page)).toBeVisible();
-        await expect(notRunning(page)).toHaveText(
-          `${textOf(site, 'site.calculator.noscript')} ${textOf(catalog, `calc.${id}.page.example`)}`,
-        );
+        await expect(notRunning(page)).toHaveText(textOf(site, 'site.calculator.noscript'));
       });
 
       test('hides "Copy link" and disables every control of the form', async ({ page }) => {

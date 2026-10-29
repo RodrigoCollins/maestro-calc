@@ -196,11 +196,11 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   it.each([
     [
       'en',
-      'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example. Example: a 12 ft by 10 ft slab, 4 in thick.',
+      'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
     ],
     [
       'es',
-      'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo. Ejemplo: una losa de 12 ft por 10 ft, de 4 in de espesor.',
+      'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
     ],
   ] as const)('shows the %s "not running" note outside noscript', async (locale, note) => {
     const root = await render(locale);

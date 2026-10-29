@@ -104,13 +104,14 @@ describe('the concrete page view (calculator-page › [CP1], [CP2], [CP3], [CP4]
     expect(view.result.rows.map(({ value }) => value)).toEqual(['1.63', '44.00', '1.25', '40.00']);
   });
 
-  // spec: calculator-page › [CP40] static: the "not running" note, then the example sentence
-  it('joins the generic note and the calculator example', () => {
+  // spec: calculator-page › [CP40] static: the "not running" note alone, which says the result
+  // below is the example (blueprint-ui: the example no longer follows it)
+  it('writes the generic note alone', () => {
     expect(pageView('concrete', 'en').notRunning).toBe(
-      'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example. Example: a 12 ft by 10 ft slab, 4 in thick.',
+      'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
     );
     expect(pageView('concrete', 'es').notRunning).toBe(
-      'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo. Ejemplo: una losa de 12 ft por 10 ft, de 4 in de espesor.',
+      'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
     );
   });
 
@@ -751,8 +752,8 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     },
   );
 
-  // spec: calculator-page › [CP40] the example is joined with one space, no trailing space without it (R7)
-  it('joins the no-JS note and the example with one space, and has no trailing space without one', () => {
+  // spec: calculator-page › [CP40] the note is the same with or without an example (blueprint-ui)
+  it('writes the no-JS note alone, whether or not the page has an example', () => {
     const page = definePage({ calculator: lengthCalculator('ft', 'm') });
     const withExample = pageViewOf(
       page,
@@ -762,7 +763,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
         'calc.length-fixture.page.example': 'Example: 10 ft.',
       }),
     );
-    expect(withExample.notRunning).toBe('Needs JavaScript. Example: 10 ft.');
+    expect(withExample.notRunning).toBe('Needs JavaScript.');
     const without = pageViewOf(
       page,
       'en',
@@ -772,7 +773,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     );
     expect(without.notRunning).toBe('Needs JavaScript.');
     expect(pageViewOf(concretePage, 'en', enCatalog).notRunning).toBe(
-      `${enSite['site.calculator.noscript']} ${enConcrete['calc.concrete.page.example']}`,
+      enSite['site.calculator.noscript'],
     );
   });
 
@@ -786,12 +787,10 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
   });
 
   // spec: calc-rectangle-area › [RAP2] the answer of the real rectangle-area page, and its not-running note
-  it('sets the rectangle-area answer from the one template and joins the example to the no-JS note', () => {
+  it('sets the rectangle-area answer from the one template and the no-JS note alone', () => {
     const view = pageViewOf(rectangleAreaPage, 'en', enRectangle);
     expect(view.answer).toBe('A 10 ft by 10 ft area is 100.00 square feet.');
-    expect(view.notRunning).toBe(
-      `${enSite['site.calculator.noscript']} ${enRectangleArea['calc.rectangle-area.page.example']}`,
-    );
+    expect(view.notRunning).toBe(enSite['site.calculator.noscript']);
     expect(names(view)).toContain('answer');
   });
 

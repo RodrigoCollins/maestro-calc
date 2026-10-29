@@ -421,21 +421,22 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
 
   // spec: calculator-page › [CP64], design K13: the line counts the sweep measured, per range
   const STEPS = {
-    // blueprint-ui slice 2: the answer is body text now, measured again 320 to 1280 px
+    // blueprint-ui slice 2: the answer is body text now, measured again 320 to 1280 px with the web
+    // font and with the fallback font, the larger count of the two
     '--answer-lines': {
       fallback: 4,
       steps: [
-        [23.5, 3],
-        [35.5, 2],
-        [64, 1],
+        [24.5, 3],
+        [36.5, 2],
       ],
     },
+    // blueprint-ui slice 2b: the note no longer repeats the example, measured again
     '--notice-lines': {
-      fallback: 6,
+      fallback: 4,
       steps: [
-        [22.25, 5],
-        [29, 4],
-        [41.6875, 3],
+        [21.5, 3],
+        [29.5, 2],
+        [55, 1],
       ],
     },
   } as const;
