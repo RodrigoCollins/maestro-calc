@@ -61,10 +61,15 @@ const { homeHref, navLabel, links, language } = Astro.props;
     clip-path: inset(0 -100vmax);
   }
 
+  /* At 320 px the logo, the menu and the pill share 288 px: no gap, and nothing wraps, so the
+     header keeps one height whichever font has loaded */
   .site-header nav {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
+  }
+
+  .site-header a {
+    white-space: nowrap;
   }
 
   .menu-button {
