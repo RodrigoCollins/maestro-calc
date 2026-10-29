@@ -218,10 +218,14 @@ export const rectangleGutters = (widthText: string): Gutters => ({
   left: round(OFFSET + PAD + textWidth(widthText, LABEL)),
 });
 
-/** The three texts of a rectangle plan in one unit system. */
-export interface RectangleTexts {
+/** The two side texts of a rectangle plan in one unit system. */
+export interface SideTexts {
   readonly length: string;
   readonly width: string;
+}
+
+/** The three texts of a rectangle plan in one unit system. */
+export interface RectangleTexts extends SideTexts {
   readonly area: string;
 }
 
@@ -238,32 +242,109 @@ export interface RectangleSpec {
   readonly name: Label;
 }
 
+/** A drawn shape: its box, its outline, its dimension lines and their labels. */
+export interface Shape extends Pick<Plan, 'outline' | 'lines' | 'labels'> {
+  readonly box: Box;
+}
+
 /**
- * A rectangle in plan: the length along the top, the width on the left (a deliberate departure from
- * the mockup's right-hand line, which keeps the reading order length then width), and the area
- * inside when it fits with 6 units each side and the rectangle is 29 tall, else in the bottom row.
+ * A rectangle in plan with its two dimensions: the length along the top, the width on the left (a
+ * deliberate departure from the mockup's right-hand line, which keeps the reading order length
+ * then width). `all` holds the side texts of every unit system, the active one first; the layout
+ * keeps room for the longest of each, so a unit toggle moves nothing.
  */
-export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
-  const { texts } = spec;
-  const all = [texts, ...(spec.others ?? [])];
-  const room = (key: keyof RectangleTexts) => longest(all.map((each) => each[key]));
-  const rect = fitRectangle(frame, rectangleGutters(room('width')), spec.length, spec.width);
-  const [x2, y2] = [rect.x + rect.w, rect.y + rect.h];
-  const top = dimensionLine({ x: rect.x, y: rect.y }, { x: x2, y: rect.y }, 'top', {
+export const rectangleShape = (
+  frame: Frame,
+  length: number,
+  width: number,
+  all: readonly [SideTexts, ...SideTexts[]],
+): Shape => {
+  const [texts] = all;
+  const room = (key: keyof SideTexts) => longest(all.map((each) => each[key]));
+  const box = fitRectangle(frame, rectangleGutters(room('width')), length, width);
+  const [x2, y2] = [box.x + box.w, box.y + box.h];
+  const top = dimensionLine({ x: box.x, y: box.y }, { x: x2, y: box.y }, 'top', {
     text: texts.length,
   });
-  const left = dimensionLine({ x: rect.x, y: rect.y }, { x: rect.x, y: y2 }, 'left', {
+  const left = dimensionLine({ x: box.x, y: box.y }, { x: box.x, y: y2 }, 'left', {
     text: texts.width,
   });
   return {
-    name: spec.name,
-    outline: [{ kind: 'rect', ...rect }],
+    box,
+    outline: [{ kind: 'rect', ...box }],
     lines: [...top.lines, ...left.lines],
-    labels: [
-      ...top.labels.map((label) => fitLabel(label, frame, room('length'))),
-      ...left.labels,
-      areaLabel(frame, rect, texts.area, room('area')),
+    labels: [...top.labels.map((label) => fitLabel(label, frame, room('length'))), ...left.labels],
+  };
+};
+
+/** A rectangle in plan with the area inside when it fits with 6 units each side and is 29 tall, else in the bottom row. */
+export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
+  const all = [spec.texts, ...(spec.others ?? [])] as const;
+  const shape = rectangleShape(frame, spec.length, spec.width, all);
+  const area = longest(all.map((each) => each.area));
+  return {
+    name: spec.name,
+    outline: shape.outline,
+    lines: shape.lines,
+    labels: [...shape.labels, areaLabel(frame, shape.box, spec.texts.area, area)],
+  };
+};
+
+/**
+ * A circle of radius `r` centred across the frame and above the note row, with one horizontal
+ * diameter line through its centre (orange ticks at both ends) and its label above the line. The
+ * box is the circle's square, so a note goes under the circle.
+ */
+export const circleShape = (frame: Frame, r: number, label: Label): Shape => {
+  const cx = round(frame.width / 2);
+  const cy = round((frame.height - PAD - LINE * NOTE) / 2);
+  const [from, to] = [
+    { x: cx - r, y: cy },
+    { x: cx + r, y: cy },
+  ];
+  return {
+    box: { x: cx - r, y: cy - r, w: 2 * r, h: 2 * r },
+    outline: [{ kind: 'circle', cx, cy, r }],
+    lines: [
+      { d: segment(from, to), tone: 'helper' },
+      { d: `${tick(from)}${tick(to)}`, tone: 'tick' },
     ],
+    labels: [
+      {
+        x: cx,
+        y: round(cy - PAD - (LINE * LABEL) / 2),
+        anchor: 'middle',
+        size: LABEL,
+        tone: 'dimension',
+        label,
+      },
+    ],
+  };
+};
+
+/** A note in the row under a box, centred on it: the thickness, depth, height or steps of a plan. */
+export const noteBelow = (box: Box, label: Label): PlanLabel => ({
+  x: round(box.x + box.w / 2),
+  y: round(box.y + box.h + PAD + (LINE * NOTE) / 2),
+  anchor: 'middle',
+  size: NOTE,
+  tone: 'note',
+  label,
+});
+
+/**
+ * A language-free mark (the count `× 3`) centred in a box when it leaves 6 units each side and the
+ * box is 29 tall, else at the start of the top row of the frame, where no plan writes.
+ */
+export const markLabel = (box: Box, text: string): PlanLabel => {
+  const inside = textWidth(text, LABEL) <= box.w - INSET && box.h >= INSIDE_HEIGHT;
+  return {
+    x: inside ? round(box.x + box.w / 2) : 0,
+    y: inside ? round(box.y + box.h / 2) : round((LINE * LABEL) / 2),
+    anchor: inside ? 'middle' : 'start',
+    size: LABEL,
+    tone: 'dimension',
+    label: { text },
   };
 };
 
