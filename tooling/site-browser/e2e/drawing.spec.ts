@@ -321,12 +321,13 @@ for (const { calculator, group } of drawn) {
     }
 
     // spec: blueprint-drawing › [BD20] from 48rem the panel is two columns, the drawing on the
-    // right and wider than the rows; below 48rem it sits between the large figure and the rows
-    test('sits beside the figures from 48rem and under the large figure below it', async ({
+    // right and wider than the rows; below 48rem, and from 64rem where the page puts the panel in
+    // its half-width right column (blueprint-ui slice 5), it sits between the large figure and the rows
+    test('sits beside the figures from 48rem to 64rem and under the large figure otherwise', async ({
       page,
     }) => {
       await open(page, calculator);
-      for (const width of [767, 768, 1280]) {
+      for (const width of [767, 768, 1023, 1024, 1280]) {
         await page.setViewportSize({ width, height: 844 });
         const { box, primary, rows } = await page.evaluate(() => {
           const rect = (selector: string) => {
@@ -347,7 +348,7 @@ for (const { calculator, group } of drawn) {
           };
         });
         const at = `${String(width)} px`;
-        if (width < 768) {
+        if (width < 768 || width >= 1024) {
           expect(box.top, at).toBeGreaterThanOrEqual(primary.bottom);
           expect(rows.top, at).toBeGreaterThanOrEqual(box.bottom);
         } else {
