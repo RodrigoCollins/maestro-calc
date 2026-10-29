@@ -91,3 +91,9 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - The notice is at the page width again, so its ladder returns to the slice 2b values (21.5/29.5/55rem); the 2c card-width ladder is superseded.
 - Deviations: the price inputs stay in the form (moving them into the list would take inputs out of `<form>`), the list has no heading (no new catalog key), and the WhatsApp link stays after the copy button (CP80/CP81 order).
 - `verify` 0, e2e 708 passed.
+
+## Slice 5 — desktop layout (branch `feat/blueprint-ui-desktop`)
+
+- From 64rem `.calculator` is a two-column grid: the form card on the left, and a new `.calc-side` wrapper on the right (result panel, shopping list, actions, notice), so the result is in the first screen on desktop. Breadcrumb, H1, answer and content keep the full width.
+- In the half-width column the panel is one column again (drawing above the rows). That override lives in `drawingCss` (page head) next to the 48rem two-column rule, so the shared sheet still holds no drawing rule. Spec change at archive: blueprint-drawing [BD20] "two columns from 48rem to 64rem; from 64rem the panel is the page's right column, the drawing between the large figure and the rows".
+- The notice takes two lines in that column: `--notice-lines: 2` from 64rem, the one rise of the ladder (the styles contract allows it at 64rem only), in the shared sheet and in `rectangle-area/reserve.ts`.

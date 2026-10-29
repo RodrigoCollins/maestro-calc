@@ -101,14 +101,16 @@ export const PANEL_ROWS = 12;
  * rows, so every other child of the panel flows into the left column. The panel has fewer children
  * than rows, so the last row is empty and takes what the drawing adds, and the left column keeps
  * its own spacing whatever the number of rows, shopping lines or costs a page shows (an empty row
- * is 0 high: the grid has no row gap). Only a page that draws carries it, so the shared stylesheet
- * and the pages without a drawing are unchanged.
+ * is 0 high: the grid has no row gap). From 64rem the page puts the panel in the half-width right
+ * column (blueprint-ui slice 5), so the panel is one column again there, the drawing above the rows.
+ * Only a page that draws carries it, so the shared stylesheet and the pages without a drawing are
+ * unchanged.
  */
 export const drawingCss = ({ width, height }: Frame): ReserveCss => {
   const divisor = gcd(width, height);
   return (
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- a string brand has no constructor
-    `[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:${String(width / divisor)}/${String(height / divisor)};margin-bottom:var(--space-3);font:600 17px var(--font-display)}@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(${String(PANEL_ROWS - 1)},auto) 1fr;column-gap:var(--space-4);align-items:start}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}` as ReserveCss
+    `[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:${String(width / divisor)}/${String(height / divisor)};margin-bottom:var(--space-3);font:600 17px var(--font-display)}@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(${String(PANEL_ROWS - 1)},auto) 1fr;column-gap:var(--space-4);align-items:start}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}@media(min-width:64rem){.calc-side>.calc-result{display:block}.calc-side>.calc-result>[data-drawing]{margin:0 0 var(--space-3)}}` as ReserveCss
   );
 };
 

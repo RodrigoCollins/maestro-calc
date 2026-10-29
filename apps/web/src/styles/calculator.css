@@ -74,6 +74,13 @@
   }
 }
 
+/* From 64rem the notice sits in the half-width right column (slice 5), where it takes two lines. */
+@media (min-width: 64rem) {
+  :root {
+    --notice-lines: 2;
+  }
+}
+
 .calc-form {
   display: grid;
   gap: var(--space-3);
@@ -395,6 +402,33 @@
 
 .calc-note {
   font-size: var(--text-small);
+}
+
+/* Desktop (Blueprint, slice 5): from 64rem the form sits on the left and the result, the shopping
+   list, the actions and the notice on the right, so the result is in the first screen. */
+@media (min-width: 64rem) {
+  .calculator {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-4);
+    align-items: start;
+  }
+
+  .calculator > * {
+    grid-column: 1 / -1;
+  }
+
+  .calculator > .calc-form {
+    grid-column: 1;
+  }
+
+  .calculator > .calc-side {
+    grid-column: 2;
+  }
+
+  .calc-side > .calc-result {
+    margin-top: 0;
+  }
 }
 
 .calc-content {

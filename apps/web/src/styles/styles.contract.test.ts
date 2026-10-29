@@ -459,9 +459,12 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
         [21.5, 3],
         [29.5, 2],
         [55, 1],
+        [64, 2],
       ],
     },
   } as const;
+  /** The width (rem) where the desktop layout puts the result and the notice in a column of their own. */
+  const DESKTOP_REM = 64;
   const stepsOf = (css: string, property: string): [number, number][] =>
     mediaRulesOf(css).flatMap(([query, blockRules]) => {
       const count = blockRules.get(':root')?.[property];
@@ -488,7 +491,9 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
       expect(found.map(([width]) => width)).toEqual(
         found.map(([width]) => width).toSorted((a, b) => a - b),
       );
-      for (const [at, [, count = 0]] of found.entries()) {
+      for (const [at, [width, count = 0]] of found.entries()) {
+        // the one rise: from 64rem the notice sits in the half-width right column (blueprint-ui slice 5)
+        if (property === '--notice-lines' && width === DESKTOP_REM) continue;
         expect(count).toBeLessThan(at === 0 ? fallback : (found[at - 1]?.[1] ?? 0));
       }
     },

@@ -62,7 +62,9 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
         // across more rows than any panel has children, the empty last one taking what it adds
         '@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(11,auto) 1fr;column-gap:var(--space-4);align-items:start}' +
         // the drawing fills column 2 of every row, so the other children flow into column 1
-        '.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}',
+        '.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}' +
+        // from 64rem the panel sits in the half-width right column, one column again (blueprint-ui slice 5)
+        '@media(min-width:64rem){.calc-side>.calc-result{display:block}.calc-side>.calc-result>[data-drawing]{margin:0 0 var(--space-3)}}',
     );
     expect(headStyleOf(rectangle)).toBe(
       `${String(reserveCss(rectangle.reserve))}${drawingCss({ width: 300, height: 200 })}`,

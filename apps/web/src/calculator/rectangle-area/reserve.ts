@@ -9,5 +9,5 @@ import type { Reserve } from '../../lib/reserve.ts';
  */
 export const rectangleAreaReserve = {
   answer: [2, [30, 1]],
-  notice: [4, [21.5, 3], [29.5, 2], [55, 1]],
+  notice: [4, [21.5, 3], [29.5, 2], [55, 1], [64, 2]],
 } as const satisfies Reserve;
