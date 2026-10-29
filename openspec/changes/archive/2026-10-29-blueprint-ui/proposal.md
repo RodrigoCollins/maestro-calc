@@ -105,3 +105,25 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - Footer: one 1.5px `--color-line` rule above it, the contact paragraph's margin tightened.
 - Trust pages: no change needed; they already read in the tokens (body text, H2 condensed).
 - HomeView test: corners come from the card token only (SS26 as amended in this change).
+
+## Verification and archive (2026-10-29)
+
+All six slices of the plan are merged, each on a green CI (verify, mutation, site-browser on Linux, Cloudflare build):
+
+| Slice | PR |
+|---|---|
+| 1 header | #117, #118 |
+| 2 answer | #119 |
+| 2b notice text and font-safe ladders | #120 |
+| 2c notice out from under the answer | #123 |
+| 3a form card, corners, segmented choices | #121 |
+| 3b two fields per row, inline stepper | #122 |
+| 4 order, shopping list card, actions | #124 |
+| 5 desktop two columns | #125 |
+| 6 home cards, hero corners, footer rule | #126 |
+
+Production checked after #125: the Spanish concrete page serves `calc-segments`, `calc-list` and `calc-side`.
+
+Specs synced at archive: site-shell (corners requirement, [SS25], [SS26]), site-quality ([SQ7] budgets 49,152 / 172,032 / 204,800 B), calculator-page (form controls, result panel order and the desktop layout, [CP66] pin). No scenario id was removed. blueprint-drawing needs no change: its scenarios do not state the 48rem panel rule.
+
+Deviations kept, for the owner: the unit stays outside the input (the value carries its unit); the price inputs stay in the form; the shopping list has no heading; the WhatsApp link stays after "Copy link"; the home cards have no arrow ([SS26]); the answer keeps a font-safe reserve (up to two empty lines at some phone widths for the longest sentence).

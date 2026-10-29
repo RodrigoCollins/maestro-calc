@@ -42,7 +42,8 @@ It MUST also declare, on `:root`, the identity primitives of the home hero:
 - a grid size `--grid-size` of `1rem` (16 px at the default size; it follows the user's text zoom);
 - the dimension-tick primitive `--tick-weight` (the thickness of the dimension line and of its end ticks, a positive length, drawn in the safety orange). The tick length is not a token of its own: a tick is one grid cell tall, `var(--grid-size)`.
 
-Corners MUST be square: no non-zero `border-radius` and no radius token exists in the shipped CSS of any page. No other new token is introduced by this change.
+Corners MUST come from three rem tokens of `tokens.css`, the corners of the Blueprint mockups: `--radius-card` (1rem: cards, the form card, the result panel, the shopping list, the home cards and the desktop home hero), `--radius-control` (0.75rem: inputs, buttons, segmented tracks, the share link) and `--radius-segment` (0.5625rem: the segments inside a segmented control). Every non-zero `border-radius` of the shipped CSS uses one of them, and no other custom property is named after a radius.
+(Previously, until blueprint-ui 2026-10-29: corners were square, with no non-zero `border-radius` and no radius token.)
 (Previously: the palette, the light theme and the page ground only; no display size, grid or tick primitive; nothing stated about corners.)
 
 #### Scenario: [SS5] Palette values present
@@ -68,12 +69,12 @@ Corners MUST be square: no non-zero `border-radius` and no radius token exists i
 #### Scenario: [SS25] Grid and tick primitives are pinned
 - GIVEN `tokens.css` read by the styles contract test
 - WHEN the primitives are collected
-- THEN `--grid-size` equals `1rem`, `--tick-weight` exists with a positive length, no `--tick-length` or other tick token exists (the tick length is `var(--grid-size)` in the hero rule), no token name contains `radius`, and the stale "1.42 line height" comment of the test now states the real body leading, 1.55 (a unit test: removing or renaming either primitive fails it)
+- THEN `--grid-size` equals `1rem`, `--tick-weight` exists with a positive length, no `--tick-length` or other tick token exists (the tick length is `var(--grid-size)` in the hero rule), and the stale "1.42 line height" comment of the test now states the real body leading, 1.55 (a unit test: removing or renaming either primitive fails it)
 
-#### Scenario: [SS26] Square corners everywhere
-- GIVEN the built CSS of every page
+#### Scenario: [SS26] Corners from the radius tokens
+- GIVEN the global sheets and the home view style
 - WHEN searched for `border-radius` declarations with a non-zero value and for custom properties whose name contains `radius`
-- THEN there is no match
+- THEN every such value is `var(--radius-card)`, `var(--radius-control)` or `var(--radius-segment)`, the three are declared in `tokens.css` only and in rem, and no arrow glyph is drawn by a pseudo-element of the home (a unit test)
 
 ### Requirement: Self-hosted fonts
 
