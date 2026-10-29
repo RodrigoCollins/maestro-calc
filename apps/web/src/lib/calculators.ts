@@ -1,5 +1,6 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { concrete } from './concrete.ts';
+import { gravel } from './gravel.ts';
 
 /**
  * Every calculator the site lists. Each one is imported through its own subpath of
@@ -7,4 +8,4 @@ import { concrete } from './concrete.ts';
  * list: labels in every catalog (`i18n-contract.test.ts`), the released URL snapshot
  * (`released.contract.test.ts`) and language-free results (`language-free.contract.test.ts`).
  */
-export const calculators = [rectangleArea, concrete] as const;
+export const calculators = [rectangleArea, concrete, gravel] as const;

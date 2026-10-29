@@ -1,12 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { CONCRETE_YIELDS } from '../__testing__/concrete-yields.ts';
+import { GRAVEL_DENSITIES } from '../__testing__/gravel-yields.ts';
 import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
+import { createGravel } from './gravel/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
 /** Every calculator of core that has been released; the web registry is checked in `apps/web`. */
-const REGISTRY: readonly ReleasedCalculator[] = [rectangleArea, createConcrete(CONCRETE_YIELDS)];
+const REGISTRY: readonly ReleasedCalculator[] = [
+  rectangleArea,
+  createConcrete(CONCRETE_YIELDS),
+  createGravel(GRAVEL_DENSITIES),
+];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
 // does the checking is tested in `url/released-harness.test.ts` with hand-built calculators: the
@@ -63,5 +69,21 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
       'steps',
     ]);
     expect(tuples.find(({ urlKey }) => urlKey === 'bg')?.options).toEqual(['40', '60', '80']);
+  });
+
+  // spec: calc-gravel › [GR6] the six inputs of gravel, appended in the order of the spec
+  it('records the 6 inputs of gravel in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'gravel');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '240'],
+        ['w', 'width', 'length', '120'],
+        ['d', 'depth', 'length', '4'],
+        ['pl', 'placement', 'select', 'compacted'],
+        ['ws', 'waste', 'percent', '5'],
+        ['tp', 'tonPrice', 'money', '0'],
+      ],
+    );
+    expect(tuples.find(({ urlKey }) => urlKey === 'pl')?.options).toEqual(['compacted', 'loose']);
   });
 });
