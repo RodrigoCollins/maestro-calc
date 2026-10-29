@@ -97,3 +97,11 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - From 64rem `.calculator` is a two-column grid: the form card on the left, and a new `.calc-side` wrapper on the right (result panel, shopping list, actions, notice), so the result is in the first screen on desktop. Breadcrumb, H1, answer and content keep the full width.
 - In the half-width column the panel is one column again (drawing above the rows). That override lives in `drawingCss` (page head) next to the 48rem two-column rule, so the shared sheet still holds no drawing rule. Spec change at archive: blueprint-drawing [BD20] "two columns from 48rem to 64rem; from 64rem the panel is the page's right column, the drawing between the large figure and the rows".
 - The notice takes two lines in that column: `--notice-lines: 2` from 64rem, the one rise of the ladder (the styles contract allows it at 64rem only), in the shared sheet and in `rectangle-area/reserve.ts`.
+
+## Slice 6 — home and footer (branch `feat/blueprint-ui-home`)
+
+- Home cards: a 2px `--color-line` edge (it darkens to ink on hover and focus with no shift, as before), `--radius-card` corners, ink titles. No arrow: site-shell [SS26] keeps arrow glyphs out of the home on purpose.
+- The hero takes `--radius-card` from 66rem, where it no longer reaches the screen edges (page width plus two gutters).
+- Footer: one 1.5px `--color-line` rule above it, the contact paragraph's margin tightened.
+- Trust pages: no change needed; they already read in the tokens (body text, H2 condensed).
+- HomeView test: corners come from the card token only (SS26 as amended in this change).

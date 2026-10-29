@@ -232,19 +232,23 @@ describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-s
   });
 
   // spec: site-shell › [SS26] the view style is square, flat and still
-  it('declares no transform, text-transform, border-radius, transition or animation in its style', () => {
+  it('declares no shadow, transform, text-transform, transition or animation, and corners from the radius token only', () => {
     const style = viewStyle();
     expect(style.length).toBeGreaterThan('<style></style>'.length);
     for (const property of [
       'box-shadow',
       'transform',
       'text-transform',
-      'border-radius',
       'transition',
       'animation',
     ]) {
       expect(style, property).not.toContain(property);
     }
+    // site-shell › [SS26] as amended by blueprint-ui: the card corner token, nothing else
+    expect([...style.matchAll(/border-radius:\s*([^;]+);/g)].map((match) => match[1])).toEqual([
+      'var(--radius-card)',
+      'var(--radius-card)',
+    ]);
   });
 });
 

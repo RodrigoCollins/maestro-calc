@@ -28,12 +28,18 @@ const { contactLabel, email, links } = Astro.props;
 </footer>
 
 <style is:global>
+  /* One rule above the footer, as the mockups: the line closes the page, the spacing stays tight. */
   .site-footer {
     max-width: var(--page-width);
     margin: var(--space-5) auto 0;
     padding: var(--space-3);
+    border-top: 1.5px solid var(--color-line);
     color: var(--color-text-secondary);
     font-size: var(--text-small);
+  }
+
+  .site-footer p {
+    margin: 0 0 var(--space-2);
   }
 
   .site-footer ul {
