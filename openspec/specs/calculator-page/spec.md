@@ -188,7 +188,7 @@ The hooks are derived from the descriptor and the module (never typed per calcul
 
 ### Requirement: Form controls
 
-The form MUST show only the fields the selected option of its choice group shows (concrete: the shape), in this order, each with a visible `<label>` and the unit hint of the active unit system. Hidden fields keep their values and are neither visible nor focusable. A calculator with no choice group shows all its fields.
+The form MUST show only the fields the selected option of its choice group shows (concrete: the shape), in this order, each with a visible `<label>` and the unit hint of the active unit system. The form is a sheet-white card; choice groups are segmented controls; from 22rem a length field and every field a choice drives take one column of two (label in a fixed two-line row, the unit hint under the input), the other parts span the row; the stepper is `−` and `+` after its input on the input row, named by `wasteLess` and `wasteMore` (blueprint-ui, 2026-10-29). Hidden fields keep their values and are neither visible nor focusable. A calculator with no choice group shows all its fields.
 (Previously: every input carried its own `autocomplete="off"`.)
 
 | shape | visible fields |
@@ -228,8 +228,8 @@ Always visible, after the shape fields: `waste` (with `wasteHelp` text, a "Less 
 
 ### Requirement: Result panel
 
-The result panel shows, in order: the primary volume (cubic yards in the US unit system, cubic meters in the metric one) as the large figure; on a page that declares the `drawing` slot, the blueprint drawing box (`blueprint-drawing`, reserved in the server HTML, plain ink, empty and `aria-hidden` until the script draws) after the large figure (`.calc-primary`) and before the result rows (`dl.calc-rows`), as in the mockup (`docs/design/mockups/Main.dc.html` lines 85-95); the other two volumes; the volume before extra (`netVolume`, labelled); the shopping line (`shoppingLine`, the quantity, `bagYield` for the chosen bag); the cost rows (each one row: the figure when its price is above zero, otherwise its price hint); the ready-mix note; the estimate note followed by a link to the terms page in the current locale. Volumes are the engine outputs rounded for display (2 places); ready-mix volume is never rounded to a truck increment. The panel uses the Blueprint tokens (ink ground, safety orange for what to buy) and keeps the text contrast of `site-shell`.
-(Previously: the panel had no drawing box, and each cost row had a separate hint row.)
+The result panel shows, in order: the primary volume (cubic yards in the US unit system, cubic meters in the metric one) as the large figure; on a page that declares the `drawing` slot, the blueprint drawing box (`blueprint-drawing`, reserved in the server HTML, plain ink, empty and `aria-hidden` until the script draws) after the large figure (`.calc-primary`) and before the result rows (`dl.calc-rows`), as in the mockup (`docs/design/mockups/Main.dc.html` lines 85-95); the other two volumes; the volume before extra (`netVolume`, labelled); the shopping line (`shoppingLine`, the quantity, `bagYield` for the chosen bag); the cost rows (each one row: the figure when its price is above zero, otherwise its price hint); the ready-mix note; the estimate note followed by a link to the terms page in the current locale. Volumes are the engine outputs rounded for display (2 places); ready-mix volume is never rounded to a truck increment. The panel uses the Blueprint tokens (ink ground) and keeps the text contrast of `site-shell`. The shopping lines, the cost rows and the ready-mix note sit in a sheet-white list card (`.calc-list`) right after the panel, with the quantity in ink condensed figures; the panel holds the figure, the drawing, the rows and the estimate note. After the list come the copy area (copy button, share link, status) and then the notice, outside the form. From 64rem the page is two columns: the form card on the left and, in `.calc-side` on the right, the panel (one column again there, the drawing above the rows), the list, the copy area and the notice.
+(Previously: the panel had no drawing box, and each cost row had a separate hint row; until blueprint-ui (2026-10-29) the shopping and cost rows were inside the panel in safety orange, and the copy area and notice were inside the form, the notice under the answer.)
 
 #### Scenario: [CP15] Order and units
 - GIVEN the default page in the US unit system
@@ -532,7 +532,7 @@ Terms. A reserved block is a block marked `data-reserved="answer"`, `"notice"` o
 #### Scenario: [CP66] The Spanish concrete page stays within the HTML budget
 - GIVEN the full-length budget fixture of `CalculatorBody.budget.test.ts` for the Spanish concrete page, built from the real components with the longest copy, after this change
 - WHEN its HTML size is measured and compared with the 40,960 byte limit of [SQ7]
-- THEN the page is at most 40,836 bytes (the pin; it measures 40,573 B before this change, which is 263 B under the pin and 387 B under the 40,960 byte limit), so its headroom to 40,960 B is never smaller than 124 bytes, the measured size and both margins are recorded in the apply progress, and `npm run check:site` passes on the real build (the seeded "one byte over" case still fails the gate, [SQ7])
+- THEN the page is at most 49,152 bytes (the pin follows the HTML budget of [SQ7] since blueprint-ui, 2026-10-29; it was 40,836 B against a 40,960 B limit before), the measured size and both margins are recorded in the apply progress, and `npm run check:site` passes on the real build (the seeded "one byte over" case still fails the gate, [SQ7])
 
 ### Requirement: Accessibility of the interactive page
 
