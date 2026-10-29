@@ -1,4 +1,4 @@
-import { scriptRootsOf } from './assets.ts';
+import { ANALYTICS_SRC, scriptRootsOf } from './assets.ts';
 import { attrsOf, urlsIn } from './dom.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
@@ -7,13 +7,18 @@ import type { BuildBytes, CheckContext, Dist, Page, Problem } from './types.ts';
 /** The byte size of every file under `dist`, by posix path (text and binary alike). */
 export type Sizes = BuildBytes['sizes'];
 
-/** Design budgets (site-quality): bytes on disk, uncompressed. JavaScript has none (`js: 0`). */
+/**
+ * Design budgets (site-quality): bytes on disk, uncompressed. A static page has no JavaScript of its
+ * own (`js: 0`); the analytics loader every page carries has a budget of its own (analytics-gtm),
+ * and its bytes count toward the page weight. Tag Manager itself comes from Google after the load.
+ */
 export const LIMITS = {
   html: 49_152,
   css: 20_480,
   font: 30_720,
   fonts: 92_160,
   js: 0,
+  analytics: 3_072,
   weight: 172_032,
 } as const;
 
@@ -46,6 +51,8 @@ interface Measure {
   readonly css: number;
   /** The script files a static page references (the budget is zero). */
   readonly scripts: readonly string[];
+  /** The bytes of the analytics loader, when the page carries its tag. */
+  readonly analytics: number;
   /** The entry file of a calculator page, if any, and the bytes of its whole JavaScript graph. */
   readonly entry: string | undefined;
   readonly js: number;
@@ -66,10 +73,14 @@ const measure = (page: Page, sizes: Sizes, dist: Dist, calculator: boolean): Mea
     ]).filter((file) => file.endsWith('.woff2')),
   );
   const icons = localFiles(attrsOf(page.root, 'link[rel~=icon]', 'href'));
+  const loader = ANALYTICS_SRC.slice(1);
   const scripts = localFiles([
     ...attrsOf(page.root, 'script[src]', 'src'),
     ...attrsOf(page.root, 'link[href]', 'href'),
-  ]).filter((file) => JS_FILE.test(file));
+  ]).filter((file) => JS_FILE.test(file) && file !== loader);
+  const analytics = attrsOf(page.root, 'script[src]', 'src').includes(ANALYTICS_SRC)
+    ? size(loader)
+    : 0;
   const linkedBytes = sum(linked.map(size));
   const roots = calculator ? scriptRootsOf(page) : [];
   const js = sum(graphOf(roots, dist).map(size));
@@ -77,9 +88,10 @@ const measure = (page: Page, sizes: Sizes, dist: Dist, calculator: boolean): Mea
     html,
     css: sum(inline.map((text) => new TextEncoder().encode(text).length)) + linkedBytes,
     scripts: calculator ? [] : scripts,
+    analytics,
     entry: roots[0],
     js,
-    weight: html + linkedBytes + sum([...fonts].map(size)) + sum(icons.map(size)) + js,
+    weight: html + linkedBytes + sum([...fonts].map(size)) + sum(icons.map(size)) + js + analytics,
   };
 };
 
@@ -99,7 +111,12 @@ export const budgetProblems = ({ pages, sizes, dist, site }: CheckContext): Prob
   return [
     ...pages.flatMap((page) => {
       const calculator = isCalculatorPage(page, site);
-      const { html, css, scripts, entry, js, weight } = measure(page, sizes, dist, calculator);
+      const { html, css, scripts, analytics, entry, js, weight } = measure(
+        page,
+        sizes,
+        dist,
+        calculator,
+      );
       const weightLimit = calculator ? CALCULATOR_LIMITS.weight : LIMITS.weight;
       return [
         ...(html > LIMITS.html
@@ -115,6 +132,15 @@ export const budgetProblems = ({ pages, sizes, dist, site }: CheckContext): Prob
             `/${file} (${fmt(sizeOf(sizes, file))} B) is JavaScript, and the budget is ${fmt(LIMITS.js)} B`,
           ),
         ),
+        ...(analytics > LIMITS.analytics
+          ? [
+              problem(
+                page.file,
+                'js-budget',
+                `${ANALYTICS_SRC} weighs ${fmt(analytics)} B, and its budget is ${fmt(LIMITS.analytics)} B`,
+              ),
+            ]
+          : []),
         ...(js > CALCULATOR_LIMITS.js
           ? [
               problem(

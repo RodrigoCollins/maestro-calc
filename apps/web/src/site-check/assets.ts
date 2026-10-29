@@ -1,6 +1,7 @@
 import { attr, attrsOf, urlsIn } from './dom.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
+import type { HTMLElement } from 'node-html-parser';
 import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
 /** `docs/design/direction.md`: the seven palette values every build must carry. */
@@ -72,23 +73,69 @@ const sharedScriptProblems = (
   }),
 ];
 
-/** A static page carries data blocks only: the only script allowed is JSON-LD. */
-const staticScriptProblems = (page: Page): Problem[] => [
-  ...page.root
+/** The analytics tag of the layout (analytics-gtm): the one same-origin classic script any page may carry. */
+export const ANALYTICS_SRC = '/analytics.js';
+
+const isAnalyticsTag = (script: HTMLElement): boolean =>
+  script.getAttribute('src') === ANALYTICS_SRC;
+
+/**
+ * At most one analytics tag, and only in its one shape: a deferred classic script with no body,
+ * carrying a Tag Manager container id and the production host as data (the file reads them).
+ */
+const analyticsProblems = (page: Page): Problem[] => {
+  const tags = page.root.querySelectorAll('script').filter(isAnalyticsTag);
+  return [
+    ...(tags.length > 1
+      ? [
+          problem(
+            page.file,
+            'analytics',
+            `expected at most one analytics tag, found ${String(tags.length)}`,
+          ),
+        ]
+      : []),
+    ...tags.flatMap((tag) =>
+      tag.getAttribute('type') !== undefined ||
+      !tag.hasAttribute('defer') ||
+      tag.text.trim() !== '' ||
+      !/^GTM-[A-Z0-9]+$/.test(tag.getAttribute('data-gtm') ?? '') ||
+      tag.getAttribute('data-host') === undefined
+        ? [
+            problem(
+              page.file,
+              'analytics',
+              'the analytics tag is a deferred classic script with no body, a data-gtm container id and a data-host',
+            ),
+          ]
+        : [],
+    ),
+  ];
+};
+
+/** The scripts a page carries besides its JSON-LD and the analytics tag. */
+const pageScripts = (page: Page): HTMLElement[] =>
+  page.root
     .querySelectorAll('script')
-    .filter((script) => script.getAttribute('type') !== 'application/ld+json')
-    .map(() => problem(page.file, 'script', 'the only script allowed is JSON-LD data')),
+    .filter(
+      (script) => script.getAttribute('type') !== 'application/ld+json' && !isAnalyticsTag(script),
+    );
+
+/** A static page carries data blocks only: besides the analytics tag, the only script allowed is JSON-LD. */
+const staticScriptProblems = (page: Page): Problem[] => [
+  ...pageScripts(page).map(() =>
+    problem(page.file, 'script', 'the only script allowed is JSON-LD data'),
+  ),
+  ...analyticsProblems(page),
   ...sharedScriptProblems(page, () => 'a module preload implies a script'),
 ];
 
 /**
- * A calculator page carries JSON-LD and exactly one external module script from `/_astro/`: no
- * inline script, no second file, no other origin (site-shell › [SS20], [SS22]).
+ * A calculator page carries JSON-LD, the analytics tag and exactly one external module script from
+ * `/_astro/`: no inline script, no second file, no other origin (site-shell › [SS20], [SS22]).
  */
 const calculatorScriptProblems = (page: Page): Problem[] => {
-  const scripts = page.root
-    .querySelectorAll('script')
-    .filter((script) => script.getAttribute('type') !== 'application/ld+json');
+  const scripts = pageScripts(page);
   const entries = scripts.filter(
     (script) => script.getAttribute('type') === 'module' && script.hasAttribute('src'),
   );
@@ -107,6 +154,7 @@ const calculatorScriptProblems = (page: Page): Problem[] => {
   const src = entry?.getAttribute('src') ?? '';
   return [
     ...shape,
+    ...analyticsProblems(page),
     ...(entries.length === 1
       ? []
       : [
@@ -241,6 +289,8 @@ const distProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[]
     ...[...dist.keys()]
       .filter((file) => /\.[cm]?js$/.test(file))
       .flatMap((file) => {
+        // the analytics loader is the one file outside _astro/: every page loads it by its tag
+        if (file === ANALYTICS_SRC.slice(1)) return [];
         if (!file.startsWith('_astro/')) {
           return [problem(file, 'js-file', 'JavaScript is only allowed under _astro/')];
         }

@@ -72,6 +72,42 @@ describe('zero client JavaScript (site-shell › [SS18])', () => {
       ),
     ).toEqual(['js-file']);
   });
+
+  // analytics-gtm: the loader is the one script file outside _astro/
+  it('accepts the analytics loader at the root, and no other root script', () => {
+    expect(problemsAfter({}, (dist) => dist.set('analytics.js', 'x'))).toEqual([]);
+    expect(
+      rulesOf(
+        problemsAfter({}, (dist) => dist.set('analytics2.js', 'x')),
+        'analytics2.js',
+      ),
+    ).toEqual(['js-file']);
+  });
+});
+
+describe('the analytics tag (analytics-gtm)', () => {
+  const TAG =
+    '<script src="/analytics.js" data-gtm="GTM-ABC123" data-host="maestrocalc.com" defer></script>';
+  const inHead: (markup: string) => Edit = (markup) => (html) =>
+    html.replace('</head>', `${markup}</head>`);
+
+  it('accepts the one deferred analytics tag on a static page', () => {
+    expect(problemsAfter({ 'about.html': inHead(TAG) })).toEqual([]);
+  });
+
+  it.each([
+    ['a second tag', TAG + TAG],
+    ['an inline body', TAG.replace('></script>', '>go()</script>')],
+    ['a module type', TAG.replace('<script ', '<script type="module" ')],
+    ['no defer', TAG.replace(' defer', '')],
+    ['no container id', TAG.replace(' data-gtm="GTM-ABC123"', '')],
+    ['a container id of another shape', TAG.replace('GTM-ABC123', 'G-ABC123')],
+    ['no host', TAG.replace(' data-host="maestrocalc.com"', '')],
+  ])('fails a tag with %s', (_name, markup) => {
+    expect(rulesOf(problemsAfter({ 'about.html': inHead(markup) }), 'about.html')).toContain(
+      'analytics',
+    );
+  });
 });
 
 describe('same-origin subresources (site-shell › [SS9])', () => {

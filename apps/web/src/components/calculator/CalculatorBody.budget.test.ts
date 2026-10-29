@@ -238,10 +238,11 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
       expect(cards.map((card) => card.querySelector('a')?.getAttribute('href'))).toEqual(
         CALCULATOR_PAGES.map((id) => pathOf(id, locale)),
       );
-      const types = parse(html)
+      // the JSON-LD and the analytics tag of the layout (analytics-gtm), nothing else
+      const scripts = parse(html)
         .querySelectorAll('script')
-        .map((tag) => tag.getAttribute('type'));
-      expect(types).toEqual(['application/ld+json']);
+        .map((tag) => tag.getAttribute('type') ?? tag.getAttribute('src'));
+      expect(scripts).toEqual(['application/ld+json', '/analytics.js']);
       expect(/<[^>]+\son[a-z]+=/i.test(html)).toBe(false);
       const text = parse(html).querySelector('main')?.text.toLowerCase() ?? '';
       expect(text).toContain('maestro');

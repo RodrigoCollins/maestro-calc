@@ -9,5 +9,7 @@ export const SITE = {
   },
   // Filled in once AdSense is approved; ad slots render nothing while empty.
   adsenseClient: '',
+  // Google Tag Manager container (public: it ships in every page). '' renders no analytics tag.
+  gtmId: 'GTM-MD8H6L5S' as string,
   contactEmail: 'contacto@maestrocalc.com',
 } as const;

@@ -90,6 +90,28 @@ describe('privacy facts match the build (trust-pages › [TP12])', () => {
     ]);
   });
 
+  // analytics-gtm: the loader may name the Tag Manager script, and nothing else foreign
+  it('allows the Tag Manager script address in the analytics loader only', () => {
+    const loader = "s.src='https://www.googletagmanager.com/gtm.js?id='+encodeURIComponent(id)";
+    expect(problemsAfter((dist) => dist.set('analytics.js', loader))).toEqual([]);
+    expect(
+      problemsAfter((dist) => dist.set('analytics.js', `${loader};u("https://example.com/x")`)),
+    ).toEqual([
+      {
+        file: 'analytics.js',
+        rule: 'third-party-origin',
+        message: 'a built asset references another origin',
+      },
+    ]);
+    expect(problemsAfter((dist) => dist.set('_astro/x.js', loader))).toEqual([
+      {
+        file: '_astro/x.js',
+        rule: 'third-party-origin',
+        message: 'a built asset references another origin',
+      },
+    ]);
+  });
+
   it('allows the site origin and the SVG namespace in built assets', () => {
     expect(
       problemsAfter((dist) => {

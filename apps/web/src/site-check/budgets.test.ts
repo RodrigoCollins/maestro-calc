@@ -55,6 +55,7 @@ describe('byte budgets over a valid dist (site-quality › [SQ6])', () => {
       font: 30_720,
       fonts: 92_160,
       js: 0,
+      analytics: 3_072,
       weight: 172_032,
     });
   });
@@ -217,6 +218,52 @@ describe('page weight (site-quality › [SQ6])', () => {
 
   it('fails 172,033 bytes, naming the page and the limit', () => {
     expect(problemsAfter(atLimit(10_241 + INLINE_CSS))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'weight-budget',
+        message: '172,033 B exceeds the limit of 172,032 B',
+      },
+    ]);
+  });
+});
+
+// analytics-gtm: the loader every page carries is not the zero-JS budget of a static page; it has a
+// budget of its own and its bytes count toward the page weight.
+describe('the analytics loader (analytics-gtm)', () => {
+  const withLoader = (bytes: number) => (dist: Map<string, string>, sizes: Map<string, number>) => {
+    dist.set(
+      'about.html',
+      (dist.get('about.html') ?? '').replace(
+        '</head>',
+        '<script src="/analytics.js" data-gtm="GTM-ABC123" data-host="maestrocalc.com" defer></script></head>',
+      ),
+    );
+    sizes.set('analytics.js', bytes);
+  };
+
+  it('passes a loader of 3,072 bytes, outside the zero JavaScript budget', () => {
+    expect(problemsAfter(withLoader(LIMITS.analytics))).toEqual([]);
+  });
+
+  it('fails a loader of 3,073 bytes, naming it and its budget', () => {
+    expect(problemsAfter(withLoader(LIMITS.analytics + 1))).toEqual([
+      {
+        file: 'about.html',
+        rule: 'js-budget',
+        message: '/analytics.js weighs 3,073 B, and its budget is 3,072 B',
+      },
+    ]);
+  });
+
+  it('adds the loader to the page weight', () => {
+    const edit = (dist: Map<string, string>, sizes: Map<string, number>) => {
+      withLoader(1_000)(dist, sizes);
+      sizes.set('about.html', LIMITS.html);
+      withLinkedCss('_astro/a.css', LIMITS.css - INLINE_CSS)(dist, sizes);
+      for (const font of FONTS) sizes.set(font, LIMITS.fonts / 4);
+      sizes.set('favicon.svg', 10_240 + INLINE_CSS - 1_000 + 1);
+    };
+    expect(problemsAfter(edit)).toEqual([
       {
         file: 'about.html',
         rule: 'weight-budget',

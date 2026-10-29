@@ -1,4 +1,4 @@
-import { scriptRootsOf } from './assets.ts';
+import { ANALYTICS_SRC, scriptRootsOf } from './assets.ts';
 import { graphOf } from './graph.ts';
 import { isCalculatorPage, problem } from './types.ts';
 import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
@@ -60,10 +60,21 @@ const storageProblems = (dist: Dist): Problem[] =>
     ),
   );
 
+/**
+ * The one foreign address a built file may name: the Tag Manager script the analytics loader adds
+ * (analytics-gtm), in that file only, and only as this exact prefix followed by its query.
+ */
+const TAG_MANAGER = /https:\/\/www\.googletagmanager\.com\/gtm\.js\?id='/g;
+
 const originProblems = (site: Site, dist: Dist): Problem[] => {
   const foreign = otherOrigin(hostOf(site.config.url));
+  const allowed = (file: string, text: string): string =>
+    file === ANALYTICS_SRC.slice(1) ? text.replace(TAG_MANAGER, '') : text;
   return [...dist]
-    .filter(([file, text]) => TEXT_ASSET.test(file) && foreign.test(text.replace(NAMESPACE, '')))
+    .filter(
+      ([file, text]) =>
+        TEXT_ASSET.test(file) && foreign.test(allowed(file, text).replace(NAMESPACE, '')),
+    )
     .map(([file]) =>
       problem(file, 'third-party-origin', 'a built asset references another origin'),
     );

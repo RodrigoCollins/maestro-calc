@@ -252,26 +252,26 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
 
 describe('privacy (trust-pages › [TP13], [TP14])', () => {
   const required = {
+    // analytics-gtm: Google Analytics through Tag Manager, the values left out, the regional and
+    // Global Privacy Control defaults, and the promise kept for advertising
     en: [
       'Cloudflare',
-      'does not use cookies',
-      'Do Not Track',
-      'before we add analytics or advertising',
+      'Google Analytics, loaded through Google Tag Manager',
+      'without the values you typed',
+      'sets no cookie',
+      'Global Privacy Control',
+      'before we add advertising',
     ],
-    es: ['Cloudflare', 'no usa cookies', 'No rastrear', 'antes de añadir analítica o publicidad'],
+    es: [
+      'Cloudflare',
+      'Google Analytics, cargado con Google Tag Manager',
+      'sin los valores que escribiste',
+      'no guarda ninguna cookie',
+      'Global Privacy Control',
+      'antes de añadir publicidad',
+    ],
   } as const;
-  const forbidden = [
-    'Google Analytics',
-    'GA4',
-    'Tag Manager',
-    'GTM',
-    'AdSense',
-    'Mediavine',
-    'Raptive',
-    'Amazon',
-    'affiliate',
-    'afiliad',
-  ];
+  const forbidden = ['AdSense', 'Mediavine', 'Raptive', 'Amazon', 'affiliate', 'afiliad'];
 
   it.each(LOCALES)('states the required facts and the contact address in %s', (locale) => {
     const body = bodyOf(`${locale}/privacy.md`);
@@ -332,12 +332,12 @@ describe('the copy follows the route table (trust-pages › [TP26], [TP21], [TP2
 describe('privacy: calculators (trust-pages › [TP27], [TP12])', () => {
   const heading = { en: '## Calculators', es: '## Calculadoras' } as const;
   const copy = {
-    en: "Calculators run in your browser. Nothing you type is sent to us. The values you enter sit in the page address, so you can copy the link and share it. Opening or sharing that address sends it like any page request, so it can appear in Cloudflare's request logs. The address with your values also stays in your browser history, like any page you visit.",
-    es: 'Las calculadoras funcionan en tu navegador. Nada de lo que escribes se nos envía. Los valores que ingresas quedan en la dirección de la página, así que puedes copiar el enlace y compartirlo. Al abrir o compartir esa dirección, se envía como cualquier solicitud de página, por lo que puede aparecer en los registros de solicitudes de Cloudflare. La dirección con tus valores también queda en el historial de tu navegador, como cualquier página que visitas.',
+    en: "Calculators run in your browser. Nothing you type is sent to us or to Google Analytics. The values you enter sit in the page address, so you can copy the link and share it. Opening or sharing that address sends it like any page request, so it can appear in Cloudflare's request logs. The address with your values also stays in your browser history, like any page you visit.",
+    es: 'Las calculadoras funcionan en tu navegador. Nada de lo que escribes se nos envía ni llega a Google Analytics. Los valores que ingresas quedan en la dirección de la página, así que puedes copiar el enlace y compartirlo. Al abrir o compartir esa dirección, se envía como cualquier solicitud de página, por lo que puede aparecer en los registros de solicitudes de Cloudflare. La dirección con tus valores también queda en el historial de tu navegador, como cualquier página que visitas.',
   } as const;
   const cookies = {
-    en: 'Maestro Calc does not use cookies. The site has no analytics, no advertising and no accounts, and it does not keep anything about you in your browser.',
-    es: 'Maestro Calc no usa cookies. El sitio no tiene analítica, publicidad ni cuentas, y no guarda nada sobre ti en tu navegador.',
+    en: 'Advertising storage and ad personalization are off everywhere.',
+    es: 'El almacenamiento publicitario y la personalización de anuncios están desactivados en todos los casos.',
   } as const;
 
   /** The paragraph under the `## ` heading `title`, up to the next heading; empty when the heading is absent. */

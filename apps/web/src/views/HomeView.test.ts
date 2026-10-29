@@ -262,7 +262,12 @@ describe('HomeView JSON-LD (site-seo › [SE6, SE7] render side)', () => {
       const document = await render(locale);
       const blocks = document.querySelectorAll('script[type="application/ld+json"]');
       expect(blocks).toHaveLength(1);
-      expect(document.querySelectorAll('script')).toHaveLength(1);
+      // besides the analytics tag of the layout (analytics-gtm), the JSON-LD is the only script
+      expect(
+        document
+          .querySelectorAll('script')
+          .filter((tag) => tag.getAttribute('src') !== '/analytics.js'),
+      ).toHaveLength(1);
       expect(blocks[0]?.text).toBe(serializeJsonLd(homeJsonLd(locale)));
       const graph = (JSON.parse(blocks[0]?.text ?? '') as { '@graph': Record<string, unknown>[] })[
         '@graph'
@@ -275,6 +280,10 @@ describe('HomeView JSON-LD (site-seo › [SE6, SE7] render side)', () => {
 
   it('is the only view that passes JSON-LD', async () => {
     const notFound = await renderComponent(NotFoundView, { locale: 'en' }, { partial: false });
-    expect(notFound.querySelectorAll('script')).toHaveLength(0);
+    expect(
+      notFound
+        .querySelectorAll('script')
+        .filter((tag) => tag.getAttribute('src') !== '/analytics.js'),
+    ).toHaveLength(0);
   });
 });

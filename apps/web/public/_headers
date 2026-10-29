@@ -1,13 +1,14 @@
 # Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
 # style-src keeps 'unsafe-inline' on purpose: Astro inlines all page CSS into <style> tags (no
-# external stylesheet, no nonce at build time). Scripts are 'self' only: no inline script, no eval,
-# no nonce or hash, no host. Static pages carry no script at all (check:site); a calculator page
-# carries its one same-origin module.
+# external stylesheet, no nonce at build time). Scripts: no inline script, no eval, no nonce or
+# hash. Every page carries the same-origin /analytics.js, which loads Google Tag Manager from its one
+# host; a calculator page also carries its one same-origin module. The Google hosts are the ones
+# Google lists for GTM with GA4 without advertising features (tag-platform/security/guides/csp).
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Hashed fonts and CSS never change under one name.
 /_astro/*
