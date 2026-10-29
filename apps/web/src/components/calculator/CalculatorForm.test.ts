@@ -205,7 +205,7 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
   });
 
   // spec: calculator-page › [CP41] static: disabled controls, the script-only controls hidden
-  it('renders every control disabled and hides the steppers and the copy button', async () => {
+  it('renders every control disabled and hides the steppers', async () => {
     const root = await render('en');
     const controls = root.querySelectorAll('input, button');
     expect(controls.length).toBeGreaterThan(20);
@@ -215,40 +215,17 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
         .querySelectorAll('[data-step="waste"] button')
         .map((button) => button.hasAttribute('hidden')),
     ).toEqual([true, true]);
-    expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
-    expect(root.querySelector('[data-copy]')?.text.trim()).toBe('Copy link');
     const less = root.querySelector('[data-step="waste"] [value="less"]');
     expect(less?.getAttribute('aria-label')).toBe('Less extra');
     expect(less?.text.trim()).toBe('−');
     expect(root.querySelectorAll('button[data-step], button[data-direction]')).toHaveLength(0);
   });
 
-  // spec: calculator-page › [CP80], [CP81], [CP83] static: the share anchor between the copy button
-  // and the status, hidden, with the inert base and no href
-  it.each([
-    ['en', 'Send on WhatsApp'],
-    ['es', 'Enviar por WhatsApp'],
-  ] as const)('renders the %s share anchor hidden and without an href', async (locale, label) => {
-    const copy = (await render(locale)).querySelector('[data-reserved="copy"]');
-    expect(copy?.children.map((el) => el.tagName.toLowerCase())).toEqual(['button', 'a', 'p']);
-    const anchor = copy?.querySelector('a');
-    expect(anchor?.attributes).toEqual({
-      class: 'calc-share',
-      'data-share': 'https://wa.me/',
-      target: '_blank',
-      rel: 'noopener noreferrer',
-      hidden: '',
-    });
-    expect(anchor?.text.trim()).toBe(label);
-  });
-
-  it('reserves the copy area, the choice area and the steppers by class alone', async () => {
+  // blueprint-ui slice 4: the copy area follows the result panel, outside the form
+  it('reserves the choice area and the steppers by class alone, and holds no copy area', async () => {
     const root = await render('en');
-    expect(
-      root.querySelectorAll('[data-reserved]').map((el) => el.getAttribute('data-reserved')),
-    ).toEqual(['copy']);
+    expect(root.querySelectorAll('[data-reserved], [data-copy], [data-share]')).toHaveLength(0);
     expect(root.querySelectorAll('.calc-choice-area, .calc-steppers')).toHaveLength(2);
-    expect(root.querySelector('[data-copy-status]')?.getAttribute('role')).toBe('status');
     expect(root.querySelector('.calc-help')?.text.trim()).toBe(
       enConcrete['calc.concrete.page.wasteHelp'],
     );

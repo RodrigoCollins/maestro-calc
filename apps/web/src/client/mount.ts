@@ -339,23 +339,22 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   });
   ui.form.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target.closest('button') : null;
-    if (target === null) return;
-    if (target === ui.copyButton) {
-      const address = copyAddress(env, current);
-      Promise.resolve()
-        .then(() => navigator.clipboard.writeText(address))
-        .then(
-          () => {
-            showCopy(ui, env, address, true);
-          },
-          () => {
-            showCopy(ui, env, address, false);
-          },
-        );
-      return;
-    }
-    const action = eventOf(target);
+    const action = target === null ? undefined : eventOf(target);
     if (action !== undefined) dispatch(action);
+  });
+  // the copy area follows the result, outside the form, so its button listens on its own
+  ui.copyButton.addEventListener('click', () => {
+    const address = copyAddress(env, current);
+    Promise.resolve()
+      .then(() => navigator.clipboard.writeText(address))
+      .then(
+        () => {
+          showCopy(ui, env, address, true);
+        },
+        () => {
+          showCopy(ui, env, address, false);
+        },
+      );
   });
   ui.form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -365,15 +364,15 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault();
   });
 
-  for (const control of findAll(ui.form, ':disabled')) {
+  for (const control of [...findAll(ui.form, ':disabled'), ui.copyButton]) {
     if (control instanceof HTMLInputElement || control instanceof HTMLButtonElement) {
       control.disabled = false;
     }
   }
-  for (const control of findAll(
-    ui.form,
-    '[data-copy][hidden], [data-share][hidden], [data-step] [hidden]',
-  )) {
+  for (const control of [
+    ...findAll(ui.form, '[data-step] [hidden]'),
+    ...findAll(ui.copyArea, '[data-copy][hidden], [data-share][hidden]'),
+  ]) {
     if (control instanceof HTMLElement) control.hidden = false;
   }
   ui.note.hidden = true;

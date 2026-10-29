@@ -45,22 +45,26 @@ const {
       </div>
     ))}
   </dl>
-  {shopping.map((line, index) => (
-    <ShoppingLine {line} {index} />
-  ))}
-  {costs.map(({ key, label, value, visible, hint }) => (
-    <p class="calc-cost">
-      <span>{label}</span>
-      <span class="calc-figure" data-output={key} data-cost={key} hidden={!visible}>
-        {value}
-      </span>
-      <span data-price-hint={key} hidden={visible}>
-        {hint}
-      </span>
-    </p>
-  ))}
-  {costsNote !== undefined && <p class="calc-note">{costsNote}</p>}
   <p class="calc-note">
     {estimateNote} <a href={termsHref}>{termsLabel}</a>
   </p>
 </section>
+{(shopping.length > 0 || costs.length > 0) && (
+  <div class="calc-list">
+    {shopping.map((line, index) => (
+      <ShoppingLine {line} {index} />
+    ))}
+    {costs.map(({ key, label, value, visible, hint }) => (
+      <p class="calc-cost">
+        <span>{label}</span>
+        <span class="calc-figure" data-output={key} data-cost={key} hidden={!visible}>
+          {value}
+        </span>
+        <span data-price-hint={key} hidden={visible}>
+          {hint}
+        </span>
+      </p>
+    ))}
+    {costsNote !== undefined && <p class="calc-note">{costsNote}</p>}
+  </div>
+)}

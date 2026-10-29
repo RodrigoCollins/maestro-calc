@@ -150,9 +150,13 @@ describe('CalculatorBody, anatomy (calculator-page › [CP5], [CP15], [CP17])', 
   });
 
   // spec: calculator-page › [CP15] the panel in the order of the spec, with units
-  it('reads the panel in the order of the spec', async () => {
-    const panel = (await render('en')).querySelector('.calc-result');
-    const text = (panel?.text ?? '').replaceAll(/\s+/g, ' ');
+  it('reads the panel, then the shopping list, in the order of the spec', async () => {
+    const parts = (await render('en')).querySelectorAll('.calc-result, .calc-list');
+    expect(parts.map((part) => part.classNames)).toEqual(['calc-result', 'calc-list']);
+    const text = parts
+      .map((part) => part.text)
+      .join(' ')
+      .replaceAll(/\s+/g, ' ');
     const order = [
       '1.63 cubic yards',
       '44.00',
@@ -297,6 +301,40 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
       'hint.ft',
       'hint.m',
     ]);
+  });
+});
+
+describe('CalculatorBody, the copy area (calculator-page › [CP80], [CP81], [CP83], [CP84] static)', () => {
+  // blueprint-ui slice 4: the actions follow the result (and the shopping list), outside the form
+  it('puts the copy area after the result and the shopping list, outside the form, then the notice', async () => {
+    const root = await render('en');
+    const copy = root.querySelector('[data-reserved="copy"]');
+    expect(copy?.closest('form')).toBeNull();
+    expect(copy?.previousElementSibling?.classNames).toBe('calc-list');
+    expect(copy?.nextElementSibling?.getAttribute('data-reserved')).toBe('notice');
+    expect(root.querySelector('[data-copy]')?.hasAttribute('hidden')).toBe(true);
+    expect(root.querySelector('[data-copy]')?.hasAttribute('disabled')).toBe(true);
+    expect(root.querySelector('[data-copy]')?.text.trim()).toBe('Copy link');
+    expect(root.querySelector('[data-copy-status]')?.getAttribute('role')).toBe('status');
+  });
+
+  // spec: calculator-page › [CP80], [CP81], [CP83] static: the share anchor between the copy button
+  // and the status, hidden, with the inert base and no href
+  it.each([
+    ['en', 'Send on WhatsApp'],
+    ['es', 'Enviar por WhatsApp'],
+  ] as const)('renders the %s share anchor hidden and without an href', async (locale, label) => {
+    const copy = (await render(locale)).querySelector('[data-reserved="copy"]');
+    expect(copy?.children.map((el) => el.tagName.toLowerCase())).toEqual(['button', 'a', 'p']);
+    const anchor = copy?.querySelector('a');
+    expect(anchor?.attributes).toEqual({
+      class: 'calc-share',
+      'data-share': 'https://wa.me/',
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      hidden: '',
+    });
+    expect(anchor?.text.trim()).toBe(label);
   });
 });
 

@@ -456,9 +456,9 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     '--notice-lines': {
       fallback: 4,
       steps: [
-        [23.5, 3],
-        [31.5, 2],
-        [57.5, 1],
+        [21.5, 3],
+        [29.5, 2],
+        [55, 1],
       ],
     },
   } as const;
@@ -652,12 +652,13 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   });
 
   // spec: calculator-page › Result panel: safety orange on the ink ground keeps the text contrast
-  it('puts orange and white on the ink ground of the result panel at 4.5:1 or more', () => {
+  it('puts white on the ink ground of the result panel and ink quantities on the white shopping list, at 4.5:1 or more', () => {
     expect(declared('.calc-result', 'background').toUpperCase()).toBe(INK);
-    expect(declared('.calc-qty', 'color').toUpperCase()).toBe(ORANGE);
     expect(declared('.calc-result', 'color').toUpperCase()).toBe(SURFACE);
-    expect(contrast(ORANGE, INK)).toBeGreaterThanOrEqual(4.5);
     expect(contrast(SURFACE, INK)).toBeGreaterThanOrEqual(4.5);
+    // blueprint-ui slice 4: the list is a sheet-white card after the panel, its quantity inherits ink
+    expect(declared('.calc-list', 'background').toUpperCase()).toBe(SURFACE);
+    expect(rules.get('.calc-qty')?.['color']).toBeUndefined();
   });
 
   // The stylesheet reaches a page through the one component that uses its classes.
