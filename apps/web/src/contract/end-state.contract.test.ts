@@ -31,10 +31,11 @@ describe('end state of the square footage change (site-routing-i18n › [SR1], [
   });
 
   // spec: site-routing-i18n › [SR17] concrete and rectangle-area have a page; gravel waits for the
-  // owner's review of its numbers before it gets one (calc-gravel, PLAN §5.2)
-  it('routes concrete and rectangle-area with the calculator template and leaves only gravel without a page', () => {
+  // owner's review of its numbers before it gets one, and so does mulch (calc-gravel, calc-mulch,
+  // PLAN §5.2)
+  it('routes concrete and rectangle-area with the calculator template and leaves gravel and mulch without a page', () => {
     expect(CALCULATOR_PAGES).toEqual(['concrete', 'rectangle-area']);
-    expect(PAGELESS).toEqual(['gravel']);
+    expect(PAGELESS).toEqual(['gravel', 'mulch']);
   });
 
   // spec: i18n-catalog › [ICW1]
