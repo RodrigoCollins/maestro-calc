@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { concretePage } from '../calculator/concrete/page.ts';
+import { slotFreePage } from '../contract/__testing__/slot-free-page.ts';
 import { controllerOf } from '../calculator/controller.ts';
 import { fromRoot } from '../contract/root.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
@@ -33,17 +34,20 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
   });
 });
 
+/** A row whose module declares no slot, so its head carries only what its reserve adds. */
+const PLAIN = { module: slotFreePage, catalogs: PAGES['rectangle-area'].catalogs };
+
 describe('the head style of a page row (calculator-page › [CP65], design K6)', () => {
   // spec: calculator-page › [CP65] a row with a reserve yields the builder output, one without yields nothing
   it('is the reserve builder output for a row that has a reserve and nothing for one that has none', () => {
     const reserve = { answer: [5, [30, 4]], notice: [6] } as const;
-    expect(headStyleOf({ ...PAGES.concrete, reserve })).toBe(reserveCss(reserve));
-    expect(headStyleOf(PAGES.concrete)).toBeUndefined();
+    expect(headStyleOf({ ...PLAIN, reserve })).toBe(reserveCss(reserve));
+    expect(headStyleOf(PLAIN)).toBeUndefined();
   });
 
   // an empty reserve writes no CSS, so the head carries no empty `<style></style>`
   it('is nothing for a row whose reserve is empty', () => {
-    expect(headStyleOf({ ...PAGES.concrete, reserve: {} })).toBeUndefined();
+    expect(headStyleOf({ ...PLAIN, reserve: {} })).toBeUndefined();
   });
 
   it('gives the concrete row no reserve, so its pages carry no extra byte', () => {
@@ -53,11 +57,12 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
   it('adds the drawing box rule after the reserve of a page that draws, and nothing to one that does not', () => {
     const rectangle = PAGES['rectangle-area'];
     expect(drawingCss({ width: 300, height: 200 })).toBe(
-      '[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:300/200;margin-bottom:var(--space-3);font:600 17px var(--font-display)}' +
+      '[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:3/2;margin-bottom:var(--space-3);font:600 17px var(--font-display)}' +
         // from 48rem the panel is two columns: the figures, rows and notes left, the drawing right
         // across more rows than any panel has children, the empty last one taking what it adds
         '@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(11,auto) 1fr;column-gap:var(--space-4);align-items:start}' +
-        '.calc-result>*{grid-column:1}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}',
+        // the drawing fills column 2 of every row, so the other children flow into column 1
+        '.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}',
     );
     expect(headStyleOf(rectangle)).toBe(
       `${String(reserveCss(rectangle.reserve))}${drawingCss({ width: 300, height: 200 })}`,
@@ -65,7 +70,8 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
     expect(headStyleOf({ module: rectangle.module, catalogs: rectangle.catalogs })).toBe(
       drawingCss({ width: 300, height: 200 }),
     );
-    expect(headStyleOf(PAGES.concrete)).toBeUndefined();
+    expect(headStyleOf(PAGES.concrete)).toBe(drawingCss({ width: 300, height: 200 }));
+    expect(headStyleOf(PLAIN)).toBeUndefined();
   });
 
   // spec: blueprint-drawing › [BD22] the shared stylesheet carries no drawing rule

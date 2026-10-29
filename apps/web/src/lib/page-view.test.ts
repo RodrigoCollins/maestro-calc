@@ -656,7 +656,7 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
     view.messages.map(([name]) => name);
 
   // spec: calculator-page › [CP43] the exact order of the template of the concrete page
-  it('lists the errors, the answers, the copy states, the unit hints and the primary templates in order', () => {
+  it('lists the errors, the answers, the drawing notes, the copy states, the unit hints and the primary templates in order', () => {
     const view = pageViewOf(concretePage, 'en', enCatalog);
     expect(names(view)).toEqual([
       ...ALL_ERROR_CODES.map((code) => `errors.${code}`),
@@ -664,6 +664,10 @@ describe('pageViewOf messages (calculator-web-core › [CWC23], [CWC25]; calcula
       'answer.footing',
       'answer.column',
       'answer.steps',
+      'drawing.slab.note',
+      'drawing.footing.note',
+      'drawing.column.note',
+      'drawing.steps.note',
       'copy.copied',
       'copy.failed',
       'share.text',

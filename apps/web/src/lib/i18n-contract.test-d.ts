@@ -30,7 +30,11 @@ type ConcretePageKeys =
   | 'calc.concrete.page.wasteLess'
   | 'calc.concrete.page.wasteMore'
   | 'calc.concrete.page.priceHint'
-  | 'calc.concrete.page.readyMixNote';
+  | 'calc.concrete.page.readyMixNote'
+  | 'calc.concrete.page.drawing.slab.note'
+  | 'calc.concrete.page.drawing.footing.note'
+  | 'calc.concrete.page.drawing.column.note'
+  | 'calc.concrete.page.drawing.steps.note';
 
 /** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
 type RectangleAreaPageKeys =

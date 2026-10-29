@@ -7,6 +7,7 @@ import { answerSlot } from '../slots/answer.ts';
 import { costSlot } from '../slots/costs.ts';
 import { shoppingSlot } from '../slots/shopping.ts';
 import { stepperSlot } from '../slots/steppers.ts';
+import { FRAME, MESSAGES, planOf } from './plan.ts';
 import { answerValues, bagFills } from './present.ts';
 import { SHAPE_FIELDS } from './shapes.ts';
 
@@ -36,4 +37,5 @@ export const concretePage: PageModule<typeof concrete> = definePage({
     { hint: 'priceHint', note: 'readyMixNote' },
   ),
   answer: answerSlot(concrete, { by: 'shape', values: answerValues }),
+  drawing: { frame: FRAME, messages: MESSAGES, plan: planOf },
 });

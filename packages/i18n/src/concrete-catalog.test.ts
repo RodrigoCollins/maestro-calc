@@ -114,6 +114,11 @@ const ROWS = [
     'Steps ({stepWidth} wide, {rise} rise, {run} run) × {stepCount}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
     'Escalones ({stepWidth} de ancho, {rise} de altura, {run} de profundidad) × {stepCount}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   ],
+  // the note of each drawn shape (blueprint-drawing › [BD4]-[BD7]); the answer sentence names the plan
+  ['calc.concrete.page.drawing.slab.note', '{thickness} thick', '{thickness} de espesor'],
+  ['calc.concrete.page.drawing.footing.note', '{depth} deep', 'Profundidad: {depth}'],
+  ['calc.concrete.page.drawing.column.note', '{height} tall', '{height} de alto'],
+  ['calc.concrete.page.drawing.steps.note', 'Steps: {count}', 'Escalones: {count}'],
 ] as const;
 
 /** The placeholders of each answer sentence, the same in both locales (ICW13). */
@@ -151,6 +156,10 @@ describe('concrete labels (i18n-catalog › [ICW12] Exact labels of concrete)', 
       'calc.concrete.page.answer.footing',
       'calc.concrete.page.answer.column',
       'calc.concrete.page.answer.steps',
+      'calc.concrete.page.drawing.slab.note',
+      'calc.concrete.page.drawing.footing.note',
+      'calc.concrete.page.drawing.column.note',
+      'calc.concrete.page.drawing.steps.note',
     ]);
     for (const [key, en, es] of ROWS) {
       expect(placeholdersOf(es), key).toEqual(placeholdersOf(en));

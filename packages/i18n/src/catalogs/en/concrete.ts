@@ -55,4 +55,8 @@ export const enConcrete = {
     'Column ({diameter} diameter, {height} tall) × {count}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.steps':
     'Steps ({stepWidth} wide, {rise} rise, {run} run) × {stepCount}: {volume} with {waste}% extra. Bags of {bagLb} lb: {bags}.',
+  'calc.concrete.page.drawing.slab.note': '{thickness} thick',
+  'calc.concrete.page.drawing.footing.note': '{depth} deep',
+  'calc.concrete.page.drawing.column.note': '{height} tall',
+  'calc.concrete.page.drawing.steps.note': 'Steps: {count}',
 } as const;

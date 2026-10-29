@@ -13,7 +13,7 @@ import { LOCALES, pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
 import { directoryOrder, exampleOf } from '../../lib/home-directory.ts';
-import { PAGES, pageView } from '../../lib/pages.ts';
+import { headStyleOf, PAGES, pageView } from '../../lib/pages.ts';
 import {
   budgetPaths,
   buildCache,
@@ -180,7 +180,8 @@ describe('inlined CSS of the built pages (site-shell › [SS28], [SS29], [SS32])
   // spec: calculator-page › [CP64] the built breakpoints are the source breakpoints, all rem, whatever the syntax
   it('keeps every media length of the built concrete CSS in rem, the same set as the source', async () => {
     await build('base');
-    const source = readFileSync(join(WEB_ROOT, 'src/styles/calculator.css'), 'utf8');
+    // the shared stylesheet and the page's own head rule (the drawing box of a page that draws)
+    const source = `${readFileSync(join(WEB_ROOT, 'src/styles/calculator.css'), 'utf8')}${String(headStyleOf(PAGES.concrete) ?? '')}`;
     const built = parse(builtPage('concrete-calculator.html'))
       .querySelectorAll('style')
       .map((style) => style.text)

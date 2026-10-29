@@ -667,3 +667,41 @@ describe('controller: raw record and helps (calculator-web-core › [CWC6], [CWC
     ]);
   });
 });
+
+describe('concrete page: the drawing through the controller (blueprint-drawing › [BD8], [BD15])', () => {
+  /** The resolved name and the texts of every label of a moment's plan. */
+  const drawingOf = (output: Output) => ({
+    named: output.view.plan?.name === output.view.answer,
+    texts: output.view.plan?.labels.map(({ text }) => text),
+  });
+
+  // spec: blueprint-drawing › [BD8], [BD15] every shape is drawn and named by the answer sentence
+  it.each([
+    ['?v=1', ['12 ft', '10 ft', '4 in thick']],
+    ['?v=1&sh=footing&l=216&n=3', ['18 ft', '1 ft 4 in', '8 in deep', '× 3']],
+    ['?v=1&sh=column&n=2', ['1 ft', '8 ft tall', '× 2']],
+    ['?v=1&sh=steps&ns=4', ['7 in', '11 in', 'Steps: 4']],
+  ])('draws %s, named by the answer', (search, texts) => {
+    expect(drawingOf(last(search))).toEqual({ named: true, texts });
+  });
+
+  it('names the slab plan in Spanish with the Spanish answer', () => {
+    const output = last('?v=1', [], ES);
+    expect(output.view.plan?.name).toMatch(/^Losa \(12 ft × 10 ft, 4 in de espesor\)/);
+    expect(drawingOf(output)).toEqual({
+      named: true,
+      texts: ['12 ft', '10 ft', '4 in de espesor'],
+    });
+  });
+
+  // spec: blueprint-drawing › [BD10] a shape switch draws the new shape; abc keeps the last plan
+  it('draws the new shape on a switch and keeps the last plan while a field is invalid', () => {
+    const outputs = run('?v=1', [shape('column'), type('diameter', 'abc')]);
+    expect(outputs.map(({ view }) => view.plan?.outline[0]?.kind)).toEqual([
+      'rect',
+      'circle',
+      undefined,
+    ]);
+    expect(outputs.at(-1)?.view.plan).toBeUndefined();
+  });
+});

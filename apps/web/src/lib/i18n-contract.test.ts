@@ -173,7 +173,7 @@ describe('registry catalog completeness (i18n-catalog › Catalog completeness a
     const concrete = catalogOf('en', 'concrete');
     expect(
       Object.keys(concrete).filter((key) => key.startsWith('calc.concrete.page.')),
-    ).toHaveLength(14);
+    ).toHaveLength(18);
   });
 
   it('keeps the same placeholders in en and es for every required key', () => {
