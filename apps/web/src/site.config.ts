@@ -7,8 +7,9 @@ export const SITE = {
     role: 'Editorial team',
     url: '/about',
   },
-  // Filled in once AdSense is approved; ad slots render nothing while empty.
-  adsenseClient: '',
+  // AdSense publisher id: the verification meta tag of every page and /ads.txt name it. No ad script
+  // loads until a consent banner (CMP) is in place; '' renders no meta tag.
+  adsenseClient: 'ca-pub-3954387285316164' as string,
   // Google Tag Manager container (public: it ships in every page). '' renders no analytics tag.
   gtmId: 'GTM-MD8H6L5S' as string,
   contactEmail: 'contacto@maestrocalc.com',
