@@ -17,6 +17,8 @@ import { renderComponent } from '../../__testing__/render-component.ts';
 import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
 import { pageViewOf } from '../../lib/page-view.ts';
 import { pageView } from '../../lib/pages.ts';
+import { PANEL_ROWS } from '../../lib/reserve.ts';
+import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculators } from '../../lib/calculators.ts';
 import CalculatorBody from './CalculatorBody.astro';
 import type { CalculatorContent } from './model.ts';
@@ -364,4 +366,25 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
       ),
     ).toHaveLength(0);
   });
+});
+
+// spec: blueprint-drawing › [BD20] the two-column panel holds every child of every page beside the
+// drawing: the explicit grid of the drawing rule has more rows than any panel has children
+describe('CalculatorBody, result panel rows (blueprint-drawing › [BD20])', () => {
+  it.each(
+    CALCULATOR_PAGES.flatMap((id) =>
+      (['en', 'es'] as const).map((locale) => [id, locale] as const),
+    ),
+  )(
+    '%s %s has no more panel children beside the drawing than the drawing rule has rows',
+    async (id, locale) => {
+      const root = await renderComponent(CalculatorBody, {
+        view: pageView(id, locale),
+        content: CONTENT,
+      });
+      const children = root.querySelectorAll('.calc-result > :not([data-drawing])');
+      expect(children.length).toBeGreaterThan(0);
+      expect(children.length).toBeLessThan(PANEL_ROWS);
+    },
+  );
 });

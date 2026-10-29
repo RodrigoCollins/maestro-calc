@@ -55,7 +55,8 @@ describe('the head style of a page row (calculator-page › [CP65], design K6)',
     expect(drawingCss({ width: 300, height: 200 })).toBe(
       '[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:300/200;margin-bottom:var(--space-3);font:600 17px var(--font-display)}' +
         // from 48rem the panel is two columns: the figures, rows and notes left, the drawing right
-        '@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto auto auto 1fr;column-gap:var(--space-4);align-items:start}' +
+        // across more rows than any panel has children, the empty last one taking what it adds
+        '@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(11,auto) 1fr;column-gap:var(--space-4);align-items:start}' +
         '.calc-result>*{grid-column:1}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}',
     );
     expect(headStyleOf(rectangle)).toBe(
