@@ -22,10 +22,11 @@ const { messages } = view;
       {view.answer}
     </p>
   )}
-  <div class="calc-notice" data-reserved="notice">
-    <p data-not-running>{view.notRunning}</p>
-  </div>
-  <CalculatorForm form={view.form} />
+  <CalculatorForm form={view.form}>
+    <div class="calc-notice" data-reserved="notice">
+      <p data-not-running>{view.notRunning}</p>
+    </div>
+  </CalculatorForm>
   <ResultPanel result={view.result} />
   <template data-messages>
     {messages.map(([name, text]) => (

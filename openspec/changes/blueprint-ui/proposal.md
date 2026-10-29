@@ -76,3 +76,9 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - The waste stepper is "−" and "+" beside the input (accessible names unchanged: "Less extra", "More extra"), in the focus order input, less, more. The stepper moved into `CalculatorField`; the separate stepper row and its 44 px reserve are gone.
 - New e2e guards: every half-field label of every option fits two lines with the web font at every width; 351/352 px join `WIDTHS`.
 - `verify` 0, e2e 688 + 4 passed.
+
+## Slice 2c — notice in the card footer (branch `feat/blueprint-ui-notice-footer`)
+
+- The notice block (no-JS note, URL notices) moved from under the answer to the end of the form card, after the copy and share actions (`CalculatorForm` takes it as its slot). Its reserve now reads as the card's footer; the first screen loses the empty block under the answer.
+- The card is about 35 px narrower than the page, so the notice ladder was swept again 320–1100 px in 1 px steps, both pages, both locales, web and fallback font: 4 → 3 at 23.5rem → 2 at 31.5rem → 1 at 57.5rem (both pages; `rectangle-area/reserve.ts` follows). New `WIDTHS` edges 503/504 and 919/920.
+- `verify` 0, e2e 708 passed.
