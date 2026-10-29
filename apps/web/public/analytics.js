@@ -57,9 +57,13 @@
       'CH',
     ],
   });
-  // The address without its query: a calculator keeps the typed values in the query, and they must
-  // not reach analytics. The GA4 tag of the container sends this as page_location.
-  dataLayer.push({ page_location_clean: location.origin + location.pathname });
+  // The addresses without their query: a calculator keeps the typed values in the query, and they
+  // must not reach analytics. The GA4 tag of the container sends these as page_location and
+  // page_referrer (a same-site referrer is the full address of the page before, values included).
+  dataLayer.push({
+    page_location_clean: location.origin + location.pathname,
+    page_referrer_clean: document.referrer.split(/[?#]/)[0],
+  });
   dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
 
   function load() {

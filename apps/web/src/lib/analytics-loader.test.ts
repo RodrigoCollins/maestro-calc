@@ -31,6 +31,7 @@ const run = (
     navigator: gpc ? { globalPrivacyControl: true } : {},
     document: {
       readyState: 'loading',
+      referrer: 'https://maestrocalc.com/es/calculadora-de-concreto?v=1&l=240#x',
       currentScript: { getAttribute: (name: string) => attrs[name] ?? null },
       createElement: () => ({ async: false, src: '' }),
       head: { appendChild: (script: { src: string }) => appended.push(script.src) },
@@ -94,10 +95,12 @@ describe('the analytics loader (analytics-gtm)', () => {
     expect(region).not.toContain('US');
   });
 
-  // the calculator values live in the query: the address offered to the GA4 tag leaves it out
-  it('offers the address without its query for the GA4 tag', () => {
+  // the calculator values live in the query: the addresses offered to the GA4 tag leave it out,
+  // the referrer too (a same-site referrer carries the full address of the page before)
+  it('offers the address and the referrer without their query for the GA4 tag', () => {
     expect(run(TAG).dataLayer).toContainEqual({
       page_location_clean: 'https://maestrocalc.com/concrete-calculator',
+      page_referrer_clean: 'https://maestrocalc.com/es/calculadora-de-concreto',
     });
   });
 
