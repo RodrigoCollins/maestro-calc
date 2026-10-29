@@ -122,7 +122,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
     expect(
       rows.map((row) => [
         row.querySelector('span:first-child')?.text,
-        row.querySelector('[data-output][data-cost-row]')?.getAttribute('data-cost-row'),
+        row.querySelector('[data-output][data-cost]')?.getAttribute('data-cost'),
         row.querySelector('[data-price-hint]')?.getAttribute('data-price-hint'),
       ]),
     ).toEqual([
@@ -130,7 +130,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
       ['Cost of ready-mix', 'readyMixCost', 'readyMixCost'],
     ]);
     expect(without.querySelectorAll('[data-hint-row], .calc-hint')).toHaveLength(0);
-    expect(hidden(without, '[data-cost-row="bagCost"]')).toBe(true);
+    expect(hidden(without, '[data-cost="bagCost"]')).toBe(true);
     expect(hidden(without, '[data-price-hint="bagCost"]')).toBe(false);
     expect(without.querySelector('[data-price-hint="bagCost"]')?.text).toBe(
       'Add your price to see the cost',
@@ -138,11 +138,11 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
 
     const costs = [{ ...result.costs[0], value: '$481.00', visible: true }, result.costs[1]];
     const withPrice = await renderComponent(ResultPanel, { result: { ...result, costs } });
-    expect(hidden(withPrice, '[data-cost-row="bagCost"]')).toBe(false);
+    expect(hidden(withPrice, '[data-cost="bagCost"]')).toBe(false);
     expect(hidden(withPrice, '[data-price-hint="bagCost"]')).toBe(true);
-    expect(hidden(withPrice, '[data-cost-row="readyMixCost"]')).toBe(true);
+    expect(hidden(withPrice, '[data-cost="readyMixCost"]')).toBe(true);
     expect(hidden(withPrice, '[data-price-hint="readyMixCost"]')).toBe(false);
-    expect(withPrice.querySelector('[data-cost-row="bagCost"]')?.text).toBe('$481.00');
+    expect(withPrice.querySelector('[data-cost="bagCost"]')?.text).toBe('$481.00');
   });
 
   // spec: calculator-page › [CP17] the estimate note and the terms link
@@ -195,7 +195,7 @@ describe('ResultPanel (calculator-page › Result panel, [CP1], [CP4], [CP15], [
       termsHref: result.termsHref,
     };
     const root = await renderComponent(ResultPanel, { result: bare });
-    expect(root.querySelectorAll('[data-line], [data-shopping], [data-cost-row]')).toHaveLength(0);
+    expect(root.querySelectorAll('[data-line], [data-shopping], [data-cost]')).toHaveLength(0);
     expect(root.querySelectorAll('.calc-note').map((el) => el.text.trim())).toEqual([
       'Estimates only. Check quantities with your supplier and the local building code. Terms',
     ]);

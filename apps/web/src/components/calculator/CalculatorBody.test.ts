@@ -360,7 +360,7 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
     expect(root.querySelectorAll('[data-copy], [data-copy-status]')).toHaveLength(2);
     expect(
       root.querySelectorAll(
-        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint]',
+        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost], [data-hint-row], [data-price-hint]',
       ),
     ).toHaveLength(0);
   });

@@ -126,7 +126,7 @@ describe('slot-free markup (calculator-web-core › [CWC33], [CWC45])', () => {
     const root = await render();
     expect(
       root.querySelectorAll(
-        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint], [data-drawing]',
+        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost], [data-hint-row], [data-price-hint], [data-drawing]',
       ),
     ).toHaveLength(0);
     expect(root.querySelector('#calc-length')).not.toBeNull();
@@ -170,7 +170,7 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
   it.each([
     ['a choice group', "find(root, '[data-choice]');", '[data-choice]'],
     ['a stepper', "findAs(root, '[data-step]', HTMLElement);", '[data-step]'],
-    ['a cost row', 'find(document, "[data-cost-row]");', '[data-cost-row]'],
+    ['a cost row', 'find(document, "[data-cost]");', '[data-cost]'],
     ['a key that is not a text input', 'find(root, `#calc-ghost`);', '#calc-ghost'],
     // spec: calculator-web-core › [CWC44] a throwing lookup of the drawing box is found
     ['the drawing box', "find(root, '[data-drawing]');", '[data-drawing]'],
@@ -229,7 +229,7 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
   // trim C of blueprint-panel: the cost row holds its hint, so the hint-row hook is gone
   it('looks up no hint row: the cost figure and its hint are spans of one row', () => {
     expect(mount).not.toContain('data-hint-row');
-    expect(mount).toContain("'[data-cost-row], [data-price-hint]'");
+    expect(mount).toContain("'[data-cost], [data-price-hint]'");
   });
 
   it('does not flag a list lookup of a slot element', async () => {

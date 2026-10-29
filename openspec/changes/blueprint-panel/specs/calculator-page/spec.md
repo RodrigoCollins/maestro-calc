@@ -53,13 +53,13 @@ The markup of every calculator page MUST expose these hooks, which the browser s
 | `data-shopping="<purchaseUnit>"` | each shopping quantity | one per shopping line |
 | `data-fill="<placeholder>"` | each value inside a shopping label or note | the placeholder of the split template it fills |
 | `data-line-note="<index>"` | the note of a shopping line | the line it belongs to |
-| `data-cost-row="<outputKey>"` | the figure of each cost row (with `data-output`) | shown once its price is above zero |
+| `data-cost="<outputKey>"` | the figure of each cost row (with `data-output`) | shown once its price is above zero |
 | `data-price-hint="<outputKey>"` | the price hint inside the same cost row | shown while its price is zero |
 | `data-drawing` | the drawing box of the result panel, on a page whose module declares the `drawing` slot (`blueprint-drawing`) | the `<svg>` the script draws into; empty and `aria-hidden` in the server HTML |
 | `data-share="<base>"` | the WhatsApp share anchor of the copy area, on every calculator page | the inert share base (`https://wa.me/`) the script reads; the anchor has no `href` before the script |
 
-The hooks are derived from the descriptor and the module (never typed per calculator in a generic component), and the concrete names `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield` and `data-yield` no longer exist. The visible markup, ids, aria and text of the concrete pages are unchanged by the rename. The cost row and its price hint are one row: the separate hint row and its `data-hint-row` hook no longer exist (the markup trim of this change; visible text, ids and ARIA unchanged).
-(Previously: a separate hint row `data-hint-row` per cost row; no `data-drawing` or `data-share` hook.)
+The hooks are derived from the descriptor and the module (never typed per calculator in a generic component), and the concrete names `data-shape-button`, `data-bag`, `data-waste-step`, `data-bag-lb`, `data-bag-yield` and `data-yield` no longer exist. The visible markup, ids, aria and text of the concrete pages are unchanged by the rename. The cost row and its price hint are one row: the separate hint row and its `data-hint-row` hook no longer exist, and the figure hook is `data-cost`, since it marks a figure, not a row (the markup trim of this change; visible text, ids and ARIA unchanged).
+(Previously: a separate hint row `data-hint-row` per cost row and `data-cost-row` on the cost row; no `data-drawing` or `data-share` hook.)
 
 #### Scenario: [CP54] Hooks on the concrete page
 - GIVEN built `/concrete-calculator`

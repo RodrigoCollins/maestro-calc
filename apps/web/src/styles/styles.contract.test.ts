@@ -288,7 +288,7 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
   });
 
   // review RD-9: components opt in; base.css holds no selector keyed to a component class
-  it.each(['.skip-link', '.wordmark', '.nav-link', '.footer-link', '.lang-switch'])(
+  it.each(['.skip-link', '.wordmark', '.lang-switch'])(
     'keeps %s out of the global stylesheet size rules',
     (selector) => {
       expect(baseRules.get(selector)?.['min-height'], selector).toBeUndefined();
@@ -321,6 +321,26 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
     const anchors = document.querySelectorAll('a');
     expect(anchors.length).toBeGreaterThan(0);
     for (const anchor of anchors) expect(anchor.classList.contains('tap-target')).toBe(true);
+  });
+
+  // blueprint-panel S4c: a class no stylesheet selects is bytes on every page
+  it.each([
+    ['SiteFooter', SiteFooter, { contactLabel: 'Contact', email: 'a@b.c', links: [link] }],
+    [
+      'SiteHeader',
+      SiteHeader,
+      {
+        homeHref: '/',
+        navLabel: 'Main',
+        links: [link],
+        language: { href: '/es', lang: 'es', hreflang: 'es-US', label: 'Español' },
+      },
+    ],
+  ])('%s gives its list links the tap-target class only', async (_name, component, props) => {
+    const document = await renderComponent(component, props);
+    const anchors = document.querySelectorAll('li a, p a');
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const anchor of anchors) expect(anchor.getAttribute('class')).toBe('tap-target');
   });
 });
 

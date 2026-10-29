@@ -137,7 +137,7 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
     ],
   })),
   figures: findAll(root, '[data-output]'),
-  costs: findAll(root, '[data-cost-row], [data-price-hint]'),
+  costs: findAll(root, '[data-cost], [data-price-hint]'),
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
   copyArea: find(root, '[data-reserved="copy"]'),
@@ -194,7 +194,7 @@ const renderPanel = (ui: Ui, view: View): void => {
   }
   // the figure shows once its price is above zero, the hint while it is zero
   for (const span of ui.costs) {
-    const figure = span.getAttribute('data-cost-row');
+    const figure = span.getAttribute('data-cost');
     const shown = panel.costs[figure ?? span.getAttribute('data-price-hint') ?? ''] === true;
     span.toggleAttribute('hidden', figure === null ? shown : !shown);
   }
