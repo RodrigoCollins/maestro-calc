@@ -34,8 +34,15 @@
   min-height: calc(var(--answer-lines, 4) * var(--text-base) * var(--leading-body));
 }
 
+/* The block keeps its own bottom margin: a paragraph's margin would collapse through it, and the
+   script swaps the no-JS note for a notice that is often hidden, which would move the form. */
 .calc-notice {
   min-height: calc(var(--notice-lines, 4) * var(--text-base) * var(--leading-body));
+  margin-bottom: var(--space-3);
+}
+
+.calc-notice p {
+  margin: 0;
 }
 
 @media (min-width: 21.5rem) {

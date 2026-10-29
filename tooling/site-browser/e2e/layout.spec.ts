@@ -83,8 +83,8 @@ const withPages = async (
 
 /**
  * The natural height of each reserved block at the current width: the tallest content it takes
- * (each variant set in turn), read with `min-height: 0` and `display: flow-root` so the note's
- * paragraph margin counts, then restored (design K13; the probe of calculator-page › [CP59]-[CP61]).
+ * (each variant set in turn), read with `min-height: 0` and `display: flow-root` so a margin
+ * inside the block would count, then restored (design K13; the probe of calculator-page › [CP59]-[CP61]).
  */
 const probeBlocks = async (page: Page, variants: Variants): Promise<Probes> => {
   const note = await notRunning(page).elementHandle();
@@ -264,51 +264,67 @@ for (const id of ids) {
 
   test.describe(`${id} reserved blocks (calculator-page › Layout stability, both locales)`, () => {
     // spec: calculator-page › [CP59], [CP60], [CP61] the content fits and under one line of its own unit is unused (two within 0.5rem below a breakpoint)
+    // The reserve holds the taller of the web font and the fallback font (the text first paints in
+    // the fallback, so a shorter reserve would move the page when the font swaps). The fit check
+    // reads the web font only, the same on every platform; the unused check takes the tallest
+    // content of both, since the fallback font differs per platform and only ever adds height.
     test('fits every reserved block at every width with less than one line unused', async ({
       browser,
     }) => {
-      await withPages(browser, [true], async ([page]) => {
-        if (page === undefined) throw new Error('no page');
-        const measured = new Map<number, [string, Probes, BlockEdges][]>();
-        for (const calculator of pages) {
-          await open(page, calculator);
-          const sentences: string[] = ['—'];
-          if (calculator.spec.answer !== undefined) {
-            for (const query of calculator.spec.layoutQueries) {
-              await open(page, calculator, query);
-              sentences.push((await answer(page).textContent()) ?? '');
+      test.slow();
+      await withPages(browser, [true, true], async ([web, fallback]) => {
+        if (web === undefined || fallback === undefined) throw new Error('no page');
+        await fallback.route(
+          (url) => url.pathname.endsWith('.woff2'),
+          (route) => route.abort(),
+        );
+        const measured = new Map<number, [string, boolean, Probes, BlockEdges][]>();
+        for (const [page, webFont] of [
+          [web, true],
+          [fallback, false],
+        ] as const) {
+          for (const calculator of pages) {
+            await open(page, calculator);
+            const sentences: string[] = ['—'];
+            if (calculator.spec.answer !== undefined) {
+              for (const query of calculator.spec.layoutQueries) {
+                await open(page, calculator, query);
+                sentences.push((await answer(page).textContent()) ?? '');
+              }
             }
-          }
-          const edges = blockEdgesOf(await cssOf(page));
-          const variants: Variants = {
-            answers: sentences,
-            notices: [
-              await messageOf(page, 'errors.INVALID_VALUE'),
-              await messageOf(page, 'errors.UNSUPPORTED_VERSION'),
-            ],
-            copied: await messageOf(page, 'copy.copied'),
-          };
-          for (const width of WIDTHS) {
-            await page.setViewportSize({ width, height: 900 });
-            measured.set(width, [
-              ...(measured.get(width) ?? []),
-              [calculator.locale, await probeBlocks(page, variants), edges],
-            ]);
+            const edges = blockEdgesOf(await cssOf(page));
+            const variants: Variants = {
+              answers: sentences,
+              notices: [
+                await messageOf(page, 'errors.INVALID_VALUE'),
+                await messageOf(page, 'errors.UNSUPPORTED_VERSION'),
+              ],
+              copied: await messageOf(page, 'copy.copied'),
+            };
+            for (const width of WIDTHS) {
+              await page.setViewportSize({ width, height: 900 });
+              measured.set(width, [
+                ...(measured.get(width) ?? []),
+                [calculator.locale, webFont, await probeBlocks(page, variants), edges],
+              ]);
+            }
           }
         }
         for (const [width, rows] of measured) {
           for (const block of ['answer', 'notice', 'copy'] as const) {
-            const probes = rows.flatMap(([locale, probes, edges]) =>
+            const probes = rows.flatMap(([locale, webFont, probes, edges]) =>
               probes[block] === undefined
                 ? []
-                : [{ locale, edges: edges[block], ...probes[block] }],
+                : [{ locale, webFont, edges: edges[block], ...probes[block] }],
             );
             const expected = pages.filter(
               ({ spec }) => block !== 'answer' || spec.answer !== undefined,
             ).length;
-            expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(expected);
+            expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(2 * expected);
             const tallest = Math.max(...probes.map(({ natural }) => natural));
-            for (const { locale, edges, reserved, line, natural } of probes) {
+            for (const { locale, edges, reserved, line, natural } of probes.filter(
+              ({ webFont }) => webFont,
+            )) {
               const label = `${block} ${locale} at ${String(width)} px`;
               // soft: one run reports every width and block that misses, not the first one
               expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
