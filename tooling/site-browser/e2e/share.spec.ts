@@ -8,10 +8,11 @@ import { calculatorPages, pressSelector } from './calculator-pages.ts';
 import { copyButton, input, open, shareLink } from './locators.ts';
 
 /*
- * The WhatsApp share link of the copy area (calculator-page › Share on WhatsApp), for every page
- * whose record declares the `share` group: the script writes its href from the base the markup
- * carries, the share text and the current link; it opens a new tab without an opener, is a 44 px
- * target in legible green with the orange ring, and comes right after "Copy link". The reserve of
+ * The WhatsApp share link of the copy area (calculator-page › Share on WhatsApp), on every
+ * calculator page: the script writes its href from the base the markup carries, the share text and
+ * the current link; it opens a new tab without an opener, is a 44 px target in legible green with
+ * the orange ring, and comes right after "Copy link". Only the change that moves the link comes
+ * from the record's optional `share` group, so a page without it still runs every other case. The reserve of
  * the copy block and the load shift are proven by `layout.spec.ts` with the link shown; Linux CI is
  * the final word on them. The hidden link of a page with no script is proven by `no-js.spec.ts`.
  */
@@ -26,10 +27,6 @@ const BASE = 'https://wa.me/';
 
 /** Safety orange, the focus ring of site-shell. */
 const ORANGE = 'rgb(240, 106, 29)';
-
-const shared = calculatorPages.flatMap((calculator) =>
-  calculator.spec.share === undefined ? [] : [{ calculator, group: calculator.spec.share }],
-);
 
 /** `#rrggbb` of a computed `rgb(r, g, b)` colour. */
 const hexOf = (rgb: string): string =>
@@ -46,33 +43,44 @@ const linkOf = async (page: Page): Promise<{ base: string; text: string | null }
   return { base: `${url.origin}${url.pathname}`, text: url.searchParams.get('text') };
 };
 
-for (const { calculator, group } of shared) {
+for (const calculator of calculatorPages) {
   const { path, locale, site, spec } = calculator;
+  const group = spec.share;
   const sentence = site['site.calculator.shareText'] ?? '';
   const label = site['site.calculator.shareWhatsApp'] ?? '';
 
   test.describe(`${path} share link (calculator-page › Share on WhatsApp, ${locale})`, () => {
-    // spec: calculator-page › [CP78], [CP79] the encoded current link, kept while a field is invalid
-    test('carries the share text and the current link, follows a change and keeps it on an invalid one', async ({
-      page,
-    }) => {
+    // spec: calculator-page › [CP78] the share text and the current link, on every page
+    test('carries the share text and the current link once mounted', async ({ page }) => {
       await open(page, calculator);
-      const message = (query: string): string =>
-        `${sentence} ${new URL(page.url()).origin}${path}${query}`;
       expect(sentence).not.toBe('');
-      expect(await linkOf(page)).toEqual({ base: BASE, text: message('') });
-      if ('hook' in group.change) await page.locator(pressSelector(group.change)).click();
-      else await input(page, group.change.key).fill(group.change.text);
-      await expect(shareLink(page)).toHaveAttribute(
-        'href',
-        `${BASE}?text=${encodeURIComponent(message(group.query))}`,
-      );
-      expect((await linkOf(page)).text).toBe(message(group.query));
-      const kept = (await shareLink(page).getAttribute('href')) ?? '';
-      await input(page, spec.typed.key).fill('abc');
-      await expect(input(page, spec.typed.key)).toHaveAttribute('aria-invalid', 'true');
-      await expect(shareLink(page)).toHaveAttribute('href', kept);
+      expect(await linkOf(page)).toEqual({
+        base: BASE,
+        text: `${sentence} ${new URL(page.url()).origin}${path}`,
+      });
     });
+
+    // spec: calculator-page › [CP78], [CP79] the encoded current link, kept while a field is invalid
+    if (group !== undefined) {
+      test('follows a change and keeps the link on an invalid one', async ({ page }) => {
+        await open(page, calculator);
+        const message = (query: string): string =>
+          `${sentence} ${new URL(page.url()).origin}${path}${query}`;
+        expect(sentence).not.toBe('');
+        expect(await linkOf(page)).toEqual({ base: BASE, text: message('') });
+        if ('hook' in group.change) await page.locator(pressSelector(group.change)).click();
+        else await input(page, group.change.key).fill(group.change.text);
+        await expect(shareLink(page)).toHaveAttribute(
+          'href',
+          `${BASE}?text=${encodeURIComponent(message(group.query))}`,
+        );
+        expect((await linkOf(page)).text).toBe(message(group.query));
+        const kept = (await shareLink(page).getAttribute('href')) ?? '';
+        await input(page, spec.typed.key).fill('abc');
+        await expect(input(page, spec.typed.key)).toHaveAttribute('aria-invalid', 'true');
+        await expect(shareLink(page)).toHaveAttribute('href', kept);
+      });
+    }
 
     // spec: calculator-page › [CP80], [CP81] shown once mounted, a new tab with no opener, named by its label
     test('shows a link to a new tab with no opener, named by its visible label', async ({

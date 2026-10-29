@@ -264,7 +264,7 @@ for (const calculator of calculatorPages) {
 
     // spec: calculator-page › [CP16], [CP18] costs
     if (prices !== undefined) {
-      test('shows the costs once a price is typed and does not round the ready-mix volume', async ({
+      test('shows the costs once a price is typed, hides them when it is cleared and does not round the ready-mix volume', async ({
         page,
       }) => {
         await open(page, calculator);
@@ -285,6 +285,16 @@ for (const calculator of calculatorPages) {
             ).toHaveCount(1);
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeHidden();
           }
+          // back to zero, then empty: the figure hides again and the hint returns
+          for (const cleared of ['0', '']) {
+            await input(page, price.input).fill(cleared);
+            await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeHidden();
+            if (price.hinted === true) {
+              await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeVisible();
+            }
+          }
+          await input(page, price.input).fill(price.text);
+          await expect(output(page, price.output)).toHaveText(price.value);
         }
         await input(page, typed.key).fill(typed.text);
         await expect(figureAt(page, headline)).toHaveText(figure(typed.figures, 0));

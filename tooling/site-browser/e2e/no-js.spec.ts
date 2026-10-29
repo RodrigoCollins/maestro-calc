@@ -48,15 +48,13 @@ test.describe('calculator pages with JavaScript off (site-quality › [SQ18], ca
       });
 
       // spec: calculator-page › [CP80], site-quality › [SQ43] the share link waits for the script
-      if (spec.share !== undefined) {
-        test('hides the share link and gives it no href, only the inert base', async ({ page }) => {
-          await page.goto(path);
-          await expect(shareLink(page)).toHaveCount(1);
-          await expect(shareLink(page)).toBeHidden();
-          await expect(shareLink(page)).not.toHaveAttribute('href');
-          await expect(shareLink(page)).toHaveAttribute('data-share', 'https://wa.me/');
-        });
-      }
+      test('hides the share link and gives it no href, only the inert base', async ({ page }) => {
+        await page.goto(path);
+        await expect(shareLink(page)).toHaveCount(1);
+        await expect(shareLink(page)).toBeHidden();
+        await expect(shareLink(page)).not.toHaveAttribute('href');
+        await expect(shareLink(page)).toHaveAttribute('data-share', 'https://wa.me/');
+      });
 
       test('requests no script', async ({ page }) => {
         const scripts: string[] = [];
