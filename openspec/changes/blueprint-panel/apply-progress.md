@@ -331,3 +331,33 @@ Session scratchpad: `bp2-{concrete,sqft}-{en,es}-{390,1280}.png`. The green link
 ### Linux gate (task 6.11, orchestrator-owned)
 
 Request: run the `site-browser` CI job on the PR 2 tip; `share.spec.ts` ([CP82]) and `layout.spec.ts` ([CP84], [CP85]) must pass on Linux Chromium, with the 8rem `.calc-copy` reserve confirmed (the copy block holds two 44 px rows and one status line, so its height should not depend on font metrics). Local command: `npm run build && npm run test:e2e -- share.spec layout.spec`. Not confirmed until the orchestrator records the run id here.
+
+PR 2 Linux gate: CI run 40796447511 green (`site-browser` 7m24s), PR #109 merged 2026-10-28.
+
+## PR 3 — Concrete drawings (`feat/blueprint-panel-p3-concrete`, from `main` `ae28b38`)
+
+Applied in the main thread (owner request: no background agents). Commits (`git diff -M --shortstat`, `openspec/` excluded):
+
+| Slice | Commit | Lines | Forecast |
+|---|---|---|---|
+| S4c bytes | `78b86c0` refactor: drop the unused `nav-link`/`footer-link` classes, `data-cost-row` → `data-cost` | 76 | new |
+| S4c share | `bab756c` feat: WhatsApp link full width, 56 px (mockup), copy reserve 9rem (content 8.6rem) | 27 | new |
+| S4c panel | `53c3b51` fix: two-column panel independent of the row count (`repeat(11,auto) 1fr`, `PANEL_ROWS` contract) | ~60 | new |
+| S5 | `0ccf6f0` slab, footing, column geometry | 421 | 300–370 |
+| S6 | `4906cb8` steps geometry | 181 | 200–260 |
+| S7a | `6493094` plan named by the answer, writer fits centred labels, notes centred on the frame | 208 | — |
+| S7b | `36398cf` concrete wiring: slot, entry, 4 note keys per locale, browser record | 245 | 300–370 |
+
+S5 is 21 lines over 400: the shared helpers of `slots/drawing.ts` reach 100 % coverage only through the concrete tests, so they could not land alone.
+
+Bytes (ES concrete full-length proof, pin 40,836 B): 40,239 at the PR 2 tip → 40,112 after S4c (−127) → 41,222 with the first S7 draft (+1,110: head CSS 451, box 65, eight templates 594, against the 556 forecast) → **40,797 at the tip, margin 39 B**. EN 40,496 B. Concrete entry graph 47,285 B (budget 49,152). The design fallbacks were not enough, so two changes, both within the spec:
+1. **The name of a concrete plan is the answer sentence** (`ANSWER`, resolved by the controller; a plan naming the answer on a page without one fails `PAGE_KEY` at creation). It names the shape and its dimensions ([BD15]) and costs no template: −390 B. Design B8 had one name template per shape.
+2. **The drawing rule lost `.calc-result>*{grid-column:1}`** (the drawing fills column 2 of every row, so auto-placement puts the rest in column 1) and writes the ratio reduced (`3/2`): −34 B.
+
+Other decisions: the slab draws no count (its volume ignores it); 0 steps → `null`; notes are centred on the frame, not the shape (a toggle moved the ES footing note when its text was fitted per system, caught by `drawing.spec` [BD11]); the ES depth note is `Profundidad: {depth}` (the longest accepted value, 29 characters, fits the 300 frame); the writer fits a centred label by its text (a note's width is known only once filled; a slot-free page's bundle reaches no slot file, so the fitting lives in `client/draw.ts`, not the controller). The independent coordinate check also caught a stair rounding bug (each corner now computed once).
+
+Gates at the tip: `npm run test:coverage` 4,075 tests, thresholds met; typecheck (both); lint; `npm run build && npm run check:site`; `npm run test:e2e` 604 cases (drawing, layout, calculator 334 passed after the note fix). Screenshots: scratchpad `p3-{slab,footing,column,steps}-{390,1280}.png` (ES); four shapes drawn, two columns at 1280 with concrete's long panel.
+
+Lighthouse (9.9): every assertion passes on the six pages. Not run: the dist diffs of 7.5 and 8.4 (S5 and S6 change no built file, since the module declared no drawing until S7). Linux gate (9.10): pending CI on the PR 3 tip.
+
+Negative proofs (each run red, then the file restored; `git status` clean): slab sides swapped (the 12:10 case fails); count mark dropped (the footing and corner cases fail); column radius 50 (the column case fails); run labelled with the rise (the steps and metric cases fail); `steps` always `null` (the [BD8] and steps cases fail); one ES note key dropped (the [ICW12] rows and key list fail); box moved before `.calc-primary` (the order test fails, both locales). The [SQ42] record contract failed naming `concrete` until the record declared its `drawing` group (seen during S7).
