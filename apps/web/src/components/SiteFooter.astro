@@ -10,7 +10,7 @@ const { contactLabel, email, links } = Astro.props;
 <footer class="site-footer">
   <p>
     {contactLabel}{' '}
-    <a class="footer-link tap-target" href={`mailto:${email}`}>
+    <a class="tap-target" href={`mailto:${email}`}>
       {email}
     </a>
   </p>
@@ -18,7 +18,7 @@ const { contactLabel, email, links } = Astro.props;
     <ul>
       {links.map(({ href, label }) => (
         <li>
-          <a class="footer-link tap-target" {href}>
+          <a class="tap-target" {href}>
             {label}
           </a>
         </li>

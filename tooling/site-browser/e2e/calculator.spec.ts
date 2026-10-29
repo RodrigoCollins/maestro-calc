@@ -269,18 +269,18 @@ for (const calculator of calculatorPages) {
       }) => {
         await open(page, calculator);
         for (const price of prices) {
-          await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeHidden();
+          await expect(page.locator(`[data-cost="${price.output}"]`)).toBeHidden();
           if (price.hinted === true) {
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeVisible();
           }
           await input(page, price.input).fill(price.text);
           await expect(output(page, price.output)).toHaveText(price.value);
-          await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeVisible();
+          await expect(page.locator(`[data-cost="${price.output}"]`)).toBeVisible();
           if (price.hinted === true) {
             // the figure and its hint are two spans of one row; the mount swaps them
             await expect(
               page.locator(
-                `p.calc-cost:has(> [data-cost-row="${price.output}"]):has(> [data-price-hint="${price.output}"])`,
+                `p.calc-cost:has(> [data-cost="${price.output}"]):has(> [data-price-hint="${price.output}"])`,
               ),
             ).toHaveCount(1);
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeHidden();
@@ -288,7 +288,7 @@ for (const calculator of calculatorPages) {
           // back to zero, then empty: the figure hides again and the hint returns
           for (const cleared of ['0', '']) {
             await input(page, price.input).fill(cleared);
-            await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeHidden();
+            await expect(page.locator(`[data-cost="${price.output}"]`)).toBeHidden();
             if (price.hinted === true) {
               await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeVisible();
             }

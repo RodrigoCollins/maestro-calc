@@ -86,19 +86,31 @@ export const reserveCss = (reserve: Reserve): ReserveCss | undefined => {
   return `.calculator{${base}}${blocks.join('')}` as ReserveCss;
 };
 
+/** The greatest common divisor of two whole numbers, so `300/200` is written `3/2`. */
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+/** The rows of the two-column result panel: more than any panel has children beside the drawing. */
+export const PANEL_ROWS = 12;
+
 /**
  * The rule of the drawing box of a page that declares the drawing slot (blueprint-drawing ›
  * [BD22]): a block as wide as the panel up to 24rem, its height from the frame's aspect ratio, so
  * the box has its size before the script draws. The labels inherit the display font at 17 units.
  *
- * From 48rem the panel is two columns ([BD20]): the heading, the large figure, the rows and the
- * notes on the left, the drawing on the right across the first four rows, the last of which takes
- * what the drawing adds, so the left column keeps its own spacing. Only a page that draws carries
- * it, so the shared stylesheet and the pages without a drawing are unchanged.
+ * From 48rem the panel is two columns ([BD20]): the drawing on the right across all `PANEL_ROWS`
+ * rows, so every other child of the panel flows into the left column. The panel has fewer children
+ * than rows, so the last row is empty and takes what the drawing adds, and the left column keeps
+ * its own spacing whatever the number of rows, shopping lines or costs a page shows (an empty row
+ * is 0 high: the grid has no row gap). Only a page that draws carries it, so the shared stylesheet
+ * and the pages without a drawing are unchanged.
  */
-export const drawingCss = ({ width, height }: Frame): ReserveCss =>
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- a string brand has no constructor
-  `[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:${String(width)}/${String(height)};margin-bottom:var(--space-3);font:600 17px var(--font-display)}@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:auto auto auto 1fr;column-gap:var(--space-4);align-items:start}.calc-result>*{grid-column:1}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}` as ReserveCss;
+export const drawingCss = ({ width, height }: Frame): ReserveCss => {
+  const divisor = gcd(width, height);
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- a string brand has no constructor
+    `[data-drawing]{display:block;width:100%;max-width:24rem;aspect-ratio:${String(width / divisor)}/${String(height / divisor)};margin-bottom:var(--space-3);font:600 17px var(--font-display)}@media(min-width:48rem){.calc-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);grid-template-rows:repeat(${String(PANEL_ROWS - 1)},auto) 1fr;column-gap:var(--space-4);align-items:start}.calc-result>[data-drawing]{grid-column:2;grid-row:1/-1;max-width:none;margin:0}}` as ReserveCss
+  );
+};
 
 /** The rule sets of a page head in order, joined; nothing when there is none. */
 export const joinCss = (...parts: readonly (ReserveCss | undefined)[]): ReserveCss | undefined => {

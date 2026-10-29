@@ -10,7 +10,7 @@ import { copyButton, input, open, shareLink } from './locators.ts';
 /*
  * The WhatsApp share link of the copy area (calculator-page › Share on WhatsApp), on every
  * calculator page: the script writes its href from the base the markup carries, the share text and
- * the current link; it opens a new tab without an opener, is a 44 px target in legible green with
+ * the current link; it opens a new tab without an opener, spans the copy area 56 px tall in legible green with
  * the orange ring, and comes right after "Copy link". Only the change that moves the link comes
  * from the record's optional `share` group, so a page without it still runs every other case. The reserve of
  * the copy block and the load shift are proven by `layout.spec.ts` with the link shown; Linux CI is
@@ -115,16 +115,17 @@ for (const calculator of calculatorPages) {
       expect(forward).toBe(true);
     });
 
-    // spec: calculator-page › [CP82] 44 px, near-black on WhatsApp green, the orange focus ring
+    // spec: calculator-page › [CP82] full width, 56 px, near-black on WhatsApp green, the orange focus ring
     for (const width of WIDTHS) {
-      test(`is a 44 px target in legible green with the orange ring at ${String(width)} px`, async ({
+      test(`spans the copy area, 56 px tall, in legible green with the orange ring at ${String(width)} px`, async ({
         page,
       }) => {
         await page.setViewportSize({ width, height: 844 });
         await open(page, calculator);
         const box = await shareLink(page).boundingBox();
-        expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
-        expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+        const area = await page.locator('[data-reserved="copy"]').boundingBox();
+        expect(box?.width ?? 0).toBeCloseTo(area?.width ?? -1, 0);
+        expect(box?.height ?? 0).toBeGreaterThanOrEqual(56);
         const colours = await shareLink(page).evaluate((link) => {
           const style = getComputedStyle(link);
           return { text: style.color, ground: style.backgroundColor };

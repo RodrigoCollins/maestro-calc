@@ -1,5 +1,10 @@
 import type { Frame } from '../calculator/page-module.ts';
-import type { PlanLine, ResolvedLabel, ResolvedPlan } from '../calculator/slots/drawing.ts';
+import {
+  fitLabel,
+  type PlanLine,
+  type ResolvedLabel,
+  type ResolvedPlan,
+} from '../calculator/slots/drawing.ts';
 
 /*
  * The SVG writer of the drawing slot (blueprint-drawing). Only the entry of a page that declares
@@ -89,10 +94,15 @@ export const nodesOf = (plan: ResolvedPlan): readonly SvgNode[] => [
     tag: 'path',
     attrs: { d, fill: 'none', ...STROKES[tone] },
   })),
+  // a note in words has its width only once filled: a centred label is fitted by its text here
   ...plan.labels.map(({ x, y, anchor, size, tone, text }): SvgNode => ({
     tag: 'text',
     attrs: {
-      x: String(x),
+      x: String(
+        anchor === 'middle'
+          ? fitLabel({ x, y, anchor, size, tone, label: { text } }, plan.frame).x
+          : x,
+      ),
       y: String(y),
       'text-anchor': anchor,
       'dominant-baseline': 'central',

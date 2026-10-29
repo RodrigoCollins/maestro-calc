@@ -251,6 +251,48 @@ export const CONCRETE: E2eSpec = {
       value: '$1,059.50',
     },
   },
+  // The plans of blueprint-drawing: the dimensions are language-free, the note under each shape is
+  // a page message in each language, and the name of the plan is the answer sentence.
+  drawing: {
+    labels: { en: ['12 ft', '10 ft', '4 in thick'], es: ['12 ft', '10 ft', '4 in de espesor'] },
+    name: {
+      en: 'Slab (12 ft × 10 ft, 4 in thick): 1.63 cubic yards with 10% extra. Bags of 80 lb: 74.',
+      es: 'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
+    },
+    typed: {
+      key: 'length',
+      text: '20 ft',
+      labels: { en: ['20 ft', '10 ft', '4 in thick'], es: ['20 ft', '10 ft', '4 in de espesor'] },
+      name: {
+        en: 'Slab (20 ft × 10 ft, 4 in thick): 2.72 cubic yards with 10% extra. Bags of 80 lb: 123.',
+        es: 'Losa (20 ft × 10 ft, 4 in de espesor): 2.72 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 123.',
+      },
+      ratio: 2,
+    },
+    kept: {
+      key: 'length',
+      text: '15 ft',
+      labels: { en: ['15 ft', '10 ft', '4 in thick'], es: ['15 ft', '10 ft', '4 in de espesor'] },
+    },
+    metric: {
+      en: ['3.66 m', '3.05 m', '10.16 cm thick'],
+      es: ['3.66 m', '3.05 m', '10.16 cm de espesor'],
+    },
+    // a slab of 12 ft 6 in and the footing link: the toggle relabels them and moves nothing
+    toggles: ['?v=1&l=150', '?v=1&sh=footing&l=216&n=3'],
+    // the longest labels the fields accept, for every shape (999 ft 11 63/64 in, 304.80 m, the
+    // largest counts), and the steepest stair
+    longest: [
+      '?v=1&l=767999/64&w=767999/64&t=7679/64',
+      '?v=1&u=m&l=12000&w=12000&t=120',
+      '?v=1&sh=footing&l=767999/64&fw=7679/64&fd=7679/64&n=1000',
+      '?v=1&sh=column&d=15359/64&h=76799/64&n=1000',
+      '?v=1&sh=steps&rs=3839/64&rn=3839/64&ns=50',
+      '?v=1&sh=steps&rs=3839/64&rn=1&ns=50',
+    ],
+    // the restored links of the other shapes ([BD21]): the box keeps its size with and without the script
+    queries: ['?v=1&sh=footing&l=216&n=3', '?v=1&sh=column', '?v=1&sh=steps'],
+  },
   hints: [
     { key: 'length', site: 'site.calculator.hintFt', describedBy: 'calc-length-hint' },
     { key: 'thickness', site: 'site.calculator.hintIn', describedBy: 'calc-thickness-hint' },

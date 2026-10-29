@@ -58,4 +58,8 @@ export const esConcrete = {
     'Columna ({diameter} de diámetro, {height} de alto) × {count}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
   'calc.concrete.page.answer.steps':
     'Escalones ({stepWidth} de ancho, {rise} de altura, {run} de profundidad) × {stepCount}: {volume} con {waste}% de extra. Bolsas de {bagLb} lb: {bags}.',
+  'calc.concrete.page.drawing.slab.note': '{thickness} de espesor',
+  'calc.concrete.page.drawing.footing.note': 'Profundidad: {depth}',
+  'calc.concrete.page.drawing.column.note': '{height} de alto',
+  'calc.concrete.page.drawing.steps.note': 'Escalones: {count}',
 } as const satisfies CatalogOf<typeof enConcrete>;

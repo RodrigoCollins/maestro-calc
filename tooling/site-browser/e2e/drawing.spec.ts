@@ -4,7 +4,7 @@ import type { Browser, Page } from '@playwright/test';
 // the character width the geometry estimates a label with, in font sizes (design B5)
 import { CHAR } from '../../../apps/web/src/calculator/slots/label-metrics.ts';
 import { formatViolations } from './axe-report.ts';
-import { calculatorPages } from './calculator-pages.ts';
+import { calculatorPages, textsIn } from './calculator-pages.ts';
 import { answer, drawing, input, open } from './locators.ts';
 
 /*
@@ -157,10 +157,11 @@ for (const { calculator, group } of drawn) {
     typeAndWait(page, key, text, labels);
 
   test.describe(`${path} drawing (blueprint-drawing, ${locale})`, () => {
+    const [typed, kept] = [textsIn(group.typed.labels, locale), textsIn(group.kept.labels, locale)];
     // spec: blueprint-drawing › [BD19] drawn and named once the script runs; [BD1] the default labels
     test('draws the default plan, named, with role img and no aria-hidden', async ({ page }) => {
       await open(page, calculator);
-      await expect(drawing(page).locator('text')).toHaveText([...group.labels]);
+      await expect(drawing(page).locator('text')).toHaveText([...textsIn(group.labels, locale)]);
       await expect(drawing(page)).toHaveAttribute('role', 'img');
       await expect(drawing(page)).toHaveAttribute('aria-label', group.name[locale]);
       await expect(drawing(page)).not.toHaveAttribute('aria-hidden', /.*/);
@@ -169,7 +170,7 @@ for (const { calculator, group } of drawn) {
     // spec: blueprint-drawing › [BD9], [BD15] typing relabels, redraws and renames
     test('follows a typed value: labels, outline ratio and name', async ({ page }) => {
       await open(page, calculator);
-      await typeAndWait(page, group.typed.key, group.typed.text, group.typed.labels);
+      await typeAndWait(page, group.typed.key, group.typed.text, typed);
       expect(await ratioOf(page)).toBeCloseTo(group.typed.ratio, 2);
       await expect(drawing(page)).toHaveAttribute('aria-label', group.typed.name[locale]);
     });
@@ -177,12 +178,12 @@ for (const { calculator, group } of drawn) {
     // spec: blueprint-drawing › [BD10] an invalid value keeps the last valid plan
     test('keeps the last valid plan while a field is invalid', async ({ page }) => {
       await open(page, calculator);
-      await typeAndWait(page, group.kept.key, group.kept.text, group.kept.labels);
+      await typeAndWait(page, group.kept.key, group.kept.text, kept);
       const before = await shapeOf(page);
       await input(page, group.kept.key).fill('abc');
       await expect(input(page, group.kept.key)).toHaveAttribute('aria-invalid', 'true');
       if (calculator.spec.answer !== undefined) await expect(answer(page)).toHaveText('—');
-      expect(await labelsOf(page)).toEqual(group.kept.labels);
+      expect(await labelsOf(page)).toEqual(kept);
       expect(await shapeOf(page)).toEqual(before);
     });
 
@@ -191,7 +192,7 @@ for (const { calculator, group } of drawn) {
       await open(page, calculator);
       const before = await shapeOf(page);
       await page.locator('[data-unit="metric"]').click();
-      await expect(drawing(page).locator('text')).toHaveText([...group.metric]);
+      await expect(drawing(page).locator('text')).toHaveText([...textsIn(group.metric, locale)]);
       expect(await shapeOf(page)).toEqual(before);
       for (const query of group.toggles) {
         await open(page, calculator, query);
@@ -212,7 +213,7 @@ for (const { calculator, group } of drawn) {
         (window as Window & { grid?: Element | null }).grid = box.firstElementChild;
       });
       const label = await drawing(page).locator('text').first().elementHandle();
-      await typeAndWait(page, group.typed.key, group.typed.text, group.typed.labels);
+      await typeAndWait(page, group.typed.key, group.typed.text, typed);
       expect(
         await drawing(page).evaluate(
           (box) => box.firstElementChild === (window as Window & { grid?: Element | null }).grid,
@@ -272,11 +273,9 @@ for (const { calculator, group } of drawn) {
         if (/content security policy/i.test(message.text())) violations.push(message.text());
       });
       await open(page, calculator);
-      await typeAndWait(page, group.typed.key, group.typed.text, group.typed.labels);
+      await typeAndWait(page, group.typed.key, group.typed.text, typed);
       await page.locator('[data-unit="metric"]').click();
-      await expect(drawing(page).locator('text').first()).not.toHaveText(
-        group.typed.labels[0] ?? '',
-      );
+      await expect(drawing(page).locator('text').first()).not.toHaveText(typed[0] ?? '');
       expect(await drawing(page).locator('[style]').count()).toBe(0);
       expect(await drawing(page).getAttribute('style')).toBeNull();
       expect(violations).toEqual([]);
@@ -285,7 +284,7 @@ for (const { calculator, group } of drawn) {
     // spec: blueprint-drawing › [BD18] axe reports nothing in the drawn states, contrast included
     for (const [name, run] of [
       ['default', async () => undefined],
-      ['typed', drive(group.typed.key, group.typed.text, group.typed.labels)],
+      ['typed', drive(group.typed.key, group.typed.text, typed)],
     ] as const) {
       test(`has no axe violation with the ${name} plan drawn`, async ({ page }) => {
         await open(page, calculator);

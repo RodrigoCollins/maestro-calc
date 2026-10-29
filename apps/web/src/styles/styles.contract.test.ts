@@ -288,7 +288,7 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
   });
 
   // review RD-9: components opt in; base.css holds no selector keyed to a component class
-  it.each(['.skip-link', '.wordmark', '.nav-link', '.footer-link', '.lang-switch'])(
+  it.each(['.skip-link', '.wordmark', '.lang-switch'])(
     'keeps %s out of the global stylesheet size rules',
     (selector) => {
       expect(baseRules.get(selector)?.['min-height'], selector).toBeUndefined();
@@ -322,6 +322,26 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
     expect(anchors.length).toBeGreaterThan(0);
     for (const anchor of anchors) expect(anchor.classList.contains('tap-target')).toBe(true);
   });
+
+  // blueprint-panel S4c: a class no stylesheet selects is bytes on every page
+  it.each([
+    ['SiteFooter', SiteFooter, { contactLabel: 'Contact', email: 'a@b.c', links: [link] }],
+    [
+      'SiteHeader',
+      SiteHeader,
+      {
+        homeHref: '/',
+        navLabel: 'Main',
+        links: [link],
+        language: { href: '/es', lang: 'es', hreflang: 'es-US', label: 'Español' },
+      },
+    ],
+  ])('%s gives its list links the tap-target class only', async (_name, component, props) => {
+    const document = await renderComponent(component, props);
+    const anchors = document.querySelectorAll('li a, p a');
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const anchor of anchors) expect(anchor.getAttribute('class')).toBe('tap-target');
+  });
 });
 
 describe('Page gutter (G1 review carry-over)', () => {
@@ -350,15 +370,18 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     expect(declared('.calc-form button', 'min-width')).toBe('2.75rem');
   });
 
-  // spec: calculator-page › [CP82] the share link: near-black on WhatsApp green, a 44 px target
-  it('draws the share link in the WhatsApp tokens as a 44 px target on a row of its own', () => {
+  // spec: calculator-page › [CP82] the share link: near-black on WhatsApp green, the full width of
+  // the copy area and as tall as an input (56 px), its label centred, as in the approved mockup
+  it('draws the share link in the WhatsApp tokens, full width and 56 px tall, on a row of its own', () => {
     expect(rules.get('.calc-share')).toMatchObject({
       display: 'flex',
-      'min-height': 'var(--target-size)',
+      'justify-content': 'center',
+      'min-height': '3.5rem',
       background: 'var(--color-whatsapp)',
       color: 'var(--color-on-whatsapp)',
       'text-decoration': 'none',
     });
+    expect(rules.get('.calc-share')?.['width']).toBeUndefined();
     expect(contrast(resolve('var(--color-on-whatsapp)'), resolve('var(--color-whatsapp)'))).toBe(
       contrast(ON_WHATSAPP, WHATSAPP),
     );
@@ -548,12 +571,12 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   });
 
   // spec: calculator-page › [CP61] the copy reserve holds the mounted content, under one body line more
-  // calculator-page › [CP84]: the button (2.75), the share link on its own row (0.5 + 2.75) and the
+  // calculator-page › [CP84]: the button (2.75), the share link on its own row (0.5 + 3.5) and the
   // status (0.25 + 1.6), in rem
   it('reserves for the copy block its mounted content and less than one body line more', () => {
-    const content = 2.75 + 0.5 + 2.75 + 0.25 + 1.6;
+    const content = 2.75 + 0.5 + 3.5 + 0.25 + 1.6;
     expect(rem(declared('.calc-share', 'margin-top'))).toBe(8);
-    expect(declared('.calc-share', 'min-height')).toBe('2.75rem');
+    expect(declared('.calc-share', 'min-height')).toBe('3.5rem');
     const line = Number.parseFloat(resolve(`var(--text-base)`)) * Number(root['--leading-body']);
     const reserved = Number.parseFloat(declared('.calc-copy', 'min-height'));
     expect(reserved).toBeGreaterThanOrEqual(content);

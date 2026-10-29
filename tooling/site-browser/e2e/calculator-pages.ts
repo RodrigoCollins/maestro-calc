@@ -105,11 +105,18 @@ export interface E2eBound {
 }
 
 /** A value typed in a field and the plan it draws. */
+/** Label texts in drawing order: one list when they are language-free, else one per language. */
+export type E2eTexts = readonly string[] | Readonly<Record<E2eLanguage, readonly string[]>>;
+
+/** The label texts of a list in a language. */
+export const textsIn = (texts: E2eTexts, language: E2eLanguage): readonly string[] =>
+  'en' in texts ? texts[language] : texts;
+
 export interface E2eDrawn {
   readonly key: string;
   readonly text: string;
   /** The texts of the labels, in drawing order. */
-  readonly labels: readonly string[];
+  readonly labels: E2eTexts;
 }
 
 /**
@@ -118,8 +125,8 @@ export interface E2eDrawn {
  * `apps/web/src/contract/drawing-record.contract.test.ts`). `drawing.spec.ts` runs over it.
  */
 export interface E2eDrawing {
-  /** The label texts of the default plan, in drawing order (language-free). */
-  readonly labels: readonly string[];
+  /** The label texts of the default plan, in drawing order (a note in words differs by language). */
+  readonly labels: E2eTexts;
   /** The accessible name of the default plan, per language. */
   readonly name: Readonly<Record<E2eLanguage, string>>;
   /** A typed value: its labels, its name and the width over height of its outline. */
@@ -130,7 +137,7 @@ export interface E2eDrawing {
   /** A valid value whose plan stays while `abc` is typed after it. */
   readonly kept: E2eDrawn;
   /** The label texts of the default plan in the metric system. */
-  readonly metric: readonly string[];
+  readonly metric: E2eTexts;
   /**
    * Links whose plan the unit toggle must not move either: the area text of one system fits
    * inside and the other's does not, so the layout keeps the room of the longer.

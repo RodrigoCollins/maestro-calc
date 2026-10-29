@@ -209,8 +209,11 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
   const valid = mustBeOk(calculator.validate({}), 'validation of the defaults');
   const choices = choicesOf(calculator, valid);
   const plan = drawing.plan({ system: 'imperial', choices, valid, result: defaults });
+  if (plan !== null && 'answer' in plan.name && module.answer === undefined)
+    fail('PAGE_KEY', calculator.id, 'answer');
   const messages: ReadonlySet<string> = new Set(drawing.messages);
-  for (const label of [plan?.name, ...(plan?.labels.map(({ label: each }) => each) ?? [])]) {
+  const name = plan === null || 'answer' in plan.name ? undefined : plan.name;
+  for (const label of [name, ...(plan?.labels.map(({ label: each }) => each) ?? [])]) {
     if (label !== undefined && 'message' in label && !messages.has(label.message))
       fail('PAGE_KEY', calculator.id, label.message);
   }
@@ -363,8 +366,15 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     );
   };
 
-  /** The plan of a ready moment, its labels filled from the page messages (this module holds no words). */
-  const planOf = (env: Environment, moment: Moment<Calc>): ResolvedPlan | null | undefined => {
+  /**
+   * The plan of a ready moment, its labels filled from the page messages (this module holds no
+   * words), and its name the answer sentence when the plan asks for it.
+   */
+  const planOf = (
+    env: Environment,
+    moment: Moment<Calc>,
+    answerText: string | undefined,
+  ): ResolvedPlan | null | undefined => {
     const { result } = moment;
     if (drawing === undefined || result === undefined) return undefined;
     const plan = drawing.plan({ ...moment, result });
@@ -373,7 +383,8 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
       'text' in label ? label.text : fillMessage(message(env, label.message), label.fills);
     return {
       frame: drawing.frame,
-      name: text(plan.name),
+      // a plan named by the answer is on a page with one (checked at creation)
+      name: 'answer' in plan.name ? required(answerText, 'answer') : text(plan.name),
       outline: plan.outline,
       lines: plan.lines,
       labels: plan.labels.map(({ label, ...at }) => ({ ...at, text: text(label) })),
@@ -384,16 +395,17 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
     const { moment, errors } = evaluation;
     const panel = panelOf(env, moment);
     const { before, value, after } = panel.primary;
+    const answerText = answerOf(env, moment, `${before}${value}${after}`);
     return {
       system: state.system,
       choices: state.choices,
       visible: shownOf(state),
       fields: fieldViews(env, state, errors),
-      answer: answerOf(env, moment, `${before}${value}${after}`),
+      answer: answerText,
       panel,
       notice: state.notice,
       switchHref: `${env.switchPath}${state.search}`,
-      plan: planOf(env, moment),
+      plan: planOf(env, moment, answerText),
     };
   };
 

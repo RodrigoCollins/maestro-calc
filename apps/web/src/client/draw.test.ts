@@ -67,7 +67,7 @@ describe('the nodes of a plan (blueprint-drawing › [BD19], [BD24]; design B6, 
       {
         tag: 'text',
         attrs: {
-          x: '1',
+          x: '19.5', // `10 ft` is 57 wide: centred, it is fitted to the 48-wide frame
           y: '2',
           'text-anchor': 'middle',
           'dominant-baseline': 'central',
@@ -126,6 +126,38 @@ const swatch = (name: string): string => {
   if (row?.[1] === undefined) throw new Error(`no ${name} row in direction.md`);
   return row[1];
 };
+
+// spec: blueprint-drawing › [BD14] a note in words has its width only once filled: the writer fits a
+// centred label to the frame by its text (a label its plan fitted already stays where it is)
+describe('the labels the writer fits (blueprint-drawing › [BD14])', () => {
+  const at = (x: number, anchor: 'middle' | 'start', text: string) => ({
+    x,
+    y: 6,
+    anchor,
+    size: 17 as const,
+    tone: 'note' as const,
+    text,
+  });
+  const xs = (labels: ResolvedPlan['labels']) =>
+    nodesOf({ ...PLAN, frame: { width: 300, height: 200 }, labels }).flatMap(({ tag, attrs }) =>
+      tag === 'text' ? [attrs['x']] : [],
+    );
+
+  it('moves a centred label inside the frame by the width of its text', () => {
+    // `Plan of x`: 9 characters at 17 units, 102.5 wide, so its centre is at most 300 − 51.25
+    expect(xs([at(290, 'middle', 'Plan of x'), at(10, 'middle', 'Plan of x')])).toEqual([
+      '248.8',
+      '51.3',
+    ]);
+  });
+
+  it('keeps a centred label that fits and any label anchored at an end', () => {
+    expect(xs([at(150, 'middle', 'Plan of x'), at(290, 'start', 'Plan of x')])).toEqual([
+      '150',
+      '290',
+    ]);
+  });
+});
 
 describe('the colours of the drawing (blueprint-drawing › [BD18])', () => {
   // spec: blueprint-drawing › [BD18] each constant is its swatch of the direction table

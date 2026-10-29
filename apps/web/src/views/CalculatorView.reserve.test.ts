@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
-import { reserveCss, type Reserve } from '../lib/reserve.ts';
+import { drawingCss, reserveCss, type Reserve } from '../lib/reserve.ts';
 import CalculatorView from './CalculatorView.astro';
 
 /** A reserve the concrete row does not have: the view must emit it, byte for byte, in the head. */
@@ -47,7 +47,10 @@ describe('CalculatorView head reserve (calculator-page › [CP65], design K6)', 
   it('emits the builder output of the row reserve as one head style', async () => {
     row.reserve = FIXTURE;
     const document = await render();
-    expect(reserveStyles(document)).toEqual([reserveCss(FIXTURE)]);
+    // the concrete row draws, so its one head style is the reserve, then the drawing rule
+    expect(reserveStyles(document)).toEqual([
+      `${String(reserveCss(FIXTURE))}${drawingCss({ width: 300, height: 200 })}`,
+    ]);
     expect(document.querySelectorAll('body style')).toHaveLength(0);
     expect(document.querySelector('[data-calculator]')?.getAttribute('style')).toBeUndefined();
   });

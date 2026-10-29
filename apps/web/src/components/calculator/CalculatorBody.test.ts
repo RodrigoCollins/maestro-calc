@@ -17,6 +17,8 @@ import { renderComponent } from '../../__testing__/render-component.ts';
 import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
 import { pageViewOf } from '../../lib/page-view.ts';
 import { pageView } from '../../lib/pages.ts';
+import { PANEL_ROWS } from '../../lib/reserve.ts';
+import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculators } from '../../lib/calculators.ts';
 import CalculatorBody from './CalculatorBody.astro';
 import type { CalculatorContent } from './model.ts';
@@ -238,11 +240,12 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   });
 
   // spec: calculator-page › [CP43] messages are inert template elements, none rendered
-  it('keeps the twelve errors, the four sentences, the copy states, the share text and the unit hints in templates', async () => {
+  it('keeps the twelve errors, the four sentences, the drawing notes, the copy states, the share text and the unit hints in templates', async () => {
     const root = await render('en');
     const byName = messagesOf(root);
-    // the errors, the answers, the copy states, the share text, the hints, the primary sentences
-    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 1 + 4 + 2);
+    // the errors, the answers, the drawing notes, the copy states, the share text, the hints, the
+    // primary sentences
+    expect(Object.keys(byName)).toHaveLength(12 + 4 + 4 + 2 + 1 + 4 + 2);
     expect(root.querySelectorAll('template')).toHaveLength(1);
     expect(Object.keys(byName).filter((name) => name.startsWith('hint.'))).toEqual([
       'hint.ft',
@@ -360,8 +363,53 @@ describe('CalculatorBody, public hooks (calculator-page › [CP54], [CP56]; calc
     expect(root.querySelectorAll('[data-copy], [data-copy-status]')).toHaveLength(2);
     expect(
       root.querySelectorAll(
-        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint]',
+        '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost], [data-hint-row], [data-price-hint]',
       ),
     ).toHaveLength(0);
   });
+});
+
+// spec: blueprint-drawing › [BD20] the two-column panel holds every child of every page beside the
+// drawing: the explicit grid of the drawing rule has more rows than any panel has children
+describe('CalculatorBody, result panel rows (blueprint-drawing › [BD20])', () => {
+  it.each(
+    CALCULATOR_PAGES.flatMap((id) =>
+      (['en', 'es'] as const).map((locale) => [id, locale] as const),
+    ),
+  )(
+    '%s %s has no more panel children beside the drawing than the drawing rule has rows',
+    async (id, locale) => {
+      const root = await renderComponent(CalculatorBody, {
+        view: pageView(id, locale),
+        content: CONTENT,
+      });
+      const children = root.querySelectorAll('.calc-result > :not([data-drawing])');
+      expect(children.length).toBeGreaterThan(0);
+      expect(children.length).toBeLessThan(PANEL_ROWS);
+    },
+  );
+});
+
+// spec: blueprint-drawing › [BD22], calculator-page › [CP76] a page that draws renders one empty,
+// hidden box between the large figure and the rows, in both locales
+describe('CalculatorBody, the drawing box (blueprint-drawing › [BD22])', () => {
+  it.each(
+    CALCULATOR_PAGES.flatMap((id) =>
+      (['en', 'es'] as const).map((locale) => [id, locale] as const),
+    ),
+  )(
+    '%s %s renders one empty aria-hidden box after the large figure and before the rows',
+    async (id, locale) => {
+      const root = await renderComponent(CalculatorBody, {
+        view: pageView(id, locale),
+        content: CONTENT,
+      });
+      const boxes = root.querySelectorAll('[data-drawing]');
+      expect(boxes).toHaveLength(1);
+      expect(boxes[0]?.getAttribute('aria-hidden')).toBe('true');
+      expect(boxes[0]?.childNodes).toHaveLength(0);
+      expect(boxes[0]?.previousElementSibling?.classList.contains('calc-primary')).toBe(true);
+      expect(boxes[0]?.nextElementSibling?.tagName).toBe('DL');
+    },
+  );
 });

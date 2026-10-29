@@ -12,7 +12,9 @@ import {
 import { controllerOf, type Environment, type UiEvent } from './controller.ts';
 import { definePage, type Ready } from './page-module.ts';
 import { choiceSlot } from './slots/choices.ts';
-import type { Plan } from './slots/drawing.ts';
+import { answerValues as rectangleAnswer } from './rectangle-area/present.ts';
+import { answerSlot } from './slots/answer.ts';
+import { ANSWER, type Plan } from './slots/drawing.ts';
 import { shoppingSlot } from './slots/shopping.ts';
 import { stepperSlot } from './slots/steppers.ts';
 
@@ -345,6 +347,34 @@ describe('the plan of each ready moment (calculator-web-core › [CWC41]; bluepr
       expect(error.cause).toEqual({ id: 'rectangle-area', at });
     },
   );
+
+  // spec: blueprint-drawing › [BD15] a plan may be named by the page's answer sentence, which
+  // names the shape and its dimensions already, so the page carries no second template for it
+  const answered = (moment: Moment): Plan => ({ ...stub(moment), name: ANSWER });
+  it('names the plan with the answer sentence when the plan asks for it, and follows it', () => {
+    const module = definePage({
+      calculator: rectangleArea,
+      answer: answerSlot(rectangleArea, { values: rectangleAnswer }),
+      drawing: { frame: FRAME, messages: [], plan: answered },
+    });
+    const env: Environment = { ...ENV, messages: { answer: 'Area: {length} by {width}' } };
+    const controller = controllerOf(module);
+    const first = controller.start(env, '');
+    expect(first.view.plan?.name).toBe('Area: 10 ft by 10 ft');
+    const next = controller.applyEvent(env, first.state, length('20 ft'));
+    expect(next.view.plan?.name).toBe(next.view.answer);
+    expect(next.view.plan?.name).toBe('Area: 20 ft by 10 ft');
+  });
+
+  it('throws PAGE_KEY at creation when a plan names the answer of a page without one', () => {
+    const module = definePage({
+      calculator: rectangleArea,
+      drawing: { frame: FRAME, messages: [], plan: answered },
+    });
+    const error = pageModuleErrorOf(() => controllerOf(module));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({ id: 'rectangle-area', at: 'answer' });
+  });
 
   it('creates the controller when every message of the default plan is declared', () => {
     expect(() => controllerOf(drawn(stub))).not.toThrow();

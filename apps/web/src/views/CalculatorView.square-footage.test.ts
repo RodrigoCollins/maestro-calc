@@ -32,7 +32,7 @@ const EXPECTED = {
 } as const;
 
 const SLOTS =
-  '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost-row], [data-hint-row], [data-price-hint]';
+  '[data-choice], [data-step], [data-shopping], [data-line], [data-fill], [data-line-note], [data-cost], [data-hint-row], [data-price-hint]';
 
 describe.each(['en', 'es'] as const)('the built square footage page in %s', (locale) => {
   const expected = EXPECTED[locale];

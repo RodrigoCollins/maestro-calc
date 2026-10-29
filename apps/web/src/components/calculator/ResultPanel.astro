@@ -51,7 +51,7 @@ const {
   {costs.map(({ key, label, value, visible, hint }) => (
     <p class="calc-cost">
       <span>{label}</span>
-      <span class="calc-figure" data-output={key} data-cost-row={key} hidden={!visible}>
+      <span class="calc-figure" data-output={key} data-cost={key} hidden={!visible}>
         {value}
       </span>
       <span data-price-hint={key} hidden={visible}>
