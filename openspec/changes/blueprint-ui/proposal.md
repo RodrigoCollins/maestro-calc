@@ -27,6 +27,7 @@ The ES concrete page is at 40,797 B against the 40,836 B pin and the 40,960 B HT
 
 1. Header and footer: logo mark, language pill, menu on phone; footer spacing. Fix the breadcrumb baseline.
 2. Answer block: body text with bold figures; reserve per breakpoint measured, not five phone lines.
+2b. Notice block: the no-JS note and the URL notices reserve up to 6 lines under the answer, the remaining gap on every page with the script running. Move them where their reserve costs nothing visible (inside the form card's footer, or an overlay), keeping CLS 0.
 3. Form card: two-column grid from 22rem, unit suffix inside the input, segmented choice control, inline stepper; reserved choice area recomputed.
 4. Order and actions: result right after the form; shopping list card; WhatsApp + copy row after it.
 5. Desktop layout: from 64rem, form left and sticky result right.
@@ -37,3 +38,8 @@ Every slice keeps CLS 0 (layout-stability e2e), axe 0, the 44 px targets and the
 ## Decision (owner, 2026-10-29): "sí, subí el presupuesto lo que necesites"
 
 HTML budget 40,960 → 49,152 B (48 KiB); the ES concrete pin ([CP66]) follows it to 49,152 B. The page weight budgets are sums of their parts, so they rise by the same 8 KiB: 163,840 → 172,032 B (home and trust) and 196,608 → 204,800 B (calculator pages). CSS, fonts and the calculator JS graph keep their limits. The `site-quality` [SQ7] and `calculator-page` [CP66] figures in `openspec/specs/` are updated at archive.
+
+## Progress
+
+- Slice 1 (header): #117, with the follow-up #118 (CLS at 320 px on Linux).
+- Slice 2 (answer): body text at weight 400. Answer reserve measured again 320–1280 px, both locales, every layout query: concrete 4 → 3 lines at 23.5rem → 2 at 35.5rem → 1 at 64rem (was 5 large lines); square footage 2 → 1 at 29rem.
