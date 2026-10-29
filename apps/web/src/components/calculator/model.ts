@@ -56,6 +56,8 @@ export interface FormView {
   /** The items in the one order of the form (the definition's), between the units and the copy button. */
   readonly items: readonly (ChoiceItemView | FieldItemView)[];
   readonly copyLabel: string;
+  /** The label of the WhatsApp share link after the copy button. */
+  readonly shareLabel: string;
 }
 
 /** Text around a value the script rewrites: `{before}<value>{after}`, for example `About 0.60 cubic feet per bag`. */

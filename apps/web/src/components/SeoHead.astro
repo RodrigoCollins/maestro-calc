@@ -13,7 +13,6 @@ const { title, description, canonical, alternates = [], robots, jsonLd } = Astro
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="generator" content={Astro.generator} />
 <title>{title}</title>
 <meta name="description" content={description} />
 {robots !== undefined && <meta name="robots" content={robots} />}

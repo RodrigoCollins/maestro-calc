@@ -2,6 +2,7 @@ import {
   controllerOf,
   copyAddress,
   copyOutcome,
+  shareHref,
   type Environment,
   type Output as ControllerOutput,
   type State as ControllerState,
@@ -98,13 +99,15 @@ interface Ui {
   /** The slot elements: empty lists for a page that declares no such slot. */
   readonly lines: readonly Line[];
   readonly figures: readonly Element[];
-  readonly costRows: readonly Element[];
-  readonly hintRows: readonly Element[];
+  /** The cost figures and their price hints, two spans of each cost row that the script swaps. */
+  readonly costs: readonly Element[];
   readonly copyButton: HTMLElement;
   readonly copyStatus: Element;
   readonly copyArea: Element;
   /** The drawing boxes: an empty list for a page that declares no drawing slot. */
   readonly drawings: readonly Element[];
+  /** The share links of the copy area: a list, so markup without one runs no share code. */
+  readonly shares: readonly Element[];
 }
 
 const collect = (root: Document, keys: readonly string[]): Ui => ({
@@ -134,12 +137,12 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
     ],
   })),
   figures: findAll(root, '[data-output]'),
-  costRows: findAll(root, '[data-cost-row]'),
-  hintRows: findAll(root, '[data-hint-row]'),
+  costs: findAll(root, '[data-cost-row], [data-price-hint]'),
   copyButton: findAs(root, '[data-copy]', HTMLElement),
   copyStatus: find(root, '[data-copy-status]'),
   copyArea: find(root, '[data-reserved="copy"]'),
   drawings: findAll(root, '[data-drawing]'),
+  shares: findAll(root, '[data-share]'),
 });
 
 /** A paragraph the script adds under `parent` (an error message, the link notice), made once. */
@@ -189,11 +192,11 @@ const renderPanel = (ui: Ui, view: View): void => {
     setText(output, figure);
     output.closest('.calc-row')?.toggleAttribute('hidden', key === panel.primary.key);
   }
-  for (const row of ui.costRows) {
-    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-cost-row') ?? ''] !== true);
-  }
-  for (const row of ui.hintRows) {
-    row.toggleAttribute('hidden', panel.costs[row.getAttribute('data-hint-row') ?? ''] === true);
+  // the figure shows once its price is above zero, the hint while it is zero
+  for (const span of ui.costs) {
+    const figure = span.getAttribute('data-cost-row');
+    const shown = panel.costs[figure ?? span.getAttribute('data-price-hint') ?? ''] === true;
+    span.toggleAttribute('hidden', figure === null ? shown : !shown);
   }
   for (const [index, row] of ui.lines.entries()) {
     const line = panel.shopping[index];
@@ -231,7 +234,13 @@ export interface Hooks {
   readonly draw?: Draw;
 }
 
-const render = (ui: Ui, keys: readonly string[], { view }: Output, hooks: Hooks): void => {
+const render = (
+  ui: Ui,
+  keys: readonly string[],
+  env: Environment,
+  { view, state }: Output,
+  hooks: Hooks,
+): void => {
   for (const key of keys) renderField(ui, key, view);
   if (ui.answer !== null) setText(ui.answer, view.answer ?? '');
   const notice = paragraph(ui.noticeArea, 'calc-notice', '');
@@ -240,6 +249,10 @@ const render = (ui: Ui, keys: readonly string[], { view }: Output, hooks: Hooks)
   renderPanel(ui, view);
   renderChoices(ui, view);
   ui.switchLink.setAttribute('href', view.switchHref);
+  // the base is the inert data-share of the markup, so no host is in the bundle (calculator-page › [CP78])
+  for (const share of ui.shares) {
+    share.setAttribute('href', shareHref(env, state, share.getAttribute('data-share') ?? ''));
+  }
   // an invalid state has no plan: the drawing keeps the last one (blueprint-drawing › [BD10])
   const { plan } = view;
   if (hooks.draw !== undefined && plan !== undefined) {
@@ -308,7 +321,7 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   let current: State;
   const show = (output: Output): void => {
     current = output.state;
-    render(ui, keys, output, hooks);
+    render(ui, keys, env, output, hooks);
     if (output.write !== undefined) {
       history.replaceState(history.state, '', `${location.pathname}${output.write}`);
     }
@@ -357,7 +370,10 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
       control.disabled = false;
     }
   }
-  for (const control of findAll(ui.form, '[data-copy][hidden], [data-step] [hidden]')) {
+  for (const control of findAll(
+    ui.form,
+    '[data-copy][hidden], [data-share][hidden], [data-step] [hidden]',
+  )) {
     if (control instanceof HTMLElement) control.hidden = false;
   }
   ui.note.hidden = true;

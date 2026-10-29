@@ -68,7 +68,11 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
         .querySelectorAll('[data-shopping]')
         .map((el) => [el.getAttribute('data-shopping'), el.text]),
     ).toEqual([['bag-80', '74']]);
-    expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe('Concrete mix, 80 lb bags');
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text).toBe(
+      'Concrete mix, 80 lb bags',
+    );
+    // trims C and D of blueprint-panel: no label class, no separate hint row
+    expect(root.querySelectorAll('.calc-label, .calc-hint, [data-hint-row]')).toHaveLength(0);
     expect(root.querySelector('[data-line-note="0"]')?.text).toBe('About 0.60 cubic feet per bag');
     for (const key of ['bagCost', 'readyMixCost']) {
       expect(root.querySelector(`[data-output="${key}"]`)?.closest('[hidden]'), key).not.toBeNull();
@@ -94,7 +98,7 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
       ['readyMixCost', '$0.00'],
     ]);
     expect(root.querySelector('[data-shopping="bag-80"]')?.text).toBe('74');
-    expect(root.querySelector('.calc-shopping .calc-label')?.text).toBe(
+    expect(root.querySelector('.calc-shopping > span:first-child')?.text).toBe(
       'Mezcla de concreto, bolsas de 80 lb',
     );
     expect(root.querySelector('[data-line-note="0"]')?.text).toBe(
@@ -234,10 +238,11 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
   });
 
   // spec: calculator-page › [CP43] messages are inert template elements, none rendered
-  it('keeps the twelve errors, the four sentences, the copy states and the unit hints in templates', async () => {
+  it('keeps the twelve errors, the four sentences, the copy states, the share text and the unit hints in templates', async () => {
     const root = await render('en');
     const byName = messagesOf(root);
-    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 4 + 2);
+    // the errors, the answers, the copy states, the share text, the hints, the primary sentences
+    expect(Object.keys(byName)).toHaveLength(12 + 4 + 2 + 1 + 4 + 2);
     expect(root.querySelectorAll('template')).toHaveLength(1);
     expect(Object.keys(byName).filter((name) => name.startsWith('hint.'))).toEqual([
       'hint.ft',
@@ -262,6 +267,8 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     expect(byName['answer.steps']).toMatch(/^Steps \(.*Bags of \{bagLb\} lb: \{bags\}\.$/);
     expect(byName['copy.copied']).toBe('Link copied');
     expect(byName['copy.failed']).toBe('Could not copy. Select the link and copy it.');
+    // spec: calculator-page › share requirement, i18n-catalog › [ICW22] the share text is inert
+    expect(byName['share.text']).toBe('Check this calculation:');
     expect(root.querySelectorAll('template [data-output], template input')).toHaveLength(0);
     expect(messagesOf(await render('es'))['errors.MALFORMED']).toBe(esCommon['errors.MALFORMED']);
   });
@@ -283,6 +290,7 @@ describe('CalculatorBody, without scripts (calculator-page › [CP40] static, [C
     expect(Object.keys(messagesOf(root)).slice(ALL_ERROR_CODES.length)).toEqual([
       'copy.copied',
       'copy.failed',
+      'share.text',
       'hint.ft',
       'hint.m',
     ]);

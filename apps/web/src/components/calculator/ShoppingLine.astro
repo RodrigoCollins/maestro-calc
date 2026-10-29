@@ -12,7 +12,7 @@ const named = (split: FillSplit): split is FillSplit & { readonly name: string }
 ---
 
 <p class="calc-shopping" data-line={index}>
-  <span class="calc-label">
+  <span>
     {label.before}
     {named(label) && <span data-fill={label.name}>{label.value}</span>}
     {label.after}

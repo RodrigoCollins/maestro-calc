@@ -101,7 +101,10 @@ export const CONCRETE: E2eSpec = {
     '#calc-bagPrice',
     '#calc-readyMixPrice',
     '[data-copy]',
+    '[data-share]',
   ],
+  // calculator-page › [CP78]: one step of extra writes ws=15 to the link the share link carries
+  share: { change: { hook: 'step', key: 'waste', value: 'more' }, query: '?v=1&ws=15' },
   bounds: [
     { key: 'length', text: '1001 ft', code: 'ABOVE_MAX', bound: '1,000 ft', restore: '12' },
     { key: 'waste', text: '51', code: 'ABOVE_MAX', bound: '50%', restore: '10' },

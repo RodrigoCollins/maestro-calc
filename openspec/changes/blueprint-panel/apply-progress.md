@@ -207,3 +207,127 @@ Commit note: 19e05be alone passes every test but misses the 100 % branch thresho
 Session scratchpad: `bp-fix-sqft-{en,es}-{390,768,1280}.png`, `bp-fix-concrete-{en,es}-{390,1280}.png`, and `bp-before-*-1280.png`. From 768 px the drawing fills the right column beside the figures; the large figure is flush left on every page. The wider estimate leaves more room left of the width label (the rectangle sits about 6 units further right than before), the price of never overlapping in DejaVu Sans.
 
 Linux gate (task 4.8) still pending; the watch item above is now covered by the 0.67 estimate and the font install.
+
+## PR 2 (`feat/blueprint-panel-share`): S3 and S4 done
+
+Mode: strict TDD. Branch from main `dcc2c8b` (PR 1 merged), so no retarget is needed. Nothing was pushed. Pushing, CI, the four reviewers, Judgment Day, the PR, the merge and the Linux confirmation (task 6.11) belong to the orchestrator (P2.2, P2.3).
+
+### Commits (oldest first; `openspec/` excluded; `git diff -M --shortstat <parent> <commit>`)
+
+| Slice | Commit | Subject | Changed lines |
+|---|---|---|---|
+| S3 | aa12561 | refactor(web): trim the calculator markup | 106+ / 73- (179) |
+| S4a | caafd97 | feat(web): share the calculation on WhatsApp | 200+ / 12- (212) |
+| S4b | 55cc084 | test(e2e): record the WhatsApp share link | 190+ / 2- (192) |
+| PR 2 | `main..HEAD` | | 496+ / 87- (**583**) |
+
+Forecast vs actual: S3 200-260 → 179; S4 280-340 → 404 as one commit, so the split rule applied (S4a code with its unit and contract tests, S4b the browser record, `share.spec.ts`, the no-JS case and the record contract); PR 2 480-600 → 583. Each commit was checked alone: S4a ran format, lint, typecheck (both), `test:coverage` (4,031 tests, thresholds met), build, `check:site` and the whole e2e (534 passed); the tip tree is byte-identical to the tree that passed every gate below. SX4: `git diff --stat main -- packages/core packages/data .github` is empty (mutation N/A); `packages/i18n` changed (two site keys per locale), not a Stryker shard.
+
+### S3 trim table (measured)
+
+Baseline at `dcc2c8b`: ES concrete full-length proof **40,657 B** (EN 40,368 B), not the 40,678 B of the design (PR 1's correction round took 21 B with `.calc-figure`). Bytes per trim counted on the built `dist/es/calculadora-de-concreto.html` (33,732 → 32,906 B, −826); the sum equals the budget-test delta exactly.
+
+| Trim | What | Count | Bytes | Hook/guard change |
+|---|---|---|---|---|
+| A | inputs drop `autocomplete="off"`, the form keeps it | 15 × 19 | −285 | `CalculatorField.test.ts`, `CalculatorForm.test.ts` (form carries it, no input sets one), e2e `calculator.spec.ts` [CP12] |
+| B | `class="calc-choice"` → `.calc-form button` (4 selectors) | 12 × 20 − 20 | −220 | `styles.contract.test.ts` (target size on `.calc-form button`; no `.calc-choice` selector or `class="calc-choice"` in any `.astro`) |
+| C | one `p.calc-cost` per cost: label, figure `[data-output][data-cost-row] hidden`, hint `[data-price-hint]`; the mount swaps the two spans; `.calc-hint` leaves the CSS | 2 rows + 11 B CSS | −218 | `data-hint-row` removed; `ResultPanel.test.ts`, `CalculatorBody.test.ts`, slot-free proof (mount looks up `'[data-cost-row], [data-price-hint]'`, no hint row), e2e `prices` group (figure visible after a price, both spans in one row) |
+| D | the label span drops `class="calc-label"` | 3 × 19 | −57 | `ShoppingLine.test.ts`, `CalculatorBody.test.ts` (`.calc-shopping > span:first-child`, no `.calc-label`) |
+| E | `<meta name="generator">` dropped | 1 | −46 | new `SeoHead.test.ts` case |
+| **Total** | | | **−826** | |
+
+Budget test after S3: ES **39,831 B** (−826), EN 39,549 B (−819); rectangle-area EN 34,519 B, ES 34,558 B (−135 each: A 2 inputs, B 3 buttons, E, the `.calc-hint` CSS).
+
+### S3 measurement gate (task 5.9): continue
+
+- [CP86] trim ≥ 700 B: 826 B. Pass.
+- Design rule adjusted to the real baseline: `size_after_S3 + 340 (S4) + 556 (S7) ≤ 40,836` ⇔ trim ≥ 40,657 + 896 − 40,836 = **717 B**; 39,831 + 896 = 40,727 B, margin 109 B. Pass.
+- Narrow rule (S4 alone): 39,831 + 340 = 40,171 ≤ 40,836. Pass.
+- Verdict: **continue** to S4. No budget or pin was touched.
+
+### [SQ39] neutrality (task 5.8)
+
+Script (`node-html-parser`): visible text (text not under a `hidden` element, no script or style), the ids in order and every `aria-*`/`role` attribute in order, before (`dist` at `dcc2c8b`) and after S3. Equal on all four calculator pages: concrete 146 texts, 68 ids, 32 ARIA attributes per locale; square footage 110, 40, 13. `npm run test:e2e -- calculator.spec a11y.spec`: 181 passed. Dist diff: every HTML page (trim E), the four calculator pages (A-E where they apply) and the mount chunk; nothing else.
+
+### S4 design notes and deviations
+
+1. **The share link sits on a row of its own** under "Copy link" (`display:flex; width:fit-content`, `margin-top: var(--space-2)`), not inline after it. Inline, "Copiar enlace" plus "Enviar por WhatsApp" does not fit 288 px at 320 px, so the copy reserve would need a width breakpoint whose edge moves with font metrics (Linux differs). On its own row the block height is the same at every width: button 2.75 + 0.5 + link 2.75 + status 0.25 + 1.6 = 7.85rem, reserve **8rem** (was 5rem; method: the CSS sum, checked by the [CP61]/[CP84] probe of `layout.spec.ts` at its 28 widths on macOS; Linux pending 6.11). The mockup also puts WhatsApp on its own row; corners stay square like every site button, and the mockup's icon is left out (bytes).
+2. **`shareHref` lives in `controller.ts`** as designed; its tests are in `calculator/concrete/controller.test.ts` (task 6.1 named the generic file) because they need a real concrete state and the real message template; the environment is `https://example.test` as [CWC46] says.
+3. **The message is `share.text`**, after `copy.failed` in the template; the four message-order tests, the template count and the register count (15 → 17 site keys) moved with it.
+4. **[CP84] uses the existing probe** (status set to `copy.copied`, as [CP61]); the failure status adds a read-only field and was never inside the reserve.
+5. **[CP85]** is proven by the existing `layout.spec.ts` checks, which now run with the link revealed: load CLS at 28 widths with and without a state, and the reserved blocks plus the next element equal with and without the script. `share.spec.ts` does not repeat them.
+6. **The `https://wa.me/` seeded case of the bundle check was green on arrival** (the existing foreign-origin gate already flags it); the share label and text joined `MESSAGES`, and the seeded share-text case was red until the keys existed.
+7. Negative proof 1 (server `href`) fails the markup tests (unit and the no-JS e2e); it cannot fail the bundle check, which reads JavaScript only.
+
+### TDD cycle evidence
+
+| Task | RED (seen failing, right reason) | GREEN | REFACTOR |
+|---|---|---|---|
+| 5.2 | 3 failed: `expected true to be false` (inputs carry `autocomplete`) | trim A | format, lint (one `prefer-includes` fix), typecheck, coverage |
+| 5.3 | 2 failed: `.calc-form button` has no `min-height`; 3 `.calc-choice` selectors | trim B | same |
+| 5.4-5.5 | 7 failed across `CalculatorField`, `CalculatorForm`, `CalculatorBody`, `ShoppingLine`, `SeoHead`, `ResultPanel` | trims C-E, mount | same |
+| 6.1 | 3 failed: `shareHref is not a function` | `shareHref` | same |
+| 6.2-6.4 | 19 failed: catalog rows and counts, message orders, anchor markup, slot-free markup and lookup scan, bundle share text | catalogs, page view, model, form, mount | same; fixture `shareLabel` |
+| 6.7 (CSS) | 2 failed: no `.calc-share` rule, reserve 5rem under the 7.85rem content | `.calc-share`, `.calc-copy` 8rem | same |
+| 6.5 | e2e on the S3 build: 4 no-JS and every `share.spec.ts` case failed (no anchor) | after GREEN: 48 passed | `npm run typecheck --prefix tooling/site-browser` |
+
+### Work unit evidence
+
+| Unit | Focused test command and result | Runtime harness | Rollback boundary |
+|---|---|---|---|
+| S3 | `npx vitest run apps/web/src/components apps/web/src/contract/slot-free apps/web/src/styles apps/web/src/views`: 327 passed | `npm run build && npm run test:e2e -- calculator.spec a11y.spec`: 181 passed; [SQ39] script equal | `aa12561` (trim files and guards); revert restores the 40,657 B markup |
+| S4a | `npx vitest run` (whole suite): 217 files, 4,031 passed at S4a | `npm run test:e2e`: 534 passed at S4a | `caafd97`: anchor, `shareHref`, mount share code, `.calc-share`, two keys per locale |
+| S4b | `npx vitest run apps/web/src/contract/browser-record`: 59 passed | `npm run test:e2e -- share.spec no-js.spec`: 48 passed | `55cc084`: record group, `share.spec.ts`, no-JS case |
+
+### Scenario ids proven
+
+calculator-page: [CP12] (unit, e2e), MODIFIED Public DOM hooks (`data-hint-row` gone, `data-cost-row`/`data-price-hint` in one row, `data-share`), [CP78] (unit `shareHref` EN/ES with decode, e2e EN/ES), [CP79] (e2e `15 ft` → `l=180`, `abc` keeps the href), [CP80] (unit markup, no-JS e2e, visible after mount), [CP81] (e2e attributes and accessible name; contract: only `setAttribute`/`getAttribute` on the anchor, listeners on the form only), [CP82] (unit tokens, e2e 320/390/1280 box ≥ 44, `#06210f` on `#1faf5a`, orange ring, axe on the copy area), [CP83] (e2e copy → share → forward; `tabOrder` of both records), [CP84], [CP85] (`layout.spec.ts`, macOS; Linux pending), [CP86] (S3 gate, tip size). calculator-web-core: [CWC46], [CWC47]. i18n-catalog: [ICW19], [ICW21] (register scan, one sentence, no URL, no placeholder), [ICW22] (all four values in the bundle `MESSAGES`). site-quality: [SQ38] tip 2, [SQ39], [SQ41], [SQ43], [SQ44] (CLS sweep, axe, Lighthouse on its representatives).
+
+### Negative proofs (applied, run red, reverted; `git status --porcelain` clean after each)
+
+S3 (5.10):
+1. `autocomplete="off"` back on the input: 3 failed (`renders the label tied to…`, `labels every en/es input…`).
+2. `class="calc-choice"` on the copy button: `× styles the form buttons by element, with no calc-choice class left in CSS or markup`.
+3. A separate `p.calc-hint[data-hint-row]` row back in the panel: 2 failed (`hides a cost row without a price…`, `renders the English table…`).
+4. `findAll(root, '[data-cost-row], [data-price-hint], [data-hint-row]')` in the mount: `× looks up no hint row…`.
+5. The generator meta back: `× names no generator`.
+
+S4 (6.12):
+1. `href="https://wa.me/"` in the server markup: 3 failed (both anchor markup cases, the slot-free markup `a[data-share][hidden]:not([href])`).
+2. `shares: [find(root, '[data-share]')]`: 2 failed (`looks up neither the drawing box nor the share link with a throwing lookup`, `reveals the share anchor…`).
+3. `encodeURIComponent` dropped: 3 failed (EN, ES and the base case).
+4. Reveal dropped (`[data-share][hidden]` out of the mount, rebuilt): `shows a link…`, the tab-order, target-size and axe cases failed.
+5. `.calc-copy` 6.35rem (one body line less, rebuilt): unit reserve case failed; e2e `fits every reserved block` failed on both pages (`copy en at 320 px: content fits`) and the four "where the script-free page puts them" cases failed.
+
+### Measurements
+
+| Measure | Start (`dcc2c8b`) | S3 tip | S4 tip | Budget |
+|---|---|---|---|---|
+| ES concrete full-length ([CP66], [SQ38]) | 40,657 B | **39,831 B** | **40,239 B** (margin 597 B) | pin 40,836 B |
+| EN concrete full-length | 40,368 B | 39,549 B | 39,958 B | 40,960 B |
+| rectangle-area full-length EN / ES ([SQ40]) | 34,654 / 34,693 B | 34,519 / 34,558 B | 34,928 / 34,966 B (headroom 6,032 / 5,994 B) | 40,960 B |
+| Built concrete HTML EN / ES | 31,729 / 33,732 B | 30,910 / 32,906 B | 31,319 / 33,314 B | 40,960 B |
+| Built square footage HTML EN / ES | 25,687 / 27,127 B | 25,552 / 26,992 B | 25,961 / 27,400 B | 40,960 B |
+| Concrete JS graph (built, `check:site`) | 39,992 B | 39,931 B | 40,160 B | 49,152 B |
+| Library builds concrete / rectangle-area | 40,114 / 38,548 B (PR 1) | | 40,648 / 39,546 B | 49,152 B |
+| Calculator page weight (largest, ES concrete) | 163,383 B (PR 1) | 162,847 B | 163,484 B | 196,608 B |
+| CSS (largest, square footage) | 8,227 B | | 8,480 B | 20,480 B |
+| e2e | 534 passed | | **566 passed** (3.5 min) | |
+
+S4 cost +408 B on the ES proof against the +340 B forecast (the built `.calc-share` rule is 244 B, with `width:fit-content` and `margin-top` for the row of its own). PR 3 forecast: 40,239 + 556 = 40,795 B, **41 B under the pin**; the design fallbacks (shorter note templates first) apply there if S7 measures over.
+
+### Gates (tip `55cc084`, tree identical to the verified `7d49cd5`)
+
+- `npm run verify`: exit 0 (217 files, 4,035 tests, coverage thresholds met, `check:site`, `check:dist` green).
+- `npm run typecheck --prefix tooling/site-browser`: exit 0.
+- `npm run build && npm run check:site && npm run test:e2e`: exit 0, **566 passed**.
+- `npm run lighthouse`: exit 0 (six representatives).
+- `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'`: nothing.
+
+### Screenshots (macOS Chromium, `astro preview` of the built site)
+
+Session scratchpad: `bp2-{concrete,sqft}-{en,es}-{390,1280}.png`. The green link sits under "Copy link", left-aligned, 44 px tall like the buttons, 173 px (EN) and 189 px (ES) wide; text near-black on the WhatsApp green; nothing overlaps at either width.
+
+### Linux gate (task 6.11, orchestrator-owned)
+
+Request: run the `site-browser` CI job on the PR 2 tip; `share.spec.ts` ([CP82]) and `layout.spec.ts` ([CP84], [CP85]) must pass on Linux Chromium, with the 8rem `.calc-copy` reserve confirmed (the copy block holds two 44 px rows and one status line, so its height should not depend on font metrics). Local command: `npm run build && npm run test:e2e -- share.spec layout.spec`. Not confirmed until the orchestrator records the run id here.

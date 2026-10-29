@@ -149,11 +149,13 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
         expect(label?.text.trim(), name).toBe(
           catalog[`calc.concrete.inputs.${name}` as keyof typeof catalog],
         );
-        expect(input.getAttribute('autocomplete'), name).toBe('off');
+        // the form owns autocomplete="off" and every input inherits it: none sets its own
+        expect(input.hasAttribute('autocomplete'), name).toBe(false);
         expect(input.getAttribute('inputmode'), name).toBe(
           name === 'count' || name === 'stepCount' ? 'numeric' : 'decimal',
         );
       }
+      expect(root.querySelector('form')?.getAttribute('autocomplete')).toBe('off');
       expect(new Set(inputs.map((input) => input.getAttribute('id'))).size).toBe(inputs.length);
       expect(root.querySelectorAll('button[type=submit], input[type=submit]')).toHaveLength(0);
       expect(
@@ -221,6 +223,25 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
     expect(root.querySelectorAll('button[data-step], button[data-direction]')).toHaveLength(0);
   });
 
+  // spec: calculator-page › [CP80], [CP81], [CP83] static: the share anchor between the copy button
+  // and the status, hidden, with the inert base and no href
+  it.each([
+    ['en', 'Send on WhatsApp'],
+    ['es', 'Enviar por WhatsApp'],
+  ] as const)('renders the %s share anchor hidden and without an href', async (locale, label) => {
+    const copy = (await render(locale)).querySelector('[data-reserved="copy"]');
+    expect(copy?.children.map((el) => el.tagName.toLowerCase())).toEqual(['button', 'a', 'p']);
+    const anchor = copy?.querySelector('a');
+    expect(anchor?.attributes).toEqual({
+      class: 'calc-share',
+      'data-share': 'https://wa.me/',
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      hidden: '',
+    });
+    expect(anchor?.text.trim()).toBe(label);
+  });
+
   it('reserves the copy area, the choice area and the steppers by class alone', async () => {
     const root = await render('en');
     expect(
@@ -278,6 +299,7 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
         },
       ],
       copyLabel: 'Copy',
+      shareLabel: 'Share',
     };
     const root = await renderComponent(CalculatorForm, { form });
     const area = root.querySelector('[data-choice="mode"] + .calc-choice-area');

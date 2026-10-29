@@ -68,7 +68,10 @@ export const RECTANGLE_AREA: E2eSpec = {
     '#calc-length',
     '#calc-width',
     '[data-copy]',
+    '[data-share]',
   ],
+  // calculator-page › [CP79]: 15 ft is 180 in, written as l=180
+  share: { change: { key: 'length', text: '15 ft' }, query: '?v=1&l=180' },
   bounds: [
     { key: 'length', text: '100001 ft', code: 'ABOVE_MAX', bound: '100,000 ft', restore: '10' },
     { key: 'width', text: '100001 ft', code: 'ABOVE_MAX', bound: '100,000 ft', restore: '10' },

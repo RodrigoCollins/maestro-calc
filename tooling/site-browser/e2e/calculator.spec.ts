@@ -134,8 +134,10 @@ for (const calculator of calculatorPages) {
           'inputmode',
           spec.numeric.includes(name) ? 'numeric' : 'decimal',
         );
-        await expect(field, name).toHaveAttribute('autocomplete', 'off');
+        // the input inherits the form's autocomplete state: it sets none of its own
+        await expect(field, name).not.toHaveAttribute('autocomplete');
       }
+      await expect(page.locator('form.calc-form')).toHaveAttribute('autocomplete', 'off');
       await expect(page.locator('form button[type=submit], form input[type=submit]')).toHaveCount(
         0,
       );
@@ -262,7 +264,7 @@ for (const calculator of calculatorPages) {
 
     // spec: calculator-page › [CP16], [CP18] costs
     if (prices !== undefined) {
-      test('shows the costs once a price is typed and does not round the ready-mix volume', async ({
+      test('shows the costs once a price is typed, hides them when it is cleared and does not round the ready-mix volume', async ({
         page,
       }) => {
         await open(page, calculator);
@@ -273,9 +275,26 @@ for (const calculator of calculatorPages) {
           }
           await input(page, price.input).fill(price.text);
           await expect(output(page, price.output)).toHaveText(price.value);
+          await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeVisible();
           if (price.hinted === true) {
+            // the figure and its hint are two spans of one row; the mount swaps them
+            await expect(
+              page.locator(
+                `p.calc-cost:has(> [data-cost-row="${price.output}"]):has(> [data-price-hint="${price.output}"])`,
+              ),
+            ).toHaveCount(1);
             await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeHidden();
           }
+          // back to zero, then empty: the figure hides again and the hint returns
+          for (const cleared of ['0', '']) {
+            await input(page, price.input).fill(cleared);
+            await expect(page.locator(`[data-cost-row="${price.output}"]`)).toBeHidden();
+            if (price.hinted === true) {
+              await expect(page.locator(`[data-price-hint="${price.output}"]`)).toBeVisible();
+            }
+          }
+          await input(page, price.input).fill(price.text);
+          await expect(output(page, price.output)).toHaveText(price.value);
         }
         await input(page, typed.key).fill(typed.text);
         await expect(figureAt(page, headline)).toHaveText(figure(typed.figures, 0));

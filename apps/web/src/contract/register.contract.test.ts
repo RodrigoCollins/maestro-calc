@@ -68,7 +68,7 @@ describe('Spanish register (i18n-catalog › Neutral tú register, no voseo)', (
     const calculatorKeys = Object.entries(site['esSite'] ?? {}).filter(([key]) =>
       key.startsWith('site.calculator.'),
     );
-    expect(calculatorKeys).toHaveLength(15);
+    expect(calculatorKeys).toHaveLength(17);
     expect(catalogRegisterProblems(Object.fromEntries(calculatorKeys))).toEqual([]);
     expect(Object.keys(concrete['esConcrete'] ?? {})).toContain('calc.concrete.page.answer.slab');
     // the scan is not blind to these keys: a voseo form in one of them is reported

@@ -10,6 +10,7 @@ import {
   copyOutcome,
   mustBeOk,
   required,
+  shareHref,
   type Environment,
   type Messages,
   type Output as ControllerOutput,
@@ -538,6 +539,38 @@ describe('controller: language switch and copy (calculator-page › [CP36]–[CP
   it('copies the plain page address on a bare visit', () => {
     expect(copyAddress(ES, last('', [], ES).state)).toBe(
       'https://maestrocalc.com/es/calculadora-de-concreto',
+    );
+  });
+});
+
+describe('the share link (calculator-web-core › [CWC46]; calculator-page › [CP78] unit half)', () => {
+  // the base is what the mount reads from `data-share`; this file is not bundled
+  const BASE = 'https://wa.me/';
+
+  // spec: calculator-web-core › [CWC46] the share text, one space and the copy address, encoded
+  it.each([
+    ['en', EN, 'Check this calculation:', '/concrete-calculator'],
+    ['es', ES, 'Mira este cálculo:', '/es/calculadora-de-concreto'],
+  ] as const)(
+    'builds the %s link from the base, the share text and the copy address',
+    (_, page, text, path) => {
+      const env: Environment = { ...page, origin: 'https://example.test' };
+      const { state } = last('', [waste('more')], env);
+      const sentence = `${text} https://example.test${path}?v=1&ws=15`;
+      const href = shareHref(env, state, BASE);
+      expect(href).toBe(`https://wa.me/?text=${encodeURIComponent(sentence)}`);
+      expect(new URL(href).searchParams.get('text')).toBe(sentence);
+      expect(sentence.endsWith(copyAddress(env, state))).toBe(true);
+    },
+  );
+
+  it('takes the base from its caller and names no host of its own', () => {
+    const { state } = last('', [], EN);
+    expect(shareHref(EN, state, 'https://share.example/send')).toBe(
+      `https://share.example/send?text=${encodeURIComponent('Check this calculation: https://maestrocalc.com/concrete-calculator')}`,
+    );
+    expect(shareHref({ ...EN, messages: {} }, state, '')).toBe(
+      `?text=${encodeURIComponent(' https://maestrocalc.com/concrete-calculator')}`,
     );
   });
 });

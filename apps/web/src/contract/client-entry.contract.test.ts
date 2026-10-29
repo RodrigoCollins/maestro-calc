@@ -31,6 +31,11 @@ const MESSAGES = [
   esCommon['errors.DECIMAL_COMMA'],
   enSite['site.calculator.copyLink'],
   esSite['site.calculator.copyLink'],
+  // i18n-catalog › [ICW22]: neither share value reaches a bundle; the page carries them inert
+  enSite['site.calculator.shareWhatsApp'],
+  esSite['site.calculator.shareWhatsApp'],
+  enSite['site.calculator.shareText'],
+  esSite['site.calculator.shareText'],
 ];
 
 /** The problems of a built client bundle: each a short sentence naming the offence. */
@@ -105,6 +110,8 @@ describe('the bundle check finds what it forbids (seeded)', () => {
       `export const u = 'https://example.com/a';`,
       'references https://example.com/a',
     ],
+    // site-quality › [SQ41]: the share base stays in the markup (`data-share`), never in code
+    ['the share base', `export const u = 'https://wa.me/';`, 'references https://wa.me/'],
     [
       'an insecure origin',
       `export const u = 'http://maestrocalc.com/a';`,
@@ -114,6 +121,11 @@ describe('the bundle check finds what it forbids (seeded)', () => {
       'a catalog message',
       `export const m = ${JSON.stringify(enSite['site.calculator.copyLink'])};`,
       `holds the message "${enSite['site.calculator.copyLink']}"`,
+    ],
+    [
+      'the share text',
+      `export const m = ${JSON.stringify(esSite['site.calculator.shareText'])};`,
+      `holds the message "${esSite['site.calculator.shareText']}"`,
     ],
   ])('flags %s in the bundle', async (_name, extra, expected) => {
     const { code } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);

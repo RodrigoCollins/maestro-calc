@@ -484,6 +484,18 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
 export const copyAddress = (env: Environment, state: { readonly search: string }): string =>
   `${env.origin}${env.path}${state.search}`;
 
+/**
+ * The share link of the copy area: `base` (the inert `data-share` of the markup, so no host is in
+ * code) with `?text=` and the share text, one space and the copy address, percent-encoded
+ * (calculator-web-core › [CWC46]).
+ */
+export const shareHref = (
+  env: Environment,
+  state: { readonly search: string },
+  base: string,
+): string =>
+  `${base}?text=${encodeURIComponent(`${message(env, 'share.text')} ${copyAddress(env, state)}`)}`;
+
 /** The status to show after a copy attempt; a failed one also offers the address in a read-only field. */
 export const copyOutcome = (
   env: Environment,

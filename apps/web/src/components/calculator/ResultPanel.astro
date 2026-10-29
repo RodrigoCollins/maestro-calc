@@ -49,18 +49,15 @@ const {
     <ShoppingLine {line} {index} />
   ))}
   {costs.map(({ key, label, value, visible, hint }) => (
-    <Fragment>
-      <p class="calc-cost" data-cost-row={key} hidden={!visible}>
-        <span class="calc-label">{label}</span>
-        <span class="calc-figure" data-output={key}>
-          {value}
-        </span>
-      </p>
-      <p class="calc-hint" data-hint-row={key} hidden={visible}>
-        <span class="calc-label">{label}</span>
-        <span data-price-hint={key}>{hint}</span>
-      </p>
-    </Fragment>
+    <p class="calc-cost">
+      <span>{label}</span>
+      <span class="calc-figure" data-output={key} data-cost-row={key} hidden={!visible}>
+        {value}
+      </span>
+      <span data-price-hint={key} hidden={visible}>
+        {hint}
+      </span>
+    </p>
   ))}
   {costsNote !== undefined && <p class="calc-note">{costsNote}</p>}
   <p class="calc-note">

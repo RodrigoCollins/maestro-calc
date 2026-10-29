@@ -5,7 +5,7 @@ import CalculatorField from './CalculatorField.astro';
 const field = { key: 'length', label: 'Length', value: '12 ft', mode: 'decimal' } as const;
 
 describe('CalculatorField (calculator-page › Form controls, [CP12], [CP41] static)', () => {
-  // spec: calculator-page › [CP12] a label tied to its input, the keyboard, no autocomplete
+  // spec: calculator-page › [CP12] a label tied to its input, the keyboard; the form owns autocomplete
   it('renders the label tied to a disabled input named after the key', async () => {
     const root = await renderComponent(CalculatorField, { field });
     expect(root.querySelector('label')?.getAttribute('for')).toBe('calc-length');
@@ -14,7 +14,7 @@ describe('CalculatorField (calculator-page › Form controls, [CP12], [CP41] sta
     expect(input?.getAttribute('id')).toBe('calc-length');
     expect(input?.getAttribute('name')).toBe('length');
     expect(input?.getAttribute('inputmode')).toBe('decimal');
-    expect(input?.getAttribute('autocomplete')).toBe('off');
+    expect(input?.hasAttribute('autocomplete')).toBe(false);
     expect(input?.getAttribute('value')).toBe('12 ft');
     expect(input?.hasAttribute('disabled')).toBe(true);
     expect(input?.hasAttribute('placeholder')).toBe(false);

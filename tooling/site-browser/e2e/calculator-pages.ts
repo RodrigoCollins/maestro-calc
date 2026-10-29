@@ -143,9 +143,20 @@ export interface E2eDrawing {
 }
 
 /**
+ * The WhatsApp share link of the copy area (calculator-page › [CP78]-[CP85]): a change the page
+ * writes to its link, and the query the share link carries after it. `share.spec.ts` runs over it.
+ */
+export interface E2eShare {
+  /** A value typed in a field, or a button pressed. */
+  readonly change: { readonly key: string; readonly text: string } | E2ePress;
+  /** The query of the link after the change, `?v=1&…`. */
+  readonly query: string;
+}
+
+/**
  * The typed per-calculator record the generic suites run over (site-quality › [SQ29], [SQ30]).
  * A calculator adds one `E2eSpec` and one row of `E2E`; no suite names a calculator. The groups
- * a page may not have (`answer`, `choices`, `steppers`, `shopping`, `prices`, `variant`, `drawing`, ...) are
+ * a page may not have (`answer`, `choices`, `steppers`, `shopping`, `prices`, `variant`, `drawing`, `share`, ...) are
  * optional and their tests are skipped when a record leaves them out. The record reaches
  * `apps/web` only by relative path: the browser job has no root install.
  */
@@ -242,6 +253,8 @@ export interface E2eSpec {
   };
   /** The live plan of the result panel: a page whose module declares no drawing slot leaves it out. */
   readonly drawing?: E2eDrawing;
+  /** The share link of the copy area, with a change that moves its link. */
+  readonly share?: E2eShare;
   /** The unit hints and the descriptions of the inputs. `site` is the key of the hint text. */
   readonly hints?: readonly {
     readonly key: string;

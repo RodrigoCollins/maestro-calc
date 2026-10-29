@@ -144,6 +144,7 @@ const formViewAt = (
         : fieldItemOf(item.key, item.stepper),
     ),
     copyLabel: text('site.calculator.copyLink'),
+    shareLabel: text('site.calculator.shareWhatsApp'),
   };
 };
 
@@ -270,7 +271,8 @@ export const resultViewOf = (
 
 /**
  * The messages the script reads, in the order of the page's one template: the user-facing errors,
- * the answer templates of the slot, the messages of the drawing slot, the copy states, one hint per length unit (the distinct default
+ * the answer templates of the slot, the messages of the drawing slot, the copy states, the share
+ * text, one hint per length unit (the distinct default
  * units in input order, then the distinct metric ones) and the sentence of each primary figure that
  * has a page key. A name is the id of its `<template>` entry; the primary sentence is named
  * `<measure>.<unit>`, as the controller looks it up.
@@ -300,6 +302,7 @@ const messagesOf = (
     ...(drawing?.messages ?? []).map((name) => [name, text(pageKey(id, name))] as const),
     ['copy.copied', text('site.calculator.linkCopied')] as const,
     ['copy.failed', text('site.calculator.copyFailed')] as const,
+    ['share.text', text('site.calculator.shareText')] as const,
     ...[...units].map((unit) => [`hint.${unit}`, text(hintKeyOf(unit))] as const),
     ...primaries,
   ];

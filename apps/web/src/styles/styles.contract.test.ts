@@ -346,8 +346,34 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   // spec: calculator-page › Form controls: inputs at least 56 px, every other control the target size
   it('makes the text inputs 56 px tall and the buttons the 44 px target in both directions', () => {
     expect(rem(declared('.calc-field input', 'min-height'))).toBe(56);
-    expect(declared('.calc-choice', 'min-height')).toBe('2.75rem');
-    expect(declared('.calc-choice', 'min-width')).toBe('2.75rem');
+    expect(declared('.calc-form button', 'min-height')).toBe('2.75rem');
+    expect(declared('.calc-form button', 'min-width')).toBe('2.75rem');
+  });
+
+  // spec: calculator-page › [CP82] the share link: near-black on WhatsApp green, a 44 px target
+  it('draws the share link in the WhatsApp tokens as a 44 px target on a row of its own', () => {
+    expect(rules.get('.calc-share')).toMatchObject({
+      display: 'flex',
+      'min-height': 'var(--target-size)',
+      background: 'var(--color-whatsapp)',
+      color: 'var(--color-on-whatsapp)',
+      'text-decoration': 'none',
+    });
+    expect(contrast(resolve('var(--color-on-whatsapp)'), resolve('var(--color-whatsapp)'))).toBe(
+      contrast(ON_WHATSAPP, WHATSAPP),
+    );
+  });
+
+  // trim B of blueprint-panel: every button of the form is a choice, so the selector names the
+  // element and no button carries a class for it (site-quality › [SQ39])
+  it('styles the form buttons by element, with no calc-choice class left in CSS or markup', () => {
+    expect([...rules.keys()].filter((selector) => /\.calc-choice(?![\w-])/.test(selector))).toEqual(
+      [],
+    );
+    const markup = globSync('apps/web/src/**/*.astro', { cwd: fromRoot() }).filter((path) =>
+      readFileSync(fromRoot(path), 'utf8').includes('class="calc-choice"'),
+    );
+    expect(markup).toEqual([]);
   });
 
   // spec: calculator-page › Layout stability: figures in fixed-width cells with tabular digits
@@ -522,8 +548,12 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
   });
 
   // spec: calculator-page › [CP61] the copy reserve holds the mounted content, under one body line more
+  // calculator-page › [CP84]: the button (2.75), the share link on its own row (0.5 + 2.75) and the
+  // status (0.25 + 1.6), in rem
   it('reserves for the copy block its mounted content and less than one body line more', () => {
-    const content = 4.6;
+    const content = 2.75 + 0.5 + 2.75 + 0.25 + 1.6;
+    expect(rem(declared('.calc-share', 'margin-top'))).toBe(8);
+    expect(declared('.calc-share', 'min-height')).toBe('2.75rem');
     const line = Number.parseFloat(resolve(`var(--text-base)`)) * Number(root['--leading-body']);
     const reserved = Number.parseFloat(declared('.calc-copy', 'min-height'));
     expect(reserved).toBeGreaterThanOrEqual(content);

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { calculatorPages } from './calculator-pages.ts';
 import type { E2eLanguage } from './calculator-pages.ts';
-import { answer, figureAt, notRunning } from './locators.ts';
+import { answer, figureAt, notRunning, shareLink } from './locators.ts';
 
 /** A catalog string the record must hold: a missing key fails with its name, never as an empty match. */
 const textOf = (catalog: Readonly<Record<string, string>>, key: string): string => {
@@ -45,6 +45,15 @@ test.describe('calculator pages with JavaScript off (site-quality › [SQ18], ca
         const controls = page.locator('form input, form button');
         expect(await controls.count()).toBe(spec.controls);
         for (const control of await controls.all()) await expect(control).toBeDisabled();
+      });
+
+      // spec: calculator-page › [CP80], site-quality › [SQ43] the share link waits for the script
+      test('hides the share link and gives it no href, only the inert base', async ({ page }) => {
+        await page.goto(path);
+        await expect(shareLink(page)).toHaveCount(1);
+        await expect(shareLink(page)).toBeHidden();
+        await expect(shareLink(page)).not.toHaveAttribute('href');
+        await expect(shareLink(page)).toHaveAttribute('data-share', 'https://wa.me/');
       });
 
       test('requests no script', async ({ page }) => {
