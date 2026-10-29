@@ -78,17 +78,18 @@
 .calc-form {
   display: grid;
   gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
 }
 
 .calc-group {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  display: grid;
   gap: var(--space-2);
 }
 
 .calc-legend {
-  flex-basis: 100%;
   font-weight: 600;
 }
 
@@ -96,6 +97,7 @@
 .calc-field input,
 .calc-fallback {
   border: 2px solid var(--color-text);
+  border-radius: var(--radius-control);
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
@@ -106,6 +108,39 @@
   min-width: var(--target-size);
   padding: 0 var(--space-3);
   cursor: pointer;
+}
+
+/* A segmented control: the options share one plan-paper track and the pressed one is ink. They
+   wrap to a second row when the labels do not fit one. */
+.calc-segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--color-ground);
+}
+
+.calc-segments button {
+  flex: 1 1 auto;
+  padding: 0 var(--space-2);
+  border-color: transparent;
+  border-radius: var(--radius-segment);
+  background: transparent;
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+/* Four options split two by two until one row holds them all (the Spanish shapes need 22.5rem). */
+.calc-segments:has(> :nth-child(4)) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (min-width: 22.5rem) {
+  .calc-segments:has(> :nth-child(4)) {
+    display: flex;
+  }
 }
 
 .calc-form button[aria-pressed='true'] {
@@ -161,6 +196,14 @@
   padding: 0 var(--space-3);
 }
 
+/* Large condensed figures in a soft-edged box (Blueprint: inputs 56 px). */
+.calc-field input {
+  border-color: var(--color-control-line);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 600;
+}
+
 .calc-field input[aria-invalid='true'] {
   border-color: var(--color-error);
 }
@@ -198,6 +241,7 @@
   min-height: 3.5rem;
   margin-top: var(--space-2);
   padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
   background: var(--color-whatsapp);
   color: var(--color-on-whatsapp);
   font-weight: 600;
@@ -213,6 +257,7 @@
 .calc-result {
   margin: var(--space-4) 0;
   padding: var(--space-3);
+  border-radius: var(--radius-card);
   background: var(--color-text);
   color: var(--color-surface);
 }

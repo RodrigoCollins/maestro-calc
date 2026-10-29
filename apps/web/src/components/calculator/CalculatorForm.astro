@@ -15,11 +15,13 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
     <span class="calc-legend" id="calc-units-label">
       {unitsLabel}
     </span>
-    {units.map((choice) => (
-      <button type="button" data-unit={choice.id} aria-pressed={pressed(choice)} disabled>
-        {choice.label}
-      </button>
-    ))}
+    <div class="calc-segments">
+      {units.map((choice) => (
+        <button type="button" data-unit={choice.id} aria-pressed={pressed(choice)} disabled>
+          {choice.label}
+        </button>
+      ))}
+    </div>
   </div>
   {items.map((item) =>
     item.kind === 'choice' ? (
@@ -33,11 +35,13 @@ const pressed = (choice: Choice): 'true' | 'false' => (choice.pressed ? 'true' :
           <span class="calc-legend" id={labelId(item.key)}>
             {item.label}
           </span>
-          {item.choices.map((choice) => (
-            <button type="button" value={choice.id} aria-pressed={pressed(choice)} disabled>
-              {choice.label}
-            </button>
-          ))}
+          <div class="calc-segments">
+            {item.choices.map((choice) => (
+              <button type="button" value={choice.id} aria-pressed={pressed(choice)} disabled>
+                {choice.label}
+              </button>
+            ))}
+          </div>
         </div>
         {item.area !== undefined && (
           <div class="calc-choice-area" style={`--calc-rows:${String(item.area.rows)}`}>
