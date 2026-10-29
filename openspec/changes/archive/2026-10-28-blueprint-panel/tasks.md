@@ -84,20 +84,20 @@ Split rule (by measurement, no exception requested): a slice that measures over 
 
 ### Standard Exit Criteria per slice (SX)
 
-- [ ] SX1 Slice gates green in the order above.
-- [ ] SX2 Size: shortstat recorded (renames as renames), at most 400, forecast vs actual in `apply-progress.md`.
-- [ ] SX3 Commits: conventional subjects, tree green at each commit, no attribution.
-- [ ] SX4 Mutation: N/A, `git diff --stat main -- packages/core packages/data` empty (stated per slice, proof recorded).
-- [ ] SX5 Traceability: `apply-progress.md` lists the scenario ids proven, each negative proof run and reverted (`git status --porcelain` clean), and the measured sizes.
+- [x] SX1 Slice gates green in the order above.
+- [x] SX2 Size: shortstat recorded (renames as renames), at most 400, forecast vs actual in `apply-progress.md`.
+- [x] SX3 Commits: conventional subjects, tree green at each commit, no attribution.
+- [x] SX4 Mutation: N/A, `git diff --stat main -- packages/core packages/data` empty (stated per slice, proof recorded).
+- [x] SX5 Traceability: `apply-progress.md` lists the scenario ids proven, each negative proof run and reverted (`git status --porcelain` clean), and the measured sizes.
 
 ### Group Exit Criteria (GX): once per PR, before merge (orchestrator-owned)
 
-- [ ] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and gate, `site-browser`); Linux run id recorded.
-- [ ] GX2 `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
-- [ ] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`). Only candidate-caused blocking findings gate.
-- [ ] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again.
-- [ ] GX5 PR opened against `main` with the body contents of the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
-- [ ] GX6 `site-browser` job green and its wall time recorded (limit 15 minutes).
+- [x] GX1 `npm run verify` green on the PR tip; CI green (`verify`, `mutation` matrix and gate, `site-browser`); Linux run id recorded.
+- [x] GX2 `git log main..HEAD --format=%B | rg -i 'co-authored|claude|anthropic|generated with'` returns nothing.
+- [x] GX3 Four specialized reviewers on the frozen candidate (after `npm run format`). Only candidate-caused blocking findings gate.
+- [x] GX4 Judgment Day (two judges); at most one scoped correction transaction, then GX1 again.
+- [x] GX5 PR opened against `main` with the body contents of the group's exit task and a Chain Context section (dependency diagram marking the current PR, start state, end state, prior dependencies, follow-ups, out of scope); merged before the next PR merges.
+- [x] GX6 `site-browser` job green and its wall time recorded (limit 15 minutes).
 
 ---
 
@@ -172,15 +172,15 @@ Commit: `test(e2e): record the square footage drawing`.
 - [x] 4.5 [GREEN] `AGENTS.md` steps 11–12 (`drawingSlot`-style `drawing` member, `calculator/<id>/plan.ts`, the `draw` hook of the entry, `findAll` rule, head CSS from the `PAGES` row) and the `docs.contract.test.ts` tokens/paths (`apps/web/src/client/draw.ts`, `apps/web/src/calculator/slots/drawing.ts`, `apps/web/src/contract/drawing-record.contract.test.ts`). Verify: `npm test -- apps/web/src/contract/docs` passes (every path named exists).
 - [x] 4.6 [REFACTOR] The four commands, with `npm run typecheck --prefix tooling/site-browser`.
 - [x] 4.7 Gates and measure: `npm run build && npm run check:site && npm run test:e2e` (record count and the drawing suite time); `npm run lighthouse` (a11y, SEO, best practices at least 0.95, CLS at most 0.01); dist unchanged against the S2a tip build; shortstat of S2b and of PR 1.
-- [ ] 4.8 **Linux gate (orchestrator-owned).** `drawing.spec.ts` ([BD14], [BD20], [BD21]) must pass on the `site-browser` CI job (Linux Chromium) at the PR 1 tip. Apply records the request and the exact command; the orchestrator records the run id and conclusion here. Not confirmed until then.
+- [x] 4.8 **Linux gate (orchestrator-owned).** `drawing.spec.ts` ([BD14], [BD20], [BD21]) must pass on the `site-browser` CI job (Linux Chromium) at the PR 1 tip. Apply records the request and the exact command; the orchestrator records the run id and conclusion here. Not confirmed until then.
 - [x] 4.9 Negative proofs: widen the factor `0.56` to `0.4` in the estimate (the [BD14] measured ≤ estimate assertion fails); make `draw` set `style="width:…"` on the box (the [BD20] case fails); add `aria-live="polite"` to the box in `ResultPanel.astro` (the [BD16] and [BD17] cases fail); remove the `drawing` group (the [SQ42] contract fails naming `rectangle-area`); revert each.
 - [x] 4.10 Exit: SX1–SX5. SX4: `packages/core packages/data` empty.
 
 ### PR 1 group tasks
 
 - [x] P1.1 Tip checks: `git log main..HEAD --oneline` shows the planning commits, then S1a, S1b, S2a, S2b; `git diff --stat main -- packages/core packages/data` is empty; CI/stryker paths unchanged. Record `git diff -M --shortstat main..HEAD -- . ':(exclude)package-lock.json' ':(exclude)tooling/site-browser/package-lock.json' ':(exclude)openspec/'` and the `openspec/` lines on a separate line.
-- [ ] P1.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at most 40,836 B (exact figure; concrete HTML byte-identical to `main`); rectangle-area sizes and headroom; both entry graph sizes; e2e count; `site-browser` wall time.
-- [ ] P1.3 Exit: GX1–GX6. PR body: scope (`drawing` slot, geometry, controller plan, injected writer, `findAll` lookup, square footage plan, box, head CSS, catalogs, e2e record, [SQ42] contract, recipe), forecast vs actual per slice, scenario ids (BD1–BD3, BD9–BD13, BD15–BD25 for rectangle-area, CWC41–CWC45, CP48, CP76, CP77, ICW20/ICW21, SQ38 tip 1, SQ40–SQ42, SQ44), negative-proof evidence, the dist-diff list, sizes against budgets, Linux CI run id, rollback (revert PR 1: the entry goes back to `mount(page)`). Chain Context: PR 1 of 3, start state `main` `05de1f7`, end state a generic `drawing` slot plus the live square footage plan, follow-ups PR 2 (trim, share), PR 3 (concrete drawings), out of scope WhatsApp, the concrete trim and any concrete drawing. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P1.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at most 40,836 B (exact figure; concrete HTML byte-identical to `main`); rectangle-area sizes and headroom; both entry graph sizes; e2e count; `site-browser` wall time.
+- [x] P1.3 Exit: GX1–GX6. PR body: scope (`drawing` slot, geometry, controller plan, injected writer, `findAll` lookup, square footage plan, box, head CSS, catalogs, e2e record, [SQ42] contract, recipe), forecast vs actual per slice, scenario ids (BD1–BD3, BD9–BD13, BD15–BD25 for rectangle-area, CWC41–CWC45, CP48, CP76, CP77, ICW20/ICW21, SQ38 tip 1, SQ40–SQ42, SQ44), negative-proof evidence, the dist-diff list, sizes against budgets, Linux CI run id, rollback (revert PR 1: the entry goes back to `mount(page)`). Chain Context: PR 1 of 3, start state `main` `05de1f7`, end state a generic `drawing` slot plus the live square footage plan, follow-ups PR 2 (trim, share), PR 3 (concrete drawings), out of scope WhatsApp, the concrete trim and any concrete drawing. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
@@ -222,15 +222,15 @@ Commit: `feat(web): share the calculation on WhatsApp`.
 - [x] 6.8 [GREEN] Tab order and records: `tabOrder` and the `share` group in `tooling/site-browser/e2e/{concrete-pages.ts,rectangle-area-pages.ts}`; `share.spec.ts` green on macOS. Verify: `npm run build && npm run test:e2e -- share.spec layout.spec` passes; `npm run typecheck --prefix tooling/site-browser`.
 - [x] 6.9 [REFACTOR] The four commands, with `npm run typecheck --prefix tooling/site-browser`.
 - [x] 6.10 Gates and measure: `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at the S4 tip at most 40,836 B (forecast 40,192 B), margin recorded; rectangle-area sizes and entry graphs; shortstat of S4 and of PR 2. If the tip is over the pin, apply the fallbacks in order (shorter `.calc-share` rule, then ask the owner); never raise the budget.
-- [ ] 6.11 **Linux gate (orchestrator-owned).** `share.spec.ts` ([CP82], [CP84], [CP85]) and `layout.spec.ts` must pass on the `site-browser` CI job (Linux Chromium) at the PR 2 tip, with the `.calc-copy` min-height confirmed on Linux (the later drop of the two platforms wins). Apply records the request; the orchestrator records the run id and conclusion here and any adjusted value.
+- [x] 6.11 **Linux gate (orchestrator-owned).** `share.spec.ts` ([CP82], [CP84], [CP85]) and `layout.spec.ts` must pass on the `site-browser` CI job (Linux Chromium) at the PR 2 tip, with the `.calc-copy` min-height confirmed on Linux (the later drop of the two platforms wins). Apply records the request; the orchestrator records the run id and conclusion here and any adjusted value.
 - [x] 6.12 Negative proofs: write `href="https://wa.me/"` in the server markup (the [CP80] and bundle checks fail); use a throwing `find(root, '[data-share]')` (the [CWC47] proof fails); drop `encodeURIComponent` (the round trip fails); drop the reveal (the e2e visible case fails); shrink `.calc-copy` min-height by 1 line (the [CP84] fit fails); revert each.
 - [x] 6.13 Exit: SX1–SX5. SX4: `packages/core packages/data` empty.
 
 ### PR 2 group tasks
 
 - [x] P2.1 Tip checks: `git log main..HEAD --oneline` shows S3 and S4 only; `git diff --stat main -- packages/core packages/data` empty; CI/stryker paths unchanged; record `--shortstat main..HEAD`.
-- [ ] P2.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length (exact figure and margin to 40,836 B) at the S3 and S4 tips; e2e count; `site-browser` wall time.
-- [ ] P2.3 Exit: GX1–GX6. PR body: scope (trim A–E with the byte table, share anchor, `shareHref`, keys, `.calc-share`, records), forecast vs actual (S3 200–260, S4 280–340), the measured trim and the S3 gate verdict, scenario ids (CP12, CP78–CP86, CWC46, CWC47, ICW19, ICW21, ICW22, SQ38 tip 2, SQ39, SQ41, SQ43, SQ44, Public DOM hooks), negative-proof evidence, sizes against budgets, Linux CI run id, rollback (revert PR 2 restores the markup and removes the share link). Chain Context: PR 2 of 3, start state the PR 1 tip, end state trim plus share on both pages, follow-up PR 3 (concrete drawings, needs about 556 B of the margin), out of scope Copy list, Print, formatted results in the message. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P2.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length (exact figure and margin to 40,836 B) at the S3 and S4 tips; e2e count; `site-browser` wall time.
+- [x] P2.3 Exit: GX1–GX6. PR body: scope (trim A–E with the byte table, share anchor, `shareHref`, keys, `.calc-share`, records), forecast vs actual (S3 200–260, S4 280–340), the measured trim and the S3 gate verdict, scenario ids (CP12, CP78–CP86, CWC46, CWC47, ICW19, ICW21, ICW22, SQ38 tip 2, SQ39, SQ41, SQ43, SQ44, Public DOM hooks), negative-proof evidence, sizes against budgets, Linux CI run id, rollback (revert PR 2 restores the markup and removes the share link). Chain Context: PR 2 of 3, start state the PR 1 tip, end state trim plus share on both pages, follow-up PR 3 (concrete drawings, needs about 556 B of the margin), out of scope Copy list, Print, formatted results in the message. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
@@ -248,7 +248,7 @@ Commit: `feat(web): add the concrete slab, footing and column geometry`.
 - [x] 7.2 [RED] `apps/web/src/calculator/concrete/plan.test.ts` (new) [BD4, BD5, BD6]: slab default (12 ft by 10 ft, 4 in, count 1): ratio 12:10, labels `12 ft`, `10 ft`, note `4 in`, no count mark; footing from `?v=1&sh=footing&l=216&n=3`: ratio of length to `footingWidth`, label `18 ft`, width label, depth note and count mark `3`; column 12 in, 8 ft, count 2: circle of fixed radius 60 with a horizontal diameter line labelled `12 in`, notes `8 ft` and `2`; metric labels; hand-verified coordinates for each; the shape selector returns `null` for `steps` until S6. Verify: `npm test -- apps/web/src/calculator/concrete/plan` fails (module missing).
 - [x] 7.3 [GREEN] `apps/web/src/calculator/concrete/plan.ts`: pure `planOf(moment)` selected by `shape`; `slab`/`footing` through `fitRectangle`; `column` circle; notes as `{ message, fills }` labels (`drawing.<shape>.note`) and language-free count mark `× n` when n > 1. Verify: 7.2 passes.
 - [x] 7.4 [REFACTOR] The four commands. Coverage 100 % on `plan.ts` (`npm run test:coverage`); `rg -n "document|window" apps/web/src/calculator/concrete/plan.ts` is empty.
-- [ ] 7.5 Gates and measure: `npm run build && npm run check:site`; dist diff against `<scratch>/dist-prev` empty; ES full-length unchanged; shortstat of S5.
+- [x] 7.5 Gates and measure: `npm run build && npm run check:site`; dist diff against `<scratch>/dist-prev` empty; ES full-length unchanged; shortstat of S5.
 - [x] 7.6 Negative proofs: swap length and width in the slab plan (the ratio case fails); drop the count mark rule (the footing case fails); change the column radius (the table fails); revert each.
 - [x] 7.7 Exit: SX1–SX5. SX4: `packages/core packages/data` empty.
 
@@ -261,7 +261,7 @@ Commit: `feat(web): add the concrete steps geometry`.
 - [x] 8.1 [RED] `apps/web/src/calculator/concrete/plan.test.ts` (edit) [BD7]: `steps` with rise 7 in, run 11 in, 4 steps returns a profile of 4 treads (each `run` long and `rise` tall) clamped like a rectangle on the outer `n·run` × `n·rise`, the rise line labelled `7 in` and the run line `11 in` on the first tread, the step count `4` in the note; a many-steps case stays inside the frame; metric labels; the selector no longer returns `null` for any of the four shapes ([BD8] unit half). Verify: `npm test -- apps/web/src/calculator/concrete/plan` fails.
 - [x] 8.2 [GREEN] `apps/web/src/calculator/concrete/plan.ts`: the steps profile as one `path` outline plus the two dimension lines. Verify: 8.1 passes.
 - [x] 8.3 [REFACTOR] The four commands; coverage 100 % on `plan.ts`.
-- [ ] 8.4 Gates and measure: `npm run build && npm run check:site`; dist diff empty; shortstat of S6 and of S5 + S6.
+- [x] 8.4 Gates and measure: `npm run build && npm run check:site`; dist diff empty; shortstat of S6 and of S5 + S6.
 - [x] 8.5 Negative proofs: use `rise` for the run line label (the table fails); let the profile ignore the clamp (the many-steps case fails); revert each.
 - [x] 8.6 Exit: SX1–SX5. SX4: `packages/core packages/data` empty.
 
@@ -280,23 +280,23 @@ Commit: `feat(web): draw the concrete plans`.
 - [x] 9.7 [GREEN] Record and docs: `concrete-pages.ts` `drawing` group; `AGENTS.md` and `docs.contract` tokens only if the recipe text changed. Verify: 9.4 passes; `npm run typecheck --prefix tooling/site-browser`.
 - [x] 9.8 [REFACTOR] The four commands, with `npm run typecheck --prefix tooling/site-browser`.
 - [x] 9.9 Gates and measure ([CP86], [SQ38]): `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at the PR 3 tip at most 40,836 B (forecast 40,748 B, about 88 B margin), exact figure and margin recorded; concrete entry graph against 49,152 B and page weight against 196,608 B; shortstat of S7. If over the pin, apply the fallbacks in order (note templates reduced to the count mark, then a shorter `.calc-share` rule, then ask the owner); never raise the budget or the pin.
-- [ ] 9.10 **Linux gate (orchestrator-owned).** On the `site-browser` CI job (Linux Chromium) at the PR 3 tip: [BD14] label collision after `document.fonts.ready` and with the fallback font, [BD20], [BD21] on restored `sh=column` and `sh=steps`, `layout.spec.ts`, Lighthouse CLS at most 0.01. The orchestrator records the run id and conclusion here. If Linux shows a measured width above the estimate, the factor `0.56` is raised in S1a's constant by a scoped correction (the one allowed), never by loosening the assertion.
+- [x] 9.10 **Linux gate (orchestrator-owned).** On the `site-browser` CI job (Linux Chromium) at the PR 3 tip: [BD14] label collision after `document.fonts.ready` and with the fallback font, [BD20], [BD21] on restored `sh=column` and `sh=steps`, `layout.spec.ts`, Lighthouse CLS at most 0.01. The orchestrator records the run id and conclusion here. If Linux shows a measured width above the estimate, the factor `0.56` is raised in S1a's constant by a scoped correction (the one allowed), never by loosening the assertion.
 - [x] 9.11 Negative proofs: make `page.ts` return `null` for `steps` (the [BD8] case and the restored-link e2e fail); drop one ES note key (ICW20 fails naming the key); leave the concrete record without the group (the [SQ42] contract fails naming `concrete`); put the box before `.calc-primary` on concrete (the order test fails); revert each.
 - [x] 9.12 Exit: SX1–SX5. SX4: `packages/core packages/data` empty.
 
 ### PR 3 group tasks
 
-- [ ] P3.1 Tip checks: `git log main..HEAD --oneline` shows S5, S6, S7 only; `git diff --stat main -- packages/core packages/data` empty; CI/stryker paths unchanged; record `--shortstat main..HEAD`.
-- [ ] P3.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at the S5, S6, S7 tips (all at most 40,836 B); both entry graphs; e2e count; `site-browser` wall time.
-- [ ] P3.3 Exit: GX1–GX6. PR body: scope (concrete geometry for four shapes, slot declaration, entry hook, 8 keys per locale, e2e group), forecast vs actual (S5 300–370, S6 200–260, S7 300–370), the ES full-length size and margin at the tip, scenario ids (BD4–BD8, BD14, BD15, BD19–BD22, CWC43, CP76, CP77, CP86, ICW20, ICW21, ICW22, SQ38 tip 3, SQ41, SQ42, SQ44), negative-proof evidence, Linux CI run id, rollback (revert PR 3 removes concrete geometry, slot declaration and keys). Chain Context: PR 3 of 3, start state the PR 2 tip, end state both live pages drawn, prior dependencies PR 1 and PR 2, follow-ups (Copy list, Print, shopping list in the share text, drawings for future calculators), out of scope raising any budget. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
+- [x] P3.1 Tip checks: `git log main..HEAD --oneline` shows S5, S6, S7 only; `git diff --stat main -- packages/core packages/data` empty; CI/stryker paths unchanged; record `--shortstat main..HEAD`.
+- [x] P3.2 `npm run verify`; `npm run build && npm run check:site && npm run test:e2e && npm run lighthouse`; ES concrete full-length at the S5, S6, S7 tips (all at most 40,836 B); both entry graphs; e2e count; `site-browser` wall time.
+- [x] P3.3 Exit: GX1–GX6. PR body: scope (concrete geometry for four shapes, slot declaration, entry hook, 8 keys per locale, e2e group), forecast vs actual (S5 300–370, S6 200–260, S7 300–370), the ES full-length size and margin at the tip, scenario ids (BD4–BD8, BD14, BD15, BD19–BD22, CWC43, CP76, CP77, CP86, ICW20, ICW21, ICW22, SQ38 tip 3, SQ41, SQ42, SQ44), negative-proof evidence, Linux CI run id, rollback (revert PR 3 removes concrete geometry, slot declaration and keys). Chain Context: PR 3 of 3, start state the PR 2 tip, end state both live pages drawn, prior dependencies PR 1 and PR 2, follow-ups (Copy list, Print, shopping list in the share text, drawings for future calculators), out of scope raising any budget. **Pushing, CI, the four reviewers, Judgment Day, the PR and the merge belong to the orchestrator, not to apply.**
 
 ---
 
 ## Final — Change-level checks
 
-- [ ] F.1 After PR 3 merges: `git diff --stat <pre-change main> -- packages/core packages/data` is empty; `RELEASED` and `REGISTRY` untouched; no budget or pin raised (SQ7 40,960 B, CP66 40,836 B, 49,152 B, 196,608 B); `end-state.contract.test.ts` unchanged (no new page).
-- [ ] F.2 `apply-progress.md` lists per slice the forecast vs actual lines, scenario ids proven, each negative proof run and reverted, the measured sizes (ES concrete full-length per slice tip, S3 measured trim and the gate verdict, rectangle-area sizes, entry graphs, e2e count) and the Linux CI run ids of 4.8, 6.11, 9.10.
-- [ ] F.3 Archive-ready: delta specs synced to `openspec/specs/` at archive time (blueprint-drawing new; calculator-web-core, calculator-page, site-quality, i18n-catalog); `docs/design/direction.md` carries "Helper line `#B9C6DA`"; `reviewGate` present for the archive report.
+- [x] F.1 After PR 3 merges: `git diff --stat <pre-change main> -- packages/core packages/data` is empty; `RELEASED` and `REGISTRY` untouched; no budget or pin raised (SQ7 40,960 B, CP66 40,836 B, 49,152 B, 196,608 B); `end-state.contract.test.ts` unchanged (no new page).
+- [x] F.2 `apply-progress.md` lists per slice the forecast vs actual lines, scenario ids proven, each negative proof run and reverted, the measured sizes (ES concrete full-length per slice tip, S3 measured trim and the gate verdict, rectangle-area sizes, entry graphs, e2e count) and the Linux CI run ids of 4.8, 6.11, 9.10.
+- [x] F.3 Archive-ready: delta specs synced to `openspec/specs/` at archive time (blueprint-drawing new; calculator-web-core, calculator-page, site-quality, i18n-catalog); `docs/design/direction.md` carries "Helper line `#B9C6DA`"; `reviewGate` present for the archive report.
 
 ---
 
