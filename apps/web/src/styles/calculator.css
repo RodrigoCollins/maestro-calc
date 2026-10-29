@@ -31,9 +31,7 @@
    sets them in the head `<style>` built from its `PAGES[id].reserve` (CP65): a count set there on
    `.calculator` replaces this whole ladder for that property, at every width. */
 .calc-answer {
-  min-height: calc(var(--answer-lines, 5) * var(--text-h3) * var(--leading-body));
-  font-size: var(--text-h3);
-  font-weight: 600;
+  min-height: calc(var(--answer-lines, 4) * var(--text-base) * var(--leading-body));
 }
 
 .calc-notice {
@@ -46,9 +44,9 @@
   }
 }
 
-@media (min-width: 24.125rem) {
+@media (min-width: 23.5rem) {
   :root {
-    --answer-lines: 4;
+    --answer-lines: 3;
   }
 }
 
@@ -58,9 +56,9 @@
   }
 }
 
-@media (min-width: 30.0625rem) {
+@media (min-width: 35.5rem) {
   :root {
-    --answer-lines: 3;
+    --answer-lines: 2;
   }
 }
 
@@ -70,9 +68,9 @@
   }
 }
 
-@media (min-width: 45.625rem) {
+@media (min-width: 64rem) {
   :root {
-    --answer-lines: 2;
+    --answer-lines: 1;
   }
 }
 

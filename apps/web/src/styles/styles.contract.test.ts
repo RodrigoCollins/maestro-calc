@@ -421,12 +421,13 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
 
   // spec: calculator-page › [CP64], design K13: the line counts the sweep measured, per range
   const STEPS = {
+    // blueprint-ui slice 2: the answer is body text now, measured again 320 to 1280 px
     '--answer-lines': {
-      fallback: 5,
+      fallback: 4,
       steps: [
-        [24.125, 4],
-        [30.0625, 3],
-        [45.625, 2],
+        [23.5, 3],
+        [35.5, 2],
+        [64, 1],
       ],
     },
     '--notice-lines': {
@@ -447,7 +448,7 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
 
   // spec: calculator-page › [CP59]-[CP61] the answer and the notice reserve a line count in their own unit
   it.each([
-    ['.calc-answer', '--answer-lines', '--text-h3'],
+    ['.calc-answer', '--answer-lines', '--text-base'],
     ['.calc-notice', '--notice-lines', '--text-base'],
   ] as const)('sizes %s as a line count times its own line unit', (selector, property, size) => {
     expect(rules.get(selector)?.['min-height']).toBe(
