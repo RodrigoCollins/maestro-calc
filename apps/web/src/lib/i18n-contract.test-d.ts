@@ -5,6 +5,7 @@ import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import type { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { calculators } from './calculators.ts';
 
@@ -16,7 +17,8 @@ type EnglishKeys =
   | keyof typeof enConcrete
   | keyof typeof enGravel
   | keyof typeof enMulch
-  | keyof typeof enRectangleArea;
+  | keyof typeof enRectangleArea
+  | keyof typeof enTopsoil;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -61,6 +63,15 @@ type MulchPageKeys =
   | 'calc.mulch.page.answer'
   | 'calc.mulch.page.drawing.note';
 
+/** The page copy of the topsoil calculator (`calc.topsoil.page.*`), exactly: a new key is added here. */
+type TopsoilPageKeys =
+  | 'calc.topsoil.page.volumeYd3'
+  | 'calc.topsoil.page.volumeM3'
+  | 'calc.topsoil.page.shoppingLine'
+  | 'calc.topsoil.page.priceHint'
+  | 'calc.topsoil.page.answer'
+  | 'calc.topsoil.page.drawing.note';
+
 /** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
 type RectangleAreaPageKeys =
   | 'calc.rectangle-area.page.answer'
@@ -94,6 +105,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | GravelPageKeys
       | MulchPageKeys
       | RectangleAreaPageKeys
+      | TopsoilPageKeys
     >();
   });
 
@@ -111,5 +123,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRectangleArea, `calc.rectangle-area.page.${string}`>
     >().toEqualTypeOf<RectangleAreaPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enTopsoil, `calc.topsoil.page.${string}`>
+    >().toEqualTypeOf<TopsoilPageKeys>();
   });
 });
