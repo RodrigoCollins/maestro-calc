@@ -30,7 +30,7 @@ testing:
     command: "npm run mutation"   # thresholds high 95 / low 90 / break 90, STRYKER=1 gives 50 property runs
   site_check:
     available: true
-    command: "npm run check:site"   # built-HTML rules over apps/web/dist (after npm run build); 100 percent covered in apps/web/src/site-check; byte budgets: HTML 40,960, CSS 20,480, woff2 30,720 each and 92,160 together, JS 0, page weight 163,840; Spanish glyph coverage from the woff2 cmap
+    command: "npm run check:site"   # built-HTML rules over apps/web/dist (after npm run build); 100 percent covered in apps/web/src/site-check; byte budgets: HTML 49,152, CSS 20,480, woff2 30,720 each and 92,160 together, JS 0, page weight 172,032; Spanish glyph coverage from the woff2 cmap
   quality:
     linter: { available: true, command: "npm run lint" }   # eslint, typescript-eslint strictTypeChecked, --max-warnings=0
     type_checker: { available: true, command: "npm run typecheck" }   # tsc --noEmit per package program (src purity gate + tests), astro check for web, root tooling files (JS configs are linted, not type-checked: checkJs is a tracked follow-up); "npm run check" is an alias

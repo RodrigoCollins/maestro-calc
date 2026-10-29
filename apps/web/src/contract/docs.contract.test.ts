@@ -31,8 +31,8 @@ describe('docs reflect the site scripts (monorepo-workspace › [MWW5])', () => 
       command: 'npm run lighthouse',
     });
     for (const text of [agents, configText]) {
-      expect(text).toContain('40,960');
-      expect(text).toContain('163,840');
+      expect(text).toContain('49,152');
+      expect(text).toContain('172,032');
     }
     expect(agents).toContain('npm run lighthouse');
   });

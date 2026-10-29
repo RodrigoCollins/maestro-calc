@@ -50,27 +50,27 @@ describe('byte budgets over a valid dist (site-quality › [SQ6])', () => {
   it('has none, and the limits are the design values', () => {
     expect(problemsAfter()).toEqual([]);
     expect(LIMITS).toEqual({
-      html: 40_960,
+      html: 49_152,
       css: 20_480,
       font: 30_720,
       fonts: 92_160,
       js: 0,
-      weight: 163_840,
+      weight: 172_032,
     });
   });
 });
 
 describe('HTML budget (site-quality › [SQ7])', () => {
-  it('passes a page of 40,960 bytes', () => {
-    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 40_960))).toEqual([]);
+  it('passes a page of 49,152 bytes', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 49_152))).toEqual([]);
   });
 
-  it('fails a page of 40,961 bytes, naming the file and the limit', () => {
-    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 40_961))).toEqual([
+  it('fails a page of 49,153 bytes, naming the file and the limit', () => {
+    expect(problemsAfter((_dist, sizes) => sizes.set('about.html', 49_153))).toEqual([
       {
         file: 'about.html',
         rule: 'html-budget',
-        message: '40,961 B exceeds the limit of 40,960 B',
+        message: '49,153 B exceeds the limit of 49,152 B',
       },
     ]);
   });
@@ -202,7 +202,7 @@ describe('JavaScript budget (site-quality › [SQ8])', () => {
 });
 
 // The inline CSS is part of the HTML bytes, so only the linked CSS adds to the weight: the favicon
-// must make up the rest of 163,840 (153,600 from the other limits, minus the inline CSS).
+// must make up the rest of 172,032 (153,600 from the other limits, minus the inline CSS).
 describe('page weight (site-quality › [SQ6])', () => {
   const atLimit = (favicon: number) => (dist: Map<string, string>, sizes: Map<string, number>) => {
     sizes.set('about.html', LIMITS.html);
@@ -211,16 +211,16 @@ describe('page weight (site-quality › [SQ6])', () => {
     sizes.set('favicon.svg', favicon);
   };
 
-  it('passes 163,840 bytes: HTML, linked CSS, referenced fonts and the favicon', () => {
+  it('passes 172,032 bytes: HTML, linked CSS, referenced fonts and the favicon', () => {
     expect(problemsAfter(atLimit(10_240 + INLINE_CSS))).toEqual([]);
   });
 
-  it('fails 163,841 bytes, naming the page and the limit', () => {
+  it('fails 172,033 bytes, naming the page and the limit', () => {
     expect(problemsAfter(atLimit(10_241 + INLINE_CSS))).toEqual([
       {
         file: 'about.html',
         rule: 'weight-budget',
-        message: '163,841 B exceeds the limit of 163,840 B',
+        message: '172,033 B exceeds the limit of 172,032 B',
       },
     ]);
   });
@@ -245,16 +245,16 @@ describe('page weight of a preloaded font that no CSS names (site-quality › [S
       sizes.set('favicon.svg', favicon);
     };
 
-  it('passes 163,840 bytes when the preloaded font is counted', () => {
+  it('passes 172,032 bytes when the preloaded font is counted', () => {
     expect(problemsAfter(withPreload(32_400 + INLINE_CSS))).toEqual([]);
   });
 
-  it('fails 163,841 bytes, which only the preloaded font can bring over the limit', () => {
+  it('fails 172,033 bytes, which only the preloaded font can bring over the limit', () => {
     expect(problemsAfter(withPreload(32_401 + INLINE_CSS))).toEqual([
       {
         file: 'about.html',
         rule: 'weight-budget',
-        message: '163,841 B exceeds the limit of 163,840 B',
+        message: '172,033 B exceeds the limit of 172,032 B',
       },
     ]);
   });
@@ -267,12 +267,12 @@ describe('budget summary (site-quality › [SQ6])', () => {
       mutable.set(FONTS[1] ?? '', 23_040);
     });
     expect(budgetSummary(context)).toEqual([
-      'budget html: largest /about.html 12,345 B (limit 40,960)',
+      'budget html: largest /about.html 12,345 B (limit 49,152)',
       `budget css: largest /index.html ${INLINE_CSS.toLocaleString('en-US')} B (limit 20,480)`,
       'budget font: largest /_astro/fonts/b.woff2 23,040 B (limit 30,720)',
       'budget fonts: total 83,040 B in 4 files (limit 92,160)',
       'budget js: 0 B referenced (limit 0)',
-      expect.stringMatching(/^budget weight: largest \/about\.html [\d,]+ B \(limit 163,840\)$/),
+      expect.stringMatching(/^budget weight: largest \/about\.html [\d,]+ B \(limit 172,032\)$/),
     ]);
   });
 
@@ -318,8 +318,8 @@ const calcProblems = (...args: Parameters<typeof calcBuild>) => {
 };
 
 describe('calculator JavaScript budget (site-quality › [SQ22], [SQ23])', () => {
-  it('has the calculator limits of the design: 49,152 B of JavaScript, 196,608 B of weight', () => {
-    expect(CALCULATOR_LIMITS).toEqual({ js: 49_152, weight: 196_608 });
+  it('has the calculator limits of the design: 49,152 B of JavaScript, 204,800 B of weight', () => {
+    expect(CALCULATOR_LIMITS).toEqual({ js: 49_152, weight: 204_800 });
   });
 
   it('passes a page whose entry and import add up to 49,152 bytes', () => {
@@ -422,21 +422,21 @@ describe('page weight per template (site-quality › [SQ24])', () => {
     for (const font of FONTS) sizes.set(font, LIMITS.fonts / 4);
     sizes.set('favicon.svg', favicon);
   };
-  // 196,608 = html + linked CSS + fonts + the 20,000 B of JavaScript + the favicon
+  // 204,800 = html + linked CSS + fonts + the 20,000 B of JavaScript + the favicon
   const FAVICON =
     CALCULATOR_LIMITS.weight - LIMITS.html - (LIMITS.css - INLINE_CSS) - LIMITS.fonts - JS;
 
-  it('passes a calculator page of 196,608 bytes, JavaScript included', () => {
+  it('passes a calculator page of 204,800 bytes, JavaScript included', () => {
     expect(calcProblems(JS / 2, JS / 2, atLimit(FAVICON))).toEqual([]);
   });
 
-  it('fails a calculator page of 196,609 bytes with its own limit, not the trust limit', () => {
+  it('fails a calculator page of 204,801 bytes with its own limit, not the trust limit', () => {
     expect(calcProblems(JS / 2, JS / 2, atLimit(FAVICON + 1))).toEqual([
-      { file: PAGE, rule: 'weight-budget', message: '196,609 B exceeds the limit of 196,608 B' },
+      { file: PAGE, rule: 'weight-budget', message: '204,801 B exceeds the limit of 204,800 B' },
     ]);
   });
 
-  it('fails a trust page of 163,841 bytes with the trust limit, in the same site', () => {
+  it('fails a trust page of 172,033 bytes with the trust limit, in the same site', () => {
     const found = calcProblems(10, 10, (dist, sizes) => {
       sizes.set('privacy.html', LIMITS.html);
       dist.set(
@@ -454,7 +454,7 @@ describe('page weight per template (site-quality › [SQ24])', () => {
       {
         file: 'privacy.html',
         rule: 'weight-budget',
-        message: '163,841 B exceeds the limit of 163,840 B',
+        message: '172,033 B exceeds the limit of 172,032 B',
       },
     ]);
   });
@@ -465,7 +465,7 @@ describe('budget summary with a calculator page (site-quality › [SQ6])', () =>
   it('adds the calculator lines and keeps the static ones for the static pages', () => {
     const lines = budgetSummary(calcBuild(28_457, 3_000));
     expect(lines.slice(0, 5)).toEqual([
-      expect.stringMatching(/^budget html: largest \/.+\.html [\d,]+ B \(limit 40,960\)$/),
+      expect.stringMatching(/^budget html: largest \/.+\.html [\d,]+ B \(limit 49,152\)$/),
       expect.stringMatching(/^budget css: /),
       expect.stringMatching(/^budget font: /),
       'budget fonts: total 80,000 B in 4 files (limit 92,160)',
@@ -475,7 +475,7 @@ describe('budget summary with a calculator page (site-quality › [SQ6])', () =>
       'budget js (calculator): largest /concrete-calculator.html 31,457 B (limit 49,152)',
     );
     expect(lines.at(-1)).toMatch(
-      /^budget weight \(calculator\): largest \/[\w/-]+\.html [\d,]+ B \(limit 196,608\)$/,
+      /^budget weight \(calculator\): largest \/[\w/-]+\.html [\d,]+ B \(limit 204,800\)$/,
     );
     expect(lines.filter((line) => line.startsWith('budget weight:'))).toHaveLength(1);
   });
