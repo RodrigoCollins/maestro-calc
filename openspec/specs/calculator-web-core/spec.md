@@ -18,8 +18,10 @@ Each calculator MUST have exactly one language-free page module, `apps/web/src/c
 | shopping | a LIST of declared lines (zero, one or many), each naming the material it shows; a line is matched to the engine's shopping line by `materialId`, never by position |
 | cost rows | the rows shown once their price is above zero |
 | primary output | the output key per unit system |
+| drawing | pure geometry (`blueprint-drawing`): a function from a moment (valid state, result, unit system) to the plan (outline, dimension lines, label values), or to no plan for a state with no drawing yet; no DOM and no message text |
 
 The result rows are not a slot: they are derived from the display hints of the outputs, with no module code. The controller, the mount and the view MUST work for a module that supplies none of the slots. A slot's code MUST live in its own importable module, so a module that omits a slot imports none of that slot's code.
+(Previously: six slots; the `drawing` row did not exist.)
 
 #### Scenario: [CWC1] Minimal module
 - GIVEN a module with only `id` and the `rectangle-area` definition
@@ -258,3 +260,46 @@ Adding a calculator MUST need only: its core definition, its catalogs, its conte
 - GIVEN the entry contracts (entry graph, client entry, client hygiene, client graph)
 - WHEN they run
 - THEN each covers one entry per id of `CALCULATOR_PAGES`, the forbidden "another calculator" pattern is derived from the entry's own id (another calculator's core directory and another calculator's web folder `apps/web/src/calculator/<other id>/`), and a new entry is covered without a test edit
+
+### Requirement: The drawing slot and its injected writer
+
+A page module that declares the `drawing` slot MUST put the geometry in its own module under `apps/web/src/calculator/slots/` (generic helpers) or its calculator folder (shape geometry). The DOM writer MUST live in its own client module, MUST NOT be imported by `mount.ts` or by any generic module, and MUST be injected into the mount only by the entry of a page that declares the slot. The mount takes an optional `draw` hook; without it the mount runs no drawing code. The mount looks up the box with a list lookup that may be empty (`findAll`), never a throwing one, so the slot-free proof's static lookup check holds. Every moment the controller reports as valid is passed to the geometry and the result to the writer; an invalid state passes nothing, so the drawing keeps the last plan.
+
+#### Scenario: [CWC41] Geometry is requested per valid moment
+- GIVEN the `rectangle-area` controller with a spy writer injected
+- WHEN the controller starts, then `length` becomes `20 ft`, then `abc`, then `15 ft`
+- THEN the writer receives plans for the default moment, `20 ft` and `15 ft` in that order, and none for `abc` (a unit test of the controller; the web unit suite runs in `node`, with no DOM)
+
+#### Scenario: [CWC42] Writer is injected, not imported
+- GIVEN the sources of `apps/web/src/client/mount.ts` and every generic file outside the entries
+- WHEN the import graph is walked
+- THEN none reaches the drawing writer module, and each entry of a page that declares the slot passes it as the `draw` hook (a contract test)
+
+#### Scenario: [CWC43] Pages without the slot ship no drawing code
+- GIVEN the entry of every page of `CALCULATOR_PAGES` and the test-only slot-free proof entry
+- WHEN the entry-graph contract walks the static graph of each
+- THEN a graph reaches the drawing writer, the geometry and the drawing slot only when that page's module declares the `drawing` slot, and the slot-free proof entry reaches none of them (a contract test; no test edit for a new calculator)
+
+#### Scenario: [CWC44] Mount without a draw hook
+- GIVEN the source of `apps/web/src/client/mount.ts` and the slot-free proof page markup
+- WHEN the static lookup proof of `slot-free-proof.contract.test.ts` collects every throwing lookup (`find(`, `findAs(`) of the mount
+- THEN none names `[data-drawing]` (the box is looked up with `findAll`), every throwing selector resolves on the slot-free markup, and a seeded `find(root, '[data-drawing]')` fails the proof (a contract test; the no-slot runtime branches stay covered by the browser record, as in the Rectangle-area headless proof)
+
+#### Scenario: [CWC45] Slot-free markup has no drawing hook
+- GIVEN the test-only slot-free page module rendered through the real `CalculatorBody` with the Astro container
+- WHEN the markup is read
+- THEN no `data-drawing` element and no drawing box CSS is present (a unit test; extends [CWC33]); the share anchor is generic and present on every page ([CWC47])
+
+### Requirement: The share hook is a list lookup
+
+The generic mount MUST look up the share anchor with a list lookup that may be empty (`findAll(root, '[data-share]')`, never a throwing `find(`), reveal it with the same step that reveals the copy button, and rewrite its `href` with the share URL built from the controller's copy address on every render (`calculator-page`, share requirement). It rewrites with `setAttribute` only. A page markup with no share anchor leaves the mount unchanged.
+
+#### Scenario: [CWC46] href follows the state
+- GIVEN `shareHref(env, state, base)` with the base `https://wa.me/` (the value the mount reads from `data-share`), an environment at origin `https://example.test` and the concrete state after `waste` is set to `15`
+- WHEN it is called
+- THEN it returns `https://wa.me/?text=` followed by the percent-encoded share text, one space and `https://example.test/concrete-calculator?v=1&ws=15` (a unit test of `shareHref`; the mounted anchor's `href` is proved in the browser by `calculator-page` [CP78])
+
+#### Scenario: [CWC47] Missing anchor is not an error
+- GIVEN the source of `apps/web/src/client/mount.ts`
+- WHEN the static lookup proof of `slot-free-proof.contract.test.ts` collects every throwing lookup of the mount
+- THEN none names `[data-share]`: the anchor is looked up with `findAll`, so markup without it runs no share code (a contract test: the proof asserts that the mount's throwing selectors exclude `[data-share]`; the slot-free markup itself carries the generic anchor, so the markup check alone would not catch a throwing lookup)
