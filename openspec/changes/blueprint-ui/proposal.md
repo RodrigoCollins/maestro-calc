@@ -68,3 +68,11 @@ Rodrigo said "seguimos" to the corners question, so the implementer chose the mo
 - Inputs: 56 px, `--radius-control`, condensed 600 figures at the H3 size, edge `--color-control-line` `#7A848C` (3.8:1 on white, WCAG 1.4.11; the mockup's `#C3CBC7` is 1.7:1).
 - Deviation: the unit stays on the label row, not inside the input. The input value carries its own unit ("12 ft", mixed input like 5′ 3 1/2″ is accepted), so a suffix would repeat it.
 - Next (3b): two fields per row from 22rem, inline −/+ stepper, smaller field reserve.
+
+## Slice 3b — two fields per row and inline stepper (branch `feat/blueprint-ui-form-grid`)
+
+- From 22rem the form is a two-column grid. A length field (the fields with a unit hint) and every field a choice drives take one column; groups, the waste field, prices and the copy area span the row. No markup or catalog change.
+- A half field stacks a 15 px label in a row of two fixed lines (bottom-aligned, so the two inputs of a row line up), the input, and the unit below it. Fixed rows keep heights independent of the font (the lesson of 3a). `--half-row` 8.5rem; the choice area reserves `round(up, rows / 2)` half rows.
+- The waste stepper is "−" and "+" beside the input (accessible names unchanged: "Less extra", "More extra"), in the focus order input, less, more. The stepper moved into `CalculatorField`; the separate stepper row and its 44 px reserve are gone.
+- New e2e guards: every half-field label of every option fits two lines with the web font at every width; 351/352 px join `WIDTHS`.
+- `verify` 0, e2e 688 + 4 passed.

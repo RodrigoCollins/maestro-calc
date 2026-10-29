@@ -8,9 +8,9 @@ import { answer, notRunning, open } from './locators.ts';
 // and of every `reserve` of the page table (the first width where a rule applies and the one before
 // it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
 const WIDTHS = [
-  320, 327, 328, 343, 344, 355, 356, 375, 376, 383, 384, 385, 386, 387, 390, 391, 392, 463, 464,
-  471, 472, 479, 480, 481, 487, 488, 567, 568, 583, 584, 599, 600, 640, 666, 667, 711, 712, 729,
-  730, 767, 768, 879, 880, 1023, 1024, 1280,
+  320, 327, 328, 343, 344, 351, 352, 355, 356, 375, 376, 383, 384, 385, 386, 387, 390, 391, 392,
+  463, 464, 471, 472, 479, 480, 481, 487, 488, 567, 568, 583, 584, 599, 600, 640, 666, 667, 711,
+  712, 729, 730, 767, 768, 879, 880, 1023, 1024, 1280,
 ] as const;
 
 type Block = 'answer' | 'notice' | 'copy';
@@ -255,6 +255,37 @@ for (const calculator of calculatorPages) {
         expect(withNotice).toBe(before);
       });
     }
+
+    // A half field of the two-column form gives its label a row of two fixed lines, so with the web
+    // font every label, of every option a choice shows, must fit in two lines at every width.
+    test('fits every half-field label in its two lines at every width', async ({ page }) => {
+      await open(page, calculator);
+      await page.evaluate(() => document.fonts.ready);
+      for (const width of WIDTHS) {
+        await page.setViewportSize({ width, height: 844 });
+        const tall = await page.evaluate(() => {
+          const fields = [
+            ...document.querySelectorAll<HTMLElement>('.calc-choice-area > .calc-field'),
+          ];
+          const hidden = fields.filter((field) => field.hidden);
+          for (const field of hidden) field.hidden = false;
+          const found = [
+            ...fields,
+            ...document.querySelectorAll<HTMLElement>('.calc-form > .calc-field:has(> small)'),
+          ].flatMap((field) => {
+            const label = field.querySelector('label');
+            if (label === null) return [];
+            const line = Number.parseFloat(getComputedStyle(label).lineHeight);
+            return label.getBoundingClientRect().height > 2 * line + 0.5
+              ? [label.textContent.trim()]
+              : [];
+          });
+          for (const field of hidden) field.hidden = true;
+          return found;
+        });
+        expect(tall, `${String(width)} px`).toEqual([]);
+      }
+    });
 
     // A segment label never wraps (its track keeps one height whatever the font), so with the web
     // font it must fit its button at every width: a clipped label is a step set too narrow.

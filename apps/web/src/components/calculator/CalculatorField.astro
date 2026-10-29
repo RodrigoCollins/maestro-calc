@@ -1,12 +1,14 @@
 ---
 import { helpId, hintId, inputId } from '../../calculator/ids.ts';
-import type { Field } from './model.ts';
+import type { Field, FieldItemView } from './model.ts';
 
 interface Props {
   field: Field;
   hidden?: boolean;
+  /** The two buttons that step the value, beside the input; hidden until the script runs. */
+  stepper?: FieldItemView['stepper'];
 }
-const { field, hidden = false } = Astro.props;
+const { field, hidden = false, stepper } = Astro.props;
 const id = inputId(field.key);
 const { hint, help } = field;
 // The input is described by its unit hint and its help text; a message for an error uses the same
@@ -30,6 +32,16 @@ const describedBy = [
     aria-describedby={describedBy === '' ? undefined : describedBy}
     disabled
   />
+  {stepper !== undefined && (
+    <div class="calc-steppers" data-step={stepper.key}>
+      <button type="button" value="less" aria-label={stepper.less} hidden disabled>
+        −
+      </button>
+      <button type="button" value="more" aria-label={stepper.more} hidden disabled>
+        +
+      </button>
+    </div>
+  )}
   {hint !== undefined && <small id={hintId(field.key)}>{hint}</small>}
   {help !== undefined && (
     <p class="calc-help" id={helpId(field.key)}>

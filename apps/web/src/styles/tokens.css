@@ -41,6 +41,9 @@
   --radius-card: 1rem;
   --radius-control: 0.75rem;
   --radius-segment: 0.5625rem;
+  /* A half field of the two-column form: two small label lines, a gap, the 56 px input, a gap and
+     one small unit line, rounded up. */
+  --half-row: 8.5rem;
   --measure: 42rem;
   --page-width: 64rem;
 }
