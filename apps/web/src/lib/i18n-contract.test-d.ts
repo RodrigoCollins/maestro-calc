@@ -63,6 +63,15 @@ type MulchPageKeys =
   | 'calc.mulch.page.answer'
   | 'calc.mulch.page.drawing.note';
 
+/** The page copy of the topsoil calculator (`calc.topsoil.page.*`), exactly: a new key is added here. */
+type TopsoilPageKeys =
+  | 'calc.topsoil.page.volumeYd3'
+  | 'calc.topsoil.page.volumeM3'
+  | 'calc.topsoil.page.shoppingLine'
+  | 'calc.topsoil.page.priceHint'
+  | 'calc.topsoil.page.answer'
+  | 'calc.topsoil.page.drawing.note';
+
 /** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
 type RectangleAreaPageKeys =
   | 'calc.rectangle-area.page.answer'
@@ -96,6 +105,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | GravelPageKeys
       | MulchPageKeys
       | RectangleAreaPageKeys
+      | TopsoilPageKeys
     >();
   });
 
@@ -113,5 +123,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRectangleArea, `calc.rectangle-area.page.${string}`>
     >().toEqualTypeOf<RectangleAreaPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enTopsoil, `calc.topsoil.page.${string}`>
+    >().toEqualTypeOf<TopsoilPageKeys>();
   });
 });

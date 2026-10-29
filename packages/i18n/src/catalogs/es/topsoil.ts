@@ -20,4 +20,11 @@ export const esTopsoil = {
   'calc.topsoil.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
   'calc.topsoil.outputs.bagCost': 'Costo en bolsas',
   'calc.topsoil.outputs.bulkCost': 'Costo a granel',
+  'calc.topsoil.page.volumeYd3': '{value} yardas cúbicas',
+  'calc.topsoil.page.volumeM3': '{value} metros cúbicos',
+  'calc.topsoil.page.shoppingLine': 'Tierra, bolsas de {size} cu ft',
+  'calc.topsoil.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.topsoil.page.answer':
+    'Un área de {length} por {width}, de {depth} de profundidad, lleva {volume} de tierra: {bags} bolsas de {size} cu ft.',
+  'calc.topsoil.page.drawing.note': '{depth} de profundidad',
 } as const satisfies CatalogOf<typeof enTopsoil>;
