@@ -180,16 +180,16 @@
   min-height: var(--target-size);
 }
 
-/* The copy button, the share link on a row of its own and the status line (CP84). */
+/* The copy button, the full-width share link on a row of its own and the status line (CP84). */
 .calc-copy {
-  min-height: 8rem;
+  min-height: 9rem;
 }
 
 .calc-share {
   display: flex;
-  width: fit-content;
   align-items: center;
-  min-height: var(--target-size);
+  justify-content: center;
+  min-height: 3.5rem;
   margin-top: var(--space-2);
   padding: 0 var(--space-3);
   background: var(--color-whatsapp);
