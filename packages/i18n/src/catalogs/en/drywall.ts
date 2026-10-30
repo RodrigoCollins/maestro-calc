@@ -1,0 +1,22 @@
+/** Copy of the `drywall` calculator, English: the keys core derives from its descriptors and the page copy. */
+export const enDrywall = {
+  'calc.drywall.title': 'Drywall Calculator',
+  'calc.drywall.inputs.length': 'Room length',
+  'calc.drywall.inputs.width': 'Room width',
+  'calc.drywall.inputs.height': 'Wall height',
+  'calc.drywall.inputs.doors': 'Doors',
+  'calc.drywall.inputs.windows': 'Windows',
+  'calc.drywall.inputs.surfaces': 'Cover',
+  'calc.drywall.inputs.sheet': 'Sheet size',
+  'calc.drywall.inputs.waste': 'Extra (%)',
+  'calc.drywall.inputs.sheetPrice': 'Price per sheet ($)',
+  'calc.drywall.options.surfaces.walls-ceiling': 'Walls and ceiling',
+  'calc.drywall.options.surfaces.walls': 'Walls only',
+  'calc.drywall.options.sheet.4x8': '4 × 8 ft',
+  'calc.drywall.options.sheet.4x12': '4 × 12 ft',
+  'calc.drywall.outputs.areaFt2': 'Area to cover (square feet)',
+  'calc.drywall.outputs.areaM2': 'Area to cover (square meters)',
+  'calc.drywall.outputs.compound': 'Joint compound (gallons)',
+  'calc.drywall.outputs.tape': 'Joint tape (feet)',
+  'calc.drywall.outputs.cost': 'Drywall cost',
+} as const;

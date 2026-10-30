@@ -9,6 +9,7 @@
     "./calculators/*": "./src/calculators/*/index.ts",
     "./testing/collect-strings": "./src/__testing__/collect-strings.ts",
     "./testing/concrete-yields": "./src/__testing__/concrete-yields.ts",
+    "./testing/drywall-yields": "./src/__testing__/drywall-yields.ts",
     "./testing/gravel-yields": "./src/__testing__/gravel-yields.ts",
     "./testing/language-free": "./src/__testing__/language-free.ts",
     "./testing/paint-yields": "./src/__testing__/paint-yields.ts",

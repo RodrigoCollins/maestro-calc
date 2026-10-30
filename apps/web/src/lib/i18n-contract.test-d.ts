@@ -2,6 +2,7 @@ import type { AllErrorCode, messageKeysOf, MessageKeysOf } from '@maestro-calc/c
 import type { concreteMix } from '@maestro-calc/data';
 import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
@@ -20,7 +21,8 @@ type EnglishKeys =
   | keyof typeof enMulch
   | keyof typeof enRectangleArea
   | keyof typeof enTopsoil
-  | keyof typeof enPaint;
+  | keyof typeof enPaint
+  | keyof typeof enDrywall;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =

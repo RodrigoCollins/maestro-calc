@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { CONCRETE_YIELDS } from '../__testing__/concrete-yields.ts';
+import { DRYWALL_FINISHING } from '../__testing__/drywall-yields.ts';
 import { GRAVEL_DENSITIES } from '../__testing__/gravel-yields.ts';
 import { PAINT_COVERAGE } from '../__testing__/paint-yields.ts';
 import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
+import { createDrywall } from './drywall/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
 import { createPaint } from './paint/index.ts';
@@ -19,6 +21,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   mulch,
   topsoil,
   createPaint(PAINT_COVERAGE),
+  createDrywall(DRYWALL_FINISHING),
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -138,6 +141,24 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['wn', 'windows', 'count', '2'],
         ['c', 'coats', 'count', '2'],
         ['gp', 'gallonPrice', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-drywall › [DW8] the nine inputs of drywall, appended in the order of the spec
+  it('records the 9 inputs of drywall in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'drywall');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '144'],
+        ['w', 'width', 'length', '144'],
+        ['h', 'height', 'length', '96'],
+        ['dr', 'doors', 'count', '1'],
+        ['wn', 'windows', 'count', '2'],
+        ['sf', 'surfaces', 'select', 'walls-ceiling'],
+        ['sz', 'sheet', 'select', '4x8'],
+        ['ws', 'waste', 'percent', '10'],
+        ['sp', 'sheetPrice', 'money', '0'],
       ],
     );
   });
