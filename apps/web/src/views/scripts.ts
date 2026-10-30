@@ -7,6 +7,7 @@ import PaintScript from '../islands/PaintScript.astro';
 import RectangleAreaScript from '../islands/RectangleAreaScript.astro';
 import RoofPitchScript from '../islands/RoofPitchScript.astro';
 import RoofingScript from '../islands/RoofingScript.astro';
+import FeetInchesScript from '../islands/FeetInchesScript.astro';
 import TopsoilScript from '../islands/TopsoilScript.astro';
 import type { CalculatorPageId } from '../routing/templates.ts';
 
@@ -24,4 +25,5 @@ export const SCRIPTS = {
   drywall: DrywallScript,
   'roof-pitch': RoofPitchScript,
   roofing: RoofingScript,
+  'feet-inches': FeetInchesScript,
 } as const satisfies Record<CalculatorPageId, AstroComponentFactory>;

@@ -465,4 +465,32 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=720&w=480&p=8&ws=15', figures: ['28.84', '2,884.44', '100', '4'] },
     ],
   },
+  'feet-inches': {
+    anchor: { en: 'feet-and-inches', es: 'pies-y-pulgadas' },
+    pageLink: {
+      en: '[feet and inches calculator](/feet-and-inches-calculator)',
+      es: '[calculadora de pies y pulgadas](/es/calculadora-de-pies-y-pulgadas)',
+    },
+    formulas: {
+      en: ['first + second', 'first − second', 'first × number', 'first ÷ number'],
+      es: ['primera + segunda', 'primera − segunda', 'primera × número', 'primera ÷ número'],
+    },
+    honesty: {
+      en: [/nearest 1\/16 of an inch/, /exactly 0\.0254 meters/],
+      es: [/1\/16 de pulgada más cercano/, /exactamente 0\.0254 metros/],
+    },
+    columns: ['result', 'resultIn', 'resultM'],
+    figuresOf: (shown) => [
+      figure(shown, 'result'),
+      figure(shown, 'resultIn'),
+      figure(shown, 'resultM'),
+    ],
+    published: [
+      { query: '', figures: ['16 ft 2 1/4 in', '194.25', '4.934'] },
+      { query: '?v=1&o=subtract', figures: ['8 ft 9 3/4 in', '105.75', '2.686'] },
+      { query: '?v=1&o=subtract&a=120&b=150', figures: ['2 ft 6 in', '30.00', '0.762'] },
+      { query: '?v=1&o=multiply', figures: ['25 ft', '300.00', '7.620'] },
+      { query: '?v=1&o=divide&n=7', figures: ['1 ft 9 7/16 in', '21.43', '0.544'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

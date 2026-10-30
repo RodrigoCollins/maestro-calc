@@ -222,16 +222,25 @@ describe('the output check at creation (calculator-web-core › [CWC3])', () => 
     });
   });
 
-  it.each([
-    ['a fraction hint on a secondary output', { span: decimal, edge: fraction }, 'edge'],
-    ['a fraction hint on the primary output', { span: fraction, edge: decimal }, 'span'],
-    ['a primary output with no hint', { edge: decimal }, 'span'],
-  ] as const)('throws OUTPUT_HINT at creation for %s', (_what, hints, at) => {
-    const module = definePage({ calculator: hintedCalculator(hints) });
-    const error = pageModuleErrorOf(() => controllerOf(module));
-    expect(error.code).toBe('OUTPUT_HINT');
-    expect(error.cause).toEqual({ id: 'hinted-fixture', at });
+  // a length output may show feet, inches and a fraction (calc-feet-inches › [FI5])
+  it('creates a controller when a length output has a fraction hint', () => {
+    for (const hints of [
+      { span: decimal, edge: fraction },
+      { span: fraction, edge: decimal },
+    ] as const) {
+      expect(() => controllerOf(definePage({ calculator: hintedCalculator(hints) }))).not.toThrow();
+    }
   });
+
+  it.each([['a primary output with no hint', { edge: decimal }, 'span']] as const)(
+    'throws OUTPUT_HINT at creation for %s',
+    (_what, hints, at) => {
+      const module = definePage({ calculator: hintedCalculator(hints) });
+      const error = pageModuleErrorOf(() => controllerOf(module));
+      expect(error.code).toBe('OUTPUT_HINT');
+      expect(error.cause).toEqual({ id: 'hinted-fixture', at });
+    },
+  );
 
   it('checks the primary of each unit system', () => {
     const calculator = hintedCalculator({ span: decimal, edge: decimal });

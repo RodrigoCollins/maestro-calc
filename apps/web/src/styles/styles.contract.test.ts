@@ -587,8 +587,8 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
     ],
     [
       'an edge missing from WIDTHS',
-      reserveCss({ answer: [5, [31, 4]] }),
-      ['(min-width:31rem): no width 495', '(min-width:31rem): no width 496'],
+      reserveCss({ answer: [5, [33, 4]] }),
+      ['(min-width:33rem): no width 527', '(min-width:33rem): no width 528'],
     ],
     // spec: calculator-page › [CP64] a condition with no length is no breakpoint the e2e widths can hold
     [

@@ -73,6 +73,7 @@ const site = {
     drywall: [USG_COMPOUND_URL, USG_TAPE_URL, NIST_URL],
     'roof-pitch': [IRC_URL, NIST_URL],
     roofing: [GAF_SHINGLES_URL, GAF_UNDERLAYMENT_URL, IRC_URL, NIST_URL],
+    'feet-inches': [NIST_URL],
   },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));

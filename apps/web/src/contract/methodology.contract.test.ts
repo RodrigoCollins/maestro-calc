@@ -71,8 +71,8 @@ describe('methodology: one section per row (trust-pages › [TP22], [TP26], [TP9
 
   // spec: trust-pages › [TP25] the methodology names no unpublished calculator
   it.each(LOCALES)('names no calculator other than the published ones in %s', (locale) => {
-    // the feet-inch-fraction calculator of PLAN §4.1, the one MVP calculator not published yet
-    const others = ['fraction calculator', 'calculadora de fracciones'];
+    // the stair calculator of PLAN §4.1 v2, not published yet
+    const others = ['stair calculator', 'calculadora de escaleras'];
     expect(others.filter((word) => hasWord(bodyOf(locale), word))).toEqual([]);
   });
 

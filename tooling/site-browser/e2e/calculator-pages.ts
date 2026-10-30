@@ -9,6 +9,7 @@ import { PAINT } from './paint-pages.ts';
 import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
 import { ROOF_PITCH } from './roof-pitch-pages.ts';
 import { ROOFING } from './roofing-pages.ts';
+import { FEET_INCHES } from './feet-inches-pages.ts';
 import { TOPSOIL } from './topsoil-pages.ts';
 
 export type E2eLanguage = 'en' | 'es';
@@ -291,6 +292,7 @@ export const E2E = {
   drywall: DRYWALL,
   'roof-pitch': ROOF_PITCH,
   roofing: ROOFING,
+  'feet-inches': FEET_INCHES,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */
