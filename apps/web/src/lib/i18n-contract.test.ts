@@ -71,6 +71,8 @@ const conventionKeys = (calculator: (typeof calculators)[number]): string[] => {
         : [],
     ),
     ...calculator.outputs.map(({ key }) => `${prefix}.outputs.${key}`),
+    // the warning codes come last, as core derives them (roof pitch is the first to declare any)
+    ...calculator.warnings.map((code) => `${prefix}.warnings.${code}`),
   ];
 };
 const ERROR_KEYS = [

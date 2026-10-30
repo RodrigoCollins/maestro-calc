@@ -111,9 +111,10 @@ export interface CostSlot<C extends AnyCalculator> {
   visible(valid: StateOf<C>): Readonly<Partial<Record<OutputKey<C>, boolean>>>;
 }
 export interface AnswerSlot<C extends AnyCalculator> {
-  /** `answer.<option>` per option of `by`, else `answer`. */
+  /** `answer.<option>` per option of `by`, `answer.<case>` per declared case, else `answer`. */
   readonly templates: readonly string[];
-  template(valid: StateOf<C>): string;
+  /** The template of a moment: by its select, by the case its result falls in, or the one. */
+  template(moment: Ready<C>): string;
   values(moment: Ready<C>, primary: string): Readonly<Record<string, string>>;
 }
 
@@ -151,6 +152,7 @@ export type PageModuleCode =
   | 'COST_KINDS'
   | 'SHOPPING_LINES'
   | 'ANSWER_SELECT'
+  | 'ANSWER_CASE'
   | 'OUTPUT_HINT'
   | 'FORM_ORDER'
   | 'PAGE_KEY';

@@ -340,7 +340,7 @@ export const pageViewOf = (
       ? {}
       : {
           answer: fillMessage(
-            text(pageKey(id, answer.template(moment.valid))),
+            text(pageKey(id, answer.template(moment))),
             answer.values(moment, `${before}${value}${after}`),
           ),
         }),

@@ -48,7 +48,7 @@ describe('end state of the drywall go-live (site-routing-i18n › [SR1], [SR19],
       'paint',
       'drywall',
     ]);
-    expect(PAGELESS).toEqual([]);
+    expect(PAGELESS).toEqual(['roof-pitch']);
   });
 
   // spec: i18n-catalog › [ICW1]
