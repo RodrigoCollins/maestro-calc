@@ -5,6 +5,7 @@ import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import type { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import type { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { calculators } from './calculators.ts';
@@ -18,7 +19,8 @@ type EnglishKeys =
   | keyof typeof enGravel
   | keyof typeof enMulch
   | keyof typeof enRectangleArea
-  | keyof typeof enTopsoil;
+  | keyof typeof enTopsoil
+  | keyof typeof enPaint;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =

@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { CONCRETE_YIELDS } from '../__testing__/concrete-yields.ts';
 import { GRAVEL_DENSITIES } from '../__testing__/gravel-yields.ts';
+import { PAINT_COVERAGE } from '../__testing__/paint-yields.ts';
 import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
+import { createPaint } from './paint/index.ts';
 import { topsoil } from './topsoil/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
@@ -16,6 +18,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   createGravel(GRAVEL_DENSITIES),
   mulch,
   topsoil,
+  createPaint(PAINT_COVERAGE),
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -119,6 +122,22 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['bg', 'bag', 'select', '0-75'],
         ['bp', 'bagPrice', 'money', '0'],
         ['yp', 'yardPrice', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-paint › [PA7] the seven inputs of paint, appended in the order of the spec
+  it('records the 7 inputs of paint in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'paint');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '144'],
+        ['w', 'width', 'length', '144'],
+        ['h', 'height', 'length', '96'],
+        ['dr', 'doors', 'count', '1'],
+        ['wn', 'windows', 'count', '2'],
+        ['c', 'coats', 'count', '2'],
+        ['gp', 'gallonPrice', 'money', '0'],
       ],
     );
   });

@@ -3,6 +3,7 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { concrete } from './concrete.ts';
 import { gravel } from './gravel.ts';
+import { paint } from './paint.ts';
 
 /**
  * Every calculator the site lists. Each one is imported through its own subpath of
@@ -10,4 +11,4 @@ import { gravel } from './gravel.ts';
  * list: labels in every catalog (`i18n-contract.test.ts`), the released URL snapshot
  * (`released.contract.test.ts`) and language-free results (`language-free.contract.test.ts`).
  */
-export const calculators = [rectangleArea, concrete, gravel, mulch, topsoil] as const;
+export const calculators = [rectangleArea, concrete, gravel, mulch, topsoil, paint] as const;
