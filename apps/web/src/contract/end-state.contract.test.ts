@@ -50,7 +50,7 @@ describe('end state of the roof pitch go-live (site-routing-i18n › [SR1], [SR1
       'drywall',
       'roof-pitch',
     ]);
-    expect(PAGELESS).toEqual([]);
+    expect(PAGELESS).toEqual(['roofing']);
   });
 
   // spec: i18n-catalog › [ICW1]

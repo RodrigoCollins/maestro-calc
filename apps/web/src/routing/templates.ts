@@ -24,7 +24,7 @@ export const isCalculatorPage = (id: string): id is CalculatorPageId =>
   CALCULATOR_PAGES.some((page) => page === id);
 
 /** Registry calculators without a page (site-routing-i18n › Calculator pages in the route table). */
-export const PAGELESS: readonly string[] = [];
+export const PAGELESS: readonly string[] = ['roofing'];
 
 /** The page templates: `check:site` and the browser lists derive their rules from them. */
 export type Template = 'home' | 'trust' | 'calculator' | 'notFound';

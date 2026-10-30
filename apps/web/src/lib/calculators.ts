@@ -6,6 +6,7 @@ import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
+import { roofing } from './roofing.ts';
 
 /**
  * Every calculator the site lists. Each one is imported through its own subpath of
@@ -22,4 +23,5 @@ export const calculators = [
   paint,
   drywall,
   roofPitch,
+  roofing,
 ] as const;

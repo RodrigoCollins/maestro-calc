@@ -226,3 +226,7 @@ Formula source: Euclidean measures (area = length x width; volume = area x heigh
 ### Requirement: Angle dimension (roof-pitch-calculator, 2026-10-30)
 
 The angle SHALL be a base dimension of its own, exponents (length 0, mass 0, angle 1), with the degree `deg` (factor 1) as its only unit; a quotient of two equal dimensions stays unnamed. The catalog holds 31 units.
+
+### Requirement: Roofing square (roofing-calculator, 2026-10-30)
+
+The area units SHALL include the roofing square `sq`, exactly 100 ft² (14,400 in²), the unit shingles are sold and quoted by. The catalog holds 32 units.

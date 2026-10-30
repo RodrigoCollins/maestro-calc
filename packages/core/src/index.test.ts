@@ -82,6 +82,7 @@ describe('core public API (design: Public API)', () => {
       'scale',
       'scaleMoney',
       'sign',
+      'sq',
       'squareRoot',
       'sub',
       'subMoney',

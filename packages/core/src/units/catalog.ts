@@ -42,6 +42,12 @@ export const mm2 = /* @__PURE__ */ squared(mm, 'mm2');
 export const cm2 = /* @__PURE__ */ squared(cm, 'cm2');
 /** The square metre. */
 export const m2 = /* @__PURE__ */ squared(m, 'm2');
+/** The roofing square, 100 ft², the unit shingles are sold and quoted by. */
+export const sq = /* @__PURE__ */ defineUnit(
+  'area',
+  'sq',
+  /* @__PURE__ */ ft2.factor.mul(/* @__PURE__ */ Rational.of(100)),
+);
 
 /** The cubic inch, the canonical volume unit. */
 export const in3 = /* @__PURE__ */ cubed(inch, 'in3');
@@ -113,7 +119,7 @@ export const deg = /* @__PURE__ */ defineUnit('angle', 'deg', /* @__PURE__ */ Ra
 export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } =
   /* @__PURE__ */ Object.freeze({
     length: /* @__PURE__ */ Object.freeze([inch, ft, yd, mm, cm, m]),
-    area: /* @__PURE__ */ Object.freeze([in2, ft2, yd2, mm2, cm2, m2]),
+    area: /* @__PURE__ */ Object.freeze([in2, ft2, yd2, mm2, cm2, m2, sq]),
     volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3, gal, liter]),
     mass: /* @__PURE__ */ Object.freeze([lb, oz, ton, kg, tonne]),
     density: /* @__PURE__ */ Object.freeze([lbIn3, lbFt3, lbYd3, tonYd3, kgM3]),

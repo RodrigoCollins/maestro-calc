@@ -4,6 +4,7 @@ import { DRYWALL_FINISHING } from '../__testing__/drywall-yields.ts';
 import { GRAVEL_DENSITIES } from '../__testing__/gravel-yields.ts';
 import { PAINT_COVERAGE } from '../__testing__/paint-yields.ts';
 import { RELEASED } from '../__testing__/released-snapshot.ts';
+import { ROOFING_COVERAGE } from '../__testing__/roofing-yields.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createDrywall } from './drywall/index.ts';
@@ -11,6 +12,7 @@ import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
 import { createPaint } from './paint/index.ts';
 import { roofPitch } from './roof-pitch/index.ts';
+import { createRoofing } from './roofing/index.ts';
 import { topsoil } from './topsoil/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
@@ -24,6 +26,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   createPaint(PAINT_COVERAGE),
   createDrywall(DRYWALL_FINISHING),
   roofPitch,
+  createRoofing(ROOFING_COVERAGE),
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -161,6 +164,21 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['sz', 'sheet', 'select', '4x8'],
         ['ws', 'waste', 'percent', '10'],
         ['sp', 'sheetPrice', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-roofing › [RF8] the six inputs of roofing, appended in the order of the spec
+  it('records the 6 inputs of roofing in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'roofing');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '480'],
+        ['w', 'width', 'length', '360'],
+        ['p', 'pitch', 'count', '6'],
+        ['ws', 'waste', 'percent', '10'],
+        ['bp', 'bundlePrice', 'money', '0'],
+        ['rp', 'rollPrice', 'money', '0'],
       ],
     );
   });
