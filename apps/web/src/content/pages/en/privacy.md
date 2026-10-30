@@ -2,7 +2,7 @@
 id: privacy
 locale: en
 updated: 2026-10-29
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Privacy

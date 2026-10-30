@@ -19,7 +19,7 @@ The owner (2026-10-29): wire Google Tag Manager (container `GTM-MD8H6L5S`, creat
 - GA4 account "Maestro Calc" (Google account of the GTM container), property `maestrocalc.com` (time zone Buenos Aires, USD), terms accepted for Argentina; every data sharing option off; Google Signals not enabled.
 - Web stream `https://maestrocalc.com`, measurement id **G-2N1E2VTEVN**. Enhanced measurement: page loads on; **page changes from browser history events off**; site search off; form interactions off; scrolls, outbound clicks, video and file downloads on.
 - GTM container `GTM-MD8H6L5S`, published version 2 "GA4 with clean page_location and page_referrer": Data Layer Variables `DLV page_location_clean` (default `https://maestrocalc.com{{Page Path}}`, also without the query) and `DLV page_referrer_clean`; a Google tag `G-2N1E2VTEVN` on Initialization – All Pages with `page_location` = `{{DLV page_location_clean}}` and `page_referrer` = `{{DLV page_referrer_clean}}` (a same-site referrer is the full address of the page before, values included, under `strict-origin-when-cross-origin`).
-- Remaining owner step: read and approve the new privacy text (EN and ES).
+- Privacy text EN/ES approved by the owner on 2026-10-29 ("si a todo"); both entries `ownerReview: approved`.
 - Remaining check after the merge: a production load of a calculator link with a query sends `page_location` and `page_referrer` without it (Tag Assistant or the GA4 DebugView / Realtime report).
 
 ## Spec changes (at archive)
@@ -31,3 +31,9 @@ The owner (2026-10-29): wire Google Tag Manager (container `GTM-MD8H6L5S`, creat
 ## Verification so far
 
 `npm run verify` 0 (4,210 tests); `npm run test:e2e` 724 passed. Production verification waits for the owner steps.
+
+## Verification and archive (2026-10-29)
+
+- #128 merged with green CI; production serves the loader, the tag and the new CSP.
+- Production check in Chrome: `/concrete-calculator?v=1&l=240` sent a GA4 `page_view` with `dl=https://maestrocalc.com/concrete-calculator` (no query), `gcs=G101` (ads denied, analytics granted), `npa=1`; after navigating to `/methodology` the hit carried `dr=https://maestrocalc.com/concrete-calculator` (no query). The GA4 realtime report showed the visit.
+- Specs synced: site-quality ([SQ12], [SQ28] and the header requirement), site-shell ([SS18]–[SS20] and the script requirement), trust-pages ([TP14], [TP34] and the privacy requirement). No scenario id removed.
