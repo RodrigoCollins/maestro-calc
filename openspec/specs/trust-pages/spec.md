@@ -106,7 +106,7 @@ The home MUST ship no client JavaScript (`site-shell` [SS18]), its HTML MUST sta
 #### Scenario: [TP34] No JavaScript on the home, directory included
 - GIVEN built `/` and `/es`
 - WHEN parsed, and then loaded in Chromium with request logging
-- THEN the only `script` elements are `application/ld+json`, no `on*=` attribute exists, and no request has type `script` (`site-shell` [SS18], [SS19]; `site-quality` [SQ8], [SQ28])
+- THEN the only `script` elements are `application/ld+json` and the analytics tag of every page, no `on*=` attribute exists, and no request has type `script` besides `/analytics.js` (`site-shell` [SS18], [SS19]; `site-quality` [SQ8], [SQ28])
 
 #### Scenario: [TP35] Home HTML budget with recorded headroom
 - GIVEN a clean `npm run build` with both cards
@@ -196,7 +196,8 @@ The about page (`/about`, `/es/sobre-nosotros`) MUST present authorship as "Maes
 
 ### Requirement: Privacy page reflects only today's facts
 
-The privacy page (`/privacy`, `/es/privacidad`) MUST describe only what the site does now (D4): hosting on Cloudflare, which processes standard request logs; no cookies set by the site; no analytics; no advertising; no accounts; email sent to the contact address is used only to reply. Because the calculator pages run a script and hold a form, it MUST also state, in a section with id `calculators` (EN) / `calculadoras` (ES), that: calculators run in your browser; nothing you type is sent to us; the values sit in the page address so you can share it; and opening or sharing such an address sends it like any page request, so it can appear in Cloudflare's request logs. It MUST NOT claim "no forms" (the calculator has a form that sends nothing). This change reaches `main` in the same merge as the first calculator `ROUTES` row, so the page never describes a calculator that is not live. It MUST state that the page will be updated before analytics or advertising is added. It MUST NOT name services the site does not use: `Google Analytics`, `GA4`, `Tag Manager`, `GTM`, `AdSense`, `Mediavine`, `Raptive`, `Amazon`, `affiliate`, `afiliad`. Spanish copy uses the neutral tú register.
+The privacy page (`/privacy`, `/es/privacidad`) MUST describe only what the site does now (D4): hosting on Cloudflare, which processes standard request logs; no cookies set by the site; no analytics; no advertising; no accounts; email sent to the contact address is used only to reply. Because the calculator pages run a script and hold a form, it MUST also state, in a section with id `calculators` (EN) / `calculadoras` (ES), that: calculators run in your browser; nothing you type is sent to us; the values sit in the page address so you can share it; and opening or sharing such an address sends it like any page request, so it can appear in Cloudflare's request logs. It MUST NOT claim "no forms" (the calculator has a form that sends nothing). This change reaches `main` in the same merge as the first calculator `ROUTES` row, so the page never describes a calculator that is not live. Amended by analytics-gtm (2026-10-29, owner-approved): the page describes Google Analytics loaded through Google Tag Manager: what is sent (the page without the typed values, browser and device type, screen size, an approximate location from the IP address), the `_ga` cookie outside the EEA, the United Kingdom and Switzerland, no cookie there or with Global Privacy Control, advertising storage and personalization off, the opt-out; the calculators section says nothing typed reaches us or Google Analytics. It MUST state that the page will be updated before advertising is added. It MUST NOT name services the site does not use: `AdSense`, `Mediavine`, `Raptive`, `Amazon`, `affiliate`, `afiliad`.
+(Previously: no cookies and no analytics, the update promised before analytics or advertising, and `Google Analytics`, `GA4`, `Tag Manager`, `GTM` also forbidden.) Spanish copy uses the neutral tú register.
 (Previously: "no accounts or forms", and nothing about calculators, scripts or the page address.)
 
 The section copy is exactly:
@@ -221,7 +222,7 @@ The cookies sentence becomes `Maestro Calc does not use cookies. The site has no
 #### Scenario: [TP14] Required statements
 - GIVEN the built privacy pages
 - WHEN parsed
-- THEN each mentions Cloudflare, states that no cookies are used, and shows `contacto@maestrocalc.com`
+- THEN each mentions Cloudflare, Google Analytics loaded through Google Tag Manager, the values left out, no cookie in the EEA, the UK and Switzerland, Global Privacy Control and the promise to update before advertising, and shows `contacto@maestrocalc.com`
 
 #### Scenario: [TP27] Calculator statements pinned
 - GIVEN the built privacy pages

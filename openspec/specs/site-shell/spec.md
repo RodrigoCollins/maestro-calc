@@ -151,22 +151,23 @@ Every interactive element MUST show an orange (`#F06A1D`) focus ring on `:focus-
 Pages that are not calculator pages (the calculator id list of `site-routing-i18n`) MUST ship 0 bytes of client JavaScript: no external `<script src>`, no inline script other than `type="application/ld+json"`, no `modulepreload`, no `<astro-island>`, no inline event-handler attributes, no `.js` or `.mjs` file in the page asset graph.
 
 A calculator page MUST ship exactly one client entry, the entry module of its own calculator (one module per calculator, shared by both locales; it may statically import same-origin hashed chunks, and the entry plus its static graph is bounded by `site-quality`): one `<script type="module" src="...">` whose URL is a same-origin file of the hashed asset directory (`/_astro/`), plus JSON-LD blocks. It MUST have no other external `<script src>`, no inline script, no inline event-handler attribute, no `<astro-island>`; `<link rel="modulepreload">` is allowed only on calculator pages and only to same-origin files. The script and everything it imports are bounded by the byte budget of `site-quality`. The script MUST NOT read or write cookies, `localStorage`, `sessionStorage` or `IndexedDB`, MUST NOT make network requests (`fetch`, `XMLHttpRequest`, `sendBeacon`, `WebSocket`), and MUST contain no localized message text (the page carries its messages as inert HTML), so that the privacy page stays true (`trust-pages`).
-(Previously: every page shipped 0 bytes of client JavaScript.)
+Amended by analytics-gtm (2026-10-29): every page, calculator or not, MAY also carry exactly one analytics tag, `<script src="/analytics.js" data-gtm="GTM-…" data-host="maestrocalc.com" defer>` with no body, at the end of the head; the loader is the one script file outside `/_astro/`, it is not part of any calculator graph, and it is the only built file that names a foreign address (the Tag Manager script). It sets Consent Mode v2 defaults and loads Tag Manager after the page load on the production host only.
+(Previously: every page shipped 0 bytes of client JavaScript; until analytics-gtm, no page carried a script outside its calculator module and JSON-LD.)
 
 #### Scenario: [SS18] No scripts on non-calculator pages
 - GIVEN every built HTML page that is not a calculator page
 - WHEN parsed
-- THEN the only `<script>` elements have `type="application/ld+json"`, and no `on*=` attribute, `astro-island` element or `rel="modulepreload"` link exists
+- THEN the only `<script>` elements have `type="application/ld+json"`, besides the one analytics tag in its exact shape, and no `on*=` attribute, `astro-island` element or `rel="modulepreload"` link exists
 
 #### Scenario: [SS19] No JS requests in the browser outside calculator pages
 - GIVEN Chromium loading each non-calculator page with request logging
 - WHEN the load settles
-- THEN no request has resource type `script` and no request targets a non-same origin
+- THEN no request has resource type `script` besides `/analytics.js`, and no request targets a non-same origin (against production, the Tag Manager and GA4 requests the loader causes are expected)
 
 #### Scenario: [SS20] Calculator page script shape
 - GIVEN built `/concrete-calculator` and `/es/calculadora-de-concreto`
 - WHEN parsed
-- THEN each has exactly one `script[type=module][src]` (a `/_astro/*.js` path) and otherwise only `application/ld+json` scripts, no inline script text, no `on*=` attribute and no `astro-island`; both locales of the calculator reference the same entry file (a different calculator would reference its own entry)
+- THEN each has exactly one `script[type=module][src]` (a `/_astro/*.js` path) and otherwise only `application/ld+json` scripts and the analytics tag, no inline script text, no `on*=` attribute and no `astro-island`; both locales of the calculator reference the same entry file (a different calculator would reference its own entry)
 
 #### Scenario: [SS21] Calculator pages in the browser
 - GIVEN Chromium loading each calculator page, then typing in a field, with request logging

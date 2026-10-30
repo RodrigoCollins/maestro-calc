@@ -102,12 +102,13 @@ Lighthouse CI MUST run in the `site-browser` job on exactly one page per templat
 ### Requirement: Security headers and caching
 
 `apps/web/public/_headers` MUST set on all paths: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` disabling camera, microphone and geolocation, and a `Content-Security-Policy` containing `default-src 'self'`, `script-src 'self'`, `frame-ancestors 'none'`, `base-uri 'self'` and `form-action 'self'`. The `script-src` directive MUST NOT contain `'unsafe-inline'`, `'unsafe-eval'`, `'strict-dynamic'`, a nonce, a hash, `data:` or any host. The other directives are unchanged (`style-src 'self' 'unsafe-inline'`, `img-src 'self' data:`, `font-src 'self'`, `object-src 'none'`). Hashed assets (the build asset directory and fonts) MUST carry `Cache-Control: public, max-age=31536000, immutable`; HTML MUST NOT be immutable. The policy is global (one `/*` block): static pages carry no script, so `script-src 'self'` costs them nothing, and per-path policies do not scale (the rule file is capped at 100 rules).
-(Previously: `script-src 'none'`.)
+Amended by analytics-gtm (2026-10-29): `script-src` is `'self' https://www.googletagmanager.com`, still with no `'unsafe-inline'`, `'unsafe-eval'`, `'strict-dynamic'`, nonce, hash, `data:`, `http:` or wildcard; `img-src` adds `https://www.googletagmanager.com https://*.google-analytics.com`; a `connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.google.com` is added (Google's list for Tag Manager with GA4 without advertising features). Every page carries the same-origin analytics loader `/analytics.js` (budget 3,072 B, counted in the page weight), which loads Tag Manager on the production host only.
+(Previously: `script-src 'none'`; until analytics-gtm, `script-src 'self'` with no host and no `connect-src`.)
 
 #### Scenario: [SQ12] Header content
 - GIVEN `dist/_headers`
 - WHEN parsed
-- THEN the global block contains the four headers with the values above, the CSP `script-src` is exactly `'self'`, and no other `script-src` appears in the file
+- THEN the global block contains the four headers with the values above, the CSP `script-src` is exactly `'self' https://www.googletagmanager.com`, the `img-src` and `connect-src` hosts are exactly the ones above, and no other `script-src` appears in the file
 
 #### Scenario: [SQ13] Immutable assets only
 - GIVEN `dist/_headers` and the built asset names
@@ -172,7 +173,7 @@ In detail:
 #### Scenario: [SQ28] Static pages request no script, including platform injections
 - GIVEN Chromium loading every non-calculator page of the local build, and the post-deploy smoke loading `/` and `/privacy` in production
 - WHEN requests are logged
-- THEN no request has type `script`, and no page references a `/cdn-cgi/` script (Cloudflare features such as Email Address Obfuscation or Rocket Loader inject one, and `script-src 'self'` would allow it)
+- THEN no request has type `script` besides the analytics loader `/analytics.js` (and, against production only, the Tag Manager and GA4 requests it causes), and no page references a `/cdn-cgi/` script (Cloudflare features such as Email Address Obfuscation or Rocket Loader inject one, and `script-src 'self'` would allow it)
 
 #### Scenario: [SQ19] Layout stability with a state in the URL
 - GIVEN Chromium on the phone profile opening `/concrete-calculator?v=1&sh=footing&l=216&n=3`
