@@ -1,3 +1,4 @@
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
@@ -24,4 +25,5 @@ export const calculators = [
   drywall,
   roofPitch,
   roofing,
+  feetInches,
 ] as const;

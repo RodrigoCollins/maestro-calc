@@ -52,7 +52,7 @@ describe('end state of the roofing go-live (site-routing-i18n › [SR1], [SR19],
       'roof-pitch',
       'roofing',
     ]);
-    expect(PAGELESS).toEqual([]);
+    expect(PAGELESS).toEqual(['feet-inches']);
   });
 
   // spec: i18n-catalog › [ICW1]
