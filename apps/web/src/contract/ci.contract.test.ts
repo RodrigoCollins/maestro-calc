@@ -341,9 +341,11 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
   // branches save, so its first run after a cache-key change installs Chromium and its OS packages
   // cold (seven to twelve minutes on the hosted runner, apt is the variable part) before the
   // suites; a ten-minute bound killed run 40328577005 and a fifteen-minute bound killed run
-  // 40330882184 (2026-10-26), both before the cache was saved.
-  it('is bounded to twenty minutes and sends no telemetry', () => {
-    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(20);
+  // 40330882184 (2026-10-26), both before the cache was saved. The suites grow with every
+  // calculator page: with five pages they took 17 minutes and Lighthouse 1 (PR #133, run
+  // 40992600428), and a twenty-minute bound cancelled its first attempt, so the bound is forty.
+  it('is bounded to forty minutes and sends no telemetry', () => {
+    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(40);
     expect(job?.['timeout-minutes']).toBeGreaterThan(0);
     expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
       WRANGLER_SEND_METRICS: 'false',
