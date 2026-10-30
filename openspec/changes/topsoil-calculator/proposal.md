@@ -18,3 +18,7 @@ One PR, two commits (owner rule: group PRs to save CI):
 ## Mutation shard
 
 The `calculators` shard was not split: its cold CI run measured 2 min 19 s for 376 mutants (PR #114, run 40809811678), well under the 10 minute trigger of design D10, which the ~400-mutant figure of `AGENTS.md` only approximates. It is split when the measured cold time nears 10 minutes.
+
+## Owner approval (go-live)
+
+On 2026-10-29 the owner approved the go-live in advance, in the message that started this run: "Publicá mulch y topsoil, un PR por calculadora, usando el #132 como plantilla. Escribí vos el contenido de cada página siguiendo el patrón de grava (800–1,500 palabras, 8 preguntas frecuentes, cifras verificadas con el motor). Apruebo ese contenido por adelantado: marcalo ownerReview approved y anotá en el proposal que lo aprobé en este mensaje." The content entries carry `ownerReview: approved` on that approval. The decisions listed above (bag sizes, the 10 % extra) and the Spanish name "Calculadora de tierra para jardín" stand as written.

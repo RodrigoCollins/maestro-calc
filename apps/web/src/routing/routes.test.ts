@@ -96,6 +96,16 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('mulch')).toBe(ids.indexOf('gravel') + 1);
   });
 
+  // spec: site-routing-i18n › the topsoil row, published 2026-10-29: its two URLs are a public contract
+  it('lists topsoil after mulch, at its published URLs', () => {
+    expect(ROUTES.topsoil).toEqual({
+      en: '/topsoil-calculator',
+      es: '/es/calculadora-de-tierra-para-jardin',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('topsoil')).toBe(ids.indexOf('mulch') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

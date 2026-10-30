@@ -42,6 +42,8 @@ export const enSite = {
   'page.home.cards.gravel.summary': 'Tons and cubic yards of gravel for a driveway, path or base.',
   'page.home.cards.mulch.title': 'Mulch calculator',
   'page.home.cards.mulch.summary': 'Cubic yards and bags of mulch for a garden bed.',
+  'page.home.cards.topsoil.title': 'Topsoil calculator',
+  'page.home.cards.topsoil.summary': 'Cubic yards and bags of topsoil for a lawn, bed or fill.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -74,6 +76,9 @@ export const enSite = {
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
+  'page.topsoil.title': 'Topsoil Calculator: Cubic Yards and Bags | Maestro Calc',
+  'page.topsoil.description':
+    'Find how much topsoil a lawn, garden bed or fill needs in cubic yards and bags, with extra for settling and the cost in bags and in bulk. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

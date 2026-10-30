@@ -72,7 +72,7 @@ const calculator = {
 } as const;
 
 describe('calculatorSchema', () => {
-  const schema = calculatorSchema(['rectangle-area', 'concrete', 'gravel', 'mulch']);
+  const schema = calculatorSchema(['rectangle-area', 'concrete', 'gravel', 'mulch', 'topsoil']);
 
   it('parses a valid entry and keeps every field', () => {
     expect(schema.parse(calculator)).toEqual(calculator);
@@ -201,7 +201,14 @@ describe('calculatorSchema', () => {
 
   // spec: calculator-page › [CP6] an id outside the table fails the parse on `id`
   it('rejects an entry whose id has no worked-example row, naming id', () => {
-    const open = calculatorSchema(['concrete', 'rectangle-area', 'gravel', 'mulch', 'asphalt']);
+    const open = calculatorSchema([
+      'concrete',
+      'rectangle-area',
+      'gravel',
+      'mulch',
+      'topsoil',
+      'asphalt',
+    ]);
     const result = open.safeParse({ ...calculator, id: 'asphalt' });
     expect(result.success).toBe(false);
     if (!result.success)

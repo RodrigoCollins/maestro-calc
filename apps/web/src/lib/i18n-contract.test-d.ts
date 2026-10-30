@@ -72,7 +72,8 @@ type TopsoilPageKeys =
   | 'calc.topsoil.page.shoppingLine'
   | 'calc.topsoil.page.priceHint'
   | 'calc.topsoil.page.answer'
-  | 'calc.topsoil.page.drawing.note';
+  | 'calc.topsoil.page.drawing.note'
+  | 'calc.topsoil.page.example';
 
 /** The page copy of the rectangle-area calculator (`calc.rectangle-area.page.*`), exactly: a new key is added here. */
 type RectangleAreaPageKeys =

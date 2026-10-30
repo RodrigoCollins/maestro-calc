@@ -217,4 +217,54 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=360&w=36&d=2', figures: ['0.58', '0.45', '8'] },
     ],
   },
+  topsoil: {
+    anchor: { en: 'topsoil', es: 'tierra-para-jardin' },
+    pageLink: {
+      en: '[topsoil calculator](/topsoil-calculator)',
+      es: '[calculadora de tierra para jardín](/es/calculadora-de-tierra-para-jardin)',
+    },
+    formulas: {
+      en: [
+        'length × width × depth',
+        'volume × (1 + extra ÷ 100)',
+        'total volume ÷ 27',
+        'total volume ÷ bag size, rounded up to a whole bag',
+      ],
+      es: [
+        'largo × ancho × profundidad',
+        'volumen × (1 + extra ÷ 100)',
+        'volumen total ÷ 27',
+        'volumen total ÷ tamaño de la bolsa, redondeado hacia arriba a una bolsa entera',
+      ],
+    },
+    honesty: {
+      en: [
+        /a bag holds the volume printed on it/,
+        /one cubic yard is exactly 27 cubic feet/,
+        /10 percent extra is a rule of thumb/,
+        /0\.3048 meters \(NIST SP 811, Appendix B\)/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /una bolsa contiene el volumen impreso en ella/,
+        /una yarda cúbica es exactamente 27 pies cúbicos/,
+        /10 por ciento de extra es una regla general/,
+        /0\.3048 metros \(NIST SP 811, apéndice B\)/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['yd3', 'm3', 'bags'],
+    figuresOf: (shown) => [
+      figure(shown, 'volumeYd3'),
+      figure(shown, 'volumeM3'),
+      shown.shopping[0] ?? '',
+    ],
+    published: [
+      { query: '', figures: ['1.36', '1.04', '49'] },
+      { query: '?v=1&bg=1-5', figures: ['1.36', '1.04', '25'] },
+      { query: '?v=1&ws=0', figures: ['1.23', '0.94', '45'] },
+      { query: '?v=1&l=240&w=120&d=6', figures: ['4.07', '3.11', '147'] },
+      { query: '?v=1&l=600&w=480&d=1', figures: ['6.79', '5.19', '245'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

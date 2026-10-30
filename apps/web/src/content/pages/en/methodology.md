@@ -115,6 +115,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 10 ft × 10 ft × 4 in (`?v=1&l=120&w=120&d=4`)                  | 1.30        | 0.99         | 18   |
 | 30 ft × 3 ft × 2 in (`?v=1&l=360&w=36&d=2`)                    | 0.58        | 0.45         | 8    |
 
+<h2 id="topsoil">Topsoil calculator</h2>
+
+The [topsoil calculator](/topsoil-calculator) finds the volume of topsoil for a rectangular area at a given depth, in cubic yards for a bulk order and in whole bags for a store run. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Volume = length × width × depth.
+- Total volume = volume × (1 + extra ÷ 100).
+- Cubic yards = total volume ÷ 27, with the volume in cubic feet.
+- Bags = total volume ÷ bag size, rounded up to a whole bag.
+
+No material constant is involved: a bag holds the volume printed on it, 0.75, 1 or 1.5 cubic feet, and one cubic yard is exactly 27 cubic feet. The starting 10 percent extra is a rule of thumb for settling, not a measured figure, and you can change it. The metric figures use one foot as exactly 0.3048 meters (NIST SP 811, Appendix B). The bag count is the only figure rounded in the calculation, always up. The volumes are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                | Cubic yards | Cubic meters | Bags |
+| ------------------------------------------------------------------- | ----------- | ------------ | ---- |
+| 10 ft × 10 ft × 4 in, 10 % extra, 0.75 cu ft bags (starting values) | 1.36        | 1.04         | 49   |
+| Same, 1.5 cu ft bags (`?v=1&bg=1-5`)                                | 1.36        | 1.04         | 25   |
+| Same, no extra (`?v=1&ws=0`)                                        | 1.23        | 0.94         | 45   |
+| 20 ft × 10 ft × 6 in (`?v=1&l=240&w=120&d=6`)                       | 4.07        | 3.11         | 147  |
+| 50 ft × 40 ft × 1 in (`?v=1&l=600&w=480&d=1`)                       | 6.79        | 5.19         | 245  |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

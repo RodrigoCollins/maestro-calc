@@ -20,6 +20,8 @@ export const esTopsoil = {
   'calc.topsoil.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
   'calc.topsoil.outputs.bagCost': 'Costo en bolsas',
   'calc.topsoil.outputs.bulkCost': 'Costo a granel',
+  'calc.topsoil.page.example':
+    'Ejemplo: un área de 10 ft por 10 ft, de 4 in de profundidad, lleva 1.36 yardas cúbicas de tierra: 49 bolsas de 0.75 cu ft.',
   'calc.topsoil.page.volumeYd3': '{value} yardas cúbicas',
   'calc.topsoil.page.volumeM3': '{value} metros cúbicos',
   'calc.topsoil.page.shoppingLine': 'Tierra, bolsas de {size} cu ft',

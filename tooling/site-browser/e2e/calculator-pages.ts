@@ -5,6 +5,7 @@ import { CONCRETE } from './concrete-pages.ts';
 import { GRAVEL } from './gravel-pages.ts';
 import { MULCH } from './mulch-pages.ts';
 import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
+import { TOPSOIL } from './topsoil-pages.ts';
 
 export type E2eLanguage = 'en' | 'es';
 
@@ -281,6 +282,7 @@ export const E2E = {
   'rectangle-area': RECTANGLE_AREA,
   gravel: GRAVEL,
   mulch: MULCH,
+  topsoil: TOPSOIL,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */
