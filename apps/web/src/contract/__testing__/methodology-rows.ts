@@ -368,4 +368,48 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=600&w=480&h=120&dr=2&wn=8', figures: ['3,640.00', '126', '8', '3'] },
     ],
   },
+  'roof-pitch': {
+    anchor: { en: 'roof-pitch', es: 'pendiente-de-techo' },
+    pageLink: {
+      en: '[roof pitch calculator](/roof-pitch-calculator)',
+      es: '[calculadora de pendiente de techo](/es/calculadora-de-pendiente-de-techo)',
+    },
+    formulas: {
+      en: [
+        'rise ÷ run',
+        'slope × 12',
+        'arctangent of the slope, in degrees',
+        '(rafter run + overhang) × √(1 + slope²)',
+      ],
+      es: [
+        'subida ÷ recorrido',
+        'inclinación × 12',
+        'arcotangente de la inclinación, en grados',
+        '(recorrido del cabio + alero) × √(1 + inclinación²)',
+      ],
+    },
+    honesty: {
+      en: [
+        /2021 International Residential Code/,
+        /R905\.2\.2/,
+        /twenty decimals/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /International Residential Code de 2021/,
+        /R905\.2\.2/,
+        /veinte decimales/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['pitch', 'angle', 'rafter'],
+    figuresOf: (shown) => [figure(shown, 'pitch'), figure(shown, 'angle'), figure(shown, 'rafter')],
+    published: [
+      { query: '', figures: ['6.00', '26.57', '14.53'] },
+      { query: '?v=1&r=3', figures: ['3.00', '14.04', '13.40'] },
+      { query: '?v=1&r=4', figures: ['4.00', '18.43', '13.70'] },
+      { query: '?v=1&r=9', figures: ['9.00', '36.87', '16.25'] },
+      { query: '?v=1&r=12', figures: ['12.00', '45.00', '18.38'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

@@ -7,6 +7,7 @@ import { GRAVEL } from './gravel-pages.ts';
 import { MULCH } from './mulch-pages.ts';
 import { PAINT } from './paint-pages.ts';
 import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
+import { ROOF_PITCH } from './roof-pitch-pages.ts';
 import { TOPSOIL } from './topsoil-pages.ts';
 
 export type E2eLanguage = 'en' | 'es';
@@ -287,6 +288,7 @@ export const E2E = {
   topsoil: TOPSOIL,
   paint: PAINT,
   drywall: DRYWALL,
+  'roof-pitch': ROOF_PITCH,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */

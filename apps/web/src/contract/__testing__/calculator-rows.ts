@@ -7,6 +7,7 @@ import { mulchPage } from '../../calculator/mulch/page.ts';
 import { paintPage } from '../../calculator/paint/page.ts';
 import { topsoilPage } from '../../calculator/topsoil/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
+import { roofPitchPage } from '../../calculator/roof-pitch/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -184,6 +185,28 @@ const USG_TAPE = {
   url: 'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf',
 } as const;
 
+/** The pitch, the angle and the rafter the roof pitch page shows for the example's link. */
+const roofPitchShown = ({ query }: WorkedExample<'roof-pitch'>) => {
+  const { figures } = shownFigures(roofPitchPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the roof pitch page shows no ${key}`);
+    return value;
+  };
+  return {
+    query,
+    pitch: shown('pitch'),
+    angle: shown('angle'),
+    rafterFt: shown('rafter'),
+    rafterM: shown('rafterM'),
+  };
+};
+
+const IRC = {
+  name: /^2021 International Residential Code, Chapter 9, Section R905\b/,
+  url: 'https://codes.iccsafe.org/content/IRC2021P2/chapter-9-roof-assemblies',
+} as const;
+
 const SHERWIN_WILLIAMS = {
   name: /^Sherwin-Williams Quali-Kote Interior Latex, Product Data Sheet\b/,
   url: 'https://www.sherwin-williams.com/document/PDS/en/035777853146/',
@@ -298,6 +321,22 @@ export const CONTENT_ROWS = {
       '8 ft',
     ],
     methodologyLink: { en: '/methodology#drywall', es: '/es/metodologia#drywall' },
+  },
+  'roof-pitch': {
+    module: roofPitchPage,
+    updated: '2026-10-30',
+    sources: () => [IRC, NIST],
+    engine: roofPitchShown,
+    // the example is the page's starting values: Formulas names the rise and the rafter run
+    figures: ({ pitch, angle, rafterFt, rafterM }) => [
+      pitch,
+      angle,
+      rafterFt,
+      rafterM,
+      '6 in',
+      '12 ft',
+    ],
+    methodologyLink: { en: '/methodology#roof-pitch', es: '/es/metodologia#pendiente-de-techo' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

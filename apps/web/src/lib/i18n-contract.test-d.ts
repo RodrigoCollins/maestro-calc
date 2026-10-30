@@ -71,6 +71,15 @@ type MulchPageKeys =
   | 'calc.mulch.page.drawing.note'
   | 'calc.mulch.page.example';
 
+/** The page copy of the roof pitch calculator (`calc.roof-pitch.page.*`), exactly: a new key is added here. */
+type RoofPitchPageKeys =
+  | 'calc.roof-pitch.page.pitch'
+  | 'calc.roof-pitch.page.angle'
+  | 'calc.roof-pitch.page.answer.meets'
+  | 'calc.roof-pitch.page.answer.double'
+  | 'calc.roof-pitch.page.answer.below'
+  | 'calc.roof-pitch.page.example';
+
 /** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
 type DrywallPageKeys =
   | 'calc.drywall.page.areaFt2'
@@ -139,6 +148,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | MulchPageKeys
       | PaintPageKeys
       | RectangleAreaPageKeys
+      | RoofPitchPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -166,5 +176,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enDrywall, `calc.drywall.page.${string}`>
     >().toEqualTypeOf<DrywallPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enRoofPitch, `calc.roof-pitch.page.${string}`>
+    >().toEqualTypeOf<RoofPitchPageKeys>();
   });
 });

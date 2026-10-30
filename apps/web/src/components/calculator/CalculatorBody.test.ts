@@ -16,7 +16,7 @@ import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../../__testing__/render-component.ts';
 import { slotFreePage } from '../../contract/__testing__/slot-free-page.ts';
 import { pageViewOf } from '../../lib/page-view.ts';
-import { pageView } from '../../lib/pages.ts';
+import { PAGES, pageView } from '../../lib/pages.ts';
 import { PANEL_ROWS } from '../../lib/reserve.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculators } from '../../lib/calculators.ts';
@@ -430,12 +430,20 @@ describe('CalculatorBody, result panel rows (blueprint-drawing › [BD20])', () 
 
 // spec: blueprint-drawing › [BD22], calculator-page › [CP76] a page that draws renders one empty,
 // hidden box between the large figure and the rows, in both locales
+// The pages whose module declares a drawing; roof pitch has none yet (its roof triangle is a
+// tracked follow-up of roof-pitch-calculator), and a page without one renders no box.
+const DRAWN = CALCULATOR_PAGES.filter((id) => PAGES[id].module.drawing !== undefined);
+
 describe('CalculatorBody, the drawing box (blueprint-drawing › [BD22])', () => {
-  it.each(
-    CALCULATOR_PAGES.flatMap((id) =>
-      (['en', 'es'] as const).map((locale) => [id, locale] as const),
-    ),
-  )(
+  it('renders no box on a page whose module declares no drawing', async () => {
+    const root = await renderComponent(CalculatorBody, {
+      view: pageView('roof-pitch', 'en'),
+      content: CONTENT,
+    });
+    expect(root.querySelectorAll('[data-drawing]')).toHaveLength(0);
+  });
+
+  it.each(DRAWN.flatMap((id) => (['en', 'es'] as const).map((locale) => [id, locale] as const)))(
     '%s %s renders one empty aria-hidden box after the large figure and before the rows',
     async (id, locale) => {
       const root = await renderComponent(CalculatorBody, {
