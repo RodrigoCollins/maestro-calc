@@ -113,8 +113,8 @@ describe('same-dimension arithmetic (units-quantities › Same-dimension arithme
   });
 
   it('keeps the dimension of a result', () => {
-    expect(add(area, area).exponents).toEqual({ length: 2, mass: 0 });
-    expect(scale(area, r(2)).exponents).toEqual({ length: 2, mass: 0 });
+    expect(add(area, area).exponents).toEqual({ length: 2, mass: 0, angle: 0 });
+    expect(scale(area, r(2)).exponents).toEqual({ length: 2, mass: 0, angle: 0 });
   });
 });
 
@@ -193,7 +193,7 @@ describe('derived products and quotients (units-quantities › Derived products 
     const mass = quantity(8400, lb);
     const volume = quantity(3, yd3);
     const density = divide(mass, volume);
-    expect(density.exponents).toEqual({ length: -3, mass: 1 });
+    expect(density.exponents).toEqual({ length: -3, mass: 1, angle: 0 });
     expect(valueIn(density, lbFt3)).toEqual(r(2800, 27));
     expect(equals(density, quantity(r(2800, 27), lbFt3))).toBe(true);
     expect(divide(mass, density)).toEqual(volume);

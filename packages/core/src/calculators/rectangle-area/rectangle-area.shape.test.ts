@@ -19,7 +19,8 @@ describe('rectangle-area result shape (calc-rectangle-area › Result shape)', (
       ['areaM2', 'secondary'],
     ]);
     // an area has two length dimensions and no mass
-    for (const { value } of outputs) expect(value.exponents).toEqual({ length: 2, mass: 0 });
+    for (const { value } of outputs)
+      expect(value.exponents).toEqual({ length: 2, mass: 0, angle: 0 });
     expect(shopping).toEqual([]);
     expect(warnings).toEqual([]);
   });

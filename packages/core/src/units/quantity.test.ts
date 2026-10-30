@@ -30,15 +30,15 @@ const r = (n: bigint | number, d: bigint | number = 1): Rational => Rational.of(
 describe('quantity construction (units-quantities › Dimension model)', () => {
   // spec: units-quantities › Runtime exponent vector [UQ2]
   it('carries the exponent vector of its unit for untyped callers', () => {
-    expect(quantity(2, ft).exponents).toEqual({ length: 1, mass: 0 });
-    expect(quantity(1, ft2).exponents).toEqual({ length: 2, mass: 0 });
-    expect(quantity(1, yd3).exponents).toEqual({ length: 3, mass: 0 });
+    expect(quantity(2, ft).exponents).toEqual({ length: 1, mass: 0, angle: 0 });
+    expect(quantity(1, ft2).exponents).toEqual({ length: 2, mass: 0, angle: 0 });
+    expect(quantity(1, yd3).exponents).toEqual({ length: 3, mass: 0, angle: 0 });
   });
 
   // spec: units-quantities › Runtime exponent vector [UQ2b]
   it('carries (0, 1) for a mass and (-3, 1) for a density', () => {
-    expect(quantity(1, lb).exponents).toEqual({ length: 0, mass: 1 });
-    expect(quantity(1, lbIn3).exponents).toEqual({ length: -3, mass: 1 });
+    expect(quantity(1, lb).exponents).toEqual({ length: 0, mass: 1, angle: 0 });
+    expect(quantity(1, lbIn3).exponents).toEqual({ length: -3, mass: 1, angle: 0 });
   });
 
   // spec: units-quantities › Construction and conversion — stored as canonical = value × factor
@@ -148,7 +148,7 @@ describe('runtime narrowing (units-quantities › Runtime exponent vector)', () 
   });
 
   it('rejects values that only look like a quantity', () => {
-    const lookalike = { exponents: { length: 1, mass: 0 }, canonical: r(2) };
+    const lookalike = { exponents: { length: 1, mass: 0, angle: 0 }, canonical: r(2) };
     for (const value of [lookalike, null, undefined, '2 ft', 2, {}]) {
       expect(isQuantityOf(value, 'length')).toBe(false);
     }
@@ -163,7 +163,7 @@ describe('runtime narrowing to any quantity (units-quantities › Runtime expone
   });
 
   it('rejects a lookalike object and anything that is not an object', () => {
-    const lookalike = { exponents: { length: 1, mass: 0 }, canonical: r(2) };
+    const lookalike = { exponents: { length: 1, mass: 0, angle: 0 }, canonical: r(2) };
     for (const value of [lookalike, null, undefined, '2 ft', 2, {}]) {
       expect(isQuantity(value)).toBe(false);
     }

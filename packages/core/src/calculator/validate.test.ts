@@ -161,7 +161,7 @@ describe('validateRecord length field (calculator-contract › Total validation,
   });
 
   it('refuses a value that is not a string or a length quantity', () => {
-    const lookalike = { exponents: { length: 1, mass: 0 }, canonical: Rational.of(2) };
+    const lookalike = { exponents: { length: 1, mass: 0, angle: 0 }, canonical: Rational.of(2) };
     for (const raw of [quantity(2, ft2), lookalike, 5, true, null, {}, ['5']]) {
       expect(inches(raw)).toEqual(failure('MALFORMED'));
     }

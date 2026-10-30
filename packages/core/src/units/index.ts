@@ -3,6 +3,7 @@ export {
   cm,
   cm2,
   cm3,
+  deg,
   findUnit,
   ft,
   ft2,

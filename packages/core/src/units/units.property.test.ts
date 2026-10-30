@@ -30,12 +30,12 @@ const forAllRationals = (check: (x: Rational) => void): void => {
 };
 
 describe('unit conversion properties (units-quantities › Construction and conversion)', () => {
-  it('covers all 30 units', () => {
+  it('covers all 31 units', () => {
     const counts = Object.values(UNITS).map((units) => units.length);
-    expect(counts.reduce((total, count) => total + count, 0)).toBe(30);
+    expect(counts.reduce((total, count) => total + count, 0)).toBe(31);
   });
 
-  // spec: units-quantities › Round trip property [UQ14], all 30 units
+  // spec: units-quantities › Round trip property [UQ14], all 31 units
   it('reads back the value it was built from, in every unit', () => {
     forAllRationals((x) => {
       roundTrips(x, UNITS.length);
@@ -49,7 +49,7 @@ describe('unit conversion properties (units-quantities › Construction and conv
   // spec: units-quantities › Construction and conversion — converting through w changes nothing.
   // One test per dimension: every pair of units runs a thousand times, and with the gallon and the
   // liter the volume pairs alone went from 36 to 64, past the time of one test for all five.
-  it.each(['length', 'area', 'volume', 'mass', 'density'] as const)(
+  it.each(['length', 'area', 'volume', 'mass', 'density', 'angle'] as const)(
     'is unchanged by converting through any other %s unit',
     (dimension) => {
       forAllRationals((x) => {

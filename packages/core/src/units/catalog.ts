@@ -104,6 +104,11 @@ export const tonYd3 = /* @__PURE__ */ densityOf(ton, yd3, 'ton/yd3');
 /** Kilograms per cubic metre. */
 export const kgM3 = /* @__PURE__ */ densityOf(kg, m3, 'kg/m3');
 
+// Canonical angle unit: the degree, a base dimension of its own (a length over a length is a ratio,
+// never an angle). A full turn is 360 degrees.
+/** The degree, the canonical angle unit. */
+export const deg = /* @__PURE__ */ defineUnit('angle', 'deg', /* @__PURE__ */ Rational.of(1));
+
 /** Every unit, grouped by dimension; the catalog and its lists are frozen. */
 export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } =
   /* @__PURE__ */ Object.freeze({
@@ -112,6 +117,7 @@ export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } =
     volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3, gal, liter]),
     mass: /* @__PURE__ */ Object.freeze([lb, oz, ton, kg, tonne]),
     density: /* @__PURE__ */ Object.freeze([lbIn3, lbFt3, lbYd3, tonYd3, kgM3]),
+    angle: /* @__PURE__ */ Object.freeze([deg]),
   });
 
 /**
