@@ -148,6 +148,20 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(styled.querySelectorAll('head style').at(-1)?.text).toBe(style);
   });
 
+  // open-graph: the page's language, and the other one, in the Open Graph form of the tag
+  it.each([
+    ['en', 'en_US', 'es_US'],
+    ['es', 'es_US', 'en_US'],
+  ] as const)('sets og:locale of the %s page and its alternate', async (locale, own, other) => {
+    const { document } = await render(locale);
+    expect(document.querySelector('meta[property="og:locale"]')?.getAttribute('content')).toBe(own);
+    expect(
+      document
+        .querySelectorAll('meta[property="og:locale:alternate"]')
+        .map((tag) => tag.getAttribute('content')),
+    ).toEqual([other]);
+  });
+
   // adsense-verify: the site ownership meta tag of AdSense names the publisher id, in the head
   it('names the AdSense publisher in one meta tag of the head', async () => {
     const { document } = await render('en');
