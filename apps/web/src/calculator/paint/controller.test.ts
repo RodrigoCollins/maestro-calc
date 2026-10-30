@@ -36,22 +36,27 @@ describe('paint page: the answer through the controller (calc-paint)', () => {
     [
       'en',
       '?v=1',
-      'A 12 ft by 12 ft room with 8 ft walls needs 1.91 gallons of paint for 2 coats: 2 gallon cans.',
+      'A 12 ft by 12 ft room with 8 ft walls needs 1.91 gallons of paint. Coats: 2. Gallon cans to buy: 2.',
     ],
     [
       'es',
       '?v=1',
-      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft lleva 1.91 galones de pintura para 2 manos: 2 latas de un galón.',
+      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft lleva 1.91 galones de pintura. Manos: 2. Latas de un galón a comprar: 2.',
     ],
     [
       'en',
       '?v=1&c=3',
-      'A 12 ft by 12 ft room with 8 ft walls needs 2.86 gallons of paint for 3 coats: 3 gallon cans.',
+      'A 12 ft by 12 ft room with 8 ft walls needs 2.86 gallons of paint. Coats: 3. Gallon cans to buy: 3.',
     ],
     [
       'en',
       '?v=1&u=m',
-      'A 3.66 m by 3.66 m room with 2.44 m walls needs 7.22 liters of paint for 2 coats: 2 gallon cans.',
+      'A 3.66 m by 3.66 m room with 2.44 m walls needs 7.22 liters of paint. Coats: 2. Gallon cans to buy: 2.',
+    ],
+    [
+      'en',
+      '?v=1&c=1',
+      'A 12 ft by 12 ft room with 8 ft walls needs 0.95 gallons of paint. Coats: 1. Gallon cans to buy: 1.',
     ],
   ] as const)('says the %s answer of %s', (locale, search, sentence) => {
     expect(viewOf(locale, search).answer).toBe(sentence);

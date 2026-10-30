@@ -18,6 +18,6 @@ export const enPaint = {
   'calc.paint.page.shoppingLine': 'Paint, gallon cans',
   'calc.paint.page.priceHint': 'Add your price to see the cost',
   'calc.paint.page.answer':
-    'A {length} by {width} room with {height} walls needs {paint} of paint for {coats} coats: {cans} gallon cans.',
+    'A {length} by {width} room with {height} walls needs {paint} of paint. Coats: {coats}. Gallon cans to buy: {cans}.',
   'calc.paint.page.drawing.note': '{height} walls',
 } as const;

@@ -21,6 +21,6 @@ export const esPaint = {
   'calc.paint.page.shoppingLine': 'Pintura, latas de un galón',
   'calc.paint.page.priceHint': 'Agrega tu precio para ver el costo',
   'calc.paint.page.answer':
-    'Un cuarto de {length} por {width} con paredes de {height} lleva {paint} de pintura para {coats} manos: {cans} latas de un galón.',
+    'Un cuarto de {length} por {width} con paredes de {height} lleva {paint} de pintura. Manos: {coats}. Latas de un galón a comprar: {cans}.',
   'calc.paint.page.drawing.note': 'paredes de {height}',
 } as const satisfies CatalogOf<typeof enPaint>;
