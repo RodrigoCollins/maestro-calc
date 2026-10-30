@@ -1,4 +1,6 @@
 ---
+import { SITE } from '../site.config.ts';
+
 interface Props {
   title: string;
   description: string;
@@ -7,8 +9,23 @@ interface Props {
   robots?: string;
   /** A serialized JSON-LD document (see `serializeJsonLd`), written verbatim into a data block. */
   jsonLd?: string;
+  /** The Open Graph locale of the page (`en_US`) and of its other languages. */
+  ogLocale?: string;
+  ogAlternateLocales?: readonly string[];
 }
-const { title, description, canonical, alternates = [], robots, jsonLd } = Astro.props;
+const {
+  title,
+  description,
+  canonical,
+  alternates = [],
+  robots,
+  jsonLd,
+  ogLocale,
+  ogAlternateLocales = [],
+} = Astro.props;
+// open-graph: an indexable page (it has a canonical) is shared with its title, description,
+// address and the one language-free image; the not-found page has none.
+const og = canonical !== undefined && ogLocale !== undefined;
 ---
 
 <meta charset="utf-8" />
@@ -20,5 +37,23 @@ const { title, description, canonical, alternates = [], robots, jsonLd } = Astro
 {alternates.map(({ hreflang, href }) => (
   <link rel="alternate" hreflang={hreflang} href={href} />
 ))}
+{og && (
+  <Fragment>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={ogLocale} />
+    {ogAlternateLocales.map((locale) => (
+      <meta property="og:locale:alternate" content={locale} />
+    ))}
+    <meta property="og:image" content={`${SITE.url}/og.png`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={SITE.name} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </Fragment>
+)}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 {jsonLd !== undefined && <script is:inline type="application/ld+json" set:html={jsonLd} />}

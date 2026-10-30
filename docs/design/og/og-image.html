@@ -1,0 +1,87 @@
+<!doctype html>
+<!--
+  Source of apps/web/public/og.png (1200x630), the Open Graph image of every indexable page.
+  Language-free on purpose: one image serves both locales. Regenerate with
+  `node tooling/site-browser/og/render.mjs` (from the repository root; needs the tooling install).
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'Barlow Condensed';
+        font-weight: 700;
+        src: url('../../../node_modules/@fontsource/barlow-condensed/files/barlow-condensed-latin-700-normal.woff2');
+      }
+      @font-face {
+        font-family: 'Barlow';
+        font-weight: 600;
+        src: url('../../../node_modules/@fontsource/barlow/files/barlow-latin-600-normal.woff2');
+      }
+      html,
+      body {
+        margin: 0;
+      }
+      .card {
+        position: relative;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 1200px;
+        height: 630px;
+        padding: 0 104px;
+        background-color: #0e2240;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+        background-size: 32px 32px;
+        color: #ffffff;
+        font-family: 'Barlow', sans-serif;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+      .name {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 128px;
+        font-weight: 700;
+        line-height: 1;
+        letter-spacing: 0.5px;
+      }
+      /* The dimension line of the home hero: two end ticks and the centre line, in safety orange. */
+      .dimension {
+        width: 760px;
+        height: 32px;
+        margin: 48px 0 40px;
+        border-inline: 4px solid #f06a1d;
+        background: linear-gradient(#f06a1d, #f06a1d) center / 100% 4px no-repeat;
+      }
+      .url {
+        font-size: 44px;
+        font-weight: 600;
+        color: #b9c6da;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="brand">
+        <svg width="132" height="132" viewBox="0 0 28 28" aria-hidden="true">
+          <rect width="28" height="28" rx="6" fill="#ffffff" />
+          <path
+            d="M8 20v-7M12 20V9M16 20v-5M20 20V7"
+            stroke="#f06a1d"
+            stroke-width="2.4"
+            stroke-linecap="round"
+          />
+        </svg>
+        <span class="name">Maestro Calc</span>
+      </div>
+      <div class="dimension"></div>
+      <div class="url">maestrocalc.com</div>
+    </div>
+  </body>
+</html>

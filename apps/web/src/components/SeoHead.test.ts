@@ -19,6 +19,38 @@ const indexable = {
 };
 
 describe('SeoHead (site-seo › Document head)', () => {
+  // open-graph: an indexable page is shared with its title, description, address and the one image
+  it('gives an indexable page the Open Graph and Twitter card of its own text and address', async () => {
+    const head = await render({ ...indexable, ogLocale: 'en_US', ogAlternateLocales: ['es_US'] });
+    const og = (property: string) =>
+      head
+        .querySelectorAll(`meta[property="${property}"]`)
+        .map((tag) => tag.getAttribute('content'));
+    expect(og('og:type')).toEqual(['website']);
+    expect(og('og:site_name')).toEqual(['Maestro Calc']);
+    expect(og('og:title')).toEqual([indexable.title]);
+    expect(og('og:description')).toEqual([indexable.description]);
+    expect(og('og:url')).toEqual([indexable.canonical]);
+    expect(og('og:locale')).toEqual(['en_US']);
+    expect(og('og:locale:alternate')).toEqual(['es_US']);
+    expect(og('og:image')).toEqual(['https://maestrocalc.com/og.png']);
+    expect([og('og:image:width'), og('og:image:height')]).toEqual([['1200'], ['630']]);
+    expect(og('og:image:alt')).toEqual(['Maestro Calc']);
+    expect(head.querySelector('meta[name="twitter:card"]')?.getAttribute('content')).toBe(
+      'summary_large_image',
+    );
+  });
+
+  it('gives a page without a canonical (the not-found page) no Open Graph and no card', async () => {
+    const head = await render({
+      title: 'Not found',
+      description: 'Nothing here.',
+      robots: 'noindex',
+      ogLocale: 'en_US',
+    });
+    expect(head.querySelectorAll('meta[property^="og:"], meta[name^="twitter:"]')).toHaveLength(0);
+  });
+
   // spec: site-seo › [SS2 / SE2] head essentials
   it('declares charset, the exact viewport, one title and one description', async () => {
     const head = await render(indexable);
