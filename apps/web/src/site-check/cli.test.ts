@@ -19,7 +19,7 @@ import { ROUTES } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
-import { NIST_URL, QUIKRETE_URL, validDist } from './__testing__/page-fixture.ts';
+import { NIST_URL, QUIKRETE_URL, validDist, WISDOT_URL } from './__testing__/page-fixture.ts';
 
 const FONT_DIRECTORIES = ['barlow', 'barlow', 'barlow-condensed', 'barlow-condensed'] as const;
 const FONT_FILES = [
@@ -52,7 +52,11 @@ const site = {
     ]),
   ),
   calculatorPages: CALCULATOR_PAGES,
-  externalLinks: { concrete: [QUIKRETE_URL, NIST_URL], 'rectangle-area': [NIST_URL] },
+  externalLinks: {
+    concrete: [QUIKRETE_URL, NIST_URL],
+    'rectangle-area': [NIST_URL],
+    gravel: [WISDOT_URL, NIST_URL],
+  },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {

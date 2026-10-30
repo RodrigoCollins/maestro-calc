@@ -82,6 +82,13 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('rectangle-area')).toBe(ids.indexOf('concrete') + 1);
   });
 
+  // spec: site-routing-i18n › the gravel row, published 2026-10-29: its two URLs are a public contract
+  it('lists gravel after square footage, at its published URLs', () => {
+    expect(ROUTES.gravel).toEqual({ en: '/gravel-calculator', es: '/es/calculadora-de-grava' });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('gravel')).toBe(ids.indexOf('rectangle-area') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

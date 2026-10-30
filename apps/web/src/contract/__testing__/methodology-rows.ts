@@ -122,4 +122,51 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=240&w=180', figures: ['300.00', '33.33', '27.87'] },
     ],
   },
+  gravel: {
+    anchor: { en: 'gravel', es: 'grava' },
+    pageLink: {
+      en: '[gravel calculator](/gravel-calculator)',
+      es: '[calculadora de grava](/es/calculadora-de-grava)',
+    },
+    formulas: {
+      en: [
+        'length × width × depth',
+        'volume in place × (1 + extra ÷ 100)',
+        'total volume × tons per cubic yard as placed',
+        'weight ÷ tons per cubic yard loose',
+      ],
+      es: [
+        'largo × ancho × profundidad',
+        'volumen colocado × (1 + extra ÷ 100)',
+        'volumen total × toneladas por yarda cúbica según se coloca',
+        'peso ÷ toneladas por yarda cúbica suelta',
+      ],
+    },
+    honesty: {
+      en: [
+        /approximately 1\.83 tons per cubic yard/,
+        /approximately 1\.29 tons per cubic yard/,
+        /WisDOT WHRP G22-05, Table E2/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /aproximadamente 1\.83 toneladas por yarda cúbica/,
+        /aproximadamente 1\.29 toneladas por yarda cúbica/,
+        /WisDOT WHRP G22-05, tabla E2/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['tons', 'tonnes', 'orderYd3'],
+    figuresOf: (shown) => [
+      figure(shown, 'tons'),
+      figure(shown, 'tonnes'),
+      figure(shown, 'orderYd3'),
+    ],
+    published: [
+      { query: '', figures: ['4.74', '4.30', '3.68'] },
+      { query: '?v=1&ws=0', figures: ['4.52', '4.10', '3.50'] },
+      { query: '?v=1&l=360&w=144&d=6', figures: ['12.81', '11.62', '9.93'] },
+      { query: '?v=1&l=120&w=120&d=3&pl=loose', figures: ['1.25', '1.14', '0.97'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

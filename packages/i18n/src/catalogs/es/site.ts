@@ -41,6 +41,9 @@ export const esSite = {
   'page.home.cards.rectangle-area.title': 'Calculadora de pies cuadrados',
   'page.home.cards.rectangle-area.summary':
     'Pies, yardas y metros cuadrados para un cuarto, piso o losa.',
+  'page.home.cards.gravel.title': 'Calculadora de grava',
+  'page.home.cards.gravel.summary':
+    'Toneladas y yardas cúbicas de grava para una entrada, camino o base.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -67,6 +70,9 @@ export const esSite = {
   'page.rectangle-area.title': 'Calculadora de pies cuadrados de un cuarto | Maestro Calc',
   'page.rectangle-area.description':
     'Calcula los pies cuadrados de un cuarto, piso o losa con su largo y ancho, más yardas y metros cuadrados. Gratis, al instante, en pies, pulgadas o metros.',
+  'page.gravel.title': 'Calculadora de grava en toneladas y yardas | Maestro Calc',
+  'page.gravel.description':
+    'Calcula cuántas toneladas de grava pedir para una entrada, camino o base, compactada o suelta, con las yardas cúbicas y el costo. Gratis y al instante.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

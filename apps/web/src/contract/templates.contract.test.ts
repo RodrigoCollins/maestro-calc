@@ -64,7 +64,12 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
       Object.entries(ROUTES).filter(([id]) => id !== 'concrete'),
     );
     expect(
-      templateProblems(withoutConcrete, ['concrete'], ['rectangle-area', ...PAGELESS], registry),
+      templateProblems(
+        withoutConcrete,
+        ['concrete'],
+        ['rectangle-area', 'gravel', ...PAGELESS],
+        registry,
+      ),
     ).toEqual(['concrete: page id is not in the route table']);
   });
 });

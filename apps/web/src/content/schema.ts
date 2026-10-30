@@ -53,6 +53,13 @@ export const WORKED_EXAMPLES = {
     yd2: decimalText,
     m2: decimalText,
   }),
+  gravel: z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    tons: decimalText,
+    tonnes: decimalText,
+    orderYd3: decimalText,
+    placedYd3: decimalText,
+  }),
 };
 
 /** The calculator ids that have a worked example row. */
