@@ -22,4 +22,15 @@ export const esDrywall = {
   'calc.drywall.outputs.compound': 'Compuesto para juntas (galones)',
   'calc.drywall.outputs.tape': 'Cinta para juntas (pies)',
   'calc.drywall.outputs.cost': 'Costo del drywall',
+  'calc.drywall.page.areaFt2': '{value} pies cuadrados',
+  'calc.drywall.page.areaM2': '{value} metros cuadrados',
+  'calc.drywall.page.shoppingSheets': 'Drywall, placas de {size}',
+  'calc.drywall.page.shoppingCompound': 'Compuesto para juntas, baldes de 4.5 gal',
+  'calc.drywall.page.shoppingTape': 'Cinta de papel para juntas, rollos de 500 ft',
+  'calc.drywall.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.drywall.page.answer.walls-ceiling':
+    'Un cuarto de {length} por {width} con paredes de {height} tiene {area} de paredes y techo para cubrir. Placas de {sheet}: {sheets}.',
+  'calc.drywall.page.answer.walls':
+    'Un cuarto de {length} por {width} con paredes de {height} tiene {area} de paredes para cubrir. Placas de {sheet}: {sheets}.',
+  'calc.drywall.page.drawing.note': 'paredes de {height}',
 } as const satisfies CatalogOf<typeof enDrywall>;

@@ -19,4 +19,15 @@ export const enDrywall = {
   'calc.drywall.outputs.compound': 'Joint compound (gallons)',
   'calc.drywall.outputs.tape': 'Joint tape (feet)',
   'calc.drywall.outputs.cost': 'Drywall cost',
+  'calc.drywall.page.areaFt2': '{value} square feet',
+  'calc.drywall.page.areaM2': '{value} square meters',
+  'calc.drywall.page.shoppingSheets': 'Drywall, {size} sheets',
+  'calc.drywall.page.shoppingCompound': 'Joint compound, 4.5 gal pails',
+  'calc.drywall.page.shoppingTape': 'Paper joint tape, 500 ft rolls',
+  'calc.drywall.page.priceHint': 'Add your price to see the cost',
+  'calc.drywall.page.answer.walls-ceiling':
+    'A {length} by {width} room with {height} walls has {area} of walls and ceiling to cover. Sheets of {sheet}: {sheets}.',
+  'calc.drywall.page.answer.walls':
+    'A {length} by {width} room with {height} walls has {area} of walls to cover. Sheets of {sheet}: {sheets}.',
+  'calc.drywall.page.drawing.note': '{height} walls',
 } as const;

@@ -69,6 +69,18 @@ type MulchPageKeys =
   | 'calc.mulch.page.drawing.note'
   | 'calc.mulch.page.example';
 
+/** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
+type DrywallPageKeys =
+  | 'calc.drywall.page.areaFt2'
+  | 'calc.drywall.page.areaM2'
+  | 'calc.drywall.page.shoppingSheets'
+  | 'calc.drywall.page.shoppingCompound'
+  | 'calc.drywall.page.shoppingTape'
+  | 'calc.drywall.page.priceHint'
+  | 'calc.drywall.page.answer.walls-ceiling'
+  | 'calc.drywall.page.answer.walls'
+  | 'calc.drywall.page.drawing.note';
+
 /** The page copy of the paint calculator (`calc.paint.page.*`), exactly: a new key is added here. */
 type PaintPageKeys =
   | 'calc.paint.page.gallons'
@@ -119,6 +131,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | `errors.${AllErrorCode}`
       | MaterialKeys<typeof concreteMix>
       | ConcretePageKeys
+      | DrywallPageKeys
       | GravelPageKeys
       | MulchPageKeys
       | PaintPageKeys
@@ -147,5 +160,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enPaint, `calc.paint.page.${string}`>
     >().toEqualTypeOf<PaintPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enDrywall, `calc.drywall.page.${string}`>
+    >().toEqualTypeOf<DrywallPageKeys>();
   });
 });
