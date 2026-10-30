@@ -213,7 +213,7 @@ describe('defineMaterial (material-data-contract › Material record shape)', ()
         purchaseUnits: [
           {
             ...plywood().purchaseUnits[0],
-            size: { exponents: { length: 2, mass: 0 }, canonical: Rational.of(4608) },
+            size: { exponents: { length: 2, mass: 0, angle: 0 }, canonical: Rational.of(4608) },
           },
         ],
       },

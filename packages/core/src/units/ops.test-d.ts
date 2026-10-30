@@ -34,7 +34,7 @@ describe('quantity types (units-quantities › Dimension model, Same-dimension a
 
   // spec: units-quantities › Construction and conversion — the brand forbids literals
   it('does not accept an object literal as a quantity', () => {
-    const literal = { exponents: { length: 1, mass: 0 }, canonical: Rational.ONE };
+    const literal = { exponents: { length: 1, mass: 0, angle: 0 }, canonical: Rational.ONE };
     // control: every field is right, so the literal has the unbranded shape of a quantity
     const unbranded: Pick<Quantity<'length'>, 'exponents' | 'canonical'> = literal;
     // @ts-expect-error only the missing unique-symbol brand makes this an error

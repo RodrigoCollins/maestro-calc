@@ -8,6 +8,7 @@ interface UnitIds {
   volume: 'in3' | 'ft3' | 'yd3' | 'mm3' | 'cm3' | 'm3' | 'gal' | 'L';
   mass: 'lb' | 'oz' | 'ton' | 'kg' | 'tonne';
   density: 'lb/in3' | 'lb/ft3' | 'lb/yd3' | 'ton/yd3' | 'kg/m3';
+  angle: 'deg';
 }
 
 export type UnitIdOf<D extends DimensionName> = UnitIds[D];

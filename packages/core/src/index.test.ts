@@ -33,6 +33,7 @@ describe('core public API (design: Public API)', () => {
       'costOf',
       'decode',
       'defineCalculator',
+      'deg',
       'divide',
       'divideScalar',
       'encode',

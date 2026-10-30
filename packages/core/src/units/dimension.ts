@@ -1,10 +1,14 @@
-/** The named dimensions and their exponents over the base dimensions (length, mass). */
+/**
+ * The named dimensions and their exponents over the base dimensions (length, mass, angle). The
+ * angle is a base of its own, so a length over a length stays an unnamed ratio, never an angle.
+ */
 export interface Dimensions {
-  length: { length: 1; mass: 0 };
-  area: { length: 2; mass: 0 };
-  volume: { length: 3; mass: 0 };
-  mass: { length: 0; mass: 1 };
-  density: { length: -3; mass: 1 };
+  length: { length: 1; mass: 0; angle: 0 };
+  area: { length: 2; mass: 0; angle: 0 };
+  volume: { length: 3; mass: 0; angle: 0 };
+  mass: { length: 0; mass: 1; angle: 0 };
+  density: { length: -3; mass: 1; angle: 0 };
+  angle: { length: 0; mass: 0; angle: 1 };
 }
 
 export type DimensionName = keyof Dimensions;
@@ -13,6 +17,7 @@ export type DimensionName = keyof Dimensions;
 export interface Exponents {
   readonly length: number;
   readonly mass: number;
+  readonly angle: number;
 }
 
 type Up = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6];
@@ -78,12 +83,14 @@ type DifferenceOf<A extends number, B extends number> = A extends infer X extend
 export interface AddVec<A extends Exponents, B extends Exponents> {
   length: SumOf<A['length'], B['length']>;
   mass: SumOf<A['mass'], B['mass']>;
+  angle: SumOf<A['angle'], B['angle']>;
 }
 
 /** Componentwise difference of two exponent vectors (the dimension of a quotient). */
 export interface SubVec<A extends Exponents, B extends Exponents> {
   length: DifferenceOf<A['length'], B['length']>;
   mass: DifferenceOf<A['mass'], B['mass']>;
+  angle: DifferenceOf<A['angle'], B['angle']>;
 }
 
 /** The name of the dimension with this vector, or `never` when no named dimension has it. */
@@ -91,8 +98,11 @@ export type NameOf<V extends Exponents> = {
   [D in DimensionName]: V extends Dimensions[D] ? D : never;
 }[DimensionName];
 
-const vector = <L extends number, M extends number>(length: L, mass: M): { length: L; mass: M } =>
-  Object.freeze({ length, mass });
+const vector = <L extends number, M extends number, A extends number>(
+  length: L,
+  mass: M,
+  angle: A,
+): { length: L; mass: M; angle: A } => Object.freeze({ length, mass, angle });
 
 /**
  * The exponent vectors at runtime. `Dimensions` gives the same vectors as types, and the mapped
@@ -100,34 +110,36 @@ const vector = <L extends number, M extends number>(length: L, mass: M): { lengt
  */
 export const DIMENSIONS: Readonly<{ [D in DimensionName]: Readonly<Dimensions[D]> }> =
   Object.freeze({
-    length: vector(1, 0),
-    area: vector(2, 0),
-    volume: vector(3, 0),
-    mass: vector(0, 1),
-    density: vector(-3, 1),
+    length: vector(1, 0, 0),
+    area: vector(2, 0, 0),
+    volume: vector(3, 0, 0),
+    mass: vector(0, 1, 0),
+    density: vector(-3, 1, 0),
+    angle: vector(0, 0, 1),
   });
 
 // A record with one entry per name: a missing or an extra name is a compile error, so the list
-// below is exactly the five names.
+// below is exactly the six names.
 const NAME_RECORD = {
   length: 'length',
   area: 'area',
   volume: 'volume',
   mass: 'mass',
   density: 'density',
+  angle: 'angle',
 } as const satisfies { readonly [D in DimensionName]: D };
 
 const NAMES = /* @__PURE__ */ Object.values(NAME_RECORD);
 
 export const sameVector = (a: Exponents, b: Exponents): boolean =>
-  a.length === b.length && a.mass === b.mass;
+  a.length === b.length && a.mass === b.mass && a.angle === b.angle;
 
 /** The name of the dimension with this exponent vector, or `undefined` for an unnamed one. */
 export const nameOf = (exponents: Exponents): DimensionName | undefined =>
   NAMES.find((name) => sameVector(DIMENSIONS[name], exponents));
 
 export const addVec = (a: Exponents, b: Exponents): Exponents =>
-  vector(a.length + b.length, a.mass + b.mass);
+  vector(a.length + b.length, a.mass + b.mass, a.angle + b.angle);
 
 export const subVec = (a: Exponents, b: Exponents): Exponents =>
-  vector(a.length - b.length, a.mass - b.mass);
+  vector(a.length - b.length, a.mass - b.mass, a.angle - b.angle);
