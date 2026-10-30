@@ -44,6 +44,8 @@ export const esSite = {
   'page.home.cards.gravel.title': 'Calculadora de grava',
   'page.home.cards.gravel.summary':
     'Toneladas y yardas cúbicas de grava para una entrada, camino o base.',
+  'page.home.cards.mulch.title': 'Calculadora de mulch',
+  'page.home.cards.mulch.summary': 'Yardas cúbicas y bolsas de mulch para un área de jardín.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -73,6 +75,9 @@ export const esSite = {
   'page.gravel.title': 'Calculadora de grava en toneladas y yardas | Maestro Calc',
   'page.gravel.description':
     'Calcula cuántas toneladas de grava pedir para una entrada, camino o base, compactada o suelta, con las yardas cúbicas y el costo. Gratis y al instante.',
+  'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
+  'page.mulch.description':
+    'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

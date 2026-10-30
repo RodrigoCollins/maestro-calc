@@ -16,6 +16,8 @@ export const enMulch = {
   'calc.mulch.outputs.netVolume': 'Volume before extra (cubic feet)',
   'calc.mulch.outputs.bagCost': 'Cost in bags',
   'calc.mulch.outputs.bulkCost': 'Cost in bulk',
+  'calc.mulch.page.example':
+    'Example: a 20 ft by 4 ft bed, 3 in deep, needs 0.78 cubic yards of mulch: 11 bags of 2 cu ft.',
   'calc.mulch.page.volumeYd3': '{value} cubic yards',
   'calc.mulch.page.volumeM3': '{value} cubic meters',
   'calc.mulch.page.shoppingLine': 'Mulch, {size} cu ft bags',

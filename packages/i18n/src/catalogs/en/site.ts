@@ -40,6 +40,8 @@ export const enSite = {
     'Square feet, yards and meters for a room, floor or slab.',
   'page.home.cards.gravel.title': 'Gravel calculator',
   'page.home.cards.gravel.summary': 'Tons and cubic yards of gravel for a driveway, path or base.',
+  'page.home.cards.mulch.title': 'Mulch calculator',
+  'page.home.cards.mulch.summary': 'Cubic yards and bags of mulch for a garden bed.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -69,6 +71,9 @@ export const enSite = {
   'page.gravel.title': 'Gravel Calculator: Tons and Cubic Yards | Maestro Calc',
   'page.gravel.description':
     'Find how many tons of gravel to order for a driveway, path or base, compacted or loose, with the cubic yards and the cost. Free and instant.',
+  'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
+  'page.mulch.description':
+    'Find how much mulch a garden bed needs in cubic yards and 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

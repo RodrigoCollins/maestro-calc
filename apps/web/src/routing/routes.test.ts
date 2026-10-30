@@ -89,6 +89,13 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('gravel')).toBe(ids.indexOf('rectangle-area') + 1);
   });
 
+  // spec: site-routing-i18n › the mulch row, published 2026-10-29: its two URLs are a public contract
+  it('lists mulch after gravel, at its published URLs', () => {
+    expect(ROUTES.mulch).toEqual({ en: '/mulch-calculator', es: '/es/calculadora-de-mulch' });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('mulch')).toBe(ids.indexOf('gravel') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

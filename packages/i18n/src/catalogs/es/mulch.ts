@@ -19,6 +19,8 @@ export const esMulch = {
   'calc.mulch.outputs.netVolume': 'Volumen sin extra (pies cúbicos)',
   'calc.mulch.outputs.bagCost': 'Costo en bolsas',
   'calc.mulch.outputs.bulkCost': 'Costo a granel',
+  'calc.mulch.page.example':
+    'Ejemplo: un área de 20 ft por 4 ft, de 3 in de profundidad, lleva 0.78 yardas cúbicas de mulch: 11 bolsas de 2 cu ft.',
   'calc.mulch.page.volumeYd3': '{value} yardas cúbicas',
   'calc.mulch.page.volumeM3': '{value} metros cúbicos',
   'calc.mulch.page.shoppingLine': 'Mulch, bolsas de {size} cu ft',

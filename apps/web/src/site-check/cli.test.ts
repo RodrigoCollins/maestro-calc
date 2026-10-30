@@ -56,6 +56,7 @@ const site = {
     concrete: [QUIKRETE_URL, NIST_URL],
     'rectangle-area': [NIST_URL],
     gravel: [WISDOT_URL, NIST_URL],
+    mulch: [NIST_URL],
   },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
