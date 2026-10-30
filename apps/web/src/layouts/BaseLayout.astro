@@ -41,6 +41,9 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
 <html lang={LOCALE_TAGS[locale]}>
   <head>
     <SeoHead {...head} />
+    {SITE.adsenseClient !== '' && (
+      <meta name="google-adsense-account" content={SITE.adsenseClient} />
+    )}
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
     {style !== undefined && <style is:inline set:html={style} />}

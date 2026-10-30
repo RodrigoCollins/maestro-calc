@@ -148,6 +148,16 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(styled.querySelectorAll('head style').at(-1)?.text).toBe(style);
   });
 
+  // adsense-verify: the site ownership meta tag of AdSense names the publisher id, in the head
+  it('names the AdSense publisher in one meta tag of the head', async () => {
+    const { document } = await render('en');
+    const tags = document.querySelectorAll('meta[name="google-adsense-account"]');
+    expect(tags).toHaveLength(1);
+    expect(tags[0]?.getAttribute('content')).toBe(SITE.adsenseClient);
+    expect(tags[0]?.parentNode?.tagName).toBe('HEAD');
+    expect(SITE.adsenseClient).toMatch(/^ca-pub-\d{16}$/);
+  });
+
   // analytics-gtm: one deferred same-origin tag ends the head on every page, with the container id
   // and the production host as data; it has no body (the CSP allows no inline script)
   it('ends the head with the one analytics tag', async () => {
