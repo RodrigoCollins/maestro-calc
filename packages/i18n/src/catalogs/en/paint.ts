@@ -13,4 +13,11 @@ export const enPaint = {
   'calc.paint.outputs.paintArea': 'Area to paint (square feet)',
   'calc.paint.outputs.wallArea': 'Wall area before openings (square feet)',
   'calc.paint.outputs.cost': 'Paint cost',
+  'calc.paint.page.gallons': '{value} gallons',
+  'calc.paint.page.liters': '{value} liters',
+  'calc.paint.page.shoppingLine': 'Paint, gallon cans',
+  'calc.paint.page.priceHint': 'Add your price to see the cost',
+  'calc.paint.page.answer':
+    'A {length} by {width} room with {height} walls needs {paint} of paint for {coats} coats: {cans} gallon cans.',
+  'calc.paint.page.drawing.note': '{height} walls',
 } as const;

@@ -16,4 +16,11 @@ export const esPaint = {
   'calc.paint.outputs.paintArea': 'Área a pintar (pies cuadrados)',
   'calc.paint.outputs.wallArea': 'Área de paredes sin descontar aberturas (pies cuadrados)',
   'calc.paint.outputs.cost': 'Costo de la pintura',
+  'calc.paint.page.gallons': '{value} galones',
+  'calc.paint.page.liters': '{value} litros',
+  'calc.paint.page.shoppingLine': 'Pintura, latas de un galón',
+  'calc.paint.page.priceHint': 'Agrega tu precio para ver el costo',
+  'calc.paint.page.answer':
+    'Un cuarto de {length} por {width} con paredes de {height} lleva {paint} de pintura para {coats} manos: {cans} latas de un galón.',
+  'calc.paint.page.drawing.note': 'paredes de {height}',
 } as const satisfies CatalogOf<typeof enPaint>;
