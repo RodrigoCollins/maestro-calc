@@ -16,6 +16,8 @@ export const esPaint = {
   'calc.paint.outputs.paintArea': 'Área a pintar (pies cuadrados)',
   'calc.paint.outputs.wallArea': 'Área de paredes sin descontar aberturas (pies cuadrados)',
   'calc.paint.outputs.cost': 'Costo de la pintura',
+  'calc.paint.page.example':
+    'Ejemplo: un cuarto de 12 ft por 12 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.91 galones de pintura para dos manos.',
   'calc.paint.page.gallons': '{value} galones',
   'calc.paint.page.liters': '{value} litros',
   'calc.paint.page.shoppingLine': 'Pintura, latas de un galón',

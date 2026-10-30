@@ -76,6 +76,14 @@ export const WORKED_EXAMPLES = {
     netFt3: decimalText,
     bags: z.number().int().nonnegative(),
   }),
+  paint: z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    gallons: decimalText,
+    liters: decimalText,
+    paintFt2: decimalText,
+    wallFt2: decimalText,
+    cans: z.number().int().nonnegative(),
+  }),
 };
 
 /** The calculator ids that have a worked example row. */

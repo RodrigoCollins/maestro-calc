@@ -138,6 +138,29 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | 20 ft × 10 ft × 6 in (`?v=1&l=240&w=120&d=6`)                                 | 4.07           | 3.11           | 147    |
 | 50 ft × 40 ft × 1 in (`?v=1&l=600&w=480&d=1`)                                 | 6.79           | 5.19           | 245    |
 
+<h2 id="pintura">Calculadora de pintura</h2>
+
+La [calculadora de pintura](/es/calculadora-de-pintura) calcula los galones de pintura para las paredes de un cuarto rectangular, descontando sus puertas y ventanas, y las latas de un galón enteras a comprar. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+Las fórmulas:
+
+- Área de paredes = 2 × (largo + ancho) × altura.
+- Área a pintar = área de paredes − 20 pies cuadrados por puerta − 15 pies cuadrados por ventana, nunca menos de cero.
+- Galones = área a pintar × manos ÷ rendimiento por galón.
+- Latas = galones, redondeados hacia arriba a un galón entero.
+
+El rendimiento es aproximadamente 350 pies cuadrados por galón para una mano, el extremo bajo de los 350 a 400 pies cuadrados por galón a 4 mils en húmedo de la hoja técnica de Sherwin-Williams Quali-Kote Interior Latex (julio de 2020). Los 20 pies cuadrados de una puerta (una puerta estándar de 36 por 80 pulgadas) y los 15 pies cuadrados de una ventana (3 por 5 pies) son descuentos aproximados. Un galón de EE. UU. es exactamente 231 pulgadas cúbicas, y un litro es exactamente 1,000 centímetros cúbicos (NIST SP 811, apéndice B). La cantidad de latas es la única cifra que se redondea en el cálculo, siempre hacia arriba. Las demás cifras se redondean a dos decimales solo cuando te las mostramos.
+
+Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                                        | Galones | Litros | Latas |
+| ------------------------------------------------------------------------------------------- | ------- | ------ | ----- |
+| Cuarto de 12 ft × 12 ft, paredes de 8 ft, 1 puerta, 2 ventanas, 2 manos (valores iniciales) | 1.91    | 7.22   | 2     |
+| Igual, 3 manos (`?v=1&c=3`)                                                                 | 2.86    | 10.84  | 3     |
+| Igual, sin puertas ni ventanas (`?v=1&dr=0&wn=0`)                                           | 2.19    | 8.31   | 3     |
+| 20 ft × 15 ft, paredes de 9 ft (`?v=1&l=240&w=180&h=108`)                                   | 3.31    | 12.55  | 4     |
+| 50 ft × 40 ft, paredes de 10 ft, 2 puertas, 8 ventanas (`?v=1&l=600&w=480&h=120&dr=2&wn=8`) | 9.37    | 35.47  | 10    |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

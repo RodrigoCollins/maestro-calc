@@ -74,7 +74,8 @@ type PaintPageKeys =
   | 'calc.paint.page.shoppingLine'
   | 'calc.paint.page.priceHint'
   | 'calc.paint.page.answer'
-  | 'calc.paint.page.drawing.note';
+  | 'calc.paint.page.drawing.note'
+  | 'calc.paint.page.example';
 
 /** The page copy of the topsoil calculator (`calc.topsoil.page.*`), exactly: a new key is added here. */
 type TopsoilPageKeys =

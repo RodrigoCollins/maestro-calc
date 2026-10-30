@@ -267,4 +267,54 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=600&w=480&d=1', figures: ['6.79', '5.19', '245'] },
     ],
   },
+  paint: {
+    anchor: { en: 'paint', es: 'pintura' },
+    pageLink: {
+      en: '[paint calculator](/paint-calculator)',
+      es: '[calculadora de pintura](/es/calculadora-de-pintura)',
+    },
+    formulas: {
+      en: [
+        '2 × (length + width) × height',
+        'wall area − 20 square feet per door − 15 square feet per window',
+        'area to paint × coats ÷ coverage per gallon',
+        'gallons, rounded up to a whole gallon',
+      ],
+      es: [
+        '2 × (largo + ancho) × altura',
+        'área de paredes − 20 pies cuadrados por puerta − 15 pies cuadrados por ventana',
+        'área a pintar × manos ÷ rendimiento por galón',
+        'galones, redondeados hacia arriba a un galón entero',
+      ],
+    },
+    honesty: {
+      en: [
+        /approximately 350 square feet per gallon/,
+        /Sherwin-Williams Quali-Kote Interior Latex/,
+        /approximate allowances/,
+        /exactly 231 cubic inches/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /aproximadamente 350 pies cuadrados por galón/,
+        /Sherwin-Williams Quali-Kote Interior Latex/,
+        /descuentos aproximados/,
+        /exactamente 231 pulgadas cúbicas/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['gallons', 'liters', 'cans'],
+    figuresOf: (shown) => [
+      figure(shown, 'gallons'),
+      figure(shown, 'liters'),
+      shown.shopping[0] ?? '',
+    ],
+    published: [
+      { query: '', figures: ['1.91', '7.22', '2'] },
+      { query: '?v=1&c=3', figures: ['2.86', '10.84', '3'] },
+      { query: '?v=1&dr=0&wn=0', figures: ['2.19', '8.31', '3'] },
+      { query: '?v=1&l=240&w=180&h=108', figures: ['3.31', '12.55', '4'] },
+      { query: '?v=1&l=600&w=480&h=120&dr=2&wn=8', figures: ['9.37', '35.47', '10'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

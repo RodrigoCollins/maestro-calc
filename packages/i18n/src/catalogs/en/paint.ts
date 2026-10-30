@@ -13,6 +13,8 @@ export const enPaint = {
   'calc.paint.outputs.paintArea': 'Area to paint (square feet)',
   'calc.paint.outputs.wallArea': 'Wall area before openings (square feet)',
   'calc.paint.outputs.cost': 'Paint cost',
+  'calc.paint.page.example':
+    'Example: a 12 ft by 12 ft room with 8 ft walls, one door and two windows needs 1.91 gallons of paint for two coats.',
   'calc.paint.page.gallons': '{value} gallons',
   'calc.paint.page.liters': '{value} liters',
   'calc.paint.page.shoppingLine': 'Paint, gallon cans',

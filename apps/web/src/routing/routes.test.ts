@@ -106,6 +106,13 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('topsoil')).toBe(ids.indexOf('mulch') + 1);
   });
 
+  // spec: site-routing-i18n › the paint row, published 2026-10-30: its two URLs are a public contract
+  it('lists paint after topsoil, at its published URLs', () => {
+    expect(ROUTES.paint).toEqual({ en: '/paint-calculator', es: '/es/calculadora-de-pintura' });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('paint')).toBe(ids.indexOf('topsoil') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

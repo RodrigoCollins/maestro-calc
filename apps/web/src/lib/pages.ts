@@ -3,6 +3,7 @@ import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
+import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
@@ -10,6 +11,7 @@ import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
+import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
@@ -18,6 +20,8 @@ import { gravelPage } from '../calculator/gravel/page.ts';
 import { gravelReserve } from '../calculator/gravel/reserve.ts';
 import { mulchPage } from '../calculator/mulch/page.ts';
 import { mulchReserve } from '../calculator/mulch/reserve.ts';
+import { paintPage } from '../calculator/paint/page.ts';
+import { paintReserve } from '../calculator/paint/reserve.ts';
 import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { rectangleAreaReserve } from '../calculator/rectangle-area/reserve.ts';
 import { topsoilPage } from '../calculator/topsoil/page.ts';
@@ -92,6 +96,14 @@ export const PAGES = {
       es: { ...esCommon, ...esTopsoil, ...esSite },
     },
     reserve: topsoilReserve,
+  },
+  paint: {
+    module: paintPage,
+    catalogs: {
+      en: { ...enCommon, ...enPaint, ...enSite },
+      es: { ...esCommon, ...esPaint, ...esSite },
+    },
+    reserve: paintReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 

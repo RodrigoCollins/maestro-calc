@@ -138,6 +138,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 20 ft × 10 ft × 6 in (`?v=1&l=240&w=120&d=6`)                       | 4.07        | 3.11         | 147  |
 | 50 ft × 40 ft × 1 in (`?v=1&l=600&w=480&d=1`)                       | 6.79        | 5.19         | 245  |
 
+<h2 id="paint">Paint calculator</h2>
+
+The [paint calculator](/paint-calculator) finds the gallons of paint for the walls of a rectangular room, less its doors and windows, and the whole gallon cans to buy. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Wall area = 2 × (length + width) × height.
+- Area to paint = wall area − 20 square feet per door − 15 square feet per window, never below zero.
+- Gallons = area to paint × coats ÷ coverage per gallon.
+- Cans = gallons, rounded up to a whole gallon.
+
+The coverage is approximately 350 square feet per gallon for one coat, the low end of the 350 to 400 square feet per gallon at 4 mils wet in the Sherwin-Williams Quali-Kote Interior Latex Product Data Sheet (July 2020). The 20 square feet of a door (a standard 36 by 80 inch door) and the 15 square feet of a window (3 by 5 feet) are approximate allowances. A US gallon is exactly 231 cubic inches, and a liter is exactly 1,000 cubic centimeters (NIST SP 811, Appendix B). The can count is the only figure rounded in the calculation, always up. The other figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                                | Gallons | Liters | Cans |
+| ----------------------------------------------------------------------------------- | ------- | ------ | ---- |
+| 12 ft × 12 ft room, 8 ft walls, 1 door, 2 windows, 2 coats (starting values)        | 1.91    | 7.22   | 2    |
+| Same, 3 coats (`?v=1&c=3`)                                                          | 2.86    | 10.84  | 3    |
+| Same, no doors or windows (`?v=1&dr=0&wn=0`)                                        | 2.19    | 8.31   | 3    |
+| 20 ft × 15 ft, 9 ft walls (`?v=1&l=240&w=180&h=108`)                                | 3.31    | 12.55  | 4    |
+| 50 ft × 40 ft, 10 ft walls, 2 doors, 8 windows (`?v=1&l=600&w=480&h=120&dr=2&wn=8`) | 9.37    | 35.47  | 10   |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

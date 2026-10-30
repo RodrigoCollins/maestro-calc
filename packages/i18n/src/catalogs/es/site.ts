@@ -49,6 +49,9 @@ export const esSite = {
   'page.home.cards.topsoil.title': 'Calculadora de tierra para jardín',
   'page.home.cards.topsoil.summary':
     'Yardas cúbicas y bolsas de tierra para un césped, una jardinera o un relleno.',
+  'page.home.cards.paint.title': 'Calculadora de pintura',
+  'page.home.cards.paint.summary':
+    'Galones de pintura y latas a comprar para las paredes de un cuarto.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -84,6 +87,9 @@ export const esSite = {
   'page.topsoil.title': 'Calculadora de tierra para jardín en yardas | Maestro Calc',
   'page.topsoil.description':
     'Calcula cuánta tierra lleva un césped, una jardinera o un relleno en yardas cúbicas y bolsas, con extra por asentamiento y el costo en bolsas y a granel.',
+  'page.paint.title': 'Calculadora de pintura: galones por cuarto | Maestro Calc',
+  'page.paint.description':
+    'Calcula cuántos galones de pintura llevan las paredes de un cuarto, sin puertas ni ventanas, para una a cinco manos, con las latas y el costo. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',
