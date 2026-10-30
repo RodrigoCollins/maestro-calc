@@ -60,6 +60,14 @@ export const WORKED_EXAMPLES = {
     orderYd3: decimalText,
     placedYd3: decimalText,
   }),
+  mulch: z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    yd3: decimalText,
+    ft3: decimalText,
+    m3: decimalText,
+    netFt3: decimalText,
+    bags: z.number().int().nonnegative(),
+  }),
 };
 
 /** The calculator ids that have a worked example row. */

@@ -62,7 +62,8 @@ type MulchPageKeys =
   | 'calc.mulch.page.shoppingLine'
   | 'calc.mulch.page.priceHint'
   | 'calc.mulch.page.answer'
-  | 'calc.mulch.page.drawing.note';
+  | 'calc.mulch.page.drawing.note'
+  | 'calc.mulch.page.example';
 
 /** The page copy of the topsoil calculator (`calc.topsoil.page.*`), exactly: a new key is added here. */
 type TopsoilPageKeys =

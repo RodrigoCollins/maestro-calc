@@ -2,6 +2,7 @@ import { concreteMix } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
 import { gravelPage } from '../../calculator/gravel/page.ts';
+import { mulchPage } from '../../calculator/mulch/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
@@ -90,6 +91,26 @@ const gravelShown = ({ query }: WorkedExample<'gravel'>) => {
   };
 };
 
+/** The volumes and the bags the mulch page shows for the example's link. */
+const mulchShown = ({ query }: WorkedExample<'mulch'>) => {
+  const { figures, shopping } = shownFigures(mulchPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the mulch page shows no ${key}`);
+    return value;
+  };
+  const [bags] = shopping;
+  if (bags === undefined) throw new Error('the mulch page shows no bag line');
+  return {
+    query,
+    yd3: shown('volumeYd3'),
+    ft3: shown('volumeFt3'),
+    m3: shown('volumeM3'),
+    netFt3: shown('netVolume'),
+    bags: Number(bags),
+  };
+};
+
 const WISDOT = {
   name: /^WisDOT WHRP G22-05, Table E2\b/,
   url: 'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf',
@@ -130,6 +151,24 @@ export const CONTENT_ROWS = {
       '4 in',
     ],
     methodologyLink: { en: '/methodology#gravel', es: '/es/metodologia#grava' },
+  },
+  mulch: {
+    module: mulchPage,
+    updated: '2026-10-29',
+    sources: () => [NIST],
+    engine: mulchShown,
+    // the example is the page's starting values: Formulas names the three sides as written
+    figures: ({ yd3, ft3, m3, netFt3, bags }) => [
+      yd3,
+      ft3,
+      m3,
+      netFt3,
+      String(bags),
+      '20 ft',
+      '4 ft',
+      '3 in',
+    ],
+    methodologyLink: { en: '/methodology#mulch', es: '/es/metodologia#mulch' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

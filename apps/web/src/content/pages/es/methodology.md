@@ -92,6 +92,29 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | 30 ft × 12 ft × 6 in, compactada (`?v=1&l=360&w=144&d=6`)          | 12.81     | 11.62              | 9.93                   |
 | 10 ft × 10 ft × 3 in, suelta (`?v=1&l=120&w=120&d=3&pl=loose`)     | 1.25      | 1.14               | 0.97                   |
 
+<h2 id="mulch">Calculadora de mulch</h2>
+
+La [calculadora de mulch](/es/calculadora-de-mulch) calcula el volumen de mulch para un área rectangular con cierta profundidad, en yardas cúbicas para pedir a granel y en bolsas enteras para comprar en la tienda. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+Las fórmulas:
+
+- Volumen = largo × ancho × profundidad.
+- Volumen total = volumen × (1 + extra ÷ 100).
+- Yardas cúbicas = volumen total ÷ 27, con el volumen en pies cúbicos.
+- Bolsas = volumen total ÷ tamaño de la bolsa, redondeado hacia arriba a una bolsa entera.
+
+No interviene ninguna constante del material: una bolsa contiene el volumen impreso en ella, 2 o 3 pies cúbicos, y una yarda cúbica es exactamente 27 pies cúbicos. Las cifras métricas usan un pie como exactamente 0.3048 metros (NIST SP 811, apéndice B). La cantidad de bolsas es la única cifra que se redondea en el cálculo, siempre hacia arriba. Los volúmenes se redondean a dos decimales solo cuando te los mostramos.
+
+Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                     | Yardas cúbicas | Metros cúbicos | Bolsas |
+| ------------------------------------------------------------------------ | -------------- | -------------- | ------ |
+| 20 ft × 4 ft × 3 in, 5 % de extra, bolsas de 2 cu ft (valores iniciales) | 0.78           | 0.59           | 11     |
+| Igual, bolsas de 3 cu ft (`?v=1&bg=3`)                                   | 0.78           | 0.59           | 7      |
+| Igual, sin extra (`?v=1&ws=0`)                                           | 0.74           | 0.57           | 10     |
+| 10 ft × 10 ft × 4 in (`?v=1&l=120&w=120&d=4`)                            | 1.30           | 0.99           | 18     |
+| 30 ft × 3 ft × 2 in (`?v=1&l=360&w=36&d=2`)                              | 0.58           | 0.45           | 8      |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

@@ -8,9 +8,9 @@ import { answer, notRunning, open } from './locators.ts';
 // and of every `reserve` of the page table (the first width where a rule applies and the one before
 // it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
 const WIDTHS = [
-  320, 327, 328, 343, 344, 351, 352, 355, 356, 375, 376, 383, 384, 385, 386, 387, 390, 391, 392,
-  463, 464, 471, 472, 479, 480, 481, 487, 488, 503, 504, 567, 568, 583, 584, 599, 600, 640, 666,
-  667, 711, 712, 729, 730, 767, 768, 879, 880, 919, 920, 1023, 1024, 1280,
+  320, 327, 328, 335, 336, 343, 344, 351, 352, 355, 356, 375, 376, 383, 384, 385, 386, 387, 390,
+  391, 392, 463, 464, 471, 472, 479, 480, 481, 487, 488, 503, 504, 567, 568, 583, 584, 599, 600,
+  640, 666, 667, 711, 712, 729, 730, 767, 768, 879, 880, 887, 888, 919, 920, 1023, 1024, 1280,
 ] as const;
 
 type Block = 'answer' | 'notice' | 'copy';

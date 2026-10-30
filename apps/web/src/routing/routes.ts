@@ -30,6 +30,7 @@ export const ROUTES = {
     es: '/es/calculadora-de-pies-cuadrados',
   },
   gravel: { en: '/gravel-calculator', es: '/es/calculadora-de-grava' },
+  mulch: { en: '/mulch-calculator', es: '/es/calculadora-de-mulch' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

@@ -92,6 +92,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 30 ft × 12 ft × 6 in, compacted (`?v=1&l=360&w=144&d=6`)      | 12.81 | 11.62         | 9.93                 |
 | 10 ft × 10 ft × 3 in, loose (`?v=1&l=120&w=120&d=3&pl=loose`) | 1.25  | 1.14          | 0.97                 |
 
+<h2 id="mulch">Mulch calculator</h2>
+
+The [mulch calculator](/mulch-calculator) finds the volume of mulch for a rectangular bed at a given depth, in cubic yards for a bulk order and in whole bags for a store run. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Volume = length × width × depth.
+- Total volume = volume × (1 + extra ÷ 100).
+- Cubic yards = total volume ÷ 27, with the volume in cubic feet.
+- Bags = total volume ÷ bag size, rounded up to a whole bag.
+
+No material constant is involved: a bag holds the volume printed on it, 2 or 3 cubic feet, and one cubic yard is exactly 27 cubic feet. The metric figures use one foot as exactly 0.3048 meters (NIST SP 811, Appendix B). The bag count is the only figure rounded in the calculation, always up. The volumes are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                           | Cubic yards | Cubic meters | Bags |
+| -------------------------------------------------------------- | ----------- | ------------ | ---- |
+| 20 ft × 4 ft × 3 in, 5 % extra, 2 cu ft bags (starting values) | 0.78        | 0.59         | 11   |
+| Same, 3 cu ft bags (`?v=1&bg=3`)                               | 0.78        | 0.59         | 7    |
+| Same, no extra (`?v=1&ws=0`)                                   | 0.74        | 0.57         | 10   |
+| 10 ft × 10 ft × 4 in (`?v=1&l=120&w=120&d=4`)                  | 1.30        | 0.99         | 18   |
+| 30 ft × 3 ft × 2 in (`?v=1&l=360&w=36&d=2`)                    | 0.58        | 0.45         | 8    |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.
