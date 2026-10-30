@@ -5,6 +5,12 @@ const local = 'http://127.0.0.1:8787';
 // (the post-deploy smoke of tasks F.4); without it they serve the local build.
 const external = process.env['BASE_URL'];
 const origin = external ?? local;
+// `SHARD=1/2` runs one half of the suites (the CI matrix splits them over two runners); unset, all.
+const [current, total] = (process.env['SHARD'] ?? '').split('/').map(Number);
+const shard =
+  current !== undefined && total !== undefined && current > 0 && total > 0
+    ? { current, total }
+    : null;
 
 // Phone projects against `wrangler dev` serving the `dist` that `verify` built: Wrangler applies the
 // same asset rules and `_headers` as production, which `astro preview` does not. The `no-js`
@@ -12,6 +18,7 @@ const origin = external ?? local;
 export default defineConfig({
   testDir: 'e2e',
   forbidOnly: true,
+  shard,
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   // A failed test keeps its trace and screenshot in `test-results`, which CI uploads on failure.
