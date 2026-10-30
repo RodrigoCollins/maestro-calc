@@ -17,6 +17,8 @@ export const enTopsoil = {
   'calc.topsoil.outputs.netVolume': 'Volume before extra (cubic feet)',
   'calc.topsoil.outputs.bagCost': 'Cost in bags',
   'calc.topsoil.outputs.bulkCost': 'Cost in bulk',
+  'calc.topsoil.page.example':
+    'Example: a 10 ft by 10 ft area, 4 in deep, needs 1.36 cubic yards of topsoil: 49 bags of 0.75 cu ft.',
   'calc.topsoil.page.volumeYd3': '{value} cubic yards',
   'calc.topsoil.page.volumeM3': '{value} cubic meters',
   'calc.topsoil.page.shoppingLine': 'Topsoil, {size} cu ft bags',

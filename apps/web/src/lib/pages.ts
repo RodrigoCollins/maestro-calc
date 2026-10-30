@@ -5,12 +5,14 @@ import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
+import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
+import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { concretePage } from '../calculator/concrete/page.ts';
 import { gravelPage } from '../calculator/gravel/page.ts';
 import { gravelReserve } from '../calculator/gravel/reserve.ts';
@@ -18,6 +20,8 @@ import { mulchPage } from '../calculator/mulch/page.ts';
 import { mulchReserve } from '../calculator/mulch/reserve.ts';
 import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { rectangleAreaReserve } from '../calculator/rectangle-area/reserve.ts';
+import { topsoilPage } from '../calculator/topsoil/page.ts';
+import { topsoilReserve } from '../calculator/topsoil/reserve.ts';
 import type { Messages } from '../calculator/controller.ts';
 import type { AnyPageModule } from '../calculator/page-module.ts';
 import type { CalculatorPageView } from '../components/calculator/model.ts';
@@ -80,6 +84,14 @@ export const PAGES = {
       es: { ...esCommon, ...esMulch, ...esSite },
     },
     reserve: mulchReserve,
+  },
+  topsoil: {
+    module: topsoilPage,
+    catalogs: {
+      en: { ...enCommon, ...enTopsoil, ...enSite },
+      es: { ...esCommon, ...esTopsoil, ...esSite },
+    },
+    reserve: topsoilReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 

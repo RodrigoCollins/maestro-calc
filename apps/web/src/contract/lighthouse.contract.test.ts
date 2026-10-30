@@ -160,7 +160,7 @@ describe('CI Lighthouse step (site-quality › [SQ15])', () => {
     expect(reports[0]?.if).toBe('failure()');
   });
 
-  it('stays inside the twenty-minute limit of the job', () => {
-    expect(workflow.jobs['site-browser']?.['timeout-minutes']).toBeLessThanOrEqual(20);
+  it('stays inside the forty-minute limit of the job', () => {
+    expect(workflow.jobs['site-browser']?.['timeout-minutes']).toBeLessThanOrEqual(40);
   });
 });

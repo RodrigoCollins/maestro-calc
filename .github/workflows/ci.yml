@@ -286,7 +286,10 @@ jobs:
   site-browser:
     needs: verify
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # The browser suites grow with every calculator page (PR #133: 17 min of tests and 1 min of
+    # Lighthouse for five pages), and a cold browser install adds 7 to 12; sharding the suites is the
+    # next step when a run nears the limit.
+    timeout-minutes: 40
     env:
       WRANGLER_SEND_METRICS: 'false'
     steps:

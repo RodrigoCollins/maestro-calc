@@ -3,6 +3,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
 import { gravelPage } from '../../calculator/gravel/page.ts';
 import { mulchPage } from '../../calculator/mulch/page.ts';
+import { topsoilPage } from '../../calculator/topsoil/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
@@ -111,6 +112,26 @@ const mulchShown = ({ query }: WorkedExample<'mulch'>) => {
   };
 };
 
+/** The volumes and the bags the topsoil page shows for the example's link. */
+const topsoilShown = ({ query }: WorkedExample<'topsoil'>) => {
+  const { figures, shopping } = shownFigures(topsoilPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the topsoil page shows no ${key}`);
+    return value;
+  };
+  const [bags] = shopping;
+  if (bags === undefined) throw new Error('the topsoil page shows no bag line');
+  return {
+    query,
+    yd3: shown('volumeYd3'),
+    ft3: shown('volumeFt3'),
+    m3: shown('volumeM3'),
+    netFt3: shown('netVolume'),
+    bags: Number(bags),
+  };
+};
+
 const WISDOT = {
   name: /^WisDOT WHRP G22-05, Table E2\b/,
   url: 'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf',
@@ -169,6 +190,23 @@ export const CONTENT_ROWS = {
       '3 in',
     ],
     methodologyLink: { en: '/methodology#mulch', es: '/es/metodologia#mulch' },
+  },
+  topsoil: {
+    module: topsoilPage,
+    updated: '2026-10-29',
+    sources: () => [NIST],
+    engine: topsoilShown,
+    // the example is the page's starting values: Formulas names the sides and the depth as written
+    figures: ({ yd3, ft3, m3, netFt3, bags }) => [
+      yd3,
+      ft3,
+      m3,
+      netFt3,
+      String(bags),
+      '10 ft',
+      '4 in',
+    ],
+    methodologyLink: { en: '/methodology#topsoil', es: '/es/metodologia#tierra-para-jardin' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 
