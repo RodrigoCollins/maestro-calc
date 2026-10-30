@@ -120,6 +120,16 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('drywall')).toBe(ids.indexOf('paint') + 1);
   });
 
+  // spec: site-routing-i18n › the roof pitch row, published 2026-10-30: its two URLs are a public contract
+  it('lists roof pitch after drywall, at its published URLs', () => {
+    expect(ROUTES['roof-pitch']).toEqual({
+      en: '/roof-pitch-calculator',
+      es: '/es/calculadora-de-pendiente-de-techo',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('roof-pitch')).toBe(ids.indexOf('drywall') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

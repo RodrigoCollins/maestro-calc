@@ -185,6 +185,29 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | 20 ft × 15 ft, paredes de 9 ft (`?v=1&l=240&w=180&h=108`)                                                                           | 880.00         | 31     | 2      | 1      |
 | 50 ft × 40 ft, paredes de 10 ft, 2 puertas, 8 ventanas (`?v=1&l=600&w=480&h=120&dr=2&wn=8`)                                         | 3,640.00       | 126    | 8      | 3      |
 
+<h2 id="pendiente-de-techo">Calculadora de pendiente de techo</h2>
+
+La [calculadora de pendiente de techo](/es/calculadora-de-pendiente-de-techo) convierte una subida y un recorrido en la pendiente en 12, el ángulo y el largo del cabio, y compara la pendiente con el mínimo de la cubierta elegida. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+Las fórmulas:
+
+- Inclinación = subida ÷ recorrido.
+- Pendiente en 12 = inclinación × 12.
+- Ángulo = arcotangente de la inclinación, en grados.
+- Largo del cabio = (recorrido del cabio + alero) × √(1 + inclinación²).
+
+La raíz cuadrada se conserva con veinte decimales (nunca pasa la raíz verdadera y queda a menos de 10⁻²⁰ de ella), y la arcotangente dentro de 10⁻²⁰ de grado, con la serie de Euler y pi con 35 cifras. Las pendientes mínimas vienen del International Residential Code de 2021: R905.2.2 tejas asfálticas, 2 en 12, con dos capas de fieltro desde 2 en 12 hasta 4 en 12; R905.3.2 teja de barro y concreto, 2 1/2 en 12, con las mismas dos capas hasta 4 en 12; R905.4.2 tejas metálicas, 3 en 12; R905.5.2 rollo asfáltico con superficie mineral, 1 en 12; R905.6.2 pizarra, 4 en 12; R905.7.2 y R905.8.2 tejas y tablillas de madera, 3 en 12. Una pendiente igual al mínimo lo cumple, y en 4 en 12 alcanza una capa de fieltro. Las cifras se redondean a dos decimales solo cuando te las mostramos.
+
+Casos verificados a mano, con 12 ft de recorrido del cabio y 12 in de alero. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                 | Pendiente en 12 | Grados | Cabio (ft) |
+| ------------------------------------ | --------------- | ------ | ---------- |
+| 6 in sobre 12 in (valores iniciales) | 6.00            | 26.57  | 14.53      |
+| 3 in sobre 12 in (`?v=1&r=3`)        | 3.00            | 14.04  | 13.40      |
+| 4 in sobre 12 in (`?v=1&r=4`)        | 4.00            | 18.43  | 13.70      |
+| 9 in sobre 12 in (`?v=1&r=9`)        | 9.00            | 36.87  | 16.25      |
+| 12 in sobre 12 in (`?v=1&r=12`)      | 12.00           | 45.00  | 18.38      |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

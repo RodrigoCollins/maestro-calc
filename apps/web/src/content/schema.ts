@@ -92,6 +92,13 @@ export const WORKED_EXAMPLES = {
     tapeFt: decimalText,
     sheets: z.number().int().nonnegative(),
   }),
+  'roof-pitch': z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    pitch: decimalText,
+    angle: decimalText,
+    rafterFt: decimalText,
+    rafterM: decimalText,
+  }),
 };
 
 /** The calculator ids that have a worked example row. */

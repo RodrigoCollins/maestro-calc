@@ -77,7 +77,8 @@ type RoofPitchPageKeys =
   | 'calc.roof-pitch.page.angle'
   | 'calc.roof-pitch.page.answer.meets'
   | 'calc.roof-pitch.page.answer.double'
-  | 'calc.roof-pitch.page.answer.below';
+  | 'calc.roof-pitch.page.answer.below'
+  | 'calc.roof-pitch.page.example';
 
 /** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
 type DrywallPageKeys =

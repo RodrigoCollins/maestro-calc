@@ -185,6 +185,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 20 ft × 15 ft, 9 ft walls (`?v=1&l=240&w=180&h=108`)                                                             | 880.00      | 31     | 2     | 1     |
 | 50 ft × 40 ft, 10 ft walls, 2 doors, 8 windows (`?v=1&l=600&w=480&h=120&dr=2&wn=8`)                              | 3,640.00    | 126    | 8     | 3     |
 
+<h2 id="roof-pitch">Roof pitch calculator</h2>
+
+The [roof pitch calculator](/roof-pitch-calculator) turns a rise and a run into the pitch in 12, the angle and the rafter length, and checks the pitch against the minimum slope of the chosen covering. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Slope = rise ÷ run.
+- Pitch in 12 = slope × 12.
+- Angle = arctangent of the slope, in degrees.
+- Rafter length = (rafter run + overhang) × √(1 + slope²).
+
+The square root is kept to twenty decimals (it is never above the true root and less than 10⁻²⁰ below it), and the arctangent within 10⁻²⁰ of a degree, from Euler's series with pi to 35 digits. The minimum slopes come from the 2021 International Residential Code: R905.2.2 asphalt shingles, 2 in 12, with two layers of underlayment from 2 in 12 up to 4 in 12; R905.3.2 clay and concrete tile, 2 1/2 in 12, with the same two layers up to 4 in 12; R905.4.2 metal roof shingles, 3 in 12; R905.5.2 mineral-surfaced roll roofing, 1 in 12; R905.6.2 slate, 4 in 12; R905.7.2 and R905.8.2 wood shingles and shakes, 3 in 12. A pitch equal to the minimum meets it, and at 4 in 12 one layer of underlayment is enough. The figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases, with a 12 ft rafter run and a 12 in overhang. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                              | Pitch in 12 | Degrees | Rafter (ft) |
+| --------------------------------- | ----------- | ------- | ----------- |
+| 6 in over 12 in (starting values) | 6.00        | 26.57   | 14.53       |
+| 3 in over 12 in (`?v=1&r=3`)      | 3.00        | 14.04   | 13.40       |
+| 4 in over 12 in (`?v=1&r=4`)      | 4.00        | 18.43   | 13.70       |
+| 9 in over 12 in (`?v=1&r=9`)      | 9.00        | 36.87   | 16.25       |
+| 12 in over 12 in (`?v=1&r=12`)    | 12.00       | 45.00   | 18.38       |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

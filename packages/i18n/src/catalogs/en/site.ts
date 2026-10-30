@@ -49,6 +49,9 @@ export const enSite = {
   'page.home.cards.drywall.title': 'Drywall calculator',
   'page.home.cards.drywall.summary':
     'Sheets, joint compound and tape for the walls and ceiling of a room.',
+  'page.home.cards.roof-pitch.title': 'Roof pitch calculator',
+  'page.home.cards.roof-pitch.summary':
+    'Pitch, angle and rafter length, checked against the IRC minimum slope.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -90,6 +93,9 @@ export const enSite = {
   'page.drywall.title': 'Drywall Calculator: Sheets, Mud and Tape | Maestro Calc',
   'page.drywall.description':
     'Find how many drywall sheets a room needs, walls and ceiling, less doors and windows, with the joint compound, the tape and the cost. Free and instant.',
+  'page.roof-pitch.title': 'Roof Pitch Calculator: Angle and Rafter | Maestro Calc',
+  'page.roof-pitch.description':
+    'Find the pitch of a roof in 12, its angle and the rafter length, and check it against the IRC minimum slope for shingles, tile, metal or slate. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

@@ -20,6 +20,7 @@ import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
+  IRC_URL,
   NIST_URL,
   QUIKRETE_URL,
   SHERWIN_WILLIAMS_URL,
@@ -68,6 +69,7 @@ const site = {
     topsoil: [NIST_URL],
     paint: [SHERWIN_WILLIAMS_URL, NIST_URL],
     drywall: [USG_COMPOUND_URL, USG_TAPE_URL, NIST_URL],
+    'roof-pitch': [IRC_URL, NIST_URL],
   },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
