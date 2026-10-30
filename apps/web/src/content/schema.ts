@@ -34,6 +34,11 @@ export type PageFrontmatter = z.infer<typeof pageSchema>;
 
 const decimalText = z.string().regex(/^\d+\.\d{2}$/, 'a decimal with two places');
 
+/** A display figure of four digits or more, grouped by thousands as the page shows it: `1,341.64`. */
+const groupedDecimalText = z
+  .string()
+  .regex(/^\d{1,3}(,\d{3})*\.\d{2}$/, 'a decimal with two places, grouped by thousands');
+
 /**
  * The worked example of the Formulas section, strict per calculator id: display texts and numbers
  * the contract tests run through the page's own controller. A calculator id with an entry has one
@@ -98,6 +103,14 @@ export const WORKED_EXAMPLES = {
     angle: decimalText,
     rafterFt: decimalText,
     rafterM: decimalText,
+  }),
+  roofing: z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    squares: decimalText,
+    areaFt2: groupedDecimalText,
+    areaM2: decimalText,
+    bundles: z.number().int().nonnegative(),
+    rolls: z.number().int().nonnegative(),
   }),
 };
 

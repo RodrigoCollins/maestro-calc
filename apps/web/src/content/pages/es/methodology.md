@@ -208,6 +208,29 @@ Casos verificados a mano, con 12 ft de recorrido del cabio y 12 in de alero. Las
 | 9 in sobre 12 in (`?v=1&r=9`)        | 9.00            | 36.87  | 16.25      |
 | 12 in sobre 12 in (`?v=1&r=12`)      | 12.00           | 45.00  | 18.38      |
 
+<h2 id="tejas">Calculadora de tejas para techo</h2>
+
+La [calculadora de tejas para techo](/es/calculadora-de-tejas) convierte la planta de un techo y su pendiente en el área del techo en cuadrados, los paquetes de tejas asfálticas y los rollos de fieltro que hay que comprar. Cada medida se guarda como un número exacto, y el resultado se redondea solo al mostrarlo.
+
+Las fórmulas:
+
+- Área del techo = largo × ancho × √(1 + (pendiente ÷ 12)²), la planta con sus aleros.
+- Cuadrados = área del techo ÷ 100.
+- Paquetes = área del techo × (1 + extra ÷ 100) ÷ 33⅓ pies cuadrados, redondeado hacia arriba.
+- Rollos = área del techo × (1 + extra ÷ 100) ÷ (250 ft − 4 in) × (48 − 2) in, redondeado hacia arriba; la mitad de ese rendimiento por debajo de 4 en 12.
+
+La raíz cuadrada se guarda con veinte decimales. Un paquete cubre aproximadamente 33⅓ pies cuadrados, tres por cuadrado (GAF Timberline HDZ, 33.33 pies cuadrados por paquete). Un rollo de fieltro sintético mide 48 pulgadas por 250 pies, 1,000 pies cuadrados sin contar los traslapes (ficha técnica de GAF FeltBuster). Los traslapes vienen de la Tabla R905.1.1(2) del International Residential Code de 2021 para tejas asfálticas en zonas donde no se exige diseño por viento: desde 4 en 12 una capa con traslape de 2 pulgadas y traslapes de 4 pulgadas en las puntas; desde 2 en 12 hasta 4 en 12 dos capas, así que un rollo cubre la mitad. La Sección R905.2.2 permite tejas asfálticas solo desde 2 en 12; por debajo, la calculadora avisa. El extra se aplica igual a los paquetes y a los rollos. La calculadora no cuenta clavos, gotero, tiras de arranque, tapas de cumbrera, tapajuntas ni barrera contra hielo. Un pie cuadrado es exactamente 0.09290304 metros cuadrados (NIST SP 811, Apéndice B). Las cantidades para comprar son las únicas cifras que se redondean en el cálculo, siempre hacia arriba; las demás se redondean a dos decimales solo cuando se muestran.
+
+Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                        | Cuadrados | Pies cuadrados | Paquetes | Rollos |
+| --------------------------------------------------------------------------- | --------- | -------------- | -------- | ------ |
+| Planta de 40 ft × 30 ft, 6 en 12, 10 % extra (valores iniciales)            | 13.42     | 1,341.64       | 45       | 2      |
+| Igual, 3 en 12, dos capas de fieltro (`?v=1&p=3`)                           | 12.37     | 1,236.93       | 41       | 3      |
+| Igual, plano (`?v=1&p=0`)                                                   | 12.00     | 1,200.00       | 40       | 3      |
+| Igual, 12 en 12 (`?v=1&p=12`)                                               | 16.97     | 1,697.06       | 57       | 2      |
+| Planta de 60 ft × 40 ft, 8 en 12, 15 % extra (`?v=1&l=720&w=480&p=8&ws=15`) | 28.84     | 2,884.44       | 100      | 4      |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

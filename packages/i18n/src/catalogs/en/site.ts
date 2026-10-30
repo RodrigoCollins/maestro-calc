@@ -52,6 +52,9 @@ export const enSite = {
   'page.home.cards.roof-pitch.title': 'Roof pitch calculator',
   'page.home.cards.roof-pitch.summary':
     'Pitch, angle and rafter length, checked against the IRC minimum slope.',
+  'page.home.cards.roofing.title': 'Roofing calculator',
+  'page.home.cards.roofing.summary':
+    'Roof squares from the footprint and the pitch, with the bundles and underlayment rolls to buy.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -96,6 +99,9 @@ export const enSite = {
   'page.roof-pitch.title': 'Roof Pitch Calculator: Angle and Rafter | Maestro Calc',
   'page.roof-pitch.description':
     'Find the pitch of a roof in 12, its angle and the rafter length, and check it against the IRC minimum slope for shingles, tile, metal or slate. Free.',
+  'page.roofing.title': 'Roofing Calculator: Squares and Bundles | Maestro Calc',
+  'page.roofing.description':
+    'Find the area of a roof in squares from its footprint and pitch, and the shingle bundles and underlayment rolls to buy, with the IRC rules. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

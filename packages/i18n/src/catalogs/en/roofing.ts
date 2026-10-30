@@ -16,4 +16,18 @@ export const enRoofing = {
     'Below the IRC minimum slope for asphalt shingles ({minimum} in 12).',
   'calc.roofing.warnings.doubleUnderlayment':
     'The IRC asks for two layers of underlayment below 4 in 12; the rolls count both.',
+  'calc.roofing.page.example':
+    'Example: a 40 ft by 30 ft footprint at 6 in 12 has 13.42 squares of roof: 45 bundles of shingles and 2 rolls of underlayment.',
+  'calc.roofing.page.squares': '{value} squares',
+  'calc.roofing.page.areaM2': '{value} m²',
+  'calc.roofing.page.shoppingShingles': 'Asphalt shingles, bundles (3 a square)',
+  'calc.roofing.page.shoppingUnderlayment': 'Synthetic underlayment, 10-square rolls',
+  'calc.roofing.page.priceHint': 'Add your price to see the cost',
+  'calc.roofing.page.answer.meets':
+    'A {length} by {width} footprint at {pitch} in 12 has {area} of roof. Bundles of shingles: {bundles}. Rolls of underlayment: {rolls}.',
+  'calc.roofing.page.answer.double':
+    'A {length} by {width} footprint at {pitch} in 12 has {area} of roof. Bundles of shingles: {bundles}. Rolls of underlayment in two layers, as the IRC asks below 4 in 12: {rolls}.',
+  'calc.roofing.page.answer.below':
+    'A {length} by {width} footprint at {pitch} in 12 has {area} of roof. That is below the IRC minimum of {minimum} in 12 for asphalt shingles: choose another covering.',
+  'calc.roofing.page.drawing.note': '{pitch} in 12 pitch',
 } as const;

@@ -81,6 +81,7 @@ describe('calculatorSchema', () => {
     'paint',
     'drywall',
     'roof-pitch',
+    'roofing',
   ]);
 
   it('parses a valid entry and keeps every field', () => {
@@ -219,6 +220,7 @@ describe('calculatorSchema', () => {
       'paint',
       'drywall',
       'roof-pitch',
+      'roofing',
       'asphalt',
     ]);
     const result = open.safeParse({ ...calculator, id: 'asphalt' });

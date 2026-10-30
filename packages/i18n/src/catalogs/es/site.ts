@@ -58,6 +58,9 @@ export const esSite = {
   'page.home.cards.roof-pitch.title': 'Calculadora de pendiente de techo',
   'page.home.cards.roof-pitch.summary':
     'Pendiente, ángulo y largo del cabio, con el mínimo del IRC.',
+  'page.home.cards.roofing.title': 'Calculadora de tejas para techo',
+  'page.home.cards.roofing.summary':
+    'Cuadrados de techo según la planta y la pendiente, con los paquetes de tejas y rollos de fieltro.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -102,6 +105,9 @@ export const esSite = {
   'page.roof-pitch.title': 'Calculadora de pendiente de techo | Maestro Calc',
   'page.roof-pitch.description':
     'Calcula la pendiente de un techo en 12, su ángulo y el largo del cabio, y compárala con el mínimo del IRC para tejas, metal o pizarra. Gratis.',
+  'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
+  'page.roofing.description':
+    'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

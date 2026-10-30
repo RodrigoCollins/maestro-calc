@@ -8,6 +8,7 @@ import { paintPage } from '../../calculator/paint/page.ts';
 import { topsoilPage } from '../../calculator/topsoil/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import { roofPitchPage } from '../../calculator/roof-pitch/page.ts';
+import { roofingPage } from '../../calculator/roofing/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -202,6 +203,38 @@ const roofPitchShown = ({ query }: WorkedExample<'roof-pitch'>) => {
   };
 };
 
+/** The squares, the areas, the bundles and the rolls the roofing page shows for the example's link. */
+const roofingShown = ({ query }: WorkedExample<'roofing'>) => {
+  const { figures, shopping } = shownFigures(roofingPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the roofing page shows no ${key}`);
+    return value;
+  };
+  const [bundles, rolls] = shopping;
+  if (bundles === undefined || rolls === undefined) {
+    throw new Error('the roofing page shows no shingles or underlayment line');
+  }
+  return {
+    query,
+    squares: shown('squares'),
+    areaFt2: shown('areaFt2'),
+    areaM2: shown('areaM2'),
+    bundles: Number(bundles),
+    rolls: Number(rolls),
+  };
+};
+
+const GAF_SHINGLES = {
+  name: /^GAF Timberline HDZ\b/,
+  url: 'https://www.homedepot.com/p/GAF-Timberline-HDZ-Weathered-Wood-Algae-Resistant-Laminated-High-Definition-Shingles-33-33-sq-ft-per-Bundle-0487900/309755323',
+} as const;
+
+const GAF_UNDERLAYMENT = {
+  name: /^GAF FeltBuster High-Traction Synthetic Roofing Felt, data sheet\b/,
+  url: 'https://images.homedepot-static.com/catalog/pdfImages/62/623aadd0-ba6d-4f90-9d5b-556abc7284e5.pdf',
+} as const;
+
 const IRC = {
   name: /^2021 International Residential Code, Chapter 9, Section R905\b/,
   url: 'https://codes.iccsafe.org/content/IRC2021P2/chapter-9-roof-assemblies',
@@ -337,6 +370,23 @@ export const CONTENT_ROWS = {
       '12 ft',
     ],
     methodologyLink: { en: '/methodology#roof-pitch', es: '/es/metodologia#pendiente-de-techo' },
+  },
+  roofing: {
+    module: roofingPage,
+    updated: '2026-10-30',
+    sources: () => [GAF_SHINGLES, GAF_UNDERLAYMENT, IRC, NIST],
+    engine: roofingShown,
+    // the example is the page's starting values: Formulas names the footprint as written
+    figures: ({ squares, areaFt2, areaM2, bundles, rolls }) => [
+      squares,
+      areaFt2,
+      areaM2,
+      String(bundles),
+      String(rolls),
+      '40 ft',
+      '30 ft',
+    ],
+    methodologyLink: { en: '/methodology#roofing', es: '/es/metodologia#tejas' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

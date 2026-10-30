@@ -82,6 +82,19 @@ type RoofPitchPageKeys =
   | 'calc.roof-pitch.page.answer.below'
   | 'calc.roof-pitch.page.example';
 
+/** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
+type RoofingPageKeys =
+  | 'calc.roofing.page.example'
+  | 'calc.roofing.page.squares'
+  | 'calc.roofing.page.areaM2'
+  | 'calc.roofing.page.shoppingShingles'
+  | 'calc.roofing.page.shoppingUnderlayment'
+  | 'calc.roofing.page.priceHint'
+  | 'calc.roofing.page.answer.meets'
+  | 'calc.roofing.page.answer.double'
+  | 'calc.roofing.page.answer.below'
+  | 'calc.roofing.page.drawing.note';
+
 /** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
 type DrywallPageKeys =
   | 'calc.drywall.page.areaFt2'
@@ -151,6 +164,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | PaintPageKeys
       | RectangleAreaPageKeys
       | RoofPitchPageKeys
+      | RoofingPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -181,5 +195,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRoofPitch, `calc.roof-pitch.page.${string}`>
     >().toEqualTypeOf<RoofPitchPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enRoofing, `calc.roofing.page.${string}`>
+    >().toEqualTypeOf<RoofingPageKeys>();
   });
 });

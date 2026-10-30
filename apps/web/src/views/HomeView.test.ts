@@ -174,8 +174,9 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
   // spec: trust-pages › [TP31] no calculator without a route is named, in either locale
   it.each(['en', 'es'] as const)('names no pageless calculator on the %s home', async (locale) => {
     const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
-    // the titles of PAGELESS in both locales: none once every calculator has a page
-    const words = ['roofing', 'techado'];
+    // the titles of PAGELESS in both locales: none once every calculator has a page; and the next
+    // calculator of PLAN §4.1, not published yet
+    const words = ['fraction calculator', 'calculadora de fracciones'];
     for (const other of [...(await pagelessTitles()), ...words])
       expect(text, other).not.toContain(other.toLowerCase());
   });

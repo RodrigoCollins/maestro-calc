@@ -208,6 +208,29 @@ Hand-verified cases, with a 12 ft rafter run and a 12 in overhang. The automated
 | 9 in over 12 in (`?v=1&r=9`)      | 9.00        | 36.87   | 16.25       |
 | 12 in over 12 in (`?v=1&r=12`)    | 12.00       | 45.00   | 18.38       |
 
+<h2 id="roofing">Roofing calculator</h2>
+
+The [roofing calculator](/roofing-calculator) turns the footprint of a roof and its pitch into the area of the roof in squares, the bundles of asphalt shingles and the rolls of underlayment to buy. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Roof area = length × width × √(1 + (pitch ÷ 12)²), the footprint with its overhangs.
+- Squares = roof area ÷ 100.
+- Bundles = roof area × (1 + extra ÷ 100) ÷ 33⅓ square feet, rounded up.
+- Rolls = roof area × (1 + extra ÷ 100) ÷ (250 ft − 4 in) × (48 − 2) in, rounded up; half of that coverage below 4 in 12.
+
+The square root is kept to twenty decimals. A bundle covers approximately 33⅓ square feet, three to a square (GAF Timberline HDZ, 33.33 square feet per bundle). A roll of synthetic underlayment is 48 inches by 250 feet, 1,000 square feet excluding laps (GAF FeltBuster data sheet). The laps come from Table R905.1.1(2) of the 2021 International Residential Code for asphalt shingles where wind design is not required: from 4 in 12 one layer lapped 2 inches with 4-inch end laps; from 2 in 12 up to 4 in 12 two layers, so a roll covers half. Section R905.2.2 allows asphalt shingles only from 2 in 12; below it the calculator warns. The extra applies to the bundles and the rolls alike. The calculator does not count nails, drip edge, starter strips, ridge caps, flashing or an ice barrier. A square foot is exactly 0.09290304 square meters (NIST SP 811, Appendix B). The purchase counts are the only figures rounded in the calculation, always up; the other figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                        | Squares | Square feet | Bundles | Rolls |
+| --------------------------------------------------------------------------- | ------- | ----------- | ------- | ----- |
+| 40 ft × 30 ft footprint, 6 in 12, 10 % extra (starting values)              | 13.42   | 1,341.64    | 45      | 2     |
+| Same, 3 in 12, two layers of underlayment (`?v=1&p=3`)                      | 12.37   | 1,236.93    | 41      | 3     |
+| Same, flat (`?v=1&p=0`)                                                     | 12.00   | 1,200.00    | 40      | 3     |
+| Same, 12 in 12 (`?v=1&p=12`)                                                | 16.97   | 1,697.06    | 57      | 2     |
+| 60 ft × 40 ft footprint, 8 in 12, 15 % extra (`?v=1&l=720&w=480&p=8&ws=15`) | 28.84   | 2,884.44    | 100     | 4     |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.
