@@ -2,6 +2,7 @@ import { ROUTES } from '../../../apps/web/src/routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../../apps/web/src/routing/templates.ts';
 import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
 import { CONCRETE } from './concrete-pages.ts';
+import { DRYWALL } from './drywall-pages.ts';
 import { GRAVEL } from './gravel-pages.ts';
 import { MULCH } from './mulch-pages.ts';
 import { PAINT } from './paint-pages.ts';
@@ -285,6 +286,7 @@ export const E2E = {
   mulch: MULCH,
   topsoil: TOPSOIL,
   paint: PAINT,
+  drywall: DRYWALL,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */

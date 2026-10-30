@@ -1,5 +1,6 @@
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
 import ConcreteScript from '../islands/ConcreteScript.astro';
+import DrywallScript from '../islands/DrywallScript.astro';
 import GravelScript from '../islands/GravelScript.astro';
 import MulchScript from '../islands/MulchScript.astro';
 import PaintScript from '../islands/PaintScript.astro';
@@ -18,4 +19,5 @@ export const SCRIPTS = {
   mulch: MulchScript,
   topsoil: TopsoilScript,
   paint: PaintScript,
+  drywall: DrywallScript,
 } as const satisfies Record<CalculatorPageId, AstroComponentFactory>;

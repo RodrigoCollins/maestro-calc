@@ -33,6 +33,7 @@ export const ROUTES = {
   mulch: { en: '/mulch-calculator', es: '/es/calculadora-de-mulch' },
   topsoil: { en: '/topsoil-calculator', es: '/es/calculadora-de-tierra-para-jardin' },
   paint: { en: '/paint-calculator', es: '/es/calculadora-de-pintura' },
+  drywall: { en: '/drywall-calculator', es: '/es/calculadora-de-drywall' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

@@ -1,6 +1,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
@@ -9,6 +10,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
@@ -16,6 +18,8 @@ import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { concretePage } from '../calculator/concrete/page.ts';
+import { drywallPage } from '../calculator/drywall/page.ts';
+import { drywallReserve } from '../calculator/drywall/reserve.ts';
 import { gravelPage } from '../calculator/gravel/page.ts';
 import { gravelReserve } from '../calculator/gravel/reserve.ts';
 import { mulchPage } from '../calculator/mulch/page.ts';
@@ -104,6 +108,14 @@ export const PAGES = {
       es: { ...esCommon, ...esPaint, ...esSite },
     },
     reserve: paintReserve,
+  },
+  drywall: {
+    module: drywallPage,
+    catalogs: {
+      en: { ...enCommon, ...enDrywall, ...enSite },
+      es: { ...esCommon, ...esDrywall, ...esSite },
+    },
+    reserve: drywallReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 

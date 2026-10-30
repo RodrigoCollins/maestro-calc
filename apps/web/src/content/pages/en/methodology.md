@@ -161,6 +161,30 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 20 ft × 15 ft, 9 ft walls (`?v=1&l=240&w=180&h=108`)                                | 3.31    | 12.55  | 4    |
 | 50 ft × 40 ft, 10 ft walls, 2 doors, 8 windows (`?v=1&l=600&w=480&h=120&dr=2&wn=8`) | 9.37    | 35.47  | 10   |
 
+<h2 id="drywall">Drywall calculator</h2>
+
+The [drywall calculator](/drywall-calculator) finds the drywall sheets for the walls of a rectangular room, less its doors and windows, and its ceiling when you include it, with the joint compound and the paper tape to finish them. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Wall area = 2 × (length + width) × height, less 20 square feet per door and 15 square feet per window, never below zero.
+- Area to cover = wall area, plus length × width when the ceiling is included.
+- Sheets = area × (1 + extra ÷ 100) ÷ the area of one sheet (32 square feet for 4 × 8, 48 for 4 × 12), rounded up.
+- Joint compound = area × 9 gallons per 1,000 square feet; pails of 4.5 gallons, rounded up.
+- Joint tape = area × 370 feet per 1,000 square feet; rolls of 500 feet, rounded up.
+
+The compound rate is approximately 9 gallons per 1,000 square feet: USG says about two 4.5-gallon pails of Sheetrock UltraLightweight All Purpose Joint Compound finish 1,000 square feet. The tape rate is approximately 370 feet per 1,000 square feet, from the USG submittal sheet for Sheetrock Brand Heavy Joint Tape (J1393, revised October 2015). The extra applies to the sheets only; the compound and the tape follow the area itself. The 20 square feet of a door and the 15 square feet of a window are approximate allowances. The calculator does not count screws, corner bead or trim. A square foot is exactly 0.09290304 square meters (NIST SP 811, Appendix B). The purchase counts are the only figures rounded in the calculation, always up; the other figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                                                             | Square feet | Sheets | Pails | Rolls |
+| ---------------------------------------------------------------------------------------------------------------- | ----------- | ------ | ----- | ----- |
+| 12 ft × 12 ft room, 8 ft walls, 1 door, 2 windows, walls and ceiling, 4 × 8 sheets, 10 % extra (starting values) | 478.00      | 17     | 1     | 1     |
+| Same, 4 × 12 sheets (`?v=1&sz=4x12`)                                                                             | 478.00      | 11     | 1     | 1     |
+| Same, walls only (`?v=1&sf=walls`)                                                                               | 334.00      | 12     | 1     | 1     |
+| 20 ft × 15 ft, 9 ft walls (`?v=1&l=240&w=180&h=108`)                                                             | 880.00      | 31     | 2     | 1     |
+| 50 ft × 40 ft, 10 ft walls, 2 doors, 8 windows (`?v=1&l=600&w=480&h=120&dr=2&wn=8`)                              | 3,640.00    | 126    | 8     | 3     |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

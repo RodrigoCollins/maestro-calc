@@ -175,7 +175,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
   it.each(['en', 'es'] as const)('names no pageless calculator on the %s home', async (locale) => {
     const text = ((await render(locale)).querySelector('main')?.text ?? '').toLowerCase();
     // the titles of PAGELESS in both locales: none once every calculator has a page
-    const words = ['roofing', 'techado', 'drywall'];
+    const words = ['roofing', 'techado'];
     for (const other of [...(await pagelessTitles()), ...words])
       expect(text, other).not.toContain(other.toLowerCase());
   });

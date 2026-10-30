@@ -26,11 +26,3 @@ Walls = 2 × (length + width) × height; area to paint = walls − 20 ft² per d
 ### Requirement: URL and catalog
 
 - [PA7] Every valid state round-trips through the link, and the seven released tuples are appended in input order.
-
-# Delta for units-quantities
-
-## MODIFIED Requirements
-
-### Requirement: Exact unit factors
-
-The volume units SHALL also include the US liquid gallon `gal` (exactly 231 in³) and the liter `L` (exactly 1,000 cm³); the catalog holds 30 units.

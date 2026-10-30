@@ -2,6 +2,7 @@ import type { AllErrorCode, messageKeysOf, MessageKeysOf } from '@maestro-calc/c
 import type { concreteMix } from '@maestro-calc/data';
 import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
@@ -20,7 +21,8 @@ type EnglishKeys =
   | keyof typeof enMulch
   | keyof typeof enRectangleArea
   | keyof typeof enTopsoil
-  | keyof typeof enPaint;
+  | keyof typeof enPaint
+  | keyof typeof enDrywall;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -66,6 +68,19 @@ type MulchPageKeys =
   | 'calc.mulch.page.answer'
   | 'calc.mulch.page.drawing.note'
   | 'calc.mulch.page.example';
+
+/** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
+type DrywallPageKeys =
+  | 'calc.drywall.page.areaFt2'
+  | 'calc.drywall.page.areaM2'
+  | 'calc.drywall.page.shoppingSheets'
+  | 'calc.drywall.page.shoppingCompound'
+  | 'calc.drywall.page.shoppingTape'
+  | 'calc.drywall.page.priceHint'
+  | 'calc.drywall.page.answer.walls-ceiling'
+  | 'calc.drywall.page.answer.walls'
+  | 'calc.drywall.page.drawing.note'
+  | 'calc.drywall.page.example';
 
 /** The page copy of the paint calculator (`calc.paint.page.*`), exactly: a new key is added here. */
 type PaintPageKeys =
@@ -117,6 +132,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | `errors.${AllErrorCode}`
       | MaterialKeys<typeof concreteMix>
       | ConcretePageKeys
+      | DrywallPageKeys
       | GravelPageKeys
       | MulchPageKeys
       | PaintPageKeys
@@ -145,5 +161,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enPaint, `calc.paint.page.${string}`>
     >().toEqualTypeOf<PaintPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enDrywall, `calc.drywall.page.${string}`>
+    >().toEqualTypeOf<DrywallPageKeys>();
   });
 });

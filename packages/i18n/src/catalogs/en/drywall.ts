@@ -1,0 +1,35 @@
+/** Copy of the `drywall` calculator, English: the keys core derives from its descriptors and the page copy. */
+export const enDrywall = {
+  'calc.drywall.title': 'Drywall Calculator',
+  'calc.drywall.inputs.length': 'Room length',
+  'calc.drywall.inputs.width': 'Room width',
+  'calc.drywall.inputs.height': 'Wall height',
+  'calc.drywall.inputs.doors': 'Doors',
+  'calc.drywall.inputs.windows': 'Windows',
+  'calc.drywall.inputs.surfaces': 'Cover',
+  'calc.drywall.inputs.sheet': 'Sheet size',
+  'calc.drywall.inputs.waste': 'Extra (%)',
+  'calc.drywall.inputs.sheetPrice': 'Price per sheet ($)',
+  'calc.drywall.options.surfaces.walls-ceiling': 'Walls and ceiling',
+  'calc.drywall.options.surfaces.walls': 'Walls only',
+  'calc.drywall.options.sheet.4x8': '4 × 8 ft',
+  'calc.drywall.options.sheet.4x12': '4 × 12 ft',
+  'calc.drywall.outputs.areaFt2': 'Area to cover (square feet)',
+  'calc.drywall.outputs.areaM2': 'Area to cover (square meters)',
+  'calc.drywall.outputs.compound': 'Joint compound (gallons)',
+  'calc.drywall.outputs.tape': 'Joint tape (feet)',
+  'calc.drywall.outputs.cost': 'Drywall cost',
+  'calc.drywall.page.example':
+    'Example: a 12 ft by 12 ft room with 8 ft walls, one door and two windows takes 17 sheets of 4 × 8 ft for walls and ceiling.',
+  'calc.drywall.page.areaFt2': '{value} ft²',
+  'calc.drywall.page.areaM2': '{value} m²',
+  'calc.drywall.page.shoppingSheets': 'Drywall, {size} sheets',
+  'calc.drywall.page.shoppingCompound': 'Joint compound, 4.5 gal pails',
+  'calc.drywall.page.shoppingTape': 'Paper joint tape, 500 ft rolls',
+  'calc.drywall.page.priceHint': 'Add your price to see the cost',
+  'calc.drywall.page.answer.walls-ceiling':
+    'A {length} by {width} room with {height} walls has {area} of walls and ceiling to cover. Sheets of {sheet}: {sheets}.',
+  'calc.drywall.page.answer.walls':
+    'A {length} by {width} room with {height} walls has {area} of walls to cover. Sheets of {sheet}: {sheets}.',
+  'calc.drywall.page.drawing.note': '{height} walls',
+} as const;

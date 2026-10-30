@@ -12,6 +12,7 @@ export const CALCULATOR_PAGES = [
   'mulch',
   'topsoil',
   'paint',
+  'drywall',
 ] as const satisfies readonly PageId[];
 
 /** The id of a page that uses the calculator template. */

@@ -23,6 +23,8 @@ import {
   NIST_URL,
   QUIKRETE_URL,
   SHERWIN_WILLIAMS_URL,
+  USG_COMPOUND_URL,
+  USG_TAPE_URL,
   validDist,
   WISDOT_URL,
 } from './__testing__/page-fixture.ts';
@@ -65,6 +67,7 @@ const site = {
     mulch: [NIST_URL],
     topsoil: [NIST_URL],
     paint: [SHERWIN_WILLIAMS_URL, NIST_URL],
+    drywall: [USG_COMPOUND_URL, USG_TAPE_URL, NIST_URL],
   },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
