@@ -37,7 +37,7 @@ describe('roof pitch page: the answer through the controller (calc-roof-pitch)',
     [
       'en',
       '?v=1',
-      'A 6 in rise over a 1 ft run is a 6.00 in 12 pitch, 26.57°. It meets the IRC minimum slope for the chosen covering.',
+      'A rise of 6 in over a run of 1 ft gives a pitch of 6.00 in 12, 26.57°. It meets the IRC minimum slope for the chosen covering.',
     ],
     [
       'es',
@@ -47,7 +47,7 @@ describe('roof pitch page: the answer through the controller (calc-roof-pitch)',
     [
       'en',
       '?v=1&r=3',
-      'A 3 in rise over a 1 ft run is a 3.00 in 12 pitch, 14.04°. The IRC asks for two layers of underlayment for the chosen covering.',
+      'A rise of 3 in over a run of 1 ft gives a pitch of 3.00 in 12, 14.04°. The IRC asks for two layers of underlayment for the chosen covering.',
     ],
     [
       'es',
@@ -57,7 +57,7 @@ describe('roof pitch page: the answer through the controller (calc-roof-pitch)',
     [
       'en',
       '?v=1&r=3&c=slate',
-      'A 3 in rise over a 1 ft run is a 3.00 in 12 pitch, 14.04°. It is below the IRC minimum of 4 in 12 for the chosen covering.',
+      'A rise of 3 in over a run of 1 ft gives a pitch of 3.00 in 12, 14.04°. It is below the IRC minimum of 4 in 12 for the chosen covering.',
     ],
   ] as const)('says the %s answer of %s', (locale, search, sentence) => {
     expect(viewOf(locale, search).answer).toBe(sentence);

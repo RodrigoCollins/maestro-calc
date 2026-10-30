@@ -19,11 +19,11 @@ export const enRoofPitch = {
   'calc.roof-pitch.page.pitch': '{value} in 12',
   'calc.roof-pitch.page.angle': '{value}°',
   'calc.roof-pitch.page.answer.meets':
-    'A {rise} rise over a {run} run is a {pitch} in 12 pitch, {angle}. It meets the IRC minimum slope for the chosen covering.',
+    'A rise of {rise} over a run of {run} gives a pitch of {pitch} in 12, {angle}. It meets the IRC minimum slope for the chosen covering.',
   'calc.roof-pitch.page.answer.double':
-    'A {rise} rise over a {run} run is a {pitch} in 12 pitch, {angle}. The IRC asks for two layers of underlayment for the chosen covering.',
+    'A rise of {rise} over a run of {run} gives a pitch of {pitch} in 12, {angle}. The IRC asks for two layers of underlayment for the chosen covering.',
   'calc.roof-pitch.page.answer.below':
-    'A {rise} rise over a {run} run is a {pitch} in 12 pitch, {angle}. It is below the IRC minimum of {minimum} in 12 for the chosen covering.',
+    'A rise of {rise} over a run of {run} gives a pitch of {pitch} in 12, {angle}. It is below the IRC minimum of {minimum} in 12 for the chosen covering.',
   'calc.roof-pitch.warnings.belowMinimum':
     'Below the IRC minimum slope for this covering ({minimum} in 12).',
   'calc.roof-pitch.warnings.doubleUnderlayment':
