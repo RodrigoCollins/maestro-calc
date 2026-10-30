@@ -286,12 +286,17 @@ jobs:
   site-browser:
     needs: verify
     runs-on: ubuntu-latest
-    # The browser suites grow with every calculator page (PR #133: 17 min of tests and 1 min of
-    # Lighthouse for five pages), and a cold browser install adds 7 to 12; sharding the suites is the
-    # next step when a run nears the limit.
+    # The browser suites grow with every calculator page (#137: 29 min for seven pages on one
+    # runner), so two runners split them; a cold browser install adds 7 to 12 minutes to each.
+    name: site-browser (${{ matrix.shard }}/2)
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     timeout-minutes: 40
     env:
       WRANGLER_SEND_METRICS: 'false'
+      SHARD: ${{ matrix.shard }}/2
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -330,21 +335,22 @@ jobs:
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.
       - run: npm run lighthouse
+        if: matrix.shard == 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: tooling/site-browser/playwright-report
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: playwright-test-results
+          name: playwright-test-results-${{ matrix.shard }}
           path: tooling/site-browser/test-results
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: lighthouse-reports
+          name: lighthouse-reports-${{ matrix.shard }}
           path: tooling/site-browser/.lighthouseci
           if-no-files-found: ignore

@@ -349,7 +349,29 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(job?.['timeout-minutes']).toBeGreaterThan(0);
     expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
       WRANGLER_SEND_METRICS: 'false',
+      SHARD: '${{ matrix.shard }}/2',
     });
+  });
+
+  // The suites grew with every calculator page (#137: 29 minutes on one runner), so two runners
+  // split them: `SHARD` reaches the Playwright config, one failing half does not cancel the other,
+  // Lighthouse runs once, and each half uploads its reports under its own name.
+  it('splits the suites over two runners and runs Lighthouse once', () => {
+    const shards = job as
+      | { name?: string; strategy?: { 'fail-fast'?: boolean; matrix?: { shard?: number[] } } }
+      | undefined;
+    expect(shards?.name).toBe('site-browser (${{ matrix.shard }}/2)');
+    expect(shards?.strategy).toEqual({ 'fail-fast': false, matrix: { shard: [1, 2] } });
+    expect(readFileSync(fromRoot('tooling/site-browser/playwright.config.ts'), 'utf8')).toContain(
+      "process.env['SHARD']",
+    );
+    const lighthouse = (job?.steps ?? []).find(({ run }) => run === 'npm run lighthouse');
+    expect(lighthouse?.if).toBe('matrix.shard == 1');
+    const names = (job?.steps ?? [])
+      .filter(({ uses }) => uses?.startsWith('actions/upload-artifact@'))
+      .map((upload) => String(upload.with?.['name']));
+    expect(names.length).toBeGreaterThan(0);
+    expect(names.every((name) => name.endsWith('-${{ matrix.shard }}'))).toBe(true);
   });
 
   it('runs the same dist that verify built, without rebuilding it', () => {
