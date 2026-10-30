@@ -614,3 +614,17 @@ The copy block reserve (`data-reserved="copy"`) MUST grow to hold the mounted co
 - GIVEN the full-length Spanish concrete budget fixture at each pull-request tip, after the markup trim (PR 2, trim A–E) and with the share anchor (PR 2) and the drawing box with all four concrete shapes (PR 3)
 - WHEN its size is measured
 - THEN it is at most 40,836 B at every tip, the pin is not raised, the trim frees at least 700 B before the share anchor is added, the trim is measured before the share slice starts (a short margin stops the apply and is reported to the owner), and the measured size and margins are recorded in the apply progress ([CP66]; a build test)
+
+### Requirement: Print (2026-10-30)
+
+A printed calculator page SHALL be a sheet to take to the store: the title, the answer, the form with its values, the result, the shopping card and the sources, on white. The skip link, the site header and footer, the copy and share tools, the notice, the stepper buttons and the article are left out; the reserves for the script collapse; the result panel and a pressed choice keep their ink ground (`print-color-adjust: exact`), since white on ink would print blank; the result and the shopping card are not split across sheets. The rules live in `calculator.css` under `@media print`.
+
+#### Scenario: [CP87] The sheet keeps the figures and leaves the chrome out
+- GIVEN every calculator page in both languages, mounted, at 672 px (about 7 in of a Letter or A4 sheet)
+- WHEN the print media is emulated
+- THEN the chrome above is hidden and every part of the kept list the screen showed is still visible (an e2e test)
+
+#### Scenario: [CP88] White paper, no reserved band, nothing past the sheet
+- GIVEN the same pages printed
+- WHEN the computed styles are read
+- THEN the body ground is white, the answer has no reserved height, the result and a pressed choice print their ground exactly, and nothing overflows the sheet width (an e2e test)

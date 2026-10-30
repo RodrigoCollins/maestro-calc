@@ -434,3 +434,40 @@
 .calc-content {
   max-width: var(--measure);
 }
+
+/* Print (calculator-page › Print): a sheet to take to the store. The figures stay, on white; the
+   page chrome, the tools that need a screen and the long article are left out, and the reserves
+   for the script collapse, since nothing moves on paper. */
+@media print {
+  html body {
+    background: #fff;
+  }
+
+  body .skip-link,
+  body .site-header,
+  body .site-footer,
+  .calc-copy,
+  .calc-notice,
+  .calc-steppers,
+  .calc-content .prose {
+    display: none;
+  }
+
+  .calc-answer,
+  .calc-choice-area {
+    min-height: 0;
+  }
+
+  /* White on ink would print as white on white, and the drawing is drawn for the ink ground: the
+     result and the pressed choice keep their ground. */
+  .calc-result,
+  .calc-form button[aria-pressed='true'] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .calc-result,
+  .calc-shopping {
+    break-inside: avoid;
+  }
+}
