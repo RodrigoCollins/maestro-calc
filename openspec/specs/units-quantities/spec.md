@@ -58,6 +58,8 @@ Each unit MUST define an exact Rational factor `f` such that `canonical = value 
 | volume | `mm3` | 125/2048383 |
 | volume | `cm3` | 125000/2048383 |
 | volume | `m3` | 125000000000/2048383 |
+| volume | `gal` | 231 |
+| volume | `L` | 125000000/2048383 |
 | mass | `lb` | 1 |
 | mass | `oz` | 1/16 |
 | mass | `ton` (US short ton) | 2000 |
@@ -69,7 +71,7 @@ Each unit MUST define an exact Rational factor `f` such that `canonical = value 
 | density | `ton/yd3` | 125/2916 |
 | density | `kg/m3` | 2048383/56699046250 |
 
-Length source: the international inch is defined as exactly 25.4 mm (international yard and pound agreement of 1959; NIST Special Publication 811, Appendix B; NIST Handbook 44 Appendix C). Hence 1 mm = 1/25.4 in = 10/254 = 5/127 in, 1 cm = 50/127 in, 1 m = 5000/127 in. 1 ft = 12 in and 1 yd = 3 ft = 36 in are exact by definition. Area and volume factors are the square and cube of the length factor. Arithmetic check: 127^2 = 16129 and 127^3 = 2,048,383; 144 = 12^2; 1296 = 36^2; 1728 = 12^3; 46656 = 36^3; (5000)^2 = 25,000,000; (5000)^3 = 125,000,000,000; 50^3 = 125,000. All metric factors reduce fully because 127 is prime and the numerators are products of 2 and 5 only.
+Length source: the international inch is defined as exactly 25.4 mm (international yard and pound agreement of 1959; NIST Special Publication 811, Appendix B; NIST Handbook 44 Appendix C). Hence 1 mm = 1/25.4 in = 10/254 = 5/127 in, 1 cm = 50/127 in, 1 m = 5000/127 in. 1 ft = 12 in and 1 yd = 3 ft = 36 in are exact by definition. Area and volume factors are the square and cube of the length factor, except the US liquid gallon, exactly 231 in3, and the liter, exactly 1000 cm3 = 125,000,000/2,048,383 in3 (NIST SP 811, Appendix B); a gallon is exactly 3.785411784 L. Arithmetic check: 127^2 = 16129 and 127^3 = 2,048,383; 144 = 12^2; 1296 = 36^2; 1728 = 12^3; 46656 = 36^3; (5000)^2 = 25,000,000; (5000)^3 = 125,000,000,000; 50^3 = 125,000. All metric factors reduce fully because 127 is prime and the numerators are products of 2 and 5 only.
 
 Mass source: the international avoirdupois pound is exactly 0.45359237 kg (international yard and pound agreement of 1959; NIST SP 811 Appendix B; NIST Handbook 44 Appendix C). 1 oz = 1/16 lb and 1 short ton = 2000 lb are exact by definition (NIST Handbook 44 Appendix C); 1 tonne = 1000 kg (SI). Hence 1 kg = 1/0.45359237 lb = 100,000,000/45,359,237 lb; 45,359,237 is odd and does not end in 0 or 5, so it is coprime with 10^8 and the fraction is reduced. 1 tonne = 1000 x 10^8/45,359,237 = 10^11/45,359,237 lb.
 
@@ -139,7 +141,7 @@ No float literal (for example `0.0254`, `0.3048`, `0.45359237`) is permitted any
 - THEN the result is `7/3`
 
 #### Scenario: Round trip property
-- GIVEN random Rationals (including negatives and zero) and each of the 28 units
+- GIVEN random Rationals (including negatives and zero) and each of the 30 units
 - WHEN `valueIn(quantity(x, u), u)` is evaluated
 - THEN it equals `x` for all samples
 
