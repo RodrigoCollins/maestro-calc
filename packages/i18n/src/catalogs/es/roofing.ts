@@ -13,7 +13,8 @@ export const esRoofing = {
   'calc.roofing.outputs.squares': 'Área del techo (cuadrados)',
   'calc.roofing.outputs.areaFt2': 'Área del techo (pies cuadrados)',
   'calc.roofing.outputs.areaM2': 'Área del techo (metros cuadrados)',
-  'calc.roofing.outputs.cost': 'Costo de tejas y fieltro',
+  'calc.roofing.outputs.shinglesCost': 'Costo de las tejas',
+  'calc.roofing.outputs.underlaymentCost': 'Costo del fieltro',
   'calc.roofing.warnings.belowMinimum':
     'Por debajo de la pendiente mínima del IRC para tejas asfálticas ({minimum} en 12).',
   'calc.roofing.warnings.doubleUnderlayment':

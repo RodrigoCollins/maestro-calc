@@ -2,7 +2,7 @@ import { defineCalculator } from '../../calculator/define.ts';
 import { CoreError } from '../../errors.ts';
 import { ceilToPurchaseUnits } from '../../format/purchase.ts';
 import { squareRoot } from '../../geometry/sqrt.ts';
-import { addMoney, multiplyCount, usd } from '../../money/money.ts';
+import { multiplyCount, usd } from '../../money/money.ts';
 import { Rational } from '../../rational/rational.ts';
 import { ft, inch } from '../../units/catalog.ts';
 import { multiply, ratio, scale, sign, sub } from '../../units/ops.ts';
@@ -128,7 +128,8 @@ export const createRoofing = (suppliedCoverage: RoofingCoverage) => {
         role: 'secondary',
         display: { unit: 'm2', format: 'decimal', places: 2 },
       },
-      { key: 'cost', measure: 'money', role: 'secondary' },
+      { key: 'shinglesCost', measure: 'money', role: 'secondary' },
+      { key: 'underlaymentCost', measure: 'money', role: 'secondary' },
     ],
     warnings: ['belowMinimum', 'doubleUnderlayment'],
     compute: ({ length: footLength, width, pitch, waste, bundlePrice, rollPrice }) => {
@@ -147,7 +148,8 @@ export const createRoofing = (suppliedCoverage: RoofingCoverage) => {
           squares: area,
           areaFt2: area,
           areaM2: area,
-          cost: addMoney(multiplyCount(bundlePrice, bundles), multiplyCount(rollPrice, rolls)),
+          shinglesCost: multiplyCount(bundlePrice, bundles),
+          underlaymentCost: multiplyCount(rollPrice, rolls),
         },
         shopping: [
           { materialId: 'shingles', purchaseUnit: 'bundle', qty: bundles },

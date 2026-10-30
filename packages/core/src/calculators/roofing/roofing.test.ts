@@ -128,11 +128,15 @@ describe('roofing area and materials (calc-roofing › Roof area and materials)'
     expect(lines({ pitch: '1' }).map(([, , qty]) => qty)).toEqual([40n, 3n]);
   });
 
-  // spec: calc-roofing › [RF6] $35 a bundle × 45 + $90 a roll × 2 = $1,755.00
+  // spec: calc-roofing › [RF6] $35 a bundle × 45 = $1,575.00 and $90 a roll × 2 = $180.00
   it('costs the bundles and the rolls at their prices', () => {
-    expect(outputs({ bundlePrice: '35', rollPrice: '90' })['cost']).toEqual(usd(1755));
-    expect(outputs({ bundlePrice: '35' })['cost']).toEqual(usd(1575));
-    expect(outputs({})['cost']).toEqual(usd(0));
+    const priced = outputs({ bundlePrice: '35', rollPrice: '90' });
+    expect([priced['shinglesCost'], priced['underlaymentCost']]).toEqual([usd(1575), usd(180)]);
+    expect(outputs({ pitch: '3', rollPrice: '90' })['underlaymentCost']).toEqual(usd(270));
+    expect([outputs({})['shinglesCost'], outputs({})['underlaymentCost']]).toEqual([
+      usd(0),
+      usd(0),
+    ]);
   });
 
   it('covers nothing on an empty footprint', () => {

@@ -10,7 +10,8 @@ export const enRoofing = {
   'calc.roofing.outputs.squares': 'Roof area (squares)',
   'calc.roofing.outputs.areaFt2': 'Roof area (square feet)',
   'calc.roofing.outputs.areaM2': 'Roof area (square meters)',
-  'calc.roofing.outputs.cost': 'Shingles and underlayment cost',
+  'calc.roofing.outputs.shinglesCost': 'Cost of the shingles',
+  'calc.roofing.outputs.underlaymentCost': 'Cost of the underlayment',
   'calc.roofing.warnings.belowMinimum':
     'Below the IRC minimum slope for asphalt shingles ({minimum} in 12).',
   'calc.roofing.warnings.doubleUnderlayment':

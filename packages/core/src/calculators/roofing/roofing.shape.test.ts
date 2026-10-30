@@ -31,13 +31,15 @@ describe('roofing descriptors and result shape (calc-roofing › Inputs, Roof ar
       ['squares', 'primary'],
       ['areaFt2', 'secondary'],
       ['areaM2', 'secondary'],
-      ['cost', 'secondary'],
+      ['shinglesCost', 'secondary'],
+      ['underlaymentCost', 'secondary'],
     ]);
     expect(roofing.outputs.map(({ key, measure }) => [key, measure])).toEqual([
       ['squares', 'area'],
       ['areaFt2', 'area'],
       ['areaM2', 'area'],
-      ['cost', 'money'],
+      ['shinglesCost', 'money'],
+      ['underlaymentCost', 'money'],
     ]);
     expect(shopping.map(({ materialId }) => materialId)).toEqual(['shingles', 'underlayment']);
     expect(warnings).toEqual([]);
