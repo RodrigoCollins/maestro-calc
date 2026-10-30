@@ -22,7 +22,7 @@ A `Quantity<D>` MUST carry its named dimension in its type (compile-time) and MU
 
 The canonical mass unit is the avoirdupois pound (`lb`): the domain is US customary first (as the inch is for length), ounce and short-ton factors are then integers or unit fractions, and the kilogram stays exact through the 1959 definition of the pound.
 
-Money is not a dimension (see the `money` capability); percent is a field kind, not a dimension. Angles and other dimensionless ratios are deferred: they MAY be added later as a dimensionless kind (exponent vector all zeros) by the roof-pitch change; this change defines no dimensionless quantity, and same-dimension quotients are plain Rationals (`ratio`).
+Money is not a dimension (see the `money` capability); percent is a field kind, not a dimension. The angle is a base dimension of its own (see "Angle dimension"); same-dimension quotients are plain Rationals (`ratio`).
 
 #### Scenario: Dimension in the type
 - GIVEN a `Quantity<'length'>` and a `Quantity<'area'>`
