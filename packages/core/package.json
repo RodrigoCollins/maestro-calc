@@ -14,7 +14,8 @@
     "./testing/language-free": "./src/__testing__/language-free.ts",
     "./testing/paint-yields": "./src/__testing__/paint-yields.ts",
     "./testing/released-harness": "./src/url/released-harness.ts",
-    "./testing/released-snapshot": "./src/__testing__/released-snapshot.ts"
+    "./testing/released-snapshot": "./src/__testing__/released-snapshot.ts",
+    "./testing/roofing-yields": "./src/__testing__/roofing-yields.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

@@ -49,6 +49,10 @@ export const USG_COMPOUND_URL =
 export const USG_TAPE_URL =
   'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf';
 export const IRC_URL = 'https://codes.iccsafe.org/content/IRC2021P2/chapter-9-roof-assemblies';
+export const GAF_SHINGLES_URL =
+  'https://www.homedepot.com/p/GAF-Timberline-HDZ-Weathered-Wood-Algae-Resistant-Laminated-High-Definition-Shingles-33-33-sq-ft-per-Bundle-0487900/309755323';
+export const GAF_UNDERLAYMENT_URL =
+  'https://images.homedepot-static.com/catalog/pdfImages/62/623aadd0-ba6d-4f90-9d5b-556abc7284e5.pdf';
 const SOURCE_NAMES: Readonly<Record<string, string>> = {
   [QUIKRETE_URL]: 'QUIKRETE',
   [NIST_URL]: 'NIST',
@@ -57,6 +61,8 @@ const SOURCE_NAMES: Readonly<Record<string, string>> = {
   [USG_COMPOUND_URL]: 'USG',
   [USG_TAPE_URL]: 'USG',
   [IRC_URL]: 'International Residential Code',
+  [GAF_SHINGLES_URL]: 'GAF Timberline HDZ',
+  [GAF_UNDERLAYMENT_URL]: 'GAF FeltBuster',
 };
 
 /** The entry and the chunk that every valid calculator fixture loads (language-free, no network). */

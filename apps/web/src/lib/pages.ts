@@ -7,6 +7,7 @@ import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
+import { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
@@ -17,6 +18,7 @@ import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
+import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { concretePage } from '../calculator/concrete/page.ts';
@@ -32,6 +34,8 @@ import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { rectangleAreaReserve } from '../calculator/rectangle-area/reserve.ts';
 import { roofPitchPage } from '../calculator/roof-pitch/page.ts';
 import { roofPitchReserve } from '../calculator/roof-pitch/reserve.ts';
+import { roofingPage } from '../calculator/roofing/page.ts';
+import { roofingReserve } from '../calculator/roofing/reserve.ts';
 import { topsoilPage } from '../calculator/topsoil/page.ts';
 import { topsoilReserve } from '../calculator/topsoil/reserve.ts';
 import type { Messages } from '../calculator/controller.ts';
@@ -128,6 +132,14 @@ export const PAGES = {
       es: { ...esCommon, ...esRoofPitch, ...esSite },
     },
     reserve: roofPitchReserve,
+  },
+  roofing: {
+    module: roofingPage,
+    catalogs: {
+      en: { ...enCommon, ...enRoofing, ...enSite },
+      es: { ...esCommon, ...esRoofing, ...esSite },
+    },
+    reserve: roofingReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 

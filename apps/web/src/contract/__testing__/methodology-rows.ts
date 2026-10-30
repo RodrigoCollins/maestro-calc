@@ -412,4 +412,57 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&r=12', figures: ['12.00', '45.00', '18.38'] },
     ],
   },
+  roofing: {
+    anchor: { en: 'roofing', es: 'tejas' },
+    pageLink: {
+      en: '[roofing calculator](/roofing-calculator)',
+      es: '[calculadora de tejas para techo](/es/calculadora-de-tejas)',
+    },
+    formulas: {
+      en: [
+        'length × width × √(1 + (pitch ÷ 12)²)',
+        'roof area ÷ 100',
+        'roof area × (1 + extra ÷ 100) ÷ 33⅓ square feet',
+        '(250 ft − 4 in) × (48 − 2) in',
+      ],
+      es: [
+        'largo × ancho × √(1 + (pendiente ÷ 12)²)',
+        'área del techo ÷ 100',
+        'área del techo × (1 + extra ÷ 100) ÷ 33⅓ pies cuadrados',
+        '(250 ft − 4 in) × (48 − 2) in',
+      ],
+    },
+    honesty: {
+      en: [
+        /twenty decimals/,
+        /approximately 33⅓ square feet/,
+        /Table R905\.1\.1\(2\)/,
+        /R905\.2\.2/,
+        /does not count nails/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /veinte decimales/,
+        /aproximadamente 33⅓ pies cuadrados/,
+        /Tabla R905\.1\.1\(2\)/,
+        /R905\.2\.2/,
+        /no cuenta clavos/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['squares', 'areaFt2', 'bundles', 'rolls'],
+    figuresOf: (shown) => [
+      figure(shown, 'squares'),
+      figure(shown, 'areaFt2'),
+      shown.shopping[0] ?? '',
+      shown.shopping[1] ?? '',
+    ],
+    published: [
+      { query: '', figures: ['13.42', '1,341.64', '45', '2'] },
+      { query: '?v=1&p=3', figures: ['12.37', '1,236.93', '41', '3'] },
+      { query: '?v=1&p=0', figures: ['12.00', '1,200.00', '40', '3'] },
+      { query: '?v=1&p=12', figures: ['16.97', '1,697.06', '57', '2'] },
+      { query: '?v=1&l=720&w=480&p=8&ws=15', figures: ['28.84', '2,884.44', '100', '4'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

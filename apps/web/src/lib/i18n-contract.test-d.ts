@@ -7,6 +7,7 @@ import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import type { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
+import type { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
 import type { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import type { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { describe, expectTypeOf, it } from 'vitest';
@@ -24,7 +25,8 @@ type EnglishKeys =
   | keyof typeof enTopsoil
   | keyof typeof enPaint
   | keyof typeof enDrywall
-  | keyof typeof enRoofPitch;
+  | keyof typeof enRoofPitch
+  | keyof typeof enRoofing;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -79,6 +81,19 @@ type RoofPitchPageKeys =
   | 'calc.roof-pitch.page.answer.double'
   | 'calc.roof-pitch.page.answer.below'
   | 'calc.roof-pitch.page.example';
+
+/** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
+type RoofingPageKeys =
+  | 'calc.roofing.page.example'
+  | 'calc.roofing.page.squares'
+  | 'calc.roofing.page.areaM2'
+  | 'calc.roofing.page.shoppingShingles'
+  | 'calc.roofing.page.shoppingUnderlayment'
+  | 'calc.roofing.page.priceHint'
+  | 'calc.roofing.page.answer.meets'
+  | 'calc.roofing.page.answer.double'
+  | 'calc.roofing.page.answer.below'
+  | 'calc.roofing.page.drawing.note';
 
 /** The page copy of the drywall calculator (`calc.drywall.page.*`), exactly: a new key is added here. */
 type DrywallPageKeys =
@@ -149,6 +164,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | PaintPageKeys
       | RectangleAreaPageKeys
       | RoofPitchPageKeys
+      | RoofingPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -179,5 +195,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRoofPitch, `calc.roof-pitch.page.${string}`>
     >().toEqualTypeOf<RoofPitchPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enRoofing, `calc.roofing.page.${string}`>
+    >().toEqualTypeOf<RoofingPageKeys>();
   });
 });

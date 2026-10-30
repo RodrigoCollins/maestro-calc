@@ -20,6 +20,8 @@ import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
+  GAF_SHINGLES_URL,
+  GAF_UNDERLAYMENT_URL,
   IRC_URL,
   NIST_URL,
   QUIKRETE_URL,
@@ -70,6 +72,7 @@ const site = {
     paint: [SHERWIN_WILLIAMS_URL, NIST_URL],
     drywall: [USG_COMPOUND_URL, USG_TAPE_URL, NIST_URL],
     'roof-pitch': [IRC_URL, NIST_URL],
+    roofing: [GAF_SHINGLES_URL, GAF_UNDERLAYMENT_URL, IRC_URL, NIST_URL],
   },
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));

@@ -120,6 +120,16 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('drywall')).toBe(ids.indexOf('paint') + 1);
   });
 
+  // spec: site-routing-i18n › the roofing row, published 2026-10-30: its two URLs are a public contract
+  it('lists roofing after roof pitch, at its published URLs', () => {
+    expect(ROUTES.roofing).toEqual({
+      en: '/roofing-calculator',
+      es: '/es/calculadora-de-tejas',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('roofing')).toBe(ids.indexOf('roof-pitch') + 1);
+  });
+
   // spec: site-routing-i18n › the roof pitch row, published 2026-10-30: its two URLs are a public contract
   it('lists roof pitch after drywall, at its published URLs', () => {
     expect(ROUTES['roof-pitch']).toEqual({

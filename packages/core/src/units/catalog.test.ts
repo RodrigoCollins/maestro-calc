@@ -27,6 +27,7 @@ import {
   mm2,
   mm3,
   oz,
+  sq,
   ton,
   tonne,
   tonYd3,
@@ -53,6 +54,7 @@ const TABLE = [
   ['area', mm2, 'mm2', 25n, 16129n],
   ['area', cm2, 'cm2', 2500n, 16129n],
   ['area', m2, 'm2', 25000000n, 16129n],
+  ['area', sq, 'sq', 14400n, 1n],
   ['volume', in3, 'in3', 1n, 1n],
   ['volume', ft3, 'ft3', 1728n, 1n],
   ['volume', yd3, 'yd3', 46656n, 1n],
@@ -74,7 +76,7 @@ const TABLE = [
   ['density', kgM3, 'kg/m3', 2048383n, 56699046250n],
 ] as const;
 
-describe('the 31 units (units-quantities › Exact unit factors)', () => {
+describe('the 32 units (units-quantities › Exact unit factors)', () => {
   it.each(TABLE.map(([dimension, unit, id, num, den]) => ({ id, dimension, unit, num, den })))(
     '$id ($dimension): id, dimension and exact factor',
     ({ dimension, unit, id, num, den }) => {
@@ -127,13 +129,19 @@ describe('the 31 units (units-quantities › Exact unit factors)', () => {
     expect(gal.factor.div(liter.factor)).toEqual(Rational.of(3785411784n, 1000000000n));
   });
 
+  // spec: units-quantities › Exact unit factors — the roofing square is 100 ft², the unit shingles
+  // are sold by (roofing-calculator)
+  it('defines the roofing square as one hundred square feet', () => {
+    expect(sq.factor).toEqual(ft2.factor.mul(Rational.of(100)));
+  });
+
   // spec: units-quantities › Exact unit factors — 45,359,237 is coprime with 10^8 (reduced)
   it('keeps the kilogram exact through the 1959 pound (1 lb = 45359237/10^8 kg)', () => {
     expect(kg.factor.num * 45359237n).toBe(100000000n * kg.factor.den);
     expect(tonne.factor).toEqual(kg.factor.mul(Rational.of(1000)));
   });
 
-  // spec: units-quantities › Dimension model — units are immutable; Table: 31 units
+  // spec: units-quantities › Dimension model — units are immutable; Table: 32 units
   it('freezes every unit', () => {
     const all: readonly Unit<DimensionName>[] = [
       ...UNITS.length,
@@ -143,7 +151,7 @@ describe('the 31 units (units-quantities › Exact unit factors)', () => {
       ...UNITS.density,
       ...UNITS.angle,
     ];
-    expect(all).toHaveLength(31);
+    expect(all).toHaveLength(32);
     for (const unit of all) {
       expect(Object.isFrozen(unit), unit.id).toBe(true);
     }

@@ -26,6 +26,7 @@ export {
   mm2,
   mm3,
   oz,
+  sq,
   ton,
   tonne,
   tonYd3,
