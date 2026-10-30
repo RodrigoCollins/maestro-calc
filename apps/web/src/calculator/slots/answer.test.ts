@@ -11,6 +11,17 @@ const values: (moment: Ready<typeof concrete>, primary: string) => Record<string
 
 const valid = (raw: Readonly<Record<string, unknown>>) => unwrap(concrete.validate(raw));
 
+/** The ready moment of raw inputs, as the page builds it. */
+const momentOf = (raw: Readonly<Record<string, unknown>>): Ready<typeof concrete> => {
+  const state = valid(raw);
+  return {
+    system: 'imperial',
+    choices: { shape: state.shape, bag: state.bag },
+    valid: state,
+    result: unwrap(concrete.run(raw)),
+  };
+};
+
 describe('answerSlot (calculator-web-core › Page-module contract: answer values)', () => {
   const byShape = answerSlot(concrete, { by: 'shape', values });
 
@@ -25,13 +36,13 @@ describe('answerSlot (calculator-web-core › Page-module contract: answer value
   });
 
   it.each(['slab', 'footing', 'column', 'steps'])('picks answer.%s for that shape', (shape) => {
-    expect(byShape.template(valid({ shape }))).toBe(`answer.${shape}`);
+    expect(byShape.template(momentOf({ shape }))).toBe(`answer.${shape}`);
   });
 
   it('has the one template answer when no select drives it', () => {
     const plain = answerSlot(concrete, { values });
     expect(plain.templates).toEqual(['answer']);
-    expect(plain.template(valid({ shape: 'column' }))).toBe('answer');
+    expect(plain.template(momentOf({ shape: 'column' }))).toBe('answer');
   });
 
   it('hands the values function the moment and the primary text', () => {
@@ -51,9 +62,30 @@ describe('answerSlot (calculator-web-core › Page-module contract: answer value
   });
 
   it('throws when the driving select holds no option text', () => {
-    expect(() => byShape.template({ ...valid({}), shape: 3 } as never)).toThrow(
-      'shape holds no option',
-    );
+    const moment = momentOf({});
+    expect(() =>
+      byShape.template({ ...moment, valid: { ...moment.valid, shape: 3 } } as never),
+    ).toThrow('shape holds no option');
+  });
+
+  // the template may follow the result instead of a select: one case per outcome
+  // (calculator-web-core › answer cases, roof-pitch-calculator)
+  it('picks a declared case from the whole moment', () => {
+    const byVolume = answerSlot(concrete, {
+      cases: ['small', 'large'],
+      pick: ({ result }) => ((result.shopping[0]?.qty ?? 0n) > 100n ? 'large' : 'small'),
+      values,
+    });
+    expect(byVolume.templates).toEqual(['answer.small', 'answer.large']);
+    expect(byVolume.template(momentOf({}))).toBe('answer.small');
+    expect(byVolume.template(momentOf({ length: '30' }))).toBe('answer.large');
+  });
+
+  it('throws ANSWER_CASE when the pick names a case it did not declare', () => {
+    const odd = answerSlot(concrete, { cases: ['one'], pick: () => 'two', values });
+    const error = pageModuleErrorOf(() => odd.template(momentOf({})));
+    expect(error.code).toBe('ANSWER_CASE');
+    expect(error.cause).toEqual({ id: 'concrete', at: 'two' });
   });
 
   it('reads a select of any fixture', () => {

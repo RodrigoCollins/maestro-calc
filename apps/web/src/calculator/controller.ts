@@ -360,10 +360,8 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   const answerOf = (env: Environment, moment: Moment<Calc>, primary: string) => {
     if (answer === undefined) return undefined;
     if (moment.result === undefined) return DASH;
-    return fillMessage(
-      message(env, answer.template(moment.valid)),
-      answer.values({ ...moment, result: moment.result }, primary),
-    );
+    const ready = { ...moment, result: moment.result };
+    return fillMessage(message(env, answer.template(ready)), answer.values(ready, primary));
   };
 
   /**
