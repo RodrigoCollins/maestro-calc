@@ -1,0 +1,3 @@
+# Archive report: roof-pitch-calculator
+
+Archived on 2026-10-30 after the go-live (#141) merged to main and was verified in production (`/roof-pitch-calculator` and `/es/calculadora-de-pendiente-de-techo` 200, 28 URLs in the sitemap). The change carried no spec delta; its requirements were written at archive from the tests that cite them: `openspec/specs/calc-roof-pitch/spec.md` ([RP1]–[RP6]), and the square root and arctangent of #139 in `openspec/specs/core-geometry/spec.md` ([GEO8], [GEO9]). The stale sentence of `units-quantities` that deferred angles was replaced by a pointer to the angle dimension requirement already there.

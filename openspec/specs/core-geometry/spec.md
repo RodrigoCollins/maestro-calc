@@ -58,3 +58,21 @@ Hand-verified cases (`ft2 = in2 / 144`):
 - GIVEN `circleArea(6 in)` and a height of `96 in`
 - WHEN multiplied with `multiply` (area x length)
 - THEN the result is a `Quantity<'volume'>` of exactly `3456 x PI` in3, which is `2 x PI` ft3 (3456 / 1728 = 2)
+
+### Requirement: Square root (roof-pitch-calculator, 2026-10-30)
+
+The package MUST export `squareRoot(x)` for a non-negative `Rational`: the integer square root of `x × 10^40` over `10^20`, so `0 ≤ √x − squareRoot(x) < 10^-20`, exact when the root has at most twenty decimals. A negative `x` MUST throw `CoreError` with code `NEGATIVE_QUANTITY`.
+
+#### Scenario: [GEO8] Truncated root
+- GIVEN `5/4`
+- WHEN `squareRoot` is evaluated
+- THEN it equals `111803398874989484820 / 10^20`, and `squareRoot(169/100)` equals `13/10` exactly
+
+### Requirement: Arctangent (roof-pitch-calculator, 2026-10-30)
+
+The package MUST export `arctangentDegrees(t)`, the angle in degrees of a slope `t`: odd, zero at zero, within `10^-20` of a degree; Euler's series on `t ≤ 1` and `90° − atan(1/t)` above one, with `PI`.
+
+#### Scenario: [GEO9] Reference angles
+- GIVEN the slopes `0`, `1/2`, `1` and `-1`
+- WHEN `arctangentDegrees` is evaluated
+- THEN they give `0`, `26.565051177077989351…`, `45` and `-45` degrees within `10^-20`
