@@ -55,6 +55,14 @@ export const mm3 = /* @__PURE__ */ cubed(mm, 'mm3');
 export const cm3 = /* @__PURE__ */ cubed(cm, 'cm3');
 /** The cubic metre. */
 export const m3 = /* @__PURE__ */ cubed(m, 'm3');
+/** The US liquid gallon, exactly 231 in3 (NIST SP 811, Appendix B). */
+export const gal = /* @__PURE__ */ defineUnit('volume', 'gal', /* @__PURE__ */ Rational.of(231));
+/** The liter, exactly 1000 cm3 (`L`, as NIST SP 811 writes it). */
+export const liter = /* @__PURE__ */ defineUnit(
+  'volume',
+  'L',
+  /* @__PURE__ */ cm3.factor.mul(/* @__PURE__ */ Rational.of(1000)),
+);
 
 // Canonical mass unit: the avoirdupois pound, exactly 45359237/10^8 kg (1959 agreement; NIST SP 811).
 // An ounce is 1/16 lb and a US short ton is 2000 lb; a tonne is 1000 kg. Written as fractions of
@@ -101,7 +109,7 @@ export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } =
   /* @__PURE__ */ Object.freeze({
     length: /* @__PURE__ */ Object.freeze([inch, ft, yd, mm, cm, m]),
     area: /* @__PURE__ */ Object.freeze([in2, ft2, yd2, mm2, cm2, m2]),
-    volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3]),
+    volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3, gal, liter]),
     mass: /* @__PURE__ */ Object.freeze([lb, oz, ton, kg, tonne]),
     density: /* @__PURE__ */ Object.freeze([lbIn3, lbFt3, lbYd3, tonYd3, kgM3]),
   });
