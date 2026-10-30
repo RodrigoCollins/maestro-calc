@@ -51,5 +51,5 @@ export {
   type Product,
   type Quotient,
 } from './ops.ts';
-export { isQuantity, quantity, valueIn, type Quantity } from './quantity.ts';
+export { isQuantity, isQuantityOf, quantity, valueIn, type Quantity } from './quantity.ts';
 export type { Unit, UnitIdOf } from './unit.ts';

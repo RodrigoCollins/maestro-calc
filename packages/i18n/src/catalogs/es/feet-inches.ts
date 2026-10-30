@@ -17,4 +17,13 @@ export const esFeetInches = {
   'calc.feet-inches.outputs.resultM': 'Resultado (metros)',
   'calc.feet-inches.warnings.secondLonger':
     'La segunda medida es más larga que la primera: el resultado es la diferencia.',
+  'calc.feet-inches.page.example': 'Ejemplo: 12 ft 6 in más 3 ft 8 1/4 in da 16 ft 2 1/4 in.',
+  'calc.feet-inches.page.result': '{value}',
+  'calc.feet-inches.page.resultM': '{value} m',
+  'calc.feet-inches.page.answer.add': '{first} más {second} da {result}.',
+  'calc.feet-inches.page.answer.subtract': '{first} menos {second} da {result}.',
+  'calc.feet-inches.page.answer.longer': '{second} es más larga que {first} por {result}.',
+  'calc.feet-inches.page.answer.multiply': '{first} por {factor} da {result}.',
+  'calc.feet-inches.page.answer.divide':
+    '{first} dividido en {factor} partes iguales da {result} cada una.',
 } as const satisfies CatalogOf<typeof enFeetInches>;

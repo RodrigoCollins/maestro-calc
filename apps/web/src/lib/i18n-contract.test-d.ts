@@ -84,6 +84,17 @@ type RoofPitchPageKeys =
   | 'calc.roof-pitch.page.answer.below'
   | 'calc.roof-pitch.page.example';
 
+/** The page copy of the feet and inches calculator (`calc.feet-inches.page.*`), exactly: a new key is added here. */
+type FeetInchesPageKeys =
+  | 'calc.feet-inches.page.example'
+  | 'calc.feet-inches.page.result'
+  | 'calc.feet-inches.page.resultM'
+  | 'calc.feet-inches.page.answer.add'
+  | 'calc.feet-inches.page.answer.subtract'
+  | 'calc.feet-inches.page.answer.longer'
+  | 'calc.feet-inches.page.answer.multiply'
+  | 'calc.feet-inches.page.answer.divide';
+
 /** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
 type RoofingPageKeys =
   | 'calc.roofing.page.example'
@@ -167,6 +178,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | RectangleAreaPageKeys
       | RoofPitchPageKeys
       | RoofingPageKeys
+      | FeetInchesPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -200,5 +212,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRoofing, `calc.roofing.page.${string}`>
     >().toEqualTypeOf<RoofingPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enFeetInches, `calc.feet-inches.page.${string}`>
+    >().toEqualTypeOf<FeetInchesPageKeys>();
   });
 });
