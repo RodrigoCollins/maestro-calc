@@ -161,6 +161,30 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | 20 ft × 15 ft, paredes de 9 ft (`?v=1&l=240&w=180&h=108`)                                   | 3.31    | 12.55  | 4     |
 | 50 ft × 40 ft, paredes de 10 ft, 2 puertas, 8 ventanas (`?v=1&l=600&w=480&h=120&dr=2&wn=8`) | 9.37    | 35.47  | 10    |
 
+<h2 id="drywall">Calculadora de drywall</h2>
+
+La [calculadora de drywall](/es/calculadora-de-drywall) calcula las placas de drywall para las paredes de un cuarto rectangular, descontando sus puertas y ventanas, y su techo cuando lo incluyes, con el compuesto y la cinta de papel para terminarlas. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+Las fórmulas:
+
+- Área de paredes = 2 × (largo + ancho) × altura, menos 20 pies cuadrados por puerta y 15 pies cuadrados por ventana, nunca menos de cero.
+- Área a cubrir = área de paredes, más largo × ancho cuando se incluye el techo.
+- Placas = área × (1 + extra ÷ 100) ÷ el área de una placa (32 pies cuadrados para 4 × 8, 48 para 4 × 12), redondeado hacia arriba.
+- Compuesto para juntas = área × 9 galones por cada 1,000 pies cuadrados; baldes de 4.5 galones, redondeado hacia arriba.
+- Cinta para juntas = área × 370 pies por cada 1,000 pies cuadrados; rollos de 500 pies, redondeado hacia arriba.
+
+El rendimiento del compuesto es aproximadamente 9 galones por cada 1,000 pies cuadrados: USG indica que unos dos baldes de 4.5 galones de Sheetrock UltraLightweight All Purpose Joint Compound terminan 1,000 pies cuadrados. El de la cinta es aproximadamente 370 pies por cada 1,000 pies cuadrados, según la hoja técnica de USG para Sheetrock Brand Heavy Joint Tape (J1393, revisada en octubre de 2015). El extra se aplica solo a las placas; el compuesto y la cinta siguen el área misma. Los 20 pies cuadrados de una puerta y los 15 pies cuadrados de una ventana son descuentos aproximados. La calculadora no cuenta tornillos, esquineros ni molduras. Un pie cuadrado es exactamente 0.09290304 metros cuadrados (NIST SP 811, apéndice B). Las cantidades a comprar son las únicas cifras que se redondean en el cálculo, siempre hacia arriba; las demás se redondean a dos decimales solo cuando te las mostramos.
+
+Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                                                                                | Pies cuadrados | Placas | Baldes | Rollos |
+| ----------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------ | ------ | ------ |
+| Cuarto de 12 ft × 12 ft, paredes de 8 ft, 1 puerta, 2 ventanas, paredes y techo, placas de 4 × 8, 10 % de extra (valores iniciales) | 478.00         | 17     | 1      | 1      |
+| Igual, placas de 4 × 12 (`?v=1&sz=4x12`)                                                                                            | 478.00         | 11     | 1      | 1      |
+| Igual, solo paredes (`?v=1&sf=walls`)                                                                                               | 334.00         | 12     | 1      | 1      |
+| 20 ft × 15 ft, paredes de 9 ft (`?v=1&l=240&w=180&h=108`)                                                                           | 880.00         | 31     | 2      | 1      |
+| 50 ft × 40 ft, paredes de 10 ft, 2 puertas, 8 ventanas (`?v=1&l=600&w=480&h=120&dr=2&wn=8`)                                         | 3,640.00       | 126    | 8      | 3      |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

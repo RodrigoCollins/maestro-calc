@@ -37,27 +37,27 @@ describe('drywall page: the answer through the controller (calc-drywall)', () =>
     [
       'en',
       '?v=1',
-      'A 12 ft by 12 ft room with 8 ft walls has 478.00 square feet of walls and ceiling to cover. Sheets of 4 × 8 ft: 17.',
+      'A 12 ft by 12 ft room with 8 ft walls has 478.00 ft² of walls and ceiling to cover. Sheets of 4 × 8 ft: 17.',
     ],
     [
       'es',
       '?v=1',
-      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft tiene 478.00 pies cuadrados de paredes y techo para cubrir. Placas de 4 × 8 ft: 17.',
+      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft tiene 478.00 ft² de paredes y techo para cubrir. Placas de 4 × 8 ft: 17.',
     ],
     [
       'en',
       '?v=1&sf=walls&sz=4x12',
-      'A 12 ft by 12 ft room with 8 ft walls has 334.00 square feet of walls to cover. Sheets of 4 × 12 ft: 8.',
+      'A 12 ft by 12 ft room with 8 ft walls has 334.00 ft² of walls to cover. Sheets of 4 × 12 ft: 8.',
     ],
     [
       'es',
       '?v=1&sf=walls',
-      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft tiene 334.00 pies cuadrados de paredes para cubrir. Placas de 4 × 8 ft: 12.',
+      'Un cuarto de 12 ft por 12 ft con paredes de 8 ft tiene 334.00 ft² de paredes para cubrir. Placas de 4 × 8 ft: 12.',
     ],
     [
       'en',
       '?v=1&u=m',
-      'A 3.66 m by 3.66 m room with 2.44 m walls has 44.41 square meters of walls and ceiling to cover. Sheets of 4 × 8 ft: 17.',
+      'A 3.66 m by 3.66 m room with 2.44 m walls has 44.41 m² of walls and ceiling to cover. Sheets of 4 × 8 ft: 17.',
     ],
   ] as const)('says the %s answer of %s', (locale, search, sentence) => {
     expect(viewOf(locale, search).answer).toBe(sentence);

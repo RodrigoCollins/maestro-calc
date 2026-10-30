@@ -84,6 +84,14 @@ export const WORKED_EXAMPLES = {
     wallFt2: decimalText,
     cans: z.number().int().nonnegative(),
   }),
+  drywall: z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    areaFt2: decimalText,
+    areaM2: decimalText,
+    compoundGal: decimalText,
+    tapeFt: decimalText,
+    sheets: z.number().int().nonnegative(),
+  }),
 };
 
 /** The calculator ids that have a worked example row. */

@@ -67,7 +67,7 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
       templateProblems(
         withoutConcrete,
         ['concrete'],
-        ['rectangle-area', 'gravel', 'mulch', 'topsoil', 'paint', ...PAGELESS],
+        ['rectangle-area', 'gravel', 'mulch', 'topsoil', 'paint', 'drywall', ...PAGELESS],
         registry,
       ),
     ).toEqual(['concrete: page id is not in the route table']);

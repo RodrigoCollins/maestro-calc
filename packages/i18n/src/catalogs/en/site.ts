@@ -46,6 +46,9 @@ export const enSite = {
   'page.home.cards.topsoil.summary': 'Cubic yards and bags of topsoil for a lawn, bed or fill.',
   'page.home.cards.paint.title': 'Paint calculator',
   'page.home.cards.paint.summary': 'Gallons of paint and cans to buy for the walls of a room.',
+  'page.home.cards.drywall.title': 'Drywall calculator',
+  'page.home.cards.drywall.summary':
+    'Sheets, joint compound and tape for the walls and ceiling of a room.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -84,6 +87,9 @@ export const enSite = {
   'page.paint.title': 'Paint Calculator: Gallons for a Room | Maestro Calc',
   'page.paint.description':
     'Find how many gallons of paint the walls of a room need, less doors and windows, for one to five coats, with the cans to buy and the cost. Free.',
+  'page.drywall.title': 'Drywall Calculator: Sheets, Mud and Tape | Maestro Calc',
+  'page.drywall.description':
+    'Find how many drywall sheets a room needs, walls and ceiling, less doors and windows, with the joint compound, the tape and the cost. Free and instant.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

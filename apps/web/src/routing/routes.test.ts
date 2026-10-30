@@ -113,6 +113,13 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('paint')).toBe(ids.indexOf('topsoil') + 1);
   });
 
+  // spec: site-routing-i18n › the drywall row, published 2026-10-30: its two URLs are a public contract
+  it('lists drywall after paint, at its published URLs', () => {
+    expect(ROUTES.drywall).toEqual({ en: '/drywall-calculator', es: '/es/calculadora-de-drywall' });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('drywall')).toBe(ids.indexOf('paint') + 1);
+  });
+
   // spec: site-routing-i18n › Table invariants hold
   it('accepts the real table and the fixture', () => {
     expect(routeProblems(ROUTES)).toEqual([]);

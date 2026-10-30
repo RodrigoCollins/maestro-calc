@@ -2,6 +2,7 @@ import { concreteMix } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
 import { gravelPage } from '../../calculator/gravel/page.ts';
+import { drywallPage } from '../../calculator/drywall/page.ts';
 import { mulchPage } from '../../calculator/mulch/page.ts';
 import { paintPage } from '../../calculator/paint/page.ts';
 import { topsoilPage } from '../../calculator/topsoil/page.ts';
@@ -153,6 +154,36 @@ const paintShown = ({ query }: WorkedExample<'paint'>) => {
   };
 };
 
+/** The area, the finishing and the sheets the drywall page shows for the example's link. */
+const drywallShown = ({ query }: WorkedExample<'drywall'>) => {
+  const { figures, shopping } = shownFigures(drywallPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the drywall page shows no ${key}`);
+    return value;
+  };
+  const [sheets] = shopping;
+  if (sheets === undefined) throw new Error('the drywall page shows no sheet line');
+  return {
+    query,
+    areaFt2: shown('areaFt2'),
+    areaM2: shown('areaM2'),
+    compoundGal: shown('compound'),
+    tapeFt: shown('tape'),
+    sheets: Number(sheets),
+  };
+};
+
+const USG_COMPOUND = {
+  name: /^USG, Sheetrock UltraLightweight All Purpose Joint Compound coverage\b/,
+  url: 'https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html',
+} as const;
+
+const USG_TAPE = {
+  name: /^USG Sheetrock Brand Heavy Joint Tape, Submittal Sheet J1393\b/,
+  url: 'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf',
+} as const;
+
 const SHERWIN_WILLIAMS = {
   name: /^Sherwin-Williams Quali-Kote Interior Latex, Product Data Sheet\b/,
   url: 'https://www.sherwin-williams.com/document/PDS/en/035777853146/',
@@ -250,6 +281,23 @@ export const CONTENT_ROWS = {
       '8 ft',
     ],
     methodologyLink: { en: '/methodology#paint', es: '/es/metodologia#pintura' },
+  },
+  drywall: {
+    module: drywallPage,
+    updated: '2026-10-30',
+    sources: () => [USG_COMPOUND, USG_TAPE, NIST],
+    engine: drywallShown,
+    // the example is the page's starting values: Formulas names the sides and the height as written
+    figures: ({ areaFt2, areaM2, compoundGal, tapeFt, sheets }) => [
+      areaFt2,
+      areaM2,
+      compoundGal,
+      tapeFt,
+      String(sheets),
+      '12 ft',
+      '8 ft',
+    ],
+    methodologyLink: { en: '/methodology#drywall', es: '/es/metodologia#drywall' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

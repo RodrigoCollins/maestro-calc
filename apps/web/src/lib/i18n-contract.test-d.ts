@@ -79,7 +79,8 @@ type DrywallPageKeys =
   | 'calc.drywall.page.priceHint'
   | 'calc.drywall.page.answer.walls-ceiling'
   | 'calc.drywall.page.answer.walls'
-  | 'calc.drywall.page.drawing.note';
+  | 'calc.drywall.page.drawing.note'
+  | 'calc.drywall.page.example';
 
 /** The page copy of the paint calculator (`calc.paint.page.*`), exactly: a new key is added here. */
 type PaintPageKeys =

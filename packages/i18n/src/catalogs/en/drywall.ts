@@ -19,8 +19,10 @@ export const enDrywall = {
   'calc.drywall.outputs.compound': 'Joint compound (gallons)',
   'calc.drywall.outputs.tape': 'Joint tape (feet)',
   'calc.drywall.outputs.cost': 'Drywall cost',
-  'calc.drywall.page.areaFt2': '{value} square feet',
-  'calc.drywall.page.areaM2': '{value} square meters',
+  'calc.drywall.page.example':
+    'Example: a 12 ft by 12 ft room with 8 ft walls, one door and two windows takes 17 sheets of 4 × 8 ft for walls and ceiling.',
+  'calc.drywall.page.areaFt2': '{value} ft²',
+  'calc.drywall.page.areaM2': '{value} m²',
   'calc.drywall.page.shoppingSheets': 'Drywall, {size} sheets',
   'calc.drywall.page.shoppingCompound': 'Joint compound, 4.5 gal pails',
   'calc.drywall.page.shoppingTape': 'Paper joint tape, 500 ft rolls',

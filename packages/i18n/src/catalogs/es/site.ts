@@ -52,6 +52,9 @@ export const esSite = {
   'page.home.cards.paint.title': 'Calculadora de pintura',
   'page.home.cards.paint.summary':
     'Galones de pintura y latas a comprar para las paredes de un cuarto.',
+  'page.home.cards.drywall.title': 'Calculadora de drywall',
+  'page.home.cards.drywall.summary':
+    'Placas, compuesto y cinta para las paredes y el techo de un cuarto.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -90,6 +93,9 @@ export const esSite = {
   'page.paint.title': 'Calculadora de pintura: galones por cuarto | Maestro Calc',
   'page.paint.description':
     'Calcula cuántos galones de pintura llevan las paredes de un cuarto, sin puertas ni ventanas, para una a cinco manos, con las latas y el costo. Gratis.',
+  'page.drywall.title': 'Calculadora de drywall: placas y compuesto | Maestro Calc',
+  'page.drywall.description':
+    'Calcula cuántas placas de drywall lleva un cuarto, paredes y techo, sin puertas ni ventanas, con el compuesto, la cinta y el costo. Gratis y al instante.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

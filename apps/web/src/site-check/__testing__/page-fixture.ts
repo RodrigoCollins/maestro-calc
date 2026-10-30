@@ -44,11 +44,17 @@ export const WISDOT_URL =
   'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf';
 export const SHERWIN_WILLIAMS_URL =
   'https://www.sherwin-williams.com/document/PDS/en/035777853146/';
+export const USG_COMPOUND_URL =
+  'https://assemblies-tools.usg.com/content/usgcom/en/resource-center/faqs/1977.html';
+export const USG_TAPE_URL =
+  'https://images.homedepot-static.com/catalog/pdfImages/7a/7a2ad9f3-62c7-45ef-b58e-869ccdbca0c6.pdf';
 const SOURCE_NAMES: Readonly<Record<string, string>> = {
   [QUIKRETE_URL]: 'QUIKRETE',
   [NIST_URL]: 'NIST',
   [WISDOT_URL]: 'WisDOT',
   [SHERWIN_WILLIAMS_URL]: 'Sherwin-Williams',
+  [USG_COMPOUND_URL]: 'USG',
+  [USG_TAPE_URL]: 'USG',
 };
 
 /** The entry and the chunk that every valid calculator fixture loads (language-free, no network). */

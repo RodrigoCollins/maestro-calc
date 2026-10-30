@@ -317,4 +317,55 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&l=600&w=480&h=120&dr=2&wn=8', figures: ['9.37', '35.47', '10'] },
     ],
   },
+  drywall: {
+    anchor: { en: 'drywall', es: 'drywall' },
+    pageLink: {
+      en: '[drywall calculator](/drywall-calculator)',
+      es: '[calculadora de drywall](/es/calculadora-de-drywall)',
+    },
+    formulas: {
+      en: [
+        '2 × (length + width) × height, less 20 square feet per door and 15 square feet per window',
+        'area × (1 + extra ÷ 100) ÷ the area of one sheet',
+        'area × 9 gallons per 1,000 square feet',
+        'area × 370 feet per 1,000 square feet',
+      ],
+      es: [
+        '2 × (largo + ancho) × altura, menos 20 pies cuadrados por puerta y 15 pies cuadrados por ventana',
+        'área × (1 + extra ÷ 100) ÷ el área de una placa',
+        'área × 9 galones por cada 1,000 pies cuadrados',
+        'área × 370 pies por cada 1,000 pies cuadrados',
+      ],
+    },
+    honesty: {
+      en: [
+        /approximately 9 gallons/,
+        /approximately 370 feet/,
+        /approximate allowances/,
+        /does not count screws/,
+        /rounded to two decimals only when they are shown/,
+      ],
+      es: [
+        /aproximadamente 9 galones/,
+        /aproximadamente 370 pies/,
+        /descuentos aproximados/,
+        /no cuenta tornillos/,
+        /se redondean a dos decimales solo cuando/,
+      ],
+    },
+    columns: ['areaFt2', 'sheets', 'pails', 'rolls'],
+    figuresOf: (shown) => [
+      figure(shown, 'areaFt2'),
+      shown.shopping[0] ?? '',
+      shown.shopping[1] ?? '',
+      shown.shopping[2] ?? '',
+    ],
+    published: [
+      { query: '', figures: ['478.00', '17', '1', '1'] },
+      { query: '?v=1&sz=4x12', figures: ['478.00', '11', '1', '1'] },
+      { query: '?v=1&sf=walls', figures: ['334.00', '12', '1', '1'] },
+      { query: '?v=1&l=240&w=180&h=108', figures: ['880.00', '31', '2', '1'] },
+      { query: '?v=1&l=600&w=480&h=120&dr=2&wn=8', figures: ['3,640.00', '126', '8', '3'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;
