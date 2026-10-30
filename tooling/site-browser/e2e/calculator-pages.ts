@@ -4,6 +4,7 @@ import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.t
 import { CONCRETE } from './concrete-pages.ts';
 import { GRAVEL } from './gravel-pages.ts';
 import { MULCH } from './mulch-pages.ts';
+import { PAINT } from './paint-pages.ts';
 import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
 import { TOPSOIL } from './topsoil-pages.ts';
 
@@ -283,6 +284,7 @@ export const E2E = {
   gravel: GRAVEL,
   mulch: MULCH,
   topsoil: TOPSOIL,
+  paint: PAINT,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */

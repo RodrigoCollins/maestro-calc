@@ -42,10 +42,13 @@ export const QUIKRETE_URL = 'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%2
 export const NIST_URL = 'https://www.nist.gov/pml/special-publication-811';
 export const WISDOT_URL =
   'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf';
+export const SHERWIN_WILLIAMS_URL =
+  'https://www.sherwin-williams.com/document/PDS/en/035777853146/';
 const SOURCE_NAMES: Readonly<Record<string, string>> = {
   [QUIKRETE_URL]: 'QUIKRETE',
   [NIST_URL]: 'NIST',
   [WISDOT_URL]: 'WisDOT',
+  [SHERWIN_WILLIAMS_URL]: 'Sherwin-Williams',
 };
 
 /** The entry and the chunk that every valid calculator fixture loads (language-free, no network). */

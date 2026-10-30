@@ -3,6 +3,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
 import { gravelPage } from '../../calculator/gravel/page.ts';
 import { mulchPage } from '../../calculator/mulch/page.ts';
+import { paintPage } from '../../calculator/paint/page.ts';
 import { topsoilPage } from '../../calculator/topsoil/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
@@ -132,6 +133,31 @@ const topsoilShown = ({ query }: WorkedExample<'topsoil'>) => {
   };
 };
 
+/** The gallons, the areas and the cans the paint page shows for the example's link. */
+const paintShown = ({ query }: WorkedExample<'paint'>) => {
+  const { figures, shopping } = shownFigures(paintPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the paint page shows no ${key}`);
+    return value;
+  };
+  const [cans] = shopping;
+  if (cans === undefined) throw new Error('the paint page shows no gallon line');
+  return {
+    query,
+    gallons: shown('gallons'),
+    liters: shown('liters'),
+    paintFt2: shown('paintArea'),
+    wallFt2: shown('wallArea'),
+    cans: Number(cans),
+  };
+};
+
+const SHERWIN_WILLIAMS = {
+  name: /^Sherwin-Williams Quali-Kote Interior Latex, Product Data Sheet\b/,
+  url: 'https://www.sherwin-williams.com/document/PDS/en/035777853146/',
+} as const;
+
 const WISDOT = {
   name: /^WisDOT WHRP G22-05, Table E2\b/,
   url: 'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf',
@@ -207,6 +233,23 @@ export const CONTENT_ROWS = {
       '4 in',
     ],
     methodologyLink: { en: '/methodology#topsoil', es: '/es/metodologia#tierra-para-jardin' },
+  },
+  paint: {
+    module: paintPage,
+    updated: '2026-10-30',
+    sources: () => [SHERWIN_WILLIAMS, NIST],
+    engine: paintShown,
+    // the example is the page's starting values: Formulas names the sides and the height as written
+    figures: ({ gallons, liters, paintFt2, wallFt2, cans }) => [
+      gallons,
+      liters,
+      paintFt2,
+      wallFt2,
+      String(cans),
+      '12 ft',
+      '8 ft',
+    ],
+    methodologyLink: { en: '/methodology#paint', es: '/es/metodologia#pintura' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

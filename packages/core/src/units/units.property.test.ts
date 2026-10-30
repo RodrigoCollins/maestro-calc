@@ -30,12 +30,12 @@ const forAllRationals = (check: (x: Rational) => void): void => {
 };
 
 describe('unit conversion properties (units-quantities › Construction and conversion)', () => {
-  it('covers all 28 units', () => {
+  it('covers all 30 units', () => {
     const counts = Object.values(UNITS).map((units) => units.length);
-    expect(counts.reduce((total, count) => total + count, 0)).toBe(28);
+    expect(counts.reduce((total, count) => total + count, 0)).toBe(30);
   });
 
-  // spec: units-quantities › Round trip property [UQ14], all 28 units
+  // spec: units-quantities › Round trip property [UQ14], all 30 units
   it('reads back the value it was built from, in every unit', () => {
     forAllRationals((x) => {
       roundTrips(x, UNITS.length);

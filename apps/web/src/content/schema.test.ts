@@ -72,7 +72,14 @@ const calculator = {
 } as const;
 
 describe('calculatorSchema', () => {
-  const schema = calculatorSchema(['rectangle-area', 'concrete', 'gravel', 'mulch', 'topsoil']);
+  const schema = calculatorSchema([
+    'rectangle-area',
+    'concrete',
+    'gravel',
+    'mulch',
+    'topsoil',
+    'paint',
+  ]);
 
   it('parses a valid entry and keeps every field', () => {
     expect(schema.parse(calculator)).toEqual(calculator);
@@ -207,6 +214,7 @@ describe('calculatorSchema', () => {
       'gravel',
       'mulch',
       'topsoil',
+      'paint',
       'asphalt',
     ]);
     const result = open.safeParse({ ...calculator, id: 'asphalt' });

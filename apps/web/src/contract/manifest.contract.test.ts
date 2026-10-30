@@ -170,6 +170,7 @@ describe('test-support exports (monorepo-workspace, PR 12 review R1-3)', () => {
       './testing/concrete-yields',
       './testing/gravel-yields',
       './testing/language-free',
+      './testing/paint-yields',
       './testing/released-harness',
       './testing/released-snapshot',
     ]);

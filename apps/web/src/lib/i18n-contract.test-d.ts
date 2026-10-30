@@ -5,6 +5,7 @@ import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import type { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import type { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { describe, expectTypeOf, it } from 'vitest';
 import type { calculators } from './calculators.ts';
@@ -18,7 +19,8 @@ type EnglishKeys =
   | keyof typeof enGravel
   | keyof typeof enMulch
   | keyof typeof enRectangleArea
-  | keyof typeof enTopsoil;
+  | keyof typeof enTopsoil
+  | keyof typeof enPaint;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -65,6 +67,16 @@ type MulchPageKeys =
   | 'calc.mulch.page.drawing.note'
   | 'calc.mulch.page.example';
 
+/** The page copy of the paint calculator (`calc.paint.page.*`), exactly: a new key is added here. */
+type PaintPageKeys =
+  | 'calc.paint.page.gallons'
+  | 'calc.paint.page.liters'
+  | 'calc.paint.page.shoppingLine'
+  | 'calc.paint.page.priceHint'
+  | 'calc.paint.page.answer'
+  | 'calc.paint.page.drawing.note'
+  | 'calc.paint.page.example';
+
 /** The page copy of the topsoil calculator (`calc.topsoil.page.*`), exactly: a new key is added here. */
 type TopsoilPageKeys =
   | 'calc.topsoil.page.volumeYd3'
@@ -107,6 +119,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | ConcretePageKeys
       | GravelPageKeys
       | MulchPageKeys
+      | PaintPageKeys
       | RectangleAreaPageKeys
       | TopsoilPageKeys
     >();
@@ -129,5 +142,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enTopsoil, `calc.topsoil.page.${string}`>
     >().toEqualTypeOf<TopsoilPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enPaint, `calc.paint.page.${string}`>
+    >().toEqualTypeOf<PaintPageKeys>();
   });
 });

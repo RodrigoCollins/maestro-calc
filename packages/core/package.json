@@ -11,6 +11,7 @@
     "./testing/concrete-yields": "./src/__testing__/concrete-yields.ts",
     "./testing/gravel-yields": "./src/__testing__/gravel-yields.ts",
     "./testing/language-free": "./src/__testing__/language-free.ts",
+    "./testing/paint-yields": "./src/__testing__/paint-yields.ts",
     "./testing/released-harness": "./src/url/released-harness.ts",
     "./testing/released-snapshot": "./src/__testing__/released-snapshot.ts"
   },

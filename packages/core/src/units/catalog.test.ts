@@ -8,6 +8,7 @@ import {
   ft,
   ft2,
   ft3,
+  gal,
   in2,
   in3,
   inch,
@@ -17,6 +18,7 @@ import {
   lbFt3,
   lbIn3,
   lbYd3,
+  liter,
   m,
   m2,
   m3,
@@ -56,6 +58,8 @@ const TABLE = [
   ['volume', mm3, 'mm3', 125n, 2048383n],
   ['volume', cm3, 'cm3', 125000n, 2048383n],
   ['volume', m3, 'm3', 125000000000n, 2048383n],
+  ['volume', gal, 'gal', 231n, 1n],
+  ['volume', liter, 'L', 125000000n, 2048383n],
   ['mass', lb, 'lb', 1n, 1n],
   ['mass', oz, 'oz', 1n, 16n],
   ['mass', ton, 'ton', 2000n, 1n],
@@ -68,7 +72,7 @@ const TABLE = [
   ['density', kgM3, 'kg/m3', 2048383n, 56699046250n],
 ] as const;
 
-describe('the 28 units (units-quantities › Exact unit factors)', () => {
+describe('the 30 units (units-quantities › Exact unit factors)', () => {
   it.each(TABLE.map(([dimension, unit, id, num, den]) => ({ id, dimension, unit, num, den })))(
     '$id ($dimension): id, dimension and exact factor',
     ({ dimension, unit, id, num, den }) => {
@@ -112,13 +116,22 @@ describe('the 28 units (units-quantities › Exact unit factors)', () => {
     }
   });
 
+  // spec: units-quantities › Exact unit factors — the US liquid gallon is exactly 231 in3 and the
+  // liter exactly 1000 cm3 (NIST SP 811, Appendix B)
+  it('defines the gallon as 231 cubic inches and the liter as 1000 cubic centimeters', () => {
+    expect(gal.factor).toEqual(Rational.of(231));
+    expect(liter.factor).toEqual(cm3.factor.mul(Rational.of(1000)));
+    // a gallon is exactly 3.785411784 liters
+    expect(gal.factor.div(liter.factor)).toEqual(Rational.of(3785411784n, 1000000000n));
+  });
+
   // spec: units-quantities › Exact unit factors — 45,359,237 is coprime with 10^8 (reduced)
   it('keeps the kilogram exact through the 1959 pound (1 lb = 45359237/10^8 kg)', () => {
     expect(kg.factor.num * 45359237n).toBe(100000000n * kg.factor.den);
     expect(tonne.factor).toEqual(kg.factor.mul(Rational.of(1000)));
   });
 
-  // spec: units-quantities › Dimension model — units are immutable; Table: 28 units
+  // spec: units-quantities › Dimension model — units are immutable; Table: 30 units
   it('freezes every unit', () => {
     const all: readonly Unit<DimensionName>[] = [
       ...UNITS.length,
@@ -127,7 +140,7 @@ describe('the 28 units (units-quantities › Exact unit factors)', () => {
       ...UNITS.mass,
       ...UNITS.density,
     ];
-    expect(all).toHaveLength(28);
+    expect(all).toHaveLength(30);
     for (const unit of all) {
       expect(Object.isFrozen(unit), unit.id).toBe(true);
     }
