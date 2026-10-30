@@ -1,8 +1,8 @@
 /** Copy of the `roofing` calculator, English: the keys core derives from its descriptors and the page copy. */
 export const enRoofing = {
   'calc.roofing.title': 'Roofing Calculator',
-  'calc.roofing.inputs.length': 'Footprint length (with overhangs)',
-  'calc.roofing.inputs.width': 'Footprint width (with overhangs)',
+  'calc.roofing.inputs.length': 'Length (with overhangs)',
+  'calc.roofing.inputs.width': 'Width (with overhangs)',
   'calc.roofing.inputs.pitch': 'Pitch (rise in 12)',
   'calc.roofing.inputs.waste': 'Extra (%)',
   'calc.roofing.inputs.bundlePrice': 'Price per bundle ($)',
