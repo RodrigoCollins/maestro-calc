@@ -38,6 +38,8 @@ export const enSite = {
   'page.home.cards.rectangle-area.title': 'Square footage calculator',
   'page.home.cards.rectangle-area.summary':
     'Square feet, yards and meters for a room, floor or slab.',
+  'page.home.cards.gravel.title': 'Gravel calculator',
+  'page.home.cards.gravel.summary': 'Tons and cubic yards of gravel for a driveway, path or base.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -64,6 +66,9 @@ export const enSite = {
   'page.rectangle-area.title': 'Square Footage Calculator: Area of a Room | Maestro Calc',
   'page.rectangle-area.description':
     'Find the square footage of a room, floor or slab from its length and width, with square yards and meters. Free, instant, in feet, inches or meters.',
+  'page.gravel.title': 'Gravel Calculator: Tons and Cubic Yards | Maestro Calc',
+  'page.gravel.description':
+    'Find how many tons of gravel to order for a driveway, path or base, compacted or loose, with the cubic yards and the cost. Free and instant.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

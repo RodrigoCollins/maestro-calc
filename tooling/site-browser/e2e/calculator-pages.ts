@@ -2,6 +2,7 @@ import { ROUTES } from '../../../apps/web/src/routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../../apps/web/src/routing/templates.ts';
 import type { CalculatorPageId } from '../../../apps/web/src/routing/templates.ts';
 import { CONCRETE } from './concrete-pages.ts';
+import { GRAVEL } from './gravel-pages.ts';
 import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
 
 export type E2eLanguage = 'en' | 'es';
@@ -277,6 +278,7 @@ export interface E2eSpec {
 export const E2E = {
   concrete: CONCRETE,
   'rectangle-area': RECTANGLE_AREA,
+  gravel: GRAVEL,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */

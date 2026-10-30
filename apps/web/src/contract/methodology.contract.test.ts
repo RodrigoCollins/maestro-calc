@@ -71,17 +71,7 @@ describe('methodology: one section per row (trust-pages › [TP22], [TP26], [TP9
 
   // spec: trust-pages › [TP25] the methodology names no unpublished calculator
   it.each(LOCALES)('names no calculator other than the published ones in %s', (locale) => {
-    const others = [
-      'roofing',
-      'drywall',
-      'paint',
-      'gravel',
-      'mulch',
-      'topsoil',
-      'techado',
-      'pintura',
-      'grava',
-    ];
+    const others = ['roofing', 'drywall', 'paint', 'mulch', 'topsoil', 'techado', 'pintura'];
     expect(others.filter((word) => hasWord(bodyOf(locale), word))).toEqual([]);
   });
 

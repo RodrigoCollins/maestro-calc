@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds eight ids, so the site has sixteen
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds nine ids, so the site has eighteen
 // routable pages and two not-found pages.
-describe('end state of the square footage change (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the gravel go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has eight page ids, sixteen routable paths and eighteen pages with the 404s', () => {
+  it('has nine page ids, eighteen routable paths and twenty pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -23,40 +23,40 @@ describe('end state of the square footage change (site-routing-i18n › [SR1], [
       'contact',
       'concrete',
       'rectangle-area',
+      'gravel',
     ]);
-    expect(staticPaths()).toHaveLength(16);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(16);
+    expect(staticPaths()).toHaveLength(18);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(18);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(18);
+    expect(pageCount(ROUTES)).toBe(20);
   });
 
-  // spec: site-routing-i18n › [SR17] concrete and rectangle-area have a page; gravel waits for the
-  // owner's review of its numbers before it gets one, and so do mulch and topsoil (calc-gravel,
-  // calc-mulch, calc-topsoil, PLAN §5.2)
-  it('routes concrete and rectangle-area with the calculator template and leaves gravel, mulch and topsoil without a page', () => {
-    expect(CALCULATOR_PAGES).toEqual(['concrete', 'rectangle-area']);
-    expect(PAGELESS).toEqual(['gravel', 'mulch', 'topsoil']);
+  // spec: site-routing-i18n › [SR17] concrete, rectangle-area and gravel have a page (gravel after
+  // the owner approved its numbers on 2026-10-29); mulch and topsoil follow (PLAN §5.2)
+  it('routes concrete, rectangle-area and gravel with the calculator template and leaves mulch and topsoil without a page', () => {
+    expect(CALCULATOR_PAGES).toEqual(['concrete', 'rectangle-area', 'gravel']);
+    expect(PAGELESS).toEqual(['mulch', 'topsoil']);
   });
 
   // spec: i18n-catalog › [ICW1]
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)('has exactly eighteen page title and description keys in %s', (_locale, module) => {
+  ] as const)('has exactly twenty page title and description keys in %s', (_locale, module) => {
     expect(
       Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-    ).toHaveLength(18);
+    ).toHaveLength(20);
   });
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: fourteen content entries in all
-  it('has ten trust entries and four calculator entries', () => {
+  // two entries per calculator page: sixteen content entries in all
+  it('has ten trust entries and six calculator entries', () => {
     expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(10);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(4);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(6);
   });
 
   // spec: site-seo › [SE10]
-  it('lists sixteen URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(16);
+  it('lists eighteen URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(18);
   });
 });

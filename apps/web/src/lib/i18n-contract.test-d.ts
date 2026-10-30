@@ -52,7 +52,8 @@ type GravelPageKeys =
   | 'calc.gravel.page.priceHint'
   | 'calc.gravel.page.answer.compacted'
   | 'calc.gravel.page.answer.loose'
-  | 'calc.gravel.page.drawing.note';
+  | 'calc.gravel.page.drawing.note'
+  | 'calc.gravel.page.example';
 
 /** The page copy of the mulch calculator (`calc.mulch.page.*`), exactly: a new key is added here. */
 type MulchPageKeys =

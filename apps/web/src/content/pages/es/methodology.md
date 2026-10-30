@@ -70,6 +70,28 @@ Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la ca
 | 12 ft 6 in × 10 ft (`?v=1&l=150`)  | 125.00         | 13.89            | 11.61            |
 | 20 ft × 15 ft (`?v=1&l=240&w=180`) | 300.00         | 33.33            | 27.87            |
 
+<h2 id="grava">Calculadora de grava</h2>
+
+La [calculadora de grava](/es/calculadora-de-grava) calcula el peso de grava a pedir para un rectángulo con cierta profundidad, compactada o suelta, y el volumen suelto que el proveedor carga para eso. Cada medida se conserva como un número exacto, y el resultado se redondea solo cuando te lo mostramos.
+
+Las fórmulas:
+
+- Volumen colocado = largo × ancho × profundidad.
+- Volumen total = volumen colocado × (1 + extra ÷ 100).
+- Peso = volumen total × toneladas por yarda cúbica según se coloca.
+- Volumen a pedir = peso ÷ toneladas por yarda cúbica suelta.
+
+Los pesos por yarda cúbica son aproximados. La grava compactada usa aproximadamente 1.83 toneladas por yarda cúbica, el punto medio del rango de 1.80 a 1.86 para base de grava de ¾ de pulgada en WisDOT WHRP G22-05, tabla E2 (diciembre de 2023). La grava suelta usa aproximadamente 1.29 toneladas por yarda cúbica, el mismo peso repartido según el esponjamiento de compactada a suelta de esa tabla (36 a 47 por ciento, punto medio 41.5). Una tonelada es una tonelada corta de 2,000 lb, y una tonelada métrica es exactamente 0.90718474 toneladas cortas (NIST SP 811, apéndice B). Las cifras se redondean a dos decimales solo cuando te las mostramos.
+
+Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                               | Toneladas | Toneladas métricas | Yardas cúbicas a pedir |
+| ------------------------------------------------------------------ | --------- | ------------------ | ---------------------- |
+| 20 ft × 10 ft × 4 in, compactada, 5 % de extra (valores iniciales) | 4.74      | 4.30               | 3.68                   |
+| Igual, sin extra (`?v=1&ws=0`)                                     | 4.52      | 4.10               | 3.50                   |
+| 30 ft × 12 ft × 6 in, compactada (`?v=1&l=360&w=144&d=6`)          | 12.81     | 11.62              | 9.93                   |
+| 10 ft × 10 ft × 3 in, suelta (`?v=1&l=120&w=120&d=3&pl=loose`)     | 1.25      | 1.14               | 0.97                   |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

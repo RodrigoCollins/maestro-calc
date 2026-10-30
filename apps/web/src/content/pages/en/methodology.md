@@ -70,6 +70,28 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 12 ft 6 in × 10 ft (`?v=1&l=150`)  | 125.00      | 13.89        | 11.61         |
 | 20 ft × 15 ft (`?v=1&l=240&w=180`) | 300.00      | 33.33        | 27.87         |
 
+<h2 id="gravel">Gravel calculator</h2>
+
+The [gravel calculator](/gravel-calculator) finds the weight of gravel to order for a rectangle at a given depth, compacted or loose, and the loose volume a yard loads for it. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Volume in place = length × width × depth.
+- Total volume = volume in place × (1 + extra ÷ 100).
+- Weight = total volume × tons per cubic yard as placed.
+- Volume to order = weight ÷ tons per cubic yard loose.
+
+The weights per cubic yard are approximate. Compacted gravel uses approximately 1.83 tons per cubic yard, the midpoint of the 1.80 to 1.86 range for dense-graded ¾-inch base in WisDOT WHRP G22-05, Table E2 (December 2023). Loose gravel uses approximately 1.29 tons per cubic yard, the same weight spread over the compacted-to-loose expansion of that table (36 to 47 percent, midpoint 41.5). A ton is a short ton of 2,000 lb, and a metric tonne is exactly 0.90718474 short tons (NIST SP 811, Appendix B). The figures are rounded to two decimals only when they are shown.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                          | Tons  | Metric tonnes | Cubic yards to order |
+| ------------------------------------------------------------- | ----- | ------------- | -------------------- |
+| 20 ft × 10 ft × 4 in, compacted, 5 % extra (starting values)  | 4.74  | 4.30          | 3.68                 |
+| Same, no extra (`?v=1&ws=0`)                                  | 4.52  | 4.10          | 3.50                 |
+| 30 ft × 12 ft × 6 in, compacted (`?v=1&l=360&w=144&d=6`)      | 12.81 | 11.62         | 9.93                 |
+| 10 ft × 10 ft × 3 in, loose (`?v=1&l=120&w=120&d=3&pl=loose`) | 1.25  | 1.14          | 0.97                 |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

@@ -18,6 +18,8 @@ export const esGravel = {
   'calc.gravel.outputs.orderM3': 'Volumen a pedir (metros cúbicos)',
   'calc.gravel.outputs.placedYd3': 'Volumen colocado (yardas cúbicas)',
   'calc.gravel.outputs.cost': 'Costo de la grava',
+  'calc.gravel.page.example':
+    'Ejemplo: un área de 20 ft por 10 ft, de 4 in de profundidad y compactada, lleva 4.74 toneladas de grava.',
   'calc.gravel.page.tons': '{value} toneladas',
   'calc.gravel.page.tonnes': '{value} toneladas métricas',
   'calc.gravel.page.priceHint': 'Agrega tu precio para ver el costo',

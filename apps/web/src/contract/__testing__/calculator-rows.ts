@@ -1,6 +1,7 @@
 import { concreteMix } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { concretePage } from '../../calculator/concrete/page.ts';
+import { gravelPage } from '../../calculator/gravel/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
@@ -72,6 +73,28 @@ const rectangleAreaShown = ({ query }: WorkedExample<'rectangle-area'>) => {
   return { query, ft2: shown('areaFt2'), yd2: shown('areaYd2'), m2: shown('areaM2') };
 };
 
+/** The weights and volumes the gravel page shows for the example's link. */
+const gravelShown = ({ query }: WorkedExample<'gravel'>) => {
+  const { figures } = shownFigures(gravelPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the gravel page shows no ${key}`);
+    return value;
+  };
+  return {
+    query,
+    tons: shown('tons'),
+    tonnes: shown('tonnes'),
+    orderYd3: shown('orderYd3'),
+    placedYd3: shown('placedYd3'),
+  };
+};
+
+const WISDOT = {
+  name: /^WisDOT WHRP G22-05, Table E2\b/,
+  url: 'https://wisconsindot.gov/documents2/research/0092-22-05-final-report.pdf',
+} as const;
+
 export const CONTENT_ROWS = {
   concrete: {
     module: concretePage,
@@ -90,6 +113,23 @@ export const CONTENT_ROWS = {
     // the example's link is 144 in by the 120 in default: Formulas names both sides as written
     figures: ({ ft2, yd2, m2 }) => [ft2, yd2, m2, '12 ft', '10 ft'],
     methodologyLink: { en: '/methodology#square-footage', es: '/es/metodologia#pies-cuadrados' },
+  },
+  gravel: {
+    module: gravelPage,
+    updated: '2026-10-29',
+    sources: () => [WISDOT, NIST],
+    engine: gravelShown,
+    // the example is the page's starting values: Formulas names the three sides as written
+    figures: ({ tons, tonnes, orderYd3, placedYd3 }) => [
+      tons,
+      tonnes,
+      orderYd3,
+      placedYd3,
+      '20 ft',
+      '10 ft',
+      '4 in',
+    ],
+    methodologyLink: { en: '/methodology#gravel', es: '/es/metodologia#grava' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

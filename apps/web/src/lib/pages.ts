@@ -1,13 +1,17 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { concretePage } from '../calculator/concrete/page.ts';
+import { gravelPage } from '../calculator/gravel/page.ts';
+import { gravelReserve } from '../calculator/gravel/reserve.ts';
 import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
 import { rectangleAreaReserve } from '../calculator/rectangle-area/reserve.ts';
 import type { Messages } from '../calculator/controller.ts';
@@ -56,6 +60,14 @@ export const PAGES = {
       es: { ...esCommon, ...esRectangleArea, ...esSite },
     },
     reserve: rectangleAreaReserve,
+  },
+  gravel: {
+    module: gravelPage,
+    catalogs: {
+      en: { ...enCommon, ...enGravel, ...enSite },
+      es: { ...esCommon, ...esGravel, ...esSite },
+    },
+    reserve: gravelReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 
