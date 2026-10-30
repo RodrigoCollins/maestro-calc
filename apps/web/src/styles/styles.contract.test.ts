@@ -63,10 +63,12 @@ const widths = (
 /**
  * What is wrong with the breakpoints of a stylesheet: a length that is not `rem`, and a rem
  * breakpoint whose edges (the first pixel width where it applies and the one before) are not among
- * `widths`. Each problem names the media condition. Nothing for no CSS (an empty reserve).
+ * `widths`. Each problem names the media condition. Nothing for no CSS (an empty reserve), and
+ * nothing for the print sheet, which changes no screen layout.
  */
 const breakpointProblems = (css: string | undefined, edges: readonly number[]): string[] =>
   mediaBlocksOf(css ?? '').flatMap(([query]) => {
+    if (query.trim() === 'print') return [];
     const lengths = lengthsOf(query);
     if (lengths.length === 0) return [`${query}: no length`];
     return lengths.flatMap(([value, unit]) => {
@@ -594,6 +596,8 @@ describe('calculator styles (calculator-page › Form controls, Layout stability
       '@media(prefers-reduced-motion:reduce){.calculator{--answer-lines:2}}',
       ['(prefers-reduced-motion:reduce): no length'],
     ],
+    // spec: calculator-page › [CP87] the print sheet changes no screen layout
+    ['the print sheet', '@media print{.calc-answer{min-height:0}}', []],
     ['a clean breakpoint', reserveCss({ answer: [5, [30.0625, 4]] }), []],
   ])('flags %s', (_name, css, expected) => {
     expect(breakpointProblems(css, widths)).toEqual(expected);
