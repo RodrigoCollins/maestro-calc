@@ -1,5 +1,6 @@
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
+import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
@@ -20,4 +21,5 @@ export const calculators = [
   topsoil,
   paint,
   drywall,
+  roofPitch,
 ] as const;

@@ -134,7 +134,9 @@ describe('createDrywall finishing validation (calc-drywall › Injected finishin
   // spec: calc-drywall › [DW7] bad finishing rates
   it.each([
     ['null', null],
+    ['undefined', undefined],
     ['a number', 9],
+    ['a zero tape', { ...DRYWALL_FINISHING, tape: quantity(0, ft) }],
     ['a missing tape', { per: DRYWALL_FINISHING.per, compound: DRYWALL_FINISHING.compound }],
     ['an extra key', { ...DRYWALL_FINISHING, screws: DRYWALL_FINISHING.tape }],
     ['a zero area', { ...DRYWALL_FINISHING, per: quantity(0, ft2) }],

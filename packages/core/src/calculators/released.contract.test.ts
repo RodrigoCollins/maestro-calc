@@ -10,6 +10,7 @@ import { createDrywall } from './drywall/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
 import { createPaint } from './paint/index.ts';
+import { roofPitch } from './roof-pitch/index.ts';
 import { topsoil } from './topsoil/index.ts';
 import { rectangleArea } from './rectangle-area/index.ts';
 
@@ -22,6 +23,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   topsoil,
   createPaint(PAINT_COVERAGE),
   createDrywall(DRYWALL_FINISHING),
+  roofPitch,
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that

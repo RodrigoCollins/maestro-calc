@@ -6,6 +6,7 @@ import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
+import type { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import type { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import type { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { describe, expectTypeOf, it } from 'vitest';
@@ -22,7 +23,8 @@ type EnglishKeys =
   | keyof typeof enRectangleArea
   | keyof typeof enTopsoil
   | keyof typeof enPaint
-  | keyof typeof enDrywall;
+  | keyof typeof enDrywall
+  | keyof typeof enRoofPitch;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
