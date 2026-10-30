@@ -70,6 +70,18 @@ describe.each(CALCULATOR_PAGES)(
       expectWithinJsBudget(`${id} client entry`, size);
     });
 
+    // spec: calculator-contract › Definition checks: the shipped bundle skips the definition
+    // checks, which every registry calculator already passes in Node (the reason codes below exist
+    // only in those checks)
+    it('carries no definition check', async () => {
+      const { code } = await buildClient(source);
+      expect(
+        ['PRIMARY_COUNT', 'INVALID_URL_KEY', 'DUPLICATE_OUTPUT_KEY'].filter((reason) =>
+          code.includes(reason),
+        ),
+      ).toEqual([]);
+    });
+
     // spec: site-shell › [SS23], calculator-page › [CP47] no storage, network, message text or foreign origin
     it('holds no storage or network API, no catalog message and no foreign origin', async () => {
       const { code } = await buildClient(source);

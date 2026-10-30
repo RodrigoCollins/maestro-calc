@@ -82,6 +82,7 @@ export const shards = {
     mutate: [
       'src/calculator/constraints.ts',
       'src/calculator/define.ts',
+      'src/calculator/definition-checks.ts',
       'src/calculator/descriptors.ts',
       'src/calculator/reserved-keys.ts',
       'src/calculator/validate.ts',

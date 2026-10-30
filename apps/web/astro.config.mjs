@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
+import { skipDefinitionChecks } from './src/client-build-plugins.ts';
 import { SITE } from './src/site.config.ts';
 
 /**
@@ -49,7 +50,7 @@ export default defineConfig({
   // carried the home's `.home-links` rule: the three new tokens (84 B) need these bytes to keep
   // the proof at 40,836 B or less (CP66). Specificity is the same (+1 class or attribute).
   scopedStyleStrategy: 'class',
-  vite: { build: { assetsInlineLimit } },
+  vite: { plugins: [skipDefinitionChecks()], build: { assetsInlineLimit } },
   fonts: [
     {
       ...shared,

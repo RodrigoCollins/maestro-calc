@@ -1,5 +1,6 @@
 import { build } from 'vite';
 import type { Rolldown } from 'vite';
+import { skipDefinitionChecks } from '../../client-build-plugins.ts';
 import { fromRoot } from '../root.ts';
 
 /** An absolute path no file lives at: library mode resolves its entry against the root. */
@@ -30,6 +31,7 @@ export const buildClient = async (source: string): Promise<ClientBuild> => {
     configFile: false,
     logLevel: 'silent',
     plugins: [
+      skipDefinitionChecks(),
       {
         name: 'virtual-client-entry',
         resolveId: (id) => (id === VIRTUAL_ENTRY ? id : undefined),
