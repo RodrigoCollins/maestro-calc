@@ -46,14 +46,15 @@ describe('unit conversion properties (units-quantities › Construction and conv
     });
   });
 
-  // spec: units-quantities › Construction and conversion — converting through w changes nothing
-  it('is unchanged by converting through any other unit of its dimension', () => {
-    forAllRationals((x) => {
-      viaAnyUnit(x, UNITS.length);
-      viaAnyUnit(x, UNITS.area);
-      viaAnyUnit(x, UNITS.volume);
-      viaAnyUnit(x, UNITS.mass);
-      viaAnyUnit(x, UNITS.density);
-    });
-  });
+  // spec: units-quantities › Construction and conversion — converting through w changes nothing.
+  // One test per dimension: every pair of units runs a thousand times, and with the gallon and the
+  // liter the volume pairs alone went from 36 to 64, past the time of one test for all five.
+  it.each(['length', 'area', 'volume', 'mass', 'density'] as const)(
+    'is unchanged by converting through any other %s unit',
+    (dimension) => {
+      forAllRationals((x) => {
+        viaAnyUnit(x, UNITS[dimension]);
+      });
+    },
+  );
 });
