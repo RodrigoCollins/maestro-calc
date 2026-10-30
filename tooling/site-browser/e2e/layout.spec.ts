@@ -4,6 +4,10 @@ import { edgesOf, nearBreakpoint } from '../../../apps/web/src/__testing__/css-m
 import { calculatorPages, typedQuery } from './calculator-pages.ts';
 import { answer, notRunning, open } from './locators.ts';
 
+// Every test opens its own page, so the tests of this file run in parallel: in series it took 22 of
+// the 23 minutes of the whole suite on one worker (six calculator pages, 2026-10-30).
+test.describe.configure({ mode: 'parallel' });
+
 // The seven widths of calculator-page › [CP59] plus both edges of every breakpoint of calculator.css
 // and of every `reserve` of the page table (the first width where a rule applies and the one before
 // it). `styles.contract.test.ts` reads this literal and fails when a breakpoint has an edge missing.
