@@ -19,6 +19,14 @@ export const esRoofPitch = {
   'calc.roof-pitch.outputs.angle': 'Ángulo (grados)',
   'calc.roof-pitch.outputs.rafter': 'Largo del cabio (pies)',
   'calc.roof-pitch.outputs.rafterM': 'Largo del cabio (metros)',
+  'calc.roof-pitch.page.pitch': '{value} en 12',
+  'calc.roof-pitch.page.angle': '{value}°',
+  'calc.roof-pitch.page.answer.meets':
+    'Una subida de {rise} sobre un recorrido de {run} es una pendiente de {pitch} en 12, {angle}. Cumple la pendiente mínima del IRC para la cubierta elegida.',
+  'calc.roof-pitch.page.answer.double':
+    'Una subida de {rise} sobre un recorrido de {run} es una pendiente de {pitch} en 12, {angle}. El IRC pide dos capas de fieltro para la cubierta elegida.',
+  'calc.roof-pitch.page.answer.below':
+    'Una subida de {rise} sobre un recorrido de {run} es una pendiente de {pitch} en 12, {angle}. Está por debajo del mínimo del IRC de {minimum} en 12 para la cubierta elegida.',
   'calc.roof-pitch.warnings.belowMinimum':
     'Por debajo de la pendiente mínima del IRC para esta cubierta ({minimum} en 12).',
   'calc.roof-pitch.warnings.doubleUnderlayment':
