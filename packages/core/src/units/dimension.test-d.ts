@@ -61,6 +61,8 @@ describe('dimension type helpers (units-quantities › Derived products and quot
     expectTypeOf<SubVec<MinusSix, One>['length']>().toEqualTypeOf<number>();
     expectTypeOf<NameOf<SubVec<MinusSix, One>>>().toBeNever();
     expectTypeOf<AddVec<{ length: 5; mass: 0; angle: 0 }, One>['length']>().toEqualTypeOf<6>();
-    expectTypeOf<AddVec<{ length: 0; mass: 0; angle: 0 }, MinusSix>['length']>().toEqualTypeOf<-6>();
+    expectTypeOf<
+      AddVec<{ length: 0; mass: 0; angle: 0 }, MinusSix>['length']
+    >().toEqualTypeOf<-6>();
   });
 });

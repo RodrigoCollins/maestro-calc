@@ -47,5 +47,8 @@ describe('dimension model (units-quantities › Dimension model)', () => {
     expect(subVec(DIMENSIONS.mass, DIMENSIONS.volume)).toEqual({ length: -3, mass: 1, angle: 0 });
     expect(subVec(DIMENSIONS.length, DIMENSIONS.mass)).toEqual({ length: 1, mass: -1, angle: 0 });
     expect(subVec(DIMENSIONS.density, DIMENSIONS.mass)).toEqual({ length: -3, mass: 0, angle: 0 });
+    expect(addVec(DIMENSIONS.angle, DIMENSIONS.angle)).toEqual({ length: 0, mass: 0, angle: 2 });
+    expect(subVec(DIMENSIONS.angle, DIMENSIONS.length)).toEqual({ length: -1, mass: 0, angle: 1 });
+    expect(subVec(DIMENSIONS.length, DIMENSIONS.angle)).toEqual({ length: 1, mass: 0, angle: -1 });
   });
 });

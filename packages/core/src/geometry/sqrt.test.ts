@@ -17,6 +17,10 @@ describe('squareRoot (core-geometry › Square root)', () => {
     expect(squareRoot(Rational.of(4))).toEqual(Rational.of(2));
     expect(squareRoot(Rational.of(1, 4))).toEqual(Rational.of(1, 2));
     expect(squareRoot(Rational.of(169, 100))).toEqual(Rational.of(13, 10));
+    // the smallest scaled values: 10^-40 · 1, 2 and 4 have the roots 10^-20 · 1, 1 and 2
+    expect(squareRoot(Rational.of(1n, 10n ** 40n))).toEqual(ULP);
+    expect(squareRoot(Rational.of(2n, 10n ** 40n))).toEqual(ULP);
+    expect(squareRoot(Rational.of(4n, 10n ** 40n))).toEqual(ULP.mul(Rational.of(2)));
   });
 
   // √2 = 1.41421356237309504880 168…, √1.25 = 1.11803398874989484820 458…
@@ -45,5 +49,6 @@ describe('squareRoot (core-geometry › Square root)', () => {
 
   it('refuses a negative number', () => {
     expect(() => squareRoot(Rational.of(-1))).toThrow(CoreError);
+    expect(() => squareRoot(Rational.of(-1))).toThrow('NEGATIVE_QUANTITY');
   });
 });

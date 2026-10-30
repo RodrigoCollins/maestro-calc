@@ -39,7 +39,6 @@ const atanScaled = (t: Rational): bigint => {
  */
 export const arctangentDegrees = (t: Rational): Rational => {
   if (t.sign() === -1) return arctangentDegrees(t.neg()).neg();
-  if (t.isZero()) return Rational.ZERO;
   const steep = t.compare(Rational.ONE) === 1;
   const radians = Rational.of(atanScaled(steep ? t.inv() : t), SCALE);
   const degrees = radians.mul(HALF_TURN).div(PI);

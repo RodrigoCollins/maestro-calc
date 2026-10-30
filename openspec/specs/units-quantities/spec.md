@@ -222,3 +222,7 @@ Formula source: Euclidean measures (area = length x width; volume = area x heigh
 - WHEN looked up in the `length` dimension
 - THEN `ft` resolves; `FT`, `furlong`, and `ft2` are absent (`ft2` belongs to `area`)
 - AND `kg` resolves in `mass` but is absent in `length`
+
+### Requirement: Angle dimension (roof-pitch-calculator, 2026-10-30)
+
+The angle SHALL be a base dimension of its own, exponents (length 0, mass 0, angle 1), with the degree `deg` (factor 1) as its only unit; a quotient of two equal dimensions stays unnamed. The catalog holds 31 units.
