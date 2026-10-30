@@ -7,6 +7,7 @@ describe('core public API (design: Public API)', () => {
   it('exports the exact-number toolkit', () => {
     expect(Object.keys(core).sort()).toEqual([
       'ALL_ERROR_CODES',
+      'ATAN_PLACES',
       'CoreError',
       'DECIMAL_PARSE_CODES',
       'DEFINITION_REASONS',
@@ -19,10 +20,12 @@ describe('core public API (design: Public API)', () => {
       'RESERVED_URL_KEYS',
       'RESULT_REASONS',
       'Rational',
+      'SQRT_PLACES',
       'URL_ISSUE_CODES',
       'abs',
       'add',
       'addMoney',
+      'arctangentDegrees',
       'ceilToPurchaseUnits',
       'circleArea',
       'cm',
@@ -79,6 +82,7 @@ describe('core public API (design: Public API)', () => {
       'scale',
       'scaleMoney',
       'sign',
+      'squareRoot',
       'sub',
       'subMoney',
       'toCents',
