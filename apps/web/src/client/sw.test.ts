@@ -10,13 +10,17 @@ const ORIGIN = 'https://maestrocalc.com';
 type Handler = (event: FakeEvent) => void;
 
 interface FakeEvent {
+  data?: unknown;
   request?: { url: string; method: string; mode: string };
   respondWith: (response: Promise<Response>) => void;
   waitUntil: (work: Promise<unknown>) => void;
 }
 
 /** A Cache Storage of named caches keyed by path, as the worker stores them. */
-const fakeCaches = (seed: Record<string, Record<string, string>> = {}) => {
+const fakeCaches = (
+  seed: Record<string, Record<string, string>> = {},
+  network: (url: string) => Promise<Response> = () => Promise.resolve(new Response('added')),
+) => {
   const store = new Map(
     Object.entries(seed).map(([name, entries]) => [name, new Map(Object.entries(entries))]),
   );
@@ -33,6 +37,11 @@ const fakeCaches = (seed: Record<string, Record<string, string>> = {}) => {
             : undefined,
         ),
       put: async (key: string, response: Response) => {
+        cache.set(pathOf(key), await response.text());
+      },
+      add: async (key: string) => {
+        const response = await network(new URL(key, ORIGIN).href);
+        if (!response.ok) throw new TypeError('bad status');
         cache.set(pathOf(key), await response.text());
       },
     });
@@ -87,19 +96,29 @@ const workerWith = (
     });
     return answer === undefined ? undefined : await answer;
   };
+  /** Dispatches a message from a page and waits for the work it starts. */
+  const message = async (data: unknown) => {
+    const work: Promise<unknown>[] = [];
+    handlers['message']?.({
+      data,
+      respondWith: () => undefined,
+      waitUntil: (each) => work.push(each),
+    });
+    await Promise.all(work);
+  };
   const lifecycle = async (type: 'install' | 'activate') => {
     const work: Promise<unknown>[] = [];
     handlers[type]?.({ respondWith: () => undefined, waitUntil: (each) => work.push(each) });
     await Promise.all(work);
   };
-  return { request, lifecycle, calls };
+  return { request, message, lifecycle, calls };
 };
 
 const page = (body: string) => () => Promise.resolve(new Response(body, { status: 200 }));
 const offline = () => Promise.reject(new TypeError('Failed to fetch'));
 
 describe('the offline worker (site-pwa › Offline)', () => {
-  it('names the cache the page fills', () => {
+  it('names the cache of the page module', () => {
     expect(SOURCE).toContain(`const CACHE = '${OFFLINE_CACHE}';`);
   });
 
@@ -147,6 +166,33 @@ describe('the offline worker (site-pwa › Offline)', () => {
     const caches = fakeCaches();
     const worker = workerWith(caches, () => Promise.resolve(new Response('gone', { status: 404 })));
     expect((await worker.request(`${ORIGIN}/nope`))?.status).toBe(404);
+    expect(caches.store.get(OFFLINE_CACHE)?.size ?? 0).toBe(0);
+  });
+
+  it('keeps what a page hands it: same-origin paths and files only, a failed one skipped', async () => {
+    const caches = fakeCaches({}, (url) =>
+      Promise.resolve(new Response(url, { status: url.endsWith('.woff2') ? 404 : 200 })),
+    );
+    const worker = workerWith(caches, page('x'));
+    await worker.message({
+      keep: [
+        '/concrete-calculator',
+        `${ORIGIN}/_astro/mount.abc.js`,
+        `${ORIGIN}/_astro/fonts/a.woff2`,
+        'https://evil.example/x.js',
+        42,
+      ],
+    });
+    expect([...(caches.store.get(OFFLINE_CACHE)?.keys() ?? [])]).toEqual([
+      '/concrete-calculator',
+      '/_astro/mount.abc.js',
+    ]);
+  });
+
+  it('ignores a message that is not a list to keep', async () => {
+    const caches = fakeCaches();
+    const worker = workerWith(caches, page('x'));
+    for (const data of [null, 'keep', { keep: 'x' }]) await worker.message(data);
     expect(caches.store.get(OFFLINE_CACHE)?.size ?? 0).toBe(0);
   });
 

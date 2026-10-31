@@ -9,6 +9,9 @@ const CALCULATOR = '/concrete-calculator';
 const CACHE = 'maestro-v1';
 
 test.describe('offline and install (site-pwa)', () => {
+  // the other suites block service workers (playwright.config.ts); this one is about them
+  test.use({ serviceWorkers: 'allow' });
+
   test('a calculator used once opens and computes with the network off', async ({
     page,
     context,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { OFFLINE_CACHE, offlineUrls, registerOffline, type OfflineHost } from './offline.ts';
+import { offlineUrls, registerOffline, type OfflineHost } from './offline.ts';
 
 const ORIGIN = 'https://maestrocalc.com';
 
@@ -19,17 +19,13 @@ const hostWith = (overrides: Partial<OfflineHost> = {}) => {
         log.push(`register ${url}`);
         return Promise.resolve();
       },
-    },
-    caches: {
-      open: (name) => {
-        log.push(`open ${name}`);
-        return Promise.resolve({
-          add: (url) => {
-            log.push(`add ${url}`);
-            return url.endsWith('.woff2') ? Promise.reject(new Error('quota')) : Promise.resolve();
+      ready: Promise.resolve({
+        active: {
+          postMessage: (message: unknown) => {
+            log.push(`post ${JSON.stringify(message)}`);
           },
-        });
-      },
+        },
+      }),
     },
     ...overrides,
   };
@@ -47,29 +43,45 @@ describe('offline registration (site-pwa › Offline)', () => {
     ).toEqual(['/a', `${ORIGIN}/_astro/x.js`]);
   });
 
-  it('registers the worker, then fills its cache with the page and its files', async () => {
+  // the worker fetches them, so the page itself makes no request (site-shell › [SS21])
+  it('registers the worker, then hands it the page and its files to keep', async () => {
     const { host, log } = hostWith();
     await registerOffline(host);
     expect(log).toEqual([
       'register /sw.js',
-      `open ${OFFLINE_CACHE}`,
-      'add /concrete-calculator',
-      `add ${ORIGIN}/_astro/mount.abc.js`,
-      `add ${ORIGIN}/_astro/fonts/a.woff2`,
+      `post ${JSON.stringify({
+        keep: [
+          '/concrete-calculator',
+          `${ORIGIN}/_astro/mount.abc.js`,
+          `${ORIGIN}/_astro/fonts/a.woff2`,
+        ],
+      })}`,
     ]);
   });
 
-  it('does nothing in a browser without service workers or caches', async () => {
-    for (const missing of [{ serviceWorker: undefined }, { caches: undefined }]) {
-      const { host, log } = hostWith(missing);
-      await registerOffline(host);
-      expect(log).toEqual([]);
-    }
+  it('does nothing in a browser without service workers', async () => {
+    const { host, log } = hostWith({ serviceWorker: undefined });
+    await registerOffline(host);
+    expect(log).toEqual([]);
+  });
+
+  it('hands nothing over while no worker is active', async () => {
+    const { host, log } = hostWith({
+      serviceWorker: {
+        register: () => Promise.resolve(),
+        ready: Promise.resolve({ active: null }),
+      },
+    });
+    await registerOffline(host);
+    expect(log).toEqual([]);
   });
 
   it('never rejects: a refused registration leaves the page as it is', async () => {
     const { host, log } = hostWith({
-      serviceWorker: { register: () => Promise.reject(new Error('blocked')) },
+      serviceWorker: {
+        register: () => Promise.reject(new Error('blocked')),
+        ready: new Promise(() => undefined),
+      },
     });
     await expect(registerOffline(host)).resolves.toBeUndefined();
     expect(log).toEqual([]);
