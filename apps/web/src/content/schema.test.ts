@@ -11,8 +11,15 @@ const valid = {
 
 // spec: trust-pages › [TP2] (schema side)
 describe('pageSchema', () => {
-  it('lists the five trust ids', () => {
-    expect(TRUST_IDS).toEqual(['methodology', 'about', 'privacy', 'terms', 'contact']);
+  it('lists the six trust ids', () => {
+    expect(TRUST_IDS).toEqual([
+      'methodology',
+      'about',
+      'privacy',
+      'terms',
+      'contact',
+      'embed-calculators',
+    ]);
   });
 
   it('parses valid frontmatter', () => {

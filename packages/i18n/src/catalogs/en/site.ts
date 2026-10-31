@@ -9,6 +9,8 @@ export const enSite = {
   'site.footer.privacy': 'Privacy',
   'site.footer.terms': 'Terms',
   'site.footer.contact': 'Contact',
+  'site.footer.embed-calculators': 'Embed our calculators',
+  'site.embed.by': 'by',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',
   'site.calculator.breadcrumb': 'Breadcrumb',
@@ -75,6 +77,9 @@ export const enSite = {
   'page.terms.title': 'Terms | Maestro Calc',
   'page.terms.description':
     'The terms for using Maestro Calc: results are estimates, to be checked with a qualified professional and your local building code.',
+  'page.embed-calculators.title': 'Embed Our Calculators | Maestro Calc',
+  'page.embed-calculators.description':
+    'Put any Maestro Calc calculator on your website for free: copy the code, paste it in your page and keep the credit link.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

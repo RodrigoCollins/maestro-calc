@@ -24,6 +24,7 @@ export const ROUTES = {
   privacy: { en: '/privacy', es: '/es/privacidad' },
   terms: { en: '/terms', es: '/es/terminos' },
   contact: { en: '/contact', es: '/es/contacto' },
+  'embed-calculators': { en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

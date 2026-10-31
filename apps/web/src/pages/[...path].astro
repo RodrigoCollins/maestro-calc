@@ -4,6 +4,8 @@ import { staticPaths } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { isCalculatorPage, templateOf } from '../routing/templates.ts';
 import CalculatorView from '../views/CalculatorView.astro';
+import EmbedSnippets from '../components/EmbedSnippets.astro';
+import { snippetsFor } from '../lib/embed-snippet.ts';
 import TrustPageView from '../views/TrustPageView.astro';
 
 // The two homes render from `index.astro` and `es.astro`, so the home view's scoped CSS ships on them only.
@@ -19,4 +21,10 @@ const { id, locale } = Astro.props;
 ---
 
 {/* A calculator id has its own template; every other id is a Markdown trust page. */}
-{isCalculatorPage(id) ? <CalculatorView {id} {locale} /> : <TrustPageView {id} {locale} />}
+{isCalculatorPage(id) ? (
+  <CalculatorView {id} {locale} />
+) : (
+  <TrustPageView {id} {locale}>
+    {id === 'embed-calculators' && <EmbedSnippets snippets={snippetsFor(locale)} />}
+  </TrustPageView>
+)}

@@ -1,0 +1,29 @@
+---
+import type { Snippet } from '../lib/embed-snippet.ts';
+
+/** The code of every calculator's embed (embed), one section each, to select and copy by hand. */
+interface Props {
+  snippets: readonly Snippet[];
+}
+const { snippets } = Astro.props;
+---
+
+{snippets.map(({ id, name, code }) => (
+  <section aria-labelledby={`embed-${id}`}>
+    <h3 id={`embed-${id}`}>{name}</h3>
+    <pre class="embed-code"><code>{code}</code></pre>
+  </section>
+))}
+
+<style>
+  .embed-code {
+    overflow-x: auto;
+    padding: var(--space-3);
+    border: 1px solid var(--color-line);
+    border-radius: 4px;
+    background: var(--color-surface);
+    font-size: var(--text-small);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+</style>

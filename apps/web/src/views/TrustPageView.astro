@@ -28,6 +28,7 @@ const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
 <BaseLayout {locale} {id} head={headFor(id, locale, text)}>
   <article class="prose">
     <Content />
+    <slot />
     <p class="updated">
       {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
     </p>
