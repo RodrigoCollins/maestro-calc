@@ -1,0 +1,70 @@
+name: Deploy
+
+# After Cloudflare deploys a push to main: wait for its build, smoke the live site, notify IndexNow.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  checks: read
+
+# No concurrency group: GitHub drops a pending run of a group, and the next run's compare would then
+# miss that push's changes. Two notifications at once are harmless.
+
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # A build that never starts (#133) or fails stops here, which is the alarm.
+      - id: build
+        name: Wait for the Cloudflare build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for _ in $(seq 60); do
+            run=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=Workers%20Builds:%20maestro-calc" \
+              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"')
+            case "$run" in
+              "completed success") echo "build: $run"; exit 0 ;;
+              completed*) echo "build: $run"; exit 1 ;;
+            esac
+            sleep 20
+          done
+          echo "build: no completed Workers Builds check after 20 minutes"
+          exit 1
+      - id: smoke
+        name: Smoke the live site
+        run: node apps/web/scripts/production.ts smoke
+      # Only a push that touches what the site is built from notifies; an openspec archive does not.
+      - id: changed
+        name: Find site changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "site=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files=$(gh api "repos/$REPO/compare/$BEFORE...$SHA" --jq '.files[].filename')
+          site=$(printf '%s\n' "$files" | grep -E '^(apps/web|packages)/' \
+            | grep -Ev '(\.test(-d)?\.ts$|/__testing__/)' || true)
+          if [ -n "$site" ]; then echo "site=true" >> "$GITHUB_OUTPUT"; else echo "site=false" >> "$GITHUB_OUTPUT"; fi
+      - id: indexnow
+        name: Notify IndexNow
+        if: steps.changed.outputs.site == 'true'
+        run: node apps/web/scripts/production.ts indexnow
