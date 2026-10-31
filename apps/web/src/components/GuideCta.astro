@@ -1,0 +1,34 @@
+---
+/** The end of a guide (guides): one link to the calculator the guide is about, under a short label. */
+interface Props {
+  label: string;
+  href: string;
+  name: string;
+}
+const { label, href, name } = Astro.props;
+---
+
+<aside class="guide-cta" aria-label={label}>
+  <p>{label}</p>
+  <a class="guide-cta-link" {href}>
+    {name}
+  </a>
+</aside>
+
+<style>
+  .guide-cta {
+    margin-block: var(--space-4);
+    padding: var(--space-3);
+    border: 2px solid var(--color-text);
+    border-radius: 4px;
+    background: var(--color-surface);
+  }
+
+  .guide-cta p {
+    margin: 0 0 var(--space-2);
+  }
+
+  .guide-cta-link {
+    font-weight: 600;
+  }
+</style>
