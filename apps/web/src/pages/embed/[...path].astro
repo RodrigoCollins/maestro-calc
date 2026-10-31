@@ -1,0 +1,19 @@
+---
+import { EMBEDS, type Embed } from '../../routing/embed.ts';
+import EmbedView from '../../views/EmbedView.astro';
+
+// One embed per calculator page and language, `/embed` + the page's path (embed).
+export const getStaticPaths = () =>
+  EMBEDS.map((embed) => ({
+    params: { path: embed.path.slice('/embed/'.length) },
+    props: { embed },
+  }));
+
+interface Props {
+  embed: Embed;
+}
+
+const { embed } = Astro.props;
+---
+
+<EmbedView {embed} />

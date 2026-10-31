@@ -1,6 +1,7 @@
 import { parse } from 'node-html-parser';
 import { LOCALES, NOT_FOUND_ID, notFoundPathOf, pathOf, urlOf } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
+import { embedFilesOf } from './embed.ts';
 import { problem } from './types.ts';
 import type { CheckContext, Dist, Page, Problem, Site } from './types.ts';
 
@@ -45,7 +46,10 @@ export const pageCount = (routes: RouteTable): number => expectedFiles(routes).l
 
 /** Orphan HTML files and missing pages, each named (site-routing-i18n › [SR1]). */
 export const fileSetProblems = ({ dist, site }: CheckContext): Problem[] => {
-  const expected = new Set(expectedFiles(site.routes));
+  const expected = new Set([
+    ...expectedFiles(site.routes),
+    ...embedFilesOf(site).map(({ file }) => file),
+  ]);
   const built = [...dist.keys()].filter((file) => file.endsWith('.html'));
   return [
     ...built

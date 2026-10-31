@@ -9,13 +9,15 @@ import '../../styles/calculator.css';
 interface Props {
   view: CalculatorPageView;
   content: CalculatorContent;
+  /** An embed (embed) shows no breadcrumb: the frame is not inside the site's hierarchy. */
+  embedded?: boolean;
 }
-const { view, content } = Astro.props;
+const { view, content, embedded = false } = Astro.props;
 const { messages } = view;
 ---
 
 <div class="calculator" data-calculator={view.id}>
-  <Breadcrumb breadcrumb={view.breadcrumb} />
+  {!embedded && <Breadcrumb breadcrumb={view.breadcrumb} />}
   <h1>{view.title}</h1>
   {view.answer !== undefined && (
     <p class="calc-answer" data-answer data-reserved="answer" aria-live="polite">

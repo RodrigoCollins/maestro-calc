@@ -1,0 +1,42 @@
+---
+import { getEntry } from 'astro:content';
+import CalculatorBody from '../components/calculator/CalculatorBody.astro';
+import type { CalculatorContent } from '../components/calculator/model.ts';
+import EmbedLayout from '../layouts/EmbedLayout.astro';
+import { calendarDay } from '../lib/calendar-day.ts';
+import { PAGES, headStyleOf, pageView } from '../lib/pages.ts';
+import { siteText } from '../lib/site-text.ts';
+import type { Embed } from '../routing/embed.ts';
+import { SCRIPTS } from './scripts.ts';
+
+/** An embed page (embed): the calculator body and its sources, with no article, under the slim shell. */
+interface Props {
+  embed: Embed;
+}
+
+const { embed } = Astro.props;
+const { id, locale } = embed;
+const text = siteText(locale);
+const entry = await getEntry('calculators', `${locale}/${id}`);
+if (entry === undefined) throw new Error(`no calculator entry for ${locale}/${id}`);
+const view = pageView(id, locale);
+const day = (iso: string): string => calendarDay(iso, locale);
+const { updated, sources } = entry.data;
+const content: CalculatorContent = {
+  updatedLabel: text('site.trust.updated'),
+  updated,
+  updatedText: day(updated),
+  sources: sources.map(({ name, url, retrieved }) => ({ name, url, retrieved: day(retrieved) })),
+};
+const Script = SCRIPTS[id];
+---
+
+<EmbedLayout
+  {embed}
+  title={text(`page.${id}.title`)}
+  description={text(`page.${id}.description`)}
+  style={headStyleOf(PAGES[id])}
+>
+  <CalculatorBody {view} {content} embedded />
+  <Script />
+</EmbedLayout>
