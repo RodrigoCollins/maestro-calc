@@ -1,9 +1,13 @@
+import { inch, valueIn, type Quantity } from '@maestro-calc/core';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Ready } from '../page-module.ts';
 import { required } from '../controller.ts';
 import { dimensionText, outputText } from '../present.ts';
 
 type Moment = Ready<typeof roofPitch>;
+
+/** A length in inches, the unit of the plan's ratio. */
+export const inches = (length: Quantity<'length'>): number => valueIn(length, inch).toNumber();
 
 /** The figure of an output of the moment, as its row writes it. */
 const figure = ({ result }: Moment, key: 'pitch' | 'angle'): string => {
@@ -17,6 +21,9 @@ const figure = ({ result }: Moment, key: 'pitch' | 'angle'): string => {
   ).value;
   return outputText(output, value);
 };
+
+/** The pitch in 12 as its row writes it (`6.00`): the answer and the drawing note show it. */
+export const pitchFigure = (moment: Moment): string => figure(moment, 'pitch');
 
 /** The case of the answer: below the IRC minimum, two layers of underlayment, or it meets it. */
 export const answerCase = ({ result }: Moment): string => {
@@ -35,7 +42,7 @@ export const answerValues = (moment: Moment): Record<string, string> => {
   return {
     rise: dimensionText(valid.rise, system),
     run: dimensionText(valid.run, system),
-    pitch: figure(moment, 'pitch'),
+    pitch: pitchFigure(moment),
     angle: `${figure(moment, 'angle')}°`,
     minimum: below === undefined ? '' : String(below.params['minimum']),
   };

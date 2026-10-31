@@ -22,11 +22,17 @@ const TWELVE: Figures = ['12.00', '45.00', '18.38'];
 /** 10 cm over 40 cm, a 4 m rafter run and a 30 cm overhang: 4.3 m × √1.0625 = 14.54 ft. */
 const METRIC_BARE: Figures = ['3.00', '14.04', '14.54'];
 
+/** The answer of the default state, which is also the name of the default plan. */
+const ANSWER_DEFAULT = {
+  en: 'A rise of 6 in over a run of 1 ft gives a pitch of 6.00 in 12, 26.57°. It meets the IRC minimum slope for the chosen covering.',
+  es: 'Una subida de 6 in sobre un recorrido de 1 ft es una pendiente de 6.00 en 12, 26.57°. Cumple la pendiente mínima del IRC para la cubierta elegida.',
+};
+
 const COVERINGS = ['asphalt', 'tile', 'metal', 'roll', 'slate', 'wood'] as const;
 
 /**
  * The record of the roof pitch page (site-quality › [SQ37]). The page has an answer whose case
- * carries the IRC check, and no drawing yet (the roof triangle is a tracked follow-up).
+ * carries the IRC check, and the slope drawing.
  */
 export const ROOF_PITCH: E2eSpec = {
   locales: {
@@ -96,19 +102,57 @@ export const ROOF_PITCH: E2eSpec = {
     '?v=1&u=m&r=3&c=slate',
   ],
   answer: {
-    default: {
-      en: 'A rise of 6 in over a run of 1 ft gives a pitch of 6.00 in 12, 26.57°. It meets the IRC minimum slope for the chosen covering.',
-      es: 'Una subida de 6 in sobre un recorrido de 1 ft es una pendiente de 6.00 en 12, 26.57°. Cumple la pendiente mínima del IRC para la cubierta elegida.',
-    },
+    default: ANSWER_DEFAULT,
     // the answer does not name the rafter, so the typed rafter run keeps the default sentence
-    typed: {
-      en: 'A rise of 6 in over a run of 1 ft gives a pitch of 6.00 in 12, 26.57°. It meets the IRC minimum slope for the chosen covering.',
-      es: 'Una subida de 6 in sobre un recorrido de 1 ft es una pendiente de 6.00 en 12, 26.57°. Cumple la pendiente mínima del IRC para la cubierta elegida.',
-    },
+    typed: ANSWER_DEFAULT,
     metric: {
       en: 'A rise of 15.24 cm over a run of 30.48 cm gives a pitch of 6.00 in 12, 26.57°. It meets the IRC minimum slope for the chosen covering.',
       es: 'Una subida de 15.24 cm sobre un recorrido de 30.48 cm es una pendiente de 6.00 en 12, 26.57°. Cumple la pendiente mínima del IRC para la cubierta elegida.',
     },
+  },
+  // The slope of blueprint-drawing: the run under it, the rise on its right, the pitch note above;
+  // the name is the answer sentence.
+  drawing: {
+    labels: {
+      en: ['1 ft', '6 in', '6.00 in 12'],
+      es: ['1 ft', '6 in', '6.00 en 12'],
+    },
+    name: ANSWER_DEFAULT,
+    typed: {
+      key: 'rise',
+      text: '9',
+      labels: {
+        en: ['1 ft', '9 in', '9.00 in 12'],
+        es: ['1 ft', '9 in', '9.00 en 12'],
+      },
+      name: {
+        en: 'A rise of 9 in over a run of 1 ft gives a pitch of 9.00 in 12, 36.87°. It meets the IRC minimum slope for the chosen covering.',
+        es: 'Una subida de 9 in sobre un recorrido de 1 ft es una pendiente de 9.00 en 12, 36.87°. Cumple la pendiente mínima del IRC para la cubierta elegida.',
+      },
+      // 12 in of run over 9 in of rise
+      ratio: 12 / 9,
+    },
+    kept: {
+      key: 'rise',
+      text: '3 in',
+      labels: {
+        en: ['1 ft', '3 in', '3.00 in 12'],
+        es: ['1 ft', '3 in', '3.00 en 12'],
+      },
+    },
+    metric: {
+      en: ['30.48 cm', '15.24 cm', '6.00 in 12'],
+      es: ['30.48 cm', '15.24 cm', '6.00 en 12'],
+    },
+    toggles: ['?v=1&r=1', '?v=1&n=144'],
+    // the longest labels the fields accept (99 ft 11 63/64 in, 30.48 m) and both ratio clamps
+    longest: [
+      '?v=1&r=76799/64&n=76799/64',
+      '?v=1&u=m&r=76799/64&n=76799/64',
+      '?v=1&r=1&n=1200',
+      '?v=1&r=1200&n=1',
+    ],
+    queries: ['?v=1&r=9', '?v=1&r=1&n=1200'],
   },
   hints: [
     { key: 'rise', site: 'site.calculator.hintIn', describedBy: 'calc-rise-hint' },
