@@ -1,0 +1,3 @@
+# Archive report: pwa
+
+Archived on 2026-10-31 after #155 merged and was verified in production: its `Deploy` run passed; both manifests answer 200 as `application/manifest+json`, `/sw.js` is served `no-cache`; in Chrome, `/concrete-calculator` registered `/sw.js` and the `maestro-v1` cache held the page, its seven scripts and its four fonts. The first CI run failed the browser suites (the page filled the cache itself, breaking [SS21], and the worker answered requests `page.route` swaps); the fix is recorded as decisions 5 and 7 of the proposal. `site-pwa` is a new capability: `openspec/specs/site-pwa/spec.md`.
