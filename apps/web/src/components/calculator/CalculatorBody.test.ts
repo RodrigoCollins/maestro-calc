@@ -430,16 +430,14 @@ describe('CalculatorBody, result panel rows (blueprint-drawing › [BD20])', () 
 
 // spec: blueprint-drawing › [BD22], calculator-page › [CP76] a page that draws renders one empty,
 // hidden box between the large figure and the rows, in both locales
-// The pages whose module declares a drawing; feet and inches has none yet (its tape drawing is a
-// tracked follow-up of feet-inches-calculator), and a page without one renders no box.
+// The pages whose module declares a drawing (every routed page since the feet and inches bars); a
+// module without one, the test-only slot-free page, renders no box.
 const DRAWN = CALCULATOR_PAGES.filter((id) => PAGES[id].module.drawing !== undefined);
 
 describe('CalculatorBody, the drawing box (blueprint-drawing › [BD22])', () => {
   it('renders no box on a page whose module declares no drawing', async () => {
-    const root = await renderComponent(CalculatorBody, {
-      view: pageView('feet-inches', 'en'),
-      content: CONTENT,
-    });
+    const view = pageViewOf(slotFreePage, 'en', { ...enCommon, ...enRectangleArea, ...enSite });
+    const root = await renderComponent(CalculatorBody, { view, content: CONTENT });
     expect(root.querySelectorAll('[data-drawing]')).toHaveLength(0);
   });
 
