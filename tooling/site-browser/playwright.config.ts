@@ -22,7 +22,14 @@ export default defineConfig({
   retries: 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   // A failed test keeps its trace and screenshot in `test-results`, which CI uploads on failure.
-  use: { baseURL: origin, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  // `serviceWorkers: 'block'`: a request the offline worker answers is not seen by `page.route`,
+  // so the suites that swap fonts or scripts would get the cached ones. `offline.spec.ts` allows it.
+  use: {
+    baseURL: origin,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
+    serviceWorkers: 'block',
+  },
   projects: [
     {
       name: 'phone',

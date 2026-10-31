@@ -36,7 +36,12 @@ describe('client sources (calculator-page › Client script contract; design C11
   // spec: calculator-web-core › [CWC37] one entry per calculator page, scanned with no hand list
   it('holds the mount, the drawing writer and one entry for each calculator page id', () => {
     expect(files).toEqual(
-      [...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`), 'draw.ts', 'mount.ts'].sort(),
+      [
+        ...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`),
+        'draw.ts',
+        'mount.ts',
+        'offline.ts',
+      ].sort(),
     );
   });
 

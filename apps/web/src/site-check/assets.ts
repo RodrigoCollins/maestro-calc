@@ -76,6 +76,9 @@ const sharedScriptProblems = (
 /** The analytics tag of the layout (analytics-gtm): the one same-origin classic script any page may carry. */
 export const ANALYTICS_SRC = '/analytics.js';
 
+/** The offline worker (site-pwa): served by its fixed name, registered by the calculator pages. */
+export const WORKER_SRC = '/sw.js';
+
 const isAnalyticsTag = (script: HTMLElement): boolean =>
   script.getAttribute('src') === ANALYTICS_SRC;
 
@@ -289,8 +292,9 @@ const distProblems = (pages: readonly Page[], dist: Dist, site: Site): Problem[]
     ...[...dist.keys()]
       .filter((file) => /\.[cm]?js$/.test(file))
       .flatMap((file) => {
-        // the analytics loader is the one file outside _astro/: every page loads it by its tag
-        if (file === ANALYTICS_SRC.slice(1)) return [];
+        // the two files outside _astro/: the analytics loader every page loads by its tag, and the
+        // offline worker the calculator pages register by its fixed name
+        if (file === ANALYTICS_SRC.slice(1) || file === WORKER_SRC.slice(1)) return [];
         if (!file.startsWith('_astro/')) {
           return [problem(file, 'js-file', 'JavaScript is only allowed under _astro/')];
         }

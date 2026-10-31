@@ -13,3 +13,8 @@
 # Hashed fonts and CSS never change under one name.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
+
+# The offline worker is fetched by its fixed name: the browser must check it on every visit, so an
+# update reaches the phone on its next page view.
+/sw.js
+  Cache-Control: no-cache
