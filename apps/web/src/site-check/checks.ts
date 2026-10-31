@@ -7,6 +7,7 @@ import { headProblems } from './head.ts';
 import { structureProblems } from './structure.ts';
 import { glyphProblems } from './woff2-cmap.ts';
 import type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
+import { embedProblems } from './embed.ts';
 
 export type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
 export { budgetSummary } from './budgets.ts';
@@ -32,6 +33,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...contentProblems(context),
     ...factProblems(context),
     ...budgetProblems(context),
+    ...embedProblems(context),
     ...glyphProblems(buildBytes.fonts),
   ];
 };

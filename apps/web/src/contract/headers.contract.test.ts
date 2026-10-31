@@ -50,7 +50,8 @@ describe('security headers (site-quality › [SQ12])', () => {
       "script-src 'self' https://www.googletagmanager.com",
     ]);
     const text = readFileSync(fromRoot('apps/web/public/_headers'), 'utf8');
-    expect(text.match(/script-src/g)).toHaveLength(1);
+    // two policies: the site's and the embed's, whose own test pins it exactly
+    expect(text.match(/script-src/g)).toHaveLength(2);
     const scriptSrc = directives.find((directive) => directive.startsWith('script-src')) ?? '';
     for (const forbidden of [
       "'unsafe-inline'",
@@ -130,6 +131,46 @@ describe('asset caching (site-quality › [SQ13])', () => {
     (path) => {
       expect(immutable.length).toBeGreaterThan(0);
       expect(immutable.filter((rule) => appliesTo(rule.pattern, path))).toEqual([]);
+    },
+  );
+});
+
+// embed: the embed pages, and they alone, may be framed by any site
+describe('embed framing (embed › Framing only there)', () => {
+  const embed = rules.find((rule) => rule.pattern === '/embed/*');
+  const directives = (embed?.headers['content-security-policy'] ?? '').split('; ');
+
+  it('detaches the site policy on /embed/* and sets its own, framable by any site', () => {
+    expect(embed?.lines.map(([name]) => name)).toEqual([
+      '! Content-Security-Policy',
+      'Content-Security-Policy',
+    ]);
+    expect(directives).toContain('frame-ancestors *');
+  });
+
+  it('keeps the embed to its own origin: no analytics host, no inline script', () => {
+    expect(directives).toEqual([
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data:",
+      "connect-src 'self'",
+      "font-src 'self'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      'frame-ancestors *',
+    ]);
+  });
+
+  it.each(['/', '/es', '/concrete-calculator', '/es/calculadora-de-concreto', '/about'])(
+    'lets no rule but the site policy set the framing of %s',
+    (path) => {
+      const framing = rules
+        .filter((rule) => appliesTo(rule.pattern, path))
+        .map((rule) => rule.headers['content-security-policy'] ?? '')
+        .filter((policy) => policy.includes('frame-ancestors'));
+      expect(framing).toEqual([CSP]);
     },
   );
 });

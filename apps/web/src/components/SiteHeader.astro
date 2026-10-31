@@ -6,7 +6,7 @@ interface Props {
   homeHref: string;
   navLabel: string;
   links: readonly { href: string; label: string }[];
-  language: { href: string; lang: string; hreflang: string; label: string };
+  language: { href: string; lang: string; hreflang: string; label: string; target?: string };
 }
 const { homeHref, navLabel, links, language } = Astro.props;
 ---

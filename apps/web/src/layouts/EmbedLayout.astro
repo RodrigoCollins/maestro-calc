@@ -1,0 +1,57 @@
+---
+import { Font } from 'astro:assets';
+import SeoHead from '../components/SeoHead.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import type { ReserveCss } from '../lib/reserve.ts';
+import { siteText } from '../lib/site-text.ts';
+import { OTHER_LOCALE, type Embed } from '../routing/embed.ts';
+import { LOCALE_TAGS, urlOf } from '../routing/routes.ts';
+import '../styles/tokens.css';
+import '../styles/base.css';
+
+/*
+ * The shell of an embed page (embed): a calculator inside another site's frame. Its canonical is the
+ * full page and it is `noindex`, so search sees one page; it loads no analytics. `<base>` opens
+ * every link in a new tab (a site page refuses to be framed), except the language switch, which
+ * stays in the frame.
+ */
+interface Props {
+  embed: Embed;
+  title: string;
+  description: string;
+  style?: ReserveCss | undefined;
+}
+const { embed, title, description, style } = Astro.props;
+const { locale } = embed;
+const text = siteText(locale);
+const other = OTHER_LOCALE[locale];
+const language = {
+  href: embed.other,
+  lang: LOCALE_TAGS[other],
+  hreflang: LOCALE_TAGS[other],
+  label: text('site.switch.label'),
+  target: '_self',
+};
+---
+
+<!doctype html>
+<html lang={LOCALE_TAGS[locale]}>
+  <head>
+    <SeoHead {title} {description} canonical={urlOf(embed.page)} robots="noindex" />
+    <base target="_blank" />
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+    {style !== undefined && <style is:inline set:html={style} />}
+  </head>
+  <body>
+    <SiteHeader
+      homeHref={urlOf(embed.page)}
+      navLabel={text('site.nav.label')}
+      links={[]}
+      {language}
+    />
+    <main id="main">
+      <slot />
+    </main>
+  </body>
+</html>

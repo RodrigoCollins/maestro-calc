@@ -38,6 +38,7 @@ describe('client sources (calculator-page › Client script contract; design C11
     expect(files).toEqual(
       [
         ...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`),
+        'canonical.ts',
         'draw.ts',
         'mount.ts',
         'offline.ts',

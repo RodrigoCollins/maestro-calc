@@ -268,6 +268,23 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
 const FAVICON =
   '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="#0E2240"/></svg>';
 
+/** A valid embed (embed) of a calculator page: its canonical, noindex, the frame shell and its entry. */
+export const validEmbed = (id: string, locale: Locale, site: Site): string => {
+  const other = LOCALES.find((each) => each !== locale) ?? locale;
+  return [
+    `<!doctype html><html lang="${LOCALE_TAGS[locale]}"><head>`,
+    `<title>${id}</title>`,
+    `<link rel="canonical" href="${urlOf(pathOf(id, locale, site.routes))}">`,
+    '<meta name="robots" content="noindex">',
+    '<base target="_blank">',
+    '</head><body>',
+    `<header><a href="${urlOf(pathOf(id, locale, site.routes))}">Maestro Calc</a>`,
+    `<a href="/embed${pathOf(id, other, site.routes)}" hreflang="${LOCALE_TAGS[other]}" target="_self">${other}</a></header>`,
+    `<main><h1>${id}</h1><script type="module" src="/${ENTRY_FILE}"></script></main>`,
+    '</body></html>',
+  ].join('');
+};
+
 const ROBOTS = 'User-agent: *\nAllow: /\nSitemap: https://maestrocalc.com/sitemap.xml\n';
 
 /** A complete valid `dist` for the site: every page, the favicon, robots, sitemap and four fonts. */
@@ -280,6 +297,11 @@ export const validDist = (site: Site = fixtureSite()): Map<string, string> => {
   }
   for (const locale of LOCALES) {
     dist.set(fileOf(notFoundPathOf(locale)), validPage(NOT_FOUND_ID, locale, site));
+  }
+  for (const id of site.calculatorPages) {
+    for (const locale of LOCALES) {
+      dist.set(fileOf(`/embed${pathOf(id, locale, site.routes)}`), validEmbed(id, locale, site));
+    }
   }
   if (site.calculatorPages.length > 0) {
     dist.set(ENTRY_FILE, 'import"./chunks/rational.js";const a=1;export{a};');

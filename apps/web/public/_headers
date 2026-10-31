@@ -18,3 +18,10 @@
 # update reaches the phone on its next page view.
 /sw.js
   Cache-Control: no-cache
+
+# The embed pages (embed) are the one thing other sites may frame: the site policy above is
+# detached and the same one set with `frame-ancestors *`, without the analytics hosts (an embed
+# loads no analytics). Every other path keeps `frame-ancestors 'none'`.
+/embed/*
+  ! Content-Security-Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors *

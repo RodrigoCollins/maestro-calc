@@ -12,6 +12,7 @@ import { errorId, helpId, hintId, inputId } from '../calculator/ids.ts';
 import type { AnyCalculator, AnyPageModule } from '../calculator/page-module.ts';
 import { textKeysOf } from '../calculator/texts.ts';
 import type { Draw } from './draw.ts';
+import { linkPathOf } from './canonical.ts';
 import { browserHost, registerOffline } from './offline.ts';
 
 /** The controller types of any calculator: keys are plain strings here, the module decides which exist. */
@@ -315,7 +316,10 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   const env: Environment = {
     messages: messagesOf(document),
     origin: location.origin,
-    path: location.pathname,
+    path: linkPathOf(
+      document.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? null,
+      location.pathname,
+    ),
     switchPath: ui.switchLink.getAttribute('href') ?? '',
     helps: new Set(keys.filter((key) => document.getElementById(helpId(key)) !== null)),
   };
