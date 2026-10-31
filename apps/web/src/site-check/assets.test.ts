@@ -73,9 +73,10 @@ describe('zero client JavaScript (site-shell › [SS18])', () => {
     ).toEqual(['js-file']);
   });
 
-  // analytics-gtm: the loader is the one script file outside _astro/
-  it('accepts the analytics loader at the root, and no other root script', () => {
+  // analytics-gtm and site-pwa: the loader and the offline worker are the script files outside _astro/
+  it('accepts the analytics loader and the offline worker at the root, and no other root script', () => {
     expect(problemsAfter({}, (dist) => dist.set('analytics.js', 'x'))).toEqual([]);
+    expect(problemsAfter({}, (dist) => dist.set('sw.js', 'x'))).toEqual([]);
     expect(
       rulesOf(
         problemsAfter({}, (dist) => dist.set('analytics2.js', 'x')),

@@ -12,6 +12,7 @@ import type { ShellPageId } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
 import type { ReserveCss } from '../lib/reserve.ts';
 import type { NotFoundHead, PageHead } from '../seo/head.ts';
+import { MANIFEST_PATHS, THEME_COLOR } from '../seo/manifest.ts';
 import { SITE } from '../site.config.ts';
 import '../styles/tokens.css';
 import '../styles/base.css';
@@ -49,6 +50,9 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
         ogTag(LOCALE_TAGS[other]),
       )}
     />
+    <link rel="manifest" href={MANIFEST_PATHS[locale]} />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content={THEME_COLOR} />
     {SITE.adsenseClient !== '' && (
       <meta name="google-adsense-account" content={SITE.adsenseClient} />
     )}

@@ -32,18 +32,29 @@ const files = globSync('**/*.ts', { cwd: CLIENT })
 
 const found = (text: string): string[] => BANNED.filter((word) => text.includes(word));
 
+/**
+ * The one exception (site-pwa): the offline registration puts the page and its own hashed files
+ * in the Cache Storage the offline worker reads. It may name `caches.` and nothing else banned.
+ */
+const ALLOWED: Readonly<Record<string, readonly string[]>> = { 'offline.ts': ['caches.'] };
+
 describe('client sources (calculator-page › Client script contract; design C11, C13)', () => {
   // spec: calculator-web-core › [CWC37] one entry per calculator page, scanned with no hand list
   it('holds the mount, the drawing writer and one entry for each calculator page id', () => {
     expect(files).toEqual(
-      [...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`), 'draw.ts', 'mount.ts'].sort(),
+      [
+        ...CALCULATOR_PAGES.map((id) => `entries/${id}.ts`),
+        'draw.ts',
+        'mount.ts',
+        'offline.ts',
+      ].sort(),
     );
   });
 
   // spec: calculator-page › the DOM is written with textContent, value, attributes and hidden only
   it('uses no HTML string, dynamic code, storage or network API', () => {
     for (const file of files) {
-      expect(found(readFileSync(`${CLIENT}/${file}`, 'utf8')), file).toEqual([]);
+      expect(found(readFileSync(`${CLIENT}/${file}`, 'utf8')), file).toEqual(ALLOWED[file] ?? []);
     }
   });
 

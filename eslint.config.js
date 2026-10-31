@@ -225,6 +225,8 @@ export default defineConfig(
     'tooling/site-browser/**',
     // A plain browser script served as is, outside every TypeScript project; its unit test runs it.
     'apps/web/public/analytics.js',
+    // The offline worker, the same: a plain script served as is, run by its unit test.
+    'apps/web/public/sw.js',
   ]),
   { linterOptions: { reportUnusedDisableDirectives: 'error' } },
   {

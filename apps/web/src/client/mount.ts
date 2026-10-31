@@ -12,6 +12,7 @@ import { errorId, helpId, hintId, inputId } from '../calculator/ids.ts';
 import type { AnyCalculator, AnyPageModule } from '../calculator/page-module.ts';
 import { textKeysOf } from '../calculator/texts.ts';
 import type { Draw } from './draw.ts';
+import { browserHost, registerOffline } from './offline.ts';
 
 /** The controller types of any calculator: keys are plain strings here, the module decides which exist. */
 type Output = ControllerOutput<AnyCalculator>;
@@ -376,4 +377,6 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
     if (control instanceof HTMLElement) control.hidden = false;
   }
   ui.note.hidden = true;
+  // the page now works; keep it for a lot without signal (site-pwa)
+  void registerOffline(browserHost());
 };
