@@ -2,7 +2,14 @@ import { z } from 'astro/zod';
 import { LOCALES } from '../routing/routes.ts';
 
 /** The pages whose long-form copy is Markdown; `home` is composed from the catalog instead. */
-export const TRUST_IDS = ['methodology', 'about', 'privacy', 'terms', 'contact'] as const;
+export const TRUST_IDS = [
+  'methodology',
+  'about',
+  'privacy',
+  'terms',
+  'contact',
+  'embed-calculators',
+] as const;
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 

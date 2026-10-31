@@ -116,11 +116,15 @@ describe('BaseLayout (site-shell › Base layout)', () => {
 
   // spec: site-shell › [SS13] footer links from the real table
   it.each([
-    ['en', ['/privacy', '/terms', '/contact'], ['Privacy', 'Terms', 'Contact']],
+    [
+      'en',
+      ['/embed-calculators', '/privacy', '/terms', '/contact'],
+      ['Embed our calculators', 'Privacy', 'Terms', 'Contact'],
+    ],
     [
       'es',
-      ['/es/privacidad', '/es/terminos', '/es/contacto'],
-      ['Privacidad', 'Términos', 'Contacto'],
+      ['/es/calculadoras-para-tu-sitio', '/es/privacidad', '/es/terminos', '/es/contacto'],
+      ['Calculadoras para tu sitio', 'Privacidad', 'Términos', 'Contacto'],
     ],
   ] as const)('lists the footer links of the table in %s', async (locale, hrefs, labels) => {
     const { document } = await render(locale);

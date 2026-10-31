@@ -12,6 +12,8 @@ export const esSite = {
   'site.footer.privacy': 'Privacidad',
   'site.footer.terms': 'Términos',
   'site.footer.contact': 'Contacto',
+  'site.footer.embed-calculators': 'Calculadoras para tu sitio',
+  'site.embed.by': 'de',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',
   'site.calculator.breadcrumb': 'Ruta de navegación',
@@ -81,6 +83,9 @@ export const esSite = {
   'page.terms.title': 'Términos | Maestro Calc',
   'page.terms.description':
     'Los términos de uso de Maestro Calc: los resultados son estimaciones y debes verificarlos con un profesional calificado y el código de construcción local.',
+  'page.embed-calculators.title': 'Calculadoras para tu sitio | Maestro Calc',
+  'page.embed-calculators.description':
+    'Pon gratis cualquier calculadora de Maestro Calc en tu sitio web: copia el código, pégalo en tu página y deja el enlace de crédito.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

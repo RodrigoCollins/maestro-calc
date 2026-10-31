@@ -6,6 +6,8 @@ describe('link lists keep the id literals (site-shell › [SS12, SS13])', () => 
     const header = linksFor(HEADER_PAGES, 'en');
     expectTypeOf(header[0]?.id).toEqualTypeOf<'methodology' | 'about' | undefined>();
     const footer = linksFor(FOOTER_PAGES, 'en');
-    expectTypeOf(footer[0]?.id).toEqualTypeOf<'privacy' | 'terms' | 'contact' | undefined>();
+    expectTypeOf(footer[0]?.id).toEqualTypeOf<
+      'embed-calculators' | 'privacy' | 'terms' | 'contact' | undefined
+    >();
   });
 });

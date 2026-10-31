@@ -31,3 +31,11 @@ The copy and WhatsApp links MUST be built from the canonical's path when the pag
 ### Requirement: Embed checks
 
 `check:site` MUST expect every embed file, flag a missing one, and check each against the embed rules (canonical, `noindex`, no alternate or JSON-LD, `<base target="_blank">`, one `h1`, the full page's module scripts, no analytics, the switch, the HTML budget).
+
+### Requirement: The snippet page
+
+`/embed-calculators` and `/es/calculadoras-para-tu-sitio` MUST list, under an intro, one snippet per calculator in the page language, built from the embeds: an `<iframe>` of the embed (title the calculator's name, `width="100%"`, `height="900"`, `loading="lazy"`, `allow="clipboard-write"`) followed by a paragraph with a link to the full page reading "<name> by Maestro Calc" ("<name> de Maestro Calc"). The page loads no script and is linked from the footer.
+
+#### Scenario: [EM4] Concrete snippet in Spanish
+- GIVEN `/es/calculadoras-para-tu-sitio`
+- THEN the Concrete section holds an iframe of `https://maestrocalc.com/embed/es/calculadora-de-concreto` and a link to `https://maestrocalc.com/es/calculadora-de-concreto` reading "Calculadora de Concreto de Maestro Calc"
