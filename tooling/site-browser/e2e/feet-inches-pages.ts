@@ -30,8 +30,8 @@ const ANSWER_DEFAULT = {
 
 /**
  * The record of the feet and inches page (site-quality › [SQ37]): the strings, states and sentences
- * the generic suites drive. The page has an answer and an operation choice; no shopping, price or
- * drawing.
+ * the generic suites drive. The page has an answer, an operation choice and the bars drawing; no
+ * shopping or price.
  */
 export const FEET_INCHES: E2eSpec = {
   locales: {
@@ -112,6 +112,37 @@ export const FEET_INCHES: E2eSpec = {
       en: '3.81 m plus 1.12 m is 4.934 m.',
       es: '3.81 m más 1.12 m da 4.934 m.',
     },
+  },
+  // The bars of blueprint-drawing: both lengths and the result to scale, each text above its bar;
+  // every label is a length, so the texts are the same in both languages.
+  drawing: {
+    labels: ['12 ft 6 in', '3 ft 8 1/4 in', '16 ft 2 1/4 in'],
+    name: ANSWER_DEFAULT,
+    typed: {
+      key: 'first',
+      text: '20',
+      labels: ['20 ft', '3 ft 8 1/4 in', '23 ft 8 1/4 in'],
+      name: {
+        en: '20 ft plus 3 ft 8 1/4 in is 23 ft 8 1/4 in.',
+        es: '20 ft más 3 ft 8 1/4 in da 23 ft 8 1/4 in.',
+      },
+      // the first bar: 240 / 284.25 × 288 = 243.2 long, 16 tall
+      ratio: 243.2 / 16,
+    },
+    kept: {
+      key: 'first',
+      text: '15 ft',
+      labels: ['15 ft', '3 ft 8 1/4 in', '18 ft 8 1/4 in'],
+    },
+    metric: ['3.81 m', '1.12 m', '4.934 m'],
+    toggles: ['?v=1&o=subtract&a=120&b=150', '?v=1&o=divide&n=7'],
+    // the longest labels the fields accept, and a bar far shorter than the other
+    longest: [
+      '?v=1&a=767999/64&b=767999/64',
+      '?v=1&u=m&a=767999/64&b=767999/64',
+      '?v=1&a=1&b=767999/64',
+    ],
+    queries: ['?v=1&o=multiply', '?v=1&o=divide&n=7'],
   },
   hints: [
     { key: 'first', site: 'site.calculator.hintFt', describedBy: 'calc-first-hint' },
