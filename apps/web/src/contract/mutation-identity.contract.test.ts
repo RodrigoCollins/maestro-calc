@@ -58,26 +58,33 @@ describe('core shard identities (quality-gates › Mutation gate on core, design
     }
   });
 
-  // The point of the change: calculators grow with the catalog, and a calculator PR must cold the
-  // `calculators` shard and nothing else.
-  it('puts the calculators and the released snapshot in the identity of `calculators` alone', () => {
+  // The point of the shards: calculators grow with the catalog, and a calculator PR must cold its
+  // own calculators group and `calculators-1` (the released contract reaches every calculator), and
+  // nothing else.
+  it('puts each calculator in its own group and in `calculators-1`, and in no other shard', () => {
     const calculatorFiles = [
       'src/calculators/rectangle-area/rectangle-area.ts',
       'src/calculators/rectangle-area/rectangle-area.test.ts',
       'src/calculators/released.contract.test.ts',
       'src/__testing__/released-snapshot.ts',
     ];
+    const groups = core.shardNames.filter((name) => name.startsWith('calculators-'));
     for (const file of calculatorFiles) {
-      expect(identity('calculators'), file).toContain(file);
-      for (const name of others('calculators')) {
+      expect(identity('calculators-1'), file).toContain(file);
+      for (const name of others('calculators-1').filter((each) => !groups.includes(each))) {
         expect(identity(name), `${name} must not hold ${file}`).not.toContain(file);
       }
     }
+    const concrete = 'src/calculators/concrete/concrete.ts';
+    expect(groups.filter((name) => identity(name).includes(concrete))).toEqual([
+      'calculators-1',
+      'calculators-2',
+    ]);
   });
 
-  it('keeps the sources of the other shards in step with their own tests, not in `calculators`', () => {
+  it('keeps the sources of the other shards in step with their own tests, not in the calculators', () => {
     expect(identity('url')).toContain('src/url/codec.ts');
-    expect(identity('calculators')).toContain('src/url/codec.ts');
+    expect(identity('calculators-2')).toContain('src/url/codec.ts');
     // the barrel test imports `src/url`, so every kernel shard holds the codec (design W1)
     for (const name of ['rational', 'units', 'format', 'calculator-define', 'calculator-run']) {
       expect(identity(name), `${name} holds the codec`).toContain('src/url/codec.ts');
@@ -91,8 +98,9 @@ describe('core shard identities (quality-gates › Mutation gate on core, design
       /stryker-incremental-([0-9a-f]{16})-/.exec(
         core.optionsFor?.(name).incrementalFile ?? '',
       )?.[1];
-    expect(hashOf('calculators')).toMatch(/^[0-9a-f]{16}$/);
-    expect(hashOf('calculators')).not.toBe(hashOf('rational'));
+    expect(hashOf('calculators-2')).toMatch(/^[0-9a-f]{16}$/);
+    expect(hashOf('calculators-2')).not.toBe(hashOf('rational'));
+    expect(hashOf('calculators-2')).not.toBe(hashOf('calculators-3'));
     // shards with the same inputs share a hash; the shard suffix keeps their report files apart
     expect(hashOf('rational')).toBe(hashOf('units'));
     // `url` mutates the codec every kernel shard now holds, so its identity equals the kernel's
@@ -184,7 +192,7 @@ describe('shard identity against the import graph (design D10, fail closed)', ()
 
   // The other direction: the shards that must not move with a calculator really import none, and
   // no test file of them reads the released snapshot.
-  it.each(core.shardNames.filter((name) => name !== 'calculators'))(
+  it.each(core.shardNames.filter((name) => !name.startsWith('calculators-')))(
     '%s: imports no calculator and not the released snapshot',
     (name) => {
       const shard = core.shards[name];
