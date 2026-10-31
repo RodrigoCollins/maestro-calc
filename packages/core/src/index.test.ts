@@ -53,6 +53,7 @@ describe('core public API (design: Public API)', () => {
       'in3',
       'inch',
       'isQuantity',
+      'isQuantityOf',
       'isZero',
       'kg',
       'kgM3',

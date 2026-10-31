@@ -479,4 +479,33 @@ export const RELEASED: readonly ReleasedField[] = [
     kind: 'money',
     default: '0',
   },
+  {
+    calculatorId: 'feet-inches',
+    key: 'first',
+    urlKey: 'a',
+    kind: 'length',
+    default: '150',
+  },
+  {
+    calculatorId: 'feet-inches',
+    key: 'operation',
+    urlKey: 'o',
+    kind: 'select',
+    default: 'add',
+    options: ['add', 'subtract', 'multiply', 'divide'],
+  },
+  {
+    calculatorId: 'feet-inches',
+    key: 'second',
+    urlKey: 'b',
+    kind: 'length',
+    default: '177/4',
+  },
+  {
+    calculatorId: 'feet-inches',
+    key: 'factor',
+    urlKey: 'n',
+    kind: 'count',
+    default: '2',
+  },
 ];

@@ -36,6 +36,10 @@ export const ROUTES = {
   drywall: { en: '/drywall-calculator', es: '/es/calculadora-de-drywall' },
   'roof-pitch': { en: '/roof-pitch-calculator', es: '/es/calculadora-de-pendiente-de-techo' },
   roofing: { en: '/roofing-calculator', es: '/es/calculadora-de-tejas' },
+  'feet-inches': {
+    en: '/feet-and-inches-calculator',
+    es: '/es/calculadora-de-pies-y-pulgadas',
+  },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

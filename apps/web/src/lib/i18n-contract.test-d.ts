@@ -3,6 +3,7 @@ import type { concreteMix } from '@maestro-calc/data';
 import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
+import type { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
@@ -26,7 +27,8 @@ type EnglishKeys =
   | keyof typeof enPaint
   | keyof typeof enDrywall
   | keyof typeof enRoofPitch
-  | keyof typeof enRoofing;
+  | keyof typeof enRoofing
+  | keyof typeof enFeetInches;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -81,6 +83,17 @@ type RoofPitchPageKeys =
   | 'calc.roof-pitch.page.answer.double'
   | 'calc.roof-pitch.page.answer.below'
   | 'calc.roof-pitch.page.example';
+
+/** The page copy of the feet and inches calculator (`calc.feet-inches.page.*`), exactly: a new key is added here. */
+type FeetInchesPageKeys =
+  | 'calc.feet-inches.page.example'
+  | 'calc.feet-inches.page.result'
+  | 'calc.feet-inches.page.resultM'
+  | 'calc.feet-inches.page.answer.add'
+  | 'calc.feet-inches.page.answer.subtract'
+  | 'calc.feet-inches.page.answer.longer'
+  | 'calc.feet-inches.page.answer.multiply'
+  | 'calc.feet-inches.page.answer.divide';
 
 /** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
 type RoofingPageKeys =
@@ -165,6 +178,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | RectangleAreaPageKeys
       | RoofPitchPageKeys
       | RoofingPageKeys
+      | FeetInchesPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -198,5 +212,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enRoofing, `calc.roofing.page.${string}`>
     >().toEqualTypeOf<RoofingPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enFeetInches, `calc.feet-inches.page.${string}`>
+    >().toEqualTypeOf<FeetInchesPageKeys>();
   });
 });

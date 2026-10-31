@@ -231,6 +231,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | Same, 12 in 12 (`?v=1&p=12`)                                                | 16.97   | 1,697.06    | 57      | 2     |
 | 60 ft × 40 ft footprint, 8 in 12, 15 % extra (`?v=1&l=720&w=480&p=8&ws=15`) | 28.84   | 2,884.44    | 100     | 4     |
 
+<h2 id="feet-and-inches">Feet and inches calculator</h2>
+
+The [feet and inches calculator](/feet-and-inches-calculator) adds or subtracts two lengths in feet, inches and fractions, or multiplies or divides one length by a whole number. Every length is kept as an exact number, and the result is rounded only when it is shown.
+
+The formulas:
+
+- Add: first + second.
+- Subtract: first − second, or second − first when the second length is the longer, with a note that says so.
+- Multiply: first × number.
+- Divide: first ÷ number.
+
+The feet-and-inches figure is rounded to the nearest 1/16 of an inch; the decimal inches show two places and the meters three. A foot is exactly 12 inches and an inch is exactly 0.0254 meters (NIST SP 811, Appendix B). No other constant is involved.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                  | Feet and inches | Inches | Meters |
+| --------------------------------------------------------------------- | --------------- | ------ | ------ |
+| 12 ft 6 in + 3 ft 8 1/4 in (starting values)                          | 16 ft 2 1/4 in  | 194.25 | 4.934  |
+| 12 ft 6 in − 3 ft 8 1/4 in (`?v=1&o=subtract`)                        | 8 ft 9 3/4 in   | 105.75 | 2.686  |
+| 10 ft − 12 ft 6 in, the second longer (`?v=1&o=subtract&a=120&b=150`) | 2 ft 6 in       | 30.00  | 0.762  |
+| 12 ft 6 in × 2 (`?v=1&o=multiply`)                                    | 25 ft           | 300.00 | 7.620  |
+| 12 ft 6 in ÷ 7 (`?v=1&o=divide&n=7`)                                  | 1 ft 9 7/16 in  | 21.43  | 0.544  |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

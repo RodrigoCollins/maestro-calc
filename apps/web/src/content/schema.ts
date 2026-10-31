@@ -112,6 +112,12 @@ export const WORKED_EXAMPLES = {
     bundles: z.number().int().nonnegative(),
     rolls: z.number().int().nonnegative(),
   }),
+  'feet-inches': z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    result: z.string().regex(/^(\d+ ft)?( ?\d+( \d+\/\d+)? in)?$/, 'feet and inches'),
+    resultIn: decimalText,
+    resultM: z.string().regex(/^\d+\.\d{3}$/, 'a decimal with three places'),
+  }),
 };
 
 /** The calculator ids that have a worked example row. */

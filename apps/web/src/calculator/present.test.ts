@@ -111,16 +111,22 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     );
   });
 
-  it('fails loudly for a fraction hint, which no calculator asks for yet', () => {
-    const hinted: OutputDescriptor = {
+  // spec: calc-feet-inches › [FI5] a fraction hint shows feet, inches and the nearest fraction
+  it('writes a length with a fraction hint as feet, inches and the nearest fraction', () => {
+    const hint = (unit: 'ft' | 'in', denominator: number): OutputDescriptor => ({
       key: 'len',
       measure: 'length',
-      role: 'secondary',
-      display: { unit: 'in', format: 'fraction', denominator: 8 },
-    };
-    expect(() => outputText(hinted, quantity(Rational.of(25, 2), inch))).toThrow(
-      'len has no decimal hint',
-    );
+      role: 'primary',
+      display: { unit, format: 'fraction', denominator },
+    });
+    expect(outputText(hint('ft', 16), quantity(Rational.of(777, 4), inch))).toBe('16 ft 2 1/4 in');
+    // 150/7 = 21.43 in, nearest 1/16: 343/16 = 21 7/16 in
+    expect(outputText(hint('ft', 16), quantity(Rational.of(150, 7), inch))).toBe('1 ft 9 7/16 in');
+    expect(outputText(hint('ft', 16), quantity(300, inch))).toBe('25 ft');
+    expect(outputText(hint('ft', 16), quantity(0, inch))).toBe('0 in');
+    expect(outputText(hint('ft', 16), quantity(12000, inch))).toBe('1,000 ft');
+    expect(outputText(hint('in', 8), quantity(Rational.of(25, 2), inch))).toBe('12 1/2 in');
+    expect(outputText(hint('in', 8), quantity(30, inch))).toBe('30 in');
   });
 
   it('throws for a quantity with no display hint and for an unknown unit', () => {

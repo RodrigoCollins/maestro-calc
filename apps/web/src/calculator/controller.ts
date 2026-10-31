@@ -191,11 +191,9 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
       defaults.outputs.find(({ key }) => key === descriptor.key),
       'output',
     );
-    try {
-      outputText(descriptor, output.value);
-    } catch {
-      fail('OUTPUT_HINT', calculator.id, descriptor.key);
-    }
+    // every hint core accepts (decimal, or a fraction of a length) has a text; a drifted one throws
+    // here, at creation, with the output's key
+    outputText(descriptor, output.value);
   }
   const figuredKeys = new Set(figured.map(({ key }) => key));
   for (const system of ['imperial', 'metric'] as const) {

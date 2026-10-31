@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds fifteen ids, so the site has thirty
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds sixteen ids, so the site has thirty-two
 // routable pages and two not-found pages.
-describe('end state of the roofing go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the feet and inches go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has fifteen page ids, thirty routable paths and thirty-two pages with the 404s', () => {
+  it('has sixteen page ids, thirty-two routable paths and thirty-four pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -30,11 +30,12 @@ describe('end state of the roofing go-live (site-routing-i18n › [SR1], [SR19],
       'drywall',
       'roof-pitch',
       'roofing',
+      'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(30);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(30);
+    expect(staticPaths()).toHaveLength(32);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(32);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(32);
+    expect(pageCount(ROUTES)).toBe(34);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -51,6 +52,7 @@ describe('end state of the roofing go-live (site-routing-i18n › [SR1], [SR19],
       'drywall',
       'roof-pitch',
       'roofing',
+      'feet-inches',
     ]);
     expect(PAGELESS).toEqual([]);
   });
@@ -59,21 +61,24 @@ describe('end state of the roofing go-live (site-routing-i18n › [SR1], [SR19],
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)('has exactly thirty-two page title and description keys in %s', (_locale, module) => {
-    expect(
-      Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-    ).toHaveLength(32);
-  });
+  ] as const)(
+    'has exactly thirty-four page title and description keys in %s',
+    (_locale, module) => {
+      expect(
+        Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
+      ).toHaveLength(34);
+    },
+  );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: twenty-eight content entries in all
-  it('has ten trust entries and eighteen calculator entries', () => {
+  // two entries per calculator page: thirty content entries in all
+  it('has ten trust entries and twenty calculator entries', () => {
     expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(10);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(18);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists thirty URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(30);
+  it('lists thirty-two URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(32);
   });
 });

@@ -61,6 +61,9 @@ export const esSite = {
   'page.home.cards.roofing.title': 'Calculadora de tejas para techo',
   'page.home.cards.roofing.summary':
     'Cuadrados de techo según la planta y la pendiente, con los paquetes de tejas y rollos de fieltro.',
+  'page.home.cards.feet-inches.title': 'Calculadora de pies y pulgadas',
+  'page.home.cards.feet-inches.summary':
+    'Suma, resta, multiplica o divide medidas de cinta, al 1/16 de pulgada.',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
@@ -108,6 +111,9 @@ export const esSite = {
   'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
   'page.roofing.description':
     'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
+  'page.feet-inches.title': 'Calculadora de pies y pulgadas | Maestro Calc',
+  'page.feet-inches.description':
+    'Suma, resta, multiplica o divide pies, pulgadas y fracciones como en la cinta métrica, al 1/16 de pulgada, también en pulgadas y metros. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

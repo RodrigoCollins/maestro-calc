@@ -8,6 +8,7 @@ import { ROOFING_COVERAGE } from '../__testing__/roofing-yields.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createDrywall } from './drywall/index.ts';
+import { feetInches } from './feet-inches/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
 import { createPaint } from './paint/index.ts';
@@ -27,6 +28,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   createDrywall(DRYWALL_FINISHING),
   roofPitch,
   createRoofing(ROOFING_COVERAGE),
+  feetInches,
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that

@@ -120,6 +120,16 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('drywall')).toBe(ids.indexOf('paint') + 1);
   });
 
+  // spec: site-routing-i18n › the feet and inches row, published 2026-10-30: its two URLs are a public contract
+  it('lists feet and inches after roofing, at its published URLs', () => {
+    expect(ROUTES['feet-inches']).toEqual({
+      en: '/feet-and-inches-calculator',
+      es: '/es/calculadora-de-pies-y-pulgadas',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('feet-inches')).toBe(ids.indexOf('roofing') + 1);
+  });
+
   // spec: site-routing-i18n › the roofing row, published 2026-10-30: its two URLs are a public contract
   it('lists roofing after roof pitch, at its published URLs', () => {
     expect(ROUTES.roofing).toEqual({

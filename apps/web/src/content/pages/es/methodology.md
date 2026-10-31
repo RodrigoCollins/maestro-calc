@@ -231,6 +231,29 @@ Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calc
 | Igual, 12 en 12 (`?v=1&p=12`)                                               | 16.97     | 1,697.06       | 57       | 2      |
 | Planta de 60 ft × 40 ft, 8 en 12, 15 % extra (`?v=1&l=720&w=480&p=8&ws=15`) | 28.84     | 2,884.44       | 100      | 4      |
 
+<h2 id="pies-y-pulgadas">Calculadora de pies y pulgadas</h2>
+
+La [calculadora de pies y pulgadas](/es/calculadora-de-pies-y-pulgadas) suma o resta dos medidas en pies, pulgadas y fracciones, o multiplica o divide una medida por un número entero. Cada medida se guarda como un número exacto, y el resultado se redondea solo al mostrarlo.
+
+Las fórmulas:
+
+- Sumar: primera + segunda.
+- Restar: primera − segunda, o segunda − primera cuando la segunda es más larga, con una nota que lo dice.
+- Multiplicar: primera × número.
+- Dividir: primera ÷ número.
+
+La cifra en pies y pulgadas se redondea al 1/16 de pulgada más cercano; las pulgadas con decimales muestran dos decimales y los metros tres. Un pie son exactamente 12 pulgadas y una pulgada son exactamente 0.0254 metros (NIST SP 811, Apéndice B). No interviene ninguna otra constante.
+
+Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                     | Pies y pulgadas | Pulgadas | Metros |
+| ------------------------------------------------------------------------ | --------------- | -------- | ------ |
+| 12 ft 6 in + 3 ft 8 1/4 in (valores iniciales)                           | 16 ft 2 1/4 in  | 194.25   | 4.934  |
+| 12 ft 6 in − 3 ft 8 1/4 in (`?v=1&o=subtract`)                           | 8 ft 9 3/4 in   | 105.75   | 2.686  |
+| 10 ft − 12 ft 6 in, la segunda más larga (`?v=1&o=subtract&a=120&b=150`) | 2 ft 6 in       | 30.00    | 0.762  |
+| 12 ft 6 in × 2 (`?v=1&o=multiply`)                                       | 25 ft           | 300.00   | 7.620  |
+| 12 ft 6 in ÷ 7 (`?v=1&o=divide&n=7`)                                     | 1 ft 9 7/16 in  | 21.43    | 0.544  |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

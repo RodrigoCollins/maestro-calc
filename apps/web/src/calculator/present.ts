@@ -4,6 +4,7 @@ import {
   formatFeetInches,
   inch,
   isQuantity,
+  isQuantityOf,
   m,
   mm,
   quantity,
@@ -221,6 +222,10 @@ export const outputText = (
     return moneyText(value);
   }
   if (!isQuantity(value)) throw new TypeError(`${key} is a ${measure}, not money`);
+  if (display?.format === 'fraction' && isQuantityOf(value, 'length')) {
+    // feet and inches to the nearest 1/denominator, or inches alone for an inch hint
+    return usText(value, display.denominator, { inchesOnly: display.unit === 'in', grouped: true });
+  }
   if (display?.format !== 'decimal') throw new TypeError(`${key} has no decimal hint`);
   const unit = findUnit(measure, display.unit);
   if (unit === undefined) throw new TypeError(`${key} has no unit ${display.unit}`);

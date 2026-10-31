@@ -9,6 +9,7 @@ import { topsoilPage } from '../../calculator/topsoil/page.ts';
 import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import { roofPitchPage } from '../../calculator/roof-pitch/page.ts';
 import { roofingPage } from '../../calculator/roofing/page.ts';
+import { feetInchesPage } from '../../calculator/feet-inches/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -225,6 +226,17 @@ const roofingShown = ({ query }: WorkedExample<'roofing'>) => {
   };
 };
 
+/** The result in feet and inches, inches and meters the feet and inches page shows for the example's link. */
+const feetInchesShown = ({ query }: WorkedExample<'feet-inches'>) => {
+  const { figures } = shownFigures(feetInchesPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the feet and inches page shows no ${key}`);
+    return value;
+  };
+  return { query, result: shown('result'), resultIn: shown('resultIn'), resultM: shown('resultM') };
+};
+
 const GAF_SHINGLES = {
   name: /^GAF Timberline HDZ\b/,
   url: 'https://www.homedepot.com/p/GAF-Timberline-HDZ-Weathered-Wood-Algae-Resistant-Laminated-High-Definition-Shingles-33-33-sq-ft-per-Bundle-0487900/309755323',
@@ -387,6 +399,21 @@ export const CONTENT_ROWS = {
       '30 ft',
     ],
     methodologyLink: { en: '/methodology#roofing', es: '/es/metodologia#tejas' },
+  },
+  'feet-inches': {
+    module: feetInchesPage,
+    updated: '2026-10-30',
+    sources: () => [NIST],
+    engine: feetInchesShown,
+    // the example is the page's starting values: Formulas names both lengths as written
+    figures: ({ result, resultIn, resultM }) => [
+      result,
+      resultIn,
+      resultM,
+      '12 ft 6 in',
+      '3 ft 8 1/4 in',
+    ],
+    methodologyLink: { en: '/methodology#feet-and-inches', es: '/es/metodologia#pies-y-pulgadas' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

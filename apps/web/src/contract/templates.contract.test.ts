@@ -76,6 +76,7 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
           'drywall',
           'roof-pitch',
           'roofing',
+          'feet-inches',
           ...PAGELESS,
         ],
         registry,

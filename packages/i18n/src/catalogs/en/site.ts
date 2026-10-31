@@ -55,6 +55,9 @@ export const enSite = {
   'page.home.cards.roofing.title': 'Roofing calculator',
   'page.home.cards.roofing.summary':
     'Roof squares from the footprint and the pitch, with the bundles and underlayment rolls to buy.',
+  'page.home.cards.feet-inches.title': 'Feet and inches calculator',
+  'page.home.cards.feet-inches.summary':
+    'Add, subtract, multiply or divide tape measurements, to the nearest 1/16 in.',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',
@@ -102,6 +105,9 @@ export const enSite = {
   'page.roofing.title': 'Roofing Calculator: Squares and Bundles | Maestro Calc',
   'page.roofing.description':
     'Find the area of a roof in squares from its footprint and pitch, and the shingle bundles and underlayment rolls to buy, with the IRC rules. Free.',
+  'page.feet-inches.title': 'Feet and Inches Calculator with Fractions | Maestro Calc',
+  'page.feet-inches.description':
+    'Add, subtract, multiply or divide feet, inches and fractions like a tape measure, to the nearest 1/16 inch, with inches and meters too. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',
