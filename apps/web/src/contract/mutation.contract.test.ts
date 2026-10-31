@@ -340,7 +340,7 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
     );
 
-  it('has seven named shards', () => {
+  it('has ten named shards, the calculators in four groups', () => {
     expect(module_.shardNames).toEqual([
       'rational',
       'units',
@@ -348,7 +348,10 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       'calculator-define',
       'calculator-run',
       'url',
-      'calculators',
+      'calculators-1',
+      'calculators-2',
+      'calculators-3',
+      'calculators-4',
     ]);
   });
 
@@ -371,24 +374,31 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
   });
 
   // JD-2 (concrete group 1): the test support a calculator brings (`<id>-arbitraries.ts`,
-  // `<id>-yields.ts`) is named by pattern in the calculators shard, so a new calculator never needs
-  // a hand edit of the shard identity; no other shard holds it.
-  it('holds the per-calculator test support of the calculators shard by pattern', () => {
+  // `<id>-yields.ts`) is named by pattern in every calculators shard, so a new calculator never
+  // needs a hand edit of a shard identity; no other shard holds it.
+  it('holds the per-calculator test support of the calculators shards by pattern', () => {
     const support = globSync('src/__testing__/*-{arbitraries,yields}.ts', {
       cwd: fromRoot('packages/core'),
     }).sort();
     expect(support.length).toBeGreaterThan(1);
-    const deps = module_.shards['calculators']?.deps ?? [];
-    expect(deps).toContain('src/__testing__/*-arbitraries.ts');
-    expect(deps).toContain('src/__testing__/*-yields.ts');
+    const groups = module_.shardNames.filter((name) => name.startsWith('calculators-'));
+    expect(groups).toHaveLength(4);
     const identityOf = (name: string): string[] => module_.identityFilesFor(name);
-    for (const file of support) {
-      expect(identityOf('calculators'), file).toContain(file);
-      for (const other of module_.shardNames.filter((name) => name !== 'calculators')) {
+    for (const name of groups) {
+      const deps = module_.shards[name]?.deps ?? [];
+      expect(deps, name).toContain('src/__testing__/*-arbitraries.ts');
+      expect(deps, name).toContain('src/__testing__/*-yields.ts');
+      expect(
+        deps.filter((dep) => /concrete|rectangle/.test(dep)),
+        name,
+      ).toEqual([]);
+      for (const file of support) expect(identityOf(name), `${name} holds ${file}`).toContain(file);
+    }
+    for (const other of module_.shardNames.filter((name) => !groups.includes(name))) {
+      for (const file of support) {
         expect(identityOf(other), `${other} holds ${file}`).not.toContain(file);
       }
     }
-    expect(deps.filter((dep) => /concrete|rectangle/.test(dep))).toEqual([]);
   });
 
   // The test command must run the tests of the shard's own files (a sibling `x.test.ts`) and the

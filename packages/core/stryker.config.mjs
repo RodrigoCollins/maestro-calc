@@ -47,6 +47,38 @@ const kernel = [
   'src/__testing__/thrown-code.ts',
 ];
 
+/** The test support every calculator group runs beside its calculators. */
+const calculatorDeps = [
+  ...kernel,
+  'src/__testing__/*-arbitraries.ts',
+  'src/__testing__/*-yields.ts',
+  'src/__testing__/released-snapshot.ts',
+];
+
+/**
+ * The calculator shards: each mutates and tests its own directories plus the barrel test; the
+ * first also runs the released contract, whose imports reach every calculator directory.
+ */
+const calculatorGroups = (groups) =>
+  Object.fromEntries(
+    Object.entries(groups).map(([name, ids], index) => {
+      const dirs = ids.map((id) => `src/calculators/${id}`);
+      const first = index === 0;
+      return [
+        name,
+        {
+          mutate: dirs.map((dir) => `${dir}/**`),
+          tests: [
+            ...dirs,
+            ...(first ? ['src/calculators/released.contract.test.ts'] : []),
+            'src/index.test.ts',
+          ],
+          deps: first ? [...calculatorDeps, 'src/calculators/**'] : calculatorDeps,
+        },
+      ];
+    }),
+  );
+
 /**
  * The command runner reruns the whole test command for every mutant, so the cost of a run is
  * (mutants) x (tests per run). A shard mutates a few modules and runs only their tests plus the
@@ -118,21 +150,18 @@ export const shards = {
     tests: ['src/url', 'src/index.test.ts'],
     deps: kernel,
   },
-  // Calculators are a shard of their own (design D10 split rule, PR 12): one directory per
-  // calculator, so the shard grows with the catalog and is split by directory when its cold CI
-  // wall time passes 10 minutes. Their tests need only the calculator directories and the barrel.
-  // This is the only shard that depends on the calculators and on the released snapshot, and the
-  // only one a calculator pull request colds.
-  calculators: {
-    mutate: ['src/calculators/**'],
-    tests: ['src/calculators', 'src/index.test.ts'],
-    deps: [
-      ...kernel,
-      'src/__testing__/*-arbitraries.ts',
-      'src/__testing__/*-yields.ts',
-      'src/__testing__/released-snapshot.ts',
-    ],
-  },
+  // Calculators are split by directory (design D10 split rule, AGENTS.md): the single shard passed
+  // 947 mutants and 10 minutes of CI with ten calculators. Four groups of about the same source
+  // size run on their own runners, and a calculator pull request colds its own group and the first.
+  // The first group holds `released.contract.test.ts`, which imports every calculator (so every
+  // calculator directory is in its identity): it gets the three smallest calculators, so its cold
+  // run stays short. A new calculator joins the group with the least source.
+  ...calculatorGroups({
+    'calculators-1': ['rectangle-area', 'feet-inches', 'roof-pitch'],
+    'calculators-2': ['concrete', 'paint'],
+    'calculators-3': ['drywall', 'roofing'],
+    'calculators-4': ['gravel', 'mulch', 'topsoil'],
+  }),
 };
 
 export const shardNames = Object.keys(shards);

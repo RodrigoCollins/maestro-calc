@@ -59,7 +59,8 @@ jobs:
         # `npm run mutation -- --list` prints the names. `inputs` are the globs of the files that
         # name the shard's report (the package's `identityFilesFor` minus the root files that
         # every entry shares, which the key step lists): one calculator pull request changes the
-        # key of the `calculators` shard only. mutation-identity.contract.test.ts pins them.
+        # keys of its own `calculators-<n>` shard and of `calculators-1` (the released contract)
+        # only. mutation-identity.contract.test.ts pins them.
         include:
           - shard: rational
             inputs: |
@@ -188,7 +189,7 @@ jobs:
               packages/core/stryker.config.mjs
               packages/core/vitest.config.ts
               packages/core/src/url/**
-          - shard: calculators
+          - shard: calculators-1
             inputs: |
               packages/core/src/*.ts
               packages/core/src/calculator/**
@@ -213,6 +214,85 @@ jobs:
               packages/core/src/__testing__/*-yields.ts
               packages/core/src/__testing__/released-snapshot.ts
               packages/core/src/calculators/**
+          - shard: calculators-2
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+              packages/core/src/url/**
+              packages/core/src/__testing__/*-arbitraries.ts
+              packages/core/src/__testing__/*-yields.ts
+              packages/core/src/__testing__/released-snapshot.ts
+              packages/core/src/calculators/concrete/**
+              packages/core/src/calculators/paint/**
+          - shard: calculators-3
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+              packages/core/src/url/**
+              packages/core/src/__testing__/*-arbitraries.ts
+              packages/core/src/__testing__/*-yields.ts
+              packages/core/src/__testing__/released-snapshot.ts
+              packages/core/src/calculators/drywall/**
+              packages/core/src/calculators/roofing/**
+          - shard: calculators-4
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
+              packages/core/src/url/**
+              packages/core/src/__testing__/*-arbitraries.ts
+              packages/core/src/__testing__/*-yields.ts
+              packages/core/src/__testing__/released-snapshot.ts
+              packages/core/src/calculators/gravel/**
+              packages/core/src/calculators/mulch/**
+              packages/core/src/calculators/topsoil/**
           - shard: data
             inputs: |
               packages/data/src/**
