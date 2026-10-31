@@ -1,0 +1,3 @@
+# Archive report: embed
+
+Archived on 2026-10-31 after #157 (embed pages) and #158 (snippet page) merged and were verified in production: both `Deploy` runs passed; `/embed/concrete-calculator` is served one policy with `frame-ancestors *` and `script-src 'self'` while `/concrete-calculator` keeps `frame-ancestors 'none'`; `/es/calculadoras-para-tu-sitio` lists the ten calculators and every page's footer links it. #158's first CI run failed one layout-shift check (drywall, 320 px, 0.034) that passed on a rerun with no change; a flake, noted to watch. The page copy is `ownerReview: pending`. `embed` is a new capability: `openspec/specs/embed/spec.md`.
