@@ -34,11 +34,18 @@ const boxOf = (page: Page) =>
     return { width, height, next: next - bottom };
   });
 
-/** The width over the height of the drawn outline. */
+/**
+ * The width over the height of the drawn outline, a rectangle or a path: the outline is the one
+ * filled shape of the plan (`fill-opacity`), and its box is the same for both.
+ */
 const ratioOf = (page: Page): Promise<number> =>
   drawing(page)
-    .locator('rect')
-    .evaluate((rect) => Number(rect.getAttribute('width')) / Number(rect.getAttribute('height')));
+    .locator('[fill-opacity]')
+    .first()
+    .evaluate((shape) => {
+      const { width, height } = (shape as SVGGraphicsElement).getBBox();
+      return width / height;
+    });
 
 /** The outline and line coordinates of the plan and the position of each label, to compare two states. */
 const shapeOf = (page: Page): Promise<string[]> =>

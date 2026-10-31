@@ -86,25 +86,25 @@ export const CLAMP = 4;
  * The height of a label box, in sizes: the ascent and descent of Barlow Condensed, which Chromium
  * measures at 1.24 sizes (`getBBox`, 21.1 at 17), centred on the label's `y`.
  */
-const LINE = 1.25;
+export const LINE = 1.25;
 /** From the outline to its dimension line. */
-const OFFSET = 14;
+export const OFFSET = 14;
 /** From a dimension line to its label, and from the outline to the bottom row. */
-const PAD = 6;
+export const PAD = 6;
 /** How far an extension line passes its dimension line, and the half length of a tick. */
 const EXTEND = 4;
 const TICK = 5;
-const LABEL = 17;
-const NOTE = 15;
+export const LABEL = 17;
+export const NOTE = 15;
 /** The right margin of a rectangle plan. */
-const MARGIN = 6;
+export const MARGIN = 6;
 /** The area goes inside when it leaves this much room across and the rectangle is this tall. */
 const INSET = 12;
 const INSIDE_HEIGHT = 29;
 
 /** `n` rounded to a tenth, the precision of every coordinate. */
-const round = (n: number): number => Math.round(n * 10) / 10;
-const num = (n: number): string => String(round(n));
+export const round = (n: number): number => Math.round(n * 10) / 10;
+export const num = (n: number): string => String(round(n));
 
 /** The estimated width of `text` at `size`: `chars × size × CHAR`. */
 export const textWidth = (text: string, size: number): number => round(text.length * size * CHAR);
@@ -195,7 +195,7 @@ export const fitLabel = (label: PlanLabel, frame: Frame, room?: string): PlanLab
 };
 
 /** The longest of some texts (the first of equals). */
-const longest = (texts: readonly string[]): string =>
+export const longest = (texts: readonly string[]): string =>
   texts.reduce((a, b) => (b.length > a.length ? b : a), '');
 
 /**
@@ -328,7 +328,7 @@ export const circleShape = (frame: Frame, r: number, label: Label): Shape => {
   };
 };
 
-/** The two texts of a stair profile in one unit system. */
+/** The two texts of a rise over a run (a stair profile, a roof slope) in one unit system. */
 export interface StairTexts {
   readonly rise: string;
   readonly run: string;
