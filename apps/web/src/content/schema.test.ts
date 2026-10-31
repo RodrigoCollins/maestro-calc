@@ -11,7 +11,7 @@ const valid = {
 
 // spec: trust-pages › [TP2] (schema side)
 describe('pageSchema', () => {
-  it('lists the six trust ids', () => {
+  it('lists the seven trust ids', () => {
     expect(TRUST_IDS).toEqual([
       'methodology',
       'about',
@@ -19,6 +19,7 @@ describe('pageSchema', () => {
       'terms',
       'contact',
       'embed-calculators',
+      'guide-concrete-bags-or-truck',
     ]);
   });
 

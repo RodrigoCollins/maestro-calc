@@ -1,10 +1,14 @@
 ---
 import type { Locale } from '@maestro-calc/i18n';
-import { staticPaths } from '../routing/routes.ts';
+import { pathOf, staticPaths } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { isCalculatorPage, templateOf } from '../routing/templates.ts';
 import CalculatorView from '../views/CalculatorView.astro';
 import EmbedSnippets from '../components/EmbedSnippets.astro';
+import GuideCta from '../components/GuideCta.astro';
+import { pageView } from '../lib/pages.ts';
+import { siteText } from '../lib/site-text.ts';
+import { guideOf } from '../routing/guides.ts';
 import { snippetsFor } from '../lib/embed-snippet.ts';
 import TrustPageView from '../views/TrustPageView.astro';
 
@@ -18,6 +22,7 @@ interface Props {
 }
 
 const { id, locale } = Astro.props;
+const guide = guideOf(id);
 ---
 
 {/* A calculator id has its own template; every other id is a Markdown trust page. */}
@@ -26,5 +31,12 @@ const { id, locale } = Astro.props;
 ) : (
   <TrustPageView {id} {locale}>
     {id === 'embed-calculators' && <EmbedSnippets snippets={snippetsFor(locale)} />}
+    {guide !== undefined && (
+      <GuideCta
+        label={siteText(locale)('site.guide.cta')}
+        href={pathOf(guide.calculator, locale)}
+        name={pageView(guide.calculator, locale).title}
+      />
+    )}
   </TrustPageView>
 )}

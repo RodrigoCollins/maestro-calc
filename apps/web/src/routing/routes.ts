@@ -25,6 +25,10 @@ export const ROUTES = {
   terms: { en: '/terms', es: '/es/terminos' },
   contact: { en: '/contact', es: '/es/contacto' },
   'embed-calculators': { en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },
+  'guide-concrete-bags-or-truck': {
+    en: '/guides/concrete-bags-or-truck',
+    es: '/es/guias/concreto-en-bolsas-o-camion',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

@@ -69,6 +69,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/embed-calculators',
       es: '/es/calculadoras-para-tu-sitio',
     });
+    expect(ROUTES['guide-concrete-bags-or-truck']).toEqual({
+      en: '/guides/concrete-bags-or-truck',
+      es: '/es/guias/concreto-en-bolsas-o-camion',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

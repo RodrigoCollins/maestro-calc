@@ -11,6 +11,7 @@ export const enSite = {
   'site.footer.contact': 'Contact',
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.embed.by': 'by',
+  'site.guide.cta': 'Work it out for your job',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',
   'site.calculator.breadcrumb': 'Breadcrumb',
@@ -80,6 +81,9 @@ export const enSite = {
   'page.embed-calculators.title': 'Embed Our Calculators | Maestro Calc',
   'page.embed-calculators.description':
     'Put any Maestro Calc calculator on your website for free: copy the code, paste it in your page and keep the credit link.',
+  'page.guide-concrete-bags-or-truck.title': 'Concrete in Bags or From a Truck? | Maestro Calc',
+  'page.guide-concrete-bags-or-truck.description':
+    'When bags of concrete mix beat a ready-mix truck and when they do not: what a cubic yard is in bags, short-load charges and how to compare.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

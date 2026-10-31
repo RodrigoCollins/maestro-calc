@@ -14,6 +14,7 @@ export const esSite = {
   'site.footer.contact': 'Contacto',
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.embed.by': 'de',
+  'site.guide.cta': 'Haz la cuenta para tu obra',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',
   'site.calculator.breadcrumb': 'Ruta de navegación',
@@ -86,6 +87,9 @@ export const esSite = {
   'page.embed-calculators.title': 'Calculadoras para tu sitio | Maestro Calc',
   'page.embed-calculators.description':
     'Pon gratis cualquier calculadora de Maestro Calc en tu sitio web: copia el código, pégalo en tu página y deja el enlace de crédito.',
+  'page.guide-concrete-bags-or-truck.title': '¿Concreto en bolsas o en camión? | Maestro Calc',
+  'page.guide-concrete-bags-or-truck.description':
+    'Cuándo conviene comprar bolsas de mezcla para concreto y cuándo un camión de premezclado: una yarda cúbica en bolsas, cargos por carga chica y cómo comparar.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

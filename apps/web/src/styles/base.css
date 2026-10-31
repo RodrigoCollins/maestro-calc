@@ -88,6 +88,12 @@ main {
   max-width: var(--measure);
 }
 
+/* A source URL is written as inline code and has no space to wrap at: let it break anywhere, so a
+   phone shows all of it instead of running past the column. */
+.prose code {
+  overflow-wrap: anywhere;
+}
+
 /* Tap target: at least 44 px in both directions. Components opt in with this class. */
 .tap-target {
   display: inline-flex;
