@@ -18,6 +18,10 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - GIVEN `/es/guias/como-calcular-pies-cuadrados`
 - THEN its last box links `/es/calculadora-de-pies-cuadrados` with the text "Calculadora de pies cuadrados" under "Haz la cuenta para tu obra"
 
+#### Scenario: [GU4] The drywall guide ends in its calculator
+- GIVEN `/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall`
+- THEN its last box links `/es/calculadora-de-drywall` with the text "Calculadora de Drywall" under "Haz la cuenta para tu obra"
+
 ### Requirement: Sourced facts
 
 Every figure in a guide MUST come from a source the guide lists, or be arithmetic on such figures; prices that vary by store MUST be left to the reader.
