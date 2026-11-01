@@ -2,7 +2,7 @@
 id: guide-concrete-bags-or-truck
 locale: es
 updated: 2026-10-31
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Concreto: ¿en bolsas o en camión?

@@ -2,7 +2,7 @@
 id: guide-concrete-quote
 locale: en
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How to quote a concrete job

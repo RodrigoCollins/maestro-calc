@@ -2,7 +2,7 @@
 id: embed-calculators
 locale: es
 updated: 2026-10-31
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Calculadoras para tu sitio

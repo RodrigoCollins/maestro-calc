@@ -54,11 +54,11 @@ const SECTION_IDS = {
   es: ['como-usar', 'formulas', 'consejos', 'preguntas-frecuentes', 'fuentes'],
 } as const;
 
-const breadcrumbProblems = (page: Page): Problem[] => {
+const breadcrumbProblems = (page: Page, kind: 'calculator' | 'guide'): Problem[] => {
   const first = page.root.querySelector('main ol[aria-label], main h1');
   return first?.tagName === 'OL' && attr(first, 'aria-label').trim() !== ''
     ? []
-    : [problem(page.file, 'breadcrumb', 'a calculator page needs a labelled ol before the h1')];
+    : [problem(page.file, 'breadcrumb', `a ${kind} page needs a labelled ol before the h1`)];
 };
 
 const sectionProblems = (page: Page): Problem[] => {
@@ -196,8 +196,13 @@ export const structureProblems = ({ pages, site, dist }: CheckContext): Problem[
     ...navigationProblems(page, site),
     ...iconProblems(page),
     ...(isCalculatorPage(page, site)
-      ? [...breadcrumbProblems(page), ...sectionProblems(page), ...faqHeadingProblems(page)]
+      ? [
+          ...breadcrumbProblems(page, 'calculator'),
+          ...sectionProblems(page),
+          ...faqHeadingProblems(page),
+        ]
       : []),
+    ...(Object.hasOwn(site.guides, page.id) ? breadcrumbProblems(page, 'guide') : []),
   ]),
   ...faviconProblems(dist),
 ];

@@ -2,7 +2,7 @@
 id: guide-tape-measure-fractions
 locale: en
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How to read a tape measure and add fractions

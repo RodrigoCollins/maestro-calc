@@ -22,6 +22,20 @@ export const homeJsonLd = (locale: Locale) => ({
   ],
 });
 
+/** The two-item breadcrumb of a page under the home: the home, then the page itself. */
+const breadcrumbOf = (name: string, canonical: string, locale: Locale, routes: RouteTable) => ({
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: siteText(locale)('site.calculator.breadcrumbHome'),
+      item: urlOf(pathOf('home', locale, routes)),
+    },
+    { '@type': 'ListItem', position: 2, name, item: canonical },
+  ],
+});
+
 /** What the structured data of a calculator page needs: its page id and the text of its h1. */
 export interface CalculatorPage {
   readonly id: string;
@@ -51,18 +65,7 @@ export const calculatorJsonLd = (
         operatingSystem: 'Any',
         isAccessibleForFree: true,
       },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: siteText(locale)('site.calculator.breadcrumbHome'),
-            item: urlOf(pathOf('home', locale, routes)),
-          },
-          { '@type': 'ListItem', position: 2, name, item: canonical },
-        ],
-      },
+      breadcrumbOf(name, canonical, locale, routes),
       {
         '@type': 'FAQPage',
         mainEntity: faq.map(({ question, answer }) => ({
@@ -71,6 +74,45 @@ export const calculatorJsonLd = (
           acceptedAnswer: { '@type': 'Answer', text: answer },
         })),
       },
+    ],
+  };
+};
+
+/** What the structured data of a guide needs: its page id, the text of its h1 and its `updated` day. */
+export interface GuidePage {
+  readonly id: string;
+  readonly name: string;
+  readonly updated: string;
+}
+
+/**
+ * The `@graph` of a guide (guides): an `Article` written and published by the organization, and
+ * its two-item breadcrumb. Never an image, a rating or a person.
+ */
+export const guideJsonLd = (
+  { id, name, updated }: GuidePage,
+  locale: Locale,
+  routes: RouteTable = ROUTES,
+) => {
+  const canonical = urlOf(pathOf(id, locale, routes));
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: name,
+        url: canonical,
+        inLanguage: LOCALE_TAGS[locale],
+        dateModified: updated,
+        author: { '@id': ORGANIZATION_ID },
+        publisher: {
+          '@type': 'Organization',
+          '@id': ORGANIZATION_ID,
+          name: SITE.name,
+          url: SITE.url,
+        },
+      },
+      breadcrumbOf(name, canonical, locale, routes),
     ],
   };
 };

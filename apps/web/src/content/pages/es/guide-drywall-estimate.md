@@ -2,7 +2,7 @@
 id: guide-drywall-estimate
 locale: es
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Cómo calcular y cotizar un trabajo de drywall

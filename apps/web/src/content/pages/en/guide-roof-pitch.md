@@ -2,7 +2,7 @@
 id: guide-roof-pitch
 locale: en
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How to measure a roof and understand its pitch

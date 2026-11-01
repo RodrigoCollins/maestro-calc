@@ -2,7 +2,7 @@
 id: guide-roof-pitch
 locale: es
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Cómo medir un techo y entender su pendiente

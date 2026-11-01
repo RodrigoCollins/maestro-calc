@@ -1,11 +1,15 @@
 ---
 import type { Locale } from '@maestro-calc/i18n';
 import { getEntry, render } from 'astro:content';
+import Breadcrumb from '../components/calculator/Breadcrumb.astro';
+import { headingOf } from '../content/heading.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteText } from '../lib/site-text.ts';
-import { LOCALE_TAGS } from '../routing/routes.ts';
+import { guideOf } from '../routing/guides.ts';
+import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
+import { guideJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 
 interface Props {
   /** A route id with Markdown copy: every id of the table except `home`. */
@@ -23,9 +27,23 @@ const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
   dateStyle: 'long',
   timeZone: 'UTC',
 }).format(new Date(`${updated}T00:00:00Z`));
+// A guide (guides › [GU9]) opens with the breadcrumb and declares an Article; other pages neither.
+const guide = guideOf(id) !== undefined;
+const heading = guide ? headingOf(entry.body ?? '') : '';
+const breadcrumb = {
+  label: text('site.calculator.breadcrumb'),
+  homeLabel: text('site.calculator.breadcrumbHome'),
+  homeHref: pathOf('home', locale),
+  current: heading,
+};
+const head = headFor(id, locale, text);
+const jsonLd = guide
+  ? serializeJsonLd(guideJsonLd({ id, name: heading, updated }, locale))
+  : undefined;
 ---
 
-<BaseLayout {locale} {id} head={headFor(id, locale, text)}>
+<BaseLayout {locale} {id} head={jsonLd === undefined ? head : { ...head, jsonLd }}>
+  {guide && <Breadcrumb {breadcrumb} />}
   <article class="prose">
     <Content />
     <slot />
