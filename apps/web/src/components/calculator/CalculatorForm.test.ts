@@ -277,6 +277,7 @@ describe('CalculatorForm (calculator-page › Form controls, [CP11] static, [CP1
       ],
       copyLabel: 'Copy',
       shareLabel: 'Share',
+      printLabel: 'Print',
     };
     const root = await renderComponent(CalculatorForm, { form });
     const area = root.querySelector('[data-choice="mode"] + .calc-choice-area');

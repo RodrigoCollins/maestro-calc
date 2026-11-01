@@ -84,6 +84,7 @@ export const FEET_INCHES: E2eSpec = {
     '#calc-second',
     '.calc-result a',
     '[data-copy]',
+    '[data-print]',
     '[data-share]',
   ],
   // calculator-page › [CP79]: 15 ft is 180 in, written as a=180

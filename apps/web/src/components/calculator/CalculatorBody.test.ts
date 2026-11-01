@@ -318,6 +318,25 @@ describe('CalculatorBody, the copy area (calculator-page › [CP80], [CP81], [CP
     expect(root.querySelector('[data-copy-status]')?.getAttribute('role')).toBe('status');
   });
 
+  // spec: calculator-page › [CP89] static: the print button right after the copy button, hidden
+  // and disabled until the script runs
+  it.each([
+    ['en', 'Print'],
+    ['es', 'Imprimir'],
+  ] as const)(
+    'renders the %s print button after the copy button, hidden and disabled',
+    async (locale, label) => {
+      const root = await render(locale);
+      const print = root.querySelector('[data-print]');
+      expect(print?.tagName).toBe('BUTTON');
+      expect(print?.getAttribute('type')).toBe('button');
+      expect(print?.hasAttribute('hidden')).toBe(true);
+      expect(print?.hasAttribute('disabled')).toBe(true);
+      expect(print?.text.trim()).toBe(label);
+      expect(print?.previousElementSibling?.hasAttribute('data-copy')).toBe(true);
+    },
+  );
+
   // spec: calculator-page › [CP80], [CP81], [CP83] static: the share anchor between the copy button
   // and the status, hidden, with the inert base and no href
   it.each([
@@ -325,7 +344,12 @@ describe('CalculatorBody, the copy area (calculator-page › [CP80], [CP81], [CP
     ['es', 'Enviar por WhatsApp'],
   ] as const)('renders the %s share anchor hidden and without an href', async (locale, label) => {
     const copy = (await render(locale)).querySelector('[data-reserved="copy"]');
-    expect(copy?.children.map((el) => el.tagName.toLowerCase())).toEqual(['button', 'a', 'p']);
+    expect(copy?.children.map((el) => el.tagName.toLowerCase())).toEqual([
+      'button',
+      'button',
+      'a',
+      'p',
+    ]);
     const anchor = copy?.querySelector('a');
     expect(anchor?.attributes).toEqual({
       class: 'calc-share',

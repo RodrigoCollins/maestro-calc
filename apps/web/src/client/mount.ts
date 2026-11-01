@@ -110,6 +110,8 @@ interface Ui {
   readonly drawings: readonly Element[];
   /** The share links of the copy area: a list, so markup without one runs no share code. */
   readonly shares: readonly Element[];
+  /** The print button of the copy area: a list, so markup without one runs no print code. */
+  readonly prints: readonly Element[];
 }
 
 const collect = (root: Document, keys: readonly string[]): Ui => ({
@@ -145,6 +147,7 @@ const collect = (root: Document, keys: readonly string[]): Ui => ({
   copyArea: find(root, '[data-reserved="copy"]'),
   drawings: findAll(root, '[data-drawing]'),
   shares: findAll(root, '[data-share]'),
+  prints: findAll(root, '[data-print]'),
 });
 
 /** A paragraph the script adds under `parent` (an error message, the link notice), made once. */
@@ -361,6 +364,12 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
         },
       );
   });
+  // printing is the browser's own dialog; the print sheet of calculator.css keeps the figures (CP87)
+  for (const button of ui.prints) {
+    button.addEventListener('click', () => {
+      print();
+    });
+  }
   ui.form.addEventListener('submit', (event) => {
     event.preventDefault();
   });
@@ -369,14 +378,14 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
     if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault();
   });
 
-  for (const control of [...findAll(ui.form, ':disabled'), ui.copyButton]) {
+  for (const control of [...findAll(ui.form, ':disabled'), ui.copyButton, ...ui.prints]) {
     if (control instanceof HTMLInputElement || control instanceof HTMLButtonElement) {
       control.disabled = false;
     }
   }
   for (const control of [
     ...findAll(ui.form, '[data-step] [hidden]'),
-    ...findAll(ui.copyArea, '[data-copy][hidden], [data-share][hidden]'),
+    ...findAll(ui.copyArea, '[data-copy][hidden], [data-print][hidden], [data-share][hidden]'),
   ]) {
     if (control instanceof HTMLElement) control.hidden = false;
   }

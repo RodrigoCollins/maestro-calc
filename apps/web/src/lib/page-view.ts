@@ -145,6 +145,7 @@ const formViewAt = (
     ),
     copyLabel: text('site.calculator.copyLink'),
     shareLabel: text('site.calculator.shareWhatsApp'),
+    printLabel: text('site.calculator.print'),
   };
 };
 

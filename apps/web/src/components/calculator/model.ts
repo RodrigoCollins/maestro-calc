@@ -58,6 +58,8 @@ export interface FormView {
   readonly copyLabel: string;
   /** The label of the WhatsApp share link after the copy button. */
   readonly shareLabel: string;
+  /** The print button of the copy area, after the copy button (calculator-page › [CP89]). */
+  readonly printLabel: string;
 }
 
 /** Text around a value the script rewrites: `{before}<value>{after}`, for example `About 0.60 cubic feet per bag`. */

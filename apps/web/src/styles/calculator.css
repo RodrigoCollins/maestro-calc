@@ -288,6 +288,11 @@
   min-height: 9rem;
 }
 
+/* The print button sits on the copy button's row (CP89), so the reserved height does not change. */
+.calc-copy [data-print] {
+  margin-inline-start: var(--space-2);
+}
+
 .calc-share {
   display: flex;
   align-items: center;

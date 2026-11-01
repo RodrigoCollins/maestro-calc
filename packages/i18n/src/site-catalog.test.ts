@@ -172,6 +172,7 @@ const CALCULATOR_ROWS = [
   ],
   ['site.calculator.shareWhatsApp', 'Send on WhatsApp', 'Enviar por WhatsApp'],
   ['site.calculator.shareText', 'Check this calculation:', 'Mira este cálculo:'],
+  ['site.calculator.print', 'Print', 'Imprimir'],
   [
     'site.calculator.noscript',
     'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
@@ -194,7 +195,7 @@ describe('site catalog: calculator page UI (i18n-catalog › [ICW17])', () => {
     expect(esSite[key]).toBe(es);
   });
 
-  it('holds exactly the seventeen keys in both locales, and they have no placeholder', () => {
+  it('holds exactly the eighteen keys in both locales, and they have no placeholder', () => {
     const keys = CALCULATOR_ROWS.map(([key]) => key);
     for (const module of [enSite, esSite]) {
       expect(Object.keys(module).filter((key) => key.startsWith('site.calculator.'))).toEqual(keys);
