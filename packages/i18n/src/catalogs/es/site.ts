@@ -101,6 +101,9 @@ export const esSite = {
     'Cómo calcular y cotizar un trabajo de drywall | Maestro Calc',
   'page.guide-drywall-estimate.description':
     'Mide el cuarto, calcula placas, compuesto y cinta, elige el nivel de terminación y arma una cotización de drywall que tu cliente entienda.',
+  'page.guide-roof-pitch.title': 'Cómo medir un techo y su pendiente | Maestro Calc',
+  'page.guide-roof-pitch.description':
+    'Mide la pendiente de un techo con un nivel, pásala a ángulo y a largo de cabio, saca el área en cuadrados y revisa la pendiente mínima del IRC.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

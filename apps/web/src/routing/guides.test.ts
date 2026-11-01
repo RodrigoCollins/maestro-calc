@@ -19,6 +19,7 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-tape-measure-fractions')).toEqual({ calculator: 'feet-inches' });
     expect(guideOf('guide-square-footage')).toEqual({ calculator: 'rectangle-area' });
     expect(guideOf('guide-drywall-estimate')).toEqual({ calculator: 'drywall' });
+    expect(guideOf('guide-roof-pitch')).toEqual({ calculator: 'roof-pitch' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });

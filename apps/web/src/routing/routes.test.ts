@@ -85,6 +85,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-estimate-a-drywall-job',
       es: '/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall',
     });
+    expect(ROUTES['guide-roof-pitch']).toEqual({
+      en: '/guides/how-to-measure-roof-pitch',
+      es: '/es/guias/como-medir-la-pendiente-de-un-techo',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

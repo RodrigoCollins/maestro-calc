@@ -41,6 +41,10 @@ export const ROUTES = {
     en: '/guides/how-to-estimate-a-drywall-job',
     es: '/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall',
   },
+  'guide-roof-pitch': {
+    en: '/guides/how-to-measure-roof-pitch',
+    es: '/es/guias/como-medir-la-pendiente-de-un-techo',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

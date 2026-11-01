@@ -94,6 +94,9 @@ export const enSite = {
   'page.guide-drywall-estimate.title': 'How to Estimate and Quote a Drywall Job | Maestro Calc',
   'page.guide-drywall-estimate.description':
     'Measure a room, count sheets, compound and tape, pick the level of finish and put together a drywall quote your client can read.',
+  'page.guide-roof-pitch.title': 'How to Measure a Roof and Its Pitch | Maestro Calc',
+  'page.guide-roof-pitch.description':
+    'Measure a roof pitch with a level, turn it into an angle and a rafter length, find the roof area in squares and check the lowest pitch the IRC allows.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
