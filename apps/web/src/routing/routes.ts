@@ -37,6 +37,10 @@ export const ROUTES = {
     en: '/guides/how-to-calculate-square-footage',
     es: '/es/guias/como-calcular-pies-cuadrados',
   },
+  'guide-drywall-estimate': {
+    en: '/guides/how-to-estimate-a-drywall-job',
+    es: '/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

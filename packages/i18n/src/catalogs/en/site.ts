@@ -91,6 +91,9 @@ export const enSite = {
   'page.guide-square-footage.title': 'How to Calculate Square Footage | Maestro Calc',
   'page.guide-square-footage.description':
     'How to find the square footage of a room or an L-shaped area, convert square feet to square yards and square meters, and back.',
+  'page.guide-drywall-estimate.title': 'How to Estimate and Quote a Drywall Job | Maestro Calc',
+  'page.guide-drywall-estimate.description':
+    'Measure a room, count sheets, compound and tape, pick the level of finish and put together a drywall quote your client can read.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

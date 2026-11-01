@@ -97,6 +97,10 @@ export const esSite = {
   'page.guide-square-footage.title': 'Cómo calcular pies cuadrados | Maestro Calc',
   'page.guide-square-footage.description':
     'Cómo sacar los pies cuadrados de un cuarto o de un área en forma de L, y cómo pasar de pies cuadrados a yardas cuadradas y metros cuadrados, y al revés.',
+  'page.guide-drywall-estimate.title':
+    'Cómo calcular y cotizar un trabajo de drywall | Maestro Calc',
+  'page.guide-drywall-estimate.description':
+    'Mide el cuarto, calcula placas, compuesto y cinta, elige el nivel de terminación y arma una cotización de drywall que tu cliente entienda.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
