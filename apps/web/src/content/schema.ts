@@ -10,6 +10,8 @@ export const TRUST_IDS = [
   'contact',
   'embed-calculators',
   'guide-concrete-bags-or-truck',
+  'guide-tape-measure-fractions',
+  'guide-square-footage',
 ] as const;
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;

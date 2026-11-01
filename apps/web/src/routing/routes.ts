@@ -29,6 +29,14 @@ export const ROUTES = {
     en: '/guides/concrete-bags-or-truck',
     es: '/es/guias/concreto-en-bolsas-o-camion',
   },
+  'guide-tape-measure-fractions': {
+    en: '/guides/read-a-tape-measure-and-add-fractions',
+    es: '/es/guias/leer-la-cinta-metrica-y-sumar-fracciones',
+  },
+  'guide-square-footage': {
+    en: '/guides/how-to-calculate-square-footage',
+    es: '/es/guias/como-calcular-pies-cuadrados',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
