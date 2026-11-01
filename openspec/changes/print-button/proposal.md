@@ -10,3 +10,4 @@ PLAN §4.2 lists "Imprimir" as an MVP function. The print sheet exists (calculat
 2. **The mount finds it as a list** (`prints: findAll(root, '[data-print]')`), reveals and enables it with the copy button, and calls the browser's `print()` on click. No other module changes; the generic controller is untouched. Cost: about 125 B on the largest calculator entry (47,215 of 49,152 B).
 3. **One catalog key**, `site.calculator.print` ("Print" / "Imprimir"): the pinned calculator-page UI keys go from seventeen to eighteen ([ICW17]).
 4. **Browser records:** `[data-print]` joins every `tabOrder` between `[data-copy]` and `[data-share]`.
+5. **Also archives** `guide-breadcrumb-article`, verified in production after #168.
