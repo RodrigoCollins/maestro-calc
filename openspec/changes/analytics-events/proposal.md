@@ -12,3 +12,4 @@ PLAN §11.1 makes "useful calculations per week" the main metric: sessions that 
 4. **Wiring in the mount**: the input and form-click handlers record `calculate`, the copy and print handlers their action, and one delegated click listener on the copy area records `share` (the share link itself is unchanged).
 5. **Privacy page** (owner approval delegated on 2026-11-01): one sentence per language says that on a calculator page Google Analytics also receives the action and the calculator's name, never the values.
 6. **Tag Manager**: the container `GTM-MD8H6L5S` needs a Custom Event trigger on `calc_action` and a GA4 event tag that forwards `calc_action` and `calc_id`. That is an account step, done in the browser after this merges; until then the events sit in `dataLayer` unused.
+7. **Also archives** `print-button`, verified in production after #169.
