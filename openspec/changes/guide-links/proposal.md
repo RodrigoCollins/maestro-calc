@@ -10,3 +10,4 @@ A follow-up of the guides change (decision 6): each calculator page links back t
 2. **The link text is the guide's own `#` heading**, read from its `pages` entry (`headingOf`), so it never drifts from the guide; `guidesOf` derives the list from `GUIDES`, in table order. A calculator without a guide renders nothing.
 3. **`check:site` holds both directions** on the real build: rule `guide-link` asks each guide page for its end box linking the calculator in the same language, and each calculator page for its link back. `Site` gains `guides` (guide id → calculator id); the fixture renders both boxes, so a valid fixture build stays valid.
 4. **Cost:** the box's CSS (about 390 B) is inlined on every calculator page, also the ones without a guide; well inside the 20,480 B CSS budget.
+5. **Also archives** `guide-roof-pitch`, verified in production after #164, to save a CI run.
