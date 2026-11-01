@@ -1,0 +1,3 @@
+# Archive report: guide-roof-pitch
+
+Archived on 2026-11-01 after #164 merged and was verified in production: its `Deploy` run passed (smoke 44 pages and the key, IndexNow 44 URLs answered 200), and `/guides/how-to-measure-roof-pitch` and `/es/guias/como-medir-la-pendiente-de-un-techo` answer 200. Its CI needed one rerun of `site-browser (2/2)`: an intermittent layout-shift failure on `/es/calculadora-de-pendiente-de-techo` that the PR did not touch (noted on #164; it passed 10/10 locally). Scenario [GU5] is synced into `openspec/specs/guides/spec.md`. The copy is `ownerReview: pending`. Five guides of seven.

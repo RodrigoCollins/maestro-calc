@@ -22,6 +22,10 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - GIVEN `/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall`
 - THEN its last box links `/es/calculadora-de-drywall` with the text "Calculadora de Drywall" under "Haz la cuenta para tu obra"
 
+#### Scenario: [GU5] The roof pitch guide ends in its calculator
+- GIVEN `/guides/how-to-measure-roof-pitch`
+- THEN its last box links `/roof-pitch-calculator` with the text "Roof Pitch Calculator" under "Work it out for your job"
+
 ### Requirement: Sourced facts
 
 Every figure in a guide MUST come from a source the guide lists, or be arithmetic on such figures; prices that vary by store MUST be left to the reader.

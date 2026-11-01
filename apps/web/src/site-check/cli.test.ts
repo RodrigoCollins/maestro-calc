@@ -18,6 +18,7 @@ import { fromRoot } from '../contract/root.ts';
 import { ROUTES } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
+import { GUIDES } from '../routing/guides.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
   GAF_SHINGLES_URL,
@@ -75,6 +76,9 @@ const site = {
     roofing: [GAF_SHINGLES_URL, GAF_UNDERLAYMENT_URL, IRC_URL, NIST_URL],
     'feet-inches': [NIST_URL],
   },
+  guides: Object.fromEntries(
+    Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator]),
+  ),
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {

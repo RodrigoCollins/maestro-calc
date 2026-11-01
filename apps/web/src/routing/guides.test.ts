@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GUIDES, guideOf } from './guides.ts';
+import { GUIDES, guideOf, guidesOf } from './guides.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES } from './templates.ts';
 
@@ -22,5 +22,15 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-roof-pitch')).toEqual({ calculator: 'roof-pitch' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
+  });
+
+  // spec: guides › [GU6] a calculator page lists the guides that end in it
+  it('lists the guides of a calculator page in table order, and none for a calculator without one', () => {
+    expect(guidesOf('concrete')).toEqual(['guide-concrete-bags-or-truck']);
+    expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
+    expect(guidesOf('gravel')).toEqual([]);
+    for (const calculator of CALCULATOR_PAGES) {
+      for (const id of guidesOf(calculator)) expect(GUIDES[id].calculator).toBe(calculator);
+    }
   });
 });

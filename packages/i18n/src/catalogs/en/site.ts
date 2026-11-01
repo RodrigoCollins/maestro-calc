@@ -12,6 +12,7 @@ export const enSite = {
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.embed.by': 'by',
   'site.guide.cta': 'Work it out for your job',
+  'site.guide.links': 'Learn more in our guides',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',
   'site.calculator.breadcrumb': 'Breadcrumb',

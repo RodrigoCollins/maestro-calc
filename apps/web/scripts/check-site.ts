@@ -7,6 +7,7 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
+import { GUIDES } from '../src/routing/guides.ts';
 import { CALCULATOR_PAGES } from '../src/routing/templates.ts';
 import { SITE } from '../src/site.config.ts';
 import {
@@ -89,6 +90,9 @@ const site = {
   updates,
   calculatorPages: CALCULATOR_PAGES,
   externalLinks,
+  guides: Object.fromEntries(
+    Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator]),
+  ),
 };
 // What the text map cannot hold: every file's byte size and the bytes of each font.
 const buildBytes = {

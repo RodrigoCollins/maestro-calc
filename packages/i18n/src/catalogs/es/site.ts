@@ -15,6 +15,7 @@ export const esSite = {
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.embed.by': 'de',
   'site.guide.cta': 'Haz la cuenta para tu obra',
+  'site.guide.links': 'Aprende más en nuestras guías',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',
   'site.calculator.breadcrumb': 'Ruta de navegación',
