@@ -1,7 +1,7 @@
 ---
 id: privacy
 locale: es
-updated: 2026-10-29
+updated: 2026-11-01
 ownerReview: approved
 ---
 
@@ -18,6 +18,8 @@ Maestro Calc se aloja en Cloudflare. Cuando cargas una página, Cloudflare proce
 Maestro Calc usa Google Analytics, cargado con Google Tag Manager, para contar visitas y ver qué páginas se usan. Se activa después de que la página termina de cargar. El sitio no tiene publicidad ni cuentas.
 
 Google Analytics recibe la página que visitas sin los valores que escribiste, el tipo de navegador y de dispositivo, el tamaño de tu pantalla y una ubicación aproximada que Google obtiene de tu dirección IP. Fuera del Espacio Económico Europeo, el Reino Unido y Suiza, puede guardar cookies propias del sitio, como `_ga`, para distinguir una visita de otra.
+
+En una calculadora también recibe lo que hiciste, con el nombre de la calculadora: que cambiaste un valor, copiaste el enlace, abriste el enlace de WhatsApp o imprimiste. Nunca recibe los valores.
 
 En el Espacio Económico Europeo, el Reino Unido y Suiza, Google Analytics no guarda ninguna cookie: solo recibe un aviso de que se vio una página. Lo mismo pasa en cualquier lugar cuando tu navegador envía la señal Global Privacy Control. El almacenamiento publicitario y la personalización de anuncios están desactivados en todos los casos.
 

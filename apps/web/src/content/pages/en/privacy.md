@@ -1,7 +1,7 @@
 ---
 id: privacy
 locale: en
-updated: 2026-10-29
+updated: 2026-11-01
 ownerReview: approved
 ---
 
@@ -18,6 +18,8 @@ Maestro Calc is hosted on Cloudflare. When you load a page, Cloudflare processes
 Maestro Calc uses Google Analytics, loaded through Google Tag Manager, to count visits and see which pages people use. It starts after the page has loaded. The site has no advertising and no accounts.
 
 Google Analytics receives the page you visit without the values you typed, your browser and device type, your screen size and an approximate location that Google derives from your IP address. Outside the European Economic Area, the United Kingdom and Switzerland, it can set first-party cookies, such as `_ga`, to tell one visit from another.
+
+On a calculator page it also receives what you did, with the name of the calculator: that you changed a value, copied the link, opened the WhatsApp link or printed. It never receives the values themselves.
 
 In the European Economic Area, the United Kingdom and Switzerland, Google Analytics sets no cookie: it only receives a signal that a page was viewed. The same applies anywhere when your browser sends a Global Privacy Control signal. Advertising storage and ad personalization are off everywhere.
 

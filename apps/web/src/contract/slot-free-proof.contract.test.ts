@@ -226,7 +226,15 @@ describe('the lookups of the generic mount (calculator-web-core › [CWC33])', (
     expect(mount).toMatch(/share\.setAttribute\('href', shareHref\(/);
     expect(
       Array.from(mount.matchAll(/([\w.]+)\.addEventListener\(/g), ([, target]) => target),
-    ).toEqual(['ui.form', 'ui.form', 'ui.copyButton', 'button', 'ui.form', 'ui.form']);
+    ).toEqual([
+      'ui.form',
+      'ui.form',
+      'ui.copyButton',
+      'button',
+      'ui.copyArea',
+      'ui.form',
+      'ui.form',
+    ]);
   });
 
   // trim C of blueprint-panel: the cost row holds its hint, so the hint-row hook is gone

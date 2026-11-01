@@ -14,6 +14,7 @@ import { textKeysOf } from '../calculator/texts.ts';
 import type { Draw } from './draw.ts';
 import { linkPathOf } from './canonical.ts';
 import { browserHost, registerOffline } from './offline.ts';
+import { trackerOf } from './track.ts';
 
 /** The controller types of any calculator: keys are plain strings here, the module decides which exist. */
 type Output = ControllerOutput<AnyCalculator>;
@@ -337,21 +338,28 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   const dispatch = (event: UiEvent): void => {
     show(controller.applyEvent(env, current, event));
   };
+  // usage events for analytics: the action and the calculator, never a value (analytics-events)
+  const track = trackerOf(window, module.calculator.id);
 
   show(controller.start(env, location.search));
   ui.form.addEventListener('input', (event) => {
     const input = event.target;
     if (input instanceof HTMLInputElement && keys.includes(input.name)) {
       dispatch({ type: 'text', key: input.name, text: input.value });
+      track('calculate');
     }
   });
   ui.form.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target.closest('button') : null;
     const action = target === null ? undefined : eventOf(target);
-    if (action !== undefined) dispatch(action);
+    if (action !== undefined) {
+      dispatch(action);
+      track('calculate');
+    }
   });
   // the copy area follows the result, outside the form, so its button listens on its own
   ui.copyButton.addEventListener('click', () => {
+    track('copy');
     const address = copyAddress(env, current);
     Promise.resolve()
       .then(() => navigator.clipboard.writeText(address))
@@ -367,9 +375,16 @@ export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
   // printing is the browser's own dialog; the print sheet of calculator.css keeps the figures (CP87)
   for (const button of ui.prints) {
     button.addEventListener('click', () => {
+      track('print');
       print();
     });
   }
+  // the share link opens WhatsApp itself; the area only records that it was used
+  ui.copyArea.addEventListener('click', (event) => {
+    if (event.target instanceof Element && event.target.closest('[data-share]') !== null) {
+      track('share');
+    }
+  });
   ui.form.addEventListener('submit', (event) => {
     event.preventDefault();
   });

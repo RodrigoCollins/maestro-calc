@@ -42,6 +42,7 @@ describe('client sources (calculator-page › Client script contract; design C11
         'draw.ts',
         'mount.ts',
         'offline.ts',
+        'track.ts',
       ].sort(),
     );
   });

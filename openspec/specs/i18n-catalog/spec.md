@@ -285,3 +285,5 @@ The site catalogs MUST define `site.calculator.shareWhatsApp` (the visible label
 - GIVEN the built entries and their static graphs for both calculators after each pull request
 - WHEN they are searched for any value of the new keys in either locale
 - THEN none is found; the values reach the client only as inert template entries of the page ([CP43], [CWC25]) (a contract test)
+
+Amended by print-button (2026-11-01): the calculator-page UI keys of [ICW17] are eighteen, adding `site.calculator.print` ("Print" / "Imprimir").
