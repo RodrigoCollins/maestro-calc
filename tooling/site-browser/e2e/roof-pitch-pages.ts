@@ -85,6 +85,7 @@ export const ROOF_PITCH: E2eSpec = {
     ...COVERINGS.map((covering) => `[data-choice="covering"] [value="${covering}"]`),
     '.calc-result a',
     '[data-copy]',
+    '[data-print]',
     '[data-share]',
   ],
   share: { change: { key: 'rise', text: '9' }, query: '?v=1&r=9' },

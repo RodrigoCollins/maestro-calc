@@ -92,6 +92,7 @@ export const ROOFING: E2eSpec = {
     '#calc-rollPrice',
     '.calc-result a',
     '[data-copy]',
+    '[data-print]',
     '[data-share]',
   ],
   // calculator-page › [CP79]: 15 ft is 180 in, written as l=180

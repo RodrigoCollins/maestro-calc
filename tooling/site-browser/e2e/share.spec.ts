@@ -5,7 +5,7 @@ import type { Page } from '@playwright/test';
 import { contrast } from '../../../apps/web/src/contract/contrast.ts';
 import { formatViolations } from './axe-report.ts';
 import { calculatorPages, pressSelector } from './calculator-pages.ts';
-import { copyButton, input, open, shareLink } from './locators.ts';
+import { copyButton, input, open, printButton, shareLink } from './locators.ts';
 
 /*
  * The WhatsApp share link of the copy area (calculator-page › Share on WhatsApp), on every
@@ -95,12 +95,36 @@ for (const calculator of calculatorPages) {
       await expect(page.getByRole('link', { name: label })).toHaveCount(1);
     });
 
-    // spec: calculator-page › [CP83] Copy link, then the share link, then the next control
-    test('comes right after Copy link in the tab order, and the next Tab leaves it forward', async ({
+    // spec: calculator-page › [CP89] Copy link, then Print, which opens the print dialog
+    test('puts Print right after Copy link, on its row, and opens the print dialog', async ({
+      page,
+    }) => {
+      await page.addInitScript(() => {
+        const counted = window as Window & { printed?: number };
+        counted.printed = 0;
+        window.print = () => {
+          counted.printed = (counted.printed ?? 0) + 1;
+        };
+      });
+      await open(page, calculator);
+      await expect(printButton(page)).toBeVisible();
+      await expect(printButton(page)).toBeEnabled();
+      await copyButton(page).focus();
+      await page.keyboard.press('Tab');
+      await expect(printButton(page)).toBeFocused();
+      const copy = await copyButton(page).boundingBox();
+      const print = await printButton(page).boundingBox();
+      expect(print?.y ?? -1).toBeCloseTo(copy?.y ?? 0, 0);
+      await printButton(page).click();
+      expect(await page.evaluate(() => (window as Window & { printed?: number }).printed)).toBe(1);
+    });
+
+    // spec: calculator-page › [CP83] Copy link, Print, then the share link, then the next control
+    test('comes right after Print in the tab order, and the next Tab leaves it forward', async ({
       page,
     }) => {
       await open(page, calculator);
-      await copyButton(page).focus();
+      await printButton(page).focus();
       await page.keyboard.press('Tab');
       await expect(shareLink(page)).toBeFocused();
       await page.keyboard.press('Tab');
@@ -135,7 +159,7 @@ for (const calculator of calculatorPages) {
           ground: '#1faf5a',
         });
         expect(contrast(hexOf(colours.text), hexOf(colours.ground))).toBeGreaterThanOrEqual(4.5);
-        await copyButton(page).focus();
+        await printButton(page).focus();
         await page.keyboard.press('Tab');
         await expect(shareLink(page)).toBeFocused();
         const ring = await shareLink(page).evaluate((link) => {

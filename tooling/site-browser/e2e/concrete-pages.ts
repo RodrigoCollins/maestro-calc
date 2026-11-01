@@ -102,6 +102,7 @@ export const CONCRETE: E2eSpec = {
     '#calc-readyMixPrice',
     '.calc-result a',
     '[data-copy]',
+    '[data-print]',
     '[data-share]',
   ],
   // calculator-page › [CP78]: one step of extra writes ws=15 to the link the share link carries

@@ -29,6 +29,7 @@ export const esSite = {
   'site.calculator.copyFailed': 'No se pudo copiar. Selecciona el enlace y cópialo.',
   'site.calculator.shareWhatsApp': 'Enviar por WhatsApp',
   'site.calculator.shareText': 'Mira este cálculo:',
+  'site.calculator.print': 'Imprimir',
   'site.calculator.noscript':
     'Esta página necesita JavaScript para recalcular. Si está desactivado o no cargó, el resultado de abajo es el ejemplo.',
   'site.calculator.estimateNote':

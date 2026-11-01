@@ -26,6 +26,7 @@ export const enSite = {
   'site.calculator.copyFailed': 'Could not copy. Select the link and copy it.',
   'site.calculator.shareWhatsApp': 'Send on WhatsApp',
   'site.calculator.shareText': 'Check this calculation:',
+  'site.calculator.print': 'Print',
   'site.calculator.noscript':
     'This page needs JavaScript to recalculate. If it is off or did not load, the result below is the example.',
   'site.calculator.estimateNote':
