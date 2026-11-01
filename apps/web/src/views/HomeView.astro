@@ -3,6 +3,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { homeCards } from '../lib/home-directory.ts';
 import { siteText } from '../lib/site-text.ts';
+import { HUB_IDS } from '../routing/hubs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -13,6 +14,11 @@ interface Props {
 const { locale } = Astro.props;
 const text = siteText(locale);
 const cards = homeCards(locale);
+// the trade hubs (hubs › [HB2]), named by their page title without the site name
+const hubs = HUB_IDS.map((id) => ({
+  href: pathOf(id, locale),
+  name: text(`page.${id}.title`).replace(/ \| Maestro Calc$/, ''),
+}));
 ---
 
 <BaseLayout
@@ -37,6 +43,18 @@ const cards = homeCards(locale);
       </li>
     ))}
   </ul>
+  <section class="home-hubs" aria-label={text('page.home.hubs')}>
+    <h2>{text('page.home.hubs')}</h2>
+    <ul>
+      {hubs.map(({ href, name }) => (
+        <li>
+          <a class="tap-target" {href}>
+            {name}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
   <p class="home-links">
     <a class="tap-target" href={pathOf('methodology', locale)}>
       {text('page.home.links.methodology')}

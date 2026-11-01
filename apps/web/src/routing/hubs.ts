@@ -33,3 +33,10 @@ export const hubOf = (id: string): Hub | undefined => {
   const table: Readonly<Record<string, Hub>> = HUBS;
   return Object.hasOwn(table, id) ? table[id] : undefined;
 };
+
+export type HubId = keyof typeof HUBS;
+
+const isHubId = (id: string): id is HubId => Object.hasOwn(HUBS, id);
+
+/** The hub ids, in table order: the order the home lists them. */
+export const HUB_IDS: readonly HubId[] = Object.keys(HUBS).filter(isHubId);
