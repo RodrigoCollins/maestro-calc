@@ -101,6 +101,7 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
     updates,
     calculatorPages: [],
     externalLinks: {},
+    guides: {},
   };
 };
 
@@ -175,8 +176,27 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     `<h2 id="${sources}">Sources</h2>`,
     `<ul>${(site.externalLinks[id] ?? [QUIKRETE_URL, NIST_URL]).map((url) => `<li><a href="${url}" rel="external noreferrer">${SOURCE_NAMES[url] ?? url}</a></li>`).join('')}</ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
+    guideLinksOf(id, locale, site),
     '</main>',
   ].join('');
+};
+
+/** The box of a calculator page that links back to its guides, or '' when it has none. */
+const guideLinksOf = (id: string, locale: Locale, site: Site): string => {
+  const items = Object.entries(site.guides)
+    .filter(([, calculator]) => calculator === id)
+    .map(([guide]) => `<li><a href="${pathOf(guide, locale, site.routes)}">${guide}</a></li>`);
+  return items.length === 0
+    ? ''
+    : `<aside class="guide-links" aria-label="Guides"><p>Guides</p><ul>${items.join('')}</ul></aside>`;
+};
+
+/** The box a guide page ends in, linking its calculator page, or '' for any other page. */
+const guideCtaOf = (id: string, locale: Locale, site: Site): string => {
+  const calculator = site.guides[id];
+  return calculator === undefined
+    ? ''
+    : `<aside class="guide-cta" aria-label="Work it out"><p>Work it out</p><a class="guide-cta-link" href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></aside>`;
 };
 
 /** The three JSON-LD nodes of a valid calculator page. */
@@ -258,7 +278,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main"><h1>${headingOf(id)}</h1>${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main"><h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

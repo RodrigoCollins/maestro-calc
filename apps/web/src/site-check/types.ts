@@ -30,6 +30,8 @@ export interface Site {
   readonly calculatorPages: readonly string[];
   /** The outbound `https` links each calculator page may carry (its `sources[].url`), by page id. */
   readonly externalLinks: Readonly<Record<string, readonly string[]>>;
+  /** The calculator page each guide ends in (`GUIDES`), by guide id; empty when none. */
+  readonly guides: Readonly<Record<string, string>>;
 }
 
 /**
