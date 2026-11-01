@@ -58,10 +58,19 @@
     ],
   });
   // The addresses without their query: a calculator keeps the typed values in the query, and they
-  // must not reach analytics. The GA4 tag of the container sends these as page_location and
-  // page_referrer (a same-site referrer is the full address of the page before, values included).
+  // must not reach analytics. Only the campaign tags (utm_*) of the page's own address are kept,
+  // so a post's link can be attributed. The GA4 tag of the container sends these as page_location
+  // and page_referrer (a same-site referrer is the full address of the page before, values
+  // included, so it keeps nothing).
+  var campaign = location.search
+    .slice(1)
+    .split('&')
+    .filter(function (pair) {
+      return /^utm_[a-z]+=/.test(pair);
+    })
+    .join('&');
   dataLayer.push({
-    page_location_clean: location.origin + location.pathname,
+    page_location_clean: location.origin + location.pathname + (campaign ? '?' + campaign : ''),
     page_referrer_clean: document.referrer.split(/[?#]/)[0],
   });
   dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });

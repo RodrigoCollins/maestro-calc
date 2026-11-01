@@ -13,3 +13,4 @@ PLAN §11.1 makes "useful calculations per week" the main metric: sessions that 
 5. **Privacy page** (owner approval delegated on 2026-11-01): one sentence per language says that on a calculator page Google Analytics also receives the action and the calculator's name, never the values.
 6. **Tag Manager**: the container `GTM-MD8H6L5S` needs a Custom Event trigger on `calc_action` and a GA4 event tag that forwards `calc_action` and `calc_id`. That is an account step, done in the browser after this merges; until then the events sit in `dataLayer` unused.
 7. **Also archives** `print-button`, verified in production after #169.
+8. **Campaign tags** (added 2026-11-01): the loader stripped the whole query, so posts tagged with UTM could not be attributed. It now keeps only `utm_*` parameters in the page address it offers the GA4 tag; values and the referrer's query stay out.
