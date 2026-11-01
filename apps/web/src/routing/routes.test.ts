@@ -93,6 +93,11 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-quote-a-concrete-job',
       es: '/es/guias/como-cotizar-un-trabajo-de-concreto',
     });
+    expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
+    expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
+    expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });
+    expect(ROUTES['hub-landscaping']).toEqual({ en: '/landscaping', es: '/es/jardineria' });
+    expect(ROUTES['hub-measurement']).toEqual({ en: '/measurement', es: '/es/medidas' });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

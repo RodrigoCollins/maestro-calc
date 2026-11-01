@@ -11,7 +11,7 @@ const valid = {
 
 // spec: trust-pages › [TP2] (schema side)
 describe('pageSchema', () => {
-  it('lists the twelve trust ids', () => {
+  it('lists the seventeen trust ids', () => {
     expect(TRUST_IDS).toEqual([
       'methodology',
       'about',
@@ -25,6 +25,11 @@ describe('pageSchema', () => {
       'guide-drywall-estimate',
       'guide-roof-pitch',
       'guide-concrete-quote',
+      'hub-concrete',
+      'hub-roofing',
+      'hub-drywall',
+      'hub-landscaping',
+      'hub-measurement',
     ]);
   });
 

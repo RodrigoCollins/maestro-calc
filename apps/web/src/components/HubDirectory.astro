@@ -1,0 +1,61 @@
+---
+/** The directory of a trade hub (hubs): one card per calculator, then the guides of the trade. */
+interface Props {
+  calculatorsLabel: string;
+  guidesLabel: string;
+  calculators: readonly { href: string; title: string; summary: string }[];
+  guides: readonly { href: string; title: string }[];
+}
+const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
+---
+
+<section class="hub-directory" aria-label={calculatorsLabel}>
+  <h2>{calculatorsLabel}</h2>
+  <ul class="hub-cards" role="list">
+    {calculators.map(({ href, title, summary }) => (
+      <li class="hub-card">
+        <a class="tap-target" {href}>
+          {title}
+        </a>
+        <p>{summary}</p>
+      </li>
+    ))}
+  </ul>
+  {guides.length > 0 && (
+    <>
+      <h2>{guidesLabel}</h2>
+      <ul>
+        {guides.map(({ href, title }) => (
+          <li>
+            <a {href}>{title}</a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+</section>
+
+<style>
+  .hub-cards {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .hub-card {
+    padding: var(--space-3);
+    border: 2px solid var(--color-text);
+    border-radius: 4px;
+    background: var(--color-surface);
+  }
+
+  .hub-card a {
+    font-weight: 600;
+  }
+
+  .hub-card p {
+    margin: var(--space-1) 0 0;
+  }
+</style>

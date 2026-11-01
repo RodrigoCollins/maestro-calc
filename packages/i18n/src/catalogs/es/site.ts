@@ -15,6 +15,8 @@ export const esSite = {
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.embed.by': 'de',
   'site.guide.cta': 'Haz la cuenta para tu obra',
+  'site.hub.calculators': 'Calculadoras',
+  'site.hub.guides': 'Guías',
   'site.guide.links': 'Aprende más en nuestras guías',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',
@@ -109,6 +111,21 @@ export const esSite = {
   'page.guide-concrete-quote.title': 'Cómo cotizar un trabajo de concreto | Maestro Calc',
   'page.guide-concrete-quote.description':
     'Calcula el concreto del colado, anota la cimbra, la base, el refuerzo y el flete, divide el trabajo y arma una cotización que tu cliente pueda revisar.',
+  'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
+  'page.hub-concrete.description':
+    'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',
+  'page.hub-roofing.title': 'Calculadoras y guías de techos | Maestro Calc',
+  'page.hub-roofing.description':
+    'Calculadoras de pendiente de techo y de tejas con su guía: mide la pendiente, saca el área en cuadrados, los paquetes y las pendientes mínimas del IRC.',
+  'page.hub-drywall.title': 'Calculadoras y guías de drywall | Maestro Calc',
+  'page.hub-drywall.description':
+    'Calculadora y guía de drywall: placas, compuesto y cinta para un cuarto, los niveles de terminación y cómo cotizar un trabajo de drywall.',
+  'page.hub-landscaping.title': 'Calculadoras de jardinería | Maestro Calc',
+  'page.hub-landscaping.description':
+    'Calculadoras de grava, mulch y tierra para jardín: yardas cúbicas, toneladas y bolsas para canteros, caminos y bases, también en métrico.',
+  'page.hub-measurement.title': 'Calculadoras y guías de medidas | Maestro Calc',
+  'page.hub-measurement.description':
+    'Calculadoras de pies cuadrados y de pies y pulgadas con guías: lee la cinta métrica, suma fracciones y pasa de pies cuadrados a metros cuadrados.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

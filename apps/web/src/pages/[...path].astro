@@ -6,6 +6,11 @@ import { isCalculatorPage, templateOf } from '../routing/templates.ts';
 import CalculatorView from '../views/CalculatorView.astro';
 import EmbedSnippets from '../components/EmbedSnippets.astro';
 import GuideCta from '../components/GuideCta.astro';
+import HubDirectory from '../components/HubDirectory.astro';
+import { getEntry } from 'astro:content';
+import { headingOf } from '../content/heading.ts';
+import { homeCards } from '../lib/home-directory.ts';
+import { hubOf } from '../routing/hubs.ts';
 import { pageView } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
 import { guideOf } from '../routing/guides.ts';
@@ -23,6 +28,22 @@ interface Props {
 
 const { id, locale } = Astro.props;
 const guide = guideOf(id);
+const hub = hubOf(id);
+const hubView =
+  hub === undefined
+    ? undefined
+    : {
+        calculators: homeCards(locale).filter((card) =>
+          (hub.calculators as readonly string[]).includes(card.id),
+        ),
+        guides: await Promise.all(
+          hub.guides.map(async (guideId) => {
+            const entry = await getEntry('pages', `${locale}/${guideId}`);
+            if (entry === undefined) throw new Error(`no content entry for ${locale}/${guideId}`);
+            return { href: pathOf(guideId, locale), title: headingOf(entry.body ?? '') };
+          }),
+        ),
+      };
 ---
 
 {/* A calculator id has its own template; every other id is a Markdown trust page. */}
@@ -31,6 +52,14 @@ const guide = guideOf(id);
 ) : (
   <TrustPageView {id} {locale}>
     {id === 'embed-calculators' && <EmbedSnippets snippets={snippetsFor(locale)} />}
+    {hubView !== undefined && (
+      <HubDirectory
+        calculatorsLabel={siteText(locale)('site.hub.calculators')}
+        guidesLabel={siteText(locale)('site.hub.guides')}
+        calculators={hubView.calculators}
+        guides={hubView.guides}
+      />
+    )}
     {guide !== undefined && (
       <GuideCta
         label={siteText(locale)('site.guide.cta')}
