@@ -73,6 +73,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/concrete-bags-or-truck',
       es: '/es/guias/concreto-en-bolsas-o-camion',
     });
+    expect(ROUTES['guide-tape-measure-fractions']).toEqual({
+      en: '/guides/read-a-tape-measure-and-add-fractions',
+      es: '/es/guias/leer-la-cinta-metrica-y-sumar-fracciones',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

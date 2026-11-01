@@ -90,6 +90,10 @@ export const esSite = {
   'page.guide-concrete-bags-or-truck.title': '¿Concreto en bolsas o en camión? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'Cuándo conviene comprar bolsas de mezcla para concreto y cuándo un camión de premezclado: una yarda cúbica en bolsas, cargos por carga chica y cómo comparar.',
+  'page.guide-tape-measure-fractions.title':
+    'Cómo leer la cinta métrica y sumar fracciones | Maestro Calc',
+  'page.guide-tape-measure-fractions.description':
+    'Qué significa cada marca de la cinta métrica, hasta 1/16 de pulgada, y cómo sumar, restar y dividir pies, pulgadas y fracciones sin errores.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

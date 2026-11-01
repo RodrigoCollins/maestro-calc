@@ -84,6 +84,10 @@ export const enSite = {
   'page.guide-concrete-bags-or-truck.title': 'Concrete in Bags or From a Truck? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'When bags of concrete mix beat a ready-mix truck and when they do not: what a cubic yard is in bags, short-load charges and how to compare.',
+  'page.guide-tape-measure-fractions.title':
+    'How to Read a Tape Measure and Add Fractions | Maestro Calc',
+  'page.guide-tape-measure-fractions.description':
+    'What each mark on a tape measure means, down to 1/16 inch, and how to add, subtract and divide feet, inches and fractions without mistakes.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
