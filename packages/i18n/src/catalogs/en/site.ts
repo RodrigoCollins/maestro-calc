@@ -88,6 +88,9 @@ export const enSite = {
     'How to Read a Tape Measure and Add Fractions | Maestro Calc',
   'page.guide-tape-measure-fractions.description':
     'What each mark on a tape measure means, down to 1/16 inch, and how to add, subtract and divide feet, inches and fractions without mistakes.',
+  'page.guide-square-footage.title': 'How to Calculate Square Footage | Maestro Calc',
+  'page.guide-square-footage.description':
+    'How to find the square footage of a room or an L-shaped area, convert square feet to square yards and square meters, and back.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

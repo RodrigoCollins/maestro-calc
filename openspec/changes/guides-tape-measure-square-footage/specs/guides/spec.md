@@ -13,3 +13,7 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 #### Scenario: [GU2] The tape measure guide ends in its calculator
 - GIVEN `/guides/read-a-tape-measure-and-add-fractions`
 - THEN its last box links `/feet-and-inches-calculator` with the text "Feet and Inches Calculator" under "Work it out for your job"
+
+#### Scenario: [GU3] The square footage guide ends in its calculator
+- GIVEN `/es/guias/como-calcular-pies-cuadrados`
+- THEN its last box links `/es/calculadora-de-pies-cuadrados` with the text "Calculadora de pies cuadrados" under "Haz la cuenta para tu obra"

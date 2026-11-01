@@ -77,6 +77,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/read-a-tape-measure-and-add-fractions',
       es: '/es/guias/leer-la-cinta-metrica-y-sumar-fracciones',
     });
+    expect(ROUTES['guide-square-footage']).toEqual({
+      en: '/guides/how-to-calculate-square-footage',
+      es: '/es/guias/como-calcular-pies-cuadrados',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

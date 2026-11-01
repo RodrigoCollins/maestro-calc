@@ -17,6 +17,7 @@ describe('guides (guides › Guide pages)', () => {
   it('finds the guide of a page id, and nothing for any other id', () => {
     expect(guideOf('guide-concrete-bags-or-truck')).toEqual({ calculator: 'concrete' });
     expect(guideOf('guide-tape-measure-fractions')).toEqual({ calculator: 'feet-inches' });
+    expect(guideOf('guide-square-footage')).toEqual({ calculator: 'rectangle-area' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
