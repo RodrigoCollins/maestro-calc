@@ -26,6 +26,22 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - GIVEN `/guides/how-to-measure-roof-pitch`
 - THEN its last box links `/roof-pitch-calculator` with the text "Roof Pitch Calculator" under "Work it out for your job"
 
+### Requirement: Calculator pages link their guides
+
+A calculator page that a guide ends in MUST hold, after its copy, a box with `site.guide.links` and one link per such guide in the same language, whose text is the guide's heading, in `GUIDES` order. A calculator page that no guide ends in MUST NOT hold the box. `check:site` MUST report a guide page without its end link and a calculator page without the link back.
+
+#### Scenario: [GU6] The roof pitch calculator links its guide
+- GIVEN `/es/calculadora-de-pendiente-de-techo`
+- THEN it holds a box "Aprende más en nuestras guías" linking `/es/guias/como-medir-la-pendiente-de-un-techo` with the text "Cómo medir un techo y entender su pendiente"
+
+#### Scenario: [GU7] A calculator without a guide has no box
+- GIVEN `/gravel-calculator`
+- THEN it holds no guide box
+
+#### Scenario: [GU8] The concrete calculator links both its guides
+- GIVEN `/concrete-calculator`
+- THEN its guide box links `/guides/concrete-bags-or-truck` and then `/guides/how-to-quote-a-concrete-job`
+
 ### Requirement: Sourced facts
 
 Every figure in a guide MUST come from a source the guide lists, or be arithmetic on such figures; prices that vary by store MUST be left to the reader.

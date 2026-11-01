@@ -20,13 +20,14 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-square-footage')).toEqual({ calculator: 'rectangle-area' });
     expect(guideOf('guide-drywall-estimate')).toEqual({ calculator: 'drywall' });
     expect(guideOf('guide-roof-pitch')).toEqual({ calculator: 'roof-pitch' });
+    expect(guideOf('guide-concrete-quote')).toEqual({ calculator: 'concrete' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
 
   // spec: guides › [GU6] a calculator page lists the guides that end in it
   it('lists the guides of a calculator page in table order, and none for a calculator without one', () => {
-    expect(guidesOf('concrete')).toEqual(['guide-concrete-bags-or-truck']);
+    expect(guidesOf('concrete')).toEqual(['guide-concrete-bags-or-truck', 'guide-concrete-quote']);
     expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
     expect(guidesOf('gravel')).toEqual([]);
     for (const calculator of CALCULATOR_PAGES) {

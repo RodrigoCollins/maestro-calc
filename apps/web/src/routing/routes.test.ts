@@ -89,6 +89,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-measure-roof-pitch',
       es: '/es/guias/como-medir-la-pendiente-de-un-techo',
     });
+    expect(ROUTES['guide-concrete-quote']).toEqual({
+      en: '/guides/how-to-quote-a-concrete-job',
+      es: '/es/guias/como-cotizar-un-trabajo-de-concreto',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',
