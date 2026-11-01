@@ -3,28 +3,6 @@
   display: none;
 }
 
-.calc-breadcrumb {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
-  margin: 0 0 var(--space-3);
-  padding: 0;
-  font-size: var(--text-small);
-  list-style: none;
-}
-
-/* each crumb is a flex box, so the 44 px link adds no line box below the text */
-.calc-breadcrumb li {
-  display: flex;
-  align-items: center;
-}
-
-.calc-breadcrumb li + li::before {
-  content: '/';
-  margin-right: var(--space-2);
-}
-
 /* Reserved areas: the script fills them without moving anything below (CP44). Each reserve is a
    line count in the block's own line unit, stepped down where the sweep of design K13 (320 to
    1280 px, both languages) found the tallest content loses a line. A page that needs other counts

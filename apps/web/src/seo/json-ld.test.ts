@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { siteText } from '../lib/site-text.ts';
 import { ROUTES } from '../routing/routes.ts';
-import { calculatorJsonLd, homeJsonLd, serializeJsonLd } from './json-ld.ts';
+import { calculatorJsonLd, guideJsonLd, homeJsonLd, serializeJsonLd } from './json-ld.ts';
 
 const organization = {
   '@type': 'Organization',
@@ -171,5 +171,45 @@ describe('calculator structured data (site-seo › [SE19], [SE20] builder side)'
     );
     expect(text).not.toContain('</script>');
     expect(text).toContain('\\u003c/script\\u003e');
+  });
+
+  // spec: guides › [GU9] a guide is an Article with its two-item breadcrumb
+  it('describes a guide as an Article with its breadcrumb, in its language', () => {
+    expect(
+      guideJsonLd(
+        { id: 'guide-roof-pitch', name: 'Cómo medir un techo', updated: '2026-11-01' },
+        'es',
+      ),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: 'Cómo medir un techo',
+          url: 'https://maestrocalc.com/es/guias/como-medir-la-pendiente-de-un-techo',
+          inLanguage: 'es-US',
+          dateModified: '2026-11-01',
+          author: { '@id': 'https://maestrocalc.com/#organization' },
+          publisher: organization,
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: siteText('es')('site.calculator.breadcrumbHome'),
+              item: 'https://maestrocalc.com/es',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Cómo medir un techo',
+              item: 'https://maestrocalc.com/es/guias/como-medir-la-pendiente-de-un-techo',
+            },
+          ],
+        },
+      ],
+    });
   });
 });

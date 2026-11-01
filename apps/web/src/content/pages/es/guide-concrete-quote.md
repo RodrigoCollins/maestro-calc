@@ -2,7 +2,7 @@
 id: guide-concrete-quote
 locale: es
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Cómo cotizar un trabajo de concreto

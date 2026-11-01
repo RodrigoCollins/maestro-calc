@@ -199,6 +199,41 @@ const guideCtaOf = (id: string, locale: Locale, site: Site): string => {
     : `<aside class="guide-cta" aria-label="Work it out"><p>Work it out</p><a class="guide-cta-link" href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></aside>`;
 };
 
+/** The two JSON-LD nodes of a valid guide page: its Article and its breadcrumb. */
+export const guideJsonLdOf = (id: string, locale: Locale, site: Site) => {
+  const canonical = urlOf(pathOf(id, locale, site.routes));
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: headingOf(id),
+        url: canonical,
+        inLanguage: LOCALE_TAGS[locale],
+        dateModified: site.updates[`${locale}/${id}`] ?? UPDATED,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: locale === 'en' ? 'Home' : 'Inicio',
+            item: urlOf(pathOf('home', locale, site.routes)),
+          },
+          { '@type': 'ListItem', position: 2, name: headingOf(id), item: canonical },
+        ],
+      },
+    ],
+  };
+};
+
+/** The labelled breadcrumb a guide page shows before its h1, or '' for any other page. */
+const guideBreadcrumbOf = (id: string, locale: Locale, site: Site): string =>
+  site.guides[id] === undefined
+    ? ''
+    : `<ol aria-label="Breadcrumb"><li><a href="${pathOf('home', locale, site.routes)}">Home</a></li><li>${headingOf(id)}</li></ol>`;
+
 /** The three JSON-LD nodes of a valid calculator page. */
 export const calculatorJsonLd = (id: string, locale: Locale, site: Site) => {
   const canonical = urlOf(pathOf(id, locale, site.routes));
@@ -266,6 +301,9 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     id === 'home'
       ? `<script type="application/ld+json">${serializeJsonLd(homeJsonLd(locale))}</script>`
       : '',
+    site.guides[id] === undefined
+      ? ''
+      : `<script type="application/ld+json">${serializeJsonLd(guideJsonLdOf(id, locale, site))}</script>`,
     calculator
       ? `<script type="application/ld+json">${serializeJsonLd(calculatorJsonLd(id, locale, site))}</script>` +
         `<script type="module" src="/${ENTRY_FILE}"></script>`
@@ -278,7 +316,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main"><h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

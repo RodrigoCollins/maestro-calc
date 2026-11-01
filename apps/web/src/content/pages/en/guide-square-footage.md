@@ -2,7 +2,7 @@
 id: guide-square-footage
 locale: en
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How to calculate square footage

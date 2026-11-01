@@ -2,7 +2,7 @@
 id: embed-calculators
 locale: en
 updated: 2026-10-31
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Embed our calculators

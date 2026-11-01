@@ -36,6 +36,9 @@ const FORBIDDEN_TYPES = [
 /** The three types of a calculator page, once each (site-seo › Calculator structured data). */
 const CALCULATOR_TYPES = ['WebApplication', 'BreadcrumbList', 'FAQPage'];
 
+/** The two types of a guide page, once each (guides › [GU9]). */
+const GUIDE_TYPES = ['Article', 'BreadcrumbList'];
+
 /** What the `WebApplication` may never claim: it is a free tool without ratings, offers or images. */
 const WEB_APPLICATION_FORBIDDEN = ['offers', 'aggregateRating', 'review', 'ratingValue', 'image'];
 
@@ -344,34 +347,62 @@ const faqProblems = (page: Page, faq: Node): string[] => {
   ];
 };
 
-/** Exactly WebApplication, BreadcrumbList and FAQPage, with the values of site-seo and the FAQ of the page. */
-const calculatorNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] => {
-  const typesOf = (node: Node): unknown[] => [node['@type']].flat();
+const typesOf = (node: Node): unknown[] => [node['@type']].flat();
+
+/**
+ * Exactly one node of each allowed type and no other type; then `checks` runs on the one node of
+ * each type it names.
+ */
+const typedNodeProblems = (
+  nodes: readonly Node[],
+  allowed: readonly string[],
+  checks: Readonly<Record<string, (node: Node) => string[]>>,
+): string[] => {
   const ofType = (type: string): Node[] => nodes.filter((node) => typesOf(node).includes(type));
-  const apps = ofType('WebApplication');
-  const lists = ofType('BreadcrumbList');
-  const faqs = ofType('FAQPage');
-  const once = <T>(found: readonly Node[], check: (node: Node) => T[]): T[] =>
-    found.length === 1 ? found.flatMap(check) : [];
   return [
-    ...(
-      [
-        ['WebApplication', apps],
-        ['BreadcrumbList', lists],
-        ['FAQPage', faqs],
-      ] as const
-    ).flatMap(([type, found]) =>
-      found.length === 1 ? [] : [`expected exactly one ${type}, found ${String(found.length)}`],
-    ),
+    ...allowed.flatMap((type) => {
+      const found = ofType(type).length;
+      return found === 1 ? [] : [`expected exactly one ${type}, found ${String(found)}`];
+    }),
     ...nodes
       .flatMap(typesOf)
-      .filter((type) => typeof type === 'string' && !CALCULATOR_TYPES.includes(type))
+      .filter((type) => typeof type === 'string' && !allowed.includes(type))
       .map((type) => `${String(type)} is not allowed on this page`),
-    ...once(apps, (app) => webApplicationProblems(page, site, app)),
-    ...once(lists, (list) => breadcrumbProblems(page, site, list)),
-    ...once(faqs, (faq) => faqProblems(page, faq)),
+    ...allowed.flatMap((type) => {
+      const found = ofType(type);
+      const check = checks[type];
+      return found.length === 1 && check !== undefined ? found.flatMap(check) : [];
+    }),
   ];
 };
+
+/** Exactly WebApplication, BreadcrumbList and FAQPage, with the values of site-seo and the FAQ of the page. */
+const calculatorNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] =>
+  typedNodeProblems(nodes, CALCULATOR_TYPES, {
+    WebApplication: (app) => webApplicationProblems(page, site, app),
+    BreadcrumbList: (list) => breadcrumbProblems(page, site, list),
+    FAQPage: (faq) => faqProblems(page, faq),
+  });
+
+const articleProblems = (page: Page, site: Site, article: Node): string[] => {
+  const tag = LOCALE_TAGS[page.locale];
+  const updated = site.updates[`${page.locale}/${page.id}`];
+  return [
+    ...(article['headline'] === headingOf(page) ? [] : ['the Article headline must be the h1']),
+    ...(article['url'] === urlOfPage(page, site) ? [] : ['the Article url must be the canonical']),
+    ...(article['inLanguage'] === tag ? [] : [`the Article inLanguage must be ${tag}`]),
+    ...(article['dateModified'] === updated
+      ? []
+      : [`the Article dateModified must be ${String(updated)}`]),
+  ];
+};
+
+/** Exactly an Article and a BreadcrumbList, tied to the h1, the canonical and the updated day (guides › [GU9]). */
+const guideNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] =>
+  typedNodeProblems(nodes, GUIDE_TYPES, {
+    Article: (article) => articleProblems(page, site, article),
+    BreadcrumbList: (list) => breadcrumbProblems(page, site, list),
+  });
 
 const jsonLdProblems = (page: Page, site: Site): Problem[] => {
   const blocks = jsonLdBlocks(page);
@@ -391,6 +422,8 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
     else if (documents.length === 1) problems.push(...homeNodeProblems(page, site, nodes));
   } else if (isCalculatorPage(page, site)) {
     problems.push(...calculatorNodeProblems(page, site, nodes));
+  } else if (Object.hasOwn(site.guides, page.id)) {
+    problems.push(...guideNodeProblems(page, site, nodes));
   } else {
     problems.push(
       ...nodes

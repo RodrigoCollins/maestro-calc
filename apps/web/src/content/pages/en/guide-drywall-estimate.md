@@ -2,7 +2,7 @@
 id: guide-drywall-estimate
 locale: en
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # How to estimate and quote a drywall job

@@ -2,7 +2,7 @@
 id: guide-square-footage
 locale: es
 updated: 2026-11-01
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Cómo calcular pies cuadrados

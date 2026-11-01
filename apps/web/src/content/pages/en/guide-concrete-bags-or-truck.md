@@ -2,7 +2,7 @@
 id: guide-concrete-bags-or-truck
 locale: en
 updated: 2026-10-31
-ownerReview: pending
+ownerReview: approved
 ---
 
 # Concrete: bags or a truck?
