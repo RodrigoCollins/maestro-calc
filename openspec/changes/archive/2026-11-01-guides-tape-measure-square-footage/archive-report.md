@@ -1,0 +1,3 @@
+# Archive report: guides-tape-measure-square-footage
+
+Archived on 2026-11-01 after #162 merged and was verified in production: its `Deploy` run passed (smoke 40 pages and the key, IndexNow 40 URLs answered 200), and `/guides/read-a-tape-measure-and-add-fractions`, `/es/guias/leer-la-cinta-metrica-y-sumar-fracciones`, `/guides/how-to-calculate-square-footage` and `/es/guias/como-calcular-pies-cuadrados` answer 200. Scenarios [GU2] and [GU3] are synced into `openspec/specs/guides/spec.md`. The copy is `ownerReview: pending`. Three guides of seven; the follow-ups (calculator page linking back, `Article` JSON-LD, breadcrumb) stay open.

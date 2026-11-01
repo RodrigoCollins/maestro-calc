@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds twenty ids, so the site has forty
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds twenty-one ids, so the site has forty-two
 // routable pages and two not-found pages.
-describe('end state of the square footage guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the drywall guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has twenty page ids, forty routable paths and forty-two pages with the 404s', () => {
+  it('has twenty-one page ids, forty-two routable paths and forty-four pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -25,6 +25,7 @@ describe('end state of the square footage guide go-live (site-routing-i18n › [
       'guide-concrete-bags-or-truck',
       'guide-tape-measure-fractions',
       'guide-square-footage',
+      'guide-drywall-estimate',
       'concrete',
       'rectangle-area',
       'gravel',
@@ -36,10 +37,10 @@ describe('end state of the square footage guide go-live (site-routing-i18n › [
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(40);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(40);
+    expect(staticPaths()).toHaveLength(42);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(42);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(42);
+    expect(pageCount(ROUTES)).toBe(44);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -65,21 +66,21 @@ describe('end state of the square footage guide go-live (site-routing-i18n › [
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)('has exactly forty-two page title and description keys in %s', (_locale, module) => {
+  ] as const)('has exactly forty-four page title and description keys in %s', (_locale, module) => {
     expect(
       Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-    ).toHaveLength(42);
+    ).toHaveLength(44);
   });
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: thirty-eight content entries in all
-  it('has eighteen trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(18);
+  // two entries per calculator page: forty content entries in all
+  it('has twenty trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(20);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists forty URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(40);
+  it('lists forty-two URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(42);
   });
 });

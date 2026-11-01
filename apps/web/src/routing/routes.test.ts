@@ -81,6 +81,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-calculate-square-footage',
       es: '/es/guias/como-calcular-pies-cuadrados',
     });
+    expect(ROUTES['guide-drywall-estimate']).toEqual({
+      en: '/guides/how-to-estimate-a-drywall-job',
+      es: '/es/guias/como-calcular-y-cotizar-un-trabajo-de-drywall',
+    });
     expect(ROUTES.concrete).toEqual({
       en: '/concrete-calculator',
       es: '/es/calculadora-de-concreto',

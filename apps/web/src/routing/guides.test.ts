@@ -18,6 +18,7 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-concrete-bags-or-truck')).toEqual({ calculator: 'concrete' });
     expect(guideOf('guide-tape-measure-fractions')).toEqual({ calculator: 'feet-inches' });
     expect(guideOf('guide-square-footage')).toEqual({ calculator: 'rectangle-area' });
+    expect(guideOf('guide-drywall-estimate')).toEqual({ calculator: 'drywall' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
