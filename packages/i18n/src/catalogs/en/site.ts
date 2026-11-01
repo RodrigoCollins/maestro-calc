@@ -98,6 +98,9 @@ export const enSite = {
   'page.guide-roof-pitch.title': 'How to Measure a Roof and Its Pitch | Maestro Calc',
   'page.guide-roof-pitch.description':
     'Measure a roof pitch with a level, turn it into an angle and a rafter length, find the roof area in squares and check the lowest pitch the IRC allows.',
+  'page.guide-concrete-quote.title': 'How to Quote a Concrete Job | Maestro Calc',
+  'page.guide-concrete-quote.description':
+    'Work out the concrete for a pour, list the forms, base, rebar and delivery, break down the work and write a concrete quote your client can check.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

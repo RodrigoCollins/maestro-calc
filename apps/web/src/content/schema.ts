@@ -14,6 +14,7 @@ export const TRUST_IDS = [
   'guide-square-footage',
   'guide-drywall-estimate',
   'guide-roof-pitch',
+  'guide-concrete-quote',
 ] as const;
 
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;

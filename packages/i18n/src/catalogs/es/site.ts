@@ -105,6 +105,9 @@ export const esSite = {
   'page.guide-roof-pitch.title': 'Cómo medir un techo y su pendiente | Maestro Calc',
   'page.guide-roof-pitch.description':
     'Mide la pendiente de un techo con un nivel, pásala a ángulo y a largo de cabio, saca el área en cuadrados y revisa la pendiente mínima del IRC.',
+  'page.guide-concrete-quote.title': 'Cómo cotizar un trabajo de concreto | Maestro Calc',
+  'page.guide-concrete-quote.description':
+    'Calcula el concreto del colado, anota la cimbra, la base, el refuerzo y el flete, divide el trabajo y arma una cotización que tu cliente pueda revisar.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

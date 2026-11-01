@@ -45,6 +45,10 @@ export const ROUTES = {
     en: '/guides/how-to-measure-roof-pitch',
     es: '/es/guias/como-medir-la-pendiente-de-un-techo',
   },
+  'guide-concrete-quote': {
+    en: '/guides/how-to-quote-a-concrete-job',
+    es: '/es/guias/como-cotizar-un-trabajo-de-concreto',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
