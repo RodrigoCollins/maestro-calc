@@ -15,7 +15,7 @@ interface Run {
 /** Runs the loader in a bare context: a tag with `attrs`, on `hostname`, with `gpc` as the signal. */
 const run = (
   attrs: Readonly<Record<string, string>>,
-  { hostname = 'maestrocalc.com', gpc = false } = {},
+  { hostname = 'maestrocalc.com', gpc = false, search = '?v=1&l=240' } = {},
 ): Run => {
   const appended: string[] = [];
   const pending: (() => void)[] = [];
@@ -26,7 +26,7 @@ const run = (
       hostname,
       origin: `https://${hostname}`,
       pathname: '/concrete-calculator',
-      search: '?v=1&l=240',
+      search,
     },
     navigator: gpc ? { globalPrivacyControl: true } : {},
     document: {
@@ -99,6 +99,22 @@ describe('the analytics loader (analytics-gtm)', () => {
   // the referrer too (a same-site referrer carries the full address of the page before)
   it('offers the address and the referrer without their query for the GA4 tag', () => {
     expect(run(TAG).dataLayer).toContainEqual({
+      page_location_clean: 'https://maestrocalc.com/concrete-calculator',
+      page_referrer_clean: 'https://maestrocalc.com/es/calculadora-de-concreto',
+    });
+  });
+
+  // spec: analytics-events › [AE2] campaign tags survive, calculator values never do
+  it('keeps only the utm_ parameters of the address, in their order, for campaign attribution', () => {
+    expect(
+      run(TAG, { search: '?utm_source=tiktok&v=1&l=240&utm_campaign=v01-losa-bolsas&utmx=1' })
+        .dataLayer,
+    ).toContainEqual({
+      page_location_clean:
+        'https://maestrocalc.com/concrete-calculator?utm_source=tiktok&utm_campaign=v01-losa-bolsas',
+      page_referrer_clean: 'https://maestrocalc.com/es/calculadora-de-concreto',
+    });
+    expect(run(TAG, { search: '' }).dataLayer).toContainEqual({
       page_location_clean: 'https://maestrocalc.com/concrete-calculator',
       page_referrer_clean: 'https://maestrocalc.com/es/calculadora-de-concreto',
     });
