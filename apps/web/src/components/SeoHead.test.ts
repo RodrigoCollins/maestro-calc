@@ -90,13 +90,16 @@ describe('SeoHead (site-seo › Document head)', () => {
     expect((await render(indexable)).querySelectorAll('meta[name=generator]')).toHaveLength(0);
   });
 
-  // spec: site-shell › [SS17] icon link
-  it('links the SVG favicon and no .ico', async () => {
+  // spec: site-shell › [SS17] icon link, [SS17b] a PNG icon for Google Search, which reads no SVG
+  it('links the SVG favicon, then the 192 px PNG icon, and no .ico', async () => {
     const head = await render(indexable);
     const icons = head.querySelectorAll('link[rel=icon]');
-    expect(icons).toHaveLength(1);
+    expect(icons).toHaveLength(2);
     expect(icons[0]?.getAttribute('type')).toBe('image/svg+xml');
     expect(icons[0]?.getAttribute('href')).toBe('/favicon.svg');
+    expect(icons[1]?.getAttribute('type')).toBe('image/png');
+    expect(icons[1]?.getAttribute('sizes')).toBe('192x192');
+    expect(icons[1]?.getAttribute('href')).toBe('/icon-192.png');
   });
 
   // spec: site-routing-i18n › [SR14]

@@ -146,6 +146,10 @@ Every interactive element MUST show an orange (`#F06A1D`) focus ring on `:focus-
 - WHEN parsed
 - THEN the link tag exists, the file is valid SVG, contains `#0E2240` or `#F06A1D`, and does not contain the Astro default gradient ids
 
+#### Scenario: [SS17b] A PNG icon for Google Search
+- GIVEN any built page
+- THEN after the SVG icon link it holds `<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">`, because Google Search reads favicons in BMP, GIF, ICO, PNG, JPEG, PPM or TIFF and not SVG (Google Search Central, "Define a favicon to show in search results", retrieved 2026-11-01); 192 is a multiple of 48 and the file is the manifest icon already in `public/`
+
 ### Requirement: Client JavaScript only on calculator pages
 
 Pages that are not calculator pages (the calculator id list of `site-routing-i18n`) MUST ship 0 bytes of client JavaScript: no external `<script src>`, no inline script other than `type="application/ld+json"`, no `modulepreload`, no `<astro-island>`, no inline event-handler attributes, no `.js` or `.mjs` file in the page asset graph.
