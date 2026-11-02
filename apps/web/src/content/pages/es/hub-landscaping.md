@@ -12,3 +12,5 @@ Los canteros, los caminos y las bases se venden por yarda cúbica, por tonelada 
 Todas funcionan también en metros y centímetros, y muestran el costo cuando escribes los precios de tu proveedor.
 
 La guía va más allá para una entrada de autos: las capas y su espesor, el bombeo que saca el agua, la grava de arriba, y cuánto pedir por tonelada o por yarda cúbica.
+
+Para una cama elevada, la segunda guía da la profundidad para cada cultivo, con qué llenarla, y cuánta tierra y composta comprar.

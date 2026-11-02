@@ -230,6 +230,27 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     avoid: [],
   },
   {
+    en: 'raised bed',
+    group: 'landscaping',
+    define: {
+      en: 'A garden bed built up inside a frame, filled with soil above the ground around it.',
+      es: 'Un cantero armado dentro de un marco, lleno de tierra por encima del suelo de alrededor.',
+    },
+    es: 'cama elevada',
+    avoid: [],
+  },
+  {
+    en: 'compost',
+    group: 'landscaping',
+    define: {
+      en: 'Decomposed plant matter mixed into soil to feed it and keep it loose.',
+      es: 'Materia vegetal descompuesta que se mezcla con la tierra para alimentarla y mantenerla suelta.',
+    },
+    es: 'composta',
+    avoid: [],
+    note: 'The word of the stores most of our readers buy in.',
+  },
+  {
     en: 'drywall',
     group: 'drywall',
     define: {

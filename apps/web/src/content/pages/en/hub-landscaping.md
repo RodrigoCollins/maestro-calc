@@ -12,3 +12,5 @@ Beds, paths and bases are sold by the cubic yard, the ton or the bag, and measur
 Each one also works in meters and centimeters, and shows the cost when you enter your supplier's prices.
 
 The guide goes further for a driveway: the layers and their depth, the crown that sheds water, the gravel for the top, and how much to order by the ton or by the cubic yard.
+
+For a raised bed, the second guide gives the depth for each crop, what to fill it with, and how much topsoil and compost to buy.

@@ -109,6 +109,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-much-gravel-for-a-driveway',
       es: '/es/guias/cuanta-grava-para-una-entrada-de-autos',
     });
+    expect(ROUTES['guide-raised-bed-soil']).toEqual({
+      en: '/guides/how-much-soil-for-a-raised-bed',
+      es: '/es/guias/cuanta-tierra-para-una-cama-elevada',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });

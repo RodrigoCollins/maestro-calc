@@ -130,6 +130,9 @@ export const enSite = {
   'page.guide-gravel-driveway.title': 'How Much Gravel for a Driveway? | Maestro Calc',
   'page.guide-gravel-driveway.description':
     'Plan a gravel driveway: the layers and their depth, the crown that sheds water, the gravel for the surface, and the tons and cubic yards to order.',
+  'page.guide-raised-bed-soil.title': 'How Much Soil for a Raised Bed? | Maestro Calc',
+  'page.guide-raised-bed-soil.description':
+    'How deep to fill a raised bed for each crop, what to fill it with, and how many cubic yards or bags of topsoil and compost to buy.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

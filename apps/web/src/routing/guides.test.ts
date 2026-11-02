@@ -26,6 +26,8 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-paint-quote')).toEqual({ calculator: 'paint' });
     // spec: guides › [GU12] the landscaping hub gets its first guide
     expect(guideOf('guide-gravel-driveway')).toEqual({ calculator: 'gravel' });
+    // spec: guides › [GU13] the raised bed guide ends in the topsoil calculator
+    expect(guideOf('guide-raised-bed-soil')).toEqual({ calculator: 'topsoil' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
@@ -36,6 +38,7 @@ describe('guides (guides › Guide pages)', () => {
     expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
     expect(guidesOf('paint')).toEqual(['guide-paint-quote']);
     expect(guidesOf('gravel')).toEqual(['guide-gravel-driveway']);
+    expect(guidesOf('topsoil')).toEqual(['guide-raised-bed-soil']);
     expect(guidesOf('mulch')).toEqual([]);
     for (const calculator of CALCULATOR_PAGES) {
       for (const id of guidesOf(calculator)) expect(GUIDES[id].calculator).toBe(calculator);
