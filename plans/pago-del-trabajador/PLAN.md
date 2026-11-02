@@ -9,7 +9,7 @@ Investigación: `~/research_notes/Nichos sitio de calculadoras EEUU/` y la memor
 |---|---|---|
 | 1 | Visión y propuesta de valor | Propuesto |
 | 2 | Público y validación | Falta validar keywords **[Rodrigo: 1 mes de Ahrefs o Semrush]** |
-| 3 | Marca y dominio | Abierto **[Rodrigo]** |
+| 3 | Marca y dominio | Decidido: Cuenta Horas (compra **[Rodrigo]**) |
 | 4 | Producto: catálogo, funciones, MVP | Propuesto |
 | 5 | Contenido y proceso editorial | Propuesto |
 | 6 | Arquitectura (reuso del monorepo) | Decidido |
@@ -72,13 +72,19 @@ Volúmenes de EE.UU. por mes (Google Ads vía seodata.dev, 2026; buckets que agr
 
 ---
 
-## 3. Marca y dominio — **[Rodrigo]**
+## 3. Marca y dominio — decidido (2026-11-02)
 
-`chequeclaro.com` está registrado y en uso (2026-11-02), así que "Cheque Claro" queda como nombre de los
-mockups y nada más. Libres el 2026-11-02 (whois):
+- **Marca: Cuenta Horas** — dominio `cuentahoras.com` (+ `cuentahoras.net` defensivo), libres el 2026-11-02.
+- Descartadas: "Cheque Claro" (`chequeclaro.com` es un competidor en uso) y "Cheque OK" (choca con CHECKOK,
+  marca vigente reg. 3122113 de ESL Federal Credit Union, clase 36, servicios financieros).
+- Sin marcas "Cuenta Horas" en la búsqueda de USPTO del 2026-11-02. YouTube `@cuentahoras` libre; TikTok,
+  Instagram y X a verificar a mano.
+- En inglés el nombre no dice nada; no importa, porque al sitio en inglés se llega por la búsqueda.
 
-| Opción | Dominio | Lectura EN/ES |
-|---|---|---|
+**Tareas de Rodrigo:** comprar `cuentahoras.com` (+ `.net`) en Cloudflare Registrar · reservar `@cuentahoras`
+en YouTube, TikTok e Instagram.
+
+---|---|---|
 | Hora y Pago | horaypago.com | Clara en ES; en EN no dice nada |
 | Cuenta Horas | cuentahoras.com | ES directa ("cuenta horas" = suma horas) |
 | Cheque OK | chequeok.com | Funciona en los dos ("check OK") |
