@@ -21,7 +21,10 @@ export const HUBS = {
   },
   'hub-roofing': { calculators: ['roof-pitch', 'roofing'], guides: ['guide-roof-pitch'] },
   'hub-drywall': { calculators: ['drywall'], guides: ['guide-drywall-estimate'] },
-  'hub-landscaping': { calculators: ['gravel', 'mulch', 'topsoil'], guides: [] },
+  'hub-landscaping': {
+    calculators: ['gravel', 'mulch', 'topsoil'],
+    guides: ['guide-gravel-driveway'],
+  },
   'hub-measurement': {
     calculators: ['rectangle-area', 'feet-inches'],
     guides: ['guide-square-footage', 'guide-tape-measure-fractions'],

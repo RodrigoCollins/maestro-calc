@@ -134,6 +134,9 @@ export const esSite = {
   'page.guide-paint-quote.title': 'Cómo cotizar un trabajo de pintura | Maestro Calc',
   'page.guide-paint-quote.description':
     'Mide las paredes, calcula los galones y las latas, anota los materiales y la preparación, divide el trabajo y arma una cotización de pintura clara.',
+  'page.guide-gravel-driveway.title': '¿Cuánta grava lleva una entrada de autos? | Maestro Calc',
+  'page.guide-gravel-driveway.description':
+    'Planea una entrada de grava: las capas y su espesor, el bombeo que saca el agua, la grava de la superficie, y las toneladas y yardas cúbicas a pedir.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

@@ -58,6 +58,10 @@ export const ROUTES = {
     en: '/guides/how-to-quote-a-painting-job',
     es: '/es/guias/como-cotizar-un-trabajo-de-pintura',
   },
+  'guide-gravel-driveway': {
+    en: '/guides/how-much-gravel-for-a-driveway',
+    es: '/es/guias/cuanta-grava-para-una-entrada-de-autos',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },
