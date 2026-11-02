@@ -1,0 +1,55 @@
+---
+import type { GlossaryView } from '../lib/glossary-view.ts';
+
+/** The public construction glossary: one table per trade, the page language's term first. */
+interface Props {
+  view: GlossaryView;
+}
+const { view } = Astro.props;
+const [term, other, definition] = view.columns;
+---
+
+{view.groups.map(({ id, label, rows }) => (
+  <section class="glossary-group" aria-labelledby={`glossary-${id}`}>
+    <h2 id={`glossary-${id}`}>{label}</h2>
+    <table class="glossary-table">
+      <thead>
+        <tr>
+          <th scope="col">{term}</th>
+          <th scope="col">{other}</th>
+          <th scope="col">{definition}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr>
+            <th scope="row">{row.term}</th>
+            <td lang={view.otherLocale}>{row.other}</td>
+            <td>{row.definition}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+))}
+
+<style>
+  .glossary-table {
+    width: 100%;
+    margin: 0 0 var(--space-4);
+    border-collapse: collapse;
+  }
+
+  .glossary-table th,
+  .glossary-table td {
+    padding: var(--space-1) var(--space-2) var(--space-1) 0;
+    border-bottom: 1px solid var(--color-text);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+  }
+
+  .glossary-table tbody th {
+    font-weight: 600;
+  }
+</style>

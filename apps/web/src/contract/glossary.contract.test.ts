@@ -1,8 +1,9 @@
 import { globSync } from 'node:fs';
-import { glossaryProblems } from '@maestro-calc/i18n/glossary';
+import { GLOSSARY, glossaryProblems } from '@maestro-calc/i18n/glossary';
 import { describe, expect, it } from 'vitest';
 import { parseEntry, readEntries } from './content.ts';
 import type { Entry } from './content.ts';
+import { registerProblems } from './register.ts';
 import { fromRoot, importFromRoot } from './root.ts';
 
 /** One `where: variant → use` line per avoided variant in `text`. */
@@ -36,6 +37,15 @@ describe('construction glossary over the Spanish copy (i18n-catalog › Construc
       }
     }
     expect(problems).toEqual([]);
+  });
+
+  // spec: i18n-catalog › [ICW24] the public definitions keep the neutral tú register
+  it('writes the Spanish definitions in the neutral tú register', () => {
+    expect(
+      GLOSSARY.flatMap(({ en, define }) =>
+        registerProblems(define.es).map((form) => `${en}: ${form}`),
+      ),
+    ).toEqual([]);
   });
 
   it('names the entry, the variant and the term to use', () => {

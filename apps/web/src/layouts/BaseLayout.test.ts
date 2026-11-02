@@ -118,13 +118,19 @@ describe('BaseLayout (site-shell › Base layout)', () => {
   it.each([
     [
       'en',
-      ['/embed-calculators', '/privacy', '/terms', '/contact'],
-      ['Embed our calculators', 'Privacy', 'Terms', 'Contact'],
+      ['/embed-calculators', '/construction-glossary', '/privacy', '/terms', '/contact'],
+      ['Embed our calculators', 'Construction glossary', 'Privacy', 'Terms', 'Contact'],
     ],
     [
       'es',
-      ['/es/calculadoras-para-tu-sitio', '/es/privacidad', '/es/terminos', '/es/contacto'],
-      ['Calculadoras para tu sitio', 'Privacidad', 'Términos', 'Contacto'],
+      [
+        '/es/calculadoras-para-tu-sitio',
+        '/es/glosario-de-construccion',
+        '/es/privacidad',
+        '/es/terminos',
+        '/es/contacto',
+      ],
+      ['Calculadoras para tu sitio', 'Glosario de obra', 'Privacidad', 'Términos', 'Contacto'],
     ],
   ] as const)('lists the footer links of the table in %s', async (locale, hrefs, labels) => {
     const { document } = await render(locale);
