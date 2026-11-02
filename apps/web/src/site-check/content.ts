@@ -397,6 +397,18 @@ const articleProblems = (page: Page, site: Site, article: Node): string[] => {
   ];
 };
 
+/** A guide is an Open Graph article, so Pinterest can show it as an article rich pin. */
+const ogTypeProblems = (page: Page): string[] => {
+  const types = page.root
+    .querySelectorAll('meta[property="og:type"]')
+    .map((tag) => tag.getAttribute('content'));
+  return types.length === 1 && types[0] === 'article'
+    ? []
+    : [
+        `a guide page needs og:type article, found ${types.length === 0 ? 'none' : types.join(', ')}`,
+      ];
+};
+
 /** Exactly an Article and a BreadcrumbList, tied to the h1, the canonical and the updated day (guides › [GU9]). */
 const guideNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): string[] =>
   typedNodeProblems(nodes, GUIDE_TYPES, {
@@ -423,7 +435,7 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
   } else if (isCalculatorPage(page, site)) {
     problems.push(...calculatorNodeProblems(page, site, nodes));
   } else if (Object.hasOwn(site.guides, page.id)) {
-    problems.push(...guideNodeProblems(page, site, nodes));
+    problems.push(...guideNodeProblems(page, site, nodes), ...ogTypeProblems(page));
   } else {
     problems.push(
       ...nodes

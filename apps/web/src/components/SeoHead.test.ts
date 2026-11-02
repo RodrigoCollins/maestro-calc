@@ -41,6 +41,14 @@ describe('SeoHead (site-seo › Document head)', () => {
     );
   });
 
+  // open-graph: a guide is an article, so Pinterest can show it as an article rich pin
+  it('declares the Open Graph type the page asks for', async () => {
+    const head = await render({ ...indexable, ogLocale: 'en_US', ogType: 'article' });
+    expect(
+      head.querySelectorAll('meta[property="og:type"]').map((tag) => tag.getAttribute('content')),
+    ).toEqual(['article']);
+  });
+
   it('gives a page without a canonical (the not-found page) no Open Graph and no card', async () => {
     const head = await render({
       title: 'Not found',
