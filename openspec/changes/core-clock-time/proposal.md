@@ -26,3 +26,7 @@ The calculators themselves, the week form slot and any page.
 The `clock` kind (parser, validation, URL text) raised the concrete page script from 47,609 B to 48,653 B against the 49,152 B limit: it fits, with 499 B left. **Follow-up before any new Maestro Calc calculator or slot:** make the kind readers tree-shakable so a page carries only the kinds it uses.
 
 A property test found a real bug while adding it: the decoder filled a decoded `null` with the default (`??`); it now treats only an absent value as absent.
+
+## Decision 2 revised (2026-11-02)
+
+A fourth base dimension touches about 20 files across core and web and adds an exponent to every quantity of every Maestro Calc page, with 499 B of script budget left. Instead, an output may declare `measure: 'hours'`, an exact `Rational` of hours (not a `Quantity`): the time card needs hours to add, multiply by a rate and show, not unit conversion. `run` checks its shape like the other measures; only `apps/pay` renders it. Measure the bundle again after it; the kind-reader tree-shaking follow-up stays mandatory.
