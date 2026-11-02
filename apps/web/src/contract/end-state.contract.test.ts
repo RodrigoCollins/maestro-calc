@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-four ids, so the site has sixty-eight
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-five ids, so the site has seventy
 // routable pages and two not-found pages.
-describe('end state of the raised bed soil guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the roofing quote guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has thirty-four page ids, sixty-eight routable paths and seventy pages with the 404s', () => {
+  it('has thirty-five page ids, seventy routable paths and seventy-two pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -33,6 +33,7 @@ describe('end state of the raised bed soil guide go-live (site-routing-i18n › 
       'guide-paint-quote',
       'guide-gravel-driveway',
       'guide-raised-bed-soil',
+      'guide-roofing-quote',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -50,10 +51,10 @@ describe('end state of the raised bed soil guide go-live (site-routing-i18n › 
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(68);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(68);
+    expect(staticPaths()).toHaveLength(70);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(70);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(70);
+    expect(pageCount(ROUTES)).toBe(72);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -79,21 +80,24 @@ describe('end state of the raised bed soil guide go-live (site-routing-i18n › 
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)('has exactly seventy page title and description keys in %s', (_locale, module) => {
-    expect(
-      Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-    ).toHaveLength(70);
-  });
+  ] as const)(
+    'has exactly seventy-two page title and description keys in %s',
+    (_locale, module) => {
+      expect(
+        Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
+      ).toHaveLength(72);
+    },
+  );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: sixty-six content entries in all
-  it('has forty-six trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(46);
+  // two entries per calculator page: sixty-eight content entries in all
+  it('has forty-eight trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(48);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists sixty-eight URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(68);
+  it('lists seventy URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(70);
   });
 });

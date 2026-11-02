@@ -42,6 +42,7 @@ describe('trade hubs (hubs › Hub pages)', () => {
       'guide-gravel-driveway',
       'guide-raised-bed-soil',
     ]);
+    expect(hubOf('hub-roofing')?.guides).toEqual(['guide-roof-pitch', 'guide-roofing-quote']);
     expect(hubOf('concrete')).toBeUndefined();
     expect(hubOf('about')).toBeUndefined();
   });

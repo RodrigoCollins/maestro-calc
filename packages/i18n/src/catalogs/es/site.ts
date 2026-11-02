@@ -140,6 +140,9 @@ export const esSite = {
   'page.guide-raised-bed-soil.title': '¿Cuánta tierra lleva una cama elevada? | Maestro Calc',
   'page.guide-raised-bed-soil.description':
     'Qué tan honda llenar una cama elevada según el cultivo, con qué llenarla, y cuántas yardas cúbicas o bolsas de tierra y composta comprar.',
+  'page.guide-roofing-quote.title': 'Cómo cotizar un trabajo de techo | Maestro Calc',
+  'page.guide-roofing-quote.description':
+    'Mide el techo en cuadrados, cuenta los paquetes y el fieltro, anota todo lo que rodea a las tejas y el trabajo, y arma una cotización de techo clara.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

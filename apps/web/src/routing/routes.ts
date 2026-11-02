@@ -66,6 +66,10 @@ export const ROUTES = {
     en: '/guides/how-much-soil-for-a-raised-bed',
     es: '/es/guias/cuanta-tierra-para-una-cama-elevada',
   },
+  'guide-roofing-quote': {
+    en: '/guides/how-to-quote-a-roofing-job',
+    es: '/es/guias/como-cotizar-un-trabajo-de-techo',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },

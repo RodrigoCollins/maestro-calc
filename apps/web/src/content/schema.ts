@@ -20,6 +20,7 @@ export const TRUST_IDS = [
   'guide-paint-quote',
   'guide-gravel-driveway',
   'guide-raised-bed-soil',
+  'guide-roofing-quote',
   'hub-concrete',
   'hub-roofing',
   'hub-drywall',

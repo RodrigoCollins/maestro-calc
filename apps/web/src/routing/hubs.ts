@@ -19,7 +19,10 @@ export const HUBS = {
     calculators: ['concrete'],
     guides: ['guide-concrete-bags-or-truck', 'guide-concrete-quote'],
   },
-  'hub-roofing': { calculators: ['roof-pitch', 'roofing'], guides: ['guide-roof-pitch'] },
+  'hub-roofing': {
+    calculators: ['roof-pitch', 'roofing'],
+    guides: ['guide-roof-pitch', 'guide-roofing-quote'],
+  },
   'hub-drywall': { calculators: ['drywall'], guides: ['guide-drywall-estimate'] },
   'hub-landscaping': {
     calculators: ['gravel', 'mulch', 'topsoil'],

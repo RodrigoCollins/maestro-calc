@@ -365,7 +365,7 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     group: 'roofing',
     define: {
       en: 'A package of shingles; several bundles cover one square.',
-      es: 'Un paquete de tejas; varios paquetes cubren un square.',
+      es: 'Un paquete de tejas; varios paquetes cubren un cuadrado.',
     },
     es: 'paquete',
     avoid: ['bulto'],
@@ -377,9 +377,9 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
       en: '100 square feet of roof, the unit roofers order and price in.',
       es: '100 pies cuadrados de techo, la unidad en que se piden y cotizan los techos.',
     },
-    es: 'square',
+    es: 'cuadrado',
     avoid: [],
-    note: '100 square feet of roof.',
+    note: '100 square feet of roof; "cuadrado de techo" where it could be read as a square foot.',
   },
   {
     en: 'underlayment',
@@ -462,6 +462,66 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     },
     es: 'cumbrera',
     avoid: ['caballete'],
+  },
+  {
+    en: 'hip',
+    group: 'roofing',
+    define: {
+      en: 'The outside edge where two slopes of a roof meet and run down to a corner.',
+      es: 'La arista exterior donde se juntan dos aguas de un techo y bajan hasta una esquina.',
+    },
+    es: 'limatesa',
+    avoid: [],
+  },
+  {
+    en: 'valley',
+    group: 'roofing',
+    define: {
+      en: 'The inside edge where two slopes of a roof meet and water runs together.',
+      es: 'La arista interior donde se juntan dos aguas de un techo y se junta el agua.',
+    },
+    es: 'limahoya',
+    avoid: [],
+  },
+  {
+    en: 'drip edge',
+    group: 'roofing',
+    define: {
+      en: 'A metal edge along the eaves and the rakes that sends the water off the roof.',
+      es: 'Un borde de metal a lo largo de los aleros y los bordes laterales que saca el agua del techo.',
+    },
+    es: 'gotero',
+    avoid: [],
+  },
+  {
+    en: 'starter strip',
+    group: 'roofing',
+    define: {
+      en: 'The first row of shingles along the eaves, under the first course.',
+      es: 'La primera hilera de tejas a lo largo del alero, debajo de la primera fila.',
+    },
+    es: 'tira de arranque',
+    avoid: [],
+  },
+  {
+    en: 'flashing',
+    group: 'roofing',
+    define: {
+      en: 'Metal that seals the roof where it meets a wall, a chimney or a vent.',
+      es: 'Metal que sella el techo donde se junta con una pared, una chimenea o un ducto.',
+    },
+    es: 'tapajuntas',
+    avoid: [],
+  },
+  {
+    en: 'ice barrier',
+    group: 'roofing',
+    define: {
+      en: 'A self-adhering layer at the eaves that keeps melting ice from backing up under the shingles.',
+      es: 'Una capa autoadhesiva en el alero que evita que el hielo derretido se meta debajo de las tejas.',
+    },
+    es: 'barrera contra hielo',
+    avoid: [],
   },
   {
     en: 'coat',
