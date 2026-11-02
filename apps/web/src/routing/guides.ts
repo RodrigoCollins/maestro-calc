@@ -21,6 +21,7 @@ export const GUIDES = {
   'guide-contractor-license': { calculator: null },
   'guide-paint-quote': { calculator: 'paint' },
   'guide-gravel-driveway': { calculator: 'gravel' },
+  'guide-raised-bed-soil': { calculator: 'topsoil' },
 } as const satisfies Record<string, Guide>;
 
 export type GuideId = keyof typeof GUIDES;

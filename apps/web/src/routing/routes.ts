@@ -62,6 +62,10 @@ export const ROUTES = {
     en: '/guides/how-much-gravel-for-a-driveway',
     es: '/es/guias/cuanta-grava-para-una-entrada-de-autos',
   },
+  'guide-raised-bed-soil': {
+    en: '/guides/how-much-soil-for-a-raised-bed',
+    es: '/es/guias/cuanta-tierra-para-una-cama-elevada',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },
