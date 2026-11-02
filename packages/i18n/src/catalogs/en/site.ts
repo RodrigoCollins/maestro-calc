@@ -12,6 +12,8 @@ export const enSite = {
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.embed.by': 'by',
   'site.guide.cta': 'Work it out for your job',
+  'site.hub.calculators': 'Calculators',
+  'site.hub.guides': 'Guides',
   'site.guide.links': 'Learn more in our guides',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',
@@ -102,6 +104,21 @@ export const enSite = {
   'page.guide-concrete-quote.title': 'How to Quote a Concrete Job | Maestro Calc',
   'page.guide-concrete-quote.description':
     'Work out the concrete for a pour, list the forms, base, rebar and delivery, break down the work and write a concrete quote your client can check.',
+  'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
+  'page.hub-concrete.description':
+    'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',
+  'page.hub-roofing.title': 'Roofing Calculators and Guides | Maestro Calc',
+  'page.hub-roofing.description':
+    'Roof pitch and roofing calculators with a guide: measure the pitch, find the roof area in squares, bundles of shingles and the IRC minimum slopes.',
+  'page.hub-drywall.title': 'Drywall Calculators and Guides | Maestro Calc',
+  'page.hub-drywall.description':
+    'Drywall calculator and guide: sheets, joint compound and tape for a room, the levels of finish and how to quote a drywall job.',
+  'page.hub-landscaping.title': 'Landscaping Calculators | Maestro Calc',
+  'page.hub-landscaping.description':
+    'Gravel, mulch and topsoil calculators: cubic yards, tons and bags for beds, paths and bases, with metric units.',
+  'page.hub-measurement.title': 'Measurement Calculators and Guides | Maestro Calc',
+  'page.hub-measurement.description':
+    'Square footage and feet-and-inches calculators with guides: read a tape measure, add fractions, convert square feet and square meters.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
