@@ -18,7 +18,7 @@ Un dormitorio de 12 ft por 12 ft con paredes de 8 ft tiene 2 × (12 + 12) × 8 =
 ## Calcula los materiales
 
 - **Placas.** Suma el extra para cortes, un 10 por ciento para empezar, y divide entre el área de una placa: 32 pies cuadrados la de 4 × 8, 48 la de 4 × 12. El dormitorio lleva 478 × 1.1 ÷ 32 = 16.4, o sea, 17 placas de 4 × 8, u 11 placas de 4 × 12. Menos placas, y más largas, también son menos juntas para terminar.
-- **Compuesto para juntas.** Unos 9 galones por cada 1,000 pies cuadrados para una terminación estándar, según el dato de USG de dos baldes de 4.5 galones para 1,000 pies cuadrados. El dormitorio lleva unos 4.30 galones: 1 balde. Un nivel de terminación más alto lleva más.
+- **Compuesto para juntas.** Unos 9 galones por cada 1,000 pies cuadrados para una terminación estándar, según el dato de USG de dos cubetas de 4.5 galones para 1,000 pies cuadrados. El dormitorio lleva unos 4.30 galones: 1 cubeta. Un nivel de terminación más alto lleva más.
 - **Cinta para juntas.** Unos 370 pies de cinta de papel por cada 1,000 pies cuadrados, el rendimiento de la hoja técnica de USG. El dormitorio lleva unos 176.86 pies: un rollo de 500 ft.
 - **Lo que cuentas en la obra.** Los tornillos, las esquineras y las molduras dependen de la estructura, de las esquinas y del código de construcción de tu zona. Cuenta las esquinas exteriores y las molduras en la obra, y sigue la tabla de fijación del fabricante de las placas para los tornillos.
 

@@ -20,9 +20,9 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de concreto</h2>
 
-La calculadora convierte las medidas de tu vaciado en el concreto que necesitas y las bolsas que debes comprar. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+La calculadora convierte las medidas de tu colado en el concreto que necesitas y las bolsas que debes comprar. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
-1. Elige la forma del vaciado: una losa, una zapata, una columna o unos escalones. Solo ves los campos de esa forma.
+1. Elige la forma del colado: una losa, una zapata, una columna o unos escalones. Solo ves los campos de esa forma.
 2. Ingresa las medidas como las lees en la cinta: 12 ft, 12 ft 6 in o 5 ft 3 1/2 in. Un número solo se lee en la unidad que aparece junto a cada campo: pies para largo, ancho, altura y ancho de los escalones, y pulgadas para las demás medidas. Cambia a métrico para escribir metros y centímetros.
 3. Ajusta el extra por desperdicio. La calculadora empieza en 10 por ciento y lo puedes cambiar en el campo o con los dos botones.
 4. Elige el tamaño de bolsa que vas a comprar: 40, 60 u 80 lb.
