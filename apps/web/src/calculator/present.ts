@@ -214,11 +214,16 @@ export const boundText = (field: InputDescriptor, bound: string, system: UnitSys
  */
 export const outputText = (
   output: OutputDescriptor,
-  value: Money | Quantity<DimensionName>,
+  value: Money | Quantity<DimensionName> | Rational,
 ): string => {
   const { key, measure, display } = output;
+  if (measure === 'hours') {
+    throw new TypeError(`${key} is hours, which a Maestro Calc page does not show`);
+  }
   if (measure === 'money') {
-    if (isQuantity(value)) throw new TypeError(`${key} is money, not a quantity`);
+    if (isQuantity(value) || value instanceof Rational) {
+      throw new TypeError(`${key} is money, not a quantity`);
+    }
     return moneyText(value);
   }
   if (!isQuantity(value)) throw new TypeError(`${key} is a ${measure}, not money`);

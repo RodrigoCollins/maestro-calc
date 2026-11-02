@@ -99,10 +99,13 @@ export type DisplayHint =
       readonly denominator: number;
     };
 
-/** One output: `measure` is a named dimension, or `money`. Exactly one output is `primary`. */
+/**
+ * One output: `measure` is a named dimension, `money`, or `hours` (an exact Rational of hours, the
+ * measure of a time card). Exactly one output is `primary`.
+ */
 export interface OutputDescriptor {
   readonly key: string;
-  readonly measure: DimensionName | 'money';
+  readonly measure: DimensionName | 'money' | 'hours';
   readonly role: 'primary' | 'secondary' | 'intermediate';
   readonly display?: DisplayHint;
 }
@@ -132,9 +135,11 @@ export type InputsOf<I extends readonly InputDescriptor[]> = {
 /** The value of an output: a quantity of its dimension, or money. */
 export type MeasureValue<M extends OutputDescriptor['measure']> = M extends 'money'
   ? Money
-  : M extends DimensionName
-    ? Quantity<M>
-    : never;
+  : M extends 'hours'
+    ? Rational
+    : M extends DimensionName
+      ? Quantity<M>
+      : never;
 
 /** A purchase line; `qty` comes from `ceilToPurchaseUnits`. */
 export interface ShoppingLine {

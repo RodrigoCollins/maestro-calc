@@ -295,6 +295,17 @@ const rejected: Row[] = [
   row('INVALID_KEY', 'a bad second warning code', { warnings: ['big', '1abc'] }, '1abc'),
   row(
     'INVALID_DISPLAY',
+    'hours with a display',
+    withOutputs(area, {
+      key: 'worked',
+      measure: 'hours',
+      role: 'secondary',
+      display: { unit: 'ft2', format: 'decimal', places: 2 },
+    }),
+    'worked',
+  ),
+  row(
+    'INVALID_DISPLAY',
     'money with a display',
     withOutputs(area, {
       key: 'cost',
