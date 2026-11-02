@@ -18,6 +18,7 @@ export const TRUST_IDS = [
   'guide-concrete-quote',
   'guide-contractor-license',
   'guide-paint-quote',
+  'guide-gravel-driveway',
   'hub-concrete',
   'hub-roofing',
   'hub-drywall',

@@ -200,6 +200,16 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
     note: 'The gravel under a slab or a path.',
   },
   {
+    en: 'crown',
+    group: 'landscaping',
+    define: {
+      en: 'The rise of a driveway or a road at its center, so water runs off to the sides.',
+      es: 'La subida de una entrada o un camino en su centro, para que el agua corra hacia los lados.',
+    },
+    es: 'bombeo',
+    avoid: [],
+  },
+  {
     en: 'mulch',
     group: 'landscaping',
     define: {

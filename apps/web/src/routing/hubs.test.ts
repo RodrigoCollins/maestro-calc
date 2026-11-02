@@ -38,6 +38,7 @@ describe('trade hubs (hubs › Hub pages)', () => {
     });
     // spec: hubs › [HB4] the paint hub lists its calculator and its guide
     expect(hubOf('hub-paint')).toEqual({ calculators: ['paint'], guides: ['guide-paint-quote'] });
+    expect(hubOf('hub-landscaping')?.guides).toEqual(['guide-gravel-driveway']);
     expect(hubOf('concrete')).toBeUndefined();
     expect(hubOf('about')).toBeUndefined();
   });

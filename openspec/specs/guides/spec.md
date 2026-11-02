@@ -35,6 +35,11 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - GIVEN `/es/guias/como-cotizar-un-trabajo-de-pintura`
 - THEN its last box links `/es/calculadora-de-pintura` with the text of the paint calculator's heading under "Haz la cuenta para tu obra"
 
+#### Scenario: [GU12] The gravel driveway guide ends in its calculator
+- GIVEN `/guides/how-much-gravel-for-a-driveway`
+- THEN its last box links `/gravel-calculator` with the text of the gravel calculator's heading under "Work it out for your job"
+- AND `/landscaping` lists it
+
 ### Requirement: Calculator pages link their guides
 
 A calculator page that a guide ends in MUST hold, after its copy, a box with `site.guide.links` and one link per such guide in the same language, whose text is the guide's heading, in `GUIDES` order. A calculator page that no guide ends in MUST NOT hold the box. `check:site` MUST report a guide page without its end link and a calculator page without the link back.

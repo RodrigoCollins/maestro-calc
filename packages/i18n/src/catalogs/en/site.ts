@@ -127,6 +127,9 @@ export const enSite = {
   'page.guide-paint-quote.title': 'How to Quote a Painting Job | Maestro Calc',
   'page.guide-paint-quote.description':
     'Measure the walls, work out the gallons and cans, list the supplies and the prep, break down the work and write a painting quote your client can check.',
+  'page.guide-gravel-driveway.title': 'How Much Gravel for a Driveway? | Maestro Calc',
+  'page.guide-gravel-driveway.description':
+    'Plan a gravel driveway: the layers and their depth, the crown that sheds water, the gravel for the surface, and the tons and cubic yards to order.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',
