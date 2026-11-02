@@ -17,6 +17,7 @@ export const esSite = {
   'site.guide.cta': 'Haz la cuenta para tu obra',
   'site.hub.calculators': 'Calculadoras',
   'site.hub.guides': 'Guías',
+  'site.hub.more': 'Más herramientas:',
   'site.guide.links': 'Aprende más en nuestras guías',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.trust.updated': 'Última actualización',

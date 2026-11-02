@@ -14,6 +14,7 @@ export const enSite = {
   'site.guide.cta': 'Work it out for your job',
   'site.hub.calculators': 'Calculators',
   'site.hub.guides': 'Guides',
+  'site.hub.more': 'More tools:',
   'site.guide.links': 'Learn more in our guides',
   'site.footer.contactLabel': 'Contact us at',
   'site.trust.updated': 'Last updated',

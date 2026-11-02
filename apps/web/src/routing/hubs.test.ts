@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GUIDES } from './guides.ts';
-import { HUBS, hubOf } from './hubs.ts';
+import { HUBS, hubOf, hubOfCalculator } from './hubs.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES } from './templates.ts';
 
@@ -38,5 +38,12 @@ describe('trade hubs (hubs › Hub pages)', () => {
     });
     expect(hubOf('concrete')).toBeUndefined();
     expect(hubOf('about')).toBeUndefined();
+  });
+
+  // spec: hubs › [HB3] a calculator page links the hub of its trade
+  it('finds the hub of a calculator page, and none for a trade without a hub', () => {
+    expect(hubOfCalculator('gravel')).toBe('hub-landscaping');
+    expect(hubOfCalculator('roofing')).toBe('hub-roofing');
+    expect(hubOfCalculator('paint')).toBeUndefined();
   });
 });

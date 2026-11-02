@@ -40,3 +40,7 @@ const isHubId = (id: string): id is HubId => Object.hasOwn(HUBS, id);
 
 /** The hub ids, in table order: the order the home lists them. */
 export const HUB_IDS: readonly HubId[] = Object.keys(HUBS).filter(isHubId);
+
+/** The hub a calculator page belongs to, or `undefined` when its trade has no hub yet. */
+export const hubOfCalculator = (calculator: CalculatorPageId): HubId | undefined =>
+  HUB_IDS.find((id) => (HUBS[id].calculators as readonly CalculatorPageId[]).includes(calculator));

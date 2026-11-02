@@ -11,6 +11,7 @@ import { calendarDay } from '../lib/calendar-day.ts';
 import { PAGES, headStyleOf, pageView } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
 import { guidesOf } from '../routing/guides.ts';
+import { hubOfCalculator } from '../routing/hubs.ts';
 import { pathOf } from '../routing/routes.ts';
 import type { CalculatorPageId } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -46,6 +47,15 @@ const guides = await Promise.all(
     return { href: pathOf(guide, locale), title: headingOf(page.body ?? '') };
   }),
 );
+const hubId = hubOfCalculator(id);
+// the trade hub (hubs › [HB3]), named by its page title without the site name
+const hub =
+  hubId === undefined
+    ? undefined
+    : {
+        href: pathOf(hubId, locale),
+        name: text(`page.${hubId}.title`).replace(/ \| Maestro Calc$/, ''),
+      };
 const Script = SCRIPTS[id];
 const style = headStyleOf(PAGES[id]);
 ---
@@ -56,6 +66,11 @@ const style = headStyleOf(PAGES[id]);
       <Content />
     </div>
     {guides.length > 0 && <GuideLinks label={text('site.guide.links')} {guides} />}
+    {hub !== undefined && (
+      <p class="hub-link">
+        {text('site.hub.more')} <a href={hub.href}>{hub.name}</a>
+      </p>
+    )}
   </CalculatorBody>
   <Script />
 </BaseLayout>
