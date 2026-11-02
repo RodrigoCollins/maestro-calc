@@ -43,6 +43,32 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+  # second-site-foundation D2: a refactor/ branch must leave the Maestro Calc build byte-identical.
+  # The fingerprint script is copied out first because the base commit may not have it yet.
+  dist-identical:
+    if: github.event_name == 'pull_request' && startsWith(github.head_ref, 'refactor/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: cp scripts/dist-fingerprint.mjs "$RUNNER_TEMP/" && node "$RUNNER_TEMP/dist-fingerprint.mjs" apps/web/dist > "$RUNNER_TEMP/head.txt"
+      - run: git checkout --force "$BASE_SHA"
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      - run: npm ci
+      - run: npm run build
+      - run: node "$RUNNER_TEMP/dist-fingerprint.mjs" apps/web/dist > "$RUNNER_TEMP/base.txt"
+      - run: diff -u "$RUNNER_TEMP/base.txt" "$RUNNER_TEMP/head.txt"
+
   # One runner per Stryker shard (design 3.19b): the command runner reruns the shard's tests for
   # every mutant, so splitting `mutate` and the test command by module cuts the wall time.
   mutation:

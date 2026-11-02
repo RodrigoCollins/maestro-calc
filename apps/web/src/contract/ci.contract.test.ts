@@ -496,3 +496,41 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     );
   });
 });
+
+// quality-gates › Byte-identical Maestro Calc build on refactor branches (second-site-foundation D2).
+describe('CI dist-identical job', () => {
+  const job = workflow.jobs['dist-identical'];
+  const steps = job?.steps ?? [];
+  const runs = steps.flatMap((step) => (step.run === undefined ? [] : [step.run]));
+
+  it('runs only on pull requests from refactor/ branches, on its own', () => {
+    expect(job?.if).toBe(
+      "github.event_name == 'pull_request' && startsWith(github.head_ref, 'refactor/')",
+    );
+    expect(job?.needs).toBeUndefined();
+    expect(job?.['timeout-minutes']).toBeLessThanOrEqual(20);
+    expect(job?.['timeout-minutes']).toBeGreaterThan(0);
+  });
+
+  it('checks out the full history without persisting the token and sets up Node from .nvmrc', () => {
+    const checkout = steps.find((step) => step.uses?.startsWith('actions/checkout@'));
+    expect(checkout?.with).toEqual({ 'persist-credentials': false, 'fetch-depth': 0 });
+    const setup = steps.find((step) => step.uses?.startsWith('actions/setup-node@'));
+    expect(setup?.with).toMatchObject({ 'node-version-file': '.nvmrc', cache: 'npm' });
+  });
+
+  it('builds and fingerprints the head, then the base, and diffs them', () => {
+    expect(runs).toEqual([
+      'npm ci',
+      'npm run build',
+      'cp scripts/dist-fingerprint.mjs "$RUNNER_TEMP/" && node "$RUNNER_TEMP/dist-fingerprint.mjs" apps/web/dist > "$RUNNER_TEMP/head.txt"',
+      'git checkout --force "$BASE_SHA"',
+      'npm ci',
+      'npm run build',
+      'node "$RUNNER_TEMP/dist-fingerprint.mjs" apps/web/dist > "$RUNNER_TEMP/base.txt"',
+      'diff -u "$RUNNER_TEMP/base.txt" "$RUNNER_TEMP/head.txt"',
+    ]);
+    const checkoutBase = steps.find((step) => step.run === 'git checkout --force "$BASE_SHA"');
+    expect(checkoutBase?.env).toEqual({ BASE_SHA: '${{ github.event.pull_request.base.sha }}' });
+  });
+});
