@@ -58,8 +58,13 @@ Volúmenes de EE.UU. por mes (Google Ads vía seodata.dev, 2026; buckets que agr
 
 - **Competencia en inglés:** fuerte (calculator.net, Clockify, Hubstaff, CalculatorSoup, dqydj). La entrada
   es por calidad, por el recibo y por las cuentas de las deducciones.
-- **Español:** volúmenes chicos según Google Ads y casi sin herramientas de calidad. Es la diferencia, no el
-  volumen.
+- **Español (corregido el 2026-11-02):** no está vacío. Para horas trabajadas y horas extra ya aparecen
+  Clockify, Harvest (decenas de páginas programáticas), Omni, ClickUp, MiniWebtool, Everhour y Turnozo, casi
+  todas traducciones de SaaS genéricas o pensadas para España. **El Cheque Claro** (chequeclaro.com, registrado
+  el 2026-08-22, solo español, 65 páginas) apunta al mismo público con sueldo neto por estado (51 páginas
+  programáticas), ganancias de apps (Uber, DoorDash), W-4, 1099 y propinas sin impuesto. La diferencia
+  posible: inglés + español, la tarjeta semanal con el recibo, FLSA y California bien explicados, y calidad
+  en vez de páginas por estado. Hay que medirla con Ahrefs antes de comprar el dominio.
 - **Validación pendiente (fase A, no se hizo en Maestro Calc y se nota):** dificultad de cada keyword, SERP
   real y volumen en español. **[Rodrigo]** aprueba el mes de Ahrefs o Semrush (~USD 130); sirve también para
   Maestro Calc.
