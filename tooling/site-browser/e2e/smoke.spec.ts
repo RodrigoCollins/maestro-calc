@@ -28,8 +28,9 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
-// A calculator page has about twenty controls between the header and the footer.
-const MAX_TABS = 40;
+// A calculator page has up to about thirty controls between the header and the footer, and the
+// footer holds thirteen links; reaching the skip link from the open menu wraps the whole page.
+const MAX_TABS = 60;
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
