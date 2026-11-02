@@ -6,7 +6,13 @@ import { multiply } from '../units/ops.ts';
 import { quantity, type Quantity } from '../units/quantity.ts';
 import type { Result } from '../result.ts';
 import { defineCalculator } from './define.ts';
-import type { FieldError, InputDescriptor, MoneyDescriptor, ValueOf } from './descriptors.ts';
+import type {
+  ClockDescriptor,
+  FieldError,
+  InputDescriptor,
+  MoneyDescriptor,
+  ValueOf,
+} from './descriptors.ts';
 
 // A `fixture-box`-shaped definition written inline (the shared fixture is built in task 9.5): the
 // `const` generics must keep the keys, kinds, measures and option ids as literals.
@@ -143,13 +149,14 @@ describe('calculator types (calculator-contract › Field kinds and descriptors)
     box.run({}, { unitSystem: 'martian' });
   });
 
-  // The last branch of `ValueOf` names the money kind, so a kind added to `InputDescriptor` without
+  // The last branch of `ValueOf` names the clock kind, so a kind added to `InputDescriptor` without
   // a branch resolves to `never` instead of silently being money. (The constraint on `ValueOf`
-  // keeps a type test from naming an unknown kind, so the union and the money case pin it.)
+  // keeps a type test from naming an unknown kind, so the union and the clock case pin it.)
   it('maps each descriptor kind to its value type', () => {
     expectTypeOf<ValueOf<MoneyDescriptor>>().toEqualTypeOf<Money>();
+    expectTypeOf<ValueOf<ClockDescriptor>>().toEqualTypeOf<number | null>();
     expectTypeOf<ValueOf<InputDescriptor>>().toEqualTypeOf<
-      Quantity<'length'> | number | Rational | string | boolean | Money
+      Quantity<'length'> | number | Rational | string | boolean | Money | null
     >();
   });
 });

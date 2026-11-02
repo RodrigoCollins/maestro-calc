@@ -155,3 +155,21 @@ describe('url value parsers (url-state-codec › Decoding)', () => {
     expect(readUrlValue(openLength, '%31'.repeat(85))).toEqual(ones(85));
   });
 });
+
+// core-clock-time: a time of day travels as `HHMM`, no time as `-`.
+describe('url value parser of a clock field (core-clock-time)', () => {
+  const clock = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 } as const;
+
+  it.each([
+    ['0730', 450],
+    ['0000', 0],
+    ['2359', 1439],
+    ['-', null],
+  ])('reads %s as %j', (raw, expected) => {
+    expect(readUrlValue(clock, raw)).toEqual(expected);
+  });
+
+  it.each(['730', '2400', '0760', '7:30', '7am', '', '--', '0730-'])('rejects %j', (raw) => {
+    expect(readUrlValue(clock, raw)).toBeUndefined();
+  });
+});

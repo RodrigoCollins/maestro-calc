@@ -29,6 +29,7 @@ const unbounded = defineCalculator({
     { kind: 'select', key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y-z'] },
     { kind: 'boolean', key: 'flg', urlKey: 'e', default: true },
     { kind: 'money', key: 'prc', urlKey: 'f', default: usd(Rational.of(249, 50)) },
+    { kind: 'clock', key: 'clk', urlKey: 'g', default: 420 },
   ],
   outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
   compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),
@@ -64,6 +65,7 @@ const unboundedArb: fc.Arbitrary<Unbounded> = fc.record({
   sel: fc.constantFrom('x', 'y-z'),
   flg: fc.boolean(),
   prc: rationalArb.map((n) => usd(n.abs())),
+  clk: fc.oneof(fc.constant(null), fc.integer({ min: 0, max: 1439 })),
 });
 
 /** Pieces that make a query hard: escapes, separators, signs, unicode and valid-looking text. */
@@ -76,6 +78,7 @@ const TOKENS = [
   'd',
   'e',
   'f',
+  'g',
   'z',
   '=',
   '&',
@@ -101,6 +104,8 @@ const TOKENS = [
   '100',
   '1200',
   '1201',
+  '0730',
+  '2400',
   'm',
   'x',
   'y',
@@ -115,7 +120,7 @@ const TOKENS = [
   '999999999999999999999',
 ];
 /** The URL keys the two calculators declare, plus the reserved ones. */
-const KNOWN_KEYS = ['v', 'u', 'a', 'b', 'c', 'd', 'e', 'f'];
+const KNOWN_KEYS = ['v', 'u', 'a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const queryArb: fc.Arbitrary<string> = fc.oneof(
   fc.string({ maxLength: 40 }),
   fc.array(fc.constantFrom(...TOKENS), { maxLength: 30 }).map((parts) => parts.join('')),
@@ -152,6 +157,10 @@ const allowed = (input: InputDescriptor, value: unknown): boolean => {
       return findOption(input, value) !== undefined;
     case 'boolean':
       return typeof value === 'boolean';
+    case 'clock':
+      return (
+        value === null || (Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 1439)
+      );
   }
 };
 

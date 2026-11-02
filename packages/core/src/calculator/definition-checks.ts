@@ -107,6 +107,15 @@ const checkSelect = (ensure: Ensure, input: SelectDescriptor): void => {
 
 const checkInput = (ensure: Ensure, input: InputDescriptor): void => {
   if (input.kind === 'boolean') return;
+  if (input.kind === 'clock') {
+    // a time of day is a whole minute of the day, 0..1439, or no time
+    ensure(
+      input.default === null || isWithin(input.default, 0, 1439),
+      'DEFAULT_INVALID',
+      input.key,
+    );
+    return;
+  }
   if (input.kind === 'select') {
     checkSelect(ensure, input);
     return;

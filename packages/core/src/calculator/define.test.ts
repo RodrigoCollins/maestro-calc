@@ -131,6 +131,7 @@ const rejection = (patch: Record<string, unknown>): unknown => {
   return undefined;
 };
 const withInputs = (...inputs: unknown[]): Record<string, unknown> => ({ inputs });
+const clockField = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 };
 const withOutputs = (...outputs: unknown[]): Record<string, unknown> => ({ outputs });
 const withSide = (patch: Record<string, unknown>): Record<string, unknown> =>
   withInputs({ ...side, ...patch });
@@ -229,6 +230,9 @@ const rejected: Row[] = [
   row('DEFAULT_INVALID', 'negative count', withCount({ default: -1 }), 'cnt'),
   row('DEFAULT_INVALID', 'fractional count', withCount({ default: 1.5 }), 'cnt'),
   row('DEFAULT_INVALID', 'select outside options', withInputs({ ...select, default: 'z' }), 'sel'),
+  row('DEFAULT_INVALID', 'clock past the day', withInputs({ ...clockField, default: 1440 }), 'tin'),
+  row('DEFAULT_INVALID', 'negative clock', withInputs({ ...clockField, default: -1 }), 'tin'),
+  row('DEFAULT_INVALID', 'fractional clock', withInputs({ ...clockField, default: 7.5 }), 'tin'),
   row(
     'DEFAULT_INVALID',
     'percent above 100',

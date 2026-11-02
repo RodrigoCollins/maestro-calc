@@ -11,6 +11,7 @@ import { CoreError } from '../errors.ts';
 import { isMoney } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { isQuantityOf } from '../units/quantity.ts';
+import { clockText } from '../format/clock.ts';
 import { percentDecode, readUrlValue, WHOLE_NUMBER, type UrlValue } from './url-values.ts';
 
 /** The parts of a calculator that the codec reads. */
@@ -29,6 +30,12 @@ export interface StateLocus {
   readonly id: string;
   readonly field: string;
 }
+
+/** The URL text of a clock field with no time (a day off). */
+const NO_TIME = '-';
+
+const isMinuteOfDay = (value: unknown): value is number =>
+  typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 1439;
 
 /** An object (a list included) can hold fields; null, a primitive and a function cannot. */
 const isContainer = (value: unknown): value is object =>
@@ -56,6 +63,8 @@ export const urlTextOf = (input: InputDescriptor, value: unknown): string | unde
       return findOption(input, value);
     case 'boolean':
       return typeof value === 'boolean' ? (value ? '1' : '0') : undefined;
+    case 'clock':
+      return value === null ? NO_TIME : isMinuteOfDay(value) ? clockText(value) : undefined;
   }
 };
 
@@ -150,8 +159,12 @@ const resultOf = (
   unitSystem: UnitSystem,
   issues: readonly UrlIssue[],
 ): DecodeResult<readonly InputDescriptor[]> => {
+  // `=== undefined`, not `??`: a decoded `null` (a clock with no time) is a value, not an absent field
   const state = Object.fromEntries(
-    inputs.map((input) => [input.key, values.get(input.key) ?? input.default]),
+    inputs.map((input) => {
+      const value = values.get(input.key);
+      return [input.key, value === undefined ? input.default : value];
+    }),
   );
   return Object.freeze({
     state: Object.freeze(state),

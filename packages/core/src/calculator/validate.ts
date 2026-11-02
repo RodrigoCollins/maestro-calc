@@ -1,5 +1,6 @@
 import type { FieldErrorCode } from '../error-codes.ts';
 import { CoreError } from '../errors.ts';
+import { parseClock } from '../format/clock.ts';
 import { parseLength } from '../format/length-parser/parser.ts';
 import { isMoney } from '../money/money.ts';
 import { parseMoney } from '../money/parse.ts';
@@ -12,6 +13,7 @@ import type { Unit } from '../units/unit.ts';
 import { checkAmount, findOption } from './constraints.ts';
 import type {
   BoundedDescriptor,
+  ClockDescriptor,
   CountDescriptor,
   FieldError,
   InputDescriptor,
@@ -125,6 +127,24 @@ const readSelect = (input: SelectDescriptor, raw: unknown): Result<Value, FieldF
   return option === undefined ? err({ code: 'UNKNOWN_OPTION' }) : ok(option);
 };
 
+/** The last minute of a day: a time of day is 0..1439 minutes since midnight. */
+const LAST_MINUTE = 1439;
+
+/** A time of day, a whole number of minutes in a day, or `null`; blank text is `null`, a day off. */
+const readClock = (_input: ClockDescriptor, raw: unknown): Result<Value, FieldFailure> => {
+  if (raw === null) return ok(null);
+  if (typeof raw === 'number') {
+    return Number.isInteger(raw) && raw >= 0 && raw <= LAST_MINUTE
+      ? ok(raw)
+      : err({ code: 'MALFORMED' });
+  }
+  if (typeof raw !== 'string') return err({ code: 'MALFORMED' });
+  const text = raw.replace(SURROUNDING_WS, '');
+  if (text === '') return ok(null);
+  const minutes = parseClock(text);
+  return minutes.ok ? minutes : err({ code: 'MALFORMED' });
+};
+
 /**
  * The value of one field: absent or `undefined` is the default, a long string is `TOO_LONG`, and
  * otherwise the parser of its kind decides. Nothing is coerced.
@@ -149,6 +169,8 @@ const readField = (
       return typeof raw === 'boolean' ? ok(raw) : err({ code: 'MALFORMED' });
     case 'money':
       return readMoney(input, raw);
+    case 'clock':
+      return readClock(input, raw);
   }
 };
 

@@ -61,6 +61,15 @@ export type MoneyDescriptor = Base & {
 };
 
 /**
+ * A time of day in minutes since midnight (0..1439), read from `7:00 am`, `16:30` or `0730`; `null`
+ * is no time (an empty field, a day off).
+ */
+export type ClockDescriptor = Base & {
+  readonly kind: 'clock';
+  readonly default: number | null;
+};
+
+/**
  * One input of a calculator. The kinds are closed: a form and the URL codec are driven from these
  * descriptors alone. Bounds are inclusive.
  */
@@ -70,7 +79,8 @@ export type InputDescriptor =
   | PercentDescriptor
   | SelectDescriptor
   | BooleanDescriptor
-  | MoneyDescriptor;
+  | MoneyDescriptor
+  | ClockDescriptor;
 
 /** The kinds whose value is an amount with inclusive bounds. */
 export type BoundedDescriptor =
@@ -110,7 +120,9 @@ export type ValueOf<D extends InputDescriptor> = D extends { readonly kind: 'len
           ? boolean
           : D extends { readonly kind: 'money' }
             ? Money
-            : never;
+            : D extends { readonly kind: 'clock' }
+              ? number | null
+              : never;
 
 /** The record `compute` receives: one entry per declared input. */
 export type InputsOf<I extends readonly InputDescriptor[]> = {
