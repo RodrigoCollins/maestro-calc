@@ -317,6 +317,18 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
   );
 
   const link = { href: '/x', label: 'X' };
+  const footerProps = {
+    homeHref: '/',
+    tagline: 'Tagline',
+    contactLabel: 'Contact',
+    email: 'a@b.c',
+    hubsLabel: 'By trade',
+    hubs: [link],
+    linksLabel: 'More',
+    links: [link],
+    note: 'Note',
+  };
+
   it.each([
     ['SkipLink', SkipLink, { label: 'Skip' }],
     ['Wordmark', Wordmark, { href: '/' }],
@@ -325,7 +337,7 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
       LanguageSwitch,
       { href: '/es', lang: 'es', hreflang: 'es-US', label: 'Español' },
     ],
-    ['SiteFooter', SiteFooter, { contactLabel: 'Contact', email: 'a@b.c', links: [link] }],
+    ['SiteFooter', SiteFooter, footerProps],
     [
       'SiteHeader',
       SiteHeader,
@@ -345,7 +357,7 @@ describe('touch targets (site-shell › Focus visibility and touch targets)', ()
 
   // blueprint-panel S4c: a class no stylesheet selects is bytes on every page
   it.each([
-    ['SiteFooter', SiteFooter, { contactLabel: 'Contact', email: 'a@b.c', links: [link] }],
+    ['SiteFooter', SiteFooter, footerProps],
     [
       'SiteHeader',
       SiteHeader,

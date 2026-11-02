@@ -245,6 +245,35 @@ describe('header and footer links (site-shell › [SS12], [SS13])', () => {
   });
 });
 
+describe('trade hubs in the footer (hubs › footer)', () => {
+  /** The fixture with one routed hub, which every footer then lists before the site pages. */
+  const hubSite = () => {
+    const site = fixtureSite();
+    return {
+      ...site,
+      routes: { ...site.routes, 'hub-concrete': { en: '/concrete', es: '/es/concreto' } },
+    };
+  };
+  const hubRulesOf = (edit: (html: string) => string): string[] => {
+    const site = hubSite();
+    const dist = validDist(site);
+    dist.set('es.html', edit(dist.get('es.html') ?? ''));
+    return structureProblems(contextOf(dist, site))
+      .filter((entry) => entry.file === 'es.html')
+      .map((entry) => entry.rule);
+  };
+
+  it('accepts a footer that lists the routed hubs before the site pages', () => {
+    expect(hubRulesOf((h) => h)).toEqual([]);
+  });
+
+  it('fails a footer that leaves a routed hub out', () => {
+    expect(
+      hubRulesOf((h) => h.replace('<li><a href="/es/concreto">hub-concrete</a></li>', '')),
+    ).toEqual(['footer-links']);
+  });
+});
+
 describe('favicon (site-shell › [SS17])', () => {
   it('requires the icon link in the head', () => {
     expect(

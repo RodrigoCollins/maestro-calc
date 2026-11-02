@@ -6,7 +6,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
 import SkipLink from '../components/SkipLink.astro';
 import { siteText } from '../lib/site-text.ts';
-import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
+import { FOOTER_HUBS, FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { LOCALE_TAGS, LOCALES, pathOf } from '../routing/routes.ts';
 import type { ShellPageId } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
@@ -33,6 +33,10 @@ const language = { ...switchFor(id, locale), label: text('site.switch.label') };
 const headerLinks = linksFor(HEADER_PAGES, locale).map((link) => ({
   href: link.href,
   label: text(`site.nav.${link.id}`),
+}));
+const footerHubs = linksFor(FOOTER_HUBS, locale).map((link) => ({
+  href: link.href,
+  label: text(`site.footer.${link.id}`),
 }));
 const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
   href: link.href,
@@ -82,9 +86,15 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
       <slot />
     </main>
     <SiteFooter
+      homeHref={pathOf('home', locale)}
+      tagline={text('site.tagline')}
       contactLabel={text('site.footer.contactLabel')}
       email={SITE.contactEmail}
+      hubsLabel={text('site.footer.hubs')}
+      hubs={footerHubs}
+      linksLabel={text('site.footer.more')}
       links={footerLinks}
+      note={text('site.footer.note')}
     />
   </body>
 </html>

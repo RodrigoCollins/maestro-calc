@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Locale } from '@maestro-calc/i18n';
-import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../routing/links.ts';
+import { FOOTER_HUBS, FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../routing/links.ts';
 import {
   alternatesOf,
   LOCALE_TAGS,
@@ -302,7 +302,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
       .map(({ id: target, href }) => `<li><a href="${href}">${target}</a></li>`)
       .join('');
   const headerLinks = links(HEADER_PAGES);
-  const footerLinks = links(FOOTER_PAGES);
+  const footerLinks = links([...FOOTER_HUBS, ...FOOTER_PAGES]);
   const catalog = site.catalogs[locale];
   const calculator = site.calculatorPages.includes(id);
   return [

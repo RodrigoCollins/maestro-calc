@@ -1,7 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
-import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
+import {
+  FOOTER_HUBS,
+  FOOTER_PAGES,
+  HEADER_PAGES,
+  linksFor,
+} from '../../../apps/web/src/routing/links.ts';
 import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
 import { ANALYTICS_PATH, isAnalyticsLoader, isAnalyticsTraffic } from './analytics.ts';
 import {
@@ -23,8 +28,9 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
-// A calculator page has about twenty controls between the header and the footer.
-const MAX_TABS = 40;
+// A calculator page has up to about thirty controls between the header and the footer, and the
+// footer holds thirteen links; reaching the skip link from the open menu wraps the whole page.
+const MAX_TABS = 60;
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
@@ -152,7 +158,10 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         const hrefs = await shellLinks(page).evaluateAll((links) =>
           links.map((link) => link.getAttribute('href')),
         );
-        for (const { href } of linksFor([...HEADER_PAGES, ...FOOTER_PAGES], locale)) {
+        for (const { href } of linksFor(
+          [...HEADER_PAGES, ...FOOTER_HUBS, ...FOOTER_PAGES],
+          locale,
+        )) {
           expect(hrefs).toContain(href);
         }
         for (let index = 0; index < count; index += 1) {

@@ -85,3 +85,30 @@ describe('TrustPageView (trust-pages › Visible update date, Owner-review marki
     },
   );
 });
+
+// guides: the kicker names the trade and the reading time; the index lists the sections
+describe('TrustPageView guide header and index (guides)', () => {
+  it('opens a guide with its kind, its trade hub and a reading time', async () => {
+    const document = await render({ id: 'guide-roofing-quote', locale: 'es' });
+    const kicker = document.querySelector('main .guide-kicker');
+    expect(kicker?.text).toContain('Guía');
+    expect(kicker?.text).toMatch(/\d+ min de lectura/);
+    expect(kicker?.querySelector('a')?.getAttribute('href')).toBe('/es/techos');
+  });
+
+  it('names no hub for a guide that ends in the home', async () => {
+    const document = await render({ id: 'guide-contractor-license', locale: 'en' });
+    expect(document.querySelector('main .guide-kicker a')).toBeNull();
+  });
+
+  it('indexes every h2 of a guide by its anchor, and no other page gets an index', async () => {
+    const document = await render({ id: 'guide-raised-bed-soil', locale: 'en' });
+    const ids = document.querySelectorAll('main .prose h2').map((h) => `#${h.id}`);
+    expect(ids.length).toBeGreaterThan(2);
+    expect(
+      document.querySelectorAll('main .guide-toc a').map((a) => a.getAttribute('href')),
+    ).toEqual(ids);
+    const about = await render({ id: 'about', locale: 'en' });
+    expect(about.querySelector('.guide-toc, .guide-kicker')).toBeNull();
+  });
+});

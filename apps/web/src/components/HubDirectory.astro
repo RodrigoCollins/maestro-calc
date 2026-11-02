@@ -4,7 +4,7 @@ interface Props {
   calculatorsLabel: string;
   guidesLabel: string;
   calculators: readonly { href: string; title: string; summary: string }[];
-  guides: readonly { href: string; title: string }[];
+  guides: readonly { href: string; title: string; summary: string }[];
 }
 const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
 ---
@@ -24,10 +24,13 @@ const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
   {guides.length > 0 && (
     <>
       <h2>{guidesLabel}</h2>
-      <ul>
-        {guides.map(({ href, title }) => (
-          <li>
-            <a {href}>{title}</a>
+      <ul class="hub-cards" role="list">
+        {guides.map(({ href, title, summary }) => (
+          <li class="hub-card hub-card-guide">
+            <a class="tap-target" {href}>
+              {title}
+            </a>
+            <p>{summary}</p>
           </li>
         ))}
       </ul>
@@ -49,6 +52,18 @@ const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
     border: 2px solid var(--color-text);
     border-radius: 4px;
     background: var(--color-surface);
+  }
+
+  /* A guide card reads as an article: an orange edge instead of the full ink frame. */
+  .hub-card-guide {
+    border: 0;
+    border-left: 6px solid var(--color-accent);
+  }
+
+  @media (min-width: 48rem) {
+    .hub-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .hub-card a {

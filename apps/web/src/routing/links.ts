@@ -1,4 +1,5 @@
 import type { Locale } from '@maestro-calc/i18n';
+import { HUB_IDS } from './hubs.ts';
 import { pathOf, ROUTES } from './routes.ts';
 import type { RouteTable } from './routes.ts';
 
@@ -23,7 +24,10 @@ export const linksFor = <Id extends string>(
 /** Pages offered in the header navigation, in order, when they exist in the table. */
 export const HEADER_PAGES = ['methodology', 'about'] as const;
 
-/** Pages offered in the footer, in order, when they exist in the table. */
+/** The trade hubs the footer lists first, in the order of the hub table. */
+export const FOOTER_HUBS = HUB_IDS;
+
+/** Pages offered in the footer after the hubs, in order, when they exist in the table. */
 export const FOOTER_PAGES = [
   'embed-calculators',
   'glossary',

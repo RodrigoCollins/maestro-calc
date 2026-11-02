@@ -114,23 +114,65 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(links.map((link) => link.text.trim())).toEqual(labels);
   });
 
-  // spec: site-shell › [SS13] footer links from the real table
+  // spec: site-shell › [SS13] footer links from the real table: the trade hubs, then the site pages
   it.each([
     [
       'en',
-      ['/embed-calculators', '/construction-glossary', '/privacy', '/terms', '/contact'],
-      ['Embed our calculators', 'Construction glossary', 'Privacy', 'Terms', 'Contact'],
+      [
+        '/concrete',
+        '/roofing',
+        '/drywall',
+        '/landscaping',
+        '/measurement',
+        '/painting',
+        '/embed-calculators',
+        '/construction-glossary',
+        '/privacy',
+        '/terms',
+        '/contact',
+      ],
+      [
+        'Concrete',
+        'Roofing',
+        'Drywall',
+        'Landscaping',
+        'Measurement',
+        'Painting',
+        'Embed our calculators',
+        'Construction glossary',
+        'Privacy',
+        'Terms',
+        'Contact',
+      ],
     ],
     [
       'es',
       [
+        '/es/concreto',
+        '/es/techos',
+        '/es/drywall',
+        '/es/jardineria',
+        '/es/medidas',
+        '/es/pintura',
         '/es/calculadoras-para-tu-sitio',
         '/es/glosario-de-construccion',
         '/es/privacidad',
         '/es/terminos',
         '/es/contacto',
       ],
-      ['Calculadoras para tu sitio', 'Glosario de obra', 'Privacidad', 'Términos', 'Contacto'],
+      [
+        'Concreto',
+        'Techos',
+        'Drywall',
+        'Jardinería',
+        'Medidas',
+        'Pintura',
+        'Calculadoras para tu sitio',
+        'Glosario de obra',
+        'Privacidad',
+        'Términos',
+        'Contacto',
+      ],
     ],
   ] as const)('lists the footer links of the table in %s', async (locale, hrefs, labels) => {
     const { document } = await render(locale);

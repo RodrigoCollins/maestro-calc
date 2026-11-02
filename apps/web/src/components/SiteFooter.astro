@@ -1,53 +1,140 @@
 ---
+/**
+ * The site footer: the brand and how to reach us, the trade hubs, then the site pages. The page has
+ * one navigation landmark (the header), so the link groups are labelled lists, not `nav`s.
+ */
 interface Props {
+  homeHref: string;
+  tagline: string;
   contactLabel: string;
   email: string;
+  hubsLabel: string;
+  hubs: readonly { href: string; label: string }[];
+  linksLabel: string;
   links: readonly { href: string; label: string }[];
+  note: string;
 }
-const { contactLabel, email, links } = Astro.props;
+const { homeHref, tagline, contactLabel, email, hubsLabel, hubs, linksLabel, links, note } =
+  Astro.props;
 ---
 
 <footer class="site-footer">
-  <p>
-    {contactLabel}{' '}
-    <a class="tap-target" href={`mailto:${email}`}>
-      {email}
-    </a>
-  </p>
-  {links.length > 0 && (
-    <ul>
-      {links.map(({ href, label }) => (
-        <li>
-          <a class="tap-target" {href}>
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  )}
+  <div class="site-footer-grid">
+    <div class="site-footer-brand">
+      <a class="site-footer-home tap-target" href={homeHref}>
+        Maestro Calc
+      </a>
+      <p>{tagline}</p>
+      <p>
+        {contactLabel}{' '}
+        <a class="tap-target" href={`mailto:${email}`}>
+          {email}
+        </a>
+      </p>
+    </div>
+    {hubs.length > 0 && (
+      <div class="site-footer-group">
+        <p class="site-footer-heading" id="footer-hubs">
+          {hubsLabel}
+        </p>
+        <ul aria-labelledby="footer-hubs">
+          {hubs.map(({ href, label }) => (
+            <li>
+              <a class="tap-target" {href}>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+    {links.length > 0 && (
+      <div class="site-footer-group">
+        <p class="site-footer-heading" id="footer-links">
+          {linksLabel}
+        </p>
+        <ul aria-labelledby="footer-links">
+          {links.map(({ href, label }) => (
+            <li>
+              <a class="tap-target" {href}>
+                {label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+  <p class="site-footer-note">{note}</p>
 </footer>
 
 <style is:global>
-  /* One rule above the footer, as the mockups: the line closes the page, the spacing stays tight. */
+  /* An ink band that closes every page: the brand and contact first, then two link groups that sit
+     side by side from tablet width. Text is plan paper on ink; group labels are safety orange. */
   .site-footer {
-    max-width: var(--page-width);
-    margin: var(--space-5) auto 0;
-    padding: var(--space-3);
-    border-top: 1.5px solid var(--color-line);
-    color: var(--color-text-secondary);
+    margin-top: var(--space-5);
+    padding: var(--space-5) var(--space-3) var(--space-4);
+    background: var(--color-text);
+    color: var(--color-ground);
     font-size: var(--text-small);
+  }
+
+  .site-footer a {
+    color: var(--color-ground);
+  }
+
+  .site-footer-grid,
+  .site-footer-note {
+    max-width: var(--page-width);
+    margin-inline: auto;
+  }
+
+  .site-footer-grid {
+    display: grid;
+    gap: var(--space-4);
   }
 
   .site-footer p {
     margin: 0 0 var(--space-2);
   }
 
+  .site-footer-home {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .site-footer-heading {
+    color: var(--color-accent);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
   .site-footer ul {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-4);
+    gap: 0 var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .site-footer .site-footer-note {
+    margin: var(--space-4) auto 0;
+    padding-top: var(--space-3);
+    border-top: 1px solid rgb(238 241 239 / 25%);
+    opacity: 0.85;
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer-grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+
+    .site-footer ul {
+      flex-direction: column;
+    }
   }
 </style>
