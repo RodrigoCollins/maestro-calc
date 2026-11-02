@@ -9,6 +9,7 @@ import { glyphProblems } from './woff2-cmap.ts';
 import type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
 import { embedProblems } from './embed.ts';
 import { guideProblems } from './guides.ts';
+import { hubProblems } from './hubs.ts';
 
 export type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
 export { budgetSummary } from './budgets.ts';
@@ -36,6 +37,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...budgetProblems(context),
     ...embedProblems(context),
     ...guideProblems(context),
+    ...hubProblems(context),
     ...glyphProblems(buildBytes.fonts),
   ];
 };

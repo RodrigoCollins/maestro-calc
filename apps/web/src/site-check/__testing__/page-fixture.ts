@@ -102,6 +102,7 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
     calculatorPages: [],
     externalLinks: {},
     guides: {},
+    hubs: {},
   };
 };
 
@@ -177,6 +178,7 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     `<ul>${(site.externalLinks[id] ?? [QUIKRETE_URL, NIST_URL]).map((url) => `<li><a href="${url}" rel="external noreferrer">${SOURCE_NAMES[url] ?? url}</a></li>`).join('')}</ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
     guideLinksOf(id, locale, site),
+    hubLinkOf(id, locale, site),
     '</main>',
   ].join('');
 };
@@ -189,6 +191,22 @@ const guideLinksOf = (id: string, locale: Locale, site: Site): string => {
   return items.length === 0
     ? ''
     : `<aside class="guide-links" aria-label="Guides"><p>Guides</p><ul>${items.join('')}</ul></aside>`;
+};
+
+/** The line of a calculator page that links its trade hub, or '' when no hub lists it. */
+const hubLinkOf = (id: string, locale: Locale, site: Site): string => {
+  const hub = Object.keys(site.hubs).find((candidate) => site.hubs[candidate]?.includes(id));
+  return hub === undefined
+    ? ''
+    : `<p class="hub-link">More tools: <a href="${pathOf(hub, locale, site.routes)}">${hub}</a></p>`;
+};
+
+/** The directory of a hub page, one link per calculator it lists, or '' for any other page. */
+const hubDirectoryOf = (id: string, locale: Locale, site: Site): string => {
+  const calculators = site.hubs[id];
+  return calculators === undefined
+    ? ''
+    : `<section class="hub-directory" aria-label="Calculators"><h2>Calculators</h2><ul>${calculators.map((calculator) => `<li><a href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></li>`).join('')}</ul></section>`;
 };
 
 /** The box a guide page ends in, linking its calculator page, or '' for any other page. */
@@ -316,7 +334,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

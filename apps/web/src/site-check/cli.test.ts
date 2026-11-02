@@ -19,6 +19,7 @@ import { ROUTES } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { GUIDES } from '../routing/guides.ts';
+import { HUBS } from '../routing/hubs.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
   GAF_SHINGLES_URL,
@@ -79,6 +80,7 @@ const site = {
   guides: Object.fromEntries(
     Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator]),
   ),
+  hubs: Object.fromEntries(Object.entries(HUBS).map(([id, { calculators }]) => [id, calculators])),
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {
