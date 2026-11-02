@@ -182,6 +182,16 @@ describe('BaseLayout (site-shell › Base layout)', () => {
     expect(SITE.adsenseClient).toMatch(/^ca-pub-\d{16}$/);
   });
 
+  // pinterest-verify: the domain claim of the Pinterest business account, in the head
+  it('names the Pinterest domain verification in one meta tag of the head', async () => {
+    const { document } = await render('es');
+    const tags = document.querySelectorAll('meta[name="p:domain_verify"]');
+    expect(tags).toHaveLength(1);
+    expect(tags[0]?.getAttribute('content')).toBe(SITE.pinterestVerify);
+    expect(tags[0]?.parentNode?.tagName).toBe('HEAD');
+    expect(SITE.pinterestVerify).toMatch(/^[0-9a-f]{32}$/);
+  });
+
   // analytics-gtm: one deferred same-origin tag ends the head on every page, with the container id
   // and the production host as data; it has no body (the CSP allows no inline script)
   it('ends the head with the one analytics tag', async () => {

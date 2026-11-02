@@ -53,6 +53,7 @@ const footerLinks = linksFor(FOOTER_PAGES, locale).map((link) => ({
     <link rel="manifest" href={MANIFEST_PATHS[locale]} />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content={THEME_COLOR} />
+    {SITE.pinterestVerify !== '' && <meta name="p:domain_verify" content={SITE.pinterestVerify} />}
     {SITE.adsenseClient !== '' && (
       <meta name="google-adsense-account" content={SITE.adsenseClient} />
     )}
