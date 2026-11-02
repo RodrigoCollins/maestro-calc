@@ -33,7 +33,7 @@ La calculadora te dice cuántas placas de drywall lleva un cuarto, y cuánto com
 5. Deja el 10 por ciento de extra para cortes y roturas, o cámbialo.
 6. Para ver el costo, escribe el precio por placa.
 
-El resultado empieza por el área a cubrir. También muestra la misma área en metros cuadrados, los galones de compuesto para juntas, los pies de cinta, y la lista de compras: las placas, los baldes de 4.5 galones de compuesto y los rollos de cinta de 500 ft.
+El resultado empieza por el área a cubrir. También muestra la misma área en metros cuadrados, los galones de compuesto para juntas, los pies de cinta, y la lista de compras: las placas, las cubetas de 4.5 galones de compuesto y los rollos de cinta de 500 ft.
 
 Para trabajar en métrico, toca Métrico (m, cm). Las medidas se leen entonces en metros, y el resultado empieza por los metros cuadrados. Cambiar de unidades nunca cambia tus números, solo cómo se escriben. Usa Copiar enlace para mandar tus números exactos a un socio, un cliente o el proveedor, y el enlace English para abrir los mismos números en inglés.
 
@@ -44,17 +44,17 @@ La calculadora va del tamaño del cuarto a lo que compras:
 - Área de paredes = 2 × (largo + ancho) × altura, menos 20 pies cuadrados por puerta y 15 pies cuadrados por ventana, nunca menos de cero.
 - Área a cubrir = área de paredes, más largo × ancho del techo cuando lo incluyes.
 - Placas = área × (1 + extra ÷ 100) ÷ el área de una placa (32 o 48 pies cuadrados), redondeado hacia arriba.
-- Compuesto para juntas = área × 9 galones por cada 1,000 pies cuadrados; baldes = galones ÷ 4.5, redondeado hacia arriba.
+- Compuesto para juntas = área × 9 galones por cada 1,000 pies cuadrados; cubetas = galones ÷ 4.5, redondeado hacia arriba.
 - Cinta para juntas = área × 370 pies por cada 1,000 pies cuadrados; rollos = pies ÷ 500, redondeado hacia arriba.
 
-El rendimiento del compuesto viene de USG, que indica que unos dos baldes de 4.5 galones de su compuesto liviano para todo uso terminan 1,000 pies cuadrados. El de la cinta es la cobertura de la hoja técnica de USG para su cinta de papel. Los dos son aproximados para una terminación estándar; una terminación más lisa lleva más compuesto.
+El rendimiento del compuesto viene de USG, que indica que unas dos cubetas de 4.5 galones de su compuesto liviano para todo uso terminan 1,000 pies cuadrados. El de la cinta es la cobertura de la hoja técnica de USG para su cinta de papel. Los dos son aproximados para una terminación estándar; una terminación más lisa lleva más compuesto.
 
 Ejemplo resuelto: un dormitorio de 12 ft por 12 ft con paredes de 8 ft, una puerta, dos ventanas, paredes y techo, placas de 4 × 8 y 10 por ciento de extra.
 
 - Las paredes son 2 × (12 + 12) × 8 = 384 pies cuadrados. Una puerta y dos ventanas descuentan 50, así que quedan 334.
 - El techo suma 12 × 12 = 144, así que el área a cubrir es 478.00 pies cuadrados, o 44.41 metros cuadrados.
 - Con 10 por ciento de extra son 525.8 pies cuadrados, y 525.8 ÷ 32 = 16.4, así que compras 17 placas.
-- Compuesto para juntas: 478 × 9 ÷ 1,000 = 4.30 galones, así que 1 balde.
+- Compuesto para juntas: 478 × 9 ÷ 1,000 = 4.30 galones, así que 1 cubeta.
 - Cinta para juntas: 478 × 370 ÷ 1,000 = 176.86 pies, así que 1 rollo.
 - A $12 la placa, las placas cuestan $204.00.
 
@@ -86,7 +86,7 @@ Una placa de 4 × 8 ft cubre 32 pies cuadrados y una de 4 × 12 ft cubre 48 pies
 
 ### ¿Cuánto compuesto para juntas necesito?
 
-Unos 9 galones por cada 1,000 pies cuadrados de drywall, según la cifra de USG de dos baldes de 4.5 galones de compuesto liviano para 1,000 pies cuadrados. El cuarto del ejemplo lleva unos 4.30 galones, así que 1 balde.
+Unos 9 galones por cada 1,000 pies cuadrados de drywall, según la cifra de USG de dos cubetas de 4.5 galones de compuesto liviano para 1,000 pies cuadrados. El cuarto del ejemplo lleva unos 4.30 galones, así que 1 cubeta.
 
 ### ¿Cuánta cinta para juntas necesito?
 
@@ -110,6 +110,6 @@ Sí. Toca Métrico (m, cm) y escribe el largo, el ancho y la altura de las pared
 
 <h2 id="fuentes">Fuentes y fecha de revisión</h2>
 
-El rendimiento del compuesto viene de una respuesta de USG sobre su Sheetrock UltraLightweight All Purpose Joint Compound: unos dos baldes de 4.5 galones terminan 1,000 pies cuadrados. El de la cinta viene de la hoja técnica de USG para Sheetrock Brand Heavy Joint Tape (J1393, revisada en octubre de 2015): aproximadamente 370 pies por cada 1,000 pies cuadrados. Las áreas de puertas y ventanas son descuentos aproximados, no cifras medidas. El factor de pies cuadrados a metros cuadrados viene de NIST Special Publication 811, apéndice B. Las fuentes de abajo muestran la fecha en que las consultamos, y luego sigue la fecha de revisión.
+El rendimiento del compuesto viene de una respuesta de USG sobre su Sheetrock UltraLightweight All Purpose Joint Compound: unas dos cubetas de 4.5 galones terminan 1,000 pies cuadrados. El de la cinta viene de la hoja técnica de USG para Sheetrock Brand Heavy Joint Tape (J1393, revisada en octubre de 2015): aproximadamente 370 pies por cada 1,000 pies cuadrados. Las áreas de puertas y ventanas son descuentos aproximados, no cifras medidas. El factor de pies cuadrados a metros cuadrados viene de NIST Special Publication 811, apéndice B. Las fuentes de abajo muestran la fecha en que las consultamos, y luego sigue la fecha de revisión.
 
 Los resultados son estimaciones. Si encuentras un error, avísanos: la [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo.

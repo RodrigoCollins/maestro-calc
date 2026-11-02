@@ -27,7 +27,7 @@ export const esDrywall = {
   'calc.drywall.page.areaFt2': '{value} ft²',
   'calc.drywall.page.areaM2': '{value} m²',
   'calc.drywall.page.shoppingSheets': 'Drywall, placas de {size}',
-  'calc.drywall.page.shoppingCompound': 'Compuesto para juntas, baldes de 4.5 gal',
+  'calc.drywall.page.shoppingCompound': 'Compuesto para juntas, cubetas de 4.5 gal',
   'calc.drywall.page.shoppingTape': 'Cinta de papel para juntas, rollos de 500 ft',
   'calc.drywall.page.priceHint': 'Agrega tu precio para ver el costo',
   'calc.drywall.page.answer.walls-ceiling':
