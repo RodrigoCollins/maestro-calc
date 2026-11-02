@@ -11,3 +11,4 @@ PLAN §7.1 and §7.3: hubs per trade that link the calculators and guides of the
 3. **The directory reuses the home cards** (`homeCards`): each calculator card shows the same title and summary as the home; guides link with their own heading. Two catalog keys: `site.hub.calculators`, `site.hub.guides`.
 4. **Copy approved by delegation** (2026-11-01): `ownerReview: approved`.
 5. **Follow-ups**: link each hub from its calculator pages and the home, a `check:site` rule for the hub links, and the paint hub with its guide.
+6. **Also archives** `analytics-events` (#170, #171 deployed; Tag Manager configured and verified in GA4 Realtime).
