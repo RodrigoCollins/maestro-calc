@@ -10,6 +10,9 @@ export const SITE = {
   // AdSense publisher id: the verification meta tag of every page and /ads.txt name it. No ad script
   // loads until a consent banner (CMP) is in place; '' renders no meta tag.
   adsenseClient: 'ca-pub-3954387285316164' as string,
+  // Pinterest domain claim of the business account (public: it ships in every page). '' renders no
+  // meta tag.
+  pinterestVerify: '472eee91b1d7ec3791b8988a28633c7c' as string,
   // Google Tag Manager container (public: it ships in every page). '' renders no analytics tag.
   gtmId: 'GTM-MD8H6L5S' as string,
   contactEmail: 'contacto@maestrocalc.com',
