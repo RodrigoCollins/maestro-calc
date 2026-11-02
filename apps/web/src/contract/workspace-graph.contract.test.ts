@@ -65,12 +65,13 @@ const extendsBase = (config: string): boolean =>
 
 describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
   // spec: Workspace enumeration [MW2]
-  it('resolves the workspace globs to exactly the four packages', () => {
+  it('resolves the workspace globs to exactly the five workspaces', () => {
     expect(rootManifest.workspaces).toEqual(['packages/*', 'apps/*']);
     expect([...workspaceNames].sort()).toEqual([
       '@maestro-calc/core',
       '@maestro-calc/data',
       '@maestro-calc/i18n',
+      '@maestro-calc/pay',
       '@maestro-calc/web',
     ]);
   });
