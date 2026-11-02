@@ -8,6 +8,7 @@ import { renderComponent } from '../__testing__/render-component.ts';
 import { fromRoot } from '../contract/root.ts';
 import { directoryOrder, exampleOf, homeCards } from '../lib/home-directory.ts';
 import { PAGES } from '../lib/pages.ts';
+import { HUB_IDS } from '../routing/hubs.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -166,10 +167,27 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         .map((link) => link.getAttribute('href'));
       expect(all).toEqual([
         ...cardLinks(document).map((link) => link.getAttribute('href')),
+        ...HUB_IDS.map((id) => pathOf(id, locale)),
         ...hrefs,
       ]);
     },
   );
+
+  // spec: hubs › [HB2] the home links every trade hub after the cards, under its own heading
+  it.each([
+    ['en', 'By trade', 'Concrete Calculators and Guides'],
+    ['es', 'Por oficio', 'Calculadoras y guías de concreto'],
+  ] as const)('links every hub after the cards of the %s home', async (locale, heading, first) => {
+    const document = await render(locale);
+    const nav = document.querySelector('main section.home-hubs');
+    expect(nav?.getAttribute('aria-label')).toBe(heading);
+    expect(nav?.querySelector('h2')?.text.trim()).toBe(heading);
+    const links = nav?.querySelectorAll('a[href]') ?? [];
+    expect(links.map((link) => link.getAttribute('href'))).toEqual(
+      HUB_IDS.map((id) => pathOf(id, locale)),
+    );
+    expect(links[0]?.text.trim()).toBe(first);
+  });
 
   // spec: trust-pages › [TP31] no calculator without a route is named, in either locale
   it.each(['en', 'es'] as const)('names no pageless calculator on the %s home', async (locale) => {

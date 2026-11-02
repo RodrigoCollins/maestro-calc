@@ -65,6 +65,7 @@ export const enSite = {
   'page.home.cards.feet-inches.title': 'Feet and inches calculator',
   'page.home.cards.feet-inches.summary':
     'Add, subtract, multiply or divide tape measurements, to the nearest 1/16 in.',
+  'page.home.hubs': 'By trade',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
   'page.home.title': 'Maestro Calc: jobsite calculators',

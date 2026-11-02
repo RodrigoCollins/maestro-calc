@@ -71,6 +71,7 @@ export const esSite = {
   'page.home.cards.feet-inches.title': 'Calculadora de pies y pulgadas',
   'page.home.cards.feet-inches.summary':
     'Suma, resta, multiplica o divide medidas de cinta, al 1/16 de pulgada.',
+  'page.home.hubs': 'Por oficio',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
