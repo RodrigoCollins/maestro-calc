@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-five ids, so the site has seventy
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-six ids, so the site has seventy-two
 // routable pages and two not-found pages.
-describe('end state of the roofing quote guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the fence post guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has thirty-five page ids, seventy routable paths and seventy-two pages with the 404s', () => {
+  it('has thirty-six page ids, seventy-two routable paths and seventy-four pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -34,6 +34,7 @@ describe('end state of the roofing quote guide go-live (site-routing-i18n › [S
       'guide-gravel-driveway',
       'guide-raised-bed-soil',
       'guide-roofing-quote',
+      'guide-fence-post-concrete',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -51,10 +52,10 @@ describe('end state of the roofing quote guide go-live (site-routing-i18n › [S
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(70);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(70);
+    expect(staticPaths()).toHaveLength(72);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(72);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(72);
+    expect(pageCount(ROUTES)).toBe(74);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -81,23 +82,23 @@ describe('end state of the roofing quote guide go-live (site-routing-i18n › [S
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly seventy-two page title and description keys in %s',
+    'has exactly seventy-four page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(72);
+      ).toHaveLength(74);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: sixty-eight content entries in all
-  it('has forty-eight trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(48);
+  // two entries per calculator page: seventy content entries in all
+  it('has fifty trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(50);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists seventy URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(70);
+  it('lists seventy-two URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(72);
   });
 });

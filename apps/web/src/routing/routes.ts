@@ -70,6 +70,10 @@ export const ROUTES = {
     en: '/guides/how-to-quote-a-roofing-job',
     es: '/es/guias/como-cotizar-un-trabajo-de-techo',
   },
+  'guide-fence-post-concrete': {
+    en: '/guides/how-much-concrete-for-a-fence-post',
+    es: '/es/guias/cuanto-concreto-para-un-poste-de-cerca',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },

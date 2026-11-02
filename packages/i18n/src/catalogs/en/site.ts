@@ -149,6 +149,9 @@ export const enSite = {
   'page.guide-roofing-quote.title': 'How to Quote a Roofing Job | Maestro Calc',
   'page.guide-roofing-quote.description':
     'Measure the roof in squares, count bundles and underlayment, list everything around the shingles and the work, and write a quote your client can check.',
+  'page.guide-fence-post-concrete.title': 'How Much Concrete for a Fence Post? | Maestro Calc',
+  'page.guide-fence-post-concrete.description':
+    'Size the hole for a fence post, work out the concrete and the bags for one post or a whole fence, and set the post step by step.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

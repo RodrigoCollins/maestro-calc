@@ -30,13 +30,19 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-raised-bed-soil')).toEqual({ calculator: 'topsoil' });
     // spec: guides › [GU14] the roofing quote guide ends in the roofing calculator
     expect(guideOf('guide-roofing-quote')).toEqual({ calculator: 'roofing' });
+    // spec: guides › [GU15] the fence post guide ends in the concrete calculator
+    expect(guideOf('guide-fence-post-concrete')).toEqual({ calculator: 'concrete' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
 
   // spec: guides › [GU6] a calculator page lists the guides that end in it
   it('lists the guides of a calculator page in table order, and none for a calculator without one', () => {
-    expect(guidesOf('concrete')).toEqual(['guide-concrete-bags-or-truck', 'guide-concrete-quote']);
+    expect(guidesOf('concrete')).toEqual([
+      'guide-concrete-bags-or-truck',
+      'guide-concrete-quote',
+      'guide-fence-post-concrete',
+    ]);
     expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
     expect(guidesOf('roofing')).toEqual(['guide-roofing-quote']);
     expect(guidesOf('paint')).toEqual(['guide-paint-quote']);
