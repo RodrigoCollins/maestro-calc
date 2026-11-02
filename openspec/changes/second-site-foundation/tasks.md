@@ -16,11 +16,11 @@ Decision needed before apply: No
 
 ## Slice 1 — `refactor/second-site-01-dist-guard`
 
-- [ ] 1.1 RED: contract test spawns `scripts/dist-fingerprint.mjs` on a temporary tree: sorted lines, stable output, content change changes the hash, missing dir exits 2.
-- [ ] 1.2 GREEN: write the script.
-- [ ] 1.3 RED: `ci.contract.test.ts` pins the `dist-identical` job (condition, commands, timeout, pinned actions).
-- [ ] 1.4 GREEN: add the job to `ci.yml`.
-- [ ] 1.5 Verify locally: fingerprint two builds; `npm run verify`.
+- [x] 1.1 RED: contract test spawns `scripts/dist-fingerprint.mjs` on a temporary tree: sorted lines, stable output, content change changes the hash, missing dir exits 2.
+- [x] 1.2 GREEN: write the script.
+- [x] 1.3 RED: `ci.contract.test.ts` pins the `dist-identical` job (condition, commands, timeout, pinned actions).
+- [x] 1.4 GREEN: add the job to `ci.yml`.
+- [x] 1.5 Verify locally: fingerprint two builds; `npm run verify`.
 
 ## Slice 2 — `feat/second-site-02-pay-scaffold`
 
