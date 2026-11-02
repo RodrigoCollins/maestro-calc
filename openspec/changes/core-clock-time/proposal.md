@@ -20,3 +20,9 @@ Spec 2 of `plans/pago-del-trabajador/PLAN.md`: give the shared engine what a tim
 ## Non-goals
 
 The calculators themselves, the week form slot and any page.
+
+## Measured (2026-11-02)
+
+The `clock` kind (parser, validation, URL text) raised the concrete page script from 47,609 B to 48,653 B against the 49,152 B limit: it fits, with 499 B left. **Follow-up before any new Maestro Calc calculator or slot:** make the kind readers tree-shakable so a page carries only the kinds it uses.
+
+A property test found a real bug while adding it: the decoder filled a decoded `null` with the default (`??`); it now treats only an absent value as absent.
