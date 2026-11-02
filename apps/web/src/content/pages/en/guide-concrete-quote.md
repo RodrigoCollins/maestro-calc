@@ -41,6 +41,8 @@ For a truck pour, have enough help on site to place and finish the concrete as i
 
 Put in the quote what the client can check: the area and the thickness, the cubic yards, the base depth, the reinforcement, the finish (broom, smooth or stamped), and what is not included. Say how long the price holds, because material prices change.
 
+If your state asks for a license for the job, put its number on the quote; the guide [How to get a contractor license in the US](/guides/how-to-get-a-contractor-license) shows where to check.
+
 The concrete calculator below works out the volume and the bags for slabs, footings, columns and steps, and totals the cost when you enter your prices.
 
 ## Sources

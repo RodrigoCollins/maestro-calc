@@ -41,6 +41,8 @@ Si el concreto llega en camión, ten suficiente gente en la obra para colocarlo 
 
 Pon en la cotización lo que el cliente puede revisar: el área y el espesor, las yardas cúbicas, el espesor de la base, el refuerzo, el acabado (escobillado, liso o estampado) y lo que no está incluido. Di cuánto tiempo vale el precio, porque los precios de los materiales cambian.
 
+Si tu estado pide licencia para el trabajo, pon su número en la cotización; la guía [Cómo sacar la licencia de contratista en EE.UU.](/es/guias/como-sacar-la-licencia-de-contratista) te muestra dónde revisarlo.
+
 La calculadora de concreto de abajo calcula el volumen y las bolsas para losas, zapatas, columnas y escalones, y suma el costo cuando escribes tus precios.
 
 ## Fuentes

@@ -49,11 +49,20 @@ export const ROUTES = {
     en: '/guides/how-to-quote-a-concrete-job',
     es: '/es/guias/como-cotizar-un-trabajo-de-concreto',
   },
+  'guide-contractor-license': {
+    en: '/guides/how-to-get-a-contractor-license',
+    es: '/es/guias/como-sacar-la-licencia-de-contratista',
+  },
+  'guide-paint-quote': {
+    en: '/guides/how-to-quote-a-painting-job',
+    es: '/es/guias/como-cotizar-un-trabajo-de-pintura',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },
   'hub-landscaping': { en: '/landscaping', es: '/es/jardineria' },
   'hub-measurement': { en: '/measurement', es: '/es/medidas' },
+  'hub-paint': { en: '/painting', es: '/es/pintura' },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

@@ -12,6 +12,7 @@ export const enSite = {
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.embed.by': 'by',
   'site.guide.cta': 'Work it out for your job',
+  'site.guide.allCalculators': 'All our calculators',
   'site.hub.calculators': 'Calculators',
   'site.hub.guides': 'Guides',
   'site.hub.more': 'More tools:',
@@ -106,6 +107,12 @@ export const enSite = {
   'page.guide-concrete-quote.title': 'How to Quote a Concrete Job | Maestro Calc',
   'page.guide-concrete-quote.description':
     'Work out the concrete for a pour, list the forms, base, rebar and delivery, break down the work and write a concrete quote your client can check.',
+  'page.guide-contractor-license.title': 'How to Get a Contractor License in the US | Maestro Calc',
+  'page.guide-contractor-license.description':
+    'Find your state board, check whether your work needs a license, document your experience, pass the exams and get the bond, with official examples.',
+  'page.guide-paint-quote.title': 'How to Quote a Painting Job | Maestro Calc',
+  'page.guide-paint-quote.description':
+    'Measure the walls, work out the gallons and cans, list the supplies and the prep, break down the work and write a painting quote your client can check.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',
@@ -121,6 +128,9 @@ export const enSite = {
   'page.hub-measurement.title': 'Measurement Calculators and Guides | Maestro Calc',
   'page.hub-measurement.description':
     'Square footage and feet-and-inches calculators with guides: read a tape measure, add fractions, convert square feet and square meters.',
+  'page.hub-paint.title': 'Painting Calculators and Guides | Maestro Calc',
+  'page.hub-paint.description':
+    'Paint calculator and guide: gallons and cans for the walls of a room, less doors and windows, and how to quote a painting job.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

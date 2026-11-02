@@ -36,14 +36,16 @@ describe('trade hubs (hubs › Hub pages)', () => {
       calculators: ['concrete'],
       guides: ['guide-concrete-bags-or-truck', 'guide-concrete-quote'],
     });
+    // spec: hubs › [HB4] the paint hub lists its calculator and its guide
+    expect(hubOf('hub-paint')).toEqual({ calculators: ['paint'], guides: ['guide-paint-quote'] });
     expect(hubOf('concrete')).toBeUndefined();
     expect(hubOf('about')).toBeUndefined();
   });
 
   // spec: hubs › [HB3] a calculator page links the hub of its trade
-  it('finds the hub of a calculator page, and none for a trade without a hub', () => {
+  it('finds the hub of a calculator page', () => {
     expect(hubOfCalculator('gravel')).toBe('hub-landscaping');
     expect(hubOfCalculator('roofing')).toBe('hub-roofing');
-    expect(hubOfCalculator('paint')).toBeUndefined();
+    expect(hubOfCalculator('paint')).toBe('hub-paint');
   });
 });
