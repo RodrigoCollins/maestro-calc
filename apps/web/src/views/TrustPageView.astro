@@ -6,6 +6,7 @@ import { headingOf } from '../content/heading.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteText } from '../lib/site-text.ts';
 import { guideOf } from '../routing/guides.ts';
+import { hubOfCalculator } from '../routing/hubs.ts';
 import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
@@ -20,7 +21,7 @@ const { id, locale } = Astro.props;
 const text = siteText(locale);
 const entry = await getEntry('pages', `${locale}/${id}`);
 if (entry === undefined) throw new Error(`no content entry for ${locale}/${id}`);
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 const { updated } = entry.data;
 // The date is a calendar day, so it is formatted in UTC: no timezone can move it.
 const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
@@ -36,6 +37,12 @@ const breadcrumb = {
   homeHref: pathOf('home', locale),
   current: heading,
 };
+// A guide opens with its trade and reading time and, on wide screens, an index of its sections.
+const calculator = guideOf(id)?.calculator;
+const hub =
+  calculator === undefined || calculator === null ? undefined : hubOfCalculator(calculator);
+const minutes = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 200));
+const sections = guide ? headings.filter(({ depth }) => depth === 2) : [];
 const head = headFor(id, locale, text);
 const jsonLd = guide
   ? serializeJsonLd(guideJsonLd({ id, name: heading, updated }, locale))
@@ -48,11 +55,110 @@ const jsonLd = guide
   head={jsonLd === undefined ? head : { ...head, jsonLd, ogType: 'article' }}
 >
   {guide && <Breadcrumb {breadcrumb} />}
-  <article class="prose">
-    <Content />
-    <slot />
-    <p class="updated">
-      {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
-    </p>
-  </article>
+  <div class:list={[{ 'guide-layout': guide }]}>
+    {sections.length > 0 && (
+      <aside class="guide-toc" aria-labelledby="guide-toc">
+        <p id="guide-toc">{text('site.guide.toc')}</p>
+        <ol>
+          {sections.map(({ slug, text: title }) => (
+            <li>
+              <a href={`#${slug}`}>{title}</a>
+            </li>
+          ))}
+        </ol>
+      </aside>
+    )}
+    <article class="prose">
+      {guide && (
+        <p class="guide-kicker">
+          <span>{text('site.guide.kicker')}</span>
+          {hub !== undefined && (
+            <a class="tap-target" href={pathOf(hub, locale)}>
+              {text(`site.footer.${hub}`)}
+            </a>
+          )}
+          <span>
+            {minutes} {text('site.guide.readingTime')}
+          </span>
+        </p>
+      )}
+      <Content />
+      <slot />
+      <p class="updated">
+        {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
+      </p>
+    </article>
+  </div>
 </BaseLayout>
+
+<style>
+  /* The kicker: the kind of page, its trade and how long it takes to read, in small caps. */
+  .guide-kicker {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 var(--space-3);
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-small);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .guide-kicker span:first-child {
+    color: var(--color-text);
+    border-left: 4px solid var(--color-accent);
+    padding-left: var(--space-2);
+  }
+
+  /* The index is for wide screens: a phone reads straight down, so it is not shown there. */
+  .guide-toc {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .guide-layout {
+      display: grid;
+      grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr);
+      gap: var(--space-5);
+      align-items: start;
+    }
+
+    .guide-layout .prose {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .guide-toc {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+      position: sticky;
+      top: var(--space-3);
+      padding: var(--space-3);
+      border-left: 4px solid var(--color-accent);
+      background: var(--color-surface);
+      font-size: var(--text-small);
+    }
+
+    .guide-toc p {
+      margin: 0 0 var(--space-2);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .guide-toc a {
+      display: inline-block;
+      min-height: 1.5rem;
+    }
+
+    .guide-toc ol {
+      display: grid;
+      gap: var(--space-2);
+      margin: 0;
+      padding-left: var(--space-4);
+    }
+  }
+</style>

@@ -1,7 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
-import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../../apps/web/src/routing/links.ts';
+import {
+  FOOTER_HUBS,
+  FOOTER_PAGES,
+  HEADER_PAGES,
+  linksFor,
+} from '../../../apps/web/src/routing/links.ts';
 import { localeOfPath } from '../../../apps/web/src/routing/routes.ts';
 import { ANALYTICS_PATH, isAnalyticsLoader, isAnalyticsTraffic } from './analytics.ts';
 import {
@@ -152,7 +157,10 @@ test.describe('every routable page (site-quality › [SQ3], [SQ4], site-routing-
         const hrefs = await shellLinks(page).evaluateAll((links) =>
           links.map((link) => link.getAttribute('href')),
         );
-        for (const { href } of linksFor([...HEADER_PAGES, ...FOOTER_PAGES], locale)) {
+        for (const { href } of linksFor(
+          [...HEADER_PAGES, ...FOOTER_HUBS, ...FOOTER_PAGES],
+          locale,
+        )) {
           expect(hrefs).toContain(href);
         }
         for (let index = 0; index < count; index += 1) {

@@ -158,6 +158,7 @@ main {
    phone shows all of it instead of running past the column. */
 .prose code {
   overflow-wrap: anywhere;
+  font-size: 0.85em;
 }
 
 /* Tap target: at least 44 px in both directions. Components opt in with this class. */

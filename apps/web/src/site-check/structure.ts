@@ -1,5 +1,5 @@
 import { FAQ_SECTION_IDS } from '../content/faq-shape.ts';
-import { FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
+import { FOOTER_HUBS, FOOTER_PAGES, HEADER_PAGES, linksFor } from '../routing/links.ts';
 import { pathOf } from '../routing/routes.ts';
 import { switchFor } from '../routing/switch.ts';
 import { attr, attrsOf } from './dom.ts';
@@ -163,7 +163,10 @@ const navigationProblems = (page: Page, site: Site): Problem[] => {
     ...(same(attrsOf(page.root, 'header li a', 'href'), expectedHrefs(HEADER_PAGES))
       ? []
       : [problem(page.file, 'nav-links', 'header links differ from the route table')]),
-    ...(same(attrsOf(page.root, 'footer li a', 'href'), expectedHrefs(FOOTER_PAGES))
+    ...(same(
+      attrsOf(page.root, 'footer li a', 'href'),
+      expectedHrefs([...FOOTER_HUBS, ...FOOTER_PAGES]),
+    )
       ? []
       : [problem(page.file, 'footer-links', 'footer links differ from the route table')]),
   ];

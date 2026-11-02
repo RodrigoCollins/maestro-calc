@@ -42,7 +42,11 @@ const hubView =
           hub.guides.map(async (guideId) => {
             const entry = await getEntry('pages', `${locale}/${guideId}`);
             if (entry === undefined) throw new Error(`no content entry for ${locale}/${guideId}`);
-            return { href: pathOf(guideId, locale), title: headingOf(entry.body ?? '') };
+            return {
+              href: pathOf(guideId, locale),
+              title: headingOf(entry.body ?? ''),
+              summary: siteText(locale)(`page.${guideId}.description`),
+            };
           }),
         ),
       };
