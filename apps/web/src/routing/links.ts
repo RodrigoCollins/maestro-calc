@@ -24,4 +24,10 @@ export const linksFor = <Id extends string>(
 export const HEADER_PAGES = ['methodology', 'about'] as const;
 
 /** Pages offered in the footer, in order, when they exist in the table. */
-export const FOOTER_PAGES = ['embed-calculators', 'privacy', 'terms', 'contact'] as const;
+export const FOOTER_PAGES = [
+  'embed-calculators',
+  'glossary',
+  'privacy',
+  'terms',
+  'contact',
+] as const;

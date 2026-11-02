@@ -13,6 +13,17 @@ export const esSite = {
   'site.footer.terms': 'Términos',
   'site.footer.contact': 'Contacto',
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
+  'site.footer.glossary': 'Glosario de obra',
+  'site.glossary.term': 'Español',
+  'site.glossary.other': 'Inglés',
+  'site.glossary.definition': 'Qué significa',
+  'site.glossary.groups.concrete': 'Concreto',
+  'site.glossary.groups.landscaping': 'Jardinería',
+  'site.glossary.groups.drywall': 'Drywall',
+  'site.glossary.groups.roofing': 'Techos',
+  'site.glossary.groups.paint': 'Pintura',
+  'site.glossary.groups.measuring': 'Medidas y la obra',
+  'site.glossary.groups.business': 'El negocio',
   'site.embed.by': 'de',
   'site.guide.cta': 'Haz la cuenta para tu obra',
   'site.guide.allCalculators': 'Todas nuestras calculadoras',
@@ -94,6 +105,9 @@ export const esSite = {
   'page.embed-calculators.title': 'Calculadoras para tu sitio | Maestro Calc',
   'page.embed-calculators.description':
     'Pon gratis cualquier calculadora de Maestro Calc en tu sitio web: copia el código, pégalo en tu página y deja el enlace de crédito.',
+  'page.glossary.title': 'Glosario de construcción inglés-español | Maestro Calc',
+  'page.glossary.description':
+    'Términos de obra en inglés y español, por oficio, con lo que significa cada uno: concreto, jardinería, drywall, techos, pintura y el negocio.',
   'page.guide-concrete-bags-or-truck.title': '¿Concreto en bolsas o en camión? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'Cuándo conviene comprar bolsas de mezcla para concreto y cuándo un camión de premezclado: una yarda cúbica en bolsas, cargos por carga chica y cómo comparar.',

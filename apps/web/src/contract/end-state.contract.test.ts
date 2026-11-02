@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-one ids, so the site has sixty-two
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds thirty-two ids, so the site has sixty-four
 // routable pages and two not-found pages.
-describe('end state of the contractor license and paint guides go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the construction glossary go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has thirty-one page ids, sixty-two routable paths and sixty-four pages with the 404s', () => {
+  it('has thirty-two page ids, sixty-four routable paths and sixty-six pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -22,6 +22,7 @@ describe('end state of the contractor license and paint guides go-live (site-rou
       'terms',
       'contact',
       'embed-calculators',
+      'glossary',
       'guide-concrete-bags-or-truck',
       'guide-tape-measure-fractions',
       'guide-square-footage',
@@ -47,10 +48,10 @@ describe('end state of the contractor license and paint guides go-live (site-rou
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(62);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(62);
+    expect(staticPaths()).toHaveLength(64);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(64);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(64);
+    expect(pageCount(ROUTES)).toBe(66);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -76,21 +77,21 @@ describe('end state of the contractor license and paint guides go-live (site-rou
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)('has exactly sixty-four page title and description keys in %s', (_locale, module) => {
+  ] as const)('has exactly sixty-six page title and description keys in %s', (_locale, module) => {
     expect(
       Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-    ).toHaveLength(64);
+    ).toHaveLength(66);
   });
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: sixty content entries in all
-  it('has forty trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(40);
+  // two entries per calculator page: sixty-two content entries in all
+  it('has forty-two trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(42);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists sixty-two URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(62);
+  it('lists sixty-four URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(64);
   });
 });

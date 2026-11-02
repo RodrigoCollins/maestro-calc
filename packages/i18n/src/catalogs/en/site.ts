@@ -10,6 +10,17 @@ export const enSite = {
   'site.footer.terms': 'Terms',
   'site.footer.contact': 'Contact',
   'site.footer.embed-calculators': 'Embed our calculators',
+  'site.footer.glossary': 'Construction glossary',
+  'site.glossary.term': 'English',
+  'site.glossary.other': 'Spanish',
+  'site.glossary.definition': 'What it means',
+  'site.glossary.groups.concrete': 'Concrete',
+  'site.glossary.groups.landscaping': 'Landscaping',
+  'site.glossary.groups.drywall': 'Drywall',
+  'site.glossary.groups.roofing': 'Roofing',
+  'site.glossary.groups.paint': 'Paint',
+  'site.glossary.groups.measuring': 'Measuring and the job',
+  'site.glossary.groups.business': 'The business',
   'site.embed.by': 'by',
   'site.guide.cta': 'Work it out for your job',
   'site.guide.allCalculators': 'All our calculators',
@@ -88,6 +99,9 @@ export const enSite = {
   'page.embed-calculators.title': 'Embed Our Calculators | Maestro Calc',
   'page.embed-calculators.description':
     'Put any Maestro Calc calculator on your website for free: copy the code, paste it in your page and keep the credit link.',
+  'page.glossary.title': 'English-Spanish Construction Glossary | Maestro Calc',
+  'page.glossary.description':
+    'Construction terms in English and Spanish, by trade, with what each one means: concrete, landscaping, drywall, roofing, paint and the business.',
   'page.guide-concrete-bags-or-truck.title': 'Concrete in Bags or From a Truck? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'When bags of concrete mix beat a ready-mix truck and when they do not: what a cubic yard is in bags, short-load charges and how to compare.',

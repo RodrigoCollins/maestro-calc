@@ -65,6 +65,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES.privacy).toEqual({ en: '/privacy', es: '/es/privacidad' });
     expect(ROUTES.terms).toEqual({ en: '/terms', es: '/es/terminos' });
     expect(ROUTES.contact).toEqual({ en: '/contact', es: '/es/contacto' });
+    expect(ROUTES.glossary).toEqual({
+      en: '/construction-glossary',
+      es: '/es/glosario-de-construccion',
+    });
     expect(ROUTES['embed-calculators']).toEqual({
       en: '/embed-calculators',
       es: '/es/calculadoras-para-tu-sitio',

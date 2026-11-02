@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GLOSSARY, glossaryProblems } from './glossary.ts';
+import { GLOSSARY, GLOSSARY_GROUPS, glossaryProblems } from './glossary.ts';
 
 describe('construction glossary (i18n-catalog › Construction glossary)', () => {
   it('holds one entry per English term', () => {
@@ -38,5 +38,28 @@ describe('construction glossary (i18n-catalog › Construction glossary)', () =>
     expect(glossaryProblems('¿Cómo saco el área? Compra sacos de concreto.')).toEqual([
       { variant: 'sacos de', use: 'bolsa' },
     ]);
+  });
+
+  // spec: i18n-catalog › [ICW24] the public glossary
+  it('puts every entry in a group and leaves no group empty', () => {
+    for (const group of GLOSSARY_GROUPS) {
+      expect(
+        GLOSSARY.some((entry) => entry.group === group),
+        group,
+      ).toBe(true);
+    }
+  });
+
+  it('defines every entry in one sentence per language', () => {
+    for (const { en, define } of GLOSSARY) {
+      expect(define.en, en).toMatch(/^[A-Z0-9].*\.$/);
+      expect(define.es, en).toMatch(/^[A-ZÁÉÍÓÚÑ0-9].*\.$/);
+    }
+  });
+
+  it('writes the Spanish definitions with the glossary terms', () => {
+    expect(GLOSSARY.flatMap(({ en, define }) => glossaryProblems(define.es).map(() => en))).toEqual(
+      [],
+    );
   });
 });

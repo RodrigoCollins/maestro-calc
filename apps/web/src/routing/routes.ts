@@ -25,6 +25,7 @@ export const ROUTES = {
   terms: { en: '/terms', es: '/es/terminos' },
   contact: { en: '/contact', es: '/es/contacto' },
   'embed-calculators': { en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },
+  glossary: { en: '/construction-glossary', es: '/es/glosario-de-construccion' },
   'guide-concrete-bags-or-truck': {
     en: '/guides/concrete-bags-or-truck',
     es: '/es/guias/concreto-en-bolsas-o-camion',
