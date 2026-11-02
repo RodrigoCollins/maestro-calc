@@ -118,7 +118,7 @@ const displayFaceOf = (page: Page) =>
       .filter(
         (face) =>
           face.family.includes('Barlow Condensed') &&
-          !face.family.includes('fallback') &&
+          !/fallback/i.test(face.family) &&
           face.weight === '600',
       )
       .map((face) => ({
