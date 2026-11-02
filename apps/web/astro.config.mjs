@@ -6,7 +6,7 @@ import { SITE } from './src/site.config.ts';
 /**
  * One self-hosted `latin` woff2 per weight, read from the exact-pinned fontsource packages and
  * emitted with hashed names under `/_astro/fonts`. The `latin` subset covers U+0000-00FF, which
- * holds every Spanish letter, `¿` and `¡`. Astro generates the metric-adjusted Arial fallback.
+ * holds every Spanish letter, `¿` and `¡`.
  */
 /**
  * @param {string} slug fontsource package name
@@ -19,13 +19,16 @@ const variant = (slug, weight) => ({
   src: [`@fontsource/${slug}/files/${slug}-latin-${String(weight)}-normal.woff2`],
 });
 
-/** What every family shares: swap, the latin subset and the metric-adjusted Arial fallback. */
+/**
+ * What every family shares: swap and the latin subset. The fallback is the family's own
+ * metric-adjusted face (the top of `src/styles/base.css`), not Astro's, which stands on `local('Arial')` only
+ * and so is missing on Linux and Android; `optimizedFallbacks: false` keeps Astro from adding it.
+ */
 const shared = {
   provider: fontProviders.local(),
   display: /** @type {const} */ ('swap'),
   subsets: /** @type {[string]} */ (['latin']),
-  fallbacks: ['Arial', 'sans-serif'],
-  optimizedFallbacks: true,
+  optimizedFallbacks: false,
 };
 
 /**
@@ -56,12 +59,14 @@ export default defineConfig({
       ...shared,
       name: 'Barlow',
       cssVariable: '--font-body',
+      fallbacks: ['Barlow Fallback', 'sans-serif'],
       options: { variants: [variant('barlow', 400), variant('barlow', 600)] },
     },
     {
       ...shared,
       name: 'Barlow Condensed',
       cssVariable: '--font-display',
+      fallbacks: ['Barlow Condensed Fallback', 'sans-serif'],
       options: {
         variants: [variant('barlow-condensed', 600), variant('barlow-condensed', 700)],
       },

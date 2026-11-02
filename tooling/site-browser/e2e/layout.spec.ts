@@ -33,6 +33,18 @@ type Block = 'answer' | 'notice' | 'copy';
  */
 type BlockEdges = Readonly<Record<Block, readonly number[]>>;
 
+/**
+ * The lines of unused reserve a block may hold away from a breakpoint. The ladders are measured on
+ * macOS, where the web font runs widest of the platforms swept; Linux Chromium (CI) sets it 2 to 4
+ * percent narrower (the sweep of 2026-11-02, 320 to 1280 px in 1 px steps: every line is lost 9 to
+ * 39 px earlier, and the concrete answer fits one line from 1013 px, which macOS never reaches by
+ * 1280 px), so there a block may hold one line more. Until the fallback faces carried the web
+ * fonts' metrics (site-shell › [SS33]), Linux's unadjusted fallback was as wide as macOS and hid
+ * the difference. Ladders measured on Linux would let the text overflow its reserve on macOS and
+ * iOS and move the page (calculator-page › [CP60], [CP61], amended 2026-11-02).
+ */
+const UNUSED_LINES = process.platform === 'linux' ? 2 : 1;
+
 const cssOf = (page: Page): Promise<string> =>
   page.evaluate(async () => {
     const inline = [...document.querySelectorAll('style')].map((style) => style.textContent ?? '');
@@ -246,6 +258,27 @@ for (const calculator of calculatorPages) {
       });
     }
 
+    // spec: site-shell › [SS33] the web fonts arriving after the first paint move nothing: the
+    // fallback faces carry the web fonts' metrics on Arial, Liberation Sans, Arimo or Roboto. The
+    // delay makes the late swap certain, so a missing fallback fails every run, not one in many
+    // (it failed now and then at the first width of the test above, cold cache, on Linux CI).
+    for (const query of ['', calculator.spec.restored?.query ?? typedQuery(calculator.spec)]) {
+      test(`shifts the layout by at most 0.01 when the web fonts arrive late${query === '' ? '' : ' with a state in the link'}`, async ({
+        page,
+      }) => {
+        await page.addInitScript(collectShifts);
+        await page.route(/\.woff2$/, async (route) => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          await route.continue();
+        });
+        await page.setViewportSize({ width: 320, height: 844 });
+        await open(page, calculator, query);
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(250);
+        expect(await shiftOf(page)).toBeLessThanOrEqual(0.01);
+      });
+    }
+
     // spec: calculator-page › [CP44], [CP62] with the notice showing nothing moves, at every width
     for (const width of WIDTHS) {
       test(`keeps the notice, shape and copy areas at their reserved size at ${String(width)} px`, async ({
@@ -382,7 +415,7 @@ for (const id of ids) {
               expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
               expect
                 .soft(reserved - tallest, `${label}: unused reserve`)
-                .toBeLessThan(nearBreakpoint(edges, width) ? 2 * line : line);
+                .toBeLessThan((nearBreakpoint(edges, width) ? 2 : UNUSED_LINES) * line);
             }
           }
         }
