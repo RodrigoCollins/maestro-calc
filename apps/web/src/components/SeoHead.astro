@@ -12,6 +12,8 @@ interface Props {
   /** The Open Graph locale of the page (`en_US`) and of its other languages. */
   ogLocale?: string;
   ogAlternateLocales?: readonly string[];
+  /** The Open Graph type: `article` for a guide, `website` for every other page. */
+  ogType?: 'website' | 'article';
 }
 const {
   title,
@@ -22,6 +24,7 @@ const {
   jsonLd,
   ogLocale,
   ogAlternateLocales = [],
+  ogType = 'website',
 } = Astro.props;
 // open-graph: an indexable page (it has a canonical) is shared with its title, description,
 // address and the one language-free image; the not-found page has none.
@@ -39,7 +42,7 @@ const og = canonical !== undefined && ogLocale !== undefined;
 ))}
 {og && (
   <Fragment>
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

@@ -44,6 +44,16 @@ describe('guide pages (guides › check:site)', () => {
     expect(problemsAfter()).toEqual([]);
   });
 
+  // open-graph: Pinterest shows a guide as an article rich pin only when its og:type says so
+  it('asks a guide for the Open Graph type article', () => {
+    expect(problemsAfter((html) => html.replace('content="article"', 'content="website"'))).toEqual(
+      [`${FILE} json-ld: a guide page needs og:type article, found website`],
+    );
+    expect(
+      problemsAfter((html) => html.replace('<meta property="og:type" content="article">', '')),
+    ).toEqual([`${FILE} json-ld: a guide page needs og:type article, found none`]);
+  });
+
   it('asks a guide for a labelled breadcrumb before its h1', () => {
     expect(
       problemsAfter((html) => html.replace(/<ol aria-label="Breadcrumb">.*?<\/ol>/, '')),

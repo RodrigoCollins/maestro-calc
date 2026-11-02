@@ -10,6 +10,8 @@ export interface PageHead {
   readonly alternates: readonly Alternate[];
   /** Serialized structured data; only a view that has some (the home pages) adds it. */
   readonly jsonLd?: string;
+  /** The Open Graph type; only a guide sets it (`article`), every other page is a `website`. */
+  readonly ogType?: 'article';
 }
 
 export interface NotFoundHead {

@@ -42,7 +42,11 @@ const jsonLd = guide
   : undefined;
 ---
 
-<BaseLayout {locale} {id} head={jsonLd === undefined ? head : { ...head, jsonLd }}>
+<BaseLayout
+  {locale}
+  {id}
+  head={jsonLd === undefined ? head : { ...head, jsonLd, ogType: 'article' }}
+>
   {guide && <Breadcrumb {breadcrumb} />}
   <article class="prose">
     <Content />

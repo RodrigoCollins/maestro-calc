@@ -321,7 +321,8 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
       : '',
     site.guides[id] === undefined
       ? ''
-      : `<script type="application/ld+json">${serializeJsonLd(guideJsonLdOf(id, locale, site))}</script>`,
+      : '<meta property="og:type" content="article">' +
+        `<script type="application/ld+json">${serializeJsonLd(guideJsonLdOf(id, locale, site))}</script>`,
     calculator
       ? `<script type="application/ld+json">${serializeJsonLd(calculatorJsonLd(id, locale, site))}</script>` +
         `<script type="module" src="/${ENTRY_FILE}"></script>`
