@@ -1,3 +1,69 @@
+/*
+ * The metric-adjusted fallback faces of the two web fonts, one per variant, the second family of
+ * each `--font-*` stack (astro.config.mjs). While a web font loads, the text is set in a local font
+ * resized to the web font's average width and given its ascent and descent, so the swap moves
+ * nothing. Astro's own fallback stands on `local('Arial')` only, which Linux and Android do not
+ * have: there the text fell back to an unadjusted sans-serif and moved by about 0.03 on the swap.
+ * Each face tries Arial, then the fonts with Arial's metrics (Liberation Sans, Arimo), then Roboto
+ * (Android, within 0.3 % of Arial's width), by full name and PostScript name.
+ *
+ * The values are Capsize's: size-adjust = (web xWidthAvg / unitsPerEm) / (Arial's, 913 / 2048, or
+ * Arial Bold's, 983 / 2048, at 700), and each override = web metric / (unitsPerEm × size-adjust).
+ * `fonts.contract.test.ts` recomputes them from the woff2 files.
+ */
+@font-face {
+  font-family: 'Barlow Fallback';
+  src:
+    local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'),
+    local('Arimo'), local('Arimo-Regular'), local('Roboto'), local('Roboto-Regular');
+  font-weight: 400;
+  font-display: swap;
+  size-adjust: 96.68%;
+  ascent-override: 103.4341%;
+  descent-override: 20.6868%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Fallback';
+  src:
+    local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'),
+    local('Arimo'), local('Arimo-Regular'), local('Roboto'), local('Roboto-Regular');
+  font-weight: 600;
+  font-display: swap;
+  size-adjust: 98.4745%;
+  ascent-override: 101.5492%;
+  descent-override: 20.3098%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src:
+    local('Arial'), local('ArialMT'), local('Liberation Sans'), local('LiberationSans'),
+    local('Arimo'), local('Arimo-Regular'), local('Roboto'), local('Roboto-Regular');
+  font-weight: 600;
+  font-display: swap;
+  size-adjust: 79.8563%;
+  ascent-override: 125.2249%;
+  descent-override: 25.045%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Barlow Condensed Fallback';
+  src:
+    local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'),
+    local('LiberationSans-Bold'), local('Arimo Bold'), local('Arimo-Bold'), local('Roboto Bold'),
+    local('Roboto-Bold');
+  font-weight: 700;
+  font-display: swap;
+  size-adjust: 76.0448%;
+  ascent-override: 131.5015%;
+  descent-override: 26.3003%;
+  line-gap-override: 0%;
+}
+
 *,
 *::before,
 *::after {

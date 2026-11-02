@@ -20,6 +20,7 @@
     "astro": "^7.4.2"
   },
   "devDependencies": {
+    "@capsizecss/unpack": "4.0.1",
     "node-html-parser": "9.0.5",
     "vite": "8.3.5"
   }

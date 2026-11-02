@@ -35,13 +35,13 @@ describe('fonts config (site-shell › Self-hosted fonts)', () => {
     expect(weightsOf(family('Barlow Condensed'))).toEqual([600, 700]);
   });
 
-  it('swaps, uses the latin subset and keeps the generated fallback metrics', () => {
+  it('swaps, uses the latin subset and falls back to its own metric-adjusted family', () => {
     expect(fonts).toHaveLength(2);
     for (const entry of fonts) {
       expect(entry.display, entry.name).toBe('swap');
       expect(entry.subsets, entry.name).toEqual(['latin']);
-      expect(entry.fallbacks, entry.name).toContain('Arial');
-      expect(entry.optimizedFallbacks, entry.name).not.toBe(false);
+      expect(entry.fallbacks, entry.name).toEqual([`${entry.name} Fallback`, 'sans-serif']);
+      expect(entry.optimizedFallbacks, entry.name).toBe(false);
     }
   });
 
@@ -78,6 +78,85 @@ describe('fonts config (site-shell › Self-hosted fonts)', () => {
     ) as { dependencies: Record<string, string> };
     for (const name of ['@fontsource/barlow', '@fontsource/barlow-condensed']) {
       expect(dependencies[name], name).toMatch(/^\d+\.\d+\.\d+$/);
+    }
+  });
+});
+
+/** Capsize's metrics of the local fonts the fallback faces stand on (Arial, and Arial Bold at 700). */
+const ARIAL = { unitsPerEm: 2048, xWidthAvg: 913 };
+const ARIAL_BOLD = { unitsPerEm: 2048, xWidthAvg: 983 };
+
+const percent = (value: number): string =>
+  `${String(Number.parseFloat((value * 100).toFixed(4)))}%`;
+
+/** The `@font-face` blocks of `css` whose family is `family`, by weight. */
+const facesOf = (css: string, family: string): Map<number, string> =>
+  new Map(
+    Array.from(css.matchAll(/@font-face\s*\{([^}]*)\}/g), ([, body = '']) => body)
+      .filter((body) => body.includes(`font-family: '${family}'`))
+      .map((body) => [
+        Number(/font-weight:\s*(\d+)/.exec(body)?.[1]),
+        body.replaceAll(/\s+/g, ' '),
+      ]),
+  );
+
+// spec: site-shell › [SS33] the fallback faces stand on Arial, Liberation Sans, Arimo or Roboto,
+// so a system without Arial (Linux, Android) still gets the adjusted metrics and the swap moves nothing
+describe('metric-adjusted fallback faces (site-shell › Self-hosted fonts)', () => {
+  const css = readFileSync(fromRoot('apps/web/src/styles/base.css'), 'utf8');
+
+  it('declares one fallback face per web-font variant, each on the Arial-metric local fonts and Roboto', async () => {
+    const { fromBuffer } = await import('@capsizecss/unpack');
+    for (const entry of fonts) {
+      const faces = facesOf(css, `${entry.name} Fallback`);
+      const variants = entry.options?.variants ?? [];
+      expect([...faces.keys()].sort(), entry.name).toEqual(weightsOf(entry));
+      for (const variant of variants) {
+        const weight = Number(variant.weight);
+        const face = faces.get(weight) ?? '';
+        const bold = weight >= 700;
+        const sources = bold
+          ? [
+              'Arial Bold',
+              'Arial-BoldMT',
+              'Liberation Sans Bold',
+              'LiberationSans-Bold',
+              'Arimo Bold',
+              'Arimo-Bold',
+              'Roboto Bold',
+              'Roboto-Bold',
+            ]
+          : [
+              'Arial',
+              'ArialMT',
+              'Liberation Sans',
+              'LiberationSans',
+              'Arimo',
+              'Arimo-Regular',
+              'Roboto',
+              'Roboto-Regular',
+            ];
+        expect(face, `${entry.name} ${String(weight)}`).toContain(
+          `src: ${sources.map((name) => `local('${name}')`).join(', ')};`,
+        );
+        const metrics = await fromBuffer(
+          readFileSync(fromRoot('node_modules', String(variant.src[0]))),
+        );
+        const local = bold ? ARIAL_BOLD : ARIAL;
+        const size = metrics.xWidthAvg / metrics.unitsPerEm / (local.xWidthAvg / local.unitsPerEm);
+        const em = metrics.unitsPerEm * size;
+        for (const [property, value] of [
+          ['size-adjust', size],
+          ['ascent-override', metrics.ascent / em],
+          ['descent-override', Math.abs(metrics.descent) / em],
+          ['line-gap-override', metrics.lineGap / em],
+        ] as const) {
+          expect(face, `${entry.name} ${String(weight)} ${property}`).toContain(
+            `${property}: ${percent(value)};`,
+          );
+        }
+        expect(face).toContain('font-display: swap;');
+      }
     }
   });
 });

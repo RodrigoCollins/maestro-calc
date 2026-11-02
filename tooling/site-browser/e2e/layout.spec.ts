@@ -246,6 +246,27 @@ for (const calculator of calculatorPages) {
       });
     }
 
+    // spec: site-shell › [SS33] the web fonts arriving after the first paint move nothing: the
+    // fallback faces carry the web fonts' metrics on Arial, Liberation Sans, Arimo or Roboto. The
+    // delay makes the late swap certain, so a missing fallback fails every run, not one in many
+    // (it failed now and then at the first width of the test above, cold cache, on Linux CI).
+    for (const query of ['', calculator.spec.restored?.query ?? typedQuery(calculator.spec)]) {
+      test(`shifts the layout by at most 0.01 when the web fonts arrive late${query === '' ? '' : ' with a state in the link'}`, async ({
+        page,
+      }) => {
+        await page.addInitScript(collectShifts);
+        await page.route(/\.woff2$/, async (route) => {
+          await new Promise((resolve) => setTimeout(resolve, 600));
+          await route.continue();
+        });
+        await page.setViewportSize({ width: 320, height: 844 });
+        await open(page, calculator, query);
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(250);
+        expect(await shiftOf(page)).toBeLessThanOrEqual(0.01);
+      });
+    }
+
     // spec: calculator-page › [CP44], [CP62] with the notice showing nothing moves, at every width
     for (const width of WIDTHS) {
       test(`keeps the notice, shape and copy areas at their reserved size at ${String(width)} px`, async ({
