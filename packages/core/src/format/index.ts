@@ -5,6 +5,7 @@ export {
   type FeetInchesOptions,
   type FeetInchesParts,
 } from './feet-inches.ts';
+export { clockText, parseClock, shiftMinutes, type ClockParseError } from './clock.ts';
 export { ceilToPurchaseUnits } from './purchase.ts';
 export { roundToFraction, type RoundingMode } from './rounding.ts';
 export {
