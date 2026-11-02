@@ -15,6 +15,7 @@ export const TRUST_IDS = [
   'guide-drywall-estimate',
   'guide-roof-pitch',
   'guide-concrete-quote',
+  'guide-contractor-license',
   'hub-concrete',
   'hub-roofing',
   'hub-drywall',

@@ -12,6 +12,7 @@ export const enSite = {
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.embed.by': 'by',
   'site.guide.cta': 'Work it out for your job',
+  'site.guide.allCalculators': 'All our calculators',
   'site.hub.calculators': 'Calculators',
   'site.hub.guides': 'Guides',
   'site.hub.more': 'More tools:',
@@ -106,6 +107,9 @@ export const enSite = {
   'page.guide-concrete-quote.title': 'How to Quote a Concrete Job | Maestro Calc',
   'page.guide-concrete-quote.description':
     'Work out the concrete for a pour, list the forms, base, rebar and delivery, break down the work and write a concrete quote your client can check.',
+  'page.guide-contractor-license.title': 'How to Get a Contractor License in the US | Maestro Calc',
+  'page.guide-contractor-license.description':
+    'Find your state board, check whether your work needs a license, document your experience, pass the exams and get the bond, with official examples.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

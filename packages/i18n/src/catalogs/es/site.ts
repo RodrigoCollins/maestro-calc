@@ -15,6 +15,7 @@ export const esSite = {
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.embed.by': 'de',
   'site.guide.cta': 'Haz la cuenta para tu obra',
+  'site.guide.allCalculators': 'Todas nuestras calculadoras',
   'site.hub.calculators': 'Calculadoras',
   'site.hub.guides': 'Guías',
   'site.hub.more': 'Más herramientas:',
@@ -113,6 +114,9 @@ export const esSite = {
   'page.guide-concrete-quote.title': 'Cómo cotizar un trabajo de concreto | Maestro Calc',
   'page.guide-concrete-quote.description':
     'Calcula el concreto del colado, anota la cimbra, la base, el refuerzo y el flete, divide el trabajo y arma una cotización que tu cliente pueda revisar.',
+  'page.guide-contractor-license.title': 'Cómo sacar la licencia de contratista | Maestro Calc',
+  'page.guide-contractor-license.description':
+    'Encuentra la junta de tu estado, revisa si tu trabajo necesita licencia, documenta tu experiencia, aprueba los exámenes y consigue la fianza.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

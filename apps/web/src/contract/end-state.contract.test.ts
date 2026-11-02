@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds twenty-eight ids, so the site has fifty-six
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds twenty-nine ids, so the site has fifty-eight
 // routable pages and two not-found pages.
-describe('end state of the trade hubs go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+describe('end state of the contractor license guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has twenty-eight page ids, fifty-six routable paths and fifty-eight pages with the 404s', () => {
+  it('has twenty-nine page ids, fifty-eight routable paths and sixty pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -28,6 +28,7 @@ describe('end state of the trade hubs go-live (site-routing-i18n › [SR1], [SR1
       'guide-drywall-estimate',
       'guide-roof-pitch',
       'guide-concrete-quote',
+      'guide-contractor-license',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -44,10 +45,10 @@ describe('end state of the trade hubs go-live (site-routing-i18n › [SR1], [SR1
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(56);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(56);
+    expect(staticPaths()).toHaveLength(58);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(58);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(58);
+    expect(pageCount(ROUTES)).toBe(60);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -73,24 +74,21 @@ describe('end state of the trade hubs go-live (site-routing-i18n › [SR1], [SR1
   it.each([
     ['en', enSite],
     ['es', esSite],
-  ] as const)(
-    'has exactly fifty-eight page title and description keys in %s',
-    (_locale, module) => {
-      expect(
-        Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(58);
-    },
-  );
+  ] as const)('has exactly sixty page title and description keys in %s', (_locale, module) => {
+    expect(
+      Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
+    ).toHaveLength(60);
+  });
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: fifty-four content entries in all
-  it('has thirty-four trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(34);
+  // two entries per calculator page: fifty-six content entries in all
+  it('has thirty-six trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(36);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists fifty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(56);
+  it('lists fifty-eight URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(58);
   });
 });

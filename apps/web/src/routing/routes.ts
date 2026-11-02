@@ -49,6 +49,10 @@ export const ROUTES = {
     en: '/guides/how-to-quote-a-concrete-job',
     es: '/es/guias/como-cotizar-un-trabajo-de-concreto',
   },
+  'guide-contractor-license': {
+    en: '/guides/how-to-get-a-contractor-license',
+    es: '/es/guias/como-sacar-la-licencia-de-contratista',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },

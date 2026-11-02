@@ -63,8 +63,12 @@ const hubView =
     {guide !== undefined && (
       <GuideCta
         label={siteText(locale)('site.guide.cta')}
-        href={pathOf(guide.calculator, locale)}
-        name={pageView(guide.calculator, locale).title}
+        href={pathOf(guide.calculator ?? 'home', locale)}
+        name={
+          guide.calculator === null
+            ? siteText(locale)('site.guide.allCalculators')
+            : pageView(guide.calculator, locale).title
+        }
       />
     )}
   </TrustPageView>

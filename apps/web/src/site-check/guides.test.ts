@@ -92,6 +92,17 @@ describe('guide links (guides › check:site)', () => {
     ]);
   });
 
+  // spec: guides › [GU10] a guide with no calculator ends in the home, and no page links back
+  it('asks a guide that ends in the home for its box only', () => {
+    const site = guideSite();
+    const homeSite: Site = { ...site, guides: { 'guide-bags': 'home' } };
+    expect(messagesOf(validDist(homeSite), homeSite)).toEqual([]);
+    expect(messagesOf(withoutBoxes(homeSite, FILES), homeSite)).toEqual([
+      'guides/bags.html guide-link: the guide must end in a box linking /',
+      'es/guias/bolsas.html guide-link: the guide must end in a box linking /es',
+    ]);
+  });
+
   it('leaves a missing page to the file set', () => {
     const dist = validDist(guideSite());
     dist.delete('guides/bags.html');

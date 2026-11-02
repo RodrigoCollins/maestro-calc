@@ -92,7 +92,7 @@ const site = {
   calculatorPages: CALCULATOR_PAGES,
   externalLinks,
   guides: Object.fromEntries(
-    Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator]),
+    Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator ?? 'home']),
   ),
   hubs: Object.fromEntries(Object.entries(HUBS).map(([id, { calculators }]) => [id, calculators])),
 };
