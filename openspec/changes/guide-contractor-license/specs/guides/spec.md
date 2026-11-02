@@ -10,3 +10,7 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - GIVEN `/es/guias/como-sacar-la-licencia-de-contratista`
 - THEN its last box links `/es` with the text "Todas nuestras calculadoras" under "Haz la cuenta para tu obra"
 - AND no calculator page links it
+
+#### Scenario: [GU11] The paint guide ends in its calculator
+- GIVEN `/es/guias/como-cotizar-un-trabajo-de-pintura`
+- THEN its last box links `/es/calculadora-de-pintura` with the text of the paint calculator's heading under "Haz la cuenta para tu obra"

@@ -4,7 +4,7 @@ import type { CalculatorPageId } from './templates.ts';
 /*
  * The trade hubs (hubs): Markdown pages of the trust template, one per trade, each listing the
  * calculators and guides of that trade. A hub id is also its `ROUTES` id and its entry in the
- * `pages` collection. Paint has no hub yet: one calculator and no guide would be a thin page.
+ * `pages` collection.
  */
 
 export interface Hub {
@@ -26,6 +26,7 @@ export const HUBS = {
     calculators: ['rectangle-area', 'feet-inches'],
     guides: ['guide-square-footage', 'guide-tape-measure-fractions'],
   },
+  'hub-paint': { calculators: ['paint'], guides: ['guide-paint-quote'] },
 } as const satisfies Record<string, Hub>;
 
 /** The hub a page id is, or `undefined` for any other page. */

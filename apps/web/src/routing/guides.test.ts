@@ -23,6 +23,7 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-concrete-quote')).toEqual({ calculator: 'concrete' });
     // spec: guides › [GU10] a guide with no calculator of its own
     expect(guideOf('guide-contractor-license')).toEqual({ calculator: null });
+    expect(guideOf('guide-paint-quote')).toEqual({ calculator: 'paint' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
@@ -31,6 +32,7 @@ describe('guides (guides › Guide pages)', () => {
   it('lists the guides of a calculator page in table order, and none for a calculator without one', () => {
     expect(guidesOf('concrete')).toEqual(['guide-concrete-bags-or-truck', 'guide-concrete-quote']);
     expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
+    expect(guidesOf('paint')).toEqual(['guide-paint-quote']);
     expect(guidesOf('gravel')).toEqual([]);
     for (const calculator of CALCULATOR_PAGES) {
       for (const id of guidesOf(calculator)) expect(GUIDES[id].calculator).toBe(calculator);

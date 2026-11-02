@@ -117,6 +117,9 @@ export const esSite = {
   'page.guide-contractor-license.title': 'Cómo sacar la licencia de contratista | Maestro Calc',
   'page.guide-contractor-license.description':
     'Encuentra la junta de tu estado, revisa si tu trabajo necesita licencia, documenta tu experiencia, aprueba los exámenes y consigue la fianza.',
+  'page.guide-paint-quote.title': 'Cómo cotizar un trabajo de pintura | Maestro Calc',
+  'page.guide-paint-quote.description':
+    'Mide las paredes, calcula los galones y las latas, anota los materiales y la preparación, divide el trabajo y arma una cotización de pintura clara.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',
@@ -132,6 +135,9 @@ export const esSite = {
   'page.hub-measurement.title': 'Calculadoras y guías de medidas | Maestro Calc',
   'page.hub-measurement.description':
     'Calculadoras de pies cuadrados y de pies y pulgadas con guías: lee la cinta métrica, suma fracciones y pasa de pies cuadrados a metros cuadrados.',
+  'page.hub-paint.title': 'Calculadoras y guías de pintura | Maestro Calc',
+  'page.hub-paint.description':
+    'Calculadora y guía de pintura: galones y latas para las paredes de un cuarto, restando puertas y ventanas, y cómo cotizar un trabajo de pintura.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

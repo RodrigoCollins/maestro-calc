@@ -19,6 +19,7 @@ export const GUIDES = {
   'guide-roof-pitch': { calculator: 'roof-pitch' },
   'guide-concrete-quote': { calculator: 'concrete' },
   'guide-contractor-license': { calculator: null },
+  'guide-paint-quote': { calculator: 'paint' },
 } as const satisfies Record<string, Guide>;
 
 export type GuideId = keyof typeof GUIDES;

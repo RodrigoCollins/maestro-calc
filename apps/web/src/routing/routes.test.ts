@@ -97,6 +97,11 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-get-a-contractor-license',
       es: '/es/guias/como-sacar-la-licencia-de-contratista',
     });
+    expect(ROUTES['guide-paint-quote']).toEqual({
+      en: '/guides/how-to-quote-a-painting-job',
+      es: '/es/guias/como-cotizar-un-trabajo-de-pintura',
+    });
+    expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });
