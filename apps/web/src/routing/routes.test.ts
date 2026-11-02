@@ -117,6 +117,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-quote-a-roofing-job',
       es: '/es/guias/como-cotizar-un-trabajo-de-techo',
     });
+    expect(ROUTES['guide-fence-post-concrete']).toEqual({
+      en: '/guides/how-much-concrete-for-a-fence-post',
+      es: '/es/guias/cuanto-concreto-para-un-poste-de-cerca',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });

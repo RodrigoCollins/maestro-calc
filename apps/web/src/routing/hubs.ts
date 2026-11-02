@@ -17,7 +17,7 @@ export interface Hub {
 export const HUBS = {
   'hub-concrete': {
     calculators: ['concrete'],
-    guides: ['guide-concrete-bags-or-truck', 'guide-concrete-quote'],
+    guides: ['guide-concrete-bags-or-truck', 'guide-concrete-quote', 'guide-fence-post-concrete'],
   },
   'hub-roofing': {
     calculators: ['roof-pitch', 'roofing'],

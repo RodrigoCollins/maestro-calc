@@ -156,6 +156,10 @@ export const esSite = {
   'page.guide-roofing-quote.title': 'Cómo cotizar un trabajo de techo | Maestro Calc',
   'page.guide-roofing-quote.description':
     'Mide el techo en cuadrados, cuenta los paquetes y el fieltro, anota todo lo que rodea a las tejas y el trabajo, y arma una cotización de techo clara.',
+  'page.guide-fence-post-concrete.title':
+    '¿Cuánto concreto lleva un poste de cerca? | Maestro Calc',
+  'page.guide-fence-post-concrete.description':
+    'Define el hoyo de un poste de cerca, calcula el concreto y las bolsas para un poste o para toda la cerca, y coloca el poste paso a paso.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

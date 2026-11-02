@@ -23,6 +23,7 @@ export const GUIDES = {
   'guide-gravel-driveway': { calculator: 'gravel' },
   'guide-raised-bed-soil': { calculator: 'topsoil' },
   'guide-roofing-quote': { calculator: 'roofing' },
+  'guide-fence-post-concrete': { calculator: 'concrete' },
 } as const satisfies Record<string, Guide>;
 
 export type GuideId = keyof typeof GUIDES;
