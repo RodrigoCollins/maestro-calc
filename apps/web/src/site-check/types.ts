@@ -32,6 +32,8 @@ export interface Site {
   readonly externalLinks: Readonly<Record<string, readonly string[]>>;
   /** The calculator page each guide ends in (`GUIDES`), by guide id; empty when none. */
   readonly guides: Readonly<Record<string, string>>;
+  /** The calculator pages each trade hub lists (`HUBS`), by hub id; empty when none. */
+  readonly hubs: Readonly<Record<string, readonly string[]>>;
 }
 
 /**
