@@ -111,3 +111,14 @@ test('gives every page a link preview: its title, description and the shared ima
     expect(await meta('og:image'), path).toBe('https://cuentahoras.com/og.png');
   }
 });
+
+test('describes every page with structured data whose url is its canonical', async ({ page }) => {
+  for (const { path } of PAGES) {
+    await page.goto(path);
+    const data = JSON.parse(
+      (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
+    ) as { '@type'?: string; url?: string };
+    expect(['WebSite', 'WebApplication', 'Article'], path).toContain(data['@type']);
+    expect(data.url, path).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
+  }
+});

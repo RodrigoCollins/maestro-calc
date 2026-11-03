@@ -23,6 +23,6 @@ describe('ROUTES', () => {
   });
 
   it('starts with the home pair', () => {
-    expect(ROUTES[0]).toEqual({ id: 'home', en: '/', es: '/es' });
+    expect(ROUTES[0]).toEqual({ id: 'home', kind: 'home', en: '/', es: '/es' });
   });
 });

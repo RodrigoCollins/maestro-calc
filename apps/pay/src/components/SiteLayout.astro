@@ -1,6 +1,8 @@
 ---
 import { Font } from 'astro:assets';
 import type { Lang } from '../time-card/receipt.ts';
+import { ROUTES } from '../routes.ts';
+import { jsonLdOf } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
 import '../styles/site.css';
 
@@ -22,6 +24,9 @@ const { lang, title, description, paths, otherLang, footer, wide = false } = Ast
 const other: Lang = lang === 'en' ? 'es' : 'en';
 const otherHref = paths?.[other] ?? (other === 'en' ? '/' : '/es');
 const indexable = SITE.indexable && paths !== undefined;
+const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === paths.en);
+const jsonLd =
+  route === undefined ? undefined : jsonLdOf(route, lang, { title, description }, SITE.origin);
 const href = (path: string): string => new URL(path, SITE.origin).href;
 const method =
   lang === 'en'
@@ -49,6 +54,7 @@ const method =
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
+    {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     {paths !== undefined && (
       <>
         <link rel="canonical" href={href(paths[lang])} />

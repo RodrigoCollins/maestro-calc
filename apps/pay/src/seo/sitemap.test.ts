@@ -2,9 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { sitemapXml } from './sitemap.ts';
 
 const ROUTES = [
-  { id: 'home', en: '/', es: '/es' },
-  { id: 'time-card', en: '/time-card-calculator', es: '/es/calculadora-de-horas-trabajadas' },
-];
+  { id: 'home', kind: 'home', en: '/', es: '/es' },
+  {
+    id: 'time-card',
+    kind: 'calculator',
+    en: '/time-card-calculator',
+    es: '/es/calculadora-de-horas-trabajadas',
+  },
+] as const;
 
 describe('sitemapXml', () => {
   const xml = sitemapXml(ROUTES, 'https://cuentahoras.com');
