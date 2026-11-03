@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { EXAMPLES } from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
-const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov']);
+const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov']);
 
 describe('methodology texts', () => {
   it('has the same sections in the same order in both languages', () => {
@@ -29,6 +29,7 @@ describe('methodology texts', () => {
         texts.sections.find((section) => section.id === id)?.sources.length ?? 0;
       expect(cited('federal')).toBe(1);
       expect(cited('california')).toBe(2);
+      expect(cited('deductions')).toBe(2);
     }
   });
 

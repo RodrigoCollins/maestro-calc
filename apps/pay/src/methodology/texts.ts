@@ -47,6 +47,14 @@ const DLSE_FAQ: Source = {
   label: 'California Labor Commissioner (DLSE), Overtime FAQ',
   href: 'https://www.dir.ca.gov/dlse/faq_overtime.htm',
 };
+const SCHEDULE_1A: Source = {
+  label: 'IRS, Schedule 1-A (Form 1040), Additional Deductions',
+  href: 'https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf',
+};
+const IRS_OVERTIME: Source = {
+  label: 'IRS, questions and answers on the deduction for qualified overtime compensation',
+  href: 'https://www.irs.gov/newsroom/questions-and-answers-about-the-new-deduction-for-qualified-overtime-compensation',
+};
 const DLSE_LETTER: Source = {
   label: 'DLSE opinion letter 2000.01.19, no pyramiding of overtime hours',
   href: 'https://www.dir.ca.gov/dlse/opinions/2000-01-19.pdf',
@@ -95,6 +103,24 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'Regular hours are paid at your hourly rate, overtime hours at 1.5 times and double time at 2 times. The calculator keeps exact fractions until the end and rounds only the money to the cent; hours are shown with up to two decimals.',
         ],
         sources: [],
+      },
+      {
+        id: 'salary',
+        heading: 'Hourly pay and salary',
+        paragraphs: [
+          'Weekly pay is the hourly rate times the hours a week; every two weeks is twice that; the year is the weekly pay times the paid weeks. A month is the year divided by 12, and twice a month the year divided by 24, which is why a monthly check is not four weekly ones.',
+          'From a salary the same steps run backwards: the yearly pay divided by the paid weeks and by the hours a week gives the hourly rate. Overtime is not included.',
+        ],
+        sources: [],
+      },
+      {
+        id: 'deductions',
+        heading: 'No tax on overtime and no tax on tips',
+        paragraphs: [
+          'For tax years 2025 through 2028, Schedule 1-A lets you deduct the qualified overtime pay, which is only the half of time and a half that the FLSA requires, up to $12,500 ($25,000 on a joint return), and qualified tips up to $25,000 on any return.',
+          'Both shrink by $100 for each full $1,000 of modified adjusted gross income over $150,000 ($300,000 joint), never below zero; a part of a $1,000 does not count. The savings we show are the deduction times the bracket you pick, an estimate and not your tax.',
+        ],
+        sources: [SCHEDULE_1A, IRS_OVERTIME],
       },
       {
         id: 'limits',
@@ -167,6 +193,24 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'Las horas regulares se pagan a tu tarifa por hora, las extra a 1.5 veces y las dobles a 2 veces. La calculadora usa fracciones exactas hasta el final y solo redondea el dinero al centavo; las horas se muestran con hasta dos decimales.',
         ],
         sources: [],
+      },
+      {
+        id: 'salary',
+        heading: 'Pago por hora y sueldo',
+        paragraphs: [
+          'El pago semanal es la tarifa por hora por las horas de la semana; cada dos semanas es el doble; el año es el pago semanal por las semanas pagadas. Un mes es el año dividido por 12, y dos veces al mes el año dividido por 24; por eso un cheque mensual no son cuatro semanales.',
+          'Desde un sueldo se hacen los mismos pasos al revés: el pago del año dividido por las semanas pagadas y por las horas de la semana da la tarifa por hora. No incluye horas extra.',
+        ],
+        sources: [],
+      },
+      {
+        id: 'deductions',
+        heading: 'Horas extra y propinas sin impuestos',
+        paragraphs: [
+          'Para los años fiscales 2025 a 2028, el Schedule 1-A te deja deducir el pago calificado de horas extra, que es solo la mitad del tiempo y medio que exige la FLSA, hasta $12,500 ($25,000 en una declaración conjunta), y las propinas calificadas hasta $25,000 en cualquier declaración.',
+          'Las dos bajan $100 por cada $1,000 completos de ingreso bruto ajustado modificado por encima de $150,000 ($300,000 en conjunta), nunca por debajo de cero; una parte de $1,000 no cuenta. El ahorro que mostramos es la deducción por el tramo que eliges, una estimación y no tu impuesto.',
+        ],
+        sources: [SCHEDULE_1A, IRS_OVERTIME],
       },
       {
         id: 'limits',

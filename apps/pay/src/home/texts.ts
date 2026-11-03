@@ -49,8 +49,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       {
         id: 'overtime',
         title: 'Overtime',
-        summary: 'What you are paid after 40 hours, at time and a half.',
-        href: null,
+        summary: 'What you are paid after 40 hours, at time and a half, from your week.',
+        href: '/time-card-calculator',
       },
       {
         id: 'hourly-to-salary',
@@ -103,8 +103,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       {
         id: 'overtime',
         title: 'Horas extra',
-        summary: 'Cuánto te pagan después de 40 horas, a tiempo y medio.',
-        href: null,
+        summary: 'Cuánto te pagan después de 40 horas, a tiempo y medio, con tu semana.',
+        href: '/es/calculadora-de-horas-trabajadas',
       },
       {
         id: 'hourly-to-salary',
