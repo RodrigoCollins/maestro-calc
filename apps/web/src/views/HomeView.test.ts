@@ -7,7 +7,9 @@ import { pagelessTitles } from '../__testing__/pageless-titles.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { fromRoot } from '../contract/root.ts';
 import { directoryOrder, exampleOf, homeCards } from '../lib/home-directory.ts';
+import { resultViewOf } from '../lib/page-view.ts';
 import { PAGES } from '../lib/pages.ts';
+import { FEATURED_GUIDES } from '../lib/home-directory.ts';
 import { HUB_IDS } from '../routing/hubs.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
@@ -50,7 +52,7 @@ const ARROW = /[\u2190-\u21FF\u27F0-\u27FF\u2900-\u297F›»]/u;
 /** The scoped style of the view, from its opening tag. */
 const viewStyle = (): string => {
   const source = readFileSync(fromRoot('apps/web/src/views/HomeView.astro'), 'utf8');
-  return source.slice(source.indexOf('<style>'));
+  return source.slice(source.indexOf('<style'));
 };
 
 /** A CSS string value with its escapes (`\2192 `, `\"`) decoded. */
@@ -82,7 +84,7 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'opens the %s home with the heading, then the intro that starts with the tagline',
+    'opens the %s home with the heading, then the intro that starts with the tagline and one call to action',
     async (locale, catalog) => {
       const main = (await render(locale)).querySelector('main');
       const hero = main?.querySelector('.home-hero');
@@ -90,7 +92,11 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
         catalog['page.home.intro'],
       );
       expect(catalog['page.home.intro'].startsWith(catalog['site.tagline'])).toBe(true);
-      expect(hero?.querySelectorAll('a, h2, h3, h4, h5, h6')).toHaveLength(0);
+      // the one link of the hero is its call to action; it names no other heading
+      const links = hero?.querySelectorAll('a') ?? [];
+      expect(links).toHaveLength(1);
+      expect(links[0]?.classList.contains('home-cta')).toBe(true);
+      expect(hero?.querySelectorAll('h2, h3, h4, h5, h6')).toHaveLength(0);
     },
   );
 });
@@ -166,7 +172,9 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         .querySelectorAll('main a[href]')
         .map((link) => link.getAttribute('href'));
       expect(all).toEqual([
+        pathOf('concrete', locale),
         ...cardLinks(document).map((link) => link.getAttribute('href')),
+        ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
         ...HUB_IDS.map((id) => pathOf(id, locale)),
         ...hrefs,
       ]);
@@ -197,6 +205,75 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
     const words = ['stair calculator', 'calculadora de escaleras'];
     for (const other of [...(await pagelessTitles()), ...words])
       expect(text, other).not.toContain(other.toLowerCase());
+  });
+});
+
+describe('HomeView hero sample, guides and trust (home desktop redesign)', () => {
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
+    'leads the %s hero with the concrete call to action and its default result',
+    async (locale, catalog) => {
+      const document = await render(locale);
+      const hero = document.querySelector('main .home-hero');
+      const cta = hero?.querySelector('a.home-cta');
+      expect(cta?.getAttribute('href')).toBe(pathOf('concrete', locale));
+      expect(cta?.text.trim()).toBe(catalog['page.home.cta']);
+      expect(hero?.querySelector('.home-kicker')?.text.trim()).toBe(catalog['page.home.kicker']);
+      const result = resultViewOf(PAGES.concrete.module, locale, PAGES.concrete.catalogs[locale]);
+      const sample = hero?.querySelector('figure.home-sample');
+      expect(sample?.querySelector('.home-sample-title')?.text.trim()).toBe(
+        catalog['page.home.sample'],
+      );
+      expect(sample?.querySelector('.home-sample-figure')?.text.replace(/\s+/g, ' ').trim()).toBe(
+        `${result.primary.value}${result.primary.after}`.trim(),
+      );
+      const line = result.shopping[0];
+      expect(line).toBeDefined();
+      expect(sample?.querySelector('.home-sample-qty')?.text.trim()).toBe(String(line?.qty));
+      expect(sample?.querySelector('figcaption')?.text.trim()).toBe(
+        exampleOf(PAGES.concrete.catalogs[locale], 'concrete', locale),
+      );
+      expect(sample?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    },
+  );
+
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
+    'links the featured guides on the %s home, titled as their pages',
+    async (locale, catalog) => {
+      const document = await render(locale);
+      const section = document.querySelector('main section.home-guides');
+      expect(section?.querySelector('h2')?.text.trim()).toBe(catalog['page.home.guides']);
+      const links = section?.querySelectorAll('a[href]') ?? [];
+      expect(FEATURED_GUIDES.length).toBe(4);
+      expect(links.map((link) => link.getAttribute('href'))).toEqual(
+        FEATURED_GUIDES.map((id) => pathOf(id, locale)),
+      );
+      FEATURED_GUIDES.forEach((id, index) => {
+        expect(links[index]?.text.trim()).toBe(
+          catalog[`page.${id}.title`].replace(/ \| Maestro Calc$/, ''),
+        );
+      });
+    },
+  );
+
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)('states how the numbers are worked out on the %s home', async (locale, catalog) => {
+    const document = await render(locale);
+    const section = document.querySelector('main section.home-trust');
+    expect(section?.getAttribute('aria-label')).toBe(catalog['page.home.trust']);
+    const items = section?.querySelectorAll('li') ?? [];
+    expect(items.map((item) => item.querySelector('h3')?.text.trim())).toEqual([
+      catalog['page.home.trust.sources.title'],
+      catalog['page.home.trust.math.title'],
+      catalog['page.home.trust.languages.title'],
+    ]);
   });
 });
 
@@ -264,10 +341,9 @@ describe('HomeView promises and glyphs (trust-pages › Home page, [TP8]; site-s
       expect(style, property).not.toContain(property);
     }
     // site-shell › [SS26] as amended by blueprint-ui: the card corner token, nothing else
-    expect([...style.matchAll(/border-radius:\s*([^;]+);/g)].map((match) => match[1])).toEqual([
-      'var(--radius-card)',
-      'var(--radius-card)',
-    ]);
+    const radii = [...style.matchAll(/border-radius:\s*([^;]+);/g)].map((match) => match[1]);
+    expect(radii.length).toBeGreaterThan(0);
+    for (const radius of radii) expect(radius).toBe('var(--radius-card)');
   });
 });
 
