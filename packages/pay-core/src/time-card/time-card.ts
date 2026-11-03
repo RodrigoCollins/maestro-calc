@@ -151,19 +151,27 @@ export const timeCard = defineCalculator({
     { key: 'regularPay', measure: 'money', role: 'secondary' },
     { key: 'overtimePay', measure: 'money', role: 'secondary' },
     { key: 'doublePay', measure: 'money', role: 'secondary' },
+    { key: 'monHours', measure: 'hours', role: 'intermediate' },
+    { key: 'tueHours', measure: 'hours', role: 'intermediate' },
+    { key: 'wedHours', measure: 'hours', role: 'intermediate' },
+    { key: 'thuHours', measure: 'hours', role: 'intermediate' },
+    { key: 'friHours', measure: 'hours', role: 'intermediate' },
+    { key: 'satHours', measure: 'hours', role: 'intermediate' },
+    { key: 'sunHours', measure: 'hours', role: 'intermediate' },
   ],
   warnings: ['breakTooLong'],
   compute: (inputs) => {
-    const warnings: { code: 'breakTooLong'; params: { day: Day } }[] = [];
-    const days = DAYS.map((day) => {
+    // the minutes of a day before the break check: 0 for a day with one time or none
+    const shiftOf = (day: Day): number => {
       const start = inputs[day];
       const end = inputs[`${day}Out`];
-      if (start === null || end === null) return 0;
-      const worked = shiftMinutes(start, end) - inputs[`${day}Break`];
-      if (worked > 0) return worked;
-      warnings.push({ code: 'breakTooLong', params: { day } });
-      return 0;
-    });
+      return start === null || end === null ? 0 : shiftMinutes(start, end) - inputs[`${day}Break`];
+    };
+    const workedOf = (day: Day): number => Math.max(shiftOf(day), 0);
+    const warnings = DAYS.filter(
+      (day) => inputs[day] !== null && inputs[`${day}Out`] !== null && shiftOf(day) <= 0,
+    ).map((day) => ({ code: 'breakTooLong' as const, params: { day } }));
+    const days = DAYS.map(workedOf);
     const split = inputs.rule === 'california' ? california(days) : federal(days);
     const regularPay = scaleMoney(inputs.rate, hours(split.regular));
     const overtimePay = scaleMoney(inputs.rate, hours(split.overtime).mul(ONE_AND_A_HALF));
@@ -178,6 +186,13 @@ export const timeCard = defineCalculator({
         regularPay,
         overtimePay,
         doublePay,
+        monHours: hours(workedOf('mon')),
+        tueHours: hours(workedOf('tue')),
+        wedHours: hours(workedOf('wed')),
+        thuHours: hours(workedOf('thu')),
+        friHours: hours(workedOf('fri')),
+        satHours: hours(workedOf('sat')),
+        sunHours: hours(workedOf('sun')),
       },
       shopping: [],
       warnings,

@@ -11,6 +11,8 @@
     "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
+    "@maestro-calc/core": "*",
+    "@maestro-calc/pay-core": "*",
     "astro": "^7.4.2"
   }
 }
