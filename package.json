@@ -27,6 +27,7 @@
     "check:site:pay": "npm run check:site -w @maestro-calc/pay",
     "test:e2e": "npm test --prefix tooling/site-browser",
     "test:e2e:pay": "npm run test:pay --prefix tooling/site-browser",
+    "test:e2e:pool": "npm run test:pool --prefix tooling/site-browser",
     "lighthouse": "npm run lighthouse --prefix tooling/site-browser",
     "sync": "npm run astro -w @maestro-calc/web -- sync",
     "lint": "eslint . --max-warnings=0",
