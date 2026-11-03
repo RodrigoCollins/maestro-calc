@@ -51,6 +51,7 @@ export const urlTextOf = (input: InputDescriptor, value: unknown): string | unde
     case 'length':
       return isQuantityOf(value, 'length') ? value.canonical.toString() : undefined;
     case 'percent':
+    case 'decimal':
       return value instanceof Rational ? value.toString() : undefined;
     case 'money':
       return isMoney(value) ? value.amount.toString() : undefined;

@@ -139,6 +139,7 @@ const allowed = (input: InputDescriptor, value: unknown): boolean => {
         ? checkAmount(input, value.canonical) === undefined
         : false;
     case 'percent':
+    case 'decimal':
       return value instanceof Rational && checkAmount(input, value) === undefined;
     case 'money':
       return (

@@ -38,4 +38,18 @@ describe('apps/pay/wrangler.jsonc', () => {
       assets: { ...assets, directory: '../../apps/pay/dist' },
     });
   });
+
+  it('serves the site headers: nosniff, no framing and same-origin scripts only', () => {
+    const headers = readFileSync(resolve(import.meta.dirname, '../public/_headers'), 'utf8');
+    const csp = /Content-Security-Policy: (.+)/.exec(headers)?.[1] ?? '';
+    expect(headers).toContain('X-Content-Type-Options: nosniff');
+    expect(csp).toContain("script-src 'self';");
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toMatch(/unsafe-eval|script-src[^;]*unsafe-inline/);
+  });
+
+  it('lets robots crawl and points them at the sitemap', () => {
+    const robots = readFileSync(resolve(import.meta.dirname, '../public/robots.txt'), 'utf8');
+    expect(robots).toBe('User-agent: *\nAllow: /\nSitemap: https://cuentahoras.com/sitemap.xml\n');
+  });
 });

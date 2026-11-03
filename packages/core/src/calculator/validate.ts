@@ -20,6 +20,7 @@ import type {
   InputsOf,
   LengthDescriptor,
   MoneyDescriptor,
+  DecimalDescriptor,
   PercentDescriptor,
   SelectDescriptor,
   UnitSystem,
@@ -116,6 +117,11 @@ const readPercent = (input: PercentDescriptor, raw: unknown): Result<Value, Fiel
   return percent.ok ? withinBounds(input, percent.value, percent.value) : percent;
 };
 
+const readDecimal = (input: DecimalDescriptor, raw: unknown): Result<Value, FieldFailure> => {
+  const decimal = parseText(raw, parseDecimal);
+  return decimal.ok ? withinBounds(input, decimal.value, decimal.value) : decimal;
+};
+
 const readMoney = (input: MoneyDescriptor, raw: unknown): Result<Value, FieldFailure> => {
   const money = isMoney(raw) ? ok(raw) : parseText(raw, parseMoney);
   return money.ok ? withinBounds(input, money.value.amount, money.value) : money;
@@ -163,6 +169,8 @@ const readField = (
       return readCount(input, raw);
     case 'percent':
       return readPercent(input, raw);
+    case 'decimal':
+      return readDecimal(input, raw);
     case 'select':
       return readSelect(input, raw);
     case 'boolean':

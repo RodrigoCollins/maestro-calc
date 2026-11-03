@@ -11,6 +11,7 @@ export type {
   ClockDescriptor,
   ComputeResult,
   CountDescriptor,
+  DecimalDescriptor,
   DisplayHint,
   FieldError,
   InputDescriptor,

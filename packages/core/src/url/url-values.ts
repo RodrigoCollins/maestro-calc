@@ -58,6 +58,7 @@ const readUrlDecoded = (descriptor: InputDescriptor, text: string): UrlValue | u
       return amount === undefined ? undefined : quantity(amount, inch);
     }
     case 'percent':
+    case 'decimal':
       return readUrlAmount(descriptor, text);
     case 'money': {
       const amount = readUrlAmount(descriptor, text);

@@ -192,3 +192,20 @@ describe('urlTextOf a clock field (core-clock-time)', () => {
     expect(urlTextOf(clock, value)).toBeUndefined();
   });
 });
+
+// A decimal is written like percent points: the canonical rational text.
+describe('urlTextOf a decimal field', () => {
+  const hours = { kind: 'decimal', key: 'hrs', urlKey: 'h', default: Rational.of(40) } as const;
+
+  it.each([
+    [Rational.of(75, 2), '75/2'],
+    [Rational.of(40), '40'],
+    [Rational.ZERO, '0'],
+  ])('writes %s as %s', (value, text) => {
+    expect(urlTextOf(hours, value)).toBe(text);
+  });
+
+  it.each([37.5, '37.5', null, undefined])('has no text for %j', (value) => {
+    expect(urlTextOf(hours, value)).toBeUndefined();
+  });
+});

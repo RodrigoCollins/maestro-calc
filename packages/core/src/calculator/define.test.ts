@@ -204,6 +204,12 @@ const rejected: Row[] = [
   ),
   row(
     'INVALID_BOUNDS',
+    'decimal min 50 max 10',
+    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(20), min: r(50), max: r(10) }),
+    'd',
+  ),
+  row(
+    'INVALID_BOUNDS',
     'negative money min',
     withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(0), min: usd(-1) }),
     'm',
@@ -233,6 +239,18 @@ const rejected: Row[] = [
   row('DEFAULT_INVALID', 'clock past the day', withInputs({ ...clockField, default: 1440 }), 'tin'),
   row('DEFAULT_INVALID', 'negative clock', withInputs({ ...clockField, default: -1 }), 'tin'),
   row('DEFAULT_INVALID', 'fractional clock', withInputs({ ...clockField, default: 7.5 }), 'tin'),
+  row(
+    'DEFAULT_INVALID',
+    'decimal above its max',
+    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(337, 2), max: r(168) }),
+    'd',
+  ),
+  row(
+    'DEFAULT_INVALID',
+    'negative decimal',
+    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(-1, 2) }),
+    'd',
+  ),
   row(
     'DEFAULT_INVALID',
     'percent above 100',

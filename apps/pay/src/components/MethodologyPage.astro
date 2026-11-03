@@ -1,0 +1,101 @@
+---
+import { hoursText, moneyText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { EXAMPLES, figuresOf } from '../methodology/examples.ts';
+import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = METHODOLOGY_TEXTS[lang];
+// The rows are the engine's own figures for each example (examples.test.ts pins them).
+const rows = EXAMPLES.map((example) => {
+  const figures = figuresOf(example);
+  return {
+    label: t.examples[example.id],
+    regular: hoursText(figures.regularHours),
+    overtime: hoursText(figures.overtimeHours),
+    double: hoursText(figures.doubleHours),
+    pay: moneyText(figures.pay),
+  };
+});
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={{ en: '/methodology', es: '/es/metodologia' }}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    {t.sections.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {section.sources.length > 0 && (
+          <p class="sources">
+            {t.sourcesLabel}:{' '}
+            {section.sources.map((source, index) => (
+              <>
+                {index > 0 && '; '}
+                <a href={source.href} rel="noopener">
+                  {source.label}
+                </a>
+              </>
+            ))}
+          </p>
+        )}
+      </section>
+    ))}
+
+    <section aria-labelledby="examples">
+      <h2 id="examples">{t.examplesHeading}</h2>
+      <p>{t.examplesLead}</p>
+      <ul class="examples">
+        {rows.map((row) => (
+          <li>
+            <p class="example-label">{row.label}</p>
+            <dl>
+              <div>
+                <dt>{t.columns.regular}</dt>
+                <dd>{row.regular}</dd>
+              </div>
+              <div>
+                <dt>{t.columns.overtime}</dt>
+                <dd>{row.overtime}</dd>
+              </div>
+              <div>
+                <dt>{t.columns.double}</dt>
+                <dd>{row.double}</dd>
+              </div>
+              <div class="example-pay">
+                <dt>{t.columns.pay}</dt>
+                <dd>{row.pay}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="note">{t.reviewed}</p>
+    <a class="button button-primary" href={t.cta.href}>
+      {t.cta.label}
+    </a>
+  </main>
+</SiteLayout>
