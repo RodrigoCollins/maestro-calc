@@ -10,6 +10,7 @@ export const TRUST_IDS = [
   'contact',
   'embed-calculators',
   'glossary',
+  'guides',
   'guide-concrete-bags-or-truck',
   'guide-tape-measure-fractions',
   'guide-square-footage',

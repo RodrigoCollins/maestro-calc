@@ -53,6 +53,38 @@ for (const path of HOMES) {
       });
     }
 
+    // the canvas: the hero is an ink band from edge to edge under the header, and the home's
+    // column is 1200 px wide, header and footer included
+    for (const width of [390, 1280, 1440]) {
+      test(`runs the hero from edge to edge at ${String(width)} px`, async ({ page }) => {
+        await openAt(page, path, width);
+        const box = await page.evaluate(() => {
+          const rect = (selector: string) => {
+            const element = document.querySelector(selector);
+            if (element === null) throw new Error(`no ${selector}`);
+            return element.getBoundingClientRect();
+          };
+          const hero = rect('main .home-hero');
+          return {
+            left: hero.left,
+            right: hero.right,
+            gap: hero.top - rect('.site-header').bottom,
+            text: rect('main .home-hero-text').left,
+            main: rect('main').width,
+            scroll: document.documentElement.scrollWidth,
+          };
+        });
+        expect(box.left).toBe(0);
+        expect(box.right).toBe(width);
+        expect(box.gap).toBe(0);
+        expect(box.scroll).toBe(width);
+        const column = Math.min(width, 1200);
+        expect(box.main).toBe(column);
+        // the hero's content starts where the column's content does
+        expect(box.text).toBe((width - column) / 2 + 16);
+      });
+    }
+
     // spec: site-shell › [SS24] the H1 is larger than the page H1 size, and larger still when wide
     test('sets the H1 in the display size and fits the viewport at 320 px', async ({ page }) => {
       const sizes: number[] = [];

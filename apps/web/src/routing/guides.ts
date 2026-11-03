@@ -36,6 +36,9 @@ export const guideOf = (id: string): Guide | undefined => {
 
 const isGuideId = (id: string): id is GuideId => Object.hasOwn(GUIDES, id);
 
+/** The guide ids, in table order. */
+export const GUIDE_IDS: readonly GuideId[] = Object.keys(GUIDES).filter(isGuideId);
+
 /** The guides that end in a calculator page, in table order: the page links back to each. */
 export const guidesOf = (calculator: CalculatorPageId): GuideId[] =>
   Object.keys(GUIDES)

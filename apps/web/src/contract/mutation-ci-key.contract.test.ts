@@ -12,7 +12,13 @@ interface PackageConfig {
 const core = await importFromRoot<PackageConfig>('packages/core/stryker.config.mjs');
 const data = await importFromRoot<PackageConfig>('packages/data/stryker.config.mjs');
 const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.config.mjs');
-const allShards = [...core.shardNames, ...data.shardNames, ...payCore.shardNames];
+const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
+const allShards = [
+  ...core.shardNames,
+  ...data.shardNames,
+  ...payCore.shardNames,
+  ...poolCore.shardNames,
+];
 
 const hasDotSegment = (path: string): boolean =>
   path.split('/').some((part) => part.startsWith('.'));
@@ -63,6 +69,7 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
         ['core', core],
         ['data', data],
         ['pay-core', payCore],
+        ['pool-core', poolCore],
       ] as const
     ).find(([, config]) => config.shardNames.includes(entry.shard));
     if (owner === undefined) throw new Error(`no package declares ${entry.shard}`);

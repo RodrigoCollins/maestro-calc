@@ -10,7 +10,7 @@ import { directoryOrder, exampleOf, homeCards } from '../lib/home-directory.ts';
 import { resultViewOf } from '../lib/page-view.ts';
 import { PAGES } from '../lib/pages.ts';
 import { FEATURED_GUIDES } from '../lib/home-directory.ts';
-import { HUB_IDS } from '../routing/hubs.ts';
+import { HUB_IDS, hubOfCalculator } from '../routing/hubs.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -84,7 +84,7 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'opens the %s home with the heading, then the intro that starts with the tagline and one call to action',
+    'opens the %s home with the heading, then the intro that starts with the tagline and two calls to action',
     async (locale, catalog) => {
       const main = (await render(locale)).querySelector('main');
       const hero = main?.querySelector('.home-hero');
@@ -92,10 +92,15 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
         catalog['page.home.intro'],
       );
       expect(catalog['page.home.intro'].startsWith(catalog['site.tagline'])).toBe(true);
-      // the one link of the hero is its call to action; it names no other heading
+      // the links of the hero are its calls to action: concrete, then the directory below
       const links = hero?.querySelectorAll('a') ?? [];
-      expect(links).toHaveLength(1);
+      expect(links).toHaveLength(2);
       expect(links[0]?.classList.contains('home-cta')).toBe(true);
+      expect(links[1]?.getAttribute('href')).toBe('#calculators');
+      expect(links[1]?.text.trim()).toBe(catalog['page.home.ctaAll']);
+      expect(main?.querySelector('#calculators')?.text.trim()).toBe(
+        catalog['page.home.calculators'],
+      );
       expect(hero?.querySelectorAll('h2, h3, h4, h5, h6')).toHaveLength(0);
     },
   );
@@ -143,7 +148,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         expect(
           card?.children.map((child) => child.tagName),
           id,
-        ).toEqual(['H2', 'P', 'P']);
+        ).toEqual(['H2', 'P', 'P', 'SMALL']);
         expect(card?.querySelector('h2 > a.tap-target')?.text.trim(), id).toBe(
           catalog[`page.home.cards.${id}.title`],
         );
@@ -152,6 +157,12 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         );
         expect(card?.querySelector('p.home-example')?.text.trim(), id).toBe(
           exampleOf(PAGES[id].catalogs[locale], id, locale),
+        );
+        // the trade of the card, last in the source and shown above the title
+        const hub = hubOfCalculator(id);
+        expect(hub, id).toBeDefined();
+        expect(card?.querySelector('small:last-child')?.text.trim(), id).toBe(
+          hub === undefined ? '' : catalog[`site.footer.${hub}`],
         );
       });
     },
@@ -173,8 +184,10 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         .map((link) => link.getAttribute('href'));
       expect(all).toEqual([
         pathOf('concrete', locale),
+        '#calculators',
         ...cardLinks(document).map((link) => link.getAttribute('href')),
         ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
+        pathOf('guides', locale),
         ...HUB_IDS.map((id) => pathOf(id, locale)),
         ...hrefs,
       ]);
@@ -243,6 +256,22 @@ describe('HomeView hero sample, guides and trust (home desktop redesign)', () =>
     ['en', enSite],
     ['es', esSite],
   ] as const)(
+    'closes the %s directory with the share note, outside the list of calculators',
+    async (locale, catalog) => {
+      const main = (await render(locale)).querySelector('main');
+      const share = main?.querySelector('.home-directory > .home-share');
+      expect(share?.previousElementSibling?.classList.contains('home-cards')).toBe(true);
+      expect(share?.querySelector('h3')?.text.trim()).toBe(catalog['page.home.share.title']);
+      expect(share?.querySelector('p')?.text.trim()).toBe(catalog['page.home.share.text']);
+      // a note, not a call to action: the share buttons live on each calculator page
+      expect(share?.querySelectorAll('a, button')).toHaveLength(0);
+    },
+  );
+
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
     'links the featured guides on the %s home, titled as their pages',
     async (locale, catalog) => {
       const document = await render(locale);
@@ -250,9 +279,12 @@ describe('HomeView hero sample, guides and trust (home desktop redesign)', () =>
       expect(section?.querySelector('h2')?.text.trim()).toBe(catalog['page.home.guides']);
       const links = section?.querySelectorAll('a[href]') ?? [];
       expect(FEATURED_GUIDES.length).toBe(4);
-      expect(links.map((link) => link.getAttribute('href'))).toEqual(
-        FEATURED_GUIDES.map((id) => pathOf(id, locale)),
-      );
+      // the featured guides, then the index of every guide
+      expect(links.map((link) => link.getAttribute('href'))).toEqual([
+        ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
+        pathOf('guides', locale),
+      ]);
+      expect(links.at(-1)?.text.trim()).toBe(catalog['site.footer.guides']);
       FEATURED_GUIDES.forEach((id, index) => {
         expect(links[index]?.text.trim()).toBe(
           catalog[`page.${id}.title`].replace(/ \| Maestro Calc$/, ''),
