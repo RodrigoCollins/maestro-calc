@@ -10,6 +10,10 @@ export const PAGES = [
   { path: '/salary-to-hourly-calculator', lang: 'en' },
   { path: '/es/de-pago-por-hora-a-sueldo-anual', lang: 'es' },
   { path: '/es/de-sueldo-anual-a-pago-por-hora', lang: 'es' },
+  { path: '/no-tax-on-overtime-calculator', lang: 'en' },
+  { path: '/no-tax-on-tips-calculator', lang: 'en' },
+  { path: '/es/calculadora-horas-extra-sin-impuestos', lang: 'es' },
+  { path: '/es/calculadora-propinas-sin-impuestos', lang: 'es' },
 ] as const;
 
 export const TIME_CARD = PAGES.filter(({ path }) =>

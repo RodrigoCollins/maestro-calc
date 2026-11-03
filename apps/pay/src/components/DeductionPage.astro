@@ -1,0 +1,124 @@
+---
+import { toDecimalParts, type Money } from '@maestro-calc/core';
+import { noTaxOnOvertime } from '@maestro-calc/pay-core/no-tax-on-overtime';
+import { noTaxOnTips } from '@maestro-calc/pay-core/no-tax-on-tips';
+import { moneyText } from '../format.ts';
+import { DEDUCTION_PATHS, DEDUCTION_TEXTS, type Deduction } from '../deductions/texts.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import OvertimeScript from '../islands/OvertimeScript.astro';
+import TipsScript from '../islands/TipsScript.astro';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  readonly deduction: Deduction;
+}
+
+const { lang, deduction } = Astro.props;
+const t = DEDUCTION_TEXTS[lang][deduction];
+const calculator = deduction === 'overtime' ? noTaxOnOvertime : noTaxOnTips;
+const ran = calculator.run({});
+if (!ran.ok) throw new Error(`the ${deduction} deduction must run at its defaults`);
+const out = new Map<string, Money>(
+  ran.value.outputs.map(({ key, value }) => [key, value as Money]),
+);
+const shown = (key: string): string => {
+  const value = out.get(key);
+  if (value === undefined) throw new Error(`no output ${key}`);
+  return moneyText(value);
+};
+const [lead] = calculator.outputs;
+const source = calculator.inputs.find(({ key }) => key === 'source')?.default;
+const fields = t.fields.map((field) => {
+  const input = calculator.inputs.find(({ key }) => key === field.key);
+  if (input === undefined) throw new Error(`no input ${field.key}`);
+  const value =
+    input.kind === 'money'
+      ? (({ integer, fraction }) => `${String(integer)}.${fraction}`)(
+          toDecimalParts(input.default.amount, 2),
+        )
+      : String(input.default);
+  return {
+    ...field,
+    kind: input.kind,
+    value,
+    hidden: field.when !== undefined && field.when !== source,
+  };
+});
+const script = deduction === 'overtime' ? 'overtime' : 'tips';
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={DEDUCTION_PATHS[deduction]}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="deduction" data-deduction={script} novalidate>
+      {fields.map((field) => (
+        <label class="field" data-when={field.when} hidden={field.hidden}>
+          {field.label}
+          {field.options === undefined ? (
+            <input
+              name={field.key}
+              inputmode={field.kind === 'money' ? 'decimal' : 'numeric'}
+              autocomplete="off"
+              value={field.value}
+            />
+          ) : (
+            <select name={field.key}>
+              {Object.entries(field.options).map(([value, label]) => (
+                <option value={value} selected={value === field.value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          )}
+          {field.hint !== undefined && <span class="hint">{field.hint}</span>}
+        </label>
+      ))}
+    </form>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out={lead.key}>
+          {shown(lead.key)}
+        </p>
+      </div>
+      <ul class="breakdown labeled">
+        {Object.entries(t.rows).map(([key, label]) => (
+          <li>
+            <span>{label}</span>
+            <span data-out={key}>{shown(key)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.rules.map((rule) => (
+        <li>{rule}</li>
+      ))}
+    </ul>
+    <p class="note">
+      {t.disclaimer}{' '}
+      <a href={t.source.href} rel="noopener">
+        {t.source.label}
+      </a>
+    </p>
+  </main>
+  {script === 'overtime' ? <OvertimeScript /> : <TipsScript />}
+</SiteLayout>

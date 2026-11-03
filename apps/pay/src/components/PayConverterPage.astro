@@ -87,7 +87,7 @@ const rows = Object.entries(t.outputs).filter(([key]) => key !== v.figure);
           {text(v.figure)}
         </p>
       </div>
-      <ul class="breakdown" aria-label={t.breakdown}>
+      <ul class="breakdown labeled" aria-label={t.breakdown}>
         {rows.map(([key, label]) => (
           <li>
             <span>{label}</span>
