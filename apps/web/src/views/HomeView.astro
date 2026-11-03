@@ -176,13 +176,25 @@ const hubs = HUB_IDS.map((id) => ({
 </BaseLayout>
 
 <style is:global>
+  /* The home runs wider than the other pages, as in the canvas: a 1200 px column, header and footer
+     included. This sheet ships on the two homes only. */
+  :root {
+    --page-width: 75rem;
+  }
+
+  /* The hero runs past the column to the window edges; a classic scrollbar makes 100vw wider than
+     the page, and the body clips that overhang instead of scrolling it. */
+  body {
+    overflow-x: clip;
+  }
+
   /* The one place the Blueprint identity is spent: the grid on the ink and one dimension line. */
   .home-hero {
     --grid-line: color-mix(in srgb, var(--color-surface) 12%, transparent);
     display: grid;
     gap: var(--space-4);
-    margin: 0 calc(-1 * var(--space-3)) var(--space-5);
-    padding: var(--space-5) var(--space-3);
+    margin: calc(-1 * var(--space-3)) calc(50% - 50vw) var(--space-5);
+    padding: var(--space-5) calc(50vw - 50%);
     background: var(--color-text);
     background-image:
       linear-gradient(var(--grid-line) 1px, transparent 0),
@@ -233,10 +245,12 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   /* Orange takes dark text only (Blueprint): the one call to action of the page. */
-  .home-cta {
+  .home-cta,
+  .home-cta-all {
     display: inline-flex;
     align-items: center;
-    padding: var(--space-2) var(--space-4);
+    padding: calc(var(--space-2) - 2px) var(--space-4);
+    border: 2px solid var(--color-accent);
     border-radius: var(--radius-card);
     background: var(--color-accent);
     color: var(--color-text);
@@ -252,14 +266,10 @@ const hubs = HUB_IDS.map((id) => ({
 
   /* The second call to action is outlined, so the orange one stays the only filled button. */
   .home-cta-all {
-    display: inline-flex;
-    align-items: center;
-    padding: calc(var(--space-2) - 2px) var(--space-4);
-    border: 2px solid #b9c6da;
-    border-radius: var(--radius-card);
+    border-color: #b9c6da;
+    background: none;
     color: var(--color-surface);
     font-weight: 600;
-    text-decoration: none;
   }
 
   .home-cta:hover,
@@ -330,13 +340,13 @@ const hubs = HUB_IDS.map((id) => ({
     font-size: var(--text-small);
   }
 
-  /* Two columns once the hero no longer reaches the screen edges: the pitch, then the sample. */
+  /* Two columns on wide screens: the pitch, then the sample, in a taller band. */
   @media (min-width: 66rem) {
     .home-hero {
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
       align-items: center;
       gap: var(--space-5);
-      border-radius: var(--radius-card);
+      padding-block: calc(2 * var(--space-5));
     }
   }
 
