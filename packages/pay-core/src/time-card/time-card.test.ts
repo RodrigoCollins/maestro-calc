@@ -137,3 +137,63 @@ describe('time card (California: daily and weekly overtime, seventh day)', () =>
     expect(out['totalHours']).toEqual(r(63));
   });
 });
+
+// DLSE opinion letter 2000.01.19 (Miles E. Locker, Chief Counsel; AB 60, no pyramiding of overtime
+// hours): https://www.dir.ca.gov/dlse/opinions/2000-01-19.pdf. Daily overtime hours are not counted
+// again toward the weekly 40; the letter's three cases, breaks set to zero.
+describe('time card (California: the three cases of DLSE opinion letter 2000.01.19)', () => {
+  const off = {
+    mon: '',
+    monOut: '',
+    tue: '',
+    tueOut: '',
+    wed: '',
+    wedOut: '',
+    thu: '',
+    thuOut: '',
+  };
+  const day = (key: string, start: string, end: string) => ({
+    [key]: start,
+    [`${key}Out`]: end,
+    [`${key}Break`]: '0',
+  });
+  const week = (days: Record<string, string>[]) =>
+    outputsOf({
+      rule: 'california',
+      ...off,
+      fri: '',
+      friOut: '',
+      sat: '',
+      satOut: '',
+      sun: '',
+      sunOut: '',
+      ...Object.assign({}, ...days),
+    });
+
+  it('10 hours a day, five days: 10 hours of overtime and none weekly on top', () => {
+    const out = week(
+      ['mon', 'tue', 'wed', 'thu', 'fri'].map((key) => day(key, '8:00 am', '6:00 pm')),
+    );
+    expect(out['regularHours']).toEqual(r(40));
+    expect(out['overtimeHours']).toEqual(r(10));
+    expect(out['doubleHours']).toEqual(r(0));
+  });
+
+  it('9 hours Monday to Thursday and 4 on Friday: 40 hours, 4 of them daily overtime', () => {
+    const out = week([
+      ...['mon', 'tue', 'wed', 'thu'].map((key) => day(key, '8:00 am', '5:00 pm')),
+      day('fri', '8:00 am', '12:00 pm'),
+    ]);
+    expect(out['totalHours']).toEqual(r(40));
+    expect(out['regularHours']).toEqual(r(36));
+    expect(out['overtimeHours']).toEqual(r(4));
+  });
+
+  it('7 hours a day, six days: no daily overtime, 2 hours weekly', () => {
+    const out = week(
+      ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((key) => day(key, '8:00 am', '3:00 pm')),
+    );
+    expect(out['regularHours']).toEqual(r(40));
+    expect(out['overtimeHours']).toEqual(r(2));
+  });
+});
