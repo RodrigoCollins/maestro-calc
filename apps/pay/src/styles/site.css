@@ -363,6 +363,175 @@ h1 {
   font-weight: 800;
 }
 
+/* Home: a wider column, the hero beside a printed card, the calculators as a grid. */
+.wide .site-header > div,
+.wide .page,
+.wide .site-footer > div {
+  max-width: 70rem;
+}
+
+.home {
+  gap: 2.5rem;
+  padding-block: 2rem 3rem;
+}
+
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+}
+
+.hero-copy {
+  flex: 999 1 26rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.home h1 {
+  font-size: clamp(2.25rem, 1.4rem + 3.6vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+
+.home .lead {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  max-width: 34rem;
+}
+
+.button-money {
+  background: var(--money);
+  border-color: var(--money);
+  color: var(--money-ink);
+  padding-inline: 1.4rem;
+  margin-top: 0.4rem;
+}
+
+.mini-card {
+  flex: 1 1 18rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  transform: rotate(1.5deg);
+}
+
+.mini-card p {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mini-head {
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.stamp {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--stamp);
+  border: 2px solid var(--stamp);
+  border-radius: 3px;
+  padding: 0 0.4rem;
+}
+
+.mini-row {
+  border-top: 1px dashed var(--rule);
+  padding-top: 0.4rem;
+}
+
+.mini-total {
+  border-top: 2px solid var(--ink) !important;
+  font-weight: 600;
+}
+
+.mini-total span:last-child {
+  color: var(--money);
+}
+
+.tools {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tools h2 {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.tools ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.9rem;
+}
+
+.tools li {
+  display: flex;
+}
+
+.tool {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-height: 8.25rem;
+  padding: 1.1rem;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+a.tool:hover .tool-title {
+  text-decoration: underline;
+}
+
+.tool-soon {
+  border-style: dashed;
+  border-color: var(--muted);
+  background: transparent;
+}
+
+.tool-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.tool-title .badge {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.tool-summary {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
 .site-footer {
   border-top: 2px solid var(--ink);
   font-size: 0.85rem;
@@ -370,6 +539,9 @@ h1 {
 }
 
 .site-footer > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
   padding-block: 1rem;
 }
 

@@ -1,0 +1,70 @@
+---
+import { Font } from 'astro:assets';
+import type { Lang } from '../time-card/receipt.ts';
+import { SITE } from '../site.config.ts';
+import '../styles/site.css';
+
+interface Props {
+  readonly lang: Lang;
+  readonly title: string;
+  readonly description: string;
+  /** This page's path in each language; the English one is also the x-default. */
+  readonly paths: Readonly<Record<Lang, string>>;
+  readonly otherLang: string;
+  readonly footer: string;
+  readonly wide?: boolean;
+}
+
+const { lang, title, description, paths, otherLang, footer, wide = false } = Astro.props;
+const other: Lang = lang === 'en' ? 'es' : 'en';
+const href = (path: string): string => new URL(path, SITE.origin).href;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={href(paths[lang])} />
+    <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
+    <link rel="alternate" hreflang="es-US" href={href(paths.es)} />
+    <link rel="alternate" hreflang="x-default" href={href(paths.en)} />
+    <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
+    <Font cssVariable="--font-mono" preload={[{ weight: '400' }]} />
+  </head>
+  <body class:list={{ wide }}>
+    <header class="site-header">
+      <div>
+        <a class="brand" href={lang === 'en' ? '/' : '/es'}>
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 26 26"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <rect x="4" y="2" width="18" height="22" rx="2"></rect>
+            <path d="M8 7h10M8 11h10M8 15h6"></path>
+            <circle cx="18" cy="19" r="2.2" fill="#e0a23b" stroke="none"></circle>
+          </svg>
+          {SITE.name}
+        </a>
+        <a class="lang" href={paths[other]} hreflang={other} lang={other}>
+          {otherLang}
+        </a>
+      </div>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <div>
+        <span>{SITE.name}</span>
+        <span>{footer}</span>
+      </div>
+    </footer>
+  </body>
+</html>

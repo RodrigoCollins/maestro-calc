@@ -351,6 +351,11 @@ export default defineConfig(
     files: ['apps/web/src/site-check/**/*.ts', 'apps/web/scripts/**/*.ts'],
     rules: extraneous({ packageDir: ['.', 'apps/web'], devDependencies: true }),
   },
+  {
+    // The same for the byte budgets of Cuenta Horas.
+    files: ['apps/pay/src/site-check/**/*.ts', 'apps/pay/scripts/**/*.ts'],
+    rules: extraneous({ packageDir: ['.', 'apps/pay'], devDependencies: true }),
+  },
   ...astro.configs['flat/recommended'],
   { files: ['**/*.astro'], extends: [tseslint.configs.disableTypeChecked] },
   {

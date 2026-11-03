@@ -1,6 +1,6 @@
 import { Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { clockFieldText, hoursText, moneyText } from './format.ts';
+import { clockFieldText, hoursText, moneyText, shiftText } from './format.ts';
 
 describe('moneyText', () => {
   it.each([
@@ -35,5 +35,17 @@ describe('clockFieldText', () => {
     [null, ''],
   ])('writes %j as %j', (minutes, text) => {
     expect(clockFieldText(minutes)).toBe(text);
+  });
+});
+
+describe('shiftText', () => {
+  it.each([
+    [420, 990, '7:00a–4:30p'],
+    [0, 720, '12:00a–12:00p'],
+    [1350, 375, '10:30p–6:15a'],
+    [null, null, ''],
+    [420, null, ''],
+  ])('writes a shift from %j to %j as %j', (start, end, text) => {
+    expect(shiftText(start, end)).toBe(text);
   });
 });
