@@ -1,7 +1,7 @@
 ---
 id: paint
 locale: en
-updated: 2026-10-30
+updated: 2026-11-03
 ownerReview: approved
 sources:
   - name: Sherwin-Williams Quali-Kote Interior Latex, Product Data Sheet (coverage)
@@ -79,6 +79,10 @@ Multiply the perimeter of the room by the wall height, take out the doors and wi
 
 About 350 to 400 square feet for one coat on a smooth, primed wall, according to the data sheet of a common interior latex paint. The calculator uses 350, the low end. Rough or bare surfaces take more paint.
 
+### How much is a quart of paint?
+
+A quart is a quarter of a gallon, about 0.95 liters. At about 350 square feet per gallon, one quart covers about 87 square feet for one coat: enough for a touch-up, a door or a small wall, not a whole room. The calculator counts gallon cans.
+
 ### How many coats of paint do I need?
 
 Two coats is the usual choice, and it is what the calculator starts with. A big change of color, a dark color or a bare wall may need more. One coat can be enough for the same color over a sound finish.
@@ -94,10 +98,6 @@ With 8 ft walls, one door, two windows and two coats, about 1.91 gallons, so 2 g
 ### Should I buy gallons or a 5-gallon bucket?
 
 The calculator counts gallon cans. When the job needs about five gallons or more, a 5-gallon bucket of the same paint is often cheaper per gallon. Compare the prices at your store.
-
-### Does the calculator include the ceiling?
-
-No. It covers the walls only. Ceilings and trim usually take a different paint, so estimate them apart. For a ceiling, its area is the length times the width of the room.
 
 ### Can I use meters?
 

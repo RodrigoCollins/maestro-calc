@@ -1,7 +1,7 @@
 ---
 id: guide-paint-quote
 locale: en
-updated: 2026-11-01
+updated: 2026-11-03
 ownerReview: approved
 ---
 
@@ -19,7 +19,7 @@ Measure the ceiling, the trim and the doors apart. They often take a different p
 
 ## Work out the paint
 
-Multiply the area by the coats and divide by the coverage of one gallon. A Sherwin-Williams data sheet gives 350 to 400 square feet per gallon for one coat of an interior latex paint; using the low end, 350, keeps the estimate from coming up short. Two coats on the bedroom are 668 square feet, and 668 ÷ 350 = 1.91 gallons: 2 gallon cans.
+Multiply the area by the coats and divide by the coverage of one gallon. A Sherwin-Williams data sheet gives 350 to 400 square feet per gallon for one coat of an interior latex paint; using the low end, 350, keeps the estimate from coming up short. Two coats on the bedroom are 668 square feet, and 668 ÷ 350 = 1.91 gallons: 2 gallon cans. The [paint calculator](/paint-calculator) does this math for any room.
 
 Check the coverage on the label of the paint you use, because it changes with the product, the color and the surface. Bare drywall, stucco and block soak up more paint; plan on a coat of primer there, and price it as its own line.
 

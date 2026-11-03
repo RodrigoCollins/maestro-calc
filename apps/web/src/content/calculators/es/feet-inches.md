@@ -1,7 +1,7 @@
 ---
 id: feet-inches
 locale: es
-updated: 2026-10-30
+updated: 2026-11-03
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (factores de conversión)
@@ -55,6 +55,22 @@ Escribe pies y pulgadas juntos. 5 ft 3 1/2 in es una medida; 5 3 1/2 no lo es. S
 
 Revisa la operación antes de cortar. La respuesta repite las dos medidas en palabras: léela una vez, es la forma más rápida de encontrar un error.
 
+Los planos y las hojas de cálculo suelen escribir las medidas en pies con decimales. Estas son las pulgadas de un pie en pies con decimales, redondeadas a tres lugares:
+
+| Pulgadas | Pies con decimales |
+| -------- | ------------------ |
+| 1 in     | 0.083 ft           |
+| 2 in     | 0.167 ft           |
+| 3 in     | 0.250 ft           |
+| 4 in     | 0.333 ft           |
+| 5 in     | 0.417 ft           |
+| 6 in     | 0.500 ft           |
+| 7 in     | 0.583 ft           |
+| 8 in     | 0.667 ft           |
+| 9 in     | 0.750 ft           |
+| 10 in    | 0.833 ft           |
+| 11 in    | 0.917 ft           |
+
 Estos resultados son la cuenta de los números que escribiste. Mide dos veces antes de cortar.
 
 <h2 id="preguntas-frecuentes">Preguntas frecuentes</h2>
@@ -71,21 +87,21 @@ Pasa las dos medidas a pulgadas, resta y escribe el resultado otra vez en pies y
 
 Elige Dividir y escribe la cantidad de partes. 12 ft 6 in dividido en 7 partes iguales da 1 ft 9 7/16 in cada una, al 1/16 de pulgada más cercano.
 
-### ¿Puedo escribir fracciones?
-
-Sí. Escribe 6 1/2 in, 3/4 in o 12 ft 6 1/2 in. También funcionan los decimales: 6.5 in.
-
 ### ¿Por qué el resultado se redondea a 1/16 de pulgada?
 
 Es la marca más chica de la mayoría de las cintas. Las pulgadas con decimales y los metros muestran el valor exacto con dos y tres decimales.
 
+### ¿Cómo paso pies con decimales a pies y pulgadas?
+
+Deja los pies enteros y multiplica la parte decimal por 12 para obtener las pulgadas. 5.75 ft son 5 ft más 0.75 × 12 = 9 in, o sea 5 ft 9 in. Si las pulgadas no son enteras, redondéalas a 1/16 de pulgada: 5.3 ft son 5 ft 3.6 in, que en la cinta es 5 ft 3 5/8 in.
+
+### ¿Cómo paso pulgadas a pies con decimales?
+
+Divide las pulgadas por 12. 7 in son 7 ÷ 12 = 0.583 ft, y 5 ft 7 in son 5.583 ft. La tabla de los consejos de arriba da de 1 a 11 pulgadas en pies con decimales.
+
 ### ¿Cuántas pulgadas tiene un pie?
 
 Doce. Un pie son exactamente 12 pulgadas, y una pulgada son exactamente 2.54 centímetros.
-
-### ¿Qué pasa si la segunda medida es más larga?
-
-Al restar, la calculadora da la diferencia y la respuesta dice cuál medida es más larga, así nunca lees una medida negativa.
 
 ### ¿Puedo usar metros?
 

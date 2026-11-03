@@ -1,7 +1,7 @@
 ---
 id: paint
 locale: es
-updated: 2026-10-30
+updated: 2026-11-03
 ownerReview: approved
 sources:
   - name: Sherwin-Williams Quali-Kote Interior Latex, Product Data Sheet (coverage)
@@ -79,6 +79,10 @@ Multiplica el perímetro del cuarto por la altura de las paredes, descuenta puer
 
 Unos 350 a 400 pies cuadrados por mano sobre una pared lisa y sellada, según la hoja técnica de una pintura látex de interior común. La calculadora usa 350, el extremo bajo. Las superficies ásperas o sin sellar llevan más pintura.
 
+### ¿Cuánto es un cuarto de galón de pintura?
+
+Un cuarto de galón es la cuarta parte de un galón, unos 0.95 litros. A unos 350 pies cuadrados por galón, un cuarto de galón cubre unos 87 pies cuadrados con una mano: alcanza para un retoque, una puerta o una pared pequeña, no para pintar un cuarto completo. La calculadora cuenta latas de un galón.
+
 ### ¿Cuántas manos de pintura necesito?
 
 Dos manos es lo común, y es con lo que empieza la calculadora. Un cambio grande de color, un color oscuro o una pared sin sellar pueden necesitar más. Una mano puede alcanzar para el mismo color sobre un acabado en buen estado.
@@ -94,10 +98,6 @@ Con paredes de 8 ft, una puerta, dos ventanas y dos manos, unos 1.91 galones, as
 ### ¿Compro galones o una cubeta de 5 galones?
 
 La calculadora cuenta latas de un galón. Cuando el trabajo lleva unos cinco galones o más, una cubeta de 5 galones de la misma pintura suele salir más barata por galón. Compara los precios en tu tienda.
-
-### ¿La calculadora incluye el techo?
-
-No. Cubre solo las paredes. El techo y los marcos suelen llevar otra pintura, así que estímalos aparte. Para un techo, su área es el largo por el ancho del cuarto.
 
 ### ¿Puedo usar metros?
 

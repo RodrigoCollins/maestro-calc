@@ -1,7 +1,7 @@
 ---
 id: guide-paint-quote
 locale: es
-updated: 2026-11-01
+updated: 2026-11-03
 ownerReview: approved
 ---
 
@@ -19,7 +19,7 @@ Mide aparte el techo, las molduras y las puertas. Muchas veces llevan otro produ
 
 ## Calcula la pintura
 
-Multiplica el área por las manos y divide por el rendimiento de un galón. Una hoja técnica de Sherwin-Williams da de 350 a 400 pies cuadrados por galón para una mano de una pintura látex de interior; usar el extremo bajo, 350, hace que la estimación no se quede corta. Dos manos en el dormitorio son 668 pies cuadrados, y 668 ÷ 350 = 1.91 galones: 2 latas de un galón.
+Multiplica el área por las manos y divide por el rendimiento de un galón. Una hoja técnica de Sherwin-Williams da de 350 a 400 pies cuadrados por galón para una mano de una pintura látex de interior; usar el extremo bajo, 350, hace que la estimación no se quede corta. Dos manos en el dormitorio son 668 pies cuadrados, y 668 ÷ 350 = 1.91 galones: 2 latas de un galón. La [calculadora de pintura](/es/calculadora-de-pintura) hace esta cuenta para cualquier cuarto.
 
 Revisa el rendimiento en la etiqueta de la pintura que usas, porque cambia con el producto, el color y la superficie. El drywall sin sellar, el estuco y el bloque absorben más pintura; cuenta con una mano de primer ahí, y ponle precio en una línea propia.
 
