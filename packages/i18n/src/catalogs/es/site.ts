@@ -14,6 +14,7 @@ export const esSite = {
   'site.footer.contact': 'Contacto',
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.footer.glossary': 'Glosario de obra',
+  'site.footer.guides': 'Todas las guías',
   'site.glossary.term': 'Español',
   'site.glossary.other': 'Inglés',
   'site.glossary.definition': 'Qué significa',
@@ -30,6 +31,7 @@ export const esSite = {
   'site.hub.calculators': 'Calculadoras',
   'site.hub.guides': 'Guías',
   'site.hub.more': 'Más herramientas:',
+  'site.guides.business': 'El negocio',
   'site.guide.links': 'Aprende más en nuestras guías',
   'site.footer.contactLabel': 'Escríbenos a',
   'site.footer.hubs': 'Calculadoras por oficio',
@@ -140,6 +142,9 @@ export const esSite = {
   'page.glossary.title': 'Glosario de construcción inglés-español | Maestro Calc',
   'page.glossary.description':
     'Términos de obra en inglés y español, por oficio, con lo que significa cada uno: concreto, jardinería, drywall, techos, pintura y el negocio.',
+  'page.guides.title': 'Guías para la obra, por oficio | Maestro Calc',
+  'page.guides.description':
+    'Todas las guías de Maestro Calc por oficio: concreto, techos, drywall, jardinería, medidas, pintura y el negocio, cada una con su calculadora.',
   'page.guide-concrete-bags-or-truck.title': '¿Concreto en bolsas o en camión? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'Cuándo conviene comprar bolsas de mezcla para concreto y cuándo un camión de premezclado: una yarda cúbica en bolsas, cargos por carga chica y cómo comparar.',

@@ -29,6 +29,7 @@ export const FOOTER_HUBS = HUB_IDS;
 
 /** Pages offered in the footer after the hubs, in order, when they exist in the table. */
 export const FOOTER_PAGES = [
+  'guides',
   'embed-calculators',
   'glossary',
   'privacy',
