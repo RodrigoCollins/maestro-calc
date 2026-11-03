@@ -335,7 +335,7 @@ export const CONTENT_ROWS = {
   },
   paint: {
     module: paintPage,
-    updated: '2026-10-30',
+    updated: '2026-11-03',
     sources: () => [SHERWIN_WILLIAMS, NIST],
     engine: paintShown,
     // the example is the page's starting values: Formulas names the sides and the height as written
@@ -402,7 +402,7 @@ export const CONTENT_ROWS = {
   },
   'feet-inches': {
     module: feetInchesPage,
-    updated: '2026-10-30',
+    updated: '2026-11-03',
     sources: () => [NIST],
     engine: feetInchesShown,
     // the example is the page's starting values: Formulas names both lengths as written

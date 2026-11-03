@@ -1,7 +1,7 @@
 ---
 id: feet-inches
 locale: en
-updated: 2026-10-30
+updated: 2026-11-03
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (conversion factors)
@@ -55,6 +55,22 @@ Type feet and inches together. 5 ft 3 1/2 in is one length; 5 3 1/2 is not. When
 
 Check the operation before you cut. The answer repeats both lengths in words, so read it once: it is the quickest way to catch a slip.
 
+Plans and spreadsheets often write lengths in decimal feet. These are the inches of one foot as decimal feet, rounded to three places:
+
+| Inches | Decimal feet |
+| ------ | ------------ |
+| 1 in   | 0.083 ft     |
+| 2 in   | 0.167 ft     |
+| 3 in   | 0.250 ft     |
+| 4 in   | 0.333 ft     |
+| 5 in   | 0.417 ft     |
+| 6 in   | 0.500 ft     |
+| 7 in   | 0.583 ft     |
+| 8 in   | 0.667 ft     |
+| 9 in   | 0.750 ft     |
+| 10 in  | 0.833 ft     |
+| 11 in  | 0.917 ft     |
+
 These results are estimates of the math on the numbers you typed. Measure twice before you cut.
 
 <h2 id="faq">Frequently asked questions</h2>
@@ -71,21 +87,21 @@ Turn both lengths into inches, subtract, and write the result back in feet and i
 
 Choose Divide and type the number of parts. 12 ft 6 in divided into 7 equal parts is 1 ft 9 7/16 in each, to the nearest 1/16 of an inch.
 
-### Can I type fractions?
-
-Yes. Type 6 1/2 in, 3/4 in or 12 ft 6 1/2 in. Decimals work too: 6.5 in.
-
 ### Why is the result rounded to 1/16 of an inch?
 
 It is the smallest mark on most tapes. The decimal inches and the meters show the exact value to two and three places.
 
+### How do I convert decimal feet to feet and inches?
+
+Keep the whole feet and multiply the decimal part by 12 to get the inches. 5.75 ft is 5 ft plus 0.75 × 12 = 9 in, so 5 ft 9 in. When the inches are not whole, round them to the nearest 1/16 of an inch: 5.3 ft is 5 ft 3.6 in, which is 5 ft 3 5/8 in on the tape.
+
+### How do I convert inches to decimal feet?
+
+Divide the inches by 12. 7 in is 7 ÷ 12 = 0.583 ft, and 5 ft 7 in is 5.583 ft. The table in the tips above lists 1 to 11 inches as decimal feet.
+
 ### How many inches are in a foot?
 
 Twelve. A foot is exactly 12 inches, and an inch is exactly 2.54 centimeters.
-
-### What if the second length is longer?
-
-When you subtract, the calculator gives the difference and the answer says which length is longer, so you never read a negative length.
 
 ### Can I use meters?
 
