@@ -10,7 +10,7 @@ import { directoryOrder, exampleOf, homeCards } from '../lib/home-directory.ts';
 import { resultViewOf } from '../lib/page-view.ts';
 import { PAGES } from '../lib/pages.ts';
 import { FEATURED_GUIDES } from '../lib/home-directory.ts';
-import { HUB_IDS } from '../routing/hubs.ts';
+import { HUB_IDS, hubOfCalculator } from '../routing/hubs.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -148,7 +148,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         expect(
           card?.children.map((child) => child.tagName),
           id,
-        ).toEqual(['H2', 'P', 'P']);
+        ).toEqual(['H2', 'P', 'P', 'P']);
         expect(card?.querySelector('h2 > a.tap-target')?.text.trim(), id).toBe(
           catalog[`page.home.cards.${id}.title`],
         );
@@ -157,6 +157,12 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         );
         expect(card?.querySelector('p.home-example')?.text.trim(), id).toBe(
           exampleOf(PAGES[id].catalogs[locale], id, locale),
+        );
+        // the trade of the card, last in the source and shown above the title
+        const hub = hubOfCalculator(id);
+        expect(hub, id).toBeDefined();
+        expect(card?.querySelector('p.home-trade:last-child')?.text.trim(), id).toBe(
+          hub === undefined ? '' : catalog[`site.footer.${hub}`],
         );
       });
     },
@@ -181,6 +187,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         '#calculators',
         ...cardLinks(document).map((link) => link.getAttribute('href')),
         ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
+        pathOf('guides', locale),
         ...HUB_IDS.map((id) => pathOf(id, locale)),
         ...hrefs,
       ]);
@@ -272,9 +279,12 @@ describe('HomeView hero sample, guides and trust (home desktop redesign)', () =>
       expect(section?.querySelector('h2')?.text.trim()).toBe(catalog['page.home.guides']);
       const links = section?.querySelectorAll('a[href]') ?? [];
       expect(FEATURED_GUIDES.length).toBe(4);
-      expect(links.map((link) => link.getAttribute('href'))).toEqual(
-        FEATURED_GUIDES.map((id) => pathOf(id, locale)),
-      );
+      // the featured guides, then the index of every guide
+      expect(links.map((link) => link.getAttribute('href'))).toEqual([
+        ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
+        pathOf('guides', locale),
+      ]);
+      expect(links.at(-1)?.text.trim()).toBe(catalog['site.footer.guides']);
       FEATURED_GUIDES.forEach((id, index) => {
         expect(links[index]?.text.trim()).toBe(
           catalog[`page.${id}.title`].replace(/ \| Maestro Calc$/, ''),
