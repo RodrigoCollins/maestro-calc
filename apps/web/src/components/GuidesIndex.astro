@@ -1,0 +1,59 @@
+---
+/** The guides index: one section per trade, each listing its guides with their summaries. */
+interface Props {
+  groups: readonly {
+    heading: string;
+    guides: readonly { href: string; title: string; summary: string }[];
+  }[];
+}
+const { groups } = Astro.props;
+---
+
+<div class="guides-index">
+  {groups.map(({ heading, guides }) => (
+    <section>
+      <h2>{heading}</h2>
+      <ul class="guides-cards" role="list">
+        {guides.map(({ href, title, summary }) => (
+          <li class="guides-card">
+            <a class="tap-target" {href}>
+              {title}
+            </a>
+            <p>{summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</div>
+
+<style>
+  .guides-cards {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A guide reads as an article: an orange edge, as on the hubs and the home. */
+  .guides-card {
+    padding: var(--space-3);
+    border-top: var(--tick-weight) solid var(--color-accent);
+    background: var(--color-surface);
+  }
+
+  @media (min-width: 48rem) {
+    .guides-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .guides-card a {
+    font-weight: 600;
+  }
+
+  .guides-card p {
+    margin: var(--space-1) 0 0;
+  }
+</style>

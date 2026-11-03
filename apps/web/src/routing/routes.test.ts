@@ -69,6 +69,7 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/construction-glossary',
       es: '/es/glosario-de-construccion',
     });
+    expect(ROUTES.guides).toEqual({ en: '/guides', es: '/es/guias' });
     expect(ROUTES['embed-calculators']).toEqual({
       en: '/embed-calculators',
       es: '/es/calculadoras-para-tu-sitio',

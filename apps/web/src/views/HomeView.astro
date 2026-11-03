@@ -5,7 +5,7 @@ import { exampleOf, FEATURED_GUIDES, homeCards } from '../lib/home-directory.ts'
 import { resultViewOf } from '../lib/page-view.ts';
 import { PAGES } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
-import { HUB_IDS, HUBS } from '../routing/hubs.ts';
+import { HUB_IDS, HUBS, hubOfCalculator } from '../routing/hubs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -18,7 +18,10 @@ const text = siteText(locale);
 const nameOf = (title: string): string => title.replace(/ \| Maestro Calc$/, '');
 const tradeOf = (hub: (typeof HUB_IDS)[number] | undefined): string =>
   hub === undefined ? '' : text(`site.footer.${hub}`);
-const cards = homeCards(locale);
+const cards = homeCards(locale).map((card) => ({
+  ...card,
+  trade: tradeOf(hubOfCalculator(card.id)),
+}));
 // the hero sample is the concrete page's own default result, worked out at build time (no script)
 const concrete = PAGES.concrete;
 const result = resultViewOf(concrete.module, locale, concrete.catalogs[locale]);
@@ -51,9 +54,14 @@ const hubs = HUB_IDS.map((id) => ({
       <p class="home-kicker">{text('page.home.kicker')}</p>
       <h1>{text('page.home.heading')}</h1>
       <p>{text('page.home.intro')}</p>
-      <a class="home-cta tap-target" href={pathOf('concrete', locale)}>
-        {text('page.home.cta')}
-      </a>
+      <p class="home-actions">
+        <a class="home-cta tap-target" href={pathOf('concrete', locale)}>
+          {text('page.home.cta')}
+        </a>
+        <a class="home-cta-all tap-target" href="#calculators">
+          {text('page.home.ctaAll')}
+        </a>
+      </p>
     </div>
     <figure class="home-sample">
       <p class="home-sample-title">{text('page.home.sample')}</p>
@@ -89,20 +97,29 @@ const hubs = HUB_IDS.map((id) => ({
     </figure>
   </div>
 
-  <h2 class="home-heading">{text('page.home.calculators')}</h2>
-  <ul class="home-cards" role="list">
-    {cards.map((card) => (
-      <li class="home-card">
-        <h2>
-          <a class="tap-target" href={card.href}>
-            {card.title}
-          </a>
-        </h2>
-        <p>{card.summary}</p>
-        <p class="home-example">{card.example}</p>
-      </li>
-    ))}
-  </ul>
+  <h2 id="calculators" class="home-heading">
+    {text('page.home.calculators')}
+  </h2>
+  <div class="home-directory">
+    <ul class="home-cards" role="list">
+      {cards.map((card) => (
+        <li class="home-card">
+          <h2>
+            <a class="tap-target" href={card.href}>
+              {card.title}
+            </a>
+          </h2>
+          <p>{card.summary}</p>
+          <p class="home-example">{card.example}</p>
+          <small>{card.trade}</small>
+        </li>
+      ))}
+    </ul>
+    <div class="home-share">
+      <h3>{text('page.home.share.title')}</h3>
+      <p>{text('page.home.share.text')}</p>
+    </div>
+  </div>
 
   <section class="home-guides" aria-labelledby="home-guides-heading">
     <h2 id="home-guides-heading" class="home-heading">
@@ -120,6 +137,9 @@ const hubs = HUB_IDS.map((id) => ({
         </li>
       ))}
     </ul>
+    <a class="tap-target" href={pathOf('guides', locale)}>
+      {text('site.footer.guides')}
+    </a>
   </section>
 
   <section class="home-trust" aria-label={text('page.home.trust')}>
@@ -156,13 +176,25 @@ const hubs = HUB_IDS.map((id) => ({
 </BaseLayout>
 
 <style is:global>
+  /* The home runs wider than the other pages, as in the canvas: a 1200 px column, header and footer
+     included. This sheet ships on the two homes only. */
+  :root {
+    --page-width: 75rem;
+  }
+
+  /* The hero runs past the column to the window edges; a classic scrollbar makes 100vw wider than
+     the page, and the body clips that overhang instead of scrolling it. */
+  body {
+    overflow-x: clip;
+  }
+
   /* The one place the Blueprint identity is spent: the grid on the ink and one dimension line. */
   .home-hero {
     --grid-line: color-mix(in srgb, var(--color-surface) 12%, transparent);
     display: grid;
     gap: var(--space-4);
-    margin: 0 calc(-1 * var(--space-3)) var(--space-5);
-    padding: var(--space-5) var(--space-3);
+    margin: calc(-1 * var(--space-3)) calc(50% - 50vw) var(--space-5);
+    padding: var(--space-5) calc(50vw - 50%);
     background: var(--color-text);
     background-image:
       linear-gradient(var(--grid-line) 1px, transparent 0),
@@ -201,7 +233,8 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-kicker,
-  .home-trade {
+  .home-trade,
+  .home-card small {
     font-size: var(--text-small);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -212,10 +245,12 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   /* Orange takes dark text only (Blueprint): the one call to action of the page. */
-  .home-cta {
+  .home-cta,
+  .home-cta-all {
     display: inline-flex;
     align-items: center;
-    padding: var(--space-2) var(--space-4);
+    padding: calc(var(--space-2) - 2px) var(--space-4);
+    border: 2px solid var(--color-accent);
     border-radius: var(--radius-card);
     background: var(--color-accent);
     color: var(--color-text);
@@ -223,7 +258,22 @@ const hubs = HUB_IDS.map((id) => ({
     text-decoration: none;
   }
 
-  .home-cta:hover {
+  .home-hero .home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  /* The second call to action is outlined, so the orange one stays the only filled button. */
+  .home-cta-all {
+    border-color: #b9c6da;
+    background: none;
+    color: var(--color-surface);
+    font-weight: 600;
+  }
+
+  .home-cta:hover,
+  .home-cta-all:hover {
     text-decoration: underline;
   }
 
@@ -290,13 +340,13 @@ const hubs = HUB_IDS.map((id) => ({
     font-size: var(--text-small);
   }
 
-  /* Two columns once the hero no longer reaches the screen edges: the pitch, then the sample. */
+  /* Two columns on wide screens: the pitch, then the sample, in a taller band. */
   @media (min-width: 66rem) {
     .home-hero {
       grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
       align-items: center;
       gap: var(--space-5);
-      border-radius: var(--radius-card);
+      padding-block: calc(2 * var(--space-5));
     }
   }
 
@@ -304,13 +354,56 @@ const hubs = HUB_IDS.map((id) => ({
     margin: 0 0 var(--space-3);
   }
 
-  .home-cards {
+  /* The cards and the share note share one grid; the list keeps its role through `display: contents`. */
+  .home-directory {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
     gap: var(--space-3);
     margin: 0 0 var(--space-5);
-    padding: 0;
+  }
+
+  .home-cards {
+    display: contents;
     list-style: none;
+  }
+
+  /* Ten cards leave two cells of the last row at two, three and four columns: the note fills them. */
+  .home-share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+    grid-column: 1 / -1;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+
+  .home-share h3 {
+    flex-basis: 100%;
+    margin: 0;
+  }
+
+  .home-share p {
+    flex: 1 1 14rem;
+    margin: 0;
+  }
+
+  .home-share::after {
+    content: 'WhatsApp';
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-whatsapp);
+    color: var(--color-on-whatsapp);
+    font-weight: 700;
+  }
+
+  @media (min-width: 32rem) {
+    .home-share {
+      grid-column: span 2;
+    }
   }
 
   /* One link per card, stretched over it; the border darkens on hover and focus with no shift. */
@@ -356,8 +449,14 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-trade,
+  .home-card small,
   .home-card .home-example {
     color: var(--color-text-secondary);
+  }
+
+  /* The trade comes last in the source, after the title a reader lands on, and shows first. */
+  .home-card small {
+    order: -1;
   }
 
   .home-card .home-example {
@@ -396,6 +495,35 @@ const hubs = HUB_IDS.map((id) => ({
     font-size: var(--text-h3);
     font-weight: 700;
     line-height: var(--leading-heading);
+  }
+
+  /* On phones the index link closes the list, as in the canvas. */
+  .home-guides > a {
+    display: inline-block;
+    margin: calc(var(--space-3) - var(--space-5)) 0 var(--space-5);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+  }
+
+  /* On wide screens the index link sits beside the heading, as in the canvas. */
+  @media (min-width: 48rem) {
+    .home-guides {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+    }
+
+    .home-guides ul {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .home-guides > a {
+      grid-row: 1;
+      grid-column: 2;
+      margin: 0;
+    }
   }
 
   .home-trust h3 {

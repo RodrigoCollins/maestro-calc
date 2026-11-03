@@ -7,7 +7,7 @@ describe('link lists keep the id literals (site-shell › [SS12, SS13])', () => 
     expectTypeOf(header[0]?.id).toEqualTypeOf<'methodology' | 'about' | undefined>();
     const footer = linksFor(FOOTER_PAGES, 'en');
     expectTypeOf(footer[0]?.id).toEqualTypeOf<
-      'embed-calculators' | 'glossary' | 'privacy' | 'terms' | 'contact' | undefined
+      'guides' | 'embed-calculators' | 'glossary' | 'privacy' | 'terms' | 'contact' | undefined
     >();
   });
 });
