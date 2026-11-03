@@ -5,14 +5,14 @@ import { hoursText, moneyText } from '../format.ts';
 type Result = Extract<ReturnType<typeof timeCard.run>, { ok: true }>['value'];
 export type Lang = 'en' | 'es';
 
+/** The value type of each output, by key. */
+type Outputs = { [O in Result['outputs'][number] as O['key']]: O['value'] };
+
 /** The value of one output of a run, by key. */
-export const outputOf = <K extends Result['outputs'][number]['key']>(
-  result: Result,
-  key: K,
-): Extract<Result['outputs'][number], { key: K }>['value'] => {
+export const outputOf = <K extends keyof Outputs>(result: Result, key: K): Outputs[K] => {
   const found = result.outputs.find((output) => output.key === key);
   if (found === undefined) throw new TypeError(`no output ${key}`);
-  return found.value as Extract<Result['outputs'][number], { key: K }>['value'];
+  return found.value as Outputs[K];
 };
 
 const WORDS = {
