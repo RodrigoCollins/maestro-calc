@@ -5,7 +5,8 @@
   "version": "0.0.1",
   "sideEffects": false,
   "exports": {
-    "./time-card": "./src/time-card/index.ts"
+    "./time-card": "./src/time-card/index.ts",
+    "./pay-converter": "./src/pay-converter/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
