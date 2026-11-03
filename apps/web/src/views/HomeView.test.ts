@@ -155,7 +155,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         expect(card?.querySelector('h2 + p')?.text.trim(), id).toBe(
           catalog[`page.home.cards.${id}.summary`],
         );
-        expect(card?.querySelector('p.home-example')?.text.trim(), id).toBe(
+        expect(card?.querySelector('h2 + p + p')?.text.trim(), id).toBe(
           exampleOf(PAGES[id].catalogs[locale], id, locale),
         );
         // the trade of the card, last in the source and shown above the title

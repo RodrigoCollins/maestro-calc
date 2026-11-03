@@ -105,8 +105,12 @@ describe('BaseLayout (site-shell › Base layout)', () => {
 
   // spec: site-shell › [SS12] header links
   it.each([
-    ['en', ['/methodology', '/about'], ['Methodology', 'About']],
-    ['es', ['/es/metodologia', '/es/sobre-nosotros'], ['Metodología', 'Sobre nosotros']],
+    ['en', ['/guides', '/methodology', '/about'], ['Guides', 'Methodology', 'About']],
+    [
+      'es',
+      ['/es/guias', '/es/metodologia', '/es/sobre-nosotros'],
+      ['Guías', 'Metodología', 'Sobre nosotros'],
+    ],
   ] as const)('lists the header links of the table in %s', async (locale, hrefs, labels) => {
     const { document } = await render(locale);
     const links = document.querySelectorAll('header nav li a');

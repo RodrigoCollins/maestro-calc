@@ -110,7 +110,7 @@ const hubs = HUB_IDS.map((id) => ({
             </a>
           </h2>
           <p>{card.summary}</p>
-          <p class="home-example">{card.example}</p>
+          <p>{card.example}</p>
           <small>{card.trade}</small>
         </li>
       ))}
@@ -450,7 +450,7 @@ const hubs = HUB_IDS.map((id) => ({
 
   .home-trade,
   .home-card small,
-  .home-card .home-example {
+  .home-card p + p {
     color: var(--color-text-secondary);
   }
 
@@ -459,7 +459,7 @@ const hubs = HUB_IDS.map((id) => ({
     order: -1;
   }
 
-  .home-card .home-example {
+  .home-card p + p {
     margin-top: auto;
     padding-top: var(--space-2);
     border-top: 1px dashed var(--color-line);

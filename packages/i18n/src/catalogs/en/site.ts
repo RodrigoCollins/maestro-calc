@@ -3,6 +3,7 @@ export const enSite = {
   'site.tagline': 'Jobsite calculators that estimate what to buy',
   'site.skipLink': 'Skip to main content',
   'site.nav.label': 'Main navigation',
+  'site.nav.guides': 'Guides',
   'site.nav.methodology': 'Methodology',
   'site.nav.about': 'About',
   'site.switch.label': 'Español',
