@@ -23,6 +23,7 @@ export default defineConfig({
         ...ninety,
         'packages/core/src/**': full,
         'packages/pay-core/src/**': full,
+        'packages/pool-core/src/**': full,
         'packages/data/src/**': ninety,
         'packages/i18n/src/**': ninety,
         'apps/web/src/calculator/**': full,
