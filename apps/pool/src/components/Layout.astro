@@ -37,6 +37,9 @@ const { title, description } = Astro.props;
     <slot />
     <footer class="pool-footer">
       <p>Every figure is an estimate. Read the label of your product before you add it.</p>
+      <p>
+        <a href="/methodology">How we work it out</a>
+      </p>
     </footer>
   </body>
 </html>
@@ -153,5 +156,15 @@ const { title, description } = Astro.props;
   .pool-footer p {
     margin: 0;
     font-size: 0.875rem;
+  }
+
+  .pool-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .pool-footer a {
+    color: var(--teal);
   }
 </style>
