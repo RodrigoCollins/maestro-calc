@@ -94,3 +94,20 @@ test('sends the security headers with every page', async ({ request }) => {
     expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
   }
 });
+
+test('gives every page a link preview: its title, description and the shared image', async ({
+  page,
+  request,
+}) => {
+  expect((await request.get('/og.png')).headers()['content-type']).toBe('image/png');
+  for (const { path } of PAGES) {
+    await page.goto(path);
+    const meta = (property: string) =>
+      page.locator(`meta[property="${property}"]`).getAttribute('content');
+    expect(await meta('og:title'), path).toBe(await page.title());
+    expect(await meta('og:description'), path).toBe(
+      await page.locator('meta[name="description"]').getAttribute('content'),
+    );
+    expect(await meta('og:image'), path).toBe('https://cuentahoras.com/og.png');
+  }
+});
