@@ -167,7 +167,7 @@ describe('time card (California: the three cases of DLSE opinion letter 2000.01.
       satOut: '',
       sun: '',
       sunOut: '',
-      ...Object.assign({}, ...days),
+      ...Object.fromEntries(days.flatMap((fields) => Object.entries(fields))),
     });
 
   it('10 hours a day, five days: 10 hours of overtime and none weekly on top', () => {
