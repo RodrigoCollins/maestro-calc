@@ -84,7 +84,7 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'opens the %s home with the heading, then the intro that starts with the tagline and one call to action',
+    'opens the %s home with the heading, then the intro that starts with the tagline and two calls to action',
     async (locale, catalog) => {
       const main = (await render(locale)).querySelector('main');
       const hero = main?.querySelector('.home-hero');
@@ -92,10 +92,15 @@ describe('HomeView hero (trust-pages › [TP29])', () => {
         catalog['page.home.intro'],
       );
       expect(catalog['page.home.intro'].startsWith(catalog['site.tagline'])).toBe(true);
-      // the one link of the hero is its call to action; it names no other heading
+      // the links of the hero are its calls to action: concrete, then the directory below
       const links = hero?.querySelectorAll('a') ?? [];
-      expect(links).toHaveLength(1);
+      expect(links).toHaveLength(2);
       expect(links[0]?.classList.contains('home-cta')).toBe(true);
+      expect(links[1]?.getAttribute('href')).toBe('#calculators');
+      expect(links[1]?.text.trim()).toBe(catalog['page.home.ctaAll']);
+      expect(main?.querySelector('#calculators')?.text.trim()).toBe(
+        catalog['page.home.calculators'],
+      );
       expect(hero?.querySelectorAll('h2, h3, h4, h5, h6')).toHaveLength(0);
     },
   );
@@ -173,6 +178,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         .map((link) => link.getAttribute('href'));
       expect(all).toEqual([
         pathOf('concrete', locale),
+        '#calculators',
         ...cardLinks(document).map((link) => link.getAttribute('href')),
         ...FEATURED_GUIDES.map((id) => pathOf(id, locale)),
         ...HUB_IDS.map((id) => pathOf(id, locale)),
@@ -236,6 +242,22 @@ describe('HomeView hero sample, guides and trust (home desktop redesign)', () =>
         exampleOf(PAGES.concrete.catalogs[locale], 'concrete', locale),
       );
       expect(sample?.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    },
+  );
+
+  it.each([
+    ['en', enSite],
+    ['es', esSite],
+  ] as const)(
+    'closes the %s directory with the share note, outside the list of calculators',
+    async (locale, catalog) => {
+      const main = (await render(locale)).querySelector('main');
+      const share = main?.querySelector('.home-directory > .home-share');
+      expect(share?.previousElementSibling?.classList.contains('home-cards')).toBe(true);
+      expect(share?.querySelector('h3')?.text.trim()).toBe(catalog['page.home.share.title']);
+      expect(share?.querySelector('p')?.text.trim()).toBe(catalog['page.home.share.text']);
+      // a note, not a call to action: the share buttons live on each calculator page
+      expect(share?.querySelectorAll('a, button')).toHaveLength(0);
     },
   );
 

@@ -51,9 +51,14 @@ const hubs = HUB_IDS.map((id) => ({
       <p class="home-kicker">{text('page.home.kicker')}</p>
       <h1>{text('page.home.heading')}</h1>
       <p>{text('page.home.intro')}</p>
-      <a class="home-cta tap-target" href={pathOf('concrete', locale)}>
-        {text('page.home.cta')}
-      </a>
+      <p class="home-actions">
+        <a class="home-cta tap-target" href={pathOf('concrete', locale)}>
+          {text('page.home.cta')}
+        </a>
+        <a class="home-cta-all tap-target" href="#calculators">
+          {text('page.home.ctaAll')}
+        </a>
+      </p>
     </div>
     <figure class="home-sample">
       <p class="home-sample-title">{text('page.home.sample')}</p>
@@ -89,20 +94,28 @@ const hubs = HUB_IDS.map((id) => ({
     </figure>
   </div>
 
-  <h2 class="home-heading">{text('page.home.calculators')}</h2>
-  <ul class="home-cards" role="list">
-    {cards.map((card) => (
-      <li class="home-card">
-        <h2>
-          <a class="tap-target" href={card.href}>
-            {card.title}
-          </a>
-        </h2>
-        <p>{card.summary}</p>
-        <p class="home-example">{card.example}</p>
-      </li>
-    ))}
-  </ul>
+  <h2 id="calculators" class="home-heading">
+    {text('page.home.calculators')}
+  </h2>
+  <div class="home-directory">
+    <ul class="home-cards" role="list">
+      {cards.map((card) => (
+        <li class="home-card">
+          <h2>
+            <a class="tap-target" href={card.href}>
+              {card.title}
+            </a>
+          </h2>
+          <p>{card.summary}</p>
+          <p class="home-example">{card.example}</p>
+        </li>
+      ))}
+    </ul>
+    <div class="home-share">
+      <h3>{text('page.home.share.title')}</h3>
+      <p>{text('page.home.share.text')}</p>
+    </div>
+  </div>
 
   <section class="home-guides" aria-labelledby="home-guides-heading">
     <h2 id="home-guides-heading" class="home-heading">
@@ -223,7 +236,26 @@ const hubs = HUB_IDS.map((id) => ({
     text-decoration: none;
   }
 
-  .home-cta:hover {
+  .home-hero .home-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  /* The second call to action is outlined, so the orange one stays the only filled button. */
+  .home-cta-all {
+    display: inline-flex;
+    align-items: center;
+    padding: calc(var(--space-2) - 2px) var(--space-4);
+    border: 2px solid #b9c6da;
+    border-radius: var(--radius-card);
+    color: var(--color-surface);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .home-cta:hover,
+  .home-cta-all:hover {
     text-decoration: underline;
   }
 
@@ -304,13 +336,56 @@ const hubs = HUB_IDS.map((id) => ({
     margin: 0 0 var(--space-3);
   }
 
-  .home-cards {
+  /* The cards and the share note share one grid; the list keeps its role through `display: contents`. */
+  .home-directory {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
     gap: var(--space-3);
     margin: 0 0 var(--space-5);
-    padding: 0;
+  }
+
+  .home-cards {
+    display: contents;
     list-style: none;
+  }
+
+  /* Ten cards leave two cells of the last row at two, three and four columns: the note fills them. */
+  .home-share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+    grid-column: 1 / -1;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+
+  .home-share h3 {
+    flex-basis: 100%;
+    margin: 0;
+  }
+
+  .home-share p {
+    flex: 1 1 14rem;
+    margin: 0;
+  }
+
+  .home-share::after {
+    content: 'WhatsApp';
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-whatsapp);
+    color: var(--color-on-whatsapp);
+    font-weight: 700;
+  }
+
+  @media (min-width: 32rem) {
+    .home-share {
+      grid-column: span 2;
+    }
   }
 
   /* One link per card, stretched over it; the border darkens on hover and focus with no shift. */
