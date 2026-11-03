@@ -6,7 +6,7 @@ const ninety = { lines: 90, branches: 90, functions: 90, statements: 90 };
 
 export default defineConfig({
   test: {
-    projects: ['packages/*', 'apps/web', 'apps/pay'],
+    projects: ['packages/*', 'apps/web', 'apps/pay', 'apps/pool'],
     coverage: {
       provider: 'v8',
       include: [

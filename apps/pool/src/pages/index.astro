@@ -1,0 +1,33 @@
+---
+import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
+import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
+import Layout from '../components/Layout.astro';
+import { SITE } from '../site.config.ts';
+
+// The placeholder shows the volume engine's own default, worked out at build time (no script).
+const ran = poolVolume.run({});
+if (!ran.ok) throw new Error('the pool volume calculator must run at its defaults');
+const value = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+if (!isQuantityOf(value, 'volume')) throw new Error('gallons must be a volume');
+const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
+  valueIn(value, gal).toNumber(),
+);
+---
+
+<Layout
+  title={`${SITE.name}: pool volume, salt and chlorine calculators`}
+  description="Pool calculators for gallons, salt, chlorine and pump size."
+>
+  <main class="pool-page">
+    <h1>{SITE.name}</h1>
+    <p>
+      Calculators for pool owners: how many gallons your pool holds, how much salt and chlorine to
+      add, and the pump flow it needs.
+    </p>
+    <p class="pool-marker">
+      {gallons}
+      <small>GALLONS</small>
+    </p>
+    <p>A 32 ft by 16 ft pool, 3 ft 6 in at the shallow end and 8 ft at the deep end.</p>
+  </main>
+</Layout>

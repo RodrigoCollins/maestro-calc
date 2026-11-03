@@ -15,6 +15,7 @@
     "dev": "npm run dev -w @maestro-calc/web",
     "build": "npm run build -w @maestro-calc/web",
     "build:pay": "npm run build -w @maestro-calc/pay",
+    "build:pool": "npm run build -w @maestro-calc/pool",
     "preview": "npm run preview -w @maestro-calc/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.json",
     "check": "npm run typecheck",
@@ -32,7 +33,7 @@
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run check:dist"
+    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run build:pool && npm run check:dist"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
