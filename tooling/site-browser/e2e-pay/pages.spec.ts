@@ -60,3 +60,18 @@ test('links every live calculator card of the home to a page that answers', asyn
     for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
   }
 });
+
+test('links every page to the methodology of its language, and it shows the worked examples', async ({
+  page,
+}) => {
+  for (const [path, method] of [
+    ['/', '/methodology'],
+    ['/es', '/es/metodologia'],
+  ] as const) {
+    await page.goto(path);
+    await page.locator(`footer a[href="${method}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`${method}$`));
+    await expect(page.locator('.examples li')).toHaveCount(4);
+    await expect(page.locator('.examples li').first()).toContainText('$1,193.50');
+  }
+});

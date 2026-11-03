@@ -532,6 +532,85 @@ a.tool:hover .tool-title {
   color: var(--ink-2);
 }
 
+/* Methodology: reading width, sources and the worked examples table. */
+.prose h2 {
+  margin: 0.6rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.prose section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.prose section p {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.prose .sources {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.examples li {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  padding: 0.8rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.prose .example-label {
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.examples dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.8rem;
+}
+
+.examples dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.examples dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+}
+
+.examples .example-pay dd {
+  color: var(--money);
+  font-weight: 600;
+}
+
+@media (min-width: 40rem) {
+  .examples dl {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .site-footer {
   border-top: 2px solid var(--ink);
   font-size: 0.85rem;

@@ -18,6 +18,10 @@ interface Props {
 const { lang, title, description, paths, otherLang, footer, wide = false } = Astro.props;
 const other: Lang = lang === 'en' ? 'es' : 'en';
 const href = (path: string): string => new URL(path, SITE.origin).href;
+const method =
+  lang === 'en'
+    ? { href: '/methodology', label: 'How we calculate' }
+    : { href: '/es/metodologia', label: 'Cómo calculamos' };
 ---
 
 <!doctype html>
@@ -64,6 +68,7 @@ const href = (path: string): string => new URL(path, SITE.origin).href;
       <div>
         <span>{SITE.name}</span>
         <span>{footer}</span>
+        <a href={method.href}>{method.label}</a>
       </div>
     </footer>
   </body>
