@@ -74,14 +74,14 @@ Volúmenes de EE.UU. por mes (Google Ads vía seodata.dev, 2026; buckets que agr
 
 ## 3. Marca y dominio — decidido (2026-11-02)
 
-- **Marca: Cuenta Horas** — dominio `cuentahoras.com` (+ `cuentahoras.net` defensivo), libres el 2026-11-02.
+- **Marca: Cuenta Horas** — dominio `cuentahoras.com` (solo el .com; Rodrigo descartó el .net defensivo el 2026-11-02).
 - Descartadas: "Cheque Claro" (`chequeclaro.com` es un competidor en uso) y "Cheque OK" (choca con CHECKOK,
   marca vigente reg. 3122113 de ESL Federal Credit Union, clase 36, servicios financieros).
 - Sin marcas "Cuenta Horas" en la búsqueda de USPTO del 2026-11-02. YouTube `@cuentahoras` libre; TikTok,
   Instagram y X a verificar a mano.
 - En inglés el nombre no dice nada; no importa, porque al sitio en inglés se llega por la búsqueda.
 
-**Tareas de Rodrigo:** comprar `cuentahoras.com` (+ `.net`) en Cloudflare Registrar · reservar `@cuentahoras`
+**Tareas de Rodrigo:** comprar `cuentahoras.com` en Cloudflare Registrar ($11.17/año) · reservar `@cuentahoras`
 en YouTube, TikTok e Instagram.
 
 ---|---|---|

@@ -5,6 +5,7 @@ import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { in2, inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
+import { shiftMinutes } from '../format/clock.ts';
 import { defineCalculator } from './define.ts';
 import { RESULT_REASONS, type ResultReason } from './run.ts';
 
@@ -345,5 +346,37 @@ describe('Calculator.run (calculator-contract › Pure, language-free compute)',
   it('accepts a shopping line of zero units', () => {
     const lines = [{ materialId: 'plywood-sheet', purchaseUnit: 'sheet', qty: 0n }];
     expect(returning({ ...good, shopping: lines }).run({}).ok).toBe(true);
+  });
+});
+
+// core-clock-time: hours are an exact Rational, the measure a time card adds up and pays.
+describe('Calculator.run with an hours output (core-clock-time)', () => {
+  const card = (worked: (minutes: number) => unknown) =>
+    defineCalculator({
+      id: 'card-box',
+      inputs: [
+        { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 },
+        { kind: 'clock', key: 'tout', urlKey: 'o', default: 990 },
+      ],
+      outputs: [{ key: 'worked', measure: 'hours', role: 'primary' }],
+      compute: ({ tin, tout }) => ({
+        outputs: { worked: worked(shiftMinutes(tin ?? 0, tout ?? 0)) as Rational },
+        shopping: [],
+        warnings: [],
+      }),
+    });
+
+  it('returns the hours as an exact Rational', () => {
+    const ran = card((minutes) => Rational.of(minutes, 60)).run({
+      tin: '7:00 am',
+      tout: '4:30 pm',
+    });
+    expect(ran.ok && ran.value.outputs).toEqual([
+      { key: 'worked', role: 'primary', value: Rational.of(19, 2) },
+    ]);
+  });
+
+  it('rejects a plain number as OUTPUT_MEASURE', () => {
+    expect(() => card((minutes) => minutes / 60).run({})).toThrow(CoreError);
   });
 });

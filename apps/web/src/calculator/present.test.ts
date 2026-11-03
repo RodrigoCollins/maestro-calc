@@ -111,6 +111,17 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     );
   });
 
+  // core-clock-time: hours belong to the hourly pay site; no Maestro Calc page declares them
+  it('refuses an hours output, naming the key', () => {
+    const worked: OutputDescriptor = { key: 'worked', measure: 'hours', role: 'primary' };
+    expect(() => outputText(worked, Rational.of(19, 2))).toThrow(
+      new TypeError('worked is hours, which a Maestro Calc page does not show'),
+    );
+    expect(() => outputText(output('bagCost'), Rational.of(1))).toThrow(
+      new TypeError('bagCost is money, not a quantity'),
+    );
+  });
+
   // spec: calc-feet-inches › [FI5] a fraction hint shows feet, inches and the nearest fraction
   it('writes a length with a fraction hint as feet, inches and the nearest fraction', () => {
     const hint = (unit: 'ft' | 'in', denominator: number): OutputDescriptor => ({

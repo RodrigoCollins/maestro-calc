@@ -7,7 +7,7 @@ import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { ft, inch, m } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
-import { encode } from './codec.ts';
+import { encode, urlTextOf } from './codec.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -172,5 +172,23 @@ describe('encode (url-state-codec › Encoding)', () => {
       code: 'INVALID_STATE',
       cause: { id: 'fixture-box', field: 'len' },
     });
+  });
+});
+
+// core-clock-time: one canonical text per time of day.
+describe('urlTextOf a clock field (core-clock-time)', () => {
+  const clock = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 } as const;
+
+  it.each([
+    [450, '0730'],
+    [0, '0000'],
+    [1439, '2359'],
+    [null, '-'],
+  ])('writes %j as %s', (value, text) => {
+    expect(urlTextOf(clock, value)).toBe(text);
+  });
+
+  it.each([1440, -1, 7.5, '0730', undefined])('has no text for %j', (value) => {
+    expect(urlTextOf(clock, value)).toBeUndefined();
   });
 });

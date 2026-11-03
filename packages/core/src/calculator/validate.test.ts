@@ -453,3 +453,43 @@ describe('validate container (calculator-contract › raw MUST be an object)', (
     expect(fixtureBox.validate([] as unknown as Record<string, unknown>)).toEqual(ok(defaults));
   });
 });
+
+// core-clock-time: a time of day is minutes since midnight; an empty field is a day off (`null`).
+describe('validateRecord clock field (core-clock-time)', () => {
+  const inputs = [
+    { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 },
+    { kind: 'clock', key: 'off', urlKey: 'o', default: null },
+  ] as const;
+  const read = (raw: Readonly<Record<string, unknown>>): ReturnType<typeof validateRecord> =>
+    validateRecord(inputs, raw);
+
+  it('takes the default, a time or null, when the field is absent', () => {
+    expect(read({})).toEqual(ok({ tin: 420, off: null }));
+  });
+
+  it.each([
+    ['4:30 pm', 990],
+    [' 7:30\t', 450],
+    ['0730', 450],
+    [990, 990],
+    [0, 0],
+    [1439, 1439],
+  ])('reads %j as %i minutes', (raw, minutes) => {
+    expect(read({ tin: raw })).toEqual(ok({ tin: minutes, off: null }));
+  });
+
+  it.each(['', '  ', null])('reads %j as no time (a day off)', (raw) => {
+    expect(read({ tin: raw })).toEqual(ok({ tin: null, off: null }));
+  });
+
+  it.each([1440, -1, 7.5, Number.NaN, '25:00', '7:60', true, {}])(
+    'rejects %j as MALFORMED',
+    (raw) => {
+      expect(read({ tin: raw })).toEqual(failed('tin', 'MALFORMED'));
+    },
+  );
+
+  it('rejects text longer than the limit as TOO_LONG', () => {
+    expect(read({ tin: '7'.repeat(129) })).toEqual(failed('tin', 'TOO_LONG'));
+  });
+});

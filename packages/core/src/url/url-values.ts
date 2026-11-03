@@ -1,5 +1,6 @@
 import { checkAmount, findOption } from '../calculator/constraints.ts';
 import type { BoundedDescriptor, InputDescriptor, InputsOf } from '../calculator/descriptors.ts';
+import { parseClock } from '../format/clock.ts';
 import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
@@ -43,6 +44,13 @@ const readUrlCount = (descriptor: BoundedDescriptor, text: string): number | und
   return amount === undefined ? undefined : Number(amount.num);
 };
 
+/** `HHMM` on the 24-hour clock, exactly four digits, as minutes since midnight. */
+const readUrlClock = (text: string): number | undefined => {
+  if (!/^[0-9]{4}$/.test(text)) return undefined;
+  const minutes = parseClock(text);
+  return minutes.ok ? minutes.value : undefined;
+};
+
 const readUrlDecoded = (descriptor: InputDescriptor, text: string): UrlValue | undefined => {
   switch (descriptor.kind) {
     case 'length': {
@@ -61,6 +69,8 @@ const readUrlDecoded = (descriptor: InputDescriptor, text: string): UrlValue | u
       return findOption(descriptor, text);
     case 'boolean':
       return text === '1' ? true : text === '0' ? false : undefined;
+    case 'clock':
+      return text === '-' ? null : readUrlClock(text);
   }
 };
 

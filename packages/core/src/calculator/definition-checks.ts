@@ -107,6 +107,15 @@ const checkSelect = (ensure: Ensure, input: SelectDescriptor): void => {
 
 const checkInput = (ensure: Ensure, input: InputDescriptor): void => {
   if (input.kind === 'boolean') return;
+  if (input.kind === 'clock') {
+    // a time of day is a whole minute of the day, 0..1439, or no time
+    ensure(
+      input.default === null || isWithin(input.default, 0, 1439),
+      'DEFAULT_INVALID',
+      input.key,
+    );
+    return;
+  }
   if (input.kind === 'select') {
     checkSelect(ensure, input);
     return;
@@ -121,7 +130,7 @@ const checkInput = (ensure: Ensure, input: InputDescriptor): void => {
 /** A display hint must fit its output: a unit of the dimension, `places` 0..12, `denominator` 2..64. */
 const hasValidDisplay = ({ measure, display }: OutputDescriptor): boolean => {
   if (display === undefined) return true;
-  if (measure === 'money') return false;
+  if (measure === 'money' || measure === 'hours') return false;
   if (!UNITS[measure].some(({ id }) => id === display.unit)) return false;
   if (display.format === 'decimal') return isWithin(display.places, 0, 12);
   return measure === 'length' && isWithin(display.denominator, 2, 64);

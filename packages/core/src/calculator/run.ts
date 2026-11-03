@@ -1,5 +1,6 @@
 import { CoreError } from '../errors.ts';
 import { isMoney, type Money } from '../money/money.ts';
+import { Rational } from '../rational/rational.ts';
 import { ok, type Result } from '../result.ts';
 import type { DimensionName } from '../units/dimension.ts';
 import { isQuantityOf, type Quantity } from '../units/quantity.ts';
@@ -54,8 +55,10 @@ const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
 const isMeasure = (
   value: unknown,
   measure: OutputDescriptor['measure'],
-): value is Quantity<DimensionName> | Money =>
-  measure === 'money' ? isMoney(value) : isQuantityOf(value, measure);
+): value is Quantity<DimensionName> | Money | Rational => {
+  if (measure === 'money') return isMoney(value);
+  return measure === 'hours' ? value instanceof Rational : isQuantityOf(value, measure);
+};
 
 /** The outputs as a frozen list in declaration order, when exactly the declared keys are own. */
 const outputsOf = (
