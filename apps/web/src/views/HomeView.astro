@@ -5,7 +5,7 @@ import { exampleOf, FEATURED_GUIDES, homeCards } from '../lib/home-directory.ts'
 import { resultViewOf } from '../lib/page-view.ts';
 import { PAGES } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
-import { HUB_IDS, HUBS } from '../routing/hubs.ts';
+import { HUB_IDS, HUBS, hubOfCalculator } from '../routing/hubs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -18,7 +18,10 @@ const text = siteText(locale);
 const nameOf = (title: string): string => title.replace(/ \| Maestro Calc$/, '');
 const tradeOf = (hub: (typeof HUB_IDS)[number] | undefined): string =>
   hub === undefined ? '' : text(`site.footer.${hub}`);
-const cards = homeCards(locale);
+const cards = homeCards(locale).map((card) => ({
+  ...card,
+  trade: tradeOf(hubOfCalculator(card.id)),
+}));
 // the hero sample is the concrete page's own default result, worked out at build time (no script)
 const concrete = PAGES.concrete;
 const result = resultViewOf(concrete.module, locale, concrete.catalogs[locale]);
@@ -108,6 +111,7 @@ const hubs = HUB_IDS.map((id) => ({
           </h2>
           <p>{card.summary}</p>
           <p class="home-example">{card.example}</p>
+          <small>{card.trade}</small>
         </li>
       ))}
     </ul>
@@ -133,6 +137,9 @@ const hubs = HUB_IDS.map((id) => ({
         </li>
       ))}
     </ul>
+    <a class="tap-target" href={pathOf('guides', locale)}>
+      {text('site.footer.guides')}
+    </a>
   </section>
 
   <section class="home-trust" aria-label={text('page.home.trust')}>
@@ -214,7 +221,8 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-kicker,
-  .home-trade {
+  .home-trade,
+  .home-card small {
     font-size: var(--text-small);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -431,8 +439,14 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-trade,
+  .home-card small,
   .home-card .home-example {
     color: var(--color-text-secondary);
+  }
+
+  /* The trade comes last in the source, after the title a reader lands on, and shows first. */
+  .home-card small {
+    order: -1;
   }
 
   .home-card .home-example {
@@ -471,6 +485,35 @@ const hubs = HUB_IDS.map((id) => ({
     font-size: var(--text-h3);
     font-weight: 700;
     line-height: var(--leading-heading);
+  }
+
+  /* On phones the index link closes the list, as in the canvas. */
+  .home-guides > a {
+    display: inline-block;
+    margin: calc(var(--space-3) - var(--space-5)) 0 var(--space-5);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 600;
+  }
+
+  /* On wide screens the index link sits beside the heading, as in the canvas. */
+  @media (min-width: 48rem) {
+    .home-guides {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+    }
+
+    .home-guides ul {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    .home-guides > a {
+      grid-row: 1;
+      grid-column: 2;
+      margin: 0;
+    }
   }
 
   .home-trust h3 {
