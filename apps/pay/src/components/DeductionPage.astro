@@ -4,6 +4,7 @@ import { noTaxOnOvertime } from '@maestro-calc/pay-core/no-tax-on-overtime';
 import { noTaxOnTips } from '@maestro-calc/pay-core/no-tax-on-tips';
 import { moneyText } from '../format.ts';
 import { DEDUCTION_PATHS, DEDUCTION_TEXTS, type Deduction } from '../deductions/texts.ts';
+import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import OvertimeScript from '../islands/OvertimeScript.astro';
@@ -118,6 +119,9 @@ const script = deduction === 'overtime' ? 'overtime' : 'tips';
       <a href={t.source.href} rel="noopener">
         {t.source.label}
       </a>
+    </p>
+    <p class="note">
+      <a href={GUIDE_PATHS[lang]}>{GUIDE_TEXTS[lang].linkLabel}</a>
     </p>
   </main>
   {script === 'overtime' ? <OvertimeScript /> : <TipsScript />}
