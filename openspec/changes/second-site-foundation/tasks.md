@@ -24,6 +24,6 @@ Decision needed before apply: No
 
 ## Slice 2 — `feat/second-site-02-pay-scaffold`
 
-- [ ] 2.1 RED: workspace contracts list `@maestro-calc/pay`.
-- [ ] 2.2 GREEN: scaffold `apps/pay` (placeholder EN/ES), vitest project, tsconfig, lint.
-- [ ] 2.3 Verify: `npm run verify`; `apps/web/dist` fingerprint unchanged.
+- [x] 2.1 RED: workspace contracts list `@maestro-calc/pay`.
+- [x] 2.2 GREEN: scaffold `apps/pay` (placeholder EN/ES), vitest project, tsconfig, lint.
+- [x] 2.3 Verify: `npm run verify`; `apps/web/dist` fingerprint unchanged.
