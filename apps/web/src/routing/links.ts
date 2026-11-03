@@ -22,7 +22,7 @@ export const linksFor = <Id extends string>(
     .map((id) => ({ id, href: pathOf(id, locale, table) }));
 
 /** Pages offered in the header navigation, in order, when they exist in the table. */
-export const HEADER_PAGES = ['methodology', 'about'] as const;
+export const HEADER_PAGES = ['guides', 'methodology', 'about'] as const;
 
 /** The trade hubs the footer lists first, in the order of the hub table. */
 export const FOOTER_HUBS = HUB_IDS;

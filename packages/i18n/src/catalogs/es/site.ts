@@ -6,6 +6,7 @@ export const esSite = {
   'site.tagline': 'Calcula tu obra y sabe qué comprar',
   'site.skipLink': 'Saltar al contenido principal',
   'site.nav.label': 'Navegación principal',
+  'site.nav.guides': 'Guías',
   'site.nav.methodology': 'Metodología',
   'site.nav.about': 'Sobre nosotros',
   'site.switch.label': 'English',
