@@ -148,11 +148,15 @@ const dataShards = await importFromRoot<{ shardNames: string[] }>(
 const payCoreShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/pay-core/stryker.config.mjs',
 );
+const poolCoreShards = await importFromRoot<{ shardNames: string[] }>(
+  'packages/pool-core/stryker.config.mjs',
+);
 // the shards of every package that has a Stryker config, core first
 const shardNames = [
   ...coreShards.shardNames,
   ...dataShards.shardNames,
   ...payCoreShards.shardNames,
+  ...poolCoreShards.shardNames,
 ];
 
 describe('CI mutation job (quality-gates › Continuous integration workflow, Mutation gate)', () => {

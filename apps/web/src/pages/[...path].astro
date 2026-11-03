@@ -7,6 +7,9 @@ import CalculatorView from '../views/CalculatorView.astro';
 import EmbedSnippets from '../components/EmbedSnippets.astro';
 import GlossaryTable from '../components/GlossaryTable.astro';
 import GuideCta from '../components/GuideCta.astro';
+import GuidesIndex from '../components/GuidesIndex.astro';
+import { guideGroups } from '../lib/guides-index.ts';
+import type { GuideId } from '../routing/guides.ts';
 import HubDirectory from '../components/HubDirectory.astro';
 import { getEntry } from 'astro:content';
 import { headingOf } from '../content/heading.ts';
@@ -31,6 +34,26 @@ interface Props {
 const { id, locale } = Astro.props;
 const guide = guideOf(id);
 const hub = hubOf(id);
+const guideCard = async (guideId: GuideId) => {
+  const entry = await getEntry('pages', `${locale}/${guideId}`);
+  if (entry === undefined) throw new Error(`no content entry for ${locale}/${guideId}`);
+  return {
+    href: pathOf(guideId, locale),
+    title: headingOf(entry.body ?? ''),
+    summary: siteText(locale)(`page.${guideId}.description`),
+  };
+};
+const guideIndex =
+  id === 'guides'
+    ? await Promise.all(
+        guideGroups().map(async (group) => ({
+          heading: siteText(locale)(
+            group.hub === null ? 'site.guides.business' : `site.footer.${group.hub}`,
+          ),
+          guides: await Promise.all(group.guides.map(guideCard)),
+        })),
+      )
+    : undefined;
 const hubView =
   hub === undefined
     ? undefined
@@ -38,17 +61,7 @@ const hubView =
         calculators: homeCards(locale).filter((card) =>
           (hub.calculators as readonly string[]).includes(card.id),
         ),
-        guides: await Promise.all(
-          hub.guides.map(async (guideId) => {
-            const entry = await getEntry('pages', `${locale}/${guideId}`);
-            if (entry === undefined) throw new Error(`no content entry for ${locale}/${guideId}`);
-            return {
-              href: pathOf(guideId, locale),
-              title: headingOf(entry.body ?? ''),
-              summary: siteText(locale)(`page.${guideId}.description`),
-            };
-          }),
-        ),
+        guides: await Promise.all(hub.guides.map(guideCard)),
       };
 ---
 
@@ -59,6 +72,7 @@ const hubView =
   <TrustPageView {id} {locale}>
     {id === 'embed-calculators' && <EmbedSnippets snippets={snippetsFor(locale)} />}
     {id === 'glossary' && <GlossaryTable view={glossaryView(locale)} />}
+    {guideIndex !== undefined && <GuidesIndex groups={guideIndex} />}
     {hubView !== undefined && (
       <HubDirectory
         calculatorsLabel={siteText(locale)('site.hub.calculators')}

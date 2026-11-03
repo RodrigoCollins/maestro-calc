@@ -9,6 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { lengthsOf, mediaBlocksOf, mediaCountOf } from '../../__testing__/css-media.ts';
 import { pagelessTitles } from '../../__testing__/pageless-titles.ts';
 import { importFromRoot } from '../../contract/root.ts';
+import { hubOfCalculator } from '../../routing/hubs.ts';
 import { LOCALES, pathOf, ROUTES } from '../../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../../seo/json-ld.ts';
@@ -284,6 +285,10 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
           catalog[`page.home.cards.${id}.summary`],
           exampleOf(PAGES[id].catalogs[locale], id, locale),
         ]);
+        const hub = hubOfCalculator(id);
+        expect(item?.querySelector(':scope > small')?.text.trim(), id).toBe(
+          hub === undefined ? undefined : catalog[`site.footer.${hub}`],
+        );
       });
     },
     120_000,

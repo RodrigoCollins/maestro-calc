@@ -57,7 +57,9 @@ export const poolSalt = defineCalculator({
   ],
   warnings: ['drainToLower'],
   compute: ({ gallons, current, target }) => {
-    const raise = target.compare(current) > 0 ? target.sub(current) : Rational.ZERO;
+    // a reading at or over the target adds nothing
+    const difference = target.sub(current);
+    const raise = difference.sign() === -1 ? Rational.ZERO : difference;
     const pounds = gallons.mul(raise).mul(POUNDS_PER_GALLON).div(MILLION);
     const mass = quantity(pounds, lb);
     return {
@@ -69,7 +71,7 @@ export const poolSalt = defineCalculator({
           qty: ceilToPurchaseUnits(pounds.div(BAG)),
         },
       ],
-      warnings: current.compare(target) > 0 ? [{ code: 'drainToLower' as const, params: {} }] : [],
+      warnings: difference.sign() === -1 ? [{ code: 'drainToLower' as const, params: {} }] : [],
     };
   },
 });

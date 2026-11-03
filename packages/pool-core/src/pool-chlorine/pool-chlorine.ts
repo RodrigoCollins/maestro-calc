@@ -61,7 +61,9 @@ export const poolChlorine = defineCalculator({
   ],
   warnings: [],
   compute: ({ gallons, current, target, product }) => {
-    const raise = target.compare(current) > 0 ? target.sub(current) : Rational.ZERO;
+    // a reading at or over the target adds nothing
+    const difference = target.sub(current);
+    const raise = difference.sign() === -1 ? Rational.ZERO : difference;
     const grams = gallons.mul(LITERS_PER_GALLON).mul(raise).div(THOUSAND);
     const { form, percent } = STRENGTH[product];
     const amount = grams.mul(HUNDRED).div(percent);
