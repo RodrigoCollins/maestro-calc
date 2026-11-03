@@ -1,0 +1,105 @@
+---
+import { payConverter } from '@maestro-calc/pay-core/pay-converter';
+import { moneyText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { PATHS, PAY_CONVERTER_TEXTS, type Variant } from '../pay-converter/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  readonly variant: Variant;
+}
+
+const { lang, variant } = Astro.props;
+const t = PAY_CONVERTER_TEXTS[lang];
+const v = t.variants[variant];
+const ran = payConverter.run({ amount: v.amount, per: v.per });
+if (!ran.ok) throw new Error(`the ${variant} page must start at a valid amount`);
+const out = Object.fromEntries(ran.value.outputs.map(({ key, value }) => [key, value]));
+const text = (key: string): string => {
+  const value = out[key];
+  if (value === undefined) throw new Error(`no output ${key}`);
+  return moneyText(value);
+};
+const hours = String(payConverter.inputs[2].default);
+const weeks = String(payConverter.inputs[3].default);
+const periods = Object.entries(t.periods);
+const rows = Object.entries(t.outputs).filter(([key]) => key !== v.figure);
+---
+
+<SiteLayout
+  lang={lang}
+  title={v.title}
+  description={v.description}
+  paths={PATHS[variant]}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{v.h1}</h1>
+    </div>
+    <p class="lead">{v.lead}</p>
+
+    <form
+      class="converter"
+      data-pay-converter
+      data-figure={v.figure}
+      data-default-amount={v.amount}
+      data-default-per={v.per}
+      novalidate
+    >
+      <div class="settings">
+        <label class="field">
+          {t.amount}
+          <input name="amount" inputmode="decimal" autocomplete="off" value={v.amount} />
+        </label>
+        <label class="field">
+          {t.per}
+          <select name="per">
+            {periods.map(([key, label]) => (
+              <option value={key} selected={key === v.per}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label class="field">
+          {t.hoursPerWeek}
+          <input name="hoursPerWeek" inputmode="numeric" autocomplete="off" value={hours} />
+        </label>
+        <label class="field">
+          {t.weeksPerYear}
+          <input name="weeksPerYear" inputmode="numeric" autocomplete="off" value={weeks} />
+        </label>
+      </div>
+      <p class="note">{t.weeksHint}</p>
+    </form>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {v.figureLabel}
+        </p>
+        <p class="result-figure" data-out={v.figure}>
+          {text(v.figure)}
+        </p>
+      </div>
+      <ul class="breakdown" aria-label={t.breakdown}>
+        {rows.map(([key, label]) => (
+          <li>
+            <span>{label}</span>
+            <span data-out={key}>{text(key)}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="note">
+      {t.note} <a href={t.timeCard.href}>{t.timeCard.label}</a>
+    </p>
+  </main>
+  <script src="../client/pay-converter.ts"></script>
+</SiteLayout>

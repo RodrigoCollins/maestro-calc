@@ -16,3 +16,10 @@ for (const { path } of TIME_CARD) {
     await expect(page.locator('[data-out="pay"]')).toHaveText(DEFAULT_PAY);
   });
 }
+
+test('the pay converter shows its starting figures without JavaScript', async ({ page }) => {
+  await page.goto('/hourly-to-salary-calculator');
+  await expect(page.locator('.result-figure')).toHaveText('$45,760.00');
+  await page.goto('/es/de-sueldo-anual-a-pago-por-hora');
+  await expect(page.locator('.result-figure')).toHaveText('$28.85');
+});

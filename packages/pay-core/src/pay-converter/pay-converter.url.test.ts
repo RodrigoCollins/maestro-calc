@@ -14,13 +14,6 @@ describe('pay converter URL keys and inputs', () => {
 
   it('offers the six periods, hourly first', () => {
     const per = payConverter.inputs[1];
-    expect(per.options).toEqual([
-      'hour',
-      'week',
-      'biweekly',
-      'semimonthly',
-      'month',
-      'year',
-    ]);
+    expect(per.options).toEqual(['hour', 'week', 'biweekly', 'semimonthly', 'month', 'year']);
   });
 });

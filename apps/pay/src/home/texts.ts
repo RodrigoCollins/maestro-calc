@@ -56,13 +56,13 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         id: 'hourly-to-salary',
         title: 'Hourly to salary',
         summary: 'What your hourly pay comes to a year, a month and a week.',
-        href: null,
+        href: '/hourly-to-salary-calculator',
       },
       {
         id: 'salary-to-hourly',
         title: 'Salary to hourly',
         summary: 'Compare a salaried offer with what you make by the hour.',
-        href: null,
+        href: '/salary-to-hourly-calculator',
       },
       {
         id: 'no-tax-on-tips',
@@ -110,13 +110,13 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         id: 'hourly-to-salary',
         title: 'Por hora a sueldo anual',
         summary: 'Cuánto es tu pago por hora al año, al mes y por semana.',
-        href: null,
+        href: '/es/de-pago-por-hora-a-sueldo-anual',
       },
       {
         id: 'salary-to-hourly',
         title: 'Sueldo anual a por hora',
         summary: 'Compara una oferta de sueldo fijo con lo que ganas por hora.',
-        href: null,
+        href: '/es/de-sueldo-anual-a-pago-por-hora',
       },
       {
         id: 'no-tax-on-tips',
