@@ -46,9 +46,13 @@ Plus a methodology page and one guide ("Opening your pool this spring").
   of available chlorine. Liquid chlorine 12.5% is trade percent (12.5 g per 100 mL), so 303 mL =
   10.24 fl oz per ppm per 10,000 gal.
 - Still to verify before building: household bleach (its percent is by weight; check a real
-  label and its density), cal-hypo 65% and dichlor 56% available chlorine per pound, and the
-  pump turnover rule (8 hours is the common residential target; find a code or manufacturer
-  source).
+  label and its density), cal-hypo 65% and dichlor 56% available chlorine per pound.
+- Pump: the 2021 International Swimming Pool and Spa Code (ISPSC, section 311) sizes a
+  residential pool's circulation for a 6-hour turnover (or 36 gpm, whichever is greater), with
+  water at most 8 ft/s in the pipes; the "8 hours" in the mockup is the informal trade figure.
+  Use the code's 6 hours (gpm = gallons / 360) and show the 8-hour figure as the gentler run.
+  Confirm in the ICC CodeNotes before building:
+  https://www.iccsafe.org/wp-content/uploads/24-23329_CodeNotes_2021_ISPSC_Velocity_FINAL_MIDRES.pdf
 
 ## 5. Design (approved)
 
