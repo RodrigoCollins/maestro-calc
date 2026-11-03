@@ -41,7 +41,7 @@ export const poolPump = defineCalculator({
     const turnover = gallons.div(SIX_HOURS);
     return {
       outputs: {
-        flow: quantity(turnover.compare(FLOOR) > 0 ? turnover : FLOOR, gal),
+        flow: quantity(turnover.sub(FLOOR).sign() === -1 ? FLOOR : turnover, gal),
         eightHour: quantity(gallons.div(EIGHT_HOURS), gal),
       },
       shopping: [],
