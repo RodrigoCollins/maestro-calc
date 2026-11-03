@@ -2,9 +2,12 @@
 import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import Layout from '../components/Layout.astro';
+import { HOME_TOOLS } from '../home.ts';
 import { SITE } from '../site.config.ts';
+import { SALT } from '../doses.ts';
+import { VOLUME_TEXTS } from '../volume/texts.ts';
 
-// The placeholder shows the volume engine's own default, worked out at build time (no script).
+// The sample shows the volume engine's own default, worked out at build time (no script).
 const ran = poolVolume.run({});
 if (!ran.ok) throw new Error('the pool volume calculator must run at its defaults');
 const value = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
@@ -16,21 +19,192 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
 
 <Layout
   title={`${SITE.name}: pool volume, salt and chlorine calculators`}
-  description="Pool calculators for gallons, salt, chlorine and pump size."
+  description="Pool calculators for gallons, salt, chlorine and pump size. Every dose shows its math."
 >
-  <main class="pool-page">
-    <h1>{SITE.name}</h1>
-    <p>
-      Calculators for pool owners: how many gallons your pool holds, how much salt and chlorine to
-      add, and the pump flow it needs.
-    </p>
-    <p class="pool-marker">
-      {gallons}
-      <small>GALLONS</small>
-    </p>
-    <p>A 32 ft by 16 ft pool, 3 ft 6 in at the shallow end and 8 ft at the deep end.</p>
-    <p>
-      <a href="/pool-volume-calculator">Work out the gallons of your pool</a>
-    </p>
+  <main class="pool-home">
+    <section class="pool-hero">
+      <div class="pool-hero-text">
+        <h1>Know your pool by the gallon.</h1>
+        <p>
+          Gallons first, then the exact pounds of salt and ounces of chlorine. Every dose shows its
+          math.
+        </p>
+        <p class="pool-actions">
+          <a class="pool-button" href={VOLUME_TEXTS.path}>
+            Find my gallons
+          </a>
+          <a class="pool-button pool-button-line" href={SALT.path}>
+            Salt calculator
+          </a>
+        </p>
+      </div>
+      <figure class="pool-sample">
+        <p class="pool-marker">
+          {gallons}
+          <small>GALLONS</small>
+        </p>
+        <figcaption>
+          A 32 ft by 16 ft pool, 3 ft 6 in at the shallow end and 8 ft at the deep end.
+        </figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="pool-tools">
+      <h2 id="pool-tools">Calculators</h2>
+      <ul class="pool-tools" role="list">
+        {HOME_TOOLS.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>
+            <p>{summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
 </Layout>
+
+<style>
+  .pool-home {
+    max-width: 70rem;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+    display: grid;
+    gap: 3rem;
+  }
+
+  .pool-hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .pool-hero-text {
+    flex: 999 1 30rem;
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  h1,
+  h2,
+  .pool-tools a {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 9vw, 5.25rem);
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .pool-hero-text p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.1875rem;
+    line-height: 1.5;
+  }
+
+  .pool-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Deep teal is for actions only; the second action is outlined in ink. */
+  .pool-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3.5rem;
+    padding: 0 1.625rem;
+    border: 3px solid var(--teal);
+    background: var(--teal);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .pool-button-line {
+    border-color: var(--ink);
+    background: #ffffff;
+    color: var(--ink);
+  }
+
+  .pool-button:hover {
+    text-decoration: underline;
+  }
+
+  .pool-sample {
+    flex: 1 1 20rem;
+    min-width: 0;
+    margin: 0;
+    padding: 1.25rem;
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    border: 4px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-sample .pool-marker {
+    justify-self: start;
+    margin: 0;
+  }
+
+  .pool-sample figcaption {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .pool-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* One card per calculator; its title link covers the card. */
+  .pool-tools li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    min-height: 9rem;
+    padding: 1.125rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-tools li:hover,
+  .pool-tools li:focus-within {
+    outline: 3px solid var(--teal);
+  }
+
+  .pool-tools a {
+    color: var(--ink);
+    font-size: 1.75rem;
+    text-decoration: none;
+  }
+
+  .pool-tools a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .pool-tools p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+</style>

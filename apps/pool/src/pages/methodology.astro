@@ -1,0 +1,103 @@
+---
+import Layout from '../components/Layout.astro';
+import { METHOD_SECTIONS } from '../methodology.ts';
+import { SITE } from '../site.config.ts';
+---
+
+<Layout
+  title={`How we work it out | ${SITE.name}`}
+  description="The formulas, sources and worked examples behind every Pool Figures calculator: volume, salt, chlorine and pump size."
+>
+  <main class="pool-page">
+    <h1>How we work it out</h1>
+    <p>
+      Every calculator does exact arithmetic and rounds only the figure you read. Each section gives
+      the formula, where its numbers come from and a case worked out by hand, which the calculator
+      must match to the last digit.
+    </p>
+    <nav aria-label="Sections">
+      <ul class="pool-method-index">
+        {METHOD_SECTIONS.map(({ id, title }) => (
+          <li>
+            <a href={`#${id}`}>{title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    {METHOD_SECTIONS.map(({ id, title, href, method, note, sources, cases }) => (
+      <section class="pool-method" aria-labelledby={id}>
+        <h2 {id}>{title}</h2>
+        <p>{method}</p>
+        <p>{note}</p>
+        <h3>Worked {cases.length === 1 ? 'example' : 'examples'}</h3>
+        <ul>
+          {cases.map(({ text, result, unit }) => (
+            <li>
+              {text}{' '}
+              <strong>
+                {result} {unit}
+              </strong>
+            </li>
+          ))}
+        </ul>
+        <h3>{sources.length === 1 ? 'Source' : 'Sources'}</h3>
+        <ul>
+          {sources.map(({ name, url }) => (
+            <li>{url === undefined ? name : <a href={url}>{name}</a>}</li>
+          ))}
+        </ul>
+        <p>
+          <a {href}>Open the {title.toLowerCase()} calculator</a>
+        </p>
+      </section>
+    ))}
+  </main>
+</Layout>
+
+<style>
+  .pool-method-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+  }
+
+  .pool-method {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-method h2,
+  .pool-method h3 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+  }
+
+  .pool-method h2 {
+    font-size: 2rem;
+  }
+
+  .pool-method h3 {
+    font-size: 1.25rem;
+  }
+
+  .pool-method ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .pool-method strong {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+</style>
