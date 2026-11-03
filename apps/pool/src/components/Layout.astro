@@ -1,0 +1,93 @@
+---
+import { Font } from 'astro:assets';
+import { SITE } from '../site.config.ts';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {!SITE.indexable && <meta name="robots" content="noindex" />}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* Depth marker (plans/pool/PLAN.md): white tile with joint lines, ink, deep teal for actions. */
+  :root {
+    --tile: #fafaf7;
+    --joint: #e4e4dc;
+    --ink: #111111;
+    --teal: #0b6e7f;
+    color: var(--ink);
+    font-family: var(--font-body), Arial, sans-serif;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--tile);
+    background-image:
+      linear-gradient(var(--joint) 1px, transparent 1px),
+      linear-gradient(90deg, var(--joint) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+  }
+
+  .pool-page {
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .pool-page h1 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    line-height: 1;
+  }
+
+  .pool-page p {
+    margin: 0;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  /* The result as a depth-marker tile: a big condensed figure and its unit on the tile. */
+  .pool-marker {
+    justify-self: start;
+    padding: 1rem 1.5rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: clamp(2.5rem, 10vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-marker small {
+    display: block;
+    font-size: 0.35em;
+    letter-spacing: 0.08em;
+  }
+
+  .pool-page a {
+    color: var(--teal);
+  }
+</style>
