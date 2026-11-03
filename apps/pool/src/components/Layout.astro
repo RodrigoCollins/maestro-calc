@@ -1,5 +1,6 @@
 ---
 import { Font } from 'astro:assets';
+import { HOME_TOOLS } from '../home.ts';
 import { SITE } from '../site.config.ts';
 
 interface Props {
@@ -23,7 +24,16 @@ const { title, description } = Astro.props;
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
   </head>
   <body>
+    <header class="pool-header">
+      <a class="pool-brand" href="/">{SITE.name}</a>
+      <nav aria-label="Calculators">
+        {HOME_TOOLS.map(({ href, title }) => <a {href}>{title}</a>)}
+      </nav>
+    </header>
     <slot />
+    <footer class="pool-footer">
+      <p>Every figure is an estimate. Read the label of your product before you add it.</p>
+    </footer>
   </body>
 </html>
 
@@ -69,7 +79,7 @@ const { title, description } = Astro.props;
   }
 
   /* The result as a depth-marker tile: a big condensed figure and its unit on the tile. */
-  .pool-page .pool-marker {
+  .pool-marker {
     justify-self: start;
     padding: 1rem 1.5rem;
     border: 3px solid var(--ink);
@@ -89,5 +99,55 @@ const { title, description } = Astro.props;
 
   .pool-page a {
     color: var(--teal);
+  }
+
+  /* A white bar with an ink rule: the wordmark, then the calculators. */
+  .pool-header,
+  .pool-footer {
+    background: #ffffff;
+  }
+
+  .pool-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding: 0.75rem max(1rem, calc((100% - 68rem) / 2));
+    border-bottom: 3px solid var(--ink);
+  }
+
+  .pool-header a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .pool-brand {
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .pool-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .pool-footer {
+    padding: 1.25rem max(1rem, calc((100% - 68rem) / 2));
+    border-top: 3px solid var(--ink);
+  }
+
+  .pool-footer p {
+    margin: 0;
+    font-size: 0.875rem;
   }
 </style>
