@@ -343,6 +343,21 @@ jobs:
               packages/data/*.json
               packages/data/stryker.config.mjs
               packages/data/vitest.config.ts
+          - shard: pay-core
+            inputs: |
+              packages/pay-core/src/**
+              packages/core/*.json
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/url/**
+              packages/pay-core/*.json
+              packages/pay-core/stryker.config.mjs
+              packages/pay-core/vitest.config.ts
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

@@ -62,19 +62,25 @@ describe('time card (federal overtime after 40 hours)', () => {
     expect(outputsOf(night)['totalHours']).toEqual(r(8));
   });
 
-  it('counts a day with only one time as not worked', () => {
-    const out = outputsOf({ sat: '7:00 am', satOut: '' });
-    expect(out['totalHours']).toEqual(r(45));
+  it('counts a day with only one time as not worked, and does not warn about it', () => {
+    for (const saturday of [
+      { sat: '7:00 am', satOut: '' },
+      { sat: '', satOut: '11:30 am' },
+    ]) {
+      const ran = timeCard.run({ ...saturday, satBreak: '30' });
+      expect(ran.ok && ran.value.warnings).toEqual([]);
+      expect(outputsOf({ ...saturday, satBreak: '30' })['totalHours']).toEqual(r(45));
+    }
   });
 
-  it('warns and counts zero when the break is as long as the shift', () => {
-    const ran = timeCard.run({ sat: '7:00', satOut: '7:30', satBreak: '45' });
-    expect(ran.ok && ran.value.warnings).toEqual([
-      { code: 'breakTooLong', params: { day: 'sat' } },
-    ]);
-    expect(ran.ok && ran.value.outputs.find(({ key }) => key === 'totalHours')?.value).toEqual(
-      r(45),
-    );
+  it('warns and counts zero when the break is as long as the shift, or longer', () => {
+    for (const satBreak of ['30', '45']) {
+      const ran = timeCard.run({ sat: '7:00', satOut: '7:30', satBreak });
+      expect(ran.ok && ran.value.warnings, satBreak).toEqual([
+        { code: 'breakTooLong', params: { day: 'sat' } },
+      ]);
+      expect(outputsOf({ sat: '7:00', satOut: '7:30', satBreak })['totalHours']).toEqual(r(45));
+    }
   });
 });
 
@@ -91,6 +97,25 @@ describe('time card (California: daily and weekly overtime, seventh day)', () =>
     const out = outputsOf({ rule: 'california', mon: '6:00 am', monOut: '7:30 pm' });
     expect(out['doubleHours']).toEqual(r(1));
     expect(out['doublePay']).toEqual(usd(44));
+    // daily overtime stops at 12 h: Mon 4, Tue-Fri 4 x 1, plus 4.5 regular hours past 40 (44.5)
+    expect(out['overtimeHours']).toEqual(r(25, 2));
+    expect(out['regularHours']).toEqual(r(40));
+  });
+
+  it('has no seventh day when another day of the week is off', () => {
+    // Monday off, Tue-Fri 9 h, Sat 4.5 h, Sun 9 h: Sunday is the sixth workday, paid by the day.
+    // Daily: 36.5 + 8 regular, 4 + 1 overtime; weekly cap moves 4.5 regular to overtime.
+    const out = outputsOf({
+      rule: 'california',
+      mon: '',
+      monOut: '',
+      sun: '7:00 am',
+      sunOut: '4:30 pm',
+      sunBreak: '30',
+    });
+    expect(out['regularHours']).toEqual(r(40));
+    expect(out['overtimeHours']).toEqual(r(19, 2));
+    expect(out['doubleHours']).toEqual(r(0));
   });
 
   it('pays the seventh consecutive day: first 8 h at 1.5x, beyond 8 at 2x', () => {
@@ -110,5 +135,65 @@ describe('time card (California: daily and weekly overtime, seventh day)', () =>
     expect(out['overtimeHours']).toEqual(r(22));
     expect(out['doubleHours']).toEqual(r(1));
     expect(out['totalHours']).toEqual(r(63));
+  });
+});
+
+// DLSE opinion letter 2000.01.19 (Miles E. Locker, Chief Counsel; AB 60, no pyramiding of overtime
+// hours): https://www.dir.ca.gov/dlse/opinions/2000-01-19.pdf. Daily overtime hours are not counted
+// again toward the weekly 40; the letter's three cases, breaks set to zero.
+describe('time card (California: the three cases of DLSE opinion letter 2000.01.19)', () => {
+  const off = {
+    mon: '',
+    monOut: '',
+    tue: '',
+    tueOut: '',
+    wed: '',
+    wedOut: '',
+    thu: '',
+    thuOut: '',
+  };
+  const day = (key: string, start: string, end: string) => ({
+    [key]: start,
+    [`${key}Out`]: end,
+    [`${key}Break`]: '0',
+  });
+  const week = (days: Record<string, string>[]) =>
+    outputsOf({
+      rule: 'california',
+      ...off,
+      fri: '',
+      friOut: '',
+      sat: '',
+      satOut: '',
+      sun: '',
+      sunOut: '',
+      ...Object.fromEntries(days.flatMap((fields) => Object.entries(fields))),
+    });
+
+  it('10 hours a day, five days: 10 hours of overtime and none weekly on top', () => {
+    const out = week(
+      ['mon', 'tue', 'wed', 'thu', 'fri'].map((key) => day(key, '8:00 am', '6:00 pm')),
+    );
+    expect(out['regularHours']).toEqual(r(40));
+    expect(out['overtimeHours']).toEqual(r(10));
+    expect(out['doubleHours']).toEqual(r(0));
+  });
+
+  it('9 hours Monday to Thursday and 4 on Friday: 40 hours, 4 of them daily overtime', () => {
+    const out = week([
+      ...['mon', 'tue', 'wed', 'thu'].map((key) => day(key, '8:00 am', '5:00 pm')),
+      day('fri', '8:00 am', '12:00 pm'),
+    ]);
+    expect(out['totalHours']).toEqual(r(40));
+    expect(out['regularHours']).toEqual(r(36));
+    expect(out['overtimeHours']).toEqual(r(4));
+  });
+
+  it('7 hours a day, six days: no daily overtime, 2 hours weekly', () => {
+    const out = week(
+      ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'].map((key) => day(key, '8:00 am', '3:00 pm')),
+    );
+    expect(out['regularHours']).toEqual(r(40));
+    expect(out['overtimeHours']).toEqual(r(2));
   });
 });

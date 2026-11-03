@@ -11,6 +11,8 @@ interface PackageConfig {
 
 const core = await importFromRoot<PackageConfig>('packages/core/stryker.config.mjs');
 const data = await importFromRoot<PackageConfig>('packages/data/stryker.config.mjs');
+const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.config.mjs');
+const allShards = [...core.shardNames, ...data.shardNames, ...payCore.shardNames];
 
 const hasDotSegment = (path: string): boolean =>
   path.split('/').some((part) => part.startsWith('.'));
@@ -56,9 +58,15 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
     ].sort();
 
   const identity = (entry: Entry): string[] => {
-    const [packageName, config]: [string, PackageConfig] = core.shardNames.includes(entry.shard)
-      ? ['core', core]
-      : ['data', data];
+    const owner = (
+      [
+        ['core', core],
+        ['data', data],
+        ['pay-core', payCore],
+      ] as const
+    ).find(([, config]) => config.shardNames.includes(entry.shard));
+    if (owner === undefined) throw new Error(`no package declares ${entry.shard}`);
+    const [packageName, config] = owner;
     return [
       ...new Set(
         config
@@ -69,7 +77,7 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
   };
 
   it('has one entry per Stryker shard, in the order of the configs', () => {
-    expect(entries.map(({ shard }) => shard)).toEqual([...core.shardNames, ...data.shardNames]);
+    expect(entries.map(({ shard }) => shard)).toEqual(allShards);
   });
 
   it('hashes the key step globs and the entry inputs, nothing else', () => {
@@ -94,13 +102,10 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
 
   // A file hashed by CI but not by the config would let a local run reuse a stale report; a file
   // hashed by the config but not by CI would let an exact cache hit restore a report for other inputs.
-  it.each([...core.shardNames, ...data.shardNames])(
-    '%s: CI hashes exactly the files that name its report',
-    (shard) => {
-      const entry = entries.find((candidate) => candidate.shard === shard);
-      expect(entry, shard).toBeDefined();
-      if (entry === undefined) return;
-      expect(hashed(entry)).toEqual(identity(entry));
-    },
-  );
+  it.each(allShards)('%s: CI hashes exactly the files that name its report', (shard) => {
+    const entry = entries.find((candidate) => candidate.shard === shard);
+    expect(entry, shard).toBeDefined();
+    if (entry === undefined) return;
+    expect(hashed(entry)).toEqual(identity(entry));
+  });
 });
