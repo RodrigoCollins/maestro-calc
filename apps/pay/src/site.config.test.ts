@@ -8,6 +8,7 @@ describe('Cuenta Horas site constants', () => {
       origin: 'https://cuentahoras.com',
       locales: ['en', 'es'],
       indexable: true,
+      gaId: 'G-NNB8KG2TXZ',
     });
   });
 });

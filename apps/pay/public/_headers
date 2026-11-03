@@ -1,12 +1,12 @@
 # Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
-# The same policy as Maestro Calc without the analytics hosts: Cuenta Horas loads nothing from
-# another origin. style-src keeps 'unsafe-inline' because Astro inlines the page CSS; scripts are
-# same-origin modules only, with no inline script and no eval.
+# The same policy as Maestro Calc: the only other origins are Google Analytics, which
+# `/analytics.js` loads. style-src keeps 'unsafe-inline' because Astro inlines the page CSS;
+# scripts are same-origin files and the Google tag, with no inline script and no eval.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
 
 # Hashed fonts and scripts never change under one name.
 /_astro/*

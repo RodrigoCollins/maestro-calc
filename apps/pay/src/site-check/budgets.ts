@@ -57,6 +57,9 @@ const over = (file: string, what: string, bytes: number, limit: number): string 
 const local = (refs: readonly string[]): string[] =>
   refs.flatMap((ref) => (ref.startsWith('/') && !ref.startsWith('//') ? [ref.slice(1)] : []));
 
+/** The analytics loader every page carries (`public/analytics.js`); it is outside the zero-JS rule. */
+export const ANALYTICS_LOADER = 'analytics.js';
+
 const URL_IN_CSS = /url\(\s*["']?([^"')]+)["']?\s*\)/g;
 
 const pageProblems = (file: string, text: string, build: Build): string[] => {
@@ -74,7 +77,7 @@ const pageProblems = (file: string, text: string, build: Build): string[] => {
       ...attrs('link[rel~=preload][as=font]', 'href'),
     ]).filter((name) => name.endsWith('.woff2')),
   );
-  const scripts = local(attrs('script[src]', 'src'));
+  const scripts = local(attrs('script[src]', 'src')).filter((src) => src !== ANALYTICS_LOADER);
   const calculator = build.calculators.has(file);
   const modules = local(attrs('script[type=module][src]', 'src'));
   const js = sum(graphOf(modules, build.texts).map(size));

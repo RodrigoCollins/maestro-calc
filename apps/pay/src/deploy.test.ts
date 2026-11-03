@@ -39,11 +39,11 @@ describe('apps/pay/wrangler.jsonc', () => {
     });
   });
 
-  it('serves the site headers: nosniff, no framing and same-origin scripts only', () => {
+  it('serves the site headers: nosniff, no framing, scripts from the site and the Google tag only', () => {
     const headers = readFileSync(resolve(import.meta.dirname, '../public/_headers'), 'utf8');
     const csp = /Content-Security-Policy: (.+)/.exec(headers)?.[1] ?? '';
     expect(headers).toContain('X-Content-Type-Options: nosniff');
-    expect(csp).toContain("script-src 'self';");
+    expect(csp).toContain("script-src 'self' https://www.googletagmanager.com;");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).not.toMatch(/unsafe-eval|script-src[^;]*unsafe-inline/);
   });

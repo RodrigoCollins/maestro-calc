@@ -23,4 +23,5 @@ export const ROUTES: readonly Route[] = [
   { id: 'no-tax-on-overtime', kind: 'calculator', ...DEDUCTION_PATHS.overtime },
   { id: 'no-tax-on-tips', kind: 'calculator', ...DEDUCTION_PATHS.tips },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
+  { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
 ];
