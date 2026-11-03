@@ -1,9 +1,11 @@
 ---
 import type { Locale } from '@maestro-calc/i18n';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { homeCards } from '../lib/home-directory.ts';
+import { exampleOf, FEATURED_GUIDES, homeCards } from '../lib/home-directory.ts';
+import { resultViewOf } from '../lib/page-view.ts';
+import { PAGES } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
-import { HUB_IDS } from '../routing/hubs.ts';
+import { HUB_IDS, HUBS } from '../routing/hubs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { homeJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
@@ -13,11 +15,29 @@ interface Props {
 }
 const { locale } = Astro.props;
 const text = siteText(locale);
+const nameOf = (title: string): string => title.replace(/ \| Maestro Calc$/, '');
+const tradeOf = (hub: (typeof HUB_IDS)[number] | undefined): string =>
+  hub === undefined ? '' : text(`site.footer.${hub}`);
 const cards = homeCards(locale);
+// the hero sample is the concrete page's own default result, worked out at build time (no script)
+const concrete = PAGES.concrete;
+const result = resultViewOf(concrete.module, locale, concrete.catalogs[locale]);
+const line = result.shopping[0];
+if (line === undefined) throw new Error('the concrete page must list a purchase line');
+const lineLabel = `${line.label.before}${line.label.value}${line.label.after}`;
+const guides = FEATURED_GUIDES.map((id) => ({
+  href: pathOf(id, locale),
+  title: nameOf(text(`page.${id}.title`)),
+  trade: tradeOf(HUB_IDS.find((hub) => (HUBS[hub].guides as readonly string[]).includes(id))),
+}));
+const trust = (['sources', 'math', 'languages'] as const).map((key) => ({
+  title: text(`page.home.trust.${key}.title`),
+  text: text(`page.home.trust.${key}.text`),
+}));
 // the trade hubs (hubs › [HB2]), named by their page title without the site name
 const hubs = HUB_IDS.map((id) => ({
   href: pathOf(id, locale),
-  name: text(`page.${id}.title`).replace(/ \| Maestro Calc$/, ''),
+  name: nameOf(text(`page.${id}.title`)),
 }));
 ---
 
@@ -27,9 +47,49 @@ const hubs = HUB_IDS.map((id) => ({
   head={{ ...headFor('home', locale, text), jsonLd: serializeJsonLd(homeJsonLd(locale)) }}
 >
   <div class="home-hero">
-    <h1>{text('page.home.heading')}</h1>
-    <p>{text('page.home.intro')}</p>
+    <div class="home-hero-text">
+      <p class="home-kicker">{text('page.home.kicker')}</p>
+      <h1>{text('page.home.heading')}</h1>
+      <p>{text('page.home.intro')}</p>
+      <a class="home-cta tap-target" href={pathOf('concrete', locale)}>
+        {text('page.home.cta')}
+      </a>
+    </div>
+    <figure class="home-sample">
+      <p class="home-sample-title">{text('page.home.sample')}</p>
+      <div class="home-sample-plan">
+        <svg viewBox="0 0 240 132" aria-hidden="true" focusable="false">
+          <rect
+            x="34"
+            y="12"
+            width="196"
+            height="96"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          ></rect>
+          <path d="M34 122h196M20 12v96" fill="none" stroke="#b9c6da" stroke-width="1.5"></path>
+          <path
+            d="M34 116v12M230 116v12M14 12h12M14 108h12"
+            fill="none"
+            stroke="#f06a1d"
+            stroke-width="2.5"
+          ></path>
+        </svg>
+        <p class="home-sample-figure">
+          {result.primary.value}
+          {result.primary.after}
+        </p>
+      </div>
+      <p class="home-sample-line">
+        <span class="home-sample-qty">{line.qty}</span>
+        <span>{lineLabel}</span>
+      </p>
+      <figcaption>{exampleOf(concrete.catalogs[locale], 'concrete', locale)}</figcaption>
+    </figure>
   </div>
+
+  <h2 class="home-heading">{text('page.home.calculators')}</h2>
   <ul class="home-cards" role="list">
     {cards.map((card) => (
       <li class="home-card">
@@ -43,6 +103,36 @@ const hubs = HUB_IDS.map((id) => ({
       </li>
     ))}
   </ul>
+
+  <section class="home-guides" aria-labelledby="home-guides-heading">
+    <h2 id="home-guides-heading" class="home-heading">
+      {text('page.home.guides')}
+    </h2>
+    <ul>
+      {guides.map((guide) => (
+        <li>
+          <p class="home-trade">
+            {text('site.guide.kicker')} · {guide.trade}
+          </p>
+          <a class="tap-target" href={guide.href}>
+            {guide.title}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="home-trust" aria-label={text('page.home.trust')}>
+    <ul>
+      {trust.map((item) => (
+        <li>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
   <section class="home-hubs" aria-label={text('page.home.hubs')}>
     <h2>{text('page.home.hubs')}</h2>
     <ul>
@@ -65,10 +155,12 @@ const hubs = HUB_IDS.map((id) => ({
   </p>
 </BaseLayout>
 
-<style>
+<style is:global>
   /* The one place the Blueprint identity is spent: the grid on the ink and one dimension line. */
   .home-hero {
     --grid-line: color-mix(in srgb, var(--color-surface) 12%, transparent);
+    display: grid;
+    gap: var(--space-4);
     margin: 0 calc(-1 * var(--space-3)) var(--space-5);
     padding: var(--space-5) var(--space-3);
     background: var(--color-text);
@@ -79,8 +171,16 @@ const hubs = HUB_IDS.map((id) => ({
     color: var(--color-surface);
   }
 
+  .home-hero-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
   .home-hero h1 {
     width: fit-content;
+    margin: 0;
     font-size: var(--text-display);
   }
 
@@ -100,17 +200,113 @@ const hubs = HUB_IDS.map((id) => ({
     margin: 0;
   }
 
-  /* Once the hero no longer reaches the screen edges (the page width plus its two gutters), it takes
-     the card corners of the mockups. */
+  .home-kicker,
+  .home-trade {
+    font-size: var(--text-small);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .home-hero .home-kicker {
+    color: var(--color-accent);
+  }
+
+  /* Orange takes dark text only (Blueprint): the one call to action of the page. */
+  .home-cta {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .home-cta:hover {
+    text-decoration: underline;
+  }
+
+  /* The sample: the concrete page's default result on a white sheet, its plan drawn in ink. */
+  .home-sample {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .home-hero .home-sample-title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+  }
+
+  .home-sample-plan {
+    position: relative;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+
+  .home-sample-plan svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .home-hero .home-sample-figure {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding-left: 12%;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 5vw, var(--text-h2));
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .home-hero .home-sample-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    border: var(--tick-weight) solid var(--color-accent);
+    border-radius: var(--radius-card);
+  }
+
+  .home-sample-qty {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 700;
+  }
+
+  .home-sample figcaption {
+    color: var(--color-text-secondary);
+    font-size: var(--text-small);
+  }
+
+  /* Two columns once the hero no longer reaches the screen edges: the pitch, then the sample. */
   @media (min-width: 66rem) {
     .home-hero {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+      gap: var(--space-5);
       border-radius: var(--radius-card);
     }
   }
 
+  .home-heading {
+    margin: 0 0 var(--space-3);
+  }
+
   .home-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
     gap: var(--space-3);
     margin: 0 0 var(--space-5);
     padding: 0;
@@ -120,6 +316,9 @@ const hubs = HUB_IDS.map((id) => ({
   /* One link per card, stretched over it; the border darkens on hover and focus with no shift. */
   .home-card {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
     padding: var(--space-3);
     border: 2px solid var(--color-line);
     border-radius: var(--radius-card);
@@ -132,7 +331,8 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-card h2 {
-    margin: 0 0 var(--space-2);
+    margin: 0;
+    font-size: var(--text-h3);
   }
 
   /* The title is ink, as the mockup cards; the whole card is the link and it underlines on hover. */
@@ -152,13 +352,69 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-card p {
-    margin: 0 0 var(--space-2);
+    margin: 0;
+  }
+
+  .home-trade,
+  .home-card .home-example {
+    color: var(--color-text-secondary);
   }
 
   .home-card .home-example {
+    margin-top: auto;
+    padding-top: var(--space-2);
+    border-top: 1px dashed var(--color-line);
+    font-size: var(--text-small);
+  }
+
+  .home-guides ul,
+  .home-trust ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-3);
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A guide: its kind and trade, then the title, under one orange tick line. */
+  .home-guides li {
+    display: grid;
+    align-content: start;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    border-top: var(--tick-weight) solid var(--color-accent);
+    background: var(--color-surface);
+  }
+
+  .home-guides p {
+    margin: 0;
+  }
+
+  .home-guides a {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 700;
+    line-height: var(--leading-heading);
+  }
+
+  .home-trust h3 {
+    margin: 0 0 var(--space-1);
+  }
+
+  .home-trust p {
     margin: 0;
     color: var(--color-text-secondary);
-    font-size: var(--text-small);
+  }
+
+  /* The trade hubs as one wrapping row of links. */
+  .home-hubs ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    margin: 0 0 var(--space-4);
+    padding: 0;
+    list-style: none;
   }
 
   .home-links {

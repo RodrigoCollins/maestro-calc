@@ -289,7 +289,8 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
     120_000,
   );
 
-  // spec: trust-pages › [TP21] the cards are the only way main links a calculator page
+  // spec: trust-pages › [TP21] the cards are the only way main links a calculator page, besides the
+  // one call to action of the hero, which opens the concrete calculator
   it.each([
     ['index.html', 'en'],
     ['es.html', 'es'],
@@ -304,9 +305,10 @@ describe('built home pages (site-shell › [SS28]; trust-pages › [TP31], [TP34
         .querySelectorAll('main a[href]')
         .map((link) => link.getAttribute('href') ?? '')
         .filter((href) => calculatorPaths.has(href));
-      expect(linked).toEqual(
-        directoryOrder(ROUTES, CALCULATOR_PAGES).map((id) => pathOf(id, locale)),
-      );
+      expect(linked).toEqual([
+        pathOf('concrete', locale),
+        ...directoryOrder(ROUTES, CALCULATOR_PAGES).map((id) => pathOf(id, locale)),
+      ]);
     },
     120_000,
   );

@@ -94,6 +94,21 @@ export const enSite = {
   'page.home.hubs': 'By trade',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
+  'page.home.kicker': 'Free jobsite calculators, in English and Spanish',
+  'page.home.cta': 'Figure my concrete',
+  'page.home.sample': 'Concrete slab',
+  'page.home.calculators': 'Calculators',
+  'page.home.guides': 'Guides for the job',
+  'page.home.trust': 'How the numbers are worked out',
+  'page.home.trust.sources.title': 'Sources on every page',
+  'page.home.trust.sources.text':
+    "Bag yields come from the manufacturers' data sheets, and roof slopes from the IRC.",
+  'page.home.trust.math.title': 'Exact math',
+  'page.home.trust.math.text':
+    'Fractions stay exact to the last step; only what you buy is rounded up.',
+  'page.home.trust.languages.title': 'English and Spanish',
+  'page.home.trust.languages.text':
+    'The same numbers in both languages, with the terms used on US jobsites.',
   'page.home.title': 'Maestro Calc: jobsite calculators',
   'page.home.description':
     'Jobsite calculators for builders and homeowners in the US. Enter your measurements and estimate what to buy.',

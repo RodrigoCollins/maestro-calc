@@ -1,4 +1,5 @@
 import type { Locale } from '@maestro-calc/i18n';
+import type { GuideId } from '../routing/guides.ts';
 import { pathOf, ROUTES } from '../routing/routes.ts';
 import type { RouteTable } from '../routing/routes.ts';
 import { CALCULATOR_PAGES, isCalculatorPage } from '../routing/templates.ts';
@@ -6,6 +7,14 @@ import type { CalculatorPageId } from '../routing/templates.ts';
 import { PAGES } from './pages.ts';
 import type { Messages } from './pages.ts';
 import { siteText } from './site-text.ts';
+
+/** The guides the home features, one per trade the visitor meets first, in the order shown. */
+export const FEATURED_GUIDES: readonly GuideId[] = [
+  'guide-concrete-bags-or-truck',
+  'guide-paint-quote',
+  'guide-gravel-driveway',
+  'guide-tape-measure-fractions',
+];
 
 /** One calculator card of the home directory; `Id` is a calculator page id outside the tests. */
 export interface HomeCard<Id extends string = CalculatorPageId> {

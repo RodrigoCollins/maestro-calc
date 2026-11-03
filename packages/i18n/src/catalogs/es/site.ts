@@ -100,6 +100,21 @@ export const esSite = {
   'page.home.hubs': 'Por oficio',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
+  'page.home.kicker': 'Calculadoras gratis para tu obra, en inglés y español',
+  'page.home.cta': 'Calcula tu concreto',
+  'page.home.sample': 'Losa de concreto',
+  'page.home.calculators': 'Calculadoras',
+  'page.home.guides': 'Guías para la obra',
+  'page.home.trust': 'Cómo sacamos los números',
+  'page.home.trust.sources.title': 'Fuentes en cada página',
+  'page.home.trust.sources.text':
+    'Los rendimientos de las bolsas salen de las hojas técnicas de los fabricantes, y las pendientes de techo, del IRC.',
+  'page.home.trust.math.title': 'Cuentas exactas',
+  'page.home.trust.math.text':
+    'Las fracciones se mantienen exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
+  'page.home.trust.languages.title': 'Inglés y español',
+  'page.home.trust.languages.text':
+    'Los mismos números en los dos idiomas, con los términos que se usan en las obras de EE. UU.',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
     'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y calcula qué comprar.',
