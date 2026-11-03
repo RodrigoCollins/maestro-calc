@@ -96,6 +96,10 @@ export const enSite = {
   'page.home.links.about': 'About Maestro Calc',
   'page.home.kicker': 'Free jobsite calculators, in English and Spanish',
   'page.home.cta': 'Figure my concrete',
+  'page.home.ctaAll': 'See all calculators',
+  'page.home.share.title': 'Send the list to your crew',
+  'page.home.share.text':
+    'Every result has a link with your numbers, a WhatsApp button and a print view.',
   'page.home.sample': 'Concrete slab',
   'page.home.calculators': 'Calculators',
   'page.home.guides': 'Guides for the job',

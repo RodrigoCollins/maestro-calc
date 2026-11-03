@@ -102,6 +102,10 @@ export const esSite = {
   'page.home.links.about': 'Sobre Maestro Calc',
   'page.home.kicker': 'Calculadoras gratis para tu obra, en inglés y español',
   'page.home.cta': 'Calcula tu concreto',
+  'page.home.ctaAll': 'Ver todas las calculadoras',
+  'page.home.share.title': 'Manda la lista a tu equipo',
+  'page.home.share.text':
+    'Cada resultado tiene un enlace con tus números, un botón de WhatsApp y una vista para imprimir.',
   'page.home.sample': 'Losa de concreto',
   'page.home.calculators': 'Calculadoras',
   'page.home.guides': 'Guías para la obra',
