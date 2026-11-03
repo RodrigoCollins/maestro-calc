@@ -23,11 +23,6 @@ describe('time card texts', () => {
     ]);
   });
 
-  it('links each language to the other page', () => {
-    expect(TIME_CARD_TEXTS.en.otherHref).toBe('/es/calculadora-de-horas-trabajadas');
-    expect(TIME_CARD_TEXTS.es.otherHref).toBe('/time-card-calculator');
-  });
-
   it('keeps titles under 70 characters and descriptions under 160', () => {
     for (const texts of Object.values(TIME_CARD_TEXTS)) {
       expect(texts.title.length).toBeLessThanOrEqual(70);

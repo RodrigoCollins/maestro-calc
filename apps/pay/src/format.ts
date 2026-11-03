@@ -24,3 +24,14 @@ export const clockFieldText = (minutes: number | null): string => {
   const clock = hour % 12 === 0 ? 12 : hour % 12;
   return `${String(clock)}:${String(minutes % 60).padStart(2, '0')} ${hour < 12 ? 'am' : 'pm'}`;
 };
+
+/** A short time of day for a printed card: `7:00a`, `4:30p`. */
+const shortClock = (minutes: number): string => {
+  const hour = Math.floor(minutes / 60);
+  const clock = hour % 12 === 0 ? 12 : hour % 12;
+  return `${String(clock)}:${String(minutes % 60).padStart(2, '0')}${hour < 12 ? 'a' : 'p'}`;
+};
+
+/** A shift as a printed card shows it, `7:00a–4:30p`; a day without both times is empty. */
+export const shiftText = (start: number | null, end: number | null): string =>
+  start === null || end === null ? '' : `${shortClock(start)}–${shortClock(end)}`;

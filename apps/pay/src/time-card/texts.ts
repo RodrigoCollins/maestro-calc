@@ -34,7 +34,6 @@ export interface TimeCardTexts {
   readonly note: string;
   readonly workweek: string;
   readonly otherLang: string;
-  readonly otherHref: string;
   readonly days: readonly DayText[];
 }
 
@@ -73,7 +72,6 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
     note: 'This is pay before taxes and deductions. Federal law (FLSA) pays 1.5 times your rate after 40 hours in a workweek. California also counts by the day: 1.5 times after 8 hours, double after 12, and its own rule for the seventh day in a row.',
     workweek: 'The card treats Monday to Sunday as the workweek.',
     otherLang: 'Español',
-    otherHref: '/es/calculadora-de-horas-trabajadas',
     days: days(
       ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
       ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -108,7 +106,6 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
     note: 'Es el pago antes de impuestos y descuentos. La ley federal (FLSA) paga 1.5 veces tu tarifa después de 40 horas en la semana. California también cuenta por día: 1.5 veces después de 8 horas, doble después de 12, y tiene su propia regla para el séptimo día seguido.',
     workweek: 'La tarjeta toma la semana de lunes a domingo.',
     otherLang: 'English',
-    otherHref: '/time-card-calculator',
     days: days(
       ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
       ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],

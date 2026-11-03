@@ -1,0 +1,93 @@
+---
+import { timeCard } from '@maestro-calc/pay-core/time-card';
+import { hoursText, moneyText, shiftText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { outputOf, type Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = HOME_TEXTS[lang];
+// The card in the hero is the calculator's own default week, so its figures are the engine's.
+const ran = timeCard.run({});
+if (!ran.ok) throw new Error('the default week of the time card must run');
+const result = ran.value;
+const defaults: Readonly<Record<string, unknown>> = Object.fromEntries(
+  timeCard.inputs.map((input) => [input.key, input.default]),
+);
+const clock = (key: string): number | null => (defaults[key] as number | null | undefined) ?? null;
+const rows = TIME_CARD_TEXTS[lang].days.slice(0, 3).map((day) => ({
+  day: day.short,
+  shift: shiftText(clock(day.key), clock(`${day.key}Out`)),
+  hours: hoursText(outputOf(result, `${day.key}Hours` as 'monHours')),
+}));
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={{ en: '/', es: '/es' }}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={t.sources}
+  wide
+>
+  <main class="page home">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="kicker">{t.kicker}</p>
+        <h1>{t.h1}</h1>
+        <p class="lead">{t.lead}</p>
+        <a class="button button-money" href={t.cta.href}>
+          {t.cta.label}
+        </a>
+      </div>
+      <div class="mini-card" aria-hidden="true">
+        <p class="mini-head">
+          <span>{t.cardTitle}</span>
+          <span class="stamp">{hoursText(outputOf(result, 'totalHours'))} H</span>
+        </p>
+        {rows.map((row) => (
+          <p class="mini-row">
+            <span>
+              {row.day} {row.shift}
+            </span>
+            <span>{row.hours}</span>
+          </p>
+        ))}
+        <p class="mini-row mini-total">
+          <span>{t.cardTotal}</span>
+          <span>{moneyText(outputOf(result, 'pay'))}</span>
+        </p>
+      </div>
+    </section>
+
+    <section class="tools" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">{t.toolsHeading}</h2>
+      <ul>
+        {t.tools.map((tool) =>
+          tool.href === null ? (
+            <li class="tool tool-soon">
+              <span class="tool-title">
+                {tool.title}
+                <span class="badge">{t.soon}</span>
+              </span>
+              <span class="tool-summary">{tool.summary}</span>
+            </li>
+          ) : (
+            <li>
+              <a class="tool" href={tool.href}>
+                <span class="tool-title">{tool.title}</span>
+                <span class="tool-summary">{tool.summary}</span>
+              </a>
+            </li>
+          ),
+        )}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>
