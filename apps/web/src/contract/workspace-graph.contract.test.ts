@@ -80,7 +80,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
 
 describe('dependency direction (monorepo-workspace › Dependency direction)', () => {
   // spec: Dependency direction — exactly the allowed edges [MW5b, MD5]
-  it('has only the edges data to core, pay-core to core, web to core, web to data and web to i18n', () => {
+  it('has only the edges data to core, pay to core and pay-core, pay-core to core, and web to core, data and i18n', () => {
     const edges = workspaceDirs.flatMap((dir) => {
       const manifest = readManifest(dir);
       return dependencyNames(manifest)
@@ -89,6 +89,8 @@ describe('dependency direction (monorepo-workspace › Dependency direction)', (
     });
     expect(edges.sort()).toEqual([
       '@maestro-calc/data -> @maestro-calc/core',
+      '@maestro-calc/pay -> @maestro-calc/core',
+      '@maestro-calc/pay -> @maestro-calc/pay-core',
       '@maestro-calc/pay-core -> @maestro-calc/core',
       '@maestro-calc/web -> @maestro-calc/core',
       '@maestro-calc/web -> @maestro-calc/data',

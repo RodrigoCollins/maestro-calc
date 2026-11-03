@@ -1,0 +1,245 @@
+---
+import { Font } from 'astro:assets';
+import { toDecimalParts } from '@maestro-calc/core';
+import { timeCard } from '@maestro-calc/pay-core/time-card';
+import { clockFieldText, hoursText, moneyText } from '../format.ts';
+import { outputOf, receiptMessage, whatsappHref, type Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import { SITE } from '../site.config.ts';
+import '../styles/site.css';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = TIME_CARD_TEXTS[lang];
+const self = lang === 'en' ? '/time-card-calculator' : '/es/calculadora-de-horas-trabajadas';
+const canonical = new URL(self, SITE.origin).href;
+const ran = timeCard.run({});
+if (!ran.ok) throw new Error('the default week of the time card must run');
+const result = ran.value;
+const defaults = Object.fromEntries(timeCard.inputs.map((input) => [input.key, input.default]));
+const rateInput = timeCard.inputs[0];
+const { integer, fraction } = toDecimalParts(rateInput.default.amount, 2);
+const rateText = `${String(integer)}.${fraction}`;
+const dayHours = (key: string): string => hoursText(outputOf(result, `${key}Hours` as 'monHours'));
+const overtime = outputOf(result, 'overtimeHours');
+const double = outputOf(result, 'doubleHours');
+const href = whatsappHref(receiptMessage(result, lang, canonical));
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{t.title}</title>
+    <meta name="description" content={t.description} />
+    <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      hreflang="en-US"
+      href={new URL('/time-card-calculator', SITE.origin).href}
+    />
+    <link
+      rel="alternate"
+      hreflang="es-US"
+      href={new URL('/es/calculadora-de-horas-trabajadas', SITE.origin).href}
+    />
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL('/time-card-calculator', SITE.origin).href}
+    />
+    <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
+    <Font cssVariable="--font-mono" preload={[{ weight: '400' }]} />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <a class="brand" href={lang === 'en' ? '/' : '/es'}>
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 26 26"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <rect x="4" y="2" width="18" height="22" rx="2"></rect>
+            <path d="M8 7h10M8 11h10M8 15h6"></path>
+            <circle cx="18" cy="19" r="2.2" fill="#e0a23b" stroke="none"></circle>
+          </svg>
+          {SITE.name}
+        </a>
+        <a
+          class="lang"
+          href={t.otherHref}
+          hreflang={lang === 'en' ? 'es' : 'en'}
+          lang={lang === 'en' ? 'es' : 'en'}
+        >
+          {t.otherLang}
+        </a>
+      </div>
+    </header>
+    <main class="page">
+      <div>
+        <p class="kicker">{t.kicker}</p>
+        <h1>{t.h1}</h1>
+      </div>
+      <p class="lead">{t.lead}</p>
+
+      <form class="time-card" data-time-card novalidate>
+        <div class="settings">
+          <label class="field">
+            {t.rate}
+            <input name="rate" inputmode="decimal" autocomplete="off" value={rateText} />
+          </label>
+          <label class="field">
+            {t.rule}
+            <select name="rule">
+              <option value="federal">{t.federal}</option>
+              <option value="california">{t.california}</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="week">
+          <table>
+            <caption>{t.week}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{t.day}</th>
+                <th scope="col">{t.in}</th>
+                <th scope="col">{t.out}</th>
+                <th scope="col" class="day-break">
+                  {t.break}
+                </th>
+                <th scope="col" class="day-hours">
+                  {t.hours}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.days.map((day) => (
+                <tr>
+                  <th scope="row">
+                    <abbr title={day.long}>{day.short}</abbr>
+                  </th>
+                  <td>
+                    <input
+                      name={day.key}
+                      aria-label={`${day.long} · ${t.in}`}
+                      autocomplete="off"
+                      value={clockFieldText(defaults[day.key] as number | null)}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      name={`${day.key}Out`}
+                      aria-label={`${day.long} · ${t.out}`}
+                      autocomplete="off"
+                      value={clockFieldText(defaults[`${day.key}Out`] as number | null)}
+                    />
+                  </td>
+                  <td class="day-break">
+                    <input
+                      name={`${day.key}Break`}
+                      aria-label={`${day.long} · ${t.break}`}
+                      inputmode="numeric"
+                      autocomplete="off"
+                      value={String(defaults[`${day.key}Break`])}
+                    />
+                  </td>
+                  <td class="day-hours" data-out={`${day.key}Hours`}>
+                    {dayHours(day.key)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row" colspan="4">
+                  {t.total}
+                </th>
+                <td class="total">
+                  <span data-out="totalHours">{hoursText(outputOf(result, 'totalHours'))}</span> h
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </form>
+
+      <p class="warning" data-warning hidden>
+        {t.breakTooLong}
+      </p>
+
+      <section class="result" aria-live="polite" aria-labelledby="owed">
+        <div>
+          <p class="result-label" id="owed">
+            {t.owed}
+          </p>
+          <p class="result-figure" data-out="pay">
+            {moneyText(outputOf(result, 'pay'))}
+          </p>
+          <p class="result-sub">{t.gross}</p>
+        </div>
+        <ul class="breakdown">
+          <li>
+            <span>
+              <span data-out="regularHours">{hoursText(outputOf(result, 'regularHours'))}</span> h
+            </span>
+            <span data-out="regularPay">{moneyText(outputOf(result, 'regularPay'))}</span>
+          </li>
+          <li data-row="overtime" hidden={overtime.isZero()}>
+            <span>
+              <span data-out="overtimeHours">{hoursText(overtime)}</span> h
+              <span class="badge">{t.overtimeBadge}</span>
+            </span>
+            <span data-out="overtimePay">{moneyText(outputOf(result, 'overtimePay'))}</span>
+          </li>
+          <li data-row="double" hidden={double.isZero()}>
+            <span>
+              <span data-out="doubleHours">{hoursText(double)}</span> h
+              <span class="badge">{t.doubleBadge}</span>
+            </span>
+            <span data-out="doublePay">{moneyText(outputOf(result, 'doublePay'))}</span>
+          </li>
+        </ul>
+      </section>
+
+      <div class="actions">
+        <a class="button button-primary" data-whatsapp href={href} rel="noopener">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <path d="M4 20l1.4-4.2A8 8 0 1 1 8.6 19z"></path>
+          </svg>
+          {t.whatsapp}
+        </a>
+        <button class="button button-secondary" type="button" data-print>
+          {t.print}
+        </button>
+        <p class="note">{t.shareNote}</p>
+      </div>
+
+      <p class="note">
+        {t.note} {t.workweek}
+      </p>
+    </main>
+    <footer class="site-footer">
+      <div>{SITE.name}</div>
+    </footer>
+    <script src="../client/time-card.ts"></script>
+  </body>
+</html>

@@ -24,6 +24,13 @@ describe('time card (federal overtime after 40 hours)', () => {
       regularPay: usd(880),
       overtimePay: usd(r(627, 2)),
       doublePay: usd(0),
+      monHours: r(9),
+      tueHours: r(9),
+      wedHours: r(9),
+      thuHours: r(9),
+      friHours: r(9),
+      satHours: r(9, 2),
+      sunHours: r(0),
     });
   });
 

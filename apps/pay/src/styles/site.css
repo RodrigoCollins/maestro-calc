@@ -1,0 +1,386 @@
+/*
+ * Cuenta Horas, direction "time card" (mockups: https://claude.ai/artifact/LbMnUv4U4m3sog8FNQGh5Z).
+ * Fallback faces: Capsize metrics of the fontsource woff2 files against Arial (Archivo) and against
+ * a monospace of the same 0.6 em advance (IBM Plex Mono), so the swap moves nothing. `--font-body`
+ * and `--font-mono` come from Astro's <Font> (astro.config.mjs), with these faces as fallbacks.
+ */
+@font-face {
+  font-family: 'Archivo Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  font-weight: 400;
+  size-adjust: 98.6988%;
+  ascent-override: 88.9575%;
+  descent-override: 21.2769%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Archivo Fallback';
+  src:
+    local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold'),
+    local('Roboto Bold');
+  font-weight: 800;
+  size-adjust: 103.1292%;
+  ascent-override: 85.1359%;
+  descent-override: 20.3628%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'IBM Plex Mono Fallback';
+  src:
+    local('Courier New'), local('CourierNewPSMT'), local('Liberation Mono'), local('Cousine'),
+    local('Roboto Mono');
+  size-adjust: 100%;
+  ascent-override: 102.5%;
+  descent-override: 27.5%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --card: #efe6cf;
+  --paper: #fbf7ec;
+  --ink: #1b1a17;
+  --ink-2: #3d382d;
+  --muted: #5c5546;
+  --rule: #b9ae92;
+  --money: #1f6b45;
+  --money-ink: #f4efe0;
+  --money-soft: #cfe3d5;
+  --amber: #e0a23b;
+  --stamp: #8e2f07;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--card);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+a {
+  color: var(--money);
+}
+
+:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.site-header {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.site-header > div,
+.page,
+.site-footer > div {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding-inline: 1rem;
+}
+
+.site-header > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 3.5rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--card);
+  font-weight: 800;
+  font-size: 1.15rem;
+  text-decoration: none;
+}
+
+.lang {
+  color: var(--card);
+  font-weight: 800;
+  padding: 0.75rem 0.25rem;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding-block: 1.4rem 2rem;
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.9rem;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--ink-2);
+}
+
+.field input,
+.field select,
+.week input {
+  min-height: 3rem;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  padding: 0 0.6rem;
+  width: 100%;
+}
+
+.week input {
+  min-height: 2.75rem;
+  border-width: 1px;
+  padding: 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+[aria-invalid='true'] {
+  border-color: var(--stamp) !important;
+  background: #fbe9e1 !important;
+}
+
+.week {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.week table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+}
+
+.week caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.week th[scope='col'] {
+  background: var(--ink);
+  color: var(--card);
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.55rem 0.35rem;
+}
+
+.week td,
+.week th[scope='row'] {
+  border-top: 1px dashed var(--rule);
+  padding: 0.3rem 0.25rem;
+}
+
+.week th[scope='row'] {
+  font-family: var(--font-body);
+  font-weight: 800;
+  text-align: left;
+  padding-left: 0.6rem;
+  width: 3rem;
+}
+
+.week .day-break {
+  width: 4.2rem;
+}
+
+.week .day-hours {
+  text-align: right;
+  font-weight: 600;
+  padding-right: 0.6rem;
+  width: 3.4rem;
+}
+
+.week tfoot td,
+.week tfoot th {
+  border-top: 2px solid var(--ink);
+  padding: 0.7rem 0.6rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.week tfoot .total {
+  text-align: right;
+  white-space: nowrap;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.result {
+  background: var(--money);
+  color: var(--money-ink);
+  border-radius: 8px;
+  padding: 1.1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.result-label {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--money-soft);
+}
+
+.result-figure {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 2.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.result-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--money-soft);
+}
+
+.breakdown {
+  margin: 0;
+  padding: 0.75rem 0 0;
+  border-top: 1px solid #4e8c69;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+
+.breakdown li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.badge {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: var(--amber);
+  color: var(--ink);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.4rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+
+.button-primary {
+  background: var(--ink);
+  color: var(--money-ink);
+}
+
+.button-secondary {
+  background: transparent;
+  color: var(--ink);
+}
+
+.note {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.warning {
+  margin: 0;
+  padding: 0.75rem;
+  border: 2px dashed var(--stamp);
+  border-radius: 8px;
+  color: var(--stamp);
+  font-weight: 800;
+}
+
+.site-footer {
+  border-top: 2px solid var(--ink);
+  font-size: 0.85rem;
+  color: var(--ink-2);
+}
+
+.site-footer > div {
+  padding-block: 1rem;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media print {
+  .site-header,
+  .actions,
+  .site-footer {
+    display: none;
+  }
+}
