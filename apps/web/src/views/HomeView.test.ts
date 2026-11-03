@@ -148,7 +148,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         expect(
           card?.children.map((child) => child.tagName),
           id,
-        ).toEqual(['H2', 'P', 'P', 'P']);
+        ).toEqual(['H2', 'P', 'P', 'SMALL']);
         expect(card?.querySelector('h2 > a.tap-target')?.text.trim(), id).toBe(
           catalog[`page.home.cards.${id}.title`],
         );
@@ -161,7 +161,7 @@ describe('HomeView directory (trust-pages › [TP7], [TP21], [TP31], [TP33])', (
         // the trade of the card, last in the source and shown above the title
         const hub = hubOfCalculator(id);
         expect(hub, id).toBeDefined();
-        expect(card?.querySelector('p.home-trade:last-child')?.text.trim(), id).toBe(
+        expect(card?.querySelector('small:last-child')?.text.trim(), id).toBe(
           hub === undefined ? '' : catalog[`site.footer.${hub}`],
         );
       });

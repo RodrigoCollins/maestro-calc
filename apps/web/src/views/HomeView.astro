@@ -111,7 +111,7 @@ const hubs = HUB_IDS.map((id) => ({
           </h2>
           <p>{card.summary}</p>
           <p class="home-example">{card.example}</p>
-          <p class="home-trade">{card.trade}</p>
+          <small>{card.trade}</small>
         </li>
       ))}
     </ul>
@@ -137,7 +137,7 @@ const hubs = HUB_IDS.map((id) => ({
         </li>
       ))}
     </ul>
-    <a class="home-all-guides tap-target" href={pathOf('guides', locale)}>
+    <a class="tap-target" href={pathOf('guides', locale)}>
       {text('site.footer.guides')}
     </a>
   </section>
@@ -221,7 +221,8 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-kicker,
-  .home-trade {
+  .home-trade,
+  .home-card small {
     font-size: var(--text-small);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -438,12 +439,13 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   .home-trade,
+  .home-card small,
   .home-card .home-example {
     color: var(--color-text-secondary);
   }
 
   /* The trade comes last in the source, after the title a reader lands on, and shows first. */
-  .home-card .home-trade {
+  .home-card small {
     order: -1;
   }
 
@@ -486,7 +488,7 @@ const hubs = HUB_IDS.map((id) => ({
   }
 
   /* On phones the index link closes the list, as in the canvas. */
-  .home-guides .home-all-guides {
+  .home-guides > a {
     display: inline-block;
     margin: calc(var(--space-3) - var(--space-5)) 0 var(--space-5);
     font-family: inherit;
@@ -507,7 +509,7 @@ const hubs = HUB_IDS.map((id) => ({
       grid-row: 2;
     }
 
-    .home-guides .home-all-guides {
+    .home-guides > a {
       grid-row: 1;
       grid-column: 2;
       margin: 0;
