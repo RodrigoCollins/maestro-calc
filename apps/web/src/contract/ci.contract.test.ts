@@ -144,8 +144,15 @@ const coreShards = await importFromRoot<{ shardNames: string[] }>(
 const dataShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/data/stryker.config.mjs',
 );
+const payCoreShards = await importFromRoot<{ shardNames: string[] }>(
+  'packages/pay-core/stryker.config.mjs',
+);
 // the shards of every package that has a Stryker config, core first
-const shardNames = [...coreShards.shardNames, ...dataShards.shardNames];
+const shardNames = [
+  ...coreShards.shardNames,
+  ...dataShards.shardNames,
+  ...payCoreShards.shardNames,
+];
 
 describe('CI mutation job (quality-gates › Continuous integration workflow, Mutation gate)', () => {
   const mutation = workflow.jobs['mutation'];

@@ -59,6 +59,8 @@ const readJson = (relativePath: string): unknown =>
 const module_ = await importFromRoot<StrykerModule>('packages/core/stryker.config.mjs');
 // The data package builds its own single shard on the same gate (task 12.10c).
 const dataModule = await importFromRoot<StrykerModule>('packages/data/stryker.config.mjs');
+// The pay calculators of Cuenta Horas build their single shard the same way.
+const payCoreModule = await importFromRoot<StrykerModule>('packages/pay-core/stryker.config.mjs');
 // The default export follows STRYKER_SHARD, so assertions about all of core read it explicitly.
 const config = module_.optionsFor('all');
 const scripts = (relativePath: string): Record<string, string> =>
@@ -580,8 +582,27 @@ describe('data mutation shard (quality-gates › Mutation gate, task 12.10c)', (
       cwd: fromRoot(),
       encoding: 'utf8',
     });
-    expect(stdout.trim().split('\n').at(-1)).toBe('data');
+    expect(stdout.trim().split('\n').slice(-2)).toEqual(['data', 'pay-core']);
     expect(scripts('packages/data/package.json')['mutation']).toBe('stryker run');
+  });
+});
+
+describe('pay-core mutation shard (Cuenta Horas)', () => {
+  const options = payCoreModule.default;
+
+  it('is the one shard named pay-core, with the gate options of core', () => {
+    expect(payCoreModule.shardNames).toEqual(['pay-core']);
+    const exclusions = config.mutate.filter((glob) => glob.startsWith('!'));
+    expect(options.mutate).toEqual(['src/**/*.ts', ...exclusions]);
+    expect(options.commandRunner.command).toBe(config.commandRunner.command);
+    expect(options.incrementalFile).toMatch(
+      /^reports\/stryker-incremental-[0-9a-f]{16}-pay-core\.json$/,
+    );
+    const own = ['mutate', 'commandRunner', 'incrementalFile', 'htmlReporter', 'jsonReporter'];
+    const shared = (source: StrykerConfig) =>
+      Object.fromEntries(Object.entries(source).filter(([key]) => !own.includes(key)));
+    expect(shared(options)).toEqual(shared(config));
+    expect(scripts('packages/pay-core/package.json')['mutation']).toBe('stryker run');
   });
 });
 
@@ -599,6 +620,7 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     expect(run('--list').stdout.trim().split('\n')).toEqual([
       ...module_.shardNames,
       ...dataModule.shardNames,
+      ...payCoreModule.shardNames,
     ]);
     const bad = run('--shard', 'nope');
     expect(bad.status).toBe(1);
@@ -634,12 +656,17 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     const owners = await loadShardOwners(fromRoot());
     expect(owners.get('rational')).toBe(fromRoot('packages/core'));
     expect(owners.get('data')).toBe(fromRoot('packages/data'));
-    expect([...owners.keys()]).toEqual([...module_.shardNames, ...dataModule.shardNames]);
+    expect(owners.get('pay-core')).toBe(fromRoot('packages/pay-core'));
+    expect([...owners.keys()]).toEqual([
+      ...module_.shardNames,
+      ...dataModule.shardNames,
+      ...payCoreModule.shardNames,
+    ]);
     // the discovery is the directory scan itself: no package with a config can be left out
     const withConfig = readdirSync(fromRoot('packages')).filter((name) =>
       existsSync(fromRoot('packages', name, 'stryker.config.mjs')),
     );
-    expect(withConfig.sort()).toEqual(['core', 'data']);
+    expect(withConfig.sort()).toEqual(['core', 'data', 'pay-core']);
     expect(new Set(owners.values())).toEqual(
       new Set(withConfig.map((name) => fromRoot('packages', name))),
     );
