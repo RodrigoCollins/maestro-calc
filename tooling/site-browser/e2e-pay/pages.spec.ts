@@ -122,3 +122,12 @@ test('describes every page with structured data whose url is its canonical', asy
     expect(data.url, path).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
   }
 });
+
+test('lets search engines index every page but the 404', async ({ page }) => {
+  for (const { path } of PAGES) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="robots"]'), path).toHaveCount(0);
+  }
+  await page.goto('/no-such-page');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+});
