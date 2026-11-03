@@ -52,4 +52,9 @@ describe('apps/pay/wrangler.jsonc', () => {
     const robots = readFileSync(resolve(import.meta.dirname, '../public/robots.txt'), 'utf8');
     expect(robots).toBe('User-agent: *\nAllow: /\nSitemap: https://cuentahoras.com/sitemap.xml\n');
   });
+
+  it('authorizes the same AdSense publisher as Maestro Calc in ads.txt', () => {
+    const ads = readFileSync(resolve(import.meta.dirname, '../public/ads.txt'), 'utf8');
+    expect(ads).toBe('google.com, pub-3954387285316164, DIRECT, f08c47fec0942fa0\n');
+  });
 });
