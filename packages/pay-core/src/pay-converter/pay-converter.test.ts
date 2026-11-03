@@ -56,4 +56,8 @@ describe('pay converter', () => {
     expect(payConverter.run({ hoursPerWeek: '0' }).ok).toBe(false);
     expect(payConverter.run({ weeksPerYear: '0' }).ok).toBe(false);
   });
+
+  it('takes decimal hours: 37.5 h a week at $22 is $42,900 a year', () => {
+    expect(outputsOf({ hoursPerWeek: '37.5' })['annual']).toEqual(usd(42900));
+  });
 });

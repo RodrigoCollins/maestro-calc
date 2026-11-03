@@ -42,3 +42,12 @@ test('a $22 hourly rate at 50 weeks is $44,000 a year', async ({ page }) => {
   await page.locator('input[name="weeksPerYear"]').fill('50');
   await expect(page.locator('.result-figure')).toHaveText('$44,000.00');
 });
+
+test('takes decimal hours and reopens them from the link', async ({ page }) => {
+  await page.goto('/hourly-to-salary-calculator');
+  await page.locator('input[name="hoursPerWeek"]').fill('37.5');
+  await expect(page.locator('.result-figure')).toHaveText('$42,900.00');
+  await page.goto(page.url());
+  await expect(page.locator('input[name="hoursPerWeek"]')).toHaveValue('37.5');
+  await expect(page.locator('.result-figure')).toHaveText('$42,900.00');
+});

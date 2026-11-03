@@ -1,4 +1,4 @@
-import { usd } from '@maestro-calc/core';
+import { Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { noTaxOnOvertime } from './no-tax-on-overtime.ts';
 
@@ -58,5 +58,9 @@ describe('no tax on overtime', () => {
       outputsOf({ source: 'amount', premium: '1000', overtimeHours: '900' })['premium'],
     ).toEqual(usd(1000));
     expect(outputsOf({ source: 'hours', premium: '99999' })['premium']).toEqual(usd(3300));
+  });
+
+  it('takes decimal overtime hours: 312.5 h at $22 is a $3,437.50 premium', () => {
+    expect(outputsOf({ overtimeHours: '312.5' })['premium']).toEqual(usd(Rational.of(6875, 2)));
   });
 });

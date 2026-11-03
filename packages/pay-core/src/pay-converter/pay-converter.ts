@@ -15,7 +15,14 @@ export const payConverter = defineCalculator({
   inputs: [
     { kind: 'money', key: 'amount', urlKey: 'a', default: usd(22), max: usd(10_000_000) },
     { kind: 'select', key: 'per', urlKey: 'p', options: PERIODS, default: 'hour' },
-    { kind: 'count', key: 'hoursPerWeek', urlKey: 'h', default: 40, min: 1, max: 168 },
+    {
+      kind: 'decimal',
+      key: 'hoursPerWeek',
+      urlKey: 'h',
+      default: Rational.of(40),
+      min: Rational.of(1),
+      max: Rational.of(168),
+    },
     { kind: 'count', key: 'weeksPerYear', urlKey: 'w', default: 52, min: 1, max: 52 },
   ],
   outputs: [
@@ -28,7 +35,7 @@ export const payConverter = defineCalculator({
   ],
   warnings: [],
   compute: (inputs) => {
-    const hours = Rational.of(inputs.hoursPerWeek);
+    const hours = inputs.hoursPerWeek;
     const weeks = Rational.of(inputs.weeksPerYear);
     // how many of each period make the annual pay
     const perYear: Readonly<Record<Period, Rational>> = {

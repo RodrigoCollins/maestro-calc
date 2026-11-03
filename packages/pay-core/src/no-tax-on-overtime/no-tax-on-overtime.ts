@@ -23,7 +23,13 @@ export const noTaxOnOvertime = defineCalculator({
   inputs: [
     { kind: 'select', key: 'source', urlKey: 's', options: ['hours', 'amount'], default: 'hours' },
     { kind: 'money', key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) },
-    { kind: 'count', key: 'overtimeHours', urlKey: 'o', default: 300, max: 5000 },
+    {
+      kind: 'decimal',
+      key: 'overtimeHours',
+      urlKey: 'o',
+      default: Rational.of(300),
+      max: Rational.of(5000),
+    },
     { kind: 'money', key: 'premium', urlKey: 'q', default: usd(3300), max: usd(1_000_000) },
     { kind: 'select', key: 'filing', urlKey: 'f', options: FILINGS, default: 'single' },
     { kind: 'money', key: 'magi', urlKey: 'm', default: usd(60_000), max: usd(100_000_000) },
@@ -40,7 +46,7 @@ export const noTaxOnOvertime = defineCalculator({
     const premium =
       inputs.source === 'amount'
         ? inputs.premium
-        : scaleMoney(inputs.rate, Rational.of(inputs.overtimeHours).mul(HALF));
+        : scaleMoney(inputs.rate, inputs.overtimeHours.mul(HALF));
     const cap = CAP[inputs.filing];
     const capped = compareMoney(premium, cap) < 0 ? premium : cap;
     const deduction = phasedOut(capped, inputs.magi, THRESHOLD[inputs.filing]);

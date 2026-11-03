@@ -1,13 +1,14 @@
 import {
   decode,
   encode,
+  Rational,
   toDecimalParts,
   type Calculator,
   type InputDescriptor,
   type Money,
   type OutputDescriptor,
 } from '@maestro-calc/core';
-import { moneyText } from '../format.ts';
+import { hoursText, moneyText } from '../format.ts';
 
 /** A money value read back from the URL state (its other kinds are plain values). */
 const moneyOf = (value: unknown): Money | null =>
@@ -44,8 +45,8 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
       if (money !== null) {
         const { integer, fraction } = toDecimalParts(money.amount, 2);
         field.value = `${String(integer)}.${fraction}`;
-      } else if (typeof value === 'number' || typeof value === 'string')
-        field.value = String(value);
+      } else if (value instanceof Rational) field.value = hoursText(value);
+      else if (typeof value === 'number' || typeof value === 'string') field.value = String(value);
     }
   }
 

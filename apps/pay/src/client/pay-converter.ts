@@ -1,6 +1,6 @@
-import { decode, encode, toDecimalParts } from '@maestro-calc/core';
+import { decode, encode, Rational, toDecimalParts } from '@maestro-calc/core';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
-import { moneyText } from '../format.ts';
+import { hoursText, moneyText } from '../format.ts';
 
 // The pay converter script: every edit reruns the converter, writes the figures and keeps the
 // state in the URL. The page's own starting point (hourly or salary) is its clean URL.
@@ -31,7 +31,8 @@ const restore = (): void => {
     if (input.kind === 'money') {
       const { integer, fraction } = toDecimalParts((value as typeof input.default).amount, 2);
       field.value = `${String(integer)}.${fraction}`;
-    } else if (typeof value === 'number' || typeof value === 'string') field.value = String(value);
+    } else if (value instanceof Rational) field.value = hoursText(value);
+    else if (typeof value === 'number' || typeof value === 'string') field.value = String(value);
   }
 };
 
