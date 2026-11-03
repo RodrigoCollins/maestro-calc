@@ -8,6 +8,7 @@ export {
 export type {
   BooleanDescriptor,
   Calculator,
+  ClockDescriptor,
   ComputeResult,
   CountDescriptor,
   DisplayHint,

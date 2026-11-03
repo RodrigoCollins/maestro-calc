@@ -1,0 +1,16 @@
+{
+  "name": "@maestro-calc/pay-core",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./time-card": "./src/time-card/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@maestro-calc/core": "*"
+  }
+}
