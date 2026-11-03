@@ -6,7 +6,9 @@
   "sideEffects": false,
   "exports": {
     "./pool-volume": "./src/pool-volume/index.ts",
-    "./pool-salt": "./src/pool-salt/index.ts"
+    "./pool-salt": "./src/pool-salt/index.ts",
+    "./pool-chlorine": "./src/pool-chlorine/index.ts",
+    "./pool-pump": "./src/pool-pump/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
