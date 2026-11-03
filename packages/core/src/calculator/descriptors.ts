@@ -40,6 +40,17 @@ export type PercentDescriptor = Base & {
   readonly max?: Rational;
 };
 
+/**
+ * A plain decimal input, such as 37.5 hours a week: an exact Rational read from `37.5` (no unit,
+ * no `%`); the minimum defaults to 0 and there is no maximum unless one is declared.
+ */
+export type DecimalDescriptor = Base & {
+  readonly kind: 'decimal';
+  readonly default: Rational;
+  readonly min?: Rational;
+  readonly max?: Rational;
+};
+
 /** A choice among a non-empty list of unique option ids. */
 export type SelectDescriptor = Base & {
   readonly kind: 'select';
@@ -80,11 +91,12 @@ export type InputDescriptor =
   | SelectDescriptor
   | BooleanDescriptor
   | MoneyDescriptor
-  | ClockDescriptor;
+  | ClockDescriptor
+  | DecimalDescriptor;
 
 /** The kinds whose value is an amount with inclusive bounds. */
 export type BoundedDescriptor =
-  LengthDescriptor | CountDescriptor | PercentDescriptor | MoneyDescriptor;
+  LengthDescriptor | CountDescriptor | PercentDescriptor | MoneyDescriptor | DecimalDescriptor;
 
 /** How the web layer may show an output (never applied by core): `places` 0..12, `denominator` 2..64. */
 export type DisplayHint =
@@ -115,7 +127,7 @@ export type ValueOf<D extends InputDescriptor> = D extends { readonly kind: 'len
   ? Quantity<'length'>
   : D extends { readonly kind: 'count' }
     ? number
-    : D extends { readonly kind: 'percent' }
+    : D extends { readonly kind: 'percent' | 'decimal' }
       ? Rational
       : D extends { readonly kind: 'select'; readonly options: readonly (infer Option)[] }
         ? Option

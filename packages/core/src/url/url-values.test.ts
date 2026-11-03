@@ -69,6 +69,24 @@ describe('url value parsers (url-state-codec › Decoding)', () => {
     expect(readUrlValue(pct, raw)).toEqual(expected);
   });
 
+  const hours = {
+    kind: 'decimal',
+    key: 'hrs',
+    urlKey: 'h',
+    default: r(40),
+    max: r(168),
+  } as const;
+  it.each([
+    ['75/2', r(75, 2)],
+    ['40', r(40)],
+    ['0', Rational.ZERO],
+  ])('reads the decimal %s as an exact rational', (raw, expected) => {
+    expect(readUrlValue(hours, raw)).toEqual(expected);
+  });
+  it.each(['-1', '169', '337/2', '37.5', '37.5%'])('rejects the decimal %s', (raw) => {
+    expect(readUrlValue(hours, raw)).toBeUndefined();
+  });
+
   // spec: user-input spellings are not URL values
   it.each(['1/0', "5'", '63.5in', '4.98', '$5', '1 m', '', '+1', 'abc', '1/', '/2', '1/2/3', ' 5'])(
     'rejects the rational spelling %j',

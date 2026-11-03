@@ -281,6 +281,49 @@ describe('validateRecord percent field (calculator-contract › Percent edge cas
   ]);
 });
 
+describe('validateRecord decimal field (a plain decimal, bounds 0..max)', () => {
+  const hours = {
+    kind: 'decimal',
+    key: 'hrs',
+    urlKey: 'h',
+    default: r(40),
+    max: r(168),
+  } as const;
+  const check = (raw: unknown): unknown => validateRecord([hours], { hrs: raw });
+
+  it.each([
+    ['37.5', r(75, 2)],
+    [' 37.5 ', r(75, 2)],
+    ['40', r(40)],
+    ['.5', r(1, 2)],
+    ['0', r(0)],
+    ['168', r(168)],
+  ])('reads %j', (raw, expected) => {
+    expect(check(raw)).toEqual(ok({ hrs: expected }));
+  });
+
+  it.each([
+    ['168.5', failed('hrs', 'ABOVE_MAX', { max: '168' })],
+    ['-1', failed('hrs', 'BELOW_MIN', { min: '0' })],
+    ['37.5%', failed('hrs', 'MALFORMED')],
+    ['12,5', failed('hrs', 'DECIMAL_COMMA')],
+    ['', failed('hrs', 'EMPTY')],
+    [37.5, failed('hrs', 'MALFORMED')],
+    [r(75, 2), failed('hrs', 'MALFORMED')],
+  ])('rejects %s', (raw, expected) => {
+    expect(check(raw)).toEqual(expected);
+  });
+
+  it('has no maximum unless one is declared', () => {
+    const open = { kind: 'decimal', key: 'hrs', urlKey: 'h', default: r(40) } as const;
+    expect(validateRecord([open], { hrs: '1000000.25' })).toEqual(ok({ hrs: r(400000100, 400) }));
+  });
+
+  it('takes the default for a missing field', () => {
+    expect(check(undefined)).toEqual(ok({ hrs: r(40) }));
+  });
+});
+
 describe('validateRecord money field (calculator-contract › Money edge cases [CC17])', () => {
   cases('prc', [
     ['$4.98', usd(r(249, 50))],

@@ -29,6 +29,8 @@ export const boundsOf = (descriptor: BoundedDescriptor): Bounds => {
       };
     case 'percent':
       return { min: descriptor.min ?? Rational.ZERO, max: descriptor.max ?? HUNDRED };
+    case 'decimal':
+      return { min: descriptor.min ?? Rational.ZERO, max: descriptor.max };
     case 'money':
       return { min: descriptor.min?.amount ?? Rational.ZERO, max: descriptor.max?.amount };
   }
@@ -42,6 +44,7 @@ export const defaultAmount = (descriptor: BoundedDescriptor): Rational => {
     case 'count':
       return Rational.of(descriptor.default);
     case 'percent':
+    case 'decimal':
       return descriptor.default;
     case 'money':
       return descriptor.default.amount;
