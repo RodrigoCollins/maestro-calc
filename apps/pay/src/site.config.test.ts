@@ -7,6 +7,7 @@ describe('Cuenta Horas site constants', () => {
       name: 'Cuenta Horas',
       origin: 'https://cuentahoras.com',
       locales: ['en', 'es'],
+      indexable: false,
     });
   });
 });

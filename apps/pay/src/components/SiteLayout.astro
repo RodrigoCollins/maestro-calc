@@ -8,8 +8,11 @@ interface Props {
   readonly lang: Lang;
   readonly title: string;
   readonly description: string;
-  /** This page's path in each language; the English one is also the x-default. */
-  readonly paths: Readonly<Record<Lang, string>>;
+  /**
+   * This page's path in each language; the English one is also the x-default. A page without
+   * paths (the 404) has no canonical or alternates, is never indexed and links the other home.
+   */
+  readonly paths?: Readonly<Record<Lang, string>>;
   readonly otherLang: string;
   readonly footer: string;
   readonly wide?: boolean;
@@ -17,6 +20,8 @@ interface Props {
 
 const { lang, title, description, paths, otherLang, footer, wide = false } = Astro.props;
 const other: Lang = lang === 'en' ? 'es' : 'en';
+const otherHref = paths?.[other] ?? (other === 'en' ? '/' : '/es');
+const indexable = SITE.indexable && paths !== undefined;
 const href = (path: string): string => new URL(path, SITE.origin).href;
 const method =
   lang === 'en'
@@ -29,13 +34,18 @@ const method =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
+    {!indexable && <meta name="robots" content="noindex" />}
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={href(paths[lang])} />
-    <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
-    <link rel="alternate" hreflang="es-US" href={href(paths.es)} />
-    <link rel="alternate" hreflang="x-default" href={href(paths.en)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {paths !== undefined && (
+      <>
+        <link rel="canonical" href={href(paths[lang])} />
+        <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
+        <link rel="alternate" hreflang="es-US" href={href(paths.es)} />
+        <link rel="alternate" hreflang="x-default" href={href(paths.en)} />
+      </>
+    )}
     <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
     <Font cssVariable="--font-mono" preload={[{ weight: '400' }]} />
   </head>
@@ -58,7 +68,7 @@ const method =
           </svg>
           {SITE.name}
         </a>
-        <a class="lang" href={paths[other]} hreflang={other} lang={other}>
+        <a class="lang" href={otherHref} hreflang={other} lang={other}>
           {otherLang}
         </a>
       </div>

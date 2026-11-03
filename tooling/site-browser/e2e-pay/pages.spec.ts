@@ -75,3 +75,22 @@ test('links every page to the methodology of its language, and it shows the work
     await expect(page.locator('.examples li').first()).toContainText('$1,193.50');
   }
 });
+
+test('serves a sitemap with every page and robots that point to it', async ({ request }) => {
+  const sitemap = await request.get('/sitemap.xml');
+  expect(sitemap.status()).toBe(200);
+  const xml = await sitemap.text();
+  for (const { path } of PAGES) {
+    expect(xml, path).toContain(`<loc>https://cuentahoras.com${path === '/' ? '/' : path}</loc>`);
+  }
+  const robots = await request.get('/robots.txt');
+  expect(await robots.text()).toContain('Sitemap: https://cuentahoras.com/sitemap.xml');
+});
+
+test('sends the security headers with every page', async ({ request }) => {
+  for (const { path } of PAGES) {
+    const response = await request.get(path);
+    expect(response.headers()['content-security-policy'], path).toContain("script-src 'self'");
+    expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
+  }
+});
