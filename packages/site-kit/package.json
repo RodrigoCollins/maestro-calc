@@ -1,0 +1,17 @@
+{
+  "name": "@maestro-calc/site-kit",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./budgets": "./src/budgets.ts",
+    "./check-site": "./src/check-site.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "node-html-parser": "9.0.5"
+  }
+}
