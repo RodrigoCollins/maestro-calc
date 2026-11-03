@@ -1,0 +1,121 @@
+---
+import type { Calculator, InputDescriptor, OutputDescriptor } from '@maestro-calc/core';
+import type { DosePage } from '../doses.ts';
+import { amountText, outputText } from '../format.ts';
+import Layout from './Layout.astro';
+
+interface Props {
+  readonly page: DosePage;
+  readonly calculator: Calculator<
+    string,
+    readonly InputDescriptor[],
+    readonly OutputDescriptor[],
+    readonly string[]
+  >;
+}
+
+const { page, calculator } = Astro.props;
+// The page renders the engine's default result, so it reads complete with no script.
+const ran = calculator.run({});
+if (!ran.ok) throw new Error(`${calculator.id} must run at its defaults`);
+const out = new Map<string, unknown>(ran.value.outputs.map(({ key, value }) => [key, value]));
+const fields = calculator.inputs.map((input) => {
+  const copy = page.fields[input.key];
+  if (copy === undefined) throw new Error(`no label for ${input.key}`);
+  return {
+    key: input.key,
+    label: copy.label,
+    value:
+      input.kind === 'select'
+        ? input.default
+        : input.kind === 'decimal'
+          ? amountText(input.default).replaceAll(',', '')
+          : '',
+    options: copy.options === undefined ? undefined : Object.entries(copy.options),
+  };
+});
+const product = fields.find(({ key }) => key === 'product')?.value;
+const [lead, ...rest] = page.results;
+const leads = page.results.filter(({ forms }) => forms !== undefined);
+const primaries = leads.length > 0 ? leads : lead === undefined ? [] : [lead];
+const rows = leads.length > 0 ? [] : rest;
+const warned = new Set(ran.value.warnings.map(({ code }) => code));
+---
+
+<Layout title={page.title} description={page.description}>
+  <main class="pool-page">
+    <p class="pool-kicker">{page.kicker}</p>
+    <h1>{page.h1}</h1>
+    <p>{page.lead}</p>
+    <form class="pool-form" data-calculator={calculator.id} novalidate>
+      {fields.map((field) => (
+        <label>
+          {field.label}
+          {field.options === undefined ? (
+            <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
+          ) : (
+            <select name={field.key}>
+              {field.options.map(([value, label]) => (
+                <option value={value} selected={value === field.value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          )}
+        </label>
+      ))}
+    </form>
+    <section class="pool-result" aria-live="polite">
+      {primaries.map((result) => (
+        <div
+          data-forms={result.forms?.join(' ')}
+          hidden={result.forms !== undefined && !result.forms.includes(product ?? '')}
+        >
+          <p>{result.label}</p>
+          <p class="pool-marker">
+            <span data-out={result.key}>{outputText(result.key, out.get(result.key))}</span>
+            <small>{result.unit}</small>
+          </p>
+        </div>
+      ))}
+      {page.bags !== undefined && (
+        <p class="pool-bags">
+          <strong data-shop>{String(ran.value.shopping[0]?.qty ?? 0n)}</strong> {page.bags}
+        </p>
+      )}
+      {rows.length > 0 && (
+        <dl>
+          {rows.map((row) => (
+            <div>
+              <dt>{row.label}</dt>
+              <dd>
+                <span data-out={row.key}>{outputText(row.key, out.get(row.key))}</span> {row.unit}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {Object.entries(page.warnings ?? {}).map(([code, text]) => (
+        <p class="pool-warning" data-warning={code} hidden={!warned.has(code)}>
+          {text}
+        </p>
+      ))}
+    </section>
+    <p class="pool-note">{page.method}</p>
+    <p class="pool-note">{page.note}</p>
+  </main>
+  <slot />
+</Layout>
+
+<style is:global>
+  .pool-page .pool-bags {
+    font-size: 1.25rem;
+  }
+
+  .pool-page .pool-warning {
+    padding: 0.75rem 1rem;
+    border: 3px solid #c2261e;
+    background: #ffffff;
+    font-weight: 600;
+  }
+</style>
