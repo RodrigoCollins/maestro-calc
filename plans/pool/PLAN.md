@@ -26,7 +26,8 @@ Most results for doses are AI-built clone sites on pages.dev: they are competiti
 
 ## 3. Launch set
 
-1. Pool volume: rectangle, round, oval and kidney; length, width, shallow and deep end.
+1. Pool volume: rectangle, round and oval (kidney has no exact formula: left out until a sourced
+   method exists); length, width, shallow and deep end.
 2. Pool salt: gallons, salt now, target; pounds and 40 lb bags.
 3. Chlorine: free chlorine now and target, product (liquid 12.5%, household bleach, cal-hypo,
    dichlor); the dose in the units on the jug.
@@ -45,13 +46,18 @@ Plus a methodology page and one guide ("Opening your pool this spring").
 - Chlorine from first principles: 1 ppm = 1 mg/L; 10,000 gal = 37,854 L, so 1 ppm needs 37.85 g
   of available chlorine. Liquid chlorine 12.5% is trade percent (12.5 g per 100 mL), so 303 mL =
   10.24 fl oz per ppm per 10,000 gal.
-- Still to verify before building: household bleach (its percent is by weight; check a real
-  label and its density), cal-hypo 65% and dichlor 56% available chlorine per pound.
+- Granular chlorine (verified 2026-11-03 on EPA-registered labels): calcium hypochlorite 68%,
+  minimum 65% available chlorine (EPA Reg. 1258-1232); dichlor (sodium dichloro-s-triazinetrione
+  dihydrate) 56% available chlorine (EPA Reg. 7124-31). Dose by weight = 37.85 g of available
+  chlorine per ppm per 10,000 gal / the label percent.
+- Household bleach is out of the launch set: its percent is by weight and the density varies by
+  product, so the page points to liquid chlorine and the label.
 - Pump: the 2021 International Swimming Pool and Spa Code (ISPSC, section 311) sizes a
   residential pool's circulation for a 6-hour turnover (or 36 gpm, whichever is greater), with
   water at most 8 ft/s in the pipes; the "8 hours" in the mockup is the informal trade figure.
-  Use the code's 6 hours (gpm = gallons / 360) and show the 8-hour figure as the gentler run.
-  Confirm in the ICC CodeNotes before building:
+  Confirmed 2026-11-03 in the ICC CodeNotes (ANSI/APSP/ICC-15): the residential filtration flow
+  is the 6-hour turnover or 36 gpm, whichever is greater; 8 ft/s return and 6 ft/s suction.
+  Use gpm = max(gallons / 360, 36) and show the 8-hour figure as the gentler run. Source:
   https://www.iccsafe.org/wp-content/uploads/24-23329_CodeNotes_2021_ISPSC_Velocity_FINAL_MIDRES.pdf
 
 ## 5. Design (approved)
@@ -73,5 +79,6 @@ second real reuse, with the byte-identical dist guard).
 
 ## 7. Open items for the owner
 
-- Brand and domain (Waterline is provisional), then the Workers Builds project.
+- Brand: Pool Figures (2026-11-03; poolfigures.com free, no USPTO mark for the compound;
+  Waterline dropped: 14 live marks). Rodrigo buys the domain, then the Workers Builds project.
 - One month of Ahrefs or Semrush for keyword difficulty, ideally before building.

@@ -65,7 +65,7 @@ const extendsBase = (config: string): boolean =>
 
 describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
   // spec: Workspace enumeration [MW2]
-  it('resolves the workspace globs to exactly the six workspaces', () => {
+  it('resolves the workspace globs to exactly the seven workspaces', () => {
     expect(rootManifest.workspaces).toEqual(['packages/*', 'apps/*']);
     expect([...workspaceNames].sort()).toEqual([
       '@maestro-calc/core',
@@ -73,6 +73,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
       '@maestro-calc/i18n',
       '@maestro-calc/pay',
       '@maestro-calc/pay-core',
+      '@maestro-calc/pool-core',
       '@maestro-calc/web',
     ]);
   });
@@ -80,7 +81,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
 
 describe('dependency direction (monorepo-workspace › Dependency direction)', () => {
   // spec: Dependency direction — exactly the allowed edges [MW5b, MD5]
-  it('has only the edges data to core, pay to core and pay-core, pay-core to core, and web to core, data and i18n', () => {
+  it('has only the edges data to core, pay to core and pay-core, pay-core to core, pool-core to core, and web to core, data and i18n', () => {
     const edges = workspaceDirs.flatMap((dir) => {
       const manifest = readManifest(dir);
       return dependencyNames(manifest)
@@ -92,6 +93,7 @@ describe('dependency direction (monorepo-workspace › Dependency direction)', (
       '@maestro-calc/pay -> @maestro-calc/core',
       '@maestro-calc/pay -> @maestro-calc/pay-core',
       '@maestro-calc/pay-core -> @maestro-calc/core',
+      '@maestro-calc/pool-core -> @maestro-calc/core',
       '@maestro-calc/web -> @maestro-calc/core',
       '@maestro-calc/web -> @maestro-calc/data',
       '@maestro-calc/web -> @maestro-calc/i18n',
