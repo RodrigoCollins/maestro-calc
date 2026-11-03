@@ -32,6 +32,10 @@ const method =
   lang === 'en'
     ? { href: '/methodology', label: 'How we calculate' }
     : { href: '/es/metodologia', label: 'Cómo calculamos' };
+const privacy =
+  lang === 'en'
+    ? { href: '/privacy', label: 'Privacy' }
+    : { href: '/es/privacidad', label: 'Privacidad' };
 ---
 
 <!doctype html>
@@ -65,6 +69,15 @@ const method =
     )}
     <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
     <Font cssVariable="--font-mono" preload={[{ weight: '400' }]} />
+    {SITE.gaId !== '' && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-ga={SITE.gaId}
+        data-host={new URL(SITE.origin).hostname}
+        defer
+      />
+    )}
   </head>
   <body class:list={{ wide }}>
     <header class="site-header">
@@ -96,6 +109,7 @@ const method =
         <span>{SITE.name}</span>
         <span>{footer}</span>
         <a href={method.href}>{method.label}</a>
+        <a href={privacy.href}>{privacy.label}</a>
       </div>
     </footer>
   </body>

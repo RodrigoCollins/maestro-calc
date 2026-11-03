@@ -49,6 +49,24 @@ describe('budgetProblems', () => {
     ]);
   });
 
+  // The analytics loader every page carries is not the zero-JS budget of a static page; any other
+  // classic script still is.
+  it('lets every page carry the analytics loader, and only that one script', () => {
+    const loader =
+      '<script src="/analytics.js" data-ga="G-ABC123" data-host="cuentahoras.com" defer></script>';
+    const files = {
+      'index.html': page('<h1>Home</h1>', loader),
+      'calc.html': page(script('/_astro/calc.js'), loader),
+      '_astro/calc.js': 'export const a=1;',
+      'analytics.js': '(function(){})();',
+      'other.html': page('', '<script src="/other.js" defer></script>'),
+      'other.js': '',
+    };
+    expect(budgetProblems(build(files, ['calc.html']))).toEqual([
+      'other.html: loads /other.js, and a page without a calculator loads no JavaScript',
+    ]);
+  });
+
   it('wants exactly one module script on a calculator page', () => {
     expect(budgetProblems(build({ 'calc.html': page('') }, ['calc.html']))).toEqual([
       'calc.html: has 0 module scripts, and a calculator page has exactly one',
