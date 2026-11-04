@@ -38,10 +38,40 @@ export const JOBS = {
     updated: '2026-11-03',
     cases: [slab(10, 10, 4), slab(10, 10, 5), slab(10, 10, 6)],
   },
+  'concrete-slab-10x12': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [slab(10, 12, 4), slab(10, 12, 5), slab(10, 12, 6)],
+  },
   'concrete-slab-12x12': {
     calculator: 'concrete',
     updated: '2026-11-03',
     cases: [slab(12, 12, 4), slab(12, 12, 5), slab(12, 12, 6)],
+  },
+  'concrete-slab-20x20': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [slab(20, 20, 4), slab(20, 20, 5), slab(20, 20, 6)],
+  },
+  'concrete-slab-24x24': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [slab(24, 24, 4), slab(24, 24, 5), slab(24, 24, 6)],
+  },
+  'concrete-pad-4x4': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [slab(4, 4, 4), slab(4, 4, 5), slab(4, 4, 6)],
+  },
+  'concrete-tube-8': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [tube(8, 24), tube(8, 36), tube(8, 48)],
+  },
+  'concrete-tube-10': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: [tube(10, 24), tube(10, 36), tube(10, 48)],
   },
   'concrete-tube-12': {
     calculator: 'concrete',

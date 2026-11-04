@@ -205,10 +205,34 @@ export const enSite = {
   'page.concrete-slab-10x10.description':
     'How many bags of concrete a 10 x 10 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-10x10.heading': 'How many bags of concrete for a 10x10 slab?',
+  'page.concrete-slab-10x12.title': 'Bags of Concrete for a 10x12 Slab | Maestro Calc',
+  'page.concrete-slab-10x12.description':
+    'How many bags of concrete a 10 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-10x12.heading': 'How many bags of concrete for a 10x12 slab?',
   'page.concrete-slab-12x12.title': 'Bags of Concrete for a 12x12 Slab | Maestro Calc',
   'page.concrete-slab-12x12.description':
     'How many bags of concrete a 12 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-12x12.heading': 'How many bags of concrete for a 12x12 slab?',
+  'page.concrete-slab-20x20.title': 'Bags of Concrete for a 20x20 Slab | Maestro Calc',
+  'page.concrete-slab-20x20.description':
+    'How many bags of concrete a 20 x 20 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-20x20.heading': 'How many bags of concrete for a 20x20 slab?',
+  'page.concrete-slab-24x24.title': 'Bags of Concrete for a 24x24 Slab | Maestro Calc',
+  'page.concrete-slab-24x24.description':
+    'How many bags of concrete a 24 x 24 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-24x24.heading': 'How many bags of concrete for a 24x24 slab?',
+  'page.concrete-pad-4x4.title': 'Bags of Concrete for a 4x4 Pad | Maestro Calc',
+  'page.concrete-pad-4x4.description':
+    'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',
+  'page.concrete-pad-4x4.heading': 'How many bags of concrete for a 4x4 pad?',
+  'page.concrete-tube-8.title': 'Bags of Concrete for a 8 in Sonotube | Maestro Calc',
+  'page.concrete-tube-8.description':
+    'How many bags of concrete fill a 8 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
+  'page.concrete-tube-8.heading': 'How many bags of concrete for a 8 in Sonotube?',
+  'page.concrete-tube-10.title': 'Bags of Concrete for a 10 in Sonotube | Maestro Calc',
+  'page.concrete-tube-10.description':
+    'How many bags of concrete fill a 10 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
+  'page.concrete-tube-10.heading': 'How many bags of concrete for a 10 in Sonotube?',
   'page.concrete-tube-12.title': 'Bags of Concrete for a 12 in Sonotube | Maestro Calc',
   'page.concrete-tube-12.description':
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
