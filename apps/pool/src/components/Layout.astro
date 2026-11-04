@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import { HOME_TOOLS } from '../home.ts';
+import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
 
@@ -13,7 +14,9 @@ interface Props {
 
 const { title, description, indexed = true } = Astro.props;
 const indexable = SITE.indexable && indexed;
-const canonical = new URL(canonicalPath(Astro.url.pathname), SITE.origin).href;
+const path = canonicalPath(Astro.url.pathname);
+const canonical = new URL(path, SITE.origin).href;
+const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
 ---
 
 <!doctype html>
@@ -29,6 +32,17 @@ const canonical = new URL(canonicalPath(Astro.url.pathname), SITE.origin).href;
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={ogTypeOf(pageKindOf(path))} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {indexable && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={new URL('/og.png', SITE.origin).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {indexable && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
   </head>

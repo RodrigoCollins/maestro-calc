@@ -1,3 +1,9 @@
+import {
+  articleLd,
+  serializeJsonLd,
+  webApplicationLd,
+  webSiteLd,
+} from '@maestro-calc/site-kit/json-ld';
 import type { Route } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 
@@ -5,8 +11,8 @@ import { SITE } from '../site.config.ts';
 const nameOf = (title: string): string => title.replace(/\s*\|\s*Cuenta Horas$/, '');
 
 /**
- * The schema.org description of a page: the home is the WebSite, a calculator a free
- * WebApplication, the methodology an Article. `<` is escaped so the text stays inside its script.
+ * The schema.org description of a page (`@maestro-calc/site-kit/json-ld`): the home is the
+ * WebSite, a calculator a free WebApplication, the methodology an Article.
  */
 export const jsonLdOf = (
   route: Route,
@@ -16,28 +22,24 @@ export const jsonLdOf = (
 ): string => {
   const url = new URL(lang === 'en' ? route.en : route.es, origin).href;
   const inLanguage = lang === 'en' ? 'en-US' : 'es-US';
-  const data =
+  const { description } = page;
+  return serializeJsonLd(
     route.kind === 'home'
-      ? { '@type': 'WebSite', name: SITE.name, url, inLanguage }
+      ? webSiteLd({ name: SITE.name, url, inLanguage })
       : route.kind === 'calculator'
-        ? {
-            '@type': 'WebApplication',
+        ? webApplicationLd({
             name: nameOf(page.title),
-            description: page.description,
+            description,
             url,
             inLanguage,
             applicationCategory: 'FinanceApplication',
-            operatingSystem: 'Any',
-            isAccessibleForFree: true,
-            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-          }
-        : {
-            '@type': 'Article',
+          })
+        : articleLd({
             headline: nameOf(page.title),
-            description: page.description,
+            description,
             url,
             inLanguage,
-            publisher: { '@type': 'Organization', name: SITE.name },
-          };
-  return JSON.stringify({ '@context': 'https://schema.org', ...data }).replaceAll('<', '\\u003c');
+            publisher: SITE.name,
+          }),
+  );
 };
