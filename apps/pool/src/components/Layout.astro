@@ -45,6 +45,15 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
     {canonical !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+    {SITE.gaId !== '' && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-ga={SITE.gaId}
+        data-host={new URL(SITE.origin).hostname}
+        defer
+      />
+    )}
   </head>
   <body>
     <header class="pool-header">
@@ -65,6 +74,9 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
       </p>
       <p>
         <a href="/opening-your-pool">Opening your pool</a>
+      </p>
+      <p>
+        <a href="/privacy">Privacy</a>
       </p>
     </footer>
   </body>

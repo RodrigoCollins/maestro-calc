@@ -226,6 +226,8 @@ export default defineConfig(
     // A plain browser script served as is, outside every TypeScript project; its unit test runs it.
     'apps/web/public/analytics.js',
     'apps/pay/public/analytics.js',
+    // Byte for byte the Cuenta Horas loader (apps/pool/src/deploy.test.ts), run by its unit test.
+    'apps/pool/public/analytics.js',
     // The offline worker, the same: a plain script served as is, run by its unit test.
     'apps/web/public/sw.js',
   ]),

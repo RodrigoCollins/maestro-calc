@@ -41,13 +41,20 @@ describe('apps/pool/wrangler.jsonc', () => {
     expect(e2e.config).not.toHaveProperty('build');
   });
 
-  it('serves the site headers: nosniff, no framing and same-origin scripts only', () => {
+  it('serves the site headers: nosniff, no framing, scripts from the site and the Google tag only', () => {
     const headers = readFileSync(resolve(import.meta.dirname, '../public/_headers'), 'utf8');
     const csp = /Content-Security-Policy: (.+)/.exec(headers)?.[1] ?? '';
     expect(headers).toContain('X-Content-Type-Options: nosniff');
-    expect(csp).toContain("script-src 'self';");
+    expect(csp).toContain("script-src 'self' https://www.googletagmanager.com;");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).not.toMatch(/unsafe-eval|script-src[^;]*unsafe-inline/);
+  });
+
+  // the Google Analytics loader of Cuenta Horas, byte for byte: one consent and privacy rule for both
+  it('loads Google Analytics with the same loader as Cuenta Horas', () => {
+    const loader = (app: string) =>
+      readFileSync(resolve(import.meta.dirname, `../../${app}/public/analytics.js`), 'utf8');
+    expect(loader('pool')).toBe(loader('pay'));
   });
 
   it('lets robots crawl and points them to the sitemap', () => {
