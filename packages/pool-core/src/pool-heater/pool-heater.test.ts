@@ -16,6 +16,13 @@ const figure = (raw: Readonly<Record<string, unknown>>, key: string): Rational =
   return value;
 };
 
+describe('the constants', () => {
+  // USGS: 62.366 lb per cubic foot at 60 °F; a gallon is 231 in3 of the 1,728 in a cubic foot
+  it('weighs a gallon of water at about 8.34 lb', () => {
+    expect((62.366 * 231) / 1728).toBeCloseTo(8.34, 2);
+  });
+});
+
 describe('pool heater', () => {
   it('reads the defaults: 20,000 gallons, 10 °F in 24 hours', () => {
     const state = poolHeater.validate({});

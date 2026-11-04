@@ -1,8 +1,8 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
-import { HOME_TOOLS } from './home.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { HOME_TOOLS, NAV_LINKS } from './home.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -19,8 +19,19 @@ describe('home calculator cards', () => {
       PUMP.path,
       ALKALINITY.path,
       STABILIZER.path,
+      HEATER.path,
+      FILL_TIME.path,
     ]);
     expect([...hrefs].sort()).toEqual([...pages].sort());
+  });
+
+  // eight uppercase links wrap to four rows on a phone: the header keeps the first four and a link
+  // to every card of the home
+  it('keeps the header to the first four calculators and a link to all of them', () => {
+    expect(NAV_LINKS).toEqual([
+      ...HOME_TOOLS.slice(0, 4).map(({ href, title }) => ({ href, title })),
+      { href: '/#pool-tools', title: 'All calculators' },
+    ]);
   });
 
   it('gives each card a short title and a one-line summary', () => {

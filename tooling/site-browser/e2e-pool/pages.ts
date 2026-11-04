@@ -12,6 +12,8 @@ export const PAGES = [
   '/pool-pump-size-calculator',
   '/pool-alkalinity-calculator',
   '/pool-stabilizer-calculator',
+  '/pool-heater-size-calculator',
+  '/pool-fill-time-calculator',
 ] as const;
 
 /** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
@@ -72,5 +74,21 @@ export const CALCULATORS = [
     // 20,000 gal x 3.785411784 L x (50 - 0) mg = 3.785 kg = 8.35 lb
     edit: { field: 'target', value: '50' },
     edited: '8.3',
+  },
+  {
+    path: '/pool-heater-size-calculator',
+    out: 'btuPerHour',
+    initial: '69,500',
+    // 20,000 gal x 8.34 lb x 10 °F = 1,668,000 BTU over 12 hours = 139,000 BTU an hour
+    edit: { field: 'hours', value: '12' },
+    edited: '139,000',
+  },
+  {
+    path: '/pool-fill-time-calculator',
+    out: 'time',
+    initial: '33 h 20 min',
+    // 20,000 gal / 20 gpm = 1,000 minutes = 16 h 40 min
+    edit: { field: 'flow', value: '20' },
+    edited: '16 h 40 min',
   },
 ] as const;
