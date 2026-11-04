@@ -159,6 +159,22 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/12-inch-sonotube',
       es: '/es/concreto/sonotubo-de-12-pulgadas',
     });
+    expect(ROUTES['roof-pitch-4-12']).toEqual({
+      en: '/roofing/4-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-4-12',
+    });
+    expect(ROUTES['roof-pitch-6-12']).toEqual({
+      en: '/roofing/6-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-6-12',
+    });
+    expect(ROUTES['roof-pitch-8-12']).toEqual({
+      en: '/roofing/8-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-8-12',
+    });
+    expect(ROUTES['roof-pitch-12-12']).toEqual({
+      en: '/roofing/12-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-12-12',
+    });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });

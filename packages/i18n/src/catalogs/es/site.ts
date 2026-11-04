@@ -33,8 +33,11 @@ export const esSite = {
   'site.hub.guides': 'Guías',
   'site.hub.jobs': 'Trabajos comunes',
   'site.job.cases': 'El mismo trabajo en otras medidas',
-  'site.job.note':
+  'site.job.note.concrete':
     'Cada cifra suma un 10% extra por desperdicio, el valor inicial de la calculadora de concreto, y se redondea hacia arriba a bolsas enteras. Cada medida abre la calculadora con sus valores ya cargados.',
+  'site.job.note.roof-pitch':
+    'Cada largo de cabio se mide sobre la pendiente a lo largo del recorrido, sin alero y sin descontar la cumbrera. Cada recorrido abre la calculadora con sus valores ya cargados, donde puedes sumar el alero.',
+  'site.job.multiplier': 'Multiplicador del cabio (pies de cabio por pie de recorrido)',
   'site.job.methodology': 'Cómo calculamos las cifras',
   'site.job.more': 'Más trabajos',
   'site.hub.more': 'Más herramientas:',
@@ -245,6 +248,22 @@ export const esSite = {
   'page.concrete-tube-12.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
+  'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12: ángulo y cabio | Maestro Calc',
+  'page.roof-pitch-4-12.description':
+    'El ángulo en grados de una pendiente de techo 4/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: el ángulo y el largo del cabio',
+  'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12: ángulo y cabio | Maestro Calc',
+  'page.roof-pitch-6-12.description':
+    'El ángulo en grados de una pendiente de techo 6/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: el ángulo y el largo del cabio',
+  'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12: ángulo y cabio | Maestro Calc',
+  'page.roof-pitch-8-12.description':
+    'El ángulo en grados de una pendiente de techo 8/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: el ángulo y el largo del cabio',
+  'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12: ángulo y cabio | Maestro Calc',
+  'page.roof-pitch-12-12.description':
+    'El ángulo en grados de una pendiente de techo 12/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: el ángulo y el largo del cabio',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
@@ -275,9 +294,9 @@ export const esSite = {
   'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
   'page.roofing.description':
     'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
-  'page.feet-inches.title': 'Calculadora de pies y pulgadas | Maestro Calc',
+  'page.feet-inches.title': 'Calculadora de decimales a pies y pulgadas | Maestro Calc',
   'page.feet-inches.description':
-    'Suma, resta, multiplica o divide pies, pulgadas y fracciones como en la cinta métrica, al 1/16 de pulgada, también en pulgadas y metros. Gratis.',
+    'Convierte medidas de decimales a pies y pulgadas con fracciones al 1/16 de pulgada, y suma, resta, multiplica o divide pies y pulgadas como en la cinta. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',
