@@ -3,6 +3,7 @@ import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
+import { EMBED_PATHS } from './embed/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
 
@@ -34,5 +35,6 @@ export const ROUTES: readonly Route[] = [
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
+  { id: 'embed', kind: 'article', ...EMBED_PATHS },
   ...LONG_TAIL_ROUTES,
 ];

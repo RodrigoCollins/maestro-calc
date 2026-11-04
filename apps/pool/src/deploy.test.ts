@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { embedHeaderProblems } from '@maestro-calc/site-kit/embed';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
 import { SITE } from './site.config.ts';
@@ -55,6 +56,12 @@ describe('apps/pool/wrangler.jsonc', () => {
     const loader = (app: string) =>
       readFileSync(resolve(import.meta.dirname, `../../${app}/public/analytics.js`), 'utf8');
     expect(loader('pool')).toBe(loader('pay'));
+  });
+
+  // growth lever 2: the embeds are the one thing other sites may frame (`@maestro-calc/site-kit/embed`)
+  it('lets other sites frame the embeds only, with the site policy and no analytics host', () => {
+    const headers = readFileSync(resolve(import.meta.dirname, '../public/_headers'), 'utf8');
+    expect(embedHeaderProblems(headers)).toEqual([]);
   });
 
   it('lets robots crawl and points them to the sitemap', () => {

@@ -1,0 +1,221 @@
+---
+import { ft3, gal, inch, isQuantityOf, liter, valueIn, type Quantity } from '@maestro-calc/core';
+import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
+import JobLinks from './JobLinks.astro';
+import Layout from './Layout.astro';
+import { lengthFieldText, volumeText } from '../format.ts';
+import { SIDE_VIEW, sideViewOf } from '../volume/side-view.ts';
+import { VOLUME_TEXTS as t } from '../volume/texts.ts';
+
+interface Props {
+  /** The embed of the page (`src/embed.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { embed = false } = Astro.props;
+// The page renders the engine's default result, so it reads complete with no script; the page
+// that uses it puts the script in its slot.
+const ran = poolVolume.run({});
+if (!ran.ok) throw new Error('the pool volume calculator must run at its defaults');
+const out = new Map<string, unknown>(ran.value.outputs.map(({ key, value }) => [key, value]));
+const volume = (key: string): Quantity<'volume'> => {
+  const value = out.get(key);
+  if (!isQuantityOf(value, 'volume')) throw new Error(`no volume ${key}`);
+  return value;
+};
+const fields = poolVolume.inputs.map((input) => ({
+  key: input.key,
+  label: t.fields[input.key].label,
+  value: input.kind === 'length' ? lengthFieldText(input.default) : String(input.default),
+  options: input.kind === 'select' ? Object.entries(t.fields.shape.options) : undefined,
+}));
+const inchesOf = (key: string): number => {
+  const input = poolVolume.inputs.find((each) => each.key === key);
+  if (input?.kind !== 'length') throw new Error(`no length ${key}`);
+  return valueIn(input.default, inch).toNumber();
+};
+// the side view of the default pool; the script redraws it from each valid edit
+const view = sideViewOf({
+  length: inchesOf('length'),
+  shallow: inchesOf('shallow'),
+  deep: inchesOf('deep'),
+});
+const rows = [
+  { key: 'liters', label: t.rows.liters, value: volumeText(volume('liters'), liter) },
+  { key: 'cubicFeet', label: t.rows.cubicFeet, value: volumeText(volume('cubicFeet'), ft3, 1) },
+];
+---
+
+<Layout title={t.title} description={t.description} {embed}>
+  <main class="pool-page">
+    <p class="pool-kicker">{t.kicker}</p>
+    <h1>{t.h1}</h1>
+    <p>{t.lead}</p>
+    <form class="pool-form" data-calculator="pool-volume" novalidate>
+      {fields.map((field) => (
+        <label>
+          {field.label}
+          {field.options === undefined ? (
+            <input name={field.key} autocomplete="off" value={field.value} />
+          ) : (
+            <select name={field.key}>
+              {field.options.map(([value, label]) => (
+                <option value={value} selected={value === field.value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          )}
+        </label>
+      ))}
+    </form>
+    <figure class="pool-side">
+      <svg
+        viewBox={`0 0 ${String(SIDE_VIEW.width)} ${String(SIDE_VIEW.height)}`}
+        role="img"
+        aria-label={view.name}
+        data-side
+      >
+        <path data-side="water" d={view.water} fill="#cde7ec"></path>
+        <path d="M8 34H322" stroke="#0b6e7f" stroke-width="3"></path>
+        <path data-side="wall" d={view.wall} fill="none" stroke="#111111" stroke-width="4"></path>
+        <text data-side="length" x="165" y="18" text-anchor="middle">
+          {view.length}
+        </text>
+        {view.markers.map((marker, index) => (
+          <>
+            <rect
+              data-side={`box${String(index)}`}
+              x={marker.x}
+              y="40"
+              width={marker.width}
+              height="20"
+              fill="#ffffff"
+              stroke="#111111"
+              stroke-width="2"
+            />
+            <text data-side={`mark${String(index)}`} x={marker.center} y="55" text-anchor="middle">
+              {marker.text}
+            </text>
+          </>
+        ))}
+      </svg>
+      <figcaption>{t.drawing}</figcaption>
+    </figure>
+    <section class="pool-result" aria-live="polite" aria-labelledby="figure-label">
+      <p id="figure-label">{t.figureLabel}</p>
+      <p class="pool-marker">
+        <span data-out="gallons">{volumeText(volume('gallons'), gal)}</span>
+        <small>{t.unit}</small>
+      </p>
+      <dl>
+        {rows.map((row) => (
+          <div>
+            <dt>{row.label}</dt>
+            <dd data-out={row.key}>{row.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+    <p class="pool-note">{t.method}</p>
+    <p class="pool-note">{t.note}</p>
+    <JobLinks path={t.path} />
+  </main>
+  <slot />
+</Layout>
+
+<style is:global>
+  .pool-kicker {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--teal);
+  }
+
+  .pool-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 1rem;
+  }
+
+  .pool-form label {
+    display: grid;
+    gap: 0.375rem;
+    font-weight: 600;
+  }
+
+  .pool-form input,
+  .pool-form select {
+    min-height: 3.5rem;
+    padding: 0 0.75rem;
+    border: 2px solid var(--ink);
+    background: #ffffff;
+    font:
+      700 1.5rem var(--font-display),
+      'Arial Narrow',
+      sans-serif;
+  }
+
+  .pool-form input:focus-visible,
+  .pool-form select:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  .pool-form [aria-invalid='true'] {
+    border-color: #c2261e;
+  }
+
+  .pool-side {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.75rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    font-size: 0.9375rem;
+  }
+
+  .pool-side svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 330 / 170;
+  }
+
+  .pool-side text {
+    font:
+      700 15px var(--font-display),
+      'Arial Narrow',
+      sans-serif;
+    fill: #111111;
+  }
+
+  .pool-result {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .pool-result dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 0;
+  }
+
+  .pool-result dt {
+    font-size: 0.9375rem;
+  }
+
+  .pool-result dd {
+    margin: 0;
+    font:
+      700 1.5rem var(--font-display),
+      'Arial Narrow',
+      sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-page .pool-note {
+    font-size: 0.9375rem;
+  }
+</style>

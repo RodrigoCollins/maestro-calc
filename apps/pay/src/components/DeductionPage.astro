@@ -13,10 +13,12 @@ import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
   readonly deduction: Deduction;
 }
 
-const { lang, deduction } = Astro.props;
+const { lang, deduction, embed = false } = Astro.props;
 const t = DEDUCTION_TEXTS[lang][deduction];
 const calculator = deduction === 'overtime' ? noTaxOnOvertime : noTaxOnTips;
 const ran = calculator.run({});
@@ -51,6 +53,7 @@ const script = deduction === 'overtime' ? 'overtime' : 'tips';
 ---
 
 <SiteLayout
+  embed={embed}
   lang={lang}
   title={t.title}
   description={t.description}

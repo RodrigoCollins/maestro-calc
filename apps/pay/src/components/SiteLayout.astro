@@ -2,7 +2,8 @@
 import { Font } from 'astro:assets';
 import type { Lang } from '../time-card/receipt.ts';
 import { ROUTES } from '../routes.ts';
-import { headOf } from '../seo/head.ts';
+import { EMBED_TEXTS } from '../embed/texts.ts';
+import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
 import '../styles/site.css';
@@ -19,15 +20,26 @@ interface Props {
   readonly otherLang: string;
   readonly footer: string;
   readonly wide?: boolean;
+  /**
+   * The embed of the page (`src/embed/embeds.ts`), another site's frame: canonical at the full
+   * page, `noindex`, no alternates, JSON-LD or analytics, every link in a new tab but the language
+   * switch, which stays in the frame, and no footer (the credit link sits under the frame).
+   */
+  readonly embed?: boolean;
 }
 
 const { lang, title, description, paths, otherLang, footer, wide = false } = Astro.props;
+const embedded = Astro.props.embed === true && paths !== undefined;
 const other: Lang = lang === 'en' ? 'es' : 'en';
-const otherHref = paths?.[other] ?? (other === 'en' ? '/' : '/es');
-const { canonical, robots, preview } = headOf(paths, lang, { title, description });
+const embedHead = embedded ? embedHeadOf(paths, lang, { title, description }) : undefined;
+const otherHref = embedHead?.other ?? paths?.[other] ?? (other === 'en' ? '/' : '/es');
+const { canonical, robots, preview } = embedHead ?? headOf(paths, lang, { title, description });
 const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === paths.en);
 const jsonLd =
-  route === undefined ? undefined : jsonLdOf(route, lang, { title, description }, SITE.origin);
+  route === undefined || embedded
+    ? undefined
+    : jsonLdOf(route, lang, { title, description }, SITE.origin);
+const homeHref = embedded ? canonical : lang === 'en' ? '/' : '/es';
 const href = (path: string): string => new URL(path, SITE.origin).href;
 const method =
   lang === 'en'
@@ -39,6 +51,10 @@ const privacy =
     : { href: '/es/privacidad', label: 'Privacidad' };
 const about =
   lang === 'en' ? { href: '/about', label: 'About' } : { href: '/es/acerca', label: 'Acerca de' };
+const embedLink =
+  lang === 'en'
+    ? { href: '/embed-calculators', label: EMBED_TEXTS.en.footerLabel }
+    : { href: '/es/calculadoras-para-tu-sitio', label: EMBED_TEXTS.es.footerLabel };
 ---
 
 <!doctype html>
@@ -62,7 +78,9 @@ const about =
     <meta property="og:image:height" content={preview['og:image:height']} />
     <meta name="twitter:card" content={preview['twitter:card']} />
     {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
-    {paths !== undefined && (
+    {embedded && <base target="_blank" />}
+    {embedded && <link rel="canonical" href={canonical} />}
+    {paths !== undefined && !embedded && (
       <>
         <link rel="canonical" href={canonical} />
         <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
@@ -72,7 +90,7 @@ const about =
     )}
     <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
     <Font cssVariable="--font-mono" preload={[{ weight: '400' }]} />
-    {SITE.gaId !== '' && (
+    {SITE.gaId !== '' && !embedded && (
       <script
         is:inline
         src="/analytics.js"
@@ -85,7 +103,7 @@ const about =
   <body class:list={{ wide }}>
     <header class="site-header">
       <div>
-        <a class="brand" href={lang === 'en' ? '/' : '/es'}>
+        <a class="brand" href={homeHref}>
           <svg
             width="26"
             height="26"
@@ -101,20 +119,29 @@ const about =
           </svg>
           {SITE.name}
         </a>
-        <a class="lang" href={otherHref} hreflang={other} lang={other}>
+        <a
+          class="lang"
+          href={otherHref}
+          hreflang={other}
+          lang={other}
+          target={embedded ? '_self' : undefined}
+        >
           {otherLang}
         </a>
       </div>
     </header>
     <slot />
-    <footer class="site-footer">
-      <div>
-        <span>{SITE.name}</span>
-        <span>{footer}</span>
-        <a href={method.href}>{method.label}</a>
-        <a href={privacy.href}>{privacy.label}</a>
-        <a href={about.href}>{about.label}</a>
-      </div>
-    </footer>
+    {!embedded && (
+      <footer class="site-footer">
+        <div>
+          <span>{SITE.name}</span>
+          <span>{footer}</span>
+          <a href={method.href}>{method.label}</a>
+          <a href={privacy.href}>{privacy.label}</a>
+          <a href={about.href}>{about.label}</a>
+          <a href={embedLink.href}>{embedLink.label}</a>
+        </div>
+      </footer>
+    )}
   </body>
 </html>

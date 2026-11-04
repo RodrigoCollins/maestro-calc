@@ -6,7 +6,9 @@ import { ROUTES } from './routes.ts';
 const pagesDir = new URL('./pages/', import.meta.url).pathname;
 const pageFiles = globSync('**/*.astro', { cwd: pagesDir })
   .map((file) => file.replaceAll('\\', '/'))
-  .filter((file) => file !== '404.astro');
+  .filter((file) => file !== '404.astro')
+  // the embeds are not routes: canonical at the full page and noindex (`embed/embeds.test.ts`)
+  .filter((file) => !file.startsWith('embed/'));
 // the long-tail pages are built by one template per language from their list of jobs
 const fileOf = (path: string): string =>
   path === '/' ? 'index.astro' : path === '/es' ? 'es/index.astro' : `${path.slice(1)}.astro`;

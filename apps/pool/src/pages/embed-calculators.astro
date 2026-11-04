@@ -1,0 +1,72 @@
+---
+import Layout from '../components/Layout.astro';
+import { EMBED_PAGE, snippets } from '../embed.ts';
+
+const { title, description, h1, lead, howHeading, steps, notes, calculatorsHeading } = EMBED_PAGE;
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <section class="pool-embed" aria-labelledby="how">
+      <h2 id="how">{howHeading}</h2>
+      <ol>
+        {steps.map((step) => (
+          <li>{step}</li>
+        ))}
+      </ol>
+      {notes.map((note) => (
+        <p>{note}</p>
+      ))}
+      <p>
+        <a href="/methodology">How we work it out</a>
+      </p>
+    </section>
+    <section class="pool-embed" aria-labelledby="calculators">
+      <h2 id="calculators">{calculatorsHeading}</h2>
+      {snippets.map(({ name, code }, index) => (
+        <section aria-labelledby={`embed-${String(index)}`}>
+          <h3 id={`embed-${String(index)}`}>{name}</h3>
+          <pre class="embed-code"><code>{code}</code></pre>
+        </section>
+      ))}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .pool-embed {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .pool-embed h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 2rem;
+    text-transform: uppercase;
+  }
+
+  .pool-embed h3 {
+    margin: 0.75rem 0 0.5rem;
+    font-size: 1.25rem;
+  }
+
+  .pool-embed ol {
+    margin: 0;
+    padding-left: 1.5rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  .embed-code {
+    margin: 0;
+    padding: 0.75rem;
+    border: 2px solid var(--ink);
+    background: #ffffff;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+</style>

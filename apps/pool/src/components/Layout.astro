@@ -1,7 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import { HOME_TOOLS } from '../home.ts';
-import { headOf } from '../seo/head.ts';
+import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
@@ -11,11 +11,19 @@ interface Props {
   readonly description: string;
   /** False for a page that is never indexed and has no canonical: the 404. */
   readonly indexed?: boolean;
+  /**
+   * The embed of the page (`src/embed.ts`), another site's frame: canonical at the full page,
+   * `noindex`, no JSON-LD or analytics, every link in a new tab, and no navigation: the footer keeps
+   * only its warning (the credit link sits under the frame).
+   */
+  readonly embed?: boolean;
 }
 
-const { title, description, indexed = true } = Astro.props;
-const path = canonicalPath(Astro.url.pathname);
-const { canonical, robots, preview } = headOf(path, { title, description }, indexed);
+const { title, description, indexed = true, embed = false } = Astro.props;
+const here = canonicalPath(Astro.url.pathname);
+const embedHead = embed ? embedHeadOf(here, { title, description }) : undefined;
+const path = embedHead?.page ?? here;
+const { canonical, robots, preview } = embedHead ?? headOf(path, { title, description }, indexed);
 const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
 ---
 
@@ -24,11 +32,9 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {canonical === undefined ? (
-      <meta name="robots" content={robots} />
-    ) : (
-      <link rel="canonical" href={canonical} />
-    )}
+    {robots !== undefined && <meta name="robots" content={robots} />}
+    {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    {embed && <base target="_blank" />}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -42,10 +48,12 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />
     <meta name="twitter:card" content={preview['twitter:card']} />
-    {canonical !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
+    {canonical !== undefined && !embed && (
+      <script type="application/ld+json" is:inline set:html={jsonLd} />
+    )}
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
-    {SITE.gaId !== '' && (
+    {SITE.gaId !== '' && !embed && (
       <script
         is:inline
         src="/analytics.js"
@@ -57,30 +65,39 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
   </head>
   <body>
     <header class="pool-header">
-      <a class="pool-brand" href="/">
+      <a class="pool-brand" href={embed ? canonical : '/'}>
         {SITE.name}
       </a>
-      <nav aria-label="Calculators">
-        {HOME_TOOLS.map(({ href, title }) => (
-          <a {href}>{title}</a>
-        ))}
-      </nav>
+      {!embed && (
+        <nav aria-label="Calculators">
+          {HOME_TOOLS.map(({ href, title }) => (
+            <a {href}>{title}</a>
+          ))}
+        </nav>
+      )}
     </header>
     <slot />
     <footer class="pool-footer">
       <p>Every figure is an estimate. Read the label of your product before you add it.</p>
-      <p>
-        <a href="/methodology">How we work it out</a>
-      </p>
-      <p>
-        <a href="/opening-your-pool">Opening your pool</a>
-      </p>
-      <p>
-        <a href="/privacy">Privacy</a>
-      </p>
-      <p>
-        <a href="/about">About</a>
-      </p>
+      {!embed && (
+        <>
+          <p>
+            <a href="/methodology">How we work it out</a>
+          </p>
+          <p>
+            <a href="/opening-your-pool">Opening your pool</a>
+          </p>
+          <p>
+            <a href="/privacy">Privacy</a>
+          </p>
+          <p>
+            <a href="/about">About</a>
+          </p>
+          <p>
+            <a href="/embed-calculators">Embed our calculators</a>
+          </p>
+        </>
+      )}
     </footer>
   </body>
 </html>

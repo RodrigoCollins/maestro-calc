@@ -1,5 +1,5 @@
-/** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */
-export const CALCULATOR_PAGES = [
+/** The built calculator pages of the route table. */
+const ROUTED = [
   'time-card-calculator.html',
   'es/calculadora-de-horas-trabajadas.html',
   'overtime-calculator.html',
@@ -13,3 +13,9 @@ export const CALCULATOR_PAGES = [
   'es/calculadora-horas-extra-sin-impuestos.html',
   'es/calculadora-propinas-sin-impuestos.html',
 ] as const;
+
+/** The embed of each (`src/embed/embeds.ts`): `/embed` + its path, the same one calculator script. */
+export const EMBED_PAGES = ROUTED.map((page) => `embed/${page}`);
+
+/** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */
+export const CALCULATOR_PAGES = [...ROUTED, ...EMBED_PAGES] as const;

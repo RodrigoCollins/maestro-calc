@@ -9,9 +9,11 @@ import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
 }
 
-const { lang } = Astro.props;
+const { lang, embed = false } = Astro.props;
 const t = OVERTIME_TEXTS[lang];
 // The page renders the engine's own figures for the default week, so it reads without JavaScript.
 const ran = overtime.run({});
@@ -45,6 +47,7 @@ const figures = [
 ---
 
 <SiteLayout
+  embed={embed}
   lang={lang}
   title={t.title}
   description={t.description}
