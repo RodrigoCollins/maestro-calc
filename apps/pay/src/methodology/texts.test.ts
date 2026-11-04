@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES } from './examples.ts';
+import { EXAMPLES, OVERTIME_EXAMPLES } from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
 const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov']);
@@ -36,14 +36,17 @@ describe('methodology texts', () => {
   it('labels every worked example in both languages', () => {
     for (const texts of Object.values(METHODOLOGY_TEXTS)) {
       expect(Object.keys(texts.examples)).toEqual(EXAMPLES.map(({ id }) => id));
+      expect(Object.keys(texts.overtimeExamples)).toEqual(OVERTIME_EXAMPLES.map(({ id }) => id));
     }
   });
 
-  it('points the button at the time card page of its language', () => {
+  it('points each button at a calculator page of its language', () => {
     for (const [lang, texts] of Object.entries(METHODOLOGY_TEXTS)) {
-      const page = resolve(import.meta.dirname, '../pages', `${texts.cta.href.slice(1)}.astro`);
-      expect(existsSync(page), page).toBe(true);
-      expect(texts.cta.href.startsWith('/es/')).toBe(lang === 'es');
+      for (const { href } of [texts.cta, texts.overtimeCta]) {
+        const page = resolve(import.meta.dirname, '../pages', `${href.slice(1)}.astro`);
+        expect(existsSync(page), page).toBe(true);
+        expect(href.startsWith('/es/')).toBe(lang === 'es');
+      }
     }
   });
 

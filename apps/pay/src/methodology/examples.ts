@@ -1,4 +1,5 @@
-import type { Money, Rational } from '@maestro-calc/core';
+import { Rational, type Money } from '@maestro-calc/core';
+import { overtime } from '@maestro-calc/pay-core/overtime';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { outputOf } from '../time-card/receipt.ts';
 
@@ -75,5 +76,45 @@ export const figuresOf = (example: Example): Figures => {
     overtimeHours: outputOf(ran.value, 'overtimeHours'),
     doubleHours: outputOf(ran.value, 'doubleHours'),
     pay: outputOf(ran.value, 'pay'),
+  };
+};
+
+/** A worked example of the overtime calculator: the hours of each day, every other day off. */
+export interface OvertimeExample {
+  readonly id: 'four-tens-federal' | 'four-tens-california' | 'long-day-california';
+  readonly inputs: Readonly<Record<string, string>>;
+}
+
+const OFF = { mon: '0', tue: '0', wed: '0', thu: '0', fri: '0', sat: '0', sun: '0' };
+const FOUR_TENS = { ...OFF, mon: '10', tue: '10', wed: '10', thu: '10' };
+
+export const OVERTIME_EXAMPLES: readonly OvertimeExample[] = [
+  { id: 'four-tens-federal', inputs: FOUR_TENS },
+  { id: 'four-tens-california', inputs: { ...FOUR_TENS, rule: 'california' } },
+  {
+    id: 'long-day-california',
+    inputs: { ...OFF, rule: 'california', mon: '13', tue: '8', wed: '8', thu: '8', fri: '8' },
+  },
+];
+
+/** What the overtime calculator gives for an example; a failing example is a build error. */
+export const overtimeFiguresOf = (example: OvertimeExample): Figures => {
+  const ran = overtime.run(example.inputs);
+  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  const out = new Map<string, Money | Rational>(
+    ran.value.outputs.map(({ key, value }) => [key, value]),
+  );
+  const hours = (key: string): Rational => {
+    const value = out.get(key);
+    if (!(value instanceof Rational)) throw new Error(`no hours ${key}`);
+    return value;
+  };
+  const pay = out.get('pay');
+  if (pay === undefined || !('currency' in pay)) throw new Error('no pay');
+  return {
+    regularHours: hours('regularHours'),
+    overtimeHours: hours('overtimeHours'),
+    doubleHours: hours('doubleHours'),
+    pay,
   };
 };
