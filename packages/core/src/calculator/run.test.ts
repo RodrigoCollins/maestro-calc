@@ -3,12 +3,12 @@ import { fixtureBox } from '../__testing__/fixture-box.ts';
 import { CoreError } from '../errors.ts';
 import { usd } from '../money/money.ts';
 import { Rational } from '../rational/rational.ts';
-import { in2, inch } from '../units/catalog.ts';
+import { in2, inch, lb } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { shiftMinutes } from '../format/clock.ts';
 import { defineCalculator } from './define.ts';
 import { RESULT_REASONS, type ResultReason } from './run.ts';
-import { clockInput } from './kinds/index.ts';
+import { clockInput, decimalInput } from './kinds/index.ts';
 
 const area = quantity(144, in2);
 const cost = usd(Rational.of(747, 50));
@@ -379,5 +379,32 @@ describe('Calculator.run with an hours output (core-clock-time)', () => {
 
   it('rejects a plain number as OUTPUT_MEASURE', () => {
     expect(() => card((minutes) => minutes / 60).run({})).toThrow(CoreError);
+  });
+});
+
+// a number output is an exact Rational with no dimension: the page names its unit (BTU, minutes)
+describe('Calculator.run with a number output', () => {
+  const heat = (btu: (pounds: Rational) => unknown) =>
+    defineCalculator({
+      id: 'heat-box',
+      inputs: [decimalInput({ key: 'pounds', urlKey: 'p', default: Rational.of(10) })],
+      outputs: [{ key: 'btu', measure: 'number', role: 'primary' }],
+      compute: ({ pounds }) => ({
+        outputs: { btu: btu(pounds) as Rational },
+        shopping: [],
+        warnings: [],
+      }),
+    });
+
+  it('returns the number as an exact Rational', () => {
+    const ran = heat((pounds) => pounds.mul(Rational.of(3))).run({});
+    expect(ran.ok && ran.value.outputs).toEqual([
+      { key: 'btu', role: 'primary', value: Rational.of(30) },
+    ]);
+  });
+
+  it('rejects a plain number and a quantity as OUTPUT_MEASURE', () => {
+    expect(() => heat((pounds) => pounds.toNumber()).run({})).toThrow(CoreError);
+    expect(() => heat((pounds) => quantity(pounds, lb)).run({})).toThrow(CoreError);
   });
 });

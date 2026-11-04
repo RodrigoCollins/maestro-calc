@@ -57,7 +57,9 @@ const isMeasure = (
   measure: OutputDescriptor['measure'],
 ): value is Quantity<DimensionName> | Money | Rational => {
   if (measure === 'money') return isMoney(value);
-  return measure === 'hours' ? value instanceof Rational : isQuantityOf(value, measure);
+  return measure === 'hours' || measure === 'number'
+    ? value instanceof Rational
+    : isQuantityOf(value, measure);
 };
 
 /** The outputs as a frozen list in declaration order, when exactly the declared keys are own. */
