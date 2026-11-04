@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { calculators } from '../lib/calculators.ts';
 import { ROUTES } from '../routing/routes.ts';
+import { JOB_IDS } from '../routing/jobs.ts';
 import { CALCULATOR_PAGES, PAGELESS, templateOf, templateProblems } from '../routing/templates.ts';
 
 const registry: string[] = calculators.map(({ id }) => id);
@@ -54,7 +55,10 @@ describe('calculator pages in the route table (site-routing-i18n › [SR17])', (
     );
     expect(templates.find(([id]) => id === 'home')?.[1]).toBe('home');
     expect(templates.filter(([, template]) => template === 'trust')).toHaveLength(
-      Object.keys(ROUTES).length - 1 - CALCULATOR_PAGES.length,
+      Object.keys(ROUTES).length - 1 - CALCULATOR_PAGES.length - JOB_IDS.length,
+    );
+    expect(templates.filter(([, template]) => template === 'job')).toEqual(
+      JOB_IDS.map((id) => [id, 'job']),
     );
   });
 

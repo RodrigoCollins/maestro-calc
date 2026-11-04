@@ -123,6 +123,18 @@ describe('route table (site-routing-i18n › Route table)', () => {
       es: '/es/guias/cuanto-concreto-para-un-poste-de-cerca',
     });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
+    expect(ROUTES['concrete-slab-10x10']).toEqual({
+      en: '/concrete/10x10-slab',
+      es: '/es/concreto/losa-de-10x10',
+    });
+    expect(ROUTES['concrete-slab-12x12']).toEqual({
+      en: '/concrete/12x12-slab',
+      es: '/es/concreto/losa-de-12x12',
+    });
+    expect(ROUTES['concrete-tube-12']).toEqual({
+      en: '/concrete/12-inch-sonotube',
+      es: '/es/concreto/sonotubo-de-12-pulgadas',
+    });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });

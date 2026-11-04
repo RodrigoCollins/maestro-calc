@@ -5,8 +5,11 @@ interface Props {
   guidesLabel: string;
   calculators: readonly { href: string; title: string; summary: string }[];
   guides: readonly { href: string; title: string; summary: string }[];
+  /** The job pages of the trade's calculators (growth plan, lever 1). */
+  jobsLabel: string;
+  jobs: readonly { href: string; title: string }[];
 }
-const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
+const { calculatorsLabel, guidesLabel, calculators, guides, jobsLabel, jobs } = Astro.props;
 ---
 
 <section class="hub-directory" aria-label={calculatorsLabel}>
@@ -31,6 +34,18 @@ const { calculatorsLabel, guidesLabel, calculators, guides } = Astro.props;
               {title}
             </a>
             <p>{summary}</p>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+  {jobs.length > 0 && (
+    <>
+      <h2>{jobsLabel}</h2>
+      <ul>
+        {jobs.map(({ href, title }) => (
+          <li>
+            <a {href}>{title}</a>
           </li>
         ))}
       </ul>

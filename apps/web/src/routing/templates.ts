@@ -1,3 +1,4 @@
+import { isJobPage } from './jobs.ts';
 import { NOT_FOUND_ID } from './routes.ts';
 import type { PageId, RouteTable } from './routes.ts';
 
@@ -29,7 +30,7 @@ export const isCalculatorPage = (id: string): id is CalculatorPageId =>
 export const PAGELESS: readonly string[] = [];
 
 /** The page templates: `check:site` and the browser lists derive their rules from them. */
-export type Template = 'home' | 'trust' | 'calculator' | 'notFound';
+export type Template = 'home' | 'trust' | 'calculator' | 'job' | 'notFound';
 
 /** The template of a page id: never guessed from the HTML. */
 export const templateOf = (
@@ -38,6 +39,7 @@ export const templateOf = (
 ): Template => {
   if (id === NOT_FOUND_ID) return 'notFound';
   if (id === 'home') return 'home';
+  if (isJobPage(id)) return 'job';
   return calculatorPages.includes(id) ? 'calculator' : 'trust';
 };
 
