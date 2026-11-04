@@ -1,0 +1,15 @@
+---
+import GuidePage from '../../../components/GuidePage.astro';
+import {
+  OVERTIME_GUIDE_PATHS,
+  OVERTIME_GUIDE_WEEKS,
+  OVERTIME_GUIDES,
+} from '../../../guide/overtime.ts';
+---
+
+<GuidePage
+  lang="es"
+  texts={OVERTIME_GUIDES.california.es}
+  paths={OVERTIME_GUIDE_PATHS.california}
+  weeks={OVERTIME_GUIDE_WEEKS.california}
+/>

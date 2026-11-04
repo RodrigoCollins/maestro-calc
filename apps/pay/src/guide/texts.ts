@@ -13,6 +13,20 @@ export interface GuideSection {
   readonly sources: readonly GuideSource[];
 }
 
+/** The worked examples a guide shows: weeks run through the time card, labelled per language. */
+export interface GuideExamplesTexts {
+  readonly heading: string;
+  readonly lead: string;
+  readonly columns: {
+    readonly regular: string;
+    readonly overtime: string;
+    readonly double: string;
+    readonly pay: string;
+  };
+  /** The label of each example, by the id of the example in the guide's list. */
+  readonly labels: Readonly<Record<string, string>>;
+}
+
 export interface GuideTexts {
   readonly title: string;
   readonly description: string;
@@ -20,11 +34,12 @@ export interface GuideTexts {
   readonly h1: string;
   readonly lead: string;
   readonly sections: readonly GuideSection[];
+  readonly examples?: GuideExamplesTexts;
   readonly sourcesLabel: string;
   readonly disclaimer: string;
   readonly reviewed: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
-  /** The text of the link the deduction calculators give to this guide. */
+  /** The text of the link other pages give to this guide. */
   readonly linkLabel: string;
 }
 

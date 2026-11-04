@@ -1,5 +1,6 @@
 ---
 import GuidePage from '../../components/GuidePage.astro';
+import { GUIDE_PATHS, GUIDE_TEXTS } from '../../guide/texts.ts';
 ---
 
-<GuidePage lang="en" />
+<GuidePage lang="en" texts={GUIDE_TEXTS.en} paths={GUIDE_PATHS} />
