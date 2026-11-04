@@ -1,3 +1,5 @@
+import { STRIP, type Pad } from './strip.ts';
+
 /** One result row of a dose page: the output, its label, its unit and the product forms it shows for. */
 export interface ResultRow {
   readonly key: string;
@@ -18,6 +20,13 @@ export interface DosePage {
   >;
   readonly results: readonly ResultRow[];
   readonly bags?: string;
+  /** The test strip picker that sets the reading of `field` (strip.ts). */
+  readonly strip?: {
+    readonly field: string;
+    readonly legend: string;
+    readonly note: string;
+    readonly pads: readonly Pad[];
+  };
   readonly warnings?: Readonly<Record<string, string>>;
   readonly method: string;
   readonly note: string;
@@ -85,6 +94,7 @@ export const CHLORINE: DosePage = {
       forms: ['cal-hypo-65', 'dichlor-56'],
     },
   ],
+  strip: { field: 'current', ...STRIP },
   method:
     '1 ppm is 1 mg per liter. The grams of available chlorine = gallons × 3.785 × (target − reading) ÷ 1,000, then divided by the strength on the label: 10.24 fl oz of 12.5% liquid per ppm per 10,000 gallons.',
   note: 'Strengths from the labels: cal-hypo at least 65% and dichlor 56% available chlorine (EPA-registered labels). Follow the label of your product.',

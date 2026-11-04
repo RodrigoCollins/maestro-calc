@@ -1,9 +1,42 @@
-import { decode, encode, ft3, gal, isQuantityOf, liter } from '@maestro-calc/core';
+import {
+  decode,
+  encode,
+  ft3,
+  gal,
+  inch,
+  isQuantityOf,
+  liter,
+  valueIn,
+  type Quantity,
+} from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { lengthFieldText, volumeText } from '../format.ts';
+import { sideViewOf, type SideView } from '../volume/side-view.ts';
 
 const form = document.querySelector<HTMLFormElement>('form[data-calculator="pool-volume"]');
 const UNITS = { gallons: [gal, 0], liters: [liter, 0], cubicFeet: [ft3, 1] } as const;
+const side = document.querySelector('svg[data-side]');
+
+/** Redraws the server's side view: the same nodes, new attributes and texts. */
+const drawSide = (view: SideView): void => {
+  if (side === null) return;
+  const set = (part: string, attrs: Readonly<Record<string, string>>, text?: string): void => {
+    const node = side.querySelector(`[data-side="${part}"]`);
+    if (node === null) return;
+    for (const [name, value] of Object.entries(attrs)) node.setAttribute(name, value);
+    if (text !== undefined) node.textContent = text;
+  };
+  set('water', { d: view.water });
+  set('wall', { d: view.wall });
+  set('length', {}, view.length);
+  for (const [index, { x, width, center, text }] of view.markers.entries()) {
+    set(`box${String(index)}`, { x: String(x), width: String(width) });
+    set(`mark${String(index)}`, { x: String(center) }, text);
+  }
+  side.setAttribute('aria-label', view.name);
+};
+
+const inches = (length: Quantity<'length'>): number => valueIn(length, inch).toNumber();
 
 if (form !== null) {
   const fieldOf = (name: string): HTMLInputElement | HTMLSelectElement | null =>
@@ -45,6 +78,13 @@ if (form !== null) {
       for (const node of document.querySelectorAll(`[data-out="${key}"]`)) {
         node.textContent = volumeText(value, unit, places);
       }
+    }
+    const validated = poolVolume.validate(raw);
+    if (validated.ok) {
+      const { length, shallow, deep } = validated.value;
+      drawSide(
+        sideViewOf({ length: inches(length), shallow: inches(shallow), deep: inches(deep) }),
+      );
     }
     const query = encoded(raw);
     if (query !== null) {
