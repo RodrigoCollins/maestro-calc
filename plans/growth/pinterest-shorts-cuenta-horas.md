@@ -82,6 +82,10 @@ extra. Pago bruto: $880.00 + $313.50 = **$1,193.50**.
 
 ## 20 pines
 
+> **En pausa.** El 2026-11-03 el dueño decidió no usar Pinterest para Cuenta Horas (no es su
+> público). Los pines quedan como reserva por si esa decisión cambia; los Shorts de abajo sí van, en
+> el canal de YouTube @CuentaHoras.
+
 Pinterest tiene poco público latino (`plans/pago-del-trabajador/PLAN.md`, §8): por eso 12 de los 20
 pines son de impuestos y salen en la temporada (diciembre a febrero), y la mitad va en inglés.
 Formato 1000 × 1500, la cifra grande arriba y las entradas abajo en letra chica. `utm_campaign` =
@@ -227,8 +231,8 @@ Cada link lleva UTM, por ejemplo:
 
 ## Sin verificar o pendiente del dueño
 
-- Las cuentas de Pinterest y YouTube de Cuenta Horas: no consta en el repo que existan. Crearlas es
-  decisión de Rodrigo.
+- YouTube: el canal @CuentaHoras ya existe (creado por el dueño el 2026-11-03). Pinterest: no se usa
+  para Cuenta Horas (decisión del dueño del 2026-11-03).
 - Los números de línea del Schedule 1-A 2026 son del borrador; por eso ninguna pieza los usa.
 - Los links con los valores ya cargados no están armados acá: se copian de la barra de direcciones
   al grabar.
