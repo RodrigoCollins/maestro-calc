@@ -9,7 +9,9 @@
     "./overtime": "./src/overtime/index.ts",
     "./pay-converter": "./src/pay-converter/index.ts",
     "./no-tax-on-overtime": "./src/no-tax-on-overtime/index.ts",
-    "./no-tax-on-tips": "./src/no-tax-on-tips/index.ts"
+    "./no-tax-on-tips": "./src/no-tax-on-tips/index.ts",
+    "./hours": "./src/hours/index.ts",
+    "./decimal-hours": "./src/decimal-hours/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
