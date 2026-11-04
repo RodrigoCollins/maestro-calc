@@ -6,12 +6,14 @@
   "sideEffects": false,
   "exports": {
     "./budgets": "./src/budgets.ts",
+    "./canonical": "./src/canonical.ts",
     "./check-site": "./src/check-site.ts",
     "./embed": "./src/embed.ts",
     "./indexnow": "./src/indexnow.ts",
     "./json-ld": "./src/json-ld.ts",
     "./link-preview": "./src/link-preview.ts",
-    "./seo-check": "./src/seo-check.ts"
+    "./seo-check": "./src/seo-check.ts",
+    "./sitemap": "./src/sitemap.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
