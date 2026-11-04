@@ -14,7 +14,7 @@ const fake = (answers: { indexnow?: number; key?: string } = {}) => {
     if (url === 'https://example.com/sitemap.xml') return Promise.resolve(new Response(SITEMAP));
     if (url === 'https://example.com/k1.txt')
       return Promise.resolve(new Response(answers.key ?? 'k1'));
-    sent.push({ url, body: JSON.parse(String(init?.body)) });
+    sent.push({ url, body: typeof init?.body === 'string' ? JSON.parse(init.body) : null });
     return Promise.resolve(new Response('', { status: answers.indexnow ?? 202 }));
   };
   return { fetcher, sent };
