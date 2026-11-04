@@ -2,6 +2,7 @@
 import { Font } from 'astro:assets';
 import type { Lang } from '../time-card/receipt.ts';
 import { ROUTES } from '../routes.ts';
+import { headOf } from '../seo/head.ts';
 import { jsonLdOf } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
 import '../styles/site.css';
@@ -23,7 +24,7 @@ interface Props {
 const { lang, title, description, paths, otherLang, footer, wide = false } = Astro.props;
 const other: Lang = lang === 'en' ? 'es' : 'en';
 const otherHref = paths?.[other] ?? (other === 'en' ? '/' : '/es');
-const indexable = SITE.indexable && paths !== undefined;
+const { canonical, robots, preview } = headOf(paths, lang, { title, description });
 const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === paths.en);
 const jsonLd =
   route === undefined ? undefined : jsonLdOf(route, lang, { title, description }, SITE.origin);
@@ -43,25 +44,25 @@ const privacy =
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {!indexable && <meta name="robots" content="noindex" />}
+    {robots !== undefined && <meta name="robots" content={robots} />}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    {paths !== undefined && <meta property="og:url" content={href(paths[lang])} />}
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
+    {canonical !== undefined && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
     <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
-    <meta property="og:image" content={href('/og.png')} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
+    <meta name="twitter:card" content={preview['twitter:card']} />
     {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     {paths !== undefined && (
       <>
-        <link rel="canonical" href={href(paths[lang])} />
+        <link rel="canonical" href={canonical} />
         <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
         <link rel="alternate" hreflang="es-US" href={href(paths.es)} />
         <link rel="alternate" hreflang="x-default" href={href(paths.en)} />

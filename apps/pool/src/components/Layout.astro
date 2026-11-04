@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import { HOME_TOOLS } from '../home.ts';
+import { headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
@@ -13,9 +14,8 @@ interface Props {
 }
 
 const { title, description, indexed = true } = Astro.props;
-const indexable = SITE.indexable && indexed;
 const path = canonicalPath(Astro.url.pathname);
-const canonical = new URL(path, SITE.origin).href;
+const { canonical, robots, preview } = headOf(path, { title, description }, indexed);
 const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
 ---
 
@@ -24,25 +24,25 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {indexable ? (
-      <link rel="canonical" href={canonical} />
+    {canonical === undefined ? (
+      <meta name="robots" content={robots} />
     ) : (
-      <meta name="robots" content="noindex" />
+      <link rel="canonical" href={canonical} />
     )}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content={ogTypeOf(pageKindOf(path))} />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    {indexable && <meta property="og:url" content={canonical} />}
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
+    {canonical !== undefined && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content="en_US" />
-    <meta property="og:image" content={new URL('/og.png', SITE.origin).href} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    {indexable && <script type="application/ld+json" is:inline set:html={jsonLd} />}
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
+    <meta name="twitter:card" content={preview['twitter:card']} />
+    {canonical !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
   </head>
