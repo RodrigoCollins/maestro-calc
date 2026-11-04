@@ -46,6 +46,19 @@ const TARGET = 3200;
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
   {
+    slug: '12x24-pool-gallons',
+    name: '12 x 24 pool',
+    title: '12x24 Pool',
+    pool: 'A 12 ft by 24 ft rectangle',
+    size: { length: '24 ft', width: '12 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '5 ft'],
+      ['3 ft 6 in', '6 ft'],
+    ],
+    main: 0,
+  },
+  {
     slug: '16x32-pool-gallons',
     name: '16 x 32 pool',
     title: '16x32 Pool',
@@ -57,6 +70,58 @@ const VOLUME_JOBS = [
       ['3 ft 6 in', '8 ft'],
     ],
     main: 2,
+  },
+  {
+    slug: '18x36-pool-gallons',
+    name: '18 x 36 pool',
+    title: '18x36 Pool',
+    pool: 'A 18 ft by 36 ft rectangle',
+    size: { length: '36 ft', width: '18 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
+  },
+  {
+    slug: '20x40-pool-gallons',
+    name: '20 x 40 pool',
+    title: '20x40 Pool',
+    pool: 'A 20 ft by 40 ft rectangle',
+    size: { length: '40 ft', width: '20 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
+  },
+  {
+    slug: '18-ft-round-pool-gallons',
+    name: '18 ft round pool',
+    title: '18 Ft Round Pool',
+    pool: 'A round pool 18 ft across',
+    size: { shape: 'round', length: '18 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '21-ft-round-pool-gallons',
+    name: '21 ft round pool',
+    title: '21 Ft Round Pool',
+    pool: 'A round pool 21 ft across',
+    size: { shape: 'round', length: '21 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
   },
   {
     slug: '24-ft-round-pool-gallons',
@@ -189,3 +254,12 @@ export const JOB_PAGES: readonly JobPage[] = [
   ...VOLUME_JOBS.map(volumePage),
   ...SALT_GALLONS.map(saltPage),
 ];
+
+/** The job pages a calculator works out, as links from its page: the common sizes, in table order. */
+export const jobLinksOf = (
+  calculatorPath: string,
+): readonly { readonly href: string; readonly label: string }[] =>
+  JOB_PAGES.filter(({ calculator }) => calculator.path === calculatorPath).map(({ path, h1 }) => ({
+    href: path,
+    label: h1,
+  }));

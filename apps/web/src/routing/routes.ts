@@ -82,7 +82,19 @@ export const ROUTES = {
   'hub-measurement': { en: '/measurement', es: '/es/medidas' },
   'hub-paint': { en: '/painting', es: '/es/pintura' },
   'concrete-slab-10x10': { en: '/concrete/10x10-slab', es: '/es/concreto/losa-de-10x10' },
+  'concrete-slab-10x12': { en: '/concrete/10x12-slab', es: '/es/concreto/losa-de-10x12' },
   'concrete-slab-12x12': { en: '/concrete/12x12-slab', es: '/es/concreto/losa-de-12x12' },
+  'concrete-slab-20x20': { en: '/concrete/20x20-slab', es: '/es/concreto/losa-de-20x20' },
+  'concrete-slab-24x24': { en: '/concrete/24x24-slab', es: '/es/concreto/losa-de-24x24' },
+  'concrete-pad-4x4': { en: '/concrete/4x4-pad', es: '/es/concreto/base-de-4x4' },
+  'concrete-tube-8': {
+    en: '/concrete/8-inch-sonotube',
+    es: '/es/concreto/sonotubo-de-8-pulgadas',
+  },
+  'concrete-tube-10': {
+    en: '/concrete/10-inch-sonotube',
+    es: '/es/concreto/sonotubo-de-10-pulgadas',
+  },
   'concrete-tube-12': {
     en: '/concrete/12-inch-sonotube',
     es: '/es/concreto/sonotubo-de-12-pulgadas',

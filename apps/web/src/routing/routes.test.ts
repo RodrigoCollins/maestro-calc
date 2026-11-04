@@ -131,6 +131,30 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/12x12-slab',
       es: '/es/concreto/losa-de-12x12',
     });
+    expect(ROUTES['concrete-slab-10x12']).toEqual({
+      en: '/concrete/10x12-slab',
+      es: '/es/concreto/losa-de-10x12',
+    });
+    expect(ROUTES['concrete-slab-20x20']).toEqual({
+      en: '/concrete/20x20-slab',
+      es: '/es/concreto/losa-de-20x20',
+    });
+    expect(ROUTES['concrete-slab-24x24']).toEqual({
+      en: '/concrete/24x24-slab',
+      es: '/es/concreto/losa-de-24x24',
+    });
+    expect(ROUTES['concrete-pad-4x4']).toEqual({
+      en: '/concrete/4x4-pad',
+      es: '/es/concreto/base-de-4x4',
+    });
+    expect(ROUTES['concrete-tube-8']).toEqual({
+      en: '/concrete/8-inch-sonotube',
+      es: '/es/concreto/sonotubo-de-8-pulgadas',
+    });
+    expect(ROUTES['concrete-tube-10']).toEqual({
+      en: '/concrete/10-inch-sonotube',
+      es: '/es/concreto/sonotubo-de-10-pulgadas',
+    });
     expect(ROUTES['concrete-tube-12']).toEqual({
       en: '/concrete/12-inch-sonotube',
       es: '/es/concreto/sonotubo-de-12-pulgadas',

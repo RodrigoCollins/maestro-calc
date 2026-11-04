@@ -1,0 +1,44 @@
+---
+import { jobLinksOf } from '../jobs.ts';
+
+interface Props {
+  /** The calculator page the list is on: it links the job pages that calculator works out. */
+  readonly path: string;
+}
+
+const links = jobLinksOf(Astro.props.path);
+---
+
+{links.length > 0 && (
+  <section class="pool-jobs" aria-labelledby="jobs-heading">
+    <h2 id="jobs-heading">Common pool sizes</h2>
+    <ul class="link-list">
+      {links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<style>
+  .pool-jobs h2 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+  }
+
+  .link-list {
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  /* Each link stands at least 24 px tall with its padding (WCAG 2.5.8, target size). */
+  .link-list a {
+    display: inline-block;
+    padding-block: 0.375rem;
+  }
+</style>

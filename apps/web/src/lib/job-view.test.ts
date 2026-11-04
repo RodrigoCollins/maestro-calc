@@ -23,6 +23,17 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     });
   });
 
+  // hand-verified: 20 × 20 × 1/3 ft = 133.33 ft³, + 10% = 146.67 ft³ = 5.43 yd³;
+  // bags of 0.60, 0.45 and 0.30 ft³: 244.4, 325.9 and 488.9, rounded up
+  it('works the 20 × 20 slab, 4 in thick, out as the calculator does', () => {
+    const [first] = jobView('concrete-slab-20x20', 'en').rows;
+    expect(first).toMatchObject({
+      label: '20 ft × 20 ft × 4 in',
+      yards: '5.43',
+      bags: ['245', '326', '489'],
+    });
+  });
+
   // hand-verified: π × (0.5 ft)² × 4 ft = 3.14 ft³, + 10% = 3.46 ft³ = 0.13 yd³; 5.8, 7.7, 11.5 bags
   it('works a 12 in tube, 48 in deep, out as the calculator does', () => {
     const rows = jobView('concrete-tube-12', 'es').rows;

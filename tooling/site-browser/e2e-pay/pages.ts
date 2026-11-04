@@ -1,3 +1,11 @@
+import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
+
+/** The long-tail pages, read from their table (a module with no run-time import), in both languages. */
+const LONG_TAIL = LONG_TAIL_ROUTES.flatMap(({ en, es }) => [
+  { path: en, lang: 'en' as const },
+  { path: es, lang: 'es' as const },
+]);
+
 /** Every page of Cuenta Horas, by language; the e2e suites run over all of them. */
 export const PAGES = [
   { path: '/', lang: 'en' },
@@ -14,6 +22,7 @@ export const PAGES = [
   { path: '/no-tax-on-tips-calculator', lang: 'en' },
   { path: '/es/calculadora-horas-extra-sin-impuestos', lang: 'es' },
   { path: '/es/calculadora-propinas-sin-impuestos', lang: 'es' },
+  ...LONG_TAIL,
 ] as const;
 
 export const TIME_CARD = PAGES.filter(({ path }) =>
