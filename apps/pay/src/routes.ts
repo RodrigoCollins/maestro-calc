@@ -1,6 +1,7 @@
 import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
+import { LONG_TAIL_ROUTES } from './long-tail/jobs.ts';
 
 /** Every page of Cuenta Horas as an English and Spanish pair; the sitemap is built from it. */
 export interface Route {
@@ -26,4 +27,5 @@ export const ROUTES: readonly Route[] = [
   { id: 'tax-guide', kind: 'article', ...GUIDE_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
+  ...LONG_TAIL_ROUTES,
 ];

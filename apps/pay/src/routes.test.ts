@@ -1,18 +1,30 @@
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import { LONG_TAIL_ROUTES } from './long-tail/jobs.ts';
 import { ROUTES } from './routes.ts';
 
 const pagesDir = new URL('./pages/', import.meta.url).pathname;
 const pageFiles = globSync('**/*.astro', { cwd: pagesDir })
   .map((file) => file.replaceAll('\\', '/'))
   .filter((file) => file !== '404.astro');
+// the long-tail pages are built by one template per language from their list of jobs
 const fileOf = (path: string): string =>
   path === '/' ? 'index.astro' : path === '/es' ? 'es/index.astro' : `${path.slice(1)}.astro`;
+const templateOf = (path: string): string =>
+  path.startsWith('/pay/')
+    ? 'pay/[slug].astro'
+    : path.startsWith('/es/pago/')
+      ? 'es/pago/[slug].astro'
+      : fileOf(path);
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {
-    const routed = ROUTES.flatMap(({ en, es }) => [fileOf(en), fileOf(es)]).sort();
-    expect(routed).toEqual([...pageFiles].sort());
+    const routed = new Set(ROUTES.flatMap(({ en, es }) => [templateOf(en), templateOf(es)]));
+    expect([...routed].sort()).toEqual([...pageFiles].sort());
+  });
+
+  it('holds every long-tail page, so the sitemap lists them', () => {
+    for (const route of LONG_TAIL_ROUTES) expect(ROUTES).toContainEqual(route);
   });
 
   it('keeps English at the root and Spanish under /es', () => {

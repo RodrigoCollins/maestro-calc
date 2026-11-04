@@ -643,6 +643,12 @@ a.tool:hover .tool-title {
   }
 }
 
+/* Lists of page links: each link is a full-height tap target (WCAG 2.5.8, 24 px minimum). */
+.link-list a {
+  display: inline-block;
+  padding-block: 0.375rem;
+}
+
 .site-footer {
   border-top: 2px solid var(--ink);
   font-size: 0.85rem;

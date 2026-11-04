@@ -2,6 +2,7 @@
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { commonLinksOf } from '../long-tail/jobs.ts';
 import { PATHS, PAY_CONVERTER_TEXTS, type Variant } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -26,6 +27,7 @@ const hours = String(payConverter.inputs[2].default);
 const weeks = String(payConverter.inputs[3].default);
 const periods = Object.entries(t.periods);
 const rows = Object.entries(t.outputs).filter(([key]) => key !== v.figure);
+const common = commonLinksOf(v.per, lang);
 ---
 
 <SiteLayout
@@ -100,6 +102,17 @@ const rows = Object.entries(t.outputs).filter(([key]) => key !== v.figure);
     <p class="note">
       {t.note} <a href={t.timeCard.href}>{t.timeCard.label}</a>
     </p>
+
+    <section aria-labelledby="common-heading">
+      <h2 id="common-heading">{common.heading}</h2>
+      <ul class="link-list">
+        {common.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/pay-converter.ts"></script>
 </SiteLayout>
