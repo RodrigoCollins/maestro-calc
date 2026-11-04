@@ -1,23 +1,43 @@
 ---
-import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
+import { hoursText, moneyText } from '../format.ts';
+import type { GuideTexts } from '../guide/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { figuresOf, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
+  readonly texts: GuideTexts;
+  readonly paths: Readonly<Record<Lang, string>>;
+  /** The weeks the guide works out; their figures are the time card's own. */
+  readonly weeks?: readonly WorkedWeek[];
 }
 
-const { lang } = Astro.props;
-const t = GUIDE_TEXTS[lang];
+const { lang, texts: t, paths, weeks = [] } = Astro.props;
+const examples = t.examples;
+if (weeks.length > 0 && examples === undefined) throw new Error(`${paths.en} has no example texts`);
+// The rows are the engine's own figures for each week (the guide's test pins them).
+const rows = weeks.map((week) => {
+  const label = examples?.labels[week.id];
+  if (label === undefined) throw new Error(`${paths[lang]} has no label for ${week.id}`);
+  const figures = figuresOf(week);
+  return {
+    label,
+    regular: hoursText(figures.regularHours),
+    overtime: hoursText(figures.overtimeHours),
+    double: hoursText(figures.doubleHours),
+    pay: moneyText(figures.pay),
+  };
+});
 ---
 
 <SiteLayout
   lang={lang}
   title={t.title}
   description={t.description}
-  paths={GUIDE_PATHS}
+  paths={paths}
   otherLang={TIME_CARD_TEXTS[lang].otherLang}
   footer={HOME_TEXTS[lang].sources}
 >
@@ -47,6 +67,38 @@ const t = GUIDE_TEXTS[lang];
         </p>
       </section>
     ))}
+
+    {examples !== undefined && rows.length > 0 && (
+      <section aria-labelledby="examples">
+        <h2 id="examples">{examples.heading}</h2>
+        <p>{examples.lead}</p>
+        <ul class="examples">
+          {rows.map((row) => (
+            <li>
+              <p class="example-label">{row.label}</p>
+              <dl>
+                <div>
+                  <dt>{examples.columns.regular}</dt>
+                  <dd>{row.regular}</dd>
+                </div>
+                <div>
+                  <dt>{examples.columns.overtime}</dt>
+                  <dd>{row.overtime}</dd>
+                </div>
+                <div>
+                  <dt>{examples.columns.double}</dt>
+                  <dd>{row.double}</dd>
+                </div>
+                <div class="example-pay">
+                  <dt>{examples.columns.pay}</dt>
+                  <dd>{row.pay}</dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <p class="note">
       {t.disclaimer} {t.reviewed}

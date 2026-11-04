@@ -6,7 +6,8 @@ import { in2, inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { fixtureBox } from './fixture-box.ts';
 
-// The bounds and defaults as canonical strings, so the table below can be read against the spec.
+// The bounds and defaults as canonical strings, so the table below can be read against the spec;
+// the codec is the code of the kind, not metadata (the kinds tests check it).
 const plain = (input: InputDescriptor): unknown => {
   const { key, kind, urlKey } = input;
   switch (input.kind) {
@@ -33,7 +34,7 @@ const plain = (input: InputDescriptor): unknown => {
     case 'percent':
       return { key, kind, urlKey, default: input.default.toString() };
     default:
-      return { ...input };
+      return Object.fromEntries(Object.entries(input).filter(([name]) => name !== 'codec'));
   }
 };
 

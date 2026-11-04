@@ -6,6 +6,10 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, inch, ton } from '../../units/catalog.ts';
 import { divide, multiply, scale, sign } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
+import { percentInput } from '../../calculator/kinds/percent.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 const HUNDRED = Rational.of(100);
 
@@ -53,8 +57,7 @@ export const createGravel = (suppliedDensities: GravelDensities) => {
   return defineCalculator({
     id: 'gravel',
     inputs: [
-      {
-        kind: 'length',
+      lengthInput({
         key: 'length',
         urlKey: 'l',
         default: quantity(240, inch),
@@ -62,9 +65,8 @@ export const createGravel = (suppliedDensities: GravelDensities) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'width',
         urlKey: 'w',
         default: quantity(120, inch),
@@ -72,9 +74,8 @@ export const createGravel = (suppliedDensities: GravelDensities) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'depth',
         urlKey: 'd',
         default: quantity(4, inch),
@@ -82,17 +83,16 @@ export const createGravel = (suppliedDensities: GravelDensities) => {
         metricDefaultUnit: 'cm',
         min: quantity(0, inch),
         max: quantity(10, ft),
-      },
-      { kind: 'select', key: 'placement', urlKey: 'pl', default: 'compacted', options: PLACEMENTS },
-      {
-        kind: 'percent',
+      }),
+      selectInput({ key: 'placement', urlKey: 'pl', default: 'compacted', options: PLACEMENTS }),
+      percentInput({
         key: 'waste',
         urlKey: 'ws',
         default: Rational.of(5),
         min: Rational.ZERO,
         max: Rational.of(50),
-      },
-      { kind: 'money', key: 'tonPrice', urlKey: 'tp', default: usd(0), max: usd(10000) },
+      }),
+      moneyInput({ key: 'tonPrice', urlKey: 'tp', default: usd(0), max: usd(10000) }),
     ],
     outputs: [
       {

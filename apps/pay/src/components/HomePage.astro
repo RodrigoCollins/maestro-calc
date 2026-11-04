@@ -1,6 +1,8 @@
 ---
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { hoursText, moneyText, shiftText } from '../format.ts';
+import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from '../guide/overtime.ts';
+import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { outputOf, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -12,6 +14,13 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = HOME_TEXTS[lang];
+const guides = [
+  ...(['federal', 'california'] as const).map((guide) => ({
+    href: OVERTIME_GUIDE_PATHS[guide][lang],
+    label: OVERTIME_GUIDES[guide][lang].linkLabel,
+  })),
+  { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
+];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.
 const ran = timeCard.run({});
 if (!ran.ok) throw new Error('the default week of the time card must run');
@@ -87,6 +96,17 @@ const rows = TIME_CARD_TEXTS[lang].days.slice(0, 3).map((day) => ({
             </li>
           ),
         )}
+      </ul>
+    </section>
+
+    <section class="guides" aria-labelledby="guides-heading">
+      <h2 id="guides-heading">{t.guidesHeading}</h2>
+      <ul class="link-list">
+        {guides.map((guide) => (
+          <li>
+            <a href={guide.href}>{guide.label}</a>
+          </li>
+        ))}
       </ul>
     </section>
   </main>

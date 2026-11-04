@@ -28,6 +28,10 @@ export const PAGES = [
   { path: '/no-tax-on-tips-calculator', lang: 'en' },
   { path: '/es/calculadora-horas-extra-sin-impuestos', lang: 'es' },
   { path: '/es/calculadora-propinas-sin-impuestos', lang: 'es' },
+  { path: '/guides/how-to-calculate-overtime', lang: 'en' },
+  { path: '/guides/california-overtime', lang: 'en' },
+  { path: '/es/guias/como-calcular-horas-extra', lang: 'es' },
+  { path: '/es/guias/horas-extra-en-california', lang: 'es' },
   ...LONG_TAIL,
 ] as const;
 

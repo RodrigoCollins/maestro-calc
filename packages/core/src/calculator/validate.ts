@@ -1,185 +1,32 @@
-import type { FieldErrorCode } from '../error-codes.ts';
 import { CoreError } from '../errors.ts';
-import { parseClock } from '../format/clock.ts';
-import { parseLength } from '../format/length-parser/parser.ts';
-import { isMoney } from '../money/money.ts';
-import { parseMoney } from '../money/parse.ts';
-import { parseDecimal } from '../rational/decimal.ts';
-import { Rational } from '../rational/rational.ts';
 import { err, ok, type Result } from '../result.ts';
-import { cm, ft, inch, m, mm, yd } from '../units/catalog.ts';
-import { isQuantityOf } from '../units/quantity.ts';
-import type { Unit } from '../units/unit.ts';
-import { checkAmount, findOption } from './constraints.ts';
 import type {
-  BoundedDescriptor,
-  ClockDescriptor,
-  CountDescriptor,
   FieldError,
+  FieldFailure,
+  FieldValue,
   InputDescriptor,
   InputsOf,
-  LengthDescriptor,
-  MoneyDescriptor,
-  DecimalDescriptor,
-  PercentDescriptor,
-  SelectDescriptor,
   UnitSystem,
   ValidateOptions,
 } from './descriptors.ts';
 
 type Descriptors = readonly InputDescriptor[];
-/** The validated value of one field: any of the value types of the kinds. */
-type Value = InputsOf<Descriptors>[string];
-type FieldFailure = Omit<FieldError, 'field'>;
-
-const LENGTH_UNITS: Readonly<
-  Record<LengthDescriptor['defaultUnit' | 'metricDefaultUnit'], Unit<'length'>>
-> = {
-  in: inch,
-  ft,
-  yd,
-  mm,
-  cm,
-  m,
-};
-
-/** What a field reads from a parser failure: its code (the offsets and params stay in the parser). */
-interface ParseFailure {
-  readonly code: FieldErrorCode;
-}
 
 /** Raw strings longer than this, before trimming, are `TOO_LONG`. */
 export const MAX_TEXT_LENGTH = 128;
 
-/** The whitespace of the text grammars: space, tab and no-break space (not every Unicode blank). */
-const SURROUNDING_WS = /^[ \t\u00A0]+|[ \t\u00A0]+$/g;
-
-/**
- * Runs a text parser on a raw string trimmed of whitespace, and fails `EMPTY` when nothing is left;
- * any other raw value is `MALFORMED`.
- */
-const parseText = <T>(
-  raw: unknown,
-  parse: (text: string) => Result<T, ParseFailure>,
-): Result<T, FieldFailure> => {
-  if (typeof raw !== 'string') return err({ code: 'MALFORMED' });
-  const text = raw.replace(SURROUNDING_WS, '');
-  if (text === '') return err({ code: 'EMPTY' });
-  const parsed = parse(text);
-  return parsed.ok ? parsed : err({ code: parsed.errors[0].code });
-};
-
-/** Passes `value` through when its exact `amount` is within the bounds of `input`. */
-const withinBounds = <T extends Value>(
-  input: BoundedDescriptor,
-  amount: Rational,
-  value: T,
-): Result<T, FieldFailure> => {
-  const violation = checkAmount(input, amount);
-  return violation === undefined ? ok(value) : err(violation);
-};
-
-const readLength = (
-  input: LengthDescriptor,
-  raw: unknown,
-  unitSystem: UnitSystem | undefined,
-): Result<Value, FieldFailure> => {
-  const unit = LENGTH_UNITS[unitSystem === 'metric' ? input.metricDefaultUnit : input.defaultUnit];
-  const length = isQuantityOf(raw, 'length')
-    ? ok(raw)
-    : parseText(raw, (text) => parseLength(text, { defaultUnit: unit }));
-  return length.ok ? withinBounds(input, length.value.canonical, length.value) : length;
-};
-
-/** A whole number: digits only, so no sign, point or exponent; a comma is a decimal comma. */
-const parseWhole = (text: string): Result<bigint, ParseFailure> => {
-  if (text.includes(',')) return err({ code: 'DECIMAL_COMMA' });
-  return /^[0-9]+$/.test(text) ? ok(BigInt(text)) : err({ code: 'MALFORMED' });
-};
-
-/** A number is a count only when it is already a non-negative safe integer. */
-const wholeNumber = (value: number): Result<bigint, ParseFailure> =>
-  Number.isSafeInteger(value) && value >= 0 ? ok(BigInt(value)) : err({ code: 'MALFORMED' });
-
-const readCount = (input: CountDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  // A string is compared as a bigint, so a value beyond the safe integers is ABOVE_MAX with no
-  // precision loss.
-  const whole = typeof raw === 'number' ? wholeNumber(raw) : parseText(raw, parseWhole);
-  return whole.ok ? withinBounds(input, Rational.of(whole.value), Number(whole.value)) : whole;
-};
-
-/** Percent points as a decimal with one optional trailing `%` and no blank before it. */
-const parsePercent = (text: string): Result<Rational, ParseFailure> =>
-  parseDecimal(text.endsWith('%') ? text.slice(0, -1) : text);
-
-const readPercent = (input: PercentDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  const percent = parseText(raw, parsePercent);
-  return percent.ok ? withinBounds(input, percent.value, percent.value) : percent;
-};
-
-const readDecimal = (input: DecimalDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  const decimal = parseText(raw, parseDecimal);
-  return decimal.ok ? withinBounds(input, decimal.value, decimal.value) : decimal;
-};
-
-const readMoney = (input: MoneyDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  const money = isMoney(raw) ? ok(raw) : parseText(raw, parseMoney);
-  return money.ok ? withinBounds(input, money.value.amount, money.value) : money;
-};
-
-/** An exact, case-sensitive option id; anything else, a non-string included, is `UNKNOWN_OPTION`. */
-const readSelect = (input: SelectDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  const option = findOption(input, raw);
-  return option === undefined ? err({ code: 'UNKNOWN_OPTION' }) : ok(option);
-};
-
-/** The last minute of a day: a time of day is 0..1439 minutes since midnight. */
-const LAST_MINUTE = 1439;
-
-/** A time of day, a whole number of minutes in a day, or `null`; blank text is `null`, a day off. */
-const readClock = (_input: ClockDescriptor, raw: unknown): Result<Value, FieldFailure> => {
-  if (raw === null) return ok(null);
-  if (typeof raw === 'number') {
-    return Number.isInteger(raw) && raw >= 0 && raw <= LAST_MINUTE
-      ? ok(raw)
-      : err({ code: 'MALFORMED' });
-  }
-  if (typeof raw !== 'string') return err({ code: 'MALFORMED' });
-  const text = raw.replace(SURROUNDING_WS, '');
-  if (text === '') return ok(null);
-  const minutes = parseClock(text);
-  return minutes.ok ? minutes : err({ code: 'MALFORMED' });
-};
-
 /**
  * The value of one field: absent or `undefined` is the default, a long string is `TOO_LONG`, and
- * otherwise the parser of its kind decides. Nothing is coerced.
+ * otherwise the codec of its kind decides. Nothing is coerced.
  */
 const readField = (
   input: InputDescriptor,
   raw: unknown,
   unitSystem: UnitSystem | undefined,
-): Result<Value, FieldFailure> => {
+): Result<FieldValue, FieldFailure> => {
   if (raw === undefined) return ok(input.default);
   if (typeof raw === 'string' && raw.length > MAX_TEXT_LENGTH) return err({ code: 'TOO_LONG' });
-  switch (input.kind) {
-    case 'length':
-      return readLength(input, raw, unitSystem);
-    case 'count':
-      return readCount(input, raw);
-    case 'percent':
-      return readPercent(input, raw);
-    case 'decimal':
-      return readDecimal(input, raw);
-    case 'select':
-      return readSelect(input, raw);
-    case 'boolean':
-      return typeof raw === 'boolean' ? ok(raw) : err({ code: 'MALFORMED' });
-    case 'money':
-      return readMoney(input, raw);
-    case 'clock':
-      return readClock(input, raw);
-  }
+  return input.codec.read(input, raw, unitSystem);
 };
 
 /** An object (an array included) can hold fields; null, a primitive and a function cannot. */
@@ -198,7 +45,7 @@ export const validateRecord = (
   { unitSystem }: ValidateOptions = {},
 ): Result<InputsOf<Descriptors>, FieldError> => {
   if (!isContainer(raw)) throw new CoreError('NOT_AN_OBJECT');
-  const values: [string, Value][] = [];
+  const values: [string, FieldValue][] = [];
   const errors: FieldError[] = [];
   for (const input of inputs) {
     const given = Object.hasOwn(raw, input.key) ? raw[input.key] : undefined;

@@ -3,6 +3,7 @@ import type { UnitSystem } from '../../calculator/descriptors.ts';
 import { findUnit, ft, inch } from '../../units/catalog.ts';
 import { quantity, valueIn } from '../../units/quantity.ts';
 import { rectangleArea } from './index.ts';
+import { lengthInput } from '../../calculator/kinds/index.ts';
 
 type Raw = Readonly<Record<string, unknown>>;
 
@@ -35,16 +36,16 @@ const areas = (areaFt2: string, areaYd2: string, areaM2: string) => ({
 describe('rectangle-area descriptor (calc-rectangle-area › Descriptor)', () => {
   // spec: Metadata [RA1]
   it('declares the length and width inputs and the three area outputs', () => {
-    const input = (key: string, urlKey: string) => ({
-      kind: 'length',
-      key,
-      urlKey,
-      default: quantity(120, inch),
-      defaultUnit: 'ft',
-      metricDefaultUnit: 'm',
-      min: quantity(0, inch),
-      max: quantity(100000, ft),
-    });
+    const input = (key: string, urlKey: string) =>
+      lengthInput({
+        key,
+        urlKey,
+        default: quantity(120, inch),
+        defaultUnit: 'ft',
+        metricDefaultUnit: 'm',
+        min: quantity(0, inch),
+        max: quantity(100000, ft),
+      });
     expect(rectangleArea.id).toBe('rectangle-area');
     expect(rectangleArea.inputs).toEqual([input('length', 'l'), input('width', 'w')]);
     expect(rectangleArea.outputs).toEqual([

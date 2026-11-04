@@ -15,6 +15,8 @@ export type {
   DisplayHint,
   FieldError,
   InputDescriptor,
+  InputKind,
+  InputSpec,
   InputsOf,
   LengthDescriptor,
   MoneyDescriptor,
@@ -29,6 +31,16 @@ export type {
   ValueOf,
   WarningEntry,
 } from './descriptors.ts';
+export {
+  booleanInput,
+  clockInput,
+  countInput,
+  decimalInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from './kinds/index.ts';
 export { messageKeysOf, type MessageKeysOf } from './message-keys.ts';
 export { RESULT_REASONS, type ResultLocus, type ResultReason } from './run.ts';
 export { MAX_TEXT_LENGTH } from './validate.ts';
