@@ -7,7 +7,8 @@
   "exports": {
     "./budgets": "./src/budgets.ts",
     "./check-site": "./src/check-site.ts",
-    "./json-ld": "./src/json-ld.ts"
+    "./json-ld": "./src/json-ld.ts",
+    "./seo-check": "./src/seo-check.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
