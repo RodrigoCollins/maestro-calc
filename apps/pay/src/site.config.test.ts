@@ -9,6 +9,7 @@ describe('Cuenta Horas site constants', () => {
       locales: ['en', 'es'],
       indexable: true,
       gaId: 'G-NNB8KG2TXZ',
+      indexNowKey: 'dd860e1e00fb82df0feac833e84e8677',
     });
   });
 });

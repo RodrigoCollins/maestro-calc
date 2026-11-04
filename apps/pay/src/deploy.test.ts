@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { SITE } from './site.config.ts';
 
 // second-site-foundation: Cuenta Horas deploys like Maestro Calc, static assets on Workers Builds,
 // from `apps/pay/wrangler.jsonc` (the Workers Builds deploy command points at it).
@@ -56,5 +57,13 @@ describe('apps/pay/wrangler.jsonc', () => {
   it('authorizes the same AdSense publisher as Maestro Calc in ads.txt', () => {
     const ads = readFileSync(resolve(import.meta.dirname, '../public/ads.txt'), 'utf8');
     expect(ads).toBe('google.com, pub-3954387285316164, DIRECT, f08c47fec0942fa0\n');
+  });
+  it('serves the IndexNow key at /<key>.txt, as the deploy job checks before it notifies', () => {
+    expect(SITE.indexNowKey).toMatch(/^[0-9a-f]{32}$/);
+    const body = readFileSync(
+      resolve(import.meta.dirname, `../public/${SITE.indexNowKey}.txt`),
+      'utf8',
+    );
+    expect(body).toBe(SITE.indexNowKey);
   });
 });

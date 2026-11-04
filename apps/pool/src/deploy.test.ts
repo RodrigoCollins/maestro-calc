@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import ts from 'typescript';
 import { describe, expect, it } from 'vitest';
+import { SITE } from './site.config.ts';
 
 // Pool Figures deploys like Maestro Calc and Cuenta Horas: static assets on Workers Builds, from
 // `apps/pool/wrangler.jsonc` (the Workers Builds deploy command points at it).
@@ -52,5 +53,13 @@ describe('apps/pool/wrangler.jsonc', () => {
   it('lets robots crawl; the pages stay noindex until launch', () => {
     const robots = readFileSync(resolve(import.meta.dirname, '../public/robots.txt'), 'utf8');
     expect(robots).toBe('User-agent: *\nAllow: /\n');
+  });
+  it('serves the IndexNow key at /<key>.txt, as the deploy job checks before it notifies', () => {
+    expect(SITE.indexNowKey).toMatch(/^[0-9a-f]{32}$/);
+    const body = readFileSync(
+      resolve(import.meta.dirname, `../public/${SITE.indexNowKey}.txt`),
+      'utf8',
+    );
+    expect(body).toBe(SITE.indexNowKey);
   });
 });

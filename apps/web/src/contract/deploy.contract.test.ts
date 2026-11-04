@@ -14,12 +14,23 @@ interface Step {
 interface Workflow {
   on: { push?: { branches?: string[] }; pull_request?: unknown };
   permissions: unknown;
-  jobs: Record<string, { steps: Step[]; permissions?: unknown; 'timeout-minutes'?: number }>;
+  jobs: Record<
+    string,
+    {
+      steps: Step[];
+      permissions?: unknown;
+      'timeout-minutes'?: number;
+      strategy?: { 'fail-fast'?: boolean; matrix?: { include?: Record<string, string>[] } };
+    }
+  >;
 }
 
 const workflow = parse(readFileSync(fromRoot('.github/workflows/deploy.yml'), 'utf8')) as Workflow;
 const steps = Object.values(workflow.jobs).flatMap((job) => job.steps);
-const ids = steps.flatMap((step) => (step.id === undefined ? [] : [step.id]));
+/** The steps of one job, by id. */
+const idsOf = (job: string): string[] =>
+  (workflow.jobs[job]?.steps ?? []).flatMap((step) => (step.id === undefined ? [] : [step.id]));
+const ids = idsOf('production');
 
 describe('deploy workflow (site-seo › Post-deploy check and notification)', () => {
   it('runs on pushes to main only', () => {
@@ -54,5 +65,21 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
     for (const step of uses) expect(step.uses).toMatch(/^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/);
     const checkout = uses.find((step) => step.uses?.startsWith('actions/checkout@'));
     expect(checkout?.with).toMatchObject({ 'persist-credentials': false });
+  });
+
+  // plans/growth/PLAN.md › G3: every niche site pings IndexNow from its live sitemap after its build
+  it('notifies IndexNow for each niche site once its own build is green and it changed', () => {
+    const job = workflow.jobs['niche-sites'];
+    expect(job?.strategy?.['fail-fast']).toBe(false);
+    expect(job?.strategy?.matrix?.include).toEqual([
+      { app: 'pay', worker: 'cuenta-horas' },
+      { app: 'pool', worker: 'pool-figures' },
+    ]);
+    expect(idsOf('niche-sites')).toEqual(['build', 'changed', 'indexnow']);
+    const step = (id: string) => job?.steps.find((candidate) => candidate.id === id);
+    expect(step('build')?.run).toContain('Workers%20Builds:%20${{ matrix.worker }}');
+    expect(step('changed')?.run).toContain('^(apps/${{ matrix.app }}|packages)/');
+    expect(step('indexnow')?.run).toBe('node apps/${{ matrix.app }}/scripts/indexnow.ts');
+    expect(step('indexnow')?.if).toBe("steps.changed.outputs.site == 'true'");
   });
 });
