@@ -14,3 +14,7 @@ Todas funcionan también en metros y centímetros, y muestran el costo cuando es
 La guía va más allá para una entrada de autos: las capas y su espesor, el bombeo que saca el agua, la grava de arriba, y cuánto pedir por tonelada o por yarda cúbica.
 
 Para una cama elevada, la segunda guía da la profundidad para cada cultivo, con qué llenarla, y cuánta tierra y composta comprar.
+
+Para el mulch, la tercera guía da la profundidad a la que se esparce y convierte un cantero en yardas cúbicas y bolsas de 2 o 3 pies cúbicos.
+
+La cuarta guía muestra la cuenta detrás de todas estas calculadoras: largo × ancho × profundidad en pies, entre 27, con pulgadas a pies y círculos.

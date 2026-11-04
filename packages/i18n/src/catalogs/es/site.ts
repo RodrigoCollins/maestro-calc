@@ -194,6 +194,12 @@ export const esSite = {
     '¿Cuánto concreto lleva un poste de cerca? | Maestro Calc',
   'page.guide-fence-post-concrete.description':
     'Define el hoyo de un poste de cerca, calcula el concreto y las bolsas para un poste o para toda la cerca, y coloca el poste paso a paso.',
+  'page.guide-mulch.title': '¿Cuánto mulch necesito? | Maestro Calc',
+  'page.guide-mulch.description':
+    'Mide el cantero, elige la profundidad y convierte largo × ancho × profundidad en pies cúbicos, yardas cúbicas y bolsas de mulch de 2 o 3 pies cúbicos.',
+  'page.guide-cubic-yards.title': 'Cómo calcular yardas cúbicas | Maestro Calc',
+  'page.guide-cubic-yards.description':
+    'Largo × ancho × profundidad en pies, entre 27: yardas cúbicas de concreto, grava, tierra para jardín y mulch, con pulgadas a pies, círculos y ejemplos.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds fifty ids, so the site has one
-// hundred routable pages and two not-found pages.
-describe('end state of the guides index go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds fifty-two ids, so the site has one
+// hundred and four routable pages and two not-found pages.
+describe('end state of the mulch and cubic yards guides go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has fifty page ids, one hundred routable paths and a hundred and two pages with the 404s', () => {
+  it('has fifty-two page ids, a hundred and four routable paths and a hundred and six pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -36,6 +36,8 @@ describe('end state of the guides index go-live (site-routing-i18n › [SR1], [S
       'guide-raised-bed-soil',
       'guide-roofing-quote',
       'guide-fence-post-concrete',
+      'guide-mulch',
+      'guide-cubic-yards',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -66,10 +68,10 @@ describe('end state of the guides index go-live (site-routing-i18n › [SR1], [S
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(100);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(100);
+    expect(staticPaths()).toHaveLength(104);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(104);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(102);
+    expect(pageCount(ROUTES)).toBe(106);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -96,23 +98,23 @@ describe('end state of the guides index go-live (site-routing-i18n › [SR1], [S
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly a hundred and two page title and description keys in %s',
+    'has exactly a hundred and six page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(102);
+      ).toHaveLength(106);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: seventy-two content entries in all
-  it('has fifty-two trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(52);
+  // two entries per calculator page: seventy-six content entries in all
+  it('has fifty-six trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(56);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists one hundred URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(100);
+  it('lists a hundred and four URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(104);
   });
 });

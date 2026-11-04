@@ -56,6 +56,20 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - AND `/concrete` lists it after the concrete quote guide
 - AND `/concrete-calculator` links it third in its guide box
 
+#### Scenario: [GU16] The mulch guide ends in the mulch calculator
+- GIVEN `/guides/how-much-mulch-do-i-need`
+- THEN its last box links `/mulch-calculator` with the text of the mulch calculator's heading under "Work it out for your job"
+- AND `/landscaping` lists it after the raised bed guide
+- AND its depth of 2 to 3 inches cites the university extension pages it was read from
+- AND every figure of its worked examples is one the mulch calculator shows for the same link, pinned in `apps/web/src/contract/guide-figures.contract.test.ts`, in both languages
+
+#### Scenario: [GU17] The cubic yards guide ends in the gravel calculator
+- GIVEN `/guides/how-to-calculate-cubic-yards`
+- THEN its last box links `/gravel-calculator` with the text of the gravel calculator's heading under "Work it out for your job"
+- AND `/landscaping` lists it after the mulch guide
+- AND it links the concrete, gravel, topsoil and mulch calculators, and every figure of its worked examples is one that calculator shows for the same link, pinned in `apps/web/src/contract/guide-figures.contract.test.ts`, in both languages
+- AND it states no weight, density or price
+
 ### Requirement: Calculator pages link their guides
 
 A calculator page that a guide ends in MUST hold, after its copy, a box with `site.guide.links` and one link per such guide in the same language, whose text is the guide's heading, in `GUIDES` order. A calculator page that no guide ends in MUST NOT hold the box. `check:site` MUST report a guide page without its end link and a calculator page without the link back.
