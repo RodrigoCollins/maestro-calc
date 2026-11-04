@@ -28,6 +28,12 @@ export const enSite = {
   'site.guide.allCalculators': 'All our calculators',
   'site.hub.calculators': 'Calculators',
   'site.hub.guides': 'Guides',
+  'site.hub.jobs': 'Common jobs',
+  'site.job.cases': 'The same job in other sizes',
+  'site.job.note':
+    'Every figure adds 10% extra for waste, the concrete calculator’s default, and rounds up to whole bags. Each size opens the calculator with its measurements filled in.',
+  'site.job.methodology': 'How we work out the figures',
+  'site.job.more': 'More jobs',
   'site.hub.more': 'More tools:',
   'site.guides.business': 'The business',
   'site.guide.links': 'Learn more in our guides',
@@ -195,6 +201,18 @@ export const enSite = {
   'page.hub-paint.title': 'Painting Calculators and Guides | Maestro Calc',
   'page.hub-paint.description':
     'Paint calculator and guide: gallons and cans for the walls of a room, less doors and windows, and how to quote a painting job.',
+  'page.concrete-slab-10x10.title': 'Bags of Concrete for a 10x10 Slab | Maestro Calc',
+  'page.concrete-slab-10x10.description':
+    'How many bags of concrete a 10 x 10 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-10x10.heading': 'How many bags of concrete for a 10x10 slab?',
+  'page.concrete-slab-12x12.title': 'Bags of Concrete for a 12x12 Slab | Maestro Calc',
+  'page.concrete-slab-12x12.description':
+    'How many bags of concrete a 12 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-12x12.heading': 'How many bags of concrete for a 12x12 slab?',
+  'page.concrete-tube-12.title': 'Bags of Concrete for a 12 in Sonotube | Maestro Calc',
+  'page.concrete-tube-12.description':
+    'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
+  'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

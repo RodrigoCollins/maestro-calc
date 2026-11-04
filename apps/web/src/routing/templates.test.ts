@@ -8,6 +8,7 @@ describe('page templates (site-routing-i18n › [SR17], [SR18] logic)', () => {
     ['home', 'home'],
     ['methodology', 'trust'],
     ['privacy', 'trust'],
+    ['concrete-slab-10x10', 'job'],
     [NOT_FOUND_ID, 'notFound'],
   ] as const)('gives %s the %s template', (id, template) => {
     expect(templateOf(id)).toBe(template);

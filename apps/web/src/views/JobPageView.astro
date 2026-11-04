@@ -1,0 +1,151 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import Breadcrumb from '../components/calculator/Breadcrumb.astro';
+import GuideCta from '../components/GuideCta.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { jobView } from '../lib/job-view.ts';
+import { siteText } from '../lib/site-text.ts';
+import { JOBS, type JobId } from '../routing/jobs.ts';
+import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
+import { headFor } from '../seo/head.ts';
+
+/*
+ * A job page (growth plan, lever 1): the answer for one common job and its table, every figure
+ * worked out at build time by the engine the calculator runs, each size linked to the calculator
+ * with that size filled in. No script.
+ */
+interface Props {
+  id: JobId;
+  locale: Locale;
+}
+const { id, locale } = Astro.props;
+const text = siteText(locale);
+const view = jobView(id, locale);
+const [first] = view.rows;
+const { updated } = JOBS[id];
+// The date is a calendar day, so it is formatted in UTC: no timezone can move it.
+const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
+  dateStyle: 'long',
+  timeZone: 'UTC',
+}).format(new Date(`${updated}T00:00:00Z`));
+const breadcrumb = {
+  label: text('site.calculator.breadcrumb'),
+  homeLabel: text('site.calculator.breadcrumbHome'),
+  homeHref: pathOf('home', locale),
+  current: view.heading,
+};
+---
+
+<BaseLayout {locale} {id} head={headFor(id, locale, text)}>
+  <Breadcrumb {breadcrumb} />
+  <article class="prose">
+    <h1>{view.heading}</h1>
+    <p class="job-size">
+      {view.sizeLabel}: {first?.label}
+    </p>
+    <p class="job-answer">{view.answer}</p>
+    <dl class="job-bags">
+      {view.bagLabels.map((label, index) => (
+        <div>
+          <dt>{label}</dt>
+          <dd>{first?.bags[index]}</dd>
+        </div>
+      ))}
+    </dl>
+    <p>
+      {text('site.job.note')} <a href={view.methodology}>{text('site.job.methodology')}</a>
+    </p>
+    <h2>{text('site.job.cases')}</h2>
+    <div class="job-table">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">{view.sizeLabel}</th>
+            <th scope="col">{view.yardsLabel}</th>
+            {view.bagLabels.map((label) => (
+              <th scope="col">{label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {view.rows.map((row) => (
+            <tr>
+              <th scope="row">
+                <a href={row.href}>{row.label}</a>
+              </th>
+              <td>{row.yards}</td>
+              {row.bags.map((bags) => (
+                <td>{bags}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <GuideCta label={text('site.guide.cta')} href={view.cta} name={view.calculatorName} />
+    {view.others.length > 0 && (
+      <>
+        <h2>{text('site.job.more')}</h2>
+        <ul>
+          {view.others.map(({ href, title }) => (
+            <li>
+              <a {href}>{title}</a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+    <p class="updated">
+      {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
+    </p>
+  </article>
+</BaseLayout>
+
+<style>
+  .job-size {
+    margin-bottom: 0;
+    color: var(--color-text-secondary);
+  }
+
+  .job-answer {
+    margin-top: var(--space-1);
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 700;
+  }
+
+  .job-bags div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-1);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .job-bags dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  /* A phone scrolls the table, never the page. */
+  .job-table {
+    overflow-x: auto;
+  }
+
+  .job-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .job-table th,
+  .job-table td {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    text-align: right;
+  }
+
+  .job-table th:first-child {
+    text-align: left;
+  }
+</style>

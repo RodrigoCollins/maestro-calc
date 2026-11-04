@@ -9,8 +9,8 @@ export const LOCALE_TAGS = { en: 'en-US', es: 'es-US' } as const satisfies Recor
  *
  * To add a page, make four edits: (1) a `ROUTES` entry (`routeProblems` and the routes tests catch a
  * bad path); (2) its body: `pages/index.astro` and `pages/es.astro` render the home, and
- * `pages/[...path].astro` renders a calculator id (`CALCULATOR_PAGES`) with `CalculatorView` and every
- * other id with `TrustPageView`, so a Markdown
+ * `pages/[...path].astro` renders a calculator id (`CALCULATOR_PAGES`) with `CalculatorView`, a job id
+ * (`JOBS`, `routing/jobs.ts`) with `JobPageView` and every other id with `TrustPageView`, so a Markdown
  * page needs the id in `TRUST_IDS` (`content/schema.ts`) and `content/pages/{en,es}/<id>.md` (the
  * content contract test names a missing entry), and a calculator page needs its entries in
  * `content/calculators/` and a row in `SCRIPTS` (`views/CalculatorView.astro`); (3) `page.<id>.title` and `page.<id>.description` in both site catalogs (the route/catalog
@@ -81,6 +81,12 @@ export const ROUTES = {
   'hub-landscaping': { en: '/landscaping', es: '/es/jardineria' },
   'hub-measurement': { en: '/measurement', es: '/es/medidas' },
   'hub-paint': { en: '/painting', es: '/es/pintura' },
+  'concrete-slab-10x10': { en: '/concrete/10x10-slab', es: '/es/concreto/losa-de-10x10' },
+  'concrete-slab-12x12': { en: '/concrete/12x12-slab', es: '/es/concreto/losa-de-12x12' },
+  'concrete-tube-12': {
+    en: '/concrete/12-inch-sonotube',
+    es: '/es/concreto/sonotubo-de-12-pulgadas',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
