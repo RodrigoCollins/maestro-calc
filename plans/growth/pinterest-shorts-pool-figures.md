@@ -191,9 +191,8 @@ Tag every link, for example:
 
 ## Unverified or owner items
 
-- Pool Figures has no GA4 yet (G6 is "owner" in `plans/growth/PLAN.md`): until it exists, UTM
-  visits cannot be read. Publish the November pins anyway; their clicks show in Pinterest
-  analytics.
+- GA4 for Pool Figures is live since 2026-11-04 (property p562288527, seen in Realtime): UTM
+  visits show under session source/medium and campaign.
 - Pinterest and YouTube accounts for Pool Figures: nothing in the repo says they exist. Creating
   them is Rodrigo's call.
 - The links with the inputs filled in are not written out here: type the values, then copy the
