@@ -1,10 +1,19 @@
-import type { Route } from '../routes.ts';
-import type { Lang } from '../time-card/receipt.ts';
-
 /*
- * The long-tail jobs and their paths, with no run-time import: the browser suites of
- * `tooling/site-browser/e2e-pay` read the page list from here without the workspace install.
+ * The long-tail jobs and their paths, with no import at all: the browser suites of
+ * `tooling/site-browser/e2e-pay` read the page list from here without the workspace install, and
+ * their typecheck loads even type-only imports (`../time-card/receipt.ts` reaches the core). The
+ * two types below are structural copies; `../routes.ts` checks them by using `LONG_TAIL_ROUTES`
+ * as its own `Route[]`.
  */
+
+type Lang = 'en' | 'es';
+
+interface Route {
+  readonly id: string;
+  readonly kind: 'calculator' | 'article';
+  readonly en: string;
+  readonly es: string;
+}
 
 /**
  * One common search the pay converter answers (plans/growth/PLAN.md, lever 1): an hourly rate
