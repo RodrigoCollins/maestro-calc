@@ -1,0 +1,11 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import { PAY_STUB_EXAMPLE, PAY_STUB_GUIDE, PAY_STUB_GUIDE_PATHS } from '../../guide/pay-stub.ts';
+---
+
+<GuidePage
+  lang="en"
+  texts={PAY_STUB_GUIDE.en}
+  paths={PAY_STUB_GUIDE_PATHS}
+  ledger={PAY_STUB_EXAMPLE}
+/>
