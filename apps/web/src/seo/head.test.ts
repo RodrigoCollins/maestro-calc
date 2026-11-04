@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { alternatesOf, pathOf, ROUTES, urlOf } from '../routing/routes.ts';
-import { headFor, notFoundHead } from './head.ts';
+import { headFor, linkPreviewOf, notFoundHead } from './head.ts';
 
 // Echoes the key so the test sees which catalog entry each field came from.
 const text = (key: string): string => `«${key}»`;
@@ -49,6 +49,19 @@ describe('head data (site-seo › Titles, descriptions and canonicals)', () => {
       title: 'PAGE.NOTFOUND.TITLE',
       description: 'PAGE.NOTFOUND.DESCRIPTION',
       robots: 'noindex',
+    });
+  });
+});
+
+describe('link preview (plans/growth/PLAN.md › G7)', () => {
+  it('shares the title and description with the one 1200 by 630 image and a large card', () => {
+    expect(linkPreviewOf({ title: 'T', description: 'D' })).toEqual({
+      'og:title': 'T',
+      'og:description': 'D',
+      'og:image': 'https://maestrocalc.com/og.png',
+      'og:image:width': '1200',
+      'og:image:height': '630',
+      'twitter:card': 'summary_large_image',
     });
   });
 });

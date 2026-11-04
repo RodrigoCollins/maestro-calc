@@ -9,6 +9,7 @@
     "./check-site": "./src/check-site.ts",
     "./indexnow": "./src/indexnow.ts",
     "./json-ld": "./src/json-ld.ts",
+    "./link-preview": "./src/link-preview.ts",
     "./seo-check": "./src/seo-check.ts"
   },
   "scripts": {
