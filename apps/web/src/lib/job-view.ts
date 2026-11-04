@@ -1,10 +1,13 @@
 import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
 import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
@@ -43,6 +46,8 @@ interface JobTable {
 
 export interface JobView extends JobTable {
   readonly heading: string;
+  /** The sentence that tells one square footage job from the next: `page.<id>.intro`. */
+  readonly intro: string | undefined;
   /** What the figures assume, from the `site.job.note.<calculator>` key. */
   readonly note: string;
   /** The calculator page, prefilled with the first case. */
@@ -57,6 +62,7 @@ type JobCalculator = Job['calculator'];
 export const METHODOLOGY_ANCHOR = {
   concrete: { en: 'concrete', es: 'concreto' },
   'roof-pitch': { en: 'roof-pitch', es: 'pendiente-de-techo' },
+  'rectangle-area': { en: 'square-footage', es: 'pies-cuadrados' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`: the sizes read the same in both languages. */
@@ -193,10 +199,71 @@ const roofPitchTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/* Square footage: the square feet, square meters and square yards of each rectangle. */
+
+const areaCatalogs = {
+  en: createTranslator(enRectangleArea),
+  es: createTranslator(esRectangleArea),
+};
+
+type AreaOutput = (typeof rectangleArea.outputs)[number];
+
+/** The areas of a row, in the order of its columns: the square feet first, as the page answers. */
+const AREAS = ['areaFt2', 'areaM2', 'areaYd2'] as const satisfies readonly AreaOutput['key'][];
+
+const areaOutput = (key: AreaOutput['key']): OutputDescriptor => {
+  const output = rectangleArea.outputs.find((each) => each.key === key);
+  if (output === undefined) throw new Error(`the square footage engine has no ${key} output`);
+  return output;
+};
+
+const areaState = (raw: JobCase) => {
+  const result = rectangleArea.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const areaTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = areaCatalogs[locale];
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = areaState(raw);
+    const { outputs } = rectangleArea.compute(state);
+    return {
+      label: `${sizeText(raw['length'] ?? '')} × ${sizeText(raw['width'] ?? '')}`,
+      href: `${pathOf('rectangle-area', locale)}?${encode(rectangleArea, state, { unitSystem: 'imperial' })}`,
+      cells: AREAS.map((key) => outputText(areaOutput(key), outputs[key])),
+    };
+  });
+  const [first] = rows;
+  const sizeLabel = (['length', 'width'] as const)
+    .map((key) => calc(`calc.rectangle-area.inputs.${key}`))
+    .join(' × ');
+  const [feet = '', ...others] = first.cells;
+  const [, ...otherKeys] = AREAS;
+  return {
+    // the formula of the first case, `Area = Length × Width = 12 ft × 14 ft`, answered below it
+    lead: `${siteText(locale)('site.job.area')} = ${sizeLabel} = ${first.label}`,
+    answer: calc('calc.rectangle-area.page.areaFt2', { value: feet }),
+    facts: otherKeys.map((key, index) => ({
+      label: calc(`calc.rectangle-area.outputs.${key}`),
+      value: others[index] ?? '',
+    })),
+    columns: [sizeLabel, ...AREAS.map((key) => calc(`calc.rectangle-area.outputs.${key}`))],
+    rows,
+    calculatorName: calc('calc.rectangle-area.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
+  'rectangle-area': areaTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
+
+/** A square footage job: the one kind of job whose page opens with a sentence of its own. */
+type AreaJobId = Extract<JobId, `square-feet-${string}`>;
+
+const isAreaJob = (id: JobId): id is AreaJobId => JOBS[id].calculator === 'rectangle-area';
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
@@ -206,6 +273,7 @@ export const jobView = (id: JobId, locale: Locale): JobView => {
   return {
     ...table,
     heading: text(`page.${id}.heading`),
+    intro: isAreaJob(id) ? text(`page.${id}.intro`) : undefined,
     note: text(`site.job.note.${calculator}`),
     cta: table.rows[0].href,
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,

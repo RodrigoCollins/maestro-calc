@@ -10,7 +10,9 @@
     "./pool-chlorine": "./src/pool-chlorine/index.ts",
     "./pool-pump": "./src/pool-pump/index.ts",
     "./pool-alkalinity": "./src/pool-alkalinity/index.ts",
-    "./pool-stabilizer": "./src/pool-stabilizer/index.ts"
+    "./pool-stabilizer": "./src/pool-stabilizer/index.ts",
+    "./pool-heater": "./src/pool-heater/index.ts",
+    "./pool-fill-time": "./src/pool-fill-time/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

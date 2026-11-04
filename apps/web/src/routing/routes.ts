@@ -107,12 +107,85 @@ export const ROUTES = {
     en: '/concrete/12-inch-sonotube',
     es: '/es/concreto/sonotubo-de-12-pulgadas',
   },
-  'roof-pitch-4-12': { en: '/roofing/4-12-roof-pitch', es: '/es/techos/pendiente-de-techo-4-12' },
-  'roof-pitch-6-12': { en: '/roofing/6-12-roof-pitch', es: '/es/techos/pendiente-de-techo-6-12' },
-  'roof-pitch-8-12': { en: '/roofing/8-12-roof-pitch', es: '/es/techos/pendiente-de-techo-8-12' },
+  'roof-pitch-3-12': {
+    en: '/roofing/3-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-3-12',
+  },
+  'roof-pitch-4-12': {
+    en: '/roofing/4-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-4-12',
+  },
+  'roof-pitch-5-12': {
+    en: '/roofing/5-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-5-12',
+  },
+  'roof-pitch-6-12': {
+    en: '/roofing/6-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-6-12',
+  },
+  'roof-pitch-7-12': {
+    en: '/roofing/7-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-7-12',
+  },
+  'roof-pitch-8-12': {
+    en: '/roofing/8-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-8-12',
+  },
+  'roof-pitch-9-12': {
+    en: '/roofing/9-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-9-12',
+  },
+  'roof-pitch-10-12': {
+    en: '/roofing/10-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-10-12',
+  },
   'roof-pitch-12-12': {
     en: '/roofing/12-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-12-12',
+  },
+  'square-feet-5x5': {
+    en: '/measurement/5x5-square-feet',
+    es: '/es/medidas/5x5-pies-cuadrados',
+  },
+  'square-feet-5x10': {
+    en: '/measurement/5x10-square-feet',
+    es: '/es/medidas/5x10-pies-cuadrados',
+  },
+  'square-feet-7x12': {
+    en: '/measurement/7x12-square-feet',
+    es: '/es/medidas/7x12-pies-cuadrados',
+  },
+  'square-feet-10x10': {
+    en: '/measurement/10x10-square-feet',
+    es: '/es/medidas/10x10-pies-cuadrados',
+  },
+  'square-feet-10x12': {
+    en: '/measurement/10x12-square-feet',
+    es: '/es/medidas/10x12-pies-cuadrados',
+  },
+  'square-feet-11x14': {
+    en: '/measurement/11x14-square-feet',
+    es: '/es/medidas/11x14-pies-cuadrados',
+  },
+  'square-feet-11x16': {
+    en: '/measurement/11x16-square-feet',
+    es: '/es/medidas/11x16-pies-cuadrados',
+  },
+  'square-feet-12x12': {
+    en: '/measurement/12x12-square-feet',
+    es: '/es/medidas/12x12-pies-cuadrados',
+  },
+  'square-feet-12x14': {
+    en: '/measurement/12x14-square-feet',
+    es: '/es/medidas/12x14-pies-cuadrados',
+  },
+  'square-feet-12x30': {
+    en: '/measurement/12x30-square-feet',
+    es: '/es/medidas/12x30-pies-cuadrados',
+  },
+  'square-feet-20x20': {
+    en: '/measurement/20x20-square-feet',
+    es: '/es/medidas/20x20-pies-cuadrados',
   },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {

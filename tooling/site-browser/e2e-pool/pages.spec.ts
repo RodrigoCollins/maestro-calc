@@ -77,13 +77,18 @@ test('links every calculator from the home and the header to a page that answers
   page,
 }) => {
   await page.goto('/');
-  for (const selector of ['[aria-labelledby="pool-tools"] .pool-tools a', 'header nav a']) {
+  // the header keeps the first four calculators and a link to every card of the home
+  for (const [selector, count] of [
+    ['[aria-labelledby="pool-tools"] .pool-tools a', 8],
+    ['header nav a', 5],
+  ] as const) {
     const hrefs = await page
       .locator(selector)
       .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-    expect(hrefs, selector).toHaveLength(6);
+    expect(hrefs, selector).toHaveLength(count);
     for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
   }
+  await expect(page.locator('header nav a').last()).toHaveAttribute('href', '/#pool-tools');
 });
 
 test('links the methodology from the footer, and it shows the worked examples', async ({
@@ -92,7 +97,7 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await page.goto('/');
   await page.locator('footer a[href="/methodology"]').click();
   await expect(page).toHaveURL(/\/methodology$/);
-  await expect(page.locator('.pool-method li strong')).toHaveCount(9);
+  await expect(page.locator('.pool-method li strong')).toHaveCount(13);
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
 });
 

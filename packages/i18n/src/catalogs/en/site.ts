@@ -34,6 +34,13 @@ export const enSite = {
     'Every figure adds 10% extra for waste, the concrete calculator’s default, and rounds up to whole bags. Each size opens the calculator with its measurements filled in.',
   'site.job.note.roof-pitch':
     'Each rafter length runs along the slope over the rafter run, with no overhang and nothing taken off for the ridge board. Each run opens the calculator with its measurements filled in, where you can add the overhang.',
+  'site.job.note.rectangle-area':
+    'The area of a rectangle is its length times its width. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
+  'site.job.area': 'Area',
+  'site.pitchDegrees.heading': 'Roof pitch to degrees',
+  'site.pitchDegrees.note':
+    'Each angle is the arctangent of the rise over 12 in of run, worked out by the roof pitch calculator.',
+  'site.pitchDegrees.pitch': 'Pitch',
   'site.job.multiplier': 'Rafter multiplier (feet of rafter per foot of run)',
   'site.job.methodology': 'How we work out the figures',
   'site.job.more': 'More jobs',
@@ -246,22 +253,108 @@ export const enSite = {
   'page.concrete-tube-12.description':
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
-  'page.roof-pitch-4-12.title': '4/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+  'page.roof-pitch-3-12.title': '3/12 Roof Pitch in Degrees: 14.04° | Maestro Calc',
+  'page.roof-pitch-3-12.description':
+    'A 3/12 roof pitch is 14.04 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-3-12.heading': '3/12 roof pitch: 14.04° and the rafter length',
+  'page.roof-pitch-4-12.title': '4/12 Roof Pitch in Degrees: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
-    'The angle of a 4/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-4-12.heading': '4/12 roof pitch: the angle and the rafter length',
-  'page.roof-pitch-6-12.title': '6/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+    'A 4/12 roof pitch is 18.43 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-4-12.heading': '4/12 roof pitch: 18.43° and the rafter length',
+  'page.roof-pitch-5-12.title': '5/12 Roof Pitch in Degrees: 22.62° | Maestro Calc',
+  'page.roof-pitch-5-12.description':
+    'A 5/12 roof pitch is 22.62 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-5-12.heading': '5/12 roof pitch: 22.62° and the rafter length',
+  'page.roof-pitch-6-12.title': '6/12 Roof Pitch in Degrees: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
-    'The angle of a 6/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-6-12.heading': '6/12 roof pitch: the angle and the rafter length',
-  'page.roof-pitch-8-12.title': '8/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+    'A 6/12 roof pitch is 26.57 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-6-12.heading': '6/12 roof pitch: 26.57° and the rafter length',
+  'page.roof-pitch-7-12.title': '7/12 Roof Pitch in Degrees: 30.26° | Maestro Calc',
+  'page.roof-pitch-7-12.description':
+    'A 7/12 roof pitch is 30.26 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-7-12.heading': '7/12 roof pitch: 30.26° and the rafter length',
+  'page.roof-pitch-8-12.title': '8/12 Roof Pitch in Degrees: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
-    'The angle of an 8/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-8-12.heading': '8/12 roof pitch: the angle and the rafter length',
-  'page.roof-pitch-12-12.title': '12/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+    'An 8/12 roof pitch is 33.69 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-8-12.heading': '8/12 roof pitch: 33.69° and the rafter length',
+  'page.roof-pitch-9-12.title': '9/12 Roof Pitch in Degrees: 36.87° | Maestro Calc',
+  'page.roof-pitch-9-12.description':
+    'A 9/12 roof pitch is 36.87 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-9-12.heading': '9/12 roof pitch: 36.87° and the rafter length',
+  'page.roof-pitch-10-12.title': '10/12 Roof Pitch in Degrees: 39.81° | Maestro Calc',
+  'page.roof-pitch-10-12.description':
+    'A 10/12 roof pitch is 39.81 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-10-12.heading': '10/12 roof pitch: 39.81° and the rafter length',
+  'page.roof-pitch-12-12.title': '12/12 Roof Pitch in Degrees: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
-    'The angle of a 12/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-12-12.heading': '12/12 roof pitch: the angle and the rafter length',
+    'A 12/12 roof pitch is 45.00 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-12-12.heading': '12/12 roof pitch: 45.00° and the rafter length',
+  'page.square-feet-5x5.title': '5x5 in Square Feet: 25 sq ft | Maestro Calc',
+  'page.square-feet-5x5.description':
+    'A 5 by 5 ft area is 25 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-5x5.heading': 'How many square feet is 5x5?',
+  'page.square-feet-5x5.intro':
+    'A 5 by 5 ft square is a small closet, a shower floor or a stair landing.',
+  'page.square-feet-5x10.title': '5x10 in Square Feet: 50 sq ft | Maestro Calc',
+  'page.square-feet-5x10.description':
+    'A 5 by 10 ft area is 50 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-5x10.heading': 'How many square feet is 5x10?',
+  'page.square-feet-5x10.intro':
+    'A 5 by 10 ft area is a common bathroom, a walk-in closet or a small storage unit.',
+  'page.square-feet-7x12.title': '7x12 (12x7) in Square Feet: 84 sq ft | Maestro Calc',
+  'page.square-feet-7x12.description':
+    'A 7 by 12 ft area (12 by 7) is 84 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-7x12.heading': 'How many square feet is 7x12 (12x7)?',
+  'page.square-feet-7x12.intro':
+    'A 7 by 12 ft area, also written 12x7, is a narrow bathroom, a laundry room or a hallway.',
+  'page.square-feet-10x10.title': '10x10 in Square Feet: 100 sq ft | Maestro Calc',
+  'page.square-feet-10x10.description':
+    'A 10 by 10 ft area is 100 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-10x10.heading': 'How many square feet is 10x10?',
+  'page.square-feet-10x10.intro':
+    'A 10 by 10 ft room is a small bedroom, a home office or the floor of a garden shed.',
+  'page.square-feet-10x12.title': '10x12 in Square Feet: 120 sq ft | Maestro Calc',
+  'page.square-feet-10x12.description':
+    'A 10 by 12 ft area is 120 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-10x12.heading': 'How many square feet is 10x12?',
+  'page.square-feet-10x12.intro':
+    'A 10 by 12 ft room is a typical second bedroom, and a common size for a shed or a patio.',
+  'page.square-feet-11x14.title': '11x14 (14x11) in Square Feet: 154 sq ft | Maestro Calc',
+  'page.square-feet-11x14.description':
+    'An 11 by 14 ft area (14 by 11) is 154 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-11x14.heading': 'How many square feet is 11x14 (14x11)?',
+  'page.square-feet-11x14.intro':
+    'An 11 by 14 ft room, also written 14x11, is a mid-size bedroom or a dining room.',
+  'page.square-feet-11x16.title': '11x16 (16x11) in Square Feet: 176 sq ft | Maestro Calc',
+  'page.square-feet-11x16.description':
+    'An 11 by 16 ft area (16 by 11) is 176 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-11x16.heading': 'How many square feet is 11x16 (16x11)?',
+  'page.square-feet-11x16.intro':
+    'An 11 by 16 ft room, also written 16x11, is a long bedroom, a den or a family room.',
+  'page.square-feet-12x12.title': '12x12 in Square Feet: 144 sq ft | Maestro Calc',
+  'page.square-feet-12x12.description':
+    'A 12 by 12 ft area is 144 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-12x12.heading': 'How many square feet is 12x12?',
+  'page.square-feet-12x12.intro':
+    'A 12 by 12 ft room is a standard bedroom, and a common size for a deck or a patio slab.',
+  'page.square-feet-12x14.title': '12x14 in Square Feet: 168 sq ft | Maestro Calc',
+  'page.square-feet-12x14.description':
+    'A 12 by 14 ft area is 168 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-12x14.heading': 'How many square feet is 12x14?',
+  'page.square-feet-12x14.intro':
+    'A 12 by 14 ft room is a common size for a main bedroom or a living room.',
+  'page.square-feet-12x30.title': '12x30 (30x12) in Square Feet: 360 sq ft | Maestro Calc',
+  'page.square-feet-12x30.description':
+    'A 12 by 30 ft area (30 by 12) is 360 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-12x30.heading': 'How many square feet is 12x30 (30x12)?',
+  'page.square-feet-12x30.intro':
+    'A 12 by 30 ft area, also written 30 by 12, is a long porch, a deck along the back of a house or a one-car driveway.',
+  'page.square-feet-20x20.title': '20x20 in Square Feet: 400 sq ft | Maestro Calc',
+  'page.square-feet-20x20.description':
+    'A 20 by 20 ft area is 400 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
+  'page.square-feet-20x20.heading': 'How many square feet is 20x20?',
+  'page.square-feet-20x20.intro':
+    'A 20 by 20 ft area is the floor of a two-car garage or a large patio.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

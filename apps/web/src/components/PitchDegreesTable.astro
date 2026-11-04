@@ -1,0 +1,53 @@
+---
+import type { PitchDegreesView } from '../lib/pitch-degrees.ts';
+
+/** The roof pitch to degrees table of the roofing hub: every figure from the engine at build time. */
+interface Props {
+  view: PitchDegreesView;
+}
+const { view } = Astro.props;
+const [pitch, angle] = view.columns;
+---
+
+<section class="pitch-degrees" aria-labelledby="pitch-degrees">
+  <h2 id="pitch-degrees">{view.heading}</h2>
+  <p>{view.note}</p>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{pitch}</th>
+        <th scope="col">{angle}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {view.rows.map((row) => (
+        <tr>
+          <th scope="row">
+            {row.href === undefined ? row.pitch : <a href={row.href}>{row.pitch}</a>}
+          </th>
+          <td>{row.angle}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
+
+<style>
+  .pitch-degrees table {
+    width: 100%;
+    margin: 0 0 var(--space-4);
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pitch-degrees th,
+  .pitch-degrees td {
+    padding: var(--space-1) var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    text-align: right;
+  }
+
+  .pitch-degrees th:first-child {
+    text-align: left;
+  }
+</style>

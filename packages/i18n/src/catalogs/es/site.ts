@@ -37,6 +37,13 @@ export const esSite = {
     'Cada cifra suma un 10% extra por desperdicio, el valor inicial de la calculadora de concreto, y se redondea hacia arriba a bolsas enteras. Cada medida abre la calculadora con sus valores ya cargados.',
   'site.job.note.roof-pitch':
     'Cada largo de cabio se mide sobre la pendiente a lo largo del recorrido, sin alero y sin descontar la cumbrera. Cada recorrido abre la calculadora con sus valores ya cargados, donde puedes sumar el alero.',
+  'site.job.note.rectangle-area':
+    'El área de un rectángulo es su largo por su ancho. Una yarda cuadrada son 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus valores ya cargados.',
+  'site.job.area': 'Área',
+  'site.pitchDegrees.heading': 'Pendiente de techo en grados',
+  'site.pitchDegrees.note':
+    'Cada ángulo es la arcotangente de la subida sobre 12 in de recorrido, calculada por la calculadora de pendiente de techo.',
+  'site.pitchDegrees.pitch': 'Pendiente',
   'site.job.multiplier': 'Multiplicador del cabio (pies de cabio por pie de recorrido)',
   'site.job.methodology': 'Cómo calculamos las cifras',
   'site.job.more': 'Más trabajos',
@@ -254,22 +261,108 @@ export const esSite = {
   'page.concrete-tube-12.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
-  'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12: ángulo y cabio | Maestro Calc',
+  'page.roof-pitch-3-12.title': 'Pendiente de techo 3/12 en grados: 14.04° | Maestro Calc',
+  'page.roof-pitch-3-12.description':
+    'Una pendiente de techo 3/12 mide 14.04 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-3-12.heading': 'Pendiente de techo 3/12: 14.04° y el largo del cabio',
+  'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12 en grados: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
-    'El ángulo en grados de una pendiente de techo 4/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: el ángulo y el largo del cabio',
-  'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12: ángulo y cabio | Maestro Calc',
+    'Una pendiente de techo 4/12 mide 18.43 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: 18.43° y el largo del cabio',
+  'page.roof-pitch-5-12.title': 'Pendiente de techo 5/12 en grados: 22.62° | Maestro Calc',
+  'page.roof-pitch-5-12.description':
+    'Una pendiente de techo 5/12 mide 22.62 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-5-12.heading': 'Pendiente de techo 5/12: 22.62° y el largo del cabio',
+  'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12 en grados: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
-    'El ángulo en grados de una pendiente de techo 6/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: el ángulo y el largo del cabio',
-  'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12: ángulo y cabio | Maestro Calc',
+    'Una pendiente de techo 6/12 mide 26.57 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: 26.57° y el largo del cabio',
+  'page.roof-pitch-7-12.title': 'Pendiente de techo 7/12 en grados: 30.26° | Maestro Calc',
+  'page.roof-pitch-7-12.description':
+    'Una pendiente de techo 7/12 mide 30.26 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-7-12.heading': 'Pendiente de techo 7/12: 30.26° y el largo del cabio',
+  'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12 en grados: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
-    'El ángulo en grados de una pendiente de techo 8/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: el ángulo y el largo del cabio',
-  'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12: ángulo y cabio | Maestro Calc',
+    'Una pendiente de techo 8/12 mide 33.69 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: 33.69° y el largo del cabio',
+  'page.roof-pitch-9-12.title': 'Pendiente de techo 9/12 en grados: 36.87° | Maestro Calc',
+  'page.roof-pitch-9-12.description':
+    'Una pendiente de techo 9/12 mide 36.87 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-9-12.heading': 'Pendiente de techo 9/12: 36.87° y el largo del cabio',
+  'page.roof-pitch-10-12.title': 'Pendiente de techo 10/12 en grados: 39.81° | Maestro Calc',
+  'page.roof-pitch-10-12.description':
+    'Una pendiente de techo 10/12 mide 39.81 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-10-12.heading': 'Pendiente de techo 10/12: 39.81° y el largo del cabio',
+  'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12 en grados: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
-    'El ángulo en grados de una pendiente de techo 12/12, su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: el ángulo y el largo del cabio',
+    'Una pendiente de techo 12/12 mide 45.00 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: 45.00° y el largo del cabio',
+  'page.square-feet-5x5.title': '5x5 en pies cuadrados: 25 pies cuadrados | Maestro Calc',
+  'page.square-feet-5x5.description':
+    'Un área de 5 por 5 ft mide 25 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-5x5.heading': '¿Cuántos pies cuadrados son 5x5?',
+  'page.square-feet-5x5.intro':
+    'Un cuadrado de 5 por 5 ft es un clóset chico, el piso de una ducha o un descanso de escalera.',
+  'page.square-feet-5x10.title': '5x10 en pies cuadrados: 50 pies cuadrados | Maestro Calc',
+  'page.square-feet-5x10.description':
+    'Un área de 5 por 10 ft mide 50 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-5x10.heading': '¿Cuántos pies cuadrados son 5x10?',
+  'page.square-feet-5x10.intro':
+    'Un área de 5 por 10 ft es un baño común, un vestidor o una bodega chica.',
+  'page.square-feet-7x12.title': '7x12 en pies cuadrados: 84 pies cuadrados | Maestro Calc',
+  'page.square-feet-7x12.description':
+    'Un área de 7 por 12 ft (12 por 7) mide 84 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-7x12.heading': '¿Cuántos pies cuadrados son 7x12 (12x7)?',
+  'page.square-feet-7x12.intro':
+    'Un área de 7 por 12 ft, también escrita 12x7, es un baño angosto, un cuarto de lavado o un pasillo.',
+  'page.square-feet-10x10.title': '10x10 en pies cuadrados: 100 pies cuadrados | Maestro Calc',
+  'page.square-feet-10x10.description':
+    'Un área de 10 por 10 ft mide 100 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-10x10.heading': '¿Cuántos pies cuadrados son 10x10?',
+  'page.square-feet-10x10.intro':
+    'Un cuarto de 10 por 10 ft es un dormitorio chico, una oficina en casa o el piso de un cobertizo de jardín.',
+  'page.square-feet-10x12.title': '10x12 en pies cuadrados: 120 pies cuadrados | Maestro Calc',
+  'page.square-feet-10x12.description':
+    'Un área de 10 por 12 ft mide 120 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-10x12.heading': '¿Cuántos pies cuadrados son 10x12?',
+  'page.square-feet-10x12.intro':
+    'Un cuarto de 10 por 12 ft es un segundo dormitorio típico, y una medida común para un cobertizo o un patio.',
+  'page.square-feet-11x14.title': '11x14 en pies cuadrados: 154 pies cuadrados | Maestro Calc',
+  'page.square-feet-11x14.description':
+    'Un área de 11 por 14 ft (14 por 11) mide 154 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-11x14.heading': '¿Cuántos pies cuadrados son 11x14 (14x11)?',
+  'page.square-feet-11x14.intro':
+    'Un cuarto de 11 por 14 ft, también escrito 14x11, es un dormitorio mediano o un comedor.',
+  'page.square-feet-11x16.title': '11x16 en pies cuadrados: 176 pies cuadrados | Maestro Calc',
+  'page.square-feet-11x16.description':
+    'Un área de 11 por 16 ft (16 por 11) mide 176 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-11x16.heading': '¿Cuántos pies cuadrados son 11x16 (16x11)?',
+  'page.square-feet-11x16.intro':
+    'Un cuarto de 11 por 16 ft, también escrito 16x11, es un dormitorio largo, un estudio o una sala familiar.',
+  'page.square-feet-12x12.title': '12x12 en pies cuadrados: 144 pies cuadrados | Maestro Calc',
+  'page.square-feet-12x12.description':
+    'Un área de 12 por 12 ft mide 144 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-12x12.heading': '¿Cuántos pies cuadrados son 12x12?',
+  'page.square-feet-12x12.intro':
+    'Un cuarto de 12 por 12 ft es un dormitorio estándar, y una medida común para una terraza o una losa de patio.',
+  'page.square-feet-12x14.title': '12x14 en pies cuadrados: 168 pies cuadrados | Maestro Calc',
+  'page.square-feet-12x14.description':
+    'Un área de 12 por 14 ft mide 168 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-12x14.heading': '¿Cuántos pies cuadrados son 12x14?',
+  'page.square-feet-12x14.intro':
+    'Un cuarto de 12 por 14 ft es una medida común para un dormitorio principal o una sala.',
+  'page.square-feet-12x30.title': '12x30 en pies cuadrados: 360 pies cuadrados | Maestro Calc',
+  'page.square-feet-12x30.description':
+    'Un área de 12 por 30 ft (30 por 12) mide 360 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-12x30.heading': '¿Cuántos pies cuadrados son 12x30 (30x12)?',
+  'page.square-feet-12x30.intro':
+    'Un área de 12 por 30 ft, también escrita 30 por 12, es un porche largo, una terraza a lo largo de la casa o una entrada para un auto.',
+  'page.square-feet-20x20.title': '20x20 en pies cuadrados: 400 pies cuadrados | Maestro Calc',
+  'page.square-feet-20x20.description':
+    'Un área de 20 por 20 ft mide 400 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
+  'page.square-feet-20x20.heading': '¿Cuántos pies cuadrados son 20x20?',
+  'page.square-feet-20x20.intro':
+    'Un área de 20 por 20 ft es el piso de un garaje para dos autos o un patio grande.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

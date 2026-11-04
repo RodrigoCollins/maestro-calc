@@ -22,6 +22,8 @@ import { snippetsFor } from '../lib/embed-snippet.ts';
 import { glossaryView } from '../lib/glossary-view.ts';
 import TrustPageView from '../views/TrustPageView.astro';
 import JobPageView from '../views/JobPageView.astro';
+import PitchDegreesTable from '../components/PitchDegreesTable.astro';
+import { pitchDegreesView } from '../lib/pitch-degrees.ts';
 import { isJobPage, jobsOf } from '../routing/jobs.ts';
 
 // The two homes render from `index.astro` and `es.astro`, so the home view's scoped CSS ships on them only.
@@ -91,6 +93,7 @@ const hubView =
         jobs={hubView.jobs}
       />
     )}
+    {id === 'hub-roofing' && <PitchDegreesTable view={pitchDegreesView(locale)} />}
     {guide !== undefined && (
       <GuideCta
         label={siteText(locale)('site.guide.cta')}
