@@ -3,6 +3,7 @@
 // Usage: node apps/pay/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { EMBEDS } from '../src/embed/embeds.ts';
@@ -22,7 +23,7 @@ const all = [
     const html = read(path);
     if (html === undefined) return [`${path}: an embed the build does not hold`];
     return embedPageProblems(html, {
-      canonical: new URL(page, SITE.origin).href,
+      canonical: canonicalUrl(page, SITE.origin),
       scripts: moduleScriptsOf(read(page) ?? ''),
       other,
     }).map((message) => `${path}: ${message}`);

@@ -1,5 +1,6 @@
 ---
 import { Font } from 'astro:assets';
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import type { Lang } from '../time-card/receipt.ts';
 import { ROUTES } from '../routes.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
@@ -40,7 +41,7 @@ const jsonLd =
     ? undefined
     : jsonLdOf(route, lang, { title, description }, SITE.origin);
 const homeHref = embedded ? canonical : lang === 'en' ? '/' : '/es';
-const href = (path: string): string => new URL(path, SITE.origin).href;
+const href = (path: string): string => canonicalUrl(path, SITE.origin);
 const method =
   lang === 'en'
     ? { href: '/methodology', label: 'How we calculate' }

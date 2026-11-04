@@ -17,6 +17,7 @@
     "@maestro-calc/core": "*",
     "@maestro-calc/data": "*",
     "@maestro-calc/i18n": "*",
+    "@maestro-calc/site-kit": "*",
     "astro": "^7.4.2"
   },
   "devDependencies": {
