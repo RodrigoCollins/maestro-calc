@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import Layout from '../components/Layout.astro';
+import JobLinks from '../components/JobLinks.astro';
 import { JOB_PAGES, type JobPage } from '../jobs.ts';
 
 // One page per common job, its figures worked out by the engines at build time (no script).
@@ -47,6 +48,7 @@ const { page } = Astro.props as { page: JobPage };
       <a href={page.calculator.href}>{page.calculator.label}</a>
     </p>
     <p class="pool-job-method">{page.method}</p>
+    <JobLinks page={page} />
   </main>
 </Layout>
 
