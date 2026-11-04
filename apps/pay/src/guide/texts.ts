@@ -1,3 +1,4 @@
+import type { Money } from '@maestro-calc/core';
 import { DEDUCTION_PATHS } from '../deductions/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
@@ -27,6 +28,24 @@ export interface GuideExamplesTexts {
   readonly labels: Readonly<Record<string, string>>;
 }
 
+/** One line of a worked ledger (a sample pay stub): the amount is computed, the label is text. */
+export interface LedgerLine {
+  readonly id: string;
+  /** An earning, a deduction (a negative amount), a total, or a figure shown for reference. */
+  readonly kind: 'earning' | 'deduction' | 'total' | 'info';
+  readonly amount: Money;
+  /** How the amount is worked out, the same in both languages: `40 h × $22.00`. */
+  readonly detail?: string;
+}
+
+/** The texts of a worked ledger, labelled per language by the id of each line. */
+export interface GuideLedgerTexts {
+  readonly heading: string;
+  readonly lead: string;
+  readonly note: string;
+  readonly labels: Readonly<Record<string, string>>;
+}
+
 export interface GuideTexts {
   readonly title: string;
   readonly description: string;
@@ -35,6 +54,7 @@ export interface GuideTexts {
   readonly lead: string;
   readonly sections: readonly GuideSection[];
   readonly examples?: GuideExamplesTexts;
+  readonly ledger?: GuideLedgerTexts;
   readonly sourcesLabel: string;
   readonly disclaimer: string;
   readonly reviewed: string;

@@ -671,6 +671,50 @@ a.tool:hover .tool-title {
   }
 }
 
+/* A worked ledger (the sample pay stub): label and how it is worked out, then the amount. */
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+}
+
+.ledger th,
+.ledger td {
+  padding: 0.5rem 0.7rem;
+  border-top: 1px solid var(--rule);
+  text-align: left;
+  font-weight: 400;
+}
+
+.ledger th span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ledger td {
+  text-align: right;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.ledger .total th,
+.ledger .total td {
+  font-weight: 800;
+  border-top: 2px solid var(--ink);
+}
+
+.ledger .total td {
+  color: var(--money);
+}
+
+.ledger .info th,
+.ledger .info td {
+  color: var(--muted);
+}
+
 /* Lists of page links: each link is a full-height tap target (WCAG 2.5.8, 24 px minimum). */
 .link-list a {
   display: inline-block;

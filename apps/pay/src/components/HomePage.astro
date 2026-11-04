@@ -2,7 +2,9 @@
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { hoursText, moneyText, shiftText } from '../format.ts';
 import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from '../guide/overtime.ts';
+import { PAY_STUB_GUIDE, PAY_STUB_GUIDE_PATHS } from '../guide/pay-stub.ts';
 import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
+import { UNPAID_WAGES_GUIDE, UNPAID_WAGES_GUIDE_PATHS } from '../guide/unpaid-wages.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { outputOf, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -19,6 +21,8 @@ const guides = [
     href: OVERTIME_GUIDE_PATHS[guide][lang],
     label: OVERTIME_GUIDES[guide][lang].linkLabel,
   })),
+  { href: PAY_STUB_GUIDE_PATHS[lang], label: PAY_STUB_GUIDE[lang].linkLabel },
+  { href: UNPAID_WAGES_GUIDE_PATHS[lang], label: UNPAID_WAGES_GUIDE[lang].linkLabel },
   { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
 ];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.
