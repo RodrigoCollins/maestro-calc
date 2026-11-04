@@ -35,7 +35,7 @@ jobs:
         run: |
           for _ in $(seq 60); do
             run=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=Workers%20Builds:%20maestro-calc" \
-              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"')
+              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"') || run=''
             case "$run" in
               "completed success") echo "build: $run"; exit 0 ;;
               completed*) echo "build: $run"; exit 1 ;;
@@ -100,7 +100,7 @@ jobs:
         run: |
           for _ in $(seq 60); do
             run=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=Workers%20Builds:%20${{ matrix.worker }}" \
-              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"')
+              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"') || run=''
             case "$run" in
               "completed success") echo "build: $run"; exit 0 ;;
               completed*) echo "build: $run"; exit 1 ;;
