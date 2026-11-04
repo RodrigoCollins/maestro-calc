@@ -14,6 +14,8 @@ export const PAGES = [
   { path: '/es/calculadora-de-horas-trabajadas', lang: 'es' },
   { path: '/methodology', lang: 'en' },
   { path: '/es/metodologia', lang: 'es' },
+  { path: '/about', lang: 'en' },
+  { path: '/es/acerca', lang: 'es' },
   { path: '/hourly-to-salary-calculator', lang: 'en' },
   { path: '/salary-to-hourly-calculator', lang: 'en' },
   { path: '/es/de-pago-por-hora-a-sueldo-anual', lang: 'es' },

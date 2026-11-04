@@ -64,3 +64,13 @@ with less. Site-specific work (content, keywords) sits on top of it.
    volume, then Cuenta Horas.
 5. Distribution: Pinterest and Shorts briefs for Cuenta Horas and Pool Figures; link outreach list.
 6. Week 3 on: query-driven tuning every two weeks; dashboard with all three sites.
+
+## 6. Open engineering items
+
+- [ ] **Tree-shakable kind readers in `packages/core`** (from the archived
+      `openspec/changes/archive/2026-11-04-core-clock-time`). Mandatory before any new Maestro Calc
+      calculator or slot: the input kinds are dispatched by `switch` in `calculator/validate.ts`,
+      `url/codec.ts` and `url/url-values.ts`, so every page script carries every kind's reader. Since
+      the `clock` kind (c59cadb) the concrete page script was 48,653 B against the 49,152 B limit (499 B
+      left). Make each definition carry only the readers of its own kinds, as its own change, and
+      measure the concrete page before and after.

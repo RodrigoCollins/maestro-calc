@@ -37,6 +37,8 @@ const privacy =
   lang === 'en'
     ? { href: '/privacy', label: 'Privacy' }
     : { href: '/es/privacidad', label: 'Privacidad' };
+const about =
+  lang === 'en' ? { href: '/about', label: 'About' } : { href: '/es/acerca', label: 'Acerca de' };
 ---
 
 <!doctype html>
@@ -111,6 +113,7 @@ const privacy =
         <span>{footer}</span>
         <a href={method.href}>{method.label}</a>
         <a href={privacy.href}>{privacy.label}</a>
+        <a href={about.href}>{about.label}</a>
       </div>
     </footer>
   </body>

@@ -2,6 +2,7 @@ import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
+import { ABOUT_PATHS } from './about/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 
 /** Every page of Cuenta Horas as an English and Spanish pair; the sitemap is built from it. */
@@ -30,5 +31,6 @@ export const ROUTES: readonly Route[] = [
   { id: 'california-overtime-guide', kind: 'article', ...OVERTIME_GUIDE_PATHS.california },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
+  { id: 'about', kind: 'article', ...ABOUT_PATHS },
   ...LONG_TAIL_ROUTES,
 ];

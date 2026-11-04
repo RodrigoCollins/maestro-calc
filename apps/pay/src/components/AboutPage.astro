@@ -1,0 +1,44 @@
+---
+import { ABOUT_PATHS, ABOUT_TEXTS } from '../about/texts.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = ABOUT_TEXTS[lang];
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={ABOUT_PATHS}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <h1>{t.h1}</h1>
+    <p class="lead">{t.lead}</p>
+
+    {t.sections.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {section.link !== undefined && (
+          <p>
+            <a href={section.link.href}>{section.link.label}</a>
+          </p>
+        )}
+      </section>
+    ))}
+
+    <p class="note">{t.reviewed}</p>
+  </main>
+</SiteLayout>

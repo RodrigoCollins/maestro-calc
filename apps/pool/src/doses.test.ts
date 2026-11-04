@@ -31,6 +31,18 @@ describe('dose pages', () => {
     );
   });
 
+  it('gives the chlorine page the strip picker on its reading, and no other page one', () => {
+    const current = poolChlorine.inputs.find(({ key }) => key === 'current');
+    expect(CHLORINE.strip?.field).toBe('current');
+    expect(current?.kind).toBe('decimal');
+    // every pad is a reading the engine accepts
+    for (const { ppm } of CHLORINE.strip?.pads ?? []) {
+      expect(poolChlorine.validate({ current: ppm }).ok).toBe(true);
+    }
+    expect(SALT.strip).toBeUndefined();
+    expect(PUMP.strip).toBeUndefined();
+  });
+
   it('names every warning of the salt engine', () => {
     expect(Object.keys(SALT.warnings ?? {})).toEqual(poolSalt.warnings);
   });

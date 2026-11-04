@@ -14,19 +14,22 @@ The repository MUST be an npm-workspaces monorepo. The root `package.json` MUST 
 | `packages/data` | `@maestro-calc/data` | Typed material-record contract |
 | `packages/i18n` | `@maestro-calc/i18n` | EN/ES label catalog |
 | `apps/web` | `@maestro-calc/web` | Astro application |
+| `apps/pay` | `@maestro-calc/pay` | Astro app of the hourly pay site (Cuenta Horas) |
+
+`apps/pay` MUST pass the same format, lint, typecheck and test gates as `apps/web`, MUST NOT be deployed until its domain exists, and MUST NOT change the build of `apps/web`.
 
 A single `package-lock.json` at the root MUST be committed and in sync with all workspace manifests.
 
 #### Scenario: Clean install from lockfile
 - GIVEN a fresh clone of the repository on Node 24
 - WHEN `npm ci` runs at the root
-- THEN it exits 0 and links all four workspaces under `node_modules/@maestro-calc/`
+- THEN it exits 0 and links every workspace of the table under `node_modules/@maestro-calc/`
 - AND `npm ls --workspaces` reports no missing, invalid, or extraneous workspace
 
 #### Scenario: Workspace enumeration
 - GIVEN the repository root
 - WHEN `npm query .workspace` is executed
-- THEN exactly the four packages in the table above are returned
+- THEN exactly `core`, `data`, `i18n`, `web` and `pay` are returned
 
 ### Requirement: Scaffold relocation preserves history
 

@@ -14,6 +14,7 @@ export const VOLUME_TEXTS = {
     shallow: { label: 'Depth at the shallow end' },
     deep: { label: 'Depth at the deep end' },
   },
+  drawing: 'Not to scale. The drawing follows what you type.',
   figureLabel: 'Your pool holds',
   unit: 'GALLONS',
   rows: { liters: 'Liters', cubicFeet: 'Cubic feet' },
