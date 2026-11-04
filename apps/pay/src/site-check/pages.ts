@@ -2,6 +2,8 @@
 export const CALCULATOR_PAGES = [
   'time-card-calculator.html',
   'es/calculadora-de-horas-trabajadas.html',
+  'overtime-calculator.html',
+  'es/calculadora-de-horas-extra.html',
   'hourly-to-salary-calculator.html',
   'salary-to-hourly-calculator.html',
   'es/de-pago-por-hora-a-sueldo-anual.html',

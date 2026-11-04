@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { HOME_TEXTS } from './texts.ts';
 
 const pageFile = (href: string): string =>
@@ -20,6 +21,13 @@ describe('home texts', () => {
         expect(existsSync(pageFile(tool.href)), tool.href).toBe(true);
         expect(tool.href.startsWith('/es/'), tool.href).toBe(lang === 'es');
       }
+    }
+  });
+
+  it('links the overtime card to the overtime calculator of its language', () => {
+    for (const [lang, texts] of Object.entries(HOME_TEXTS)) {
+      const card = texts.tools.find(({ id }) => id === 'overtime');
+      expect(card?.href).toBe(OVERTIME_PATHS[lang as keyof typeof OVERTIME_PATHS]);
     }
   });
 

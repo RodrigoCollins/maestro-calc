@@ -1,7 +1,13 @@
 ---
 import { hoursText, moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
-import { EXAMPLES, figuresOf } from '../methodology/examples.ts';
+import {
+  EXAMPLES,
+  figuresOf,
+  OVERTIME_EXAMPLES,
+  overtimeFiguresOf,
+  type Figures,
+} from '../methodology/examples.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -14,16 +20,29 @@ interface Props {
 const { lang } = Astro.props;
 const t = METHODOLOGY_TEXTS[lang];
 // The rows are the engine's own figures for each example (examples.test.ts pins them).
-const rows = EXAMPLES.map((example) => {
-  const figures = figuresOf(example);
-  return {
-    label: t.examples[example.id],
-    regular: hoursText(figures.regularHours),
-    overtime: hoursText(figures.overtimeHours),
-    double: hoursText(figures.doubleHours),
-    pay: moneyText(figures.pay),
-  };
+const rowOf = (label: string, figures: Figures) => ({
+  label,
+  regular: hoursText(figures.regularHours),
+  overtime: hoursText(figures.overtimeHours),
+  double: hoursText(figures.doubleHours),
+  pay: moneyText(figures.pay),
 });
+const groups = [
+  {
+    id: 'examples',
+    heading: t.examplesHeading,
+    lead: t.examplesLead,
+    rows: EXAMPLES.map((example) => rowOf(t.examples[example.id], figuresOf(example))),
+  },
+  {
+    id: 'overtime-examples',
+    heading: t.overtimeExamplesHeading,
+    lead: t.overtimeExamplesLead,
+    rows: OVERTIME_EXAMPLES.map((example) =>
+      rowOf(t.overtimeExamples[example.id], overtimeFiguresOf(example)),
+    ),
+  },
+];
 ---
 
 <SiteLayout
@@ -63,39 +82,46 @@ const rows = EXAMPLES.map((example) => {
       </section>
     ))}
 
-    <section aria-labelledby="examples">
-      <h2 id="examples">{t.examplesHeading}</h2>
-      <p>{t.examplesLead}</p>
-      <ul class="examples">
-        {rows.map((row) => (
-          <li>
-            <p class="example-label">{row.label}</p>
-            <dl>
-              <div>
-                <dt>{t.columns.regular}</dt>
-                <dd>{row.regular}</dd>
-              </div>
-              <div>
-                <dt>{t.columns.overtime}</dt>
-                <dd>{row.overtime}</dd>
-              </div>
-              <div>
-                <dt>{t.columns.double}</dt>
-                <dd>{row.double}</dd>
-              </div>
-              <div class="example-pay">
-                <dt>{t.columns.pay}</dt>
-                <dd>{row.pay}</dd>
-              </div>
-            </dl>
-          </li>
-        ))}
-      </ul>
-    </section>
+    {groups.map((group) => (
+      <section aria-labelledby={group.id}>
+        <h2 id={group.id}>{group.heading}</h2>
+        <p>{group.lead}</p>
+        <ul class="examples">
+          {group.rows.map((row) => (
+            <li>
+              <p class="example-label">{row.label}</p>
+              <dl>
+                <div>
+                  <dt>{t.columns.regular}</dt>
+                  <dd>{row.regular}</dd>
+                </div>
+                <div>
+                  <dt>{t.columns.overtime}</dt>
+                  <dd>{row.overtime}</dd>
+                </div>
+                <div>
+                  <dt>{t.columns.double}</dt>
+                  <dd>{row.double}</dd>
+                </div>
+                <div class="example-pay">
+                  <dt>{t.columns.pay}</dt>
+                  <dd>{row.pay}</dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
 
     <p class="note">{t.reviewed}</p>
-    <a class="button button-primary" href={t.cta.href}>
-      {t.cta.label}
-    </a>
+    <div class="actions">
+      <a class="button button-primary" href={t.cta.href}>
+        {t.cta.label}
+      </a>
+      <a class="button button-secondary" href={t.overtimeCta.href}>
+        {t.overtimeCta.label}
+      </a>
+    </div>
   </main>
 </SiteLayout>
