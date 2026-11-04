@@ -1,0 +1,66 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { longTailPageOf, type Job } from '../long-tail/jobs.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  readonly job: Job;
+}
+
+const { lang, job } = Astro.props;
+const t = PAY_CONVERTER_TEXTS[lang];
+const page = longTailPageOf(job, lang);
+---
+
+<SiteLayout
+  lang={lang}
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <section class="result" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure">{page.figure}</p>
+      </div>
+      <ul class="breakdown labeled" aria-label={t.breakdown}>
+        {page.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <a class="button button-primary" href={page.calculator.href}>
+      {page.calculator.label}
+    </a>
+    <p class="note">{t.note}</p>
+
+    <section aria-labelledby="others-heading">
+      <h2 id="others-heading">{page.others.heading}</h2>
+      <ul>
+        {page.others.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>
