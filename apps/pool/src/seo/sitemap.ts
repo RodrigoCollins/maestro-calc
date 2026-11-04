@@ -1,7 +1,19 @@
-/** The paths of the page files (`./methodology.astro` is `/methodology`, `./index.astro` is `/`), sorted; the 404 is never listed. */
-export const pagePaths = (files: readonly string[]): string[] =>
+/**
+ * The paths of the page files (`./methodology.astro` is `/methodology`, `./index.astro` is `/`),
+ * sorted; the 404 is never listed. A dynamic file (`./[job].astro`) stands for the paths `dynamic`
+ * gives it, and one it does not name throws, so a dynamic page cannot drop out of the sitemap.
+ */
+export const pagePaths = (
+  files: readonly string[],
+  dynamic: Readonly<Record<string, readonly string[]>> = {},
+): string[] =>
   files
-    .map((file) => file.replace(/^\.\//, '/').replace(/\.astro$/, ''))
+    .flatMap((file) => {
+      if (!file.includes('[')) return [file.replace(/^\.\//, '/').replace(/\.astro$/, '')];
+      const paths = dynamic[file];
+      if (paths === undefined) throw new Error(`no paths for the dynamic page ${file}`);
+      return paths;
+    })
     .filter((path) => path !== '/404')
     .map((path) => (path === '/index' ? '/' : path))
     .sort();

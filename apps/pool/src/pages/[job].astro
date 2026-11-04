@@ -1,0 +1,80 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '../components/Layout.astro';
+import { JOB_PAGES, type JobPage } from '../jobs.ts';
+
+// One page per common job, its figures worked out by the engines at build time (no script).
+export const getStaticPaths = (() =>
+  JOB_PAGES.map((page) => ({
+    params: { job: page.path.slice(1) },
+    props: { page },
+  }))) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: JobPage };
+---
+
+<Layout title={page.title} description={page.description}>
+  <main class="pool-page">
+    <h1>{page.h1}</h1>
+    <p>{page.lead}</p>
+    <figure class="pool-job-figure">
+      <p class="pool-marker">
+        {page.figure.value}
+        <small>{page.figure.unit}</small>
+      </p>
+      <figcaption>{page.figure.caption}</figcaption>
+    </figure>
+    <table class="pool-job-table">
+      <thead>
+        <tr>
+          {page.head.map((cell) => (
+            <th scope="col">{cell}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {page.rows.map(({ cells: [label, ...figures] }) => (
+          <tr>
+            <th scope="row">{label}</th>
+            {figures.map((cell) => (
+              <td>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <p>
+      <a href={page.calculator.href}>{page.calculator.label}</a>
+    </p>
+    <p class="pool-job-method">{page.method}</p>
+  </main>
+</Layout>
+
+<style>
+  .pool-job-figure {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .pool-job-table {
+    border-collapse: collapse;
+    background: #ffffff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-job-table th,
+  .pool-job-table td {
+    padding: 0.5rem 0.75rem;
+    border: 2px solid var(--ink);
+    text-align: right;
+  }
+
+  .pool-job-table th[scope='row'] {
+    text-align: left;
+  }
+
+  .pool-job-method {
+    font-size: 0.9375rem;
+  }
+</style>

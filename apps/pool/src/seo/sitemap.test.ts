@@ -12,6 +12,13 @@ describe('pagePaths', () => {
       ]),
     ).toEqual(['/', '/methodology', '/pool-salt-calculator']);
   });
+
+  it('lists the paths a dynamic page file builds, and refuses one it was not told', () => {
+    expect(
+      pagePaths(['./index.astro', './[job].astro'], { './[job].astro': ['/b', '/a'] }),
+    ).toEqual(['/', '/a', '/b']);
+    expect(() => pagePaths(['./[job].astro'])).toThrow('./[job].astro');
+  });
 });
 
 describe('sitemapXml', () => {
