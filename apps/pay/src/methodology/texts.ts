@@ -1,5 +1,5 @@
 import type { Lang } from '../time-card/receipt.ts';
-import type { Example } from './examples.ts';
+import type { Example, OvertimeExample } from './examples.ts';
 
 export interface Source {
   readonly label: string;
@@ -30,6 +30,10 @@ export interface MethodologyTexts {
     readonly pay: string;
   };
   readonly examples: Readonly<Record<Example['id'], string>>;
+  readonly overtimeExamplesHeading: string;
+  readonly overtimeExamplesLead: string;
+  readonly overtimeExamples: Readonly<Record<OvertimeExample['id'], string>>;
+  readonly overtimeCta: { readonly label: string; readonly href: string };
   readonly sourcesLabel: string;
   readonly reviewed: string;
   readonly cta: { readonly label: string; readonly href: string };
@@ -97,6 +101,15 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
         sources: [DLSE_FAQ, DLSE_LETTER],
       },
       {
+        id: 'overtime-calculator',
+        heading: 'The overtime calculator: hours by day',
+        paragraphs: [
+          'The overtime calculator takes the hours you worked each day, Monday to Sunday, instead of clock times, and splits them with the same federal or California rule as the time card. A day can be from 0 to 24 hours, in decimals: 8.25 is 8 hours 15 minutes.',
+          'It also shows your overtime rate, 1.5 times your hourly rate, and your double-time rate, 2 times it, rounded to the cent.',
+        ],
+        sources: [],
+      },
+      {
         id: 'pay',
         heading: 'From hours to pay',
         paragraphs: [
@@ -147,6 +160,15 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'california-ten-hour-days': 'California: 10 h a day, Mon-Fri (DLSE letter)',
       'california-seventh-day': 'California: 9 h every day, seven days',
     },
+    overtimeExamplesHeading: 'Overtime calculator examples',
+    overtimeExamplesLead:
+      'Each example is the hours of each day run through the overtime calculator at $22 an hour.',
+    overtimeExamples: {
+      'four-tens-federal': 'Federal: 10 h a day, Mon-Thu (40 h)',
+      'four-tens-california': 'California: the same four 10 h days',
+      'long-day-california': 'California: a 13 h Monday, then 8 h Tue-Fri',
+    },
+    overtimeCta: { label: 'Open the overtime calculator', href: '/overtime-calculator' },
     sourcesLabel: 'Sources',
     reviewed: 'Reviewed November 3, 2026.',
     cta: { label: 'Open the time card', href: '/time-card-calculator' },
@@ -185,6 +207,15 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'La regla semanal sigue valiendo, pero una hora ya pagada como extra del día no se vuelve a contar para las 40. Solo las horas regulares suman al límite semanal; el Comisionado Laboral lo llama no piramidar.',
         ],
         sources: [DLSE_FAQ, DLSE_LETTER],
+      },
+      {
+        id: 'overtime-calculator',
+        heading: 'La calculadora de horas extra: horas por día',
+        paragraphs: [
+          'La calculadora de horas extra toma las horas que trabajaste cada día, de lunes a domingo, en vez de la hora de entrada y salida, y las reparte con la misma regla federal o de California que la tarjeta de horas. Un día puede tener de 0 a 24 horas, con decimales: 8.25 son 8 horas y 15 minutos.',
+          'También muestra tu tarifa de hora extra, 1.5 veces tu pago por hora, y tu tarifa de hora doble, 2 veces, redondeadas al centavo.',
+        ],
+        sources: [],
       },
       {
         id: 'pay',
@@ -236,6 +267,18 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'california-long-day': 'California: la misma semana con un lunes de 13 h',
       'california-ten-hour-days': 'California: 10 h por día, lun-vie (carta de la DLSE)',
       'california-seventh-day': 'California: 9 h todos los días, siete días',
+    },
+    overtimeExamplesHeading: 'Ejemplos de la calculadora de horas extra',
+    overtimeExamplesLead:
+      'Cada ejemplo son las horas de cada día pasadas por la calculadora de horas extra a $22 la hora.',
+    overtimeExamples: {
+      'four-tens-federal': 'Federal: 10 h por día, lun-jue (40 h)',
+      'four-tens-california': 'California: los mismos cuatro días de 10 h',
+      'long-day-california': 'California: un lunes de 13 h y 8 h de mar a vie',
+    },
+    overtimeCta: {
+      label: 'Abrir la calculadora de horas extra',
+      href: '/es/calculadora-de-horas-extra',
     },
     sourcesLabel: 'Fuentes',
     reviewed: 'Revisado el 3 de noviembre de 2026.',

@@ -2,6 +2,7 @@ import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
+import { OVERTIME_PATHS } from './overtime/texts.ts';
 
 /** Every page of Cuenta Horas as an English and Spanish pair; the sitemap is built from it. */
 export interface Route {
@@ -20,6 +21,7 @@ export const ROUTES: readonly Route[] = [
     en: '/time-card-calculator',
     es: '/es/calculadora-de-horas-trabajadas',
   },
+  { id: 'overtime', kind: 'calculator', ...OVERTIME_PATHS },
   { id: 'hourly-to-salary', kind: 'calculator', ...PATHS.hourly },
   { id: 'salary-to-hourly', kind: 'calculator', ...PATHS.salary },
   { id: 'no-tax-on-overtime', kind: 'calculator', ...DEDUCTION_PATHS.overtime },
