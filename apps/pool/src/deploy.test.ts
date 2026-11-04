@@ -71,4 +71,10 @@ describe('apps/pool/wrangler.jsonc', () => {
     );
     expect(body).toBe(SITE.indexNowKey);
   });
+  it('serves the Bing Webmaster Tools ownership file at /BingSiteAuth.xml', () => {
+    const body = readFileSync(resolve(import.meta.dirname, '../public/BingSiteAuth.xml'), 'utf8');
+    expect(body).toBe(
+      '<?xml version="1.0"?>\n<users>\n\t<user>4AD8C29368765B41A0003ABF9C79C523</user>\n</users>\n',
+    );
+  });
 });
