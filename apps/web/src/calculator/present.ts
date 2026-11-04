@@ -220,6 +220,9 @@ export const outputText = (
   if (measure === 'hours') {
     throw new TypeError(`${key} is hours, which a Maestro Calc page does not show`);
   }
+  if (measure === 'number') {
+    throw new TypeError(`${key} is a number, which a Maestro Calc page does not show`);
+  }
   if (measure === 'money') {
     if (isQuantity(value) || value instanceof Rational) {
       throw new TypeError(`${key} is money, not a quantity`);

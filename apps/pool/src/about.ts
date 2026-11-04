@@ -5,7 +5,15 @@ import { CONTACT_EMAIL } from './privacy.ts';
  * opening guide cite; `about.test.ts` holds the two lists to each other, so the page claims no
  * source the site does not cite.
  */
-export const NAMED_SOURCES = ['NIST', 'ANSI/APSP/ICC-15', 'CDC', 'EPA', 'Hayward'] as const;
+export const NAMED_SOURCES = [
+  'NIST',
+  'USGS',
+  'Department of Energy',
+  'ANSI/APSP/ICC-15',
+  'CDC',
+  'EPA',
+  'Hayward',
+] as const;
 
 export interface AboutSection {
   readonly id: string;
@@ -51,7 +59,7 @@ export const ABOUT: About = {
       id: 'sources',
       heading: 'Sources',
       paragraphs: [
-        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets, and the manufacturer: the Hayward manual and guide for salt and opening, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
+        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets, and the manufacturer: the Hayward manual and guide for salt and opening, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
       ],
     },
     {
