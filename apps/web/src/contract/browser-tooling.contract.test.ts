@@ -95,7 +95,7 @@ describe('tooling tsconfig', () => {
 
   it('extends the base config and covers the specs and the root TypeScript configs', () => {
     expect(config.extends).toBe('../../tsconfig.base.json');
-    expect(config.include).toEqual(['e2e', 'e2e-pay', '*.ts']);
+    expect(config.include).toEqual(['e2e', 'e2e-pay', 'e2e-pool', '*.ts']);
   });
 
   // so the type-only import in apps/web/src/routing/routes.ts resolves without a root install

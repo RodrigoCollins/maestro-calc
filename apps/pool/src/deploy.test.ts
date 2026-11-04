@@ -5,10 +5,11 @@ import { describe, expect, it } from 'vitest';
 
 // Pool Figures deploys like Maestro Calc and Cuenta Horas: static assets on Workers Builds, from
 // `apps/pool/wrangler.jsonc` (the Workers Builds deploy command points at it).
-const parsed = ts.parseConfigFileTextToJson(
-  '../wrangler.jsonc',
-  readFileSync(resolve(import.meta.dirname, '../wrangler.jsonc'), 'utf8'),
-);
+const jsonc = (path: string): { config?: unknown; error?: ts.Diagnostic } =>
+  ts.parseConfigFileTextToJson(path, readFileSync(resolve(import.meta.dirname, path), 'utf8'));
+const parsed = jsonc('../wrangler.jsonc');
+// The browser tests serve the built dist through their own copy, without the build command.
+const e2e = jsonc('../../../tooling/site-browser/wrangler.pool.e2e.jsonc');
 
 describe('apps/pool/wrangler.jsonc', () => {
   it('parses and names the Worker pool-figures', () => {
@@ -27,6 +28,16 @@ describe('apps/pool/wrangler.jsonc', () => {
       },
     });
     expect(parsed.config).not.toHaveProperty('main');
+  });
+
+  it('is served to the browser tests with the same name and asset rules', () => {
+    expect(e2e.error).toBeUndefined();
+    const { assets, name } = parsed.config as { assets: Record<string, string>; name: string };
+    expect(e2e.config).toMatchObject({
+      name,
+      assets: { ...assets, directory: '../../apps/pool/dist' },
+    });
+    expect(e2e.config).not.toHaveProperty('build');
   });
 
   it('serves the site headers: nosniff, no framing and same-origin scripts only', () => {
