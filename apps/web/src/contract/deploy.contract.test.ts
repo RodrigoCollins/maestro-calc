@@ -53,6 +53,18 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
     ]);
   });
 
+  // A 502 from the GitHub API once failed a deploy under `bash -e` (2026-11-04): a failed poll is
+  // a "not yet", so the 20-minute loop keeps waiting instead of stopping on the first error.
+  it('keeps polling the build when one GitHub API call fails', () => {
+    const waits = Object.values(workflow.jobs).flatMap((job) =>
+      job.steps.filter((step) => step.id === 'build'),
+    );
+    expect(waits).toHaveLength(2);
+    for (const wait of waits) {
+      expect(wait.run).toMatch(/run=\$\(gh api [\s\S]*?\) \|\| run=''/);
+    }
+  });
+
   // spec: site-seo › [IN4]
   it('holds read-only contents and checks, pins every action and keeps no token', () => {
     expect(workflow.permissions).toEqual({ contents: 'read', checks: 'read' });
