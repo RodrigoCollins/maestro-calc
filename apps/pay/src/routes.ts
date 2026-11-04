@@ -1,7 +1,7 @@
 import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
-import { LONG_TAIL_ROUTES } from './long-tail/jobs.ts';
+import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 
 /** Every page of Cuenta Horas as an English and Spanish pair; the sitemap is built from it. */
 export interface Route {

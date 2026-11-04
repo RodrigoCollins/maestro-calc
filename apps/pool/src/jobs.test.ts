@@ -12,9 +12,9 @@ import {
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { SALT } from './doses.ts';
+import { CHLORINE, PUMP, SALT } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
-import { JOB_PAGES, type JobPage } from './jobs.ts';
+import { JOB_PAGES, jobLinksOf, type JobPage } from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -103,5 +103,33 @@ describe('the long-tail job pages', () => {
     expect(byPath('/24-ft-round-pool-gallons').figure.value).toBe('13,536');
     // π × 30 × 15 ÷ 4 = 353.43 ft², × 4 ft × 1,728 ÷ 231 = 10,575
     expect(byPath('/15x30-oval-pool-gallons').figure.value).toBe('10,575');
+  });
+
+  // worked by hand: 800 ft² × (3.5 + 8) ÷ 2 ft = 4,600 ft³, × 1,728 ÷ 231 = 34,410
+  it('works out the 20 x 40 and the 18 ft and 21 ft round pools as by hand', () => {
+    expect(byPath('/20x40-pool-gallons').figure.value).toBe('34,410');
+    // π × 18² ÷ 4 × 4 ft = 1,017.88 ft³, × 1,728 ÷ 231 = 7,614
+    expect(byPath('/18-ft-round-pool-gallons').figure.value).toBe('7,614');
+    // π × 21² ÷ 4 × 4 ft = 1,385.44 ft³, × 1,728 ÷ 231 = 10,364
+    expect(byPath('/21-ft-round-pool-gallons').figure.value).toBe('10,364');
+  });
+
+  it('is linked from the calculator it works with, and from no other', () => {
+    for (const path of [VOLUME_TEXTS.path, SALT.path]) {
+      const linked = jobLinksOf(path).map(({ href }) => href);
+      const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
+      expect(linked).toEqual(own.map((page) => page.path));
+      expect(jobLinksOf(path).map(({ label }) => label)).toEqual(own.map(({ h1 }) => h1));
+    }
+    expect(jobLinksOf(VOLUME_TEXTS.path)).toContainEqual({
+      href: '/12x24-pool-gallons',
+      label: 'How many gallons in a 12 x 24 pool',
+    });
+    expect(jobLinksOf(SALT.path)).toContainEqual({
+      href: '/how-much-salt-for-a-20000-gallon-pool',
+      label: 'How much salt for a 20,000 gallon pool',
+    });
+    expect(jobLinksOf(CHLORINE.path)).toEqual([]);
+    expect(jobLinksOf(PUMP.path)).toEqual([]);
   });
 });

@@ -2,6 +2,7 @@
 import type { Calculator, InputDescriptor, OutputDescriptor } from '@maestro-calc/core';
 import type { DosePage } from '../doses.ts';
 import { amountText, outputText } from '../format.ts';
+import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 
 interface Props {
@@ -103,6 +104,7 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
     </section>
     <p class="pool-note">{page.method}</p>
     <p class="pool-note">{page.note}</p>
+    <JobLinks path={page.path} />
   </main>
   <slot />
 </Layout>

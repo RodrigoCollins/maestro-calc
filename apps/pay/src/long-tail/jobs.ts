@@ -2,52 +2,10 @@ import { encode, type Money } from '@maestro-calc/core';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { moneyText } from '../format.ts';
 import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
-import type { Route } from '../routes.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import { JOBS, pathOf, type Job } from './routes.ts';
 
-/**
- * One common search the pay converter answers (plans/growth/PLAN.md, lever 1): an hourly rate
- * people ask the yearly pay of, or a salary they ask the hourly rate of. Only the amount is given;
- * every figure of the page is the engine's, at 40 hours a week and 52 paid weeks.
- */
-export interface Job {
-  readonly amount: string;
-  readonly per: 'hour' | 'year';
-  readonly slug: Readonly<Record<Lang, string>>;
-}
-
-const hourly = (amount: string): Job => ({
-  amount,
-  per: 'hour',
-  slug: { en: `${amount}-an-hour-is-how-much-a-year`, es: `${amount}-la-hora-cuanto-es-al-ano` },
-});
-
-const salary = (amount: string): Job => ({
-  amount,
-  per: 'year',
-  slug: { en: `${amount}-a-year-is-how-much-an-hour`, es: `${amount}-al-ano-cuanto-es-por-hora` },
-});
-
-export const JOBS: readonly Job[] = [
-  hourly('15'),
-  hourly('17'),
-  hourly('18'),
-  hourly('20'),
-  hourly('25'),
-  salary('50000'),
-  salary('60000'),
-  salary('100000'),
-];
-
-const pathOf = (job: Job, lang: Lang): string =>
-  lang === 'en' ? `/pay/${job.slug.en}` : `/es/pago/${job.slug.es}`;
-
-export const LONG_TAIL_ROUTES: readonly Route[] = JOBS.map((job) => ({
-  id: `pay-${job.slug.en}`,
-  kind: 'article',
-  en: pathOf(job, 'en'),
-  es: pathOf(job, 'es'),
-}));
+export { JOBS, LONG_TAIL_ROUTES, type Job } from './routes.ts';
 
 /** `$41,600.00` reads `$41,600` in a sentence; cents stay when there are any. */
 const short = (text: string): string => text.replace(/\.00$/, '');

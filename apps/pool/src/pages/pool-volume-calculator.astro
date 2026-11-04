@@ -1,6 +1,7 @@
 ---
 import { ft3, gal, isQuantityOf, liter, type Quantity } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
+import JobLinks from '../components/JobLinks.astro';
 import Layout from '../components/Layout.astro';
 import { lengthFieldText, volumeText } from '../format.ts';
 import { VOLUME_TEXTS as t } from '../volume/texts.ts';
@@ -66,6 +67,7 @@ const rows = [
     </section>
     <p class="pool-note">{t.method}</p>
     <p class="pool-note">{t.note}</p>
+    <JobLinks path={t.path} />
   </main>
   <script src="../client/pool-volume.ts"></script>
 </Layout>

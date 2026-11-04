@@ -43,6 +43,29 @@ for (const path of PAGES) {
   });
 }
 
+// The volume and salt calculators link the job pages they work out ("Common pool sizes").
+for (const calculator of ['/pool-volume-calculator', '/pool-salt-calculator']) {
+  test(`links the job pages of ${calculator}, each one answering with no WCAG violation`, async ({
+    page,
+  }) => {
+    await page.goto(calculator);
+    const links = await page.locator('.pool-jobs .link-list a').evaluateAll((anchors) =>
+      anchors.map((anchor) => ({
+        href: anchor.getAttribute('href') ?? '',
+        text: anchor.textContent.trim(),
+      })),
+    );
+    expect(links.length).toBeGreaterThan(1);
+    for (const { href, text } of links) {
+      const response = await page.goto(href);
+      expect(response?.status(), href).toBe(200);
+      await expect(page.locator('h1')).toHaveText(text);
+      const { violations } = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+      expect(violations, formatViolations(href, violations)).toEqual([]);
+    }
+  });
+}
+
 test('answers an unknown path with the 404 page', async ({ page }) => {
   const response = await page.goto('/no-such-page');
   expect(response?.status()).toBe(404);
@@ -54,7 +77,7 @@ test('links every calculator from the home and the header to a page that answers
   page,
 }) => {
   await page.goto('/');
-  for (const selector of ['.pool-tools a', 'header nav a']) {
+  for (const selector of ['[aria-labelledby="pool-tools"] .pool-tools a', 'header nav a']) {
     const hrefs = await page
       .locator(selector)
       .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
@@ -102,10 +125,19 @@ test('sends the security headers with every page', async ({ request }) => {
   }
 });
 
-test('serves a sitemap with every page and robots that point to it', async ({ request }) => {
+// The job pages are built from their table, so the home's list of them is the reference.
+test('serves a sitemap with every page and job page, and robots that point to it', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/');
+  const jobs = await page
+    .locator('[aria-labelledby="pool-jobs"] a')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(jobs.length).toBeGreaterThan(0);
   const xml = await (await request.get('/sitemap.xml')).text();
-  expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length);
-  for (const path of PAGES)
+  expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length + jobs.length);
+  for (const path of [...PAGES, ...jobs])
     expect(xml, path).toContain(`<loc>https://poolfigures.com${path}</loc>`);
   const robots = await (await request.get('/robots.txt')).text();
   expect(robots).toContain('Sitemap: https://poolfigures.com/sitemap.xml');
