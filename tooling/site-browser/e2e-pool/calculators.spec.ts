@@ -19,6 +19,28 @@ test('warns that salt over the target only comes down by draining', async ({ pag
   await expect(warning).toBeVisible();
 });
 
+test('says lowering alkalinity takes acid when the reading is over the target', async ({
+  page,
+}) => {
+  await page.goto('/pool-alkalinity-calculator');
+  const warning = page.locator('[data-warning="acidToLower"]');
+  await expect(warning).toBeHidden();
+  await page.locator('[name="current"]').fill('150');
+  await expect(warning).toBeVisible();
+  await expect(page.locator('[data-out="pounds"]').first()).toHaveText('0.0');
+});
+
+test('notes a stabilizer target over the 90 ppm public-pool limit', async ({ page }) => {
+  await page.goto('/pool-stabilizer-calculator');
+  const limit = page.locator('[data-warning="overCodeLimit"]');
+  const drain = page.locator('[data-warning="drainToLower"]');
+  await expect(limit).toBeHidden();
+  await page.locator('[name="target"]').fill('100');
+  await expect(limit).toBeVisible();
+  await page.locator('[name="current"]').fill('120');
+  await expect(drain).toBeVisible();
+});
+
 test('shows the dose of the chlorine product the visitor picks', async ({ page }) => {
   await page.goto('/pool-chlorine-calculator');
   await page.locator('[name="product"]').selectOption('cal-hypo-65');

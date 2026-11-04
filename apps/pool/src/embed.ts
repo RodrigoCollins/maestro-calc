@@ -1,5 +1,5 @@
 import { embedPathOf, embedSnippetOf } from '@maestro-calc/site-kit/embed';
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { SITE } from './site.config.ts';
@@ -17,6 +17,8 @@ const CALCULATORS: Readonly<Record<string, { readonly name: string; readonly hei
   [SALT.path]: { name: SALT.h1, height: 1100 },
   [CHLORINE.path]: { name: CHLORINE.h1, height: 1200 },
   [PUMP.path]: { name: PUMP.h1, height: 1000 },
+  [ALKALINITY.path]: { name: ALKALINITY.h1, height: 1100 },
+  [STABILIZER.path]: { name: STABILIZER.h1, height: 1100 },
 };
 
 export interface Embed {
@@ -54,7 +56,7 @@ export const EMBED_PAGE = {
   path: '/embed-calculators',
   title: 'Embed Our Pool Calculators on Your Site | Pool Figures',
   description:
-    'Put the Pool Figures volume, salt, chlorine and pump size calculators on your own website for free: copy the code and paste it.',
+    'Put the Pool Figures volume, salt, chlorine, pump, alkalinity and stabilizer calculators on your own website for free: copy the code and paste it.',
   h1: 'Embed our calculators',
   lead: 'You can put any Pool Figures calculator on your own website for free. It works the same as on our site: the same formulas, the same figures and the link your visitors can share.',
   howHeading: 'How to embed a calculator',

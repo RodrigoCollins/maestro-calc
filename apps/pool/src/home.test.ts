@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -12,7 +12,14 @@ const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
 describe('home calculator cards', () => {
   it('links every calculator page once, volume first, as the pages name their paths', () => {
     const hrefs = HOME_TOOLS.map(({ href }) => href);
-    expect(hrefs).toEqual([VOLUME_TEXTS.path, SALT.path, CHLORINE.path, PUMP.path]);
+    expect(hrefs).toEqual([
+      VOLUME_TEXTS.path,
+      SALT.path,
+      CHLORINE.path,
+      PUMP.path,
+      ALKALINITY.path,
+      STABILIZER.path,
+    ]);
     expect([...hrefs].sort()).toEqual([...pages].sort());
   });
 

@@ -4,6 +4,8 @@ export const ROUTED_PAGES = [
   'pool-salt-calculator.html',
   'pool-chlorine-calculator.html',
   'pool-pump-size-calculator.html',
+  'pool-alkalinity-calculator.html',
+  'pool-stabilizer-calculator.html',
 ] as const;
 
 /** The embed of each (`src/embed.ts`): `/embed` + its path, the same one calculator script. */

@@ -1,5 +1,11 @@
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
+
+/** The public-pool limits of the alkalinity and stabilizer pages: MAHC 5.7.4.4.1 and 5.7.3.1.3.2. */
+const MAHC = {
+  name: 'CDC, 2024 Model Aquatic Health Code, 5th Edition: total alkalinity 60 to 180 ppm (5.7.4.4.1), CYA at or below 90 ppm (5.7.3.1.3.2)',
+  url: 'https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf',
+};
 
 /** A source of a section: its name as it is cited, and a link when there is a public one. */
 export interface MethodSource {
@@ -113,6 +119,54 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         key: 'flow',
         result: '55.6',
         unit: 'gpm',
+      },
+    ],
+  },
+  {
+    id: 'alkalinity',
+    title: 'Alkalinity',
+    href: ALKALINITY.path,
+    method: ALKALINITY.method,
+    note: ALKALINITY.note,
+    sources: [MAHC],
+    cases: [
+      {
+        text: '10,000 gallons from 80 to 90 ppm: 37,854.1 L × 10 × 1.6788 mg = 635.5 g, and 635.5 ÷ 453.6 =',
+        raw: { gallons: '10000', current: '80', target: '90' },
+        key: 'pounds',
+        result: '1.4',
+        unit: 'lb',
+      },
+      {
+        text: '20,000 gallons from 70 to 100 ppm: 75,708.2 L × 30 × 1.6788 mg = 3,813.0 g, and 3,813.0 ÷ 28.35 =',
+        raw: { gallons: '20000', current: '70', target: '100' },
+        key: 'ounces',
+        result: '134.5',
+        unit: 'oz',
+      },
+    ],
+  },
+  {
+    id: 'stabilizer',
+    title: 'Stabilizer',
+    href: STABILIZER.path,
+    method: STABILIZER.method,
+    note: STABILIZER.note,
+    sources: [MAHC],
+    cases: [
+      {
+        text: '10,000 gallons from 20 to 30 ppm: 37,854.1 L × 10 mg = 378.5 g, and 378.5 ÷ 28.35 =',
+        raw: { gallons: '10000', current: '20', target: '30' },
+        key: 'ounces',
+        result: '13.4',
+        unit: 'oz',
+      },
+      {
+        text: '20,000 gallons from 0 to 30 ppm: 75,708.2 L × 30 mg = 2,271.2 g, and 2,271.2 ÷ 453.6 =',
+        raw: { gallons: '20000', current: '0', target: '30' },
+        key: 'pounds',
+        result: '5.0',
+        unit: 'lb',
       },
     ],
   },

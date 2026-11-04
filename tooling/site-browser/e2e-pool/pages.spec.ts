@@ -81,7 +81,7 @@ test('links every calculator from the home and the header to a page that answers
     const hrefs = await page
       .locator(selector)
       .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-    expect(hrefs, selector).toHaveLength(4);
+    expect(hrefs, selector).toHaveLength(6);
     for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
   }
 });
@@ -92,7 +92,7 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await page.goto('/');
   await page.locator('footer a[href="/methodology"]').click();
   await expect(page).toHaveURL(/\/methodology$/);
-  await expect(page.locator('.pool-method li strong')).toHaveCount(5);
+  await expect(page.locator('.pool-method li strong')).toHaveCount(9);
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
 });
 

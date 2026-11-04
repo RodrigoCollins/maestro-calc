@@ -1,4 +1,4 @@
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** One calculator card of the home: its page, a short title and what it works out. */
@@ -29,5 +29,15 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     href: PUMP.path,
     title: 'Pump size',
     summary: 'The flow to turn your pool over in six hours, as the pool standard sizes it.',
+  },
+  {
+    href: ALKALINITY.path,
+    title: 'Alkalinity',
+    summary: 'Pounds of baking soda to raise total alkalinity.',
+  },
+  {
+    href: STABILIZER.path,
+    title: 'Stabilizer',
+    summary: 'Pounds of cyanuric acid to raise your CYA.',
   },
 ];

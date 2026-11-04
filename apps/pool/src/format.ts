@@ -50,12 +50,15 @@ const PER_GALLON = Rational.of(128);
 
 /**
  * The text of an output of the dose calculators, in the unit the page names: pounds and
- * kilograms of salt, fluid ounces of liquid chlorine (1/128 gal), ounces of a granular product and
+ * kilograms of salt, ounces of baking soda or stabilizer, fluid ounces of liquid chlorine (1/128 gal), ounces of a granular product and
  * gallons a minute of pump flow.
  */
 export const outputText = (key: string, value: unknown): string => {
   if (isQuantityOf(value, 'mass'))
-    return amountText(valueIn(value, key === 'kilograms' ? kg : key === 'dry' ? oz : lb), 1);
+    return amountText(
+      valueIn(value, key === 'kilograms' ? kg : key === 'dry' || key === 'ounces' ? oz : lb),
+      1,
+    );
   if (isQuantityOf(value, 'volume'))
     return amountText(
       key === 'liquid' ? valueIn(value, gal).mul(PER_GALLON) : valueIn(value, gal),
