@@ -12,7 +12,7 @@ export interface Example {
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 
 /** Every day off, then the given days worked with no break. */
-const only = (days: readonly string[], start: string, end: string): Record<string, string> =>
+export const only = (days: readonly string[], start: string, end: string): Record<string, string> =>
   Object.fromEntries(
     DAYS.flatMap((day) =>
       days.includes(day)
@@ -66,10 +66,16 @@ export interface Figures {
   readonly pay: Money;
 }
 
+/** A week of time card fields, named; the guides' examples share this shape. */
+export interface WorkedWeek {
+  readonly id: string;
+  readonly inputs: Readonly<Record<string, string>>;
+}
+
 /** What the time card gives for an example; a failing example is a build error. */
-export const figuresOf = (example: Example): Figures => {
+export const figuresOf = (example: WorkedWeek): Figures => {
   const ran = timeCard.run(example.inputs);
-  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  if (!ran.ok) throw new Error(`worked example ${example.id} does not run`);
   return {
     regularHours: outputOf(ran.value, 'regularHours'),
     overtimeHours: outputOf(ran.value, 'overtimeHours'),

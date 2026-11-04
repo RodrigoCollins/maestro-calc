@@ -479,7 +479,8 @@ h1 {
   gap: 1rem;
 }
 
-.tools h2 {
+.tools h2,
+.guides h2 {
   margin: 0;
   font-size: 1.65rem;
   font-weight: 800;

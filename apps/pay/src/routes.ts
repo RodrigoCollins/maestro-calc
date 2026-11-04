@@ -1,5 +1,6 @@
 import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
+import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 
@@ -25,6 +26,8 @@ export const ROUTES: readonly Route[] = [
   { id: 'no-tax-on-overtime', kind: 'calculator', ...DEDUCTION_PATHS.overtime },
   { id: 'no-tax-on-tips', kind: 'calculator', ...DEDUCTION_PATHS.tips },
   { id: 'tax-guide', kind: 'article', ...GUIDE_PATHS },
+  { id: 'overtime-guide', kind: 'article', ...OVERTIME_GUIDE_PATHS.federal },
+  { id: 'california-overtime-guide', kind: 'article', ...OVERTIME_GUIDE_PATHS.california },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   ...LONG_TAIL_ROUTES,

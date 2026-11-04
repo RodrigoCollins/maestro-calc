@@ -18,6 +18,7 @@ export interface HomeTexts {
   readonly cardTitle: string;
   readonly cardTotal: string;
   readonly toolsHeading: string;
+  readonly guidesHeading: string;
   readonly soon: string;
   readonly sources: string;
   readonly otherLang: string;
@@ -36,6 +37,7 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
     cardTitle: 'Time card',
     cardTotal: 'Gross total',
     toolsHeading: 'Calculators',
+    guidesHeading: 'Guides',
     soon: 'SOON',
     sources: 'Rules from the US Department of Labor (FLSA) and the California Labor Commissioner.',
     otherLang: 'Español',
@@ -89,6 +91,7 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
     cardTitle: 'Tarjeta de horas',
     cardTotal: 'Total bruto',
     toolsHeading: 'Calculadoras',
+    guidesHeading: 'Guías',
     soon: 'PRONTO',
     sources:
       'Reglas del Departamento de Trabajo de EE. UU. (FLSA) y del Comisionado Laboral de California.',
