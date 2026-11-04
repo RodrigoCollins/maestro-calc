@@ -250,7 +250,7 @@ export const enSite = {
   'page.roof-pitch-6-12.heading': '6/12 roof pitch: the angle and the rafter length',
   'page.roof-pitch-8-12.title': '8/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
   'page.roof-pitch-8-12.description':
-    'The angle of a 8/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+    'The angle of an 8/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-8-12.heading': '8/12 roof pitch: the angle and the rafter length',
   'page.roof-pitch-12-12.title': '12/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
   'page.roof-pitch-12-12.description':
