@@ -22,7 +22,7 @@ const script = (src: string): string => `<script type="module" src="${src}"></sc
 describe('staticImportsOf', () => {
   it('follows relative and absolute static imports, not dynamic ones or packages', () => {
     const text =
-      'import"./a.js";import{x}from"../b.mjs";export*from"/_astro/c.js";import("./lazy.js");import"pkg"';
+      'import"./a.js";import{x}from"../b.mjs";export*from"/_astro/c.js";import("./lazy.js");import"pkg";import"pkg/index.js"';
     expect(staticImportsOf('_astro/x/entry.js', text)).toEqual([
       '_astro/x/a.js',
       '_astro/b.mjs',
@@ -109,5 +109,32 @@ describe('budgetProblems', () => {
         /^index\.html: the page weighs 180,\d{3} B, over the limit of 172,032 B$/,
       ),
     ]);
+  });
+
+  // a reference the build does not hold weighs nothing: the missing page check names it instead
+  it('counts a font or a module the build does not hold as zero bytes', () => {
+    const head =
+      '<link rel="preload" as="font" href="/_astro/fonts/gone.woff2"><script type="module" src="/_astro/a.js"></script>';
+    const files = { 'calc.html': page('', head), '_astro/a.js': 'import"./gone.js";' };
+    expect(budgetProblems(build(files, ['calc.html']))).toEqual([]);
+  });
+
+  it('weighs a module imported twice once', () => {
+    const head = '<script type="module" src="/_astro/a.js"></script>';
+    const files = {
+      'calc.html': page('', head),
+      '_astro/a.js': 'import"./b.js";import"./c.js";',
+      '_astro/b.js': 'import"./d.js";',
+      '_astro/c.js': 'import"./d.js";',
+      '_astro/d.js': 40_000,
+    };
+    // d.js twice would be 80,000 B, over the 49,152 B budget
+    expect(budgetProblems(build(files, ['calc.html']))).toEqual([]);
+  });
+
+  it('leaves a protocol-relative reference and a preload with no href out of the page', () => {
+    const head =
+      '<link rel="preload" as="font"><link rel="preload" as="font" href="//cdn.example/a.woff2">';
+    expect(budgetProblems(build({ 'index.html': page('', head) }))).toEqual([]);
   });
 });
