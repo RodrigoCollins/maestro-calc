@@ -32,10 +32,13 @@ for (const path of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
-    // the launch switch (SITE.indexable) is off until March 2027
-    test('stays out of search engines until launch', async ({ page }) => {
+    test('is open to search engines, with its canonical URL', async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://poolfigures.com${path}`,
+      );
     });
   });
 }
@@ -44,6 +47,7 @@ test('answers an unknown path with the 404 page', async ({ page }) => {
   const response = await page.goto('/no-such-page');
   expect(response?.status()).toBe(404);
   await expect(page.locator('h1')).toBeVisible();
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
 });
 
 test('links every calculator from the home and the header to a page that answers', async ({
@@ -75,6 +79,15 @@ test('sends the security headers with every page', async ({ request }) => {
     expect(response.headers()['content-security-policy'], path).toContain("script-src 'self'");
     expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
   }
+});
+
+test('serves a sitemap with every page and robots that point to it', async ({ request }) => {
+  const xml = await (await request.get('/sitemap.xml')).text();
+  expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length);
+  for (const path of PAGES)
+    expect(xml, path).toContain(`<loc>https://poolfigures.com${path}</loc>`);
+  const robots = await (await request.get('/robots.txt')).text();
+  expect(robots).toContain('Sitemap: https://poolfigures.com/sitemap.xml');
 });
 
 test('leads from the home to the spring guide, whose calculator links all answer', async ({
