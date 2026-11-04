@@ -2,6 +2,7 @@
 import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import Layout from '../components/Layout.astro';
+import { OPENING_GUIDE } from '../guide.ts';
 import { HOME_TOOLS } from '../home.ts';
 import { SITE } from '../site.config.ts';
 import { SALT } from '../doses.ts';
@@ -59,6 +60,19 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
           </li>
         ))}
       </ul>
+    </section>
+
+    <section class="pool-band" aria-labelledby="pool-spring">
+      <div>
+        <h2 id="pool-spring">Opening your pool this spring?</h2>
+        <p>
+          The order that saves a second trip to the store: water level, salt, pH, then chlorine.
+          Every dose sized to your pool.
+        </p>
+      </div>
+      <a class="pool-button pool-button-light" href={OPENING_GUIDE.path}>
+        Read the opening guide
+      </a>
     </section>
   </main>
 </Layout>
@@ -200,6 +214,40 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
     content: '';
     position: absolute;
     inset: 0;
+  }
+
+  /* The one ink band of the home: the spring guide. */
+  .pool-band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.75rem;
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  .pool-band div {
+    flex: 999 1 26rem;
+    min-width: 0;
+  }
+
+  .pool-band h2 {
+    margin: 0 0 0.375rem;
+    font-size: 2.25rem;
+  }
+
+  .pool-band p {
+    margin: 0;
+    line-height: 1.5;
+    color: #d4d6d3;
+  }
+
+  .pool-button-light {
+    border-color: #ffffff;
+    background: #ffffff;
+    color: var(--ink);
   }
 
   .pool-tools p {
