@@ -1,6 +1,7 @@
 import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
+import { ABOUT_PATHS } from './about/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
 
@@ -29,5 +30,6 @@ export const ROUTES: readonly Route[] = [
   { id: 'tax-guide', kind: 'article', ...GUIDE_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
+  { id: 'about', kind: 'article', ...ABOUT_PATHS },
   ...LONG_TAIL_ROUTES,
 ];
