@@ -1,21 +1,50 @@
-import { decode } from '@maestro-calc/core';
+import { decode, Rational, type Money } from '@maestro-calc/core';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
+import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { describe, expect, it } from 'vitest';
 import { moneyText } from '../format.ts';
 import { PATHS } from '../pay-converter/texts.ts';
-import { commonLinksOf, JOBS, LONG_TAIL_ROUTES, longTailPageOf } from './jobs.ts';
+import {
+  commonLinksOf,
+  JOBS,
+  LONG_TAIL_ROUTES,
+  longTailPageOf,
+  overtimeWeekOf,
+  TIME_CARD_PATHS,
+} from './jobs.ts';
 
 const LANGS = ['en', 'es'] as const;
 
-const jobOf = (amount: string): (typeof JOBS)[number] => {
-  const job = JOBS.find((candidate) => candidate.amount === amount);
-  if (job === undefined) throw new Error(`no job of ${amount}`);
+/** The pay converter jobs; the overtime jobs run through the time card. */
+const CONVERTS = JOBS.filter(({ kind }) => kind === 'convert');
+const OVERTIMES = JOBS.filter(({ kind }) => kind === 'overtime');
+
+const jobOf = (amount: string, kind: 'convert' | 'overtime' = 'convert'): (typeof JOBS)[number] => {
+  const job = JOBS.find((candidate) => candidate.amount === amount && candidate.kind === kind);
+  if (job === undefined) throw new Error(`no ${kind} job of ${amount}`);
   return job;
+};
+
+/** The time card's overtime pay and week pay for `hours` overtime hours at `rate`. */
+const timeCardPay = (rate: string, hours: number): { overtime: string; week: string } => {
+  const ran = timeCard.run(overtimeWeekOf(rate, hours));
+  if (!ran.ok) throw new Error(`${rate} with ${String(hours)} h must run`);
+  const out = new Map<string, Money | Rational>(
+    ran.value.outputs.map(({ key, value }) => [key, value]),
+  );
+  const money = (key: string): string => {
+    const value = out.get(key);
+    if (value === undefined || !('currency' in value)) throw new Error(`no money ${key}`);
+    return moneyText(value);
+  };
+  expect(out.get('overtimeHours')).toEqual(Rational.of(hours));
+  expect(out.get('regularHours')).toEqual(Rational.of(40));
+  return { overtime: money('overtimePay'), week: money('pay') };
 };
 
 describe('long-tail pages', () => {
   it('take every figure from the pay converter, never from the text', () => {
-    for (const job of JOBS) {
+    for (const job of CONVERTS) {
       const ran = payConverter.run({ amount: job.amount, per: job.per });
       if (!ran.ok) throw new Error(job.amount);
       const engine = Object.fromEntries(
@@ -49,7 +78,7 @@ describe('long-tail pages', () => {
   });
 
   it('cover the common hourly rates and salaries people search', () => {
-    expect(JOBS.filter(({ per }) => per === 'hour').map(({ amount }) => amount)).toEqual([
+    expect(CONVERTS.filter(({ per }) => per === 'hour').map(({ amount }) => amount)).toEqual([
       '15',
       '16',
       '17',
@@ -59,7 +88,7 @@ describe('long-tail pages', () => {
       '25',
       '30',
     ]);
-    expect(JOBS.filter(({ per }) => per === 'year').map(({ amount }) => amount)).toEqual([
+    expect(CONVERTS.filter(({ per }) => per === 'year').map(({ amount }) => amount)).toEqual([
       '40000',
       '45000',
       '50000',
@@ -68,10 +97,11 @@ describe('long-tail pages', () => {
       '80000',
       '100000',
     ]);
+    expect(OVERTIMES.map(({ amount }) => amount)).toEqual(['15', '16', '18', '20', '25']);
   });
 
   it('link the matching calculator, prefilled through its URL state', () => {
-    for (const job of JOBS) {
+    for (const job of CONVERTS) {
       for (const lang of LANGS) {
         const { calculator } = longTailPageOf(job, lang);
         const [path, query = ''] = calculator.href.split('?');
@@ -88,6 +118,8 @@ describe('long-tail pages', () => {
     expect(LONG_TAIL_ROUTES).toHaveLength(JOBS.length);
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
+    expect(LONG_TAIL_ROUTES.map(({ en }) => en)).toContain('/pay/time-and-a-half-for-20-an-hour');
+    expect(LONG_TAIL_ROUTES.map(({ es }) => es)).toContain('/es/pago/tiempo-y-medio-de-20-la-hora');
     for (const route of LONG_TAIL_ROUTES) {
       expect(route.kind).toBe('article');
       expect(route.en).toMatch(/^\/pay\/[a-z0-9-]+$/);
@@ -97,10 +129,57 @@ describe('long-tail pages', () => {
 
   it('are linked from the calculator of their kind, in each language', () => {
     for (const lang of LANGS) {
-      const linked = (['hour', 'year'] as const).flatMap((per) =>
+      const linked = (['hour', 'year', 'overtime'] as const).flatMap((per) =>
         commonLinksOf(per, lang).links.map(({ href }) => href),
       );
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
+    }
+  });
+});
+
+describe('overtime long-tail pages', () => {
+  it('take the overtime rate and pay from the time card, never from the text', () => {
+    for (const job of OVERTIMES) {
+      for (const lang of LANGS) {
+        const page = longTailPageOf(job, lang);
+        // the rate is the time card's pay for one overtime hour
+        expect(page.figure).toBe(timeCardPay(job.amount, 1).overtime);
+        expect(page.rows.map(({ value }) => value)).toEqual(
+          [5, 10, 15, 20].map((hours) => timeCardPay(job.amount, hours).overtime),
+        );
+      }
+    }
+  });
+
+  it('answer the hand-verified case', () => {
+    // 20 x 1.5 = 30 an hour; 10 x 30 = 300; 40 x 20 + 300 = 1,100
+    const page = longTailPageOf(jobOf('20', 'overtime'), 'en');
+    expect(page.h1).toBe('What is time and a half for $20 an hour?');
+    expect(page.figure).toBe('$30.00');
+    expect(page.rows.find(({ key }) => key === '10')?.value).toBe('$300.00');
+    expect(page.lead).toBe(
+      'Time and a half for $20 an hour is $30 an hour. Under the federal rule, 10 overtime hours past 40 in a week pay $300, and the 50-hour week comes to $1,100 before taxes.',
+    );
+    expect(timeCardPay('20', 10)).toEqual({ overtime: '$300.00', week: '$1,100.00' });
+    // 15 x 1.5 = 22.50; 10 x 22.50 = 225
+    const fifteen = longTailPageOf(jobOf('15', 'overtime'), 'es');
+    expect(fifteen.h1).toBe('¿Cuánto es tiempo y medio de $15 la hora?');
+    expect(fifteen.figure).toBe('$22.50');
+    expect(fifteen.rows.find(({ key }) => key === '10')?.value).toBe('$225.00');
+  });
+
+  it('link the time card, prefilled with the 50-hour week at the rate', () => {
+    for (const job of OVERTIMES) {
+      for (const lang of LANGS) {
+        const { calculator } = longTailPageOf(job, lang);
+        const [path, query = ''] = calculator.href.split('?');
+        expect(path).toBe(TIME_CARD_PATHS[lang]);
+        const { state, issues } = decode(timeCard, query);
+        expect(issues).toEqual([]);
+        const validated = timeCard.validate(overtimeWeekOf(job.amount, 10));
+        if (!validated.ok) throw new Error('the week must validate');
+        expect(state).toEqual(validated.value);
+      }
     }
   });
 });

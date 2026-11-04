@@ -5,6 +5,7 @@ import { clockFieldText, hoursText, moneyText } from '../format.ts';
 import { outputOf, receiptMessage, whatsappHref, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { commonLinksOf, TIME_CARD_PATHS } from '../long-tail/jobs.ts';
 import { SITE } from '../site.config.ts';
 import SiteLayout from './SiteLayout.astro';
 
@@ -14,7 +15,8 @@ interface Props {
 
 const { lang } = Astro.props;
 const t = TIME_CARD_TEXTS[lang];
-const paths = { en: '/time-card-calculator', es: '/es/calculadora-de-horas-trabajadas' } as const;
+const paths = TIME_CARD_PATHS;
+const common = commonLinksOf('overtime', lang);
 const canonical = new URL(paths[lang], SITE.origin).href;
 const ran = timeCard.run({});
 if (!ran.ok) throw new Error('the default week of the time card must run');
@@ -188,6 +190,17 @@ const href = whatsappHref(receiptMessage(result, lang, canonical));
     <p class="note">
       {t.note} {t.workweek}
     </p>
+
+    <section aria-labelledby="common-heading">
+      <h2 id="common-heading">{common.heading}</h2>
+      <ul class="link-list">
+        {common.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/time-card.ts"></script>
 </SiteLayout>

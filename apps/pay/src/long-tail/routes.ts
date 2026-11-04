@@ -16,26 +16,38 @@ interface Route {
 }
 
 /**
- * One common search the pay converter answers (plans/growth/PLAN.md, lever 1): an hourly rate
- * people ask the yearly pay of, or a salary they ask the hourly rate of. Only the amount is given;
- * every figure of the page is the engine's, at 40 hours a week and 52 paid weeks.
+ * One common search a calculator answers (plans/growth/PLAN.md, lever 1). A `convert` job is the
+ * pay converter's: an hourly rate people ask the yearly pay of, or a salary they ask the hourly
+ * rate of, at 40 hours a week and 52 paid weeks. An `overtime` job is the time card's: the time
+ * and a half of an hourly rate, and the pay of common overtime hours past 40 in the week. Only the
+ * amount is given; every figure of the page is the engine's.
  */
 export interface Job {
+  readonly kind: 'convert' | 'overtime';
   readonly amount: string;
   readonly per: 'hour' | 'year';
   readonly slug: Readonly<Record<Lang, string>>;
 }
 
 const hourly = (amount: string): Job => ({
+  kind: 'convert',
   amount,
   per: 'hour',
   slug: { en: `${amount}-an-hour-is-how-much-a-year`, es: `${amount}-la-hora-cuanto-es-al-ano` },
 });
 
 const salary = (amount: string): Job => ({
+  kind: 'convert',
   amount,
   per: 'year',
   slug: { en: `${amount}-a-year-is-how-much-an-hour`, es: `${amount}-al-ano-cuanto-es-por-hora` },
+});
+
+const overtime = (amount: string): Job => ({
+  kind: 'overtime',
+  amount,
+  per: 'hour',
+  slug: { en: `time-and-a-half-for-${amount}-an-hour`, es: `tiempo-y-medio-de-${amount}-la-hora` },
 });
 
 /** Each kind in ascending order: the calculators list them in this order. */
@@ -55,6 +67,11 @@ export const JOBS: readonly Job[] = [
   salary('70000'),
   salary('80000'),
   salary('100000'),
+  overtime('15'),
+  overtime('16'),
+  overtime('18'),
+  overtime('20'),
+  overtime('25'),
 ];
 
 export const pathOf = (job: Job, lang: Lang): string =>
