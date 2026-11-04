@@ -1,11 +1,13 @@
+import { JOB_PAGES } from './jobs.ts';
 import { headOf } from './seo/head.ts';
 import { jsonLdOf, pageKindOf } from './seo/json-ld.ts';
 import { pagePaths, sitemapXml } from './seo/sitemap.ts';
 import { SITE } from './site.config.ts';
 
-// The page files, as `pages/sitemap.xml.ts` lists them (`./methodology.astro`).
+// The page files and the job pages of `[job].astro`, as `pages/sitemap.xml.ts` lists them.
 const paths = pagePaths(
   Object.keys(import.meta.glob('./pages/*.astro')).map((file) => file.replace('/pages/', '/')),
+  { './[job].astro': JOB_PAGES.map(({ path }) => path) },
 );
 const pathOf = (url: string): string => new URL(url).pathname;
 
