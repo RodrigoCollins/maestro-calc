@@ -50,9 +50,11 @@ describe('apps/pool/wrangler.jsonc', () => {
     expect(csp).not.toMatch(/unsafe-eval|script-src[^;]*unsafe-inline/);
   });
 
-  it('lets robots crawl; the pages stay noindex until launch', () => {
+  it('lets robots crawl and points them to the sitemap', () => {
     const robots = readFileSync(resolve(import.meta.dirname, '../public/robots.txt'), 'utf8');
-    expect(robots).toBe('User-agent: *\nAllow: /\n');
+    expect(robots).toBe(
+      'User-agent: *\nAllow: /\n\nSitemap: https://poolfigures.com/sitemap.xml\n',
+    );
   });
   it('serves the IndexNow key at /<key>.txt, as the deploy job checks before it notifies', () => {
     expect(SITE.indexNowKey).toMatch(/^[0-9a-f]{32}$/);

@@ -1,14 +1,19 @@
 ---
 import { Font } from 'astro:assets';
 import { HOME_TOOLS } from '../home.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
 
 interface Props {
   readonly title: string;
   readonly description: string;
+  /** False for a page that is never indexed and has no canonical: the 404. */
+  readonly indexed?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, indexed = true } = Astro.props;
+const indexable = SITE.indexable && indexed;
+const canonical = new URL(canonicalPath(Astro.url.pathname), SITE.origin).href;
 ---
 
 <!doctype html>
@@ -16,7 +21,11 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    {!SITE.indexable && <meta name="robots" content="noindex" />}
+    {indexable ? (
+      <link rel="canonical" href={canonical} />
+    ) : (
+      <meta name="robots" content="noindex" />
+    )}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -39,6 +48,9 @@ const { title, description } = Astro.props;
       <p>Every figure is an estimate. Read the label of your product before you add it.</p>
       <p>
         <a href="/methodology">How we work it out</a>
+      </p>
+      <p>
+        <a href="/opening-your-pool">Opening your pool</a>
       </p>
     </footer>
   </body>
