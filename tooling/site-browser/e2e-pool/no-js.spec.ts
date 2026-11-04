@@ -15,3 +15,14 @@ for (const { path, out, initial } of CALCULATORS) {
     await expect(page.locator(`[data-out="${out}"]`).first()).toHaveText(initial);
   });
 }
+
+test('draws the default pool and leaves the strip picker out without JavaScript', async ({
+  page,
+}) => {
+  await page.goto('/pool-volume-calculator');
+  await expect(page.locator('svg[data-side] [data-side="mark0"]')).toHaveText('3½ FT');
+  await expect(page.locator('svg[data-side] [data-side="mark1"]')).toHaveText('8 FT');
+  await page.goto('/pool-chlorine-calculator');
+  await expect(page.locator('.pool-strip')).toBeHidden();
+  await expect(page.locator('[name="current"]')).toBeEditable();
+});
