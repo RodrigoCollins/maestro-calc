@@ -18,7 +18,7 @@ const must = (file: string, what: string, expected: string, found: string | unde
 /** The string field of a JSON-LD document, when it is an object that has one. */
 const fieldOf = (document: unknown, key: string): string | undefined => {
   if (typeof document !== 'object' || document === null || Array.isArray(document)) return;
-  const value = (document as Record<string, unknown>)[key];
+  const value: unknown = Reflect.get(document, key);
   return typeof value === 'string' ? value : undefined;
 };
 

@@ -16,9 +16,7 @@
     "@fontsource/ibm-plex-mono": "5.3.0",
     "@maestro-calc/core": "*",
     "@maestro-calc/pay-core": "*",
+    "@maestro-calc/site-kit": "*",
     "astro": "^7.4.2"
-  },
-  "devDependencies": {
-    "@maestro-calc/site-kit": "*"
   }
 }
