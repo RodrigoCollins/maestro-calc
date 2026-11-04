@@ -1,4 +1,3 @@
-import { defineCalculator, Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import {
   choiceCalculator,
@@ -11,6 +10,7 @@ import { definePage } from './page-module.ts';
 import { stepperSlot } from './slots/steppers.ts';
 import { rectangleAreaPage } from './rectangle-area/page.ts';
 import { choiceSlot } from './slots/choices.ts';
+import { defineCalculator, percentInput, Rational, selectInput, usd } from '@maestro-calc/core';
 
 const TWELVE = [
   'length',
@@ -86,15 +86,14 @@ describe('formOf (calculator-web-core › [CWC30], [CWC28])', () => {
     const calculator = defineCalculator({
       id: 'driven-stepper-fixture',
       inputs: [
-        { kind: 'select', key: 'mode', urlKey: 'm1', options: ['a', 'b'], default: 'a' },
-        {
-          kind: 'percent',
+        selectInput({ key: 'mode', urlKey: 'm1', options: ['a', 'b'], default: 'a' }),
+        percentInput({
           key: 'rate',
           urlKey: 'p1',
           default: Rational.of(5),
           min: Rational.ZERO,
           max: Rational.of(10),
-        },
+        }),
       ],
       outputs: [{ key: 'total', measure: 'money', role: 'primary' }],
       compute: () => ({ outputs: { total: usd(0) }, shopping: [], warnings: [] }),

@@ -6,17 +6,26 @@ import { ft, in2, inch } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { quantity } from '../units/quantity.ts';
 import { defineCalculator, DEFINITION_REASONS, type DefinitionReason } from './define.ts';
+import {
+  booleanInput,
+  clockInput,
+  countInput,
+  decimalInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from './kinds/index.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
-const side = {
-  kind: 'length',
+const side = lengthInput({
   key: 'side',
   urlKey: 'a',
   default: quantity(2, inch),
   defaultUnit: 'in',
   metricDefaultUnit: 'cm',
-} as const;
+});
 const outputs = [
   { key: 'area', measure: 'area', role: 'primary' },
   { key: 'cost', measure: 'money', role: 'secondary' },
@@ -47,13 +56,12 @@ describe('defineCalculator (calculator-contract › Field kinds and descriptors)
 
   // The registry shares one definition with every page: nothing reachable from it may change.
   it('freezes the metadata at every level, so no list or descriptor can be altered', () => {
-    const mode = {
-      kind: 'select',
+    const mode = selectInput({
       key: 'mode',
       urlKey: 'b',
       default: 'x',
       options: ['x', 'y'],
-    } as const;
+    });
     const lengthOutput = {
       key: 'len',
       measure: 'length',
@@ -112,8 +120,8 @@ type Definition = Parameters<typeof defineCalculator>[0];
 const compute = (): never => {
   throw new Error('compute is never called by a definition test');
 };
-const count = { kind: 'count', key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 };
-const select = { kind: 'select', key: 'sel', urlKey: 'c', default: 'x', options: ['x', 'y'] };
+const count = countInput({ key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 });
+const select = selectInput({ key: 'sel', urlKey: 'c', default: 'x', options: ['x', 'y'] });
 const area = { key: 'area', measure: 'area', role: 'primary' };
 const baseline = { id: 'box', inputs: [side, count, select], outputs: [area], compute };
 const define = (patch: Record<string, unknown>): unknown =>
@@ -131,7 +139,7 @@ const rejection = (patch: Record<string, unknown>): unknown => {
   return undefined;
 };
 const withInputs = (...inputs: unknown[]): Record<string, unknown> => ({ inputs });
-const clockField = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 };
+const clockField = clockInput({ key: 'tin', urlKey: 'i', default: 420 });
 const withOutputs = (...outputs: unknown[]): Record<string, unknown> => ({ outputs });
 const withSide = (patch: Record<string, unknown>): Record<string, unknown> =>
   withInputs({ ...side, ...patch });
@@ -199,25 +207,25 @@ const rejected: Row[] = [
   row(
     'INVALID_BOUNDS',
     'percent min 50 max 10',
-    withInputs({ kind: 'percent', key: 'p', urlKey: 'p', default: r(20), min: r(50), max: r(10) }),
+    withInputs(percentInput({ key: 'p', urlKey: 'p', default: r(20), min: r(50), max: r(10) })),
     'p',
   ),
   row(
     'INVALID_BOUNDS',
     'decimal min 50 max 10',
-    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(20), min: r(50), max: r(10) }),
+    withInputs(decimalInput({ key: 'd', urlKey: 'd', default: r(20), min: r(50), max: r(10) })),
     'd',
   ),
   row(
     'INVALID_BOUNDS',
     'negative money min',
-    withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(0), min: usd(-1) }),
+    withInputs(moneyInput({ key: 'm', urlKey: 'm', default: usd(0), min: usd(-1) })),
     'm',
   ),
   row(
     'INVALID_BOUNDS',
     'money min above max',
-    withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(5), min: usd(6), max: usd(5) }),
+    withInputs(moneyInput({ key: 'm', urlKey: 'm', default: usd(5), min: usd(6), max: usd(5) })),
     'm',
   ),
   row(
@@ -242,25 +250,25 @@ const rejected: Row[] = [
   row(
     'DEFAULT_INVALID',
     'decimal above its max',
-    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(337, 2), max: r(168) }),
+    withInputs(decimalInput({ key: 'd', urlKey: 'd', default: r(337, 2), max: r(168) })),
     'd',
   ),
   row(
     'DEFAULT_INVALID',
     'negative decimal',
-    withInputs({ kind: 'decimal', key: 'd', urlKey: 'd', default: r(-1, 2) }),
+    withInputs(decimalInput({ key: 'd', urlKey: 'd', default: r(-1, 2) })),
     'd',
   ),
   row(
     'DEFAULT_INVALID',
     'percent above 100',
-    withInputs({ kind: 'percent', key: 'p', urlKey: 'p', default: r(201, 2) }),
+    withInputs(percentInput({ key: 'p', urlKey: 'p', default: r(201, 2) })),
     'p',
   ),
   row(
     'DEFAULT_INVALID',
     'negative money',
-    withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(-1) }),
+    withInputs(moneyInput({ key: 'm', urlKey: 'm', default: usd(-1) })),
     'm',
   ),
   row('DEFAULT_INVALID', 'length above max', withSide({ max: quantity(1, inch) }), 'side'),
@@ -379,18 +387,18 @@ describe('defineCalculator validation (calculator-contract › Definition-time v
     ['imperial default unit yd', withSide({ defaultUnit: 'yd' })],
     ['imperial default unit ft', withSide({ defaultUnit: 'ft' })],
     ['metric default unit m', withSide({ metricDefaultUnit: 'm' })],
-    ['a boolean input', withInputs({ kind: 'boolean', key: 'flg', urlKey: 'f', default: false })],
-    ['a count without bounds', withInputs({ kind: 'count', key: 'c', urlKey: 'c', default: 3 })],
+    ['a boolean input', withInputs(booleanInput({ key: 'flg', urlKey: 'f', default: false }))],
+    ['a count without bounds', withInputs(countInput({ key: 'c', urlKey: 'c', default: 3 }))],
     ['a count with equal bounds', withCount({ min: 4, max: 4, default: 4 })],
     ['a count at the safe maximum', withCount({ max: Number.MAX_SAFE_INTEGER, default: 0 })],
     ['a length with equal bounds', withSide({ min: quantity(2, inch), max: quantity(2, inch) })],
     [
       'a money minimum of $0',
-      withInputs({ kind: 'money', key: 'm', urlKey: 'm', default: usd(0), min: usd(0) }),
+      withInputs(moneyInput({ key: 'm', urlKey: 'm', default: usd(0), min: usd(0) })),
     ],
     [
       'a percent default on its bounds',
-      withInputs({ kind: 'percent', key: 'p', urlKey: 'p', default: r(100) }),
+      withInputs(percentInput({ key: 'p', urlKey: 'p', default: r(100) })),
     ],
     ['a decimal display with 0 places', displayed({ unit: 'ft2', format: 'decimal', places: 0 })],
     ['a decimal display with 12 places', displayed({ unit: 'm2', format: 'decimal', places: 12 })],

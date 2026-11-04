@@ -150,6 +150,21 @@ export const shards = {
     tests: ['src/url', 'src/index.test.ts'],
     deps: kernel,
   },
+  // The input kinds (one module per kind, so a bundle carries only the kinds its calculator
+  // declares): each holds its form reader, its URL text and its URL reader, so the shard runs the
+  // tests of both sides, `validate` and the codec, without the slow property suites.
+  kinds: {
+    mutate: ['src/calculator/kinds/**'],
+    tests: [
+      'src/calculator/kinds',
+      'src/calculator/validate.test.ts',
+      'src/url/codec.test.ts',
+      'src/url/decode.test.ts',
+      'src/url/url-values.test.ts',
+      'src/index.test.ts',
+    ],
+    deps: kernel,
+  },
   // Calculators are split by directory (design D10 split rule, AGENTS.md): the single shard passed
   // 947 mutants and 10 minutes of CI with ten calculators. Four groups of about the same source
   // size run on their own runners, and a calculator pull request colds its own group and the first.

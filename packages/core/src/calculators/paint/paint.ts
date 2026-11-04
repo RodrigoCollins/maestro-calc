@@ -6,6 +6,9 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, ft2, gal, inch } from '../../units/catalog.ts';
 import { add, multiply, ratio, scale, sign, sub } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
+import { countInput } from '../../calculator/kinds/count.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
 
 /** The area of one door left out of the walls: a standard 36 in by 80 in door, exactly 20 ft². */
 const DOOR = quantity(20, ft2);
@@ -50,8 +53,7 @@ export const createPaint = (suppliedCoverage: PaintCoverage) => {
   return defineCalculator({
     id: 'paint',
     inputs: [
-      {
-        kind: 'length',
+      lengthInput({
         key: 'length',
         urlKey: 'l',
         default: quantity(144, inch),
@@ -59,9 +61,8 @@ export const createPaint = (suppliedCoverage: PaintCoverage) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'width',
         urlKey: 'w',
         default: quantity(144, inch),
@@ -69,9 +70,8 @@ export const createPaint = (suppliedCoverage: PaintCoverage) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'height',
         urlKey: 'h',
         default: quantity(96, inch),
@@ -79,11 +79,11 @@ export const createPaint = (suppliedCoverage: PaintCoverage) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(50, ft),
-      },
-      { kind: 'count', key: 'doors', urlKey: 'dr', default: 1, min: 0, max: 50 },
-      { kind: 'count', key: 'windows', urlKey: 'wn', default: 2, min: 0, max: 100 },
-      { kind: 'count', key: 'coats', urlKey: 'c', default: 2, min: 1, max: 5 },
-      { kind: 'money', key: 'gallonPrice', urlKey: 'gp', default: usd(0), max: usd(10000) },
+      }),
+      countInput({ key: 'doors', urlKey: 'dr', default: 1, min: 0, max: 50 }),
+      countInput({ key: 'windows', urlKey: 'wn', default: 2, min: 0, max: 100 }),
+      countInput({ key: 'coats', urlKey: 'c', default: 2, min: 1, max: 5 }),
+      moneyInput({ key: 'gallonPrice', urlKey: 'gp', default: usd(0), max: usd(10000) }),
     ],
     outputs: [
       {

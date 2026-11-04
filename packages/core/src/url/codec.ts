@@ -1,4 +1,3 @@
-import { findOption } from '../calculator/constraints.ts';
 import { UNIT_KEY, VERSION_KEY } from '../calculator/reserved-keys.ts';
 import type { UrlIssueCode } from '../error-codes.ts';
 import type {
@@ -8,11 +7,7 @@ import type {
   UnitSystem,
 } from '../calculator/descriptors.ts';
 import { CoreError } from '../errors.ts';
-import { isMoney } from '../money/money.ts';
-import { Rational } from '../rational/rational.ts';
-import { isQuantityOf } from '../units/quantity.ts';
-import { clockText } from '../format/clock.ts';
-import { percentDecode, readUrlValue, WHOLE_NUMBER, type UrlValue } from './url-values.ts';
+import { percentDecode, readUrlValue, type UrlValue } from './url-values.ts';
 
 /** The parts of a calculator that the codec reads. */
 export type UrlCodable = Pick<AnyCalculator, 'id' | 'inputs'>;
@@ -31,12 +26,6 @@ export interface StateLocus {
   readonly field: string;
 }
 
-/** The URL text of a clock field with no time (a day off). */
-const NO_TIME = '-';
-
-const isMinuteOfDay = (value: unknown): value is number =>
-  typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 1439;
-
 /** An object (a list included) can hold fields; null, a primitive and a function cannot. */
 const isContainer = (value: unknown): value is object =>
   typeof value === 'object' && value !== null;
@@ -46,28 +35,8 @@ const isContainer = (value: unknown): value is object =>
  * `input`: inches for a length, percent points, dollars for money, an integer, an option id, and
  * `1` or `0`. One value has one text, so comparing texts is comparing exact values.
  */
-export const urlTextOf = (input: InputDescriptor, value: unknown): string | undefined => {
-  switch (input.kind) {
-    case 'length':
-      return isQuantityOf(value, 'length') ? value.canonical.toString() : undefined;
-    case 'percent':
-    case 'decimal':
-      return value instanceof Rational ? value.toString() : undefined;
-    case 'money':
-      return isMoney(value) ? value.amount.toString() : undefined;
-    case 'count':
-      // `Number.isSafeInteger` does not coerce, so `String` only ever sees a number here
-      return Number.isSafeInteger(value) && WHOLE_NUMBER.test(String(value))
-        ? String(value)
-        : undefined;
-    case 'select':
-      return findOption(input, value);
-    case 'boolean':
-      return typeof value === 'boolean' ? (value ? '1' : '0') : undefined;
-    case 'clock':
-      return value === null ? NO_TIME : isMinuteOfDay(value) ? clockText(value) : undefined;
-  }
-};
+export const urlTextOf = (input: InputDescriptor, value: unknown): string | undefined =>
+  input.codec.urlText(input, value);
 
 /**
  * Encodes a calculator state as a query string without a leading `?`: `v=1`, then `u=m` for

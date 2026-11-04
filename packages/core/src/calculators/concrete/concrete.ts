@@ -9,6 +9,11 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, inch, yd3 } from '../../units/catalog.ts';
 import { divideScalar, multiply, ratio, scale, sign } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
+import { countInput } from '../../calculator/kinds/count.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
+import { percentInput } from '../../calculator/kinds/percent.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 const HUNDRED = Rational.of(100);
 
@@ -126,16 +131,16 @@ const lengthField = <const K extends string, const U extends string>(
   defaultInches: number,
   [defaultUnit, metricDefaultUnit]: readonly ['in' | 'ft', 'cm' | 'm'],
   max: Quantity<'length'>,
-): LengthDescriptor & { readonly key: K; readonly urlKey: U } => ({
-  kind: 'length',
-  key,
-  urlKey,
-  default: quantity(defaultInches, inch),
-  defaultUnit,
-  metricDefaultUnit,
-  min: quantity(0, inch),
-  max,
-});
+): LengthDescriptor & { readonly key: K; readonly urlKey: U } =>
+  lengthInput({
+    key,
+    urlKey,
+    default: quantity(defaultInches, inch),
+    defaultUnit,
+    metricDefaultUnit,
+    min: quantity(0, inch),
+    max,
+  });
 
 /** Large dimensions are read in feet (and metres), small ones in inches (and centimetres). */
 const BIG = ['ft', 'm'] as const;
@@ -151,13 +156,12 @@ export const createConcrete = (suppliedYields: BagYields) => {
   return defineCalculator({
     id: 'concrete',
     inputs: [
-      {
-        kind: 'select',
+      selectInput({
         key: 'shape',
         urlKey: 'sh',
         default: 'slab',
         options: SHAPES,
-      },
+      }),
       lengthField('length', 'l', 144, BIG, quantity(1000, ft)),
       lengthField('width', 'w', 120, BIG, quantity(1000, ft)),
       lengthField('thickness', 't', 4, SMALL, quantity(10, ft)),
@@ -168,19 +172,18 @@ export const createConcrete = (suppliedYields: BagYields) => {
       lengthField('stepWidth', 'sw', 48, BIG, quantity(100, ft)),
       lengthField('rise', 'rs', 7, SMALL, quantity(5, ft)),
       lengthField('run', 'rn', 11, SMALL, quantity(5, ft)),
-      { kind: 'count', key: 'stepCount', urlKey: 'ns', default: 3, min: 0, max: 50 },
-      { kind: 'count', key: 'count', urlKey: 'n', default: 1, min: 1, max: 1000 },
-      {
-        kind: 'percent',
+      countInput({ key: 'stepCount', urlKey: 'ns', default: 3, min: 0, max: 50 }),
+      countInput({ key: 'count', urlKey: 'n', default: 1, min: 1, max: 1000 }),
+      percentInput({
         key: 'waste',
         urlKey: 'ws',
         default: Rational.of(10),
         min: Rational.ZERO,
         max: Rational.of(50),
-      },
-      { kind: 'select', key: 'bag', urlKey: 'bg', default: '80', options: BAG_SIZES },
-      { kind: 'money', key: 'bagPrice', urlKey: 'bp', default: usd(0), max: usd(10000) },
-      { kind: 'money', key: 'readyMixPrice', urlKey: 'rp', default: usd(0), max: usd(10000) },
+      }),
+      selectInput({ key: 'bag', urlKey: 'bg', default: '80', options: BAG_SIZES }),
+      moneyInput({ key: 'bagPrice', urlKey: 'bp', default: usd(0), max: usd(10000) }),
+      moneyInput({ key: 'readyMixPrice', urlKey: 'rp', default: usd(0), max: usd(10000) }),
     ],
     outputs: [
       {

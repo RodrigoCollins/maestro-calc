@@ -8,6 +8,7 @@ import { Rational } from '../rational/rational.ts';
 import { ft, inch, m } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { encode, urlTextOf } from './codec.ts';
+import { booleanInput, clockInput, decimalInput } from '../calculator/kinds/index.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -38,7 +39,7 @@ const defaults: Box = {
 
 const flagBox = defineCalculator({
   id: 'flag-box',
-  inputs: [{ kind: 'boolean', key: 'on', urlKey: 'e', default: true }],
+  inputs: [booleanInput({ key: 'on', urlKey: 'e', default: true })],
   outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
   compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),
 });
@@ -177,7 +178,7 @@ describe('encode (url-state-codec › Encoding)', () => {
 
 // core-clock-time: one canonical text per time of day.
 describe('urlTextOf a clock field (core-clock-time)', () => {
-  const clock = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 } as const;
+  const clock = clockInput({ key: 'tin', urlKey: 'i', default: 420 });
 
   it.each([
     [450, '0730'],
@@ -195,7 +196,7 @@ describe('urlTextOf a clock field (core-clock-time)', () => {
 
 // A decimal is written like percent points: the canonical rational text.
 describe('urlTextOf a decimal field', () => {
-  const hours = { kind: 'decimal', key: 'hrs', urlKey: 'h', default: Rational.of(40) } as const;
+  const hours = decimalInput({ key: 'hrs', urlKey: 'h', default: Rational.of(40) });
 
   it.each([
     [Rational.of(75, 2), '75/2'],

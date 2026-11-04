@@ -3,11 +3,13 @@ import {
   defineCalculator,
   ft,
   inch,
+  lengthInput,
   multiply,
   PI,
   quantity,
   Rational,
   scale,
+  selectInput,
 } from '@maestro-calc/core';
 
 /** The shapes the calculator measures exactly; a kidney pool has no exact formula. */
@@ -17,8 +19,7 @@ const HALF = Rational.of(1, 2);
 const QUARTER = Rational.of(1, 4);
 
 const length = <K extends string>(key: K, urlKey: string, feet: number) =>
-  ({
-    kind: 'length',
+  lengthInput({
     key,
     urlKey,
     default: quantity(feet * 12, inch),
@@ -26,7 +27,7 @@ const length = <K extends string>(key: K, urlKey: string, feet: number) =>
     metricDefaultUnit: 'm',
     min: quantity(0, inch),
     max: quantity(500, ft),
-  }) as const;
+  });
 
 /**
  * Pool volume: the surface area of the shape times the average of the shallow and the deep end.
@@ -37,7 +38,7 @@ const length = <K extends string>(key: K, urlKey: string, feet: number) =>
 export const poolVolume = defineCalculator({
   id: 'pool-volume',
   inputs: [
-    { kind: 'select', key: 'shape', urlKey: 's', options: SHAPES, default: 'rectangle' },
+    selectInput({ key: 'shape', urlKey: 's', options: SHAPES, default: 'rectangle' }),
     length('length', 'l', 32),
     length('width', 'w', 16),
     length('shallow', 'sh', 3.5),

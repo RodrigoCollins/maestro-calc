@@ -1,4 +1,14 @@
-import { defineCalculator, Rational, scaleMoney, usd, type Money } from '@maestro-calc/core';
+import {
+  countInput,
+  decimalInput,
+  defineCalculator,
+  type Money,
+  moneyInput,
+  Rational,
+  scaleMoney,
+  selectInput,
+  usd,
+} from '@maestro-calc/core';
 
 /** The periods a pay amount can be given in, and how many of each fit in a year. */
 const PERIODS = ['hour', 'week', 'biweekly', 'semimonthly', 'month', 'year'] as const;
@@ -13,17 +23,16 @@ type Period = (typeof PERIODS)[number];
 export const payConverter = defineCalculator({
   id: 'pay-converter',
   inputs: [
-    { kind: 'money', key: 'amount', urlKey: 'a', default: usd(22), max: usd(10_000_000) },
-    { kind: 'select', key: 'per', urlKey: 'p', options: PERIODS, default: 'hour' },
-    {
-      kind: 'decimal',
+    moneyInput({ key: 'amount', urlKey: 'a', default: usd(22), max: usd(10_000_000) }),
+    selectInput({ key: 'per', urlKey: 'p', options: PERIODS, default: 'hour' }),
+    decimalInput({
       key: 'hoursPerWeek',
       urlKey: 'h',
       default: Rational.of(40),
       min: Rational.of(1),
       max: Rational.of(168),
-    },
-    { kind: 'count', key: 'weeksPerYear', urlKey: 'w', default: 52, min: 1, max: 52 },
+    }),
+    countInput({ key: 'weeksPerYear', urlKey: 'w', default: 52, min: 1, max: 52 }),
   ],
   outputs: [
     { key: 'annual', measure: 'money', role: 'primary' },

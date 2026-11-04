@@ -4,6 +4,14 @@ import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { quantity } from '../units/quantity.ts';
+import {
+  booleanInput,
+  countInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from '../calculator/kinds/index.ts';
 
 /**
  * The calculator of the `calculator-contract` scenarios (spec table): one input of each kind and
@@ -13,8 +21,7 @@ import { quantity } from '../units/quantity.ts';
 export const fixtureBox = defineCalculator({
   id: 'fixture-box',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'len',
       urlKey: 'a',
       default: quantity(12, inch),
@@ -22,26 +29,24 @@ export const fixtureBox = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(0, inch),
       max: quantity(1200, inch),
-    },
-    { kind: 'count', key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 },
-    {
-      kind: 'percent',
+    }),
+    countInput({ key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 }),
+    percentInput({
       key: 'pct',
       urlKey: 'c',
       default: Rational.of(10),
       min: Rational.ZERO,
       max: Rational.of(100),
-    },
-    { kind: 'select', key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y'] },
-    { kind: 'boolean', key: 'flg', urlKey: 'e', default: false },
-    {
-      kind: 'money',
+    }),
+    selectInput({ key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y'] }),
+    booleanInput({ key: 'flg', urlKey: 'e', default: false }),
+    moneyInput({
       key: 'prc',
       urlKey: 'f',
       default: usd(Rational.of(249, 50)),
       min: usd(0),
       max: usd(10000),
-    },
+    }),
   ],
   outputs: [
     {

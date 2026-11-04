@@ -1,12 +1,16 @@
 import {
   addMoney,
+  type ClockDescriptor,
+  clockInput,
+  type CountDescriptor,
+  countInput,
   defineCalculator,
+  moneyInput,
   Rational,
   scaleMoney,
+  selectInput,
   shiftMinutes,
   usd,
-  type ClockDescriptor,
-  type CountDescriptor,
 } from '@maestro-calc/core';
 
 /** The days of the week, Monday first; the key of a day is its clock-in field. */
@@ -51,29 +55,29 @@ const DEFAULT_OUT: Readonly<Record<Day, number | null>> = {
   sun: null,
 };
 
-const clockIn = <const D extends Day>(day: D): ClockDescriptor & { readonly key: D } => ({
-  kind: 'clock',
-  key: day,
-  urlKey: `${STEM[day]}i`,
-  default: DEFAULT_IN[day],
-});
+const clockIn = <const D extends Day>(day: D): ClockDescriptor & { readonly key: D } =>
+  clockInput({
+    key: day,
+    urlKey: `${STEM[day]}i`,
+    default: DEFAULT_IN[day],
+  });
 
-const clockOut = <const D extends Day>(day: D): ClockDescriptor & { readonly key: `${D}Out` } => ({
-  kind: 'clock',
-  key: `${day}Out`,
-  urlKey: `${STEM[day]}o`,
-  default: DEFAULT_OUT[day],
-});
+const clockOut = <const D extends Day>(day: D): ClockDescriptor & { readonly key: `${D}Out` } =>
+  clockInput({
+    key: `${day}Out`,
+    urlKey: `${STEM[day]}o`,
+    default: DEFAULT_OUT[day],
+  });
 
 const unpaidBreak = <const D extends Day>(
   day: D,
-): CountDescriptor & { readonly key: `${D}Break` } => ({
-  kind: 'count',
-  key: `${day}Break`,
-  urlKey: `${STEM[day]}b`,
-  default: DEFAULT_IN[day] === null || day === 'sat' ? 0 : 30,
-  max: 720,
-});
+): CountDescriptor & { readonly key: `${D}Break` } =>
+  countInput({
+    key: `${day}Break`,
+    urlKey: `${STEM[day]}b`,
+    default: DEFAULT_IN[day] === null || day === 'sat' ? 0 : 30,
+    max: 720,
+  });
 
 const dayFields = <const D extends Day>(day: D) =>
   [clockIn(day), clockOut(day), unpaidBreak(day)] as const;
@@ -126,14 +130,13 @@ const hours = (minutes: number): Rational => Rational.of(minutes).div(SIXTY);
 export const timeCard = defineCalculator({
   id: 'time-card',
   inputs: [
-    { kind: 'money', key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) },
-    {
-      kind: 'select',
+    moneyInput({ key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) }),
+    selectInput({
       key: 'rule',
       urlKey: 'ru',
       options: ['federal', 'california'],
       default: 'federal',
-    },
+    }),
     ...dayFields('mon'),
     ...dayFields('tue'),
     ...dayFields('wed'),

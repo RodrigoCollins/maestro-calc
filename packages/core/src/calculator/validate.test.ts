@@ -11,6 +11,7 @@ import { isQuantityOf, quantity } from '../units/quantity.ts';
 import { defineCalculator } from './define.ts';
 import type { ValidateOptions } from './descriptors.ts';
 import { validateRecord } from './validate.ts';
+import { booleanInput, clockInput, countInput, decimalInput, lengthInput } from './kinds/index.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 // A failed result for one field, with the params of a violated bound when there are any.
@@ -62,8 +63,8 @@ describe('validateRecord (calculator-contract › Total validation without silen
     const inherited = defineCalculator({
       id: 'inherited',
       inputs: [
-        { kind: 'count', key: 'valueOf', urlKey: 'a', default: 4 },
-        { kind: 'boolean', key: 'toString', urlKey: 'b', default: true },
+        countInput({ key: 'valueOf', urlKey: 'a', default: 4 }),
+        booleanInput({ key: 'toString', urlKey: 'b', default: true }),
       ],
       outputs: [{ key: 'area', measure: 'area', role: 'primary' }],
       compute: () => ({
@@ -139,14 +140,13 @@ describe('validateRecord length field (calculator-contract › Total validation,
   ] as const)(
     'reads 5 as the %s/%s default in the %s system',
     (defaultUnit, metricDefaultUnit, unitSystem, expected) => {
-      const field = {
-        kind: 'length',
+      const field = lengthInput({
         key: 'len',
         urlKey: 'a',
         default: quantity(1, inch),
         defaultUnit,
         metricDefaultUnit,
-      } as const;
+      });
       const result = validateRecord([field], { len: '5' }, { unitSystem });
       const len = result.ok ? result.value['len'] : undefined;
       expect(isQuantityOf(len, 'length') && len.canonical.toString()).toBe(expected);
@@ -242,7 +242,7 @@ describe('validateRecord count field (calculator-contract › Count edge cases [
   ]);
 
   it('compares a count beyond the safe integers without precision loss', () => {
-    const field = { kind: 'count', key: 'cnt', urlKey: 'a', default: 1, min: 5 } as const;
+    const field = countInput({ key: 'cnt', urlKey: 'a', default: 1, min: 5 });
     const check = (raw: string): unknown => validateRecord([field], { cnt: raw });
     const above = failed('cnt', 'ABOVE_MAX', { max: '9007199254740991' });
     expect(check('9007199254740991')).toEqual(ok({ cnt: Number.MAX_SAFE_INTEGER }));
@@ -282,13 +282,12 @@ describe('validateRecord percent field (calculator-contract › Percent edge cas
 });
 
 describe('validateRecord decimal field (a plain decimal, bounds 0..max)', () => {
-  const hours = {
-    kind: 'decimal',
+  const hours = decimalInput({
     key: 'hrs',
     urlKey: 'h',
     default: r(40),
     max: r(168),
-  } as const;
+  });
   const check = (raw: unknown): unknown => validateRecord([hours], { hrs: raw });
 
   it.each([
@@ -315,7 +314,7 @@ describe('validateRecord decimal field (a plain decimal, bounds 0..max)', () => 
   });
 
   it('has no maximum unless one is declared', () => {
-    const open = { kind: 'decimal', key: 'hrs', urlKey: 'h', default: r(40) } as const;
+    const open = decimalInput({ key: 'hrs', urlKey: 'h', default: r(40) });
     expect(validateRecord([open], { hrs: '1000000.25' })).toEqual(ok({ hrs: r(400000100, 400) }));
   });
 
@@ -500,8 +499,8 @@ describe('validate container (calculator-contract › raw MUST be an object)', (
 // core-clock-time: a time of day is minutes since midnight; an empty field is a day off (`null`).
 describe('validateRecord clock field (core-clock-time)', () => {
   const inputs = [
-    { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 },
-    { kind: 'clock', key: 'off', urlKey: 'o', default: null },
+    clockInput({ key: 'tin', urlKey: 'i', default: 420 }),
+    clockInput({ key: 'off', urlKey: 'o', default: null }),
   ] as const;
   const read = (raw: Readonly<Record<string, unknown>>): ReturnType<typeof validateRecord> =>
     validateRecord(inputs, raw);

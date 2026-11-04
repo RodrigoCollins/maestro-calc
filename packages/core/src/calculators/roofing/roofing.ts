@@ -7,6 +7,10 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, inch } from '../../units/catalog.ts';
 import { multiply, ratio, scale, sign, sub } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
+import { countInput } from '../../calculator/kinds/count.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
+import { percentInput } from '../../calculator/kinds/percent.ts';
 
 const HUNDRED = Rational.of(100);
 const TWELVE = Rational.of(12);
@@ -77,8 +81,7 @@ export const createRoofing = (suppliedCoverage: RoofingCoverage) => {
   return defineCalculator({
     id: 'roofing',
     inputs: [
-      {
-        kind: 'length',
+      lengthInput({
         key: 'length',
         urlKey: 'l',
         default: quantity(40, ft),
@@ -86,9 +89,8 @@ export const createRoofing = (suppliedCoverage: RoofingCoverage) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'width',
         urlKey: 'w',
         default: quantity(30, ft),
@@ -96,18 +98,17 @@ export const createRoofing = (suppliedCoverage: RoofingCoverage) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      { kind: 'count', key: 'pitch', urlKey: 'p', default: 6, min: 0, max: 24 },
-      {
-        kind: 'percent',
+      }),
+      countInput({ key: 'pitch', urlKey: 'p', default: 6, min: 0, max: 24 }),
+      percentInput({
         key: 'waste',
         urlKey: 'ws',
         default: Rational.of(10),
         min: Rational.ZERO,
         max: Rational.of(50),
-      },
-      { kind: 'money', key: 'bundlePrice', urlKey: 'bp', default: usd(0), max: usd(10000) },
-      { kind: 'money', key: 'rollPrice', urlKey: 'rp', default: usd(0), max: usd(10000) },
+      }),
+      moneyInput({ key: 'bundlePrice', urlKey: 'bp', default: usd(0), max: usd(10000) }),
+      moneyInput({ key: 'rollPrice', urlKey: 'rp', default: usd(0), max: usd(10000) }),
     ],
     outputs: [
       {

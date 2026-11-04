@@ -1,4 +1,4 @@
-import { defineCalculator, gal, quantity, Rational } from '@maestro-calc/core';
+import { decimalInput, defineCalculator, gal, quantity, Rational } from '@maestro-calc/core';
 
 /** Minutes in the 6-hour turnover of ANSI/APSP/ICC-15 and in the gentler 8-hour run. */
 const SIX_HOURS = Rational.of(360);
@@ -14,13 +14,12 @@ const FLOOR = Rational.of(36);
 export const poolPump = defineCalculator({
   id: 'pool-pump',
   inputs: [
-    {
-      kind: 'decimal',
+    decimalInput({
       key: 'gallons',
       urlKey: 'g',
       default: Rational.of(20_000),
       max: Rational.of(1_000_000),
-    },
+    }),
   ],
   outputs: [
     {

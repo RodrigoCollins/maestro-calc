@@ -5,6 +5,8 @@ import { Rational } from '../../rational/rational.ts';
 import { deg, ft, inch } from '../../units/catalog.ts';
 import { add, ratio, scale } from '../../units/ops.ts';
 import { quantity } from '../../units/quantity.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 /** The roof coverings the IRC check knows, in the order the select offers them. */
 const COVERINGS = ['asphalt', 'tile', 'metal', 'roll', 'slate', 'wood'] as const;
@@ -41,8 +43,7 @@ const TWELVE = Rational.of(12);
 export const roofPitch = defineCalculator({
   id: 'roof-pitch',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'rise',
       urlKey: 'r',
       default: quantity(6, inch),
@@ -50,9 +51,8 @@ export const roofPitch = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(0, inch),
       max: quantity(100, ft),
-    },
-    {
-      kind: 'length',
+    }),
+    lengthInput({
       key: 'run',
       urlKey: 'n',
       default: quantity(12, inch),
@@ -60,9 +60,8 @@ export const roofPitch = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(Rational.of(1, 16), inch),
       max: quantity(100, ft),
-    },
-    {
-      kind: 'length',
+    }),
+    lengthInput({
       key: 'rafterRun',
       urlKey: 'rr',
       default: quantity(144, inch),
@@ -70,9 +69,8 @@ export const roofPitch = defineCalculator({
       metricDefaultUnit: 'm',
       min: quantity(0, inch),
       max: quantity(100, ft),
-    },
-    {
-      kind: 'length',
+    }),
+    lengthInput({
       key: 'overhang',
       urlKey: 'oh',
       default: quantity(12, inch),
@@ -80,8 +78,8 @@ export const roofPitch = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(0, inch),
       max: quantity(10, ft),
-    },
-    { kind: 'select', key: 'covering', urlKey: 'c', default: 'asphalt', options: COVERINGS },
+    }),
+    selectInput({ key: 'covering', urlKey: 'c', default: 'asphalt', options: COVERINGS }),
   ],
   outputs: [
     {
