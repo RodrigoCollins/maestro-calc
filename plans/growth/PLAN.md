@@ -76,4 +76,4 @@ with less. Site-specific work (content, keywords) sits on top of it.
       measure the concrete page before and after.
       Done in `feat/core-tree-shakable-kinds`: each input is built by its kind's builder
       (`lengthInput`, `countInput`, ... in `packages/core/src/calculator/kinds/`), which attaches
-      that kind's codec; the concrete page script went from 48,955 B to 48,015 B.
+      that kind's codec; the concrete page script went from 48,955 B to 48,023 B.
