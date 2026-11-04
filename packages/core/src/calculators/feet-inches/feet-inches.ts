@@ -3,6 +3,9 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, inch } from '../../units/catalog.ts';
 import { add, scale, sign, sub } from '../../units/ops.ts';
 import { quantity } from '../../units/quantity.ts';
+import { countInput } from '../../calculator/kinds/count.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 /** The operations, in the order the select offers them. */
 const OPERATIONS = ['add', 'subtract', 'multiply', 'divide'] as const;
@@ -16,8 +19,7 @@ const OPERATIONS = ['add', 'subtract', 'multiply', 'divide'] as const;
 export const feetInches = defineCalculator({
   id: 'feet-inches',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'first',
       urlKey: 'a',
       default: quantity(150, inch),
@@ -25,10 +27,9 @@ export const feetInches = defineCalculator({
       metricDefaultUnit: 'm',
       min: quantity(0, inch),
       max: quantity(1000, ft),
-    },
-    { kind: 'select', key: 'operation', urlKey: 'o', default: 'add', options: OPERATIONS },
-    {
-      kind: 'length',
+    }),
+    selectInput({ key: 'operation', urlKey: 'o', default: 'add', options: OPERATIONS }),
+    lengthInput({
       key: 'second',
       urlKey: 'b',
       default: quantity(Rational.of(177, 4), inch),
@@ -36,8 +37,8 @@ export const feetInches = defineCalculator({
       metricDefaultUnit: 'm',
       min: quantity(0, inch),
       max: quantity(1000, ft),
-    },
-    { kind: 'count', key: 'factor', urlKey: 'n', default: 2, min: 1, max: 1000 },
+    }),
+    countInput({ key: 'factor', urlKey: 'n', default: 2, min: 1, max: 1000 }),
   ],
   outputs: [
     {

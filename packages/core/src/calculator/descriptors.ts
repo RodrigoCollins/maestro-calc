@@ -12,6 +12,12 @@ export type UnitSystem = 'imperial' | 'metric';
 interface Base {
   readonly key: string;
   readonly urlKey: string;
+  /**
+   * The readers and the URL writer of the kind, set by the builder of the kind (`lengthInput`,
+   * `countInput`, ...). `validate`, `encode` and `decode` call it and hold no code of their own for
+   * any kind, so a bundle carries only the kinds its calculator declares.
+   */
+  readonly codec: InputKind;
 }
 
 /** A length input; `defaultUnit` applies to bare numbers in imperial, `metricDefaultUnit` in metric. */
@@ -93,6 +99,39 @@ export type InputDescriptor =
   | MoneyDescriptor
   | ClockDescriptor
   | DecimalDescriptor;
+
+/** The validated value of one field: any of the value types of the kinds. */
+export type FieldValue = Quantity<'length'> | Money | Rational | number | string | boolean | null;
+
+/** A failed field before it is tagged with its key: one code, and the violated bound. */
+export type FieldFailure = Omit<FieldError, 'field'>;
+
+/**
+ * The code of one kind of input, shared by every descriptor of that kind. The methods take the
+ * descriptor they read for (a method, so the code of one kind is a code of any kind: the builder of
+ * the kind is what pairs a descriptor with its own code).
+ */
+export interface InputKind<D extends InputDescriptor = InputDescriptor> {
+  /**
+   * Reads a raw field that is not `undefined` and, when it is a string, not longer than
+   * `MAX_TEXT_LENGTH`: form text or a typed value. Nothing is coerced.
+   */
+  read(
+    input: D,
+    raw: unknown,
+    unitSystem: UnitSystem | undefined,
+  ): Result<FieldValue, FieldFailure>;
+  /** The canonical URL text of a value of the kind, or `undefined` for any other value. */
+  urlText(input: D, value: unknown): string | undefined;
+  /** The value that a percent-decoded URL text names, or `undefined` when it is invalid. */
+  fromUrl(input: D, text: string): FieldValue | undefined;
+}
+
+/** What a calculator writes for one input: its descriptor without the `kind` and the `codec`. */
+export type InputSpec<D extends InputDescriptor> = Omit<D, 'kind' | 'codec'> & {
+  readonly kind?: never;
+  readonly codec?: never;
+};
 
 /** The kinds whose value is an amount with inclusive bounds. */
 export type BoundedDescriptor =

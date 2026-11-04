@@ -1,8 +1,11 @@
 import {
   compareMoney,
+  decimalInput,
   defineCalculator,
+  moneyInput,
   Rational,
   scaleMoney,
+  selectInput,
   subMoney,
   usd,
 } from '@maestro-calc/core';
@@ -21,19 +24,18 @@ const HALF = Rational.of(1, 2);
 export const noTaxOnOvertime = defineCalculator({
   id: 'no-tax-on-overtime',
   inputs: [
-    { kind: 'select', key: 'source', urlKey: 's', options: ['hours', 'amount'], default: 'hours' },
-    { kind: 'money', key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) },
-    {
-      kind: 'decimal',
+    selectInput({ key: 'source', urlKey: 's', options: ['hours', 'amount'], default: 'hours' }),
+    moneyInput({ key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) }),
+    decimalInput({
       key: 'overtimeHours',
       urlKey: 'o',
       default: Rational.of(300),
       max: Rational.of(5000),
-    },
-    { kind: 'money', key: 'premium', urlKey: 'q', default: usd(3300), max: usd(1_000_000) },
-    { kind: 'select', key: 'filing', urlKey: 'f', options: FILINGS, default: 'single' },
-    { kind: 'money', key: 'magi', urlKey: 'm', default: usd(60_000), max: usd(100_000_000) },
-    { kind: 'select', key: 'bracket', urlKey: 'b', options: BRACKETS, default: '12' },
+    }),
+    moneyInput({ key: 'premium', urlKey: 'q', default: usd(3300), max: usd(1_000_000) }),
+    selectInput({ key: 'filing', urlKey: 'f', options: FILINGS, default: 'single' }),
+    moneyInput({ key: 'magi', urlKey: 'm', default: usd(60_000), max: usd(100_000_000) }),
+    selectInput({ key: 'bracket', urlKey: 'b', options: BRACKETS, default: '12' }),
   ],
   outputs: [
     { key: 'deduction', measure: 'money', role: 'primary' },

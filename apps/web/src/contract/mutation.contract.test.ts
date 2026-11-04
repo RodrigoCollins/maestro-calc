@@ -343,7 +343,7 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       (module_.shards[name]?.mutate ?? []).some((glob) => filesUnder(glob).includes(file)),
     );
 
-  it('has ten named shards, the calculators in four groups', () => {
+  it('has eleven named shards, the calculators in four groups', () => {
     expect(module_.shardNames).toEqual([
       'rational',
       'units',
@@ -351,6 +351,7 @@ describe('mutation shards (quality-gates › Mutation gate on core, design 3.19b
       'calculator-define',
       'calculator-run',
       'url',
+      'kinds',
       'calculators-1',
       'calculators-2',
       'calculators-3',

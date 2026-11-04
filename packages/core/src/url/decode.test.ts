@@ -7,6 +7,7 @@ import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { decode, encode } from './codec.ts';
+import { countInput, lengthInput } from '../calculator/kinds/index.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
@@ -102,7 +103,7 @@ describe('decode (url-state-codec › Decoding)', () => {
     });
     const retired = defineCalculator({
       id: 'retired-box',
-      inputs: [{ kind: 'count', key: 'n', urlKey: 'n', default: 1 }],
+      inputs: [countInput({ key: 'n', urlKey: 'n', default: 1 })],
       outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
       retiredUrlKeys: ['q'],
       compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),
@@ -292,14 +293,13 @@ describe('decode versions (url-state-codec › Decoding, Key stability rules)', 
     const huge = defineCalculator({
       id: 'huge-box',
       inputs: [
-        {
-          kind: 'length',
+        lengthInput({
           key: 'len',
           urlKey: 'a',
           default: quantity(1, inch),
           defaultUnit: 'in',
           metricDefaultUnit: 'cm',
-        },
+        }),
       ],
       outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
       compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),

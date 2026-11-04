@@ -3,21 +3,22 @@ import type { LengthDescriptor } from '../../calculator/descriptors.ts';
 import { ft, inch } from '../../units/catalog.ts';
 import { multiply } from '../../units/ops.ts';
 import { quantity } from '../../units/quantity.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
 
 /** Both sides are the same field: 10 ft by default, from 0 up to 100000 ft, feet or metres bare. */
 const side = <const K extends string, const U extends string>(
   key: K,
   urlKey: U,
-): LengthDescriptor & { readonly key: K; readonly urlKey: U } => ({
-  kind: 'length',
-  key,
-  urlKey,
-  default: quantity(120, inch),
-  defaultUnit: 'ft',
-  metricDefaultUnit: 'm',
-  min: quantity(0, inch),
-  max: quantity(100000, ft),
-});
+): LengthDescriptor & { readonly key: K; readonly urlKey: U } =>
+  lengthInput({
+    key,
+    urlKey,
+    default: quantity(120, inch),
+    defaultUnit: 'ft',
+    metricDefaultUnit: 'm',
+    min: quantity(0, inch),
+    max: quantity(100000, ft),
+  });
 
 /**
  * The proof calculator of the foundation change (calc-rectangle-area): the area of a rectangle,

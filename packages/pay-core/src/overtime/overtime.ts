@@ -1,27 +1,19 @@
 import {
+  decimalInput,
   defineCalculator,
+  moneyInput,
   Rational,
   scaleMoney,
+  selectInput,
   usd,
-  type DecimalDescriptor,
 } from '@maestro-calc/core';
 import { payOf, RULES, splitWeek } from './split.ts';
 
 const ZERO = Rational.of(0);
 
 /** A day's hours worked, keyed by the day and its two-letter stem; the week starts Monday. */
-const day = <const K extends string>(
-  key: K,
-  urlKey: string,
-  hours: Rational,
-): DecimalDescriptor & { readonly key: K } => ({
-  kind: 'decimal',
-  key,
-  urlKey,
-  default: hours,
-  min: ZERO,
-  max: Rational.of(24),
-});
+const day = <const K extends string>(key: K, urlKey: string, hours: Rational) =>
+  decimalInput({ key, urlKey, default: hours, min: ZERO, max: Rational.of(24) });
 
 /**
  * The overtime calculator of plans/pago-del-trabajador/PLAN.md: the hourly rate, the overtime rule
@@ -31,8 +23,8 @@ const day = <const K extends string>(
 export const overtime = defineCalculator({
   id: 'overtime',
   inputs: [
-    { kind: 'money', key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) },
-    { kind: 'select', key: 'rule', urlKey: 'ru', options: RULES, default: 'federal' },
+    moneyInput({ key: 'rate', urlKey: 'r', default: usd(22), max: usd(1000) }),
+    selectInput({ key: 'rule', urlKey: 'ru', options: RULES, default: 'federal' }),
     day('mon', 'mo', Rational.of(9)),
     day('tue', 'tu', Rational.of(9)),
     day('wed', 'we', Rational.of(9)),

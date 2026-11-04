@@ -10,6 +10,7 @@ import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { readUrlValue } from './url-values.ts';
+import { clockInput, countInput, decimalInput, lengthInput } from '../calculator/kinds/index.ts';
 
 const field = (urlKey: string): InputDescriptor => {
   const found = fixtureBox.inputs.find((input) => input.urlKey === urlKey);
@@ -26,15 +27,14 @@ const prc = field('f');
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 const inches = (n: number, d = 1) => quantity(r(n, d), inch);
 
-const openLength: LengthDescriptor = {
-  kind: 'length',
+const openLength: LengthDescriptor = lengthInput({
   key: 'open',
   urlKey: 'o',
   default: inches(1),
   defaultUnit: 'in',
   metricDefaultUnit: 'cm',
-};
-const openCount: CountDescriptor = { kind: 'count', key: 'n', urlKey: 'n', default: 0 };
+});
+const openCount: CountDescriptor = countInput({ key: 'n', urlKey: 'n', default: 0 });
 
 describe('url value parsers (url-state-codec › Decoding)', () => {
   // spec: Round trip of a full state; Non-canonical but valid values
@@ -69,13 +69,12 @@ describe('url value parsers (url-state-codec › Decoding)', () => {
     expect(readUrlValue(pct, raw)).toEqual(expected);
   });
 
-  const hours = {
-    kind: 'decimal',
+  const hours = decimalInput({
     key: 'hrs',
     urlKey: 'h',
     default: r(40),
     max: r(168),
-  } as const;
+  });
   it.each([
     ['75/2', r(75, 2)],
     ['40', r(40)],
@@ -176,7 +175,7 @@ describe('url value parsers (url-state-codec › Decoding)', () => {
 
 // core-clock-time: a time of day travels as `HHMM`, no time as `-`.
 describe('url value parser of a clock field (core-clock-time)', () => {
-  const clock = { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 } as const;
+  const clock = clockInput({ key: 'tin', urlKey: 'i', default: 420 });
 
   it.each([
     ['0730', 450],

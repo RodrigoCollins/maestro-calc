@@ -6,6 +6,10 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, ft3, inch, yd3 } from '../../units/catalog.ts';
 import { multiply, ratio, scale } from '../../units/ops.ts';
 import { quantity } from '../../units/quantity.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
+import { percentInput } from '../../calculator/kinds/percent.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 const HUNDRED = Rational.of(100);
 
@@ -29,8 +33,7 @@ const BAG_VOLUME = {
 export const topsoil = defineCalculator({
   id: 'topsoil',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'length',
       urlKey: 'l',
       default: quantity(120, inch),
@@ -38,9 +41,8 @@ export const topsoil = defineCalculator({
       metricDefaultUnit: 'm',
       min: quantity(0, inch),
       max: quantity(1000, ft),
-    },
-    {
-      kind: 'length',
+    }),
+    lengthInput({
       key: 'width',
       urlKey: 'w',
       default: quantity(120, inch),
@@ -48,9 +50,8 @@ export const topsoil = defineCalculator({
       metricDefaultUnit: 'm',
       min: quantity(0, inch),
       max: quantity(1000, ft),
-    },
-    {
-      kind: 'length',
+    }),
+    lengthInput({
       key: 'depth',
       urlKey: 'd',
       default: quantity(4, inch),
@@ -58,18 +59,17 @@ export const topsoil = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(0, inch),
       max: quantity(2, ft),
-    },
-    {
-      kind: 'percent',
+    }),
+    percentInput({
       key: 'waste',
       urlKey: 'ws',
       default: Rational.of(10),
       min: Rational.ZERO,
       max: Rational.of(50),
-    },
-    { kind: 'select', key: 'bag', urlKey: 'bg', default: '0-75', options: BAG_SIZES },
-    { kind: 'money', key: 'bagPrice', urlKey: 'bp', default: usd(0), max: usd(10000) },
-    { kind: 'money', key: 'yardPrice', urlKey: 'yp', default: usd(0), max: usd(10000) },
+    }),
+    selectInput({ key: 'bag', urlKey: 'bg', default: '0-75', options: BAG_SIZES }),
+    moneyInput({ key: 'bagPrice', urlKey: 'bp', default: usd(0), max: usd(10000) }),
+    moneyInput({ key: 'yardPrice', urlKey: 'yp', default: usd(0), max: usd(10000) }),
   ],
   outputs: [
     {

@@ -3,6 +3,7 @@ import { Rational } from '../rational/rational.ts';
 import { inch, lb } from '../units/catalog.ts';
 import { multiply } from '../units/ops.ts';
 import { quantity } from '../units/quantity.ts';
+import { booleanInput, lengthInput, selectInput } from '../calculator/kinds/index.ts';
 
 /**
  * Two selects with their own options, a boolean between them and two warnings: the one definition
@@ -11,9 +12,9 @@ import { quantity } from '../units/quantity.ts';
 export const picker = defineCalculator({
   id: 'picker',
   inputs: [
-    { kind: 'select', key: 'shape', urlKey: 'a', default: 'round', options: ['round', 'flat'] },
-    { kind: 'boolean', key: 'trim', urlKey: 'b', default: false },
-    { kind: 'select', key: 'grade', urlKey: 'c', default: 'one', options: ['one'] },
+    selectInput({ key: 'shape', urlKey: 'a', default: 'round', options: ['round', 'flat'] }),
+    booleanInput({ key: 'trim', urlKey: 'b', default: false }),
+    selectInput({ key: 'grade', urlKey: 'c', default: 'one', options: ['one'] }),
   ],
   outputs: [{ key: 'weight', measure: 'mass', role: 'primary' }],
   warnings: ['heavy', 'bulky'],
@@ -21,14 +22,13 @@ export const picker = defineCalculator({
 });
 
 const length = <const Key extends string>(key: Key, urlKey: string) =>
-  ({
-    kind: 'length',
+  lengthInput({
     key,
     urlKey,
     default: quantity(Rational.of(12), inch),
     defaultUnit: 'in',
     metricDefaultUnit: 'cm',
-  }) as const;
+  });
 
 /** The shape of the proof calculator: two lengths, three area outputs, no select, no warning. */
 export const rectangle = defineCalculator({

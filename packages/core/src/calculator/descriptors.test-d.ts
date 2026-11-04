@@ -13,14 +13,21 @@ import type {
   MoneyDescriptor,
   ValueOf,
 } from './descriptors.ts';
+import {
+  booleanInput,
+  countInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from './kinds/index.ts';
 
 // A `fixture-box`-shaped definition written inline (the shared fixture is built in task 9.5): the
 // `const` generics must keep the keys, kinds, measures and option ids as literals.
 const box = defineCalculator({
   id: 'fixture-box',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'len',
       urlKey: 'a',
       default: quantity(12, inch),
@@ -28,12 +35,12 @@ const box = defineCalculator({
       metricDefaultUnit: 'cm',
       min: quantity(0, inch),
       max: quantity(1200, inch),
-    },
-    { kind: 'count', key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 },
-    { kind: 'percent', key: 'pct', urlKey: 'c', default: Rational.of(10), min: Rational.ZERO },
-    { kind: 'select', key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y'] },
-    { kind: 'boolean', key: 'flg', urlKey: 'e', default: false },
-    { kind: 'money', key: 'prc', urlKey: 'f', default: usd(Rational.of(249, 50)) },
+    }),
+    countInput({ key: 'cnt', urlKey: 'b', default: 3, min: 0, max: 100 }),
+    percentInput({ key: 'pct', urlKey: 'c', default: Rational.of(10), min: Rational.ZERO }),
+    selectInput({ key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y'] }),
+    booleanInput({ key: 'flg', urlKey: 'e', default: false }),
+    moneyInput({ key: 'prc', urlKey: 'f', default: usd(Rational.of(249, 50)) }),
   ],
   outputs: [
     {
@@ -70,7 +77,7 @@ const box = defineCalculator({
 // A minimal definition for the negative proofs: the compute return type is the thing under test.
 const one = {
   id: 'one',
-  inputs: [{ kind: 'boolean', key: 'flg', urlKey: 'a', default: false }],
+  inputs: [booleanInput({ key: 'flg', urlKey: 'a', default: false })],
   outputs: [
     { key: 'area', measure: 'area', role: 'primary' },
     { key: 'cost', measure: 'money', role: 'secondary' },
