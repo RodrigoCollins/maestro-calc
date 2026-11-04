@@ -9,6 +9,7 @@ import {
   type InputDescriptor,
   type OutputDescriptor,
 } from '@maestro-calc/core';
+import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
@@ -21,13 +22,26 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
   .filter((name) => name.endsWith('.astro') && !name.startsWith('['))
   .map((name) => `/${name.replace(/\.astro$/, '').replace(/^index$/, '')}`);
 
-/** The figures of one engine run, as a table row writes them: pounds and bags, or gallons and liters. */
+/**
+ * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
+ * liters of liquid chlorine, or gallons and liters of water.
+ */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
-  const ran = path === SALT.path ? poolSalt.run(raw) : poolVolume.run(raw);
+  const ran =
+    path === SALT.path
+      ? poolSalt.run(raw)
+      : path === CHLORINE.path
+        ? poolChlorine.run(raw)
+        : poolVolume.run(raw);
   if (!ran.ok) throw new Error(`${path} did not run`);
   const value = (key: string): unknown => ran.value.outputs.find((out) => out.key === key)?.value;
   if (path === SALT.path)
     return [outputText('pounds', value('pounds')), String(ran.value.shopping[0]?.qty)];
+  if (path === CHLORINE.path) {
+    const liquid = value('liquid');
+    if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
+    return [outputText('liquid', liquid), volumeText(liquid, liter, 2)];
+  }
   const volume = value('gallons');
   if (!isQuantityOf(volume, 'volume')) throw new Error('gallons must be a volume');
   return [volumeText(volume, gal), volumeText(volume, liter)];
@@ -74,12 +88,14 @@ describe('the long-tail job pages', () => {
 
   it('links each page to its calculator, opened on the pool of the large figure', () => {
     for (const { calculator, rows, figure } of JOB_PAGES) {
-      expect([SALT.path, VOLUME_TEXTS.path]).toContain(calculator.path);
+      expect([SALT.path, CHLORINE.path, VOLUME_TEXTS.path]).toContain(calculator.path);
       expect(pageFiles).toContain(calculator.path);
       const [path, query = ''] = calculator.href.split('?');
       expect(path).toBe(calculator.path);
       const main = rows.find(({ cells }) => cells.includes(figure.value));
       if (calculator.path === SALT.path) expectOpensOn(poolSalt, query, main?.raw ?? {});
+      else if (calculator.path === CHLORINE.path)
+        expectOpensOn(poolChlorine, query, main?.raw ?? {});
       else expectOpensOn(poolVolume, query, main?.raw ?? {});
     }
   });
@@ -95,6 +111,20 @@ describe('the long-tail job pages', () => {
       '100.1',
       '3',
     ]);
+  });
+
+  // worked by hand: 20,000 gal × 3.785411784 L × 2 ppm ÷ 1,000 = 151.42 g of chlorine, ÷ 0.125 =
+  // 1,211.3 mL of 12.5% liquid, ÷ 29.5735 mL = 40.96 fl oz (CHLORINE.method: 10.24 per ppm per 10,000)
+  it('works out 20,000 gallons from 1 to 3 ppm with 12.5% liquid as by hand', () => {
+    const page = byPath('/how-much-chlorine-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '41.0', unit: 'FL OZ' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['1 to 2 ppm', '20.5', '0.61'],
+      ['1 to 3 ppm', '41.0', '1.21'],
+      ['1 to 4 ppm', '61.4', '1.82'],
+    ]);
+    // 10,000 gal: 10.24 fl oz for each ppm, so 20.48 for 2 ppm
+    expect(byPath('/how-much-chlorine-for-a-10000-gallon-pool').figure.value).toBe('20.5');
   });
 
   // worked by hand: 512 ft² × 5.75 ft × 1,728 ÷ 231 = 22,023; π × 24² ÷ 4 × 4 ft × 1,728 ÷ 231 = 13,536
@@ -115,7 +145,7 @@ describe('the long-tail job pages', () => {
   });
 
   it('is linked from the calculator it works with, and from no other', () => {
-    for (const path of [VOLUME_TEXTS.path, SALT.path]) {
+    for (const path of [VOLUME_TEXTS.path, SALT.path, CHLORINE.path]) {
       const linked = jobLinksOf(path).map(({ href }) => href);
       const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
       expect(linked).toEqual(own.map((page) => page.path));
@@ -129,7 +159,12 @@ describe('the long-tail job pages', () => {
       href: '/how-much-salt-for-a-20000-gallon-pool',
       label: 'How much salt for a 20,000 gallon pool',
     });
-    expect(jobLinksOf(CHLORINE.path)).toEqual([]);
+    expect(jobLinksOf(CHLORINE.path).map(({ href }) => href)).toEqual([
+      '/how-much-chlorine-for-a-10000-gallon-pool',
+      '/how-much-chlorine-for-a-15000-gallon-pool',
+      '/how-much-chlorine-for-a-20000-gallon-pool',
+      '/how-much-chlorine-for-a-25000-gallon-pool',
+    ]);
     expect(jobLinksOf(PUMP.path)).toEqual([]);
   });
 });

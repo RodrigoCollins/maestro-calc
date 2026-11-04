@@ -8,9 +8,10 @@ import {
   type InputDescriptor,
   type OutputDescriptor,
 } from '@maestro-calc/core';
+import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { SALT } from './doses.ts';
+import { CHLORINE, SALT } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -42,6 +43,17 @@ export interface JobPage {
 const SALT_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const READINGS = [0, 1000, 2000, 2400, 2800] as const;
 const TARGET = 3200;
+
+/**
+ * The chlorine jobs: the same pool sizes, with 12.5% liquid chlorine (the jug pool stores sell)
+ * raising free chlorine from a low 1 ppm by 1, 2 or 3 ppm; the 1 to 3 ppm row, the calculator's
+ * own defaults, is the large figure.
+ */
+const CHLORINE_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const CHLORINE_FROM = 1;
+const CHLORINE_TARGETS = [2, 3, 4] as const;
+const CHLORINE_MAIN = 1;
+const LIQUID = 'liquid-12-5';
 
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
@@ -153,7 +165,7 @@ const VOLUME_JOBS = [
 
 /** The outputs of one engine run, by key; a run that fails is a build error. */
 const outputsOf = (
-  engine: typeof poolSalt | typeof poolVolume,
+  engine: typeof poolSalt | typeof poolChlorine | typeof poolVolume,
   raw: Raw,
 ): { readonly values: ReadonlyMap<string, unknown>; readonly bags: bigint } => {
   const ran = engine.run(raw);
@@ -209,6 +221,56 @@ const saltPage = (gallons: number): JobPage => {
   };
 };
 
+const chlorinePage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = CHLORINE_TARGETS.map((target) => {
+    const raw = {
+      gallons: String(gallons),
+      current: String(CHLORINE_FROM),
+      target: String(target),
+      product: LIQUID,
+    };
+    const { values } = outputsOf(poolChlorine, raw);
+    const liquid = values.get('liquid');
+    if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
+    return {
+      raw,
+      cells: [
+        `${String(CHLORINE_FROM)} to ${String(target)} ppm`,
+        outputText('liquid', liquid),
+        volumeText(liquid, liter, 2),
+      ],
+    };
+  });
+  const main = rows[CHLORINE_MAIN];
+  if (main === undefined) throw new Error('a chlorine job needs its main row');
+  const [range = '', ounces = '', liters = ''] = main.cells;
+  return {
+    path: `/how-much-chlorine-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Chlorine for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The fluid ounces of 12.5% liquid chlorine a ${size} gallon pool needs to raise free chlorine by 1, 2 or 3 ppm.`,
+    h1: `How much chlorine for a ${size} gallon pool`,
+    lead: `A ${size} gallon pool needs ${ounces} fl oz of 12.5% liquid chlorine to raise free chlorine from ${range}. Other raises are in the table; the calculator also doses cal-hypo and dichlor.`,
+    figure: {
+      value: ounces,
+      unit: 'FL OZ',
+      caption: `${liters} L of 12.5% liquid chlorine, from ${range}.`,
+    },
+    head: ['Free chlorine', '12.5% liquid (fl oz)', 'Liters'],
+    rows,
+    calculator: {
+      path: CHLORINE.path,
+      href: linkTo(poolChlorine, CHLORINE.path, main.raw),
+      label: 'Work it out for your reading and product',
+    },
+    method: `${CHLORINE.method} ${CHLORINE.note}`,
+    card: {
+      title: `Chlorine for ${size} gallons`,
+      summary: `${ounces} fl oz of 12.5% liquid, ${range}.`,
+    },
+  };
+};
+
 const volumePage = ({
   slug,
   name,
@@ -249,10 +311,11 @@ const volumePage = ({
   };
 };
 
-/** Every job page, volume first: the gallons the salt pages start from. */
+/** Every job page, volume first: the gallons the salt and chlorine pages start from. */
 export const JOB_PAGES: readonly JobPage[] = [
   ...VOLUME_JOBS.map(volumePage),
   ...SALT_GALLONS.map(saltPage),
+  ...CHLORINE_GALLONS.map(chlorinePage),
 ];
 
 /** The job pages a calculator works out, as links from its page: the common sizes, in table order. */

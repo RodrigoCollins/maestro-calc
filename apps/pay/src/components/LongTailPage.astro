@@ -25,7 +25,7 @@ const page = longTailPageOf(job, lang);
 >
   <main class="page">
     <div>
-      <p class="kicker">{t.kicker}</p>
+      <p class="kicker">{page.kicker}</p>
       <h1>{page.h1}</h1>
     </div>
     <p class="lead">{page.lead}</p>
@@ -37,7 +37,7 @@ const page = longTailPageOf(job, lang);
         </p>
         <p class="result-figure">{page.figure}</p>
       </div>
-      <ul class="breakdown labeled" aria-label={t.breakdown}>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
         {page.rows.map((row) => (
           <li>
             <span>{row.label}</span>
@@ -50,7 +50,7 @@ const page = longTailPageOf(job, lang);
     <a class="button button-primary" href={page.calculator.href}>
       {page.calculator.label}
     </a>
-    <p class="note">{t.note}</p>
+    <p class="note">{page.note}</p>
 
     <section aria-labelledby="others-heading">
       <h2 id="others-heading">{page.others.heading}</h2>
