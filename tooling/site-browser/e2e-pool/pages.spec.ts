@@ -73,6 +73,27 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
 });
 
+test('links the privacy page from the footer, and it describes Google Analytics', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.locator('footer a[href="/privacy"]').click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(page.locator('#analytics')).toHaveText('Analytics and cookies');
+});
+
+// The loader runs on poolfigures.com only, so the browser tests send nothing to Google.
+test('carries the analytics loader on every page, with the measurement id and the host', async ({
+  page,
+}) => {
+  for (const path of PAGES) {
+    await page.goto(path);
+    const loader = page.locator('script[src="/analytics.js"]');
+    await expect(loader, path).toHaveAttribute('data-ga', 'G-VE973PXMS4');
+    await expect(loader, path).toHaveAttribute('data-host', 'poolfigures.com');
+  }
+});
+
 test('sends the security headers with every page', async ({ request }) => {
   for (const path of PAGES) {
     const response = await request.get(path);
