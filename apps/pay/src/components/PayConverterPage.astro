@@ -105,7 +105,7 @@ const common = commonLinksOf(v.per, lang);
 
     <section aria-labelledby="common-heading">
       <h2 id="common-heading">{common.heading}</h2>
-      <ul>
+      <ul class="link-list">
         {common.links.map((link) => (
           <li>
             <a href={link.href}>{link.label}</a>
