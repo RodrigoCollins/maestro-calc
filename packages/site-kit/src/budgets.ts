@@ -2,8 +2,8 @@ import { posix } from 'node:path';
 import { parse } from 'node-html-parser';
 
 /**
- * Byte budgets of Cuenta Horas, uncompressed bytes on disk, the same ceilings as Maestro Calc
- * (`apps/web/src/site-check/budgets.ts`): a page without a calculator loads no JavaScript, and a
+ * Byte budgets of the niche sites (Cuenta Horas, Pool Figures), uncompressed bytes on disk, the
+ * same ceilings as Maestro Calc (`apps/web/src/site-check/budgets.ts`): a page without a calculator loads no JavaScript, and a
  * calculator page loads one module whose static import graph is at most `js`.
  */
 export const LIMITS = {
@@ -28,12 +28,10 @@ const STATIC_IMPORT = /(?:\bimport|\bfrom)\s*["']([^"']+\.[cm]?js)["']/g;
 
 /** The files a script imports statically; a dynamic `import()` and a bare package name are not followed. */
 export const staticImportsOf = (file: string, text: string): string[] =>
-  Array.from(text.matchAll(STATIC_IMPORT), ([, specifier = '']) => specifier).flatMap(
-    (specifier) => {
-      if (specifier.startsWith('/')) return [specifier.slice(1)];
-      return specifier.startsWith('.') ? [posix.join(posix.dirname(file), specifier)] : [];
-    },
-  );
+  Array.from(text.matchAll(STATIC_IMPORT), (match) => String(match[1])).flatMap((specifier) => {
+    if (specifier.startsWith('/')) return [specifier.slice(1)];
+    return specifier.startsWith('.') ? [posix.join(posix.dirname(file), specifier)] : [];
+  });
 
 const graphOf = (roots: readonly string[], texts: Build['texts']): string[] => {
   const seen = new Set<string>();
@@ -106,14 +104,13 @@ const pageProblems = (file: string, text: string, build: Build): string[] => {
 
 /** Every page, font and script of the build over its budget, each named with its limit. */
 export const budgetProblems = (build: Build): string[] => {
-  const fonts = [...build.sizes.keys()].filter((file) => file.endsWith('.woff2'));
-  const fontTotal = sum(fonts.map((file) => build.sizes.get(file) ?? 0));
+  const fonts = [...build.sizes].filter(([file]) => file.endsWith('.woff2'));
+  const fontTotal = sum(fonts.map(([, bytes]) => bytes));
   const pages = [...build.texts].filter(([file]) => file.endsWith('.html'));
   return [
-    ...fonts.flatMap((file) => {
-      const bytes = build.sizes.get(file) ?? 0;
-      return bytes > LIMITS.font ? [over(file, 'weighs', bytes, LIMITS.font)] : [];
-    }),
+    ...fonts.flatMap(([file, bytes]) =>
+      bytes > LIMITS.font ? [over(file, 'weighs', bytes, LIMITS.font)] : [],
+    ),
     ...(fontTotal > LIMITS.fonts ? [over('dist', 'the fonts weigh', fontTotal, LIMITS.fonts)] : []),
     ...pages.flatMap(([file, text]) => pageProblems(file, text, build)),
   ];
