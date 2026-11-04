@@ -112,6 +112,10 @@ describe('seoProblems', () => {
       'guide.html: the JSON-LD @type must be "Article", found none',
       'guide.html: the JSON-LD url must be "https://x.test/guide", found none',
     ]);
+    expect(check(head({}, ['null']))).toHaveLength(2);
+    expect(check(head({}, ['{"@type":["Article"],"url":"https://x.test/guide"}']))).toEqual([
+      'guide.html: the JSON-LD @type must be "Article", found none',
+    ]);
   });
 
   it('reads the types of a page from the path of its canonical', () => {
