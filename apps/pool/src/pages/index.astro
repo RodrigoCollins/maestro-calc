@@ -4,6 +4,7 @@ import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import Layout from '../components/Layout.astro';
 import { OPENING_GUIDE } from '../guide.ts';
 import { HOME_TOOLS } from '../home.ts';
+import { JOB_PAGES } from '../jobs.ts';
 import { SITE } from '../site.config.ts';
 import { SALT } from '../doses.ts';
 import { VOLUME_TEXTS } from '../volume/texts.ts';
@@ -57,6 +58,18 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
           <li>
             <a {href}>{title}</a>
             <p>{summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="pool-jobs">
+      <h2 id="pool-jobs">Common pools, worked out</h2>
+      <ul class="pool-tools" role="list">
+        {JOB_PAGES.map(({ path, card }) => (
+          <li>
+            <a href={path}>{card.title}</a>
+            <p>{card.summary}</p>
           </li>
         ))}
       </ul>
