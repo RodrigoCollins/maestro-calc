@@ -1,6 +1,6 @@
 ---
 import { Font } from 'astro:assets';
-import { HOME_TOOLS } from '../home.ts';
+import { NAV_LINKS } from '../home.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
@@ -70,7 +70,7 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
       </a>
       {!embed && (
         <nav aria-label="Calculators">
-          {HOME_TOOLS.map(({ href, title }) => (
+          {NAV_LINKS.map(({ href, title }) => (
             <a {href}>{title}</a>
           ))}
         </nav>

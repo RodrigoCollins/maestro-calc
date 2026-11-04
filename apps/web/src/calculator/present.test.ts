@@ -122,6 +122,14 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     );
   });
 
+  // a number output (BTU, minutes) belongs to the pool site; no Maestro Calc page declares one
+  it('refuses a number output, naming the key', () => {
+    const btu: OutputDescriptor = { key: 'btu', measure: 'number', role: 'primary' };
+    expect(() => outputText(btu, Rational.of(69_500))).toThrow(
+      new TypeError('btu is a number, which a Maestro Calc page does not show'),
+    );
+  });
+
   // spec: calc-feet-inches › [FI5] a fraction hint shows feet, inches and the nearest fraction
   it('writes a length with a fraction hint as feet, inches and the nearest fraction', () => {
     const hint = (unit: 'ft' | 'in', denominator: number): OutputDescriptor => ({
