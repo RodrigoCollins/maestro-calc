@@ -42,6 +42,12 @@ const timeCardPay = (rate: string, hours: number): { overtime: string; week: str
   return { overtime: money('overtimePay'), week: money('pay') };
 };
 
+// prettier-ignore
+const HOURLY = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '28', '30', '35', '40', '45', '50'];
+// prettier-ignore
+const SALARIES = ['30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000', '75000', '80000', '90000', '100000', '120000', '150000'];
+const OVERTIME_RATES = ['15', '16', '17', '18', '19', '20', '22', '25', '30'];
+
 describe('long-tail pages', () => {
   it('take every figure from the pay converter, never from the text', () => {
     for (const job of CONVERTS) {
@@ -75,29 +81,49 @@ describe('long-tail pages', () => {
     expect(twentyTwo.rows.find(({ key }) => key === 'weekly')?.value).toBe('$880.00');
     // 45,000 / (40 x 52) = 45,000 / 2,080 = 21.634...
     expect(longTailPageOf(jobOf('45000'), 'en').figure).toBe('$21.63');
+    // 19 x 40 x 52 = 39,520; 35 x 2,080 = 72,800
+    expect(longTailPageOf(jobOf('19'), 'en').figure).toBe('$39,520.00');
+    expect(longTailPageOf(jobOf('35'), 'es').figure).toBe('$72,800.00');
+    // 55,000 / 2,080 = 26.442...; 150,000 / 2,080 = 72.115...
+    expect(longTailPageOf(jobOf('55000'), 'en').figure).toBe('$26.44');
+    expect(longTailPageOf(jobOf('150000'), 'en').figure).toBe('$72.12');
+    expect(longTailPageOf(jobOf('150000'), 'en').h1).toBe('$150,000 a year is how much an hour?');
+  });
+
+  it('link the nearest amounts of their family, never every page of it', () => {
+    const others = (amount: string, kind: 'convert' | 'overtime' = 'convert'): string[] =>
+      longTailPageOf(jobOf(amount, kind), 'en').others.links.map(({ href }) => href);
+    expect(others('15')).toEqual(
+      ['16', '17', '18', '19', '20', '21'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
+    );
+    expect(others('30')).toEqual(
+      ['25', '26', '28', '35', '40', '45'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
+    );
+    expect(others('50000')).toEqual(
+      ['35000', '40000', '45000', '55000', '60000', '65000'].map(
+        (a) => `/pay/${a}-a-year-is-how-much-an-hour`,
+      ),
+    );
+    expect(others('30', 'overtime')).toEqual(
+      ['17', '18', '19', '20', '22', '25'].map((a) => `/pay/time-and-a-half-for-${a}-an-hour`),
+    );
+    for (const job of JOBS) {
+      for (const lang of LANGS) {
+        const { links } = longTailPageOf(job, lang).others;
+        expect(links).toHaveLength(6);
+        expect(links.map(({ href }) => href)).not.toContain(longTailPageOf(job, lang).paths[lang]);
+      }
+    }
   });
 
   it('cover the common hourly rates and salaries people search', () => {
-    expect(CONVERTS.filter(({ per }) => per === 'hour').map(({ amount }) => amount)).toEqual([
-      '15',
-      '16',
-      '17',
-      '18',
-      '20',
-      '22',
-      '25',
-      '30',
-    ]);
-    expect(CONVERTS.filter(({ per }) => per === 'year').map(({ amount }) => amount)).toEqual([
-      '40000',
-      '45000',
-      '50000',
-      '60000',
-      '70000',
-      '80000',
-      '100000',
-    ]);
-    expect(OVERTIMES.map(({ amount }) => amount)).toEqual(['15', '16', '18', '20', '25']);
+    expect(CONVERTS.filter(({ per }) => per === 'hour').map(({ amount }) => amount)).toEqual(
+      HOURLY,
+    );
+    expect(CONVERTS.filter(({ per }) => per === 'year').map(({ amount }) => amount)).toEqual(
+      SALARIES,
+    );
+    expect(OVERTIMES.map(({ amount }) => amount)).toEqual(OVERTIME_RATES);
   });
 
   it('link the matching calculator, prefilled through its URL state', () => {
@@ -166,6 +192,8 @@ describe('overtime long-tail pages', () => {
     expect(fifteen.h1).toBe('¿Cuánto es tiempo y medio de $15 la hora?');
     expect(fifteen.figure).toBe('$22.50');
     expect(fifteen.rows.find(({ key }) => key === '10')?.value).toBe('$225.00');
+    // 17 x 1.5 = 25.50
+    expect(longTailPageOf(jobOf('17', 'overtime'), 'en').figure).toBe('$25.50');
   });
 
   it('link the time card, prefilled with the 50-hour week at the rate', () => {
