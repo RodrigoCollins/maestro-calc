@@ -1,0 +1,10 @@
+---
+import StabilizerScript from '../islands/StabilizerScript.astro';
+import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
+import DosePage from '../components/DosePage.astro';
+import { STABILIZER } from '../doses.ts';
+---
+
+<DosePage page={STABILIZER} calculator={poolStabilizer}>
+  <StabilizerScript />
+</DosePage>

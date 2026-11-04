@@ -1,10 +1,12 @@
 import { gal, isQuantityOf } from '@maestro-calc/core';
+import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
+import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
 import { HOME_TOOLS } from './home.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
@@ -15,6 +17,8 @@ const ENGINES = {
   [SALT.path]: poolSalt,
   [CHLORINE.path]: poolChlorine,
   [PUMP.path]: poolPump,
+  [ALKALINITY.path]: poolAlkalinity,
+  [STABILIZER.path]: poolStabilizer,
 } as const;
 
 /** The text of one output of an engine run, as its page writes it. */
@@ -35,7 +39,7 @@ describe('pool methodology', () => {
   });
 
   it('states each formula and note exactly as the calculator page does', () => {
-    const pages = [VOLUME_TEXTS, SALT, CHLORINE, PUMP];
+    const pages = [VOLUME_TEXTS, SALT, CHLORINE, PUMP, ALKALINITY, STABILIZER];
     METHOD_SECTIONS.forEach((section, index) => {
       expect(section.method).toBe(pages[index]?.method);
       expect(section.note).toBe(pages[index]?.note);

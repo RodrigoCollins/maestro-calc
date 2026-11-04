@@ -10,6 +10,8 @@ export const PAGES = [
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
   '/pool-pump-size-calculator',
+  '/pool-alkalinity-calculator',
+  '/pool-stabilizer-calculator',
 ] as const;
 
 /** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
@@ -54,5 +56,21 @@ export const CALCULATORS = [
     // 36,000 gal / 360 min
     edit: { field: 'gallons', value: '36000' },
     edited: '100.0',
+  },
+  {
+    path: '/pool-alkalinity-calculator',
+    out: 'pounds',
+    initial: '8.4',
+    // 20,000 gal x 3.785411784 L x (100 - 90) ppm x 84.007 / 50.04 mg = 1.271 kg = 2.80 lb
+    edit: { field: 'current', value: '90' },
+    edited: '2.8',
+  },
+  {
+    path: '/pool-stabilizer-calculator',
+    out: 'pounds',
+    initial: '5.0',
+    // 20,000 gal x 3.785411784 L x (50 - 0) mg = 3.785 kg = 8.35 lb
+    edit: { field: 'target', value: '50' },
+    edited: '8.3',
   },
 ] as const;
