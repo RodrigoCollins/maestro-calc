@@ -30,3 +30,7 @@ A property test found a real bug while adding it: the decoder filled a decoded `
 ## Decision 2 revised (2026-11-02)
 
 A fourth base dimension touches about 20 files across core and web and adds an exponent to every quantity of every Maestro Calc page, with 499 B of script budget left. Instead, an output may declare `measure: 'hours'`, an exact `Rational` of hours (not a `Quantity`): the time card needs hours to add, multiply by a rate and show, not unit conversion. `run` checks its shape like the other measures; only `apps/pay` renders it. Measure the bundle again after it; the kind-reader tree-shaking follow-up stays mandatory.
+
+## Archive notes (2026-11-04)
+
+Archived as shipped: the `clock` kind is in c59cadb. One follow-up is still open and is **mandatory before any new Maestro Calc calculator or slot**: make the kind readers tree-shakable (each definition carries only the readers of its own kinds), so a page's script stops paying for kinds it does not use. When `clock` landed, the concrete page script was 48,653 B against the 49,152 B limit, 499 B of headroom. The item is tracked in `plans/growth/PLAN.md`, section "Open engineering items".
