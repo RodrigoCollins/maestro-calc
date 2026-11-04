@@ -8,6 +8,7 @@ describe('Pool Figures site constants', () => {
       origin: 'https://poolfigures.com',
       locales: ['en'],
       indexable: true,
+      gaId: 'G-VE973PXMS4',
     });
   });
 });

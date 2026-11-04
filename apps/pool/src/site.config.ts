@@ -5,4 +5,6 @@ export const SITE = {
   locales: ['en'],
   /** Launch switch: open to search engines on 2026-11-04, months before the May to August season. */
   indexable: true,
+  /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). */
+  gaId: 'G-VE973PXMS4',
 } as const;

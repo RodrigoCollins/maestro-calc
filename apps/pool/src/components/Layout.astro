@@ -31,6 +31,13 @@ const canonical = new URL(canonicalPath(Astro.url.pathname), SITE.origin).href;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '700' }]} />
+    <script
+      is:inline
+      src="/analytics.js"
+      data-ga={SITE.gaId}
+      data-host={new URL(SITE.origin).hostname}
+      defer
+    />
   </head>
   <body>
     <header class="pool-header">
