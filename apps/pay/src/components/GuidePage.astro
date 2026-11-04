@@ -1,6 +1,6 @@
 ---
 import { hoursText, moneyText } from '../format.ts';
-import type { GuideTexts } from '../guide/texts.ts';
+import type { GuideTexts, LedgerLine } from '../guide/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { figuresOf, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -13,9 +13,11 @@ interface Props {
   readonly paths: Readonly<Record<Lang, string>>;
   /** The weeks the guide works out; their figures are the time card's own. */
   readonly weeks?: readonly WorkedWeek[];
+  /** The lines of a worked ledger (a sample pay stub), computed by the guide's module. */
+  readonly ledger?: readonly LedgerLine[];
 }
 
-const { lang, texts: t, paths, weeks = [] } = Astro.props;
+const { lang, texts: t, paths, weeks = [], ledger = [] } = Astro.props;
 const examples = t.examples;
 if (weeks.length > 0 && examples === undefined) throw new Error(`${paths.en} has no example texts`);
 // The rows are the engine's own figures for each week (the guide's test pins them).
@@ -30,6 +32,14 @@ const rows = weeks.map((week) => {
     double: hoursText(figures.doubleHours),
     pay: moneyText(figures.pay),
   };
+});
+const ledgerTexts = t.ledger;
+if (ledger.length > 0 && ledgerTexts === undefined)
+  throw new Error(`${paths.en} has no ledger texts`);
+const ledgerRows = ledger.map((line) => {
+  const label = ledgerTexts?.labels[line.id];
+  if (label === undefined) throw new Error(`${paths[lang]} has no label for ${line.id}`);
+  return { label, kind: line.kind, detail: line.detail, amount: moneyText(line.amount) };
 });
 ---
 
@@ -97,6 +107,27 @@ const rows = weeks.map((week) => {
             </li>
           ))}
         </ul>
+      </section>
+    )}
+
+    {ledgerTexts !== undefined && ledgerRows.length > 0 && (
+      <section aria-labelledby="ledger">
+        <h2 id="ledger">{ledgerTexts.heading}</h2>
+        <p>{ledgerTexts.lead}</p>
+        <table class="ledger">
+          <tbody>
+            {ledgerRows.map((row) => (
+              <tr class={row.kind}>
+                <th scope="row">
+                  {row.label}
+                  {row.detail !== undefined && <span>{row.detail}</span>}
+                </th>
+                <td>{row.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p class="note">{ledgerTexts.note}</p>
       </section>
     )}
 

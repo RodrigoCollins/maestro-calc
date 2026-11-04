@@ -1,6 +1,7 @@
 import { only, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { OVERTIME_PATHS } from '../overtime/texts.ts';
+import { UNPAID_WAGES_GUIDE_PATHS } from './paths.ts';
 import type { GuideSource, GuideTexts } from './texts.ts';
 
 /** The two overtime guides of plans/pago-del-trabajador/PLAN.md (MVP guides 1 and 2). */
@@ -199,6 +200,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
             label: 'California overtime by day and week',
             href: OVERTIME_GUIDE_PATHS.california.en,
           },
+          { label: 'If your overtime was not paid', href: UNPAID_WAGES_GUIDE_PATHS.en },
         ],
         linkLabel: 'How federal overtime is calculated',
       },
@@ -278,6 +280,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
             label: 'Horas extra en California por día y por semana',
             href: OVERTIME_GUIDE_PATHS.california.es,
           },
+          { label: 'Si no te pagaron las horas extra', href: UNPAID_WAGES_GUIDE_PATHS.es },
         ],
         linkLabel: 'Cómo se calculan las horas extra federales',
       },
@@ -359,6 +362,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         ctas: [
           { label: 'Open the overtime calculator', href: CALCULATOR.en },
           { label: 'Federal overtime under the FLSA', href: OVERTIME_GUIDE_PATHS.federal.en },
+          { label: 'If your overtime was not paid', href: UNPAID_WAGES_GUIDE_PATHS.en },
         ],
         linkLabel: 'California overtime by day and week',
       },
@@ -442,6 +446,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
             label: 'Horas extra federales según la FLSA',
             href: OVERTIME_GUIDE_PATHS.federal.es,
           },
+          { label: 'Si no te pagaron las horas extra', href: UNPAID_WAGES_GUIDE_PATHS.es },
         ],
         linkLabel: 'Horas extra en California por día y por semana',
       },

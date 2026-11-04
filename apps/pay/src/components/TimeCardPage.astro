@@ -7,6 +7,8 @@ import { outputOf, receiptMessage, whatsappHref, type Lang } from '../time-card/
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from '../guide/overtime.ts';
+import { PAY_STUB_GUIDE, PAY_STUB_GUIDE_PATHS } from '../guide/pay-stub.ts';
+import { UNPAID_WAGES_GUIDE, UNPAID_WAGES_GUIDE_PATHS } from '../guide/unpaid-wages.ts';
 import { commonLinksOf, TIME_CARD_PATHS } from '../long-tail/jobs.ts';
 import { SITE } from '../site.config.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -21,10 +23,14 @@ const { lang, embed = false } = Astro.props;
 const t = TIME_CARD_TEXTS[lang];
 const paths = TIME_CARD_PATHS;
 const common = commonLinksOf('overtime', lang);
-const guides = (['federal', 'california'] as const).map((guide) => ({
-  href: OVERTIME_GUIDE_PATHS[guide][lang],
-  label: OVERTIME_GUIDES[guide][lang].linkLabel,
-}));
+const guides = [
+  ...(['federal', 'california'] as const).map((guide) => ({
+    href: OVERTIME_GUIDE_PATHS[guide][lang],
+    label: OVERTIME_GUIDES[guide][lang].linkLabel,
+  })),
+  { href: PAY_STUB_GUIDE_PATHS[lang], label: PAY_STUB_GUIDE[lang].linkLabel },
+  { href: UNPAID_WAGES_GUIDE_PATHS[lang], label: UNPAID_WAGES_GUIDE[lang].linkLabel },
+];
 const canonical = canonicalUrl(paths[lang], SITE.origin);
 const ran = timeCard.run({});
 if (!ran.ok) throw new Error('the default week of the time card must run');
