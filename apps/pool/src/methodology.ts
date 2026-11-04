@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** The public-pool limits of the alkalinity and stabilizer pages: MAHC 5.7.4.4.1 and 5.7.3.1.3.2. */
@@ -167,6 +167,68 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         key: 'pounds',
         result: '5.0',
         unit: 'lb',
+      },
+    ],
+  },
+  {
+    id: 'heater',
+    title: 'Heater size',
+    href: HEATER.path,
+    method: HEATER.method,
+    note: HEATER.note,
+    sources: [
+      {
+        name: 'USGS Water Science School: water weighs 62.366 lb per cubic foot at 60 °F, and 62.366 × 231 ÷ 1,728 = 8.34 lb per gallon',
+        url: 'https://www.usgs.gov/special-topics/water-science-school/science/water-density',
+      },
+      {
+        name: 'U.S. Department of Energy, Energy Saver: Gas Pool Heaters (pool area × temperature rise × 12; archived copy of May 1, 2026)',
+        url: 'https://web.archive.org/web/20260501012216/https://www.energy.gov/energysaver/gas-pool-heaters',
+      },
+    ],
+    cases: [
+      {
+        text: '20,000 gallons warmed 10 °F in 24 hours: 20,000 × 8.34 × 10 = 1,668,000 BTU, and 1,668,000 ÷ 24 =',
+        raw: { gallons: '20000', rise: '10', hours: '24' },
+        key: 'btuPerHour',
+        result: '69,500',
+        unit: 'BTU per hour',
+      },
+      {
+        text: '15,000 gallons warmed 8 °F: 15,000 × 8.34 × 8 =',
+        raw: { gallons: '15000', rise: '8', hours: '12' },
+        key: 'btu',
+        result: '1,000,800',
+        unit: 'BTU',
+      },
+    ],
+  },
+  {
+    id: 'fill-time',
+    title: 'Fill time',
+    href: FILL_TIME.path,
+    method: FILL_TIME.method,
+    note: FILL_TIME.note,
+    sources: [
+      {
+        name: 'NIST SP 811, Table 6: 1 h = 60 min and 1 min = 60 s, so a 5-gallon bucket filled in S seconds is 5 × 60 ÷ S = 300 ÷ S gallons a minute',
+        url: 'https://www.nist.gov/pml/special-publication-811/nist-guide-si-chapter-5-units-outside-si',
+      },
+    ],
+    cases: [
+      {
+        text: '20,000 gallons at 10 gallons a minute: 20,000 ÷ 10 = 2,000 minutes, and 2,000 ÷ 60 =',
+        raw: { gallons: '20000', flow: '10' },
+        key: 'time',
+        result: '33 h 20 min',
+        unit: 'to fill',
+      },
+      {
+        text: '15,000 gallons at 12 gallons a minute: 15,000 ÷ 12 =',
+        raw: { gallons: '15000', flow: '12' },
+        key: 'minutes',
+        result: '1,250',
+        unit: 'minutes',
       },
     ],
   },

@@ -332,6 +332,17 @@ const rejected: Row[] = [
   ),
   row(
     'INVALID_DISPLAY',
+    'a number with a display',
+    withOutputs(area, {
+      key: 'btu',
+      measure: 'number',
+      role: 'secondary',
+      display: { unit: 'ft2', format: 'decimal', places: 2 },
+    }),
+    'btu',
+  ),
+  row(
+    'INVALID_DISPLAY',
     'money with a display',
     withOutputs(area, {
       key: 'cost',

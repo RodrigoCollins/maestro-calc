@@ -1,3 +1,4 @@
+import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
@@ -7,7 +8,7 @@ import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, templateOf } from './templates.ts';
 
 /** The engine of each calculator a job can belong to. */
-const ENGINES = { concrete, 'roof-pitch': roofPitch } as const;
+const ENGINES = { concrete, 'roof-pitch': roofPitch, 'rectangle-area': rectangleArea } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
   it('gives every job a route under the hub of its calculator, in both locales', () => {
@@ -39,17 +40,52 @@ describe('job pages (growth plan › lever 1)', () => {
   it('lists the jobs of a calculator in table order, and tells a job id apart', () => {
     expect(jobsOf('concrete')).toEqual(JOB_IDS.filter((id) => id.startsWith('concrete-')));
     expect(jobsOf('roof-pitch')).toEqual([
+      'roof-pitch-3-12',
       'roof-pitch-4-12',
+      'roof-pitch-5-12',
       'roof-pitch-6-12',
+      'roof-pitch-7-12',
       'roof-pitch-8-12',
+      'roof-pitch-9-12',
+      'roof-pitch-10-12',
       'roof-pitch-12-12',
     ]);
-    expect([...jobsOf('concrete'), ...jobsOf('roof-pitch')]).toEqual(JOB_IDS);
+    expect(jobsOf('rectangle-area')).toEqual([
+      'square-feet-5x5',
+      'square-feet-5x10',
+      'square-feet-7x12',
+      'square-feet-10x10',
+      'square-feet-10x12',
+      'square-feet-11x14',
+      'square-feet-11x16',
+      'square-feet-12x12',
+      'square-feet-12x14',
+      'square-feet-12x30',
+      'square-feet-20x20',
+    ]);
+    expect([...jobsOf('concrete'), ...jobsOf('roof-pitch'), ...jobsOf('rectangle-area')]).toEqual(
+      JOB_IDS,
+    );
     expect(jobsOf('paint')).toEqual([]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
+    expect(isJobPage('square-feet-12x14')).toBe(true);
     expect(isJobPage('hub-concrete')).toBe(false);
     expect(templateOf('hub-concrete')).toBe('trust');
+  });
+
+  it('names each square footage job after the length and the width of its first case', () => {
+    for (const id of jobsOf('rectangle-area')) {
+      const [first] = JOBS[id].cases;
+      expect(
+        `square-feet-${first['length'] ?? ''}x${first['width'] ?? ''}`.replaceAll('ft', ''),
+        id,
+      ).toBe(id);
+      expect(ROUTES[id].en, id).toBe(`/measurement/${id.replace('square-feet-', '')}-square-feet`);
+      expect(ROUTES[id].es, id).toBe(
+        `/es/medidas/${id.replace('square-feet-', '')}-pies-cuadrados`,
+      );
+    }
   });
 
   it('lists every job under a hub that holds its calculator', () => {

@@ -39,6 +39,7 @@ const breadcrumb = {
   <Breadcrumb {breadcrumb} />
   <article class="prose">
     <h1>{view.heading}</h1>
+    {view.intro !== undefined && <p>{view.intro}</p>}
     <p class="job-size">{view.lead}</p>
     <p class="job-answer">{view.answer}</p>
     <dl class="job-facts">

@@ -46,12 +46,21 @@ export const lengthFieldText = (length: Quantity<'length'>): string => {
   return [feet, inches].filter(Boolean).join(' ') || '0 ft';
 };
 
+const MINUTES_PER_HOUR = Rational.of(60);
+
+/** Hours as whole hours and the nearest minute, the hours grouped: `33 h 20 min`. */
+export const durationText = (hours: Rational): string => {
+  const { integer } = toDecimalParts(hours.mul(MINUTES_PER_HOUR), 0);
+  return `${grouped(integer / 60n)} h ${String(integer % 60n)} min`;
+};
+
 const PER_GALLON = Rational.of(128);
 
 /**
  * The text of an output of the dose calculators, in the unit the page names: pounds and
  * kilograms of salt, ounces of baking soda or stabilizer, fluid ounces of liquid chlorine (1/128 gal), ounces of a granular product and
- * gallons a minute of pump flow.
+ * gallons a minute of pump flow; a plain number is the fill time in hours and minutes, or a whole
+ * figure (BTU, minutes).
  */
 export const outputText = (key: string, value: unknown): string => {
   if (isQuantityOf(value, 'mass'))
@@ -64,5 +73,6 @@ export const outputText = (key: string, value: unknown): string => {
       key === 'liquid' ? valueIn(value, gal).mul(PER_GALLON) : valueIn(value, gal),
       1,
     );
+  if (value instanceof Rational) return key === 'time' ? durationText(value) : amountText(value);
   throw new Error(`no text for output ${key}`);
 };

@@ -1,4 +1,5 @@
 import { decode } from '@maestro-calc/core';
+import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { describe, expect, it } from 'vitest';
 import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
@@ -17,8 +18,13 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
     expect(state.ok && decode(concrete, query).state).toEqual(state.ok && state.value);
     return;
   }
-  const state = roofPitch.validate(raw);
-  expect(state.ok && decode(roofPitch, query).state).toEqual(state.ok && state.value);
+  if (calculator === 'roof-pitch') {
+    const state = roofPitch.validate(raw);
+    expect(state.ok && decode(roofPitch, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  const state = rectangleArea.validate(raw);
+  expect(state.ok && decode(rectangleArea, query).state).toEqual(state.ok && state.value);
 };
 
 describe('job page view (growth plan › lever 1: figures from the engine)', () => {
@@ -89,6 +95,68 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.facts.map(({ value }) => value)).toEqual(['12.00 en 12', '1.414']);
   });
 
+  // hand-verified: atan(9/12) = 36.870°, atan(10/12) = 39.806°, atan(3/12) = 14.036°,
+  // atan(5/12) = 22.620°, atan(7/12) = 30.256°
+  it.each([
+    ['roof-pitch-3-12', '14.04°'],
+    ['roof-pitch-5-12', '22.62°'],
+    ['roof-pitch-7-12', '30.26°'],
+    ['roof-pitch-9-12', '36.87°'],
+    ['roof-pitch-10-12', '39.81°'],
+  ] as const)('works the angle of %s out as %s in both languages', (id, angle) => {
+    for (const locale of LOCALES) expect(jobView(id, locale).answer).toBe(angle);
+  });
+
+  // hand-verified: 12 × 14 = 168 ft²; × 0.09290304 = 15.6077 m²; ÷ 9 = 18.667 yd²;
+  // 12 × 15 = 180 ft² and 12 × 16 = 192 ft²
+  it('works the 12 × 14 area out as the square footage calculator does', () => {
+    const view = jobView('square-feet-12x14', 'en');
+    expect(view.lead).toBe('Area = Length × Width = 12 ft × 14 ft');
+    expect(view.answer).toBe('168.00 square feet');
+    expect(view.facts).toEqual([
+      { label: 'Area (square meters)', value: '15.61' },
+      { label: 'Area (square yards)', value: '18.67' },
+    ]);
+    expect(view.columns).toEqual([
+      'Length × Width',
+      'Area (square feet)',
+      'Area (square meters)',
+      'Area (square yards)',
+    ]);
+    expect(view.rows[0]).toEqual({
+      label: '12 ft × 14 ft',
+      href: '/square-footage-calculator?v=1&l=144&w=168',
+      cells: ['168.00', '15.61', '18.67'],
+    });
+    expect(view.rows.map(({ label }) => label)).toEqual([
+      '12 ft × 14 ft',
+      '12 ft × 15 ft',
+      '12 ft × 16 ft',
+    ]);
+    expect(view.rows.map(({ cells }) => cells[0])).toEqual(['168.00', '180.00', '192.00']);
+    expect(view.calculatorName).toBe('Square Footage Calculator');
+    expect(view.methodology).toBe('/methodology#square-footage');
+  });
+
+  // hand-verified: 5 × 5 = 25 ft² = 2.32 m² = 2.78 yd²; 30 × 12 = 360 ft² = 33.45 m² = 40 yd²
+  it('works the 5 × 5 and the 12 × 30 areas out in Spanish', () => {
+    const small = jobView('square-feet-5x5', 'es');
+    expect(small.answer).toBe('25.00 pies cuadrados');
+    expect(small.lead).toBe('Área = Largo × Ancho = 5 ft × 5 ft');
+    expect(small.facts.map(({ value }) => value)).toEqual(['2.32', '2.78']);
+    expect(small.rows[0].href).toMatch(/^\/es\/calculadora-de-pies-cuadrados\?/);
+    const long = jobView('square-feet-12x30', 'es');
+    expect(long.rows[0].cells).toEqual(['360.00', '33.45', '40.00']);
+  });
+
+  it.each(LOCALES)('opens each square footage job with its own lead sentence in %s', (locale) => {
+    const intros = jobsOf('rectangle-area').map((id) => jobView(id, locale).intro);
+    for (const intro of intros) expect(intro).toMatch(/\S/);
+    expect(new Set(intros).size).toBe(intros.length);
+    expect(jobView('concrete-slab-10x10', locale).intro).toBeUndefined();
+    expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');
+  });
+
   it.each(PAIRS)('links every row of %s in %s to the calculator in that case', (id, locale) => {
     const view = jobView(id, locale);
     expect(view.rows).toHaveLength(JOBS[id].cases.length);
@@ -125,6 +193,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(METHODOLOGY_ANCHOR.concrete[locale]).toBe(METHODOLOGY_ROWS.concrete.anchor[locale]);
     expect(METHODOLOGY_ANCHOR['roof-pitch'][locale]).toBe(
       METHODOLOGY_ROWS['roof-pitch'].anchor[locale],
+    );
+    expect(METHODOLOGY_ANCHOR['rectangle-area'][locale]).toBe(
+      METHODOLOGY_ROWS['rectangle-area'].anchor[locale],
     );
     expect(jobView('roof-pitch-4-12', locale).methodology).toMatch(
       new RegExp(`#${METHODOLOGY_ANCHOR['roof-pitch'][locale]}$`),

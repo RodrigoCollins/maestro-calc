@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** One calculator card of the home: its page, a short title and what it works out. */
@@ -40,4 +40,23 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     title: 'Stabilizer',
     summary: 'Pounds of cyanuric acid to raise your CYA.',
   },
+  {
+    href: HEATER.path,
+    title: 'Heater size',
+    summary: 'The BTU per hour to warm your pool in the hours you give it.',
+  },
+  {
+    href: FILL_TIME.path,
+    title: 'Fill time',
+    summary: 'Hours and minutes to fill your pool from a hose.',
+  },
+];
+
+/**
+ * The header links: the first four calculators, then every card of the home. Eight uppercase
+ * links would wrap to four rows on a phone and push the calculator below the fold.
+ */
+export const NAV_LINKS: readonly { readonly href: string; readonly title: string }[] = [
+  ...HOME_TOOLS.slice(0, 4).map(({ href, title }) => ({ href, title })),
+  { href: '/#pool-tools', title: 'All calculators' },
 ];

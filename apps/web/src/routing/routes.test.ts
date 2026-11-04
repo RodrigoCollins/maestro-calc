@@ -175,6 +175,70 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/roofing/12-12-roof-pitch',
       es: '/es/techos/pendiente-de-techo-12-12',
     });
+    expect(ROUTES['roof-pitch-3-12']).toEqual({
+      en: '/roofing/3-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-3-12',
+    });
+    expect(ROUTES['roof-pitch-5-12']).toEqual({
+      en: '/roofing/5-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-5-12',
+    });
+    expect(ROUTES['roof-pitch-7-12']).toEqual({
+      en: '/roofing/7-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-7-12',
+    });
+    expect(ROUTES['roof-pitch-9-12']).toEqual({
+      en: '/roofing/9-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-9-12',
+    });
+    expect(ROUTES['roof-pitch-10-12']).toEqual({
+      en: '/roofing/10-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-10-12',
+    });
+    expect(ROUTES['square-feet-5x5']).toEqual({
+      en: '/measurement/5x5-square-feet',
+      es: '/es/medidas/5x5-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-5x10']).toEqual({
+      en: '/measurement/5x10-square-feet',
+      es: '/es/medidas/5x10-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-7x12']).toEqual({
+      en: '/measurement/7x12-square-feet',
+      es: '/es/medidas/7x12-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-10x10']).toEqual({
+      en: '/measurement/10x10-square-feet',
+      es: '/es/medidas/10x10-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-10x12']).toEqual({
+      en: '/measurement/10x12-square-feet',
+      es: '/es/medidas/10x12-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-11x14']).toEqual({
+      en: '/measurement/11x14-square-feet',
+      es: '/es/medidas/11x14-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-11x16']).toEqual({
+      en: '/measurement/11x16-square-feet',
+      es: '/es/medidas/11x16-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-12x12']).toEqual({
+      en: '/measurement/12x12-square-feet',
+      es: '/es/medidas/12x12-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-12x14']).toEqual({
+      en: '/measurement/12x14-square-feet',
+      es: '/es/medidas/12x14-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-12x30']).toEqual({
+      en: '/measurement/12x30-square-feet',
+      es: '/es/medidas/12x30-pies-cuadrados',
+    });
+    expect(ROUTES['square-feet-20x20']).toEqual({
+      en: '/measurement/20x20-square-feet',
+      es: '/es/medidas/20x20-pies-cuadrados',
+    });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });

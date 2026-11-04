@@ -1,7 +1,7 @@
 ---
 id: hub-roofing
 locale: en
-updated: 2026-11-02
+updated: 2026-11-04
 ownerReview: approved
 ---
 
