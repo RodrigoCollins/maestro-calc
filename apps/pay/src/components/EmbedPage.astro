@@ -1,0 +1,70 @@
+---
+import { EMBED_PATHS, EMBED_TEXTS } from '../embed/texts.ts';
+import { snippetsFor } from '../embed/embeds.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+/** The page that offers every calculator to other sites, one snippet each to select and copy. */
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = EMBED_TEXTS[lang];
+const method = lang === 'en' ? '/methodology' : '/es/metodologia';
+const methodLabel = lang === 'en' ? 'How we calculate' : 'Cómo calculamos';
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={EMBED_PATHS}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <h1>{t.h1}</h1>
+    <p class="lead">{t.lead}</p>
+
+    <section aria-labelledby="how">
+      <h2 id="how">{t.howHeading}</h2>
+      <ol>
+        {t.steps.map((step) => (
+          <li>{step}</li>
+        ))}
+      </ol>
+      {t.notes.map((note) => (
+        <p>{note}</p>
+      ))}
+      <p>
+        <a href={method}>{methodLabel}</a>
+      </p>
+    </section>
+
+    <section aria-labelledby="calculators">
+      <h2 id="calculators">{t.calculatorsHeading}</h2>
+      {snippetsFor(lang).map(({ id, name, code }) => (
+        <section aria-labelledby={`embed-${id}`}>
+          <h3 id={`embed-${id}`}>{name}</h3>
+          <pre class="embed-code"><code>{code}</code></pre>
+        </section>
+      ))}
+    </section>
+  </main>
+</SiteLayout>
+
+<style>
+  .embed-code {
+    margin: 0;
+    padding: 0.75rem;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    font-family: var(--font-mono), monospace;
+    font-size: 0.875rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+</style>

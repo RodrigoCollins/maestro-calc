@@ -1,7 +1,13 @@
 import { decode, encode, toDecimalParts } from '@maestro-calc/core';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { clockFieldText, hoursText, moneyText } from '../format.ts';
-import { outputOf, receiptMessage, whatsappHref, type Lang } from '../time-card/receipt.ts';
+import {
+  outputOf,
+  receiptMessage,
+  sharedUrlOf,
+  whatsappHref,
+  type Lang,
+} from '../time-card/receipt.ts';
 
 // The time card page script: every edit reruns the calculator, writes the figures, keeps the state
 // in the URL (so the receipt link reopens the same week) and rewrites the WhatsApp link.
@@ -59,7 +65,9 @@ const render = (): void => {
     history.replaceState(null, '', query === 'v=1' ? location.pathname : `?${query}`);
   }
   const link = document.querySelector<HTMLAnchorElement>('[data-whatsapp]');
-  if (link !== null) link.href = whatsappHref(receiptMessage(result, lang, location.href));
+  const canonical = document.querySelector('link[rel=canonical]')?.getAttribute('href') ?? null;
+  const url = sharedUrlOf(canonical, location.href);
+  if (link !== null) link.href = whatsappHref(receiptMessage(result, lang, url));
 };
 
 restore();

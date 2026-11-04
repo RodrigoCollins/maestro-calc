@@ -9,10 +9,12 @@ import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
   readonly variant: Variant;
 }
 
-const { lang, variant } = Astro.props;
+const { lang, variant, embed = false } = Astro.props;
 const t = PAY_CONVERTER_TEXTS[lang];
 const v = t.variants[variant];
 const ran = payConverter.run({ amount: v.amount, per: v.per });
@@ -31,6 +33,7 @@ const common = commonLinksOf(v.per, lang);
 ---
 
 <SiteLayout
+  embed={embed}
   lang={lang}
   title={v.title}
   description={v.description}

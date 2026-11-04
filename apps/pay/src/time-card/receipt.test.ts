@@ -1,6 +1,6 @@
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { describe, expect, it } from 'vitest';
-import { receiptMessage, whatsappHref } from './receipt.ts';
+import { receiptMessage, sharedUrlOf, whatsappHref } from './receipt.ts';
 
 const ran = timeCard.run({});
 if (!ran.ok) throw new Error('the default week must run');
@@ -31,6 +31,33 @@ describe('receiptMessage', () => {
     const long = timeCard.run({ rule: 'california', mon: '6:00 am', monOut: '7:30 pm' });
     if (!long.ok) throw new Error('must run');
     expect(receiptMessage(long.value, 'es', url)).toContain('h extra, 1 h doble)');
+  });
+});
+
+describe('sharedUrlOf', () => {
+  it('shares the page itself, with its week in the query', () => {
+    expect(
+      sharedUrlOf(
+        'https://cuentahoras.com/time-card-calculator',
+        'http://localhost:8788/time-card-calculator?v=1&a=2',
+      ),
+    ).toBe('http://localhost:8788/time-card-calculator?v=1&a=2');
+  });
+
+  // an embed's canonical is the full page: a receipt sent from another site's frame opens it
+  it('shares the full page from its embed, on the same origin', () => {
+    expect(
+      sharedUrlOf(
+        'https://cuentahoras.com/time-card-calculator',
+        'https://cuentahoras.com/embed/time-card-calculator?v=1&a=2',
+      ),
+    ).toBe('https://cuentahoras.com/time-card-calculator?v=1&a=2');
+  });
+
+  it('keeps the address when the page has no canonical or a broken one', () => {
+    const here = 'https://cuentahoras.com/embed/time-card-calculator';
+    expect(sharedUrlOf(null, here)).toBe(here);
+    expect(sharedUrlOf('not a url', here)).toBe(here);
   });
 });
 

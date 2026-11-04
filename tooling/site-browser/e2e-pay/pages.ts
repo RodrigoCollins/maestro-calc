@@ -16,6 +16,8 @@ export const PAGES = [
   { path: '/es/metodologia', lang: 'es' },
   { path: '/about', lang: 'en' },
   { path: '/es/acerca', lang: 'es' },
+  { path: '/embed-calculators', lang: 'en' },
+  { path: '/es/calculadoras-para-tu-sitio', lang: 'es' },
   { path: '/hourly-to-salary-calculator', lang: 'en' },
   { path: '/salary-to-hourly-calculator', lang: 'en' },
   { path: '/es/de-pago-por-hora-a-sueldo-anual', lang: 'es' },
@@ -33,3 +35,22 @@ export const TIME_CARD = PAGES.filter(({ path }) =>
 
 /** The default week of the time card: six days, 49.5 hours, $1,193.50 at $22 an hour. */
 export const DEFAULT_PAY = '$1,193.50';
+
+/** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
+const CALCULATOR_PATHS: readonly string[] = [
+  '/time-card-calculator',
+  '/es/calculadora-de-horas-trabajadas',
+  '/hourly-to-salary-calculator',
+  '/salary-to-hourly-calculator',
+  '/es/de-pago-por-hora-a-sueldo-anual',
+  '/es/de-sueldo-anual-a-pago-por-hora',
+  '/no-tax-on-overtime-calculator',
+  '/no-tax-on-tips-calculator',
+  '/es/calculadora-horas-extra-sin-impuestos',
+  '/es/calculadora-propinas-sin-impuestos',
+];
+
+/** Every embed with the page it embeds and its language. */
+export const EMBEDS = PAGES.filter(({ path }) => CALCULATOR_PATHS.includes(path)).map(
+  ({ path, lang }) => ({ embed: `/embed${path}`, page: path, lang }),
+);
