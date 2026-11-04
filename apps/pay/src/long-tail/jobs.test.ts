@@ -39,6 +39,35 @@ describe('long-tail pages', () => {
     const fifty = longTailPageOf(jobOf('50000'), 'es');
     expect(fifty.figure).toBe('$24.04');
     expect(fifty.h1).toBe('¿$50,000 al año cuánto es por hora?');
+    // 22 x 40 x 52 = 45,760; 45,760 / 12 = 3,813.33; 22 x 40 = 880
+    const twentyTwo = longTailPageOf(jobOf('22'), 'en');
+    expect(twentyTwo.figure).toBe('$45,760.00');
+    expect(twentyTwo.rows.find(({ key }) => key === 'monthly')?.value).toBe('$3,813.33');
+    expect(twentyTwo.rows.find(({ key }) => key === 'weekly')?.value).toBe('$880.00');
+    // 45,000 / (40 x 52) = 45,000 / 2,080 = 21.634...
+    expect(longTailPageOf(jobOf('45000'), 'en').figure).toBe('$21.63');
+  });
+
+  it('cover the common hourly rates and salaries people search', () => {
+    expect(JOBS.filter(({ per }) => per === 'hour').map(({ amount }) => amount)).toEqual([
+      '15',
+      '16',
+      '17',
+      '18',
+      '20',
+      '22',
+      '25',
+      '30',
+    ]);
+    expect(JOBS.filter(({ per }) => per === 'year').map(({ amount }) => amount)).toEqual([
+      '40000',
+      '45000',
+      '50000',
+      '60000',
+      '70000',
+      '80000',
+      '100000',
+    ]);
   });
 
   it('link the matching calculator, prefilled through its URL state', () => {
