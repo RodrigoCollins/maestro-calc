@@ -130,7 +130,7 @@ const checkInput = (ensure: Ensure, input: InputDescriptor): void => {
 /** A display hint must fit its output: a unit of the dimension, `places` 0..12, `denominator` 2..64. */
 const hasValidDisplay = ({ measure, display }: OutputDescriptor): boolean => {
   if (display === undefined) return true;
-  if (measure === 'money' || measure === 'hours') return false;
+  if (measure === 'money' || measure === 'hours' || measure === 'number') return false;
   if (!UNITS[measure].some(({ id }) => id === display.unit)) return false;
   if (display.format === 'decimal') return isWithin(display.places, 0, 12);
   return measure === 'length' && isWithin(display.denominator, 2, 64);
