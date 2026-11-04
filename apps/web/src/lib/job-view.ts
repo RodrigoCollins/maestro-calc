@@ -1,10 +1,13 @@
-import { encode, yd3 } from '@maestro-calc/core';
+import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
-import { groupedInteger, volumeText } from '../calculator/present.ts';
-import { JOB_IDS, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
+import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
+import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
+import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
 import { siteText } from './site-text.ts';
@@ -15,38 +18,65 @@ export interface JobRow {
   readonly label: string;
   /** The calculator page with the case in its URL state. */
   readonly href: string;
-  /** Cubic yards with the default extra, as the calculator shows them. */
-  readonly yards: string;
-  /** Whole bags of each size of `BAGS`, in that order. */
-  readonly bags: readonly string[];
+  /** The figures of the case, one per column after the first, as the calculator shows them. */
+  readonly cells: readonly string[];
 }
 
-export interface JobView {
-  readonly heading: string;
-  /** The names of the case's sizes, from the calculator catalog: `Length × Width × Thickness`. */
-  readonly sizeLabel: string;
-  readonly yardsLabel: string;
-  readonly bagLabels: readonly string[];
-  /** The answer of the first case: `1.36 cubic yards`. */
+/** One figure of the first case, under the answer: a bag count, the pitch in 12. */
+export interface JobFact {
+  readonly label: string;
+  readonly value: string;
+}
+
+/** What a calculator's engine makes of the cases of a job, in one language. */
+interface JobTable {
+  /** The sizes of the first case with their names: `Length × Width × Thickness: 10 ft × …`. */
+  readonly lead: string;
+  /** The answer of the first case: `1.36 cubic yards`, `26.57°`. */
   readonly answer: string;
-  readonly rows: readonly JobRow[];
+  readonly facts: readonly JobFact[];
+  /** The heading of each column, the sizes first. */
+  readonly columns: readonly [string, ...string[]];
+  readonly rows: readonly [JobRow, ...JobRow[]];
+  readonly calculatorName: string;
+}
+
+export interface JobView extends JobTable {
+  readonly heading: string;
+  /** What the figures assume, from the `site.job.note.<calculator>` key. */
+  readonly note: string;
   /** The calculator page, prefilled with the first case. */
   readonly cta: string;
-  readonly calculatorName: string;
   readonly methodology: string;
   readonly others: readonly { readonly href: string; readonly title: string }[];
 }
 
+type JobCalculator = Job['calculator'];
+
+/** The section of each job calculator on the methodology page, by locale. */
+export const METHODOLOGY_ANCHOR = {
+  concrete: { en: 'concrete', es: 'concreto' },
+  'roof-pitch': { en: 'roof-pitch', es: 'pendiente-de-techo' },
+} as const satisfies Record<JobCalculator, Record<Locale, string>>;
+
+/** `10ft` as `10 ft`: the sizes read the same in both languages. */
+const sizeText = (value: string): string => value.replace(/^(\d+)(ft|in)$/, '$1 $2');
+
+/** The first item and the rest mapped, keeping the list non-empty for the type. */
+const mapCases = <T>(
+  [first, ...rest]: readonly [JobCase, ...JobCase[]],
+  each: (raw: JobCase) => T,
+): readonly [T, ...T[]] => [each(first), ...rest.map(each)];
+
+/* Concrete: the cubic yards and the bags of each size, the default bag first. */
+
 /** The bag sizes of the table, the calculator's default first. */
 const BAGS = ['80', '60', '40'] as const;
 
-/** The concrete section of the methodology page, by locale. */
-export const METHODOLOGY_ANCHOR = { en: 'concrete', es: 'concreto' } as const;
-
-const catalogs = { en: createTranslator(enConcrete), es: createTranslator(esConcrete) };
+const concreteCatalogs = { en: createTranslator(enConcrete), es: createTranslator(esConcrete) };
 
 /** The validated state of a case: a case the engine rejects is a programming error. */
-const stateOf = (raw: JobCase) => {
+const concreteState = (raw: JobCase) => {
   const result = concrete.validate(raw);
   if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
   return result.value;
@@ -64,47 +94,123 @@ const sizeKeysOf = (raw: JobCase): LengthInput['key'][] =>
     .filter(({ key }) => Object.hasOwn(raw, key))
     .map(({ key }) => key);
 
-/** `10ft` as `10 ft`: the sizes read the same in both languages. */
-const sizeText = (value: string): string => value.replace(/^(\d+)(ft|in)$/, '$1 $2');
-
-const rowOf = (raw: JobCase, locale: Locale): JobRow => {
-  const state = stateOf(raw);
-  const { outputs } = concrete.compute(state);
-  return {
-    label: sizeKeysOf(raw)
-      .map((key) => sizeText(raw[key] ?? ''))
-      .join(' × '),
-    href: `${pathOf('concrete', locale)}?${encode(concrete, state, { unitSystem: 'imperial' })}`,
-    yards: volumeText(outputs.volumeYd3, yd3),
-    bags: BAGS.map((bag) => {
-      const [line] = concrete.compute(stateOf({ ...raw, bag })).shopping;
+const concreteTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = concreteCatalogs[locale];
+  const bagsOf = (raw: JobCase): string[] =>
+    BAGS.map((bag) => {
+      const [line] = concrete.compute(concreteState({ ...raw, bag })).shopping;
       if (line === undefined) throw new Error('the concrete engine returned no bag line');
       return groupedInteger(line.qty);
-    }),
+    });
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = concreteState(raw);
+    return {
+      label: sizeKeysOf(raw)
+        .map((key) => sizeText(raw[key] ?? ''))
+        .join(' × '),
+      href: `${pathOf('concrete', locale)}?${encode(concrete, state, { unitSystem: 'imperial' })}`,
+      cells: [volumeText(concrete.compute(state).outputs.volumeYd3, yd3), ...bagsOf(raw)],
+    };
+  });
+  const [first] = rows;
+  const sizeLabel = sizeKeysOf(cases[0])
+    .map((key) => calc(`calc.concrete.inputs.${key}`))
+    .join(' × ');
+  const bagLabels = BAGS.map((bagLb) => calc('calc.concrete.page.shoppingLine', { bagLb }));
+  const [yards = '', ...bags] = first.cells;
+  return {
+    lead: `${sizeLabel}: ${first.label}`,
+    answer: calc('calc.concrete.page.volumeYd3', { value: yards }),
+    facts: bagLabels.map((label, index) => ({ label, value: bags[index] ?? '' })),
+    columns: [sizeLabel, calc('calc.concrete.outputs.volumeYd3'), ...bagLabels],
+    rows,
+    calculatorName: calc('calc.concrete.title'),
   };
 };
 
-/** The page of job `id` in `locale`: every figure worked out by the concrete engine. */
+/* Roof pitch: the pitch in 12, the angle, the rafter multiplier and the rafter of each run. */
+
+const roofPitchCatalogs = { en: createTranslator(enRoofPitch), es: createTranslator(esRoofPitch) };
+
+type RoofPitchOutput = (typeof roofPitch.outputs)[number];
+
+const roofPitchOutput = (key: RoofPitchOutput['key']): OutputDescriptor => {
+  const output = roofPitch.outputs.find((each) => each.key === key);
+  if (output === undefined) throw new Error(`the roof pitch engine has no ${key} output`);
+  return output;
+};
+
+const roofPitchState = (raw: JobCase) => {
+  const result = roofPitch.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const roofPitchTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = roofPitchCatalogs[locale];
+  const rafter = roofPitchOutput('rafter');
+  const rafterM = roofPitchOutput('rafterM');
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = roofPitchState(raw);
+    const { outputs } = roofPitch.compute(state);
+    return {
+      label: sizeText(raw['rafterRun'] ?? ''),
+      href: `${pathOf('roof-pitch', locale)}?${encode(roofPitch, state, { unitSystem: 'imperial' })}`,
+      cells: [outputText(rafter, outputs.rafter), outputText(rafterM, outputs.rafterM)],
+    };
+  });
+  const [raw] = cases;
+  const { outputs } = roofPitch.compute(roofPitchState(raw));
+  // the rafter of one foot of run with no overhang is the multiplier √(1 + t²), to the thousandth
+  const perFoot = roofPitch.compute(roofPitchState({ ...raw, rafterRun: '1ft', overhang: '0in' }));
+  const multiplier = outputText(
+    { ...rafter, display: { unit: 'ft', format: 'decimal', places: 3 } },
+    perFoot.outputs.rafter,
+  );
+  return {
+    lead: (['rise', 'run'] as const)
+      .map((key) => `${calc(`calc.roof-pitch.inputs.${key}`)}: ${sizeText(raw[key] ?? '')}`)
+      .join(', '),
+    answer: calc('calc.roof-pitch.page.angle', {
+      value: outputText(roofPitchOutput('angle'), outputs.angle),
+    }),
+    facts: [
+      {
+        label: calc('calc.roof-pitch.outputs.pitch'),
+        value: calc('calc.roof-pitch.page.pitch', {
+          value: outputText(roofPitchOutput('pitch'), outputs.pitch),
+        }),
+      },
+      { label: siteText(locale)('site.job.multiplier'), value: multiplier },
+    ],
+    columns: [
+      calc('calc.roof-pitch.inputs.rafterRun'),
+      calc('calc.roof-pitch.outputs.rafter'),
+      calc('calc.roof-pitch.outputs.rafterM'),
+    ],
+    rows,
+    calculatorName: calc('calc.roof-pitch.title'),
+  };
+};
+
+const TABLES = {
+  concrete: concreteTable,
+  'roof-pitch': roofPitchTable,
+} as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
+
+/** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
   const text = siteText(locale);
-  const calc = catalogs[locale];
-  const [first, ...rest] = JOBS[id].cases;
-  const rows = [rowOf(first, locale), ...rest.map((raw) => rowOf(raw, locale))] as const;
+  const { calculator, cases } = JOBS[id];
+  const table = TABLES[calculator](cases, locale);
   return {
+    ...table,
     heading: text(`page.${id}.heading`),
-    sizeLabel: sizeKeysOf(first)
-      .map((key) => calc(`calc.concrete.inputs.${key}`))
-      .join(' × '),
-    yardsLabel: calc('calc.concrete.outputs.volumeYd3'),
-    bagLabels: BAGS.map((bagLb) => calc('calc.concrete.page.shoppingLine', { bagLb })),
-    answer: calc('calc.concrete.page.volumeYd3', { value: rows[0].yards }),
-    rows,
-    cta: rows[0].href,
-    calculatorName: calc('calc.concrete.title'),
-    methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[locale]}`,
-    others: JOB_IDS.filter((other) => other !== id).map((other) => ({
-      href: pathOf(other, locale),
-      title: text(`page.${other}.heading`),
-    })),
+    note: text(`site.job.note.${calculator}`),
+    cta: table.rows[0].href,
+    methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
+    others: jobsOf(calculator)
+      .filter((other) => other !== id)
+      .map((other) => ({ href: pathOf(other, locale), title: text(`page.${other}.heading`) })),
   };
 };

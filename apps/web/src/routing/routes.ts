@@ -99,6 +99,13 @@ export const ROUTES = {
     en: '/concrete/12-inch-sonotube',
     es: '/es/concreto/sonotubo-de-12-pulgadas',
   },
+  'roof-pitch-4-12': { en: '/roofing/4-12-roof-pitch', es: '/es/techos/pendiente-de-techo-4-12' },
+  'roof-pitch-6-12': { en: '/roofing/6-12-roof-pitch', es: '/es/techos/pendiente-de-techo-6-12' },
+  'roof-pitch-8-12': { en: '/roofing/8-12-roof-pitch', es: '/es/techos/pendiente-de-techo-8-12' },
+  'roof-pitch-12-12': {
+    en: '/roofing/12-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-12-12',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

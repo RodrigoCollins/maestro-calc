@@ -3,7 +3,8 @@ import type { CalculatorPageId } from './templates.ts';
 
 /*
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
- * out at build time. A job id is also its `ROUTES` id; the page copy is its `page.<id>.*` keys of the
+ * out at build time: concrete for a slab or a tube, roof pitch for a pitch in 12. A job id is also
+ * its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -13,7 +14,7 @@ export type JobCase = Readonly<Record<string, string>>;
 
 export interface Job {
   /** The calculator that works the figures out; the page links to it, prefilled with each case. */
-  readonly calculator: Extract<CalculatorPageId, 'concrete'>;
+  readonly calculator: Extract<CalculatorPageId, 'concrete' | 'roof-pitch'>;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
   /** The cases of the table, the one the page answers first; every case has the same keys. */
@@ -31,6 +32,24 @@ const tube = (diameter: number, depth: number): JobCase => ({
   diameter: `${String(diameter)}in`,
   height: `${String(depth)}in`,
 });
+
+/** The rafter runs (half the span) of a roof pitch table, in feet. */
+const RAFTER_RUNS = [8, 10, 12, 14, 16] as const;
+
+/**
+ * A roof pitch of `rise` in 12: one case per rafter run, with no overhang, so each rafter length is
+ * the run times the multiplier of the pitch.
+ */
+const pitch = (rise: number) => {
+  const run = (rafterRun: number): JobCase => ({
+    rise: `${String(rise)}in`,
+    run: '12in',
+    rafterRun: `${String(rafterRun)}ft`,
+    overhang: '0in',
+  });
+  const [first, ...rest] = RAFTER_RUNS;
+  return [run(first), ...rest.map(run)] as const;
+};
 
 export const JOBS = {
   'concrete-slab-10x10': {
@@ -78,6 +97,10 @@ export const JOBS = {
     updated: '2026-11-03',
     cases: [tube(12, 24), tube(12, 36), tube(12, 48)],
   },
+  'roof-pitch-4-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(4) },
+  'roof-pitch-6-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(6) },
+  'roof-pitch-8-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(8) },
+  'roof-pitch-12-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(12) },
 } as const satisfies Record<string, Job>;
 
 export type JobId = keyof typeof JOBS;

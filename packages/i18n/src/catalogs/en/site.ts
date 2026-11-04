@@ -30,8 +30,11 @@ export const enSite = {
   'site.hub.guides': 'Guides',
   'site.hub.jobs': 'Common jobs',
   'site.job.cases': 'The same job in other sizes',
-  'site.job.note':
+  'site.job.note.concrete':
     'Every figure adds 10% extra for waste, the concrete calculator’s default, and rounds up to whole bags. Each size opens the calculator with its measurements filled in.',
+  'site.job.note.roof-pitch':
+    'Each rafter length runs along the slope over the rafter run, with no overhang and nothing taken off for the ridge board. Each run opens the calculator with its measurements filled in, where you can add the overhang.',
+  'site.job.multiplier': 'Rafter multiplier (feet of rafter per foot of run)',
   'site.job.methodology': 'How we work out the figures',
   'site.job.more': 'More jobs',
   'site.hub.more': 'More tools:',
@@ -237,6 +240,22 @@ export const enSite = {
   'page.concrete-tube-12.description':
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
+  'page.roof-pitch-4-12.title': '4/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+  'page.roof-pitch-4-12.description':
+    'The angle of a 4/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-4-12.heading': '4/12 roof pitch: the angle and the rafter length',
+  'page.roof-pitch-6-12.title': '6/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+  'page.roof-pitch-6-12.description':
+    'The angle of a 6/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-6-12.heading': '6/12 roof pitch: the angle and the rafter length',
+  'page.roof-pitch-8-12.title': '8/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+  'page.roof-pitch-8-12.description':
+    'The angle of an 8/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-8-12.heading': '8/12 roof pitch: the angle and the rafter length',
+  'page.roof-pitch-12-12.title': '12/12 Roof Pitch: Angle and Rafter Length | Maestro Calc',
+  'page.roof-pitch-12-12.description':
+    'The angle of a 12/12 roof pitch in degrees, its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-12-12.heading': '12/12 roof pitch: the angle and the rafter length',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',
@@ -267,9 +286,9 @@ export const enSite = {
   'page.roofing.title': 'Roofing Calculator: Squares and Bundles | Maestro Calc',
   'page.roofing.description':
     'Find the area of a roof in squares from its footprint and pitch, and the shingle bundles and underlayment rolls to buy, with the IRC rules. Free.',
-  'page.feet-inches.title': 'Feet and Inches Calculator with Fractions | Maestro Calc',
+  'page.feet-inches.title': 'Decimal to Feet and Inches Calculator | Maestro Calc',
   'page.feet-inches.description':
-    'Add, subtract, multiply or divide feet, inches and fractions like a tape measure, to the nearest 1/16 inch, with inches and meters too. Free.',
+    'Convert decimal feet or inches to feet, inches and fractions to the nearest 1/16 inch, and add, subtract, multiply or divide them like a tape measure. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

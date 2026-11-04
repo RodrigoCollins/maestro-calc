@@ -21,7 +21,6 @@ interface Props {
 const { id, locale } = Astro.props;
 const text = siteText(locale);
 const view = jobView(id, locale);
-const [first] = view.rows;
 const { updated } = JOBS[id];
 // The date is a calendar day, so it is formatted in UTC: no timezone can move it.
 const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
@@ -40,29 +39,25 @@ const breadcrumb = {
   <Breadcrumb {breadcrumb} />
   <article class="prose">
     <h1>{view.heading}</h1>
-    <p class="job-size">
-      {view.sizeLabel}: {first?.label}
-    </p>
+    <p class="job-size">{view.lead}</p>
     <p class="job-answer">{view.answer}</p>
-    <dl class="job-bags">
-      {view.bagLabels.map((label, index) => (
+    <dl class="job-facts">
+      {view.facts.map(({ label, value }) => (
         <div>
           <dt>{label}</dt>
-          <dd>{first?.bags[index]}</dd>
+          <dd>{value}</dd>
         </div>
       ))}
     </dl>
     <p>
-      {text('site.job.note')} <a href={view.methodology}>{text('site.job.methodology')}</a>
+      {view.note} <a href={view.methodology}>{text('site.job.methodology')}</a>
     </p>
     <h2>{text('site.job.cases')}</h2>
     <div class="job-table">
       <table>
         <thead>
           <tr>
-            <th scope="col">{view.sizeLabel}</th>
-            <th scope="col">{view.yardsLabel}</th>
-            {view.bagLabels.map((label) => (
+            {view.columns.map((label) => (
               <th scope="col">{label}</th>
             ))}
           </tr>
@@ -73,9 +68,8 @@ const breadcrumb = {
               <th scope="row">
                 <a href={row.href}>{row.label}</a>
               </th>
-              <td>{row.yards}</td>
-              {row.bags.map((bags) => (
-                <td>{bags}</td>
+              {row.cells.map((cell) => (
+                <td>{cell}</td>
               ))}
             </tr>
           ))}
@@ -114,7 +108,7 @@ const breadcrumb = {
     font-weight: 700;
   }
 
-  .job-bags div {
+  .job-facts div {
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
@@ -122,7 +116,7 @@ const breadcrumb = {
     border-bottom: 1px solid var(--color-line);
   }
 
-  .job-bags dd {
+  .job-facts dd {
     margin: 0;
     font-weight: 700;
   }
