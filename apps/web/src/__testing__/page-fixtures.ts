@@ -8,6 +8,14 @@ import {
 } from '@maestro-calc/core';
 import { PageModuleError } from '../calculator/page-module.ts';
 import type { Field, FormView } from '../components/calculator/model.ts';
+import {
+  booleanInput,
+  countInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from '@maestro-calc/core';
 
 /*
  * Synthetic calculators for the generic web layer (calculator-web-core): each one is built with
@@ -44,7 +52,7 @@ const total = {
 } as const;
 
 const count = <const K extends string, const U extends string>(key: K, urlKey: U) =>
-  ({ kind: 'count', key, urlKey, default: 1 }) as const;
+  countInput({ key, urlKey, default: 1 });
 
 /**
  * A select whose option `huge` shows five of the five count fields, next to a boolean and a second
@@ -53,20 +61,19 @@ const count = <const K extends string, const U extends string>(key: K, urlKey: U
 export const choiceCalculator = defineCalculator({
   id: 'choice-fixture',
   inputs: [
-    {
-      kind: 'select',
+    selectInput({
       key: 'mode',
       urlKey: 'm1',
       options: ['small', 'large', 'huge'],
       default: 'small',
-    },
+    }),
     count('one', 'c1'),
     count('two', 'c2'),
     count('three', 'c3'),
     count('four', 'c4'),
     count('five', 'c5'),
-    { kind: 'boolean', key: 'flag', urlKey: 'b1', default: false },
-    { kind: 'select', key: 'other', urlKey: 'm2', options: ['x', 'y'], default: 'x' },
+    booleanInput({ key: 'flag', urlKey: 'b1', default: false }),
+    selectInput({ key: 'other', urlKey: 'm2', options: ['x', 'y'], default: 'x' }),
   ],
   outputs: [total],
   compute: () => unused,
@@ -79,7 +86,7 @@ export const choiceCalculator = defineCalculator({
 export const formCalculator = defineCalculator({
   id: 'form-fixture',
   inputs: [
-    { kind: 'select', key: 'mode', urlKey: 'm1', options: ['small', 'large'], default: 'small' },
+    selectInput({ key: 'mode', urlKey: 'm1', options: ['small', 'large'], default: 'small' }),
     count('a', 'c1'),
     count('b', 'c2'),
     count('c', 'c3'),
@@ -98,14 +105,13 @@ export const lengthCalculator = (
   defineCalculator({
     id: 'length-fixture',
     inputs: [
-      {
-        kind: 'length',
+      lengthInput({
         key: 'span',
         urlKey: 'l1',
         default: quantity(120, inch),
         defaultUnit,
         metricDefaultUnit,
-      },
+      }),
     ],
     outputs: [total],
     compute: () => unused,
@@ -117,14 +123,15 @@ export const lengthsCalculator = (
 ) =>
   defineCalculator({
     id: 'lengths-fixture',
-    inputs: units.map(([defaultUnit, metricDefaultUnit], index) => ({
-      kind: 'length',
-      key: `span${String(index)}`,
-      urlKey: `l${String(index)}`,
-      default: quantity(120, inch),
-      defaultUnit,
-      metricDefaultUnit,
-    })),
+    inputs: units.map(([defaultUnit, metricDefaultUnit], index) =>
+      lengthInput({
+        key: `span${String(index)}`,
+        urlKey: `l${String(index)}`,
+        default: quantity(120, inch),
+        defaultUnit,
+        metricDefaultUnit,
+      }),
+    ),
     outputs: [total],
     compute: () => unused,
   });
@@ -145,23 +152,21 @@ export const percentCalculator = (max: number) =>
   defineCalculator({
     id: 'percent-fixture',
     inputs: [
-      {
-        kind: 'percent',
+      percentInput({
         key: 'tip',
         urlKey: 'p1',
         default: Rational.of(5),
         min: Rational.ZERO,
         max: Rational.of(max),
-      },
-      { kind: 'percent', key: 'open', urlKey: 'p2', default: Rational.of(5) },
-      {
-        kind: 'percent',
+      }),
+      percentInput({ key: 'open', urlKey: 'p2', default: Rational.of(5) }),
+      percentInput({
         key: 'floor',
         urlKey: 'p3',
         default: Rational.of(5),
         max: Rational.of(10),
-      },
-      { kind: 'percent', key: 'ceil', urlKey: 'p4', default: Rational.of(5), min: Rational.ZERO },
+      }),
+      percentInput({ key: 'ceil', urlKey: 'p4', default: Rational.of(5), min: Rational.ZERO }),
       count('qty', 'c1'),
     ],
     outputs: [total],
@@ -177,7 +182,7 @@ const beta = { materialId: 'beta', purchaseUnit: 'bag-b', qty: 7n } as const;
  */
 export const shoppingCalculator = defineCalculator({
   id: 'shopping-fixture',
-  inputs: [{ kind: 'count', key: 'size', urlKey: 'c1', default: 1, min: 1, max: 3 }],
+  inputs: [countInput({ key: 'size', urlKey: 'c1', default: 1, min: 1, max: 3 })],
   outputs: [total],
   compute: ({ size }) => ({
     outputs: { total: zero },
@@ -190,19 +195,18 @@ export const shoppingCalculator = defineCalculator({
 export const mixedCalculator = defineCalculator({
   id: 'mixed-fixture',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'span',
       urlKey: 'l1',
       default: quantity(120, inch),
       defaultUnit: 'ft',
       metricDefaultUnit: 'm',
-    },
+    }),
     count('pieces', 'c1'),
-    { kind: 'percent', key: 'rate', urlKey: 'p1', default: Rational.of(5) },
-    { kind: 'money', key: 'price', urlKey: 'm1', default: usd(0) },
-    { kind: 'boolean', key: 'flag', urlKey: 'b1', default: false },
-    { kind: 'select', key: 'mode', urlKey: 's1', options: ['one', 'two'], default: 'one' },
+    percentInput({ key: 'rate', urlKey: 'p1', default: Rational.of(5) }),
+    moneyInput({ key: 'price', urlKey: 'm1', default: usd(0) }),
+    booleanInput({ key: 'flag', urlKey: 'b1', default: false }),
+    selectInput({ key: 'mode', urlKey: 's1', options: ['one', 'two'], default: 'one' }),
   ],
   outputs: [total],
   compute: () => unused,

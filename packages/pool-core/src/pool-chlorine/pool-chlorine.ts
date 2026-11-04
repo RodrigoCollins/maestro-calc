@@ -1,4 +1,12 @@
-import { cm3, defineCalculator, kg, quantity, Rational } from '@maestro-calc/core';
+import {
+  cm3,
+  decimalInput,
+  defineCalculator,
+  kg,
+  quantity,
+  Rational,
+  selectInput,
+} from '@maestro-calc/core';
 
 /** The products, each with the available chlorine its label states. */
 const PRODUCTS = ['liquid-12-5', 'liquid-10', 'cal-hypo-65', 'dichlor-56'] as const;
@@ -23,7 +31,7 @@ const THOUSAND = Rational.of(1000);
 const HUNDRED = Rational.of(100);
 
 const reading = <K extends string>(key: K, urlKey: string, value: number) =>
-  ({ kind: 'decimal', key, urlKey, default: Rational.of(value), max: Rational.of(100) }) as const;
+  decimalInput({ key, urlKey, default: Rational.of(value), max: Rational.of(100) });
 
 /**
  * Pool chlorine: the grams of available chlorine that raise free chlorine from the current
@@ -34,16 +42,15 @@ const reading = <K extends string>(key: K, urlKey: string, value: number) =>
 export const poolChlorine = defineCalculator({
   id: 'pool-chlorine',
   inputs: [
-    {
-      kind: 'decimal',
+    decimalInput({
       key: 'gallons',
       urlKey: 'g',
       default: Rational.of(20_000),
       max: Rational.of(1_000_000),
-    },
+    }),
     reading('current', 'c', 1),
     reading('target', 't', 3),
-    { kind: 'select', key: 'product', urlKey: 'p', options: PRODUCTS, default: 'liquid-12-5' },
+    selectInput({ key: 'product', urlKey: 'p', options: PRODUCTS, default: 'liquid-12-5' }),
   ],
   outputs: [
     {

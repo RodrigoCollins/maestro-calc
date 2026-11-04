@@ -4,6 +4,8 @@ import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import type { InputDescriptor } from '@maestro-calc/core';
+import { calculators } from '../lib/calculators.ts';
 import { ROUTES } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { buildClient } from './__testing__/client-build.ts';
@@ -48,6 +50,24 @@ const problemsOf = (code: string): string[] => [
   ...(/quikrete/i.test(code) ? ['names the source'] : []),
 ];
 
+/**
+ * Code that only the reader of one input kind holds: the meridiem of the clock grammar. A bundle
+ * whose calculator declares no input of the kind must not carry it (the kinds are tree-shakable).
+ */
+const KIND_MARKERS: Partial<Record<InputDescriptor['kind'], string>> = {
+  clock: '(?:m|\\.m\\.)',
+};
+
+/** The kinds whose code is in `code` although no input of `id` declares them. */
+const undeclaredKindsIn = (id: string, code: string): string[] => {
+  const inputs: readonly InputDescriptor[] =
+    calculators.find((calculator) => calculator.id === id)?.inputs ?? [];
+  const declared = new Set<string>(inputs.map(({ kind }) => kind));
+  return Object.entries(KIND_MARKERS)
+    .filter(([kind, marker]) => !declared.has(kind) && code.includes(marker))
+    .map(([kind]) => kind);
+};
+
 /** What sets a reserved height from script: a size, a line-count property or a `data-reserved` write. */
 const RESERVE_WRITES = [
   /min-?height/i,
@@ -86,6 +106,12 @@ describe.each(CALCULATOR_PAGES)(
     it('holds no storage or network API, no catalog message and no foreign origin', async () => {
       const { code } = await buildClient(source);
       expect(problemsOf(code)).toEqual([]);
+    });
+
+    // the code of an input kind is in a bundle only when the calculator declares that kind
+    it('carries no reader of an input kind its calculator does not declare', async () => {
+      const { code } = await buildClient(source);
+      expect(undeclaredKindsIn(id, code)).toEqual([]);
     });
 
     // spec: calculator-page › [CP63] the reserve is CSS only, no code sets a reserved height
@@ -161,6 +187,14 @@ describe('the bundle check finds what it forbids (seeded)', () => {
   ])('flags %s in the bundle', async (_name, extra, index) => {
     const { code } = await buildClient(`${ENTRY_SOURCE}\n${extra}`);
     expect(reserveWritesIn(code)).toContain(String(RESERVE_WRITES[index]));
+  });
+
+  // seeded: the kind check finds the clock reader once the entry carries it
+  it('flags the clock reader in a bundle whose calculator has no clock input', async () => {
+    const { code } = await buildClient(
+      `${ENTRY_SOURCE}\nexport { clockInput } from '@maestro-calc/core';`,
+    );
+    expect(undeclaredKindsIn(FIRST, code)).toEqual(['clock']);
   });
 
   it('allows the site origin', async () => {

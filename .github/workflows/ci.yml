@@ -227,6 +227,27 @@ jobs:
               packages/core/stryker.config.mjs
               packages/core/vitest.config.ts
               packages/core/src/url/**
+          - shard: kinds
+            inputs: |
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/url/**
+              packages/core/src/__testing__/arbitraries.ts
+              packages/core/src/__testing__/collect-strings.ts
+              packages/core/src/__testing__/fixture-box.ts
+              packages/core/src/__testing__/language-free.ts
+              packages/core/src/__testing__/length-failure.ts
+              packages/core/src/__testing__/message-key-fixtures.ts
+              packages/core/src/__testing__/property-runs.ts
+              packages/core/src/__testing__/thrown-code.ts
+              packages/core/*.json
+              packages/core/stryker.config.mjs
+              packages/core/vitest.config.ts
           - shard: calculators-1
             inputs: |
               packages/core/src/*.ts

@@ -11,25 +11,33 @@ import { Rational } from '../rational/rational.ts';
 import { inch } from '../units/catalog.ts';
 import { quantity } from '../units/quantity.ts';
 import { decode, encode, type UrlCodable } from './codec.ts';
+import {
+  booleanInput,
+  clockInput,
+  countInput,
+  lengthInput,
+  moneyInput,
+  percentInput,
+  selectInput,
+} from '../calculator/kinds/index.ts';
 
 /** A calculator without maximums: lengths are signed and unbounded, money is not capped. */
 const unbounded = defineCalculator({
   id: 'unbounded-box',
   inputs: [
-    {
-      kind: 'length',
+    lengthInput({
       key: 'len',
       urlKey: 'a',
       default: quantity(12, inch),
       defaultUnit: 'in',
       metricDefaultUnit: 'cm',
-    },
-    { kind: 'count', key: 'cnt', urlKey: 'b', default: 3 },
-    { kind: 'percent', key: 'pct', urlKey: 'c', default: Rational.of(10) },
-    { kind: 'select', key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y-z'] },
-    { kind: 'boolean', key: 'flg', urlKey: 'e', default: true },
-    { kind: 'money', key: 'prc', urlKey: 'f', default: usd(Rational.of(249, 50)) },
-    { kind: 'clock', key: 'clk', urlKey: 'g', default: 420 },
+    }),
+    countInput({ key: 'cnt', urlKey: 'b', default: 3 }),
+    percentInput({ key: 'pct', urlKey: 'c', default: Rational.of(10) }),
+    selectInput({ key: 'sel', urlKey: 'd', default: 'x', options: ['x', 'y-z'] }),
+    booleanInput({ key: 'flg', urlKey: 'e', default: true }),
+    moneyInput({ key: 'prc', urlKey: 'f', default: usd(Rational.of(249, 50)) }),
+    clockInput({ key: 'clk', urlKey: 'g', default: 420 }),
   ],
   outputs: [{ key: 'size', measure: 'length', role: 'primary' }],
   compute: () => ({ outputs: { size: quantity(1, inch) }, shopping: [], warnings: [] }),

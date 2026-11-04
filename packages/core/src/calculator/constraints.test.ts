@@ -11,50 +11,50 @@ import type {
   PercentDescriptor,
   SelectDescriptor,
 } from './descriptors.ts';
+import { countInput, lengthInput, moneyInput, percentInput, selectInput } from './kinds/index.ts';
 
 const r = (n: number, d = 1): Rational => Rational.of(n, d);
 
-const length = (min?: Quantity<'length'>, max?: Quantity<'length'>): LengthDescriptor => ({
-  kind: 'length',
-  key: 'len',
-  urlKey: 'a',
-  default: quantity(12, inch),
-  defaultUnit: 'in',
-  metricDefaultUnit: 'cm',
-  ...(min === undefined ? {} : { min }),
-  ...(max === undefined ? {} : { max }),
-});
-const count = (min?: number, max?: number): CountDescriptor => ({
-  kind: 'count',
-  key: 'cnt',
-  urlKey: 'b',
-  default: 3,
-  ...(min === undefined ? {} : { min }),
-  ...(max === undefined ? {} : { max }),
-});
-const percent = (min?: Rational, max?: Rational): PercentDescriptor => ({
-  kind: 'percent',
-  key: 'pct',
-  urlKey: 'c',
-  default: r(10),
-  ...(min === undefined ? {} : { min }),
-  ...(max === undefined ? {} : { max }),
-});
-const money = (min?: Money, max?: Money): MoneyDescriptor => ({
-  kind: 'money',
-  key: 'prc',
-  urlKey: 'f',
-  default: usd(1),
-  ...(min === undefined ? {} : { min }),
-  ...(max === undefined ? {} : { max }),
-});
-const select: SelectDescriptor = {
-  kind: 'select',
+const length = (min?: Quantity<'length'>, max?: Quantity<'length'>): LengthDescriptor =>
+  lengthInput({
+    key: 'len',
+    urlKey: 'a',
+    default: quantity(12, inch),
+    defaultUnit: 'in',
+    metricDefaultUnit: 'cm',
+    ...(min === undefined ? {} : { min }),
+    ...(max === undefined ? {} : { max }),
+  });
+const count = (min?: number, max?: number): CountDescriptor =>
+  countInput({
+    key: 'cnt',
+    urlKey: 'b',
+    default: 3,
+    ...(min === undefined ? {} : { min }),
+    ...(max === undefined ? {} : { max }),
+  });
+const percent = (min?: Rational, max?: Rational): PercentDescriptor =>
+  percentInput({
+    key: 'pct',
+    urlKey: 'c',
+    default: r(10),
+    ...(min === undefined ? {} : { min }),
+    ...(max === undefined ? {} : { max }),
+  });
+const money = (min?: Money, max?: Money): MoneyDescriptor =>
+  moneyInput({
+    key: 'prc',
+    urlKey: 'f',
+    default: usd(1),
+    ...(min === undefined ? {} : { min }),
+    ...(max === undefined ? {} : { max }),
+  });
+const select: SelectDescriptor = selectInput({
   key: 'sel',
   urlKey: 'd',
   default: 'x',
   options: ['x', 'y'],
-};
+});
 
 const below = (min: string): ConstraintError => ({ code: 'BELOW_MIN', params: { min } });
 const above = (max: string): ConstraintError => ({ code: 'ABOVE_MAX', params: { max } });

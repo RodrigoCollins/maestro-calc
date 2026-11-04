@@ -8,6 +8,7 @@ import { quantity } from '../units/quantity.ts';
 import { shiftMinutes } from '../format/clock.ts';
 import { defineCalculator } from './define.ts';
 import { RESULT_REASONS, type ResultReason } from './run.ts';
+import { clockInput } from './kinds/index.ts';
 
 const area = quantity(144, in2);
 const cost = usd(Rational.of(747, 50));
@@ -355,8 +356,8 @@ describe('Calculator.run with an hours output (core-clock-time)', () => {
     defineCalculator({
       id: 'card-box',
       inputs: [
-        { kind: 'clock', key: 'tin', urlKey: 'i', default: 420 },
-        { kind: 'clock', key: 'tout', urlKey: 'o', default: 990 },
+        clockInput({ key: 'tin', urlKey: 'i', default: 420 }),
+        clockInput({ key: 'tout', urlKey: 'o', default: 990 }),
       ],
       outputs: [{ key: 'worked', measure: 'hours', role: 'primary' }],
       compute: ({ tin, tout }) => ({

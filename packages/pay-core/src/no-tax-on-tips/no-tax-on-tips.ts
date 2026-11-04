@@ -1,6 +1,13 @@
-import { compareMoney, defineCalculator, subMoney, usd } from '@maestro-calc/core';
 import { phasedOut } from '../deductions/phase-out.ts';
 import { BRACKETS, FILINGS, savingsOf, THRESHOLD } from '../deductions/schedule-1a.ts';
+import {
+  compareMoney,
+  defineCalculator,
+  moneyInput,
+  selectInput,
+  subMoney,
+  usd,
+} from '@maestro-calc/core';
 
 /** Line 7: the tips cap, $25,000 on every return, joint included. */
 const CAP = usd(25_000);
@@ -12,10 +19,10 @@ const CAP = usd(25_000);
 export const noTaxOnTips = defineCalculator({
   id: 'no-tax-on-tips',
   inputs: [
-    { kind: 'money', key: 'tips', urlKey: 't', default: usd(8000), max: usd(1_000_000) },
-    { kind: 'select', key: 'filing', urlKey: 'f', options: FILINGS, default: 'single' },
-    { kind: 'money', key: 'magi', urlKey: 'm', default: usd(45_000), max: usd(100_000_000) },
-    { kind: 'select', key: 'bracket', urlKey: 'b', options: BRACKETS, default: '12' },
+    moneyInput({ key: 'tips', urlKey: 't', default: usd(8000), max: usd(1_000_000) }),
+    selectInput({ key: 'filing', urlKey: 'f', options: FILINGS, default: 'single' }),
+    moneyInput({ key: 'magi', urlKey: 'm', default: usd(45_000), max: usd(100_000_000) }),
+    selectInput({ key: 'bracket', urlKey: 'b', options: BRACKETS, default: '12' }),
   ],
   outputs: [
     { key: 'deduction', measure: 'money', role: 'primary' },

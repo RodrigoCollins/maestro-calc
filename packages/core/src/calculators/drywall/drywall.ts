@@ -6,6 +6,11 @@ import { Rational } from '../../rational/rational.ts';
 import { ft, ft2, gal, inch } from '../../units/catalog.ts';
 import { add, multiply, ratio, scale, sign, sub } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
+import { countInput } from '../../calculator/kinds/count.ts';
+import { lengthInput } from '../../calculator/kinds/length.ts';
+import { moneyInput } from '../../calculator/kinds/money.ts';
+import { percentInput } from '../../calculator/kinds/percent.ts';
+import { selectInput } from '../../calculator/kinds/select.ts';
 
 const HUNDRED = Rational.of(100);
 
@@ -77,8 +82,7 @@ export const createDrywall = (suppliedFinishing: DrywallFinishing) => {
   return defineCalculator({
     id: 'drywall',
     inputs: [
-      {
-        kind: 'length',
+      lengthInput({
         key: 'length',
         urlKey: 'l',
         default: quantity(144, inch),
@@ -86,9 +90,8 @@ export const createDrywall = (suppliedFinishing: DrywallFinishing) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'width',
         urlKey: 'w',
         default: quantity(144, inch),
@@ -96,9 +99,8 @@ export const createDrywall = (suppliedFinishing: DrywallFinishing) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(1000, ft),
-      },
-      {
-        kind: 'length',
+      }),
+      lengthInput({
         key: 'height',
         urlKey: 'h',
         default: quantity(96, inch),
@@ -106,26 +108,24 @@ export const createDrywall = (suppliedFinishing: DrywallFinishing) => {
         metricDefaultUnit: 'm',
         min: quantity(0, inch),
         max: quantity(50, ft),
-      },
-      { kind: 'count', key: 'doors', urlKey: 'dr', default: 1, min: 0, max: 50 },
-      { kind: 'count', key: 'windows', urlKey: 'wn', default: 2, min: 0, max: 100 },
-      {
-        kind: 'select',
+      }),
+      countInput({ key: 'doors', urlKey: 'dr', default: 1, min: 0, max: 50 }),
+      countInput({ key: 'windows', urlKey: 'wn', default: 2, min: 0, max: 100 }),
+      selectInput({
         key: 'surfaces',
         urlKey: 'sf',
         default: 'walls-ceiling',
         options: SURFACES,
-      },
-      { kind: 'select', key: 'sheet', urlKey: 'sz', default: '4x8', options: SHEETS },
-      {
-        kind: 'percent',
+      }),
+      selectInput({ key: 'sheet', urlKey: 'sz', default: '4x8', options: SHEETS }),
+      percentInput({
         key: 'waste',
         urlKey: 'ws',
         default: Rational.of(10),
         min: Rational.ZERO,
         max: Rational.of(50),
-      },
-      { kind: 'money', key: 'sheetPrice', urlKey: 'sp', default: usd(0), max: usd(10000) },
+      }),
+      moneyInput({ key: 'sheetPrice', urlKey: 'sp', default: usd(0), max: usd(10000) }),
     ],
     outputs: [
       {

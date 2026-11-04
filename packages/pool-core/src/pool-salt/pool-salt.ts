@@ -1,4 +1,11 @@
-import { ceilToPurchaseUnits, defineCalculator, lb, quantity, Rational } from '@maestro-calc/core';
+import {
+  ceilToPurchaseUnits,
+  decimalInput,
+  defineCalculator,
+  lb,
+  quantity,
+  Rational,
+} from '@maestro-calc/core';
 
 /** A gallon of water weighs about 8.34 lb, so 1 ppm in a gallon is 8.34 millionths of a pound. */
 const POUNDS_PER_GALLON = Rational.of(834, 100);
@@ -9,13 +16,12 @@ const BAG = Rational.of(40);
 const FIRST = Rational.of(3, 4);
 
 const ppm = <K extends string>(key: K, urlKey: string, value: number) =>
-  ({
-    kind: 'decimal',
+  decimalInput({
     key,
     urlKey,
     default: Rational.of(value),
     max: Rational.of(10_000),
-  }) as const;
+  });
 
 /**
  * Pool salt: the pounds that raise the pool from the current reading to the target,
@@ -25,13 +31,12 @@ const ppm = <K extends string>(key: K, urlKey: string, value: number) =>
 export const poolSalt = defineCalculator({
   id: 'pool-salt',
   inputs: [
-    {
-      kind: 'decimal',
+    decimalInput({
       key: 'gallons',
       urlKey: 'g',
       default: Rational.of(20_000),
       max: Rational.of(1_000_000),
-    },
+    }),
     ppm('current', 'c', 2400),
     ppm('target', 't', 3200),
   ],
