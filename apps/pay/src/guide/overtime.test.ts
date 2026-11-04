@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { hoursText, moneyText } from '../format.ts';
 import { figuresOf } from '../methodology/examples.ts';
+import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { ROUTES } from '../routes.ts';
 import {
   OVERTIME_GUIDE_PATHS,
@@ -95,4 +96,14 @@ describe('the overtime guides', () => {
       expect.objectContaining({ kind: 'article', ...OVERTIME_GUIDE_PATHS[guide] }),
     );
   });
+});
+
+describe('overtime guides: the calculator they open', () => {
+  it.each(['federal', 'california'] as const)(
+    '%s: the first call to action opens the overtime calculator in its own language',
+    (guide) => {
+      expect(OVERTIME_GUIDES[guide].en.ctas[0]?.href).toBe(OVERTIME_PATHS.en);
+      expect(OVERTIME_GUIDES[guide].es.ctas[0]?.href).toBe(OVERTIME_PATHS.es);
+    },
+  );
 });

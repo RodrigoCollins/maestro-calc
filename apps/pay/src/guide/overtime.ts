@@ -1,6 +1,6 @@
 import { only, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
-import { TIME_CARD_PATHS } from '../long-tail/jobs.ts';
+import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import type { GuideSource, GuideTexts } from './texts.ts';
 
 /** The two overtime guides of plans/pago-del-trabajador/PLAN.md (MVP guides 1 and 2). */
@@ -12,8 +12,8 @@ export const OVERTIME_GUIDE_PATHS: Readonly<Record<OvertimeGuide, Readonly<Recor
     california: { en: '/guides/california-overtime', es: '/es/guias/horas-extra-en-california' },
   };
 
-/** The calculator each guide sends the reader to: the time card works out both rules. */
-const CALCULATOR = TIME_CARD_PATHS;
+/** The calculator each guide sends the reader to: it works out both rules from each day's hours. */
+const CALCULATOR = OVERTIME_PATHS;
 
 const MON_TO_THU = ['mon', 'tue', 'wed', 'thu'];
 const MON_TO_FRI = [...MON_TO_THU, 'fri'];
@@ -194,7 +194,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
           'A guide to the federal rules, not legal advice. Your state law, your contract or an exemption can change what you are owed.',
         reviewed: 'Checked against U.S. Department of Labor sources on November 4, 2026.',
         ctas: [
-          { label: 'Open the time card', href: CALCULATOR.en },
+          { label: 'Open the overtime calculator', href: CALCULATOR.en },
           {
             label: 'California overtime by day and week',
             href: OVERTIME_GUIDE_PATHS.california.en,
@@ -273,7 +273,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
           'Una guía de las reglas federales, no asesoría legal. La ley de tu estado, tu contrato o una exención pueden cambiar lo que te deben.',
         reviewed: 'Revisada con fuentes del Departamento de Trabajo el 4 de noviembre de 2026.',
         ctas: [
-          { label: 'Abrir la tarjeta de horas', href: CALCULATOR.es },
+          { label: 'Abrir la calculadora de horas extra', href: CALCULATOR.es },
           {
             label: 'Horas extra en California por día y por semana',
             href: OVERTIME_GUIDE_PATHS.california.es,
@@ -357,7 +357,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
           'A guide to the general California rule, not legal advice. Your wage order, an exemption or an alternative workweek schedule can change what you are owed.',
         reviewed: 'Checked against California Labor Commissioner sources on November 4, 2026.',
         ctas: [
-          { label: 'Open the time card', href: CALCULATOR.en },
+          { label: 'Open the overtime calculator', href: CALCULATOR.en },
           { label: 'Federal overtime under the FLSA', href: OVERTIME_GUIDE_PATHS.federal.en },
         ],
         linkLabel: 'California overtime by day and week',
@@ -437,7 +437,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         reviewed:
           'Revisada con fuentes del Comisionado Laboral de California el 4 de noviembre de 2026.',
         ctas: [
-          { label: 'Abrir la tarjeta de horas', href: CALCULATOR.es },
+          { label: 'Abrir la calculadora de horas extra', href: CALCULATOR.es },
           {
             label: 'Horas extra federales según la FLSA',
             href: OVERTIME_GUIDE_PATHS.federal.es,
