@@ -1,5 +1,4 @@
 import {
-  addMoney,
   type ClockDescriptor,
   clockInput,
   type CountDescriptor,
@@ -7,11 +6,11 @@ import {
   defineCalculator,
   moneyInput,
   Rational,
-  scaleMoney,
   selectInput,
   shiftMinutes,
   usd,
 } from '@maestro-calc/core';
+import { payOf, RULES, splitWeek } from '../overtime/split.ts';
 
 /** The days of the week, Monday first; the key of a day is its clock-in field. */
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
@@ -28,12 +27,7 @@ const STEM: Readonly<Record<Day, string>> = {
   sun: 'su',
 };
 
-const H8 = 8 * 60;
-const H12 = 12 * 60;
-const H40 = 40 * 60;
 const SIXTY = Rational.of(60);
-const ONE_AND_A_HALF = Rational.of(3, 2);
-const TWO = Rational.of(2);
 
 /** The example week of the plan: Monday to Friday 7:00 to 16:30, Saturday 7:00 to 11:30. */
 const DEFAULT_IN: Readonly<Record<Day, number | null>> = {
@@ -82,44 +76,6 @@ const unpaidBreak = <const D extends Day>(
 const dayFields = <const D extends Day>(day: D) =>
   [clockIn(day), clockOut(day), unpaidBreak(day)] as const;
 
-/** Minutes split by the rate they are paid at. */
-interface Split {
-  readonly regular: number;
-  readonly overtime: number;
-  readonly double: number;
-}
-
-/** FLSA: every hour past 40 in the workweek is overtime at 1.5x; there is no double time. */
-const federal = (days: readonly number[]): Split => {
-  const total = days.reduce((sum, minutes) => sum + minutes, 0);
-  const regular = Math.min(total, H40);
-  return { regular, overtime: total - regular, double: 0 };
-};
-
-/**
- * California (Labor Code 510): past 8 h in a day at 1.5x and past 12 h at 2x; on the seventh
- * consecutive workday the first 8 h at 1.5x and the rest at 2x; then regular hours past 40 in the
- * week become overtime.
- */
-const california = (days: readonly number[]): Split => {
-  const seventh = days.every((minutes) => minutes > 0);
-  let regular = 0;
-  let overtime = 0;
-  let double = 0;
-  days.forEach((minutes, index) => {
-    if (seventh && index === days.length - 1) {
-      overtime += Math.min(minutes, H8);
-      double += Math.max(minutes - H8, 0);
-      return;
-    }
-    regular += Math.min(minutes, H8);
-    overtime += Math.min(Math.max(minutes - H8, 0), H12 - H8);
-    double += Math.max(minutes - H12, 0);
-  });
-  const excess = Math.max(regular - H40, 0);
-  return { regular: regular - excess, overtime: overtime + excess, double };
-};
-
 const hours = (minutes: number): Rational => Rational.of(minutes).div(SIXTY);
 
 /**
@@ -134,7 +90,7 @@ export const timeCard = defineCalculator({
     selectInput({
       key: 'rule',
       urlKey: 'ru',
-      options: ['federal', 'california'],
+      options: RULES,
       default: 'federal',
     }),
     ...dayFields('mon'),
@@ -174,18 +130,18 @@ export const timeCard = defineCalculator({
     const warnings = DAYS.filter(
       (day) => inputs[day] !== null && inputs[`${day}Out`] !== null && shiftOf(day) <= 0,
     ).map((day) => ({ code: 'breakTooLong' as const, params: { day } }));
-    const days = DAYS.map(workedOf);
-    const split = inputs.rule === 'california' ? california(days) : federal(days);
-    const regularPay = scaleMoney(inputs.rate, hours(split.regular));
-    const overtimePay = scaleMoney(inputs.rate, hours(split.overtime).mul(ONE_AND_A_HALF));
-    const doublePay = scaleMoney(inputs.rate, hours(split.double).mul(TWO));
+    const split = splitWeek(
+      inputs.rule,
+      DAYS.map((day) => hours(workedOf(day))),
+    );
+    const { regularPay, overtimePay, doublePay, pay } = payOf(inputs.rate, split);
     return {
       outputs: {
-        pay: addMoney(addMoney(regularPay, overtimePay), doublePay),
-        totalHours: hours(split.regular + split.overtime + split.double),
-        regularHours: hours(split.regular),
-        overtimeHours: hours(split.overtime),
-        doubleHours: hours(split.double),
+        pay,
+        totalHours: split.regular.add(split.overtime).add(split.double),
+        regularHours: split.regular,
+        overtimeHours: split.overtime,
+        doubleHours: split.double,
         regularPay,
         overtimePay,
         doublePay,

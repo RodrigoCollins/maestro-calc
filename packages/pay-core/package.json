@@ -6,6 +6,7 @@
   "sideEffects": false,
   "exports": {
     "./time-card": "./src/time-card/index.ts",
+    "./overtime": "./src/overtime/index.ts",
     "./pay-converter": "./src/pay-converter/index.ts",
     "./no-tax-on-overtime": "./src/no-tax-on-overtime/index.ts",
     "./no-tax-on-tips": "./src/no-tax-on-tips/index.ts"

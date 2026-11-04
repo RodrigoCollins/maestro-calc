@@ -49,8 +49,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       {
         id: 'overtime',
         title: 'Overtime',
-        summary: 'What you are paid after 40 hours, at time and a half, from your week.',
-        href: '/time-card-calculator',
+        summary: 'Your overtime rate and pay after 40 hours, or by the day in California.',
+        href: '/overtime-calculator',
       },
       {
         id: 'hourly-to-salary',
@@ -103,8 +103,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       {
         id: 'overtime',
         title: 'Horas extra',
-        summary: 'Cuánto te pagan después de 40 horas, a tiempo y medio, con tu semana.',
-        href: '/es/calculadora-de-horas-trabajadas',
+        summary: 'Tu tarifa y tu pago de horas extra después de 40 horas, o por día en California.',
+        href: '/es/calculadora-de-horas-extra',
       },
       {
         id: 'hourly-to-salary',
