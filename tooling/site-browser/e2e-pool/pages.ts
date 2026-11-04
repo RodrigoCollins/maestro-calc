@@ -3,6 +3,7 @@ export const PAGES = [
   '/',
   '/methodology',
   '/opening-your-pool',
+  '/privacy',
   '/pool-volume-calculator',
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
