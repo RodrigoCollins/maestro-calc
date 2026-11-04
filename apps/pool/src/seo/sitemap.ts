@@ -1,3 +1,6 @@
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { sitemapXml as sitemapOf } from '@maestro-calc/site-kit/sitemap';
+
 /**
  * The paths of the page files (`./methodology.astro` is `/methodology`, `./index.astro` is `/`),
  * sorted; the 404 is never listed. A dynamic file (`./[job].astro`) stands for the paths `dynamic`
@@ -27,10 +30,4 @@ export const canonicalPath = (pathname: string): string =>
 
 /** The sitemap of the site: one `<loc>` per path on the origin. */
 export const sitemapXml = (paths: readonly string[], origin: string): string =>
-  [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...paths.map((path) => `  <url><loc>${new URL(path, origin).href}</loc></url>`),
-    '</urlset>',
-    '',
-  ].join('\n');
+  sitemapOf(paths.map((path) => ({ loc: canonicalUrl(path, origin) })));

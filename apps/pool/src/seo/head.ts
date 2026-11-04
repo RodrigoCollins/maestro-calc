@@ -1,3 +1,4 @@
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { pagePathOf } from '@maestro-calc/site-kit/embed';
 import { linkPreviewOf } from '@maestro-calc/site-kit/link-preview';
 import { SITE } from '../site.config.ts';
@@ -17,7 +18,7 @@ export const headOf = (
   readonly preview: ReturnType<typeof linkPreviewOf>;
 } => ({
   ...(site.indexable && indexed
-    ? { canonical: new URL(path, site.origin).href }
+    ? { canonical: canonicalUrl(path, site.origin) }
     : { robots: 'noindex' }),
   preview: linkPreviewOf(site.origin, text),
 });
@@ -40,7 +41,7 @@ export const embedHeadOf = (
   if (page === undefined) throw new Error(`not an embed: ${path}`);
   return {
     page,
-    canonical: new URL(page, site.origin).href,
+    canonical: canonicalUrl(page, site.origin),
     robots: 'noindex',
     preview: linkPreviewOf(site.origin, text),
   };

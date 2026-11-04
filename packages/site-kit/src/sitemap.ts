@@ -50,7 +50,10 @@ const lineOf = (url: SitemapUrl): string => {
 };
 
 /** `sitemap.xml` of `urls`, in order; the xhtml namespace is declared only when a URL has alternates. */
-export const sitemapXml = (urls: readonly SitemapUrl[], layout: SitemapLayout = 'lines'): string => {
+export const sitemapXml = (
+  urls: readonly SitemapUrl[],
+  layout: SitemapLayout = 'lines',
+): string => {
   const localized = urls.some(({ alternates = [] }) => alternates.length > 0);
   const head = [
     '<?xml version="1.0" encoding="UTF-8"?>',

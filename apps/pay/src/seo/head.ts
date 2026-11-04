@@ -1,3 +1,4 @@
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { embedPathOf } from '@maestro-calc/site-kit/embed';
 import { linkPreviewOf } from '@maestro-calc/site-kit/link-preview';
 import { SITE } from '../site.config.ts';
@@ -13,7 +14,7 @@ export const headOf = (
   text: { readonly title: string; readonly description: string },
   site: { readonly origin: string; readonly indexable: boolean } = SITE,
 ) => ({
-  ...(paths === undefined ? {} : { canonical: new URL(paths[lang], site.origin).href }),
+  ...(paths === undefined ? {} : { canonical: canonicalUrl(paths[lang], site.origin) }),
   ...(site.indexable && paths !== undefined ? {} : { robots: 'noindex' }),
   preview: linkPreviewOf(site.origin, text),
 });
@@ -29,7 +30,7 @@ export const embedHeadOf = (
   text: { readonly title: string; readonly description: string },
   site: { readonly origin: string; readonly indexable: boolean } = SITE,
 ) => ({
-  canonical: new URL(paths[lang], site.origin).href,
+  canonical: canonicalUrl(paths[lang], site.origin),
   robots: 'noindex',
   preview: linkPreviewOf(site.origin, text),
   other: embedPathOf(paths[lang === 'en' ? 'es' : 'en']),

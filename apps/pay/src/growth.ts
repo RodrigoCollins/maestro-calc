@@ -1,3 +1,4 @@
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ROUTES } from './routes.ts';
 import { headOf } from './seo/head.ts';
 import { jsonLdOf } from './seo/json-ld.ts';
@@ -6,7 +7,7 @@ import { SITE } from './site.config.ts';
 
 const PAGES = ROUTES.flatMap((route) =>
   (['en', 'es'] as const).map((lang) => ({
-    url: new URL(route[lang], SITE.origin).href,
+    url: canonicalUrl(route[lang], SITE.origin),
     route,
     lang,
   })),

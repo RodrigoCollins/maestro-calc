@@ -4,6 +4,7 @@
 // Usage: node apps/pool/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
@@ -31,7 +32,7 @@ const all = [
     const embed = html.get(`${path.slice(1)}.html`);
     if (embed === undefined) return [`${path}: an embed the build does not hold`];
     return embedPageProblems(embed, {
-      canonical: new URL(page, SITE.origin).href,
+      canonical: canonicalUrl(page, SITE.origin),
       scripts: moduleScriptsOf(html.get(`${page.slice(1)}.html`) ?? ''),
     }).map((message) => `${path}: ${message}`);
   }),

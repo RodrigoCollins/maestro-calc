@@ -1,28 +1,15 @@
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { localizedUrls, sitemapXml as sitemapOf } from '@maestro-calc/site-kit/sitemap';
 import type { Route } from '../routes.ts';
 
-const link = (lang: string, href: string): string =>
-  `    <xhtml:link rel="alternate" hreflang="${lang}" href="${href}"/>`;
-
 /** The sitemap: every route in both languages, each URL with its en-US, es-US and x-default pair. */
-export const sitemapXml = (routes: readonly Route[], origin: string): string => {
-  const href = (path: string): string => new URL(path, origin).href;
-  const urls = routes.flatMap((route) =>
-    [route.en, route.es].map((path) =>
-      [
-        '  <url>',
-        `    <loc>${href(path)}</loc>`,
-        link('en-US', href(route.en)),
-        link('es-US', href(route.es)),
-        link('x-default', href(route.en)),
-        '  </url>',
-      ].join('\n'),
+export const sitemapXml = (routes: readonly Route[], origin: string): string =>
+  sitemapOf(
+    routes.flatMap((route) =>
+      localizedUrls([
+        { hreflang: 'en-US', href: canonicalUrl(route.en, origin) },
+        { hreflang: 'es-US', href: canonicalUrl(route.es, origin) },
+        { hreflang: 'x-default', href: canonicalUrl(route.en, origin) },
+      ]),
     ),
   );
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
-    ...urls,
-    '</urlset>',
-    '',
-  ].join('\n');
-};

@@ -77,3 +77,11 @@ with less. Site-specific work (content, keywords) sits on top of it.
       Done in `feat/core-tree-shakable-kinds`: each input is built by its kind's builder
       (`lengthInput`, `countInput`, ... in `packages/core/src/calculator/kinds/`), which attaches
       that kind's codec; the concrete page script went from 48,955 B to 48,023 B.
+- [x] **Sitemap and canonical helpers in `packages/site-kit`** (section 4). Done in
+      `refactor/site-kit-sitemap`: `@maestro-calc/site-kit/sitemap` (`sitemapXml`, `localizedUrls`;
+      the hreflang alternates and the xhtml namespace only when a URL has them, a `lines` or
+      `compact` layout so each site keeps its published bytes) and `@maestro-calc/site-kit/canonical`
+      (`canonicalUrl`, which refuses a path that would leave the origin). The three sitemaps and the
+      Cuenta Horas and Pool Figures canonicals use them; every `dist` is byte-identical. Maestro
+      Calc keeps its `urlOf` in `routing/routes.ts`, which the browser tests import at run time
+      without the workspace packages.
