@@ -1,4 +1,5 @@
 ---
+import { linkPreviewOf } from '../seo/head.ts';
 import { SITE } from '../site.config.ts';
 
 interface Props {
@@ -29,6 +30,7 @@ const {
 // open-graph: an indexable page (it has a canonical) is shared with its title, description,
 // address and the one language-free image; the not-found page has none.
 const og = canonical !== undefined && ogLocale !== undefined;
+const preview = linkPreviewOf({ title, description });
 ---
 
 <meta charset="utf-8" />
@@ -44,18 +46,18 @@ const og = canonical !== undefined && ogLocale !== undefined;
   <Fragment>
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.name} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={ogLocale} />
     {ogAlternateLocales.map((locale) => (
       <meta property="og:locale:alternate" content={locale} />
     ))}
-    <meta property="og:image" content={`${SITE.url}/og.png`} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
     <meta property="og:image:alt" content={SITE.name} />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content={preview['twitter:card']} />
   </Fragment>
 )}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
