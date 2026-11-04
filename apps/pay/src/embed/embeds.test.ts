@@ -2,6 +2,7 @@ import { existsSync, globSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
+import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { ROUTES } from '../routes.ts';
 import { CALCULATOR_PAGES, EMBED_PAGES } from '../site-check/pages.ts';
@@ -50,6 +51,7 @@ describe('EMBEDS', () => {
     const headings = new Set(
       (['en', 'es'] as const).flatMap((lang) => [
         TIME_CARD_TEXTS[lang].h1,
+        OVERTIME_TEXTS[lang].h1,
         PAY_CONVERTER_TEXTS[lang].variants.hourly.h1,
         PAY_CONVERTER_TEXTS[lang].variants.salary.h1,
         DEDUCTION_TEXTS[lang].overtime.h1,

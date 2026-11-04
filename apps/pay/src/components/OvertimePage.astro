@@ -1,0 +1,137 @@
+---
+import { toDecimalParts, type Money, type Rational } from '@maestro-calc/core';
+import { overtime } from '@maestro-calc/pay-core/overtime';
+import { hoursText, moneyText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { OVERTIME_PATHS, OVERTIME_TEXTS } from '../overtime/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+const t = OVERTIME_TEXTS[lang];
+// The page renders the engine's own figures for the default week, so it reads without JavaScript.
+const ran = overtime.run({});
+if (!ran.ok) throw new Error('the default week of the overtime calculator must run');
+const out = new Map<string, Money | Rational>(
+  ran.value.outputs.map(({ key, value }) => [key, value]),
+);
+const shown = (key: string): string => {
+  const value = out.get(key);
+  if (value === undefined) throw new Error(`no output ${key}`);
+  return 'currency' in value ? moneyText(value) : hoursText(value);
+};
+const [rateInput, ruleInput, ...dayInputs] = overtime.inputs;
+const { integer, fraction } = toDecimalParts(rateInput.default.amount, 2);
+const rateText = `${String(integer)}.${fraction}`;
+const days = t.days.map((day, index) => {
+  const input = dayInputs[index];
+  if (input?.key !== day.key) throw new Error(`no day input ${day.key}`);
+  return { ...day, value: hoursText(input.default) };
+});
+const rows = [
+  { hours: 'regularHours', pay: 'regularPay', badge: t.regularBadge },
+  { hours: 'overtimeHours', pay: 'overtimePay', badge: t.overtimeBadge },
+  { hours: 'doubleHours', pay: 'doublePay', badge: t.doubleBadge },
+];
+const figures = [
+  { key: 'totalHours', label: t.totalHours, unit: ' h' },
+  { key: 'overtimeRate', label: t.overtimeRate, unit: '' },
+  { key: 'doubleRate', label: t.doubleRate, unit: '' },
+];
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={OVERTIME_PATHS}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="overtime" data-overtime novalidate>
+      <div class="settings">
+        <label class="field">
+          {t.rate}
+          <input name="rate" inputmode="decimal" autocomplete="off" value={rateText} />
+        </label>
+        <label class="field">
+          {t.rule}
+          <select name="rule">
+            {ruleInput.options.map((option) => (
+              <option value={option} selected={option === ruleInput.default}>
+                {t.rules[option]}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <fieldset class="days">
+        <legend>{t.week}</legend>
+        {days.map((day) => (
+          <label class="field">
+            <abbr title={day.long}>{day.short}</abbr>
+            <input name={day.key} inputmode="decimal" autocomplete="off" value={day.value} />
+          </label>
+        ))}
+      </fieldset>
+    </form>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out="pay">
+          {shown('pay')}
+        </p>
+        <p class="result-sub">{t.gross}</p>
+      </div>
+      <ul class="breakdown">
+        {rows.map((row) => (
+          <li>
+            <span>
+              <span data-out={row.hours}>{shown(row.hours)}</span> h
+              <span class="badge">{row.badge}</span>
+            </span>
+            <span data-out={row.pay}>{shown(row.pay)}</span>
+          </li>
+        ))}
+      </ul>
+      <ul class="breakdown labeled" aria-label={t.figures}>
+        {figures.map((figure) => (
+          <li>
+            <span>{figure.label}</span>
+            <span>
+              <span data-out={figure.key}>{shown(figure.key)}</span>
+              {figure.unit}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <p class="note">
+      {t.disclaimer} <a href={t.timeCard.href}>{t.timeCard.label}</a>
+    </p>
+  </main>
+  <script src="../client/overtime.ts"></script>
+</SiteLayout>

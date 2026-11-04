@@ -542,6 +542,33 @@ a.tool:hover .tool-title {
   color: var(--ink-2);
 }
 
+/* Overtime: the rate and rule, then the hours of each day in a grid that wraps on a phone. */
+.overtime {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.25rem, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.days legend {
+  margin-bottom: 0.4rem;
+  padding: 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.days abbr {
+  text-decoration: none;
+}
+
 /* Deductions: one field per row, a hint under a field, the rules as a list. */
 .deduction {
   display: flex;

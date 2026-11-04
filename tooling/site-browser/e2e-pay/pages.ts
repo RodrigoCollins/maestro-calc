@@ -12,6 +12,8 @@ export const PAGES = [
   { path: '/es', lang: 'es' },
   { path: '/time-card-calculator', lang: 'en' },
   { path: '/es/calculadora-de-horas-trabajadas', lang: 'es' },
+  { path: '/overtime-calculator', lang: 'en' },
+  { path: '/es/calculadora-de-horas-extra', lang: 'es' },
   { path: '/methodology', lang: 'en' },
   { path: '/es/metodologia', lang: 'es' },
   { path: '/about', lang: 'en' },
@@ -36,10 +38,16 @@ export const TIME_CARD = PAGES.filter(({ path }) =>
 /** The default week of the time card: six days, 49.5 hours, $1,193.50 at $22 an hour. */
 export const DEFAULT_PAY = '$1,193.50';
 
+export const OVERTIME = PAGES.filter(({ path }) =>
+  ['/overtime-calculator', '/es/calculadora-de-horas-extra'].includes(path),
+);
+
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
 const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',
   '/es/calculadora-de-horas-trabajadas',
+  '/overtime-calculator',
+  '/es/calculadora-de-horas-extra',
   '/hourly-to-salary-calculator',
   '/salary-to-hourly-calculator',
   '/es/de-pago-por-hora-a-sueldo-anual',

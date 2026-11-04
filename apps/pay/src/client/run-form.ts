@@ -15,8 +15,8 @@ const moneyOf = (value: unknown): Money | null =>
   typeof value === 'object' && value !== null && 'currency' in value ? (value as Money) : null;
 
 /**
- * Runs a calculator whose outputs are money on every edit of `form`: writes each output into its
- * `[data-out]`, marks the fields it cannot read, shows the `[data-when]` fields of the chosen
+ * Runs a calculator whose outputs are money or hours on every edit of `form`: writes each output
+ * into its `[data-out]`, marks the fields it cannot read, shows the `[data-when]` fields of the chosen
  * `source` and keeps the state in the URL (the defaults are the clean URL).
  */
 export const runForm = <const I extends readonly InputDescriptor[]>(
@@ -62,10 +62,14 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
       return;
     }
     for (const { key, value } of ran.value.outputs) {
-      if (!('currency' in value)) continue;
-      for (const node of document.querySelectorAll(`[data-out="${key}"]`)) {
-        node.textContent = moneyText(value);
-      }
+      const text =
+        typeof value === 'object' && 'currency' in value
+          ? moneyText(value)
+          : value instanceof Rational
+            ? hoursText(value)
+            : null;
+      if (text === null) continue;
+      for (const node of document.querySelectorAll(`[data-out="${key}"]`)) node.textContent = text;
     }
     const query = encoded(raw);
     if (query !== null) {
