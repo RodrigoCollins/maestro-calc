@@ -16,9 +16,9 @@ with less. Site-specific work (content, keywords) sits on top of it.
 | G1 | Indexable, canonical on every page, 404 `noindex` | done | done | done |
 | G2 | `sitemap.xml` from the pages themselves, `robots.txt` points to it | done | done | done |
 | G3 | IndexNow ping of every URL after each deploy (Bing, Yandex) | done | done | done |
-| G4 | Search Console domain property + sitemap submitted | done | done | owner |
-| G5 | Bing Webmaster Tools + sitemap submitted | done | done | owner |
-| G6 | GA4 property, page views + calculator events | done | done | owner |
+| G4 | Search Console domain property + sitemap submitted | done | done | done |
+| G5 | Bing Webmaster Tools + sitemap submitted | done | done | done |
+| G6 | GA4 property, page views + calculator events | done | done | done |
 | G7 | Link preview: `og:title`, `og:description`, one `og.png` | done | done | done |
 | G8 | JSON-LD (WebSite, WebApplication per calculator, Article per guide) | done | done | done |
 | G9 | Methodology page with sources and hand-verified cases | done | done | done |
