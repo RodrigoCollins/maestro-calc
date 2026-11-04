@@ -8,6 +8,7 @@ describe('Pool Figures site constants', () => {
       origin: 'https://poolfigures.com',
       locales: ['en'],
       indexable: true,
+      indexNowKey: 'af8fd289898ace62cd0e8bd5094b3195',
     });
   });
 });

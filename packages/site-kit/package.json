@@ -6,7 +6,8 @@
   "sideEffects": false,
   "exports": {
     "./budgets": "./src/budgets.ts",
-    "./check-site": "./src/check-site.ts"
+    "./check-site": "./src/check-site.ts",
+    "./indexnow": "./src/indexnow.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"

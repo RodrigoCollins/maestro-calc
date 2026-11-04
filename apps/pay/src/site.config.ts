@@ -7,4 +7,6 @@ export const SITE = {
   indexable: true,
   /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). */
   gaId: 'G-NNB8KG2TXZ' as string,
+  /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */
+  indexNowKey: 'dd860e1e00fb82df0feac833e84e8677',
 } as const;
