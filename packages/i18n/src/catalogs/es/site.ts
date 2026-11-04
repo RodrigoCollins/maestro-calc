@@ -31,6 +31,12 @@ export const esSite = {
   'site.guide.allCalculators': 'Todas nuestras calculadoras',
   'site.hub.calculators': 'Calculadoras',
   'site.hub.guides': 'Guías',
+  'site.hub.jobs': 'Trabajos comunes',
+  'site.job.cases': 'El mismo trabajo en otras medidas',
+  'site.job.note':
+    'Cada cifra suma un 10% extra por desperdicio, el valor inicial de la calculadora de concreto, y se redondea hacia arriba a bolsas enteras. Cada medida abre la calculadora con sus valores ya cargados.',
+  'site.job.methodology': 'Cómo calculamos las cifras',
+  'site.job.more': 'Más trabajos',
   'site.hub.more': 'Más herramientas:',
   'site.guides.business': 'El negocio',
   'site.guide.links': 'Aprende más en nuestras guías',
@@ -203,6 +209,18 @@ export const esSite = {
   'page.hub-paint.title': 'Calculadoras y guías de pintura | Maestro Calc',
   'page.hub-paint.description':
     'Calculadora y guía de pintura: galones y latas para las paredes de un cuarto, restando puertas y ventanas, y cómo cotizar un trabajo de pintura.',
+  'page.concrete-slab-10x10.title': 'Bolsas de concreto para una losa de 10x10 | Maestro Calc',
+  'page.concrete-slab-10x10.description':
+    'Cuántas bolsas de concreto lleva una losa de 10 x 10 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
+  'page.concrete-slab-10x10.heading': '¿Cuántas bolsas de concreto para una losa de 10x10?',
+  'page.concrete-slab-12x12.title': 'Bolsas de concreto para una losa de 12x12 | Maestro Calc',
+  'page.concrete-slab-12x12.description':
+    'Cuántas bolsas de concreto lleva una losa de 12 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
+  'page.concrete-slab-12x12.heading': '¿Cuántas bolsas de concreto para una losa de 12x12?',
+  'page.concrete-tube-12.title': 'Bolsas de concreto para un Sonotube de 12 in | Maestro Calc',
+  'page.concrete-tube-12.description':
+    'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
+  'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',

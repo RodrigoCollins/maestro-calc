@@ -9,6 +9,7 @@ import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { ROUTES } from '../src/routing/routes.ts';
 import { GUIDES } from '../src/routing/guides.ts';
 import { HUBS } from '../src/routing/hubs.ts';
+import { JOB_UPDATES } from '../src/routing/jobs.ts';
 import { CALCULATOR_PAGES } from '../src/routing/templates.ts';
 import { SITE } from '../src/site.config.ts';
 import {
@@ -66,12 +67,16 @@ const entries = collection('pages');
 const calculatorEntries = collection('calculators');
 const allEntries = [...entries, ...calculatorEntries];
 // `en/about.md` becomes the key `en/about`; an entry without a readable date is left out.
-const updates = Object.fromEntries(
-  allEntries.flatMap(([file, text]) => {
-    const updated = updatedOf(text);
-    return updated === undefined ? [] : [[file.replace(/\.md$/, ''), updated]];
-  }),
-);
+const updates = {
+  ...Object.fromEntries(
+    allEntries.flatMap(([file, text]) => {
+      const updated = updatedOf(text);
+      return updated === undefined ? [] : [[file.replace(/\.md$/, ''), updated]];
+    }),
+  ),
+  // a job page has no entry: its row carries the day it was checked
+  ...JOB_UPDATES,
+};
 // A calculator page may link the sources of its entry, in either locale, and nothing else outbound.
 const externalLinks = Object.fromEntries(
   CALCULATOR_PAGES.map((id) => [

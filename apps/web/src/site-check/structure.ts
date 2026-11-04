@@ -100,6 +100,9 @@ const skipLinkProblems = (page: Page): Problem[] =>
     ? []
     : [problem(page.file, 'skip-link', 'the first focusable element must be the link to #main')];
 
+/** The query of a state link: the version first, then the encoded state (`v=1&l=120`). */
+const STATE = /^v=1(&[a-z]+=[^&]+)*$/;
+
 const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[] => {
   const byPath = new Map(
     pages.flatMap((target) =>
@@ -124,9 +127,12 @@ const linkProblems = (page: Page, pages: readonly Page[], site: Site): Problem[]
         ? []
         : [problem(page.file, 'fragment', `${href} matches no id on this page`)];
     }
-    const [path = '', ...rest] = href.split('#');
+    const [address = '', ...rest] = href.split('#');
+    // a calculator page may be linked with a state of its URL contract (`?v=1&…`), no other page
+    const [path = '', query] = address.split('?', 2);
     const target = byPath.get(path);
-    if (target === undefined) {
+    const stateLink = target !== undefined && isCalculatorPage(target, site);
+    if (target === undefined || (query !== undefined && !(stateLink && STATE.test(query)))) {
       return [problem(page.file, 'link', `${href} is not a path of the route table`)];
     }
     return rest.length === 0 || idsOf(target).has(rest.join('#'))

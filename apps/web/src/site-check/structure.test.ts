@@ -337,6 +337,25 @@ const calcRulesOf = (edits: Edits, file: string): string[] =>
     .filter((entry) => entry.file === file)
     .map((entry) => entry.rule);
 
+// a job page links the calculator prefilled with each case: a state link of the URL contract
+describe('state links to a calculator page (growth plan › lever 1)', () => {
+  const withLink = (href: string) => (h: string) =>
+    h.replace('</h1>', `</h1><a href="${href}">x</a>`);
+
+  it('accepts a versioned state query on a link to a calculator page', () => {
+    expect(calcProblemsAfter({ 'about.html': withLink('/concrete-calculator?v=1&l=120') })).toEqual(
+      [],
+    );
+  });
+
+  it.each(['/privacy?v=1&l=120', '/concrete-calculator?l=120', '/concrete-calculator?'])(
+    'fails the href "%s"',
+    (href) => {
+      expect(calcRulesOf({ 'about.html': withLink(href) }, 'about.html')).toEqual(['link']);
+    },
+  );
+});
+
 describe('calculator page anatomy (calculator-page › [CP5] built side)', () => {
   it('accepts the valid calculator pages: one nav, a breadcrumb list, five sections', () => {
     expect(calcProblemsAfter()).toEqual([]);

@@ -20,6 +20,7 @@ import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { GUIDES } from '../routing/guides.ts';
 import { HUBS } from '../routing/hubs.ts';
+import { JOB_UPDATES } from '../routing/jobs.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
   GAF_SHINGLES_URL,
@@ -58,12 +59,15 @@ const site = {
   routes: ROUTES,
   config: SITE,
   catalogs: { en: enSite, es: esSite },
-  updates: Object.fromEntries(
-    [...entries, ...calculatorEntries].map((entry) => [
-      entry.path.replace(/\.md$/, ''),
-      entry.fields['updated'] ?? '',
-    ]),
-  ),
+  updates: {
+    ...Object.fromEntries(
+      [...entries, ...calculatorEntries].map((entry) => [
+        entry.path.replace(/\.md$/, ''),
+        entry.fields['updated'] ?? '',
+      ]),
+    ),
+    ...JOB_UPDATES,
+  },
   calculatorPages: CALCULATOR_PAGES,
   externalLinks: {
     concrete: [QUIKRETE_URL, NIST_URL],
