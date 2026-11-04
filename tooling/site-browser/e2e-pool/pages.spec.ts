@@ -89,3 +89,17 @@ test('serves a sitemap with every page and robots that point to it', async ({ re
   const robots = await (await request.get('/robots.txt')).text();
   expect(robots).toContain('Sitemap: https://poolfigures.com/sitemap.xml');
 });
+
+test('leads from the home to the spring guide, whose calculator links all answer', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.locator('.pool-band a').click();
+  await expect(page).toHaveURL(/\/opening-your-pool$/);
+  await expect(page.locator('.pool-steps > li')).toHaveCount(10);
+  const hrefs = await page
+    .locator('.pool-steps a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toHaveLength(3);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
