@@ -68,3 +68,64 @@ jobs:
         name: Notify IndexNow
         if: steps.changed.outputs.site == 'true'
         run: node apps/web/scripts/production.ts indexnow
+
+  # plans/growth/PLAN.md › G3: each niche site deploys from its own Workers Builds project; once that
+  # build is green and the push touched the site, IndexNow hears every URL of its live sitemap.
+  niche-sites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: pay
+            worker: cuenta-horas
+          - app: pool
+            worker: pool-figures
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - id: build
+        name: Wait for the Cloudflare build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          for _ in $(seq 60); do
+            run=$(gh api "repos/$REPO/commits/$SHA/check-runs?check_name=Workers%20Builds:%20${{ matrix.worker }}" \
+              --jq '.check_runs[0] | select(. != null) | "\(.status) \(.conclusion)"')
+            case "$run" in
+              "completed success") echo "build: $run"; exit 0 ;;
+              completed*) echo "build: $run"; exit 1 ;;
+            esac
+            sleep 20
+          done
+          echo "build: no completed Workers Builds check after 20 minutes"
+          exit 1
+      - id: changed
+        name: Find site changes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            echo "site=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files=$(gh api "repos/$REPO/compare/$BEFORE...$SHA" --jq '.files[].filename')
+          site=$(printf '%s\n' "$files" | grep -E '^(apps/${{ matrix.app }}|packages)/' \
+            | grep -Ev '(\.test(-d)?\.ts$|/__testing__/)' || true)
+          if [ -n "$site" ]; then echo "site=true" >> "$GITHUB_OUTPUT"; else echo "site=false" >> "$GITHUB_OUTPUT"; fi
+      - id: indexnow
+        name: Notify IndexNow
+        if: steps.changed.outputs.site == 'true'
+        run: node apps/${{ matrix.app }}/scripts/indexnow.ts
