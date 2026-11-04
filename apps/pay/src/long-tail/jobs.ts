@@ -139,15 +139,27 @@ const questionOf = (job: Job, lang: Lang): string => {
   return job.kind === 'overtime' ? w.overtime.question(given) : w.question(given, w.ask[job.per]);
 };
 
-/** The long-tail pages of one family, as links: on their calculator, and on each other but `except`. */
+/** How many pages of its family a long-tail page links: its nearest amounts, so pages stay distinct. */
+const NEIGHBORS = 6;
+
+/** The `NEIGHBORS` jobs of `members` nearest to `job` in their ascending order, `job` left out. */
+const nearestOf = (members: readonly Job[], job: Job): readonly Job[] => {
+  const index = members.indexOf(job);
+  const start = Math.max(0, Math.min(index - NEIGHBORS / 2, members.length - NEIGHBORS - 1));
+  return members.slice(start, start + NEIGHBORS + 1).filter((member) => member !== job);
+};
+
+/**
+ * The long-tail pages of one family, as links: every one of them on their calculator, and on a
+ * page of the family (`except`) only its nearest amounts.
+ */
 export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonLinks => {
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
+  const members = JOBS.filter((job) => familyOf(job) === family);
+  const listed = except === undefined ? members : nearestOf(members, except);
   return {
     heading: except === undefined ? w.common : w.others,
-    links: JOBS.filter((job) => job !== except && familyOf(job) === family).map((job) => ({
-      href: pathOf(job, lang),
-      label: questionOf(job, lang),
-    })),
+    links: listed.map((job) => ({ href: pathOf(job, lang), label: questionOf(job, lang) })),
   };
 };
 
