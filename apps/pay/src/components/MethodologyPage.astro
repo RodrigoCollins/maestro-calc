@@ -1,9 +1,11 @@
 ---
-import { hoursText, moneyText } from '../format.ts';
+import { decimalHoursText, hoursMinutesText, hoursText, moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import {
   EXAMPLES,
   figuresOf,
+  HOURS_EXAMPLES,
+  hoursOf,
   OVERTIME_EXAMPLES,
   overtimeFiguresOf,
   type Figures,
@@ -43,6 +45,14 @@ const groups = [
     ),
   },
 ];
+const hoursRows = HOURS_EXAMPLES.map((example) => {
+  const hours = hoursOf(example);
+  return {
+    label: t.hoursExamples[example.id],
+    hoursMinutes: hoursMinutesText(hours),
+    decimal: decimalHoursText(hours),
+  };
+});
 ---
 
 <SiteLayout
@@ -113,6 +123,28 @@ const groups = [
         </ul>
       </section>
     ))}
+
+    <section aria-labelledby="hours-examples">
+      <h2 id="hours-examples">{t.hoursExamplesHeading}</h2>
+      <p>{t.hoursExamplesLead}</p>
+      <ul class="examples">
+        {hoursRows.map((row) => (
+          <li>
+            <p class="example-label">{row.label}</p>
+            <dl>
+              <div>
+                <dt>{t.hoursColumns.hoursMinutes}</dt>
+                <dd>{row.hoursMinutes}</dd>
+              </div>
+              <div class="example-pay">
+                <dt>{t.hoursColumns.decimal}</dt>
+                <dd>{row.decimal}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
 
     <p class="note">{t.reviewed}</p>
     <div class="actions">

@@ -1,5 +1,5 @@
 import type { Lang } from '../time-card/receipt.ts';
-import type { Example, OvertimeExample } from './examples.ts';
+import type { Example, HoursExample, OvertimeExample } from './examples.ts';
 
 export interface Source {
   readonly label: string;
@@ -34,6 +34,10 @@ export interface MethodologyTexts {
   readonly overtimeExamplesLead: string;
   readonly overtimeExamples: Readonly<Record<OvertimeExample['id'], string>>;
   readonly overtimeCta: { readonly label: string; readonly href: string };
+  readonly hoursExamplesHeading: string;
+  readonly hoursExamplesLead: string;
+  readonly hoursColumns: { readonly hoursMinutes: string; readonly decimal: string };
+  readonly hoursExamples: Readonly<Record<HoursExample['id'], string>>;
   readonly sourcesLabel: string;
   readonly reviewed: string;
   readonly cta: { readonly label: string; readonly href: string };
@@ -110,6 +114,24 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
         sources: [],
       },
       {
+        id: 'hours-calculator',
+        heading: 'The hours calculator: one shift',
+        paragraphs: [
+          'The hours calculator counts one shift: the time from the start to the end, less the unpaid break, counted to the minute. An end time before the start time means the shift crosses midnight, so 10:00 pm to 6:15 am is 8 hours 15 minutes.',
+          'A missing time, the same start and end, or a break as long as the shift, or longer, counts zero and shows a warning.',
+        ],
+        sources: [],
+      },
+      {
+        id: 'decimal-hours',
+        heading: 'Minutes and decimal hours',
+        paragraphs: [
+          'Decimal hours are the hours plus the minutes divided by 60: 45 minutes is 0.75 hours, and 8 hours 20 minutes is 8.33 hours. The calculators keep the exact fraction and round only what they show, to two places, to the nearest.',
+          'Decimal hours read back to the nearest whole minute: 7.75 hours is 7 hours 45 minutes. Your employer’s payroll system may round in another way, so its figure can differ by a minute or a cent.',
+        ],
+        sources: [],
+      },
+      {
         id: 'pay',
         heading: 'From hours to pay',
         paragraphs: [
@@ -169,6 +191,17 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'long-day-california': 'California: a 13 h Monday, then 8 h Tue-Fri',
     },
     overtimeCta: { label: 'Open the overtime calculator', href: '/overtime-calculator' },
+    hoursExamplesHeading: 'Hours and decimal hours examples',
+    hoursExamplesLead:
+      'Each example is run through the hours calculator or the minutes to decimal hours converter.',
+    hoursColumns: { hoursMinutes: 'Hours and minutes', decimal: 'Decimal hours' },
+    hoursExamples: {
+      'day-shift': 'Hours: 9:00 am to 5:30 pm, 30 min break',
+      'night-shift': 'Hours: 10:00 pm to 6:15 am, across midnight',
+      'eight-twenty': 'Decimal: 8 h 20 min',
+      'forty-five': 'Decimal: 45 min',
+      'seven-seventy-five': 'Back to minutes: 7.75 h',
+    },
     sourcesLabel: 'Sources',
     reviewed: 'Reviewed November 3, 2026.',
     cta: { label: 'Open the time card', href: '/time-card-calculator' },
@@ -214,6 +247,24 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
         paragraphs: [
           'La calculadora de horas extra toma las horas que trabajaste cada día, de lunes a domingo, en vez de la hora de entrada y salida, y las reparte con la misma regla federal o de California que la tarjeta de horas. Un día puede tener de 0 a 24 horas, con decimales: 8.25 son 8 horas y 15 minutos.',
           'También muestra tu tarifa de hora extra, 1.5 veces tu pago por hora, y tu tarifa de hora doble, 2 veces, redondeadas al centavo.',
+        ],
+        sources: [],
+      },
+      {
+        id: 'hours-calculator',
+        heading: 'La calculadora de horas: un turno',
+        paragraphs: [
+          'La calculadora de horas cuenta un turno: el tiempo de la entrada a la salida, menos el descanso sin pago, contado al minuto. Si la hora de salida es antes que la de entrada, el turno cruza la medianoche: de 10:00 pm a 6:15 am son 8 horas y 15 minutos.',
+          'Si falta una hora, si la entrada y la salida son la misma, o si el descanso dura lo mismo que el turno o más, cuenta cero y muestra un aviso.',
+        ],
+        sources: [],
+      },
+      {
+        id: 'decimal-hours',
+        heading: 'Minutos y horas decimales',
+        paragraphs: [
+          'Las horas decimales son las horas más los minutos divididos por 60: 45 minutos son 0.75 horas, y 8 horas y 20 minutos son 8.33 horas. Las calculadoras guardan la fracción exacta y solo redondean lo que muestran, a dos decimales, al más cercano.',
+          'Las horas decimales se leen al minuto entero más cercano: 7.75 horas son 7 horas y 45 minutos. El sistema de nómina de tu empleador puede redondear de otra forma, así que su número puede variar por un minuto o un centavo.',
         ],
         sources: [],
       },
@@ -279,6 +330,17 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
     overtimeCta: {
       label: 'Abrir la calculadora de horas extra',
       href: '/es/calculadora-de-horas-extra',
+    },
+    hoursExamplesHeading: 'Ejemplos de horas y horas decimales',
+    hoursExamplesLead:
+      'Cada ejemplo pasa por la calculadora de horas o por el convertidor de minutos a horas decimales.',
+    hoursColumns: { hoursMinutes: 'Horas y minutos', decimal: 'Horas decimales' },
+    hoursExamples: {
+      'day-shift': 'Horas: de 9:00 am a 5:30 pm, descanso de 30 min',
+      'night-shift': 'Horas: de 10:00 pm a 6:15 am, cruzando la medianoche',
+      'eight-twenty': 'Decimales: 8 h 20 min',
+      'forty-five': 'Decimales: 45 min',
+      'seven-seventy-five': 'De vuelta a minutos: 7.75 h',
     },
     sourcesLabel: 'Fuentes',
     reviewed: 'Revisado el 3 de noviembre de 2026.',

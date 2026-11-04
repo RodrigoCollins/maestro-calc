@@ -55,6 +55,18 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         href: '/overtime-calculator',
       },
       {
+        id: 'hours',
+        title: 'Hours between two times',
+        summary: 'From start to end, less the break, in hours and minutes and decimals.',
+        href: '/hours-calculator',
+      },
+      {
+        id: 'decimal-hours',
+        title: 'Minutes to decimal hours',
+        summary: '8 h 20 min is 8.33: convert both ways, with a chart of every minute.',
+        href: '/minutes-to-decimal-hours',
+      },
+      {
         id: 'hourly-to-salary',
         title: 'Hourly to salary',
         summary: 'What your hourly pay comes to a year, a month and a week.',
@@ -108,6 +120,19 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         title: 'Horas extra',
         summary: 'Tu tarifa y tu pago de horas extra después de 40 horas, o por día en California.',
         href: '/es/calculadora-de-horas-extra',
+      },
+      {
+        id: 'hours',
+        title: 'Horas entre dos horas',
+        summary: 'De la entrada a la salida, menos el descanso, en horas y minutos y en decimales.',
+        href: '/es/calculadora-de-horas',
+      },
+      {
+        id: 'decimal-hours',
+        title: 'Minutos a horas decimales',
+        summary:
+          '8 h 20 min son 8.33: convierte en los dos sentidos, con una tabla de cada minuto.',
+        href: '/es/minutos-a-horas-decimales',
       },
       {
         id: 'hourly-to-salary',

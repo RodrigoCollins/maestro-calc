@@ -1,4 +1,6 @@
 import { Rational, type Money } from '@maestro-calc/core';
+import { decimalHours } from '@maestro-calc/pay-core/decimal-hours';
+import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { overtime } from '@maestro-calc/pay-core/overtime';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { outputOf } from '../time-card/receipt.ts';
@@ -83,6 +85,67 @@ export const figuresOf = (example: WorkedWeek): Figures => {
     doubleHours: outputOf(ran.value, 'doubleHours'),
     pay: outputOf(ran.value, 'pay'),
   };
+};
+
+/**
+ * A worked example of the hours calculator (`hours`, start and end times) or of the decimal hours
+ * converter (`decimal-hours`, hours and minutes, or a decimal read back): one figure of hours.
+ */
+export type HoursExample =
+  | {
+      readonly id: 'day-shift' | 'night-shift';
+      readonly calculator: 'hours';
+      readonly inputs: Readonly<Record<string, string>>;
+    }
+  | {
+      readonly id: 'eight-twenty' | 'forty-five' | 'seven-seventy-five';
+      readonly calculator: 'decimal-hours';
+      readonly output: 'decimalHours' | 'fromDecimal';
+      readonly inputs: Readonly<Record<string, string>>;
+    };
+
+export const HOURS_EXAMPLES: readonly HoursExample[] = [
+  {
+    id: 'day-shift',
+    calculator: 'hours',
+    inputs: { start: '9:00', end: '17:30', unpaidBreak: '30' },
+  },
+  {
+    id: 'night-shift',
+    calculator: 'hours',
+    inputs: { start: '22:00', end: '6:15', unpaidBreak: '0' },
+  },
+  {
+    id: 'eight-twenty',
+    calculator: 'decimal-hours',
+    output: 'decimalHours',
+    inputs: { hours: '8', minutes: '20' },
+  },
+  {
+    id: 'forty-five',
+    calculator: 'decimal-hours',
+    output: 'decimalHours',
+    inputs: { hours: '0', minutes: '45' },
+  },
+  {
+    id: 'seven-seventy-five',
+    calculator: 'decimal-hours',
+    output: 'fromDecimal',
+    inputs: { decimal: '7.75' },
+  },
+];
+
+/** The hours an example comes to; a failing example is a build error. */
+export const hoursOf = (example: HoursExample): Rational => {
+  const ran =
+    example.calculator === 'hours'
+      ? hoursBetween.run(example.inputs)
+      : decimalHours.run(example.inputs);
+  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  const key = example.calculator === 'hours' ? 'hours' : example.output;
+  const value = ran.value.outputs.find((output) => output.key === key)?.value;
+  if (!(value instanceof Rational)) throw new Error(`no hours ${key} in ${example.id}`);
+  return value;
 };
 
 /** A worked example of the overtime calculator: the hours of each day, every other day off. */

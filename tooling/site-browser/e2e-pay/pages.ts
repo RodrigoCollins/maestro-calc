@@ -14,6 +14,10 @@ export const PAGES = [
   { path: '/es/calculadora-de-horas-trabajadas', lang: 'es' },
   { path: '/overtime-calculator', lang: 'en' },
   { path: '/es/calculadora-de-horas-extra', lang: 'es' },
+  { path: '/hours-calculator', lang: 'en' },
+  { path: '/es/calculadora-de-horas', lang: 'es' },
+  { path: '/minutes-to-decimal-hours', lang: 'en' },
+  { path: '/es/minutos-a-horas-decimales', lang: 'es' },
   { path: '/methodology', lang: 'en' },
   { path: '/es/metodologia', lang: 'es' },
   { path: '/about', lang: 'en' },
@@ -50,12 +54,24 @@ export const OVERTIME = PAGES.filter(({ path }) =>
   ['/overtime-calculator', '/es/calculadora-de-horas-extra'].includes(path),
 );
 
+export const HOURS = PAGES.filter(({ path }) =>
+  ['/hours-calculator', '/es/calculadora-de-horas'].includes(path),
+);
+
+export const DECIMAL_HOURS = PAGES.filter(({ path }) =>
+  ['/minutes-to-decimal-hours', '/es/minutos-a-horas-decimales'].includes(path),
+);
+
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
 const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',
   '/es/calculadora-de-horas-trabajadas',
   '/overtime-calculator',
   '/es/calculadora-de-horas-extra',
+  '/hours-calculator',
+  '/es/calculadora-de-horas',
+  '/minutes-to-decimal-hours',
+  '/es/minutos-a-horas-decimales',
   '/hourly-to-salary-calculator',
   '/salary-to-hourly-calculator',
   '/es/de-pago-por-hora-a-sueldo-anual',
