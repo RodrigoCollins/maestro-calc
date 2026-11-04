@@ -1,6 +1,6 @@
 # Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
 # Pool Figures loads nothing from another origin yet. style-src keeps 'unsafe-inline' because Astro
-# inlines the page CSS; scripts are same-origin files only, with no inline script and no eval.
+# inlines the page CSS; scripts are same-origin files only, with no inline script (the JSON-LD block is data, never run) and no eval.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
