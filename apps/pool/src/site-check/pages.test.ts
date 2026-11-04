@@ -1,7 +1,7 @@
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CALCULATOR_PAGES } from './pages.ts';
+import { ROUTED_PAGES } from './pages.ts';
 
 describe('CALCULATOR_PAGES', () => {
   // a calculator page left out would fail the zero-JavaScript rule, so the list is the directory
@@ -9,6 +9,6 @@ describe('CALCULATOR_PAGES', () => {
     const sources = readdirSync(resolve(import.meta.dirname, '../pages'))
       .filter((name) => name.endsWith('-calculator.astro'))
       .map((name) => name.replace(/\.astro$/, '.html'));
-    expect([...CALCULATOR_PAGES].sort()).toEqual(sources.sort());
+    expect([...ROUTED_PAGES].sort()).toEqual(sources.sort());
   });
 });

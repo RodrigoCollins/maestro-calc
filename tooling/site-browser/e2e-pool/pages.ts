@@ -5,11 +5,18 @@ export const PAGES = [
   '/opening-your-pool',
   '/privacy',
   '/about',
+  '/embed-calculators',
   '/pool-volume-calculator',
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
   '/pool-pump-size-calculator',
 ] as const;
+
+/** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
+export const EMBEDS = PAGES.filter((path) => path.endsWith('-calculator')).map((page) => ({
+  embed: `/embed${page}`,
+  page,
+}));
 
 /**
  * Each calculator: the figure it shows at its defaults (worked out at build time, so it reads with no

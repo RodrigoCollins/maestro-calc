@@ -13,9 +13,11 @@ interface Props {
     readonly OutputDescriptor[],
     readonly string[]
   >;
+  /** The embed of the page (`src/embed.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
 }
 
-const { page, calculator } = Astro.props;
+const { page, calculator, embed = false } = Astro.props;
 // The page renders the engine's default result, so it reads complete with no script.
 const ran = calculator.run({});
 if (!ran.ok) throw new Error(`${calculator.id} must run at its defaults`);
@@ -44,7 +46,7 @@ const reading = fields.find(({ key }) => key === page.strip?.field)?.value;
 const warned = new Set(ran.value.warnings.map(({ code }) => code));
 ---
 
-<Layout title={page.title} description={page.description}>
+<Layout title={page.title} description={page.description} {embed}>
   <main class="pool-page">
     <p class="pool-kicker">{page.kicker}</p>
     <h1>{page.h1}</h1>

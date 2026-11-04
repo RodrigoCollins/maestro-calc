@@ -33,7 +33,7 @@ with less. Site-specific work (content, keywords) sits on top of it.
    build time, never filler text. Low competition, exact intent, and it scales with the engine:
    a new site gets them by listing its common inputs. Guard: each page must carry a figure the
    engine computes and a link to the calculator; no page without a real search behind it.
-2. **Links from other sites.** The embed page (Maestro Calc has it) for trade blogs; tool and
+2. **Links from other sites.** The embed page for trade blogs (all three sites: `/embed-calculators`, and Cuenta Horas also `/es/calculadoras-para-tu-sitio`); tool and
    calculator directories; answers in forums (Reddit, trade forums) posted by the owner from his
    accounts, drafted by Claude. Never automated posting.
 3. **Pinterest and YouTube Shorts** per site, scheduled, not bursts (the publishing session and its

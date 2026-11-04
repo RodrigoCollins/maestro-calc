@@ -1,0 +1,10 @@
+---
+import SaltScript from '../../islands/SaltScript.astro';
+import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
+import DosePage from '../../components/DosePage.astro';
+import { SALT } from '../../doses.ts';
+---
+
+<DosePage embed page={SALT} calculator={poolSalt}>
+  <SaltScript />
+</DosePage>

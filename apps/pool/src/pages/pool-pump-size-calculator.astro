@@ -1,9 +1,10 @@
 ---
+import PumpSizeScript from '../islands/PumpSizeScript.astro';
 import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import DosePage from '../components/DosePage.astro';
 import { PUMP } from '../doses.ts';
 ---
 
 <DosePage page={PUMP} calculator={poolPump}>
-  <script src="../client/pool-pump.ts"></script>
+  <PumpSizeScript />
 </DosePage>

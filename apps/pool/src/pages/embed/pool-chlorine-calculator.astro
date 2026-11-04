@@ -1,0 +1,10 @@
+---
+import ChlorineScript from '../../islands/ChlorineScript.astro';
+import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
+import DosePage from '../../components/DosePage.astro';
+import { CHLORINE } from '../../doses.ts';
+---
+
+<DosePage embed page={CHLORINE} calculator={poolChlorine}>
+  <ChlorineScript />
+</DosePage>
