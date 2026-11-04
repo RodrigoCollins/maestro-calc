@@ -168,3 +168,43 @@ export const STABILIZER: DosePage = {
   method: `1 ppm is 1 mg per liter, so the grams of cyanuric acid = gallons × 3.785 × (target − reading) ÷ 1,000: 13.35 oz per 10 ppm per 10,000 gallons. For public pools, ${CODE} keeps CYA at or below 90 ppm.`,
   note: 'The dose is for a product of 100% cyanuric acid. Read the label of yours: for a liquid or blended stabilizer, divide the dose by its percent and multiply by 100. Dichlor and trichlor add CYA too.',
 };
+
+export const HEATER: DosePage = {
+  path: '/pool-heater-size-calculator',
+  title: 'Pool Heater Size Calculator: BTU per Hour | Pool Figures',
+  description:
+    'The BTU per hour a heater must put out to warm your pool by the degrees you want in the hours you give it, from the weight of the water.',
+  kicker: 'Heater size · free',
+  h1: 'Pool heater size calculator',
+  lead: 'Type your pool gallons, how many degrees to warm it and in how many hours. You get the BTU per hour a heater must put out.',
+  fields: {
+    gallons,
+    rise: { label: 'Temperature rise (°F)' },
+    hours: { label: 'Hours to heat' },
+  },
+  results: [
+    { key: 'btuPerHour', label: 'Heater output', unit: 'BTU/H' },
+    { key: 'btu', label: 'Heat to warm the water', unit: 'BTU' },
+  ],
+  method:
+    'One BTU warms 1 lb of water by 1 °F, and a gallon of water weighs about 8.34 lb. BTU = gallons × 8.34 × rise, and BTU per hour = that heat ÷ the hours: 20,000 gallons warmed 10 °F take 1,668,000 BTU, 69,500 an hour over 24 hours.',
+  note: 'That is the heat the water holds, with nothing lost. Wind, evaporation and cool nights take heat away while it warms, so a real heater is sized larger, and a cover keeps more of it in. The U.S. Department of Energy sizes a gas heater by surface area: square feet × (pool temperature − average air temperature of the coldest month) × 12 BTU per hour, for a rise of 1 to 1¼ °F an hour in a 3½ mph wind.',
+};
+
+export const FILL_TIME: DosePage = {
+  path: '/pool-fill-time-calculator',
+  title: 'Pool Fill Time Calculator: How Long to Fill a Pool | Pool Figures',
+  description:
+    'How many hours and minutes a hose takes to fill your pool, from its gallons and the flow in gallons a minute.',
+  kicker: 'Fill time · free',
+  h1: 'Pool fill time calculator',
+  lead: 'Type your pool gallons and the flow of your hose in gallons a minute. You get the hours and minutes it takes to fill.',
+  fields: { gallons, flow: { label: 'Flow (gallons a minute)' } },
+  results: [
+    { key: 'time', label: 'Time to fill', unit: 'HOURS AND MINUTES' },
+    { key: 'minutes', label: 'In minutes', unit: 'min' },
+  ],
+  method:
+    'Minutes = gallons ÷ gallons a minute, and hours = minutes ÷ 60: 20,000 gallons at 10 gallons a minute take 2,000 minutes, 33 h 20 min.',
+  note: 'Measure your own flow: time in seconds how long a 5-gallon bucket takes to fill at the hose, then gallons a minute = 300 ÷ those seconds (30 seconds is 10 gallons a minute). The 10 gallons a minute already filled in is only a starting figure.',
+};

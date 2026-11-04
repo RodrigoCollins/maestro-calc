@@ -1,10 +1,12 @@
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
+import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
+import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
 import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText } from './format.ts';
 
 const CASES = [
@@ -13,6 +15,8 @@ const CASES = [
   ['pump', PUMP, poolPump],
   ['alkalinity', ALKALINITY, poolAlkalinity],
   ['stabilizer', STABILIZER, poolStabilizer],
+  ['heater', HEATER, poolHeater],
+  ['fill time', FILL_TIME, poolFillTime],
 ] as const;
 
 describe('dose pages', () => {
@@ -47,6 +51,8 @@ describe('dose pages', () => {
     expect(PUMP.strip).toBeUndefined();
     expect(ALKALINITY.strip).toBeUndefined();
     expect(STABILIZER.strip).toBeUndefined();
+    expect(HEATER.strip).toBeUndefined();
+    expect(FILL_TIME.strip).toBeUndefined();
   });
 
   it('names every warning of the salt, alkalinity and stabilizer engines', () => {
@@ -65,6 +71,17 @@ describe('dose pages', () => {
     expect(STABILIZER.note.toLowerCase()).toContain('label');
   });
 
+  // first principles: 1 BTU warms 1 lb of water 1 °F, a gallon weighs about 8.34 lb; the loss and
+  // the surface-area method are the U.S. Department of Energy's, quoted, never a multiplier of ours
+  it('states the heat assumptions and that a real heater is sized larger', () => {
+    expect(HEATER.method).toContain('8.34 lb');
+    expect(HEATER.method).toContain('1 °F');
+    expect(HEATER.note).toContain('sized larger');
+    expect(HEATER.note).toContain('Department of Energy');
+    expect(HEATER.note).toContain('× 12');
+    expect(FILL_TIME.note).toContain('300 ÷');
+  });
+
   it('writes the default results in the units the pages name', () => {
     const text = (engine: (typeof CASES)[number][2], key: string, raw = {}) => {
       const ran = engine.run(raw);
@@ -81,6 +98,10 @@ describe('dose pages', () => {
     expect(text(poolAlkalinity, 'ounces')).toBe('134.5');
     expect(text(poolStabilizer, 'pounds')).toBe('5.0');
     expect(text(poolStabilizer, 'ounces')).toBe('80.1');
+    expect(text(poolHeater, 'btuPerHour')).toBe('69,500');
+    expect(text(poolHeater, 'btu')).toBe('1,668,000');
+    expect(text(poolFillTime, 'time')).toBe('33 h 20 min');
+    expect(text(poolFillTime, 'minutes')).toBe('2,000');
     expect(() => outputText('x', 1)).toThrow('no text for output x');
   });
 });
