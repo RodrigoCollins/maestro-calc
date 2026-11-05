@@ -8,7 +8,7 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 /*
- * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17]): each
+ * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17], [GU18]): each
  * case is a link the calculator page loads, with the figures that page shows for it, hand-verified
  * and pinned here. The engine must still show them, and the guide must print every one of them, in
  * both languages, next to a link to the calculator that computes it.
@@ -25,7 +25,10 @@ interface GuideCase {
 }
 
 const GUIDE_CASES: Readonly<
-  Record<Extract<GuideId, 'guide-mulch' | 'guide-cubic-yards'>, readonly GuideCase[]>
+  Record<
+    Extract<GuideId, 'guide-mulch' | 'guide-cubic-yards' | 'guide-concrete-bag-coverage'>,
+    readonly GuideCase[]
+  >
 > = {
   'guide-mulch': [
     // 20 ft × 4 ft at 3 in, the page's starting values: 20 ft³, 21 ft³ with 5 percent extra
@@ -75,6 +78,31 @@ const GUIDE_CASES: Readonly<
     // a mulch bed 20 ft × 4 ft at 3 in, no extra
     { calculator: 'mulch', query: '?v=1&ws=0', figures: { volumeYd3: '0.74' } },
   ],
+  'guide-concrete-bag-coverage': [
+    // a 10 ft × 10 ft slab, 4 in thick, no extra: 33.33 ft³ over 0.60 ft³ a bag is 55.6, 56 bags
+    {
+      calculator: 'concrete',
+      query: '?v=1&l=120&ws=0',
+      figures: { netVolume: '33.33' },
+      bags: '56',
+    },
+    // the same slab with the default 10 percent extra, in each bag size
+    {
+      calculator: 'concrete',
+      query: '?v=1&l=120',
+      figures: { volumeFt3: '36.67', volumeYd3: '1.36' },
+      bags: '62',
+    },
+    { calculator: 'concrete', query: '?v=1&l=120&bg=60', figures: {}, bags: '82' },
+    { calculator: 'concrete', query: '?v=1&l=120&bg=40', figures: {}, bags: '123' },
+    // the same slab at 6 in, with the extra
+    {
+      calculator: 'concrete',
+      query: '?v=1&l=120&t=6',
+      figures: { volumeFt3: '55.00' },
+      bags: '92',
+    },
+  ],
 };
 
 const moduleOf = (id: CalculatorPageId) => CONTENT_ROWS[id].module;
@@ -109,7 +137,7 @@ const PAIRS = GUIDES_WITH_CASES.flatMap(([id, cases]) =>
   LOCALES.map((locale) => [id, locale, cases] as const),
 );
 
-describe('guide worked examples (guides › [GU16], [GU17])', () => {
+describe('guide worked examples (guides › [GU16], [GU17], [GU18])', () => {
   it.each(GUIDES_WITH_CASES)('the engine shows the pinned figures of %s', (_id, cases) => {
     expect(caseProblems(cases, real)).toEqual([]);
   });
