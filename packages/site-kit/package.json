@@ -19,6 +19,6 @@
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
-    "node-html-parser": "9.0.5"
+    "node-html-parser": "9.0.6"
   }
 }
