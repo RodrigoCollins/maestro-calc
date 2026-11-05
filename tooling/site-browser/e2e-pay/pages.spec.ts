@@ -72,8 +72,8 @@ test('links every page to the methodology of its language, and it shows the work
     await page.locator(`footer a[href="${method}"]`).click();
     await expect(page).toHaveURL(new RegExp(`${method}$`));
     // four time card weeks, three weeks of the overtime calculator, five hours conversions, then
-    // four PTO accruals, then four shift differential weeks
-    await expect(page.locator('.examples')).toHaveCount(5);
+    // four PTO accruals, four shift differential weeks, then four tipped weeks
+    await expect(page.locator('.examples')).toHaveCount(6);
     await expect(page.locator('.examples').first().locator('li')).toHaveCount(4);
     await expect(page.locator('.examples li').first()).toContainText('$1,193.50');
     await expect(page.locator('.examples').nth(1).locator('li')).toHaveCount(3);
@@ -82,8 +82,10 @@ test('links every page to the methodology of its language, and it shows the work
     await expect(page.locator('.examples').nth(2).locator('li').nth(1)).toContainText('8.25');
     await expect(page.locator('.examples').nth(3).locator('li')).toHaveCount(4);
     await expect(page.locator('.examples').nth(3).locator('li').nth(1)).toContainText('4.62');
+    await expect(page.locator('.examples').nth(4).locator('li')).toHaveCount(4);
+    await expect(page.locator('.examples').nth(4).locator('li').nth(1)).toContainText('$1,092.00');
     await expect(page.locator('.examples').last().locator('li')).toHaveCount(4);
-    await expect(page.locator('.examples').last().locator('li').nth(1)).toContainText('$1,092.00');
+    await expect(page.locator('.examples').last().locator('li').nth(1)).toContainText('$54.80');
   }
 });
 

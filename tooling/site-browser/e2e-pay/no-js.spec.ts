@@ -7,6 +7,7 @@ import {
   PAGES,
   PTO,
   SHIFT,
+  TIPPED,
   TIME_CARD,
 } from './pages.ts';
 
@@ -74,6 +75,17 @@ for (const { path } of SHIFT) {
     await expect(page.locator('[data-out="shiftRate"]')).toHaveText('$22.00');
     await expect(page.locator('[data-out="regularRate"]')).toHaveText('$20.80');
     await expect(page.locator('input[name="amount"]')).toBeHidden();
+  });
+}
+
+for (const { path } of TIPPED) {
+  test(`${path} shows the default week without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    // 40 h x $2.13 = $85.20 + $250 in tips = $335.20, $8.38 an hour, no top-up
+    await expect(page.locator('.result-figure')).toHaveText('$8.38');
+    await expect(page.locator('[data-out="totalPay"]')).toHaveText('$335.20');
+    await expect(page.locator('[data-out="topUp"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-warning="topUpOwed"]')).toBeHidden();
   });
 }
 

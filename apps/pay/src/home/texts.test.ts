@@ -5,6 +5,7 @@ import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from '../hours/texts.ts';
 import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { PTO_PATHS } from '../pto/texts.ts';
 import { SHIFT_PATHS } from '../shift/texts.ts';
+import { TIPPED_PATHS } from '../tipped/texts.ts';
 import { HOME_TEXTS } from './texts.ts';
 
 const pageFile = (href: string): string =>
@@ -59,6 +60,15 @@ describe('home texts', () => {
       expect(ids.indexOf('shift-differential')).toBe(ids.indexOf('pto-accrual') + 1);
       const card = HOME_TEXTS[lang].tools.find(({ id }) => id === 'shift-differential');
       expect(card?.href).toBe(SHIFT_PATHS[lang]);
+    }
+  });
+
+  it('links the tipped wage card to its calculator, after the shift differential card', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const ids = HOME_TEXTS[lang].tools.map(({ id }) => id);
+      expect(ids.indexOf('tipped-wage')).toBe(ids.indexOf('shift-differential') + 1);
+      const card = HOME_TEXTS[lang].tools.find(({ id }) => id === 'tipped-wage');
+      expect(card?.href).toBe(TIPPED_PATHS[lang]);
     }
   });
 

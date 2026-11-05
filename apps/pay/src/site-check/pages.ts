@@ -16,6 +16,8 @@ const ROUTED = [
   'es/calculadora-de-vacaciones-pagadas.html',
   'shift-differential-calculator.html',
   'es/calculadora-de-diferencial-de-turno.html',
+  'tipped-wage-calculator.html',
+  'es/calculadora-de-propinas-por-hora.html',
   'no-tax-on-overtime-calculator.html',
   'no-tax-on-tips-calculator.html',
   'es/calculadora-horas-extra-sin-impuestos.html',
