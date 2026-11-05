@@ -118,6 +118,43 @@ export const PUMP: DosePage = {
   note: 'Size the pipes for that flow too: the standard keeps water under 8 ft per second in the return and 6 in the suction.',
 };
 
+export const PH: DosePage = {
+  path: '/pool-ph-calculator',
+  title: 'Pool pH Calculator: How Much Muriatic Acid? | Pool Figures',
+  description:
+    'How much muriatic acid lowers your pool’s pH, or soda ash raises it, from the drops of the acid or base demand test of a Taylor kit.',
+  kicker: 'pH · free',
+  h1: 'Pool pH calculator',
+  lead: 'Run the acid demand test of your kit to lower pH, or the base demand test to raise it, and count the drops it takes. Type your pool gallons and those drops. You get the muriatic acid or soda ash to add.',
+  fields: {
+    gallons,
+    product: {
+      label: 'What you need',
+      options: {
+        'muriatic-31-45': 'Lower pH: muriatic acid, 31.45%',
+        'soda-ash': 'Raise pH: soda ash',
+      },
+    },
+    drops: { label: 'Drops of demand reagent' },
+  },
+  results: [
+    {
+      key: 'liquid',
+      label: 'Muriatic acid to add',
+      unit: 'FL OZ',
+      forms: ['muriatic-31-45'],
+    },
+    { key: 'dry', label: 'Soda ash to add', unit: 'OZ BY WEIGHT', forms: ['soda-ash'] },
+  ],
+  warnings: {
+    pastChart:
+      'Taylor’s chart stops at 3 drops. Add no more than the 3-drop dose at a time, let the pump run, then test again before you add the rest.',
+  },
+  method:
+    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate.',
+  note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé); for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
+};
+
 /** The CDC's Model Aquatic Health Code, the one source of the public-pool limits these pages cite. */
 const CODE = 'the CDC’s Model Aquatic Health Code';
 

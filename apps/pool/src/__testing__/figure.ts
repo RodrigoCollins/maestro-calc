@@ -3,11 +3,12 @@ import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from '../doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from '../doses.ts';
 import { outputText, volumeText } from '../format.ts';
 import { VOLUME_TEXTS } from '../volume/texts.ts';
 
@@ -17,6 +18,7 @@ const ENGINES = {
   [SALT.path]: poolSalt,
   [CHLORINE.path]: poolChlorine,
   [PUMP.path]: poolPump,
+  [PH.path]: poolPh,
   [ALKALINITY.path]: poolAlkalinity,
   [STABILIZER.path]: poolStabilizer,
   [HEATER.path]: poolHeater,

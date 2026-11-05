@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** The public-pool limits of the alkalinity and stabilizer pages: MAHC 5.7.4.4.1 and 5.7.3.1.3.2. */
@@ -119,6 +119,39 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         key: 'flow',
         result: '55.6',
         unit: 'gpm',
+      },
+    ],
+  },
+  {
+    id: 'ph',
+    title: 'pH',
+    href: PH.path,
+    method: PH.method,
+    note: PH.note,
+    sources: [
+      {
+        name: 'Taylor Technologies, K-1003 test kit instructions (Instr. #5816), pH dosage charts: 9.16 fl oz of muriatic acid (31.45% HCl) a drop of acid demand reagent R-0015, and 5.13 oz of soda ash (sodium carbonate, 100%) a drop of base demand reagent R-0016, per 10,000 gallons, for 1 to 3 drops',
+        url: 'https://www.novatech-usa.com/pdf/Taylor%20K-1003%20Instruction%20Manual.pdf',
+      },
+      {
+        name: 'Taylor Technologies, K-1004 test kit instructions (Instr. #5817): the same muriatic acid chart',
+        url: 'https://waterlinetechnologies.com/content/Taylor/K-1004%20Instrustions.pdf',
+      },
+    ],
+    cases: [
+      {
+        text: '10,000 gallons, 2 drops of acid demand reagent: 10,000 ÷ 10,000 × 2 × 9.16 fl oz =',
+        raw: { gallons: '10000', product: 'muriatic-31-45', drops: '2' },
+        key: 'liquid',
+        result: '18.3',
+        unit: 'fl oz',
+      },
+      {
+        text: '20,000 gallons, 2 drops of base demand reagent: 20,000 ÷ 10,000 × 2 × 5.13 oz =',
+        raw: { gallons: '20000', product: 'soda-ash', drops: '2' },
+        key: 'dry',
+        result: '20.5',
+        unit: 'oz',
       },
     ],
   },

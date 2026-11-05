@@ -13,6 +13,7 @@ export const NAMED_SOURCES = [
   'CDC',
   'EPA',
   'Hayward',
+  'Taylor Technologies',
 ] as const;
 
 export interface AboutSection {
@@ -44,7 +45,7 @@ export const ABOUT: About = {
       id: 'what',
       heading: 'What the site does',
       paragraphs: [
-        'Pool Figures works out the volume of your pool, the salt and the chlorine to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, and a water chemistry chart gives the target range of each level. Each calculator shows the figure and the formula behind it.',
+        'Pool Figures works out the volume of your pool, the salt, the chlorine and the pH dose to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, and a water chemistry chart gives the target range of each level. Each calculator shows the figure and the formula behind it.',
       ],
     },
     {
@@ -59,7 +60,7 @@ export const ABOUT: About = {
       id: 'sources',
       heading: 'Sources',
       paragraphs: [
-        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, and the manufacturer: the Hayward manual and guides for salt, water levels, opening and closing, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
+        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, the pH dosage chart of Taylor Technologies’ test kits for acid and soda ash, and the manufacturer: the Hayward manual and guides for salt, water levels, opening and closing, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
       ],
     },
     {

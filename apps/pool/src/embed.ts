@@ -1,5 +1,5 @@
 import { embedPathOf, embedSnippetOf } from '@maestro-calc/site-kit/embed';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { SITE } from './site.config.ts';
@@ -17,6 +17,7 @@ const CALCULATORS: Readonly<Record<string, { readonly name: string; readonly hei
   [SALT.path]: { name: SALT.h1, height: 1100 },
   [CHLORINE.path]: { name: CHLORINE.h1, height: 1200 },
   [PUMP.path]: { name: PUMP.h1, height: 1000 },
+  [PH.path]: { name: PH.h1, height: 1300 },
   [ALKALINITY.path]: { name: ALKALINITY.h1, height: 1100 },
   [STABILIZER.path]: { name: STABILIZER.h1, height: 1100 },
   [HEATER.path]: { name: HEATER.h1, height: 1100 },

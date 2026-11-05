@@ -43,6 +43,7 @@ export const runDose = <const I extends readonly InputDescriptor[]>(
           .replace(/\.?0+$/, '')
           .replaceAll(',', '');
       else if (typeof value === 'string') field.value = value;
+      else if (typeof value === 'number') field.value = String(value);
     }
   }
 

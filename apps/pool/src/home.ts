@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** One calculator card of the home: its page, a short title and what it works out. */
@@ -29,6 +29,11 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     href: PUMP.path,
     title: 'Pump size',
     summary: 'The flow to turn your pool over in six hours, as the pool standard sizes it.',
+  },
+  {
+    href: PH.path,
+    title: 'pH',
+    summary: 'Muriatic acid to lower pH, or soda ash to raise it.',
   },
   {
     href: ALKALINITY.path,

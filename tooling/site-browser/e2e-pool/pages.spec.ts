@@ -91,7 +91,7 @@ test('links every calculator from the home and the header to a page that answers
   await page.goto('/');
   // the header keeps the first four calculators and a link to every card of the home
   for (const [selector, count] of [
-    ['[aria-labelledby="pool-tools"] .pool-tools a', 8],
+    ['[aria-labelledby="pool-tools"] .pool-tools a', 9],
     ['header nav a', 5],
   ] as const) {
     const hrefs = await page
@@ -109,7 +109,7 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await page.goto('/');
   await page.locator('footer a[href="/methodology"]').click();
   await expect(page).toHaveURL(/\/methodology$/);
-  await expect(page.locator('.pool-method li strong')).toHaveCount(13);
+  await expect(page.locator('.pool-method li strong')).toHaveCount(15);
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
 });
 

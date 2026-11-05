@@ -12,6 +12,7 @@ export const PAGES = [
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
   '/pool-pump-size-calculator',
+  '/pool-ph-calculator',
   '/pool-alkalinity-calculator',
   '/pool-stabilizer-calculator',
   '/pool-heater-size-calculator',
@@ -60,6 +61,14 @@ export const CALCULATORS = [
     // 36,000 gal / 360 min
     edit: { field: 'gallons', value: '36000' },
     edited: '100.0',
+  },
+  {
+    path: '/pool-ph-calculator',
+    out: 'liquid',
+    initial: '36.6',
+    // Taylor: 9.16 fl oz a drop per 10,000 gal, x 3 drops x 2 (20,000 gal) = 54.96 fl oz
+    edit: { field: 'drops', value: '3' },
+    edited: '55.0',
   },
   {
     path: '/pool-alkalinity-calculator',
