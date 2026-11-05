@@ -1,32 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { calculatorSite, validDist } from './__testing__/page-fixture.ts';
+import { calculatorSite, jobSite, validDist } from './__testing__/page-fixture.ts';
 import { contextOf } from './checks.ts';
 import { jobLinkProblems } from './job-links.ts';
 import type { Dist, Site } from './types.ts';
-
-/**
- * The calculator fixture with the hub `hub-concrete` and three concrete job pages, in table order:
- * the slab of 10 by 10, the slab of 12 by 12 (between the other two) and the tube of 12 in.
- */
-const jobSite = (): Site => {
-  const site = calculatorSite();
-  return {
-    ...site,
-    routes: {
-      ...site.routes,
-      'hub-concrete': { en: '/concrete', es: '/es/concreto' },
-      'concrete-slab-10x10': { en: '/concrete-slab-10x10', es: '/es/losa-de-concreto-10x10' },
-      'concrete-slab-12x12': { en: '/concrete-slab-12x12', es: '/es/losa-de-concreto-12x12' },
-      'concrete-tube-12': { en: '/concrete-tube-12', es: '/es/tubo-de-concreto-12' },
-    },
-    hubs: { 'hub-concrete': ['concrete'] },
-    jobs: {
-      'concrete-slab-10x10': 'concrete',
-      'concrete-slab-12x12': 'concrete',
-      'concrete-tube-12': 'concrete',
-    },
-  };
-};
 
 /** The valid dist of `site` with `from` replaced by `to` in the named file. */
 const edited = (site: Site, file: string, from: RegExp, to: string): Map<string, string> => {
@@ -81,7 +57,8 @@ describe('job page links (growth › job pages › check:site)', () => {
     const dist = edited(
       jobSite(),
       'concrete-slab-12x12.html',
-      /<p class="job-calculator">.*?<\/p>/,
+      // the body link and the breadcrumb's crumb: either one links the calculator
+      /<p class="job-calculator">.*?<\/p>|<li><a href="\/concrete-calculator">[^<]*<\/a><\/li>/g,
       '',
     );
     expect(messagesOf(dist, jobSite())).toEqual([
@@ -93,7 +70,7 @@ describe('job page links (growth › job pages › check:site)', () => {
     const dist = edited(
       jobSite(),
       'concrete-slab-12x12.html',
-      /href="\/concrete-calculator"/,
+      /href="\/concrete-calculator"/g,
       'href="/concrete-calculator?length=12ft&amp;width=12ft#calc-result-heading"',
     );
     expect(messagesOf(dist, jobSite())).toEqual([]);
@@ -136,7 +113,7 @@ describe('job page links (growth › job pages › check:site)', () => {
     const dist = edited(
       jobSite(),
       'es/losa-de-concreto-12x12.html',
-      /href="\/es\/calculadora-de-concreto"/,
+      /href="\/es\/calculadora-de-concreto"/g,
       'href="/concrete-calculator"',
     );
     expect(messagesOf(dist, jobSite())).toEqual([

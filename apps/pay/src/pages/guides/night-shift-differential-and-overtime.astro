@@ -1,0 +1,15 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import {
+  SHIFT_GUIDE,
+  SHIFT_GUIDE_LINKS,
+  SHIFT_GUIDE_PATHS,
+} from '../../guide/shift-differential.ts';
+---
+
+<GuidePage
+  lang="en"
+  texts={SHIFT_GUIDE.en}
+  paths={SHIFT_GUIDE_PATHS}
+  links={SHIFT_GUIDE_LINKS.en}
+/>

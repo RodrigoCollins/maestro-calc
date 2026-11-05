@@ -4,6 +4,7 @@ import { hoursText, moneyText, shiftText } from '../format.ts';
 import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from '../guide/overtime.ts';
 import { PAY_STUB_GUIDE, PAY_STUB_GUIDE_PATHS } from '../guide/pay-stub.ts';
 import { PTO_GUIDE, PTO_GUIDE_PATHS } from '../guide/pto.ts';
+import { SHIFT_GUIDE, SHIFT_GUIDE_PATHS } from '../guide/shift-differential.ts';
 import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { UNPAID_WAGES_GUIDE, UNPAID_WAGES_GUIDE_PATHS } from '../guide/unpaid-wages.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
@@ -25,6 +26,7 @@ const guides = [
   { href: PAY_STUB_GUIDE_PATHS[lang], label: PAY_STUB_GUIDE[lang].linkLabel },
   { href: UNPAID_WAGES_GUIDE_PATHS[lang], label: UNPAID_WAGES_GUIDE[lang].linkLabel },
   { href: PTO_GUIDE_PATHS[lang], label: PTO_GUIDE[lang].linkLabel },
+  { href: SHIFT_GUIDE_PATHS[lang], label: SHIFT_GUIDE[lang].linkLabel },
   { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
 ];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.

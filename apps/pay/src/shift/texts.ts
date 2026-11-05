@@ -1,3 +1,4 @@
+import { SHIFT_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 export const SHIFT_PATHS = {
@@ -90,6 +91,7 @@ export const SHIFT_TEXTS: Readonly<Record<Lang, ShiftTexts>> = {
       'Pay is rounded to the cent and uses the federal 40-hour week; your payroll may round the rate first. For daily overtime in California, use the overtime calculator.',
     ],
     links: [
+      { label: 'Is the night differential in the overtime rate?', href: SHIFT_GUIDE_PATHS.en },
       { label: 'Work out your overtime by day', href: '/overtime-calculator' },
       { label: 'Add up a week on the time card', href: '/time-card-calculator' },
     ],
@@ -135,6 +137,10 @@ export const SHIFT_TEXTS: Readonly<Record<Lang, ShiftTexts>> = {
       'El pago se redondea al centavo y usa la semana federal de 40 horas; tu nómina puede redondear antes la tarifa. Para las horas extra por día de California, usa la calculadora de horas extra.',
     ],
     links: [
+      {
+        label: '¿El diferencial nocturno entra en la tarifa de horas extra?',
+        href: SHIFT_GUIDE_PATHS.es,
+      },
       { label: 'Calcula tus horas extra por día', href: '/es/calculadora-de-horas-extra' },
       {
         label: 'Suma una semana en la tarjeta de horas',
