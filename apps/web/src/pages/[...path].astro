@@ -2,8 +2,8 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { pathOf, staticPaths } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
-import { isCalculatorPage, templateOf } from '../routing/templates.ts';
-import CalculatorView from '../views/CalculatorView.astro';
+import { templateOf } from '../routing/templates.ts';
+import type { CalculatorPageId } from '../routing/templates.ts';
 import EmbedSnippets from '../components/EmbedSnippets.astro';
 import GlossaryTable from '../components/GlossaryTable.astro';
 import GuideCta from '../components/GuideCta.astro';
@@ -27,12 +27,13 @@ import { pitchDegreesView } from '../lib/pitch-degrees.ts';
 import { isJobPage } from '../routing/jobs.ts';
 import { jobLinks } from '../lib/job-links.ts';
 
-// The two homes render from `index.astro` and `es.astro`, so the home view's scoped CSS ships on them only.
+// The two homes render from `index.astro` and `es.astro`, and the calculator pages from
+// `[calculator].astro` and `es/[calculator].astro`, so their views' scoped CSS ships on them only.
 export const getStaticPaths = () =>
-  staticPaths().filter(({ props }) => templateOf(props.id) !== 'home');
+  staticPaths().filter(({ props }) => !['home', 'calculator'].includes(templateOf(props.id)));
 
 interface Props {
-  id: Exclude<PageId, 'home'>;
+  id: Exclude<PageId, 'home' | CalculatorPageId>;
   locale: Locale;
 }
 
@@ -71,10 +72,8 @@ const hubView =
       };
 ---
 
-{/* A calculator id and a job id have their own templates; every other id is a Markdown trust page. */}
-{isCalculatorPage(id) ? (
-  <CalculatorView {id} {locale} />
-) : isJobPage(id) ? (
+{/* A job id has its own template; every other id is a Markdown trust page. */}
+{isJobPage(id) ? (
   <JobPageView {id} {locale} />
 ) : (
   <TrustPageView {id} {locale}>

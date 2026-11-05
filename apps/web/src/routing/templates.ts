@@ -1,5 +1,6 @@
+import type { Locale } from '@maestro-calc/i18n';
 import { isJobPage } from './jobs.ts';
-import { NOT_FOUND_ID } from './routes.ts';
+import { NOT_FOUND_ID, pathOf, staticPaths } from './routes.ts';
 import type { PageId, RouteTable } from './routes.ts';
 
 /**
@@ -22,9 +23,22 @@ export const CALCULATOR_PAGES = [
 /** The id of a page that uses the calculator template. */
 export type CalculatorPageId = (typeof CALCULATOR_PAGES)[number];
 
-/** Whether `id` is a calculator page id (a type guard for the catch-all route). */
+/** Whether `id` is a calculator page id (a type guard for the route files). */
 export const isCalculatorPage = (id: string): id is CalculatorPageId =>
   CALCULATOR_PAGES.some((page) => page === id);
+
+/**
+ * `getStaticPaths` of the calculator route file of a locale: `pages/[calculator].astro` (en) and
+ * `pages/es/[calculator].astro` (es). The calculator pages have route files of their own because Astro
+ * bundles the scoped CSS of every component a route file imports: rendered from the catch-all, they
+ * would carry the trust, job, glossary and guide styles they never use.
+ */
+export const calculatorPaths = (locale: Locale) =>
+  staticPaths().flatMap(({ props: { id, locale: of } }) =>
+    of === locale && isCalculatorPage(id)
+      ? [{ params: { calculator: pathOf(id, locale).split('/').at(-1) }, props: { id, locale } }]
+      : [],
+  );
 
 /** Registry calculators without a page (site-routing-i18n › Calculator pages in the route table). */
 export const PAGELESS: readonly string[] = [];

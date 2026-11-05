@@ -1,0 +1,18 @@
+---
+import type { Locale } from '@maestro-calc/i18n';
+import { calculatorPaths } from '../routing/templates.ts';
+import type { CalculatorPageId } from '../routing/templates.ts';
+import CalculatorView from '../views/CalculatorView.astro';
+
+// The English calculator pages: a route file of their own, so they ship the calculator CSS only.
+export const getStaticPaths = () => calculatorPaths('en');
+
+interface Props {
+  id: CalculatorPageId;
+  locale: Locale;
+}
+
+const { id, locale } = Astro.props;
+---
+
+<CalculatorView {id} {locale} />
