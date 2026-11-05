@@ -188,6 +188,14 @@ describe('seoProblems on a JSON-LD graph', () => {
     ]);
   });
 
+  it('needs the breadcrumb to list its steps', () => {
+    expect(checkCrumbed(head({}, [graph(ARTICLE, '{"@type":"BreadcrumbList"}')]))).toEqual([
+      'guide.html: the BreadcrumbList must be numbered 1 to 0, found none',
+      'guide.html: the BreadcrumbList must start at "https://x.test/", found none',
+      'guide.html: the BreadcrumbList must end at "https://x.test/guide", found none',
+    ]);
+  });
+
   it('refuses FAQ and HowTo markup', () => {
     const spam = graph(ARTICLE, '{"@type":"FAQPage"}', '{"@type":"HowTo"}');
     expect(check(head({}, [spam]))).toEqual([
@@ -308,6 +316,21 @@ describe('headProblems', () => {
     const astray = page('es', { en: '/b', es: '/es/a' });
     expect(site({ ...both, 'es/a.html': astray })).toContain(
       'a.html: its es-US alternate "https://x.test/es/a" does not name the same alternates back',
+    );
+  });
+
+  it('reads a page with no head as empty, and names what it lacks', () => {
+    const bare = '<html><head><link rel="alternate"></head></html>';
+    const problems = site({ ...both, 'bare.html': bare }, `${SITEMAP}<url></url>`);
+    expect(problems).toEqual(
+      expect.arrayContaining([
+        'bare.html: no title',
+        'bare.html: the description is 0 characters, outside 10 to 40',
+        'bare.html: needs one en-US alternate, found 0',
+        'bare.html: the canonical none is none of its alternates',
+        'bare.html: none is not in the sitemap',
+        'sitemap.xml: "" is not an indexable page of the build',
+      ]),
     );
   });
 

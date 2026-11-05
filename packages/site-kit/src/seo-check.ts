@@ -57,7 +57,7 @@ const breadcrumbProblems = (file: string, nodes: readonly unknown[], home: strin
     ...(numbered && items.length > 0
       ? []
       : [
-          `${file}: the BreadcrumbList must be numbered 1 to ${String(items.length)}, found ${positions.join(', ')}`,
+          `${file}: the BreadcrumbList must be numbered 1 to ${String(items.length)}, found ${positions.join(', ') || 'none'}`,
         ]),
     ...ends(file, 'start', home, fieldOf(items[0], 'item')),
     ...ends(file, 'end', url, fieldOf(items.at(-1), 'item')),
@@ -166,7 +166,7 @@ const headOf = (file: string, html: string): Head | undefined => {
     description: content('meta[name="description"]') ?? '',
     canonical: root.querySelector('link[rel="canonical"]')?.getAttribute('href'),
     alternates: root
-      .querySelectorAll('link[rel="alternate"][hreflang]')
+      .querySelectorAll('link[rel="alternate"]')
       .map(
         (link) => [link.getAttribute('hreflang') ?? '', link.getAttribute('href') ?? ''] as const,
       ),
