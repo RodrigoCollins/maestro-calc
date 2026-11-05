@@ -84,6 +84,10 @@ export const ROUTES = {
     en: '/guides/how-to-calculate-cubic-yards',
     es: '/es/guias/como-calcular-yardas-cubicas',
   },
+  'guide-concrete-bag-coverage': {
+    en: '/guides/how-much-does-a-bag-of-concrete-cover',
+    es: '/es/guias/cuanto-cubre-una-bolsa-de-concreto',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },

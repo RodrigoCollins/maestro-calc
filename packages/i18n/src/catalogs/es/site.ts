@@ -222,6 +222,9 @@ export const esSite = {
   'page.guide-cubic-yards.title': 'Cómo calcular yardas cúbicas | Maestro Calc',
   'page.guide-cubic-yards.description':
     'Largo × ancho × profundidad en pies, entre 27: yardas cúbicas de concreto, grava, tierra para jardín y mulch, con pulgadas a pies, círculos y ejemplos.',
+  'page.guide-concrete-bag-coverage.title': '¿Cuánto cubre una bolsa de concreto? | Maestro Calc',
+  'page.guide-concrete-bag-coverage.description':
+    'Pies cuadrados por bolsa de mezcla para concreto de 40, 60 y 80 lb con 4 y 6 in de espesor, y las bolsas para una losa de 10x10 con el extra.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

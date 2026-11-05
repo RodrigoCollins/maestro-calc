@@ -34,7 +34,12 @@ describe('trade hubs (hubs › Hub pages)', () => {
   it('finds the hub of a page id, and nothing for any other id', () => {
     expect(hubOf('hub-concrete')).toEqual({
       calculators: ['concrete'],
-      guides: ['guide-concrete-bags-or-truck', 'guide-concrete-quote', 'guide-fence-post-concrete'],
+      guides: [
+        'guide-concrete-bags-or-truck',
+        'guide-concrete-quote',
+        'guide-fence-post-concrete',
+        'guide-concrete-bag-coverage',
+      ],
     });
     // spec: hubs › [HB4] the paint hub lists its calculator and its guide
     expect(hubOf('hub-paint')).toEqual({ calculators: ['paint'], guides: ['guide-paint-quote'] });
