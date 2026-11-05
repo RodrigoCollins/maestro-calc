@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="how-to-use">How to use the square footage calculator</h2>
 
-The calculator turns the length and the width of a floor, a wall or any other rectangle into its area. The result updates as you type, so there is nothing to submit.
+To calculate square footage, multiply the length by the width. The calculator does it for a room, a floor, a wall or any other rectangle, in square feet, square yards and square meters. The result updates as you type, so there is nothing to submit.
 
 1. Measure the length and the width of the surface with a tape.
 2. Enter the two measurements. Type them the way you read a tape: 12 ft, 12 ft 6 in or 12 ft 6 1/2 in. A plain number is read in feet. You can also write the unit yourself, for example 150 in or 4 yd.

@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pies y pulgadas</h2>
 
-La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, o multiplica o divide una medida por un número entero. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, o multiplica o divide una medida por un número entero. Para pasar un decimal a pies y pulgadas, escríbelo y multiplícalo por 1: 11.65 ft son 11 ft 7 13/16 in. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Escribe la primera medida como la lees en la cinta: 12 ft 6 in, 12' 6", 6 1/2 in o 75.5 in. Un número solo se lee en pies.
 2. Elige la operación: Sumar, Restar, Multiplicar o Dividir.

@@ -20,7 +20,7 @@ workedExample:
 
 <h2 id="how-to-use">How to use the roof pitch calculator</h2>
 
-The calculator turns a rise and a run into the pitch of a roof, its angle and the length of a rafter, and it checks the pitch against the minimum slope the International Residential Code sets for the covering you plan to use. The result updates as you type, so there is nothing to submit.
+The calculator turns a rise and a run, such as 6 in 12, into the pitch of a roof, its angle in degrees and the length of a rafter, and it checks the pitch against the minimum slope the International Residential Code sets for the covering you plan to use. The result updates as you type, so there is nothing to submit.
 
 1. Measure the rise and the run. The usual way is to hold a level against the roof, mark 12 inches along it and measure straight down to the roof: that is the rise over a 12 inch run. You can also use any rise and run you know, such as the height of the ridge over half the width of the building. A plain number is read in inches.
 2. Type the rafter run: the horizontal distance the rafter covers, usually half the span of the building. A plain number is read in feet.

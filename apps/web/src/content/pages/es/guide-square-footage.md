@@ -7,7 +7,7 @@ ownerReview: approved
 
 # Cómo calcular pies cuadrados
 
-Los pies cuadrados miden el área de una superficie plana: cuántos cuadrados de 1 ft por 1 ft entran en ella. Los pisos, las baldosas, el pasto en rollo y el rendimiento de la pintura se venden o se indican por pie cuadrado, así que suele ser el primer número de una obra.
+Los pies cuadrados miden el área de una superficie plana: cuántos cuadrados de 1 ft por 1 ft entran en ella. Los pisos, las baldosas, el pasto en rollo y el rendimiento de la pintura se venden o se indican por pie cuadrado, así que suele ser el primer número de una obra. Para calcular los pies cuadrados de un cuarto o de una pared, mide el largo y el ancho en pies y multiplícalos.
 
 ## Un rectángulo: largo por ancho
 

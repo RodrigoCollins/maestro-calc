@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pies cuadrados</h2>
 
-La calculadora convierte el largo y el ancho de un piso, una pared o cualquier otro rectángulo en su área. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+Para calcular pies cuadrados, multiplica el largo por el ancho. La calculadora lo hace por ti para un cuarto, un piso, una pared o cualquier otro rectángulo, en pies cuadrados, yardas cuadradas y metros cuadrados. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Mide el largo y el ancho de la superficie con una cinta métrica.
 2. Ingresa las dos medidas como las lees en la cinta: 12 ft, 12 ft 6 in o 12 ft 6 1/2 in. Un número solo se lee en pies. También puedes escribir tú mismo la unidad, por ejemplo 150 in o 4 yd.

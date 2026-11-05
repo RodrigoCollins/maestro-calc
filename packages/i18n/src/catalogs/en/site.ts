@@ -183,7 +183,7 @@ export const enSite = {
     'What each mark on a tape measure means, down to 1/16 inch, and how to add, subtract and divide feet, inches and fractions without mistakes.',
   'page.guide-square-footage.title': 'How to Calculate Square Footage | Maestro Calc',
   'page.guide-square-footage.description':
-    'How to find the square footage of a room or an L-shaped area, convert square feet to square yards and square meters, and back.',
+    'How to calculate square feet: multiply the length by the width. Find the square footage of a room, a wall or an L-shaped area, and convert to yards and meters.',
   'page.guide-drywall-estimate.title': 'How to Estimate and Quote a Drywall Job | Maestro Calc',
   'page.guide-drywall-estimate.description':
     'Measure a room, count sheets, compound and tape, pick the level of finish and put together a drywall quote your client can read.',
@@ -469,9 +469,9 @@ export const enSite = {
   'page.concrete.title': 'Concrete Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.concrete.description':
     'Estimate the cubic yards and bags of concrete for a slab, footing, column or steps. Free, instant, in feet, inches or meters.',
-  'page.rectangle-area.title': 'Square Footage Calculator: Area of a Room | Maestro Calc',
+  'page.rectangle-area.title': 'Square Footage Calculator for a Room or Wall | Maestro Calc',
   'page.rectangle-area.description':
-    'Find the square footage of a room, floor or slab from its length and width, with square yards and meters. Free, instant, in feet, inches or meters.',
+    'Calculate square footage: multiply the length by the width. Find the square feet of a room, floor or wall, with square yards and meters. Free and instant.',
   'page.gravel.title': 'Gravel Calculator: Tons and Cubic Yards | Maestro Calc',
   'page.gravel.description':
     'Find how many tons of gravel to order for a driveway, path or base, compacted or loose, with the cubic yards and the cost. Free and instant.',
@@ -672,9 +672,9 @@ export const enSite = {
   'page.drywall.title': 'Drywall Calculator: Sheets, Mud and Tape | Maestro Calc',
   'page.drywall.description':
     'Find how many drywall sheets a room needs, walls and ceiling, less doors and windows, with the joint compound, the tape and the cost. Free and instant.',
-  'page.roof-pitch.title': 'Roof Pitch Calculator: Angle and Rafter | Maestro Calc',
+  'page.roof-pitch.title': 'Roof Pitch Calculator: Pitch in Degrees | Maestro Calc',
   'page.roof-pitch.description':
-    'Find the pitch of a roof in 12, its angle and the rafter length, and check it against the IRC minimum slope for shingles, tile, metal or slate. Free.',
+    'Enter a rise and a run, such as 6 in 12, to get the roof angle in degrees and the rafter length, and check the IRC minimum slope for shingles or metal. Free.',
   'page.roofing.title': 'Roofing Calculator: Squares and Bundles | Maestro Calc',
   'page.roofing.description':
     'Find the area of a roof in squares from its footprint and pitch, and the shingle bundles and underlayment rolls to buy, with the IRC rules. Free.',
