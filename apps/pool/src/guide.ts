@@ -1,5 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, SALT } from './doses.ts';
+import { CHLORINE, HEATER, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -24,6 +24,8 @@ interface StepGuide {
   description: string;
   h1: string;
   lead: string;
+  /** The closing line of the page; the default asks to read each product label. */
+  note?: string;
   sources: Record<string, GuideSource>;
   steps: readonly GuideStep[];
 }
@@ -193,8 +195,105 @@ export const CLOSING_GUIDE = {
   steps: CLOSING_STEPS,
 } as const satisfies StepGuide;
 
+const PUMP_RUN_SOURCES = {
+  icc: {
+    name: 'ICC CodeNotes: 2021 ISPSC circulation and velocity (ANSI/APSP/ICC-15)',
+    url: 'https://www.iccsafe.org/wp-content/uploads/24-23329_CodeNotes_2021_ISPSC_Velocity_FINAL_MIDRES.pdf',
+  },
+  hayward: {
+    name: 'Hayward VS Omni pump owner’s manual, 092708 Rev B: Energy Efficiency Overview',
+    url: 'https://hayward.com/media/akeneo_connector/asset_files/0/9/092708_RevB_9fbf.pdf',
+  },
+  doe: {
+    name: 'U.S. Department of Energy, Energy Saver: Choosing, Installing, and Operating an Efficient Swimming Pool Pump',
+    url: 'https://web.archive.org/web/20260519025951/https://www.energy.gov/energysaver/choosing-installing-and-operating-efficient-swimming-pool-pump',
+  },
+  energyStar: {
+    name: 'ENERGY STAR (U.S. EPA): Pool Pumps',
+    url: 'https://www.energystar.gov/products/pool_pumps',
+  },
+  haywardClosing: {
+    name: 'Hayward: Closing Your Pool',
+    url: 'https://www.hayward.com/maintenance/closing-your-pool',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** From the gallons to the hours: the flow the standard sizes, one turnover a day, then trimmed. */
+const PUMP_RUN_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Know your gallons',
+    text: 'The run time is the time the pump takes to move all the water through the filter, so it starts from how much water the pool holds. Work it out once from the length, the width and the depth at each end.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'Find the flow the standard sizes',
+    text: 'ANSI/APSP/ICC-15, which the 2021 ISPSC references, sizes the filtration of a home pool at the 6-hour turnover or 36 gpm, whichever is greater: gallons ÷ 360 minutes. That is 55.6 gpm for 20,000 gallons, and 36.0 gpm for 10,000, where the floor applies. The pipes are sized for that flow too, under 8 ft per second in the return and 6 in the suction.',
+    link: { href: PUMP.path, label: 'Work out the pump flow' },
+    sources: ['icc'],
+  },
+  {
+    title: 'Turn the water over once a day',
+    text: 'Hayward’s variable-speed pump manual recommends filtering all the water in the pool at least once every 24 hours, and checking your local rules for the minimum. A pump that moves the 6-hour flow does that in 6 hours.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Work out your own hours',
+    text: 'At the flow your pump moves, one turnover takes gallons ÷ gallons a minute: at 40 gpm, 20,000 gallons take 20,000 ÷ 40 = 500 minutes, 8 h 20 min. A slower speed needs a longer run, as the manual says. You will often hear 8 hours a day: that is an informal trade figure, not a rule of the standard or of these sources. Turning 20,000 gallons over in 8 hours takes 41.7 gpm.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Start at 6 hours, then adjust',
+    text: 'The U.S. Department of Energy says pool pumps often run much longer than necessary. Its advice: cut filtration to 6 hours a day, and if the water does not look clean, add time in half-hour steps until it does. In the Florida study it cites, most owners who pumped less than 3 hours a day were still happy with the water, and saved 60% of their pumping bill on average.',
+    sources: ['doe'],
+  },
+  {
+    title: 'Split the hours with a timer',
+    text: 'If debris is a problem, set a timer to run the pump for several short periods a day: one long run leaves the rest of the day for the pool to collect debris. Running the filter 6 hours a day instead of 24 cuts its energy use by 75%.',
+    sources: ['doe', 'energyStar'],
+  },
+  {
+    title: 'Run a variable-speed pump slower, for longer',
+    text: 'Halving the speed of a pump lets it use just one-eighth as much energy, so a variable-speed pump saves by running slowly for more hours. Slower water also lets the filter catch smaller particles.',
+    sources: ['energyStar', 'hayward'],
+  },
+  {
+    title: 'Speed up for the heater',
+    text: 'Heaters, skimmers and chlorinators each need a minimum flow, given in their own manuals. Run the pump faster for the shorter times a heater or a water feature needs, and at the slow daily speed check that water still flows over the skimmer.',
+    link: { href: HEATER.path, label: 'Work out the heater size' },
+    sources: ['hayward'],
+  },
+  {
+    title: 'In a mild winter, halve it',
+    text: 'Where the water does not freeze and the pool stays open, Hayward’s closing guide cuts the filter run time in half.',
+    sources: ['haywardClosing'],
+  },
+];
+
+/**
+ * How long to run a pool pump. The flow is the residential standard's, the daily turnover is
+ * Hayward's manual, the hours to start from and the timer are DOE's, the speed and energy figures
+ * ENERGY STAR's; each flow is the pump calculator's own. No figure here that a source does not give,
+ * and the trade's 8 hours is named as the informal figure it is.
+ */
+export const PUMP_RUN_GUIDE = {
+  path: '/how-long-to-run-pool-pump',
+  kicker: 'Guide · pump',
+  card: {
+    title: 'How long to run your pump',
+    summary: 'The hours a day from your gallons and your pump flow, then trimmed.',
+  },
+  title: 'How Long to Run a Pool Pump: Hours a Day | Pool Figures',
+  description:
+    'How many hours a day to run your pool pump: one turnover of all the water, the flow the standard sizes, DOE’s 6 hours to start from, and variable speed.',
+  h1: 'How long to run your pool pump',
+  lead: 'Long enough to move all the water through the filter once a day. Work out the hours from your gallons and the flow of your pump, start at 6, and trim or add half an hour at a time.',
+  note: 'Follow the manual of your pump and of each piece of equipment where it differs from this guide, and any local rule for the turnover.',
+  sources: PUMP_RUN_SOURCES,
+  steps: PUMP_RUN_STEPS,
+} as const satisfies StepGuide;
+
 /** Every guide, in the order the home and the footer list them. */
 export const GUIDES: readonly {
   readonly path: string;
   readonly card: { readonly title: string; readonly summary: string };
-}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART];
+}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART, PUMP_RUN_GUIDE];

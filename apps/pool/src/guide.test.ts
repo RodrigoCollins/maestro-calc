@@ -1,9 +1,10 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE } from './doses.ts';
-import { CLOSING_GUIDE, GUIDES, OPENING_GUIDE, type GuideSource } from './guide.ts';
+import { CHLORINE, FILL_TIME, HEATER, PUMP } from './doses.ts';
+import { CLOSING_GUIDE, GUIDES, OPENING_GUIDE, PUMP_RUN_GUIDE, type GuideSource } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -15,12 +16,14 @@ const layout = readFileSync(
 );
 const footer = /<footer[\s\S]*<\/footer>/.exec(layout)?.[0] ?? '';
 
-const textOf = (guide: typeof OPENING_GUIDE | typeof CLOSING_GUIDE): string =>
-  guide.steps.map(({ text }) => text).join(' ');
+const textOf = (
+  guide: typeof OPENING_GUIDE | typeof CLOSING_GUIDE | typeof PUMP_RUN_GUIDE,
+): string => guide.steps.map(({ text }) => text).join(' ');
 
 describe.each([
   ['spring opening', OPENING_GUIDE],
   ['winter closing', CLOSING_GUIDE],
+  ['pump run time', PUMP_RUN_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -80,12 +83,54 @@ describe('the guide figures', () => {
   });
 });
 
+describe('the pump run time guide', () => {
+  const text = textOf(PUMP_RUN_GUIDE);
+
+  // the figures come from the sources as published; a changed one must be checked against them again
+  it('gives the standard, the manual, DOE and ENERGY STAR figures exactly as they publish them', () => {
+    expect(text).toContain('6-hour turnover or 36 gpm, whichever is greater');
+    expect(text).toContain('8 ft per second in the return and 6 in the suction');
+    expect(text).toContain('at least once every 24 hours');
+    expect(text).toContain('6 hours a day');
+    expect(text).toContain('half-hour');
+    expect(text).toContain('less than 3 hours a day');
+    expect(text).toContain('60%');
+    expect(text).toContain('one-eighth');
+    expect(text).toContain('75%');
+    expect(text).toContain('in half');
+  });
+
+  it('calls 8 hours what it is: an informal trade figure, in no source it cites', () => {
+    expect(text).toContain('informal trade figure');
+  });
+
+  // a figure a calculator works out is the calculator's own, to the digit
+  it('works out the flows as the pump size calculator does', () => {
+    expect(text).toContain(`${figure(PUMP.path, { gallons: '20000' }, 'flow')} gpm`);
+    expect(text).toContain(`${figure(PUMP.path, { gallons: '20000' }, 'eightHour')} gpm`);
+    expect(text).toContain(`${figure(PUMP.path, { gallons: '10000' }, 'flow')} gpm`);
+  });
+
+  it('works out one turnover at a slower flow as gallons ÷ gallons a minute', () => {
+    expect(figure(FILL_TIME.path, { gallons: '20000', flow: '40' }, 'time')).toBe('8 h 20 min');
+    expect(text).toContain('20,000 ÷ 40 = 500 minutes, 8 h 20 min');
+  });
+
+  it('links the volume, the pump size and the heater calculators', () => {
+    const links = PUMP_RUN_GUIDE.steps.flatMap(({ link }) =>
+      link === undefined ? [] : [link.href],
+    );
+    expect(links).toEqual([VOLUME_TEXTS.path, PUMP.path, HEATER.path]);
+  });
+});
+
 describe('the guides', () => {
   it('lists every guide once, each with a short card', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
       OPENING_GUIDE.path,
       CLOSING_GUIDE.path,
       CHEMISTRY_CHART.path,
+      PUMP_RUN_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);
