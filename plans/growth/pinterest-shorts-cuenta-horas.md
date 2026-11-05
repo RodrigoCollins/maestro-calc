@@ -2,7 +2,10 @@
 
 Para la sesión que publica en redes. Escrito el 3 de noviembre de 2026 desde el repo (paso 5 de
 `plans/growth/PLAN.md`). Mismo formato que el brief de Maestro Calc: qué es, reglas, links, piezas
-con números verificados, calendario y cómo medir.
+con números verificados, calendario y cómo medir. Ampliado el 5 de noviembre de 2026 con lo publicado
+desde entonces (calculadoras de horas extra, horas, minutos a decimales, vacaciones pagadas,
+diferencial de turno y propinas por hora; siete guías; páginas de cifras comunes): pines ch-p21 a
+ch-p43 y Shorts ch-v11 a ch-v18, cada cifra copiada del texto de la página en vivo.
 
 ## Qué es y para quién
 
@@ -38,6 +41,8 @@ español y en inglés, sin registro, y el recibo de la semana se manda por Whats
   del tiempo y medio que exige la ley federal (FLSA), por las horas sobre 40 en la semana.
 - Dar asesoría legal sobre reclamos de salario. Se puede decir "revisa tu cheque" y nada más.
 - Usar "usted" o voseo.
+- Hablar de impuestos en las piezas de propinas por hora y crédito por propinas (ch-p27 a ch-p31,
+  ch-v13, ch-v14): son las reglas federales del salario mínimo, nada sobre propinas sin impuestos.
 
 ### Datos de impuestos que no se cambian
 
@@ -57,16 +62,30 @@ noviembre de 2026) y de `packages/pay-core/src/deductions`:
 
 ## Links
 
-| Página                                      | Español                                                               | English                                                    |
-| ------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Inicio                                      | https://cuentahoras.com/es                                            | https://cuentahoras.com/                                   |
-| Horas trabajadas y horas extra              | https://cuentahoras.com/es/calculadora-de-horas-trabajadas            | https://cuentahoras.com/time-card-calculator               |
-| Por hora a sueldo anual                     | https://cuentahoras.com/es/de-pago-por-hora-a-sueldo-anual            | https://cuentahoras.com/hourly-to-salary-calculator        |
-| Sueldo anual a por hora                     | https://cuentahoras.com/es/de-sueldo-anual-a-pago-por-hora            | https://cuentahoras.com/salary-to-hourly-calculator        |
-| Horas extra sin impuestos                   | https://cuentahoras.com/es/calculadora-horas-extra-sin-impuestos      | https://cuentahoras.com/no-tax-on-overtime-calculator      |
-| Propinas sin impuestos                      | https://cuentahoras.com/es/calculadora-propinas-sin-impuestos         | https://cuentahoras.com/no-tax-on-tips-calculator          |
-| Guía: deducir propinas y horas extra (2026) | https://cuentahoras.com/es/guias/propinas-y-horas-extra-sin-impuestos | https://cuentahoras.com/guides/no-tax-on-tips-and-overtime |
-| Metodología                                 | https://cuentahoras.com/es/metodologia                                | https://cuentahoras.com/methodology                        |
+| Página                                      | Español                                                                             | English                                                              |
+| ------------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Inicio                                      | https://cuentahoras.com/es                                                          | https://cuentahoras.com/                                             |
+| Horas trabajadas y horas extra              | https://cuentahoras.com/es/calculadora-de-horas-trabajadas                          | https://cuentahoras.com/time-card-calculator                         |
+| Por hora a sueldo anual                     | https://cuentahoras.com/es/de-pago-por-hora-a-sueldo-anual                          | https://cuentahoras.com/hourly-to-salary-calculator                  |
+| Sueldo anual a por hora                     | https://cuentahoras.com/es/de-sueldo-anual-a-pago-por-hora                          | https://cuentahoras.com/salary-to-hourly-calculator                  |
+| Horas extra sin impuestos                   | https://cuentahoras.com/es/calculadora-horas-extra-sin-impuestos                    | https://cuentahoras.com/no-tax-on-overtime-calculator                |
+| Propinas sin impuestos                      | https://cuentahoras.com/es/calculadora-propinas-sin-impuestos                       | https://cuentahoras.com/no-tax-on-tips-calculator                    |
+| Guía: deducir propinas y horas extra (2026) | https://cuentahoras.com/es/guias/propinas-y-horas-extra-sin-impuestos               | https://cuentahoras.com/guides/no-tax-on-tips-and-overtime           |
+| Metodología                                 | https://cuentahoras.com/es/metodologia                                              | https://cuentahoras.com/methodology                                  |
+| Horas extra (federal y California, por día) | https://cuentahoras.com/es/calculadora-de-horas-extra                               | https://cuentahoras.com/overtime-calculator                          |
+| Horas entre dos horas                       | https://cuentahoras.com/es/calculadora-de-horas                                     | https://cuentahoras.com/hours-calculator                             |
+| Minutos a horas decimales                   | https://cuentahoras.com/es/minutos-a-horas-decimales                                | https://cuentahoras.com/minutes-to-decimal-hours                     |
+| Vacaciones pagadas (PTO)                    | https://cuentahoras.com/es/calculadora-de-vacaciones-pagadas                        | https://cuentahoras.com/pto-accrual-calculator                       |
+| Diferencial de turno                        | https://cuentahoras.com/es/calculadora-de-diferencial-de-turno                      | https://cuentahoras.com/shift-differential-calculator                |
+| Propinas por hora                           | https://cuentahoras.com/es/calculadora-de-propinas-por-hora                         | https://cuentahoras.com/tipped-wage-calculator                       |
+| Guía: cómo calcular las horas extra         | https://cuentahoras.com/es/guias/como-calcular-horas-extra                          | https://cuentahoras.com/guides/how-to-calculate-overtime             |
+| Guía: horas extra en California             | https://cuentahoras.com/es/guias/horas-extra-en-california                          | https://cuentahoras.com/guides/california-overtime                   |
+| Guía: cómo leer tu talón de pago            | https://cuentahoras.com/es/guias/como-leer-tu-talon-de-pago                         | https://cuentahoras.com/guides/how-to-read-a-pay-stub                |
+| Guía: si no te pagan las horas extra        | https://cuentahoras.com/es/guias/si-no-te-pagan-las-horas-extra                     | https://cuentahoras.com/guides/unpaid-overtime-and-wages             |
+| Guía: vacaciones pagadas                    | https://cuentahoras.com/es/guias/vacaciones-pagadas                                 | https://cuentahoras.com/guides/paid-time-off-pto                     |
+| Guía: diferencial nocturno y horas extra    | https://cuentahoras.com/es/guias/diferencial-nocturno-y-horas-extra                 | https://cuentahoras.com/guides/night-shift-differential-and-overtime |
+| Guía: salario mínimo con propinas           | https://cuentahoras.com/es/guias/salario-minimo-con-propinas-y-credito-por-propinas | https://cuentahoras.com/guides/tipped-minimum-wage-and-tip-credit    |
+| Cifras comunes (cada pieza nombra la suya)  | https://cuentahoras.com/es/pago/…                                                   | https://cuentahoras.com/pay/…                                        |
 
 Para mostrar un cálculo exacto: carga los valores en la calculadora; la dirección de la página se
 actualiza con ellos ("El link lleva tus horas y tu tarifa; no se guarda nada en un servidor"), así
@@ -113,6 +132,39 @@ id.
 | ch-p18 | EN     | Earn over $150,000? The deduction shrinks      | $12,500 tips, single, MAGI $165,500 → $100 less per full $1,000 over $150,000 → **$11,000**                              | /no-tax-on-tips-calculator                     |
 | ch-p19 | ES     | ¿Quién califica? 4 puntos                      | Propina voluntaria, ocupación de la lista del IRS, SSN válido para trabajar, conjunta si estás casado                    | /es/guias/propinas-y-horas-extra-sin-impuestos |
 | ch-p20 | EN     | Daily overtime in California does not count    | Only the FLSA half, for hours over 40 in the workweek, goes on Schedule 1-A                                              | /guides/no-tax-on-tips-and-overtime            |
+
+### Pines nuevos: ch-p21 a ch-p43
+
+Mismo formato y la misma pausa de arriba. Cada cifra está copiada del texto de la página en vivo
+(5 de noviembre de 2026); el idioma dice en qué idioma va el pin, y las dos columnas de link son la
+misma página en español y en inglés (las dos responden 200). Ninguna es de impuestos salvo ch-p40,
+que lleva el aviso "guía, no asesoría fiscal".
+
+| Id     | Idioma | Título del pin                                   | Cifra en pantalla (entradas → resultado)                                                                                                                                                     | Link ES                                                      | Link EN                                            |
+| ------ | ------ | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------- |
+| ch-p21 | ES     | ¿Cuánto PTO ganas en cada cheque?                | 10 días libres de 8 h, 40 h a la semana → **3.08 h** de PTO cada dos semanas; 80 h al año; 1 hora libre por cada 26 horas de trabajo                                                         | /es/calculadora-de-vacaciones-pagadas                        | /pto-accrual-calculator                            |
+| ch-p22 | EN     | 15 PTO days: what each paycheck adds             | 15 days off of 8 h, 40-hour week → 120 PTO hours a year, **4.62 hours** every two weeks, 1 hour off for every 17.33 hours worked                                                             | /es/guias/vacaciones-pagadas                                 | /guides/paid-time-off-pto                          |
+| ch-p23 | ES     | En California las vacaciones ganadas son salario | Ejemplo del Comisionado Laboral: 15 días (120 h), renuncia el día 219 → 60% = 72 h × $13.00 = **$936.00** en el último cheque. Guía, no asesoría legal                                       | /es/guias/vacaciones-pagadas                                 | /guides/paid-time-off-pto                          |
+| ch-p24 | ES     | Turno de noche: 10% más                          | $20/h + 10% → **$22** la hora en el turno; 24 h a $20 + 16 h a $22 = $480 + $352 = $832.00 por 40 h, bruto                                                                                   | /es/calculadora-de-diferencial-de-turno                      | /shift-differential-calculator                     |
+| ch-p25 | EN     | Your night differential counts in overtime       | 24 h at $20 + 24 h at $22 = $1,008; regular rate $1,008 / 48 = $21.00; 8 hours over 40 add $84 → **$1,092**                                                                                  | /es/guias/diferencial-nocturno-y-horas-extra                 | /guides/night-shift-differential-and-overtime      |
+| ch-p26 | ES     | Si dejan afuera el diferencial, te pagan menos   | Misma semana de 48 h: con la base de $20.00 las 8 h después de 40 suman $80.00, **$4.00 menos** de lo que exige la ley                                                                       | /es/guias/diferencial-nocturno-y-horas-extra                 | /guides/night-shift-differential-and-overtime      |
+| ch-p27 | ES     | $2.13 la hora más propinas: ¿cuánto ganas?       | $2.13/h, $250 de propinas, 40 h → **$8.38** la hora; semana $335.20; crédito por propinas $204.80; tu empleador completa $0.00                                                               | /es/calculadora-de-propinas-por-hora                         | /tipped-wage-calculator                            |
+| ch-p28 | ES     | $200 de propinas en 40 horas: te deben $4.80     | $85.20 de salario en efectivo + $200 de propinas no llegan a $290 (40 × $7.25) → tu empleador te debe **$4.80**                                                                              | /es/pago/2-13-la-hora-mas-200-de-propinas-en-40-horas        | /pay/2-13-an-hour-plus-200-in-tips-for-40-hours    |
+| ch-p29 | EN     | $500 in tips over 40 hours, per hour             | $12.50 an hour in tips + $85.20 cash wages → week $585.20, **$14.63 an hour** before taxes                                                                                                   | /es/pago/500-de-propinas-en-40-horas-cuanto-es-por-hora      | /pay/500-in-tips-over-40-hours-is-how-much-an-hour |
+| ch-p30 | ES     | Horas extra con propinas: sobre $7.25, no $2.13  | 50 h a $2.13 → prima de **$36.25** por las 10 h después de 40; con $400 de propinas, $542.75, o $10.86 la hora                                                                               | /es/pago/horas-extra-con-propinas-50-horas-a-2-13-la-hora    | /pay/tipped-overtime-for-50-hours-at-2-13-an-hour  |
+| ch-p31 | EN     | The tip credit: at most $5.12 an hour            | $7.25 − $2.13 = **$5.12**, never more than the tips you got, checked each workweek; your employer must tell you first (DOL Fact Sheet #15)                                                   | /es/guias/salario-minimo-con-propinas-y-credito-por-propinas | /guides/tipped-minimum-wage-and-tip-credit         |
+| ch-p32 | ES     | ¿Cuántas horas son de 9 am a 5 pm?               | **8 horas** (8.00); con 30 min de descanso sin pago, 7.50 h; cinco turnos, 37.5 h a la semana                                                                                                | /es/pago/cuantas-horas-son-de-9-am-a-5-pm                    | /pay/how-many-hours-is-9am-to-5pm                  |
+| ch-p33 | EN     | How many hours is 7 pm to 7 am?                  | **12 hours**, across midnight; with a 30-minute unpaid break, 11.50 h; five shifts, 57.5 hours a week                                                                                        | /es/pago/cuantas-horas-son-de-7-pm-a-7-am                    | /pay/how-many-hours-is-7pm-to-7am                  |
+| ch-p34 | ES     | De 9:00 am a 5:30 pm, ¿cuántas horas?            | 9:00 am a 5:30 pm, 30 min de descanso sin pago → **8 h 0 min**, 8.00 horas decimales                                                                                                         | /es/calculadora-de-horas                                     | /hours-calculator                                  |
+| ch-p35 | ES     | 15 minutos son 0.25 horas                        | Minutos ÷ 60: 15 min = **0.25**; 8 h 15 min en la tarjeta = 8.25 h                                                                                                                           | /es/pago/cuanto-son-15-minutos-en-horas-decimales            | /pay/what-is-15-minutes-in-decimal-hours           |
+| ch-p36 | EN     | 8 hours 20 minutes is not 8.20                   | 8 h 20 min → **8.33** decimal hours; 7.75 hours → 7 h 45 min                                                                                                                                 | /es/minutos-a-horas-decimales                                | /minutes-to-decimal-hours                          |
+| ch-p37 | ES     | Tiempo doble de $22 la hora                      | **$44** la hora; en California un día de 14 h paga 2 h dobles, $88; esa semana con cuatro días de 8 h, $1,100 bruto                                                                          | /es/pago/tiempo-doble-de-22-la-hora                          | /pay/double-time-for-22-an-hour                    |
+| ch-p38 | EN     | Time and a half for $20 an hour                  | **$30** an hour; 10 overtime hours past 40 pay $300; the 50-hour week, $1,100 before taxes                                                                                                   | /es/pago/tiempo-y-medio-de-20-la-hora                        | /pay/time-and-a-half-for-20-an-hour                |
+| ch-p39 | ES     | $20 la hora, ¿cuánto es al año?                  | 40 h por semana, 52 semanas → **$41,600** al año; $800.00 por semana, bruto                                                                                                                  | /es/pago/20-la-hora-cuanto-es-al-ano                         | /pay/20-an-hour-is-how-much-a-year                 |
+| ch-p40 | ES     | Tu talón de pago, línea por línea                | Ejemplo: bruto $1,193.50 − salud $40.00 − 401(k) $59.68 − Seguro Social $71.52 − Medicare $16.73 = **$1,005.57** antes de la retención del impuesto sobre la renta. Guía, no asesoría fiscal | /es/guias/como-leer-tu-talon-de-pago                         | /guides/how-to-read-a-pay-stub                     |
+| ch-p41 | ES     | California: 10 horas al día, 5 días              | $22/h, regla de California → 40 normales + 10 extra = **$1,210.00** bruto (carta de la DLSE)                                                                                                 | /es/guias/horas-extra-en-california                          | /guides/california-overtime                        |
+| ch-p42 | ES     | Las horas extra no se promedian                  | 30 h una semana y 50 la siguiente → las **10 h** sobre 40 de la segunda son extra, aunque el promedio sea 40                                                                                 | /es/guias/como-calcular-horas-extra                          | /guides/how-to-calculate-overtime                  |
+| ch-p43 | ES     | ¿Tu cheque llegó corto? Revísalo                 | Anota cada día tu entrada, tu salida y tus descansos; guarda tus talones y compáralos con la tarjeta de horas                                                                                | /es/guias/si-no-te-pagan-las-horas-extra                     | /guides/unpaid-overtime-and-wages                  |
 
 ## 10 guiones de Shorts
 
@@ -204,17 +256,94 @@ español neutro, 30 a 45 segundos, la cifra grande al final. Link en la descripc
 - Cierre: "Pon esos montos en la calculadora y mira cuánto te ahorras." Aviso: "Guía, no asesoría
   fiscal."
 
+### Shorts nuevos: ch-v11 a ch-v18
+
+Mismo formato. Cada guion lleva el link en español y, para la versión en inglés, el de la misma
+página en inglés.
+
+**ch-v11: "Tu PTO en cada cheque"** → `/es/calculadora-de-vacaciones-pagadas` · EN
+`/pto-accrual-calculator`
+
+- Gancho: "Te dan 10 días de vacaciones pagadas. ¿Cuántas horas ganas en cada cheque?"
+- 10 días libres de 8 horas, 40 horas a la semana.
+- Pantalla: 80 horas de PTO al año; 1.54 cada semana; 6.67 al mes.
+- "1 hora libre por cada 26 horas de trabajo."
+- Cifra: **3.08 horas cada dos semanas**. "La política de tu empleador decide la tasa y el tope."
+
+**ch-v12: "El diferencial de noche entra en tus horas extra"** →
+`/es/guias/diferencial-nocturno-y-horas-extra` · EN `/guides/night-shift-differential-and-overtime`
+
+- Gancho: "Trabajas de noche con un 10% más. ¿Sobre qué tarifa te pagan las horas extra?"
+- $20 la hora; el turno paga $22. 24 horas a $20 y 24 a $22: $1,008 por 48 horas.
+- Tarifa regular: $1,008 / 48 = $21.00. Las 8 horas después de 40 suman $84.
+- Si dejaran afuera el diferencial sumarían $80.00: $4.00 menos de lo que exige la ley.
+- Cifra: **$1,092 la semana**, bruto.
+
+**ch-v13: "$2.13 la hora más propinas"** → `/es/calculadora-de-propinas-por-hora` · EN
+`/tipped-wage-calculator`
+
+- Gancho: "Te pagan $2.13 la hora. ¿Y si las propinas no alcanzan?"
+- 40 horas a $2.13: $85.20 de salario en efectivo.
+- Con $250 de propinas: $335.20, $8.38 la hora; tu empleador no debe nada más.
+- Con $150: $235.20 no llega a $290; el empleador completa $54.80.
+- Cifra: **$7.25 la hora**, el mínimo federal. "Muchos estados pagan más: revisa el tuyo."
+
+**ch-v14: "Horas extra con propinas"** → `/es/guias/salario-minimo-con-propinas-y-credito-por-propinas`
+· EN `/guides/tipped-minimum-wage-and-tip-credit`
+
+- Gancho: "Si ganas propinas, tu hora extra no se calcula sobre $2.13."
+- 44 horas a $2.13: $93.72. Propinas: $300.
+- Cada hora después de 40 suma la mitad de $7.25: 4 horas, $14.50.
+- Sobre $2.13 serían solo $4.26: $10.24 menos de lo que exige la ley.
+- Cifra: **$408.22 la semana**, o $9.28 la hora.
+
+**ch-v15: "El turno que cruza la medianoche"** → `/es/calculadora-de-horas` · EN `/hours-calculator`
+
+- Gancho: "Entras a las 10 de la noche y sales a las 6:15. ¿Cuántas horas son?"
+- Escribe la entrada, 10:00 pm, y la salida, 6:15 am.
+- La calculadora cuenta hasta el día siguiente.
+- Pantalla: 8 horas y 15 minutos.
+- Cifra: **8.25 horas** decimales.
+
+**ch-v16: "8 horas y 20 minutos no son 8.20"** → `/es/minutos-a-horas-decimales` · EN
+`/minutes-to-decimal-hours`
+
+- Gancho: "Tu talón dice 8.33 horas. ¿Te robaron minutos?"
+- Las horas decimales son los minutos divididos por 60.
+- 15 minutos son 0.25; 45 minutos, 0.75.
+- Al revés: 7.75 horas son 7 horas y 45 minutos.
+- Cifra: **8 h 20 min = 8.33 horas**.
+
+**ch-v17: "California: 10 horas al día"** → `/es/guias/horas-extra-en-california` · EN
+`/guides/california-overtime`
+
+- Gancho: "Cinco días de 10 horas son 50 horas. En California, ¿cuántas son extra?"
+- $22 la hora: $33 a tiempo y medio.
+- Cada día, las horas después de 8 son extra: 2 por día, 10 en la semana.
+- Esas horas no se vuelven a contar para las 40 (carta de la DLSE).
+- Cifra: **$1,210.00 bruto**: 40 normales + 10 extra.
+
+**ch-v18: "Lee tu talón de pago"** → `/es/guias/como-leer-tu-talon-de-pago` · EN
+`/guides/how-to-read-a-pay-stub`
+
+- Gancho: "Ganaste $1,193.50. ¿Por qué te llegó menos?"
+- Prima de salud antes de impuestos: $40.00. 401(k) del 5%: $59.68.
+- Seguro Social 6.2%: $71.52. Medicare 1.45%: $16.73.
+- Las retenciones del impuesto sobre la renta dependen de tu W-4 y tu estado: quedan fuera.
+- Cifra: **$1,005.57** antes de esa retención. Aviso: "Ejemplo inventado; guía, no asesoría fiscal."
+
 ## Calendario
 
 Programado, nunca en ráfagas. La temporada que manda es la de impuestos: los W-2 llegan a fines de
 enero y la declaración del año fiscal 2026 se presenta de enero a abril de 2027
 (`plans/pago-del-trabajador/PLAN.md`, §8: "Pico de contenido: diciembre y enero").
 
-| Semana                    | Pines                                            | Shorts                                             |
-| ------------------------- | ------------------------------------------------ | -------------------------------------------------- |
-| 10 nov a 14 dic 2026      | ch-p01 a ch-p08, dos por semana (horas y sueldo) | ch-v01 a ch-v05, uno por semana desde el 17 nov    |
-| 15 dic 2026 a 31 ene 2027 | ch-p09 a ch-p20, dos por semana (impuestos)      | ch-v06 a ch-v09, uno por semana; ch-v10 el 26 ene  |
-| feb a abr 2027            | repinear los 3 pines de impuestos con más clics  | volver a subir ch-v08 y ch-v09 a mediados de marzo |
+| Semana                    | Pines                                                                     | Shorts                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| 10 nov a 14 dic 2026      | ch-p01 a ch-p08, dos por semana (horas y sueldo)                          | ch-v01 a ch-v05, uno por semana desde el 17 nov                                                    |
+| 15 dic 2026 a 31 ene 2027 | ch-p09 a ch-p20, dos por semana (impuestos)                               | ch-v06 a ch-v09, uno por semana; ch-v10 el 26 ene                                                  |
+| feb a abr 2027            | repinear los 3 pines de impuestos con más clics                           | ch-v11 a ch-v18, uno por semana desde el 2 feb; volver a subir ch-v08 y ch-v09 a mediados de marzo |
+| may a sep 2027            | ch-p21 a ch-p43, dos por semana, solo si el dueño vuelve a usar Pinterest | —                                                                                                  |
 
 Después de abril, las piezas de horas y sueldo siguen todo el año; las de impuestos vuelven en
 diciembre de 2027 con las cifras del año fiscal 2027 (revisar topes y formularios antes).

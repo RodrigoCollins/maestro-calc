@@ -2,7 +2,10 @@
 
 For the session that publishes on social networks. Written 2026-11-03 from the repo (step 5 of
 `plans/growth/PLAN.md`), in the format of the Maestro Calc brief: what the site is, the rules, the
-links, pieces with verified figures, the calendar and how to measure.
+links, pieces with verified figures, the calendar and how to measure. Extended 2026-11-05 with what
+shipped since (the pH, calcium hardness, heater size, fill time, alkalinity and stabilizer
+calculators, six guides and the job pages): pins pf-p21 to pf-p39 and Shorts pf-v11 to pf-v18,
+each figure copied from the text of the live page.
 
 ## What it is and who it is for
 
@@ -28,11 +31,19 @@ reopens the same calculation.
 - Say "follow the label of your product" on every chlorine piece, and "the level your cell asks
   for" on every salt piece (3,200 ppm is Hayward AquaRite's optimum, not every cell's).
 - Disclose the AI voice where the platform asks.
+- Keep the label safety note the page states on every chemical piece (pf-p21 onward): on acid, "add
+  acid to water, never water to acid", at the deep end with the pump running, never mixed with
+  chlorine, and the label's most a day (32.0 fl oz per 20,000 gallons, so a bigger dose goes in over
+  more than one day, with a test before each part); on soda ash, at most 1 lb per 10,000 gallons at
+  a time, then 2 to 3 hours and a retest; on calcium chloride, the first part, 12 hours with the
+  pump, a test, then the rest; on shock, never mixed with anything, and swim only when free
+  chlorine is back down to the label's level (4 ppm cal-hypo, 3 ppm dichlor).
 
 **Don't**
 
-- Give shock levels, algaecide doses, pH or alkalinity doses, or any chemical advice the site does
-  not compute. The water targets the site cites are CDC's (free chlorine at least 1 ppm, at least
+- Give algaecide doses, or any chemical dose or advice the site does not compute. The pH,
+  alkalinity, stabilizer, calcium and shock doses in the pieces below are the calculators' and job
+  pages' own figures. The water targets the site cites are CDC's (free chlorine at least 1 ppm, at least
   2 ppm with cyanuric acid or a stabilized chlorine; pH 7.0 to 7.8) and Hayward's opening guide
   (1 to 3 ppm; pH 7.2 to 7.8).
 - Mention household bleach: it is out of the calculator on purpose (its percent is by weight and
@@ -43,15 +54,28 @@ reopens the same calculation.
 
 ## Links
 
-| Page                                                       | URL                                               |
-| ---------------------------------------------------------- | ------------------------------------------------- |
-| Home                                                       | https://poolfigures.com/                          |
-| Pool volume (rectangle, round, oval)                       | https://poolfigures.com/pool-volume-calculator    |
-| Pool salt                                                  | https://poolfigures.com/pool-salt-calculator      |
-| Chlorine (12.5% and 10% liquid, cal-hypo 65%, dichlor 56%) | https://poolfigures.com/pool-chlorine-calculator  |
-| Pump size                                                  | https://poolfigures.com/pool-pump-size-calculator |
-| Guide: opening your pool this spring                       | https://poolfigures.com/opening-your-pool         |
-| Methodology                                                | https://poolfigures.com/methodology               |
+| Page                                                       | URL                                                                         |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Home                                                       | https://poolfigures.com/                                                    |
+| Pool volume (rectangle, round, oval)                       | https://poolfigures.com/pool-volume-calculator                              |
+| Pool salt                                                  | https://poolfigures.com/pool-salt-calculator                                |
+| Chlorine (12.5% and 10% liquid, cal-hypo 65%, dichlor 56%) | https://poolfigures.com/pool-chlorine-calculator                            |
+| Pump size                                                  | https://poolfigures.com/pool-pump-size-calculator                           |
+| Guide: opening your pool this spring                       | https://poolfigures.com/opening-your-pool                                   |
+| Methodology                                                | https://poolfigures.com/methodology                                         |
+| pH (muriatic acid to lower, soda ash to raise)             | https://poolfigures.com/pool-ph-calculator                                  |
+| Alkalinity (baking soda)                                   | https://poolfigures.com/pool-alkalinity-calculator                          |
+| Stabilizer (cyanuric acid)                                 | https://poolfigures.com/pool-stabilizer-calculator                          |
+| Calcium hardness (calcium chloride)                        | https://poolfigures.com/pool-calcium-hardness-calculator                    |
+| Heater size                                                | https://poolfigures.com/pool-heater-size-calculator                         |
+| Fill time                                                  | https://poolfigures.com/pool-fill-time-calculator                           |
+| Guide: water chemistry chart                               | https://poolfigures.com/pool-water-chemistry-chart                          |
+| Guide: closing your pool                                   | https://poolfigures.com/closing-your-pool                                   |
+| Guide: how long to run your pump                           | https://poolfigures.com/how-long-to-run-pool-pump                           |
+| Guide: salt water vs chlorine                              | https://poolfigures.com/salt-water-pool-vs-chlorine-pool                    |
+| Guide: how to shock a pool                                 | https://poolfigures.com/how-to-shock-a-pool                                 |
+| Guide: how to lower pH                                     | https://poolfigures.com/how-to-lower-ph-in-a-pool                           |
+| Job pages (each piece names its own)                       | https://poolfigures.com/how-much-shock-for-a-20000-gallon-pool and the like |
 
 ## 20 pins
 
@@ -80,6 +104,34 @@ small under it. `utm_campaign` = the id.
 | pf-p18 | Opening your pool: the order               | Cover → equipment → water level → pump and leaks → test → salt → shock and chlorine → vacuum next day                              | /opening-your-pool         |
 | pf-p19 | Opening day water targets                  | CDC: free chlorine **at least 1 ppm** (2 ppm with cyanuric acid), pH 7.0 to 7.8                                                    | /opening-your-pool         |
 | pf-p20 | One 24 ft round pool, every number         | 13,536 gal → salt 0 → 3,200 ppm: 361.2 lb (10 bags) · chlorine 1 → 3 ppm, 12.5%: 27.7 fl oz · pump 37.6 gpm                        | /pool-volume-calculator    |
+
+### New pins: pf-p21 to pf-p39
+
+Same format. Each figure is copied from the text of the live page (2026-11-05), and every link
+answered 200. The safety note in the figure column is part of the pin: keep it in small type under
+the inputs.
+
+| Id     | Pin title                                 | Figure on screen (inputs → result)                                                                                                                                                                        | Link                                               |
+| ------ | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| pf-p21 | How much muriatic acid to lower pH?       | 20,000 gal, acid demand test 2 drops → **36.6 fl oz** of 31.45% muriatic acid; the label adds at most 32.0 fl oz a day, so over 2 days, testing before each part. Add acid to water, never water to acid  | /pool-ph-calculator                                |
+| pf-p22 | Muriatic acid for a 20,000 gallon pool    | 1 drop 18.3 fl oz · 2 drops **36.6 fl oz** · 3 drops 55.0 fl oz; at most 32.0 fl oz a day, so 2 days for 2 or 3 drops. Deep end, pump running, never mixed with chlorine                                  | /how-much-muriatic-acid-for-a-20000-gallon-pool    |
+| pf-p23 | Raise pH with soda ash                    | 20,000 gal, base demand test 2 drops → **20.5 oz** of soda ash; the label adds at most 32.0 oz at a time there, so it goes in at once; let it circulate 2 to 3 hours, then retest                         | /how-to-lower-ph-in-a-pool                         |
+| pf-p24 | Lower pool pH in this order               | Test pH → alkalinity to 80 to 120 ppm first → acid demand test → acid at the deep end, pump running → retest before adding more. Add acid to water, never water to acid                                   | /how-to-lower-ph-in-a-pool                         |
+| pf-p25 | How much baking soda to raise alkalinity? | 20,000 gal, 70 → 100 ppm → **8.4 lb** of baking soda (134.5 oz); 1.4 lb per 10 ppm per 10,000 gal                                                                                                         | /pool-alkalinity-calculator                        |
+| pf-p26 | Baking soda for a 20,000 gallon pool      | From 90 ppm to 100: **2.8 lb** · from 80: 5.6 lb · from 70: 8.4 lb (pure sodium bicarbonate)                                                                                                              | /how-much-baking-soda-for-a-20000-gallon-pool      |
+| pf-p27 | Stabilizer for a freshly filled pool      | 20,000 gal, CYA 0 → 30 ppm → **5.0 lb** of cyanuric acid (80.1 oz), for a 100% product; dichlor and trichlor add CYA too                                                                                  | /how-much-stabilizer-for-a-20000-gallon-pool       |
+| pf-p28 | Calcium chloride: add it in two parts     | 20,000 gal, 150 → 250 ppm → **25.0 lb** of flake; add 6.0 lb first, run the pump 12 hours, test, then the rest. Dissolve it first, pour at the deep end                                                   | /how-much-calcium-chloride-for-a-20000-gallon-pool |
+| pf-p29 | A small calcium top-up                    | 20,000 gal, 180 → 200 ppm → **5.0 lb** of calcium chloride (80.0 oz); "add this first, then wait 12 hours" shows the same 5.0 lb. Dissolve it first, pump running                                         | /pool-calcium-hardness-calculator                  |
+| pf-p30 | What size pool heater?                    | 20,000 gal, warm 10 °F in 24 hours → **69,500 BTU/h** (1,668,000 BTU), before any heat lost: a real heater is sized larger                                                                                | /pool-heater-size-calculator                       |
+| pf-p31 | Heater size for a 20,000 gallon pool      | In 24 hours: 10 °F **69,500 BTU/h** · 15 °F 104,250 · 20 °F 139,000                                                                                                                                       | /what-size-pool-heater-for-a-20000-gallon-pool     |
+| pf-p32 | How long to fill a 20,000 gallon pool?    | At 10 gallons a minute → **33 h 20 min** (2,000 min); 5 gpm 66 h 40 min; 20 gpm 16 h 40 min. Time a 5-gallon bucket: gpm = 300 ÷ seconds                                                                  | /how-long-to-fill-a-20000-gallon-pool              |
+| pf-p33 | Pool water chemistry chart                | Home pool: free chlorine 1.0 to 3.0 ppm · pH 7.2 to 7.8 · alkalinity 80 to 120 · CYA 30 to 50 outdoors · calcium 200 to 400 · salt 2,700 to 3,400, 3,200 best                                             | /pool-water-chemistry-chart                        |
+| pf-p34 | How much shock for a 20,000 gallon pool?  | 65% cal-hypo, 0 → 10 ppm → **41.1 oz** (2.57 lb); 0 → 5 ppm 20.5 oz; dichlor 56%, 0 → 8.7 ppm 41.5 oz. Never mix it with anything; swim once free chlorine is back to 4 ppm (cal-hypo) or 3 ppm (dichlor) | /how-much-shock-for-a-20000-gallon-pool            |
+| pf-p35 | How much shock for a 10,000 gallon pool?  | 65% cal-hypo, 0 → 10 ppm → **20.5 oz** (1.28 lb); 0 → 5 ppm 10.3 oz: the label's 10 to 20 oz. Swim once free chlorine is back to the label's level                                                        | /how-much-shock-for-a-10000-gallon-pool            |
+| pf-p36 | How to shock a pool                       | Balance pH to 7.2 to 7.6 → test free chlorine → dose to the label's level → add in the evening, pump running → never pre-mix → swim when chlorine is back down                                            | /how-to-shock-a-pool                               |
+| pf-p37 | How long to run your pool pump            | 20,000 gal at 40 gpm → **8 h 20 min** for one turnover; DOE: start at 6 hours, add half an hour at a time                                                                                                 | /how-long-to-run-pool-pump                         |
+| pf-p38 | Closing your pool, in order               | pH 7.2 to 7.8 → shock, filter 24 to 48 h → brush and vacuum → water below the skimmer → drain the equipment → power off. Mild winter: half the filter time                                                | /closing-your-pool                                 |
+| pf-p39 | Salt pool vs chlorine pool                | Same water targets; 20,000 gal from 0 to 3,200 ppm → **533.8 lb** of salt, or 41.0 fl oz of 12.5% liquid for 1 → 3 ppm. The level your cell asks for                                                      | /salt-water-pool-vs-chlorine-pool                  |
 
 ## 10 Shorts scripts
 
@@ -166,6 +218,76 @@ big figure last. Link in the description, with UTM.
 - Chlorine 1 → 3 ppm with 12.5% liquid: 27.7 fl oz.
 - Figure: pump **37.6 gpm**.
 
+### New Shorts: pf-v11 to pf-v18
+
+Same system. Every chemical script says its label safety note out loud and keeps it on screen.
+
+**pf-v11: "How much acid to lower pH?"** → `/pool-ph-calculator`
+
+- Hook: "Your pH is high. How much muriatic acid do you pour?"
+- Run the acid demand test of your kit: 2 drops. Type 20,000 gallons and 2 drops.
+- On screen: 36.6 fl oz of 31.45% muriatic acid.
+- The label adds at most 32.0 fl oz a day, so it goes in over 2 days, with a test before each part.
+- "Add acid to water, never water to acid: slowly, at the deep end, pump running, gloves and eye
+  protection, never mixed with chlorine." Figure: **36.6 fl oz over 2 days**.
+
+**pf-v12: "Baking soda for alkalinity"** → `/pool-alkalinity-calculator`
+
+- Hook: "Alkalinity at 70. The chart wants 80 to 120. How much baking soda?"
+- 20,000 gallons, 70 ppm now, 100 target.
+- On screen: 1.4 lb per 10 ppm per 10,000 gallons.
+- "Pure sodium bicarbonate: check the label of an alkalinity increaser."
+- Figure: **8.4 lb**.
+
+**pf-v13: "How much shock?"** → `/how-much-shock-for-a-20000-gallon-pool`
+
+- Hook: "A 20,000 gallon pool. How much shock does the label's 10 ppm take?"
+- 65% cal-hypo, from 0 to 10 ppm: 41.1 oz, 2.57 lb.
+- To 5 ppm: 20.5 oz. Dichlor 56% to 8.7 ppm: 41.5 oz.
+- "Add it in the evening with the pump running, and never mix it with anything."
+- Figure: **41.1 oz**. "Swim again only when free chlorine is back to 4 ppm (cal-hypo) or 3 ppm
+  (dichlor)."
+
+**pf-v14: "Calcium chloride in two parts"** → `/how-much-calcium-chloride-for-a-20000-gallon-pool`
+
+- Hook: "Calcium at 150. The chart wants 200 to 400. How much calcium chloride?"
+- 20,000 gallons, 150 → 250 ppm: 25.0 lb of flake.
+- Over 3 lb per 10,000 gallons, so the label splits it.
+- "Dissolve it first, about ½ lb to a gallon of water, pour it at the deep end, pump running."
+- Figure: **6.0 lb first**, 12 hours with the pump, test, then the rest.
+
+**pf-v15: "How long to fill a pool?"** → `/pool-fill-time-calculator`
+
+- Hook: "A 20,000 gallon pool and a garden hose. How long?"
+- Time a 5-gallon bucket: 30 seconds is 10 gallons a minute (300 ÷ 30).
+- On screen: 20,000 ÷ 10 = 2,000 minutes.
+- At 5 gallons a minute: 66 h 40 min.
+- Figure: **33 h 20 min**.
+
+**pf-v16: "What size heater?"** → `/pool-heater-size-calculator`
+
+- Hook: "Warm 20,000 gallons by 10 degrees in a day. How big a heater?"
+- One BTU warms 1 lb of water 1 °F; a gallon weighs about 8.34 lb.
+- On screen: 20,000 × 8.34 × 10 = 1,668,000 BTU, over 24 hours.
+- "That is with nothing lost: wind and cool nights take heat, so a real heater is sized larger."
+- Figure: **69,500 BTU an hour**.
+
+**pf-v17: "Close your pool in this order"** → `/closing-your-pool` (September to October)
+
+- Hook: "Where the water freezes, close the pool in this order."
+- pH to 7.2 to 7.8; shock, then the filter 24 to 48 hours.
+- Brush, skim, vacuum; drain to below the skimmer.
+- Empty the filter, the pump and the heater; blow out the lines; power off.
+- Figure: a mild winter keeps running at **half the filter time**.
+
+**pf-v18: "Stabilizer for a new fill"** → `/pool-stabilizer-calculator`
+
+- Hook: "Fresh water has no stabilizer. The sun burns your chlorine off."
+- 20,000 gallons, CYA 0 now, 30 target.
+- On screen: 13.35 oz per 10 ppm per 10,000 gallons, for a 100% product.
+- "It does not wear off: only draining lowers it. Dichlor and trichlor add it too."
+- Figure: **5.0 lb**.
+
 ## Calendar
 
 Scheduled, never in bursts. The rule of `plans/growth/PLAN.md` (lever 5): index now, push in
@@ -177,6 +299,15 @@ wait for March.
 | 10 Nov 2026 to 28 Feb 2027 | pf-p01, pf-p03, pf-p04, pf-p05, pf-p16: one every three weeks                                                             | none                                                                                   |
 | 1 Mar to 31 May 2027       | pf-p18, pf-p19, pf-p12, pf-p08, pf-p09, pf-p10, pf-p02, pf-p06, pf-p13, pf-p14, pf-p20, pf-p07: one a week, opening first | pf-v08 (1 Mar), then pf-v01, pf-v02, pf-v03, pf-v04, pf-v05, pf-v06: one every 10 days |
 | 1 Jun to 31 Aug 2027       | pf-p11, pf-p15, pf-p17, then repins of the five pins with most clicks: one a week                                         | pf-v07, pf-v09, pf-v10: one every two weeks from 1 Jun                                 |
+
+The new pieces join the same windows, after the ones above:
+
+| Window                     | Pins                                                                                   | Shorts                                        |
+| -------------------------- | -------------------------------------------------------------------------------------- | --------------------------------------------- |
+| 10 Nov 2026 to 28 Feb 2027 | pf-p33, pf-p37: one every three weeks, between the evergreen volume pins               | none                                          |
+| 1 Mar to 31 May 2027       | pf-p32, pf-p27, pf-p25, pf-p26, pf-p24, pf-p21, pf-p22, pf-p23, pf-p28, pf-p29, pf-p39 | pf-v15, pf-v18, pf-v12, pf-v11, in that order |
+| 1 Jun to 31 Aug 2027       | pf-p34, pf-p35, pf-p36, pf-p30, pf-p31                                                 | pf-v13, pf-v14, pf-v16                        |
+| 1 Sep to 31 Oct 2027       | pf-p38 (1 Sep), repinned 1 Oct                                                         | pf-v17 (1 Sep)                                |
 
 Before each window, check Search Console queries for the site and move the matching pieces up
 (lever 4 of `plans/growth/PLAN.md`).
