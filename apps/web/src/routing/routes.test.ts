@@ -263,6 +263,38 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/landscaping/bags-of-mulch-per-yard',
       es: '/es/jardineria/bolsas-de-mulch-por-yarda',
     });
+    expect(ROUTES['gravel-driveway-10x20']).toEqual({
+      en: '/landscaping/gravel-for-10x20-driveway',
+      es: '/es/jardineria/grava-para-entrada-de-10x20',
+    });
+    expect(ROUTES['gravel-driveway-12x50']).toEqual({
+      en: '/landscaping/gravel-for-12x50-driveway',
+      es: '/es/jardineria/grava-para-entrada-de-12x50',
+    });
+    expect(ROUTES['paint-room-10x10']).toEqual({
+      en: '/painting/paint-for-10x10-room',
+      es: '/es/pintura/pintura-para-cuarto-de-10x10',
+    });
+    expect(ROUTES['paint-room-10x12']).toEqual({
+      en: '/painting/paint-for-10x12-room',
+      es: '/es/pintura/pintura-para-cuarto-de-10x12',
+    });
+    expect(ROUTES['paint-room-12x12']).toEqual({
+      en: '/painting/paint-for-12x12-room',
+      es: '/es/pintura/pintura-para-cuarto-de-12x12',
+    });
+    expect(ROUTES['drywall-room-10x10']).toEqual({
+      en: '/drywall/drywall-for-10x10-room',
+      es: '/es/drywall/drywall-para-cuarto-de-10x10',
+    });
+    expect(ROUTES['drywall-room-10x12']).toEqual({
+      en: '/drywall/drywall-for-10x12-room',
+      es: '/es/drywall/drywall-para-cuarto-de-10x12',
+    });
+    expect(ROUTES['drywall-room-12x12']).toEqual({
+      en: '/drywall/drywall-for-12x12-room',
+      es: '/es/drywall/drywall-para-cuarto-de-12x12',
+    });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });

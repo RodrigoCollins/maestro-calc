@@ -203,6 +203,38 @@ export const ROUTES = {
     en: '/landscaping/bags-of-mulch-per-yard',
     es: '/es/jardineria/bolsas-de-mulch-por-yarda',
   },
+  'gravel-driveway-10x20': {
+    en: '/landscaping/gravel-for-10x20-driveway',
+    es: '/es/jardineria/grava-para-entrada-de-10x20',
+  },
+  'gravel-driveway-12x50': {
+    en: '/landscaping/gravel-for-12x50-driveway',
+    es: '/es/jardineria/grava-para-entrada-de-12x50',
+  },
+  'paint-room-10x10': {
+    en: '/painting/paint-for-10x10-room',
+    es: '/es/pintura/pintura-para-cuarto-de-10x10',
+  },
+  'paint-room-10x12': {
+    en: '/painting/paint-for-10x12-room',
+    es: '/es/pintura/pintura-para-cuarto-de-10x12',
+  },
+  'paint-room-12x12': {
+    en: '/painting/paint-for-12x12-room',
+    es: '/es/pintura/pintura-para-cuarto-de-12x12',
+  },
+  'drywall-room-10x10': {
+    en: '/drywall/drywall-for-10x10-room',
+    es: '/es/drywall/drywall-para-cuarto-de-10x10',
+  },
+  'drywall-room-10x12': {
+    en: '/drywall/drywall-for-10x12-room',
+    es: '/es/drywall/drywall-para-cuarto-de-10x12',
+  },
+  'drywall-room-12x12': {
+    en: '/drywall/drywall-for-12x12-room',
+    es: '/es/drywall/drywall-para-cuarto-de-12x12',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

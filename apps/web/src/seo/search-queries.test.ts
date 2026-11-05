@@ -86,6 +86,60 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     }
   });
 
+  // target queries of the job pages batch 3 (growth plan › lever 1): "how much gravel for a 10x20
+  // driveway", "how much paint for a 12x12 room", "how many sheets of drywall for a 12x12 room"
+  it('states the tons of gravel of each driveway in its title, heading and description', () => {
+    for (const id of jobsOf('gravel')) {
+      const size = id.replace('gravel-driveway-', '');
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { answer, facts } = jobView(id, locale);
+        expect(text(`page.${id}.title`), id).toContain(answer.split(' ')[0]);
+        expect(text(`page.${id}.description`), id).toContain(`${answer.split(' ')[0] ?? ''} `);
+        expect(text(`page.${id}.description`), id).toContain(`${facts[0]?.value ?? ''} `);
+      }
+      expect(siteText('en')(`page.${id}.title`)).toContain(`Gravel for a ${size} Driveway`);
+      expect(siteText('en')(`page.${id}.heading`)).toBe(`How much gravel for a ${size} driveway?`);
+      expect(siteText('es')(`page.${id}.title`)).toContain(`Grava para entrada de ${size}`);
+    }
+  });
+
+  it('states the gallons of paint of each room in its title, heading and description', () => {
+    for (const id of jobsOf('paint')) {
+      const size = id.replace('paint-room-', '');
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { answer, facts } = jobView(id, locale);
+        // the English title writes the unit in title case: `1.91 Gallons`
+        expect(text(`page.${id}.title`).toLowerCase(), id).toContain(answer.toLowerCase());
+        expect(text(`page.${id}.description`), id).toContain(answer);
+        expect(text(`page.${id}.description`), id).toContain(`${facts[0]?.value ?? ''} `);
+      }
+      expect(siteText('en')(`page.${id}.title`)).toContain(`Paint for a ${size} Room`);
+      expect(siteText('en')(`page.${id}.heading`)).toBe(`How much paint for a ${size} room?`);
+      expect(siteText('es')(`page.${id}.title`)).toContain(`Pintura para un cuarto de ${size}`);
+    }
+  });
+
+  it('states the sheets of drywall of each room in its title, heading and description', () => {
+    for (const id of jobsOf('drywall')) {
+      const size = id.replace('drywall-room-', '');
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { answer, facts } = jobView(id, locale);
+        const sheets = answer.split(' ')[0] ?? '';
+        expect(text(`page.${id}.title`), id).toContain(` ${sheets} `);
+        expect(text(`page.${id}.description`), id).toContain(` ${sheets} `);
+        expect(text(`page.${id}.description`), id).toContain(` ${facts[0]?.value ?? ''} `);
+      }
+      expect(siteText('en')(`page.${id}.title`)).toContain(`Drywall for a ${size} Room`);
+      expect(siteText('en')(`page.${id}.heading`)).toBe(
+        `How many sheets of drywall for a ${size} room?`,
+      );
+      expect(siteText('es')(`page.${id}.title`)).toContain(`Drywall para cuarto de ${size}`);
+    }
+  });
+
   it('answers the bags of mulch in a cubic yard in the title and the description', () => {
     // queries: "how many bags of 1.5 cubic feet in a yard", "bag of mulch cubic feet"
     for (const locale of ['en', 'es'] as const) {

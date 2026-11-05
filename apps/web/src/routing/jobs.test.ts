@@ -3,6 +3,9 @@ import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
+import { drywall } from '../lib/drywall.ts';
+import { gravel } from '../lib/gravel.ts';
+import { paint } from '../lib/paint.ts';
 import { HUBS, hubOfCalculator } from './hubs.ts';
 import { isJobPage, JOB_IDS, JOBS, jobsOf } from './jobs.ts';
 import { ROUTES } from './routes.ts';
@@ -14,6 +17,9 @@ const ENGINES = {
   'roof-pitch': roofPitch,
   'rectangle-area': rectangleArea,
   mulch,
+  gravel,
+  paint,
+  drywall,
 } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
@@ -70,13 +76,23 @@ describe('job pages (growth plan › lever 1)', () => {
       'square-feet-20x20',
     ]);
     expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
+    expect(jobsOf('gravel')).toEqual(['gravel-driveway-10x20', 'gravel-driveway-12x50']);
+    expect(jobsOf('paint')).toEqual(['paint-room-10x10', 'paint-room-10x12', 'paint-room-12x12']);
+    expect(jobsOf('drywall')).toEqual([
+      'drywall-room-10x10',
+      'drywall-room-10x12',
+      'drywall-room-12x12',
+    ]);
     expect([
       ...jobsOf('concrete'),
       ...jobsOf('roof-pitch'),
       ...jobsOf('rectangle-area'),
       ...jobsOf('mulch'),
+      ...jobsOf('gravel'),
+      ...jobsOf('paint'),
+      ...jobsOf('drywall'),
     ]).toEqual(JOB_IDS);
-    expect(jobsOf('paint')).toEqual([]);
+    expect(jobsOf('roofing')).toEqual([]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
     expect(isJobPage('square-feet-12x14')).toBe(true);
@@ -134,6 +150,52 @@ describe('job pages (growth plan › lever 1)', () => {
       en: '/landscaping/bags-of-mulch-per-yard',
       es: '/es/jardineria/bolsas-de-mulch-por-yarda',
     });
+  });
+
+  // queries: "how much gravel for a 10x20 driveway", "how much paint for a 12x12 room", "how many
+  // sheets of drywall for a 12x12 room": the size in the id is the length by the width of every
+  // case, and the cases differ only in the depth (gravel) or the wall height (paint, drywall)
+  it.each([
+    ['gravel', 'gravel-driveway-', 'depth', ['4in', '6in', '8in']],
+    ['paint', 'paint-room-', 'height', ['8ft', '9ft', '10ft']],
+    ['drywall', 'drywall-room-', 'height', ['8ft', '9ft', '10ft']],
+  ] as const)(
+    'names each %s job after the length and the width of its cases',
+    (calculator, prefix, varying, values) => {
+      for (const id of jobsOf(calculator)) {
+        const size = id.replace(prefix, '');
+        const [length, width] = size.split('x');
+        for (const each of JOBS[id].cases) {
+          expect(each, id).toEqual({
+            length: `${length ?? ''}ft`,
+            width: `${width ?? ''}ft`,
+            [varying]: each[varying],
+          });
+        }
+        expect(
+          JOBS[id].cases.map((each) => each[varying]),
+          id,
+        ).toEqual(values);
+      }
+    },
+  );
+
+  it('routes the gravel, paint and drywall jobs by their size', () => {
+    for (const id of jobsOf('gravel')) {
+      const size = id.replace('gravel-driveway-', '');
+      expect(ROUTES[id].en, id).toBe(`/landscaping/gravel-for-${size}-driveway`);
+      expect(ROUTES[id].es, id).toBe(`/es/jardineria/grava-para-entrada-de-${size}`);
+    }
+    for (const id of jobsOf('paint')) {
+      const size = id.replace('paint-room-', '');
+      expect(ROUTES[id].en, id).toBe(`/painting/paint-for-${size}-room`);
+      expect(ROUTES[id].es, id).toBe(`/es/pintura/pintura-para-cuarto-de-${size}`);
+    }
+    for (const id of jobsOf('drywall')) {
+      const size = id.replace('drywall-room-', '');
+      expect(ROUTES[id].en, id).toBe(`/drywall/drywall-for-${size}-room`);
+      expect(ROUTES[id].es, id).toBe(`/es/drywall/drywall-para-cuarto-de-${size}`);
+    }
   });
 
   it('lists every job under a hub that holds its calculator', () => {

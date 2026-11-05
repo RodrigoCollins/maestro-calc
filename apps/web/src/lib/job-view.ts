@@ -5,11 +5,17 @@ import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
+import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
+import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
+import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
+import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
@@ -17,6 +23,9 @@ import { groupedInteger, outputText, volumeText } from '../calculator/present.ts
 import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
+import { drywall } from './drywall.ts';
+import { gravel } from './gravel.ts';
+import { paint } from './paint.ts';
 import { siteText } from './site-text.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
@@ -50,7 +59,7 @@ interface JobTable {
 
 export interface JobView extends JobTable {
   readonly heading: string;
-  /** The sentence that opens a square footage, slab-by-area or mulch job: `page.<id>.intro`. */
+  /** The sentence that opens a job with an intro (see `hasIntro`): `page.<id>.intro`. */
   readonly intro: string | undefined;
   /** What the figures assume, from the `site.job.note.<calculator>` key. */
   readonly note: string;
@@ -68,6 +77,9 @@ export const METHODOLOGY_ANCHOR = {
   'roof-pitch': { en: 'roof-pitch', es: 'pendiente-de-techo' },
   'rectangle-area': { en: 'square-footage', es: 'pies-cuadrados' },
   mulch: { en: 'mulch', es: 'mulch' },
+  gravel: { en: 'gravel', es: 'grava' },
+  paint: { en: 'paint', es: 'pintura' },
+  drywall: { en: 'drywall', es: 'drywall' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`: the sizes read the same in both languages. */
@@ -328,20 +340,212 @@ const mulchTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/** An output of an engine by its key: a key the engine does not declare is a programming error. */
+const outputOf = (
+  outputs: readonly OutputDescriptor[],
+  key: string,
+  name: string,
+): OutputDescriptor => {
+  const output = outputs.find((each) => each.key === key);
+  if (output === undefined) throw new Error(`the ${name} engine has no ${key} output`);
+  return output;
+};
+
+/** The sizes of a case, `12 ft × 12 ft × 8 ft`, in the order `keys` names them. */
+const sizesOf = (raw: JobCase, keys: readonly string[]): string =>
+  keys.map((key) => sizeText(raw[key] ?? '')).join(' × ');
+
+/* Gravel: the tons, the cubic yards to order and the metric tonnes of a driveway at each depth. */
+
+const gravelCatalogs = { en: createTranslator(enGravel), es: createTranslator(esGravel) };
+
+/** The figures of a gravel row, in the order of its columns: the tons first, as the page answers. */
+const GRAVEL = ['tons', 'orderYd3', 'tonnes'] as const;
+
+const GRAVEL_SIZES = ['length', 'width', 'depth'] as const;
+
+const gravelState = (raw: JobCase) => {
+  const result = gravel.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const gravelTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = gravelCatalogs[locale];
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = gravelState(raw);
+    const { outputs } = gravel.compute(state);
+    return {
+      label: sizesOf(raw, GRAVEL_SIZES),
+      href: `${pathOf('gravel', locale)}?${encode(gravel, state, { unitSystem: 'imperial' })}`,
+      cells: GRAVEL.map((key) => outputText(outputOf(gravel.outputs, key, 'gravel'), outputs[key])),
+    };
+  });
+  const [first] = rows;
+  const sizeLabel = GRAVEL_SIZES.map((key) => calc(`calc.gravel.inputs.${key}`)).join(' × ');
+  const [tons = '', ...others] = first.cells;
+  const [, ...otherKeys] = GRAVEL;
+  return {
+    lead: `${sizeLabel}: ${first.label}`,
+    answer: calc('calc.gravel.page.tons', { value: tons }),
+    facts: otherKeys.map((key, index) => ({
+      label: calc(`calc.gravel.outputs.${key}`),
+      value: others[index] ?? '',
+    })),
+    columns: [sizeLabel, ...GRAVEL.map((key) => calc(`calc.gravel.outputs.${key}`))],
+    rows,
+    calculatorName: calc('calc.gravel.title'),
+  };
+};
+
+/* Paint and drywall: a room by its length, its width and the height of its walls. */
+
+const ROOM_SIZES = ['length', 'width', 'height'] as const;
+
+/** The whole units of a shopping line of `materialId`: a line the engine omits is an error. */
+const shoppingQty = (
+  shopping: readonly { readonly materialId: string; readonly qty: bigint }[],
+  materialId: string,
+): string => {
+  const line = shopping.find((each) => each.materialId === materialId);
+  if (line === undefined) throw new Error(`the engine returned no ${materialId} line`);
+  return groupedInteger(line.qty);
+};
+
+const paintCatalogs = { en: createTranslator(enPaint), es: createTranslator(esPaint) };
+
+const paintState = (raw: JobCase) => {
+  const result = paint.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const paintTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = paintCatalogs[locale];
+  const gallons = outputOf(paint.outputs, 'gallons', 'paint');
+  const area = outputOf(paint.outputs, 'paintArea', 'paint');
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = paintState(raw);
+    const { outputs, shopping } = paint.compute(state);
+    return {
+      label: sizesOf(raw, ROOM_SIZES),
+      href: `${pathOf('paint', locale)}?${encode(paint, state, { unitSystem: 'imperial' })}`,
+      cells: [
+        outputText(gallons, outputs.gallons),
+        shoppingQty(shopping, 'paint'),
+        outputText(area, outputs.paintArea),
+      ],
+    };
+  });
+  const [first] = rows;
+  const sizeLabel = ROOM_SIZES.map((key) => calc(`calc.paint.inputs.${key}`)).join(' × ');
+  const [value = '', cans = '', painted = ''] = first.cells;
+  return {
+    lead: `${sizeLabel}: ${first.label}`,
+    answer: calc('calc.paint.page.gallons', { value }),
+    facts: [
+      { label: calc('calc.paint.page.shoppingLine'), value: cans },
+      { label: calc('calc.paint.outputs.paintArea'), value: painted },
+    ],
+    columns: [
+      sizeLabel,
+      calc('calc.paint.outputs.gallons'),
+      calc('calc.paint.page.shoppingLine'),
+      calc('calc.paint.outputs.paintArea'),
+    ],
+    rows,
+    calculatorName: calc('calc.paint.title'),
+  };
+};
+
+const drywallCatalogs = { en: createTranslator(enDrywall), es: createTranslator(esDrywall) };
+
+/** The panel sizes of the table, the calculator's default first. */
+const SHEETS = ['4x8', '4x12'] as const;
+
+const drywallState = (raw: JobCase) => {
+  const result = drywall.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const drywallTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = drywallCatalogs[locale];
+  const area = outputOf(drywall.outputs, 'areaFt2', 'drywall');
+  const sheetsOf = (raw: JobCase): string[] =>
+    SHEETS.map((sheet) =>
+      shoppingQty(drywall.compute(drywallState({ ...raw, sheet })).shopping, 'drywall'),
+    );
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = drywallState(raw);
+    return {
+      label: sizesOf(raw, ROOM_SIZES),
+      href: `${pathOf('drywall', locale)}?${encode(drywall, state, { unitSystem: 'imperial' })}`,
+      cells: [outputText(area, drywall.compute(state).outputs.areaFt2), ...sheetsOf(raw)],
+    };
+  });
+  const [first] = rows;
+  const [raw] = cases;
+  const { shopping } = drywall.compute(drywallState(raw));
+  const sizeLabel = ROOM_SIZES.map((key) => calc(`calc.drywall.inputs.${key}`)).join(' × ');
+  const sheetLabels = SHEETS.map((sheet) =>
+    calc('calc.drywall.page.shoppingSheets', { size: calc(`calc.drywall.options.sheet.${sheet}`) }),
+  );
+  const [covered = '', small = '', large = ''] = first.cells;
+  return {
+    lead: `${sizeLabel}: ${first.label}`,
+    // the site catalog holds no placeholder: the count, the words, then the size of the sheet
+    answer: `${small} ${siteText(locale)('site.job.sheetsOf')} ${calc('calc.drywall.options.sheet.4x8')}`,
+    facts: [
+      { label: sheetLabels[1] ?? '', value: large },
+      { label: calc('calc.drywall.outputs.areaFt2'), value: covered },
+      {
+        label: calc('calc.drywall.page.shoppingCompound'),
+        value: shoppingQty(shopping, 'joint-compound'),
+      },
+      { label: calc('calc.drywall.page.shoppingTape'), value: shoppingQty(shopping, 'joint-tape') },
+    ],
+    columns: [sizeLabel, calc('calc.drywall.outputs.areaFt2'), ...sheetLabels],
+    rows,
+    calculatorName: calc('calc.drywall.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
   'rectangle-area': areaTable,
   mulch: mulchTable,
+  gravel: gravelTable,
+  paint: paintTable,
+  drywall: drywallTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
-/** The jobs whose page opens with a sentence of its own: square footage, slab by area, mulch. */
-type IntroJobId = Extract<JobId, `square-feet-${string}` | `${string}-sq-ft` | `mulch-${string}`>;
+/**
+ * The jobs whose page opens with a sentence of its own: square footage, slab by area, mulch, and
+ * the gravel, paint and drywall jobs.
+ */
+type IntroJobId = Extract<
+  JobId,
+  | `square-feet-${string}`
+  | `${string}-sq-ft`
+  | `mulch-${string}`
+  | `gravel-${string}`
+  | `paint-${string}`
+  | `drywall-${string}`
+>;
+
+/** The calculators whose every job opens with its own sentence. */
+const INTRO_CALCULATORS: readonly JobCalculator[] = [
+  'rectangle-area',
+  'mulch',
+  'gravel',
+  'paint',
+  'drywall',
+];
 
 const hasIntro = (id: JobId): id is IntroJobId =>
-  JOBS[id].calculator === 'rectangle-area' ||
-  JOBS[id].calculator === 'mulch' ||
-  id.endsWith('-sq-ft');
+  INTRO_CALCULATORS.includes(JOBS[id].calculator) || id.endsWith('-sq-ft');
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
