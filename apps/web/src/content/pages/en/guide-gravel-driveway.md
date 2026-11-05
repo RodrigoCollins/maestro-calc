@@ -1,13 +1,13 @@
 ---
 id: guide-gravel-driveway
 locale: en
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # How much gravel for a driveway?
 
-A gravel driveway is a few layers of gravel, each spread and compacted, shaped so water runs off it. How much you order comes from the size of the driveway and the depth of each layer; how long it lasts comes mostly from the gravel on top and from keeping water off it.
+A gravel driveway 60 ft long and 10 ft wide takes about 14.23 tons of gravel for each compacted layer 4 in deep, with 5 percent extra. The driveway is a few such layers, each spread and compacted, shaped so water runs off it; how long it lasts comes mostly from the gravel on top and from keeping water off it.
 
 ## Plan the layers
 

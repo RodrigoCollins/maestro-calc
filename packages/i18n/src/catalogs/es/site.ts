@@ -64,6 +64,13 @@ export const esSite = {
   'site.pitchDegrees.pitch': 'Pendiente',
   'site.job.multiplier': 'Multiplicador del cabio (pies de cabio por pie de recorrido)',
   'site.job.methodology': 'Cómo calculamos las cifras',
+  'site.job.chart.table': 'Yardas cúbicas y bolsas por tamaño de losa',
+  'site.job.chart.sources': 'Fuentes y supuestos',
+  'site.job.chart.yields': 'Lo que rinde una bolsa',
+  'site.job.chart.source': 'Rendimiento de las bolsas',
+  'site.job.chart.retrieved': 'consultado el',
+  'site.job.chart.cite': 'Cita esta tabla',
+  'site.job.chart.citeLead': 'Para enlazar esta tabla o citar sus cifras, usa su dirección:',
   'site.job.more': 'Más trabajos',
   'site.hub.more': 'Más herramientas:',
   'site.guides.business': 'El negocio',
@@ -315,6 +322,14 @@ export const esSite = {
   'page.concrete-slab-1000-sq-ft.label': 'Losa de 1000 pies²',
   'page.concrete-slab-1000-sq-ft.intro':
     'Aquí la losa de 1000 pies cuadrados se calcula como 40 por 25 ft. Cualquier largo y ancho que multiplicados den 1000 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
+  'page.concrete-slab-chart.title': 'Tabla de losas de concreto: bolsas y yardas | Maestro Calc',
+  'page.concrete-slab-chart.description':
+    'Yardas cúbicas y bolsas de concreto de 40, 60 u 80 lb para losas comunes de 4x4 a 30x30 ft, de 4, 5 y 6 in de espesor, con 10% extra. Fuentes y cita.',
+  'page.concrete-slab-chart.heading':
+    'Tabla de losas de concreto: yardas cúbicas y bolsas por tamaño',
+  'page.concrete-slab-chart.label': 'Tabla de losas por tamaño',
+  'page.concrete-slab-chart.intro':
+    'Busca en la tabla el tamaño y el espesor de tu losa: cada fila da las yardas cúbicas de concreto que hay que pedir y las bolsas de 80, 60 o 40 lb que hay que comprar, calculadas por la calculadora de concreto con un 10% extra por desperdicio.',
   'page.concrete-pad-4x4.title': 'Bolsas de concreto para una base de 4x4 | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'Cuántas bolsas de concreto lleva una base de 4 x 4 ft (para un aire acondicionado o un generador) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',

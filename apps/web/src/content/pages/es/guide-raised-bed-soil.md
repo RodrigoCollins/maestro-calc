@@ -1,13 +1,13 @@
 ---
 id: guide-raised-bed-soil
 locale: es
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # ¿Cuánta tierra lleva una cama elevada?
 
-Una cama elevada es una caja de tierra, así que cuánto compras es el tamaño de la caja: su largo, su ancho y qué tan hondo la llenas. Con qué la llenas depende de lo que hay debajo de la cama y de lo que vas a cultivar.
+Una cama elevada de 8 ft por 4 ft, llena a 12 in de profundidad, lleva 32 pies cúbicos de tierra: 35.20 pies cúbicos, o 1.30 yardas cúbicas, con un 10 por ciento de extra para el asentamiento. Cuánto compras es el tamaño de la caja; con qué la llenas depende de lo que hay debajo de la cama y de lo que vas a cultivar.
 
 ## Decide qué tan honda llenarla
 

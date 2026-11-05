@@ -37,7 +37,7 @@ With the 10 percent extra the [concrete calculator](/concrete-calculator) adds b
 
 At 6 in thick, the same slab with the extra takes 55.00 cubic feet: 92 bags of 80 lb. The calculator rounds the bags up only once, at the end, so the count never comes up short.
 
-The page [How many bags of concrete for a 10x10 slab?](/concrete/10x10-slab) gives that slab at 4, 5 and 6 in thick, and [How many bags of concrete for a 4x4 pad?](/concrete/4x4-pad) works out a small square pad at 4, 5 and 6 in thick. For a round form, see [How many bags of concrete for a 8 in Sonotube?](/concrete/8-inch-sonotube).
+The page [How many bags of concrete for a 10x10 slab?](/concrete/10x10-slab) gives that slab at 4, 5 and 6 in thick, and [How many bags of concrete for a 4x4 pad?](/concrete/4x4-pad) works out a small square pad at 4, 5 and 6 in thick. For a round form, see [How many bags of concrete for a 8 in Sonotube?](/concrete/8-inch-sonotube). Every common slab from 4x4 to 30x30 ft, at 4, 5 and 6 in thick, is on one page: the [Concrete slab chart: cubic yards and bags by size](/concrete/slab-chart).
 
 ## Which bag size to buy
 

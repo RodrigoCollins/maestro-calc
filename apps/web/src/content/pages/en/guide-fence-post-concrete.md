@@ -1,13 +1,13 @@
 ---
 id: guide-fence-post-concrete
 locale: en
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # How much concrete for a fence post?
 
-A fence post sits in a round hole filled with concrete, so the concrete is the hole minus the post. Size the hole first: its width and its depth decide how many bags each post takes, and the number of posts decides how many bags the fence takes.
+A 3 in square post in a hole 9 in wide and 30 in deep takes about two 50 lb bags of fast-setting concrete mix, according to Quikrete's data sheet. The concrete is the hole minus the post, so size the hole first: its width and its depth decide how many bags each post takes, and the number of posts decides how many bags the fence takes.
 
 ## Size the hole
 

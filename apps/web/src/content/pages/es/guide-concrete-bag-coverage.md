@@ -37,7 +37,7 @@ Con el 10 por ciento de extra que la [calculadora de concreto](/es/calculadora-d
 
 Con 6 in de espesor, la misma losa con el extra lleva 55.00 pies cúbicos: 92 bolsas de 80 lb. La calculadora redondea las bolsas hacia arriba una sola vez, al final, así que la cuenta nunca se queda corta.
 
-La página [¿Cuántas bolsas de concreto para una losa de 10x10?](/es/concreto/losa-de-10x10) da esa losa con 4, 5 y 6 in de espesor, y [¿Cuántas bolsas de concreto para una base de 4x4?](/es/concreto/base-de-4x4) calcula una base cuadrada chica con 4, 5 y 6 in de espesor. Para una cimbra redonda, mira [¿Cuántas bolsas de concreto para un Sonotube de 8 in?](/es/concreto/sonotubo-de-8-pulgadas).
+La página [¿Cuántas bolsas de concreto para una losa de 10x10?](/es/concreto/losa-de-10x10) da esa losa con 4, 5 y 6 in de espesor, y [¿Cuántas bolsas de concreto para una base de 4x4?](/es/concreto/base-de-4x4) calcula una base cuadrada chica con 4, 5 y 6 in de espesor. Para una cimbra redonda, mira [¿Cuántas bolsas de concreto para un Sonotube de 8 in?](/es/concreto/sonotubo-de-8-pulgadas). Todas las losas comunes, de 4x4 a 30x30 ft y de 4, 5 y 6 in de espesor, están en una sola página: la [Tabla de losas de concreto: yardas cúbicas y bolsas por tamaño](/es/concreto/tabla-de-losas).
 
 ## Qué tamaño de bolsa comprar
 
