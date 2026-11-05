@@ -1,10 +1,16 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES, HOURS_EXAMPLES, OVERTIME_EXAMPLES, PTO_EXAMPLES } from './examples.ts';
+import {
+  EXAMPLES,
+  HOURS_EXAMPLES,
+  OVERTIME_EXAMPLES,
+  PTO_EXAMPLES,
+  SHIFT_EXAMPLES,
+} from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
-const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov']);
+const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov', 'www.ecfr.gov']);
 
 describe('methodology texts', () => {
   it('has the same sections in the same order in both languages', () => {
@@ -60,6 +66,22 @@ describe('methodology texts', () => {
         'www.dir.ca.gov',
       ]);
       expect(Object.keys(texts.ptoExamples)).toEqual(PTO_EXAMPLES.map(({ id }) => id));
+    }
+  });
+
+  it('explains the shift differential, citing the DOL and the two FLSA regulations', () => {
+    for (const texts of Object.values(METHODOLOGY_TEXTS)) {
+      const shift = texts.sections.find(({ id }) => id === 'shift-differential');
+      const paragraphs = shift?.paragraphs.join(' ') ?? '';
+      for (const figure of ['$1,008', '$21.00', '$1,092', '778.207', '778.115']) {
+        expect(paragraphs, figure).toContain(figure);
+      }
+      expect(shift?.sources.map(({ href }) => new URL(href).hostname)).toEqual([
+        'www.dol.gov',
+        'www.ecfr.gov',
+        'www.ecfr.gov',
+      ]);
+      expect(Object.keys(texts.shiftExamples)).toEqual(SHIFT_EXAMPLES.map(({ id }) => id));
     }
   });
 

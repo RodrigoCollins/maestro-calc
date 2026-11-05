@@ -12,7 +12,8 @@
     "./no-tax-on-tips": "./src/no-tax-on-tips/index.ts",
     "./hours": "./src/hours/index.ts",
     "./decimal-hours": "./src/decimal-hours/index.ts",
-    "./pto-accrual": "./src/pto-accrual/index.ts"
+    "./pto-accrual": "./src/pto-accrual/index.ts",
+    "./shift-differential": "./src/shift-differential/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

@@ -1,5 +1,11 @@
 import type { Lang } from '../time-card/receipt.ts';
-import type { Example, HoursExample, OvertimeExample, PtoExample } from './examples.ts';
+import type {
+  Example,
+  HoursExample,
+  OvertimeExample,
+  PtoExample,
+  ShiftExample,
+} from './examples.ts';
 
 export interface Source {
   readonly label: string;
@@ -46,6 +52,14 @@ export interface MethodologyTexts {
     readonly perHour: string;
   };
   readonly ptoExamples: Readonly<Record<PtoExample['id'], string>>;
+  readonly shiftExamplesHeading: string;
+  readonly shiftExamplesLead: string;
+  readonly shiftColumns: {
+    readonly shiftRate: string;
+    readonly regularRate: string;
+    readonly pay: string;
+  };
+  readonly shiftExamples: Readonly<Record<ShiftExample['id'], string>>;
   readonly sourcesLabel: string;
   readonly reviewed: string;
   readonly cta: { readonly label: string; readonly href: string };
@@ -86,6 +100,30 @@ const DLSE_VACATION: Source = {
 const DLSE_VACATION_ES: Source = {
   label: 'Comisionado Laboral de California (DLSE), preguntas sobre vacaciones (en inglés)',
   href: DLSE_VACATION.href,
+};
+const DOL_NIGHT: Source = {
+  label: 'U.S. Department of Labor, Night Work',
+  href: 'https://www.dol.gov/general/topic/workhours/nightwork',
+};
+const DOL_NIGHT_ES: Source = {
+  label: 'Departamento de Trabajo de EE. UU., Night Work (trabajo nocturno, en inglés)',
+  href: DOL_NIGHT.href,
+};
+const ECFR_207: Source = {
+  label: '29 CFR 778.207, other types of contract premium pay (shift differentials)',
+  href: 'https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-778/subpart-C/section-778.207',
+};
+const ECFR_207_ES: Source = {
+  label: '29 CFR 778.207, primas que se incluyen en la tarifa regular (en inglés)',
+  href: ECFR_207.href,
+};
+const ECFR_115: Source = {
+  label: '29 CFR 778.115, employees working at two or more rates',
+  href: 'https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-778/subpart-C/section-778.115',
+};
+const ECFR_115_ES: Source = {
+  label: '29 CFR 778.115, trabajo a dos o más tarifas (en inglés)',
+  href: ECFR_115.href,
 };
 const DLSE_LETTER: Source = {
   label: 'DLSE opinion letter 2000.01.19, no pyramiding of overtime hours',
@@ -164,6 +202,16 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'The Fair Labor Standards Act does not require paid vacation; it is a matter of agreement with the employer. In California, vacation is a form of wages earned as you work: a use-it-or-lose-it policy is illegal, a reasonable cap is allowed, and unused vacation is paid at the final rate when the job ends (Labor Code section 227.3).',
         ],
         sources: [DOL_VACATION, DLSE_VACATION],
+      },
+      {
+        id: 'shift-differential',
+        heading: 'Shift differential: nights in the regular rate',
+        paragraphs: [
+          'The shift differential calculator adds to the base rate a percent of it or a flat amount an hour. At $20 an hour, 10% makes $22 on the shift; 24 hours at $20 and 16 at $22 are $832 for 40 hours.',
+          'Over 40 hours in the week, the regular rate is the weighted average of the two rates: the pay before overtime divided by all the hours (29 CFR 778.115), and the differential is part of it (29 CFR 778.207(b)). 24 + 24 hours pay $480 + $528 = $1,008; $1,008 / 48 = $21.00 an hour, and each of the 8 hours over 40 adds half of it, $10.50: $84, for $1,092. Paying the overtime at 1.5 × $20 would come up short.',
+          'The FLSA does not require extra pay for night or weekend work; it is a matter of agreement with the employer. Pay is rounded to the cent and the calculator uses the federal 40-hour week.',
+        ],
+        sources: [DOL_NIGHT, ECFR_207, ECFR_115],
       },
       {
         id: 'pay',
@@ -249,8 +297,22 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'part-time': '10 days of 6 h, 30 h a week',
       'four-weeks': '20 days of 8 h, 40 h a week',
     },
+    shiftExamplesHeading: 'Shift differential examples',
+    shiftExamplesLead:
+      'Each example is run through the shift differential calculator at $20 an hour.',
+    shiftColumns: {
+      shiftRate: 'Shift rate',
+      regularRate: 'Regular rate',
+      pay: 'Pay of the week',
+    },
+    shiftExamples: {
+      'ten-percent': '10% more, 24 h base and 16 h on the shift',
+      'ten-percent-overtime': '10% more, 24 h base and 24 h on the shift',
+      'dollar-fifty': '$1.50 more an hour, 24 h base and 16 h on the shift',
+      'nights-overtime': '$2 more an hour, 45 h all on the shift',
+    },
     sourcesLabel: 'Sources',
-    reviewed: 'Reviewed November 4, 2026.',
+    reviewed: 'Reviewed November 5, 2026.',
     cta: { label: 'Open the time card', href: '/time-card-calculator' },
   },
   es: {
@@ -324,6 +386,16 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'La Ley de Normas Justas de Trabajo (FLSA) no exige vacaciones pagadas; es un acuerdo con el empleador. En California, las vacaciones son una forma de salario que se gana al trabajar: una política de "úsalas o piérdelas" es ilegal, un tope razonable está permitido, y las vacaciones no usadas se pagan a la última tarifa cuando termina el trabajo (Código Laboral, sección 227.3).',
         ],
         sources: [DOL_VACATION_ES, DLSE_VACATION_ES],
+      },
+      {
+        id: 'shift-differential',
+        heading: 'Diferencial de turno: la noche en la tarifa regular',
+        paragraphs: [
+          'La calculadora de diferencial de turno suma a la tarifa base un porcentaje de ella o un monto fijo por hora. A $20 la hora, un 10% da $22 en el turno; 24 horas a $20 y 16 a $22 son $832 por 40 horas.',
+          'Después de 40 horas en la semana, la tarifa regular es el promedio ponderado de las dos tarifas: el pago sin horas extra dividido por todas las horas (29 CFR 778.115), y el diferencial se incluye en ella (29 CFR 778.207(b)). 24 + 24 horas pagan $480 + $528 = $1,008; $1,008 / 48 = $21.00 la hora, y las 8 horas después de 40 suman cada una la mitad, $10.50: $84, para $1,092. Pagar las extra a 1.5 × $20 se quedaría corto.',
+          'La FLSA no exige pago extra por trabajar de noche ni en fin de semana; es un acuerdo con el empleador. El pago se redondea al centavo y la calculadora usa la semana federal de 40 horas.',
+        ],
+        sources: [DOL_NIGHT_ES, ECFR_207_ES, ECFR_115_ES],
       },
       {
         id: 'pay',
@@ -413,8 +485,22 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'part-time': '10 días de 6 h, 30 h a la semana',
       'four-weeks': '20 días de 8 h, 40 h a la semana',
     },
+    shiftExamplesHeading: 'Ejemplos de diferencial de turno',
+    shiftExamplesLead:
+      'Cada ejemplo pasa por la calculadora de diferencial de turno, a $20 la hora.',
+    shiftColumns: {
+      shiftRate: 'Tarifa del turno',
+      regularRate: 'Tarifa regular',
+      pay: 'Pago de la semana',
+    },
+    shiftExamples: {
+      'ten-percent': '10% más, 24 h base y 16 h en el turno',
+      'ten-percent-overtime': '10% más, 24 h base y 24 h en el turno',
+      'dollar-fifty': '$1.50 más por hora, 24 h base y 16 h en el turno',
+      'nights-overtime': '$2 más por hora, 45 h todas en el turno',
+    },
     sourcesLabel: 'Fuentes',
-    reviewed: 'Revisado el 4 de noviembre de 2026.',
+    reviewed: 'Revisado el 5 de noviembre de 2026.',
     cta: { label: 'Abrir la tarjeta de horas', href: '/es/calculadora-de-horas-trabajadas' },
   },
 };

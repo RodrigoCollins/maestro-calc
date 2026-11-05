@@ -3,8 +3,9 @@ import { decimalHours } from '@maestro-calc/pay-core/decimal-hours';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { overtime } from '@maestro-calc/pay-core/overtime';
 import { ptoAccrual } from '@maestro-calc/pay-core/pto-accrual';
+import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
-import { decimalHoursText, hoursText, rateText } from '../format.ts';
+import { decimalHoursText, hoursText, moneyText, rateText } from '../format.ts';
 import { outputOf } from '../time-card/receipt.ts';
 
 /** A worked example of the methodology page: raw time card fields over the default week. */
@@ -183,6 +184,47 @@ export const ptoFiguresOf = (example: PtoExample): PtoFigures => {
     annual: hoursText(hours('annualHours')),
     biweekly: decimalHoursText(hours('biweekly')),
     perHour: rateText(hours('perHourWorked')),
+  };
+};
+
+/** A worked example of the shift differential calculator: its raw fields over the defaults. */
+export interface ShiftExample {
+  readonly id: 'ten-percent' | 'ten-percent-overtime' | 'dollar-fifty' | 'nights-overtime';
+  readonly inputs: Readonly<Record<string, string>>;
+}
+
+export const SHIFT_EXAMPLES: readonly ShiftExample[] = [
+  { id: 'ten-percent', inputs: {} },
+  { id: 'ten-percent-overtime', inputs: { shiftHours: '24' } },
+  { id: 'dollar-fifty', inputs: { source: 'amount', amount: '1.50' } },
+  {
+    id: 'nights-overtime',
+    inputs: { source: 'amount', amount: '2', baseHours: '0', shiftHours: '45' },
+  },
+];
+
+/** The figures the page shows for a shift differential example, written as the calculator does. */
+export interface ShiftFigures {
+  readonly shiftRate: string;
+  readonly regularRate: string;
+  readonly pay: string;
+}
+
+/** The figures of a shift differential example; a failing example is a build error. */
+export const shiftFiguresOf = (example: ShiftExample): ShiftFigures => {
+  const ran = shiftDifferential.run(example.inputs);
+  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  const money = (key: string): string => {
+    const value = ran.value.outputs.find((output) => output.key === key)?.value;
+    if (typeof value !== 'object' || !('currency' in value)) {
+      throw new Error(`no money ${key} in ${example.id}`);
+    }
+    return moneyText(value);
+  };
+  return {
+    shiftRate: money('shiftRate'),
+    regularRate: money('regularRate'),
+    pay: money('pay'),
   };
 };
 

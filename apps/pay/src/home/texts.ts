@@ -85,6 +85,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         href: '/pto-accrual-calculator',
       },
       {
+        id: 'shift-differential',
+        title: 'Shift differential',
+        summary: 'Night or weekend pay on top of your rate, with the overtime counted right.',
+        href: '/shift-differential-calculator',
+      },
+      {
         id: 'no-tax-on-tips',
         title: 'No tax on tips',
         summary: 'How much the new tips deduction saves you.',
@@ -157,6 +163,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         title: 'Vacaciones pagadas (PTO)',
         summary: 'El tiempo libre pagado que ganas en cada cheque y por hora trabajada.',
         href: '/es/calculadora-de-vacaciones-pagadas',
+      },
+      {
+        id: 'shift-differential',
+        title: 'Diferencial de turno',
+        summary: 'El pago extra de noche o de fin de semana, con las horas extra bien contadas.',
+        href: '/es/calculadora-de-diferencial-de-turno',
       },
       {
         id: 'no-tax-on-tips',
