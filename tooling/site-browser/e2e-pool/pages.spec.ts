@@ -173,3 +173,39 @@ test('leads from the home to the spring guide, whose calculator links all answer
   expect(hrefs).toHaveLength(3);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
+
+test('lists every guide on the home, each one answering', async ({ page }) => {
+  await page.goto('/');
+  const hrefs = await page
+    .locator('[aria-labelledby="pool-guides"] a')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toEqual([
+    '/opening-your-pool',
+    '/closing-your-pool',
+    '/pool-water-chemistry-chart',
+  ]);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('numbers the winter steps, whose calculator links all answer', async ({ page }) => {
+  await page.goto('/closing-your-pool');
+  await expect(page.locator('.pool-steps > li')).toHaveCount(9);
+  const hrefs = await page
+    .locator('.pool-steps a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toHaveLength(3);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('charts six levels, each with its section, and every calculator link answers', async ({
+  page,
+}) => {
+  await page.goto('/pool-water-chemistry-chart');
+  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(6);
+  await expect(page.locator('.pool-level')).toHaveCount(6);
+  const hrefs = await page
+    .locator('main a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toHaveLength(5);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});

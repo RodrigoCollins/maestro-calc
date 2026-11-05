@@ -1,41 +1,9 @@
-import { gal, isQuantityOf } from '@maestro-calc/core';
-import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
-import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
-import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
-import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
-import { poolPump } from '@maestro-calc/pool-core/pool-pump';
-import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
-import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
-import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
+import { figure } from './__testing__/figure.ts';
 import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
-import { outputText, volumeText } from './format.ts';
 import { HOME_TOOLS } from './home.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
-
-const ENGINES = {
-  [VOLUME_TEXTS.path]: poolVolume,
-  [SALT.path]: poolSalt,
-  [CHLORINE.path]: poolChlorine,
-  [PUMP.path]: poolPump,
-  [ALKALINITY.path]: poolAlkalinity,
-  [STABILIZER.path]: poolStabilizer,
-  [HEATER.path]: poolHeater,
-  [FILL_TIME.path]: poolFillTime,
-} as const;
-
-/** The text of one output of an engine run, as its page writes it. */
-const figure = (path: string, raw: Readonly<Record<string, string>>, key: string): string => {
-  const engine = ENGINES[path];
-  if (engine === undefined) throw new Error(`no engine for ${path}`);
-  const ran = engine.run(raw);
-  if (!ran.ok) throw new Error(`${path} did not run`);
-  const value = ran.value.outputs.find((output) => output.key === key)?.value;
-  return isQuantityOf(value, 'volume') && key === 'gallons'
-    ? volumeText(value, gal)
-    : outputText(key, value);
-};
 
 describe('pool methodology', () => {
   it('has one section per calculator, in the order of the home cards', () => {
