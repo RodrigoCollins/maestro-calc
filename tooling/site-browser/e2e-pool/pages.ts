@@ -6,6 +6,7 @@ export const PAGES = [
   '/closing-your-pool',
   '/pool-water-chemistry-chart',
   '/how-long-to-run-pool-pump',
+  '/salt-water-pool-vs-chlorine-pool',
   '/privacy',
   '/about',
   '/embed-calculators',
