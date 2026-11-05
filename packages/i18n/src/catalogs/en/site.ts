@@ -247,6 +247,21 @@ export const enSite = {
     'How many bags of concrete a 12 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-12x12.heading': 'How many bags of concrete for a 12x12 slab?',
   'page.concrete-slab-12x12.label': '12x12 slab',
+  'page.concrete-slab-10x20.title': 'Bags of Concrete for a 10x20 Slab | Maestro Calc',
+  'page.concrete-slab-10x20.description':
+    'How many bags of concrete a 10 x 20 ft slab (a one-car pad or a long patio) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards.',
+  'page.concrete-slab-10x20.heading': 'How many bags of concrete for a 10x20 slab?',
+  'page.concrete-slab-10x20.label': '10x20 slab',
+  'page.concrete-slab-12x20.title': 'Bags of Concrete for a 12x20 Slab | Maestro Calc',
+  'page.concrete-slab-12x20.description':
+    'How many bags of concrete a 12 x 20 ft slab (a carport or a shed floor) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards.',
+  'page.concrete-slab-12x20.heading': 'How many bags of concrete for a 12x20 slab?',
+  'page.concrete-slab-12x20.label': '12x20 slab',
+  'page.concrete-slab-12x24.title': 'Bags of Concrete for a 12x24 Slab | Maestro Calc',
+  'page.concrete-slab-12x24.description':
+    'How many bags of concrete a 12 x 24 ft slab (a one-car garage) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
+  'page.concrete-slab-12x24.heading': 'How many bags of concrete for a 12x24 slab?',
+  'page.concrete-slab-12x24.label': '12x24 slab',
   'page.concrete-slab-20x20.title': 'Bags of Concrete for a 20x20 Slab | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'How many bags of concrete a 20 x 20 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
@@ -299,6 +314,16 @@ export const enSite = {
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
   'page.concrete-tube-12.label': '12 in Sonotube',
+  'page.concrete-footing-16x8.title': 'Bags of Concrete for a 16x8 in Footing | Maestro Calc',
+  'page.concrete-footing-16x8.description':
+    'How many bags of concrete a footing 16 in wide and 8 in deep takes for 20, 50 or 100 ft of wall, in 40, 60 or 80 lb bags, with the cubic yards.',
+  'page.concrete-footing-16x8.heading': 'How many bags of concrete for a 16x8 in footing?',
+  'page.concrete-footing-16x8.label': '16x8 in footing',
+  'page.concrete-footing-20x10.title': 'Bags of Concrete for a 20x10 in Footing | Maestro Calc',
+  'page.concrete-footing-20x10.description':
+    'How many bags of concrete a footing 20 in wide and 10 in deep takes for 20, 50 or 100 ft of wall, in 40, 60 or 80 lb bags, with the cubic yards.',
+  'page.concrete-footing-20x10.heading': 'How many bags of concrete for a 20x10 in footing?',
+  'page.concrete-footing-20x10.label': '20x10 in footing',
   'page.roof-pitch-3-12.title': '3/12 Roof Pitch in Degrees: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'A 3/12 roof pitch is 14.04 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
@@ -454,6 +479,13 @@ export const enSite = {
   'page.gravel-driveway-12x50.label': '12x50 driveway',
   'page.gravel-driveway-12x50.intro':
     'A 12 by 50 ft driveway is one lane from the street to a garage set back from the road. A new driveway often takes a deeper base course first and a top layer after.',
+  'page.gravel-driveway-12x100.title': 'Gravel for a 12x100 Driveway: 28.47 Tons | Maestro Calc',
+  'page.gravel-driveway-12x100.description':
+    'A 12 by 100 ft driveway 4 in deep takes 28.47 tons of compacted gravel, 22.07 cubic yards to order with 5% extra, and the same driveway at 6 or 8 in.',
+  'page.gravel-driveway-12x100.heading': 'How much gravel for a 12x100 driveway?',
+  'page.gravel-driveway-12x100.label': '12x100 driveway',
+  'page.gravel-driveway-12x100.intro':
+    'A 12 by 100 ft driveway is a long lane to a house or a barn set well back from the road. At this length the gravel comes by the truckload, so order it in tons from the yard.',
   'page.paint-room-10x10.title': 'Paint for a 10x10 Room: 1.54 Gallons | Maestro Calc',
   'page.paint-room-10x10.description':
     'A 10 by 10 ft room with 8 ft walls, one door and two windows takes 1.54 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
@@ -475,6 +507,20 @@ export const enSite = {
   'page.paint-room-12x12.label': '12x12 room',
   'page.paint-room-12x12.intro':
     'A 12 by 12 ft room is a typical main bedroom or a small living room. The table paints the walls only; the ceiling and the trim take paint of their own.',
+  'page.paint-room-12x14.title': 'Paint for a 12x14 Room: 2.09 Gallons | Maestro Calc',
+  'page.paint-room-12x14.description':
+    'A 12 by 14 ft room with 8 ft walls, one door and two windows takes 2.09 gallons of paint for two coats: 3 gallon cans, and the room with 9 or 10 ft walls.',
+  'page.paint-room-12x14.heading': 'How much paint for a 12x14 room?',
+  'page.paint-room-12x14.label': '12x14 room',
+  'page.paint-room-12x14.intro':
+    'A 12 by 14 ft room is a roomy main bedroom or a family room. Just over two gallons rounds up to a third can, which also covers touch-ups later.',
+  'page.paint-room-12x16.title': 'Paint for a 12x16 Room: 2.27 Gallons | Maestro Calc',
+  'page.paint-room-12x16.description':
+    'A 12 by 16 ft room with 8 ft walls, one door and two windows takes 2.27 gallons of paint for two coats: 3 gallon cans, and the room with 9 or 10 ft walls.',
+  'page.paint-room-12x16.heading': 'How much paint for a 12x16 room?',
+  'page.paint-room-12x16.label': '12x16 room',
+  'page.paint-room-12x16.intro':
+    'A 12 by 16 ft room is a large bedroom, a living room or a bonus room over a garage. The table paints the walls only; the ceiling and the trim take paint of their own.',
   'page.drywall-room-10x10.title': 'Drywall for a 10x10 Room: 13 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-10x10.description':
     'A 10 by 10 ft room with 8 ft walls takes 13 sheets of 4x8 drywall or 9 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
@@ -496,6 +542,20 @@ export const enSite = {
   'page.drywall-room-12x12.label': '12x12 room',
   'page.drywall-room-12x12.intro':
     'A 12 by 12 ft room is a typical main bedroom or a small living room. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+  'page.drywall-room-12x14.title': 'Drywall for a 12x14 Room: 19 Sheets of 4x8 | Maestro Calc',
+  'page.drywall-room-12x14.description':
+    'A 12 by 14 ft room with 8 ft walls takes 19 sheets of 4x8 drywall or 13 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
+  'page.drywall-room-12x14.heading': 'How many sheets of drywall for a 12x14 room?',
+  'page.drywall-room-12x14.label': '12x14 room',
+  'page.drywall-room-12x14.intro':
+    'A 12 by 14 ft room is a roomy main bedroom or a family room. The ceiling is the hardest part to hang, so plan its sheets first and use the offcuts on the walls.',
+  'page.drywall-room-12x16.title': 'Drywall for a 12x16 Room: 21 Sheets of 4x8 | Maestro Calc',
+  'page.drywall-room-12x16.description':
+    'A 12 by 16 ft room with 8 ft walls takes 21 sheets of 4x8 drywall or 14 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
+  'page.drywall-room-12x16.heading': 'How many sheets of drywall for a 12x16 room?',
+  'page.drywall-room-12x16.label': '12x16 room',
+  'page.drywall-room-12x16.intro':
+    'A 12 by 16 ft room is a large bedroom, a living room or a bonus room over a garage. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
   'page.topsoil-raised-bed-4x4.title': 'Soil for a 4x4 Raised Bed: 0.65 Cubic Yards | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'A 4 by 4 ft raised bed 12 in deep takes 0.65 cubic yards of soil with 10% for settling: 24 bags of 0.75 cu ft or 12 of 1.5 cu ft, and the bed at 18 or 24 in.',

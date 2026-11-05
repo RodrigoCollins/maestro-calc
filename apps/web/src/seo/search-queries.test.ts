@@ -86,6 +86,32 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     }
   });
 
+  // target queries of the job pages batch 5 (growth plan › lever 1): "how many bags of concrete
+  // for a 10x20 slab 4 inches", "how many bags of concrete for a footing"
+  it('names the size and the bag sizes of each concrete slab and footing job', () => {
+    const slabs = jobsOf('concrete').filter((id) => /^concrete-slab-\d+x\d+$/.test(id));
+    const footings = jobsOf('concrete').filter((id) => id.startsWith('concrete-footing-'));
+    for (const id of [...slabs, ...footings]) {
+      const footing = id.startsWith('concrete-footing-');
+      const size = id.replace(/^concrete-(slab|footing)-/, '');
+      const en = siteText('en');
+      const es = siteText('es');
+      expect(en(`page.${id}.title`), id).toBe(
+        `Bags of Concrete for a ${size}${footing ? ' in Footing' : ' Slab'} | Maestro Calc`,
+      );
+      expect(en(`page.${id}.heading`), id).toBe(
+        `How many bags of concrete for a ${size}${footing ? ' in footing' : ' slab'}?`,
+      );
+      expect(es(`page.${id}.heading`), id).toBe(
+        `¿Cuántas bolsas de concreto para una ${footing ? 'zapata' : 'losa'} de ${size}${footing ? ' in' : ''}?`,
+      );
+      for (const locale of ['en', 'es'] as const) {
+        expect(siteText(locale)(`page.${id}.description`), id).toContain('40, 60 ');
+        expect(siteText(locale)(`page.${id}.description`), id).toContain(' 80 lb');
+      }
+    }
+  });
+
   // target queries of the job pages batch 3 (growth plan › lever 1): "how much gravel for a 10x20
   // driveway", "how much paint for a 12x12 room", "how many sheets of drywall for a 12x12 room"
   it('states the tons of gravel of each driveway in its title, heading and description', () => {
