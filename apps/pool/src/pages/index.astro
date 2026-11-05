@@ -2,7 +2,7 @@
 import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import Layout from '../components/Layout.astro';
-import { OPENING_GUIDE } from '../guide.ts';
+import { GUIDES, OPENING_GUIDE } from '../guide.ts';
 import { HOME_TOOLS } from '../home.ts';
 import { JOB_PAGES } from '../jobs.ts';
 import { SITE } from '../site.config.ts';
@@ -86,6 +86,18 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
       <a class="pool-button pool-button-light" href={OPENING_GUIDE.path}>
         Read the opening guide
       </a>
+    </section>
+
+    <section aria-labelledby="pool-guides">
+      <h2 id="pool-guides">Guides</h2>
+      <ul class="pool-tools" role="list">
+        {GUIDES.map(({ path, card }) => (
+          <li>
+            <a href={path}>{card.title}</a>
+            <p>{card.summary}</p>
+          </li>
+        ))}
+      </ul>
     </section>
   </main>
 </Layout>

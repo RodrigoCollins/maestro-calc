@@ -1,3 +1,4 @@
+import { CHEMISTRY_CHART } from './chemistry.ts';
 import { CHLORINE, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -12,6 +13,19 @@ export interface GuideStep {
   readonly text: string;
   readonly link?: { readonly href: string; readonly label: string };
   readonly sources?: readonly string[];
+}
+
+/** A guide of numbered steps (`components/StepGuide.astro`). */
+interface StepGuide {
+  path: string;
+  kicker: string;
+  card: { title: string; summary: string };
+  title: string;
+  description: string;
+  h1: string;
+  lead: string;
+  sources: Record<string, GuideSource>;
+  steps: readonly GuideStep[];
 }
 
 const SOURCES = {
@@ -87,6 +101,11 @@ const STEPS: readonly GuideStep[] = [
  */
 export const OPENING_GUIDE = {
   path: '/opening-your-pool',
+  kicker: 'Guide · spring',
+  card: {
+    title: 'Opening your pool',
+    summary: 'The spring steps in order, from the cover to the chlorine.',
+  },
   title: 'How to Open Your Pool in Spring, Step by Step | Pool Figures',
   description:
     'Open your pool in the order that saves a second trip to the store: cover, equipment, water level, salt, pH, then chlorine, each dose sized to your pool.',
@@ -94,12 +113,88 @@ export const OPENING_GUIDE = {
   lead: 'The order that saves a second trip to the store: the cover and the equipment first, then the water level, the salt, the pH and the chlorine last. Each dose is sized to your own pool.',
   sources: SOURCES,
   steps: STEPS,
-} as const satisfies {
-  path: string;
-  title: string;
-  description: string;
-  h1: string;
-  lead: string;
-  sources: Record<string, GuideSource>;
-  steps: readonly GuideStep[];
-};
+} as const satisfies StepGuide;
+
+const CLOSING_SOURCES = {
+  hayward: {
+    name: 'Hayward: Closing Your Pool',
+    url: 'https://www.hayward.com/maintenance/closing-your-pool',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** The cold-climate steps of Hayward's closing guide, in its order, then its mild-climate ones. */
+const CLOSING_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Know your gallons',
+    text: 'The shock and every balancer you add before closing depend on how much water the pool holds. Work it out once from the length, the width and the depth at each end.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'Balance the water',
+    text: 'Bring the pH to 7.2 to 7.8, so the water does not stain, scale or grow algae while the pool is closed. The chart gives the range of every other level.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See the water chemistry chart' },
+    sources: ['hayward'],
+  },
+  {
+    title: 'Shock the pool',
+    text: 'Shock the pool, then run the filter for 24 to 48 hours to clear the debris.',
+    link: { href: CHLORINE.path, label: 'Work out the chlorine' },
+    sources: ['hayward'],
+  },
+  {
+    title: 'Clean and vacuum',
+    text: 'Brush, skim and vacuum the pool thoroughly. It makes the spring opening easier.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Lower the water',
+    text: 'Where the water freezes, drain it to below the skimmer, since water expands as it freezes.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Drain the equipment',
+    text: 'Empty the water from the filter, the pump and the heater. Blow out the lines, then close the valves so no water gets back into them.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Turn off the power',
+    text: 'Switch off the power to every piece of pool equipment.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Put the accessories away',
+    text: 'Take off the ladders, slides and diving boards, and store them safely.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'In a mild winter, keep it running',
+    text: 'Where the water does not freeze, do not drain it. Cut the filter run time in half, keep the pH at 7.2 to 7.8 and free chlorine at 1.0 to 3.0 ppm, clean the skimmer every week, and shock the pool before you cover it.',
+    sources: ['hayward'],
+  },
+];
+
+/**
+ * Closing a pool for winter. The steps and every figure follow Hayward's closing guide; each dose is
+ * sized by a calculator and each level is on the chart. No figure here that a source does not give.
+ */
+export const CLOSING_GUIDE = {
+  path: '/closing-your-pool',
+  kicker: 'Guide · winter',
+  card: {
+    title: 'Closing your pool',
+    summary: 'Balance, shock, lower the water and drain the lines before the frost.',
+  },
+  title: 'How to Close Your Pool for Winter, Step by Step | Pool Figures',
+  description:
+    'Close your pool for winter in order: balance the pH, shock, clean, lower the water below the skimmer, drain the equipment, then the power.',
+  h1: 'Closing your pool for winter',
+  lead: 'Where the water freezes, close the pool in this order: the water first, then the level, the equipment and the power. Where it does not, keep it running at half the filter time.',
+  sources: CLOSING_SOURCES,
+  steps: CLOSING_STEPS,
+} as const satisfies StepGuide;
+
+/** Every guide, in the order the home and the footer list them. */
+export const GUIDES: readonly {
+  readonly path: string;
+  readonly card: { readonly title: string; readonly summary: string };
+}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART];

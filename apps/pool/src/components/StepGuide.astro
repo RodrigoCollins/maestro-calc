@@ -1,0 +1,102 @@
+---
+import Layout from './Layout.astro';
+import type { GuideSource, GuideStep } from '../guide.ts';
+
+/** A guide of numbered steps, each tile with its calculator link and its sources (`guide.ts`). */
+interface Props {
+  readonly guide: {
+    readonly kicker: string;
+    readonly title: string;
+    readonly description: string;
+    readonly h1: string;
+    readonly lead: string;
+    readonly sources: Readonly<Record<string, GuideSource>>;
+    readonly steps: readonly GuideStep[];
+  };
+}
+
+const { kicker, title, description, h1, lead, steps, sources } = Astro.props.guide;
+const sourceOf = (key: string): GuideSource => {
+  const source = sources[key];
+  if (source === undefined) throw new Error(`no source ${key}`);
+  return source;
+};
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">{kicker}</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <ol class="pool-steps">
+      {steps.map((step) => (
+        <li>
+          <h2>{step.title}</h2>
+          <p>{step.text}</p>
+          {step.link !== undefined && (
+            <p>
+              <a href={step.link.href}>{step.link.label}</a>
+            </p>
+          )}
+          {step.sources !== undefined && (
+            <p class="pool-step-source">
+              Source:{' '}
+              {step.sources.map((key, index) => (
+                <>
+                  {index > 0 && ', '}
+                  <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+                </>
+              ))}
+            </p>
+          )}
+        </li>
+      ))}
+    </ol>
+    <p class="pool-note">
+      Read the label of each product before you add it, and follow it where it differs from this
+      guide.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .pool-steps {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  /* Each step is a tile numbered like a depth marker. */
+  .pool-steps li {
+    counter-increment: step;
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-steps h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-steps h2::before {
+    content: counter(step) '. ';
+  }
+
+  .pool-steps p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .pool-step-source {
+    font-size: 0.875rem;
+  }
+</style>

@@ -2,7 +2,7 @@ import { CONTACT_EMAIL } from './privacy.ts';
 
 /**
  * The sources the about page names, each as it appears in the source names the methodology and the
- * opening guide cite; `about.test.ts` holds the two lists to each other, so the page claims no
+ * guides cite; `about.test.ts` holds the two lists to each other, so the page claims no
  * source the site does not cite.
  */
 export const NAMED_SOURCES = [
@@ -44,7 +44,7 @@ export const ABOUT: About = {
       id: 'what',
       heading: 'What the site does',
       paragraphs: [
-        'Pool Figures works out the volume of your pool, the salt and the chlorine to add, and the pump flow your pool needs. A step-by-step guide covers opening the pool in spring. Each calculator shows the figure and the formula behind it.',
+        'Pool Figures works out the volume of your pool, the salt and the chlorine to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, and a water chemistry chart gives the target range of each level. Each calculator shows the figure and the formula behind it.',
       ],
     },
     {
@@ -59,7 +59,7 @@ export const ABOUT: About = {
       id: 'sources',
       heading: 'Sources',
       paragraphs: [
-        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets, and the manufacturer: the Hayward manual and guide for salt and opening, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
+        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, and the manufacturer: the Hayward manual and guides for salt, water levels, opening and closing, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
       ],
     },
     {
