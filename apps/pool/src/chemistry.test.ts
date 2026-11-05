@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { ALKALINITY, CHLORINE, PH, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CALCIUM, CHLORINE, PH, SALT, STABILIZER } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -37,6 +37,7 @@ describe('the water chemistry chart', () => {
     expect(row('ph').link?.href).toBe(PH.path);
     expect(row('alkalinity').link?.href).toBe(ALKALINITY.path);
     expect(row('stabilizer').link?.href).toBe(STABILIZER.path);
+    expect(row('calcium').link?.href).toBe(CALCIUM.path);
     expect(row('salt').link?.href).toBe(SALT.path);
     for (const { link } of CHEMISTRY_CHART.rows)
       if (link !== undefined) expect(pages, link.href).toContain(link.href);

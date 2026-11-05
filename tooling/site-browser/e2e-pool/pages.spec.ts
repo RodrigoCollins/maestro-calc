@@ -212,7 +212,8 @@ test('charts six levels, each with its section, and every calculator link answer
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  expect(hrefs).toHaveLength(5);
+  // the gallons, then chlorine, pH, alkalinity, stabilizer, calcium and salt
+  expect(hrefs).toHaveLength(7);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 

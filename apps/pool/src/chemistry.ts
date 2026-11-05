@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, PH, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CALCIUM, CHLORINE, PH, SALT, STABILIZER } from './doses.ts';
 import type { GuideSource } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -104,8 +104,16 @@ const ROWS: readonly ChartRow[] = [
     name: 'Calcium hardness',
     home: '200 to 400 ppm',
     publicPool: '2,500 ppm at most',
-    text: 'The code only caps calcium. Too little and the water dissolves plaster; too much and it leaves scale and stains.',
+    text: 'The code only caps calcium. Too little and the water dissolves plaster; too much and it leaves scale and stains. Calcium chloride raises it; only draining part of the water and refilling lowers it.',
     sources: ['hayward', 'mahc'],
+    link: { href: CALCIUM.path, label: 'Work out the calcium chloride' },
+    example: {
+      text: '20,000 gallons from 180 to 200 ppm take',
+      raw: { gallons: '20000', current: '180', target: '200' },
+      key: 'pounds',
+      result: '5.0',
+      unit: 'lb of calcium chloride',
+    },
   },
   {
     id: 'salt',
