@@ -1,0 +1,15 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import {
+  HOURS_WORKED_GUIDE,
+  HOURS_WORKED_GUIDE_LINKS,
+  HOURS_WORKED_GUIDE_PATHS,
+} from '../../guide/hours-worked.ts';
+---
+
+<GuidePage
+  lang="en"
+  texts={HOURS_WORKED_GUIDE.en}
+  paths={HOURS_WORKED_GUIDE_PATHS}
+  links={HOURS_WORKED_GUIDE_LINKS.en}
+/>

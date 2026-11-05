@@ -48,6 +48,8 @@ export const PAGES = [
   { path: '/es/guias/diferencial-nocturno-y-horas-extra', lang: 'es' },
   { path: '/guides/tipped-minimum-wage-and-tip-credit', lang: 'en' },
   { path: '/es/guias/salario-minimo-con-propinas-y-credito-por-propinas', lang: 'es' },
+  { path: '/guides/how-to-calculate-hours-worked', lang: 'en' },
+  { path: '/es/guias/como-calcular-las-horas-trabajadas', lang: 'es' },
   { path: '/es/guias/como-leer-tu-talon-de-pago', lang: 'es' },
   { path: '/es/guias/si-no-te-pagan-las-horas-extra', lang: 'es' },
   { path: '/es/guias/como-calcular-horas-extra', lang: 'es' },

@@ -1,3 +1,4 @@
+import { HOURS_WORKED_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 export const HOURS_PATHS = {
@@ -94,6 +95,7 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
         href: '/time-card-calculator',
       },
       { label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' },
+      { label: 'Which breaks count as hours worked?', href: HOURS_WORKED_GUIDE_PATHS.en },
     ],
     otherLang: 'Español',
   },
@@ -131,6 +133,7 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
         href: '/es/calculadora-de-horas-trabajadas',
       },
       { label: 'Convierte minutos a horas decimales', href: '/es/minutos-a-horas-decimales' },
+      { label: '¿Qué descansos cuentan como horas trabajadas?', href: HOURS_WORKED_GUIDE_PATHS.es },
     ],
     otherLang: 'English',
   },
@@ -162,6 +165,10 @@ export const DECIMAL_HOURS_TEXTS: Readonly<Record<Lang, DecimalHoursTexts>> = {
     links: [
       { label: 'Count the hours between two times', href: '/hours-calculator' },
       { label: 'Add up a whole week on the time card', href: '/time-card-calculator' },
+      {
+        label: 'How to calculate hours worked, with lunch breaks',
+        href: HOURS_WORKED_GUIDE_PATHS.en,
+      },
     ],
     otherLang: 'Español',
   },
@@ -192,6 +199,10 @@ export const DECIMAL_HOURS_TEXTS: Readonly<Record<Lang, DecimalHoursTexts>> = {
       {
         label: 'Suma una semana entera en la tarjeta de horas',
         href: '/es/calculadora-de-horas-trabajadas',
+      },
+      {
+        label: 'Cómo calcular las horas trabajadas, con descanso',
+        href: HOURS_WORKED_GUIDE_PATHS.es,
       },
     ],
     otherLang: 'English',
