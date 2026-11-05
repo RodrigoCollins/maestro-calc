@@ -398,7 +398,7 @@ export const enSite = {
     'Mulch comes in bags of 1.5, 2 or 3 cubic feet, and in bulk by the cubic yard. Divide 27 by the bag size and round up: a cubic yard takes 18 bags of 1.5 cu ft, 14 of 2 cu ft or 9 of 3 cu ft.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
-    'Find how much mulch a garden bed needs in cubic yards and 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
+    'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
   'page.topsoil.title': 'Topsoil Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.topsoil.description':
     'Find how much topsoil a lawn, garden bed or fill needs in cubic yards and bags, with extra for settling and the cost in bags and in bulk. Free.',

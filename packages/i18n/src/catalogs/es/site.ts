@@ -407,7 +407,7 @@ export const esSite = {
     'El mulch se vende en bolsas de 1.5, 2 o 3 pies cúbicos, y a granel por yarda cúbica. Divide 27 entre el tamaño de la bolsa y redondea hacia arriba: una yarda cúbica lleva 18 bolsas de 1.5 cu ft, 14 de 2 cu ft o 9 de 3 cu ft.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
-    'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',
+    'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',
   'page.topsoil.title': 'Calculadora de tierra para jardín en yardas | Maestro Calc',
   'page.topsoil.description':
     'Calcula cuánta tierra lleva un césped, una jardinera o un relleno en yardas cúbicas y bolsas, con extra por asentamiento y el costo en bolsas y a granel.',
