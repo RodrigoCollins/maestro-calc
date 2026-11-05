@@ -50,6 +50,12 @@ describe('LONG_TAIL_RULES', () => {
         calculator: '/shift-differential-calculator',
       }),
     );
+    expect(LONG_TAIL_RULES).toContainEqual(
+      expect.objectContaining({
+        path: '/es/pago/2-13-la-hora-mas-150-de-propinas-en-40-horas',
+        calculator: '/es/calculadora-de-propinas-por-hora',
+      }),
+    );
   });
 });
 
