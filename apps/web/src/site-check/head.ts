@@ -1,5 +1,5 @@
 import { alternatesOf, LOCALE_TAGS } from '../routing/routes.ts';
-import { alternatesIn, attrsOf } from './dom.ts';
+import { alternatesIn, attr, attrsOf } from './dom.ts';
 import { urlOfPage } from './files.ts';
 import { problem } from './types.ts';
 import type { CheckContext, Page, Problem, Site } from './types.ts';
@@ -171,7 +171,7 @@ const previewTags = (page: Page): Map<string, string[]> => {
   for (const meta of page.root.querySelectorAll('meta')) {
     const key = meta.getAttribute('property') ?? meta.getAttribute('name') ?? '';
     if (!key.startsWith('og:') && key !== 'twitter:card') continue;
-    tags.set(key, [...(tags.get(key) ?? []), meta.getAttribute('content') ?? '']);
+    tags.set(key, [...(tags.get(key) ?? []), attr(meta, 'content')]);
   }
   return tags;
 };

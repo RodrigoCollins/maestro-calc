@@ -419,15 +419,13 @@ const guideNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): stri
     BreadcrumbList: (list) => breadcrumbProblems(page, site, list),
   });
 
+/** The h1 of the built page of `id` in `locale`, or `undefined` when the build has no such page. */
+type HeadingIn = (id: string, locale: Page['locale']) => string | undefined;
+
 /** The pages above a job page, each named by the h1 its built page shows: home, hub, calculator. */
-const jobTrailOf = (
-  page: Page,
-  site: Site,
-  calculator: string,
-  headingIn: (id: string, locale: Page['locale']) => string,
-) => {
+const jobTrailOf = (page: Page, site: Site, calculator: string, headingIn: HeadingIn) => {
   const hub = Object.keys(site.hubs).find((id) => site.hubs[id]?.includes(calculator));
-  const crumb = (id: string, name: string) => {
+  const crumb = (id: string, name: string | undefined) => {
     const path = pathOf(id, page.locale, site.routes);
     return { name, path, url: urlOf(path) };
   };
@@ -451,50 +449,39 @@ const jobNodeProblems = (
 ): string[] =>
   typedNodeProblems(nodes, JOB_TYPES, {
     BreadcrumbList: (list) => {
-      const expected = [...trail, { name: headingOf(page), url: urlOfPage(page, site) }];
-      const items = nodesIn(list['itemListElement']);
-      const right =
-        items.length === expected.length &&
-        expected.every(
-          ({ name, url }, index) =>
-            items[index]?.['position'] === index + 1 &&
-            items[index]['name'] === name &&
-            items[index]['item'] === url,
-        );
-      return right
+      const shown = nodesIn(list['itemListElement']).map((item) => [
+        item['position'],
+        item['name'],
+        item['item'],
+      ]);
+      const wanted = [...trail, { name: headingOf(page), url: urlOfPage(page, site) }].map(
+        ({ name, url }, index) => [index + 1, name, url],
+      );
+      return JSON.stringify(shown) === JSON.stringify(wanted)
         ? []
         : [
-            `the BreadcrumbList must be ${trail.map(({ name, url }) => `${name} (${url})`).join(', ')}, then the page (name and canonical)`,
+            `the BreadcrumbList must be ${trail.map(({ name, url }) => `${String(name)} (${url})`).join(', ')}, then the page (name and canonical)`,
           ];
     },
   });
 
 /** The visible breadcrumb of a job page links each page of its trail, then names the page. */
 const visibleTrailProblems = (page: Page, trail: ReturnType<typeof jobTrailOf>): string[] => {
-  const list = page.root.querySelector('main ol[aria-label]');
-  const crumbs = list?.querySelectorAll('li') ?? [];
-  const links = crumbs.slice(0, -1).map((crumb) => crumb.querySelector('a'));
-  const right =
-    crumbs.length === trail.length + 1 &&
-    trail.every(
-      ({ name, path }, index) =>
-        attr(links[index] ?? crumbs[index] ?? page.root, 'href') === path &&
-        normalized(links[index]?.text ?? '') === name,
-    ) &&
-    crumbs.at(-1)?.querySelector('a') === null &&
-    normalized(crumbs.at(-1)?.text ?? '') === headingOf(page);
-  return right
+  const crumbs = page.root.querySelector('main ol[aria-label]')?.querySelectorAll('li') ?? [];
+  // a link is named and has an address; the page itself is named only
+  const shown = crumbs.map((crumb) => {
+    const link = crumb.querySelector('a');
+    return link === null ? [normalized(crumb.text)] : [normalized(link.text), attr(link, 'href')];
+  });
+  const wanted = [...trail.map(({ name, path }) => [name, path]), [headingOf(page)]];
+  return JSON.stringify(shown) === JSON.stringify(wanted)
     ? []
     : [
-        `the visible breadcrumb must link ${trail.map(({ name, path }) => `${name} (${path})`).join(', ')}, then name the page`,
+        `the visible breadcrumb must link ${trail.map(({ name, path }) => `${String(name)} (${path})`).join(', ')}, then name the page`,
       ];
 };
 
-const jsonLdProblems = (
-  page: Page,
-  site: Site,
-  headingIn: (id: string, locale: Page['locale']) => string,
-): Problem[] => {
+const jsonLdProblems = (page: Page, site: Site, headingIn: HeadingIn): Problem[] => {
   const blocks = jsonLdBlocks(page);
   const documents: unknown[] = [];
   const problems: string[] = [];
@@ -506,6 +493,7 @@ const jsonLdProblems = (
     }
   }
   const nodes = documents.flatMap(nodesOf);
+  const jobCalculator = Object.hasOwn(site.jobs, page.id) ? site.jobs[page.id] : undefined;
   if (page.id === 'home') {
     if (blocks.length !== 1)
       problems.push(`expected one JSON-LD block, found ${String(blocks.length)}`);
@@ -514,8 +502,8 @@ const jsonLdProblems = (
     problems.push(...calculatorNodeProblems(page, site, nodes));
   } else if (Object.hasOwn(site.guides, page.id)) {
     problems.push(...guideNodeProblems(page, site, nodes), ...ogTypeProblems(page));
-  } else if (Object.hasOwn(site.jobs, page.id)) {
-    const trail = jobTrailOf(page, site, site.jobs[page.id] ?? '', headingIn);
+  } else if (jobCalculator !== undefined) {
+    const trail = jobTrailOf(page, site, jobCalculator, headingIn);
     problems.push(
       ...jobNodeProblems(page, site, nodes, trail),
       ...visibleTrailProblems(page, trail),
@@ -533,9 +521,11 @@ const jsonLdProblems = (
 
 /** Content, placeholder, robots, sitemap and structured-data rules. */
 export const contentProblems = ({ pages, site, dist }: CheckContext): Problem[] => {
-  const headings = new Map(pages.map((page) => [`${page.locale}/${page.id}`, headingOf(page)]));
-  const headingIn = (id: string, locale: Page['locale']): string =>
-    headings.get(`${locale}/${id}`) ?? '';
+  // a page missing from the build is the file set's problem: its heading is then `undefined`
+  const headings: Readonly<Record<string, string | undefined>> = Object.fromEntries(
+    pages.map((page) => [`${page.locale}/${page.id}`, headingOf(page)]),
+  );
+  const headingIn: HeadingIn = (id, locale) => headings[`${locale}/${id}`];
   return contentRules(pages, site, dist, headingIn);
 };
 
@@ -543,7 +533,7 @@ const contentRules = (
   pages: readonly Page[],
   site: Site,
   dist: Dist,
-  headingIn: (id: string, locale: Page['locale']) => string,
+  headingIn: HeadingIn,
 ): Problem[] => [
   ...pages.flatMap((page) => [
     ...reviewProblems(page),

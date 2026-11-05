@@ -1148,6 +1148,27 @@ describe('job page structured data (growth › job pages › check:site)', () =>
     ]);
   });
 
+  it('leaves the hub out of the trail of a calculator that no hub lists', () => {
+    const site = { ...jobSite(), hubs: {} };
+    const dist = validDist(site);
+    expect(contentProblems(contextOf(dist, site))).toEqual([]);
+    dist.set(JOB_PAGE, (dist.get(JOB_PAGE) ?? '').replace(LD, ''));
+    expect(messagesOf(contentProblems(contextOf(dist, site)), JOB_PAGE)).toEqual([
+      'expected exactly one BreadcrumbList, found 0',
+    ]);
+  });
+
+  it('fails a job page that shows no breadcrumb', () => {
+    expect(
+      messagesOf(
+        jobProblemsAfter({}, { [JOB_PAGE]: (html) => html.replace(/<ol aria-label.*?<\/ol>/, '') }),
+        JOB_PAGE,
+      ),
+    ).toEqual([
+      'the visible breadcrumb must link Home (/), Heading of hub-concrete (/concrete), Heading of concrete (/concrete-calculator), then name the page',
+    ]);
+  });
+
   it('requires the visible breadcrumb to link the same trail', () => {
     expect(
       messagesOf(
