@@ -32,3 +32,9 @@ export const TIP_CREDIT_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/tipped-minimum-wage-and-tip-credit',
   es: '/es/guias/salario-minimo-con-propinas-y-credito-por-propinas',
 };
+
+/** The hours worked guide: what counts, the breaks, and minutes to decimal hours. */
+export const HOURS_WORKED_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/how-to-calculate-hours-worked',
+  es: '/es/guias/como-calcular-las-horas-trabajadas',
+};
