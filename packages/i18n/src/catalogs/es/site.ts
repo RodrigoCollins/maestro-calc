@@ -255,6 +255,21 @@ export const esSite = {
     'Cuántas bolsas de concreto lleva una losa de 12 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-12x12.heading': '¿Cuántas bolsas de concreto para una losa de 12x12?',
   'page.concrete-slab-12x12.label': 'Losa de 12x12',
+  'page.concrete-slab-10x20.title': 'Bolsas de concreto para una losa de 10x20 | Maestro Calc',
+  'page.concrete-slab-10x20.description':
+    'Cuántas bolsas de concreto lleva una losa de 10 x 20 ft (un auto o un patio) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas.',
+  'page.concrete-slab-10x20.heading': '¿Cuántas bolsas de concreto para una losa de 10x20?',
+  'page.concrete-slab-10x20.label': 'Losa de 10x20',
+  'page.concrete-slab-12x20.title': 'Bolsas de concreto para una losa de 12x20 | Maestro Calc',
+  'page.concrete-slab-12x20.description':
+    'Cuántas bolsas de concreto lleva una losa de 12 x 20 ft (una cochera o el piso de un cobertizo) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
+  'page.concrete-slab-12x20.heading': '¿Cuántas bolsas de concreto para una losa de 12x20?',
+  'page.concrete-slab-12x20.label': 'Losa de 12x20',
+  'page.concrete-slab-12x24.title': 'Bolsas de concreto para una losa de 12x24 | Maestro Calc',
+  'page.concrete-slab-12x24.description':
+    'Cuántas bolsas de concreto lleva una losa de 12 x 24 ft (un garaje para un auto) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas.',
+  'page.concrete-slab-12x24.heading': '¿Cuántas bolsas de concreto para una losa de 12x24?',
+  'page.concrete-slab-12x24.label': 'Losa de 12x24',
   'page.concrete-slab-20x20.title': 'Bolsas de concreto para una losa de 20x20 | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'Cuántas bolsas de concreto lleva una losa de 20 x 20 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
@@ -308,6 +323,16 @@ export const esSite = {
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
   'page.concrete-tube-12.label': 'Sonotube de 12 in',
+  'page.concrete-footing-16x8.title': 'Bolsas de concreto para zapata de 16x8 in | Maestro Calc',
+  'page.concrete-footing-16x8.description':
+    'Cuántas bolsas de concreto lleva una zapata corrida de 16 in de ancho y 8 in de profundidad para 20, 50 o 100 ft de muro, en bolsas de 40, 60 u 80 lb.',
+  'page.concrete-footing-16x8.heading': '¿Cuántas bolsas de concreto para una zapata de 16x8 in?',
+  'page.concrete-footing-16x8.label': 'Zapata de 16x8 in',
+  'page.concrete-footing-20x10.title': 'Bolsas de concreto para zapata de 20x10 in | Maestro Calc',
+  'page.concrete-footing-20x10.description':
+    'Cuántas bolsas de concreto lleva una zapata corrida de 20 in de ancho y 10 in de profundidad para 20, 50 o 100 ft de muro, en bolsas de 40, 60 u 80 lb.',
+  'page.concrete-footing-20x10.heading': '¿Cuántas bolsas de concreto para una zapata de 20x10 in?',
+  'page.concrete-footing-20x10.label': 'Zapata de 20x10 in',
   'page.roof-pitch-3-12.title': 'Pendiente de techo 3/12 en grados: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'Una pendiente de techo 3/12 mide 14.04 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
@@ -463,6 +488,14 @@ export const esSite = {
   'page.gravel-driveway-12x50.label': 'Entrada de 12x50',
   'page.gravel-driveway-12x50.intro':
     'Una entrada de 12 por 50 ft es un carril desde la calle hasta un garaje alejado de ella. Una entrada nueva suele llevar primero una base más profunda y después una capa de acabado.',
+  'page.gravel-driveway-12x100.title':
+    'Grava para entrada de 12x100: 28.47 toneladas | Maestro Calc',
+  'page.gravel-driveway-12x100.description':
+    'Una entrada de 12 por 100 ft y 4 in de profundidad lleva 28.47 toneladas de grava compactada, 22.07 yardas cúbicas a pedir con 5% de extra, y a 6 u 8 in.',
+  'page.gravel-driveway-12x100.heading': '¿Cuánta grava para una entrada de 12x100?',
+  'page.gravel-driveway-12x100.label': 'Entrada de 12x100',
+  'page.gravel-driveway-12x100.intro':
+    'Una entrada de 12 por 100 ft es un camino largo hasta una casa o un granero alejado de la calle. A este largo la grava llega por camión, así que pídela en toneladas al proveedor.',
   'page.paint-room-10x10.title': 'Pintura para un cuarto de 10x10: 1.54 galones | Maestro Calc',
   'page.paint-room-10x10.description':
     'Un cuarto de 10 por 10 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.54 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
@@ -484,6 +517,20 @@ export const esSite = {
   'page.paint-room-12x12.label': 'Cuarto de 12x12',
   'page.paint-room-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
+  'page.paint-room-12x14.title': 'Pintura para un cuarto de 12x14: 2.09 galones | Maestro Calc',
+  'page.paint-room-12x14.description':
+    'Un cuarto de 12 por 14 ft con paredes de 8 ft, una puerta y dos ventanas lleva 2.09 galones de pintura en dos manos: 3 latas, y con paredes de 9 o 10 ft.',
+  'page.paint-room-12x14.heading': '¿Cuánta pintura para un cuarto de 12x14?',
+  'page.paint-room-12x14.label': 'Cuarto de 12x14',
+  'page.paint-room-12x14.intro':
+    'Un cuarto de 12 por 14 ft es un dormitorio principal amplio o una sala familiar. Algo más de dos galones redondea a una tercera lata, que también sirve para retoques después.',
+  'page.paint-room-12x16.title': 'Pintura para un cuarto de 12x16: 2.27 galones | Maestro Calc',
+  'page.paint-room-12x16.description':
+    'Un cuarto de 12 por 16 ft con paredes de 8 ft, una puerta y dos ventanas lleva 2.27 galones de pintura en dos manos: 3 latas, y con paredes de 9 o 10 ft.',
+  'page.paint-room-12x16.heading': '¿Cuánta pintura para un cuarto de 12x16?',
+  'page.paint-room-12x16.label': 'Cuarto de 12x16',
+  'page.paint-room-12x16.intro':
+    'Un cuarto de 12 por 16 ft es un dormitorio grande, una sala o un cuarto sobre el garaje. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
   'page.drywall-room-10x10.title': 'Drywall para cuarto de 10x10: 13 placas | Maestro Calc',
   'page.drywall-room-10x10.description':
     'Un cuarto de 10 por 10 ft con paredes de 8 ft lleva 13 placas de drywall de 4x8 o 9 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
@@ -505,6 +552,20 @@ export const esSite = {
   'page.drywall-room-12x12.label': 'Cuarto de 12x12',
   'page.drywall-room-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+  'page.drywall-room-12x14.title': 'Drywall para cuarto de 12x14: 19 placas | Maestro Calc',
+  'page.drywall-room-12x14.description':
+    'Un cuarto de 12 por 14 ft con paredes de 8 ft lleva 19 placas de drywall de 4x8 o 13 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
+  'page.drywall-room-12x14.heading': '¿Cuántas placas de drywall para un cuarto de 12x14?',
+  'page.drywall-room-12x14.label': 'Cuarto de 12x14',
+  'page.drywall-room-12x14.intro':
+    'Un cuarto de 12 por 14 ft es un dormitorio principal amplio o una sala familiar. El techo es lo más difícil de colocar, así que planea sus placas primero y usa los recortes en las paredes.',
+  'page.drywall-room-12x16.title': 'Drywall para cuarto de 12x16: 21 placas | Maestro Calc',
+  'page.drywall-room-12x16.description':
+    'Un cuarto de 12 por 16 ft con paredes de 8 ft lleva 21 placas de drywall de 4x8 o 14 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
+  'page.drywall-room-12x16.heading': '¿Cuántas placas de drywall para un cuarto de 12x16?',
+  'page.drywall-room-12x16.label': 'Cuarto de 12x16',
+  'page.drywall-room-12x16.intro':
+    'Un cuarto de 12 por 16 ft es un dormitorio grande, una sala o un cuarto sobre el garaje. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
   'page.topsoil-raised-bed-4x4.title': 'Tierra para cama elevada de 4x4: 0.65 yd³ | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'Una cama elevada de 4 por 4 ft con 12 in de tierra lleva 0.65 yardas cúbicas con 10% por asentamiento: 24 bolsas de 0.75 cu ft o 12 de 1.5, y a 18 o 24 in.',

@@ -92,7 +92,10 @@ export const ROUTES = {
   'hub-paint': { en: '/painting', es: '/es/pintura' },
   'concrete-slab-10x10': { en: '/concrete/10x10-slab', es: '/es/concreto/losa-de-10x10' },
   'concrete-slab-10x12': { en: '/concrete/10x12-slab', es: '/es/concreto/losa-de-10x12' },
+  'concrete-slab-10x20': { en: '/concrete/10x20-slab', es: '/es/concreto/losa-de-10x20' },
   'concrete-slab-12x12': { en: '/concrete/12x12-slab', es: '/es/concreto/losa-de-12x12' },
+  'concrete-slab-12x20': { en: '/concrete/12x20-slab', es: '/es/concreto/losa-de-12x20' },
+  'concrete-slab-12x24': { en: '/concrete/12x24-slab', es: '/es/concreto/losa-de-12x24' },
   'concrete-slab-20x20': { en: '/concrete/20x20-slab', es: '/es/concreto/losa-de-20x20' },
   'concrete-slab-24x24': { en: '/concrete/24x24-slab', es: '/es/concreto/losa-de-24x24' },
   'concrete-slab-500-sq-ft': {
@@ -120,6 +123,8 @@ export const ROUTES = {
     en: '/concrete/12-inch-sonotube',
     es: '/es/concreto/sonotubo-de-12-pulgadas',
   },
+  'concrete-footing-16x8': { en: '/concrete/16x8-footing', es: '/es/concreto/zapata-de-16x8' },
+  'concrete-footing-20x10': { en: '/concrete/20x10-footing', es: '/es/concreto/zapata-de-20x10' },
   'roof-pitch-3-12': {
     en: '/roofing/3-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-3-12',
@@ -212,6 +217,10 @@ export const ROUTES = {
     en: '/landscaping/gravel-for-12x50-driveway',
     es: '/es/jardineria/grava-para-entrada-de-12x50',
   },
+  'gravel-driveway-12x100': {
+    en: '/landscaping/gravel-for-12x100-driveway',
+    es: '/es/jardineria/grava-para-entrada-de-12x100',
+  },
   'paint-room-10x10': {
     en: '/painting/paint-for-10x10-room',
     es: '/es/pintura/pintura-para-cuarto-de-10x10',
@@ -224,6 +233,14 @@ export const ROUTES = {
     en: '/painting/paint-for-12x12-room',
     es: '/es/pintura/pintura-para-cuarto-de-12x12',
   },
+  'paint-room-12x14': {
+    en: '/painting/paint-for-12x14-room',
+    es: '/es/pintura/pintura-para-cuarto-de-12x14',
+  },
+  'paint-room-12x16': {
+    en: '/painting/paint-for-12x16-room',
+    es: '/es/pintura/pintura-para-cuarto-de-12x16',
+  },
   'drywall-room-10x10': {
     en: '/drywall/drywall-for-10x10-room',
     es: '/es/drywall/drywall-para-cuarto-de-10x10',
@@ -235,6 +252,14 @@ export const ROUTES = {
   'drywall-room-12x12': {
     en: '/drywall/drywall-for-12x12-room',
     es: '/es/drywall/drywall-para-cuarto-de-12x12',
+  },
+  'drywall-room-12x14': {
+    en: '/drywall/drywall-for-12x14-room',
+    es: '/es/drywall/drywall-para-cuarto-de-12x14',
+  },
+  'drywall-room-12x16': {
+    en: '/drywall/drywall-for-12x16-room',
+    es: '/es/drywall/drywall-para-cuarto-de-12x16',
   },
   'topsoil-raised-bed-4x4': {
     en: '/landscaping/soil-for-4x4-raised-bed',
