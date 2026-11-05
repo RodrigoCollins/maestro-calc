@@ -32,10 +32,11 @@ describe('jobLinks', () => {
     },
   );
 
-  it('gives a calculator with no job pages an empty list', () => {
-    const jobless = CALCULATOR_PAGES.filter((id) => jobsOf(id).length === 0);
-    expect(jobless.length).toBeGreaterThan(0);
-    for (const id of jobless) expect(jobLinks(id, 'en')).toEqual([]);
+  // the feet and inches calculator was the last without a job page (tape division, 2026-11-05)
+  it('gives every calculator page its jobs, and an empty list once its one job is left out', () => {
+    expect(CALCULATOR_PAGES.filter((id) => jobsOf(id).length === 0)).toEqual([]);
+    expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
+    expect(jobLinks('mulch', 'en', 'mulch-bags-per-yard')).toEqual([]);
   });
 
   it('can leave one job out: a job page lists the others', () => {

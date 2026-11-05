@@ -1,4 +1,5 @@
 import { decode } from '@maestro-calc/core';
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
@@ -57,6 +58,11 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
   if (calculator === 'roofing') {
     const state = roofing.validate(raw);
     expect(state.ok && decode(roofing, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'feet-inches') {
+    const state = feetInches.validate(raw);
+    expect(state.ok && decode(feetInches, query).state).toEqual(state.ok && state.value);
     return;
   }
   const state = rectangleArea.validate(raw);
@@ -429,6 +435,78 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     ]);
   });
 
+  // hand-verified: 29 1/4 in = 29.25 in; ÷ 2 = 14.625 in = 14 5/8 in = 1 ft 2 5/8 in, 14.63 in to
+  // two places, × 0.0254 = 0.371475 m; ÷ 3 = 9.75 in = 9 3/4 in, 0.24765 m; ÷ 4 = 7.3125 in =
+  // 7 5/16 in, 7.31 in, 0.185738 m
+  it('works 29 1/4 in divided by 2 out as the feet and inches calculator does', () => {
+    const view = jobView('divide-29-1-4-in-by-2', 'en');
+    expect(view.lead).toBe('First length: 29 1/4 in ÷ 2');
+    expect(view.answer).toBe('29 1/4 in divided into 2 equal parts is 14 5/8 in each.');
+    expect(view.facts).toEqual([
+      { label: 'Result (feet and inches)', value: '1 ft 2 5/8 in' },
+      { label: 'Result (inches)', value: '14.63' },
+      { label: 'Result (meters)', value: '0.371' },
+    ]);
+    expect(view.columns).toEqual([
+      'Number',
+      'On the tape (inches, to 1/16)',
+      'Result (feet and inches)',
+      'Result (inches)',
+      'Result (meters)',
+    ]);
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['÷ 2', '14 5/8 in', '1 ft 2 5/8 in', '14.63', '0.371'],
+      ['÷ 3', '9 3/4 in', '9 3/4 in', '9.75', '0.248'],
+      ['÷ 4', '7 5/16 in', '7 5/16 in', '7.31', '0.186'],
+    ]);
+    expect(view.rows[0].href.split('?')[0]).toBe('/feet-and-inches-calculator');
+    expect(view.calculatorName).toBe('Feet and Inches Calculator');
+    expect(view.methodology).toBe('/methodology#feet-and-inches');
+    expect(view.intro).toBeUndefined();
+  });
+
+  // hand-verified: 9 ft 6 in = 114 in; ÷ 2 = 57 in = 4 ft 9 in, × 0.0254 = 1.4478 m; ÷ 3 = 38 in =
+  // 3 ft 2 in; ÷ 4 = 28.5 in = 2 ft 4 1/2 in. 22 in ÷ 10 = 2.2 in, 35.2 sixteenths so 2 3/16 in,
+  // 0.05588 m. 23 5/8 in ÷ 2 = 11.8125 in = 11 13/16 in. 35.5 in ÷ 2 = 17.75 in = 17 3/4 in.
+  // 3 ft 9 in = 45 in; ÷ 2 = 22.5 in = 1 ft 10 1/2 in, 0.5715 m
+  it('answers a length in feet in feet and inches, and a length in inches on the tape', () => {
+    const feet = jobView('divide-9-ft-6-in-by-2', 'es');
+    expect(feet.answer).toBe('9 ft 6 in dividido en 2 partes iguales da 4 ft 9 in cada una.');
+    expect(feet.facts.map(({ value }) => value)).toEqual(['57 in', '57.00', '1.448']);
+    expect(feet.facts[0]?.label).toBe('En la cinta (pulgadas, a 1/16)');
+    expect(feet.rows.map(({ cells }) => cells[1])).toEqual([
+      '4 ft 9 in',
+      '3 ft 2 in',
+      '2 ft 4 1/2 in',
+    ]);
+    expect(feet.methodology).toBe('/es/metodologia#pies-y-pulgadas');
+    const tenth = jobView('divide-22-in-by-10', 'en');
+    expect(tenth.answer).toBe('22 in divided into 10 equal parts is 2 3/16 in each.');
+    expect(tenth.rows.map(({ label }) => label)).toEqual(['÷ 10', '÷ 2', '÷ 3', '÷ 4']);
+    expect(tenth.rows[0].cells).toEqual(['2 3/16 in', '2 3/16 in', '2.20', '0.056']);
+    expect(jobView('divide-23-5-8-in-by-2', 'en').answer).toBe(
+      '23 5/8 in divided into 2 equal parts is 11 13/16 in each.',
+    );
+    expect(jobView('divide-35-5-in-by-2', 'en').answer).toBe(
+      '35.5 in divided into 2 equal parts is 17 3/4 in each.',
+    );
+    expect(jobView('divide-3-ft-9-in-by-2', 'en').facts.map(({ value }) => value)).toEqual([
+      '22 1/2 in',
+      '22.50',
+      '0.572',
+    ]);
+  });
+
+  // hand-verified: 7.5 in over 12 in is t = 0.625, atan(0.625) = 32.005°; √(1 + 0.390625) = 1.17925;
+  // a 12 ft run is 14.151 ft of rafter, × 0.3048 = 4.313 m
+  it('works the 7.5/12 pitch out as the roof pitch calculator does', () => {
+    const view = jobView('roof-pitch-7-5-12', 'en');
+    expect(view.answer).toBe('32.01°');
+    expect(view.lead).toBe('Rise: 7.5 in, Run: 12 in');
+    expect(view.facts.map(({ value }) => value)).toEqual(['7.50 in 12', '1.179']);
+    expect(view.rows.find(({ label }) => label === '12 ft')?.cells).toEqual(['14.15', '4.31']);
+  });
+
   it.each(LOCALES)('states the defaults of the topsoil and roofing engines in %s', (locale) => {
     const defaultOf = (inputs: readonly { key: string; default: unknown }[], key: string) =>
       String(inputs.find((input) => input.key === key)?.default);
@@ -592,6 +670,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(METHODOLOGY_ANCHOR.drywall[locale]).toBe(METHODOLOGY_ROWS.drywall.anchor[locale]);
     expect(METHODOLOGY_ANCHOR.topsoil[locale]).toBe(METHODOLOGY_ROWS.topsoil.anchor[locale]);
     expect(METHODOLOGY_ANCHOR.roofing[locale]).toBe(METHODOLOGY_ROWS.roofing.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR['feet-inches'][locale]).toBe(
+      METHODOLOGY_ROWS['feet-inches'].anchor[locale],
+    );
     expect(jobView('roof-pitch-4-12', locale).methodology).toMatch(
       new RegExp(`#${METHODOLOGY_ANCHOR['roof-pitch'][locale]}$`),
     );

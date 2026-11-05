@@ -1,5 +1,6 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
@@ -24,6 +25,7 @@ const ENGINES = {
   drywall,
   topsoil,
   roofing,
+  'feet-inches': feetInches,
 } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
@@ -61,6 +63,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'roof-pitch-5-12',
       'roof-pitch-6-12',
       'roof-pitch-7-12',
+      'roof-pitch-7-5-12',
       'roof-pitch-8-12',
       'roof-pitch-9-12',
       'roof-pitch-10-12',
@@ -121,8 +124,16 @@ describe('job pages (growth plan › lever 1)', () => {
       ...jobsOf('drywall'),
       ...jobsOf('topsoil'),
       ...jobsOf('roofing'),
+      ...jobsOf('feet-inches'),
     ]).toEqual(JOB_IDS);
-    expect(jobsOf('feet-inches')).toEqual([]);
+    expect(jobsOf('feet-inches')).toEqual([
+      'divide-29-1-4-in-by-2',
+      'divide-23-5-8-in-by-2',
+      'divide-35-5-in-by-2',
+      'divide-22-in-by-10',
+      'divide-9-ft-6-in-by-2',
+      'divide-3-ft-9-in-by-2',
+    ]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
     expect(isJobPage('square-feet-12x14')).toBe(true);
@@ -325,6 +336,46 @@ describe('job pages (growth plan › lever 1)', () => {
       const size = id.replace('roofing-', '');
       expect(ROUTES[id].en, id).toBe(`/roofing/shingles-for-${size}-roof`);
       expect(ROUTES[id].es, id).toBe(`/es/techos/tejas-para-techo-de-${size}`);
+    }
+  });
+
+  // query: "7.5/12 roof pitch": a rise of 7 1/2 in, written 7-5 in the id and the URL
+  it('names each roof pitch job after its rise in 12', () => {
+    for (const id of jobsOf('roof-pitch')) {
+      const rise = id.replace('roof-pitch-', '').replace(/-12$/, '');
+      for (const each of JOBS[id].cases) {
+        expect(each['rise'], id).toBe(`${rise.replace('-', '.')}in`);
+        expect(each['run'], id).toBe('12in');
+      }
+      expect(ROUTES[id].en, id).toBe(`/roofing/${rise}-12-roof-pitch`);
+      expect(ROUTES[id].es, id).toBe(`/es/techos/pendiente-de-techo-${rise}-12`);
+    }
+  });
+
+  // queries: "29 1/4 divided by 2 on a tape measure", "what is half of 23 5/8 on a tape measure",
+  // "35.5 inches divided by 2", "22 inches divided by 10", "9 feet 6 inches divided by 2", "3 feet 9
+  // inches divided by 2": the length and the number of the id first, then the same length by the
+  // other numbers of 2, 3 and 4
+  it('divides the length of each feet and inches job by its number, then by 2, 3 and 4', () => {
+    const LENGTHS = {
+      'divide-29-1-4-in-by-2': ['29 1/4 in', '29-1-4-inches', '29-1-4-pulgadas'],
+      'divide-23-5-8-in-by-2': ['23 5/8 in', '23-5-8-inches', '23-5-8-pulgadas'],
+      'divide-35-5-in-by-2': ['35.5 in', '35-5-inches', '35-5-pulgadas'],
+      'divide-22-in-by-10': ['22 in', '22-inches', '22-pulgadas'],
+      'divide-9-ft-6-in-by-2': ['9 ft 6 in', '9-feet-6-inches', '9-pies-6-pulgadas'],
+      'divide-3-ft-9-in-by-2': ['3 ft 9 in', '3-feet-9-inches', '3-pies-9-pulgadas'],
+    } as const;
+    for (const id of jobsOf('feet-inches')) {
+      expect(Object.hasOwn(LENGTHS, id), id).toBe(true);
+      if (!Object.hasOwn(LENGTHS, id)) continue;
+      const [first, en, es] = LENGTHS[id as keyof typeof LENGTHS];
+      const factor = id.replace(/^.*-by-/, '');
+      const factors = [factor, ...['2', '3', '4'].filter((each) => each !== factor)];
+      expect(JOBS[id].cases, id).toEqual(
+        factors.map((each) => ({ first, operation: 'divide', factor: each })),
+      );
+      expect(ROUTES[id].en, id).toBe(`/measurement/${en}-divided-by-${factor}`);
+      expect(ROUTES[id].es, id).toBe(`/es/medidas/${es}-entre-${factor}`);
     }
   });
 

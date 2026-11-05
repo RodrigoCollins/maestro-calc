@@ -52,6 +52,9 @@ export const esSite = {
     'Las cifras suman un 10% por asentamiento, el valor inicial de la calculadora de tierra para jardín, y se redondean a bolsas enteras de 0.75 o 1.5 cu ft. Una yarda cúbica son 27 pies cúbicos. Cada profundidad abre la calculadora con sus valores ya cargados.',
   'site.job.note.roofing':
     'Las medidas son la planta del techo con sus aleros. Las cifras suman un 10% extra, el valor inicial de la calculadora de tejas, y se redondean a paquetes enteros, tres por cuadrado de 100 pies cuadrados, y a rollos enteros de fieltro sintético. Cada pendiente abre la calculadora con sus valores ya cargados.',
+  'site.job.note.feet-inches':
+    'Cada medida se divide de forma exacta y solo se redondea lo que la página muestra: la cinta y los pies y pulgadas al 1/16 in más cercano, las pulgadas a dos decimales y los metros a tres. Cada número abre la calculadora con la medida ya cargada.',
+  'site.job.tape': 'En la cinta (pulgadas, a 1/16)',
   'site.job.cubicFeet': 'pies cúbicos',
   'site.job.bagsFor': 'Bolsas para',
   'site.job.area': 'Área',
@@ -367,6 +370,11 @@ export const esSite = {
     'Una pendiente de techo 7/12 mide 30.26 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-7-12.heading': 'Pendiente de techo 7/12: 30.26° y el largo del cabio',
   'page.roof-pitch-7-12.label': 'Pendiente 7/12',
+  'page.roof-pitch-7-5-12.title': 'Pendiente de techo 7.5/12 en grados: 32.01° | Maestro Calc',
+  'page.roof-pitch-7-5-12.description':
+    'Una pendiente de techo 7.5/12 mide 32.01 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-7-5-12.heading': 'Pendiente de techo 7.5/12: 32.01° y el largo del cabio',
+  'page.roof-pitch-7-5-12.label': 'Pendiente 7.5/12',
   'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12 en grados: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'Una pendiente de techo 8/12 mide 33.69 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
@@ -631,6 +639,37 @@ export const esSite = {
   'page.roofing-30x50.label': 'Techo de 30x50',
   'page.roofing-30x50.intro':
     'Una planta de 30 por 50 ft cubre una casa de un piso de estilo rancho. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
+  'page.divide-29-1-4-in-by-2.title':
+    '29 1/4 entre 2 en la cinta métrica: 14 5/8 in | Maestro Calc',
+  'page.divide-29-1-4-in-by-2.description':
+    '29 1/4 in entre 2 da 14 5/8 in en la cinta métrica (14.63 in, 1 ft 2 5/8 in), redondeado al 1/16 in. También 29 1/4 in entre 3 y entre 4.',
+  'page.divide-29-1-4-in-by-2.heading': '¿Cuánto es 29 1/4 in entre 2 en la cinta métrica?',
+  'page.divide-29-1-4-in-by-2.label': '29 1/4 in ÷ 2',
+  'page.divide-23-5-8-in-by-2.title': 'Mitad de 23 5/8 in en la cinta: 11 13/16 in | Maestro Calc',
+  'page.divide-23-5-8-in-by-2.description':
+    'La mitad de 23 5/8 in, o 23 5/8 in entre 2, da 11 13/16 in en la cinta métrica (11.81 in), redondeado al 1/16 in. También entre 3 y entre 4.',
+  'page.divide-23-5-8-in-by-2.heading': '¿Cuál es la mitad de 23 5/8 in (entre 2) en la cinta?',
+  'page.divide-23-5-8-in-by-2.label': '23 5/8 in ÷ 2',
+  'page.divide-35-5-in-by-2.title': '35.5 pulgadas entre 2: 17 3/4 in | Maestro Calc',
+  'page.divide-35-5-in-by-2.description':
+    '35.5 pulgadas entre 2 da 17 3/4 in en la cinta métrica (17.75 in, 1 ft 5 3/4 in). También 35.5 in entre 3 y entre 4, redondeado al 1/16 in.',
+  'page.divide-35-5-in-by-2.heading': '¿Cuánto es 35.5 pulgadas entre 2?',
+  'page.divide-35-5-in-by-2.label': '35.5 in ÷ 2',
+  'page.divide-22-in-by-10.title': '22 pulgadas entre 10: 2 3/16 in | Maestro Calc',
+  'page.divide-22-in-by-10.description':
+    '22 pulgadas entre 10 da 2.20 in, o 2 3/16 in en la cinta métrica redondeado al 1/16 in. También 22 in entre 2, 3 y 4.',
+  'page.divide-22-in-by-10.heading': '¿Cuánto es 22 pulgadas entre 10?',
+  'page.divide-22-in-by-10.label': '22 in ÷ 10',
+  'page.divide-9-ft-6-in-by-2.title': '9 pies 6 pulgadas entre 2: 4 ft 9 in | Maestro Calc',
+  'page.divide-9-ft-6-in-by-2.description':
+    'La mitad de 9 pies 6 pulgadas: 9 ft 6 in entre 2 da 4 ft 9 in, o 57 in en la cinta métrica (57.00 in, 1.448 m). También entre 3 y entre 4.',
+  'page.divide-9-ft-6-in-by-2.heading': '¿Cuánto es 9 pies 6 pulgadas entre 2?',
+  'page.divide-9-ft-6-in-by-2.label': '9 ft 6 in ÷ 2',
+  'page.divide-3-ft-9-in-by-2.title': '3 pies 9 pulgadas entre 2: 1 ft 10 1/2 in | Maestro Calc',
+  'page.divide-3-ft-9-in-by-2.description':
+    'La mitad de 3 pies 9 pulgadas: 3 ft 9 in entre 2 da 1 ft 10 1/2 in, o 22 1/2 in en la cinta métrica (22.50 in, 0.572 m). También entre 3 y entre 4.',
+  'page.divide-3-ft-9-in-by-2.heading': '¿Cuánto es 3 pies 9 pulgadas entre 2?',
+  'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',

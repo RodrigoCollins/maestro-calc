@@ -6,7 +6,7 @@ import type { CalculatorPageId } from './templates.ts';
  * out at build time: concrete for a slab (by its sides or by its area), a tube or a footing, roof pitch for a
  * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
  * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
- * area, and the shingles for a roof. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
+ * area, the shingles for a roof, and a tape measurement divided into equal parts. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -27,6 +27,7 @@ export interface Job {
     | 'drywall'
     | 'topsoil'
     | 'roofing'
+    | 'feet-inches'
   >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
@@ -158,6 +159,15 @@ const pitch = (rise: number) => {
 };
 
 /**
+ * A tape measurement `first` (as a visitor types it: `29 1/4 in`, `9 ft 6 in`) divided by `factor`,
+ * the number of the query, then by the others of 2, 3 and 4: halves, thirds and quarters.
+ */
+const divide = (first: string, factor: number) => {
+  const by = (each: number): JobCase => ({ first, operation: 'divide', factor: String(each) });
+  return [by(factor), ...[2, 3, 4].filter((each) => each !== factor).map(by)] as const;
+};
+
+/**
  * A rectangle of `length` by `width` feet, then the same length a foot and two feet wider: the
  * sizes a tape reads when the room is a little larger than its plan.
  */
@@ -260,6 +270,7 @@ export const JOBS = {
   'roof-pitch-5-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(5) },
   'roof-pitch-6-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(6) },
   'roof-pitch-7-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(7) },
+  'roof-pitch-7-5-12': { calculator: 'roof-pitch', updated: '2026-11-05', cases: pitch(7.5) },
   'roof-pitch-8-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(8) },
   'roof-pitch-9-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(9) },
   'roof-pitch-10-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(10) },
@@ -365,6 +376,36 @@ export const JOBS = {
   'roofing-24x24': { calculator: 'roofing', updated: '2026-11-05', cases: roof(24, 24) },
   'roofing-30x40': { calculator: 'roofing', updated: '2026-11-05', cases: roof(30, 40) },
   'roofing-30x50': { calculator: 'roofing', updated: '2026-11-05', cases: roof(30, 50) },
+  'divide-29-1-4-in-by-2': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('29 1/4 in', 2),
+  },
+  'divide-23-5-8-in-by-2': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('23 5/8 in', 2),
+  },
+  'divide-35-5-in-by-2': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('35.5 in', 2),
+  },
+  'divide-22-in-by-10': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('22 in', 10),
+  },
+  'divide-9-ft-6-in-by-2': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('9 ft 6 in', 2),
+  },
+  'divide-3-ft-9-in-by-2': {
+    calculator: 'feet-inches',
+    updated: '2026-11-05',
+    cases: divide('3 ft 9 in', 2),
+  },
 } as const satisfies Record<string, Job>;
 
 export type JobId = keyof typeof JOBS;

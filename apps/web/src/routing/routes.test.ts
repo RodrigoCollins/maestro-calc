@@ -239,6 +239,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/roofing/7-12-roof-pitch',
       es: '/es/techos/pendiente-de-techo-7-12',
     });
+    expect(ROUTES['roof-pitch-7-5-12']).toEqual({
+      en: '/roofing/7-5-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-7-5-12',
+    });
     expect(ROUTES['roof-pitch-9-12']).toEqual({
       en: '/roofing/9-12-roof-pitch',
       es: '/es/techos/pendiente-de-techo-9-12',
@@ -378,6 +382,30 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES['roofing-30x50']).toEqual({
       en: '/roofing/shingles-for-30x50-roof',
       es: '/es/techos/tejas-para-techo-de-30x50',
+    });
+    expect(ROUTES['divide-29-1-4-in-by-2']).toEqual({
+      en: '/measurement/29-1-4-inches-divided-by-2',
+      es: '/es/medidas/29-1-4-pulgadas-entre-2',
+    });
+    expect(ROUTES['divide-23-5-8-in-by-2']).toEqual({
+      en: '/measurement/23-5-8-inches-divided-by-2',
+      es: '/es/medidas/23-5-8-pulgadas-entre-2',
+    });
+    expect(ROUTES['divide-35-5-in-by-2']).toEqual({
+      en: '/measurement/35-5-inches-divided-by-2',
+      es: '/es/medidas/35-5-pulgadas-entre-2',
+    });
+    expect(ROUTES['divide-22-in-by-10']).toEqual({
+      en: '/measurement/22-inches-divided-by-10',
+      es: '/es/medidas/22-pulgadas-entre-10',
+    });
+    expect(ROUTES['divide-9-ft-6-in-by-2']).toEqual({
+      en: '/measurement/9-feet-6-inches-divided-by-2',
+      es: '/es/medidas/9-pies-6-pulgadas-entre-2',
+    });
+    expect(ROUTES['divide-3-ft-9-in-by-2']).toEqual({
+      en: '/measurement/3-feet-9-inches-divided-by-2',
+      es: '/es/medidas/3-pies-9-pulgadas-entre-2',
     });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
