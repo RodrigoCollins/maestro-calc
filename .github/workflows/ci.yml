@@ -457,20 +457,25 @@ jobs:
     runs-on: ubuntu-latest
     # The browser suites grow with every page (#137: 29 min for seven pages on one runner; two
     # runners reached 32 min for Maestro Calc alone and 40 with Cuenta Horas on PR #304), so the
-    # Maestro Calc suites split over four runners and Cuenta Horas runs on one of its own; a cold
+    # Maestro Calc suites split over six runners and Cuenta Horas runs on one of its own; a cold
     # browser install adds 7 to 12 minutes to each. Every test runs on exactly one entry: the web
     # entries split `npm run test:e2e` by `SHARD` (fully parallel, so the split is by test, not by
-    # file), the pay entry runs `npm run test:e2e:pay`. A growing suite adds an entry and raises
-    # its `total` on every entry of that suite.
+    # file), the pay entry runs `npm run test:e2e:pay`. Playwright cuts equal test counts in file
+    # order, and the layout tests (about 2 s each, against under 1 s elsewhere) fall together:
+    # with four shards the one that held only layout tests took 22 minutes (PR #307), with six it
+    # holds a third fewer. A growing suite adds an entry and raises its `total` on every entry of
+    # that suite.
     name: site-browser (${{ matrix.suite }} ${{ matrix.shard }}/${{ matrix.total }})
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { suite: web, shard: 1, total: 4 }
-          - { suite: web, shard: 2, total: 4 }
-          - { suite: web, shard: 3, total: 4 }
-          - { suite: web, shard: 4, total: 4 }
+          - { suite: web, shard: 1, total: 6 }
+          - { suite: web, shard: 2, total: 6 }
+          - { suite: web, shard: 3, total: 6 }
+          - { suite: web, shard: 4, total: 6 }
+          - { suite: web, shard: 5, total: 6 }
+          - { suite: web, shard: 6, total: 6 }
           - { suite: pay, shard: 1, total: 1 }
     timeout-minutes: 40
     env:

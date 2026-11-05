@@ -5,8 +5,8 @@ const local = 'http://127.0.0.1:8787';
 // (the post-deploy smoke of tasks F.4); without it they serve the local build.
 const external = process.env['BASE_URL'];
 const origin = external ?? local;
-// `SHARD=1/4` runs one quarter of the suites (the CI matrix splits them over four runners); unset,
-// all. `fullyParallel` makes the split by test, not by file, so the shards end together.
+// `SHARD=1/6` runs one sixth of the suites (the CI matrix splits them over six runners); unset,
+// all. `fullyParallel` makes the split by test, not by file.
 const [current, total] = (process.env['SHARD'] ?? '').split('/').map(Number);
 const shard =
   current !== undefined && total !== undefined && current > 0 && total > 0
