@@ -39,6 +39,8 @@ describe('feet and inches page: the answer through the controller (calc-feet-inc
     ['es', '?v=1&o=subtract', '12 ft 6 in menos 3 ft 8 1/4 in da 8 ft 9 3/4 in.'],
     ['en', '?v=1&o=subtract&a=120&b=150', '12 ft 6 in is longer than 10 ft by 2 ft 6 in.'],
     ['es', '?v=1&o=subtract&a=120&b=150', '12 ft 6 in es más larga que 10 ft por 2 ft 6 in.'],
+    // a decimal to feet and inches: 11.65 ft = 139.8 in = 11 ft 7.8 in, nearest 1/16: 7 13/16 in (the length echoes 7 51/64 in)
+    ['en', '?v=1&a=699/5&o=multiply&n=1', '11 ft 7 51/64 in times 1 is 11 ft 7 13/16 in.'],
     ['en', '?v=1&o=multiply', '12 ft 6 in times 2 is 25 ft.'],
     ['es', '?v=1&o=multiply', '12 ft 6 in por 2 da 25 ft.'],
     ['en', '?v=1&o=divide&n=7', '12 ft 6 in divided into 7 equal parts is 1 ft 9 7/16 in each.'],

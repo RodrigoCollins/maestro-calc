@@ -7,7 +7,7 @@ ownerReview: approved
 
 # How to calculate square footage
 
-Square footage is the area of a flat surface measured in square feet: how many 1 ft by 1 ft squares fit on it. Flooring, tile, sod and paint coverage are sold or rated by it, so it is often the first number of a job.
+Square footage is the area of a flat surface measured in square feet: how many 1 ft by 1 ft squares fit on it. Flooring, tile, sod and paint coverage are sold or rated by it, so it is often the first number of a job. To figure out the square footage of a room or a wall, measure its length and width in feet and multiply them.
 
 ## A rectangle: length times width
 

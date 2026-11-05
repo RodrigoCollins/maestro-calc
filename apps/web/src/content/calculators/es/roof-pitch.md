@@ -20,7 +20,7 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pendiente de techo</h2>
 
-La calculadora convierte una subida y un recorrido en la pendiente de un techo, su ángulo y el largo de un cabio, y compara la pendiente con el mínimo que fija el International Residential Code para la cubierta que vas a usar. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+La calculadora convierte una subida y un recorrido, como 6 en 12, en la pendiente de un techo, su ángulo en grados y el largo de un cabio, y compara la pendiente con el mínimo que fija el International Residential Code para la cubierta que vas a usar. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Mide la subida y el recorrido. Lo común es apoyar un nivel en el techo, marcar 12 pulgadas sobre el nivel y medir en vertical hasta el techo: esa es la subida en un recorrido de 12 pulgadas. También puedes usar cualquier subida y recorrido que conozcas, como la altura de la cumbrera sobre la mitad del ancho de la casa. Un número solo se lee en pulgadas.
 2. Escribe el recorrido del cabio: la distancia horizontal que cubre el cabio, por lo general la mitad del claro de la casa. Un número solo se lee en pies.

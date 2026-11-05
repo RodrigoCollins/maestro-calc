@@ -24,6 +24,43 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     expect(es('page.feet-inches.description')).toContain('decimales a pies y pulgadas');
   });
 
+  // queries (28 days to 2026-11-03): "calculating square footage", "how to calculate square feet",
+  // "square footage of a room", "how to figure out square footage of a wall", "calcular pies
+  // cuadrados", "calculadora de pies cuadrados", "6 12 roof pitch calculator", "8 12 pitch in
+  // degrees"
+  it('answers the square footage and roof pitch queries in the titles and descriptions', () => {
+    const en = siteText('en');
+    const es = siteText('es');
+    expect(en('page.rectangle-area.title')).toBe(
+      'Square Footage Calculator for a Room or Wall | Maestro Calc',
+    );
+    expect(en('page.rectangle-area.description')).toMatch(
+      /^Calculate square footage: multiply the length by the width\. .*room, floor or wall/,
+    );
+    expect(es('page.rectangle-area.title')).toBe(
+      'Calculadora para calcular pies cuadrados | Maestro Calc',
+    );
+    expect(es('page.rectangle-area.description')).toMatch(
+      /^Calcula los pies cuadrados de un cuarto, piso o pared: multiplica el largo por el ancho\./,
+    );
+    expect(en('page.guide-square-footage.description')).toMatch(
+      /^How to calculate square feet: multiply the length by the width\. .*room, a wall/,
+    );
+    expect(es('page.guide-square-footage.description')).toMatch(
+      /^Cómo calcular pies cuadrados: multiplica el largo por el ancho\. .*cuarto, una pared/,
+    );
+    expect(en('page.roof-pitch.title')).toBe(
+      'Roof Pitch Calculator: Pitch in Degrees | Maestro Calc',
+    );
+    expect(en('page.roof-pitch.description')).toContain('such as 6 in 12');
+    expect(en('page.roof-pitch.description')).toContain('angle in degrees');
+    expect(es('page.roof-pitch.title')).toBe(
+      'Calculadora de pendiente de techo en grados | Maestro Calc',
+    );
+    expect(es('page.roof-pitch.description')).toContain('como 6 en 12');
+    expect(es('page.roof-pitch.description')).toContain('ángulo en grados');
+  });
+
   it('names the pitch of each roof pitch job page in its title', () => {
     // queries: "6 12 roof pitch calculator", "7.5/12 roof pitch" (the rise 7.5 is `7-5` in the id)
     for (const id of jobsOf('roof-pitch')) {

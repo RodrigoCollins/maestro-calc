@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="how-to-use">How to use the feet and inches calculator</h2>
 
-The calculator does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, or multiplies or divides one length by a whole number. The result updates as you type, so there is nothing to submit.
+The calculator does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, or multiplies or divides one length by a whole number. To turn a decimal into feet and inches, type it and multiply it by 1: 11.65 ft is 11 ft 7 13/16 in. The result updates as you type, so there is nothing to submit.
 
 1. Type the first length the way you read it on the tape: 12 ft 6 in, 12' 6", 6 1/2 in or 75.5 in. A plain number is read in feet.
 2. Choose the operation: Add, Subtract, Multiply or Divide.

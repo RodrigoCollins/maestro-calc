@@ -189,7 +189,7 @@ export const esSite = {
     'Qué significa cada marca de la cinta métrica, hasta 1/16 de pulgada, y cómo sumar, restar y dividir pies, pulgadas y fracciones sin errores.',
   'page.guide-square-footage.title': 'Cómo calcular pies cuadrados | Maestro Calc',
   'page.guide-square-footage.description':
-    'Cómo sacar los pies cuadrados de un cuarto o de un área en forma de L, y cómo pasar de pies cuadrados a yardas cuadradas y metros cuadrados, y al revés.',
+    'Cómo calcular pies cuadrados: multiplica el largo por el ancho. Saca los pies cuadrados de un cuarto, una pared o un área en L, y pásalos a yardas y metros.',
   'page.guide-drywall-estimate.title':
     'Cómo calcular y cotizar un trabajo de drywall | Maestro Calc',
   'page.guide-drywall-estimate.description':
@@ -478,9 +478,9 @@ export const esSite = {
   'page.concrete.title': 'Calculadora de concreto en yardas y bolsas | Maestro Calc',
   'page.concrete.description':
     'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
-  'page.rectangle-area.title': 'Calculadora de pies cuadrados de un cuarto | Maestro Calc',
+  'page.rectangle-area.title': 'Calculadora para calcular pies cuadrados | Maestro Calc',
   'page.rectangle-area.description':
-    'Calcula los pies cuadrados de un cuarto, piso o losa con su largo y ancho, más yardas y metros cuadrados. Gratis, al instante, en pies, pulgadas o metros.',
+    'Calcula los pies cuadrados de un cuarto, piso o pared: multiplica el largo por el ancho. Con yardas y metros cuadrados, en pies, pulgadas o metros. Gratis.',
   'page.gravel.title': 'Calculadora de grava en toneladas y yardas | Maestro Calc',
   'page.gravel.description':
     'Calcula cuántas toneladas de grava pedir para una entrada, camino o base, compactada o suelta, con las yardas cúbicas y el costo. Gratis y al instante.',
@@ -682,9 +682,9 @@ export const esSite = {
   'page.drywall.title': 'Calculadora de drywall: placas y compuesto | Maestro Calc',
   'page.drywall.description':
     'Calcula cuántas placas de drywall lleva un cuarto, paredes y techo, sin puertas ni ventanas, con el compuesto, la cinta y el costo. Gratis y al instante.',
-  'page.roof-pitch.title': 'Calculadora de pendiente de techo | Maestro Calc',
+  'page.roof-pitch.title': 'Calculadora de pendiente de techo en grados | Maestro Calc',
   'page.roof-pitch.description':
-    'Calcula la pendiente de un techo en 12, su ángulo y el largo del cabio, y compárala con el mínimo del IRC para tejas, metal o pizarra. Gratis.',
+    'Ingresa la subida y el recorrido, como 6 en 12, y obtén el ángulo en grados y el largo del cabio, con el mínimo del IRC para tejas o metal. Gratis.',
   'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
   'page.roofing.description':
     'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
