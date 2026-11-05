@@ -43,6 +43,7 @@ if (!existsSync(dist)) {
   console.error(
     `check:site: ${given === undefined ? 'apps/web/dist' : dist} not found. Run \`npm run build\` first.`,
   );
+  // One line into an empty pipe is written whole before this returns, so exiting here loses nothing.
   process.exit(1);
 }
 
@@ -113,14 +114,16 @@ const buildBytes = {
 };
 const problems = checkSite(built, site, buildBytes);
 
+// `exitCode`, never `process.exit`: a pipe is written asynchronously once it is full, and exiting
+// drops what is still queued, so a slow reader would lose the last problems and the count.
 if (problems.length > 0) {
   for (const { file, rule, message } of problems) console.error(`${file}: ${rule}: ${message}`);
   console.error(`check:site: ${String(problems.length)} problems`);
-  process.exit(1);
+  process.exitCode = 1;
+} else {
+  console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
+  for (const line of budgetSummary(contextOf(built, site, buildBytes.sizes))) console.log(line);
+  console.log(
+    `pending ownerReview entries: ${String(countPending(allEntries.map(([, text]) => text)))}`,
+  );
 }
-
-console.log(`check:site: checked ${String(pageCount(ROUTES))} pages`);
-for (const line of budgetSummary(contextOf(built, site, buildBytes.sizes))) console.log(line);
-console.log(
-  `pending ownerReview entries: ${String(countPending(allEntries.map(([, text]) => text)))}`,
-);

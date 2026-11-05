@@ -253,6 +253,24 @@ describe('check:site CLI (site-seo › [SE14], monorepo-workspace › [MWW3])', 
     expect(err).toContain(line);
   });
 
+  it('prints every problem when its reader is slower than the pipe fills', () => {
+    // Eight foreign imports give every page eight lines: far more than a 64 KiB pipe holds. The
+    // reader waits a second, so the pipe fills and the CLI must wait for it to drain before it exits.
+    const imports = Array.from(
+      { length: 8 },
+      (_, index) => `@import url(https://cdn.example.com/${String(index)}.css);`,
+    ).join('');
+    const dir = writeDist((dist) => dist.set('_astro/x.css', imports));
+    const slow = spawnSync(
+      'sh',
+      ['-c', '"$0" "$1" "$2" 2>&1 >/dev/null | { sleep 1; cat; }', process.execPath, script, dir],
+      { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 },
+    );
+    expect(Buffer.byteLength(slow.stdout)).toBeGreaterThan(128 * 1024);
+    expect(slow.stdout).toContain('_astro/x.css: third-party-origin:');
+    expect(slow.stdout).toMatch(/\ncheck:site: \d+ problems\n$/);
+  });
+
   it('exits 1 with a build-first message when the directory is missing', () => {
     const missing = join(scratch, 'missing');
     const { code, err, out } = run(missing);
