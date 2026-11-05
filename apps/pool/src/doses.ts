@@ -6,6 +6,8 @@ export interface ResultRow {
   readonly label: string;
   readonly unit: string;
   readonly forms?: readonly string[];
+  /** A row under the large figure of its forms (a label's most per addition), not a figure of its own. */
+  readonly detail?: true;
 }
 
 export interface DosePage {
@@ -145,13 +147,39 @@ export const PH: DosePage = {
       forms: ['muriatic-31-45'],
     },
     { key: 'dry', label: 'Soda ash to add', unit: 'OZ BY WEIGHT', forms: ['soda-ash'] },
+    {
+      key: 'liquidPerDay',
+      label: 'Most to add in 24 hours',
+      unit: 'fl oz',
+      forms: ['muriatic-31-45'],
+      detail: true,
+    },
+    { key: 'days', label: 'Days it takes', unit: '', forms: ['muriatic-31-45'], detail: true },
+    {
+      key: 'dryPerAddition',
+      label: 'Most to add at a time',
+      unit: 'oz',
+      forms: ['soda-ash'],
+      detail: true,
+    },
+    {
+      key: 'additions',
+      label: 'Additions, 2 to 3 hours apart',
+      unit: '',
+      forms: ['soda-ash'],
+      detail: true,
+    },
   ],
   warnings: {
     pastChart:
       'Taylor’s chart stops at 3 drops. Add no more than the 3-drop dose at a time, let the pump run, then test again before you add the rest.',
+    splitDays:
+      'That is more than the label adds in one day, so split it: add at most the amount above, run the pump, test the pH again after 24 hours, and add the rest the same way.',
+    splitAdditions:
+      'That is more than the label adds at a time, so split it: add at most the amount above, let the water circulate 2 to 3 hours, test the pH again, and add the rest the same way.',
   },
   method:
-    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate.',
+    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up.',
   note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé); for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
 };
 

@@ -144,8 +144,10 @@ describe('pool pH', () => {
     // 48 a day: 2 days; 10 drops of 20,000 = 183.2 fl oz over 32: 6 days
     expect(valueOf({ gallons: '30000', drops: '3' }, 'days')).toEqual(Rational.of(2));
     expect(valueOf({ drops: '10' }, 'days')).toEqual(Rational.of(6));
-    // no acid, no day
+    // no acid, no day, and no pool, no most to divide by
     expect(valueOf({ drops: '0' }, 'days')).toEqual(Rational.ZERO);
+    expect(valueOf({ gallons: '0' }, 'days')).toEqual(Rational.ZERO);
+    expect(valueOf({ ...SODA, gallons: '0' }, 'additions')).toEqual(Rational.ZERO);
     expect(valueOf({ ...SODA }, 'days')).toEqual(Rational.ZERO);
   });
 

@@ -57,7 +57,32 @@ describe('dose pages', () => {
     const product = poolPh.inputs.find(({ key }) => key === 'product');
     const options = product?.kind === 'select' ? product.options : [];
     expect(Object.keys(PH.fields['product']?.options ?? {})).toEqual(options);
-    expect(PH.results.map(({ forms }) => forms)).toEqual([['muriatic-31-45'], ['soda-ash']]);
+    expect(PH.results.map(({ forms }) => forms)).toEqual([
+      ['muriatic-31-45'],
+      ['soda-ash'],
+      ['muriatic-31-45'],
+      ['muriatic-31-45'],
+      ['soda-ash'],
+      ['soda-ash'],
+    ]);
+    // one large figure per product; the labels' most and the parts it takes sit under it
+    expect(PH.results.filter(({ detail }) => detail !== true).map(({ key }) => key)).toEqual([
+      'liquid',
+      'dry',
+    ]);
+  });
+
+  // HASA Muriatic Acid, directions for use: one quart per 20,000 gallons per 24 hours, repeated at
+  // 24-hour intervals; pH Up (Alliance Trading) label: at most 1 lb per 10,000 gallons a time, the
+  // water recirculating 2 to 3 hours before the pH is checked and the treatment repeated
+  it('states the labels’ most per addition and how the split goes', () => {
+    expect(PH.method).toContain('one quart per 20,000 gallons in 24 hours');
+    expect(PH.method).toContain('HASA');
+    expect(PH.method).toContain('1 lb per 10,000 gallons');
+    expect(PH.method).toContain('2 to 3 hours');
+    expect(PH.warnings?.['splitDays']).toContain('24 hours');
+    expect(PH.warnings?.['splitDays']).toContain('test');
+    expect(PH.warnings?.['splitAdditions']).toContain('2 to 3 hours');
   });
 
   // Taylor Technologies' pH dosage charts (K-1003, Instr. #5816) per drop per 10,000 gallons
@@ -149,6 +174,10 @@ describe('dose pages', () => {
     expect(text(poolPump, 'eightHour')).toBe('41.7');
     expect(text(poolPh, 'liquid')).toBe('36.6');
     expect(text(poolPh, 'dry', { product: 'soda-ash' })).toBe('20.5');
+    expect(text(poolPh, 'liquidPerDay')).toBe('32.0');
+    expect(text(poolPh, 'days')).toBe('2');
+    expect(text(poolPh, 'dryPerAddition', { product: 'soda-ash' })).toBe('32.0');
+    expect(text(poolPh, 'additions', { product: 'soda-ash' })).toBe('1');
     expect(text(poolAlkalinity, 'pounds')).toBe('8.4');
     expect(text(poolAlkalinity, 'ounces')).toBe('134.5');
     expect(text(poolStabilizer, 'pounds')).toBe('5.0');
