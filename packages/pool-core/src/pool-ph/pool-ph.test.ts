@@ -30,6 +30,20 @@ const sodaAsh = (raw: Readonly<Record<string, unknown>>): Rational => {
   return valueIn(value, oz);
 };
 
+/** Fluid ounces of any volume output. */
+const fluidOunces = (raw: Readonly<Record<string, unknown>>, key: string): Rational => {
+  const value = valueOf(raw, key);
+  if (!isQuantityOf(value, 'volume')) throw new Error(`${key} is not a volume`);
+  return valueIn(value, gal).mul(Rational.of(128));
+};
+
+/** Ounces of any mass output. */
+const ounces = (raw: Readonly<Record<string, unknown>>, key: string): Rational => {
+  const value = valueOf(raw, key);
+  if (!isQuantityOf(value, 'mass')) throw new Error(`${key} is not a mass`);
+  return valueIn(value, oz);
+};
+
 const SODA = { product: 'soda-ash' } as const;
 
 describe('pool pH', () => {
@@ -84,10 +98,9 @@ describe('pool pH', () => {
   );
 
   // 20,000 / 10,000 x 2 x 9.16 = 36.64 fl oz; the chart prints 1.15 qt
-  it('adds 36.64 fl oz of acid by default, with no note', () => {
+  it('adds 36.64 fl oz of acid by default', () => {
     expect(acid({})).toEqual(Rational.of(3664, 100));
     expect(ran({}).shopping).toEqual([]);
-    expect(ran({}).warnings).toEqual([]);
   });
 
   it('adds nothing for no drops', () => {
@@ -96,11 +109,63 @@ describe('pool pH', () => {
   });
 
   it('says the chart stops at 3 drops past it, for either product', () => {
-    expect(ran({ drops: '3' }).warnings).toEqual([]);
-    expect(ran({ drops: '4' }).warnings).toEqual([{ code: 'pastChart', params: {} }]);
-    expect(ran({ ...SODA, drops: '4' }).warnings).toEqual([{ code: 'pastChart', params: {} }]);
+    // past 1 drop the acid is over the label's quart a day, past 3 the soda ash over its pound a
+    // time (9.16 and 5.13 a drop against 16 per 10,000 gallons), so the split note comes too
+    expect(ran({ ...SODA, drops: '3' }).warnings).toEqual([]);
+    expect(ran({ drops: '4' }).warnings).toEqual([
+      { code: 'pastChart', params: {} },
+      { code: 'splitDays', params: {} },
+    ]);
+    expect(ran({ ...SODA, drops: '4' }).warnings).toEqual([
+      { code: 'pastChart', params: {} },
+      { code: 'splitAdditions', params: {} },
+    ]);
     // each drop adds the same amount, as every row of the chart does
     expect(acid({ gallons: '10000', drops: '4' })).toEqual(Rational.of(3664, 100));
+  });
+
+  // HASA Muriatic Acid (31.45%), directions for use: "add one quart HASA MURIATIC ACID per 20,000
+  // gallons of pool water per 24 hours ... Repeat as necessary at 24 hour intervals." A quart is
+  // 32 fl oz, so the most a day is gallons x 32 / 20,000 fl oz.
+  it('splits 20,000 gallons at 2 drops over 2 days: 36.64 fl oz is over the 32 fl oz a day', () => {
+    expect(fluidOunces({}, 'liquidPerDay')).toEqual(Rational.of(32));
+    expect(valueOf({}, 'days')).toEqual(Rational.of(2));
+    expect(ran({}).warnings).toEqual([{ code: 'splitDays', params: {} }]);
+  });
+
+  it('keeps a dose within the label in one day, and caps the day at the pool’s quart share', () => {
+    // 10,000 gal x 3 drops = 27.48 fl oz, over 10,000 x 32 / 20,000 = 16 fl oz: 2 days
+    expect(fluidOunces({ gallons: '10000', drops: '3' }, 'liquidPerDay')).toEqual(Rational.of(16));
+    expect(valueOf({ gallons: '10000', drops: '3' }, 'days')).toEqual(Rational.of(2));
+    // 20,000 gal x 1 drop = 18.32 fl oz, under 32: one day, no note
+    expect(valueOf({ drops: '1' }, 'days')).toEqual(Rational.of(1));
+    expect(ran({ drops: '1' }).warnings).toEqual([]);
+    // exactly the quart: 20,000 gal is 32 fl oz a day; 3 drops of 30,000 gal = 82.44 fl oz over
+    // 48 a day: 2 days; 10 drops of 20,000 = 183.2 fl oz over 32: 6 days
+    expect(valueOf({ gallons: '30000', drops: '3' }, 'days')).toEqual(Rational.of(2));
+    expect(valueOf({ drops: '10' }, 'days')).toEqual(Rational.of(6));
+    // no acid, no day
+    expect(valueOf({ drops: '0' }, 'days')).toEqual(Rational.ZERO);
+    expect(valueOf({ ...SODA }, 'days')).toEqual(Rational.ZERO);
+  });
+
+  // pH Up (sodium carbonate 100%) label, made for Alliance Trading (01616483, REV050824): "a
+  // maximum of one bag or 1 pound per 10,000 gallons ... Allow water to recirculate two to three
+  // hours, recheck pH, and repeat treatments if necessary." 1 lb = 16 oz per 10,000 gallons a time.
+  it('splits soda ash past 1 lb per 10,000 gallons into additions 2 to 3 hours apart', () => {
+    expect(ounces({ ...SODA }, 'dryPerAddition')).toEqual(Rational.of(32));
+    // 20,000 gal x 2 drops = 20.52 oz, under 32: one addition, no note
+    expect(valueOf({ ...SODA }, 'additions')).toEqual(Rational.of(1));
+    expect(ran({ ...SODA }).warnings).toEqual([]);
+    // the chart's 3 drops stay under it: 10,000 gal x 3 = 15.39 oz, under 16
+    expect(valueOf({ ...SODA, gallons: '10000', drops: '3' }, 'additions')).toEqual(Rational.of(1));
+    // past the chart: 10,000 gal x 4 drops = 20.52 oz over 16: 2 additions
+    expect(valueOf({ ...SODA, gallons: '10000', drops: '4' }, 'additions')).toEqual(Rational.of(2));
+    expect(ran({ ...SODA, gallons: '10000', drops: '4' }).warnings).toEqual([
+      { code: 'pastChart', params: {} },
+      { code: 'splitAdditions', params: {} },
+    ]);
+    expect(valueOf({}, 'additions')).toEqual(Rational.ZERO);
   });
 
   it('rejects a part of a drop, a negative count, more than 10 drops and another product', () => {
