@@ -6,10 +6,24 @@ import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { nearestOf } from './nearest.ts';
-import { JOBS, pathOf, type Job, type Shift } from './routes.ts';
+import { minutesLinksOf, minutesPageOf } from './minutes.ts';
+import { ptoLinksOf, ptoPageOf } from './pto.ts';
+import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
 import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 
-export { JOBS, LONG_TAIL_ROUTES, SHIFTS, type Job, type Shift } from './routes.ts';
+export {
+  JOBS,
+  LONG_TAIL_JOBS,
+  LONG_TAIL_ROUTES,
+  MINUTES,
+  PTOS,
+  SHIFTS,
+  type Job,
+  type LongTailJob,
+  type Minutes,
+  type Pto,
+  type Shift,
+} from './routes.ts';
 
 /** `$41,600.00` reads `$41,600` in a sentence; cents stay when there are any. */
 const short = (text: string): string => text.replace(/\.00$/, '');
@@ -129,8 +143,11 @@ export interface CommonLinks {
   readonly links: readonly { readonly href: string; readonly label: string }[];
 }
 
-/** A family of long-tail pages, listed together: hourly rates, salaries, overtime rates or shifts. */
-export type Family = Job['per'] | 'overtime' | 'shift';
+/**
+ * A family of long-tail pages, listed together: hourly rates, salaries, overtime rates, shifts,
+ * PTO days or minutes.
+ */
+export type Family = Job['per'] | 'overtime' | 'shift' | 'pto' | 'minutes';
 
 const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : job.per);
 
@@ -147,6 +164,8 @@ const questionOf = (job: Job, lang: Lang): string => {
  */
 export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonLinks => {
   if (family === 'shift') return shiftLinksOf(lang);
+  if (family === 'pto') return ptoLinksOf(lang);
+  if (family === 'minutes') return minutesLinksOf(lang);
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);
@@ -213,8 +232,10 @@ const overtimePageOf = (job: Job, lang: Lang): LongTailPage => {
 };
 
 /** The page of one job in one language, its figures run through its engine at build time. */
-export const longTailPageOf = (job: Job | Shift, lang: Lang): LongTailPage => {
+export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   if (job.kind === 'shift') return shiftPageOf(job, lang);
+  if (job.kind === 'pto') return ptoPageOf(job, lang);
+  if (job.kind === 'minutes') return minutesPageOf(job, lang);
   if (job.kind === 'overtime') return overtimePageOf(job, lang);
   const validated = payConverter.validate({ amount: job.amount, per: job.per });
   const ran = payConverter.run({ amount: job.amount, per: job.per });
