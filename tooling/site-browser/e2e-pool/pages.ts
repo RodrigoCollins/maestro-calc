@@ -9,6 +9,7 @@ export const PAGES = [
   '/salt-water-pool-vs-chlorine-pool',
   '/how-to-shock-a-pool',
   '/how-to-lower-ph-in-a-pool',
+  '/how-to-raise-calcium-hardness-in-a-pool',
   '/privacy',
   '/about',
   '/embed-calculators',

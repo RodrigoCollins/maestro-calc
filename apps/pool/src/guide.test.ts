@@ -3,8 +3,9 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import {
+  CALCIUM_GUIDE,
   CLOSING_GUIDE,
   GUIDES,
   guidesOf,
@@ -34,7 +35,8 @@ const textOf = (
     | typeof PUMP_RUN_GUIDE
     | typeof SALT_VS_CHLORINE_GUIDE
     | typeof SHOCK_GUIDE
-    | typeof PH_GUIDE,
+    | typeof PH_GUIDE
+    | typeof CALCIUM_GUIDE,
 ): string => guide.steps.map(({ text }) => text).join(' ');
 
 describe.each([
@@ -44,6 +46,7 @@ describe.each([
   ['salt water vs chlorine', SALT_VS_CHLORINE_GUIDE],
   ['pool shock', SHOCK_GUIDE],
   ['pool pH', PH_GUIDE],
+  ['calcium hardness', CALCIUM_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -372,6 +375,103 @@ describe('the pool pH guide', () => {
   });
 });
 
+describe('the calcium hardness guide', () => {
+  const text = textOf(CALCIUM_GUIDE);
+  const calcium = (gallons: string, current: string, target: string, key: string): string =>
+    figure(CALCIUM.path, { gallons, current, target }, key);
+
+  // the figures come from the sources as published; a changed one must be checked against them again
+  it('gives the ranges exactly as Hayward’s manual, the label and the CDC’s code publish them', () => {
+    expect(text).toContain('200 to 400 ppm');
+    expect(text).toContain('between 150 and 350 ppm');
+    expect(text).toContain('2,500 ppm');
+  });
+
+  it('says what low and high calcium do exactly as Hayward’s manual does', () => {
+    expect(text).toContain('below -0.2');
+    expect(text).toContain('plaster pool walls will be dissolved into the water');
+    expect(text).toContain('above +0.2');
+    expect(text).toContain('scaling and staining will occur');
+    expect(text).toContain('old pool water is usually the cause');
+  });
+
+  it('doses and adds the calcium chloride as the label and its safety data sheet say', () => {
+    expect(text).toContain('2 ounces per 1,000 gallons');
+    expect(text).toContain('1.25 lb per 10 ppm per 10,000 gallons');
+    expect(text).toContain('Avoid overtreating');
+    expect(text).toContain('74 to 100%');
+    expect(text).toContain('adding 1/2 pound of product to one gallon of water');
+    expect(text).toContain('deep end of the pool with the pump running');
+    expect(text).toContain('always use cool water');
+    expect(text).toContain('Heat evolved is significant');
+    expect(text).toContain('chemical goggles');
+  });
+
+  // the label's rule as the calculator applies it: over 3 lb per 10,000 gallons, the first part is
+  // 3 lb per 10,000 gallons, and the next waits at least 12 hours
+  it('splits a dose over 3 lb per 10,000 gallons 12 hours apart, as the calculator does', () => {
+    expect(text).toContain(
+      'If more than 3 pounds of this product is needed per 10,000 gallons of pool water, separate doses and apply this product at least 12 hours apart',
+    );
+    expect(calcium('20000', '180', '200', 'firstAddition')).toBe(
+      calcium('20000', '180', '200', 'pounds'),
+    );
+    expect(text).toContain(
+      `takes ${calcium('20000', '150', '250', 'pounds')} lb, more than 3 lb per 10,000 gallons, so add ${calcium('20000', '150', '250', 'firstAddition')} lb first`,
+    );
+    expect(text).toContain(
+      `In 10,000 gallons, ${calcium('10000', '150', '250', 'pounds')} lb starts with ${calcium('10000', '150', '250', 'firstAddition')} lb`,
+    );
+  });
+
+  // a figure a calculator works out is the calculator's own, to the digit
+  it('works out every dose as the calcium calculator does', () => {
+    expect(text).toContain(
+      `10,000 gallons from 200 to 220 ppm take ${calcium('10000', '200', '220', 'pounds')} lb`,
+    );
+    expect(text).toContain(
+      `20,000 gallons from 180 to 200 ppm take ${calcium('20000', '180', '200', 'pounds')} lb`,
+    );
+    expect(text).toContain(
+      `from 600 to 400 ppm, the calculator adds ${calcium('20000', '600', '400', 'pounds')} lb`,
+    );
+  });
+
+  // plain dilution, worked by hand: drain d of G gallons at reading R, refill with water at F, and
+  // the pool reads ((G − d) × R + d × F) ÷ G, so d = G × (R − T) ÷ (R − F) reaches the target T:
+  // 20,000 × (600 − 400) ÷ (600 − 100) = 8,000 gallons, and (12,000 × 600 + 8,000 × 100) ÷ 20,000 = 400
+  it('lowers it only by draining and refilling, with the dilution worked out in the open', () => {
+    const [gallons, reading, target, fill] = [20_000, 600, 400, 100];
+    const drain = (gallons * (reading - target)) / (reading - fill);
+    expect(drain).toBe(8000);
+    expect(((gallons - drain) * reading + drain * fill) / gallons).toBe(target);
+    expect(CALCIUM_GUIDE.lead).toContain('draining part of the water');
+    expect(text).toContain(
+      'gallons to drain = gallons × (reading − target) ÷ (reading − fill water)',
+    );
+    expect(text).toContain(
+      'A 20,000-gallon pool at 600 ppm, brought down to 400 ppm with fill water at 100 ppm, drains 8,000 gallons',
+    );
+    expect(text).toContain(
+      '12,000 gallons at 600 ppm and 8,000 gallons at 100 ppm make 20,000 gallons at 400 ppm',
+    );
+  });
+
+  it('links the volume and calcium calculators, the chart and the fill time', () => {
+    const links = CALCIUM_GUIDE.steps.flatMap(({ link }) =>
+      link === undefined ? [] : [link.href],
+    );
+    expect(links).toEqual([
+      VOLUME_TEXTS.path,
+      CHEMISTRY_CHART.path,
+      CALCIUM.path,
+      CALCIUM.path,
+      FILL_TIME.path,
+      CHEMISTRY_CHART.path,
+    ]);
+  });
+});
+
 describe('the guides', () => {
   it('lists every guide once, each with a short card', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
@@ -382,6 +482,7 @@ describe('the guides', () => {
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
       PH_GUIDE.path,
+      CALCIUM_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);
@@ -410,6 +511,7 @@ describe('the calculators each guide explains', () => {
           SALT_VS_CHLORINE_GUIDE,
           SHOCK_GUIDE,
           PH_GUIDE,
+          CALCIUM_GUIDE,
         ]
           .filter(({ path }) => path === guide.path)
           .flatMap(({ steps }) =>
@@ -432,6 +534,13 @@ describe('the calculators each guide explains', () => {
       CHEMISTRY_CHART.path,
       SHOCK_GUIDE.path,
       PH_GUIDE.path,
+    ]);
+  });
+
+  it('send the calcium calculator to the chart and the calcium guide', () => {
+    expect(guidesOf(CALCIUM.path).map(({ path }) => path)).toEqual([
+      CHEMISTRY_CHART.path,
+      CALCIUM_GUIDE.path,
     ]);
   });
 

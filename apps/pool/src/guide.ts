@@ -1,5 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -613,6 +613,100 @@ export const PH_GUIDE = {
   steps: PH_STEPS,
 } as const satisfies StepGuide;
 
+const CALCIUM_SOURCES = {
+  label: {
+    name: 'ClearView Calcium Increaser, Critical Usage Information (Oreq Corporation): directions',
+    url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/Calcium_Increaser.pdf',
+  },
+  sds: {
+    name: 'ClearView Calcium Increaser safety data sheet (Oreq Corporation): sections 3, 7 and 8',
+    url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/SDS_Calcium_Increaser.pdf',
+  },
+  hayward: {
+    name: 'Hayward AquaRite owner’s manual, 092538 Rev D: Water Chemistry, saturation index and cell cleaning',
+    url: 'https://hayward.com/media/akeneo_connector/asset_files/0/9/092538_RevD_b778.pdf',
+  },
+  mahc: {
+    name: 'CDC, 2024 Model Aquatic Health Code, 5th Edition: 5.7.4.4.3 Calcium Hardness',
+    url: 'https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** From the gallons to the retest: the label sizes and splits the dose; only dilution lowers it. */
+const CALCIUM_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Know your gallons',
+    text: 'Every calcium chloride dose, and every drain to lower it, depends on how much water the pool holds. Work it out once from the length, the width and the depth at each end, and keep the number.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'Test the calcium hardness',
+    text: 'Hayward’s AquaRite manual keeps calcium hardness at 200 to 400 ppm, the level APSP recommends for a home pool. The ClearView label says it should be maintained between 150 and 350 ppm. For a public pool, the CDC’s Model Aquatic Health Code caps it at 2,500 ppm.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See every target range' },
+    sources: ['hayward', 'label', 'mahc'],
+  },
+  {
+    title: 'Know what low and high calcium do',
+    text: 'The saturation index relates the calcium and the alkalinity to the balance of the water, Hayward’s manual says. With the index below -0.2, the water is corrosive and plaster pool walls will be dissolved into the water; above +0.2, scaling and staining will occur. A buildup on a salt cell indicates an unusually high calcium level, and old pool water is usually the cause.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Work out the calcium chloride',
+    text: 'The ClearView label: to raise calcium hardness 10 ppm, use 2 ounces per 1,000 gallons, which is 1.25 lb per 10 ppm per 10,000 gallons. Its safety data sheet gives calcium chloride flake of 74 to 100% by weight. So 10,000 gallons from 200 to 220 ppm take 2.5 lb, and 20,000 gallons from 180 to 200 ppm take 5.0 lb. Avoid overtreating, the label says.',
+    link: { href: CALCIUM.path, label: 'Work out the calcium chloride' },
+    sources: ['label', 'sds'],
+  },
+  {
+    title: 'Split a large dose, 12 hours apart',
+    text: 'The label: “If more than 3 pounds of this product is needed per 10,000 gallons of pool water, separate doses and apply this product at least 12 hours apart”, so the water can adjust without clouding. Raising 20,000 gallons from 150 to 250 ppm takes 25.0 lb, more than 3 lb per 10,000 gallons, so add 6.0 lb first, let the pump run at least 12 hours, test again, then add the rest the same way. In 10,000 gallons, 12.5 lb starts with 3.0 lb.',
+    link: { href: CALCIUM.path, label: 'Work out the first addition' },
+    sources: ['label'],
+  },
+  {
+    title: 'Dissolve it, then pour it in',
+    text: 'Pre-dissolve it in a pail of water, adding 1/2 pound of product to one gallon of water, and pour the mixture into the deep end of the pool with the pump running, the label says; repeat until the whole amount is in. The safety data sheet says to always use cool water when dissolving calcium chloride: “Heat evolved is significant.” Wear safety glasses with side shields or chemical goggles, and PVC, neoprene or heavy nitrile gloves; leather does not protect.',
+    sources: ['label', 'sds'],
+  },
+  {
+    title: 'Know why no chemical lowers it',
+    text: 'Calcium hardness only goes up: nothing you pour in takes the calcium back out, and it stays behind when water evaporates and you top the pool up. Give the calcium calculator a reading over the target and it adds nothing: for 20,000 gallons from 600 to 400 ppm, the calculator adds 0.0 lb and tells you to drain part of the water and refill with softer water.',
+  },
+  {
+    title: 'Work out how much water to drain',
+    text: 'Test the water you will refill with first: if it is not softer than your target, refilling cannot get you there. Draining and refilling is plain dilution, so gallons to drain = gallons × (reading − target) ÷ (reading − fill water). A 20,000-gallon pool at 600 ppm, brought down to 400 ppm with fill water at 100 ppm, drains 8,000 gallons: 12,000 gallons at 600 ppm and 8,000 gallons at 100 ppm make 20,000 gallons at 400 ppm.',
+    link: { href: FILL_TIME.path, label: 'Work out the time to refill' },
+  },
+  {
+    title: 'Rebalance after you refill',
+    text: 'The fresh water dilutes the rest of the water too. Test free chlorine, pH, alkalinity, stabilizer and salt again, and bring each back into its range before you add more calcium.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See every target range' },
+  },
+];
+
+/**
+ * How to raise calcium hardness in a pool, and why no chemical lowers it. The ranges are Hayward's
+ * manual, the ClearView label's and the CDC code's cap; each dose is the calcium calculator's own,
+ * split as it splits it, at the label's 3 lb per 10,000 gallons with 12 hours between parts; how
+ * to add it is the label's and its safety data sheet's. Lowering it is the plain dilution of a
+ * partial drain and refill, worked out in the open. No rule that a source does not give.
+ */
+export const CALCIUM_GUIDE = {
+  path: '/how-to-raise-calcium-hardness-in-a-pool',
+  kicker: 'Guide · Calcium hardness',
+  card: {
+    title: 'How to raise calcium hardness',
+    summary: 'How much calcium chloride raises it, and how much water to drain to lower it.',
+  },
+  title: 'How to Raise Calcium Hardness in a Pool | Pool Figures',
+  description:
+    'How to raise calcium hardness in a pool with calcium chloride, how much to add and when to split it, and why only a partial drain and refill lowers it.',
+  h1: 'How to raise calcium hardness in a pool (and why you can’t lower it with chemicals)',
+  lead: 'Test the calcium hardness, work out the calcium chloride for your gallons from the label’s dose, and add it dissolved, at most 3 lb per 10,000 gallons at a time, 12 hours apart. No chemical lowers it: only draining part of the water and refilling with softer water does, and plain dilution says how much to drain.',
+  note: 'Follow the label of your own calcium product where it differs from this guide, since strengths vary. Ask whoever built your pool before you drain a large share of it.',
+  sources: CALCIUM_SOURCES,
+  steps: CALCIUM_STEPS,
+} as const satisfies StepGuide;
+
 /** A guide as the home, the footer and the calculator pages list it. */
 export interface GuideCard {
   readonly path: string;
@@ -652,6 +746,7 @@ export const GUIDES: readonly GuideCard[] = [
   stepsCard(SALT_VS_CHLORINE_GUIDE),
   stepsCard(SHOCK_GUIDE),
   stepsCard(PH_GUIDE),
+  stepsCard(CALCIUM_GUIDE),
 ];
 
 /** The guides that explain the calculator at `path`, as links from its page, in `GUIDES` order. */

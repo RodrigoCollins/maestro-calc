@@ -192,6 +192,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/salt-water-pool-vs-chlorine-pool',
     '/how-to-shock-a-pool',
     '/how-to-lower-ph-in-a-pool',
+    '/how-to-raise-calcium-hardness-in-a-pool',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
@@ -276,6 +277,23 @@ test('numbers the pool pH steps, whose links all answer', async ({ page }) => {
     '/pool-alkalinity-calculator',
     '/pool-ph-calculator',
     '/pool-ph-calculator',
+  ]);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('numbers the calcium hardness steps, whose links all answer', async ({ page }) => {
+  await page.goto('/how-to-raise-calcium-hardness-in-a-pool');
+  await expect(page.locator('.pool-steps > li')).toHaveCount(9);
+  const hrefs = await page
+    .locator('.pool-steps a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toEqual([
+    '/pool-volume-calculator',
+    '/pool-water-chemistry-chart',
+    '/pool-calcium-hardness-calculator',
+    '/pool-calcium-hardness-calculator',
+    '/pool-fill-time-calculator',
+    '/pool-water-chemistry-chart',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
