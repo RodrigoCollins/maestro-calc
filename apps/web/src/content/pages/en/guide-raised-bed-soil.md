@@ -1,13 +1,13 @@
 ---
 id: guide-raised-bed-soil
 locale: en
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # How much soil for a raised bed?
 
-A raised bed holds a box of soil, so how much you buy is the size of the box: its length, its width and how deep you fill it. What you fill it with depends on what is under the bed and what you will grow.
+A raised bed 8 ft by 4 ft, filled 12 in deep, holds 32 cubic feet of soil: 35.20 cubic feet, or 1.30 cubic yards, with 10 percent extra for settling. How much you buy is the size of the box; what you fill it with depends on what is under the bed and what you will grow.
 
 ## Decide how deep to fill it
 

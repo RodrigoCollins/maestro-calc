@@ -1,13 +1,13 @@
 ---
 id: guide-cubic-yards
 locale: en
-updated: 2026-11-04
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # How to calculate cubic yards
 
-Concrete, gravel, topsoil and mulch are all ordered by the cubic yard, and the math behind each one is the same: work out the volume in cubic feet, then divide by 27. Measure in feet, multiply, divide.
+Cubic yards are length × width × depth in feet, divided by 27: a slab 10 ft by 10 ft and 4 in thick is 33.33 cubic feet, or 1.23 cubic yards. Concrete, gravel, topsoil and mulch are all ordered by the cubic yard, and the math is the same for each: measure in feet, multiply, divide.
 
 ## Use the formula
 

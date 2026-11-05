@@ -1,13 +1,13 @@
 ---
 id: guide-concrete-bags-or-truck
 locale: es
-updated: 2026-10-31
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # Concreto: ¿en bolsas o en camión?
 
-Para un colado chico, las bolsas suelen ser lo más simple. Para uno grande, el camión de concreto premezclado. En el medio, la respuesta depende de lo que cobra la planta por una carga chica, así que conviene hacer la cuenta antes de comprar.
+Por debajo de 1 yarda cúbica, más o menos, las bolsas de mezcla de concreto suelen ganar; para varias yardas cúbicas, suele ganar el camión de concreto premezclado. Una yarda cúbica lleva unas 45 bolsas de 80 lb, así que en el medio compara lo que cobra la planta por una carga chica con el precio de las bolsas antes de comprar.
 
 ## Empieza por el volumen
 

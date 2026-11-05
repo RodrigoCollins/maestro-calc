@@ -1,13 +1,13 @@
 ---
 id: guide-fence-post-concrete
 locale: es
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # ¿Cuánto concreto lleva un poste de cerca?
 
-Un poste de cerca va en un hoyo redondo lleno de concreto, así que el concreto es el hoyo menos el poste. Primero define el hoyo: su ancho y su profundidad deciden cuántas bolsas lleva cada poste, y la cantidad de postes decide cuántas bolsas lleva la cerca.
+Un poste de 3 in por lado en un hoyo de 9 in de ancho y 30 in de hondo lleva unas dos bolsas de 50 lb de mezcla de concreto de fraguado rápido, según la hoja técnica de Quikrete. El concreto es el hoyo menos el poste, así que primero define el hoyo: su ancho y su profundidad deciden cuántas bolsas lleva cada poste, y la cantidad de postes decide cuántas bolsas lleva la cerca.
 
 ## Define el hoyo
 
