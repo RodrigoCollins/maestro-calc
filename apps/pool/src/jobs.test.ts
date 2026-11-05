@@ -360,9 +360,10 @@ describe('the long-tail job pages', () => {
         expect(Number(raw['drops'])).toBeLessThanOrEqual(3);
         // no page doses past the chart; a dose over the label's quart a day is split, and says so
         const ran = poolPh.run(raw);
-        const days = ran.ok && ran.value.outputs.find(({ key }) => key === 'days')?.value;
-        expect(ran.ok && ran.value.warnings).toEqual(
-          String(days) === '1' ? [] : [{ code: 'splitDays', params: {} }],
+        if (!ran.ok) throw new Error('a pH row must run');
+        const days = ran.value.outputs.find(({ key }) => key === 'days')?.value;
+        expect(ran.value.warnings).toEqual(
+          outputText('days', days) === '1' ? [] : [{ code: 'splitDays', params: {} }],
         );
       }
   });
