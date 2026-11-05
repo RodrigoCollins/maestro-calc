@@ -5,6 +5,7 @@ import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
 import { ROUTES } from '../routes.ts';
+import { SHIFT_TEXTS } from '../shift/texts.ts';
 import { SITE } from '../site.config.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -33,6 +34,7 @@ const CALCULATORS: Readonly<
     height: 1100,
   },
   'pto-accrual': { name: (lang) => PTO_TEXTS[lang].h1, height: 1100 },
+  'shift-differential': { name: (lang) => SHIFT_TEXTS[lang].h1, height: 1300 },
   'no-tax-on-overtime': { name: (lang) => DEDUCTION_TEXTS[lang].overtime.h1, height: 1200 },
   'no-tax-on-tips': { name: (lang) => DEDUCTION_TEXTS[lang].tips.h1, height: 1200 },
 };

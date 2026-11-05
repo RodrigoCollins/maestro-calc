@@ -10,6 +10,8 @@ import {
   overtimeFiguresOf,
   PTO_EXAMPLES,
   ptoFiguresOf,
+  SHIFT_EXAMPLES,
+  shiftFiguresOf,
   type Figures,
 } from '../methodology/examples.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
@@ -58,6 +60,10 @@ const hoursRows = HOURS_EXAMPLES.map((example) => {
 const ptoRows = PTO_EXAMPLES.map((example) => ({
   label: t.ptoExamples[example.id],
   ...ptoFiguresOf(example),
+}));
+const shiftRows = SHIFT_EXAMPLES.map((example) => ({
+  label: t.shiftExamples[example.id],
+  ...shiftFiguresOf(example),
 }));
 ---
 
@@ -171,6 +177,32 @@ const ptoRows = PTO_EXAMPLES.map((example) => ({
               <div class="example-pay">
                 <dt>{t.ptoColumns.biweekly}</dt>
                 <dd>{row.biweekly}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="shift-examples">
+      <h2 id="shift-examples">{t.shiftExamplesHeading}</h2>
+      <p>{t.shiftExamplesLead}</p>
+      <ul class="examples">
+        {shiftRows.map((row) => (
+          <li>
+            <p class="example-label">{row.label}</p>
+            <dl>
+              <div>
+                <dt>{t.shiftColumns.shiftRate}</dt>
+                <dd>{row.shiftRate}</dd>
+              </div>
+              <div>
+                <dt>{t.shiftColumns.regularRate}</dt>
+                <dd>{row.regularRate}</dd>
+              </div>
+              <div class="example-pay">
+                <dt>{t.shiftColumns.pay}</dt>
+                <dd>{row.pay}</dd>
               </div>
             </dl>
           </li>
