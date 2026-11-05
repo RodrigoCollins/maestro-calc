@@ -38,3 +38,9 @@ export const HOURS_WORKED_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/how-to-calculate-hours-worked',
   es: '/es/guias/como-calcular-las-horas-trabajadas',
 };
+
+/** The tipped minimum wage by state: the cash wage, tip credit and minimum of each state. */
+export const TIPPED_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/tipped-minimum-wage-by-state',
+  es: '/es/guias/salario-minimo-con-propinas-por-estado',
+};

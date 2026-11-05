@@ -56,7 +56,7 @@ export const UNPAID_WAGES_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Keep your own time records, check the math, ask in writing, then file with the Wage and Hour Division or a California wage claim. Time limits and retaliation.',
     kicker: 'Your rights · guide',
     h1: 'What to do if your overtime or wages were not paid',
-    lead: 'If a paycheck is short, the steps are the same in most cases: keep your own record, check the math, ask your employer, and if that does not fix it, file a complaint. This guide covers the federal Wage and Hour Division, the California Labor Commissioner, the time limits and the protection against retaliation.',
+    lead: 'If a paycheck is short, keep your own record, check the math, ask your employer, and if that does not fix it, file a complaint: under federal law you generally have 2 years to recover back wages, 3 when the violation was willful. This guide covers the federal Wage and Hour Division, the California Labor Commissioner, the time limits and the protection against retaliation.',
     sections: [
       {
         id: 'keep-records',
@@ -143,7 +143,7 @@ export const UNPAID_WAGES_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Lleva tu propio registro, revisa la cuenta, pide por escrito y presenta una queja ante la División de Horas y Salarios o un reclamo en California.',
     kicker: 'Tus derechos · guía',
     h1: 'Qué hacer si no te pagan las horas extra o el salario',
-    lead: 'Si un cheque llega corto, los pasos son casi siempre los mismos: lleva tu propio registro, revisa la cuenta, pregúntale a tu empleador y, si eso no lo arregla, presenta una queja. Esta guía explica la División de Horas y Salarios federal, el Comisionado Laboral de California, los plazos y la protección contra represalias.',
+    lead: 'Si un cheque llega corto, lleva tu propio registro, revisa la cuenta, pregúntale a tu empleador y, si eso no lo arregla, presenta una queja: según la ley federal, en general tienes 2 años para recuperar los salarios atrasados, 3 si la infracción fue intencional. Esta guía explica la División de Horas y Salarios federal, el Comisionado Laboral de California, los plazos y la protección contra represalias.',
     sections: [
       {
         id: 'lleva-tu-registro',

@@ -116,7 +116,7 @@ export const PTO_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'How PTO accrues per paycheck and per hour worked, worked examples, and what federal law, California and other states say about vacation pay.',
     kicker: 'Paid time off · guide',
     h1: 'Paid time off (PTO): how accrual works and what the law says',
-    lead: 'PTO is the paid time off your employer gives you, often earned a little with each paycheck. This guide shows how accrual is worked out, with examples, and what federal law and some state labor agencies say about vacation pay, caps and payout when a job ends.',
+    lead: 'To work out PTO accrual, divide the hours of paid time off you get a year by your paychecks: 10 days of 8 hours, 80 hours, over 26 paychecks is 3.08 hours a paycheck. This guide shows more examples and what federal law and some state labor agencies say about vacation pay, caps and payout when a job ends.',
     sections: [
       {
         id: 'what-pto-is',
@@ -196,7 +196,7 @@ export const PTO_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Cómo se acumula el PTO por cheque y por hora trabajada, ejemplos resueltos y qué dicen la ley federal, California y otros estados de las vacaciones pagadas.',
     kicker: 'Vacaciones pagadas · guía',
     h1: 'Vacaciones pagadas: cómo se acumulan y qué dice la ley',
-    lead: 'El PTO (paid time off) es el tiempo libre pagado que te da tu empleador, muchas veces ganado de a poco en cada cheque. Esta guía muestra cómo se calcula la acumulación, con ejemplos, y qué dicen la ley federal y algunas agencias laborales estatales sobre el pago de vacaciones, los topes y el pago cuando termina el trabajo.',
+    lead: 'Para calcular la acumulación de PTO (paid time off), divide las horas de tiempo libre pagado que recibes al año por tus cheques: 10 días de 8 horas, 80 horas, entre 26 cheques son 3.08 horas por cheque. Esta guía muestra más ejemplos y qué dicen la ley federal y algunas agencias laborales estatales sobre el pago de vacaciones, los topes y el pago cuando termina el trabajo.',
     sections: [
       {
         id: 'que-es-el-pto',

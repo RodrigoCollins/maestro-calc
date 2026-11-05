@@ -152,7 +152,7 @@ export const HOURS_WORKED_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Count your hours worked: end time less start time, less an unpaid lunch, then minutes to decimal hours (15 min = 0.25). Which breaks are paid, with examples.',
     kicker: 'Hours · guide',
     h1: 'How to calculate hours worked, with lunch breaks and minutes to decimal',
-    lead: 'To count the hours you worked, take the time from start to finish, subtract an unpaid meal break, and turn the minutes into decimal hours the way payroll writes them. This guide shows which breaks count as work under federal law, how to do the math, and where rounding comes in.',
+    lead: 'To count the hours you worked, take the time from start to finish and subtract an unpaid meal break: 9:00 to 5:30 with a 30-minute unpaid lunch is 8 hours. Payroll writes minutes as decimal hours, the minutes divided by 60, so 45 minutes is 0.75 hours. This guide shows which breaks count as work under federal law and where rounding comes in.',
     sections: [
       {
         id: 'what-counts',
@@ -230,7 +230,7 @@ export const HOURS_WORKED_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Calcula tus horas trabajadas: salida menos entrada, menos el almuerzo sin pago, y minutos a horas decimales (15 min = 0.25). Qué descansos se pagan y ejemplos.',
     kicker: 'Horas · guía',
     h1: 'Cómo calcular las horas trabajadas, con descanso y minutos a decimal',
-    lead: 'Para contar las horas que trabajaste, toma el tiempo de la entrada a la salida, resta el descanso para comer sin pago y convierte los minutos a horas decimales, como las escribe la nómina. Esta guía muestra qué descansos cuentan como trabajo según la ley federal, cómo hacer la cuenta y dónde entra el redondeo.',
+    lead: 'Para contar las horas que trabajaste, toma el tiempo de la entrada a la salida y resta el descanso para comer sin pago: de 9:00 a 5:30 con 30 minutos de almuerzo sin pago son 8 horas. La nómina escribe los minutos como horas decimales, los minutos divididos por 60, así que 45 minutos son 0.75 horas. Esta guía muestra qué descansos cuentan como trabajo según la ley federal y dónde entra el redondeo.',
     sections: [
       {
         id: 'que-cuenta',
