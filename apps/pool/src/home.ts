@@ -1,4 +1,14 @@
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** One calculator card of the home: its page, a short title and what it works out. */
@@ -44,6 +54,11 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     href: STABILIZER.path,
     title: 'Stabilizer',
     summary: 'Pounds of cyanuric acid to raise your CYA.',
+  },
+  {
+    href: CALCIUM.path,
+    title: 'Calcium hardness',
+    summary: 'Pounds of calcium chloride to raise calcium hardness.',
   },
   {
     href: HEATER.path,
