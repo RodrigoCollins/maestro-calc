@@ -402,6 +402,109 @@ export const SALT_VS_CHLORINE_GUIDE = {
   steps: SALT_VS_CHLORINE_STEPS,
 } as const satisfies StepGuide;
 
+const SHOCK_SOURCES = {
+  calHypo: {
+    name: 'Clor Mor Calcium Hypochlorite Granules label, EPA Reg. No. 69681-6 (accepted September 18, 2014)',
+    url: 'https://www3.epa.gov/pesticides/chem_search/ppls/069681-00006-20140918.pdf',
+  },
+  dichlor: {
+    name: 'Nu-Clo Concentrated Pool Chlorinating Granules (dichlor) label, EPA Reg. No. 7124-31 (accepted January 5, 2012)',
+    url: 'https://www3.epa.gov/pesticides/chem_search/ppls/007124-00031-20120105.pdf',
+  },
+  cdc: {
+    name: 'CDC: Home Pool and Hot Tub Water Treatment and Testing',
+    url: 'https://www.cdc.gov/healthy-swimming/about/home-pool-and-hot-tub-water-treatment-and-testing.html',
+  },
+  cdcFecal: {
+    name: 'CDC: Fecal Incident Response Recommendations for Aquatic Staff (2018)',
+    url: 'https://www.cdc.gov/healthy-swimming/media/pdfs/fecal-incident-response-guidelines.pdf',
+  },
+  hayward: {
+    name: 'Hayward: Opening Your Pool',
+    url: 'https://www.hayward.com/maintenance/opening-your-pool',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** From the gallons to the swim: the label's shock level, sized by the chlorine calculator. */
+const SHOCK_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Know your gallons',
+    text: 'Every shock dose depends on how much water the pool holds. Work it out once from the length, the width and the depth at each end, and keep the number.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'Balance the pH first',
+    text: 'Both labels ask for the pH at 7.2 to 7.6: the cal-hypo label says to always adjust it before you add the product, and the dichlor label keeps it there for every use.',
+    link: { href: PH.path, label: 'Work out the pH dose' },
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Test the free chlorine',
+    text: 'Test with a DPD test kit, as CDC advises. CDC’s floor for a home pool is free chlorine of at least 1 ppm, at least 2 ppm if you use cyanuric acid. Shock raises it well above that for a while, then you let it fall back.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See every target range' },
+    sources: ['cdc'],
+  },
+  {
+    title: 'Read the shock level on your label',
+    text: 'A cal-hypo granule label of 65% available chlorine shocks every 7 days, or as needed, with 10 to 20 oz per 10,000 gallons to provide 5 to 10 ppm available chlorine. A dichlor label of 56% available chlorine shocks with 2 oz per 1,000 gallons; on a new pool, it says, that provides 8.7 ppm.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Work out your dose',
+    text: 'The shock dose is the chlorine dose from your reading to the shock level, so the calculator gives it for the product you have. From 0 ppm, 10,000 gallons take 10.3 oz of 65% cal-hypo to reach 5 ppm and 20.5 oz to reach 10, the label’s 10 to 20 oz, and 1,000 gallons take 2.1 oz of dichlor to reach 8.7 ppm, the label’s 2 oz. A 20,000-gallon pool reading 1 ppm takes 37.0 oz of cal-hypo, or 184.3 fl oz of 12.5% liquid chlorine, to reach 10.',
+    link: { href: CHLORINE.path, label: 'Work out the shock dose' },
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Add it in the evening, with the pump running',
+    text: 'The cal-hypo label says to add it during evening hours while the filter pump is running, broadcast over a wide area of the deep end, and to brush any granules that settle. Hayward also waits until the sun starts to go down. To keep a vinyl liner or paint from bleaching, both labels pour it slowly into the skimmer instead, with the filter on and the skimmer emptied of any other chemical.',
+    sources: ['calHypo', 'dichlor', 'hayward'],
+  },
+  {
+    title: 'Never mix it with anything',
+    text: 'The dichlor label: do not mix it with any other chemicals, do not add water to it, and do not add it to water in a pail. The cal-hypo label: do not pre-mix it, add it straight to the pool or the skimmer. Contamination may cause an explosion or release toxic gases, both warn.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Swim only when the chlorine is back down',
+    text: 'The labels give a reading, not a number of hours. The cal-hypo label prohibits reentry above 4 ppm, the dichlor label above 3 ppm. Test again before anyone swims, and wait until free chlorine is at or below the level on your label.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Shock again when the pool needs it',
+    text: 'The cal-hypo label adds a shock after rain and heavy winds, many swimmers, warmer water or heavier use, and to correct visible algae, odors or eye irritation. The dichlor label shocks every week in hot weather or after heavy rains, and less often in cool weather.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'After diarrhea in the water, follow CDC',
+    text: 'For aquatic staff, CDC raises free chlorine with unstabilized chlorine, such as sodium hypochlorite, and keeps the water at pH 7.5 or less. Without stabilizer: 20 ppm for 12.75 hours. With cyanuric acid at 1 to 15 ppm: 20 ppm for 28 hours; above 15 ppm, drain part of the water and refill first. For formed poop, 2 ppm for 25 to 30 minutes. In 20,000 gallons, 2 to 20 ppm takes 368.6 fl oz of 12.5% liquid chlorine. Many test kits cannot read that high, CDC warns, and no one swims until the level is back in range.',
+    sources: ['cdcFecal'],
+  },
+];
+
+/**
+ * How to shock a pool. The shock level, the timing and the reentry reading are the EPA-registered
+ * labels' (cal-hypo and dichlor, the strengths the chlorine calculator uses); the home pool floor
+ * and the hyperchlorination after a fecal incident are CDC's; each dose is the chlorine
+ * calculator's own, from the reading to the label's level. No rule that a source does not give.
+ */
+export const SHOCK_GUIDE = {
+  path: '/how-to-shock-a-pool',
+  kicker: 'Guide · shock',
+  card: {
+    title: 'How to shock a pool',
+    summary: 'How much shock to add, when, and when you can swim again.',
+  },
+  title: 'How to Shock a Pool: How Much Shock to Add | Pool Figures',
+  description:
+    'How to shock a pool and how much shock to add: the label’s shock level for cal-hypo or dichlor, the dose for your gallons, and when you can swim again.',
+  h1: 'How to shock a pool',
+  lead: 'Shocking raises free chlorine to the level on your product’s label for a while. Balance the pH, work out the dose from your reading to that level, add it in the evening with the pump running, and swim once the chlorine is back down.',
+  note: 'Follow the label of your own product where it differs from this guide: its strength, its shock dose and its reentry level all vary by product.',
+  sources: SHOCK_SOURCES,
+  steps: SHOCK_STEPS,
+} as const satisfies StepGuide;
+
 /** A guide as the home, the footer and the calculator pages list it. */
 export interface GuideCard {
   readonly path: string;
@@ -439,6 +542,7 @@ export const GUIDES: readonly GuideCard[] = [
   ]),
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
+  stepsCard(SHOCK_GUIDE),
 ];
 
 /** The guides that explain the calculator at `path`, as links from its page, in `GUIDES` order. */
