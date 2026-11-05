@@ -105,7 +105,7 @@ const pageProblems = (
   path: string,
   head: HeadText,
   origin: string,
-  repeats: { readonly title?: string; readonly description?: string },
+  repeats: { readonly title: string | undefined; readonly description: string | undefined },
 ): string[] => {
   const url = new URL(path, origin).href;
   const [least, most] = DESCRIPTION_RANGE;
@@ -188,8 +188,8 @@ export const seoAuditProblems = (
   return [
     ...indexable.flatMap(([path, head]) =>
       pageProblems(path, head, rules.origin, {
-        ...(titles.has(path) ? { title: titles.get(path) } : {}),
-        ...(descriptions.has(path) ? { description: descriptions.get(path) } : {}),
+        title: titles.get(path),
+        description: descriptions.get(path),
       }),
     ),
     ...[...indexed]
