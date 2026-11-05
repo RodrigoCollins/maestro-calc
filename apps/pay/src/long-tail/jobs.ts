@@ -5,9 +5,11 @@ import { moneyText } from '../format.ts';
 import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
-import { JOBS, pathOf, type Job } from './routes.ts';
+import { nearestOf } from './nearest.ts';
+import { JOBS, pathOf, type Job, type Shift } from './routes.ts';
+import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 
-export { JOBS, LONG_TAIL_ROUTES, type Job } from './routes.ts';
+export { JOBS, LONG_TAIL_ROUTES, SHIFTS, type Job, type Shift } from './routes.ts';
 
 /** `$41,600.00` reads `$41,600` in a sentence; cents stay when there are any. */
 const short = (text: string): string => text.replace(/\.00$/, '');
@@ -127,8 +129,8 @@ export interface CommonLinks {
   readonly links: readonly { readonly href: string; readonly label: string }[];
 }
 
-/** A family of long-tail pages, listed together: hourly rates, salaries or overtime rates. */
-export type Family = Job['per'] | 'overtime';
+/** A family of long-tail pages, listed together: hourly rates, salaries, overtime rates or shifts. */
+export type Family = Job['per'] | 'overtime' | 'shift';
 
 const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : job.per);
 
@@ -139,21 +141,12 @@ const questionOf = (job: Job, lang: Lang): string => {
   return job.kind === 'overtime' ? w.overtime.question(given) : w.question(given, w.ask[job.per]);
 };
 
-/** How many pages of its family a long-tail page links: its nearest amounts, so pages stay distinct. */
-const NEIGHBORS = 6;
-
-/** The `NEIGHBORS` jobs of `members` nearest to `job` in their ascending order, `job` left out. */
-const nearestOf = (members: readonly Job[], job: Job): readonly Job[] => {
-  const index = members.indexOf(job);
-  const start = Math.max(0, Math.min(index - NEIGHBORS / 2, members.length - NEIGHBORS - 1));
-  return members.slice(start, start + NEIGHBORS + 1).filter((member) => member !== job);
-};
-
 /**
  * The long-tail pages of one family, as links: every one of them on their calculator, and on a
  * page of the family (`except`) only its nearest amounts.
  */
 export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonLinks => {
+  if (family === 'shift') return shiftLinksOf(lang);
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);
@@ -220,7 +213,8 @@ const overtimePageOf = (job: Job, lang: Lang): LongTailPage => {
 };
 
 /** The page of one job in one language, its figures run through its engine at build time. */
-export const longTailPageOf = (job: Job, lang: Lang): LongTailPage => {
+export const longTailPageOf = (job: Job | Shift, lang: Lang): LongTailPage => {
+  if (job.kind === 'shift') return shiftPageOf(job, lang);
   if (job.kind === 'overtime') return overtimePageOf(job, lang);
   const validated = payConverter.validate({ amount: job.amount, per: job.per });
   const ran = payConverter.run({ amount: job.amount, per: job.per });

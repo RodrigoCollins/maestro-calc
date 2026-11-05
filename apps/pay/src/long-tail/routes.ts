@@ -96,10 +96,74 @@ export const JOBS: readonly Job[] = [
   overtime('30'),
 ];
 
-export const pathOf = (job: Job, lang: Lang): string =>
+/**
+ * A shift people ask the hours of, "how many hours is 9am to 5pm": the hours calculator's. The
+ * times are minutes from midnight; an end before the start is the next day, so the shift crosses
+ * midnight. Every figure of its page is the engine's.
+ */
+export interface Shift {
+  readonly kind: 'shift';
+  readonly start: number;
+  readonly end: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+/** A time of a slug: `9am`, `8-30am` in English, `9-am`, `8-30-am` in Spanish. */
+const clockSlugOf = (minutes: number): Readonly<Record<Lang, string>> => {
+  const hour = Math.floor(minutes / 60);
+  const clock = String(hour % 12 === 0 ? 12 : hour % 12);
+  const time = minutes % 60 === 0 ? clock : `${clock}-${String(minutes % 60).padStart(2, '0')}`;
+  const half = hour < 12 ? 'am' : 'pm';
+  return { en: `${time}${half}`, es: `${time}-${half}` };
+};
+
+/** `'8:30'` is 510 minutes from midnight. */
+const minutesOf = (time: string): number => {
+  const [hour = '', minute = ''] = time.split(':');
+  return Number(hour) * 60 + Number(minute);
+};
+
+/** A shift from `from` to `to`, each a time of a 24-hour clock. */
+const shift = (from: string, to: string): Shift => {
+  const start = minutesOf(from);
+  const end = minutesOf(to);
+  const s = clockSlugOf(start);
+  const e = clockSlugOf(end);
+  return {
+    kind: 'shift',
+    start,
+    end,
+    slug: {
+      en: `how-many-hours-is-${s.en}-to-${e.en}`,
+      es: `cuantas-horas-son-de-${s.es}-a-${e.es}`,
+    },
+  };
+};
+
+/** By length, then by start: the hours calculator lists them, and a page links its nearest, so. */
+export const SHIFTS: readonly Shift[] = [
+  shift('7:00', '15:00'),
+  shift('8:00', '16:00'),
+  shift('9:00', '17:00'),
+  shift('10:00', '18:00'),
+  shift('11:00', '19:00'),
+  shift('12:00', '20:00'),
+  shift('15:00', '23:00'),
+  shift('23:00', '7:00'),
+  shift('8:00', '16:30'),
+  shift('8:30', '17:00'),
+  shift('7:00', '16:00'),
+  shift('8:00', '17:00'),
+  shift('9:00', '18:00'),
+  shift('10:00', '19:00'),
+  shift('7:00', '19:00'),
+  shift('19:00', '7:00'),
+];
+
+export const pathOf = (job: Job | Shift, lang: Lang): string =>
   lang === 'en' ? `/pay/${job.slug.en}` : `/es/pago/${job.slug.es}`;
 
-export const LONG_TAIL_ROUTES: readonly Route[] = JOBS.map((job) => ({
+export const LONG_TAIL_ROUTES: readonly Route[] = [...JOBS, ...SHIFTS].map((job) => ({
   id: `pay-${job.slug.en}`,
   kind: 'article',
   en: pathOf(job, 'en'),

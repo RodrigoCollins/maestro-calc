@@ -10,6 +10,7 @@ import {
   LONG_TAIL_ROUTES,
   longTailPageOf,
   overtimeWeekOf,
+  SHIFTS,
   TIME_CARD_PATHS,
 } from './jobs.ts';
 
@@ -141,7 +142,7 @@ describe('long-tail pages', () => {
   });
 
   it('route one English and Spanish pair per job, each with its own title', () => {
-    expect(LONG_TAIL_ROUTES).toHaveLength(JOBS.length);
+    expect(LONG_TAIL_ROUTES).toHaveLength(JOBS.length + SHIFTS.length);
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
     expect(LONG_TAIL_ROUTES.map(({ en }) => en)).toContain('/pay/time-and-a-half-for-20-an-hour');
@@ -155,7 +156,7 @@ describe('long-tail pages', () => {
 
   it('are linked from the calculator of their kind, in each language', () => {
     for (const lang of LANGS) {
-      const linked = (['hour', 'year', 'overtime'] as const).flatMap((per) =>
+      const linked = (['hour', 'year', 'overtime', 'shift'] as const).flatMap((per) =>
         commonLinksOf(per, lang).links.map(({ href }) => href),
       );
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());

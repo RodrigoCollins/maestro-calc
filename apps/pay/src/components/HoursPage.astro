@@ -3,6 +3,7 @@ import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { clockFieldText, decimalHoursText, hoursMinutesText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
+import { commonLinksOf } from '../long-tail/jobs.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import SiteLayout from './SiteLayout.astro';
 
@@ -23,6 +24,7 @@ if (hours?.key !== 'hours' || shift?.key !== 'shiftHours') {
 }
 const [startInput, endInput, breakInput] = hoursBetween.inputs;
 const warnings = Object.entries(t.warnings);
+const common = commonLinksOf('shift', lang);
 ---
 
 <SiteLayout
@@ -107,6 +109,17 @@ const warnings = Object.entries(t.warnings);
         </li>
       ))}
     </ul>
+
+    <section aria-labelledby="common-heading">
+      <h2 id="common-heading">{common.heading}</h2>
+      <ul class="link-list">
+        {common.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/hours.ts"></script>
 </SiteLayout>

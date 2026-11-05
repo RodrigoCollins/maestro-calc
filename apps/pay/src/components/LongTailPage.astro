@@ -1,13 +1,13 @@
 ---
 import { HOME_TEXTS } from '../home/texts.ts';
-import { longTailPageOf, type Job } from '../long-tail/jobs.ts';
+import { longTailPageOf, type Job, type Shift } from '../long-tail/jobs.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
-  readonly job: Job;
+  readonly job: Job | Shift;
 }
 
 const { lang, job } = Astro.props;
