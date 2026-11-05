@@ -1,0 +1,112 @@
+---
+import { hoursBetween } from '@maestro-calc/pay-core/hours';
+import { clockFieldText, decimalHoursText, hoursMinutesText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+const t = HOURS_TEXTS[lang];
+// The page renders the engine's own figures for the default shift, so it reads without JavaScript.
+const ran = hoursBetween.run({});
+if (!ran.ok) throw new Error('the default shift of the hours calculator must run');
+const [hours, shift] = ran.value.outputs;
+if (hours?.key !== 'hours' || shift?.key !== 'shiftHours') {
+  throw new Error('the hours calculator must lead with the hours, then the shift');
+}
+const [startInput, endInput, breakInput] = hoursBetween.inputs;
+const warnings = Object.entries(t.warnings);
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={HOURS_PATHS}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="deduction" data-hours novalidate>
+      <div class="settings">
+        <label class="field">
+          {t.start}
+          <input name="start" autocomplete="off" value={clockFieldText(startInput.default)} />
+        </label>
+        <label class="field">
+          {t.end}
+          <input name="end" autocomplete="off" value={clockFieldText(endInput.default)} />
+        </label>
+      </div>
+      <p class="note">{t.timeHint}</p>
+      <label class="field">
+        {t.unpaidBreak}
+        <input
+          name="unpaidBreak"
+          inputmode="numeric"
+          autocomplete="off"
+          value={String(breakInput.default)}
+        />
+      </label>
+    </form>
+
+    {warnings.map(([code, text]) => (
+      <p class="warning" data-warning={code} hidden>
+        {text}
+      </p>
+    ))}
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out="hours" data-format="hours-minutes">
+          {hoursMinutesText(hours.value)}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={t.figures}>
+        <li>
+          <span>{t.decimalLabel}</span>
+          <span data-out="hours" data-format="decimal">
+            {decimalHoursText(hours.value)}
+          </span>
+        </li>
+        <li>
+          <span>{t.shiftLabel}</span>
+          <span data-out="shiftHours" data-format="hours-minutes">
+            {hoursMinutesText(shift.value)}
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <ul class="link-list">
+      {t.links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <script src="../client/hours.ts"></script>
+</SiteLayout>

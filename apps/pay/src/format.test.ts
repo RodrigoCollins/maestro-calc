@@ -1,6 +1,43 @@
 import { Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { clockFieldText, hoursText, moneyText, shiftText } from './format.ts';
+import {
+  clockFieldText,
+  decimalHoursText,
+  hoursMinutesText,
+  hoursText,
+  moneyText,
+  shiftText,
+} from './format.ts';
+
+describe('decimalHoursText', () => {
+  it.each([
+    [Rational.of(8), '8.00'],
+    [Rational.of(25, 3), '8.33'],
+    [Rational.of(33, 4), '8.25'],
+    [Rational.of(1, 6), '0.17'],
+    [Rational.of(59, 60), '0.98'],
+    [Rational.of(1999, 2), '999.50'],
+    [Rational.of(1234), '1,234.00'],
+  ])('writes %o hours as %s, always two places', (hours, text) => {
+    expect(decimalHoursText(hours)).toBe(text);
+  });
+});
+
+describe('hoursMinutesText', () => {
+  it.each([
+    [Rational.of(8), '8 h 0 min'],
+    [Rational.of(33, 4), '8 h 15 min'],
+    [Rational.of(25, 3), '8 h 20 min'],
+    [Rational.of(3, 4), '0 h 45 min'],
+    [Rational.of(59, 60), '0 h 59 min'],
+    // to the nearest minute: 0.999 h is 59.94 min, so 1 h 0 min
+    [Rational.of(999, 1000), '1 h 0 min'],
+    [Rational.of(1999, 2), '999 h 30 min'],
+    [Rational.of(1234), '1,234 h 0 min'],
+  ])('writes %o hours as %s', (hours, text) => {
+    expect(hoursMinutesText(hours)).toBe(text);
+  });
+});
 
 describe('moneyText', () => {
   it.each([

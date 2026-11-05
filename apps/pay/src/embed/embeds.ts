@@ -1,5 +1,6 @@
 import { embedPathOf, embedSnippetOf } from '@maestro-calc/site-kit/embed';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
+import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { ROUTES } from '../routes.ts';
@@ -20,6 +21,8 @@ const CALCULATORS: Readonly<
 > = {
   'time-card': { name: (lang) => TIME_CARD_TEXTS[lang].h1, height: 1500 },
   overtime: { name: (lang) => OVERTIME_TEXTS[lang].h1, height: 1200 },
+  hours: { name: (lang) => HOURS_TEXTS[lang].h1, height: 1000 },
+  'decimal-hours': { name: (lang) => DECIMAL_HOURS_TEXTS[lang].h1, height: 1900 },
   'hourly-to-salary': {
     name: (lang) => PAY_CONVERTER_TEXTS[lang].variants.hourly.h1,
     height: 1100,

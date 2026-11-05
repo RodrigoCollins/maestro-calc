@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { hoursText, moneyText } from '../format.ts';
-import { EXAMPLES, figuresOf, OVERTIME_EXAMPLES, overtimeFiguresOf } from './examples.ts';
+import { decimalHoursText, hoursMinutesText, hoursText, moneyText } from '../format.ts';
+import {
+  EXAMPLES,
+  figuresOf,
+  HOURS_EXAMPLES,
+  hoursOf,
+  OVERTIME_EXAMPLES,
+  overtimeFiguresOf,
+} from './examples.ts';
 
 // The worked examples the methodology page publishes, verified by hand at $22 an hour
 // (overtime $33, double time $44). The page renders what the engine returns; this pins it.
@@ -36,6 +43,30 @@ const OVERTIME_HAND = {
   'four-tens-california': { regular: '32', overtime: '8', double: '0', pay: '$968.00' },
   'long-day-california': { regular: '40', overtime: '4', double: '1', pay: '$1,056.00' },
 } as const;
+
+// The hours calculator and the decimal hours converter, verified by hand: 9:00 to 17:30 less 30 min
+// is 8 h 0 min; 22:00 to 6:15 crosses midnight, 2 h + 6 h 15 min; 20/60 = 0.333.. so 8.33;
+// 45/60 = 0.75; 0.75 x 60 = 45 min.
+const HOURS_HAND = {
+  'day-shift': { hoursMinutes: '8 h 0 min', decimal: '8.00' },
+  'night-shift': { hoursMinutes: '8 h 15 min', decimal: '8.25' },
+  'eight-twenty': { hoursMinutes: '8 h 20 min', decimal: '8.33' },
+  'forty-five': { hoursMinutes: '0 h 45 min', decimal: '0.75' },
+  'seven-seventy-five': { hoursMinutes: '7 h 45 min', decimal: '7.75' },
+} as const;
+
+describe('hours and decimal hours examples', () => {
+  it('publishes exactly the hand-verified cases, in order', () => {
+    expect(HOURS_EXAMPLES.map(({ id }) => id)).toEqual(Object.keys(HOURS_HAND));
+  });
+
+  it.each(HOURS_EXAMPLES)('$id: the engine gives the hand-verified figures', (example) => {
+    const hours = hoursOf(example);
+    expect({ hoursMinutes: hoursMinutesText(hours), decimal: decimalHoursText(hours) }).toEqual(
+      HOURS_HAND[example.id],
+    );
+  });
+});
 
 describe('overtime calculator examples', () => {
   it('publishes exactly the hand-verified cases, in order', () => {

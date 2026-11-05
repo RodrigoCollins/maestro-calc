@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { DEFAULT_PAY, OVERTIME, PAGES, TIME_CARD } from './pages.ts';
+import { DECIMAL_HOURS, DEFAULT_PAY, HOURS, OVERTIME, PAGES, TIME_CARD } from './pages.ts';
 
 for (const { path } of PAGES) {
   test(`${path} reads without JavaScript`, async ({ page }) => {
@@ -26,6 +26,24 @@ for (const { path } of OVERTIME) {
     await expect(page.locator('[data-out="overtimeHours"]')).toHaveText('9.5');
     await expect(page.locator('[data-out="overtimeRate"]')).toHaveText('$33.00');
     await expect(page.locator('[data-out="pay"]')).toHaveText(DEFAULT_PAY);
+  });
+}
+
+for (const { path } of HOURS) {
+  test(`${path} shows the default shift in both forms without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('.result-figure')).toHaveText('8 h 0 min');
+    await expect(page.locator('[data-out="hours"][data-format="decimal"]')).toHaveText('8.00');
+  });
+}
+
+for (const { path } of DECIMAL_HOURS) {
+  test(`${path} shows both conversions and the chart without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('[data-out="decimalHours"]')).toHaveText('8.33');
+    await expect(page.locator('[data-out="fromDecimal"]')).toHaveText('7 h 45 min');
+    // 45 minutes is the first row's third column: 0, 20 and 40 minutes, then 5 rows down
+    await expect(page.locator('.chart tbody tr').nth(5).locator('td').nth(2)).toHaveText('0.75');
   });
 }
 

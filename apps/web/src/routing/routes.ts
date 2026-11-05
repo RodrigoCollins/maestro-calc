@@ -75,6 +75,14 @@ export const ROUTES = {
     en: '/guides/how-much-concrete-for-a-fence-post',
     es: '/es/guias/cuanto-concreto-para-un-poste-de-cerca',
   },
+  'guide-mulch': {
+    en: '/guides/how-much-mulch-do-i-need',
+    es: '/es/guias/cuanto-mulch-necesito',
+  },
+  'guide-cubic-yards': {
+    en: '/guides/how-to-calculate-cubic-yards',
+    es: '/es/guias/como-calcular-yardas-cubicas',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },

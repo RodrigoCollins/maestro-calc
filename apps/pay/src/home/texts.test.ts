@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from '../hours/texts.ts';
 import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { HOME_TEXTS } from './texts.ts';
 
@@ -28,6 +29,16 @@ describe('home texts', () => {
     for (const [lang, texts] of Object.entries(HOME_TEXTS)) {
       const card = texts.tools.find(({ id }) => id === 'overtime');
       expect(card?.href).toBe(OVERTIME_PATHS[lang as keyof typeof OVERTIME_PATHS]);
+    }
+  });
+
+  it('links the hours and decimal hours cards to their calculators, after the overtime card', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const ids = HOME_TEXTS[lang].tools.map(({ id }) => id);
+      expect(ids.slice(1, 4)).toEqual(['overtime', 'hours', 'decimal-hours']);
+      const href = (id: string) => HOME_TEXTS[lang].tools.find((tool) => tool.id === id)?.href;
+      expect(href('hours')).toBe(HOURS_PATHS[lang]);
+      expect(href('decimal-hours')).toBe(DECIMAL_HOURS_PATHS[lang]);
     }
   });
 

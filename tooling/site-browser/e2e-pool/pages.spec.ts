@@ -43,8 +43,14 @@ for (const path of PAGES) {
   });
 }
 
-// The volume and salt calculators link the job pages they work out ("Common pool sizes").
-for (const calculator of ['/pool-volume-calculator', '/pool-salt-calculator']) {
+// The volume and dose calculators link the job pages they work out ("Common pool sizes").
+for (const calculator of [
+  '/pool-volume-calculator',
+  '/pool-salt-calculator',
+  '/pool-chlorine-calculator',
+  '/pool-alkalinity-calculator',
+  '/pool-stabilizer-calculator',
+]) {
   test(`links the job pages of ${calculator}, each one answering with no WCAG violation`, async ({
     page,
   }) => {
@@ -60,6 +66,12 @@ for (const calculator of ['/pool-volume-calculator', '/pool-salt-calculator']) {
       const response = await page.goto(href);
       expect(response?.status(), href).toBe(200);
       await expect(page.locator('h1')).toHaveText(text);
+      // and each job page links its nearest sizes, every one of them a job page of this calculator
+      const near = await page
+        .locator('.pool-jobs .link-list a')
+        .evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href') ?? ''));
+      expect(near.length, href).toBeGreaterThan(0);
+      for (const neighbor of near) expect(links.map((link) => link.href)).toContain(neighbor);
       const { violations } = await new AxeBuilder({ page }).withTags(TAGS).analyze();
       expect(violations, formatViolations(href, violations)).toEqual([]);
     }

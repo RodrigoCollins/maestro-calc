@@ -715,6 +715,34 @@ a.tool:hover .tool-title {
   color: var(--muted);
 }
 
+/* Minutes to decimal hours: the reverse line and the chart of every minute. */
+.reverse-heading,
+.chart h2 {
+  margin: 0.4rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* six columns on a phone: a fixed layout shares the width out evenly */
+.chart .ledger {
+  table-layout: fixed;
+}
+
+.chart .ledger th,
+.chart .ledger td {
+  padding: 0.35rem 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
 /* Lists of page links: each link is a full-height tap target (WCAG 2.5.8, 24 px minimum). */
 .link-list a {
   display: inline-block;
