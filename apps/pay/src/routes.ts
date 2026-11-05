@@ -1,7 +1,12 @@
 import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
-import { PAY_STUB_GUIDE_PATHS, PTO_GUIDE_PATHS, UNPAID_WAGES_GUIDE_PATHS } from './guide/paths.ts';
+import {
+  PAY_STUB_GUIDE_PATHS,
+  PTO_GUIDE_PATHS,
+  SHIFT_GUIDE_PATHS,
+  UNPAID_WAGES_GUIDE_PATHS,
+} from './guide/paths.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
 import { EMBED_PATHS } from './embed/texts.ts';
@@ -43,6 +48,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'pay-stub-guide', kind: 'article', ...PAY_STUB_GUIDE_PATHS },
   { id: 'unpaid-wages-guide', kind: 'article', ...UNPAID_WAGES_GUIDE_PATHS },
   { id: 'pto-guide', kind: 'article', ...PTO_GUIDE_PATHS },
+  { id: 'shift-differential-guide', kind: 'article', ...SHIFT_GUIDE_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
