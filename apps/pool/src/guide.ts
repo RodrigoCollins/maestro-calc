@@ -1,5 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, HEATER, PUMP, SALT } from './doses.ts';
+import { CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -56,6 +56,7 @@ const STEPS: readonly GuideStep[] = [
   {
     title: 'Put the equipment back',
     text: 'Remove the winterizing plugs, put the skimmer baskets and return fittings back, and reconnect the pump and the filter. Bring the water up to the level the skimmer needs.',
+    link: { href: FILL_TIME.path, label: 'Work out the time to top it up' },
     sources: ['hayward'],
   },
   {
@@ -71,6 +72,7 @@ const STEPS: readonly GuideStep[] = [
   {
     title: 'Test the water',
     text: 'Test free chlorine and pH with a DPD test kit. For a home pool, CDC recommends free chlorine of at least 1 ppm, at least 2 ppm if you use cyanuric acid or a stabilized chlorine such as dichlor or trichlor, and pH 7.0 to 7.8. Hayward’s opening guide aims for 1 to 3 ppm and a pH of 7.2 to 7.8.',
+    link: { href: PH.path, label: 'Work out the pH dose' },
     sources: ['cdc', 'hayward'],
   },
   {
@@ -400,8 +402,45 @@ export const SALT_VS_CHLORINE_GUIDE = {
   steps: SALT_VS_CHLORINE_STEPS,
 } as const satisfies StepGuide;
 
-/** Every guide, in the order the home and the footer list them. */
-export const GUIDES: readonly {
+/** A guide as the home, the footer and the calculator pages list it. */
+export interface GuideCard {
   readonly path: string;
   readonly card: { readonly title: string; readonly summary: string };
-}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE];
+  /** The calculators the guide explains: the ones its links open, each once, in its order. */
+  readonly calculators: readonly string[];
+}
+
+const cardOf = (
+  { path, card }: { readonly path: string; readonly card: GuideCard['card'] },
+  links: readonly (GuideStep['link'] | undefined)[],
+): GuideCard => ({
+  path,
+  card,
+  calculators: [
+    ...new Set(
+      links.flatMap((link) => (link?.href.endsWith('-calculator') === true ? [link.href] : [])),
+    ),
+  ],
+});
+
+const stepsCard = (guide: StepGuide): GuideCard =>
+  cardOf(
+    guide,
+    guide.steps.map(({ link }) => link),
+  );
+
+/** Every guide, in the order the home and the footer list them. */
+export const GUIDES: readonly GuideCard[] = [
+  stepsCard(OPENING_GUIDE),
+  stepsCard(CLOSING_GUIDE),
+  cardOf(CHEMISTRY_CHART, [
+    CHEMISTRY_CHART.gallons,
+    ...CHEMISTRY_CHART.rows.map(({ link }) => link),
+  ]),
+  stepsCard(PUMP_RUN_GUIDE),
+  stepsCard(SALT_VS_CHLORINE_GUIDE),
+];
+
+/** The guides that explain the calculator at `path`, as links from its page, in `GUIDES` order. */
+export const guidesOf = (path: string): readonly GuideCard[] =>
+  GUIDES.filter(({ calculators }) => calculators.includes(path));

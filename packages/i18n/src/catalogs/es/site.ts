@@ -244,32 +244,39 @@ export const esSite = {
   'page.concrete-slab-10x10.description':
     'Cuántas bolsas de concreto lleva una losa de 10 x 10 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-10x10.heading': '¿Cuántas bolsas de concreto para una losa de 10x10?',
+  'page.concrete-slab-10x10.label': 'Losa de 10x10',
   'page.concrete-slab-10x12.title': 'Bolsas de concreto para una losa de 10x12 | Maestro Calc',
   'page.concrete-slab-10x12.description':
     'Cuántas bolsas de concreto lleva una losa de 10 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-10x12.heading': '¿Cuántas bolsas de concreto para una losa de 10x12?',
+  'page.concrete-slab-10x12.label': 'Losa de 10x12',
   'page.concrete-slab-12x12.title': 'Bolsas de concreto para una losa de 12x12 | Maestro Calc',
   'page.concrete-slab-12x12.description':
     'Cuántas bolsas de concreto lleva una losa de 12 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-12x12.heading': '¿Cuántas bolsas de concreto para una losa de 12x12?',
+  'page.concrete-slab-12x12.label': 'Losa de 12x12',
   'page.concrete-slab-20x20.title': 'Bolsas de concreto para una losa de 20x20 | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'Cuántas bolsas de concreto lleva una losa de 20 x 20 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-20x20.heading': '¿Cuántas bolsas de concreto para una losa de 20x20?',
+  'page.concrete-slab-20x20.label': 'Losa de 20x20',
   'page.concrete-slab-24x24.title': 'Bolsas de concreto para una losa de 24x24 | Maestro Calc',
   'page.concrete-slab-24x24.description':
     'Cuántas bolsas de concreto lleva una losa de 24 x 24 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-24x24.heading': '¿Cuántas bolsas de concreto para una losa de 24x24?',
+  'page.concrete-slab-24x24.label': 'Losa de 24x24',
   'page.concrete-slab-500-sq-ft.title': 'Concreto para losa de 500 ft²: 6.79 yardas | Maestro Calc',
   'page.concrete-slab-500-sq-ft.description':
     'Una losa de 500 pies cuadrados y 4 in de espesor lleva 6.17 yardas cúbicas de concreto, 6.79 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
   'page.concrete-slab-500-sq-ft.heading': '¿Cuánto concreto lleva una losa de 500 pies cuadrados?',
+  'page.concrete-slab-500-sq-ft.label': 'Losa de 500 pies²',
   'page.concrete-slab-500-sq-ft.intro':
     'Aquí la losa de 500 pies cuadrados se calcula como 25 por 20 ft. Cualquier largo y ancho que multiplicados den 500 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
   'page.concrete-slab-650-sq-ft.title': 'Concreto para losa de 650 ft²: 8.83 yardas | Maestro Calc',
   'page.concrete-slab-650-sq-ft.description':
     'Una losa de 650 pies cuadrados y 4 in de espesor lleva 8.02 yardas cúbicas de concreto, 8.83 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
   'page.concrete-slab-650-sq-ft.heading': '¿Cuánto concreto lleva una losa de 650 pies cuadrados?',
+  'page.concrete-slab-650-sq-ft.label': 'Losa de 650 pies²',
   'page.concrete-slab-650-sq-ft.intro':
     'Aquí la losa de 650 pies cuadrados se calcula como 26 por 25 ft. Cualquier largo y ancho que multiplicados den 650 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
   'page.concrete-slab-1000-sq-ft.title':
@@ -278,124 +285,149 @@ export const esSite = {
     'Una losa de 1000 pies cuadrados y 4 in de espesor lleva 12.35 yardas cúbicas de concreto, 13.58 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
   'page.concrete-slab-1000-sq-ft.heading':
     '¿Cuánto concreto lleva una losa de 1000 pies cuadrados?',
+  'page.concrete-slab-1000-sq-ft.label': 'Losa de 1000 pies²',
   'page.concrete-slab-1000-sq-ft.intro':
     'Aquí la losa de 1000 pies cuadrados se calcula como 40 por 25 ft. Cualquier largo y ancho que multiplicados den 1000 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
   'page.concrete-pad-4x4.title': 'Bolsas de concreto para una base de 4x4 | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'Cuántas bolsas de concreto lleva una base de 4 x 4 ft (para un aire acondicionado o un generador) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-pad-4x4.heading': '¿Cuántas bolsas de concreto para una base de 4x4?',
+  'page.concrete-pad-4x4.label': 'Base de 4x4',
   'page.concrete-tube-8.title': 'Bolsas de concreto para un Sonotube de 8 in | Maestro Calc',
   'page.concrete-tube-8.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 8 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-8.heading': '¿Cuántas bolsas de concreto para un Sonotube de 8 in?',
+  'page.concrete-tube-8.label': 'Sonotube de 8 in',
   'page.concrete-tube-10.title': 'Bolsas de concreto para un Sonotube de 10 in | Maestro Calc',
   'page.concrete-tube-10.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 10 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-10.heading': '¿Cuántas bolsas de concreto para un Sonotube de 10 in?',
+  'page.concrete-tube-10.label': 'Sonotube de 10 in',
   'page.concrete-tube-12.title': 'Bolsas de concreto para un Sonotube de 12 in | Maestro Calc',
   'page.concrete-tube-12.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
+  'page.concrete-tube-12.label': 'Sonotube de 12 in',
   'page.roof-pitch-3-12.title': 'Pendiente de techo 3/12 en grados: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'Una pendiente de techo 3/12 mide 14.04 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-3-12.heading': 'Pendiente de techo 3/12: 14.04° y el largo del cabio',
+  'page.roof-pitch-3-12.label': 'Pendiente 3/12',
   'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12 en grados: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'Una pendiente de techo 4/12 mide 18.43 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: 18.43° y el largo del cabio',
+  'page.roof-pitch-4-12.label': 'Pendiente 4/12',
   'page.roof-pitch-5-12.title': 'Pendiente de techo 5/12 en grados: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'Una pendiente de techo 5/12 mide 22.62 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-5-12.heading': 'Pendiente de techo 5/12: 22.62° y el largo del cabio',
+  'page.roof-pitch-5-12.label': 'Pendiente 5/12',
   'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12 en grados: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'Una pendiente de techo 6/12 mide 26.57 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: 26.57° y el largo del cabio',
+  'page.roof-pitch-6-12.label': 'Pendiente 6/12',
   'page.roof-pitch-7-12.title': 'Pendiente de techo 7/12 en grados: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'Una pendiente de techo 7/12 mide 30.26 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-7-12.heading': 'Pendiente de techo 7/12: 30.26° y el largo del cabio',
+  'page.roof-pitch-7-12.label': 'Pendiente 7/12',
   'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12 en grados: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'Una pendiente de techo 8/12 mide 33.69 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: 33.69° y el largo del cabio',
+  'page.roof-pitch-8-12.label': 'Pendiente 8/12',
   'page.roof-pitch-9-12.title': 'Pendiente de techo 9/12 en grados: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'Una pendiente de techo 9/12 mide 36.87 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-9-12.heading': 'Pendiente de techo 9/12: 36.87° y el largo del cabio',
+  'page.roof-pitch-9-12.label': 'Pendiente 9/12',
   'page.roof-pitch-10-12.title': 'Pendiente de techo 10/12 en grados: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'Una pendiente de techo 10/12 mide 39.81 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-10-12.heading': 'Pendiente de techo 10/12: 39.81° y el largo del cabio',
+  'page.roof-pitch-10-12.label': 'Pendiente 10/12',
   'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12 en grados: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'Una pendiente de techo 12/12 mide 45.00 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: 45.00° y el largo del cabio',
+  'page.roof-pitch-12-12.label': 'Pendiente 12/12',
   'page.square-feet-5x5.title': '5x5 en pies cuadrados: 25 pies cuadrados | Maestro Calc',
   'page.square-feet-5x5.description':
     'Un área de 5 por 5 ft mide 25 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-5x5.heading': '¿Cuántos pies cuadrados son 5x5?',
+  'page.square-feet-5x5.label': '5x5 pies',
   'page.square-feet-5x5.intro':
     'Un cuadrado de 5 por 5 ft es un clóset chico, el piso de una ducha o un descanso de escalera.',
   'page.square-feet-5x10.title': '5x10 en pies cuadrados: 50 pies cuadrados | Maestro Calc',
   'page.square-feet-5x10.description':
     'Un área de 5 por 10 ft mide 50 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-5x10.heading': '¿Cuántos pies cuadrados son 5x10?',
+  'page.square-feet-5x10.label': '5x10 pies',
   'page.square-feet-5x10.intro':
     'Un área de 5 por 10 ft es un baño común, un vestidor o una bodega chica.',
   'page.square-feet-7x12.title': '7x12 en pies cuadrados: 84 pies cuadrados | Maestro Calc',
   'page.square-feet-7x12.description':
     'Un área de 7 por 12 ft (12 por 7) mide 84 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-7x12.heading': '¿Cuántos pies cuadrados son 7x12 (12x7)?',
+  'page.square-feet-7x12.label': '7x12 pies',
   'page.square-feet-7x12.intro':
     'Un área de 7 por 12 ft, también escrita 12x7, es un baño angosto, un cuarto de lavado o un pasillo.',
   'page.square-feet-10x10.title': '10x10 en pies cuadrados: 100 pies cuadrados | Maestro Calc',
   'page.square-feet-10x10.description':
     'Un área de 10 por 10 ft mide 100 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-10x10.heading': '¿Cuántos pies cuadrados son 10x10?',
+  'page.square-feet-10x10.label': '10x10 pies',
   'page.square-feet-10x10.intro':
     'Un cuarto de 10 por 10 ft es un dormitorio chico, una oficina en casa o el piso de un cobertizo de jardín.',
   'page.square-feet-10x12.title': '10x12 en pies cuadrados: 120 pies cuadrados | Maestro Calc',
   'page.square-feet-10x12.description':
     'Un área de 10 por 12 ft mide 120 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-10x12.heading': '¿Cuántos pies cuadrados son 10x12?',
+  'page.square-feet-10x12.label': '10x12 pies',
   'page.square-feet-10x12.intro':
     'Un cuarto de 10 por 12 ft es un segundo dormitorio típico, y una medida común para un cobertizo o un patio.',
   'page.square-feet-11x14.title': '11x14 en pies cuadrados: 154 pies cuadrados | Maestro Calc',
   'page.square-feet-11x14.description':
     'Un área de 11 por 14 ft (14 por 11) mide 154 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-11x14.heading': '¿Cuántos pies cuadrados son 11x14 (14x11)?',
+  'page.square-feet-11x14.label': '11x14 pies',
   'page.square-feet-11x14.intro':
     'Un cuarto de 11 por 14 ft, también escrito 14x11, es un dormitorio mediano o un comedor.',
   'page.square-feet-11x16.title': '11x16 en pies cuadrados: 176 pies cuadrados | Maestro Calc',
   'page.square-feet-11x16.description':
     'Un área de 11 por 16 ft (16 por 11) mide 176 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-11x16.heading': '¿Cuántos pies cuadrados son 11x16 (16x11)?',
+  'page.square-feet-11x16.label': '11x16 pies',
   'page.square-feet-11x16.intro':
     'Un cuarto de 11 por 16 ft, también escrito 16x11, es un dormitorio largo, un estudio o una sala familiar.',
   'page.square-feet-12x12.title': '12x12 en pies cuadrados: 144 pies cuadrados | Maestro Calc',
   'page.square-feet-12x12.description':
     'Un área de 12 por 12 ft mide 144 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-12x12.heading': '¿Cuántos pies cuadrados son 12x12?',
+  'page.square-feet-12x12.label': '12x12 pies',
   'page.square-feet-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio estándar, y una medida común para una terraza o una losa de patio.',
   'page.square-feet-12x14.title': '12x14 en pies cuadrados: 168 pies cuadrados | Maestro Calc',
   'page.square-feet-12x14.description':
     'Un área de 12 por 14 ft mide 168 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-12x14.heading': '¿Cuántos pies cuadrados son 12x14?',
+  'page.square-feet-12x14.label': '12x14 pies',
   'page.square-feet-12x14.intro':
     'Un cuarto de 12 por 14 ft es una medida común para un dormitorio principal o una sala.',
   'page.square-feet-12x30.title': '12x30 en pies cuadrados: 360 pies cuadrados | Maestro Calc',
   'page.square-feet-12x30.description':
     'Un área de 12 por 30 ft (30 por 12) mide 360 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-12x30.heading': '¿Cuántos pies cuadrados son 12x30 (30x12)?',
+  'page.square-feet-12x30.label': '12x30 pies',
   'page.square-feet-12x30.intro':
     'Un área de 12 por 30 ft, también escrita 30 por 12, es un porche largo, una terraza a lo largo de la casa o una entrada para un auto.',
   'page.square-feet-20x20.title': '20x20 en pies cuadrados: 400 pies cuadrados | Maestro Calc',
   'page.square-feet-20x20.description':
     'Un área de 20 por 20 ft mide 400 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
   'page.square-feet-20x20.heading': '¿Cuántos pies cuadrados son 20x20?',
+  'page.square-feet-20x20.label': '20x20 pies',
   'page.square-feet-20x20.intro':
     'Un área de 20 por 20 ft es el piso de un garaje para dos autos o un patio grande.',
   'page.contact.title': 'Contacto | Maestro Calc',
@@ -414,102 +446,119 @@ export const esSite = {
   'page.mulch-bags-per-yard.description':
     'Una yarda cúbica de mulch son 27 pies cúbicos: 18 bolsas de 1.5 cu ft, 14 bolsas de 2 cu ft o 9 bolsas de 3 cu ft, y las bolsas para 2 o 3 yardas cúbicas.',
   'page.mulch-bags-per-yard.heading': '¿Cuántas bolsas de mulch hay en una yarda cúbica?',
+  'page.mulch-bags-per-yard.label': 'Bolsas por yarda cúbica',
   'page.mulch-bags-per-yard.intro':
     'El mulch se vende en bolsas de 1.5, 2 o 3 pies cúbicos, y a granel por yarda cúbica. Divide 27 entre el tamaño de la bolsa y redondea hacia arriba: una yarda cúbica lleva 18 bolsas de 1.5 cu ft, 14 de 2 cu ft o 9 de 3 cu ft.',
   'page.gravel-driveway-10x20.title': 'Grava para entrada de 10x20: 4.74 toneladas | Maestro Calc',
   'page.gravel-driveway-10x20.description':
     'Una entrada de 10 por 20 ft y 4 in de profundidad lleva 4.74 toneladas de grava compactada, 3.68 yardas cúbicas a pedir con 5% de extra, y a 6 u 8 in.',
   'page.gravel-driveway-10x20.heading': '¿Cuánta grava para una entrada de 10x20?',
+  'page.gravel-driveway-10x20.label': 'Entrada de 10x20',
   'page.gravel-driveway-10x20.intro':
     'Un área de 10 por 20 ft da lugar para un auto, o amplía la entrada junto al garaje. La base de una entrada se compacta por capas, así que la grava se calcula con su peso compactado.',
   'page.gravel-driveway-12x50.title': 'Grava para entrada de 12x50: 14.23 toneladas | Maestro Calc',
   'page.gravel-driveway-12x50.description':
     'Una entrada de 12 por 50 ft y 4 in de profundidad lleva 14.23 toneladas de grava compactada, 11.03 yardas cúbicas a pedir con 5% de extra, y a 6 u 8 in.',
   'page.gravel-driveway-12x50.heading': '¿Cuánta grava para una entrada de 12x50?',
+  'page.gravel-driveway-12x50.label': 'Entrada de 12x50',
   'page.gravel-driveway-12x50.intro':
     'Una entrada de 12 por 50 ft es un carril desde la calle hasta un garaje alejado de ella. Una entrada nueva suele llevar primero una base más profunda y después una capa de acabado.',
   'page.paint-room-10x10.title': 'Pintura para un cuarto de 10x10: 1.54 galones | Maestro Calc',
   'page.paint-room-10x10.description':
     'Un cuarto de 10 por 10 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.54 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
   'page.paint-room-10x10.heading': '¿Cuánta pintura para un cuarto de 10x10?',
+  'page.paint-room-10x10.label': 'Cuarto de 10x10',
   'page.paint-room-10x10.intro':
     'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
   'page.paint-room-10x12.title': 'Pintura para un cuarto de 10x12: 1.73 galones | Maestro Calc',
   'page.paint-room-10x12.description':
     'Un cuarto de 10 por 12 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.73 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
   'page.paint-room-10x12.heading': '¿Cuánta pintura para un cuarto de 10x12?',
+  'page.paint-room-10x12.label': 'Cuarto de 10x12',
   'page.paint-room-10x12.intro':
     'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
   'page.paint-room-12x12.title': 'Pintura para un cuarto de 12x12: 1.91 galones | Maestro Calc',
   'page.paint-room-12x12.description':
     'Un cuarto de 12 por 12 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.91 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
   'page.paint-room-12x12.heading': '¿Cuánta pintura para un cuarto de 12x12?',
+  'page.paint-room-12x12.label': 'Cuarto de 12x12',
   'page.paint-room-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
   'page.drywall-room-10x10.title': 'Drywall para cuarto de 10x10: 13 placas | Maestro Calc',
   'page.drywall-room-10x10.description':
     'Un cuarto de 10 por 10 ft con paredes de 8 ft lleva 13 placas de drywall de 4x8 o 9 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
   'page.drywall-room-10x10.heading': '¿Cuántas placas de drywall para un cuarto de 10x10?',
+  'page.drywall-room-10x10.label': 'Cuarto de 10x10',
   'page.drywall-room-10x10.intro':
     'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
   'page.drywall-room-10x12.title': 'Drywall para cuarto de 10x12: 15 placas | Maestro Calc',
   'page.drywall-room-10x12.description':
     'Un cuarto de 10 por 12 ft con paredes de 8 ft lleva 15 placas de drywall de 4x8 o 10 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
   'page.drywall-room-10x12.heading': '¿Cuántas placas de drywall para un cuarto de 10x12?',
+  'page.drywall-room-10x12.label': 'Cuarto de 10x12',
   'page.drywall-room-10x12.intro':
     'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
   'page.drywall-room-12x12.title': 'Drywall para cuarto de 12x12: 17 placas | Maestro Calc',
   'page.drywall-room-12x12.description':
     'Un cuarto de 12 por 12 ft con paredes de 8 ft lleva 17 placas de drywall de 4x8 u 11 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
   'page.drywall-room-12x12.heading': '¿Cuántas placas de drywall para un cuarto de 12x12?',
+  'page.drywall-room-12x12.label': 'Cuarto de 12x12',
   'page.drywall-room-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
   'page.topsoil-raised-bed-4x4.title': 'Tierra para cama elevada de 4x4: 0.65 yd³ | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'Una cama elevada de 4 por 4 ft con 12 in de tierra lleva 0.65 yardas cúbicas con 10% por asentamiento: 24 bolsas de 0.75 cu ft o 12 de 1.5, y a 18 o 24 in.',
   'page.topsoil-raised-bed-4x4.heading': '¿Cuánta tierra para una cama elevada de 4x4?',
+  'page.topsoil-raised-bed-4x4.label': 'Cama elevada de 4x4',
   'page.topsoil-raised-bed-4x4.intro':
     'Una cama de 4 por 4 ft es una medida común de kit, y llegas a su centro desde cualquier lado. La mayoría de las hortalizas crecen bien en 12 in de tierra; una cama más honda sirve para raíces y te ahorra agacharte.',
   'page.topsoil-raised-bed-4x8.title': 'Tierra para cama elevada de 4x8: 1.30 yd³ | Maestro Calc',
   'page.topsoil-raised-bed-4x8.description':
     'Una cama elevada de 4 por 8 ft con 12 in de tierra lleva 1.30 yardas cúbicas con 10% por asentamiento: 47 bolsas de 0.75 cu ft o 24 de 1.5, y a 18 o 24 in.',
   'page.topsoil-raised-bed-4x8.heading': '¿Cuánta tierra para una cama elevada de 4x8?',
+  'page.topsoil-raised-bed-4x8.label': 'Cama elevada de 4x8',
   'page.topsoil-raised-bed-4x8.intro':
     'Una cama de 4 por 8 ft es la cama elevada más común: cada lado largo es una tabla de 8 ft. La mayoría de las hortalizas crecen bien en 12 in de tierra; una cama más honda sirve para raíces y te ahorra agacharte.',
   'page.topsoil-10x10.title': 'Tierra para un área de 10x10: 1.36 yd³ | Maestro Calc',
   'page.topsoil-10x10.description':
     'Un área de 10 por 10 ft con 4 in de tierra lleva 1.36 yardas cúbicas con 10% por asentamiento: 49 bolsas de 0.75 cu ft o 25 de 1.5, y a 6 u 8 in.',
   'page.topsoil-10x10.heading': '¿Cuánta tierra para un área de 10x10?',
+  'page.topsoil-10x10.label': 'Área de 10x10',
   'page.topsoil-10x10.intro':
     'Un área de 10 por 10 ft son 100 pies cuadrados: un trozo de césped o una huerta. Cuatro pulgadas de tierra son una base común para sembrar césped; una huerta crece mejor con 6 a 8 in.',
   'page.topsoil-20x20.title': 'Tierra para un área de 20x20: 5.43 yd³ | Maestro Calc',
   'page.topsoil-20x20.description':
     'Un área de 20 por 20 ft con 4 in de tierra lleva 5.43 yardas cúbicas con 10% por asentamiento: 196 bolsas de 0.75 cu ft o 98 de 1.5, y a 6 u 8 in.',
   'page.topsoil-20x20.heading': '¿Cuánta tierra para un área de 20x20?',
+  'page.topsoil-20x20.label': 'Área de 20x20',
   'page.topsoil-20x20.intro':
     'Un área de 20 por 20 ft son 400 pies cuadrados: un césped pequeño o una huerta en el patio. A esta medida, compara el precio a granel por yarda cúbica con el de las bolsas.',
   'page.roofing-12x16.title': 'Tejas para techo de 12x16: 8 paquetes | Maestro Calc',
   'page.roofing-12x16.description':
     'Un techo con planta de 12 por 16 ft y pendiente de 6 en 12 tiene 2.15 cuadrados: 8 paquetes de tejas y 1 rollo de fieltro con 10% extra, y a 8 o 10 en 12.',
   'page.roofing-12x16.heading': '¿Cuántos paquetes de tejas para un techo de 12x16?',
+  'page.roofing-12x16.label': 'Techo de 12x16',
   'page.roofing-12x16.intro':
     'Una planta de 12 por 16 ft es un cobertizo grande o un taller pequeño. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
   'page.roofing-24x24.title': 'Tejas para techo de 24x24: 22 paquetes | Maestro Calc',
   'page.roofing-24x24.description':
     'Un techo con planta de 24 por 24 ft y pendiente de 6 en 12 tiene 6.44 cuadrados: 22 paquetes de tejas y 1 rollo de fieltro con 10% extra, y a 8 o 10 en 12.',
   'page.roofing-24x24.heading': '¿Cuántos paquetes de tejas para un techo de 24x24?',
+  'page.roofing-24x24.label': 'Techo de 24x24',
   'page.roofing-24x24.intro':
     'Una planta de 24 por 24 ft es un garaje típico para dos autos. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
   'page.roofing-30x40.title': 'Tejas para techo de 30x40: 45 paquetes | Maestro Calc',
   'page.roofing-30x40.description':
     'Un techo con planta de 30 por 40 ft y pendiente de 6 en 12 tiene 13.42 cuadrados: 45 paquetes de tejas y 2 rollos de fieltro con 10% extra, y a 8 o 10 en 12.',
   'page.roofing-30x40.heading': '¿Cuántos paquetes de tejas para un techo de 30x40?',
+  'page.roofing-30x40.label': 'Techo de 30x40',
   'page.roofing-30x40.intro':
     'Una planta de 30 por 40 ft cubre una casa pequeña de un piso o un taller grande. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
   'page.roofing-30x50.title': 'Tejas para techo de 30x50: 56 paquetes | Maestro Calc',
   'page.roofing-30x50.description':
     'Un techo con planta de 30 por 50 ft y pendiente de 6 en 12 tiene 16.77 cuadrados: 56 paquetes de tejas y 2 rollos de fieltro con 10% extra, y a 8 o 10 en 12.',
   'page.roofing-30x50.heading': '¿Cuántos paquetes de tejas para un techo de 30x50?',
+  'page.roofing-30x50.label': 'Techo de 30x50',
   'page.roofing-30x50.intro':
     'Una planta de 30 por 50 ft cubre una casa de un piso de estilo rancho. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',

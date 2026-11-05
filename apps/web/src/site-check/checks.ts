@@ -10,6 +10,7 @@ import type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
 import { embedProblems } from './embed.ts';
 import { guideProblems } from './guides.ts';
 import { hubProblems } from './hubs.ts';
+import { jobLinkProblems } from './job-links.ts';
 
 export type { BuildBytes, CheckContext, Dist, Problem, Site } from './types.ts';
 export { budgetSummary } from './budgets.ts';
@@ -38,6 +39,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...embedProblems(context),
     ...guideProblems(context),
     ...hubProblems(context),
+    ...jobLinkProblems(context),
     ...glyphProblems(buildBytes.fonts),
   ];
 };

@@ -236,32 +236,39 @@ export const enSite = {
   'page.concrete-slab-10x10.description':
     'How many bags of concrete a 10 x 10 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-10x10.heading': 'How many bags of concrete for a 10x10 slab?',
+  'page.concrete-slab-10x10.label': '10x10 slab',
   'page.concrete-slab-10x12.title': 'Bags of Concrete for a 10x12 Slab | Maestro Calc',
   'page.concrete-slab-10x12.description':
     'How many bags of concrete a 10 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-10x12.heading': 'How many bags of concrete for a 10x12 slab?',
+  'page.concrete-slab-10x12.label': '10x12 slab',
   'page.concrete-slab-12x12.title': 'Bags of Concrete for a 12x12 Slab | Maestro Calc',
   'page.concrete-slab-12x12.description':
     'How many bags of concrete a 12 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-12x12.heading': 'How many bags of concrete for a 12x12 slab?',
+  'page.concrete-slab-12x12.label': '12x12 slab',
   'page.concrete-slab-20x20.title': 'Bags of Concrete for a 20x20 Slab | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'How many bags of concrete a 20 x 20 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-20x20.heading': 'How many bags of concrete for a 20x20 slab?',
+  'page.concrete-slab-20x20.label': '20x20 slab',
   'page.concrete-slab-24x24.title': 'Bags of Concrete for a 24x24 Slab | Maestro Calc',
   'page.concrete-slab-24x24.description':
     'How many bags of concrete a 24 x 24 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-24x24.heading': 'How many bags of concrete for a 24x24 slab?',
+  'page.concrete-slab-24x24.label': '24x24 slab',
   'page.concrete-slab-500-sq-ft.title': 'Concrete for a 500 Sq Ft Slab: 6.79 Yards | Maestro Calc',
   'page.concrete-slab-500-sq-ft.description':
     'A 500 sq ft slab 4 in thick is 6.17 cubic yards of concrete, 6.79 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
   'page.concrete-slab-500-sq-ft.heading': 'How much concrete for a 500 sq ft slab?',
+  'page.concrete-slab-500-sq-ft.label': '500 sq ft slab',
   'page.concrete-slab-500-sq-ft.intro':
     'A 500 sq ft slab is worked out here as 25 by 20 ft. Any length and width that multiply to 500 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
   'page.concrete-slab-650-sq-ft.title': 'Concrete for a 650 Sq Ft Slab: 8.83 Yards | Maestro Calc',
   'page.concrete-slab-650-sq-ft.description':
     'A 650 sq ft slab 4 in thick is 8.02 cubic yards of concrete, 8.83 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
   'page.concrete-slab-650-sq-ft.heading': 'How much concrete for a 650 sq ft slab?',
+  'page.concrete-slab-650-sq-ft.label': '650 sq ft slab',
   'page.concrete-slab-650-sq-ft.intro':
     'A 650 sq ft slab is worked out here as 26 by 25 ft. Any length and width that multiply to 650 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
   'page.concrete-slab-1000-sq-ft.title':
@@ -269,124 +276,149 @@ export const enSite = {
   'page.concrete-slab-1000-sq-ft.description':
     'A 1000 sq ft slab 4 in thick is 12.35 cubic yards of concrete, 13.58 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
   'page.concrete-slab-1000-sq-ft.heading': 'How much concrete for a 1000 sq ft slab?',
+  'page.concrete-slab-1000-sq-ft.label': '1000 sq ft slab',
   'page.concrete-slab-1000-sq-ft.intro':
     'A 1000 sq ft slab is worked out here as 40 by 25 ft. Any length and width that multiply to 1000 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
   'page.concrete-pad-4x4.title': 'Bags of Concrete for a 4x4 Pad | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',
   'page.concrete-pad-4x4.heading': 'How many bags of concrete for a 4x4 pad?',
+  'page.concrete-pad-4x4.label': '4x4 pad',
   'page.concrete-tube-8.title': 'Bags of Concrete for a 8 in Sonotube | Maestro Calc',
   'page.concrete-tube-8.description':
     'How many bags of concrete fill a 8 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-8.heading': 'How many bags of concrete for a 8 in Sonotube?',
+  'page.concrete-tube-8.label': '8 in Sonotube',
   'page.concrete-tube-10.title': 'Bags of Concrete for a 10 in Sonotube | Maestro Calc',
   'page.concrete-tube-10.description':
     'How many bags of concrete fill a 10 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-10.heading': 'How many bags of concrete for a 10 in Sonotube?',
+  'page.concrete-tube-10.label': '10 in Sonotube',
   'page.concrete-tube-12.title': 'Bags of Concrete for a 12 in Sonotube | Maestro Calc',
   'page.concrete-tube-12.description':
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
+  'page.concrete-tube-12.label': '12 in Sonotube',
   'page.roof-pitch-3-12.title': '3/12 Roof Pitch in Degrees: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'A 3/12 roof pitch is 14.04 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-3-12.heading': '3/12 roof pitch: 14.04° and the rafter length',
+  'page.roof-pitch-3-12.label': '3/12 pitch',
   'page.roof-pitch-4-12.title': '4/12 Roof Pitch in Degrees: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'A 4/12 roof pitch is 18.43 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-4-12.heading': '4/12 roof pitch: 18.43° and the rafter length',
+  'page.roof-pitch-4-12.label': '4/12 pitch',
   'page.roof-pitch-5-12.title': '5/12 Roof Pitch in Degrees: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'A 5/12 roof pitch is 22.62 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-5-12.heading': '5/12 roof pitch: 22.62° and the rafter length',
+  'page.roof-pitch-5-12.label': '5/12 pitch',
   'page.roof-pitch-6-12.title': '6/12 Roof Pitch in Degrees: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'A 6/12 roof pitch is 26.57 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-6-12.heading': '6/12 roof pitch: 26.57° and the rafter length',
+  'page.roof-pitch-6-12.label': '6/12 pitch',
   'page.roof-pitch-7-12.title': '7/12 Roof Pitch in Degrees: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'A 7/12 roof pitch is 30.26 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-7-12.heading': '7/12 roof pitch: 30.26° and the rafter length',
+  'page.roof-pitch-7-12.label': '7/12 pitch',
   'page.roof-pitch-8-12.title': '8/12 Roof Pitch in Degrees: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'An 8/12 roof pitch is 33.69 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-8-12.heading': '8/12 roof pitch: 33.69° and the rafter length',
+  'page.roof-pitch-8-12.label': '8/12 pitch',
   'page.roof-pitch-9-12.title': '9/12 Roof Pitch in Degrees: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'A 9/12 roof pitch is 36.87 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-9-12.heading': '9/12 roof pitch: 36.87° and the rafter length',
+  'page.roof-pitch-9-12.label': '9/12 pitch',
   'page.roof-pitch-10-12.title': '10/12 Roof Pitch in Degrees: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'A 10/12 roof pitch is 39.81 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-10-12.heading': '10/12 roof pitch: 39.81° and the rafter length',
+  'page.roof-pitch-10-12.label': '10/12 pitch',
   'page.roof-pitch-12-12.title': '12/12 Roof Pitch in Degrees: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'A 12/12 roof pitch is 45.00 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-12-12.heading': '12/12 roof pitch: 45.00° and the rafter length',
+  'page.roof-pitch-12-12.label': '12/12 pitch',
   'page.square-feet-5x5.title': '5x5 in Square Feet: 25 sq ft | Maestro Calc',
   'page.square-feet-5x5.description':
     'A 5 by 5 ft area is 25 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-5x5.heading': 'How many square feet is 5x5?',
+  'page.square-feet-5x5.label': '5x5 ft',
   'page.square-feet-5x5.intro':
     'A 5 by 5 ft square is a small closet, a shower floor or a stair landing.',
   'page.square-feet-5x10.title': '5x10 in Square Feet: 50 sq ft | Maestro Calc',
   'page.square-feet-5x10.description':
     'A 5 by 10 ft area is 50 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-5x10.heading': 'How many square feet is 5x10?',
+  'page.square-feet-5x10.label': '5x10 ft',
   'page.square-feet-5x10.intro':
     'A 5 by 10 ft area is a common bathroom, a walk-in closet or a small storage unit.',
   'page.square-feet-7x12.title': '7x12 (12x7) in Square Feet: 84 sq ft | Maestro Calc',
   'page.square-feet-7x12.description':
     'A 7 by 12 ft area (12 by 7) is 84 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-7x12.heading': 'How many square feet is 7x12 (12x7)?',
+  'page.square-feet-7x12.label': '7x12 ft',
   'page.square-feet-7x12.intro':
     'A 7 by 12 ft area, also written 12x7, is a narrow bathroom, a laundry room or a hallway.',
   'page.square-feet-10x10.title': '10x10 in Square Feet: 100 sq ft | Maestro Calc',
   'page.square-feet-10x10.description':
     'A 10 by 10 ft area is 100 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-10x10.heading': 'How many square feet is 10x10?',
+  'page.square-feet-10x10.label': '10x10 ft',
   'page.square-feet-10x10.intro':
     'A 10 by 10 ft room is a small bedroom, a home office or the floor of a garden shed.',
   'page.square-feet-10x12.title': '10x12 in Square Feet: 120 sq ft | Maestro Calc',
   'page.square-feet-10x12.description':
     'A 10 by 12 ft area is 120 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-10x12.heading': 'How many square feet is 10x12?',
+  'page.square-feet-10x12.label': '10x12 ft',
   'page.square-feet-10x12.intro':
     'A 10 by 12 ft room is a typical second bedroom, and a common size for a shed or a patio.',
   'page.square-feet-11x14.title': '11x14 (14x11) in Square Feet: 154 sq ft | Maestro Calc',
   'page.square-feet-11x14.description':
     'An 11 by 14 ft area (14 by 11) is 154 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-11x14.heading': 'How many square feet is 11x14 (14x11)?',
+  'page.square-feet-11x14.label': '11x14 ft',
   'page.square-feet-11x14.intro':
     'An 11 by 14 ft room, also written 14x11, is a mid-size bedroom or a dining room.',
   'page.square-feet-11x16.title': '11x16 (16x11) in Square Feet: 176 sq ft | Maestro Calc',
   'page.square-feet-11x16.description':
     'An 11 by 16 ft area (16 by 11) is 176 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-11x16.heading': 'How many square feet is 11x16 (16x11)?',
+  'page.square-feet-11x16.label': '11x16 ft',
   'page.square-feet-11x16.intro':
     'An 11 by 16 ft room, also written 16x11, is a long bedroom, a den or a family room.',
   'page.square-feet-12x12.title': '12x12 in Square Feet: 144 sq ft | Maestro Calc',
   'page.square-feet-12x12.description':
     'A 12 by 12 ft area is 144 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-12x12.heading': 'How many square feet is 12x12?',
+  'page.square-feet-12x12.label': '12x12 ft',
   'page.square-feet-12x12.intro':
     'A 12 by 12 ft room is a standard bedroom, and a common size for a deck or a patio slab.',
   'page.square-feet-12x14.title': '12x14 in Square Feet: 168 sq ft | Maestro Calc',
   'page.square-feet-12x14.description':
     'A 12 by 14 ft area is 168 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-12x14.heading': 'How many square feet is 12x14?',
+  'page.square-feet-12x14.label': '12x14 ft',
   'page.square-feet-12x14.intro':
     'A 12 by 14 ft room is a common size for a main bedroom or a living room.',
   'page.square-feet-12x30.title': '12x30 (30x12) in Square Feet: 360 sq ft | Maestro Calc',
   'page.square-feet-12x30.description':
     'A 12 by 30 ft area (30 by 12) is 360 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-12x30.heading': 'How many square feet is 12x30 (30x12)?',
+  'page.square-feet-12x30.label': '12x30 ft',
   'page.square-feet-12x30.intro':
     'A 12 by 30 ft area, also written 30 by 12, is a long porch, a deck along the back of a house or a one-car driveway.',
   'page.square-feet-20x20.title': '20x20 in Square Feet: 400 sq ft | Maestro Calc',
   'page.square-feet-20x20.description':
     'A 20 by 20 ft area is 400 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
   'page.square-feet-20x20.heading': 'How many square feet is 20x20?',
+  'page.square-feet-20x20.label': '20x20 ft',
   'page.square-feet-20x20.intro':
     'A 20 by 20 ft area is the floor of a two-car garage or a large patio.',
   'page.contact.title': 'Contact | Maestro Calc',
@@ -405,102 +437,119 @@ export const enSite = {
   'page.mulch-bags-per-yard.description':
     'A cubic yard of mulch is 27 cubic feet: 18 bags of 1.5 cu ft, 14 bags of 2 cu ft or 9 bags of 3 cu ft, and the bags for 2 or 3 cubic yards.',
   'page.mulch-bags-per-yard.heading': 'How many bags of mulch in a cubic yard?',
+  'page.mulch-bags-per-yard.label': 'Bags per cubic yard',
   'page.mulch-bags-per-yard.intro':
     'Mulch comes in bags of 1.5, 2 or 3 cubic feet, and in bulk by the cubic yard. Divide 27 by the bag size and round up: a cubic yard takes 18 bags of 1.5 cu ft, 14 of 2 cu ft or 9 of 3 cu ft.',
   'page.gravel-driveway-10x20.title': 'Gravel for a 10x20 Driveway: 4.74 Tons | Maestro Calc',
   'page.gravel-driveway-10x20.description':
     'A 10 by 20 ft driveway 4 in deep takes 4.74 tons of compacted gravel, 3.68 cubic yards to order with 5% extra, and the same driveway at 6 or 8 in.',
   'page.gravel-driveway-10x20.heading': 'How much gravel for a 10x20 driveway?',
+  'page.gravel-driveway-10x20.label': '10x20 driveway',
   'page.gravel-driveway-10x20.intro':
     'A 10 by 20 ft pad parks one car, or widens a driveway beside the garage. A driveway base is compacted in layers, so the gravel is worked out at its compacted weight.',
   'page.gravel-driveway-12x50.title': 'Gravel for a 12x50 Driveway: 14.23 Tons | Maestro Calc',
   'page.gravel-driveway-12x50.description':
     'A 12 by 50 ft driveway 4 in deep takes 14.23 tons of compacted gravel, 11.03 cubic yards to order with 5% extra, and the same driveway at 6 or 8 in.',
   'page.gravel-driveway-12x50.heading': 'How much gravel for a 12x50 driveway?',
+  'page.gravel-driveway-12x50.label': '12x50 driveway',
   'page.gravel-driveway-12x50.intro':
     'A 12 by 50 ft driveway is one lane from the street to a garage set back from the road. A new driveway often takes a deeper base course first and a top layer after.',
   'page.paint-room-10x10.title': 'Paint for a 10x10 Room: 1.54 Gallons | Maestro Calc',
   'page.paint-room-10x10.description':
     'A 10 by 10 ft room with 8 ft walls, one door and two windows takes 1.54 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
   'page.paint-room-10x10.heading': 'How much paint for a 10x10 room?',
+  'page.paint-room-10x10.label': '10x10 room',
   'page.paint-room-10x10.intro':
     'A 10 by 10 ft room is a small bedroom or a home office. The table paints the walls only; the ceiling and the trim take paint of their own.',
   'page.paint-room-10x12.title': 'Paint for a 10x12 Room: 1.73 Gallons | Maestro Calc',
   'page.paint-room-10x12.description':
     'A 10 by 12 ft room with 8 ft walls, one door and two windows takes 1.73 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
   'page.paint-room-10x12.heading': 'How much paint for a 10x12 room?',
+  'page.paint-room-10x12.label': '10x12 room',
   'page.paint-room-10x12.intro':
     'A 10 by 12 ft room is a common size for a bedroom or a nursery. The table paints the walls only; the ceiling and the trim take paint of their own.',
   'page.paint-room-12x12.title': 'Paint for a 12x12 Room: 1.91 Gallons | Maestro Calc',
   'page.paint-room-12x12.description':
     'A 12 by 12 ft room with 8 ft walls, one door and two windows takes 1.91 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
   'page.paint-room-12x12.heading': 'How much paint for a 12x12 room?',
+  'page.paint-room-12x12.label': '12x12 room',
   'page.paint-room-12x12.intro':
     'A 12 by 12 ft room is a typical main bedroom or a small living room. The table paints the walls only; the ceiling and the trim take paint of their own.',
   'page.drywall-room-10x10.title': 'Drywall for a 10x10 Room: 13 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-10x10.description':
     'A 10 by 10 ft room with 8 ft walls takes 13 sheets of 4x8 drywall or 9 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
   'page.drywall-room-10x10.heading': 'How many sheets of drywall for a 10x10 room?',
+  'page.drywall-room-10x10.label': '10x10 room',
   'page.drywall-room-10x10.intro':
     'A 10 by 10 ft room is a small bedroom or a home office. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
   'page.drywall-room-10x12.title': 'Drywall for a 10x12 Room: 15 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-10x12.description':
     'A 10 by 12 ft room with 8 ft walls takes 15 sheets of 4x8 drywall or 10 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
   'page.drywall-room-10x12.heading': 'How many sheets of drywall for a 10x12 room?',
+  'page.drywall-room-10x12.label': '10x12 room',
   'page.drywall-room-10x12.intro':
     'A 10 by 12 ft room is a common size for a bedroom or a nursery. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
   'page.drywall-room-12x12.title': 'Drywall for a 12x12 Room: 17 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-12x12.description':
     'A 12 by 12 ft room with 8 ft walls takes 17 sheets of 4x8 drywall or 11 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
   'page.drywall-room-12x12.heading': 'How many sheets of drywall for a 12x12 room?',
+  'page.drywall-room-12x12.label': '12x12 room',
   'page.drywall-room-12x12.intro':
     'A 12 by 12 ft room is a typical main bedroom or a small living room. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
   'page.topsoil-raised-bed-4x4.title': 'Soil for a 4x4 Raised Bed: 0.65 Cubic Yards | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'A 4 by 4 ft raised bed 12 in deep takes 0.65 cubic yards of soil with 10% for settling: 24 bags of 0.75 cu ft or 12 of 1.5 cu ft, and the bed at 18 or 24 in.',
   'page.topsoil-raised-bed-4x4.heading': 'How much soil for a 4x4 raised bed?',
+  'page.topsoil-raised-bed-4x4.label': '4x4 raised bed',
   'page.topsoil-raised-bed-4x4.intro':
     'A 4 by 4 ft bed is a common kit size, and you can reach its middle from any side. Most vegetables grow well in 12 in of soil; a deeper bed suits root crops and saves bending.',
   'page.topsoil-raised-bed-4x8.title': 'Soil for a 4x8 Raised Bed: 1.30 Cubic Yards | Maestro Calc',
   'page.topsoil-raised-bed-4x8.description':
     'A 4 by 8 ft raised bed 12 in deep takes 1.30 cubic yards of soil with 10% for settling: 47 bags of 0.75 cu ft or 24 of 1.5 cu ft, and the bed at 18 or 24 in.',
   'page.topsoil-raised-bed-4x8.heading': 'How much soil for a 4x8 raised bed?',
+  'page.topsoil-raised-bed-4x8.label': '4x8 raised bed',
   'page.topsoil-raised-bed-4x8.intro':
     'A 4 by 8 ft bed is the most common raised bed: each long side is one 8 ft board. Most vegetables grow well in 12 in of soil; a deeper bed suits root crops and saves bending.',
   'page.topsoil-10x10.title': 'Topsoil for a 10x10 Area: 1.36 Cubic Yards | Maestro Calc',
   'page.topsoil-10x10.description':
     'A 10 by 10 ft area 4 in deep takes 1.36 cubic yards of topsoil with 10% for settling: 49 bags of 0.75 cu ft or 25 of 1.5 cu ft, and the area at 6 or 8 in.',
   'page.topsoil-10x10.heading': 'How much topsoil for a 10x10 area?',
+  'page.topsoil-10x10.label': '10x10 area',
   'page.topsoil-10x10.intro':
     'A 10 by 10 ft area is 100 sq ft: a lawn patch or a garden plot. Four inches of topsoil is a common base for new grass seed; a vegetable garden does better with 6 to 8 in.',
   'page.topsoil-20x20.title': 'Topsoil for a 20x20 Area: 5.43 Cubic Yards | Maestro Calc',
   'page.topsoil-20x20.description':
     'A 20 by 20 ft area 4 in deep takes 5.43 cubic yards of topsoil with 10% for settling: 196 bags of 0.75 cu ft or 98 of 1.5 cu ft, and the area at 6 or 8 in.',
   'page.topsoil-20x20.heading': 'How much topsoil for a 20x20 area?',
+  'page.topsoil-20x20.label': '20x20 area',
   'page.topsoil-20x20.intro':
     'A 20 by 20 ft area is 400 sq ft: a small lawn or a backyard garden. At this size, compare the bulk price per cubic yard with the price of the bags.',
   'page.roofing-12x16.title': 'Shingles for a 12x16 Roof: 8 Bundles | Maestro Calc',
   'page.roofing-12x16.description':
     'A 12 by 16 ft roof footprint at 6 in 12 has 2.15 squares: 8 bundles of shingles and 1 roll of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
   'page.roofing-12x16.heading': 'How many bundles of shingles for a 12x16 roof?',
+  'page.roofing-12x16.label': '12x16 roof',
   'page.roofing-12x16.intro':
     'A 12 by 16 ft footprint is a large shed or a small workshop. Measure the footprint to the edge of the overhangs, not to the walls.',
   'page.roofing-24x24.title': 'Shingles for a 24x24 Roof: 22 Bundles | Maestro Calc',
   'page.roofing-24x24.description':
     'A 24 by 24 ft roof footprint at 6 in 12 has 6.44 squares: 22 bundles of shingles and 1 roll of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
   'page.roofing-24x24.heading': 'How many bundles of shingles for a 24x24 roof?',
+  'page.roofing-24x24.label': '24x24 roof',
   'page.roofing-24x24.intro':
     'A 24 by 24 ft footprint is a typical two-car garage. Measure the footprint to the edge of the overhangs, not to the walls.',
   'page.roofing-30x40.title': 'Shingles for a 30x40 Roof: 45 Bundles | Maestro Calc',
   'page.roofing-30x40.description':
     'A 30 by 40 ft roof footprint at 6 in 12 has 13.42 squares: 45 bundles of shingles and 2 rolls of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
   'page.roofing-30x40.heading': 'How many bundles of shingles for a 30x40 roof?',
+  'page.roofing-30x40.label': '30x40 roof',
   'page.roofing-30x40.intro':
     'A 30 by 40 ft footprint covers a small one-story house or a large shop. Measure the footprint to the edge of the overhangs, not to the walls.',
   'page.roofing-30x50.title': 'Shingles for a 30x50 Roof: 56 Bundles | Maestro Calc',
   'page.roofing-30x50.description':
     'A 30 by 50 ft roof footprint at 6 in 12 has 16.77 squares: 56 bundles of shingles and 2 rolls of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
   'page.roofing-30x50.heading': 'How many bundles of shingles for a 30x50 roof?',
+  'page.roofing-30x50.label': '30x50 roof',
   'page.roofing-30x50.intro':
     'A 30 by 50 ft footprint covers a one-story ranch house. Measure the footprint to the edge of the overhangs, not to the walls.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',

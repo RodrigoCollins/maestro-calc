@@ -24,7 +24,8 @@ import TrustPageView from '../views/TrustPageView.astro';
 import JobPageView from '../views/JobPageView.astro';
 import PitchDegreesTable from '../components/PitchDegreesTable.astro';
 import { pitchDegreesView } from '../lib/pitch-degrees.ts';
-import { isJobPage, jobsOf } from '../routing/jobs.ts';
+import { isJobPage } from '../routing/jobs.ts';
+import { jobLinks } from '../lib/job-links.ts';
 
 // The two homes render from `index.astro` and `es.astro`, so the home view's scoped CSS ships on them only.
 export const getStaticPaths = () =>
@@ -66,10 +67,7 @@ const hubView =
           (hub.calculators as readonly string[]).includes(card.id),
         ),
         guides: await Promise.all(hub.guides.map(guideCard)),
-        jobs: hub.calculators.flatMap(jobsOf).map((job) => ({
-          href: pathOf(job, locale),
-          title: siteText(locale)(`page.${job}.heading`),
-        })),
+        jobs: hub.calculators.flatMap((calculator) => jobLinks(calculator, locale)),
       };
 ---
 

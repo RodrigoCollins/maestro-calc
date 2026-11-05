@@ -3,11 +3,13 @@ import type { Locale } from '@maestro-calc/i18n';
 import { getEntry, render } from 'astro:content';
 import CalculatorBody from '../components/calculator/CalculatorBody.astro';
 import GuideLinks from '../components/GuideLinks.astro';
+import JobLinks from '../components/JobLinks.astro';
 import type { CalculatorContent } from '../components/calculator/model.ts';
 import { faqOf } from '../content/faq.ts';
 import { headingOf } from '../content/heading.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { calendarDay } from '../lib/calendar-day.ts';
+import { jobLinks } from '../lib/job-links.ts';
 import { PAGES, headStyleOf, pageView } from '../lib/pages.ts';
 import { siteText } from '../lib/site-text.ts';
 import { guidesOf } from '../routing/guides.ts';
@@ -47,6 +49,8 @@ const guides = await Promise.all(
     return { href: pathOf(guide, locale), title: headingOf(page.body ?? '') };
   }),
 );
+// the job pages of this calculator (growth plan, lever 1), each linked back from here
+const jobs = jobLinks(id, locale);
 const hubId = hubOfCalculator(id);
 // the trade hub (hubs › [HB3]), named by its page title without the site name
 const hub =
@@ -66,6 +70,7 @@ const style = headStyleOf(PAGES[id]);
       <Content />
     </div>
     {guides.length > 0 && <GuideLinks label={text('site.guide.links')} {guides} />}
+    {jobs.length > 0 && <JobLinks label={text('site.hub.jobs')} {jobs} />}
     {hub !== undefined && (
       <p class="hub-link">
         {text('site.hub.more')} <a href={hub.href}>{hub.name}</a>

@@ -1,4 +1,4 @@
-import { ALKALINITY, CHLORINE, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, PH, SALT, STABILIZER } from './doses.ts';
 import type { GuideSource } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -64,6 +64,7 @@ const ROWS: readonly ChartRow[] = [
     home: '7.2 to 7.8',
     publicPool: '7.0 to 7.8',
     text: 'CDC gives pH 7.0 to 7.8 for a home pool too; the manual keeps it at 7.2 or more. Held in range with the alkalinity and the calcium, the water neither corrodes the pool nor leaves scale.',
+    link: { href: PH.path, label: 'Work out the acid or the soda ash' },
     sources: ['hayward', 'cdc', 'mahc'],
   },
   {
