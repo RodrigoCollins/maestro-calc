@@ -46,11 +46,25 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
     expect(step('smoke')?.run).toBe('node apps/web/scripts/production.ts smoke');
     expect(step('indexnow')?.run).toBe('node apps/web/scripts/production.ts indexnow');
     expect(step('indexnow')?.if).toBe("steps.changed.outputs.site == 'true'");
-    expect(['build', 'smoke', 'changed'].map((id) => step(id)?.if)).toEqual([
-      undefined,
-      undefined,
-      undefined,
-    ]);
+    expect(step('smoke')?.if).toBe("steps.build.outputs.superseded != 'true'");
+    expect(['build', 'changed'].map((id) => step(id)?.if)).toEqual([undefined, undefined]);
+  });
+
+  // Three merges within minutes (2026-11-05): Cloudflare built only the newest commit, so the
+  // middle push waited 20 minutes for a build that never came and failed. A push that main has
+  // moved past and that has no build of its own is superseded: the newer run smokes the site,
+  // and this run still notifies its own changes, which the newer run's compare does not see.
+  it('treats a push with no build of its own as superseded once main has moved past it', () => {
+    const waits = Object.values(workflow.jobs).flatMap((job) =>
+      job.steps.filter((step) => step.id === 'build'),
+    );
+    expect(waits).toHaveLength(2);
+    for (const wait of waits) {
+      expect(wait.run).toContain('head=$(gh api "repos/$REPO/commits/main" --jq .sha)');
+      expect(wait.run).toMatch(
+        /if \[ -z "\$run" \] && \[ -n "\$head" \] && \[ "\$head" != "\$SHA" \]; then[\s\S]*?echo "superseded=true" >> "\$GITHUB_OUTPUT"; exit 0/,
+      );
+    }
   });
 
   // A 502 from the GitHub API once failed a deploy under `bash -e` (2026-11-04): a failed poll is

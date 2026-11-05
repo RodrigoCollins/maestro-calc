@@ -25,7 +25,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
-      # A build that never starts (#133) or fails stops here, which is the alarm.
+      # A build that never starts (#133) or fails stops here, which is the alarm. Cloudflare builds
+      # only the newest of several quick pushes, so an older push with no build is superseded.
       - id: build
         name: Wait for the Cloudflare build
         env:
@@ -40,12 +41,18 @@ jobs:
               "completed success") echo "build: $run"; exit 0 ;;
               completed*) echo "build: $run"; exit 1 ;;
             esac
+            head=$(gh api "repos/$REPO/commits/main" --jq .sha) || head=''
+            if [ -z "$run" ] && [ -n "$head" ] && [ "$head" != "$SHA" ]; then
+              echo "build: superseded by $head"; echo "superseded=true" >> "$GITHUB_OUTPUT"; exit 0
+            fi
             sleep 20
           done
           echo "build: no completed Workers Builds check after 20 minutes"
           exit 1
+      # A superseded push has no build of its own: the newer push's run smokes the site.
       - id: smoke
         name: Smoke the live site
+        if: steps.build.outputs.superseded != 'true'
         run: node apps/web/scripts/production.ts smoke
       # Only a push that touches what the site is built from notifies; an openspec archive does not.
       - id: changed
@@ -105,6 +112,10 @@ jobs:
               "completed success") echo "build: $run"; exit 0 ;;
               completed*) echo "build: $run"; exit 1 ;;
             esac
+            head=$(gh api "repos/$REPO/commits/main" --jq .sha) || head=''
+            if [ -z "$run" ] && [ -n "$head" ] && [ "$head" != "$SHA" ]; then
+              echo "build: superseded by $head"; echo "superseded=true" >> "$GITHUB_OUTPUT"; exit 0
+            fi
             sleep 20
           done
           echo "build: no completed Workers Builds check after 20 minutes"
