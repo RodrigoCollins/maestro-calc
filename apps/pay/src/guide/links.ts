@@ -1,5 +1,6 @@
 import type { Lang } from '../time-card/receipt.ts';
 import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from './overtime.ts';
+import { OVERTIME_STATES_GUIDE, OVERTIME_STATES_GUIDE_PATHS } from './overtime-states.ts';
 import { PAY_STUB_GUIDE, PAY_STUB_GUIDE_PATHS } from './pay-stub.ts';
 import { UNPAID_WAGES_GUIDE, UNPAID_WAGES_GUIDE_PATHS } from './unpaid-wages.ts';
 
@@ -16,4 +17,5 @@ export const overtimeGuideLinksOf = (
   })),
   { href: PAY_STUB_GUIDE_PATHS[lang], label: PAY_STUB_GUIDE[lang].linkLabel },
   { href: UNPAID_WAGES_GUIDE_PATHS[lang], label: UNPAID_WAGES_GUIDE[lang].linkLabel },
+  { href: OVERTIME_STATES_GUIDE_PATHS[lang], label: OVERTIME_STATES_GUIDE[lang].linkLabel },
 ];
