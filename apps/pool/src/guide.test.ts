@@ -3,15 +3,17 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, FILL_TIME, HEATER, PUMP, SALT } from './doses.ts';
+import { CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import {
   CLOSING_GUIDE,
   GUIDES,
+  guidesOf,
   OPENING_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
   type GuideSource,
 } from './guide.ts';
+import { HOME_TOOLS } from './home.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -223,5 +225,52 @@ describe('the guides', () => {
 
   it('links every guide from the footer of every page', () => {
     for (const { path } of GUIDES) expect(footer, path).toContain(`href="${path}"`);
+  });
+});
+
+describe('the calculators each guide explains', () => {
+  const calculators = HOME_TOOLS.map(({ href }) => href);
+  const linksOf = (guide: (typeof GUIDES)[number]): string[] =>
+    guide.path === CHEMISTRY_CHART.path
+      ? [
+          CHEMISTRY_CHART.gallons.href,
+          ...CHEMISTRY_CHART.rows.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
+        ]
+      : [OPENING_GUIDE, CLOSING_GUIDE, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE]
+          .filter(({ path }) => path === guide.path)
+          .flatMap(({ steps }) =>
+            steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
+          );
+
+  // a calculator page links back each guide that names it (`src/site-check/links.ts` checks the build)
+  it.each(GUIDES.map((guide) => [guide.path, guide] as const))(
+    'are the calculators %s links, each once, in its order',
+    (_path, guide) => {
+      expect(guide.calculators).toEqual([
+        ...new Set(linksOf(guide).filter((href) => calculators.includes(href))),
+      ]);
+    },
+  );
+
+  it('are the guides a calculator page links, in the order of the list', () => {
+    expect(guidesOf(PH.path).map(({ path }) => path)).toEqual([
+      OPENING_GUIDE.path,
+      CHEMISTRY_CHART.path,
+    ]);
+  });
+
+  it('cover every calculator, so each calculator page links at least one guide', () => {
+    const explained = new Set(GUIDES.flatMap((guide) => guide.calculators));
+    expect(calculators.filter((href) => !explained.has(href))).toEqual([]);
+  });
+
+  it('send the opening guide’s water level to the fill time and its test to the pH dose', () => {
+    expect(GUIDES.find(({ path }) => path === OPENING_GUIDE.path)?.calculators).toEqual([
+      FILL_TIME.path,
+      VOLUME_TEXTS.path,
+      PH.path,
+      SALT.path,
+      CHLORINE.path,
+    ]);
   });
 });
