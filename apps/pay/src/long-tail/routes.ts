@@ -239,8 +239,64 @@ const double = (amount: string): DoubleTime => ({
 /** In ascending order: the overtime calculator lists them, and a page links its nearest, so. */
 export const DOUBLES: readonly DoubleTime[] = ['15', '18', '20', '22', '25', '30'].map(double);
 
+/**
+ * An hourly rate and a shift differential people ask the pay of, "what is a 10% shift differential
+ * on $20 an hour" or "$18 an hour with a $2 shift differential": the shift differential
+ * calculator's, as a percent of the rate or an amount an hour. Only the rate and the differential
+ * are given; every figure of its page is the engine's.
+ */
+export interface Differential {
+  readonly kind: 'differential';
+  readonly amount: string;
+  readonly source: 'percent' | 'amount';
+  readonly differential: string;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const percentOn = (differential: string, amount: string): Differential => ({
+  kind: 'differential',
+  amount,
+  source: 'percent',
+  differential,
+  slug: {
+    en: `${differential}-percent-shift-differential-on-${amount}-an-hour`,
+    es: `diferencial-de-turno-del-${differential}-por-ciento-sobre-${amount}-la-hora`,
+  },
+});
+
+const dollarsOn = (differential: string, amount: string): Differential => ({
+  kind: 'differential',
+  amount,
+  source: 'amount',
+  differential,
+  slug: {
+    en: `${amount}-an-hour-with-a-${differential}-dollar-shift-differential`,
+    es: `${amount}-la-hora-con-diferencial-de-turno-de-${differential}-dolares`,
+  },
+});
+
+/**
+ * The percents first, then the dollars an hour, each by rate and then by differential: the shift
+ * differential calculator lists them, and a page links its nearest, so.
+ */
+export const DIFFERENTIALS: readonly Differential[] = [
+  percentOn('10', '15'),
+  percentOn('10', '18'),
+  percentOn('10', '20'),
+  percentOn('15', '20'),
+  percentOn('10', '22'),
+  percentOn('10', '25'),
+  percentOn('10', '30'),
+  dollarsOn('2', '15'),
+  dollarsOn('2', '18'),
+  dollarsOn('1', '20'),
+  dollarsOn('2', '20'),
+  dollarsOn('3', '20'),
+  dollarsOn('2', '25'),
+];
+
 /** A long-tail page's job, of any family. */
-export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime;
+export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
 export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
@@ -249,6 +305,7 @@ export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
   ...PTOS,
   ...MINUTES,
   ...DOUBLES,
+  ...DIFFERENTIALS,
 ];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>
