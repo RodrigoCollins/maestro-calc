@@ -1,3 +1,4 @@
+import { PTO_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 export const PTO_PATHS = {
@@ -64,6 +65,7 @@ export const PTO_TEXTS: Readonly<Record<Lang, PtoTexts>> = {
       'Federal law (the FLSA) does not require paid vacation: it is an agreement between you and your employer. In California, earned vacation is wages: it cannot be lost by a deadline, and what you have not used is paid when the job ends.',
     ],
     links: [
+      { label: 'How PTO accrues and what the law says', href: PTO_GUIDE_PATHS.en },
       { label: 'Turn your hourly pay into a salary', href: '/hourly-to-salary-calculator' },
       { label: 'Add up a week on the time card', href: '/time-card-calculator' },
     ],
@@ -99,6 +101,10 @@ export const PTO_TEXTS: Readonly<Record<Lang, PtoTexts>> = {
       'La ley federal (la FLSA) no exige vacaciones pagadas: es un acuerdo entre tú y tu empleador. En California, las vacaciones ganadas son salario: no se pierden por una fecha límite, y lo que no usaste se paga cuando termina el trabajo.',
     ],
     links: [
+      {
+        label: 'Cómo se acumulan las vacaciones pagadas y qué dice la ley',
+        href: PTO_GUIDE_PATHS.es,
+      },
       {
         label: 'Convierte tu pago por hora en sueldo anual',
         href: '/es/de-pago-por-hora-a-sueldo-anual',
