@@ -11,6 +11,7 @@ import {
   OPENING_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
+  SHOCK_GUIDE,
   type GuideSource,
 } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
@@ -30,7 +31,8 @@ const textOf = (
     | typeof OPENING_GUIDE
     | typeof CLOSING_GUIDE
     | typeof PUMP_RUN_GUIDE
-    | typeof SALT_VS_CHLORINE_GUIDE,
+    | typeof SALT_VS_CHLORINE_GUIDE
+    | typeof SHOCK_GUIDE,
 ): string => guide.steps.map(({ text }) => text).join(' ');
 
 describe.each([
@@ -38,6 +40,7 @@ describe.each([
   ['winter closing', CLOSING_GUIDE],
   ['pump run time', PUMP_RUN_GUIDE],
   ['salt water vs chlorine', SALT_VS_CHLORINE_GUIDE],
+  ['pool shock', SHOCK_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -207,6 +210,76 @@ describe('the salt water vs chlorine guide', () => {
   });
 });
 
+describe('the pool shock guide', () => {
+  const text = textOf(SHOCK_GUIDE);
+  const dose = (gallons: string, current: string, target: string, product: string): string =>
+    figure(
+      CHLORINE.path,
+      { gallons, current, target, product },
+      product.startsWith('liquid') ? 'liquid' : 'dry',
+    );
+
+  it('sizes the shock as the chlorine calculator raising free chlorine to the shock level', () => {
+    expect(SHOCK_GUIDE.lead).toContain('free chlorine');
+    expect(text).toContain('from your reading to the shock level');
+  });
+
+  // the figures come from the sources as published; a changed one must be checked against them again
+  it('gives the cal-hypo label’s strength, dose, timing and reentry level exactly as it does', () => {
+    expect(text).toContain('65% available chlorine');
+    expect(text).toContain('10 to 20 oz per 10,000 gallons');
+    expect(text).toContain('5 to 10 ppm');
+    expect(text).toContain('every 7 days');
+    expect(text).toContain('evening hours while the filter pump is running');
+    expect(text).toContain('above 4 ppm');
+  });
+
+  it('gives the dichlor label’s strength, dose and reentry level exactly as it does', () => {
+    expect(text).toContain('56% available chlorine');
+    expect(text).toContain('2 oz per 1,000 gallons');
+    expect(text).toContain('8.7 ppm');
+    expect(text).toContain('above 3 ppm');
+  });
+
+  it('balances the pH first, at the 7.2 to 7.6 both labels ask for', () => {
+    expect(text).toContain('7.2 to 7.6');
+  });
+
+  it('gives CDC’s home pool floor and its hyperchlorination exactly as CDC publishes them', () => {
+    expect(text).toContain('at least 1 ppm');
+    expect(text).toContain('at least 2 ppm');
+    expect(text).toContain('DPD');
+    expect(text).toContain('aquatic staff');
+    expect(text).toContain('unstabilized chlorine');
+    expect(text).toContain('20 ppm for 12.75 hours');
+    expect(text).toContain('1 to 15 ppm');
+    expect(text).toContain('20 ppm for 28 hours');
+    expect(text).toContain('pH 7.5 or less');
+    expect(text).toContain('2 ppm for 25 to 30 minutes');
+  });
+
+  it('states no breakpoint rule that no source it cites gives', () => {
+    expect(`${SHOCK_GUIDE.lead} ${text}`).not.toMatch(
+      /breakpoint|combined chlorine|10 ?(x|×|times)/i,
+    );
+  });
+
+  // a figure a calculator works out is the calculator's own, to the digit
+  it('works out every shock dose as the chlorine calculator does', () => {
+    expect(text).toContain(`${dose('10000', '0', '5', 'cal-hypo-65')} oz`);
+    expect(text).toContain(`${dose('10000', '0', '10', 'cal-hypo-65')} oz`);
+    expect(text).toContain(`${dose('1000', '0', '8.7', 'dichlor-56')} oz`);
+    expect(text).toContain(`${dose('20000', '1', '10', 'cal-hypo-65')} oz`);
+    expect(text).toContain(`${dose('20000', '1', '10', 'liquid-12-5')} fl oz`);
+    expect(text).toContain(`${dose('20000', '2', '20', 'liquid-12-5')} fl oz`);
+  });
+
+  it('links the volume, the pH and the chlorine calculators and the chart', () => {
+    const links = SHOCK_GUIDE.steps.flatMap(({ link }) => (link === undefined ? [] : [link.href]));
+    expect(links).toEqual([VOLUME_TEXTS.path, PH.path, CHEMISTRY_CHART.path, CHLORINE.path]);
+  });
+});
+
 describe('the guides', () => {
   it('lists every guide once, each with a short card', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
@@ -215,6 +288,7 @@ describe('the guides', () => {
       CHEMISTRY_CHART.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
+      SHOCK_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);
@@ -236,7 +310,7 @@ describe('the calculators each guide explains', () => {
           CHEMISTRY_CHART.gallons.href,
           ...CHEMISTRY_CHART.rows.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
         ]
-      : [OPENING_GUIDE, CLOSING_GUIDE, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE]
+      : [OPENING_GUIDE, CLOSING_GUIDE, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE, SHOCK_GUIDE]
           .filter(({ path }) => path === guide.path)
           .flatMap(({ steps }) =>
             steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
@@ -256,6 +330,7 @@ describe('the calculators each guide explains', () => {
     expect(guidesOf(PH.path).map(({ path }) => path)).toEqual([
       OPENING_GUIDE.path,
       CHEMISTRY_CHART.path,
+      SHOCK_GUIDE.path,
     ]);
   });
 
