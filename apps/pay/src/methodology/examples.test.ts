@@ -9,7 +9,31 @@ import {
   overtimeFiguresOf,
   PTO_EXAMPLES,
   ptoFiguresOf,
+  SHIFT_EXAMPLES,
+  shiftFiguresOf,
 } from './examples.ts';
+
+// The shift differential calculator, verified by hand at $20 an hour (29 CFR 778.115, 778.207(b)):
+// 10% is $22: 24 h x $20 + 16 h x $22 = $832 over 40 h, regular rate $20.80;
+// 24 + 24 h = $480 + $528 = $1,008 over 48 h, regular rate $21.00, + 8 x $10.50 = $84: $1,092;
+// $1.50 an hour is $21.50: $480 + $344 = $824 over 40 h, regular rate $20.60;
+// $2 an hour, 45 h all on nights: 45 x $22 = $990, regular rate $22, + 5 x $11 = $55: $1,045.
+const SHIFT_HAND = {
+  'ten-percent': { shiftRate: '$22.00', regularRate: '$20.80', pay: '$832.00' },
+  'ten-percent-overtime': { shiftRate: '$22.00', regularRate: '$21.00', pay: '$1,092.00' },
+  'dollar-fifty': { shiftRate: '$21.50', regularRate: '$20.60', pay: '$824.00' },
+  'nights-overtime': { shiftRate: '$22.00', regularRate: '$22.00', pay: '$1,045.00' },
+} as const;
+
+describe('shift differential examples', () => {
+  it('publishes exactly the hand-verified cases, in order', () => {
+    expect(SHIFT_EXAMPLES.map(({ id }) => id)).toEqual(Object.keys(SHIFT_HAND));
+  });
+
+  it.each(SHIFT_EXAMPLES)('$id: the engine gives the hand-verified figures', (example) => {
+    expect(shiftFiguresOf(example)).toEqual(SHIFT_HAND[example.id]);
+  });
+});
 
 // The PTO accrual calculator, verified by hand on 52 weeks a year: 10 days x 8 h = 80 h over
 // 40 x 52 = 2,080 h worked, 80/26 = 3.0769 every two weeks, 80/2,080 = 0.0385 per hour worked;

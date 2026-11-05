@@ -1,0 +1,127 @@
+---
+import { Rational, toDecimalParts, type Money } from '@maestro-calc/core';
+import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
+import { hoursText, moneyText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { SHIFT_PATHS, SHIFT_TEXTS, type ShiftOutput } from '../shift/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+const t = SHIFT_TEXTS[lang];
+// The page renders the engine's own figures for the defaults, so it reads without JavaScript.
+const ran = shiftDifferential.run({});
+if (!ran.ok) throw new Error('the defaults of the shift differential calculator must run');
+const isMoney = (value: unknown): value is Money =>
+  typeof value === 'object' && value !== null && 'currency' in value;
+const [primary, ...rest] = ran.value.outputs;
+if (primary?.key !== 'pay' || !isMoney(primary.value)) {
+  throw new Error('the shift differential calculator must lead with the pay of the week');
+}
+const textOf = (value: unknown): string => {
+  if (isMoney(value)) return moneyText(value);
+  if (value instanceof Rational) return hoursText(value);
+  throw new Error('a shift differential output is money or hours');
+};
+const rows = rest.map(({ key, value }) => ({
+  key,
+  label: t.outputs[key as ShiftOutput],
+  text: textOf(value),
+}));
+const source = shiftDifferential.inputs.find(({ key }) => key === 'source')?.default;
+const fields = t.fields.map((field) => {
+  const input = shiftDifferential.inputs.find(({ key }) => key === field.key);
+  if (input === undefined) throw new Error(`no input ${field.key}`);
+  const value = isMoney(input.default)
+    ? (({ integer, fraction }) => `${String(integer)}.${fraction}`)(
+        toDecimalParts(input.default.amount, 2),
+      )
+    : input.default instanceof Rational
+      ? hoursText(input.default)
+      : String(input.default);
+  return { ...field, value, hidden: field.when !== undefined && field.when !== source };
+});
+const warnings = Object.entries(t.warnings);
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={SHIFT_PATHS}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="deduction" data-shift-differential novalidate>
+      {fields.map((field) => (
+        <label class="field" data-when={field.when} hidden={field.hidden}>
+          {field.label}
+          {field.options === undefined ? (
+            <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
+          ) : (
+            <select name={field.key}>
+              {Object.entries(field.options).map(([value, label]) => (
+                <option value={value} selected={value === field.value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          )}
+        </label>
+      ))}
+    </form>
+
+    {warnings.map(([code, text]) => (
+      <p class="warning" data-warning={code} hidden>
+        {text}
+      </p>
+    ))}
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out="pay">
+          {moneyText(primary.value)}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={t.figures}>
+        {rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-out={row.key}>{row.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <ul class="link-list">
+      {t.links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <script src="../client/shift-differential.ts"></script>
+</SiteLayout>

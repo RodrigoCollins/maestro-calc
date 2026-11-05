@@ -1,5 +1,14 @@
 import { expect, test } from '@playwright/test';
-import { DECIMAL_HOURS, DEFAULT_PAY, HOURS, OVERTIME, PAGES, PTO, TIME_CARD } from './pages.ts';
+import {
+  DECIMAL_HOURS,
+  DEFAULT_PAY,
+  HOURS,
+  OVERTIME,
+  PAGES,
+  PTO,
+  SHIFT,
+  TIME_CARD,
+} from './pages.ts';
 
 for (const { path } of PAGES) {
   test(`${path} reads without JavaScript`, async ({ page }) => {
@@ -54,6 +63,17 @@ for (const { path } of PTO) {
     await expect(page.locator('.result-figure')).toHaveText('3.08');
     await expect(page.locator('[data-out="perHourWorked"]')).toHaveText('0.0385');
     await expect(page.locator('[data-out="hoursPerPtoHour"]')).toHaveText('26');
+  });
+}
+
+for (const { path } of SHIFT) {
+  test(`${path} shows the default week without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    // $20 + 10% = $22: 24 h x $20 + 16 h x $22 = $832 over 40 h, a regular rate of $20.80
+    await expect(page.locator('.result-figure')).toHaveText('$832.00');
+    await expect(page.locator('[data-out="shiftRate"]')).toHaveText('$22.00');
+    await expect(page.locator('[data-out="regularRate"]')).toHaveText('$20.80');
+    await expect(page.locator('input[name="amount"]')).toBeHidden();
   });
 }
 

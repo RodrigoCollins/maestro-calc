@@ -7,6 +7,7 @@ import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
 import { ROUTES } from '../routes.ts';
+import { SHIFT_TEXTS } from '../shift/texts.ts';
 import { CALCULATOR_PAGES, EMBED_PAGES } from '../site-check/pages.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { EMBEDS, snippetsFor } from './embeds.ts';
@@ -57,6 +58,7 @@ describe('EMBEDS', () => {
         HOURS_TEXTS[lang].h1,
         DECIMAL_HOURS_TEXTS[lang].h1,
         PTO_TEXTS[lang].h1,
+        SHIFT_TEXTS[lang].h1,
         PAY_CONVERTER_TEXTS[lang].variants.hourly.h1,
         PAY_CONVERTER_TEXTS[lang].variants.salary.h1,
         DEDUCTION_TEXTS[lang].overtime.h1,
