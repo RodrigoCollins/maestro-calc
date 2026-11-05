@@ -52,6 +52,7 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
  * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
  * liters of liquid chlorine or muriatic acid, pounds and ounces of baking soda or stabilizer, BTU per hour and
  * BTU of heat, the fill time and its minutes, pounds of calcium chloride and its first addition,
+ * the days muriatic acid takes at the label's quart per 20,000 gallons a day,
  * or gallons and liters of water.
  */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
@@ -96,7 +97,8 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
   if (path === CHLORINE.path || path === PH.path) {
     const liquid = value('liquid');
     if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
-    return [outputText('liquid', liquid), volumeText(liquid, liter, 2)];
+    const cells = [outputText('liquid', liquid), volumeText(liquid, liter, 2)];
+    return path === PH.path ? [...cells, outputText('days', value('days'))] : cells;
   }
   const volume = value('gallons');
   if (!isQuantityOf(volume, 'volume')) throw new Error('gallons must be a volume');
@@ -324,11 +326,25 @@ describe('the long-tail job pages', () => {
   it('works out muriatic acid for 20,000 gallons, 1 to 3 drops of acid demand, as by hand', () => {
     const page = byPath('/how-much-muriatic-acid-for-a-20000-gallon-pool');
     expect(page.figure).toMatchObject({ value: '36.6', unit: 'FL OZ' });
+    // HASA: at most one quart (32 fl oz) per 20,000 gal in 24 hours, so 36.64 and 54.96 take 2 days
     expect(page.rows.map(({ cells }) => cells)).toEqual([
-      ['1 drop', '18.3', '0.54'],
-      ['2 drops', '36.6', '1.08'],
-      ['3 drops', '55.0', '1.63'],
+      ['1 drop', '18.3', '0.54', '1'],
+      ['2 drops', '36.6', '1.08', '2'],
+      ['3 drops', '55.0', '1.63', '2'],
     ]);
+    expect(page.head).toEqual([
+      'Acid demand test',
+      'Muriatic acid (fl oz)',
+      'Liters',
+      'Days, at most 32.0 fl oz a day',
+    ]);
+    expect(page.lead).toContain('at most 32.0 fl oz a day');
+    expect(page.lead).toContain('over 2 days');
+    expect(page.figure.caption).toContain('over 2 days');
+    // 10,000 gal: 16 fl oz a day, so 9.16 takes 1 day and 18.32 takes 2
+    expect(
+      byPath('/how-much-muriatic-acid-for-a-10000-gallon-pool').rows.map(({ cells }) => cells[3]),
+    ).toEqual(['1', '2', '2']);
     // 10,000 gal at 2 drops: 18.32 fl oz; 30,000 gal: 54.96
     expect(byPath('/how-much-muriatic-acid-for-a-10000-gallon-pool').figure.value).toBe('18.3');
     expect(byPath('/how-much-muriatic-acid-for-a-30000-gallon-pool').figure.value).toBe('55.0');
@@ -342,8 +358,12 @@ describe('the long-tail job pages', () => {
       for (const { raw } of rows) {
         expect(raw['product']).toBe('muriatic-31-45');
         expect(Number(raw['drops'])).toBeLessThanOrEqual(3);
+        // no page doses past the chart; a dose over the label's quart a day is split, and says so
         const ran = poolPh.run(raw);
-        expect(ran.ok && ran.value.warnings).toEqual([]);
+        const days = ran.ok && ran.value.outputs.find(({ key }) => key === 'days')?.value;
+        expect(ran.ok && ran.value.warnings).toEqual(
+          String(days) === '1' ? [] : [{ code: 'splitDays', params: {} }],
+        );
       }
   });
 

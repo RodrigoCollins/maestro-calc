@@ -744,24 +744,33 @@ const phPage = (gallons: number): JobPage => {
         `${String(drops)} ${drops === 1 ? 'drop' : 'drops'}`,
         outputText('liquid', liquid),
         volumeText(liquid, liter, 2),
+        outputText('days', values.get('days')),
       ],
     };
   });
   const main = rows[PH_MAIN];
   if (main === undefined) throw new Error('a pH job needs its 2 drops row');
-  const [drops = '', ounces = '', liters = ''] = main.cells;
+  const [drops = '', ounces = '', liters = '', days = ''] = main.cells;
+  const perDay = outputText('liquidPerDay', outputsOf(poolPh, main.raw).values.get('liquidPerDay'));
+  // the lead says HASA's label splits the large figure's dose: a build error if it does not
+  if (days === '1') throw new Error('a pH job needs a split dose as its large figure');
   return {
     path: `/how-much-muriatic-acid-for-a-${String(gallons)}-gallon-pool`,
     title: `How Much Muriatic Acid for a ${size} Gallon Pool? | Pool Figures`,
     description: `The fluid ounces of 31.45% muriatic acid that lower pH in a ${size} gallon pool, for 1, 2 or 3 drops of the acid demand test of a Taylor kit.`,
     h1: `How much muriatic acid for a ${size} gallon pool`,
-    lead: `When the acid demand test of a Taylor kit takes ${drops}, a ${size} gallon pool needs ${ounces} fl oz of 31.45% muriatic acid to lower its pH. The table stops at 3 drops, where Taylor’s chart does; the calculator also raises pH with soda ash.`,
+    lead: `When the acid demand test of a Taylor kit takes ${drops}, a ${size} gallon pool needs ${ounces} fl oz of 31.45% muriatic acid to lower its pH. HASA’s label adds at most ${perDay} fl oz a day to that pool, so it goes in over ${days} days, with a test before each part. The table stops at 3 drops, where Taylor’s chart does; the calculator also raises pH with soda ash.`,
     figure: {
       value: ounces,
       unit: 'FL OZ',
-      caption: `${liters} L of 31.45% muriatic acid, for ${drops} of acid demand reagent.`,
+      caption: `${liters} L of 31.45% muriatic acid, for ${drops} of acid demand reagent, over ${days} days.`,
     },
-    head: ['Acid demand test', 'Muriatic acid (fl oz)', 'Liters'],
+    head: [
+      'Acid demand test',
+      'Muriatic acid (fl oz)',
+      'Liters',
+      `Days, at most ${perDay} fl oz a day`,
+    ],
     rows,
     calculator: {
       path: PH.path,

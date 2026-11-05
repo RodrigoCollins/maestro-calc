@@ -342,6 +342,24 @@ describe('the pool pH guide', () => {
     expect(`${PH_GUIDE.lead} ${text}`).not.toMatch(/\b([4-9]|10) drops\b/);
   });
 
+  // HASA's quart per 20,000 gallons a day and the pH Up pound per 10,000 gallons a time: the most and
+  // the days the guide gives are the calculator's own, so a dose over the label is split as it splits it
+  it('splits the acid over the days the pH calculator gives, at the label’s most a day', () => {
+    const acid20k = { gallons: '20000', product: 'muriatic-31-45', drops: '2' };
+    const acid10k = { gallons: '10000', product: 'muriatic-31-45', drops: '3' };
+    const soda20k = { gallons: '20000', product: 'soda-ash', drops: '2' };
+    expect(text).toContain(
+      `${figure(PH.path, acid20k, 'liquidPerDay')} fl oz a day, so it goes in over ${figure(PH.path, acid20k, 'days')} days`,
+    );
+    expect(text).toContain(
+      `${figure(PH.path, acid10k, 'liquidPerDay')} fl oz a day: the 3-drop dose of 10,000 gallons takes ${figure(PH.path, acid10k, 'days')} days`,
+    );
+    expect(figure(PH.path, soda20k, 'additions')).toBe('1');
+    expect(text).toContain(
+      `in 20,000 gallons, ${figure(PH.path, soda20k, 'dryPerAddition')} oz, so the 2-drop dose goes in at once`,
+    );
+  });
+
   it('links the volume, the alkalinity and the pH calculators and the chart', () => {
     const links = PH_GUIDE.steps.flatMap(({ link }) => (link === undefined ? [] : [link.href]));
     expect(links).toEqual([
