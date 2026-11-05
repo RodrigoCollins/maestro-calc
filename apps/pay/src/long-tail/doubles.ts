@@ -2,6 +2,7 @@ import { encode, type Money, type Rational } from '@maestro-calc/core';
 import { overtime } from '@maestro-calc/pay-core/overtime';
 import { moneyText } from '../format.ts';
 import { OVERTIME_PATHS, OVERTIME_TEXTS } from '../overtime/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { nearestOf } from './nearest.ts';
@@ -112,8 +113,11 @@ export const doublePageOf = (job: DoubleTime, lang: Lang): LongTailPage => {
   if (note === undefined) throw new Error('the overtime calculator must state the California rule');
   return {
     kicker: t.kicker,
-    title: `${question} ${short(figure)} | Cuenta Horas`,
-    description: `${answer} ${rows.map(({ label, value }) => `${label}: ${short(value)}`).join('; ')}.`,
+    title: titleOf(`${question} ${short(figure)}`),
+    description: descriptionOf(
+      answer,
+      rows.map(({ label, value }) => `${label}: ${short(value)}`),
+    ),
     h1: question,
     lead: answer,
     figure,
@@ -123,6 +127,7 @@ export const doublePageOf = (job: DoubleTime, lang: Lang): LongTailPage => {
     calculator: {
       href: `${OVERTIME_PATHS[lang]}?${encode(overtime, validated.value)}`,
       label: w.edit,
+      title: t.title,
     },
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },

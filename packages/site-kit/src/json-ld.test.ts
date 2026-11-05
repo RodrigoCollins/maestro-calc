@@ -6,6 +6,7 @@ import {
   serializeJsonLd,
   webApplicationLd,
   webSiteLd,
+  withBreadcrumb,
 } from './json-ld.ts';
 
 describe('webSiteLd', () => {
@@ -69,6 +70,48 @@ describe('articleLd', () => {
   });
 });
 
+describe('withBreadcrumb', () => {
+  const article = articleLd({
+    headline: 'Opening your pool',
+    description: 'Step by step.',
+    url: 'https://x.test/open',
+    inLanguage: 'en-US',
+    publisher: 'Pool Figures',
+  });
+
+  it('puts the page and its trail from the home in one graph, the page first', () => {
+    const trail = [
+      { name: 'Pool Figures', url: 'https://x.test/' },
+      { name: 'Opening your pool', url: 'https://x.test/open' },
+    ];
+    expect(withBreadcrumb(article, trail)).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: 'Opening your pool',
+          description: 'Step by step.',
+          url: 'https://x.test/open',
+          inLanguage: 'en-US',
+          publisher: { '@type': 'Organization', name: 'Pool Figures' },
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Pool Figures', item: 'https://x.test/' },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Opening your pool',
+              item: 'https://x.test/open',
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
+
 describe('breadcrumbListLd', () => {
   it('lists the trail from the home to the page, each item at its position', () => {
     expect(
@@ -93,6 +136,13 @@ describe('breadcrumbListLd', () => {
 });
 
 describe('graphLd', () => {
+  it('is the graph of its nodes without their own contexts', () => {
+    expect(graphLd({ '@context': 'https://schema.org', '@type': 'Thing' })).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [{ '@type': 'Thing' }],
+    });
+  });
+
   it('joins nodes into one document with one @context', () => {
     const page = { url: 'https://x.test/', inLanguage: 'en-US' };
     expect(graphLd(webSiteLd({ name: 'X', ...page }), breadcrumbListLd([]))).toEqual({

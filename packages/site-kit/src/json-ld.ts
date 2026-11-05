@@ -79,12 +79,25 @@ export const breadcrumbListLd = (
 });
 
 /** Several nodes of one page as one document: one `@context`, the nodes in its `@graph`. */
-export const graphLd = (...nodes: readonly { readonly '@context': string }[]) => ({
+export const graphLd = (...nodes: readonly Readonly<Record<string, unknown>>[]) => ({
   '@context': CONTEXT,
   '@graph': nodes.map((node) =>
     Object.fromEntries(Object.entries(node).filter(([key]) => key !== '@context')),
   ),
 });
+
+/** A step of a breadcrumb: the name of a page and its canonical URL. */
+export interface Crumb {
+  readonly name: string;
+  readonly url: string;
+}
+
+/**
+ * A page and the BreadcrumbList of its trail (`trail`, from the home to the page itself) in one
+ * graph, the page first, so its `@type` and `url` stay the first node's.
+ */
+export const withBreadcrumb = (page: Readonly<Record<string, unknown>>, trail: readonly Crumb[]) =>
+  graphLd(page, breadcrumbListLd(trail));
 
 /** The JSON text of a document for a `<script type="application/ld+json">`: `<`, `>` and `&` escaped, so it stays inside its script. */
 export const serializeJsonLd = (value: unknown): string =>

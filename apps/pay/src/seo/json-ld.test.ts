@@ -2,32 +2,54 @@ import { describe, expect, it } from 'vitest';
 import { jsonLdOf } from './json-ld.ts';
 
 const page = { title: 'Time Card Calculator | Cuenta Horas', description: 'Add up your hours.' };
+const ORIGIN = 'https://cuentahoras.com';
 
 describe('jsonLdOf', () => {
-  it('describes a calculator as a free web application in its language', () => {
+  it('describes a calculator as a free web application in its language, under its home', () => {
     const route = {
       id: 'time-card',
       kind: 'calculator',
       en: '/time-card-calculator',
       es: '/es/x',
     } as const;
-    expect(JSON.parse(jsonLdOf(route, 'es', page, 'https://cuentahoras.com'))).toEqual({
+    expect(JSON.parse(jsonLdOf(route, 'es', page, ORIGIN))).toEqual({
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'Time Card Calculator',
-      description: 'Add up your hours.',
-      url: 'https://cuentahoras.com/es/x',
-      inLanguage: 'es-US',
-      applicationCategory: 'FinanceApplication',
-      operatingSystem: 'Any',
-      isAccessibleForFree: true,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      '@graph': [
+        {
+          '@type': 'WebApplication',
+          name: 'Time Card Calculator',
+          description: 'Add up your hours.',
+          url: 'https://cuentahoras.com/es/x',
+          inLanguage: 'es-US',
+          applicationCategory: 'FinanceApplication',
+          operatingSystem: 'Any',
+          isAccessibleForFree: true,
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Cuenta Horas',
+              item: 'https://cuentahoras.com/es',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Time Card Calculator',
+              item: 'https://cuentahoras.com/es/x',
+            },
+          ],
+        },
+      ],
     });
   });
 
-  it('describes the home as the web site', () => {
+  it('describes the home as the web site, with no breadcrumb', () => {
     const route = { id: 'home', kind: 'home', en: '/', es: '/es' } as const;
-    expect(JSON.parse(jsonLdOf(route, 'en', page, 'https://cuentahoras.com'))).toEqual({
+    expect(JSON.parse(jsonLdOf(route, 'en', page, ORIGIN))).toEqual({
       '@context': 'https://schema.org',
       '@type': 'WebSite',
       name: 'Cuenta Horas',
@@ -43,10 +65,60 @@ describe('jsonLdOf', () => {
       en: '/methodology',
       es: '/es/metodologia',
     } as const;
-    expect(JSON.parse(jsonLdOf(route, 'en', page, 'https://cuentahoras.com'))).toMatchObject({
-      '@type': 'Article',
-      headline: 'Time Card Calculator',
-      url: 'https://cuentahoras.com/methodology',
+    expect(JSON.parse(jsonLdOf(route, 'en', page, ORIGIN))).toMatchObject({
+      '@graph': [
+        {
+          '@type': 'Article',
+          headline: 'Time Card Calculator',
+          url: 'https://cuentahoras.com/methodology',
+        },
+        { '@type': 'BreadcrumbList' },
+      ],
+    });
+  });
+
+  it('names a long-tail page under the calculator it answers for, short of its subtitle', () => {
+    const route = {
+      id: 'pay-15-an-hour',
+      kind: 'article',
+      en: '/pay/15-an-hour-is-how-much-a-year',
+      es: '/es/pago/15-la-hora-cuanto-es-al-ano',
+    } as const;
+    const text = {
+      title: '$15 an hour is how much a year? $31,200 | Cuenta Horas',
+      description: 'D',
+    };
+    const parent = {
+      title: 'Hourly to Salary Calculator: Yearly, Monthly, Weekly | Cuenta Horas',
+      path: '/hourly-to-salary-calculator',
+    };
+    expect(JSON.parse(jsonLdOf(route, 'en', text, ORIGIN, parent))).toMatchObject({
+      '@graph': [
+        { '@type': 'Article' },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Cuenta Horas',
+              item: 'https://cuentahoras.com/',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Hourly to Salary Calculator',
+              item: 'https://cuentahoras.com/hourly-to-salary-calculator',
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: '$15 an hour is how much a year? $31,200',
+              item: 'https://cuentahoras.com/pay/15-an-hour-is-how-much-a-year',
+            },
+          ],
+        },
+      ],
     });
   });
 
