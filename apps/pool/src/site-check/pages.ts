@@ -7,6 +7,7 @@ export const ROUTED_PAGES = [
   'pool-ph-calculator.html',
   'pool-alkalinity-calculator.html',
   'pool-stabilizer-calculator.html',
+  'pool-calcium-hardness-calculator.html',
   'pool-heater-size-calculator.html',
   'pool-fill-time-calculator.html',
 ] as const;

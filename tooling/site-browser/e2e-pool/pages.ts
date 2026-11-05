@@ -17,6 +17,7 @@ export const PAGES = [
   '/pool-ph-calculator',
   '/pool-alkalinity-calculator',
   '/pool-stabilizer-calculator',
+  '/pool-calcium-hardness-calculator',
   '/pool-heater-size-calculator',
   '/pool-fill-time-calculator',
 ] as const;
@@ -87,6 +88,14 @@ export const CALCULATORS = [
     // 20,000 gal x 3.785411784 L x (50 - 0) mg = 3.785 kg = 8.35 lb
     edit: { field: 'target', value: '50' },
     edited: '8.3',
+  },
+  {
+    path: '/pool-calcium-hardness-calculator',
+    out: 'pounds',
+    initial: '5.0',
+    // label: 1.25 lb per 10 ppm per 10,000 gal; 20,000 gal x (220 - 180) ppm / 80,000 = 10 lb
+    edit: { field: 'target', value: '220' },
+    edited: '10.0',
   },
   {
     path: '/pool-heater-size-calculator',

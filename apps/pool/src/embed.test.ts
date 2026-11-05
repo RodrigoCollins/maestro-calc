@@ -1,7 +1,17 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { EMBED_PAGE, EMBEDS, snippets } from './embed.ts';
 import { HOME_TOOLS } from './home.ts';
 import { pagePaths } from './seo/sitemap.ts';
@@ -41,6 +51,7 @@ describe('EMBEDS', () => {
       PH.h1,
       ALKALINITY.h1,
       STABILIZER.h1,
+      CALCIUM.h1,
       HEATER.h1,
       FILL_TIME.h1,
     ]);

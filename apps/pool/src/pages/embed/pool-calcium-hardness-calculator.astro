@@ -1,0 +1,10 @@
+---
+import CalciumScript from '../../islands/CalciumScript.astro';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
+import DosePage from '../../components/DosePage.astro';
+import { CALCIUM } from '../../doses.ts';
+---
+
+<DosePage embed page={CALCIUM} calculator={poolCalcium}>
+  <CalciumScript />
+</DosePage>

@@ -1,5 +1,6 @@
 import { gal, isQuantityOf } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
@@ -8,7 +9,17 @@ import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from '../doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from '../doses.ts';
 import { outputText, volumeText } from '../format.ts';
 import { VOLUME_TEXTS } from '../volume/texts.ts';
 
@@ -21,6 +32,7 @@ const ENGINES = {
   [PH.path]: poolPh,
   [ALKALINITY.path]: poolAlkalinity,
   [STABILIZER.path]: poolStabilizer,
+  [CALCIUM.path]: poolCalcium,
   [HEATER.path]: poolHeater,
   [FILL_TIME.path]: poolFillTime,
 } as const;

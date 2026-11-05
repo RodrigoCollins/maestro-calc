@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -19,6 +29,7 @@ describe('pool methodology', () => {
       PH,
       ALKALINITY,
       STABILIZER,
+      CALCIUM,
       HEATER,
       FILL_TIME,
     ];

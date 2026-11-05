@@ -41,6 +41,26 @@ test('notes a stabilizer target over the 90 ppm public-pool limit', async ({ pag
   await expect(drain).toBeVisible();
 });
 
+test('splits a calcium dose over 3 lb per 10,000 gallons, and says dilution lowers it', async ({
+  page,
+}) => {
+  await page.goto('/pool-calcium-hardness-calculator');
+  const split = page.locator('[data-warning="splitDose"]');
+  const dilute = page.locator('[data-warning="dilutionToLower"]');
+  await expect(split).toBeHidden();
+  await expect(dilute).toBeHidden();
+  // 20,000 gal from 150 to 250 ppm: 25 lb, the first 2 x 3 lb = 6 lb
+  await page.locator('[name="current"]').fill('150');
+  await page.locator('[name="target"]').fill('250');
+  await expect(page.locator('[data-out="pounds"]').first()).toHaveText('25.0');
+  await expect(page.locator('[data-out="firstAddition"]').first()).toHaveText('6.0');
+  await expect(split).toBeVisible();
+  await page.locator('[name="current"]').fill('450');
+  await expect(dilute).toBeVisible();
+  await expect(split).toBeHidden();
+  await expect(page.locator('[data-out="pounds"]').first()).toHaveText('0.0');
+});
+
 test('shows the dose of the chlorine product the visitor picks', async ({ page }) => {
   await page.goto('/pool-chlorine-calculator');
   await page.locator('[name="product"]').selectOption('cal-hypo-65');

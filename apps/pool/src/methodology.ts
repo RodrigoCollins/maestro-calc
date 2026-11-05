@@ -1,4 +1,14 @@
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** The public-pool limits of the alkalinity and stabilizer pages: MAHC 5.7.4.4.1 and 5.7.3.1.3.2. */
@@ -199,6 +209,54 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         raw: { gallons: '20000', current: '0', target: '30' },
         key: 'pounds',
         result: '5.0',
+        unit: 'lb',
+      },
+    ],
+  },
+  {
+    id: 'calcium',
+    title: 'Calcium hardness',
+    href: CALCIUM.path,
+    method: CALCIUM.method,
+    note: CALCIUM.note,
+    sources: [
+      {
+        name: 'ClearView Calcium Increaser, Critical Usage Information (Oreq Corporation): calcium chloride, 2 oz per 1,000 gallons raises calcium hardness 10 ppm; over 3 lb per 10,000 gallons, separate doses at least 12 hours apart',
+        url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/Calcium_Increaser.pdf',
+      },
+      {
+        name: 'ClearView Calcium Increaser safety data sheet (Oreq Corporation): calcium chloride flake, 74 to 100% by weight',
+        url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/SDS_Calcium_Increaser.pdf',
+      },
+      {
+        name: 'Hayward AquaRite owner’s manual, 092538 Rev D: Water Chemistry, calcium hardness 200 to 400 ppm',
+        url: 'https://hayward.com/media/akeneo_connector/asset_files/0/9/092538_RevD_b778.pdf',
+      },
+      {
+        name: 'CDC, 2024 Model Aquatic Health Code, 5th Edition: calcium hardness at most 2,500 ppm in a public pool',
+        url: 'https://www.cdc.gov/model-aquatic-health-code/media/pdfs/2024/11/5th-Ed-MAHC-Code-508.pdf',
+      },
+    ],
+    cases: [
+      {
+        text: '10,000 gallons from 200 to 210 ppm: 10,000 ÷ 1,000 × 2 oz =',
+        raw: { gallons: '10000', current: '200', target: '210' },
+        key: 'ounces',
+        result: '20.0',
+        unit: 'oz',
+      },
+      {
+        text: '20,000 gallons from 150 to 250 ppm: 20,000 × 100 ÷ 80,000 =',
+        raw: { gallons: '20000', current: '150', target: '250' },
+        key: 'pounds',
+        result: '25.0',
+        unit: 'lb',
+      },
+      {
+        text: 'That is over 3 lb per 10,000 gallons, so the first addition is 20,000 ÷ 10,000 × 3 lb =',
+        raw: { gallons: '20000', current: '150', target: '250' },
+        key: 'firstAddition',
+        result: '6.0',
         unit: 'lb',
       },
     ],
