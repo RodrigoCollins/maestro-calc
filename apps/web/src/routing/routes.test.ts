@@ -179,6 +179,26 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/12-inch-sonotube',
       es: '/es/concreto/sonotubo-de-12-pulgadas',
     });
+    expect(ROUTES['concrete-slab-10x20']).toEqual({
+      en: '/concrete/10x20-slab',
+      es: '/es/concreto/losa-de-10x20',
+    });
+    expect(ROUTES['concrete-slab-12x20']).toEqual({
+      en: '/concrete/12x20-slab',
+      es: '/es/concreto/losa-de-12x20',
+    });
+    expect(ROUTES['concrete-slab-12x24']).toEqual({
+      en: '/concrete/12x24-slab',
+      es: '/es/concreto/losa-de-12x24',
+    });
+    expect(ROUTES['concrete-footing-16x8']).toEqual({
+      en: '/concrete/16x8-footing',
+      es: '/es/concreto/zapata-de-16x8',
+    });
+    expect(ROUTES['concrete-footing-20x10']).toEqual({
+      en: '/concrete/20x10-footing',
+      es: '/es/concreto/zapata-de-20x10',
+    });
     expect(ROUTES['roof-pitch-4-12']).toEqual({
       en: '/roofing/4-12-roof-pitch',
       es: '/es/techos/pendiente-de-techo-4-12',
@@ -294,6 +314,26 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES['drywall-room-12x12']).toEqual({
       en: '/drywall/drywall-for-12x12-room',
       es: '/es/drywall/drywall-para-cuarto-de-12x12',
+    });
+    expect(ROUTES['gravel-driveway-12x100']).toEqual({
+      en: '/landscaping/gravel-for-12x100-driveway',
+      es: '/es/jardineria/grava-para-entrada-de-12x100',
+    });
+    expect(ROUTES['paint-room-12x14']).toEqual({
+      en: '/painting/paint-for-12x14-room',
+      es: '/es/pintura/pintura-para-cuarto-de-12x14',
+    });
+    expect(ROUTES['paint-room-12x16']).toEqual({
+      en: '/painting/paint-for-12x16-room',
+      es: '/es/pintura/pintura-para-cuarto-de-12x16',
+    });
+    expect(ROUTES['drywall-room-12x14']).toEqual({
+      en: '/drywall/drywall-for-12x14-room',
+      es: '/es/drywall/drywall-para-cuarto-de-12x14',
+    });
+    expect(ROUTES['drywall-room-12x16']).toEqual({
+      en: '/drywall/drywall-for-12x16-room',
+      es: '/es/drywall/drywall-para-cuarto-de-12x16',
     });
     expect(ROUTES['topsoil-raised-bed-4x4']).toEqual({
       en: '/landscaping/soil-for-4x4-raised-bed',

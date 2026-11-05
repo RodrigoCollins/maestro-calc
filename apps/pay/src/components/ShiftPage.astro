@@ -3,6 +3,7 @@ import { Rational, toDecimalParts, type Money } from '@maestro-calc/core';
 import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
 import { hoursText, moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { commonLinksOf } from '../long-tail/jobs.ts';
 import { SHIFT_PATHS, SHIFT_TEXTS, type ShiftOutput } from '../shift/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -15,6 +16,7 @@ interface Props {
 
 const { lang, embed = false } = Astro.props;
 const t = SHIFT_TEXTS[lang];
+const common = commonLinksOf('differential', lang);
 // The page renders the engine's own figures for the defaults, so it reads without JavaScript.
 const ran = shiftDifferential.run({});
 if (!ran.ok) throw new Error('the defaults of the shift differential calculator must run');
@@ -122,6 +124,17 @@ const warnings = Object.entries(t.warnings);
         </li>
       ))}
     </ul>
+
+    <section aria-labelledby="common-heading">
+      <h2 id="common-heading">{common.heading}</h2>
+      <ul class="link-list">
+        {common.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/shift-differential.ts"></script>
 </SiteLayout>

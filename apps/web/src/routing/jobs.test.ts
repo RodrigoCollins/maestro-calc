@@ -80,12 +80,24 @@ describe('job pages (growth plan › lever 1)', () => {
       'square-feet-20x20',
     ]);
     expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
-    expect(jobsOf('gravel')).toEqual(['gravel-driveway-10x20', 'gravel-driveway-12x50']);
-    expect(jobsOf('paint')).toEqual(['paint-room-10x10', 'paint-room-10x12', 'paint-room-12x12']);
+    expect(jobsOf('gravel')).toEqual([
+      'gravel-driveway-10x20',
+      'gravel-driveway-12x50',
+      'gravel-driveway-12x100',
+    ]);
+    expect(jobsOf('paint')).toEqual([
+      'paint-room-10x10',
+      'paint-room-10x12',
+      'paint-room-12x12',
+      'paint-room-12x14',
+      'paint-room-12x16',
+    ]);
     expect(jobsOf('drywall')).toEqual([
       'drywall-room-10x10',
       'drywall-room-10x12',
       'drywall-room-12x12',
+      'drywall-room-12x14',
+      'drywall-room-12x16',
     ]);
     expect(jobsOf('topsoil')).toEqual([
       'topsoil-raised-bed-4x4',
@@ -154,6 +166,56 @@ describe('job pages (growth plan › lever 1)', () => {
       ).toEqual(['4in', '5in', '6in']);
       expect(ROUTES[id].en, id).toBe(`/concrete/${area}-sq-ft-slab`);
       expect(ROUTES[id].es, id).toBe(`/es/concreto/losa-de-${area}-pies-cuadrados`);
+    }
+  });
+
+  // queries: "how many bags of concrete for a 10x20 slab 4 inches", "12x24 slab": the size in the
+  // id is the length by the width of every case, 4, 5 and 6 in thick, in table order by size
+  it('names each concrete slab by its sides after the length and the width of its cases', () => {
+    const bySides = JOB_IDS.filter((id) => /^concrete-slab-\d+x\d+$/.test(id));
+    expect(bySides).toEqual([
+      'concrete-slab-10x10',
+      'concrete-slab-10x12',
+      'concrete-slab-10x20',
+      'concrete-slab-12x12',
+      'concrete-slab-12x20',
+      'concrete-slab-12x24',
+      'concrete-slab-20x20',
+      'concrete-slab-24x24',
+    ]);
+    for (const id of bySides) {
+      const size = id.replace('concrete-slab-', '');
+      const [length, width] = size.split('x');
+      expect(JOBS[id].cases, id).toEqual(
+        ['4in', '5in', '6in'].map((thickness) => ({
+          length: `${length ?? ''}ft`,
+          width: `${width ?? ''}ft`,
+          thickness,
+        })),
+      );
+      expect(ROUTES[id].en, id).toBe(`/concrete/${size}-slab`);
+      expect(ROUTES[id].es, id).toBe(`/es/concreto/losa-de-${size}`);
+    }
+  });
+
+  // query: "how many bags of concrete for a footing": a continuous footing of the calculator, its
+  // width by its depth in inches in the id, 20, 50 and 100 ft long (one wall, a shed, a garage)
+  it('names each concrete footing after its width and its depth in inches', () => {
+    const footings = JOB_IDS.filter((id) => id.startsWith('concrete-footing-'));
+    expect(footings).toEqual(['concrete-footing-16x8', 'concrete-footing-20x10']);
+    for (const id of footings) {
+      const size = id.replace('concrete-footing-', '');
+      const [footingWidth, footingDepth] = size.split('x');
+      expect(JOBS[id].cases, id).toEqual(
+        ['20ft', '50ft', '100ft'].map((length) => ({
+          shape: 'footing',
+          length,
+          footingWidth: `${footingWidth ?? ''}in`,
+          footingDepth: `${footingDepth ?? ''}in`,
+        })),
+      );
+      expect(ROUTES[id].en, id).toBe(`/concrete/${size}-footing`);
+      expect(ROUTES[id].es, id).toBe(`/es/concreto/zapata-de-${size}`);
     }
   });
 

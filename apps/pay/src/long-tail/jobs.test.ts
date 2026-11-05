@@ -6,6 +6,7 @@ import { moneyText } from '../format.ts';
 import { PATHS } from '../pay-converter/texts.ts';
 import {
   commonLinksOf,
+  DIFFERENTIALS,
   DOUBLES,
   JOBS,
   LONG_TAIL_ROUTES,
@@ -154,7 +155,12 @@ describe('long-tail pages', () => {
 
   it('route one English and Spanish pair per job, each with its own title', () => {
     expect(LONG_TAIL_ROUTES).toHaveLength(
-      JOBS.length + SHIFTS.length + PTOS.length + MINUTES.length + DOUBLES.length,
+      JOBS.length +
+        SHIFTS.length +
+        PTOS.length +
+        MINUTES.length +
+        DOUBLES.length +
+        DIFFERENTIALS.length,
     );
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
@@ -170,7 +176,7 @@ describe('long-tail pages', () => {
   it('are linked from the calculator of their kind, in each language', () => {
     for (const lang of LANGS) {
       const linked = (
-        ['hour', 'year', 'overtime', 'double', 'shift', 'pto', 'minutes'] as const
+        ['hour', 'year', 'overtime', 'double', 'shift', 'pto', 'minutes', 'differential'] as const
       ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
     }

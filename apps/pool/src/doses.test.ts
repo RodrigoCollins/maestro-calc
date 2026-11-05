@@ -1,4 +1,5 @@
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
@@ -7,7 +8,17 @@ import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { outputText } from './format.ts';
 
 const CASES = [
@@ -17,6 +28,7 @@ const CASES = [
   ['pH', PH, poolPh],
   ['alkalinity', ALKALINITY, poolAlkalinity],
   ['stabilizer', STABILIZER, poolStabilizer],
+  ['calcium', CALCIUM, poolCalcium],
   ['heater', HEATER, poolHeater],
   ['fill time', FILL_TIME, poolFillTime],
 ] as const;
@@ -61,6 +73,21 @@ describe('dose pages', () => {
     expect(PH.warnings?.['pastChart']).toContain('3 drops');
   });
 
+  // ClearView Calcium Increaser label (Oreq): 2 oz per 1,000 gallons per 10 ppm, at most 3 lb per
+  // 10,000 gallons a dose, 12 hours apart; the target range is Hayward's (the chart's)
+  it('states the label dose, the split, the dilution rule and the range it cites', () => {
+    expect(CALCIUM.method).toContain('2 oz of calcium chloride flake per 1,000 gallons');
+    expect(CALCIUM.method).toContain('1.25 lb per 10 ppm per 10,000 gallons');
+    expect(CALCIUM.method).toContain('0.925 lb');
+    expect(CALCIUM.warnings?.['splitDose']).toContain('3 lb per 10,000 gallons');
+    expect(CALCIUM.warnings?.['splitDose']).toContain('12 hours');
+    expect(CALCIUM.warnings?.['dilutionToLower']).toContain('drain');
+    expect(CALCIUM.note).toContain('200 to 400 ppm');
+    expect(CALCIUM.note).toContain('2,500 ppm');
+    expect(CALCIUM.note).toContain('Model Aquatic Health Code');
+    expect(CALCIUM.note.toLowerCase()).toContain('label');
+  });
+
   it('gives the chlorine page the strip picker on its reading, and no other page one', () => {
     const current = poolChlorine.inputs.find(({ key }) => key === 'current');
     expect(CHLORINE.strip?.field).toBe('current');
@@ -74,11 +101,13 @@ describe('dose pages', () => {
     expect(PH.strip).toBeUndefined();
     expect(ALKALINITY.strip).toBeUndefined();
     expect(STABILIZER.strip).toBeUndefined();
+    expect(CALCIUM.strip).toBeUndefined();
     expect(HEATER.strip).toBeUndefined();
     expect(FILL_TIME.strip).toBeUndefined();
   });
 
-  it('names every warning of the salt, pH, alkalinity and stabilizer engines', () => {
+  it('names every warning of the salt, pH, alkalinity, stabilizer and calcium engines', () => {
+    expect(Object.keys(CALCIUM.warnings ?? {})).toEqual(poolCalcium.warnings);
     expect(Object.keys(SALT.warnings ?? {})).toEqual(poolSalt.warnings);
     expect(Object.keys(PH.warnings ?? {})).toEqual(poolPh.warnings);
     expect(Object.keys(ALKALINITY.warnings ?? {})).toEqual(poolAlkalinity.warnings);
@@ -124,6 +153,9 @@ describe('dose pages', () => {
     expect(text(poolAlkalinity, 'ounces')).toBe('134.5');
     expect(text(poolStabilizer, 'pounds')).toBe('5.0');
     expect(text(poolStabilizer, 'ounces')).toBe('80.1');
+    expect(text(poolCalcium, 'pounds')).toBe('5.0');
+    expect(text(poolCalcium, 'ounces')).toBe('80.0');
+    expect(text(poolCalcium, 'firstAddition')).toBe('5.0');
     expect(text(poolHeater, 'btuPerHour')).toBe('69,500');
     expect(text(poolHeater, 'btu')).toBe('1,668,000');
     expect(text(poolFillTime, 'time')).toBe('33 h 20 min');
