@@ -64,10 +64,7 @@ export const esSite = {
   'site.pitchDegrees.pitch': 'Pendiente',
   'site.job.multiplier': 'Multiplicador del cabio (pies de cabio por pie de recorrido)',
   'site.job.methodology': 'Cómo calculamos las cifras',
-  'site.job.chart.table': 'Yardas cúbicas y bolsas por tamaño de losa',
   'site.job.chart.sources': 'Fuentes y supuestos',
-  'site.job.chart.yields': 'Lo que rinde una bolsa',
-  'site.job.chart.source': 'Rendimiento de las bolsas',
   'site.job.chart.retrieved': 'consultado el',
   'site.job.chart.cite': 'Cita esta tabla',
   'site.job.chart.citeLead': 'Para enlazar esta tabla o citar sus cifras, usa su dirección:',
@@ -330,6 +327,9 @@ export const esSite = {
   'page.concrete-slab-chart.label': 'Tabla de losas por tamaño',
   'page.concrete-slab-chart.intro':
     'Busca en la tabla el tamaño y el espesor de tu losa: cada fila da las yardas cúbicas de concreto que hay que pedir y las bolsas de 80, 60 o 40 lb que hay que comprar, calculadas por la calculadora de concreto con un 10% extra por desperdicio.',
+  'page.concrete-slab-chart.table': 'Yardas cúbicas y bolsas por tamaño de losa',
+  'page.concrete-slab-chart.source': 'Rendimiento de las bolsas',
+  'page.concrete-slab-chart.basis': 'Lo que rinde una bolsa',
   'page.concrete-pad-4x4.title': 'Bolsas de concreto para una base de 4x4 | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'Cuántas bolsas de concreto lleva una base de 4 x 4 ft (para un aire acondicionado o un generador) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
@@ -410,6 +410,31 @@ export const esSite = {
     'Una pendiente de techo 12/12 mide 45.00 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: 45.00° y el largo del cabio',
   'page.roof-pitch-12-12.label': 'Pendiente 12/12',
+  'page.roof-pitch-chart.title': 'Tabla de pendientes de techo en grados | Maestro Calc',
+  'page.roof-pitch-chart.description':
+    'Cada pendiente de techo de 1/12 a 24/12 en grados, en porcentaje y con su multiplicador de cabio, la pendiente mínima del IRC y de grados a pendiente.',
+  'page.roof-pitch-chart.heading':
+    'Tabla de pendientes de techo: grados, porcentaje y multiplicador del cabio',
+  'page.roof-pitch-chart.label': 'Pendientes en grados',
+  'page.roof-pitch-chart.intro':
+    'Una pendiente de techo 6/12 mide 26.57° y un 50%, y una 12/12 mide 45°. Busca tu pendiente en la tabla: cada fila da su ángulo, su porcentaje, su multiplicador de cabio y las cubiertas que el IRC permite, calculados por la calculadora de pendiente de techo.',
+  'page.roof-pitch-chart.note':
+    'El ángulo es el arcotangente de la subida sobre el recorrido, el porcentaje es la subida sobre el recorrido por 100 y el multiplicador del cabio son los pies de cabio por pie de recorrido, √(1 + (subida ÷ 12)²), sin alero. Cada pendiente abre la calculadora con su subida y su recorrido ya cargados.',
+  'page.roof-pitch-chart.table':
+    'Pendiente de techo en grados, porcentaje y multiplicador del cabio',
+  'page.roof-pitch-chart.source': 'Pendientes mínimas de techo',
+  'page.roof-pitch-chart.basis': 'La pendiente mínima del IRC para cada cubierta',
+  'page.roof-pitch-chart.pitch': 'Pendiente',
+  'page.roof-pitch-chart.angle': 'Ángulo',
+  'page.roof-pitch-chart.grade': 'Porcentaje',
+  'page.roof-pitch-chart.multiplier': 'Multiplicador del cabio',
+  'page.roof-pitch-chart.coverings': 'Cubiertas que permite el IRC',
+  'page.roof-pitch-chart.twoLayers': '(2 capas)',
+  'page.roof-pitch-chart.all': 'Las seis',
+  'page.roof-pitch-chart.double': 'dos capas de fieltro debajo de',
+  'page.roof-pitch-chart.reverse': 'De grados a pendiente',
+  'page.roof-pitch-chart.reverseLead':
+    'Un ángulo de techo en grados como subida sobre un recorrido de 12 in: subida = 12 × tan(ángulo), al centésimo de pulgada, y el porcentaje que da.',
   'page.square-feet-5x5.title': '5x5 en pies cuadrados: 25 pies cuadrados | Maestro Calc',
   'page.square-feet-5x5.description':
     'Un área de 5 por 5 ft mide 25 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',

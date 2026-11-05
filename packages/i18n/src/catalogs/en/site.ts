@@ -61,10 +61,7 @@ export const enSite = {
   'site.pitchDegrees.pitch': 'Pitch',
   'site.job.multiplier': 'Rafter multiplier (feet of rafter per foot of run)',
   'site.job.methodology': 'How we work out the figures',
-  'site.job.chart.table': 'Cubic yards and bags by slab size',
   'site.job.chart.sources': 'Sources and assumptions',
-  'site.job.chart.yields': 'What one bag makes',
-  'site.job.chart.source': 'Bag yields',
   'site.job.chart.retrieved': 'retrieved',
   'site.job.chart.cite': 'Cite this chart',
   'site.job.chart.citeLead': 'To link to this chart or quote its figures, use its address:',
@@ -320,6 +317,9 @@ export const enSite = {
   'page.concrete-slab-chart.label': 'Slab chart, every size',
   'page.concrete-slab-chart.intro':
     'Find your slab size and thickness in the chart below: each row gives the cubic yards of concrete to order and the bags of 80, 60 or 40 lb to buy, worked out by the concrete calculator with 10% extra for waste.',
+  'page.concrete-slab-chart.table': 'Cubic yards and bags by slab size',
+  'page.concrete-slab-chart.source': 'Bag yields',
+  'page.concrete-slab-chart.basis': 'What one bag makes',
   'page.concrete-pad-4x4.title': 'Bags of Concrete for a 4x4 Pad | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',
@@ -400,6 +400,29 @@ export const enSite = {
     'A 12/12 roof pitch is 45.00 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-12-12.heading': '12/12 roof pitch: 45.00° and the rafter length',
   'page.roof-pitch-12-12.label': '12/12 pitch',
+  'page.roof-pitch-chart.title': 'Roof Pitch Chart in Degrees and Percent | Maestro Calc',
+  'page.roof-pitch-chart.description':
+    'Every roof pitch from 1/12 to 24/12 in degrees, percent grade and rafter multiplier, with the IRC minimum slope of each covering and degrees to pitch.',
+  'page.roof-pitch-chart.heading': 'Roof pitch chart: pitch to degrees, percent and rafter factor',
+  'page.roof-pitch-chart.label': 'Pitch chart in degrees',
+  'page.roof-pitch-chart.intro':
+    'A 6/12 roof pitch is 26.57° and a 50% grade, and a 12/12 pitch is 45°. Find your pitch in the chart below: each row gives its angle, its grade, its rafter multiplier and the coverings the IRC allows on it, worked out by the roof pitch calculator.',
+  'page.roof-pitch-chart.note':
+    'The angle is the arctangent of the rise over the run, the grade is the rise over the run as a percentage, and the rafter multiplier is the feet of rafter per foot of run, √(1 + (rise ÷ 12)²), with no overhang. Each pitch opens the calculator with its rise and run filled in.',
+  'page.roof-pitch-chart.table': 'Roof pitch to degrees, grade and rafter multiplier',
+  'page.roof-pitch-chart.source': 'Minimum roof slopes',
+  'page.roof-pitch-chart.basis': 'The IRC minimum slope of each covering',
+  'page.roof-pitch-chart.pitch': 'Pitch',
+  'page.roof-pitch-chart.angle': 'Angle',
+  'page.roof-pitch-chart.grade': 'Grade',
+  'page.roof-pitch-chart.multiplier': 'Rafter multiplier',
+  'page.roof-pitch-chart.coverings': 'Coverings the IRC allows',
+  'page.roof-pitch-chart.twoLayers': '(2 layers)',
+  'page.roof-pitch-chart.all': 'All six',
+  'page.roof-pitch-chart.double': 'two layers of underlayment below',
+  'page.roof-pitch-chart.reverse': 'Degrees to pitch',
+  'page.roof-pitch-chart.reverseLead':
+    'A roof angle in degrees as a rise over a 12 in run: rise = 12 × tan(angle), to the hundredth of an inch, and the grade it makes.',
   'page.square-feet-5x5.title': '5x5 in Square Feet: 25 sq ft | Maestro Calc',
   'page.square-feet-5x5.description':
     'A 5 by 5 ft area is 25 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',

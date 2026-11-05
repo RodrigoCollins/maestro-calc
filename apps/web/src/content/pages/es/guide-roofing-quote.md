@@ -11,7 +11,7 @@ Una cotización de techo tiene tres partes: las tejas y el fieltro, todo lo que 
 
 ## Mide el techo en cuadrados
 
-Los techos se piden y se cotizan por cuadrado, 100 pies cuadrados de techo. Un techo es más grande que la planta de la casa, porque tiene pendiente: multiplica la planta por el factor de la pendiente. Una planta de 40 ft por 30 ft con 6 en 12 tiene 1,341.64 pies cuadrados de techo, 13.42 cuadrados. La guía [Cómo medir un techo y entender su pendiente](/es/guias/como-medir-la-pendiente-de-un-techo) muestra cómo leer la pendiente en la obra.
+Los techos se piden y se cotizan por cuadrado, 100 pies cuadrados de techo. Un techo es más grande que la planta de la casa, porque tiene pendiente: multiplica la planta por el factor de la pendiente. Una planta de 40 ft por 30 ft con 6 en 12 tiene 1,341.64 pies cuadrados de techo, 13.42 cuadrados. La guía [Cómo medir un techo y entender su pendiente](/es/guias/como-medir-la-pendiente-de-un-techo) muestra cómo leer la pendiente en la obra, y la [Tabla de pendientes de techo: grados, porcentaje y multiplicador del cabio](/es/techos/tabla-de-pendientes-de-techo) da el factor de cada pendiente de 1/12 a 24/12.
 
 ## Cuenta las tejas y el fieltro
 

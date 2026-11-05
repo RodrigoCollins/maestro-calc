@@ -40,6 +40,13 @@ import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
 import { jobLinks } from './job-links.ts';
 import { roofing } from './roofing.ts';
+import {
+  IRC_R905,
+  roofPitchChartBasis,
+  roofPitchChartTable,
+  roofPitchReverse,
+  type ChartReverse,
+} from './roof-pitch-chart.ts';
 import { siteText } from './site-text.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
@@ -59,7 +66,7 @@ export interface JobFact {
 }
 
 /** What a calculator's engine makes of the cases of a job, in one language. */
-interface JobTable {
+export interface JobTable {
   /** The sizes of the first case with their names: `Length × Width × Thickness: 10 ft × …`. */
   readonly lead: string;
   /** The answer of the first case: `1.36 cubic yards`, `26.57°`. */
@@ -76,10 +83,18 @@ interface JobTable {
  * it rests on and the citation a site can copy, all derived, none typed.
  */
 export interface JobChart {
-  /** The source of the bag yields: the material record of the data package. */
+  /** The heading over the table: `page.<id>.table`. */
+  readonly table: string;
+  /** What the source gives: `page.<id>.source` (`Bag yields`, `Minimum roof slopes`). */
+  readonly sourceLabel: string;
+  /** The published source the figures rest on: a data sheet, a code section. */
   readonly source: Required<MaterialSource>;
-  /** What one bag of each size of the table makes, in the order of its columns. */
-  readonly yields: readonly JobFact[];
+  /** The heading over the facts: `page.<id>.basis`. */
+  readonly basis: string;
+  /** What the source sets: what one bag of each column makes, the minimum slope of each covering. */
+  readonly facts: readonly JobFact[];
+  /** A second table read the other way round (degrees to pitch), when the chart has one. */
+  readonly reverse: ChartReverse | undefined;
   /** The canonical address of the chart in its language. */
   readonly url: string;
   /** `Maestro Calc, “<h1>”, <updated day>, <url>`. */
@@ -783,32 +798,82 @@ const concreteYields = (locale: Locale): JobFact[] =>
     value: `${volumeText(CONCRETE_MIX_YIELDS[`bag-${bagLb}`], ft3)} ft³`,
   }));
 
+/** The reference charts: each a job whose id ends in `-chart` (`isChartJob`). */
+type ChartId = Extract<JobId, `${string}-chart`>;
+
+/** What a chart rests on: its source, the facts the source sets, and any table read backwards. */
+interface ChartBasis {
+  readonly source: Required<MaterialSource>;
+  readonly facts: readonly JobFact[];
+  readonly reverse: ChartReverse | undefined;
+}
+
+const concreteSource = (): Required<MaterialSource> => {
+  const { name, url, retrieved } = concreteMix.source;
+  if (url === undefined) throw new Error('the concrete mix source has no address');
+  return { name, url, retrieved };
+};
+
+const CHART_BASES = {
+  'concrete-slab-chart': (locale) => ({
+    source: concreteSource(),
+    facts: concreteYields(locale),
+    reverse: undefined,
+  }),
+  'roof-pitch-chart': (locale) => ({
+    source: IRC_R905,
+    facts: roofPitchChartBasis(JOBS['roof-pitch-chart'].cases, locale),
+    reverse: roofPitchReverse(locale),
+  }),
+} as const satisfies Record<ChartId, (locale: Locale) => ChartBasis>;
+
+/** The charts whose table is not the job table of their calculator. */
+const CHART_TABLES: Partial<Record<ChartId, (cases: Job['cases'], locale: Locale) => JobTable>> = {
+  'roof-pitch-chart': roofPitchChartTable,
+};
+
+const isChart = (id: JobId): id is ChartId => isChartJob(id);
+
 const chartOf = (id: JobId, heading: string, locale: Locale): JobChart | undefined => {
-  if (!isChartJob(id)) return undefined;
-  // the one chart so far is the concrete one: a chart of another calculator needs its own source
-  if (JOBS[id].calculator !== 'concrete') throw new Error(`no source for the chart ${id}`);
-  const { name, url: sourceUrl, retrieved } = concreteMix.source;
-  if (sourceUrl === undefined) throw new Error(`the source of the chart ${id} has no address`);
+  if (!isChart(id)) return undefined;
+  const text = siteText(locale);
   const url = urlOf(pathOf(id, locale));
   return {
-    source: { name, url: sourceUrl, retrieved },
-    yields: concreteYields(locale),
+    ...CHART_BASES[id](locale),
+    table: text(`page.${id}.table`),
+    sourceLabel: text(`page.${id}.source`),
+    basis: text(`page.${id}.basis`),
     url,
     citation: `${SITE.name}, “${heading}”, ${calendarDay(JOBS[id].updated, locale)}, ${url}`,
   };
 };
 
+/** The table of job `id`: its chart's own, or the job table of its calculator. */
+const tableOf = (id: JobId, locale: Locale): JobTable => {
+  const { calculator, cases } = JOBS[id];
+  const own = isChart(id) ? CHART_TABLES[id] : undefined;
+  return (own ?? TABLES[calculator])(cases, locale);
+};
+
+/** What the figures assume: a chart with its own table says it in `page.<id>.note`. */
+const noteOf = (id: JobId, locale: Locale): string => {
+  const text = siteText(locale);
+  return id === 'roof-pitch-chart'
+    ? text('page.roof-pitch-chart.note')
+    : text(`site.job.note.${JOBS[id].calculator}`);
+};
+
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
   const text = siteText(locale);
-  const { calculator, cases } = JOBS[id];
-  const table = TABLES[calculator](cases, locale);
+  const { calculator } = JOBS[id];
+  const table = tableOf(id, locale);
   const heading = text(`page.${id}.heading`);
   return {
     ...table,
     heading,
     intro: hasIntro(id) ? text(`page.${id}.intro`) : undefined,
-    note: text(`site.job.note.${calculator}`),
+    note: noteOf(id, locale),
     cta: table.rows[0].href,
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
     others: jobLinks(calculator, locale, id),

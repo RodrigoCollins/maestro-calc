@@ -10,6 +10,7 @@ import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
 import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
 import { LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { calendarDay } from './calendar-day.ts';
+import { IRC_R905, roofPitchChartBasis, roofPitchReverse } from './roof-pitch-chart.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
@@ -103,8 +104,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     });
     const { chart } = view;
     expect(chart?.source).toEqual(concreteMix.source);
-    expect(chart?.yields.map(({ value }) => value)).toEqual(['0.60 ft³', '0.45 ft³', '0.30 ft³']);
-    expect(chart?.yields.map(({ label }) => label)).toEqual(view.columns.slice(2));
+    expect(chart?.facts.map(({ value }) => value)).toEqual(['0.60 ft³', '0.45 ft³', '0.30 ft³']);
+    expect(chart?.facts.map(({ label }) => label)).toEqual(view.columns.slice(2));
+    expect(chart?.reverse).toBeUndefined();
     const url = urlOf(pathOf('concrete-slab-chart', locale));
     expect(chart?.url).toBe(url);
     expect(chart?.citation).toBe(
@@ -112,6 +114,36 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     );
     expect(view.intro).toMatch(/\S/);
   });
+
+  // hand-verified: atan(6/12) = 26.565°, 6/12 = 50%; atan(1) = 45°; 12 × tan 60° = 20.785
+  it.each(LOCALES)(
+    'charts every roof pitch with the IRC source and its citation in %s',
+    (locale) => {
+      const view = jobView('roof-pitch-chart', locale);
+      const { cases, updated } = JOBS['roof-pitch-chart'];
+      expect(view.rows).toHaveLength(cases.length);
+      expect(view.rows.find(({ label }) => label === '6/12')?.cells.slice(0, 3)).toEqual([
+        '26.57°',
+        '50.00%',
+        '1.118',
+      ]);
+      const { chart } = view;
+      expect(chart?.source).toEqual(IRC_R905);
+      expect(chart?.facts).toEqual(roofPitchChartBasis(cases, locale));
+      expect(chart?.reverse).toEqual(roofPitchReverse(locale));
+      expect(view.note).toBe(siteText(locale)('page.roof-pitch-chart.note'));
+      const url = urlOf(pathOf('roof-pitch-chart', locale));
+      expect(chart?.citation).toBe(
+        `Maestro Calc, “${view.heading}”, ${calendarDay(updated, locale)}, ${url}`,
+      );
+      // the opening names the figures of two rows of the table, as the engine works them out
+      const angleOf = (label: string) =>
+        view.rows.find((row) => row.label === label)?.cells[0] ?? 'missing';
+      expect(view.intro).toContain(`6/12`);
+      expect(view.intro).toContain(angleOf('6/12'));
+      expect(view.intro).toContain(`${angleOf('12/12').replace('.00°', '')}°`);
+    },
+  );
 
   it.each(LOCALES)('gives no chart block to a job of one size in %s', (locale) => {
     expect(jobView('concrete-slab-10x10', locale).chart).toBeUndefined();

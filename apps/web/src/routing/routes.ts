@@ -178,6 +178,10 @@ export const ROUTES = {
     en: '/roofing/12-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-12-12',
   },
+  'roof-pitch-chart': {
+    en: '/roofing/roof-pitch-chart',
+    es: '/es/techos/tabla-de-pendientes-de-techo',
+  },
   'square-feet-5x5': {
     en: '/measurement/5x5-square-feet',
     es: '/es/medidas/5x5-pies-cuadrados',

@@ -86,7 +86,7 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
     <p>
       {view.note} <a href={view.methodology}>{text('site.job.methodology')}</a>
     </p>
-    <h2>{text(chart === undefined ? 'site.job.cases' : 'site.job.chart.table')}</h2>
+    <h2>{chart === undefined ? text('site.job.cases') : chart.table}</h2>
     <div class="job-table">
       <table>
         <thead>
@@ -110,16 +110,43 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
         </tbody>
       </table>
     </div>
+    {chart?.reverse !== undefined && (
+      <>
+        <h2>{chart.reverse.heading}</h2>
+        <p>{chart.reverse.lead}</p>
+        <div class="job-table">
+          <table>
+            <thead>
+              <tr>
+                {chart.reverse.columns.map((label) => (
+                  <th scope="col">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {chart.reverse.rows.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
     {chart !== undefined && (
       <>
         <h2>{text('site.job.chart.sources')}</h2>
         <p>
-          {text('site.job.chart.source')}: {chart.source.name}, <code>{chart.source.url}</code>,{' '}
+          {chart.sourceLabel}: {chart.source.name}, <code>{chart.source.url}</code>,{' '}
           {text('site.job.chart.retrieved')} {retrieved}.
         </p>
-        <h3>{text('site.job.chart.yields')}</h3>
+        <h3>{chart.basis}</h3>
         <dl class="job-facts">
-          {chart.yields.map(({ label, value }) => (
+          {chart.facts.map(({ label, value }) => (
             <div>
               <dt>{label}</dt>
               <dd>{value}</dd>
