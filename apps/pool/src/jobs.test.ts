@@ -10,6 +10,7 @@ import {
   type OutputDescriptor,
 } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
@@ -18,7 +19,17 @@ import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { outputText, volumeText } from './format.ts';
 import { JOB_PAGES, jobLinksOf, NEIGHBORS, neighborsOf, type JobPage } from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -30,7 +41,8 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
 /**
  * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
  * liters of liquid chlorine or muriatic acid, pounds and ounces of baking soda or stabilizer, BTU per hour and
- * BTU of heat, the fill time and its minutes, or gallons and liters of water.
+ * BTU of heat, the fill time and its minutes, pounds of calcium chloride and its first addition,
+ * or gallons and liters of water.
  */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
   const ran =
@@ -48,11 +60,18 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
                 ? poolFillTime.run(raw)
                 : path === PH.path
                   ? poolPh.run(raw)
-                  : poolVolume.run(raw);
+                  : path === CALCIUM.path
+                    ? poolCalcium.run(raw)
+                    : poolVolume.run(raw);
   if (!ran.ok) throw new Error(`${path} did not run`);
   const value = (key: string): unknown => ran.value.outputs.find((out) => out.key === key)?.value;
   if (path === ALKALINITY.path || path === STABILIZER.path)
     return [outputText('pounds', value('pounds')), outputText('ounces', value('ounces'))];
+  if (path === CALCIUM.path)
+    return [
+      outputText('pounds', value('pounds')),
+      outputText('firstAddition', value('firstAddition')),
+    ];
   if (path === HEATER.path)
     return [outputText('btuPerHour', value('btuPerHour')), outputText('btu', value('btu'))];
   if (path === FILL_TIME.path)
@@ -118,6 +137,7 @@ describe('the long-tail job pages', () => {
         HEATER.path,
         FILL_TIME.path,
         PH.path,
+        CALCIUM.path,
         VOLUME_TEXTS.path,
       ]).toContain(calculator.path);
       expect(pageFiles).toContain(calculator.path);
@@ -135,6 +155,7 @@ describe('the long-tail job pages', () => {
       else if (calculator.path === FILL_TIME.path)
         expectOpensOn(poolFillTime, query, main?.raw ?? {});
       else if (calculator.path === PH.path) expectOpensOn(poolPh, query, main?.raw ?? {});
+      else if (calculator.path === CALCIUM.path) expectOpensOn(poolCalcium, query, main?.raw ?? {});
       else expectOpensOn(poolVolume, query, main?.raw ?? {});
     }
   });
@@ -342,6 +363,65 @@ describe('the long-tail job pages', () => {
     expect(byPath('/18x33-oval-pool-gallons').figure.value).toBe('13,959');
   });
 
+  // worked by hand (CALCIUM.method): gallons × raise ÷ 80,000 lb; 20,000 gal from 150 to 250 ppm
+  // is 25 lb, over 3 lb per 10,000 gallons, so 6 lb go in first; from 200, 12.5 lb, 6 first; from
+  // 240, 2.5 lb, all at once
+  it('works out calcium chloride for 20,000 gallons, 10, 50 and 100 ppm up to 250, as by hand', () => {
+    const page = byPath('/how-much-calcium-chloride-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '25.0', unit: 'LB' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['240 ppm', '2.5', '2.5'],
+      ['200 ppm', '12.5', '6.0'],
+      ['150 ppm', '25.0', '6.0'],
+    ]);
+    // 10,000 gal from 150 to 250: 12.5 lb, 3 lb first; 30,000 gal: 37.5 lb, 9 lb first
+    expect(byPath('/how-much-calcium-chloride-for-a-10000-gallon-pool').rows[2]?.cells).toEqual([
+      '150 ppm',
+      '12.5',
+      '3.0',
+    ]);
+    expect(byPath('/how-much-calcium-chloride-for-a-30000-gallon-pool').rows[2]?.cells).toEqual([
+      '150 ppm',
+      '37.5',
+      '9.0',
+    ]);
+    expect(page.lead).toMatch(/12 hours/);
+  });
+
+  // the label: over 3 lb per 10,000 gallons, separate doses at least 12 hours apart
+  it('splits every calcium dose over 3 lb per 10,000 gallons, as the label and the calculator do', () => {
+    const calcium = JOB_PAGES.filter(({ calculator }) => calculator.path === CALCIUM.path);
+    expect(calcium.map(({ gallons }) => gallons)).toEqual([10_000, 15_000, 20_000, 25_000, 30_000]);
+    for (const { gallons, rows } of calcium)
+      for (const { raw, cells } of rows) {
+        const ran = poolCalcium.run(raw);
+        if (!ran.ok) throw new Error('a calcium row must run');
+        const raise = Number(raw['target']) - Number(raw['current']);
+        const split = (gallons * raise) / 80_000 > (gallons * 3) / 10_000;
+        expect(ran.value.warnings.map(({ code }) => code)).toEqual(split ? ['splitDose'] : []);
+        if (split) expect(cells[2]).toBe(((gallons * 3) / 10_000).toFixed(1));
+        else expect(cells[2]).toBe(cells[1]);
+      }
+  });
+
+  // worked by hand: 3.785411784 L a gallon × 30 mg of CYA = 113.56 g per 1,000 gallons; 5,000 gal is
+  // 567.8 g = 1.25 lb, 35,000 gal 3.975 kg = 8.76 lb, 40,000 gal 4.542 kg = 10.01 lb; baking soda
+  // at 10 ppm × 1.6788 mg: 5,000 gal 0.70 lb, 35,000 gal 4.90 lb, 40,000 gal 5.61 lb
+  it('works out stabilizer and baking soda for 5,000, 35,000 and 40,000 gallons as by hand', () => {
+    expect(byPath('/how-much-stabilizer-for-a-5000-gallon-pool').figure.value).toBe('1.3');
+    expect(byPath('/how-much-stabilizer-for-a-35000-gallon-pool').figure.value).toBe('8.8');
+    expect(byPath('/how-much-stabilizer-for-a-40000-gallon-pool').figure.value).toBe('10.0');
+    expect(byPath('/how-much-baking-soda-for-a-5000-gallon-pool').figure.value).toBe('0.7');
+    expect(byPath('/how-much-baking-soda-for-a-35000-gallon-pool').figure.value).toBe('4.9');
+    expect(byPath('/how-much-baking-soda-for-a-40000-gallon-pool').figure.value).toBe('5.6');
+    for (const path of [ALKALINITY.path, STABILIZER.path])
+      expect(
+        JOB_PAGES.filter(({ calculator }) => calculator.path === path).map(
+          ({ gallons }) => gallons,
+        ),
+      ).toEqual([5000, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000, 40_000]);
+  });
+
   it('links each page to its nearest neighbors of the same calculator, by pool size', () => {
     for (const page of JOB_PAGES) {
       const links = neighborsOf(page);
@@ -408,6 +488,7 @@ describe('the long-tail job pages', () => {
       HEATER.path,
       FILL_TIME.path,
       PH.path,
+      CALCIUM.path,
     ]) {
       const linked = jobLinksOf(path).map(({ href }) => href);
       const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
@@ -448,6 +529,13 @@ describe('the long-tail job pages', () => {
       href: '/how-long-to-fill-a-25000-gallon-pool',
       label: 'How long to fill a 25,000 gallon pool',
     });
+    expect(jobLinksOf(CALCIUM.path).map(({ href }) => href)).toEqual([
+      '/how-much-calcium-chloride-for-a-10000-gallon-pool',
+      '/how-much-calcium-chloride-for-a-15000-gallon-pool',
+      '/how-much-calcium-chloride-for-a-20000-gallon-pool',
+      '/how-much-calcium-chloride-for-a-25000-gallon-pool',
+      '/how-much-calcium-chloride-for-a-30000-gallon-pool',
+    ]);
     expect(jobLinksOf(PUMP.path)).toEqual([]);
   });
 });

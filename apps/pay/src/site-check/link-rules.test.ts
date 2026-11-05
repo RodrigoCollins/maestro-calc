@@ -44,6 +44,12 @@ describe('LONG_TAIL_RULES', () => {
         calculator: '/es/calculadora-de-horas-extra',
       }),
     );
+    expect(LONG_TAIL_RULES).toContainEqual(
+      expect.objectContaining({
+        path: '/pay/10-percent-shift-differential-on-20-an-hour',
+        calculator: '/shift-differential-calculator',
+      }),
+    );
   });
 });
 

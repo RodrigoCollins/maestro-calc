@@ -3,7 +3,7 @@ import type { CalculatorPageId } from './templates.ts';
 
 /*
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
- * out at build time: concrete for a slab (by its sides or by its area) or a tube, roof pitch for a
+ * out at build time: concrete for a slab (by its sides or by its area), a tube or a footing, roof pitch for a
  * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
  * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
  * area, and the shingles for a roof. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
@@ -45,6 +45,20 @@ const tube = (diameter: number, depth: number): JobCase => ({
   diameter: `${String(diameter)}in`,
   height: `${String(depth)}in`,
 });
+
+/**
+ * A continuous footing `footingWidth` by `footingDepth` inches, 20, 50 and 100 ft long: one wall, a
+ * shed and a garage perimeter, one piece each.
+ */
+const footing = (footingWidth: number, footingDepth: number) => {
+  const long = (length: number): JobCase => ({
+    shape: 'footing',
+    length: `${String(length)}ft`,
+    footingWidth: `${String(footingWidth)}in`,
+    footingDepth: `${String(footingDepth)}in`,
+  });
+  return [long(20), long(50), long(100)] as const;
+};
 
 /**
  * A slab of so many square feet, as the calculator takes it: a rectangle of `length` by `width` feet
@@ -166,10 +180,25 @@ export const JOBS = {
     updated: '2026-11-04',
     cases: [slab(10, 12, 4), slab(10, 12, 5), slab(10, 12, 6)],
   },
+  'concrete-slab-10x20': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: [slab(10, 20, 4), slab(10, 20, 5), slab(10, 20, 6)],
+  },
   'concrete-slab-12x12': {
     calculator: 'concrete',
     updated: '2026-11-03',
     cases: [slab(12, 12, 4), slab(12, 12, 5), slab(12, 12, 6)],
+  },
+  'concrete-slab-12x20': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: [slab(12, 20, 4), slab(12, 20, 5), slab(12, 20, 6)],
+  },
+  'concrete-slab-12x24': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: [slab(12, 24, 4), slab(12, 24, 5), slab(12, 24, 6)],
   },
   'concrete-slab-20x20': {
     calculator: 'concrete',
@@ -215,6 +244,16 @@ export const JOBS = {
     calculator: 'concrete',
     updated: '2026-11-03',
     cases: [tube(12, 24), tube(12, 36), tube(12, 48)],
+  },
+  'concrete-footing-16x8': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: footing(16, 8),
+  },
+  'concrete-footing-20x10': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: footing(20, 10),
   },
   'roof-pitch-3-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(3) },
   'roof-pitch-4-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(4) },
@@ -295,12 +334,21 @@ export const JOBS = {
     updated: '2026-11-04',
     cases: driveway(12, 50),
   },
+  'gravel-driveway-12x100': {
+    calculator: 'gravel',
+    updated: '2026-11-05',
+    cases: driveway(12, 100),
+  },
   'paint-room-10x10': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 10) },
   'paint-room-10x12': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 12) },
   'paint-room-12x12': { calculator: 'paint', updated: '2026-11-04', cases: room(12, 12) },
+  'paint-room-12x14': { calculator: 'paint', updated: '2026-11-05', cases: room(12, 14) },
+  'paint-room-12x16': { calculator: 'paint', updated: '2026-11-05', cases: room(12, 16) },
   'drywall-room-10x10': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 10) },
   'drywall-room-10x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 12) },
   'drywall-room-12x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(12, 12) },
+  'drywall-room-12x14': { calculator: 'drywall', updated: '2026-11-05', cases: room(12, 14) },
+  'drywall-room-12x16': { calculator: 'drywall', updated: '2026-11-05', cases: room(12, 16) },
   'topsoil-raised-bed-4x4': {
     calculator: 'topsoil',
     updated: '2026-11-05',

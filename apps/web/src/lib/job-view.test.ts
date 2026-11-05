@@ -90,6 +90,37 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     });
   });
 
+  // hand-verified: 10 × 20 × 1/3 ft = 66.67 ft³, + 10% = 73.33 ft³ = 2.72 yd³;
+  // bags of 0.60, 0.45 and 0.30 ft³: 122.2, 163.0 and 244.4, rounded up
+  it('works the 10 × 20 slab, 4 in thick, out as the calculator does', () => {
+    const [first] = jobView('concrete-slab-10x20', 'en').rows;
+    expect(first).toEqual({
+      label: '10 ft × 20 ft × 4 in',
+      href: '/concrete-calculator?v=1&l=120&w=240',
+      cells: ['2.72', '123', '163', '245'],
+    });
+  });
+
+  // hand-verified: a footing 20 ft long, 16 in wide and 8 in deep is 20 × 4/3 × 2/3 = 17.78 ft³,
+  // + 10% = 19.56 ft³ = 0.72 yd³; bags of 0.60, 0.45 and 0.30 ft³: 32.6, 43.5 and 65.2, rounded
+  // up. 100 ft of 20 × 10 in is 100 × 5/3 × 5/6 = 138.89 ft³, + 10% = 152.78 ft³ = 5.66 yd³,
+  // bags 254.6, 339.5, 509.3
+  it('works the footings out as the calculator does, the length first', () => {
+    const view = jobView('concrete-footing-16x8', 'en');
+    expect(view.rows[0]).toEqual({
+      label: '20 ft × 16 in × 8 in',
+      // the width and the depth of the footing are the calculator's defaults
+      href: '/concrete-calculator?v=1&sh=footing&l=240',
+      cells: ['0.72', '33', '44', '66'],
+    });
+    expect(view.lead).toBe('Length × Footing width × Footing depth: 20 ft × 16 in × 8 in');
+    expect(view.answer).toBe('0.72 cubic yards');
+    expect(jobView('concrete-footing-20x10', 'es').rows.at(-1)).toMatchObject({
+      label: '100 ft × 20 in × 10 in',
+      cells: ['5.66', '255', '340', '510'],
+    });
+  });
+
   // hand-verified: 650 ft² as 26 × 25 ft, × 1/3 ft = 216.67 ft³ (8.02 yd³), + 10% = 238.33 ft³ =
   // 8.83 yd³; bags of 0.60, 0.45 and 0.30 ft³: 397.2, 529.6 and 794.4, rounded up. At 5 in,
   // 270.83 ft³ + 10% = 297.92 ft³ = 11.03 yd³; at 6 in, 325 ft³ + 10% = 357.5 ft³ = 13.24 yd³
