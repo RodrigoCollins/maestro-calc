@@ -171,11 +171,11 @@ test('leads from the home to the spring guide, whose calculator links all answer
   await page.goto('/');
   await page.locator('.pool-band a').click();
   await expect(page).toHaveURL(/\/opening-your-pool$/);
-  await expect(page.locator('.pool-steps > li')).toHaveCount(10);
+  await expect(page.locator('.pool-steps > li')).toHaveCount(12);
   const hrefs = await page
     .locator('.pool-steps a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  expect(hrefs).toHaveLength(5);
+  expect(hrefs).toHaveLength(6);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 

@@ -123,6 +123,9 @@ const runner = (path: string): Runner => {
   return found;
 };
 
+/** The dose the calculator page at `path` prints for `raw`, by its output `key`: a figure a guide quotes. */
+export const doseOf = (path: string, raw: Raw, key: string): string => runner(path).dose(raw, key);
+
 type ColumnSpec = Omit<DoseColumn, 'link'> & { readonly label: string };
 
 const columnOf = ({ label, ...spec }: ColumnSpec): DoseColumn => ({
