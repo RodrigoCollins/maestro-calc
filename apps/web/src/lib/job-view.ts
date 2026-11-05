@@ -8,12 +8,10 @@ import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
-import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
-import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
 import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
@@ -288,15 +286,12 @@ const mulchOutput = (key: 'volumeYd3' | 'volumeFt3'): OutputDescriptor => {
   return output;
 };
 
-/** The `site` messages of the mulch table, with their params: `siteText` takes none. */
-const siteCatalogs = { en: createTranslator(enSite), es: createTranslator(esSite) };
-
 /** The lengths of the bed of a case, in the order the calculator declares them. */
 const BED = ['length', 'width', 'depth'] as const;
 
 const mulchTable = (cases: Job['cases'], locale: Locale): JobTable => {
   const calc = mulchCatalogs[locale];
-  const site = siteCatalogs[locale];
+  const site = siteText(locale);
   const rows = mapCases(cases, (raw): JobRow => {
     const state = mulchState(raw);
     return {
@@ -311,19 +306,17 @@ const mulchTable = (cases: Job['cases'], locale: Locale): JobTable => {
     ...mulchOutput('volumeYd3'),
     display: { unit: 'yd3', format: 'decimal', places: 0 },
   } as const;
-  const columns = YARD_DEPTHS.map((depth) =>
-    site('site.job.bagsFor', {
-      value: outputText(yards, mulch.compute(mulchState({ ...raw, depth })).outputs.volumeYd3),
-    }),
+  const columns = YARD_DEPTHS.map(
+    (depth) =>
+      // the site catalog holds no placeholder: the label, then the whole cubic yards
+      `${site('site.job.bagsFor')} ${outputText(yards, mulch.compute(mulchState({ ...raw, depth })).outputs.volumeYd3)} yd³`,
   );
   const { outputs } = mulch.compute(mulchState(raw));
   return {
     lead: `${BED.map((key) => calc(`calc.mulch.inputs.${key}`)).join(' × ')}: ${BED.map((key) =>
       sizeText(raw[key] ?? ''),
     ).join(' × ')}`,
-    answer: site('site.job.cubicFeet', {
-      value: outputText(mulchOutput('volumeFt3'), outputs.volumeFt3),
-    }),
+    answer: `${outputText(mulchOutput('volumeFt3'), outputs.volumeFt3)} ${site('site.job.cubicFeet')}`,
     // the bags of one cubic yard, one fact per bag size
     facts: mapCases(cases, (each) => mulchState(each).bag).map((bag, index) => ({
       label: calc('calc.mulch.page.shoppingLine', { size: mulchSize(bag) }),

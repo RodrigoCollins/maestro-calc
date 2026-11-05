@@ -41,8 +41,8 @@ export const esSite = {
     'El área de un rectángulo es su largo por su ancho. Una yarda cuadrada son 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus valores ya cargados.',
   'site.job.note.mulch':
     'Una yarda cúbica es exactamente 27 pies cúbicos, y una bolsa contiene el volumen impreso en ella. Las cantidades no suman extra y se redondean hacia arriba a bolsas enteras: 27 ÷ 2 = 13.5, así que 14 bolsas de 2 cu ft. Cada tamaño abre la calculadora de mulch con un área de 9 por 9 ft y 4 in de profundidad: una yarda cúbica.',
-  'site.job.cubicFeet': '{value} pies cúbicos',
-  'site.job.bagsFor': 'Bolsas para {value} yd³',
+  'site.job.cubicFeet': 'pies cúbicos',
+  'site.job.bagsFor': 'Bolsas para',
   'site.job.area': 'Área',
   'site.pitchDegrees.heading': 'Pendiente de techo en grados',
   'site.pitchDegrees.note':

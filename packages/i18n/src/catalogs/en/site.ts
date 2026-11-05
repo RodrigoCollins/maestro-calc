@@ -38,8 +38,8 @@ export const enSite = {
     'The area of a rectangle is its length times its width. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
   'site.job.note.mulch':
     'A cubic yard is exactly 27 cubic feet, and a bag holds the volume printed on it. The counts add no extra and round up to whole bags: 27 ÷ 2 = 13.5, so 14 bags of 2 cu ft. Each size opens the mulch calculator with a 9 by 9 ft bed, 4 in deep: one cubic yard.',
-  'site.job.cubicFeet': '{value} cubic feet',
-  'site.job.bagsFor': 'Bags for {value} yd³',
+  'site.job.cubicFeet': 'cubic feet',
+  'site.job.bagsFor': 'Bags for',
   'site.job.area': 'Area',
   'site.pitchDegrees.heading': 'Roof pitch to degrees',
   'site.pitchDegrees.note':
