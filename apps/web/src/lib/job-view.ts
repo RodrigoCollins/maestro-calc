@@ -2,6 +2,7 @@ import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
+import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
@@ -11,6 +12,8 @@ import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
+import { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
+import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
@@ -18,6 +21,8 @@ import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
+import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
+import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
 import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
@@ -26,6 +31,7 @@ import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
+import { roofing } from './roofing.ts';
 import { siteText } from './site-text.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
@@ -80,6 +86,8 @@ export const METHODOLOGY_ANCHOR = {
   gravel: { en: 'gravel', es: 'grava' },
   paint: { en: 'paint', es: 'pintura' },
   drywall: { en: 'drywall', es: 'drywall' },
+  topsoil: { en: 'topsoil', es: 'tierra-para-jardin' },
+  roofing: { en: 'roofing', es: 'tejas' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`: the sizes read the same in both languages. */
@@ -511,6 +519,118 @@ const drywallTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/* Topsoil: the cubic yards, the cubic feet and the bags of a bed or an area at each depth. */
+
+const topsoilCatalogs = { en: createTranslator(enTopsoil), es: createTranslator(esTopsoil) };
+
+/** The bag sizes of the table (the select's option ids), the calculator's default first. */
+const SOIL_BAGS = ['0-75', '1-5'] as const;
+
+const SOIL_SIZES = ['length', 'width', 'depth'] as const;
+
+const topsoilState = (raw: JobCase) => {
+  const result = topsoil.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const topsoilTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = topsoilCatalogs[locale];
+  const yards = outputOf(topsoil.outputs, 'volumeYd3', 'topsoil');
+  const feet = outputOf(topsoil.outputs, 'volumeFt3', 'topsoil');
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = topsoilState(raw);
+    const { outputs } = topsoil.compute(state);
+    return {
+      label: sizesOf(raw, SOIL_SIZES),
+      href: `${pathOf('topsoil', locale)}?${encode(topsoil, state, { unitSystem: 'imperial' })}`,
+      cells: [
+        outputText(yards, outputs.volumeYd3),
+        outputText(feet, outputs.volumeFt3),
+        ...SOIL_BAGS.map((bag) =>
+          shoppingQty(topsoil.compute(topsoilState({ ...raw, bag })).shopping, 'topsoil'),
+        ),
+      ],
+    };
+  });
+  const [first] = rows;
+  const sizeLabel = SOIL_SIZES.map((key) => calc(`calc.topsoil.inputs.${key}`)).join(' × ');
+  // `0-75` is 0.75 cu ft: the option id with its dot
+  const bagLabels = SOIL_BAGS.map((bag) =>
+    calc('calc.topsoil.page.shoppingLine', { size: bag.replace('-', '.') }),
+  );
+  const [volume = '', cubicFeet = '', ...bags] = first.cells;
+  return {
+    lead: `${sizeLabel}: ${first.label}`,
+    answer: calc('calc.topsoil.page.volumeYd3', { value: volume }),
+    facts: [
+      { label: calc('calc.topsoil.outputs.volumeFt3'), value: cubicFeet },
+      ...bagLabels.map((label, index) => ({ label, value: bags[index] ?? '' })),
+    ],
+    columns: [
+      sizeLabel,
+      calc('calc.topsoil.outputs.volumeYd3'),
+      calc('calc.topsoil.outputs.volumeFt3'),
+      ...bagLabels,
+    ],
+    rows,
+    calculatorName: calc('calc.topsoil.title'),
+  };
+};
+
+/* Roofing: the squares, the square feet, the bundles and the rolls of a footprint at each pitch. */
+
+const roofingCatalogs = { en: createTranslator(enRoofing), es: createTranslator(esRoofing) };
+
+const roofingState = (raw: JobCase) => {
+  const result = roofing.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+const roofingTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = roofingCatalogs[locale];
+  const squares = outputOf(roofing.outputs, 'squares', 'roofing');
+  const area = outputOf(roofing.outputs, 'areaFt2', 'roofing');
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = roofingState(raw);
+    const { outputs, shopping } = roofing.compute(state);
+    return {
+      label: calc('calc.roofing.page.drawing.note', { pitch: raw['pitch'] ?? '' }),
+      href: `${pathOf('roofing', locale)}?${encode(roofing, state, { unitSystem: 'imperial' })}`,
+      cells: [
+        outputText(squares, outputs.squares),
+        outputText(area, outputs.areaFt2),
+        shoppingQty(shopping, 'shingles'),
+        shoppingQty(shopping, 'underlayment'),
+      ],
+    };
+  });
+  const [first] = rows;
+  const [raw] = cases;
+  const [value = '', feet = '', bundles = '', rolls = ''] = first.cells;
+  return {
+    lead: (['length', 'width', 'pitch'] as const)
+      .map((key) => `${calc(`calc.roofing.inputs.${key}`)}: ${sizeText(raw[key] ?? '')}`)
+      .join(', '),
+    answer: calc('calc.roofing.page.squares', { value }),
+    facts: [
+      { label: calc('calc.roofing.page.shoppingShingles'), value: bundles },
+      { label: calc('calc.roofing.page.shoppingUnderlayment'), value: rolls },
+      { label: calc('calc.roofing.outputs.areaFt2'), value: feet },
+    ],
+    columns: [
+      calc('calc.roofing.inputs.pitch'),
+      calc('calc.roofing.outputs.squares'),
+      calc('calc.roofing.outputs.areaFt2'),
+      calc('calc.roofing.page.shoppingShingles'),
+      calc('calc.roofing.page.shoppingUnderlayment'),
+    ],
+    rows,
+    calculatorName: calc('calc.roofing.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
@@ -519,11 +639,13 @@ const TABLES = {
   gravel: gravelTable,
   paint: paintTable,
   drywall: drywallTable,
+  topsoil: topsoilTable,
+  roofing: roofingTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
 /**
  * The jobs whose page opens with a sentence of its own: square footage, slab by area, mulch, and
- * the gravel, paint and drywall jobs.
+ * the gravel, paint, drywall, topsoil and roofing jobs.
  */
 type IntroJobId = Extract<
   JobId,
@@ -533,6 +655,8 @@ type IntroJobId = Extract<
   | `gravel-${string}`
   | `paint-${string}`
   | `drywall-${string}`
+  | `topsoil-${string}`
+  | `roofing-${string}`
 >;
 
 /** The calculators whose every job opens with its own sentence. */
@@ -542,6 +666,8 @@ const INTRO_CALCULATORS: readonly JobCalculator[] = [
   'gravel',
   'paint',
   'drywall',
+  'topsoil',
+  'roofing',
 ];
 
 const hasIntro = (id: JobId): id is IntroJobId =>

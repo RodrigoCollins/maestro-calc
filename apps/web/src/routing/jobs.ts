@@ -5,7 +5,8 @@ import type { CalculatorPageId } from './templates.ts';
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
  * out at build time: concrete for a slab (by its sides or by its area) or a tube, roof pitch for a
  * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
- * gravel for a driveway, and the paint and the drywall for a room. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
+ * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
+ * area, and the shingles for a roof. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -17,7 +18,15 @@ export interface Job {
   /** The calculator that works the figures out; the page links to it, prefilled with each case. */
   readonly calculator: Extract<
     CalculatorPageId,
-    'concrete' | 'roof-pitch' | 'rectangle-area' | 'mulch' | 'gravel' | 'paint' | 'drywall'
+    | 'concrete'
+    | 'roof-pitch'
+    | 'rectangle-area'
+    | 'mulch'
+    | 'gravel'
+    | 'paint'
+    | 'drywall'
+    | 'topsoil'
+    | 'roofing'
   >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
@@ -81,6 +90,39 @@ const room = (length: number, width: number) => {
     height: `${String(height)}ft`,
   });
   return [high(8), high(9), high(10)] as const;
+};
+
+/**
+ * A bed or an area of `length` by `width` feet at each of `depths` inches: 10% extra for settling
+ * and bags of 0.75 cu ft, the topsoil calculator's defaults, so the case names only the sizes.
+ */
+const soil = (length: number, width: number, depths: readonly [number, number, number]) => {
+  const deep = (depth: number): JobCase => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+    depth: `${String(depth)}in`,
+  });
+  return [deep(depths[0]), deep(depths[1]), deep(depths[2])] as const;
+};
+
+/** A raised bed filled 12, 18 and 24 in deep. */
+const raisedBed = (length: number, width: number) => soil(length, width, [12, 18, 24]);
+
+/** A lawn or garden area spread 4 in deep (the calculator's default), then 6 and 8 in. */
+const area = (length: number, width: number) => soil(length, width, [4, 6, 8]);
+
+/**
+ * A roof over a footprint of `length` by `width` feet, overhangs included, at 6 in 12 (the roofing
+ * calculator's default), then 8 and 10 in 12; 10% extra, its default, so the case names only the
+ * sizes and the pitch.
+ */
+const roof = (length: number, width: number) => {
+  const pitched = (pitch: number): JobCase => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+    pitch: String(pitch),
+  });
+  return [pitched(6), pitched(8), pitched(10)] as const;
 };
 
 /** The rafter runs (half the span) of a roof pitch table, in feet. */
@@ -259,6 +301,22 @@ export const JOBS = {
   'drywall-room-10x10': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 10) },
   'drywall-room-10x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 12) },
   'drywall-room-12x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(12, 12) },
+  'topsoil-raised-bed-4x4': {
+    calculator: 'topsoil',
+    updated: '2026-11-05',
+    cases: raisedBed(4, 4),
+  },
+  'topsoil-raised-bed-4x8': {
+    calculator: 'topsoil',
+    updated: '2026-11-05',
+    cases: raisedBed(4, 8),
+  },
+  'topsoil-10x10': { calculator: 'topsoil', updated: '2026-11-05', cases: area(10, 10) },
+  'topsoil-20x20': { calculator: 'topsoil', updated: '2026-11-05', cases: area(20, 20) },
+  'roofing-12x16': { calculator: 'roofing', updated: '2026-11-05', cases: roof(12, 16) },
+  'roofing-24x24': { calculator: 'roofing', updated: '2026-11-05', cases: roof(24, 24) },
+  'roofing-30x40': { calculator: 'roofing', updated: '2026-11-05', cases: roof(30, 40) },
+  'roofing-30x50': { calculator: 'roofing', updated: '2026-11-05', cases: roof(30, 50) },
 } as const satisfies Record<string, Job>;
 
 export type JobId = keyof typeof JOBS;

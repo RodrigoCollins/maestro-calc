@@ -295,6 +295,38 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/drywall/drywall-for-12x12-room',
       es: '/es/drywall/drywall-para-cuarto-de-12x12',
     });
+    expect(ROUTES['topsoil-raised-bed-4x4']).toEqual({
+      en: '/landscaping/soil-for-4x4-raised-bed',
+      es: '/es/jardineria/tierra-para-cama-elevada-de-4x4',
+    });
+    expect(ROUTES['topsoil-raised-bed-4x8']).toEqual({
+      en: '/landscaping/soil-for-4x8-raised-bed',
+      es: '/es/jardineria/tierra-para-cama-elevada-de-4x8',
+    });
+    expect(ROUTES['topsoil-10x10']).toEqual({
+      en: '/landscaping/topsoil-for-10x10-area',
+      es: '/es/jardineria/tierra-para-area-de-10x10',
+    });
+    expect(ROUTES['topsoil-20x20']).toEqual({
+      en: '/landscaping/topsoil-for-20x20-area',
+      es: '/es/jardineria/tierra-para-area-de-20x20',
+    });
+    expect(ROUTES['roofing-12x16']).toEqual({
+      en: '/roofing/shingles-for-12x16-roof',
+      es: '/es/techos/tejas-para-techo-de-12x16',
+    });
+    expect(ROUTES['roofing-24x24']).toEqual({
+      en: '/roofing/shingles-for-24x24-roof',
+      es: '/es/techos/tejas-para-techo-de-24x24',
+    });
+    expect(ROUTES['roofing-30x40']).toEqual({
+      en: '/roofing/shingles-for-30x40-roof',
+      es: '/es/techos/tejas-para-techo-de-30x40',
+    });
+    expect(ROUTES['roofing-30x50']).toEqual({
+      en: '/roofing/shingles-for-30x50-roof',
+      es: '/es/techos/tejas-para-techo-de-30x50',
+    });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });
     expect(ROUTES['hub-drywall']).toEqual({ en: '/drywall', es: '/es/drywall' });

@@ -45,6 +45,10 @@ export const enSite = {
   'site.job.note.drywall':
     'The figures cover the four walls and the ceiling, less one door of 20 sq ft and two windows of 15 sq ft each, with 10% extra for cuts, the drywall calculator’s defaults, and round up to whole sheets. Each height opens the calculator with its measurements filled in.',
   'site.job.sheetsOf': 'sheets of',
+  'site.job.note.topsoil':
+    'The figures add 10% for settling, the topsoil calculator’s default, and round up to whole bags of 0.75 or 1.5 cu ft. A cubic yard is 27 cubic feet. Each depth opens the calculator with its measurements filled in.',
+  'site.job.note.roofing':
+    'The sizes are the footprint of the roof with its overhangs. The figures add 10% extra, the roofing calculator’s default, and round up to whole bundles, three to a square of 100 sq ft, and whole rolls of synthetic underlayment. Each pitch opens the calculator with its measurements filled in.',
   'site.job.cubicFeet': 'cubic feet',
   'site.job.bagsFor': 'Bags for',
   'site.job.area': 'Area',
@@ -451,6 +455,54 @@ export const enSite = {
   'page.drywall-room-12x12.heading': 'How many sheets of drywall for a 12x12 room?',
   'page.drywall-room-12x12.intro':
     'A 12 by 12 ft room is a typical main bedroom or a small living room. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+  'page.topsoil-raised-bed-4x4.title': 'Soil for a 4x4 Raised Bed: 0.65 Cubic Yards | Maestro Calc',
+  'page.topsoil-raised-bed-4x4.description':
+    'A 4 by 4 ft raised bed 12 in deep takes 0.65 cubic yards of soil with 10% for settling: 24 bags of 0.75 cu ft or 12 of 1.5 cu ft, and the bed at 18 or 24 in.',
+  'page.topsoil-raised-bed-4x4.heading': 'How much soil for a 4x4 raised bed?',
+  'page.topsoil-raised-bed-4x4.intro':
+    'A 4 by 4 ft bed is a common kit size, and you can reach its middle from any side. Most vegetables grow well in 12 in of soil; a deeper bed suits root crops and saves bending.',
+  'page.topsoil-raised-bed-4x8.title': 'Soil for a 4x8 Raised Bed: 1.30 Cubic Yards | Maestro Calc',
+  'page.topsoil-raised-bed-4x8.description':
+    'A 4 by 8 ft raised bed 12 in deep takes 1.30 cubic yards of soil with 10% for settling: 47 bags of 0.75 cu ft or 24 of 1.5 cu ft, and the bed at 18 or 24 in.',
+  'page.topsoil-raised-bed-4x8.heading': 'How much soil for a 4x8 raised bed?',
+  'page.topsoil-raised-bed-4x8.intro':
+    'A 4 by 8 ft bed is the most common raised bed: each long side is one 8 ft board. Most vegetables grow well in 12 in of soil; a deeper bed suits root crops and saves bending.',
+  'page.topsoil-10x10.title': 'Topsoil for a 10x10 Area: 1.36 Cubic Yards | Maestro Calc',
+  'page.topsoil-10x10.description':
+    'A 10 by 10 ft area 4 in deep takes 1.36 cubic yards of topsoil with 10% for settling: 49 bags of 0.75 cu ft or 25 of 1.5 cu ft, and the area at 6 or 8 in.',
+  'page.topsoil-10x10.heading': 'How much topsoil for a 10x10 area?',
+  'page.topsoil-10x10.intro':
+    'A 10 by 10 ft area is 100 sq ft: a lawn patch or a garden plot. Four inches of topsoil is a common base for new grass seed; a vegetable garden does better with 6 to 8 in.',
+  'page.topsoil-20x20.title': 'Topsoil for a 20x20 Area: 5.43 Cubic Yards | Maestro Calc',
+  'page.topsoil-20x20.description':
+    'A 20 by 20 ft area 4 in deep takes 5.43 cubic yards of topsoil with 10% for settling: 196 bags of 0.75 cu ft or 98 of 1.5 cu ft, and the area at 6 or 8 in.',
+  'page.topsoil-20x20.heading': 'How much topsoil for a 20x20 area?',
+  'page.topsoil-20x20.intro':
+    'A 20 by 20 ft area is 400 sq ft: a small lawn or a backyard garden. At this size, compare the bulk price per cubic yard with the price of the bags.',
+  'page.roofing-12x16.title': 'Shingles for a 12x16 Roof: 8 Bundles | Maestro Calc',
+  'page.roofing-12x16.description':
+    'A 12 by 16 ft roof footprint at 6 in 12 has 2.15 squares: 8 bundles of shingles and 1 roll of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
+  'page.roofing-12x16.heading': 'How many bundles of shingles for a 12x16 roof?',
+  'page.roofing-12x16.intro':
+    'A 12 by 16 ft footprint is a large shed or a small workshop. Measure the footprint to the edge of the overhangs, not to the walls.',
+  'page.roofing-24x24.title': 'Shingles for a 24x24 Roof: 22 Bundles | Maestro Calc',
+  'page.roofing-24x24.description':
+    'A 24 by 24 ft roof footprint at 6 in 12 has 6.44 squares: 22 bundles of shingles and 1 roll of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
+  'page.roofing-24x24.heading': 'How many bundles of shingles for a 24x24 roof?',
+  'page.roofing-24x24.intro':
+    'A 24 by 24 ft footprint is a typical two-car garage. Measure the footprint to the edge of the overhangs, not to the walls.',
+  'page.roofing-30x40.title': 'Shingles for a 30x40 Roof: 45 Bundles | Maestro Calc',
+  'page.roofing-30x40.description':
+    'A 30 by 40 ft roof footprint at 6 in 12 has 13.42 squares: 45 bundles of shingles and 2 rolls of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
+  'page.roofing-30x40.heading': 'How many bundles of shingles for a 30x40 roof?',
+  'page.roofing-30x40.intro':
+    'A 30 by 40 ft footprint covers a small one-story house or a large shop. Measure the footprint to the edge of the overhangs, not to the walls.',
+  'page.roofing-30x50.title': 'Shingles for a 30x50 Roof: 56 Bundles | Maestro Calc',
+  'page.roofing-30x50.description':
+    'A 30 by 50 ft roof footprint at 6 in 12 has 16.77 squares: 56 bundles of shingles and 2 rolls of underlayment with 10% extra, and the roof at 8 or 10 in 12.',
+  'page.roofing-30x50.heading': 'How many bundles of shingles for a 30x50 roof?',
+  'page.roofing-30x50.intro':
+    'A 30 by 50 ft footprint covers a one-story ranch house. Measure the footprint to the edge of the overhangs, not to the walls.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
