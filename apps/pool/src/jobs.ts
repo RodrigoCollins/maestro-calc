@@ -728,7 +728,7 @@ const volumePage = ({
   return {
     path: `/${slug}`,
     title: `How Many Gallons in a ${title}? | Pool Figures`,
-    description: `How many gallons a ${name} holds at the depths it comes in, worked out from its size.`,
+    description: `How many gallons a ${name} holds: ${gallons} at ${at}, and the gallons and liters at the other depths it comes in.`,
     h1: `How many gallons in a ${name}`,
     lead: `${pool}, ${at}, holds ${gallons} gallons. Other depths are in the table, and the calculator takes your own tape readings.`,
     figure: { value: gallons, unit: 'GALLONS', caption: `${pool}, ${at}.` },

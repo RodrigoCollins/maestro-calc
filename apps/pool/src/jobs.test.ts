@@ -174,6 +174,13 @@ describe('the long-tail job pages', () => {
     expect(byPath('/15x30-oval-pool-gallons').figure.value).toBe('10,575');
   });
 
+  // a search result answers the question: the gallons of the large figure, at its depth
+  it('gives the answer of a volume page in its description', () => {
+    expect(byPath('/16x32-pool-gallons').description).toBe(
+      'How many gallons a 16 x 32 pool holds: 22,023 at 3 ft 6 in to 8 ft deep, and the gallons and liters at the other depths it comes in.',
+    );
+  });
+
   // worked by hand: 800 ft² × (3.5 + 8) ÷ 2 ft = 4,600 ft³, × 1,728 ÷ 231 = 34,410
   it('works out the 20 x 40 and the 18 ft and 21 ft round pools as by hand', () => {
     expect(byPath('/20x40-pool-gallons').figure.value).toBe('34,410');
