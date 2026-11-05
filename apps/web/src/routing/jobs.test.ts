@@ -1,11 +1,13 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
+import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
 import { drywall } from '../lib/drywall.ts';
 import { gravel } from '../lib/gravel.ts';
 import { paint } from '../lib/paint.ts';
+import { roofing } from '../lib/roofing.ts';
 import { HUBS, hubOfCalculator } from './hubs.ts';
 import { isJobPage, JOB_IDS, JOBS, jobsOf } from './jobs.ts';
 import { ROUTES } from './routes.ts';
@@ -20,6 +22,8 @@ const ENGINES = {
   gravel,
   paint,
   drywall,
+  topsoil,
+  roofing,
 } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
@@ -83,6 +87,18 @@ describe('job pages (growth plan › lever 1)', () => {
       'drywall-room-10x12',
       'drywall-room-12x12',
     ]);
+    expect(jobsOf('topsoil')).toEqual([
+      'topsoil-raised-bed-4x4',
+      'topsoil-raised-bed-4x8',
+      'topsoil-10x10',
+      'topsoil-20x20',
+    ]);
+    expect(jobsOf('roofing')).toEqual([
+      'roofing-12x16',
+      'roofing-24x24',
+      'roofing-30x40',
+      'roofing-30x50',
+    ]);
     expect([
       ...jobsOf('concrete'),
       ...jobsOf('roof-pitch'),
@@ -91,8 +107,10 @@ describe('job pages (growth plan › lever 1)', () => {
       ...jobsOf('gravel'),
       ...jobsOf('paint'),
       ...jobsOf('drywall'),
+      ...jobsOf('topsoil'),
+      ...jobsOf('roofing'),
     ]).toEqual(JOB_IDS);
-    expect(jobsOf('roofing')).toEqual([]);
+    expect(jobsOf('feet-inches')).toEqual([]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
     expect(isJobPage('square-feet-12x14')).toBe(true);
@@ -195,6 +213,56 @@ describe('job pages (growth plan › lever 1)', () => {
       const size = id.replace('drywall-room-', '');
       expect(ROUTES[id].en, id).toBe(`/drywall/drywall-for-${size}-room`);
       expect(ROUTES[id].es, id).toBe(`/es/drywall/drywall-para-cuarto-de-${size}`);
+    }
+  });
+
+  // queries: "how much soil for a 4x8 raised bed", "how much topsoil for a 10x10 area", "how many
+  // bundles of shingles for a 24x24 roof": the size in the id is the length by the width of every
+  // case, and the cases differ only in the depth (topsoil) or the pitch (roofing), the calculator's
+  // default first
+  it.each([
+    ['topsoil-raised-bed-', 'depth', ['12in', '18in', '24in']],
+    ['topsoil-', 'depth', ['4in', '6in', '8in']],
+    ['roofing-', 'pitch', ['6', '8', '10']],
+  ] as const)(
+    'names each %s job after the length and the width of its cases',
+    (prefix, varying, values) => {
+      const ids = JOB_IDS.filter((id) => /^\d+x\d+$/.test(id.replace(prefix, '')));
+      expect(ids.length, prefix).toBeGreaterThan(0);
+      for (const id of ids) {
+        const [length, width] = id.replace(prefix, '').split('x');
+        for (const each of JOBS[id].cases) {
+          expect(each, id).toEqual({
+            length: `${length ?? ''}ft`,
+            width: `${width ?? ''}ft`,
+            [varying]: each[varying],
+          });
+        }
+        expect(
+          JOBS[id].cases.map((each) => each[varying]),
+          id,
+        ).toEqual(values);
+      }
+    },
+  );
+
+  it('routes the topsoil and roofing jobs by their size', () => {
+    for (const id of jobsOf('topsoil')) {
+      const size = id.replace('topsoil-raised-bed-', '').replace('topsoil-', '');
+      const bed = id.startsWith('topsoil-raised-bed-');
+      expect(ROUTES[id].en, id).toBe(
+        bed ? `/landscaping/soil-for-${size}-raised-bed` : `/landscaping/topsoil-for-${size}-area`,
+      );
+      expect(ROUTES[id].es, id).toBe(
+        bed
+          ? `/es/jardineria/tierra-para-cama-elevada-de-${size}`
+          : `/es/jardineria/tierra-para-area-de-${size}`,
+      );
+    }
+    for (const id of jobsOf('roofing')) {
+      const size = id.replace('roofing-', '');
+      expect(ROUTES[id].en, id).toBe(`/roofing/shingles-for-${size}-roof`);
+      expect(ROUTES[id].es, id).toBe(`/es/techos/tejas-para-techo-de-${size}`);
     }
   });
 

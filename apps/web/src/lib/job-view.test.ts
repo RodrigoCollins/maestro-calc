@@ -2,6 +2,7 @@ import { decode } from '@maestro-calc/core';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
+import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
 import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
@@ -10,6 +11,7 @@ import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
+import { roofing } from './roofing.ts';
 import { jobView, METHODOLOGY_ANCHOR } from './job-view.ts';
 import { siteText } from './site-text.ts';
 
@@ -45,6 +47,16 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
   if (calculator === 'drywall') {
     const state = drywall.validate(raw);
     expect(state.ok && decode(drywall, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'topsoil') {
+    const state = topsoil.validate(raw);
+    expect(state.ok && decode(topsoil, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'roofing') {
+    const state = roofing.validate(raw);
+    expect(state.ok && decode(roofing, query).state).toEqual(state.ok && state.value);
     return;
   }
   const state = rectangleArea.validate(raw);
@@ -294,6 +306,110 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     },
   );
 
+  // hand-verified: 4 × 8 × 1 ft = 32 ft³, + 10% for settling = 35.2 ft³ = 1.30 yd³; 35.2 ÷ 0.75 =
+  // 46.9 so 47 bags, ÷ 1.5 = 23.5 so 24. At 18 in: 52.8 ft³ = 1.96 yd³, 70.4 so 71, 35.2 so 36; at
+  // 24 in: 70.4 ft³ = 2.61 yd³, 93.9 so 94, 46.9 so 47
+  it('works the soil for a 4 × 8 ft raised bed out as the topsoil calculator does', () => {
+    const view = jobView('topsoil-raised-bed-4x8', 'en');
+    expect(view.lead).toBe('Length × Width × Depth: 4 ft × 8 ft × 12 in');
+    expect(view.answer).toBe('1.30 cubic yards');
+    expect(view.facts).toEqual([
+      { label: 'Topsoil needed (cubic feet)', value: '35.20' },
+      { label: 'Topsoil, 0.75 cu ft bags', value: '47' },
+      { label: 'Topsoil, 1.5 cu ft bags', value: '24' },
+    ]);
+    expect(view.columns).toEqual([
+      'Length × Width × Depth',
+      'Topsoil needed (cubic yards)',
+      'Topsoil needed (cubic feet)',
+      'Topsoil, 0.75 cu ft bags',
+      'Topsoil, 1.5 cu ft bags',
+    ]);
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['4 ft × 8 ft × 12 in', '1.30', '35.20', '47', '24'],
+      ['4 ft × 8 ft × 18 in', '1.96', '52.80', '71', '36'],
+      ['4 ft × 8 ft × 24 in', '2.61', '70.40', '94', '47'],
+    ]);
+    expect(view.rows[0].href).toBe('/topsoil-calculator?v=1&l=48&w=96&d=12');
+    expect(view.calculatorName).toBe('Topsoil Calculator');
+    expect(view.methodology).toBe('/methodology#topsoil');
+    // hand-verified: 4 × 4 × 1 = 16 ft³ + 10% = 17.6 ft³ = 0.65 yd³, 23.5 so 24 and 11.7 so 12
+    const small = jobView('topsoil-raised-bed-4x4', 'es');
+    expect(small.answer).toBe('0.65 yardas cúbicas');
+    expect(small.rows[0].cells).toEqual(['0.65', '17.60', '24', '12']);
+    expect(small.methodology).toBe('/es/metodologia#tierra-para-jardin');
+    // hand-verified: 10 × 10 × 1/3 ft = 33.33 ft³ + 10% = 36.67 ft³ = 1.36 yd³, 48.9 so 49 and
+    // 24.4 so 25; 20 × 20 at 8 in: 266.67 ft³ + 10% = 293.33 ft³ = 10.86 yd³, 391.1 so 392, 195.6
+    // so 196
+    expect(jobView('topsoil-10x10', 'en').rows[0].cells).toEqual(['1.36', '36.67', '49', '25']);
+    expect(jobView('topsoil-10x10', 'en').rows[0].href).toBe('/topsoil-calculator?v=1');
+    expect(jobView('topsoil-20x20', 'en').rows.at(-1)?.cells).toEqual([
+      '10.86',
+      '293.33',
+      '392',
+      '196',
+    ]);
+  });
+
+  // hand-verified: 24 × 24 = 576 ft² × √(1 + (6/12)²) = 576 × 1.11803 = 643.99 ft² = 6.44 squares;
+  // + 10% = 708.39 ft² ÷ 33.33 = 21.3 so 22 bundles; a roll covers (250 ft − 4 in) × (48 − 2 in) =
+  // 957.06 ft², so 1 roll. At 8 in 12: × 1.20185 = 692.27 ft², 6.92 squares, 22.8 so 23 bundles; at
+  // 10 in 12: × 1.30171 = 749.78 ft², 7.50 squares, 24.7 so 25 bundles
+  it('works the shingles for a 24 × 24 ft roof out as the roofing calculator does', () => {
+    const view = jobView('roofing-24x24', 'en');
+    expect(view.lead).toBe(
+      'Length (with overhangs): 24 ft, Width (with overhangs): 24 ft, Pitch (rise in 12): 6',
+    );
+    expect(view.answer).toBe('6.44 squares');
+    expect(view.facts).toEqual([
+      { label: 'Asphalt shingles, bundles (3 a square)', value: '22' },
+      { label: 'Synthetic underlayment, 10-square rolls', value: '1' },
+      { label: 'Roof area (square feet)', value: '643.99' },
+    ]);
+    expect(view.columns).toEqual([
+      'Pitch (rise in 12)',
+      'Roof area (squares)',
+      'Roof area (square feet)',
+      'Asphalt shingles, bundles (3 a square)',
+      'Synthetic underlayment, 10-square rolls',
+    ]);
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['6 in 12 pitch', '6.44', '643.99', '22', '1'],
+      ['8 in 12 pitch', '6.92', '692.27', '23', '1'],
+      ['10 in 12 pitch', '7.50', '749.78', '25', '1'],
+    ]);
+    // the pitch of 6 in 12 is the calculator's default
+    expect(view.rows[0].href).toBe('/roofing-calculator?v=1&l=288&w=288');
+    expect(view.calculatorName).toBe('Roofing Calculator');
+    expect(view.methodology).toBe('/methodology#roofing');
+    // hand-verified: 30 × 40 at 6 in 12 = 1,341.64 ft², 13.42 squares, 45 bundles, 1.54 so 2 rolls
+    // (the calculator's own example); 30 × 50 at 10 in 12 = 1,952.56 ft², 19.53 squares, 64.4 so 65
+    // bundles, 2.24 so 3 rolls
+    const house = jobView('roofing-30x40', 'es');
+    expect(house.answer).toBe('13.42 cuadrados');
+    expect(house.rows[0].label).toBe('pendiente de 6 en 12');
+    expect(house.rows[0].cells).toEqual(['13.42', '1,341.64', '45', '2']);
+    expect(house.methodology).toBe('/es/metodologia#tejas');
+    expect(jobView('roofing-30x50', 'en').rows.at(-1)?.cells).toEqual([
+      '19.53',
+      '1,952.56',
+      '65',
+      '3',
+    ]);
+  });
+
+  it.each(LOCALES)('states the defaults of the topsoil and roofing engines in %s', (locale) => {
+    const defaultOf = (inputs: readonly { key: string; default: unknown }[], key: string) =>
+      String(inputs.find((input) => input.key === key)?.default);
+    expect(defaultOf(topsoil.inputs, 'waste')).toBe('10');
+    expect(jobView('topsoil-10x10', locale).note).toContain('10%');
+    expect(defaultOf(roofing.inputs, 'waste')).toBe('10');
+    expect(jobView('roofing-24x24', locale).note).toContain('10%');
+    for (const id of [...jobsOf('topsoil'), ...jobsOf('roofing')]) {
+      expect(jobView(id, locale).intro, id).toMatch(/\S/);
+    }
+  });
+
   // hand-verified: π × (0.5 ft)² × 4 ft = 3.14 ft³, + 10% = 3.46 ft³ = 0.13 yd³; 5.8, 7.7, 11.5 bags
   it('works a 12 in tube, 48 in deep, out as the calculator does', () => {
     const rows = jobView('concrete-tube-12', 'es').rows;
@@ -443,6 +559,8 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(METHODOLOGY_ANCHOR.gravel[locale]).toBe(METHODOLOGY_ROWS.gravel.anchor[locale]);
     expect(METHODOLOGY_ANCHOR.paint[locale]).toBe(METHODOLOGY_ROWS.paint.anchor[locale]);
     expect(METHODOLOGY_ANCHOR.drywall[locale]).toBe(METHODOLOGY_ROWS.drywall.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR.topsoil[locale]).toBe(METHODOLOGY_ROWS.topsoil.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR.roofing[locale]).toBe(METHODOLOGY_ROWS.roofing.anchor[locale]);
     expect(jobView('roof-pitch-4-12', locale).methodology).toMatch(
       new RegExp(`#${METHODOLOGY_ANCHOR['roof-pitch'][locale]}$`),
     );

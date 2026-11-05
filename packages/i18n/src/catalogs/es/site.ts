@@ -48,6 +48,10 @@ export const esSite = {
   'site.job.note.drywall':
     'Las cifras cubren las cuatro paredes y el techo, sin una puerta de 20 pies cuadrados ni dos ventanas de 15 cada una, con un 10% extra por cortes, los valores iniciales de la calculadora de drywall, y se redondean a placas enteras. Cada altura abre la calculadora con sus valores ya cargados.',
   'site.job.sheetsOf': 'placas de',
+  'site.job.note.topsoil':
+    'Las cifras suman un 10% por asentamiento, el valor inicial de la calculadora de tierra para jardín, y se redondean a bolsas enteras de 0.75 o 1.5 cu ft. Una yarda cúbica son 27 pies cúbicos. Cada profundidad abre la calculadora con sus valores ya cargados.',
+  'site.job.note.roofing':
+    'Las medidas son la planta del techo con sus aleros. Las cifras suman un 10% extra, el valor inicial de la calculadora de tejas, y se redondean a paquetes enteros, tres por cuadrado de 100 pies cuadrados, y a rollos enteros de fieltro sintético. Cada pendiente abre la calculadora con sus valores ya cargados.',
   'site.job.cubicFeet': 'pies cúbicos',
   'site.job.bagsFor': 'Bolsas para',
   'site.job.area': 'Área',
@@ -460,6 +464,54 @@ export const esSite = {
   'page.drywall-room-12x12.heading': '¿Cuántas placas de drywall para un cuarto de 12x12?',
   'page.drywall-room-12x12.intro':
     'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+  'page.topsoil-raised-bed-4x4.title': 'Tierra para cama elevada de 4x4: 0.65 yd³ | Maestro Calc',
+  'page.topsoil-raised-bed-4x4.description':
+    'Una cama elevada de 4 por 4 ft con 12 in de tierra lleva 0.65 yardas cúbicas con 10% por asentamiento: 24 bolsas de 0.75 cu ft o 12 de 1.5, y a 18 o 24 in.',
+  'page.topsoil-raised-bed-4x4.heading': '¿Cuánta tierra para una cama elevada de 4x4?',
+  'page.topsoil-raised-bed-4x4.intro':
+    'Una cama de 4 por 4 ft es una medida común de kit, y llegas a su centro desde cualquier lado. La mayoría de las hortalizas crecen bien en 12 in de tierra; una cama más honda sirve para raíces y te ahorra agacharte.',
+  'page.topsoil-raised-bed-4x8.title': 'Tierra para cama elevada de 4x8: 1.30 yd³ | Maestro Calc',
+  'page.topsoil-raised-bed-4x8.description':
+    'Una cama elevada de 4 por 8 ft con 12 in de tierra lleva 1.30 yardas cúbicas con 10% por asentamiento: 47 bolsas de 0.75 cu ft o 24 de 1.5, y a 18 o 24 in.',
+  'page.topsoil-raised-bed-4x8.heading': '¿Cuánta tierra para una cama elevada de 4x8?',
+  'page.topsoil-raised-bed-4x8.intro':
+    'Una cama de 4 por 8 ft es la cama elevada más común: cada lado largo es una tabla de 8 ft. La mayoría de las hortalizas crecen bien en 12 in de tierra; una cama más honda sirve para raíces y te ahorra agacharte.',
+  'page.topsoil-10x10.title': 'Tierra para un área de 10x10: 1.36 yd³ | Maestro Calc',
+  'page.topsoil-10x10.description':
+    'Un área de 10 por 10 ft con 4 in de tierra lleva 1.36 yardas cúbicas con 10% por asentamiento: 49 bolsas de 0.75 cu ft o 25 de 1.5, y a 6 u 8 in.',
+  'page.topsoil-10x10.heading': '¿Cuánta tierra para un área de 10x10?',
+  'page.topsoil-10x10.intro':
+    'Un área de 10 por 10 ft son 100 pies cuadrados: un trozo de césped o una huerta. Cuatro pulgadas de tierra son una base común para sembrar césped; una huerta crece mejor con 6 a 8 in.',
+  'page.topsoil-20x20.title': 'Tierra para un área de 20x20: 5.43 yd³ | Maestro Calc',
+  'page.topsoil-20x20.description':
+    'Un área de 20 por 20 ft con 4 in de tierra lleva 5.43 yardas cúbicas con 10% por asentamiento: 196 bolsas de 0.75 cu ft o 98 de 1.5, y a 6 u 8 in.',
+  'page.topsoil-20x20.heading': '¿Cuánta tierra para un área de 20x20?',
+  'page.topsoil-20x20.intro':
+    'Un área de 20 por 20 ft son 400 pies cuadrados: un césped pequeño o una huerta en el patio. A esta medida, compara el precio a granel por yarda cúbica con el de las bolsas.',
+  'page.roofing-12x16.title': 'Tejas para techo de 12x16: 8 paquetes | Maestro Calc',
+  'page.roofing-12x16.description':
+    'Un techo con planta de 12 por 16 ft y pendiente de 6 en 12 tiene 2.15 cuadrados: 8 paquetes de tejas y 1 rollo de fieltro con 10% extra, y a 8 o 10 en 12.',
+  'page.roofing-12x16.heading': '¿Cuántos paquetes de tejas para un techo de 12x16?',
+  'page.roofing-12x16.intro':
+    'Una planta de 12 por 16 ft es un cobertizo grande o un taller pequeño. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
+  'page.roofing-24x24.title': 'Tejas para techo de 24x24: 22 paquetes | Maestro Calc',
+  'page.roofing-24x24.description':
+    'Un techo con planta de 24 por 24 ft y pendiente de 6 en 12 tiene 6.44 cuadrados: 22 paquetes de tejas y 1 rollo de fieltro con 10% extra, y a 8 o 10 en 12.',
+  'page.roofing-24x24.heading': '¿Cuántos paquetes de tejas para un techo de 24x24?',
+  'page.roofing-24x24.intro':
+    'Una planta de 24 por 24 ft es un garaje típico para dos autos. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
+  'page.roofing-30x40.title': 'Tejas para techo de 30x40: 45 paquetes | Maestro Calc',
+  'page.roofing-30x40.description':
+    'Un techo con planta de 30 por 40 ft y pendiente de 6 en 12 tiene 13.42 cuadrados: 45 paquetes de tejas y 2 rollos de fieltro con 10% extra, y a 8 o 10 en 12.',
+  'page.roofing-30x40.heading': '¿Cuántos paquetes de tejas para un techo de 30x40?',
+  'page.roofing-30x40.intro':
+    'Una planta de 30 por 40 ft cubre una casa pequeña de un piso o un taller grande. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
+  'page.roofing-30x50.title': 'Tejas para techo de 30x50: 56 paquetes | Maestro Calc',
+  'page.roofing-30x50.description':
+    'Un techo con planta de 30 por 50 ft y pendiente de 6 en 12 tiene 16.77 cuadrados: 56 paquetes de tejas y 2 rollos de fieltro con 10% extra, y a 8 o 10 en 12.',
+  'page.roofing-30x50.heading': '¿Cuántos paquetes de tejas para un techo de 30x50?',
+  'page.roofing-30x50.intro':
+    'Una planta de 30 por 50 ft cubre una casa de un piso de estilo rancho. Mide la planta hasta el borde de los aleros, no hasta las paredes.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',

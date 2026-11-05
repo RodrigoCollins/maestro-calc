@@ -140,6 +140,54 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     }
   });
 
+  // target queries of the job pages batch 4 (growth plan › lever 1): "how much soil for a 4x8
+  // raised bed", "how much topsoil for a 10x10 area", "how many bundles of shingles for a 24x24
+  // roof"
+  it('states the cubic yards of topsoil of each job in its title and description', () => {
+    for (const id of jobsOf('topsoil')) {
+      const bed = id.startsWith('topsoil-raised-bed-');
+      const size = id.replace('topsoil-raised-bed-', '').replace('topsoil-', '');
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { answer, facts } = jobView(id, locale);
+        // the title holds the cubic yards (the Spanish one writes `yd³` to fit 60 characters)
+        expect(text(`page.${id}.title`), id).toContain(`: ${answer.split(' ')[0] ?? ''} `);
+        expect(text(`page.${id}.description`), id).toContain(answer);
+        expect(text(`page.${id}.description`), id).toContain(` ${facts[1]?.value ?? ''} `);
+      }
+      const en = siteText('en');
+      const es = siteText('es');
+      if (bed) {
+        expect(en(`page.${id}.title`)).toContain(`Soil for a ${size} Raised Bed`);
+        expect(en(`page.${id}.heading`)).toBe(`How much soil for a ${size} raised bed?`);
+        expect(es(`page.${id}.title`)).toContain(`Tierra para cama elevada de ${size}`);
+      } else {
+        expect(en(`page.${id}.title`)).toContain(`Topsoil for a ${size} Area`);
+        expect(en(`page.${id}.heading`)).toBe(`How much topsoil for a ${size} area?`);
+        expect(es(`page.${id}.title`)).toContain(`Tierra para un área de ${size}`);
+      }
+    }
+  });
+
+  it('states the bundles of shingles of each roof in its title, heading and description', () => {
+    for (const id of jobsOf('roofing')) {
+      const size = id.replace('roofing-', '');
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { answer, facts } = jobView(id, locale);
+        const bundles = facts[0]?.value ?? '';
+        expect(text(`page.${id}.title`), id).toContain(` ${bundles} `);
+        expect(text(`page.${id}.description`), id).toContain(` ${bundles} `);
+        expect(text(`page.${id}.description`), id).toContain(answer);
+      }
+      expect(siteText('en')(`page.${id}.title`)).toContain(`Shingles for a ${size} Roof`);
+      expect(siteText('en')(`page.${id}.heading`)).toBe(
+        `How many bundles of shingles for a ${size} roof?`,
+      );
+      expect(siteText('es')(`page.${id}.title`)).toContain(`Tejas para techo de ${size}`);
+    }
+  });
+
   it('answers the bags of mulch in a cubic yard in the title and the description', () => {
     // queries: "how many bags of 1.5 cubic feet in a yard", "bag of mulch cubic feet"
     for (const locale of ['en', 'es'] as const) {
