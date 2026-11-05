@@ -130,6 +130,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-to-calculate-cubic-yards',
       es: '/es/guias/como-calcular-yardas-cubicas',
     });
+    expect(ROUTES['guide-concrete-bag-coverage']).toEqual({
+      en: '/guides/how-much-does-a-bag-of-concrete-cover',
+      es: '/es/guias/cuanto-cubre-una-bolsa-de-concreto',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['concrete-slab-10x10']).toEqual({
       en: '/concrete/10x10-slab',
