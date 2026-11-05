@@ -65,6 +65,7 @@ export const GUIDE_CALCULATORS: Readonly<Record<string, readonly string[]>> = {
   'pto-guide': ['pto-accrual'],
   'shift-differential-guide': ['shift-differential'],
   'tip-credit-guide': ['tipped-wage'],
+  'tipped-states-guide': ['tipped-wage'],
   'hours-worked-guide': ['hours', 'decimal-hours'],
 };
 

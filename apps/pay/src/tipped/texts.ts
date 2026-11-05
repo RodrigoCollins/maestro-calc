@@ -1,4 +1,4 @@
-import { TIP_CREDIT_GUIDE_PATHS } from '../guide/paths.ts';
+import { TIP_CREDIT_GUIDE_PATHS, TIPPED_STATES_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 export const TIPPED_PATHS = {
@@ -91,6 +91,7 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
     },
     links: [
       { label: 'When must your employer top up your tips?', href: TIP_CREDIT_GUIDE_PATHS.en },
+      { label: 'Tipped minimum wage by state, 2026', href: TIPPED_STATES_GUIDE_PATHS.en },
       { label: 'Work out your overtime by day', href: '/overtime-calculator' },
       { label: 'Add up a week on the time card', href: '/time-card-calculator' },
     ],
@@ -139,6 +140,10 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
       {
         label: '¿Cuándo debe tu empleador completar tus propinas?',
         href: TIP_CREDIT_GUIDE_PATHS.es,
+      },
+      {
+        label: 'Salario mínimo con propinas por estado, 2026',
+        href: TIPPED_STATES_GUIDE_PATHS.es,
       },
       { label: 'Calcula tus horas extra por día', href: '/es/calculadora-de-horas-extra' },
       {

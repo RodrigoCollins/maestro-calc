@@ -7,6 +7,7 @@ import {
   PTO_GUIDE_PATHS,
   SHIFT_GUIDE_PATHS,
   TIP_CREDIT_GUIDE_PATHS,
+  TIPPED_STATES_GUIDE_PATHS,
   UNPAID_WAGES_GUIDE_PATHS,
 } from './guide/paths.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
@@ -54,6 +55,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'pto-guide', kind: 'article', ...PTO_GUIDE_PATHS },
   { id: 'shift-differential-guide', kind: 'article', ...SHIFT_GUIDE_PATHS },
   { id: 'tip-credit-guide', kind: 'article', ...TIP_CREDIT_GUIDE_PATHS },
+  { id: 'tipped-states-guide', kind: 'article', ...TIPPED_STATES_GUIDE_PATHS },
   { id: 'hours-worked-guide', kind: 'article', ...HOURS_WORKED_GUIDE_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
