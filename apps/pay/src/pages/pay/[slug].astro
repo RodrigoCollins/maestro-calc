@@ -1,12 +1,12 @@
 ---
 import LongTailPage from '../../components/LongTailPage.astro';
-import { JOBS, SHIFTS, type Job, type Shift } from '../../long-tail/jobs.ts';
+import { LONG_TAIL_JOBS, type LongTailJob } from '../../long-tail/jobs.ts';
 
 export const getStaticPaths = () =>
-  [...JOBS, ...SHIFTS].map((job) => ({ params: { slug: job.slug.en }, props: { job } }));
+  LONG_TAIL_JOBS.map((job) => ({ params: { slug: job.slug.en }, props: { job } }));
 
 interface Props {
-  readonly job: Job | Shift;
+  readonly job: LongTailJob;
 }
 ---
 

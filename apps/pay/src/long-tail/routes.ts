@@ -160,10 +160,61 @@ export const SHIFTS: readonly Shift[] = [
   shift('19:00', '7:00'),
 ];
 
-export const pathOf = (job: Job | Shift, lang: Lang): string =>
+/**
+ * Paid days off a year people ask the PTO per paycheck of, "how much PTO do I earn with 15 days a
+ * year": the PTO accrual calculator's, at its defaults (8-hour days off, a 40-hour week) and every
+ * two weeks. Every figure of its page is the engine's.
+ */
+export interface Pto {
+  readonly kind: 'pto';
+  readonly days: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const pto = (days: number): Pto => ({
+  kind: 'pto',
+  days,
+  slug: {
+    en: `pto-per-paycheck-with-${String(days)}-days-a-year`,
+    es: `vacaciones-por-cheque-con-${String(days)}-dias-al-ano`,
+  },
+});
+
+/** In ascending order: the PTO accrual calculator lists them, and a page links its nearest, so. */
+export const PTOS: readonly Pto[] = [5, 10, 12, 15, 20, 25].map(pto);
+
+/**
+ * Minutes people ask the decimal hours of, "what is 15 minutes in decimal hours": the minutes to
+ * decimal hours converter's. Every figure of its page is the engine's.
+ */
+export interface Minutes {
+  readonly kind: 'minutes';
+  readonly minutes: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const minutes = (count: number): Minutes => ({
+  kind: 'minutes',
+  minutes: count,
+  slug: {
+    en: `what-is-${String(count)}-minutes-in-decimal-hours`,
+    es: `cuanto-son-${String(count)}-minutos-en-horas-decimales`,
+  },
+});
+
+/** In ascending order: the converter lists them, and a page links its nearest, so. */
+export const MINUTES: readonly Minutes[] = [10, 15, 20, 30, 40, 45, 50].map(minutes);
+
+/** A long-tail page's job, of any family. */
+export type LongTailJob = Job | Shift | Pto | Minutes;
+
+/** Every long-tail job: the two page templates build one page per language from each. */
+export const LONG_TAIL_JOBS: readonly LongTailJob[] = [...JOBS, ...SHIFTS, ...PTOS, ...MINUTES];
+
+export const pathOf = (job: LongTailJob, lang: Lang): string =>
   lang === 'en' ? `/pay/${job.slug.en}` : `/es/pago/${job.slug.es}`;
 
-export const LONG_TAIL_ROUTES: readonly Route[] = [...JOBS, ...SHIFTS].map((job) => ({
+export const LONG_TAIL_ROUTES: readonly Route[] = LONG_TAIL_JOBS.map((job) => ({
   id: `pay-${job.slug.en}`,
   kind: 'article',
   en: pathOf(job, 'en'),
