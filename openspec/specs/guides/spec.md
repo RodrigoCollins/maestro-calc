@@ -79,6 +79,15 @@ A guide MUST be a route under `/guides/<slug>` and `/es/guias/<slug>`, a `pages`
 - AND every figure of its worked examples is one the concrete calculator shows for the same link, pinned in `apps/web/src/contract/guide-figures.contract.test.ts`, in both languages
 - AND it links the cubic yards guide, the bags or truck guide and the concrete job pages it names
 
+#### Scenario: [GU19] The paint coverage guide ends in the paint calculator
+- GIVEN `/guides/how-much-does-a-gallon-of-paint-cover`
+- THEN its last box links `/paint-calculator` with the text of the paint calculator's heading under "Work it out for your job"
+- AND `/painting` lists it after the paint quote guide
+- AND `/paint-calculator` links it second in its guide box
+- AND its coverage of 350 to 400 square feet per gallon cites the manufacturer's data sheet the paint calculator uses
+- AND every figure of its worked examples is one the paint calculator shows for the same link, pinned in `apps/web/src/contract/guide-figures.contract.test.ts`, in both languages
+- AND it links the paint quote guide, the drywall estimate guide and the paint job pages it names
+
 ### Requirement: Calculator pages link their guides
 
 A calculator page that a guide ends in MUST hold, after its copy, a box with `site.guide.links` and one link per such guide in the same language, whose text is the guide's heading, in `GUIDES` order. A calculator page that no guide ends in MUST NOT hold the box. `check:site` MUST report a guide page without its end link and a calculator page without the link back.

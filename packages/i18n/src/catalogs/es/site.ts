@@ -225,6 +225,9 @@ export const esSite = {
   'page.guide-concrete-bag-coverage.title': '¿Cuánto cubre una bolsa de concreto? | Maestro Calc',
   'page.guide-concrete-bag-coverage.description':
     'Pies cuadrados por bolsa de mezcla para concreto de 40, 60 y 80 lb con 4 y 6 in de espesor, y las bolsas para una losa de 10x10 con el extra.',
+  'page.guide-paint-coverage.title': '¿Cuánto cubre un galón de pintura? | Maestro Calc',
+  'page.guide-paint-coverage.description':
+    'Un galón de pintura látex de interior cubre de 350 a 400 pies cuadrados por mano: el rendimiento según las manos y las latas para un cuarto de 12x12.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

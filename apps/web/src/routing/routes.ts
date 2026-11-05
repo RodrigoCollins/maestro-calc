@@ -88,6 +88,10 @@ export const ROUTES = {
     en: '/guides/how-much-does-a-bag-of-concrete-cover',
     es: '/es/guias/cuanto-cubre-una-bolsa-de-concreto',
   },
+  'guide-paint-coverage': {
+    en: '/guides/how-much-does-a-gallon-of-paint-cover',
+    es: '/es/guias/cuanto-cubre-un-galon-de-pintura',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },
