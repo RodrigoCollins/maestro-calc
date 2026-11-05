@@ -14,3 +14,9 @@ export const UNPAID_WAGES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/unpaid-overtime-and-wages',
   es: '/es/guias/si-no-te-pagan-las-horas-extra',
 };
+
+/** The paid time off guide: how PTO accrues and what federal and state law say about it. */
+export const PTO_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/paid-time-off-pto',
+  es: '/es/guias/vacaciones-pagadas',
+};
