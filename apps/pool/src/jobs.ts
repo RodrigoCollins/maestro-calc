@@ -21,7 +21,7 @@ import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
-import { SHOCK_GUIDE } from './guide.ts';
+import { PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 type Raw = Readonly<Record<string, string>>;
@@ -768,6 +768,7 @@ const phPage = (gallons: number): JobPage => {
       href: linkTo(poolPh, PH.path, main.raw),
       label: 'Work it out for your test',
     },
+    guide: { href: PH_GUIDE.path, label: PH_GUIDE.card.title },
     method: `${PH.method} ${PH.note}`,
     card: { title: `Muriatic acid for ${size} gallons`, summary: `${ounces} fl oz for ${drops}.` },
     gallons,
