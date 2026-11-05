@@ -2,6 +2,7 @@ import {
   encode,
   gal,
   isQuantityOf,
+  lb,
   liter,
   Rational,
   type Calculator,
@@ -20,6 +21,7 @@ import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
+import { SHOCK_GUIDE } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 type Raw = Readonly<Record<string, string>>;
@@ -42,6 +44,8 @@ export interface JobPage {
   readonly head: readonly string[];
   readonly rows: readonly JobRow[];
   readonly calculator: { readonly path: string; readonly href: string; readonly label: string };
+  /** The guide whose dose the page works out, linked from the page and linking it back. */
+  readonly guide?: { readonly href: string; readonly label: string };
   readonly method: string;
   readonly card: { readonly title: string; readonly summary: string };
   /** The gallons the page is about (the large figure of a volume page): the order of its neighbors. */
@@ -116,6 +120,21 @@ const PH_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const PH_DROPS = [1, 2, 3] as const;
 const PH_MAIN = 1;
 const MURIATIC = 'muriatic-31-45';
+
+/**
+ * The shock jobs: 5,000 to 40,000 gallons, from 0 ppm to the shock level on the labels the shock
+ * guide reads: 65% cal-hypo to 5 and to 10 ppm (its 10 to 20 oz per 10,000 gallons) and 56%
+ * dichlor to 8.7 ppm (its 2 oz per 1,000 gallons). Cal-hypo to 10 ppm is the large figure.
+ */
+const SHOCK_GALLONS = [
+  5000, 10_000, 12_000, 15_000, 18_000, 20_000, 25_000, 30_000, 35_000, 40_000,
+] as const;
+const SHOCK_DOSES = [
+  { product: 'cal-hypo-65', target: '5', label: 'Cal-hypo 65%, 0 to 5 ppm' },
+  { product: 'cal-hypo-65', target: '10', label: 'Cal-hypo 65%, 0 to 10 ppm' },
+  { product: 'dichlor-56', target: '8.7', label: 'Dichlor 56%, 0 to 8.7 ppm' },
+] as const;
+const SHOCK_MAIN = 1;
 
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
@@ -513,6 +532,46 @@ const chlorinePage = (gallons: number): JobPage => {
   };
 };
 
+const shockPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = SHOCK_DOSES.map(({ product, target, label }) => {
+    const raw = { gallons: String(gallons), current: '0', target, product };
+    const { values } = outputsOf(poolChlorine, raw);
+    const dry = values.get('dry');
+    if (!isQuantityOf(dry, 'mass')) throw new Error('dry must be a mass');
+    return { raw, cells: [label, outputText('dry', dry), amountText(valueIn(dry, lb), 2)] };
+  });
+  const main = rows[SHOCK_MAIN];
+  if (main === undefined) throw new Error('a shock job needs its 10 ppm row');
+  const [, ounces = '', pounds = ''] = main.cells;
+  return {
+    path: `/how-much-shock-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Shock for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The ounces of 65% cal-hypo or 56% dichlor that shock a ${size} gallon pool to the level on the label, from 0 ppm free chlorine.`,
+    h1: `How much shock for a ${size} gallon pool`,
+    lead: `A 65% cal-hypo label shocks to 5 to 10 ppm available chlorine. From 0 ppm, reaching 10 ppm in a ${size} gallon pool takes ${ounces} oz of cal-hypo; 5 ppm and the 8.7 ppm of a 56% dichlor label are in the table, and the calculator starts from your own reading.`,
+    figure: {
+      value: ounces,
+      unit: 'OZ BY WEIGHT',
+      caption: `${pounds} lb of 65% cal-hypo, from 0 to 10 ppm.`,
+    },
+    head: ['Shock', 'Ounces by weight', 'Pounds'],
+    rows,
+    calculator: {
+      path: CHLORINE.path,
+      href: linkTo(poolChlorine, CHLORINE.path, main.raw),
+      label: 'Work it out for your reading and product',
+    },
+    guide: { href: SHOCK_GUIDE.path, label: SHOCK_GUIDE.card.title },
+    method: `${CHLORINE.method} Swim again only when free chlorine is back down: the cal-hypo label prohibits reentry above 4 ppm, the dichlor label above 3 ppm. ${CHLORINE.note}`,
+    card: {
+      title: `Shock for ${size} gallons`,
+      summary: `${ounces} oz of 65% cal-hypo, 0 to 10 ppm.`,
+    },
+    gallons,
+  };
+};
+
 /** The rows of a dose in pounds and ounces (baking soda, stabilizer): one per reading, up to `target`. */
 const massRows = (
   engine: typeof poolAlkalinity | typeof poolStabilizer,
@@ -820,16 +879,21 @@ export const JOB_PAGES: readonly JobPage[] = [
   ...FILL_GALLONS.map(fillPage),
   ...PH_GALLONS.map(phPage),
   ...CALCIUM_GALLONS.map(calciumPage),
+  ...SHOCK_GALLONS.map(shockPage),
 ];
 
 /** How many job pages of its calculator a job page links: its nearest sizes, so pages stay distinct. */
 export const NEIGHBORS = 4;
 
-/** The `NEIGHBORS` job pages of the same calculator nearest to `page` in gallons, smallest first. */
+/** A job page's family: the pages of the same calculator that work out the same guide's dose, or none. */
+const sameFamily = (a: JobPage, b: JobPage): boolean =>
+  a.calculator.path === b.calculator.path && a.guide?.href === b.guide?.href;
+
+/** The `NEIGHBORS` job pages of the same family nearest to `page` in gallons, smallest first. */
 export const neighborsOf = (
   page: JobPage,
 ): readonly { readonly href: string; readonly label: string }[] => {
-  const family = JOB_PAGES.filter(({ calculator }) => calculator.path === page.calculator.path)
+  const family = JOB_PAGES.filter((member) => sameFamily(member, page))
     .slice()
     .sort((a, b) => a.gallons - b.gallons);
   const index = family.indexOf(page);
@@ -845,6 +909,15 @@ export const jobLinksOf = (
   calculatorPath: string,
 ): readonly { readonly href: string; readonly label: string }[] =>
   JOB_PAGES.filter(({ calculator }) => calculator.path === calculatorPath).map(({ path, h1 }) => ({
+    href: path,
+    label: h1,
+  }));
+
+/** The job pages that work out the dose of the guide at `guidePath`, as links from it. */
+export const guideJobLinksOf = (
+  guidePath: string,
+): readonly { readonly href: string; readonly label: string }[] =>
+  JOB_PAGES.filter(({ guide }) => guide?.href === guidePath).map(({ path, h1 }) => ({
     href: path,
     label: h1,
   }));

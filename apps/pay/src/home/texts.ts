@@ -91,6 +91,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         href: '/shift-differential-calculator',
       },
       {
+        id: 'tipped-wage',
+        title: 'Tipped wage',
+        summary: 'Your pay per hour with tips, and whether your employer owes you up to $7.25.',
+        href: '/tipped-wage-calculator',
+      },
+      {
         id: 'no-tax-on-tips',
         title: 'No tax on tips',
         summary: 'How much the new tips deduction saves you.',
@@ -169,6 +175,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         title: 'Diferencial de turno',
         summary: 'El pago extra de noche o de fin de semana, con las horas extra bien contadas.',
         href: '/es/calculadora-de-diferencial-de-turno',
+      },
+      {
+        id: 'tipped-wage',
+        title: 'Propinas por hora',
+        summary: 'Tu pago por hora con propinas, y si tu empleador te debe completar $7.25.',
+        href: '/es/calculadora-de-propinas-por-hora',
       },
       {
         id: 'no-tax-on-tips',

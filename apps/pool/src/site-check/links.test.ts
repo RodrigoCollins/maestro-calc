@@ -84,6 +84,35 @@ describe('linkProblems', () => {
     expect(linkProblems(site, RULES)).toContain('/job-1: must link its sibling /job-2');
   });
 
+  describe('a job page a guide sizes', () => {
+    const rules: LinkRules = {
+      ...RULES,
+      jobs: [
+        { path: '/job-1', calculator: '/calc', neighbors: ['/job-2'], guide: '/guide' },
+        { path: '/job-2', calculator: '/calc', neighbors: ['/job-1'] },
+      ],
+    };
+    const linked = new Map([
+      ...SITE,
+      ['/job-1', page(`${a('/calc')}${a('/job-2')}${a('/guide')}`, FOOTER)],
+      ['/guide', page(`${a('/calc')}${a('/job-1')}`, FOOTER)],
+    ]);
+
+    it('passes when the job page and its guide link each other', () => {
+      expect(linkProblems(linked, rules)).toEqual([]);
+    });
+
+    it('names a job page that does not link its guide', () => {
+      const site = new Map([...linked, ['/job-1', page(`${a('/calc')}${a('/job-2')}`, FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual(['/job-1: must link its guide /guide']);
+    });
+
+    it('names a guide that does not link its job page', () => {
+      const site = new Map([...linked, ['/guide', page(a('/calc'), FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual(['/guide: must link its job page /job-1']);
+    });
+  });
+
   it('names a guide the home Guides list leaves out', () => {
     const site = without(
       '/',

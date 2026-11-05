@@ -37,7 +37,7 @@ export const HUBS = {
     calculators: ['rectangle-area', 'feet-inches'],
     guides: ['guide-square-footage', 'guide-tape-measure-fractions'],
   },
-  'hub-paint': { calculators: ['paint'], guides: ['guide-paint-quote'] },
+  'hub-paint': { calculators: ['paint'], guides: ['guide-paint-quote', 'guide-paint-coverage'] },
 } as const satisfies Record<string, Hub>;
 
 /** The hub a page id is, or `undefined` for any other page. */

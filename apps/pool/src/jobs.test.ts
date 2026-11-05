@@ -4,7 +4,9 @@ import {
   decode,
   gal,
   isQuantityOf,
+  lb,
   liter,
+  valueIn,
   type Calculator,
   type InputDescriptor,
   type OutputDescriptor,
@@ -30,8 +32,16 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { outputText, volumeText } from './format.ts';
-import { JOB_PAGES, jobLinksOf, NEIGHBORS, neighborsOf, type JobPage } from './jobs.ts';
+import { amountText, outputText, volumeText } from './format.ts';
+import { GUIDES, SHOCK_GUIDE } from './guide.ts';
+import {
+  guideJobLinksOf,
+  JOB_PAGES,
+  jobLinksOf,
+  NEIGHBORS,
+  neighborsOf,
+  type JobPage,
+} from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -78,6 +88,11 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
     return [outputText('time', value('time')), outputText('minutes', value('minutes'))];
   if (path === SALT.path)
     return [outputText('pounds', value('pounds')), String(ran.value.shopping[0]?.qty)];
+  if (path === CHLORINE.path && raw['product']?.startsWith('liquid') !== true) {
+    const dry = value('dry');
+    if (!isQuantityOf(dry, 'mass')) throw new Error('dry must be a mass');
+    return [outputText('dry', dry), amountText(valueIn(dry, lb), 2)];
+  }
   if (path === CHLORINE.path || path === PH.path) {
     const liquid = value('liquid');
     if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
@@ -100,6 +115,11 @@ const expectOpensOn = <const I extends readonly InputDescriptor[]>(
   expect(decoded.issues).toEqual([]);
   expect(decoded.state).toEqual(validated.value);
 };
+
+const SHOCK_SIZES = [5000, 10_000, 12_000, 15_000, 18_000, 20_000, 25_000, 30_000, 35_000, 40_000];
+const SHOCK_PATHS = SHOCK_SIZES.map(
+  (gallons) => `/how-much-shock-for-a-${String(gallons)}-gallon-pool`,
+);
 
 const byPath = (path: string): JobPage => {
   const page = JOB_PAGES.find((job) => job.path === path);
@@ -432,12 +452,16 @@ describe('the long-tail job pages', () => {
   it('links each page to its nearest neighbors of the same calculator, by pool size', () => {
     for (const page of JOB_PAGES) {
       const links = neighborsOf(page);
-      const family = JOB_PAGES.filter(({ calculator }) => calculator.path === page.calculator.path);
+      const family = JOB_PAGES.filter(
+        ({ calculator, guide }) =>
+          calculator.path === page.calculator.path && guide?.href === page.guide?.href,
+      );
       expect(links.length).toBe(Math.min(NEIGHBORS, family.length - 1));
       for (const { href, label } of links) {
         expect(href).not.toBe(page.path);
         const linked = byPath(href);
         expect(linked.calculator.path).toBe(page.calculator.path);
+        expect(linked.guide?.href).toBe(page.guide?.href);
         expect(label).toBe(linked.h1);
       }
     }
@@ -517,6 +541,7 @@ describe('the long-tail job pages', () => {
       '/how-much-chlorine-for-a-20000-gallon-pool',
       '/how-much-chlorine-for-a-25000-gallon-pool',
       '/how-much-chlorine-for-a-30000-gallon-pool',
+      ...SHOCK_PATHS,
     ]);
     expect(jobLinksOf(PH.path).map(({ href }) => href)).toEqual([
       '/how-much-muriatic-acid-for-a-10000-gallon-pool',
@@ -544,5 +569,89 @@ describe('the long-tail job pages', () => {
       '/how-much-calcium-chloride-for-a-30000-gallon-pool',
     ]);
     expect(jobLinksOf(PUMP.path)).toEqual([]);
+  });
+});
+
+describe('the shock job pages', () => {
+  const shock = JOB_PAGES.filter(({ path }) => path.startsWith('/how-much-shock-'));
+
+  it('works out 5,000 to 40,000 gallons, each linked from the shock guide and linking it back', () => {
+    expect(shock.map(({ path }) => path)).toEqual(SHOCK_PATHS);
+    expect(shock.map(({ gallons }) => gallons)).toEqual(SHOCK_SIZES);
+    for (const page of shock) {
+      expect(page.calculator.path).toBe(CHLORINE.path);
+      expect(page.guide).toEqual({ href: SHOCK_GUIDE.path, label: SHOCK_GUIDE.card.title });
+    }
+    expect(guideJobLinksOf(SHOCK_GUIDE.path)).toEqual(
+      shock.map(({ path, h1 }) => ({ href: path, label: h1 })),
+    );
+    for (const { path } of GUIDES.filter(({ path }) => path !== SHOCK_GUIDE.path))
+      expect(guideJobLinksOf(path)).toEqual([]);
+  });
+
+  // the shock guide's levels: 65% cal-hypo to 5 and 10 ppm, 56% dichlor to 8.7 ppm, from 0 ppm
+  it('doses the labels the shock guide reads, to the levels they give, from 0 ppm', () => {
+    for (const { rows } of shock)
+      expect(
+        rows.map(({ raw, cells }) => [raw['product'], raw['current'], raw['target'], cells[0]]),
+      ).toEqual([
+        ['cal-hypo-65', '0', '5', 'Cal-hypo 65%, 0 to 5 ppm'],
+        ['cal-hypo-65', '0', '10', 'Cal-hypo 65%, 0 to 10 ppm'],
+        ['dichlor-56', '0', '8.7', 'Dichlor 56%, 0 to 8.7 ppm'],
+      ]);
+  });
+
+  // worked by hand: 20,000 gal × 3.785411784 L × 10 ppm ÷ 1,000 = 757.08 g of chlorine, ÷ 0.65 =
+  // 1,164.74 g of cal-hypo, ÷ 28.3495 g = 41.09 oz (2.57 lb); 5 ppm is half, 20.54 oz (1.28 lb);
+  // 8.7 ppm of 56% dichlor is 658.66 g ÷ 0.56 = 1,176.18 g = 41.49 oz (2.59 lb)
+  it('works out 20,000 gallons as by hand', () => {
+    const page = byPath('/how-much-shock-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '41.1', unit: 'OZ BY WEIGHT' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['Cal-hypo 65%, 0 to 5 ppm', '20.5', '1.28'],
+      ['Cal-hypo 65%, 0 to 10 ppm', '41.1', '2.57'],
+      ['Dichlor 56%, 0 to 8.7 ppm', '41.5', '2.59'],
+    ]);
+    // 10,000 gal: the guide's own 10.3 and 20.5 oz of cal-hypo, the label's 10 to 20 oz
+    expect(
+      byPath('/how-much-shock-for-a-10000-gallon-pool').rows.map(({ cells }) => cells[1]),
+    ).toEqual(['10.3', '20.5', '20.7']);
+  });
+
+  // a search result answers the question, and names its gallons in title and description
+  it('names its gallons in its title and description, and the label levels, never a rule of thumb', () => {
+    const page = byPath('/how-much-shock-for-a-15000-gallon-pool');
+    expect(page.title).toBe('How Much Shock for a 15,000 Gallon Pool? | Pool Figures');
+    expect(page.h1).toBe('How much shock for a 15,000 gallon pool');
+    expect(page.description).toContain('15,000 gallon pool');
+    for (const { title, description, lead, method, figure } of shock) {
+      expect(title.length).toBeLessThanOrEqual(65);
+      expect(description.length).toBeLessThanOrEqual(160);
+      expect(`${description} ${lead} ${method} ${figure.caption}`).not.toMatch(
+        /breakpoint|combined chlorine|10 ?(x|×|times)/i,
+      );
+      expect(lead).toContain('5 to 10 ppm');
+      expect(method).toContain('above 4 ppm');
+      expect(method).toContain('above 3 ppm');
+    }
+  });
+
+  it('links its nearest shock sizes, never the chlorine pages of the same calculator', () => {
+    expect(
+      neighborsOf(byPath('/how-much-shock-for-a-20000-gallon-pool')).map(({ href }) => href),
+    ).toEqual([
+      '/how-much-shock-for-a-15000-gallon-pool',
+      '/how-much-shock-for-a-18000-gallon-pool',
+      '/how-much-shock-for-a-25000-gallon-pool',
+      '/how-much-shock-for-a-30000-gallon-pool',
+    ]);
+    expect(
+      neighborsOf(byPath('/how-much-chlorine-for-a-20000-gallon-pool')).map(({ href }) => href),
+    ).toEqual([
+      '/how-much-chlorine-for-a-10000-gallon-pool',
+      '/how-much-chlorine-for-a-15000-gallon-pool',
+      '/how-much-chlorine-for-a-25000-gallon-pool',
+      '/how-much-chlorine-for-a-30000-gallon-pool',
+    ]);
   });
 });

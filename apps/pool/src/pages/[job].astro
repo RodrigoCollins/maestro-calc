@@ -60,6 +60,11 @@ const here = trail.at(-1);
     <p>
       <a href={page.calculator.href}>{page.calculator.label}</a>
     </p>
+    {page.guide !== undefined && (
+      <p>
+        <a href={page.guide.href}>{page.guide.label}</a>
+      </p>
+    )}
     <p class="pool-job-method">{page.method}</p>
     <JobLinks page={page} />
   </main>

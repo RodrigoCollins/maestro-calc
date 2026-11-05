@@ -5,6 +5,7 @@ import { overtime } from '@maestro-calc/pay-core/overtime';
 import { ptoAccrual } from '@maestro-calc/pay-core/pto-accrual';
 import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
+import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
 import { decimalHoursText, hoursText, moneyText, rateText } from '../format.ts';
 import { outputOf } from '../time-card/receipt.ts';
 
@@ -226,6 +227,40 @@ export const shiftFiguresOf = (example: ShiftExample): ShiftFigures => {
     regularRate: money('regularRate'),
     pay: money('pay'),
   };
+};
+
+/** A worked example of the tipped wage calculator: its raw fields over the defaults. */
+export interface TippedExample {
+  readonly id: 'good-week' | 'slow-week' | 'overtime' | 'slow-overtime';
+  readonly inputs: Readonly<Record<string, string>>;
+}
+
+export const TIPPED_EXAMPLES: readonly TippedExample[] = [
+  { id: 'good-week', inputs: {} },
+  { id: 'slow-week', inputs: { tips: '150' } },
+  { id: 'overtime', inputs: { hours: '44', tips: '300' } },
+  { id: 'slow-overtime', inputs: { hours: '44', tips: '100' } },
+];
+
+/** The figures the page shows for a tipped wage example, written as the calculator does. */
+export interface TippedFigures {
+  readonly perHour: string;
+  readonly topUp: string;
+  readonly totalPay: string;
+}
+
+/** The figures of a tipped wage example; a failing example is a build error. */
+export const tippedFiguresOf = (example: TippedExample): TippedFigures => {
+  const ran = tippedWage.run(example.inputs);
+  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  const money = (key: string): string => {
+    const value = ran.value.outputs.find((output) => output.key === key)?.value;
+    if (typeof value !== 'object' || !('currency' in value)) {
+      throw new Error(`no money ${key} in ${example.id}`);
+    }
+    return moneyText(value);
+  };
+  return { perHour: money('perHour'), topUp: money('topUp'), totalPay: money('totalPay') };
 };
 
 /** A worked example of the overtime calculator: the hours of each day, every other day off. */

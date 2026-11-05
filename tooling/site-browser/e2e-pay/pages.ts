@@ -32,6 +32,8 @@ export const PAGES = [
   { path: '/es/calculadora-de-vacaciones-pagadas', lang: 'es' },
   { path: '/shift-differential-calculator', lang: 'en' },
   { path: '/es/calculadora-de-diferencial-de-turno', lang: 'es' },
+  { path: '/tipped-wage-calculator', lang: 'en' },
+  { path: '/es/calculadora-de-propinas-por-hora', lang: 'es' },
   { path: '/no-tax-on-overtime-calculator', lang: 'en' },
   { path: '/no-tax-on-tips-calculator', lang: 'en' },
   { path: '/es/calculadora-horas-extra-sin-impuestos', lang: 'es' },
@@ -78,6 +80,10 @@ export const SHIFT = PAGES.filter(({ path }) =>
   ['/shift-differential-calculator', '/es/calculadora-de-diferencial-de-turno'].includes(path),
 );
 
+export const TIPPED = PAGES.filter(({ path }) =>
+  ['/tipped-wage-calculator', '/es/calculadora-de-propinas-por-hora'].includes(path),
+);
+
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
 const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',
@@ -96,6 +102,8 @@ const CALCULATOR_PATHS: readonly string[] = [
   '/es/calculadora-de-vacaciones-pagadas',
   '/shift-differential-calculator',
   '/es/calculadora-de-diferencial-de-turno',
+  '/tipped-wage-calculator',
+  '/es/calculadora-de-propinas-por-hora',
   '/no-tax-on-overtime-calculator',
   '/no-tax-on-tips-calculator',
   '/es/calculadora-horas-extra-sin-impuestos',

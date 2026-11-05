@@ -10,9 +10,9 @@ A hub MUST be a route `/<slug>` and `/es/<slug>`, a `pages` entry in each langua
 - GIVEN `/es/concreto`
 - THEN it holds a card linking `/es/calculadora-de-concreto` and links to `/es/guias/concreto-en-bolsas-o-camion` and `/es/guias/como-cotizar-un-trabajo-de-concreto`
 
-#### Scenario: [HB4] The paint hub lists its calculator and its guide
+#### Scenario: [HB4] The paint hub lists its calculator and its guides
 - GIVEN `/painting`
-- THEN it holds a card linking `/paint-calculator` and a link to `/guides/how-to-quote-a-painting-job`
+- THEN it holds a card linking `/paint-calculator` and links to `/guides/how-to-quote-a-painting-job` and `/guides/how-much-does-a-gallon-of-paint-cover`
 - AND `/paint-calculator` holds "More tools:" and a link to `/painting`
 
 ### Requirement: Calculator pages link their hub

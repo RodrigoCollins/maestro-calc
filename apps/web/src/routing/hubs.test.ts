@@ -41,8 +41,11 @@ describe('trade hubs (hubs › Hub pages)', () => {
         'guide-concrete-bag-coverage',
       ],
     });
-    // spec: hubs › [HB4] the paint hub lists its calculator and its guide
-    expect(hubOf('hub-paint')).toEqual({ calculators: ['paint'], guides: ['guide-paint-quote'] });
+    // spec: hubs › [HB4] the paint hub lists its calculator and its guides
+    expect(hubOf('hub-paint')).toEqual({
+      calculators: ['paint'],
+      guides: ['guide-paint-quote', 'guide-paint-coverage'],
+    });
     expect(hubOf('hub-landscaping')?.guides).toEqual([
       'guide-gravel-driveway',
       'guide-raised-bed-soil',
