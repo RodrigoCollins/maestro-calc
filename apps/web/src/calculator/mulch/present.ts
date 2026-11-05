@@ -11,7 +11,7 @@ export const inches = (length: Quantity<'length'>): number => valueIn(length, in
 const SIZES: Readonly<Record<string, string>> = { '1-5': '1.5', '2': '2', '3': '3' };
 
 /** The size text of a bag option. */
-const sizeOf = (bag: string): string => required(SIZES[bag], `bag ${bag}`);
+export const sizeOf = (bag: string): string => required(SIZES[bag], `bag ${bag}`);
 
 /** The bag line's fills: the size of the pressed bag (it follows the choice even while invalid). */
 export const bagFills = (moment: Moment<typeof mulch>): Readonly<Record<string, string>> => ({

@@ -36,6 +36,10 @@ export const enSite = {
     'Each rafter length runs along the slope over the rafter run, with no overhang and nothing taken off for the ridge board. Each run opens the calculator with its measurements filled in, where you can add the overhang.',
   'site.job.note.rectangle-area':
     'The area of a rectangle is its length times its width. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
+  'site.job.note.mulch':
+    'A cubic yard is exactly 27 cubic feet, and a bag holds the volume printed on it. The counts add no extra and round up to whole bags: 27 ÷ 2 = 13.5, so 14 bags of 2 cu ft. Each size opens the mulch calculator with a 9 by 9 ft bed, 4 in deep: one cubic yard.',
+  'site.job.cubicFeet': '{value} cubic feet',
+  'site.job.bagsFor': 'Bags for {value} yd³',
   'site.job.area': 'Area',
   'site.pitchDegrees.heading': 'Roof pitch to degrees',
   'site.pitchDegrees.note':
@@ -231,6 +235,25 @@ export const enSite = {
   'page.concrete-slab-24x24.description':
     'How many bags of concrete a 24 x 24 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-24x24.heading': 'How many bags of concrete for a 24x24 slab?',
+  'page.concrete-slab-500-sq-ft.title': 'Concrete for a 500 Sq Ft Slab: 6.79 Yards | Maestro Calc',
+  'page.concrete-slab-500-sq-ft.description':
+    'A 500 sq ft slab 4 in thick is 6.17 cubic yards of concrete, 6.79 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
+  'page.concrete-slab-500-sq-ft.heading': 'How much concrete for a 500 sq ft slab?',
+  'page.concrete-slab-500-sq-ft.intro':
+    'A 500 sq ft slab is worked out here as 25 by 20 ft. Any length and width that multiply to 500 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
+  'page.concrete-slab-650-sq-ft.title': 'Concrete for a 650 Sq Ft Slab: 8.83 Yards | Maestro Calc',
+  'page.concrete-slab-650-sq-ft.description':
+    'A 650 sq ft slab 4 in thick is 8.02 cubic yards of concrete, 8.83 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
+  'page.concrete-slab-650-sq-ft.heading': 'How much concrete for a 650 sq ft slab?',
+  'page.concrete-slab-650-sq-ft.intro':
+    'A 650 sq ft slab is worked out here as 26 by 25 ft. Any length and width that multiply to 650 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
+  'page.concrete-slab-1000-sq-ft.title':
+    'Concrete for a 1000 Sq Ft Slab: 13.58 Yards | Maestro Calc',
+  'page.concrete-slab-1000-sq-ft.description':
+    'A 1000 sq ft slab 4 in thick is 12.35 cubic yards of concrete, 13.58 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
+  'page.concrete-slab-1000-sq-ft.heading': 'How much concrete for a 1000 sq ft slab?',
+  'page.concrete-slab-1000-sq-ft.intro':
+    'A 1000 sq ft slab is worked out here as 40 by 25 ft. Any length and width that multiply to 1000 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
   'page.concrete-pad-4x4.title': 'Bags of Concrete for a 4x4 Pad | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',
@@ -361,6 +384,12 @@ export const enSite = {
   'page.gravel.title': 'Gravel Calculator: Tons and Cubic Yards | Maestro Calc',
   'page.gravel.description':
     'Find how many tons of gravel to order for a driveway, path or base, compacted or loose, with the cubic yards and the cost. Free and instant.',
+  'page.mulch-bags-per-yard.title': 'How Many Bags of Mulch in a Cubic Yard? | Maestro Calc',
+  'page.mulch-bags-per-yard.description':
+    'A cubic yard of mulch is 27 cubic feet: 18 bags of 1.5 cu ft, 14 bags of 2 cu ft or 9 bags of 3 cu ft, and the bags for 2 or 3 cubic yards.',
+  'page.mulch-bags-per-yard.heading': 'How many bags of mulch in a cubic yard?',
+  'page.mulch-bags-per-yard.intro':
+    'Mulch comes in bags of 1.5, 2 or 3 cubic feet, and in bulk by the cubic yard. Divide 27 by the bag size and round up: a cubic yard takes 18 bags of 1.5 cu ft, 14 of 2 cu ft or 9 of 3 cu ft.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',

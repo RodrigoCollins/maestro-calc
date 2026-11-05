@@ -39,6 +39,10 @@ export const esSite = {
     'Cada largo de cabio se mide sobre la pendiente a lo largo del recorrido, sin alero y sin descontar la cumbrera. Cada recorrido abre la calculadora con sus valores ya cargados, donde puedes sumar el alero.',
   'site.job.note.rectangle-area':
     'El área de un rectángulo es su largo por su ancho. Una yarda cuadrada son 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus valores ya cargados.',
+  'site.job.note.mulch':
+    'Una yarda cúbica es exactamente 27 pies cúbicos, y una bolsa contiene el volumen impreso en ella. Las cantidades no suman extra y se redondean hacia arriba a bolsas enteras: 27 ÷ 2 = 13.5, así que 14 bolsas de 2 cu ft. Cada tamaño abre la calculadora de mulch con un área de 9 por 9 ft y 4 in de profundidad: una yarda cúbica.',
+  'site.job.cubicFeet': '{value} pies cúbicos',
+  'site.job.bagsFor': 'Bolsas para {value} yd³',
   'site.job.area': 'Área',
   'site.pitchDegrees.heading': 'Pendiente de techo en grados',
   'site.pitchDegrees.note':
@@ -239,6 +243,26 @@ export const esSite = {
   'page.concrete-slab-24x24.description':
     'Cuántas bolsas de concreto lleva una losa de 24 x 24 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-24x24.heading': '¿Cuántas bolsas de concreto para una losa de 24x24?',
+  'page.concrete-slab-500-sq-ft.title': 'Concreto para losa de 500 ft²: 6.79 yardas | Maestro Calc',
+  'page.concrete-slab-500-sq-ft.description':
+    'Una losa de 500 pies cuadrados y 4 in de espesor lleva 6.17 yardas cúbicas de concreto, 6.79 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
+  'page.concrete-slab-500-sq-ft.heading': '¿Cuánto concreto lleva una losa de 500 pies cuadrados?',
+  'page.concrete-slab-500-sq-ft.intro':
+    'Aquí la losa de 500 pies cuadrados se calcula como 25 por 20 ft. Cualquier largo y ancho que multiplicados den 500 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
+  'page.concrete-slab-650-sq-ft.title': 'Concreto para losa de 650 ft²: 8.83 yardas | Maestro Calc',
+  'page.concrete-slab-650-sq-ft.description':
+    'Una losa de 650 pies cuadrados y 4 in de espesor lleva 8.02 yardas cúbicas de concreto, 8.83 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
+  'page.concrete-slab-650-sq-ft.heading': '¿Cuánto concreto lleva una losa de 650 pies cuadrados?',
+  'page.concrete-slab-650-sq-ft.intro':
+    'Aquí la losa de 650 pies cuadrados se calcula como 26 por 25 ft. Cualquier largo y ancho que multiplicados den 650 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
+  'page.concrete-slab-1000-sq-ft.title':
+    'Concreto para losa de 1000 ft²: 13.58 yardas | Maestro Calc',
+  'page.concrete-slab-1000-sq-ft.description':
+    'Una losa de 1000 pies cuadrados y 4 in de espesor lleva 12.35 yardas cúbicas de concreto, 13.58 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
+  'page.concrete-slab-1000-sq-ft.heading':
+    '¿Cuánto concreto lleva una losa de 1000 pies cuadrados?',
+  'page.concrete-slab-1000-sq-ft.intro':
+    'Aquí la losa de 1000 pies cuadrados se calcula como 40 por 25 ft. Cualquier largo y ancho que multiplicados den 1000 pies cuadrados llevan el mismo concreto con el mismo espesor, así que escribe tus medidas en la calculadora si son otras.',
   'page.concrete-pad-4x4.title': 'Bolsas de concreto para una base de 4x4 | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'Cuántas bolsas de concreto lleva una base de 4 x 4 ft (para un aire acondicionado o un generador) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
@@ -369,6 +393,12 @@ export const esSite = {
   'page.gravel.title': 'Calculadora de grava en toneladas y yardas | Maestro Calc',
   'page.gravel.description':
     'Calcula cuántas toneladas de grava pedir para una entrada, camino o base, compactada o suelta, con las yardas cúbicas y el costo. Gratis y al instante.',
+  'page.mulch-bags-per-yard.title': 'Bolsas de mulch en una yarda cúbica | Maestro Calc',
+  'page.mulch-bags-per-yard.description':
+    'Una yarda cúbica de mulch son 27 pies cúbicos: 18 bolsas de 1.5 cu ft, 14 bolsas de 2 cu ft o 9 bolsas de 3 cu ft, y las bolsas para 2 o 3 yardas cúbicas.',
+  'page.mulch-bags-per-yard.heading': '¿Cuántas bolsas de mulch hay en una yarda cúbica?',
+  'page.mulch-bags-per-yard.intro':
+    'El mulch se vende en bolsas de 1.5, 2 o 3 pies cúbicos, y a granel por yarda cúbica. Divide 27 entre el tamaño de la bolsa y redondea hacia arriba: una yarda cúbica lleva 18 bolsas de 1.5 cu ft, 14 de 2 cu ft o 9 de 3 cu ft.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',

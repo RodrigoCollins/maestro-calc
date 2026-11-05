@@ -3,8 +3,9 @@ import type { CalculatorPageId } from './templates.ts';
 
 /*
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
- * out at build time: concrete for a slab or a tube, roof pitch for a pitch in 12, square footage for
- * a common room or area. A job id is also
+ * out at build time: concrete for a slab (by its sides or by its area) or a tube, roof pitch for a
+ * pitch in 12, square footage for a common room or area, and the bags of mulch in a cubic yard. A
+ * job id is also
  * its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
@@ -15,7 +16,10 @@ export type JobCase = Readonly<Record<string, string>>;
 
 export interface Job {
   /** The calculator that works the figures out; the page links to it, prefilled with each case. */
-  readonly calculator: Extract<CalculatorPageId, 'concrete' | 'roof-pitch' | 'rectangle-area'>;
+  readonly calculator: Extract<
+    CalculatorPageId,
+    'concrete' | 'roof-pitch' | 'rectangle-area' | 'mulch'
+  >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
   /** The cases of the table, the one the page answers first; every case has the same keys. */
@@ -32,6 +36,28 @@ const tube = (diameter: number, depth: number): JobCase => ({
   shape: 'column',
   diameter: `${String(diameter)}in`,
   height: `${String(depth)}in`,
+});
+
+/**
+ * A slab of `area` square feet, as the calculator takes it: a rectangle of `length` by `width` feet
+ * whose product is the area, 4, 5 and 6 in thick. Any rectangle of that area takes the same concrete.
+ */
+const slabOfArea = (area: number, length: number, width: number) => {
+  if (length * width !== area)
+    throw new Error(`${String(length)} × ${String(width)} is not ${String(area)} sq ft`);
+  return [slab(length, width, 4), slab(length, width, 5), slab(length, width, 6)] as const;
+};
+
+/**
+ * One cubic yard of mulch in a bag of `bag` cubic feet (the select's option id): a bed of 9 by 9 ft,
+ * 4 in deep, is 27 cubic feet, and no extra is added, so the bag count is the yard's alone.
+ */
+const yardOfMulch = (bag: string): JobCase => ({
+  length: '9ft',
+  width: '9ft',
+  depth: '4in',
+  waste: '0',
+  bag,
 });
 
 /** The rafter runs (half the span) of a roof pitch table, in feet. */
@@ -89,6 +115,21 @@ export const JOBS = {
     calculator: 'concrete',
     updated: '2026-11-04',
     cases: [slab(24, 24, 4), slab(24, 24, 5), slab(24, 24, 6)],
+  },
+  'concrete-slab-500-sq-ft': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: slabOfArea(500, 25, 20),
+  },
+  'concrete-slab-650-sq-ft': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: slabOfArea(650, 26, 25),
+  },
+  'concrete-slab-1000-sq-ft': {
+    calculator: 'concrete',
+    updated: '2026-11-04',
+    cases: slabOfArea(1000, 40, 25),
   },
   'concrete-pad-4x4': {
     calculator: 'concrete',
@@ -173,6 +214,11 @@ export const JOBS = {
     calculator: 'rectangle-area',
     updated: '2026-11-04',
     cases: rectangle(20, 20),
+  },
+  'mulch-bags-per-yard': {
+    calculator: 'mulch',
+    updated: '2026-11-04',
+    cases: [yardOfMulch('1-5'), yardOfMulch('2'), yardOfMulch('3')],
   },
 } as const satisfies Record<string, Job>;
 

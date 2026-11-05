@@ -1,7 +1,10 @@
+import { yd3 } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
+import { volumeText } from '../calculator/present.ts';
+import { concrete } from '../lib/concrete.ts';
 import { siteText } from '../lib/site-text.ts';
 import { jobView } from '../lib/job-view.ts';
-import { jobsOf } from '../routing/jobs.ts';
+import { JOBS, jobsOf } from '../routing/jobs.ts';
 
 // Growth plan › lever 4: the title and the description of a page carry the words of the Search
 // Console queries that already show it (maestrocalc.com, 28 days to 2026-11-02), so the result
@@ -61,5 +64,38 @@ describe('titles from real queries (growth plan › lever 4)', () => {
       expect(siteText('es')(`page.${id}.description`)).toContain(`${feet} pies cuadrados`);
     }
     expect(siteText('en')('page.square-feet-7x12.title')).toContain('(12x7)');
+  });
+
+  it('states the cubic yards of each slab by area in its title and description', () => {
+    // query: "how much concrete for 650 sf slab", position 9.5
+    for (const id of jobsOf('concrete').filter((each) => each.endsWith('-sq-ft'))) {
+      const area = id.replace('concrete-slab-', '').replace('-sq-ft', '');
+      const state = concrete.validate(JOBS[id].cases[0]);
+      if (!state.ok) throw new Error(id);
+      // the volume before the 10% extra, which the description gives first
+      const net = volumeText(concrete.compute(state.value).outputs.netVolume, yd3);
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const yards = jobView(id, locale).rows[0].cells[0] ?? '';
+        expect(text(`page.${id}.title`), id).toContain(yards);
+        expect(text(`page.${id}.description`), id).toContain(`${net} `);
+        expect(text(`page.${id}.description`), id).toContain(`${yards} `);
+      }
+      expect(siteText('en')(`page.${id}.title`)).toContain(`${area} Sq Ft Slab`);
+      expect(siteText('es')(`page.${id}.title`)).toContain(`losa de ${area} ft²`);
+    }
+  });
+
+  it('answers the bags of mulch in a cubic yard in the title and the description', () => {
+    // queries: "how many bags of 1.5 cubic feet in a yard", "bag of mulch cubic feet"
+    for (const locale of ['en', 'es'] as const) {
+      const { facts } = jobView('mulch-bags-per-yard', locale);
+      const description = siteText(locale)('page.mulch-bags-per-yard.description');
+      for (const { value } of facts) expect(description).toContain(` ${value} `);
+      expect(description).toContain('27');
+    }
+    expect(siteText('en')('page.mulch-bags-per-yard.title')).toContain(
+      'Bags of Mulch in a Cubic Yard',
+    );
   });
 });

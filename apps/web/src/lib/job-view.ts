@@ -1,14 +1,20 @@
 import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
+import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
+import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
+import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esRectangleArea } from '@maestro-calc/i18n/catalogs/es/rectangle-area';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
+import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
+import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
 import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -46,7 +52,7 @@ interface JobTable {
 
 export interface JobView extends JobTable {
   readonly heading: string;
-  /** The sentence that tells one square footage job from the next: `page.<id>.intro`. */
+  /** The sentence that opens a square footage, slab-by-area or mulch job: `page.<id>.intro`. */
   readonly intro: string | undefined;
   /** What the figures assume, from the `site.job.note.<calculator>` key. */
   readonly note: string;
@@ -63,6 +69,7 @@ export const METHODOLOGY_ANCHOR = {
   concrete: { en: 'concrete', es: 'concreto' },
   'roof-pitch': { en: 'roof-pitch', es: 'pendiente-de-techo' },
   'rectangle-area': { en: 'square-footage', es: 'pies-cuadrados' },
+  mulch: { en: 'mulch', es: 'mulch' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`: the sizes read the same in both languages. */
@@ -254,16 +261,94 @@ const areaTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/* Mulch: the bags of each size in one, two and three cubic yards. */
+
+const mulchCatalogs = { en: createTranslator(enMulch), es: createTranslator(esMulch) };
+
+/** The depths of the 9 × 9 ft bed of a case that hold one, two and three cubic yards. */
+const YARD_DEPTHS = ['4in', '8in', '12in'] as const;
+
+const mulchState = (raw: JobCase) => {
+  const result = mulch.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+/** The whole bags of a case: the engine writes one bag line. */
+const mulchBags = (raw: JobCase): string => {
+  const [line] = mulch.compute(mulchState(raw)).shopping;
+  if (line === undefined) throw new Error('the mulch engine returned no bag line');
+  return groupedInteger(line.qty);
+};
+
+/** The volume outputs of the mulch engine, for its cubic yards and cubic feet. */
+const mulchOutput = (key: 'volumeYd3' | 'volumeFt3'): OutputDescriptor => {
+  const output = mulch.outputs.find((each) => each.key === key);
+  if (output === undefined) throw new Error(`the mulch engine has no ${key} output`);
+  return output;
+};
+
+/** The `site` messages of the mulch table, with their params: `siteText` takes none. */
+const siteCatalogs = { en: createTranslator(enSite), es: createTranslator(esSite) };
+
+/** The lengths of the bed of a case, in the order the calculator declares them. */
+const BED = ['length', 'width', 'depth'] as const;
+
+const mulchTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = mulchCatalogs[locale];
+  const site = siteCatalogs[locale];
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = mulchState(raw);
+    return {
+      label: calc(`calc.mulch.options.bag.${state.bag}`),
+      href: `${pathOf('mulch', locale)}?${encode(mulch, state, { unitSystem: 'imperial' })}`,
+      cells: YARD_DEPTHS.map((depth) => mulchBags({ ...raw, depth })),
+    };
+  });
+  const [raw] = cases;
+  // the cubic yards of each column as the engine works them out, in whole yards
+  const yards = {
+    ...mulchOutput('volumeYd3'),
+    display: { unit: 'yd3', format: 'decimal', places: 0 },
+  } as const;
+  const columns = YARD_DEPTHS.map((depth) =>
+    site('site.job.bagsFor', {
+      value: outputText(yards, mulch.compute(mulchState({ ...raw, depth })).outputs.volumeYd3),
+    }),
+  );
+  const { outputs } = mulch.compute(mulchState(raw));
+  return {
+    lead: `${BED.map((key) => calc(`calc.mulch.inputs.${key}`)).join(' × ')}: ${BED.map((key) =>
+      sizeText(raw[key] ?? ''),
+    ).join(' × ')}`,
+    answer: site('site.job.cubicFeet', {
+      value: outputText(mulchOutput('volumeFt3'), outputs.volumeFt3),
+    }),
+    // the bags of one cubic yard, one fact per bag size
+    facts: mapCases(cases, (each) => mulchState(each).bag).map((bag, index) => ({
+      label: calc('calc.mulch.page.shoppingLine', { size: mulchSize(bag) }),
+      value: rows[index]?.cells[0] ?? '',
+    })),
+    columns: [calc('calc.mulch.inputs.bag'), ...columns],
+    rows,
+    calculatorName: calc('calc.mulch.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
   'rectangle-area': areaTable,
+  mulch: mulchTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
-/** A square footage job: the one kind of job whose page opens with a sentence of its own. */
-type AreaJobId = Extract<JobId, `square-feet-${string}`>;
+/** The jobs whose page opens with a sentence of its own: square footage, slab by area, mulch. */
+type IntroJobId = Extract<JobId, `square-feet-${string}` | `${string}-sq-ft` | `mulch-${string}`>;
 
-const isAreaJob = (id: JobId): id is AreaJobId => JOBS[id].calculator === 'rectangle-area';
+const hasIntro = (id: JobId): id is IntroJobId =>
+  JOBS[id].calculator === 'rectangle-area' ||
+  JOBS[id].calculator === 'mulch' ||
+  id.endsWith('-sq-ft');
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
@@ -273,7 +358,7 @@ export const jobView = (id: JobId, locale: Locale): JobView => {
   return {
     ...table,
     heading: text(`page.${id}.heading`),
-    intro: isAreaJob(id) ? text(`page.${id}.intro`) : undefined,
+    intro: hasIntro(id) ? text(`page.${id}.intro`) : undefined,
     note: text(`site.job.note.${calculator}`),
     cta: table.rows[0].href,
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,

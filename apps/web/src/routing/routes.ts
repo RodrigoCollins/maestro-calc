@@ -86,6 +86,18 @@ export const ROUTES = {
   'concrete-slab-12x12': { en: '/concrete/12x12-slab', es: '/es/concreto/losa-de-12x12' },
   'concrete-slab-20x20': { en: '/concrete/20x20-slab', es: '/es/concreto/losa-de-20x20' },
   'concrete-slab-24x24': { en: '/concrete/24x24-slab', es: '/es/concreto/losa-de-24x24' },
+  'concrete-slab-500-sq-ft': {
+    en: '/concrete/500-sq-ft-slab',
+    es: '/es/concreto/losa-de-500-pies-cuadrados',
+  },
+  'concrete-slab-650-sq-ft': {
+    en: '/concrete/650-sq-ft-slab',
+    es: '/es/concreto/losa-de-650-pies-cuadrados',
+  },
+  'concrete-slab-1000-sq-ft': {
+    en: '/concrete/1000-sq-ft-slab',
+    es: '/es/concreto/losa-de-1000-pies-cuadrados',
+  },
   'concrete-pad-4x4': { en: '/concrete/4x4-pad', es: '/es/concreto/base-de-4x4' },
   'concrete-tube-8': {
     en: '/concrete/8-inch-sonotube',
@@ -178,6 +190,10 @@ export const ROUTES = {
   'square-feet-20x20': {
     en: '/measurement/20x20-square-feet',
     es: '/es/medidas/20x20-pies-cuadrados',
+  },
+  'mulch-bags-per-yard': {
+    en: '/landscaping/bags-of-mulch-per-yard',
+    es: '/es/jardineria/bolsas-de-mulch-por-yarda',
   },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
