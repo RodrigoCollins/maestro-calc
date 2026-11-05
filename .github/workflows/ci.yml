@@ -455,17 +455,32 @@ jobs:
   site-browser:
     needs: verify
     runs-on: ubuntu-latest
-    # The browser suites grow with every calculator page (#137: 29 min for seven pages on one
-    # runner), so two runners split them; a cold browser install adds 7 to 12 minutes to each.
-    name: site-browser (${{ matrix.shard }}/2)
+    # The browser suites grow with every page (#137: 29 min for seven pages on one runner; two
+    # runners reached 32 min for Maestro Calc alone and 40 with Cuenta Horas on PR #304), so the
+    # Maestro Calc suites split over six runners and Cuenta Horas runs on one of its own; a cold
+    # browser install adds 7 to 12 minutes to each. Every test runs on exactly one entry: the web
+    # entries split `npm run test:e2e` by `SHARD` (fully parallel, so the split is by test, not by
+    # file), the pay entry runs `npm run test:e2e:pay`. Playwright cuts equal test counts in file
+    # order, and the layout tests (about 2 s each, against under 1 s elsewhere) fall together:
+    # with four shards the one that held only layout tests took 22 minutes (PR #307), with six it
+    # holds a third fewer. A growing suite adds an entry and raises its `total` on every entry of
+    # that suite.
+    name: site-browser (${{ matrix.suite }} ${{ matrix.shard }}/${{ matrix.total }})
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        include:
+          - { suite: web, shard: 1, total: 6 }
+          - { suite: web, shard: 2, total: 6 }
+          - { suite: web, shard: 3, total: 6 }
+          - { suite: web, shard: 4, total: 6 }
+          - { suite: web, shard: 5, total: 6 }
+          - { suite: web, shard: 6, total: 6 }
+          - { suite: pay, shard: 1, total: 1 }
     timeout-minutes: 40
     env:
       WRANGLER_SEND_METRICS: 'false'
-      SHARD: ${{ matrix.shard }}/2
+      SHARD: ${{ matrix.shard }}/${{ matrix.total }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -475,7 +490,8 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: tooling/site-browser/package-lock.json
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      - if: matrix.suite == 'web'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: web-dist
           path: apps/web/dist
@@ -500,41 +516,40 @@ jobs:
       # The fallback fonts the drawing labels are measured in when the web fonts are blocked
       # (Liberation Sans for Arial, DejaVu Sans for sans-serif), on every run, warm cache or cold.
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends fonts-dejavu-core fonts-liberation
-      - run: npm run test:e2e
-      # Cuenta Horas runs on the second runner only: its suites take seconds, a runner of its own
-      # would pay the browser install again.
-      - if: matrix.shard == 2
+      - if: matrix.suite == 'web'
+        run: npm run test:e2e
+      - if: matrix.suite == 'pay'
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: pay-dist
           path: apps/pay/dist
-      - if: matrix.shard == 2
+      - if: matrix.suite == 'pay'
         run: npm run test:e2e:pay
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.
       - run: npm run lighthouse
-        if: matrix.shard == 1
+        if: matrix.suite == 'web' && matrix.shard == 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: playwright-report-${{ matrix.shard }}
+          name: playwright-report-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/playwright-report
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: playwright-test-results-${{ matrix.shard }}
+          name: playwright-test-results-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: playwright-test-results-pay-${{ matrix.shard }}
+          name: playwright-test-results-pay-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-pay
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
-          name: lighthouse-reports-${{ matrix.shard }}
+          name: lighthouse-reports-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/.lighthouseci
           if-no-files-found: ignore
