@@ -1,0 +1,136 @@
+---
+import type { Rational } from '@maestro-calc/core';
+import { ptoAccrual } from '@maestro-calc/pay-core/pto-accrual';
+import { decimalHoursText, hoursText, rateText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { PTO_PATHS, PTO_TEXTS, type PtoOutput } from '../pto/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+const t = PTO_TEXTS[lang];
+// The page renders the engine's own figures for the defaults, so it reads without JavaScript.
+const ran = ptoAccrual.run({});
+if (!ran.ok) throw new Error('the defaults of the PTO accrual calculator must run');
+const [primary, ...rest] = ran.value.outputs;
+if (primary?.key !== 'biweekly') throw new Error('the PTO calculator must lead with two weeks');
+// how each figure is written: a rate to four places, a count of hours as it is, a period to two
+const FORMATS: Readonly<Record<PtoOutput, 'rate' | 'plain' | 'decimal'>> = {
+  weekly: 'decimal',
+  semimonthly: 'decimal',
+  monthly: 'decimal',
+  perHourWorked: 'rate',
+  hoursPerPtoHour: 'plain',
+  annualHours: 'plain',
+};
+const TEXT_OF = { rate: rateText, plain: hoursText, decimal: decimalHoursText } as const;
+const rows = rest.map(({ key, value }) => {
+  const output = key as PtoOutput;
+  const format = FORMATS[output];
+  return {
+    key,
+    label: t.outputs[output],
+    format: format === 'plain' ? undefined : format,
+    text: TEXT_OF[format](value as Rational),
+  };
+});
+const [daysInput, dayInput, weekInput] = ptoAccrual.inputs;
+const warnings = Object.entries(t.warnings);
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={PTO_PATHS}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="deduction" data-pto-accrual novalidate>
+      <label class="field">
+        {t.ptoDays}
+        <input
+          name="ptoDays"
+          inputmode="decimal"
+          autocomplete="off"
+          value={hoursText(daysInput.default)}
+        />
+      </label>
+      <div class="settings">
+        <label class="field">
+          {t.hoursPerDay}
+          <input
+            name="hoursPerDay"
+            inputmode="decimal"
+            autocomplete="off"
+            value={hoursText(dayInput.default)}
+          />
+        </label>
+        <label class="field">
+          {t.hoursPerWeek}
+          <input
+            name="hoursPerWeek"
+            inputmode="decimal"
+            autocomplete="off"
+            value={hoursText(weekInput.default)}
+          />
+        </label>
+      </div>
+    </form>
+
+    {warnings.map(([code, text]) => (
+      <p class="warning" data-warning={code} hidden>
+        {text}
+      </p>
+    ))}
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out="biweekly" data-format="decimal">
+          {decimalHoursText(primary.value as Rational)}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={t.figures}>
+        {rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-out={row.key} data-format={row.format}>
+              {row.text}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <ul class="link-list">
+      {t.links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <script src="../client/pto-accrual.ts"></script>
+</SiteLayout>

@@ -1,5 +1,5 @@
 import type { Lang } from '../time-card/receipt.ts';
-import type { Example, HoursExample, OvertimeExample } from './examples.ts';
+import type { Example, HoursExample, OvertimeExample, PtoExample } from './examples.ts';
 
 export interface Source {
   readonly label: string;
@@ -38,6 +38,14 @@ export interface MethodologyTexts {
   readonly hoursExamplesLead: string;
   readonly hoursColumns: { readonly hoursMinutes: string; readonly decimal: string };
   readonly hoursExamples: Readonly<Record<HoursExample['id'], string>>;
+  readonly ptoExamplesHeading: string;
+  readonly ptoExamplesLead: string;
+  readonly ptoColumns: {
+    readonly annual: string;
+    readonly biweekly: string;
+    readonly perHour: string;
+  };
+  readonly ptoExamples: Readonly<Record<PtoExample['id'], string>>;
   readonly sourcesLabel: string;
   readonly reviewed: string;
   readonly cta: { readonly label: string; readonly href: string };
@@ -62,6 +70,22 @@ const SCHEDULE_1A: Source = {
 const IRS_OVERTIME: Source = {
   label: 'IRS, questions and answers on the deduction for qualified overtime compensation',
   href: 'https://www.irs.gov/newsroom/questions-and-answers-about-the-new-deduction-for-qualified-overtime-compensation',
+};
+const DOL_VACATION: Source = {
+  label: 'U.S. Department of Labor, Vacation Leave',
+  href: 'https://www.dol.gov/general/topic/workhours/vacation_leave',
+};
+const DOL_VACATION_ES: Source = {
+  label: 'Departamento de Trabajo de EE. UU., Vacation Leave (vacaciones, en inglés)',
+  href: DOL_VACATION.href,
+};
+const DLSE_VACATION: Source = {
+  label: 'California Labor Commissioner (DLSE), Vacation FAQ',
+  href: 'https://www.dir.ca.gov/dlse/faq_vacation.htm',
+};
+const DLSE_VACATION_ES: Source = {
+  label: 'Comisionado Laboral de California (DLSE), preguntas sobre vacaciones (en inglés)',
+  href: DLSE_VACATION.href,
 };
 const DLSE_LETTER: Source = {
   label: 'DLSE opinion letter 2000.01.19, no pyramiding of overtime hours',
@@ -130,6 +154,16 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'Decimal hours read back to the nearest whole minute: 7.75 hours is 7 hours 45 minutes. Your employer’s payroll system may round in another way, so its figure can differ by a minute or a cent.',
         ],
         sources: [],
+      },
+      {
+        id: 'pto-accrual',
+        heading: 'PTO accrual: paid time off per paycheck',
+        paragraphs: [
+          'The PTO accrual calculator multiplies the paid days off a year by the hours of a day off, then divides by the pay periods of the year: 52 weeks, 26 two-week periods, 24 half months or 12 months. 10 days of 8 hours are 80 hours, or 3.08 hours every two weeks.',
+          'The rate per hour worked divides the same hours by the hours worked in 52 weeks: 80 hours over 40 × 52 = 2,080 hours is 0.0385 hours per hour worked, or 1 hour off for every 26 hours worked. Figures are rounded to two places and the rate to four.',
+          'The Fair Labor Standards Act does not require paid vacation; it is a matter of agreement with the employer. In California, vacation is a form of wages earned as you work: a use-it-or-lose-it policy is illegal, a reasonable cap is allowed, and unused vacation is paid at the final rate when the job ends (Labor Code section 227.3).',
+        ],
+        sources: [DOL_VACATION, DLSE_VACATION],
       },
       {
         id: 'pay',
@@ -202,8 +236,21 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'forty-five': 'Decimal: 45 min',
       'seven-seventy-five': 'Back to minutes: 7.75 h',
     },
+    ptoExamplesHeading: 'PTO accrual examples',
+    ptoExamplesLead: 'Each example is run through the PTO accrual calculator over 52 weeks.',
+    ptoColumns: {
+      annual: 'PTO hours a year',
+      biweekly: 'Every two weeks',
+      perHour: 'Per hour worked',
+    },
+    ptoExamples: {
+      'two-weeks': '10 days of 8 h, 40 h a week',
+      'three-weeks': '15 days of 8 h, 40 h a week',
+      'part-time': '10 days of 6 h, 30 h a week',
+      'four-weeks': '20 days of 8 h, 40 h a week',
+    },
     sourcesLabel: 'Sources',
-    reviewed: 'Reviewed November 3, 2026.',
+    reviewed: 'Reviewed November 4, 2026.',
     cta: { label: 'Open the time card', href: '/time-card-calculator' },
   },
   es: {
@@ -267,6 +314,16 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'Las horas decimales se leen al minuto entero más cercano: 7.75 horas son 7 horas y 45 minutos. El sistema de nómina de tu empleador puede redondear de otra forma, así que su número puede variar por un minuto o un centavo.',
         ],
         sources: [],
+      },
+      {
+        id: 'pto-accrual',
+        heading: 'Vacaciones pagadas (PTO): cuánto ganas por cheque',
+        paragraphs: [
+          'La calculadora de vacaciones pagadas multiplica los días libres pagados del año por las horas de un día libre, y divide por los períodos de pago del año: 52 semanas, 26 períodos de dos semanas, 24 quincenas o 12 meses. 10 días de 8 horas son 80 horas, o 3.08 horas cada dos semanas.',
+          'La tasa por hora trabajada divide las mismas horas por las horas trabajadas en 52 semanas: 80 horas sobre 40 × 52 = 2,080 horas son 0.0385 horas por hora trabajada, o 1 hora libre por cada 26 horas de trabajo. Las cifras se redondean a dos decimales y la tasa a cuatro.',
+          'La Ley de Normas Justas de Trabajo (FLSA) no exige vacaciones pagadas; es un acuerdo con el empleador. En California, las vacaciones son una forma de salario que se gana al trabajar: una política de "úsalas o piérdelas" es ilegal, un tope razonable está permitido, y las vacaciones no usadas se pagan a la última tarifa cuando termina el trabajo (Código Laboral, sección 227.3).',
+        ],
+        sources: [DOL_VACATION_ES, DLSE_VACATION_ES],
       },
       {
         id: 'pay',
@@ -342,8 +399,22 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'forty-five': 'Decimales: 45 min',
       'seven-seventy-five': 'De vuelta a minutos: 7.75 h',
     },
+    ptoExamplesHeading: 'Ejemplos de vacaciones pagadas (PTO)',
+    ptoExamplesLead:
+      'Cada ejemplo pasa por la calculadora de vacaciones pagadas, sobre 52 semanas.',
+    ptoColumns: {
+      annual: 'Horas de PTO al año',
+      biweekly: 'Cada dos semanas',
+      perHour: 'Por hora trabajada',
+    },
+    ptoExamples: {
+      'two-weeks': '10 días de 8 h, 40 h a la semana',
+      'three-weeks': '15 días de 8 h, 40 h a la semana',
+      'part-time': '10 días de 6 h, 30 h a la semana',
+      'four-weeks': '20 días de 8 h, 40 h a la semana',
+    },
     sourcesLabel: 'Fuentes',
-    reviewed: 'Revisado el 3 de noviembre de 2026.',
+    reviewed: 'Revisado el 4 de noviembre de 2026.',
     cta: { label: 'Abrir la tarjeta de horas', href: '/es/calculadora-de-horas-trabajadas' },
   },
 };

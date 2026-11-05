@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES, HOURS_EXAMPLES, OVERTIME_EXAMPLES } from './examples.ts';
+import { EXAMPLES, HOURS_EXAMPLES, OVERTIME_EXAMPLES, PTO_EXAMPLES } from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
 const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov']);
@@ -48,6 +48,18 @@ describe('methodology texts', () => {
       expect(ids).toContain('decimal-hours');
       const decimal = texts.sections.find(({ id }) => id === 'decimal-hours');
       expect(decimal?.paragraphs.join(' ')).toContain('8.33');
+    }
+  });
+
+  it('explains PTO accrual, citing the DOL and the California Labor Commissioner', () => {
+    for (const texts of Object.values(METHODOLOGY_TEXTS)) {
+      const pto = texts.sections.find(({ id }) => id === 'pto-accrual');
+      expect(pto?.paragraphs.join(' ')).toContain('2,080');
+      expect(pto?.sources.map(({ href }) => new URL(href).hostname)).toEqual([
+        'www.dol.gov',
+        'www.dir.ca.gov',
+      ]);
+      expect(Object.keys(texts.ptoExamples)).toEqual(PTO_EXAMPLES.map(({ id }) => id));
     }
   });
 

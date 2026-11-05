@@ -8,6 +8,8 @@ import {
   hoursOf,
   OVERTIME_EXAMPLES,
   overtimeFiguresOf,
+  PTO_EXAMPLES,
+  ptoFiguresOf,
   type Figures,
 } from '../methodology/examples.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
@@ -53,6 +55,10 @@ const hoursRows = HOURS_EXAMPLES.map((example) => {
     decimal: decimalHoursText(hours),
   };
 });
+const ptoRows = PTO_EXAMPLES.map((example) => ({
+  label: t.ptoExamples[example.id],
+  ...ptoFiguresOf(example),
+}));
 ---
 
 <SiteLayout
@@ -139,6 +145,32 @@ const hoursRows = HOURS_EXAMPLES.map((example) => {
               <div class="example-pay">
                 <dt>{t.hoursColumns.decimal}</dt>
                 <dd>{row.decimal}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="pto-examples">
+      <h2 id="pto-examples">{t.ptoExamplesHeading}</h2>
+      <p>{t.ptoExamplesLead}</p>
+      <ul class="examples">
+        {ptoRows.map((row) => (
+          <li>
+            <p class="example-label">{row.label}</p>
+            <dl>
+              <div>
+                <dt>{t.ptoColumns.annual}</dt>
+                <dd>{row.annual}</dd>
+              </div>
+              <div>
+                <dt>{t.ptoColumns.perHour}</dt>
+                <dd>{row.perHour}</dd>
+              </div>
+              <div class="example-pay">
+                <dt>{t.ptoColumns.biweekly}</dt>
+                <dd>{row.biweekly}</dd>
               </div>
             </dl>
           </li>

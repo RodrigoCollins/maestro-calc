@@ -19,6 +19,13 @@ export const hoursText = (hours: Rational): string => {
   return trimmed === '' ? grouped(integer) : `${grouped(integer)}.${trimmed}`;
 };
 
+/** A rate of hours per hour to four places at most, trailing zeros dropped: `0.0385`, `1`. */
+export const rateText = (rate: Rational): string => {
+  const { integer, fraction } = toDecimalParts(rate, 4);
+  const trimmed = fraction.replace(/0+$/, '');
+  return trimmed === '' ? grouped(integer) : `${grouped(integer)}.${trimmed}`;
+};
+
 /** Decimal hours as a time card writes them, always two places, to the nearest: `8.33`, `8.00`. */
 export const decimalHoursText = (hours: Rational): string => {
   const { integer, fraction } = toDecimalParts(hours, 2);

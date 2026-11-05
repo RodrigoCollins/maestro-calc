@@ -79,6 +79,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         href: '/salary-to-hourly-calculator',
       },
       {
+        id: 'pto-accrual',
+        title: 'PTO accrual',
+        summary: 'The paid time off you earn each paycheck and per hour worked.',
+        href: '/pto-accrual-calculator',
+      },
+      {
         id: 'no-tax-on-tips',
         title: 'No tax on tips',
         summary: 'How much the new tips deduction saves you.',
@@ -145,6 +151,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         title: 'Sueldo anual a por hora',
         summary: 'Compara una oferta de sueldo fijo con lo que ganas por hora.',
         href: '/es/de-sueldo-anual-a-pago-por-hora',
+      },
+      {
+        id: 'pto-accrual',
+        title: 'Vacaciones pagadas (PTO)',
+        summary: 'El tiempo libre pagado que ganas en cada cheque y por hora trabajada.',
+        href: '/es/calculadora-de-vacaciones-pagadas',
       },
       {
         id: 'no-tax-on-tips',

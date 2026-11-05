@@ -12,6 +12,8 @@ const ROUTED = [
   'salary-to-hourly-calculator.html',
   'es/de-pago-por-hora-a-sueldo-anual.html',
   'es/de-sueldo-anual-a-pago-por-hora.html',
+  'pto-accrual-calculator.html',
+  'es/calculadora-de-vacaciones-pagadas.html',
   'no-tax-on-overtime-calculator.html',
   'no-tax-on-tips-calculator.html',
   'es/calculadora-horas-extra-sin-impuestos.html',
