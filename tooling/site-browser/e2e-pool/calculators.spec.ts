@@ -75,16 +75,31 @@ test('shows the soda ash dose to raise pH, and notes a count past the 3-drop cha
   const acid = page.locator('[data-out="liquid"]').first();
   const soda = page.locator('[data-out="dry"]').first();
   const past = page.locator('[data-warning="pastChart"]');
+  const days = page.locator('[data-warning="splitDays"]');
+  const additions = page.locator('[data-warning="splitAdditions"]');
   await expect(acid).toBeVisible();
   await expect(soda).toBeHidden();
   await expect(past).toBeHidden();
+  // HASA: one quart per 20,000 gal a day, so 36.64 fl oz takes 2 days
+  await expect(page.locator('[data-out="liquidPerDay"]')).toHaveText('32.0');
+  await expect(page.locator('[data-out="days"]')).toHaveText('2');
+  await expect(days).toBeVisible();
+  await expect(page.locator('[data-out="additions"]')).toBeHidden();
   await page.locator('[name="product"]').selectOption('soda-ash');
   // Taylor: 5.13 oz a drop of base demand per 10,000 gal, x 2 drops x 2 (20,000 gal)
   await expect(soda).toHaveText('20.5');
   await expect(acid).toBeHidden();
+  await expect(page.locator('[data-out="days"]')).toBeHidden();
+  await expect(days).toBeHidden();
+  // pH Up: at most 1 lb per 10,000 gal at a time, 32 oz here: one addition
+  await expect(page.locator('[data-out="dryPerAddition"]')).toHaveText('32.0');
+  await expect(page.locator('[data-out="additions"]')).toHaveText('1');
+  await expect(additions).toBeHidden();
   await page.locator('[name="drops"]').fill('4');
   await expect(soda).toHaveText('41.0');
+  await expect(page.locator('[data-out="additions"]')).toHaveText('2');
   await expect(past).toBeVisible();
+  await expect(additions).toBeVisible();
 });
 
 test('redraws the side view of the pool as the visitor types', async ({ page }) => {
