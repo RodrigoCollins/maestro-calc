@@ -388,7 +388,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(shards?.strategy?.['fail-fast']).toBe(false);
     const entries = shards?.strategy?.matrix?.include ?? [];
     const suites = [...new Set(entries.map(({ suite }) => suite))];
-    expect(suites).toEqual(['web', 'pay']);
+    expect(suites).toEqual(['web', 'pay', 'pool']);
     for (const suite of suites) {
       const own = entries.filter((entry) => entry.suite === suite);
       const total = own[0]?.total ?? 0;
@@ -397,7 +397,11 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
         Array.from({ length: total }, (_, index) => index + 1),
       );
     }
-    for (const config of ['playwright.config.ts', 'playwright.pay.config.ts']) {
+    for (const config of [
+      'playwright.config.ts',
+      'playwright.pay.config.ts',
+      'playwright.pool.config.ts',
+    ]) {
       const source = readFileSync(fromRoot(`tooling/site-browser/${config}`), 'utf8');
       expect(source).toContain("process.env['SHARD']");
       expect(source).toContain('fullyParallel: true');
@@ -407,6 +411,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
       steps.find((candidate) => candidate.run === run)?.if;
     expect(suiteOf('npm run test:e2e')).toBe("matrix.suite == 'web'");
     expect(suiteOf('npm run test:e2e:pay')).toBe("matrix.suite == 'pay'");
+    expect(suiteOf('npm run test:e2e:pool')).toBe("matrix.suite == 'pool'");
     const lighthouse = steps.find(({ run }) => run === 'npm run lighthouse');
     expect(lighthouse?.if).toBe("matrix.suite == 'web' && matrix.shard == 1");
     const names = (job?.steps ?? [])
@@ -513,6 +518,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
   it('runs the browser tests and uploads reports only on failure', () => {
     expect(runs).toContain('npm run test:e2e');
     expect(runs).toContain('npm run test:e2e:pay');
+    expect(runs).toContain('npm run test:e2e:pool');
     const uploads = steps.filter((candidate) =>
       candidate.uses?.startsWith('actions/upload-artifact@'),
     );
