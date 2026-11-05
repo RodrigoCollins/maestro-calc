@@ -9,13 +9,15 @@ import {
   type InputDescriptor,
   type OutputDescriptor,
 } from '@maestro-calc/core';
+import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
+import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { CHLORINE, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
-import { JOB_PAGES, jobLinksOf, type JobPage } from './jobs.ts';
+import { JOB_PAGES, jobLinksOf, NEIGHBORS, neighborsOf, type JobPage } from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -24,7 +26,8 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
 
 /**
  * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
- * liters of liquid chlorine, or gallons and liters of water.
+ * liters of liquid chlorine, pounds and ounces of baking soda or stabilizer, or gallons and liters
+ * of water.
  */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
   const ran =
@@ -32,9 +35,15 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
       ? poolSalt.run(raw)
       : path === CHLORINE.path
         ? poolChlorine.run(raw)
-        : poolVolume.run(raw);
+        : path === ALKALINITY.path
+          ? poolAlkalinity.run(raw)
+          : path === STABILIZER.path
+            ? poolStabilizer.run(raw)
+            : poolVolume.run(raw);
   if (!ran.ok) throw new Error(`${path} did not run`);
   const value = (key: string): unknown => ran.value.outputs.find((out) => out.key === key)?.value;
+  if (path === ALKALINITY.path || path === STABILIZER.path)
+    return [outputText('pounds', value('pounds')), outputText('ounces', value('ounces'))];
   if (path === SALT.path)
     return [outputText('pounds', value('pounds')), String(ran.value.shopping[0]?.qty)];
   if (path === CHLORINE.path) {
@@ -88,7 +97,13 @@ describe('the long-tail job pages', () => {
 
   it('links each page to its calculator, opened on the pool of the large figure', () => {
     for (const { calculator, rows, figure } of JOB_PAGES) {
-      expect([SALT.path, CHLORINE.path, VOLUME_TEXTS.path]).toContain(calculator.path);
+      expect([
+        SALT.path,
+        CHLORINE.path,
+        ALKALINITY.path,
+        STABILIZER.path,
+        VOLUME_TEXTS.path,
+      ]).toContain(calculator.path);
       expect(pageFiles).toContain(calculator.path);
       const [path, query = ''] = calculator.href.split('?');
       expect(path).toBe(calculator.path);
@@ -96,6 +111,10 @@ describe('the long-tail job pages', () => {
       if (calculator.path === SALT.path) expectOpensOn(poolSalt, query, main?.raw ?? {});
       else if (calculator.path === CHLORINE.path)
         expectOpensOn(poolChlorine, query, main?.raw ?? {});
+      else if (calculator.path === ALKALINITY.path)
+        expectOpensOn(poolAlkalinity, query, main?.raw ?? {});
+      else if (calculator.path === STABILIZER.path)
+        expectOpensOn(poolStabilizer, query, main?.raw ?? {});
       else expectOpensOn(poolVolume, query, main?.raw ?? {});
     }
   });
@@ -144,8 +163,98 @@ describe('the long-tail job pages', () => {
     expect(byPath('/21-ft-round-pool-gallons').figure.value).toBe('10,364');
   });
 
+  // worked by hand: 20,000 gal × 3.785411784 L × 10 ppm × 84.007 ÷ 50.04 mg = 1.271 kg = 2.80 lb
+  // (44.83 oz); 20 ppm is 5.60 lb and 30 ppm 8.41 lb
+  it('works out baking soda for 20,000 gallons, 10, 20 and 30 ppm up to 100, as by hand', () => {
+    const page = byPath('/how-much-baking-soda-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '2.8', unit: 'LB' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['90 ppm', '2.8', '44.8'],
+      ['80 ppm', '5.6', '89.7'],
+      ['70 ppm', '8.4', '134.5'],
+    ]);
+    // 10,000 gal: 1.40 lb for 10 ppm (ALKALINITY.method: 1.4 lb per 10 ppm per 10,000 gallons)
+    expect(byPath('/how-much-baking-soda-for-a-10000-gallon-pool').figure.value).toBe('1.4');
+    expect(page.lead).not.toMatch(/ideal/i);
+  });
+
+  // worked by hand: 20,000 gal × 3.785411784 L × 30 mg = 2.271 kg = 5.01 lb (80.12 oz); from 20
+  // ppm, 10 ppm is 1.67 lb (26.71 oz)
+  it('works out stabilizer for 20,000 gallons, from fresh water to 30 ppm, as by hand', () => {
+    const page = byPath('/how-much-stabilizer-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '5.0', unit: 'LB' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['0 ppm', '5.0', '80.1'],
+      ['10 ppm', '3.3', '53.4'],
+      ['20 ppm', '1.7', '26.7'],
+    ]);
+    // 25,000 gal: 2.839 kg = 6.26 lb from 0 to 30 ppm
+    expect(byPath('/how-much-stabilizer-for-a-25000-gallon-pool').figure.value).toBe('6.3');
+    expect(page.lead).not.toMatch(/ideal/i);
+  });
+
+  // worked by hand: π × 15² × 4 ft = 2,827.43 ft³, × 1,728 ÷ 231 = 21,151; π × 6² × 4 = 3,384
+  it('works out the 12, 15, 27 and 30 ft round pools at 4 ft as by hand', () => {
+    expect(byPath('/30-ft-round-pool-gallons').figure.value).toBe('21,151');
+    expect(byPath('/12-ft-round-pool-gallons').figure.value).toBe('3,384');
+    // π × 7.5² × 4 = 706.86 ft³ = 5,288; π × 13.5² × 4 = 2,290.22 ft³ = 17,132
+    expect(byPath('/15-ft-round-pool-gallons').figure.value).toBe('5,288');
+    expect(byPath('/27-ft-round-pool-gallons').figure.value).toBe('17,132');
+  });
+
+  // worked by hand: 392 ft² × 5.75 ft = 2,254 ft³, × 1,728 ÷ 231 = 16,861; 450 ft² × 5.75 = 19,356
+  it('works out the 14 x 28 and the 15 x 30 pools, 3 ft 6 in to 8 ft, as by hand', () => {
+    expect(byPath('/14x28-pool-gallons').figure.value).toBe('16,861');
+    expect(byPath('/15x30-pool-gallons').figure.value).toBe('19,356');
+    expect(byPath('/15x30-pool-gallons').rows.map(({ cells }) => cells[1])).toEqual([
+      '13,465',
+      '15,148',
+      '19,356',
+    ]);
+  });
+
+  it('links each page to its nearest neighbors of the same calculator, by pool size', () => {
+    for (const page of JOB_PAGES) {
+      const links = neighborsOf(page);
+      const family = JOB_PAGES.filter(({ calculator }) => calculator.path === page.calculator.path);
+      expect(links.length).toBe(Math.min(NEIGHBORS, family.length - 1));
+      for (const { href, label } of links) {
+        expect(href).not.toBe(page.path);
+        const linked = byPath(href);
+        expect(linked.calculator.path).toBe(page.calculator.path);
+        expect(label).toBe(linked.h1);
+      }
+    }
+    expect(
+      neighborsOf(byPath('/how-much-stabilizer-for-a-20000-gallon-pool')).map(({ href }) => href),
+    ).toEqual([
+      '/how-much-stabilizer-for-a-10000-gallon-pool',
+      '/how-much-stabilizer-for-a-15000-gallon-pool',
+      '/how-much-stabilizer-for-a-25000-gallon-pool',
+    ]);
+    // the 30 ft round (21,151 gal) sits between the 15 x 30 (19,356) and the 16 x 32 (22,023)
+    expect(neighborsOf(byPath('/30-ft-round-pool-gallons')).map(({ href }) => href)).toEqual([
+      '/27-ft-round-pool-gallons',
+      '/15x30-pool-gallons',
+      '/16x32-pool-gallons',
+      '/18x36-pool-gallons',
+    ]);
+    expect(neighborsOf(byPath('/12-ft-round-pool-gallons')).map(({ href }) => href)).toEqual([
+      '/15-ft-round-pool-gallons',
+      '/18-ft-round-pool-gallons',
+      '/12x24-pool-gallons',
+      '/21-ft-round-pool-gallons',
+    ]);
+  });
+
   it('is linked from the calculator it works with, and from no other', () => {
-    for (const path of [VOLUME_TEXTS.path, SALT.path, CHLORINE.path]) {
+    for (const path of [
+      VOLUME_TEXTS.path,
+      SALT.path,
+      CHLORINE.path,
+      ALKALINITY.path,
+      STABILIZER.path,
+    ]) {
       const linked = jobLinksOf(path).map(({ href }) => href);
       const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
       expect(linked).toEqual(own.map((page) => page.path));

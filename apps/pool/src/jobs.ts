@@ -7,11 +7,14 @@ import {
   type Calculator,
   type InputDescriptor,
   type OutputDescriptor,
+  valueIn,
 } from '@maestro-calc/core';
+import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
+import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { CHLORINE, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -37,6 +40,8 @@ export interface JobPage {
   readonly calculator: { readonly path: string; readonly href: string; readonly label: string };
   readonly method: string;
   readonly card: { readonly title: string; readonly summary: string };
+  /** The gallons the page is about (the large figure of a volume page): the order of its neighbors. */
+  readonly gallons: number;
 }
 
 /** The salt jobs: the pool sizes people search for, from a fresh fill and from common readings. */
@@ -55,6 +60,22 @@ const CHLORINE_TARGETS = [2, 3, 4] as const;
 const CHLORINE_MAIN = 1;
 const LIQUID = 'liquid-12-5';
 
+/**
+ * The baking soda jobs: the same pool sizes, raising total alkalinity by 10, 20 or 30 ppm up to
+ * 100 ppm, the calculator's own target; the 10 ppm raise is the large figure.
+ */
+const ALKALINITY_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const ALKALINITY_READINGS = [90, 80, 70] as const;
+const ALKALINITY_TARGET = 100;
+
+/**
+ * The stabilizer jobs: the same pool sizes, from fresh water (0 ppm, the large figure) and from 10
+ * or 20 ppm up to 30 ppm, the calculator's own target.
+ */
+const STABILIZER_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const STABILIZER_READINGS = [0, 10, 20] as const;
+const STABILIZER_TARGET = 30;
+
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
   {
@@ -69,6 +90,32 @@ const VOLUME_JOBS = [
       ['3 ft 6 in', '6 ft'],
     ],
     main: 0,
+  },
+  {
+    slug: '14x28-pool-gallons',
+    name: '14 x 28 pool',
+    title: '14x28 Pool',
+    pool: 'A 14 ft by 28 ft rectangle',
+    size: { length: '28 ft', width: '14 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
+  },
+  {
+    slug: '15x30-pool-gallons',
+    name: '15 x 30 pool',
+    title: '15x30 Pool',
+    pool: 'A 15 ft by 30 ft rectangle',
+    size: { length: '30 ft', width: '15 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
   },
   {
     slug: '16x32-pool-gallons',
@@ -110,6 +157,32 @@ const VOLUME_JOBS = [
     main: 2,
   },
   {
+    slug: '12-ft-round-pool-gallons',
+    name: '12 ft round pool',
+    title: '12 Ft Round Pool',
+    pool: 'A round pool 12 ft across',
+    size: { shape: 'round', length: '12 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '15-ft-round-pool-gallons',
+    name: '15 ft round pool',
+    title: '15 Ft Round Pool',
+    pool: 'A round pool 15 ft across',
+    size: { shape: 'round', length: '15 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
     slug: '18-ft-round-pool-gallons',
     name: '18 ft round pool',
     title: '18 Ft Round Pool',
@@ -149,6 +222,32 @@ const VOLUME_JOBS = [
     main: 1,
   },
   {
+    slug: '27-ft-round-pool-gallons',
+    name: '27 ft round pool',
+    title: '27 Ft Round Pool',
+    pool: 'A round pool 27 ft across',
+    size: { shape: 'round', length: '27 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '30-ft-round-pool-gallons',
+    name: '30 ft round pool',
+    title: '30 Ft Round Pool',
+    pool: 'A round pool 30 ft across',
+    size: { shape: 'round', length: '30 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
     slug: '15x30-oval-pool-gallons',
     name: '15 x 30 oval pool',
     title: '15x30 Oval Pool',
@@ -165,7 +264,12 @@ const VOLUME_JOBS = [
 
 /** The outputs of one engine run, by key; a run that fails is a build error. */
 const outputsOf = (
-  engine: typeof poolSalt | typeof poolChlorine | typeof poolVolume,
+  engine:
+    | typeof poolSalt
+    | typeof poolChlorine
+    | typeof poolAlkalinity
+    | typeof poolStabilizer
+    | typeof poolVolume,
   raw: Raw,
 ): { readonly values: ReadonlyMap<string, unknown>; readonly bags: bigint } => {
   const ran = engine.run(raw);
@@ -218,6 +322,7 @@ const saltPage = (gallons: number): JobPage => {
     },
     method: `${SALT.method} ${SALT.note}`,
     card: { title: `Salt for ${size} gallons`, summary: `${pounds} lb from fresh water.` },
+    gallons,
   };
 };
 
@@ -268,6 +373,88 @@ const chlorinePage = (gallons: number): JobPage => {
       title: `Chlorine for ${size} gallons`,
       summary: `${ounces} fl oz of 12.5% liquid, ${range}.`,
     },
+    gallons,
+  };
+};
+
+/** The rows of a dose in pounds and ounces (baking soda, stabilizer): one per reading, up to `target`. */
+const massRows = (
+  engine: typeof poolAlkalinity | typeof poolStabilizer,
+  gallons: number,
+  readings: readonly number[],
+  target: number,
+): readonly JobRow[] =>
+  readings.map((current) => {
+    const raw = { gallons: String(gallons), current: String(current), target: String(target) };
+    const { values } = outputsOf(engine, raw);
+    return {
+      raw,
+      cells: [
+        `${amountText(Rational.of(current))} ppm`,
+        outputText('pounds', values.get('pounds')),
+        outputText('ounces', values.get('ounces')),
+      ],
+    };
+  });
+
+const alkalinityPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = massRows(poolAlkalinity, gallons, ALKALINITY_READINGS, ALKALINITY_TARGET);
+  const [main] = rows;
+  if (main === undefined) throw new Error('a baking soda job needs its 10 ppm row');
+  const [from = '', pounds = '', ounces = ''] = main.cells;
+  const raise = `from ${from.replace(' ppm', '')} to ${String(ALKALINITY_TARGET)} ppm`;
+  return {
+    path: `/how-much-baking-soda-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Baking Soda for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The pounds of baking soda (sodium bicarbonate) that raise total alkalinity in a ${size} gallon pool by 10, 20 or 30 ppm.`,
+    h1: `How much baking soda for a ${size} gallon pool`,
+    lead: `Raising total alkalinity by 10 ppm, ${raise}, takes ${pounds} lb of baking soda in a ${size} gallon pool. Bigger raises are in the table; the calculator takes your own reading and target.`,
+    figure: {
+      value: pounds,
+      unit: 'LB',
+      caption: `${ounces} oz of sodium bicarbonate, ${raise}.`,
+    },
+    head: ['Alkalinity now', 'Baking soda (lb)', 'Ounces'],
+    rows,
+    calculator: {
+      path: ALKALINITY.path,
+      href: linkTo(poolAlkalinity, ALKALINITY.path, main.raw),
+      label: 'Work it out for your reading',
+    },
+    method: `${ALKALINITY.method} ${ALKALINITY.note}`,
+    card: { title: `Baking soda for ${size} gallons`, summary: `${pounds} lb for 10 ppm more.` },
+    gallons,
+  };
+};
+
+const stabilizerPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = massRows(poolStabilizer, gallons, STABILIZER_READINGS, STABILIZER_TARGET);
+  const [fresh] = rows;
+  if (fresh === undefined) throw new Error('a stabilizer job needs a fresh-fill row');
+  const [, pounds = '', ounces = ''] = fresh.cells;
+  return {
+    path: `/how-much-stabilizer-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Stabilizer for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The pounds of stabilizer (cyanuric acid) a ${size} gallon pool needs to reach 30 ppm CYA, from fresh water and from 10 or 20 ppm.`,
+    h1: `How much stabilizer for a ${size} gallon pool`,
+    lead: `A ${size} gallon pool filled with fresh water needs ${pounds} lb of cyanuric acid to reach 30 ppm CYA. Already stabilized? Find your reading below; the dose is for a 100% product.`,
+    figure: {
+      value: pounds,
+      unit: 'LB',
+      caption: `${ounces} oz of cyanuric acid, from 0 to 30 ppm.`,
+    },
+    head: ['CYA now', 'Stabilizer (lb)', 'Ounces'],
+    rows,
+    calculator: {
+      path: STABILIZER.path,
+      href: linkTo(poolStabilizer, STABILIZER.path, fresh.raw),
+      label: 'Work it out for your reading',
+    },
+    method: `${STABILIZER.method} ${STABILIZER.note}`,
+    card: { title: `Stabilizer for ${size} gallons`, summary: `${pounds} lb from 0 to 30 ppm.` },
+    gallons,
   };
 };
 
@@ -291,6 +478,8 @@ const volumePage = ({
   const main = rows[index];
   if (main === undefined) throw new Error('a volume job needs a row');
   const [depth = '', gallons = ''] = main.cells;
+  const volume = outputsOf(poolVolume, main.raw).values.get('gallons');
+  if (!isQuantityOf(volume, 'volume')) throw new Error('gallons must be a volume');
   const at = `${depth} deep`;
   return {
     path: `/${slug}`,
@@ -308,15 +497,36 @@ const volumePage = ({
     },
     method: `${VOLUME_TEXTS.method} ${VOLUME_TEXTS.note}`,
     card: { title: `Gallons in a ${name}`, summary: `${gallons} gallons, ${at}.` },
+    gallons: valueIn(volume, gal).toNumber(),
   };
 };
 
-/** Every job page, volume first: the gallons the salt and chlorine pages start from. */
+/** Every job page, volume first: the gallons the dose pages start from. */
 export const JOB_PAGES: readonly JobPage[] = [
   ...VOLUME_JOBS.map(volumePage),
   ...SALT_GALLONS.map(saltPage),
   ...CHLORINE_GALLONS.map(chlorinePage),
+  ...ALKALINITY_GALLONS.map(alkalinityPage),
+  ...STABILIZER_GALLONS.map(stabilizerPage),
 ];
+
+/** How many job pages of its calculator a job page links: its nearest sizes, so pages stay distinct. */
+export const NEIGHBORS = 4;
+
+/** The `NEIGHBORS` job pages of the same calculator nearest to `page` in gallons, smallest first. */
+export const neighborsOf = (
+  page: JobPage,
+): readonly { readonly href: string; readonly label: string }[] => {
+  const family = JOB_PAGES.filter(({ calculator }) => calculator.path === page.calculator.path)
+    .slice()
+    .sort((a, b) => a.gallons - b.gallons);
+  const index = family.indexOf(page);
+  const start = Math.max(0, Math.min(index - NEIGHBORS / 2, family.length - NEIGHBORS - 1));
+  return family
+    .slice(start, start + NEIGHBORS + 1)
+    .filter((member) => member !== page)
+    .map(({ path, h1 }) => ({ href: path, label: h1 }));
+};
 
 /** The job pages a calculator works out, as links from its page: the common sizes, in table order. */
 export const jobLinksOf = (

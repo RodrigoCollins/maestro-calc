@@ -1,17 +1,22 @@
 ---
-import { jobLinksOf } from '../jobs.ts';
+import { jobLinksOf, neighborsOf, type JobPage } from '../jobs.ts';
 
-interface Props {
-  /** The calculator page the list is on: it links the job pages that calculator works out. */
-  readonly path: string;
-}
+type Props =
+  /** On a calculator page: every job page that calculator works out. */
+  | { readonly path: string }
+  /** On a job page: its nearest sizes only, so the pages stay distinct. */
+  | { readonly page: JobPage };
 
-const links = jobLinksOf(Astro.props.path);
+const props = Astro.props;
+const [links, heading] =
+  'page' in props
+    ? [neighborsOf(props.page), 'Nearby pool sizes']
+    : [jobLinksOf(props.path), 'Common pool sizes'];
 ---
 
 {links.length > 0 && (
   <section class="pool-jobs" aria-labelledby="jobs-heading">
-    <h2 id="jobs-heading">Common pool sizes</h2>
+    <h2 id="jobs-heading">{heading}</h2>
     <ul class="link-list">
       {links.map((link) => (
         <li>
