@@ -53,6 +53,8 @@ const all = [
     }).map((message) => `${path}: ${message}`);
   }),
   ...(sitemap.length === 0 ? ['sitemap.xml: no page listed'] : []),
+  // the guide for AI answer engines, built from the same lists (`src/llms.ts`)
+  ...(existsSync(join(dist, 'llms.txt')) ? [] : ['llms.txt: not in the build']),
   ...linkProblems(site, {
     origin: SITE.origin,
     sitemap,
