@@ -8,7 +8,7 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 /*
- * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17], [GU18], [GU19]): each
+ * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17], [GU18], [GU19], [GU20]): each
  * case is a link the calculator page loads, with the figures that page shows for it, hand-verified
  * and pinned here. The engine must still show them, and the guide must print every one of them, in
  * both languages, next to a link to the calculator that computes it.
@@ -28,7 +28,11 @@ const GUIDE_CASES: Readonly<
   Record<
     Extract<
       GuideId,
-      'guide-mulch' | 'guide-cubic-yards' | 'guide-concrete-bag-coverage' | 'guide-paint-coverage'
+      | 'guide-mulch'
+      | 'guide-cubic-yards'
+      | 'guide-concrete-bag-coverage'
+      | 'guide-paint-coverage'
+      | 'guide-gravel-coverage'
     >,
     readonly GuideCase[]
   >
@@ -132,6 +136,26 @@ const GUIDE_CASES: Readonly<
       bags: '3',
     },
   ],
+  'guide-gravel-coverage': [
+    // 10 ft × 10 ft, compacted, no extra, at 2, 3 and 4 in: 100 ft² × depth ÷ 27 × 1.83 t/yd³
+    { calculator: 'gravel', query: '?v=1&l=120&d=2&ws=0', figures: { tons: '1.13' } },
+    { calculator: 'gravel', query: '?v=1&l=120&d=3&ws=0', figures: { tons: '1.69' } },
+    { calculator: 'gravel', query: '?v=1&l=120&ws=0', figures: { tons: '2.26' } },
+    // the same area at 3 in, spread loose: 0.93 yd³ × 1.29 t/yd³
+    { calculator: 'gravel', query: '?v=1&l=120&d=3&pl=loose&ws=0', figures: { tons: '1.19' } },
+    // a path 50 ft × 3 ft at 3 in, loose, with the 5 percent extra: 1.46 yd³, 1.88 t
+    {
+      calculator: 'gravel',
+      query: '?v=1&l=600&w=36&d=3&pl=loose',
+      figures: { tons: '1.88', orderYd3: '1.46' },
+    },
+    // the page's starting driveway, 20 ft × 10 ft at 4 in, compacted, 5 percent extra
+    {
+      calculator: 'gravel',
+      query: '',
+      figures: { placedYd3: '2.47', tons: '4.74', orderYd3: '3.68' },
+    },
+  ],
 };
 
 const moduleOf = (id: CalculatorPageId) => CONTENT_ROWS[id].module;
@@ -166,7 +190,7 @@ const PAIRS = GUIDES_WITH_CASES.flatMap(([id, cases]) =>
   LOCALES.map((locale) => [id, locale, cases] as const),
 );
 
-describe('guide worked examples (guides › [GU16], [GU17], [GU18], [GU19])', () => {
+describe('guide worked examples (guides › [GU16], [GU17], [GU18], [GU19], [GU20])', () => {
   it.each(GUIDES_WITH_CASES)('the engine shows the pinned figures of %s', (_id, cases) => {
     expect(caseProblems(cases, real)).toEqual([]);
   });

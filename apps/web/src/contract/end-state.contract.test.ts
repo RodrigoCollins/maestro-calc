@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred ids, so the site has
-// two hundred routable pages and two not-found pages.
-describe('end state of the paint coverage guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and one ids, so the site
+// has two hundred and two routable pages and two not-found pages.
+describe('end state of the gravel coverage guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred page ids, two hundred routable paths and two hundred and two pages with the 404s', () => {
+  it('has a hundred and one page ids, two hundred and two routable paths and two hundred and four pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -40,6 +40,7 @@ describe('end state of the paint coverage guide go-live (site-routing-i18n › [
       'guide-cubic-yards',
       'guide-concrete-bag-coverage',
       'guide-paint-coverage',
+      'guide-gravel-coverage',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -116,10 +117,10 @@ describe('end state of the paint coverage guide go-live (site-routing-i18n › [
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(200);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(200);
+    expect(staticPaths()).toHaveLength(202);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(202);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(202);
+    expect(pageCount(ROUTES)).toBe(204);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -146,23 +147,23 @@ describe('end state of the paint coverage guide go-live (site-routing-i18n › [
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and two page title and description keys in %s',
+    'has exactly two hundred and four page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(202);
+      ).toHaveLength(204);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: eighty content entries in all
-  it('has sixty trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(60);
+  // two entries per calculator page: eighty-two content entries in all
+  it('has sixty-two trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(62);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(200);
+  it('lists two hundred and two URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(202);
   });
 });

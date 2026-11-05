@@ -1,7 +1,7 @@
 ---
 id: hub-landscaping
 locale: en
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
@@ -18,3 +18,5 @@ For a raised bed, the second guide gives the depth for each crop, what to fill i
 For mulch, the third guide gives the depth to spread and turns a bed into cubic yards and bags of 2 or 3 cubic feet.
 
 The fourth guide shows the math behind every one of these calculators: length × width × depth in feet, divided by 27, with inches to feet and circles.
+
+The fifth guide gives the square feet one ton of gravel covers at 2, 3 and 4 in deep, compacted and loose, and the tons for an area.

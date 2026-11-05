@@ -28,6 +28,7 @@ export const GUIDES = {
   'guide-cubic-yards': { calculator: 'gravel' },
   'guide-concrete-bag-coverage': { calculator: 'concrete' },
   'guide-paint-coverage': { calculator: 'paint' },
+  'guide-gravel-coverage': { calculator: 'gravel' },
 } as const satisfies Record<string, Guide>;
 
 export type GuideId = keyof typeof GUIDES;

@@ -220,6 +220,9 @@ export const enSite = {
   'page.guide-paint-coverage.title': 'How Much Does a Gallon of Paint Cover? | Maestro Calc',
   'page.guide-paint-coverage.description':
     'One gallon of interior latex covers about 350 to 400 sq ft in one coat: square feet per gallon by coats, and the gallons and cans for a 12x12 room.',
+  'page.guide-gravel-coverage.title': 'How Much Does a Ton of Gravel Cover? | Maestro Calc',
+  'page.guide-gravel-coverage.description':
+    'One ton of gravel covers about 88 sq ft at 2 in, 59 at 3 in and 44 at 4 in, compacted: square feet per ton by depth, loose too, and the tons for an area.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

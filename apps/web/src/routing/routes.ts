@@ -92,6 +92,10 @@ export const ROUTES = {
     en: '/guides/how-much-does-a-gallon-of-paint-cover',
     es: '/es/guias/cuanto-cubre-un-galon-de-pintura',
   },
+  'guide-gravel-coverage': {
+    en: '/guides/how-much-does-a-ton-of-gravel-cover',
+    es: '/es/guias/cuanto-cubre-una-tonelada-de-grava',
+  },
   'hub-concrete': { en: '/concrete', es: '/es/concreto' },
   'hub-roofing': { en: '/roofing', es: '/es/techos' },
   'hub-drywall': { en: '/drywall', es: '/es/drywall' },
