@@ -1,10 +1,12 @@
 import { Rational, subMoney, type Money } from '@maestro-calc/core';
 import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
 import { hoursText, moneyText } from '../format.ts';
+import { differentialLinksOf } from '../long-tail/differentials.ts';
+import type { CommonLinks } from '../long-tail/jobs.ts';
 import { SHIFT_PATHS } from '../shift/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { OVERTIME_GUIDE_PATHS } from './overtime.ts';
-import { PAY_STUB_GUIDE_PATHS, SHIFT_GUIDE_PATHS } from './paths.ts';
+import { PAY_STUB_GUIDE_PATHS } from './paths.ts';
 import type { GuideSource, GuideTexts } from './texts.ts';
 
 export { SHIFT_GUIDE_PATHS } from './paths.ts';
@@ -97,6 +99,12 @@ export const SHIFT_GUIDE_LEFT_OUT = ((): {
     ),
   };
 })();
+
+/** The shift differential pages the guide lists under its body, in each language. */
+export const SHIFT_GUIDE_LINKS: Readonly<Record<Lang, CommonLinks>> = {
+  en: differentialLinksOf('en'),
+  es: differentialLinksOf('es'),
+};
 
 const forty = exampleOf('forty-hours');
 const fortyEight = exampleOf('forty-eight-hours');

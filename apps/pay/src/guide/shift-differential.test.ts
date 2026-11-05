@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DIFFERENTIALS, pathOf } from '../long-tail/routes.ts';
 import { GUIDE_CALCULATORS } from '../site-check/link-rules.ts';
 import { ROUTES } from '../routes.ts';
 import { SHIFT_PATHS, SHIFT_TEXTS } from '../shift/texts.ts';
@@ -6,6 +7,7 @@ import {
   SHIFT_GUIDE,
   SHIFT_GUIDE_EXAMPLES,
   SHIFT_GUIDE_LEFT_OUT,
+  SHIFT_GUIDE_LINKS,
   SHIFT_GUIDE_PATHS,
 } from './shift-differential.ts';
 
@@ -117,6 +119,14 @@ describe('the shift differential guide', () => {
     for (const lang of ['en', 'es'] as const) {
       expect(SHIFT_GUIDE[lang].ctas[0]?.href).toBe(SHIFT_PATHS[lang]);
       expect(SHIFT_TEXTS[lang].links.map(({ href }) => href)).toContain(SHIFT_GUIDE_PATHS[lang]);
+    }
+  });
+
+  it('lists every shift differential page in its own language', () => {
+    for (const lang of ['en', 'es'] as const) {
+      expect(SHIFT_GUIDE_LINKS[lang].links.map(({ href }) => href)).toEqual(
+        DIFFERENTIALS.map((job) => pathOf(job, lang)),
+      );
     }
   });
 
