@@ -364,29 +364,58 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(job?.['timeout-minutes']).toBeGreaterThan(0);
     expect((job as { env?: Record<string, string> } | undefined)?.env).toEqual({
       WRANGLER_SEND_METRICS: 'false',
-      SHARD: '${{ matrix.shard }}/2',
+      SHARD: '${{ matrix.shard }}/${{ matrix.total }}',
     });
   });
 
-  // The suites grew with every calculator page (#137: 29 minutes on one runner), so two runners
-  // split them: `SHARD` reaches the Playwright config, one failing half does not cancel the other,
-  // Lighthouse runs once, and each half uploads its reports under its own name.
-  it('splits the suites over two runners and runs Lighthouse once', () => {
+  // The suites grew with every page (#137: 29 minutes on one runner; two runners reached 40 on
+  // PR #304), so every suite splits over the runners of its own entries: `SHARD` reaches both
+  // Playwright configs, each suite's shards cover 1..total exactly once, the split is by test
+  // (`fullyParallel`), one failing shard does not cancel the others, Lighthouse runs once, and
+  // each entry uploads its reports under its own name.
+  it('splits each suite over its own runners and runs Lighthouse once', () => {
+    interface Entry {
+      suite: string;
+      shard: number;
+      total: number;
+    }
     const shards = job as
-      | { name?: string; strategy?: { 'fail-fast'?: boolean; matrix?: { shard?: number[] } } }
+      | { name?: string; strategy?: { 'fail-fast'?: boolean; matrix?: { include?: Entry[] } } }
       | undefined;
-    expect(shards?.name).toBe('site-browser (${{ matrix.shard }}/2)');
-    expect(shards?.strategy).toEqual({ 'fail-fast': false, matrix: { shard: [1, 2] } });
-    expect(readFileSync(fromRoot('tooling/site-browser/playwright.config.ts'), 'utf8')).toContain(
-      "process.env['SHARD']",
+    expect(shards?.name).toBe(
+      'site-browser (${{ matrix.suite }} ${{ matrix.shard }}/${{ matrix.total }})',
     );
-    const lighthouse = (job?.steps ?? []).find(({ run }) => run === 'npm run lighthouse');
-    expect(lighthouse?.if).toBe('matrix.shard == 1');
+    expect(shards?.strategy?.['fail-fast']).toBe(false);
+    const entries = shards?.strategy?.matrix?.include ?? [];
+    const suites = [...new Set(entries.map(({ suite }) => suite))];
+    expect(suites).toEqual(['web', 'pay']);
+    for (const suite of suites) {
+      const own = entries.filter((entry) => entry.suite === suite);
+      const total = own[0]?.total ?? 0;
+      expect(own.every((entry) => entry.total === total)).toBe(true);
+      expect(own.map(({ shard }) => shard)).toEqual(
+        Array.from({ length: total }, (_, index) => index + 1),
+      );
+    }
+    for (const config of ['playwright.config.ts', 'playwright.pay.config.ts']) {
+      const source = readFileSync(fromRoot(`tooling/site-browser/${config}`), 'utf8');
+      expect(source).toContain("process.env['SHARD']");
+      expect(source).toContain('fullyParallel: true');
+    }
+    const steps = job?.steps ?? [];
+    const suiteOf = (run: string): string | undefined =>
+      steps.find((candidate) => candidate.run === run)?.if;
+    expect(suiteOf('npm run test:e2e')).toBe("matrix.suite == 'web'");
+    expect(suiteOf('npm run test:e2e:pay')).toBe("matrix.suite == 'pay'");
+    const lighthouse = steps.find(({ run }) => run === 'npm run lighthouse');
+    expect(lighthouse?.if).toBe("matrix.suite == 'web' && matrix.shard == 1");
     const names = (job?.steps ?? [])
       .filter(({ uses }) => uses?.startsWith('actions/upload-artifact@'))
       .map((upload) => String(upload.with?.['name']));
     expect(names.length).toBeGreaterThan(0);
-    expect(names.every((name) => name.endsWith('-${{ matrix.shard }}'))).toBe(true);
+    expect(names.every((name) => name.endsWith('-${{ matrix.suite }}-${{ matrix.shard }}'))).toBe(
+      true,
+    );
   });
 
   it('runs the same dist that verify built, without rebuilding it', () => {
@@ -483,6 +512,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
 
   it('runs the browser tests and uploads reports only on failure', () => {
     expect(runs).toContain('npm run test:e2e');
+    expect(runs).toContain('npm run test:e2e:pay');
     const uploads = steps.filter((candidate) =>
       candidate.uses?.startsWith('actions/upload-artifact@'),
     );
