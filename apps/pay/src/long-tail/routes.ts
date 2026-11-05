@@ -64,12 +64,15 @@ export const JOBS: readonly Job[] = [
   hourly('24'),
   hourly('25'),
   hourly('26'),
+  hourly('27'),
   hourly('28'),
   hourly('30'),
+  hourly('32'),
   hourly('35'),
   hourly('40'),
   hourly('45'),
   hourly('50'),
+  hourly('60'),
   salary('30000'),
   salary('35000'),
   salary('40000'),
@@ -81,7 +84,9 @@ export const JOBS: readonly Job[] = [
   salary('70000'),
   salary('75000'),
   salary('80000'),
+  salary('85000'),
   salary('90000'),
+  salary('95000'),
   salary('100000'),
   salary('120000'),
   salary('150000'),
@@ -91,9 +96,16 @@ export const JOBS: readonly Job[] = [
   overtime('18'),
   overtime('19'),
   overtime('20'),
+  overtime('21'),
   overtime('22'),
+  overtime('23'),
+  overtime('24'),
   overtime('25'),
+  overtime('26'),
+  overtime('28'),
   overtime('30'),
+  overtime('35'),
+  overtime('40'),
 ];
 
 /**
@@ -142,6 +154,7 @@ const shift = (from: string, to: string): Shift => {
 
 /** By length, then by start: the hours calculator lists them, and a page links its nearest, so. */
 export const SHIFTS: readonly Shift[] = [
+  shift('6:00', '14:00'),
   shift('7:00', '15:00'),
   shift('8:00', '16:00'),
   shift('9:00', '17:00'),
@@ -156,6 +169,7 @@ export const SHIFTS: readonly Shift[] = [
   shift('8:00', '17:00'),
   shift('9:00', '18:00'),
   shift('10:00', '19:00'),
+  shift('6:00', '18:00'),
   shift('7:00', '19:00'),
   shift('19:00', '7:00'),
 ];
@@ -205,11 +219,37 @@ const minutes = (count: number): Minutes => ({
 /** In ascending order: the converter lists them, and a page links its nearest, so. */
 export const MINUTES: readonly Minutes[] = [10, 15, 20, 30, 40, 45, 50].map(minutes);
 
+/**
+ * An hourly rate people ask the double time of, "what is double time for $20 an hour": the
+ * overtime calculator's, under the California rule, where hours past 12 in a day pay double. Only
+ * the rate is given; every figure of its page is the engine's.
+ */
+export interface DoubleTime {
+  readonly kind: 'double';
+  readonly amount: string;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const double = (amount: string): DoubleTime => ({
+  kind: 'double',
+  amount,
+  slug: { en: `double-time-for-${amount}-an-hour`, es: `tiempo-doble-de-${amount}-la-hora` },
+});
+
+/** In ascending order: the overtime calculator lists them, and a page links its nearest, so. */
+export const DOUBLES: readonly DoubleTime[] = ['15', '18', '20', '22', '25', '30'].map(double);
+
 /** A long-tail page's job, of any family. */
-export type LongTailJob = Job | Shift | Pto | Minutes;
+export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
-export const LONG_TAIL_JOBS: readonly LongTailJob[] = [...JOBS, ...SHIFTS, ...PTOS, ...MINUTES];
+export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
+  ...JOBS,
+  ...SHIFTS,
+  ...PTOS,
+  ...MINUTES,
+  ...DOUBLES,
+];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>
   lang === 'en' ? `/pay/${job.slug.en}` : `/es/pago/${job.slug.es}`;

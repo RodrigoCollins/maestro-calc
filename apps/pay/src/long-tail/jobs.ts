@@ -5,6 +5,7 @@ import { moneyText } from '../format.ts';
 import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import { doubleLinksOf, doublePageOf } from './doubles.ts';
 import { nearestOf } from './nearest.ts';
 import { minutesLinksOf, minutesPageOf } from './minutes.ts';
 import { ptoLinksOf, ptoPageOf } from './pto.ts';
@@ -12,12 +13,14 @@ import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
 import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 
 export {
+  DOUBLES,
   JOBS,
   LONG_TAIL_JOBS,
   LONG_TAIL_ROUTES,
   MINUTES,
   PTOS,
   SHIFTS,
+  type DoubleTime,
   type Job,
   type LongTailJob,
   type Minutes,
@@ -144,10 +147,10 @@ export interface CommonLinks {
 }
 
 /**
- * A family of long-tail pages, listed together: hourly rates, salaries, overtime rates, shifts,
- * PTO days or minutes.
+ * A family of long-tail pages, listed together: hourly rates, salaries, overtime rates, double-time
+ * rates, shifts, PTO days or minutes.
  */
-export type Family = Job['per'] | 'overtime' | 'shift' | 'pto' | 'minutes';
+export type Family = Job['per'] | 'overtime' | 'double' | 'shift' | 'pto' | 'minutes';
 
 const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : job.per);
 
@@ -166,6 +169,7 @@ export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonL
   if (family === 'shift') return shiftLinksOf(lang);
   if (family === 'pto') return ptoLinksOf(lang);
   if (family === 'minutes') return minutesLinksOf(lang);
+  if (family === 'double') return doubleLinksOf(lang);
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);
@@ -236,6 +240,7 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   if (job.kind === 'shift') return shiftPageOf(job, lang);
   if (job.kind === 'pto') return ptoPageOf(job, lang);
   if (job.kind === 'minutes') return minutesPageOf(job, lang);
+  if (job.kind === 'double') return doublePageOf(job, lang);
   if (job.kind === 'overtime') return overtimePageOf(job, lang);
   const validated = payConverter.validate({ amount: job.amount, per: job.per });
   const ran = payConverter.run({ amount: job.amount, per: job.per });
