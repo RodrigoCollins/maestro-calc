@@ -17,6 +17,7 @@ import { ALKALINITY, CALCIUM, CHLORINE, PH, SALT, STABILIZER } from './doses.ts'
 import { amountText, outputText } from './format.ts';
 import type { GuideSource } from './guide.ts';
 import { SITE } from './site.config.ts';
+import { VOLUME_CHART } from './volume/chart.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 type Raw = Readonly<Record<string, string>>;
@@ -296,6 +297,11 @@ export const DOSING_CHART = {
   h1: H1,
   lead: `A 10,000 gallon pool takes ${at('liquid')} fl oz of 12.5% liquid chlorine to raise free chlorine 1 ppm, ${at('bakingSoda')} lb of baking soda to raise alkalinity 10 ppm, ${at('acid')} fl oz of muriatic acid for each drop of the acid demand test, and ${at('salt')} lb of salt to reach 3,200 ppm from fresh water. Every dose scales in a straight line: twice the gallons or twice the rise takes twice as much.`,
   gallons: { text: 'Not sure of your gallons?', href: VOLUME_TEXTS.path, label: 'Work them out' },
+  chart: {
+    text: 'or look your size up in the',
+    href: VOLUME_CHART.path,
+    label: 'pool volume chart',
+  },
   ranges: {
     text: 'The level to aim for is in the',
     href: CHEMISTRY_CHART.path,

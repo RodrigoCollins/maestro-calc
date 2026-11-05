@@ -1,0 +1,194 @@
+---
+import Layout from '../components/Layout.astro';
+import { DOSING_CHART } from '../dosing.ts';
+import { volumeJobPathOf } from '../jobs.ts';
+import { VOLUME_CHART } from '../volume/chart.ts';
+
+const {
+  title,
+  description,
+  h1,
+  lead,
+  tables,
+  assumptions,
+  shortcuts,
+  calculator,
+  method,
+  source,
+  cite,
+} = VOLUME_CHART;
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">Chart · gallons by pool size</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <p>
+      Your size is not here? <a href={calculator.href}>{calculator.label}</a>. Once you know the
+      gallons, the <a href={DOSING_CHART.path}>{DOSING_CHART.h1.toLowerCase()}</a> gives the dose of
+      each chemical.
+    </p>
+    {tables.map(({ id, caption, note, columns, rows }) => (
+      <section class="pool-dose" aria-labelledby={id}>
+        <h2 {id}>{caption}</h2>
+        <div class="pool-scroll" role="region" aria-label={`${caption} table`} tabindex="0">
+          <table class="pool-chart">
+            <thead>
+              <tr>
+                <th scope="col">Size</th>
+                {columns.map(({ head, average }) => (
+                  <th scope="col">
+                    {head}{' '}
+                    {head !== `${average} deep` && (
+                      <span class="pool-unit">(average {average})</span>
+                    )}
+                  </th>
+                ))}
+                <th scope="col">Calculator</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ label, size, cells, href }) => {
+                const job = volumeJobPathOf(size);
+                return (
+                  <tr>
+                    <th scope="row">{job === undefined ? label : <a href={job}>{label}</a>}</th>
+                    {cells.map((value) => (
+                      <td>{value}</td>
+                    ))}
+                    <td>
+                      <a href={href} aria-label={`Open the ${label} pool in the calculator`}>
+                        Open
+                      </a>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p class="pool-level-source">US gallons. {note}</p>
+      </section>
+    ))}
+    <section class="pool-dose" aria-labelledby="assumptions">
+      <h2 id="assumptions">How the gallons are worked out</h2>
+      <ul class="pool-list">
+        {assumptions.map((text) => (
+          <li>{text}</li>
+        ))}
+      </ul>
+      <p>The same figures in your head, close enough for a dose:</p>
+      <ul class="pool-list">
+        {shortcuts.map((text) => (
+          <li>{text}</li>
+        ))}
+      </ul>
+      <p>
+        <a href={method}>How it is worked out</a>, with the cases worked by hand.
+      </p>
+      <p class="pool-level-source">
+        Source: <a href={source.url}>{source.name}</a>
+      </p>
+    </section>
+    <section class="pool-dose" aria-labelledby="cite">
+      <h2 id="cite">Cite this chart</h2>
+      <p>
+        Every figure is worked out by this site’s volume calculator when the page is built. To cite
+        it:
+      </p>
+      <p class="pool-cite">
+        {cite.text} <a href={cite.url}>{cite.url}</a>
+      </p>
+    </section>
+    <p class="pool-note">
+      Every figure is an estimate for a pool of the shape and depths its table names. Measure your
+      own pool inside the walls for the closest figure.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .pool-dose {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .pool-dose h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-dose p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* a narrow phone scrolls the table, never the page */
+  .pool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-chart {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-chart th,
+  .pool-chart td {
+    padding: 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: right;
+    vertical-align: top;
+  }
+
+  .pool-chart th[scope='row'],
+  .pool-chart thead th:first-child {
+    text-align: left;
+  }
+
+  .pool-chart thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-weight: 600;
+  }
+
+  /* each link stands at least 24 px tall (WCAG 2.5.8, target size) */
+  .pool-chart a {
+    display: inline-block;
+    min-height: 1.5rem;
+  }
+
+  .pool-unit {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .pool-list {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .pool-level-source {
+    font-size: 0.875rem;
+  }
+
+  .pool-cite {
+    padding: 1rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    overflow-wrap: anywhere;
+  }
+</style>
