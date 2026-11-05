@@ -741,7 +741,7 @@ const calciumPage = (gallons: number): JobPage => {
   const raise = `from ${from.replace(' ppm', '')} to ${String(CALCIUM_TARGET)} ppm`;
   return {
     path: `/how-much-calcium-chloride-for-a-${String(gallons)}-gallon-pool`,
-    title: `How Much Calcium Chloride for a ${size} Gallon Pool? | Pool Figures`,
+    title: `How Much Calcium Chloride for ${size} Gallons? | Pool Figures`,
     description: `The pounds of calcium chloride (calcium hardness increaser) that raise calcium hardness in a ${size} gallon pool by 10, 50 or 100 ppm, and how much to add first.`,
     h1: `How much calcium chloride for a ${size} gallon pool`,
     lead: `Raising calcium hardness ${raise} in a ${size} gallon pool takes ${pounds} lb of calcium chloride flake. That is over 3 lb per 10,000 gallons, so the label splits it: add ${first} lb, run the pump 12 hours, test, then add the rest.`,

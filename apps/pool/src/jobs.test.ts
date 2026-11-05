@@ -363,6 +363,13 @@ describe('the long-tail job pages', () => {
     expect(byPath('/18x33-oval-pool-gallons').figure.value).toBe('13,959');
   });
 
+  // a search result shows about 65 characters of a title (src/site-check/seo.ts)
+  it('titles a calcium page short enough to show whole, with its gallons', () => {
+    expect(byPath('/how-much-calcium-chloride-for-a-20000-gallon-pool').title).toBe(
+      'How Much Calcium Chloride for 20,000 Gallons? | Pool Figures',
+    );
+  });
+
   // worked by hand (CALCIUM.method): gallons × raise ÷ 80,000 lb; 20,000 gal from 150 to 250 ppm
   // is 25 lb, over 3 lb per 10,000 gallons, so 6 lb go in first; from 200, 12.5 lb, 6 first; from
   // 240, 2.5 lb, all at once
