@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and nine ids, so the site
-// has two hundred and eighteen routable pages and two not-found pages.
-describe('end state of the concrete slab chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and ten ids, so the site
+// has two hundred and twenty routable pages and two not-found pages.
+describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and nine page ids, two hundred and eighteen routable paths and two hundred and twenty pages with the 404s', () => {
+  it('has a hundred and ten page ids, two hundred and twenty routable paths and two hundred and twenty-two pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -75,6 +75,7 @@ describe('end state of the concrete slab chart (site-routing-i18n › [SR1], [SR
       'roof-pitch-9-12',
       'roof-pitch-10-12',
       'roof-pitch-12-12',
+      'roof-pitch-chart',
       'square-feet-5x5',
       'square-feet-5x10',
       'square-feet-7x12',
@@ -125,10 +126,10 @@ describe('end state of the concrete slab chart (site-routing-i18n › [SR1], [SR
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(218);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(218);
+    expect(staticPaths()).toHaveLength(220);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(220);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(220);
+    expect(pageCount(ROUTES)).toBe(222);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -155,11 +156,11 @@ describe('end state of the concrete slab chart (site-routing-i18n › [SR1], [SR
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and twenty page title and description keys in %s',
+    'has exactly two hundred and twenty-two page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(220);
+      ).toHaveLength(222);
     },
   );
 
@@ -171,7 +172,7 @@ describe('end state of the concrete slab chart (site-routing-i18n › [SR1], [SR
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and eighteen URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(218);
+  it('lists two hundred and twenty URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(220);
   });
 });

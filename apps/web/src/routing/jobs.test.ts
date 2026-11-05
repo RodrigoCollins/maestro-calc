@@ -68,6 +68,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'roof-pitch-9-12',
       'roof-pitch-10-12',
       'roof-pitch-12-12',
+      'roof-pitch-chart',
     ]);
     expect(jobsOf('rectangle-area')).toEqual([
       'square-feet-5x5',
@@ -236,10 +237,34 @@ describe('job pages (growth plan › lever 1)', () => {
     }
     expect(sizes.length).toBeGreaterThanOrEqual(12);
     expect(isChartJob('concrete-slab-chart')).toBe(true);
-    expect(JOB_IDS.filter(isChartJob)).toEqual(['concrete-slab-chart']);
+    expect(JOB_IDS.filter(isChartJob)).toEqual(['concrete-slab-chart', 'roof-pitch-chart']);
     expect(ROUTES['concrete-slab-chart']).toEqual({
       en: '/concrete/slab-chart',
       es: '/es/concreto/tabla-de-losas',
+    });
+  });
+
+  // queries: "60 degree pitch", "7.5/12 pitch": a reference chart of every whole pitch from 1 to 24
+  // in 12 and every half pitch that has a job page, smallest first, each a rise over a 12 in run
+  it('charts every pitch from 1 to 24 in 12 and each half pitch of a job, smallest first', () => {
+    const { calculator, cases } = JOBS['roof-pitch-chart'];
+    expect(calculator).toBe('roof-pitch');
+    const rises = cases.map((each) => Number.parseFloat(each['rise'] ?? ''));
+    expect(rises).toEqual(rises.toSorted((a, b) => a - b));
+    expect(cases).toEqual(rises.map((rise) => ({ rise: `${String(rise)}in`, run: '12in' })));
+    const whole = Array.from({ length: 24 }, (_, index) => index + 1);
+    const halves = jobsOf('roof-pitch')
+      .filter((id) => !isChartJob(id))
+      .map((id) =>
+        Number.parseFloat(id.replace('roof-pitch-', '').replace(/-12$/, '').replace('-', '.')),
+      )
+      .filter((rise) => !Number.isInteger(rise));
+    expect(halves).toEqual([7.5]);
+    expect(rises).toEqual([...whole, ...halves].toSorted((a, b) => a - b));
+    expect(isChartJob('roof-pitch-chart')).toBe(true);
+    expect(ROUTES['roof-pitch-chart']).toEqual({
+      en: '/roofing/roof-pitch-chart',
+      es: '/es/techos/tabla-de-pendientes-de-techo',
     });
   });
 
@@ -375,7 +400,7 @@ describe('job pages (growth plan › lever 1)', () => {
 
   // query: "7.5/12 roof pitch": a rise of 7 1/2 in, written 7-5 in the id and the URL
   it('names each roof pitch job after its rise in 12', () => {
-    for (const id of jobsOf('roof-pitch')) {
+    for (const id of jobsOf('roof-pitch').filter((each) => !isChartJob(each))) {
       const rise = id.replace('roof-pitch-', '').replace(/-12$/, '');
       for (const each of JOBS[id].cases) {
         expect(each['rise'], id).toBe(`${rise.replace('-', '.')}in`);

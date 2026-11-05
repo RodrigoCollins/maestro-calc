@@ -17,6 +17,8 @@ Un techo 6/12 sube 6 pulgadas por cada 12 pulgadas de recorrido horizontal. La m
 - 6/12 son aproximadamente 26.57 grados,
 - 12/12 son exactamente 45 grados.
 
+Cada pendiente de 1/12 a 24/12, con su ángulo, su porcentaje, su multiplicador de cabio y las cubiertas que el IRC permite, y los ángulos comunes de vuelta a una pendiente en 12, están en una sola página: la [Tabla de pendientes de techo: grados, porcentaje y multiplicador del cabio](/es/techos/tabla-de-pendientes-de-techo).
+
 ## Mide la pendiente
 
 Trabaja desde el ático o desde el suelo siempre que puedas.

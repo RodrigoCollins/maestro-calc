@@ -179,6 +179,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/slab-chart',
       es: '/es/concreto/tabla-de-losas',
     });
+    expect(ROUTES['roof-pitch-chart']).toEqual({
+      en: '/roofing/roof-pitch-chart',
+      es: '/es/techos/tabla-de-pendientes-de-techo',
+    });
     expect(ROUTES['concrete-pad-4x4']).toEqual({
       en: '/concrete/4x4-pad',
       es: '/es/concreto/base-de-4x4',

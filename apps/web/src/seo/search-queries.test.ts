@@ -4,7 +4,7 @@ import { volumeText } from '../calculator/present.ts';
 import { concrete } from '../lib/concrete.ts';
 import { siteText } from '../lib/site-text.ts';
 import { jobView } from '../lib/job-view.ts';
-import { JOBS, jobsOf } from '../routing/jobs.ts';
+import { isChartJob, JOBS, jobsOf } from '../routing/jobs.ts';
 
 // Growth plan › lever 4: the title and the description of a page carry the words of the Search
 // Console queries that already show it (maestrocalc.com, 28 days to 2026-11-02), so the result
@@ -63,16 +63,27 @@ describe('titles from real queries (growth plan › lever 4)', () => {
 
   it('names the pitch of each roof pitch job page in its title', () => {
     // queries: "6 12 roof pitch calculator", "7.5/12 roof pitch" (the rise 7.5 is `7-5` in the id)
-    for (const id of jobsOf('roof-pitch')) {
+    for (const id of jobsOf('roof-pitch').filter((each) => !isChartJob(each))) {
       const pitch = id.replace('roof-pitch-', '').replace(/-12$/, '/12').replace('-', '.');
       expect(siteText('en')(`page.${id}.title`)).toContain(`${pitch} Roof Pitch`);
       expect(siteText('es')(`page.${id}.title`)).toContain(`Pendiente de techo ${pitch}`);
     }
   });
 
+  it('names the roof pitch chart after the chart, the degrees and the percent', () => {
+    // queries: "roof pitch chart", "roof pitch to degrees", "60 degree pitch", "tabla de pendientes"
+    expect(siteText('en')('page.roof-pitch-chart.title')).toContain('Roof Pitch Chart in Degrees');
+    expect(siteText('en')('page.roof-pitch-chart.heading')).toContain('pitch to degrees, percent');
+    expect(siteText('es')('page.roof-pitch-chart.title')).toContain('Tabla de pendientes de techo');
+    for (const locale of ['en', 'es'] as const) {
+      const reverse = jobView('roof-pitch-chart', locale).chart?.reverse;
+      expect(reverse?.rows.map(({ label }) => label)).toContain('60°');
+    }
+  });
+
   it('states the angle of each roof pitch job page in its title, heading and description', () => {
     // queries: "8 12 pitch in degrees", "10 12 roof pitch", "what pitch is 26 degrees"
-    for (const id of jobsOf('roof-pitch')) {
+    for (const id of jobsOf('roof-pitch').filter((each) => !isChartJob(each))) {
       for (const locale of ['en', 'es'] as const) {
         const text = siteText(locale);
         const { answer } = jobView(id, locale);

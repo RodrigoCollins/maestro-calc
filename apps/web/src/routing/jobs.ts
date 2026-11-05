@@ -158,6 +158,18 @@ const pitch = (rise: number) => {
   return [run(first), ...rest.map(run)] as const;
 };
 
+/** The rises of the roof pitch chart: every whole pitch from 1 to 24 in 12, and 7 1/2 (a job page). */
+const CHART_RISES = [...Array.from({ length: 24 }, (_, index) => index + 1), 7.5].toSorted(
+  (a, b) => a - b,
+);
+
+/** Every pitch of the chart as a rise over a 12 in run, smallest first. */
+const pitchChart = () => {
+  const pitched = (rise: number): JobCase => ({ rise: `${String(rise)}in`, run: '12in' });
+  const [, ...rest] = CHART_RISES;
+  return [pitched(1), ...rest.map(pitched)] as const;
+};
+
 /**
  * A tape measurement `first` (as a visitor types it: `29 1/4 in`, `9 ft 6 in`) divided by `factor`,
  * the number of the query, then by the others of 2, 3 and 4: halves, thirds and quarters.
@@ -313,6 +325,7 @@ export const JOBS = {
   'roof-pitch-9-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(9) },
   'roof-pitch-10-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(10) },
   'roof-pitch-12-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(12) },
+  'roof-pitch-chart': { calculator: 'roof-pitch', updated: '2026-11-05', cases: pitchChart() },
   'square-feet-5x5': {
     calculator: 'rectangle-area',
     updated: '2026-11-04',

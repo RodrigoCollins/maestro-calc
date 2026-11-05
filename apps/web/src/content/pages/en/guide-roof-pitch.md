@@ -17,6 +17,8 @@ A 6/12 roof rises 6 inches over each 12 inches of horizontal run. The same pitch
 - 6/12 is approximately 26.57 degrees,
 - 12/12 is exactly 45 degrees.
 
+Every pitch from 1/12 to 24/12, with its angle, its grade, its rafter multiplier and the coverings the IRC allows on it, and the common angles back to a pitch in 12, are on one page: the [Roof pitch chart: pitch to degrees, percent and rafter factor](/roofing/roof-pitch-chart).
+
 ## Measure the pitch
 
 Work from the attic or from the ground when you can.

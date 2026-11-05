@@ -11,7 +11,7 @@ A roofing quote has three parts: the shingles and the underlayment, everything t
 
 ## Measure the roof in squares
 
-Roofers order and price by the square, 100 square feet of roof. A roof is bigger than the footprint of the house, because it slopes: multiply the footprint by the slope factor of the pitch. A footprint 40 ft by 30 ft at 6 in 12 has 1,341.64 square feet of roof, 13.42 squares. The guide [How to measure a roof and understand its pitch](/guides/how-to-measure-roof-pitch) shows how to read the pitch on site.
+Roofers order and price by the square, 100 square feet of roof. A roof is bigger than the footprint of the house, because it slopes: multiply the footprint by the slope factor of the pitch. A footprint 40 ft by 30 ft at 6 in 12 has 1,341.64 square feet of roof, 13.42 squares. The guide [How to measure a roof and understand its pitch](/guides/how-to-measure-roof-pitch) shows how to read the pitch on site, and the [Roof pitch chart: pitch to degrees, percent and rafter factor](/roofing/roof-pitch-chart) gives the slope factor of every pitch from 1/12 to 24/12.
 
 ## Count the shingles and the underlayment
 

@@ -46,7 +46,7 @@ export const groupedInteger = (value: bigint): string =>
   String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 /** `value` rounded to `places` decimals (ties away from zero), with the integer part grouped on request. */
-const decimalText = (value: Rational, places: number, grouped: boolean): string => {
+export const decimalText = (value: Rational, places: number, grouped: boolean): string => {
   const { negative, integer, fraction } = toDecimalParts(value, places);
   const whole = grouped ? groupedInteger(integer) : String(integer);
   return `${negative ? '-' : ''}${whole}${places === 0 ? '' : `.${fraction}`}`;
