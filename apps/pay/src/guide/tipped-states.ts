@@ -17,6 +17,11 @@ export const TIPPED_STATES_SOURCES = {
     label: 'New York State Department of Labor, Minimum Wage',
     href: 'https://dol.ny.gov/minimum-wage-0',
   },
+  fl: {
+    label:
+      'Florida Constitution, Article X, Section 24 (Florida minimum wage: $15.00 from September 30, 2026)',
+    href: 'https://www.flsenate.gov/Laws/Constitution',
+  },
 } as const satisfies Readonly<Record<string, GuideSource>>;
 
 type Words = Readonly<Record<Lang, string>>;
@@ -65,7 +70,8 @@ const percent = (share: number): Words => ({
 /**
  * The 50 states and DC, copied from the DOL table "Minimum Wages for Tipped Employees" (last
  * revised July 1, 2026); New York, which the DOL table sends to the state, from the New York State
- * Department of Labor (food service workers). The notes restate the table's own notes.
+ * Department of Labor (food service workers); Florida, whose $15.00 of September 30, 2026 the DOL
+ * table only footnotes, from Article X, Section 24 of the Florida Constitution. The notes restate the table's own notes.
  */
 export const TIPPED_STATES: readonly TippedState[] = [
   row('Alabama', 'Alabama', [213, 512, 725], NO_STATE_LAW),
@@ -83,10 +89,16 @@ export const TIPPED_STATES: readonly TippedState[] = [
     en: 'The cash wage is at least 56% of the standard minimum wage.',
     es: 'El salario en efectivo es al menos el 56% del salario mínimo estándar.',
   }),
-  row('Florida', 'Florida', [1098, 302, 1400], {
-    en: 'The rates of the DOL table; its note says the minimum wage rises to $15.00 on September 30, 2026.',
-    es: 'Las tarifas de la tabla del DOL; su nota dice que el salario mínimo sube a $15.00 el 30 de septiembre de 2026.',
-  }),
+  row(
+    'Florida',
+    'Florida',
+    [1198, 302, 1500],
+    {
+      en: 'Since September 30, 2026, under the state constitution; the tip credit stays at the 2003 federal amount, $3.02. The DOL table still shows the earlier $14.00.',
+      es: 'Desde el 30 de septiembre de 2026, según la constitución del estado; el crédito por propinas sigue en el monto federal de 2003, $3.02. La tabla del DOL aún muestra los $14.00 anteriores.',
+    },
+    'fl',
+  ),
   row('Georgia', 'Georgia', [213, 512, 725], {
     en: 'The state minimum wage law does not apply to tipped employees; the federal rates apply.',
     es: 'La ley estatal de salario mínimo no se aplica a quien recibe propinas; se aplican las tarifas federales.',
@@ -248,7 +260,7 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     kicker: 'Tipped pay · data',
     h1: 'Tipped minimum wage by state, 2026',
     lead: `The federal tipped minimum wage is $2.13 an hour in cash, with a tip credit of up to $5.12 toward the $7.25 minimum wage. ${String(noCredit)} states allow no tip credit, ${String(federal)} states use the federal $2.13 cash wage, and the highest cash wage is ${centsText(highest.cash)} in ${highest.name.en}.`,
-    asOf: 'Figures from the U.S. Department of Labor table “Minimum Wages for Tipped Employees”, last revised July 1, 2026; New York from the New York State Department of Labor. Checked November 5, 2026. Many states change their rates on January 1.',
+    asOf: 'Figures from the U.S. Department of Labor table “Minimum Wages for Tipped Employees”, last revised July 1, 2026; New York from the New York State Department of Labor; Florida from Article X, Section 24 of the Florida Constitution ($15.00 since September 30, 2026). Checked November 5, 2026. Many states change their rates on January 1.',
     table: {
       caption: 'Tipped minimum wage by state, per hour',
       state: 'State',
@@ -276,7 +288,8 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies publish, not legal advice. Rates change, often on January 1: check your state’s labor department.',
-    reviewed: 'Checked against the Department of Labor pages on November 5, 2026.',
+    reviewed:
+      'Checked against the Department of Labor pages and the Florida Constitution on November 5, 2026.',
     ctas: [
       { label: 'Open the tipped wage calculator', href: TIPPED_PATHS.en },
       { label: 'How the tip credit works', href: TIP_CREDIT_GUIDE_PATHS.en },
@@ -290,7 +303,7 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     kicker: 'Pago con propinas · datos',
     h1: 'Salario mínimo con propinas por estado, 2026',
     lead: `El salario mínimo federal con propinas es $2.13 la hora en efectivo, con un crédito por propinas de hasta $5.12 para llegar al mínimo de $7.25. ${String(noCredit)} estados no permiten crédito por propinas, ${String(federal)} estados usan el salario federal en efectivo de $2.13, y el salario en efectivo más alto es ${centsText(highest.cash)} en ${highest.name.es}.`,
-    asOf: 'Cifras de la tabla del Departamento de Trabajo de EE. UU. “Minimum Wages for Tipped Employees”, revisada el 1 de julio de 2026; Nueva York, del Departamento de Trabajo del Estado de Nueva York. Revisado el 5 de noviembre de 2026. Muchos estados cambian sus tarifas el 1 de enero.',
+    asOf: 'Cifras de la tabla del Departamento de Trabajo de EE. UU. “Minimum Wages for Tipped Employees”, revisada el 1 de julio de 2026; Nueva York, del Departamento de Trabajo del Estado de Nueva York; Florida, del artículo X, sección 24 de la Constitución de Florida ($15.00 desde el 30 de septiembre de 2026). Revisado el 5 de noviembre de 2026. Muchos estados cambian sus tarifas el 1 de enero.',
     table: {
       caption: 'Salario mínimo con propinas por estado, por hora',
       state: 'Estado',
@@ -318,7 +331,8 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Un resumen de lo que publican estas agencias, no asesoría legal. Las tarifas cambian, a menudo el 1 de enero: consulta al departamento de trabajo de tu estado.',
-    reviewed: 'Revisado con las páginas del Departamento de Trabajo el 5 de noviembre de 2026.',
+    reviewed:
+      'Revisado con las páginas del Departamento de Trabajo y la Constitución de Florida el 5 de noviembre de 2026.',
     ctas: [
       { label: 'Abrir la calculadora de propinas por hora', href: TIPPED_PATHS.es },
       { label: 'Cómo funciona el crédito por propinas', href: TIP_CREDIT_GUIDE_PATHS.es },
