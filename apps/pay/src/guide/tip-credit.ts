@@ -6,7 +6,7 @@ import { tippedLinksOf } from '../long-tail/tipped.ts';
 import { TIPPED_PATHS } from '../tipped/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { OVERTIME_GUIDE_PATHS } from './overtime.ts';
-import { PAY_STUB_GUIDE_PATHS } from './paths.ts';
+import { PAY_STUB_GUIDE_PATHS, TIPPED_STATES_GUIDE_PATHS } from './paths.ts';
 import type { GuideSource, GuideTexts } from './texts.ts';
 
 export { TIP_CREDIT_GUIDE_PATHS } from './paths.ts';
@@ -136,7 +136,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'The $2.13 cash wage, the $5.12 tip credit and when your employer must top you up to $7.25 an hour. Overtime for tipped workers, with worked weeks.',
     kicker: 'Tipped pay · guide',
     h1: 'Tipped minimum wage and the tip credit: when your employer must top up',
-    lead: 'If you earn tips, your employer may pay you less than the minimum wage in cash and count part of your tips toward it. This guide shows what federal law allows, what your employer must tell you first, when it has to make up the difference, and how your overtime is figured.',
+    lead: 'If you earn tips, federal law lets your employer pay you $2.13 an hour in cash and count up to $5.12 an hour of your tips toward the $7.25 minimum wage; if your tips fall short in a workweek, it must make up the difference. This guide shows what your employer must tell you first and how your overtime is figured.',
     sections: [
       {
         id: 'cash-wage-and-tip-credit',
@@ -202,6 +202,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     reviewed: 'Checked against the eCFR and Department of Labor pages on November 5, 2026.',
     ctas: [
       { label: 'Open the tipped wage calculator', href: TIPPED_PATHS.en },
+      { label: 'Tipped minimum wage by state, 2026', href: TIPPED_STATES_GUIDE_PATHS.en },
       { label: 'How overtime is calculated', href: OVERTIME_GUIDE_PATHS.federal.en },
       { label: 'How to read your pay stub', href: PAY_STUB_GUIDE_PATHS.en },
     ],
@@ -213,7 +214,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'El salario en efectivo de $2.13, el crédito por propinas de $5.12 y cuándo tu empleador debe completar $7.25 la hora. Horas extra con propinas, con ejemplos.',
     kicker: 'Pago con propinas · guía',
     h1: 'Salario mínimo con propinas y el crédito por propinas: cuándo tu empleador debe completar',
-    lead: 'Si recibes propinas, tu empleador puede pagarte en efectivo menos que el salario mínimo y contar parte de tus propinas para llegar a él. Esta guía muestra qué permite la ley federal, qué debe avisarte tu empleador antes, cuándo tiene que completar la diferencia y cómo se calculan tus horas extra.',
+    lead: 'Si recibes propinas, la ley federal permite que tu empleador te pague $2.13 la hora en efectivo y cuente hasta $5.12 la hora de tus propinas para llegar al salario mínimo de $7.25; si tus propinas no alcanzan en una semana laboral, debe completar la diferencia. Esta guía muestra qué debe avisarte tu empleador antes y cómo se calculan tus horas extra.',
     sections: [
       {
         id: 'salario-en-efectivo-y-credito',
@@ -280,6 +281,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Revisada con el eCFR y páginas del Departamento de Trabajo el 5 de noviembre de 2026.',
     ctas: [
       { label: 'Abrir la calculadora de propinas por hora', href: TIPPED_PATHS.es },
+      { label: 'Salario mínimo con propinas por estado, 2026', href: TIPPED_STATES_GUIDE_PATHS.es },
       { label: 'Cómo se calculan las horas extra', href: OVERTIME_GUIDE_PATHS.federal.es },
       { label: 'Cómo leer tu talón de pago', href: PAY_STUB_GUIDE_PATHS.es },
     ],

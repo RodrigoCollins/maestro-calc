@@ -1,13 +1,13 @@
 ---
 id: guide-gravel-driveway
 locale: es
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # ¿Cuánta grava lleva una entrada de autos?
 
-Una entrada de grava son unas pocas capas de grava, cada una esparcida y compactada, con una forma que saca el agua. Cuánto pides sale del tamaño de la entrada y del espesor de cada capa; cuánto dura depende sobre todo de la grava de arriba y de mantenerla sin agua.
+Una entrada de grava de 60 ft de largo y 10 ft de ancho lleva unas 14.23 toneladas de grava por cada capa compactada de 4 in de espesor, con un 5 por ciento de extra. La entrada son unas pocas capas así, cada una esparcida y compactada, con una forma que saca el agua; cuánto dura depende sobre todo de la grava de arriba y de mantenerla sin agua.
 
 ## Planea las capas
 

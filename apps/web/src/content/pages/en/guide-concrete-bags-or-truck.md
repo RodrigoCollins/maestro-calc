@@ -1,13 +1,13 @@
 ---
 id: guide-concrete-bags-or-truck
 locale: en
-updated: 2026-10-31
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # Concrete: bags or a truck?
 
-For a small pour, bags are usually simpler. For a big one, a ready-mix truck is. In between, the answer depends on what the plant charges for a small load, so it pays to do the math before you buy.
+Under about 1 cubic yard, bags of concrete mix usually win; for several cubic yards, a ready-mix truck usually does. One cubic yard takes about 45 bags of 80 lb, so in between, compare what the plant charges for a small load with the price of the bags before you buy.
 
 ## Start with the volume
 

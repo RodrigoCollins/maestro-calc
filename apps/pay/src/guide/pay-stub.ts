@@ -134,7 +134,7 @@ export const PAY_STUB_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Gross pay, hours and rates, the overtime line, pre-tax and after-tax deductions, federal withholding, Social Security and Medicare, net pay and YTD.',
     kicker: 'Pay stub · guide',
     h1: 'How to read your pay stub, line by line',
-    lead: 'A pay stub shows what you earned in the pay period, what came out of it and why. This guide walks through each line, with the 2026 Social Security and Medicare rates, and works a sample stub at the end.',
+    lead: 'A pay stub shows your gross pay for the pay period, what came out of it, such as Social Security at 6.2% and Medicare at 1.45% in 2026, and the net pay left. This guide walks through each line and works a sample stub at the end.',
     sections: [
       {
         id: 'gross-pay',
@@ -230,7 +230,7 @@ export const PAY_STUB_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Pago bruto, horas y tarifas, la línea de horas extra, deducciones antes y después de impuestos, retención federal, Seguro Social, Medicare, neto y YTD.',
     kicker: 'Talón de pago · guía',
     h1: 'Cómo leer tu talón de pago, línea por línea',
-    lead: 'El talón de pago (pay stub) muestra lo que ganaste en el período de pago, lo que se descontó y por qué. Esta guía repasa cada línea, con las tasas de Seguro Social y Medicare de 2026, y resuelve un talón de ejemplo al final.',
+    lead: 'El talón de pago (pay stub) muestra tu pago bruto del período de pago, lo que se descontó, como el Seguro Social al 6.2% y Medicare al 1.45% en 2026, y el pago neto que queda. Esta guía repasa cada línea y resuelve un talón de ejemplo al final.',
     sections: [
       {
         id: 'pago-bruto',

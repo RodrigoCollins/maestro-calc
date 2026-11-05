@@ -1,13 +1,13 @@
 ---
 id: guide-mulch
 locale: en
-updated: 2026-11-04
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # How much mulch do I need?
 
-Mulch is sold by volume: in bags marked with the cubic feet they hold, or in bulk by the cubic yard. How much you need is the area of the bed times the depth you spread it, so measure the bed, choose the depth and multiply.
+A bed 20 ft by 4 ft, mulched 3 in deep, takes 20.00 cubic feet of mulch: 21.00 with 5 percent extra, or 11 bags of 2 cubic feet. Mulch is sold by volume, in bags marked with the cubic feet they hold or in bulk by the cubic yard, so measure the bed, choose the depth and multiply.
 
 ## Measure the bed
 

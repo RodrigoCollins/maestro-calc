@@ -1132,6 +1132,74 @@ describe('job page structured data (growth › job pages › check:site)', () =>
     ).toEqual([TRAIL_EN]);
   });
 
+  // a reference chart (`-chart`) adds one Dataset named by its h1 at its canonical
+  describe('a chart page', () => {
+    const CHART = 'concrete-slab-chart.html';
+    const chartProblemsAfter = (edit: (graph: Node[]) => Node[]) => {
+      const base = jobSite();
+      const site = {
+        ...base,
+        routes: {
+          ...base.routes,
+          'concrete-slab-chart': { en: '/concrete-slab-chart', es: '/es/tabla-de-losas' },
+        },
+        updates: {
+          ...base.updates,
+          'en/concrete-slab-chart': '2026-11-05',
+          'es/concrete-slab-chart': '2026-11-05',
+        },
+        jobs: { ...base.jobs, 'concrete-slab-chart': 'concrete' },
+      };
+      const dist = validDist(site);
+      dist.set(
+        CHART,
+        (dist.get(CHART) ?? '').replace(LD, (_match, json: string) => {
+          const graph = JSON.parse(json) as Graph;
+          return `<script type="application/ld+json">${JSON.stringify({ ...graph, '@graph': edit(graph['@graph']) })}</script>`;
+        }),
+      );
+      return contentProblems(contextOf(dist, site));
+    };
+
+    it('accepts its BreadcrumbList and its Dataset', () => {
+      expect(chartProblemsAfter((graph) => graph)).toEqual([]);
+    });
+
+    it('requires the Dataset, named by the h1 at the canonical, with a description', () => {
+      expect(
+        messagesOf(
+          chartProblemsAfter((graph) => graph.filter((node) => node['@type'] !== 'Dataset')),
+          CHART,
+        ),
+      ).toEqual(['expected exactly one Dataset, found 0']);
+      expect(
+        messagesOf(
+          chartProblemsAfter((graph) =>
+            graph.map((node) =>
+              node['@type'] === 'Dataset'
+                ? { ...node, name: 'Other', url: 'https://maestrocalc.com/', description: '' }
+                : node,
+            ),
+          ),
+          CHART,
+        ),
+      ).toEqual([
+        'the Dataset name must be the h1',
+        'the Dataset url must be the canonical',
+        'the Dataset needs a description',
+      ]);
+    });
+
+    it('keeps the Dataset off a job of one size', () => {
+      expect(
+        messagesOf(
+          jobProblemsAfter({ [JOB_PAGE]: (graph) => [...graph, { '@type': 'Dataset' }] }),
+          JOB_PAGE,
+        ),
+      ).toEqual(['Dataset is not allowed on this page']);
+    });
+  });
+
   it('names the trail in the language of the page', () => {
     expect(
       messagesOf(

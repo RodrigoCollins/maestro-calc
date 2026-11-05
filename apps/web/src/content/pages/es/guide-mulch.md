@@ -1,13 +1,13 @@
 ---
 id: guide-mulch
 locale: es
-updated: 2026-11-04
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # ¿Cuánto mulch necesito?
 
-El mulch se vende por volumen: en bolsas marcadas con los pies cúbicos que traen, o a granel por yarda cúbica. Cuánto necesitas es el área del cantero por la profundidad a la que lo esparces, así que mide el cantero, elige la profundidad y multiplica.
+Un cantero de 20 ft por 4 ft, con mulch de 3 in de profundidad, lleva 20.00 pies cúbicos de mulch: 21.00 con un 5 por ciento de extra, u 11 bolsas de 2 pies cúbicos. El mulch se vende por volumen, en bolsas marcadas con los pies cúbicos que traen o a granel por yarda cúbica, así que mide el cantero, elige la profundidad y multiplica.
 
 ## Mide el cantero
 

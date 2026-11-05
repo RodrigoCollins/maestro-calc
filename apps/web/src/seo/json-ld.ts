@@ -128,26 +128,65 @@ export const guideJsonLd = (
   };
 };
 
+/** What the `Dataset` of a reference chart needs beyond the page: see `isChartJob`. */
+export interface JobDataset {
+  /** The description of the page: its `page.<id>.description`. */
+  readonly description: string;
+  /** The day the figures were last checked. */
+  readonly updated: string;
+  /** The published source the figures rest on (a data sheet). */
+  readonly basedOn: string;
+}
+
 /** What the structured data of a job page needs: its page id, its h1 and the pages above it. */
 export interface JobPage {
   readonly id: string;
   readonly name: string;
   /** The pages between the home and the job: its calculator's hub, then its calculator. */
   readonly trail: readonly Crumb[];
+  /** A reference chart only: what its `Dataset` says. */
+  readonly dataset?: JobDataset;
 }
 
 /**
  * The `@graph` of a job page (growth plan, lever 1): its breadcrumb, home → hub → calculator →
- * job, and nothing else; its table of figures is no FAQ, how-to or product.
+ * job; its table of figures is no FAQ, how-to or product. A reference chart adds a `Dataset`
+ * created by the organization, named by its h1 at its canonical. Never a license, a rating or an
+ * image.
  */
 export const jobJsonLd = (
-  { id, name, trail }: JobPage,
+  { id, name, trail, dataset }: JobPage,
   locale: Locale,
   routes: RouteTable = ROUTES,
-) => ({
-  '@context': 'https://schema.org',
-  '@graph': [breadcrumbOf(name, urlOf(pathOf(id, locale, routes)), locale, routes, trail)],
-});
+) => {
+  const canonical = urlOf(pathOf(id, locale, routes));
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      breadcrumbOf(name, canonical, locale, routes, trail),
+      ...(dataset === undefined
+        ? []
+        : [
+            {
+              '@type': 'Dataset',
+              name,
+              description: dataset.description,
+              url: canonical,
+              inLanguage: LOCALE_TAGS[locale],
+              dateModified: dataset.updated,
+              isAccessibleForFree: true,
+              isBasedOn: dataset.basedOn,
+              creator: {
+                '@type': 'Organization',
+                '@id': ORGANIZATION_ID,
+                name: SITE.name,
+                url: SITE.url,
+              },
+            },
+          ]),
+    ],
+  };
+};
 
 /** JSON for a `<script type="application/ld+json">`: `</script>` and entities cannot be injected. */
 export const serializeJsonLd = (value: unknown): string =>

@@ -1,13 +1,13 @@
 ---
 id: guide-cubic-yards
 locale: es
-updated: 2026-11-04
+updated: 2026-11-05
 ownerReview: approved
 ---
 
 # Cómo calcular yardas cúbicas
 
-El concreto, la grava, la tierra para jardín y el mulch se piden por yarda cúbica, y la cuenta detrás de cada uno es la misma: calcula el volumen en pies cúbicos y divídelo entre 27. Mide en pies, multiplica, divide.
+Las yardas cúbicas son largo × ancho × profundidad en pies, divididos entre 27: una losa de 10 ft por 10 ft y 4 in de espesor son 33.33 pies cúbicos, o 1.23 yardas cúbicas. El concreto, la grava, la tierra para jardín y el mulch se piden por yarda cúbica, y la cuenta es la misma para todos: mide en pies, multiplica, divide.
 
 ## Usa la fórmula
 

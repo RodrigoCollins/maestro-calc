@@ -4,6 +4,7 @@ import {
   sourceTypography,
   type FaqItem,
 } from '../content/faq-shape.ts';
+import { isChartId } from '../routing/jobs.ts';
 import { LOCALE_TAGS, LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { alternatesIn, attr, hasWord, visibleText } from './dom.ts';
 import { urlOfPage } from './files.ts';
@@ -41,6 +42,8 @@ const GUIDE_TYPES = ['Article', 'BreadcrumbList'];
 
 /** The one type of a job page: its trail (growth › job pages). */
 const JOB_TYPES = ['BreadcrumbList'];
+/** A reference chart is a job page that is also a dataset. */
+const CHART_TYPES = [...JOB_TYPES, 'Dataset'];
 
 /** What the `WebApplication` may never claim: it is a free tool without ratings, offers or images. */
 const WEB_APPLICATION_FORBIDDEN = ['offers', 'aggregateRating', 'review', 'ratingValue', 'image'];
@@ -447,7 +450,8 @@ const jobNodeProblems = (
   nodes: readonly Node[],
   trail: ReturnType<typeof jobTrailOf>,
 ): string[] =>
-  typedNodeProblems(nodes, JOB_TYPES, {
+  typedNodeProblems(nodes, isChartId(page.id) ? CHART_TYPES : JOB_TYPES, {
+    Dataset: (dataset) => datasetProblems(page, site, dataset),
     BreadcrumbList: (list) => {
       const shown = nodesIn(list['itemListElement']).map((item) => [
         item['position'],
@@ -464,6 +468,15 @@ const jobNodeProblems = (
           ];
     },
   });
+
+/** The Dataset of a reference chart: named by its h1, at its canonical, with a description. */
+const datasetProblems = (page: Page, site: Site, dataset: Node): string[] => [
+  ...(dataset['name'] === headingOf(page) ? [] : ['the Dataset name must be the h1']),
+  ...(dataset['url'] === urlOfPage(page, site) ? [] : ['the Dataset url must be the canonical']),
+  ...(typeof dataset['description'] === 'string' && dataset['description'] !== ''
+    ? []
+    : ['the Dataset needs a description']),
+];
 
 /** The visible breadcrumb of a job page links each page of its trail, then names the page. */
 const visibleTrailProblems = (page: Page, trail: ReturnType<typeof jobTrailOf>): string[] => {

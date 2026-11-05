@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Locale } from '@maestro-calc/i18n';
+import { isChartId } from '../../routing/jobs.ts';
 import { FOOTER_HUBS, FOOTER_PAGES, HEADER_PAGES, linksFor } from '../../routing/links.ts';
 import {
   alternatesOf,
@@ -332,7 +333,10 @@ const jobTrailOf = (id: string, locale: Locale, site: Site) => {
   ];
 };
 
-/** The one JSON-LD node of a valid job page: its breadcrumb, home → hub → calculator → job. */
+/**
+ * The JSON-LD of a valid job page: its breadcrumb, home → hub → calculator → job, and the Dataset
+ * of a reference chart.
+ */
 export const jobJsonLdOf = (id: string, locale: Locale, site: Site) => ({
   '@context': 'https://schema.org',
   '@graph': [
@@ -343,6 +347,16 @@ export const jobJsonLdOf = (id: string, locale: Locale, site: Site) => ({
         { name: headingOf(id), item: urlOf(pathOf(id, locale, site.routes)) },
       ].map((item, index) => ({ '@type': 'ListItem', position: index + 1, ...item })),
     },
+    ...(isChartId(id)
+      ? [
+          {
+            '@type': 'Dataset',
+            name: headingOf(id),
+            description: `Description of ${id}`,
+            url: urlOf(pathOf(id, locale, site.routes)),
+          },
+        ]
+      : []),
   ],
 });
 

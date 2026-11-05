@@ -10,7 +10,7 @@ import { gravel } from '../lib/gravel.ts';
 import { paint } from '../lib/paint.ts';
 import { roofing } from '../lib/roofing.ts';
 import { HUBS, hubOfCalculator } from './hubs.ts';
-import { isJobPage, JOB_IDS, JOBS, jobsOf } from './jobs.ts';
+import { isChartJob, isJobPage, JOB_IDS, JOBS, jobsOf } from './jobs.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, templateOf } from './templates.ts';
 
@@ -207,6 +207,40 @@ describe('job pages (growth plan › lever 1)', () => {
       expect(ROUTES[id].en, id).toBe(`/concrete/${size}-slab`);
       expect(ROUTES[id].es, id).toBe(`/es/concreto/losa-de-${size}`);
     }
+  });
+
+  // a reference chart (growth plan, links): every slab size of the slab jobs and the common sizes
+  // around them, smallest first, each at 4, 5 and 6 in thick, in one table a site can link to
+  it('charts every slab size by area, smallest first, at 4, 5 and 6 in thick', () => {
+    const { calculator, cases } = JOBS['concrete-slab-chart'];
+    expect(calculator).toBe('concrete');
+    const sizes = [
+      ...new Set(cases.map((each) => `${each['length'] ?? ''}x${each['width'] ?? ''}`)),
+    ];
+    const sides = (size: string): number[] => size.split('x').map((side) => Number.parseInt(side));
+    const area = (size: string): number => (sides(size)[0] ?? 0) * (sides(size)[1] ?? 0);
+    expect(sizes.map(area)).toEqual(sizes.map(area).toSorted((a, b) => a - b));
+    expect(cases).toEqual(
+      sizes.flatMap((size) =>
+        ['4in', '5in', '6in'].map((thickness) => {
+          const [length, width] = size.split('x');
+          return { length: length ?? '', width: width ?? '', thickness };
+        }),
+      ),
+    );
+    const bySides = JOB_IDS.filter((id) => /^concrete-slab-\d+x\d+$/.test(id)).map((id) =>
+      id.replace('concrete-slab-', ''),
+    );
+    for (const size of [...bySides, '4x4']) {
+      expect(sizes, size).toContain(size.replace(/(\d+)/g, '$1ft'));
+    }
+    expect(sizes.length).toBeGreaterThanOrEqual(12);
+    expect(isChartJob('concrete-slab-chart')).toBe(true);
+    expect(JOB_IDS.filter(isChartJob)).toEqual(['concrete-slab-chart']);
+    expect(ROUTES['concrete-slab-chart']).toEqual({
+      en: '/concrete/slab-chart',
+      es: '/es/concreto/tabla-de-losas',
+    });
   });
 
   // query: "how many bags of concrete for a footing": a continuous footing of the calculator, its
