@@ -292,6 +292,25 @@ describe('contrast (site-shell › [SS7, SS14, SS16])', () => {
   });
 });
 
+describe('the printed page chrome (calculator-page › Print)', () => {
+  // The calculator pages and the other pages have route files of their own, so calculator.css no
+  // longer reaches a trust, guide or job page: the chrome rule of the print sheet lives in base.css,
+  // which every page carries, and every page prints on white without the skip link, header and footer.
+  it('leaves the skip link, the header and the footer out of every printed page, on white', () => {
+    const print = new Map(mediaRulesOf(base)).get('print');
+    expect(print?.get('html body')?.['background']).toBe('#fff');
+    for (const selector of ['body .skip-link', 'body .site-header', 'body .site-footer']) {
+      expect(print?.get(selector)?.['display'], selector).toBe('none');
+    }
+    const calculatorPrint = new Map(mediaRulesOf(read('calculator.css'))).get('print');
+    expect(
+      [...(calculatorPrint?.keys() ?? [])].filter(
+        (selector) => selector.startsWith('body') || selector.startsWith('html'),
+      ),
+    ).toEqual([]);
+  });
+});
+
 describe('skip link styles (site-shell › Skip link)', () => {
   it('is off-screen until it has focus, then visible', () => {
     expect(baseRules.get('.skip-link')?.['transform']).toBe('translateY(-150%)');

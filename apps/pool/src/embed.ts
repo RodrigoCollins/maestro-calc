@@ -1,5 +1,15 @@
 import { embedPathOf, embedSnippetOf } from '@maestro-calc/site-kit/embed';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { SITE } from './site.config.ts';
@@ -20,6 +30,7 @@ const CALCULATORS: Readonly<Record<string, { readonly name: string; readonly hei
   [PH.path]: { name: PH.h1, height: 1300 },
   [ALKALINITY.path]: { name: ALKALINITY.h1, height: 1100 },
   [STABILIZER.path]: { name: STABILIZER.h1, height: 1100 },
+  [CALCIUM.path]: { name: CALCIUM.h1, height: 1200 },
   [HEATER.path]: { name: HEATER.h1, height: 1100 },
   [FILL_TIME.path]: { name: FILL_TIME.h1, height: 1000 },
 };

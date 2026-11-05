@@ -191,3 +191,17 @@ main {
   content: '/';
   margin-right: var(--space-2);
 }
+
+/* Print (calculator-page › Print): every page prints on white without the page chrome; the
+   calculator sheet of calculator.css adds what a calculator page leaves out. */
+@media print {
+  html body {
+    background: #fff;
+  }
+
+  body .skip-link,
+  body .site-header,
+  body .site-footer {
+    display: none;
+  }
+}

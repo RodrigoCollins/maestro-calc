@@ -11,6 +11,7 @@ import { pageView } from '../lib/pages.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { calculatorJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import CatchAll from '../pages/[...path].astro';
+import CalculatorRoute from '../pages/[calculator].astro';
 import CalculatorView from './CalculatorView.astro';
 
 /** `rectangle-area` as `RectangleArea`: the name of the island file `<Id>Script.astro`. */
@@ -187,11 +188,11 @@ describe('CalculatorView script (site-shell › [SS20])', () => {
   });
 });
 
-describe('catch-all page (site-routing-i18n › [SR18])', () => {
+describe('route files (site-routing-i18n › [SR18])', () => {
   // spec: site-routing-i18n › [SR18] concrete takes the calculator template, every other id its own
   it('renders the concrete id with the calculator template', async () => {
     const document = await renderComponent(
-      CatchAll,
+      CalculatorRoute,
       { id: 'concrete', locale: 'en' },
       { partial: false },
     );

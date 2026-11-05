@@ -206,6 +206,35 @@ export const STABILIZER: DosePage = {
   note: 'The dose is for a product of 100% cyanuric acid. Read the label of yours: for a liquid or blended stabilizer, divide the dose by its percent and multiply by 100. Dichlor and trichlor add CYA too.',
 };
 
+export const CALCIUM: DosePage = {
+  path: '/pool-calcium-hardness-calculator',
+  title: 'Calcium Hardness Calculator: Calcium Chloride Dose | Pool Figures',
+  description:
+    'How many pounds of calcium chloride raise your pool’s calcium hardness from its reading to the target, at the dose of an increaser label.',
+  kicker: 'Calcium hardness · free',
+  h1: 'Pool calcium hardness calculator',
+  lead: 'Type your pool gallons, today’s calcium hardness and the level you want. You get the pounds of calcium chloride to add, and how much of it to add first.',
+  fields: {
+    gallons,
+    current: { label: 'Calcium hardness now (ppm)' },
+    target: { label: 'Target (ppm)' },
+  },
+  results: [
+    { key: 'pounds', label: 'Calcium chloride to add', unit: 'LB' },
+    { key: 'ounces', label: 'Ounces', unit: 'oz' },
+    { key: 'firstAddition', label: 'Add this first, then wait 12 hours', unit: 'lb' },
+  ],
+  warnings: {
+    dilutionToLower:
+      'Your calcium hardness is over the target. Calcium does not wear off and no product takes it out: the only way to lower it is to drain part of the water and refill with softer water.',
+    splitDose:
+      'That is more than 3 lb per 10,000 gallons, so the label splits it: add the first amount, let the pump run at least 12 hours, test again, then add the rest the same way.',
+  },
+  method:
+    'From the label of a calcium hardness increaser (ClearView, Oreq Corporation): 2 oz of calcium chloride flake per 1,000 gallons raises calcium hardness 10 ppm, which is 1.25 lb per 10 ppm per 10,000 gallons. Pounds = gallons × (target − reading) ÷ 80,000. Checked against the chemistry: 10 ppm as calcium carbonate in 10,000 gallons takes 0.925 lb of pure calcium chloride, 1.25 lb of a 74% flake.',
+  note: `Hayward’s AquaRite manual keeps calcium hardness at 200 to 400 ppm; for public pools, ${CODE} caps it at 2,500 ppm. The dose is for calcium chloride flake, the usual calcium hardness increaser; an anhydrous product (94% or more) is stronger, so follow the label of yours. Dissolve it first, about ½ lb to a gallon of water, and pour it into the deep end with the pump running.`,
+};
+
 export const HEATER: DosePage = {
   path: '/pool-heater-size-calculator',
   title: 'Pool Heater Size Calculator: BTU per Hour | Pool Figures',

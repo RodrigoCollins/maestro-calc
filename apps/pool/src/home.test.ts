@@ -1,7 +1,17 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+} from './doses.ts';
 import { HOME_TOOLS, NAV_LINKS } from './home.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -20,6 +30,7 @@ describe('home calculator cards', () => {
       PH.path,
       ALKALINITY.path,
       STABILIZER.path,
+      CALCIUM.path,
       HEATER.path,
       FILL_TIME.path,
     ]);
