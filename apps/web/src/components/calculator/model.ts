@@ -125,6 +125,8 @@ export interface BreadcrumbView {
   readonly label: string;
   readonly homeLabel: string;
   readonly homeHref: string;
+  /** The pages between the home and this one, in order: a job page's hub and calculator. */
+  readonly trail?: readonly { readonly href: string; readonly label: string }[];
   readonly current: string;
 }
 

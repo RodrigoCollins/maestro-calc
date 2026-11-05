@@ -7,6 +7,7 @@ export const PAGES = [
   '/pool-water-chemistry-chart',
   '/how-long-to-run-pool-pump',
   '/salt-water-pool-vs-chlorine-pool',
+  '/how-to-shock-a-pool',
   '/privacy',
   '/about',
   '/embed-calculators',

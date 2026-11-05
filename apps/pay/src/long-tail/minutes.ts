@@ -2,6 +2,7 @@ import { encode, type Rational } from '@maestro-calc/core';
 import { decimalHours } from '@maestro-calc/pay-core/decimal-hours';
 import { decimalHoursText, hoursText, rateText } from '../format.ts';
 import { DECIMAL_HOURS_PATHS, DECIMAL_HOURS_TEXTS } from '../hours/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { nearestOf } from './nearest.ts';
@@ -95,8 +96,11 @@ export const minutesPageOf = (job: Minutes, lang: Lang): LongTailPage => {
   if (!validated.ok) throw new Error(`the minutes job of ${String(job.minutes)} must validate`);
   return {
     kicker: t.kicker,
-    title: `${question} ${figure} | Cuenta Horas`,
-    description: `${lead} ${rows.map(({ label, value }) => `${label}: ${value}`).join('; ')}.`,
+    title: titleOf(`${question} ${figure}`),
+    description: descriptionOf(
+      lead,
+      rows.map(({ label, value }) => `${label}: ${value}`),
+    ),
     h1: question,
     lead,
     figure,
@@ -106,6 +110,7 @@ export const minutesPageOf = (job: Minutes, lang: Lang): LongTailPage => {
     calculator: {
       href: `${DECIMAL_HOURS_PATHS[lang]}?${encode(decimalHours, validated.value)}`,
       label: w.edit,
+      title: t.title,
     },
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },

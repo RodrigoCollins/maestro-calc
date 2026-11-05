@@ -214,6 +214,9 @@ export const enSite = {
   'page.guide-cubic-yards.title': 'How to Calculate Cubic Yards | Maestro Calc',
   'page.guide-cubic-yards.description':
     'Length × width × depth in feet, divided by 27: cubic yards of concrete, gravel, topsoil and mulch, with inches to feet, circles and worked examples.',
+  'page.guide-concrete-bag-coverage.title': 'How Much Does a Bag of Concrete Cover? | Maestro Calc',
+  'page.guide-concrete-bag-coverage.description':
+    'Square feet per bag of 40, 60 and 80 lb concrete mix at 4 and 6 in thick, and the bags for a 10x10 slab with the extra, from the bag yields.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

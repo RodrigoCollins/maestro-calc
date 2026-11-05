@@ -36,6 +36,8 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-mulch')).toEqual({ calculator: 'mulch' });
     // spec: guides › [GU17] the cubic yards guide ends in the gravel calculator
     expect(guideOf('guide-cubic-yards')).toEqual({ calculator: 'gravel' });
+    // spec: guides › [GU18] the concrete bag coverage guide ends in the concrete calculator
+    expect(guideOf('guide-concrete-bag-coverage')).toEqual({ calculator: 'concrete' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
@@ -46,6 +48,7 @@ describe('guides (guides › Guide pages)', () => {
       'guide-concrete-bags-or-truck',
       'guide-concrete-quote',
       'guide-fence-post-concrete',
+      'guide-concrete-bag-coverage',
     ]);
     expect(guidesOf('roof-pitch')).toEqual(['guide-roof-pitch']);
     expect(guidesOf('roofing')).toEqual(['guide-roofing-quote']);

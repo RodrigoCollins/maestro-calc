@@ -2,6 +2,7 @@ import { encode, type Rational } from '@maestro-calc/core';
 import { ptoAccrual } from '@maestro-calc/pay-core/pto-accrual';
 import { decimalHoursText, hoursText, rateText } from '../format.ts';
 import { PTO_PATHS, PTO_TEXTS, type PtoOutput } from '../pto/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { nearestOf } from './nearest.ts';
@@ -87,8 +88,8 @@ export const ptoPageOf = (job: Pto, lang: Lang): LongTailPage => {
   if (note === undefined) throw new Error('the PTO calculator must say how it rounds');
   return {
     kicker: t.kicker,
-    title: `${question} ${figure} | Cuenta Horas`,
-    description: lead,
+    title: titleOf(`${question} ${figure}`),
+    description: descriptionOf(lead),
     h1: question,
     lead,
     figure,
@@ -98,6 +99,7 @@ export const ptoPageOf = (job: Pto, lang: Lang): LongTailPage => {
     calculator: {
       href: `${PTO_PATHS[lang]}?${encode(ptoAccrual, validated.value)}`,
       label: w.edit,
+      title: t.title,
     },
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },

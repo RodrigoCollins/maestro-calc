@@ -63,6 +63,42 @@ describe('jsonLdOf', () => {
     });
   });
 
+  it('gives a page with a trail its node and the BreadcrumbList of the trail, in one @graph', () => {
+    const job = {
+      title: 'How Much Salt for a 5,000 Gallon Pool? | Pool Figures',
+      description: 'D.',
+    };
+    const trail = [
+      { name: 'Pool Figures', path: '/' },
+      { name: 'Pool salt calculator', path: '/pool-salt-calculator' },
+      { name: 'How Much Salt for a 5,000 Gallon Pool?', path: '/salt-5000' },
+    ];
+    expect(JSON.parse(jsonLdOf('/salt-5000', job, ORIGIN, trail))).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [
+        expect.objectContaining({ '@type': 'Article', url: `${ORIGIN}/salt-5000` }),
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Pool Figures', item: `${ORIGIN}/` },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Pool salt calculator',
+              item: `${ORIGIN}/pool-salt-calculator`,
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: 'How Much Salt for a 5,000 Gallon Pool?',
+              item: `${ORIGIN}/salt-5000`,
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it('cannot break out of its script element', () => {
     const text = jsonLdOf('/methodology', { title: '</script>', description: '' }, ORIGIN);
     expect(text).not.toContain('</script>');

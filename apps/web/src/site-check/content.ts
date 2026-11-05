@@ -39,6 +39,9 @@ const CALCULATOR_TYPES = ['WebApplication', 'BreadcrumbList', 'FAQPage'];
 /** The two types of a guide page, once each (guides › [GU9]). */
 const GUIDE_TYPES = ['Article', 'BreadcrumbList'];
 
+/** The one type of a job page: its trail (growth › job pages). */
+const JOB_TYPES = ['BreadcrumbList'];
+
 /** What the `WebApplication` may never claim: it is a free tool without ratings, offers or images. */
 const WEB_APPLICATION_FORBIDDEN = ['offers', 'aggregateRating', 'review', 'ratingValue', 'image'];
 
@@ -416,7 +419,69 @@ const guideNodeProblems = (page: Page, site: Site, nodes: readonly Node[]): stri
     BreadcrumbList: (list) => breadcrumbProblems(page, site, list),
   });
 
-const jsonLdProblems = (page: Page, site: Site): Problem[] => {
+/** The h1 of the built page of `id` in `locale`, or `undefined` when the build has no such page. */
+type HeadingIn = (id: string, locale: Page['locale']) => string | undefined;
+
+/** The pages above a job page, each named by the h1 its built page shows: home, hub, calculator. */
+const jobTrailOf = (page: Page, site: Site, calculator: string, headingIn: HeadingIn) => {
+  const hub = Object.keys(site.hubs).find((id) => site.hubs[id]?.includes(calculator));
+  const crumb = (id: string, name: string | undefined) => {
+    const path = pathOf(id, page.locale, site.routes);
+    return { name, path, url: urlOf(path) };
+  };
+  return [
+    crumb('home', HOME_NAME[page.locale]),
+    ...(hub === undefined ? [] : [crumb(hub, headingIn(hub, page.locale))]),
+    crumb(calculator, headingIn(calculator, page.locale)),
+  ];
+};
+
+/**
+ * A job page (growth plan, lever 1) declares one BreadcrumbList, the trail it sits on: the home,
+ * its calculator's hub, its calculator, then the page, each named by its h1 and at its canonical;
+ * its visible breadcrumb links the same trail. Nothing else: its table is no rich result.
+ */
+const jobNodeProblems = (
+  page: Page,
+  site: Site,
+  nodes: readonly Node[],
+  trail: ReturnType<typeof jobTrailOf>,
+): string[] =>
+  typedNodeProblems(nodes, JOB_TYPES, {
+    BreadcrumbList: (list) => {
+      const shown = nodesIn(list['itemListElement']).map((item) => [
+        item['position'],
+        item['name'],
+        item['item'],
+      ]);
+      const wanted = [...trail, { name: headingOf(page), url: urlOfPage(page, site) }].map(
+        ({ name, url }, index) => [index + 1, name, url],
+      );
+      return JSON.stringify(shown) === JSON.stringify(wanted)
+        ? []
+        : [
+            `the BreadcrumbList must be ${trail.map(({ name, url }) => `${String(name)} (${url})`).join(', ')}, then the page (name and canonical)`,
+          ];
+    },
+  });
+
+/** The visible breadcrumb of a job page links each page of its trail, then names the page. */
+const visibleTrailProblems = (page: Page, trail: ReturnType<typeof jobTrailOf>): string[] => {
+  const crumbs = page.root.querySelector('main ol[aria-label]')?.querySelectorAll('li') ?? [];
+  // a link is named and has an address; the page itself is named only
+  const shown = crumbs.map((crumb) => {
+    const link = crumb.querySelector('a');
+    return link === null ? [normalized(crumb.text)] : [normalized(link.text), attr(link, 'href')];
+  });
+  const wanted = [...trail.map(({ name, path }) => [name, path]), [headingOf(page)]];
+  return JSON.stringify(shown) === JSON.stringify(wanted)
+    ? []
+    : [
+        `the visible breadcrumb must link ${trail.map(({ name, path }) => `${String(name)} (${path})`).join(', ')}, then name the page`,
+      ];
+};
+
+const jsonLdProblems = (page: Page, site: Site, headingIn: HeadingIn): Problem[] => {
   const blocks = jsonLdBlocks(page);
   const documents: unknown[] = [];
   const problems: string[] = [];
@@ -428,6 +493,7 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
     }
   }
   const nodes = documents.flatMap(nodesOf);
+  const jobCalculator = Object.hasOwn(site.jobs, page.id) ? site.jobs[page.id] : undefined;
   if (page.id === 'home') {
     if (blocks.length !== 1)
       problems.push(`expected one JSON-LD block, found ${String(blocks.length)}`);
@@ -436,6 +502,12 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
     problems.push(...calculatorNodeProblems(page, site, nodes));
   } else if (Object.hasOwn(site.guides, page.id)) {
     problems.push(...guideNodeProblems(page, site, nodes), ...ogTypeProblems(page));
+  } else if (jobCalculator !== undefined) {
+    const trail = jobTrailOf(page, site, jobCalculator, headingIn);
+    problems.push(
+      ...jobNodeProblems(page, site, nodes, trail),
+      ...visibleTrailProblems(page, trail),
+    );
   } else {
     problems.push(
       ...nodes
@@ -448,11 +520,25 @@ const jsonLdProblems = (page: Page, site: Site): Problem[] => {
 };
 
 /** Content, placeholder, robots, sitemap and structured-data rules. */
-export const contentProblems = ({ pages, site, dist }: CheckContext): Problem[] => [
+export const contentProblems = ({ pages, site, dist }: CheckContext): Problem[] => {
+  // a page missing from the build is the file set's problem: its heading is then `undefined`
+  const headings: Readonly<Record<string, string | undefined>> = Object.fromEntries(
+    pages.map((page) => [`${page.locale}/${page.id}`, headingOf(page)]),
+  );
+  const headingIn: HeadingIn = (id, locale) => headings[`${locale}/${id}`];
+  return contentRules(pages, site, dist, headingIn);
+};
+
+const contentRules = (
+  pages: readonly Page[],
+  site: Site,
+  dist: Dist,
+  headingIn: HeadingIn,
+): Problem[] => [
   ...pages.flatMap((page) => [
     ...reviewProblems(page),
     ...messageKeyProblems(page),
-    ...jsonLdProblems(page, site),
+    ...jsonLdProblems(page, site, headingIn),
     ...updatedProblems(page, site),
   ]),
   ...addressProblems(dist),

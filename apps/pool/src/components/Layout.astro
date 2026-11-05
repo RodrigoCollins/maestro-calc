@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import { NAV_LINKS } from '../home.ts';
+import type { Crumb } from '../seo/breadcrumb.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
@@ -17,14 +18,16 @@ interface Props {
    * only its warning (the credit link sits under the frame).
    */
   readonly embed?: boolean;
+  /** The breadcrumb of a job page (`src/seo/breadcrumb.ts`): its `BreadcrumbList` joins the JSON-LD. */
+  readonly trail?: readonly Crumb[];
 }
 
-const { title, description, indexed = true, embed = false } = Astro.props;
+const { title, description, indexed = true, embed = false, trail } = Astro.props;
 const here = canonicalPath(Astro.url.pathname);
 const embedHead = embed ? embedHeadOf(here, { title, description }) : undefined;
 const path = embedHead?.page ?? here;
 const { canonical, robots, preview } = embedHead ?? headOf(path, { title, description }, indexed);
-const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
+const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
 ---
 
 <!doctype html>
@@ -98,6 +101,9 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin);
           </p>
           <p>
             <a href="/salt-water-pool-vs-chlorine-pool">Salt water vs chlorine</a>
+          </p>
+          <p>
+            <a href="/how-to-shock-a-pool">How to shock a pool</a>
           </p>
           <p>
             <a href="/privacy">Privacy</a>

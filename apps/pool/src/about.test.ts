@@ -8,6 +8,7 @@ import {
   OPENING_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
+  SHOCK_GUIDE,
   type GuideSource,
 } from './guide.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
@@ -28,6 +29,7 @@ const cited = [
     CHEMISTRY_CHART,
     PUMP_RUN_GUIDE,
     SALT_VS_CHLORINE_GUIDE,
+    SHOCK_GUIDE,
   ].flatMap(({ sources }) => Object.values<GuideSource>(sources).map(({ name }) => name)),
 ];
 
@@ -61,6 +63,7 @@ describe('the about page', () => {
     expect(text).toContain('water chemistry chart');
     expect(text).toContain('how long to run the pump');
     expect(text).toContain('a salt water pool with a chlorine one');
+    expect(text).toContain('how to shock the pool');
   });
 
   it('gives the address readers write to', () => {

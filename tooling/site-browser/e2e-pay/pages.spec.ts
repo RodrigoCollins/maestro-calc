@@ -128,9 +128,12 @@ test('gives every page a link preview: its title, description and the shared ima
 test('describes every page with structured data whose url is its canonical', async ({ page }) => {
   for (const { path } of PAGES) {
     await page.goto(path);
-    const data = JSON.parse(
+    type LdNode = { '@type'?: string; url?: string };
+    const document = JSON.parse(
       (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
-    ) as { '@type'?: string; url?: string };
+    ) as LdNode & { '@graph'?: LdNode[] };
+    // a home is one WebSite node; every other page leads a @graph its BreadcrumbList follows
+    const data = document['@graph']?.[0] ?? document;
     expect(['WebSite', 'WebApplication', 'Article'], path).toContain(data['@type']);
     expect(data.url, path).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
   }

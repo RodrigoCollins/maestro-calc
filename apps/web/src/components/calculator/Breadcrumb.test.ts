@@ -37,4 +37,36 @@ describe('Breadcrumb (calculator-page › Page anatomy and content collection, [
     expect(root.querySelector('li a')?.text).toBe('Inicio');
     expect(root.querySelector('li a')?.getAttribute('href')).toBe('/es');
   });
+
+  // spec: growth › job pages: a job page shows its trail, home → hub → calculator → job
+  it('links each page of a trail between the home and the current page', async () => {
+    const root = await renderComponent(Breadcrumb, {
+      breadcrumb: {
+        ...breadcrumb,
+        trail: [
+          { href: '/concrete', label: 'Concrete' },
+          { href: '/concrete-calculator', label: 'Concrete Calculator' },
+        ],
+        current: 'Concrete for a 10 × 10 slab',
+      },
+    });
+    const items = root.querySelectorAll('li');
+    expect(items.map((item) => item.text.trim())).toEqual([
+      'Home',
+      'Concrete',
+      'Concrete Calculator',
+      'Concrete for a 10 × 10 slab',
+    ]);
+    expect(root.querySelectorAll('li a').map((link) => link.getAttribute('href'))).toEqual([
+      '/',
+      '/concrete',
+      '/concrete-calculator',
+    ]);
+    expect(items.map((item) => item.getAttribute('aria-current') ?? null)).toEqual([
+      null,
+      null,
+      null,
+      'page',
+    ]);
+  });
 });

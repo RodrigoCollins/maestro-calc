@@ -20,6 +20,7 @@ const page = longTailPageOf(job, lang);
   title={page.title}
   description={page.description}
   paths={page.paths}
+  parent={{ title: page.calculator.title, path: page.calculator.href.replace(/\?.*$/, '') }}
   otherLang={t.otherLang}
   footer={HOME_TEXTS[lang].sources}
 >
