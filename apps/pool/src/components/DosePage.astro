@@ -129,7 +129,7 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
     </section>
     <p class="pool-note">{page.method}</p>
     <p class="pool-note">{page.note}</p>
-    <JobLinks path={page.path} />
+    <JobLinks path={page.path} {embed} />
   </main>
   <slot />
 </Layout>

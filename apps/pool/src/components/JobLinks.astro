@@ -1,9 +1,13 @@
 ---
+import { guidesOf } from '../guide.ts';
 import { jobLinksOf, neighborsOf, type JobPage } from '../jobs.ts';
 
 type Props =
-  /** On a calculator page: every job page that calculator works out. */
-  | { readonly path: string }
+  /**
+   * On a calculator page: the guides that explain it (left out of an embed, whose frame height is
+   * fixed), then every job page that calculator works out.
+   */
+  | { readonly path: string; readonly embed: boolean }
   /** On a job page: its nearest sizes only, so the pages stay distinct. */
   | { readonly page: JobPage };
 
@@ -12,7 +16,21 @@ const [links, heading] =
   'page' in props
     ? [neighborsOf(props.page), 'Nearby pool sizes']
     : [jobLinksOf(props.path), 'Common pool sizes'];
+const guides = 'path' in props && !props.embed ? guidesOf(props.path) : [];
 ---
+
+{guides.length > 0 && (
+  <section class="pool-guides" aria-labelledby="guides-heading">
+    <h2 id="guides-heading">Guides</h2>
+    <ul class="link-list">
+      {guides.map(({ path, card }) => (
+        <li>
+          <a href={path}>{card.title}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
 
 {links.length > 0 && (
   <section class="pool-jobs" aria-labelledby="jobs-heading">
@@ -28,6 +46,8 @@ const [links, heading] =
 )}
 
 <style>
+  /* the guides keep a class of their own: `.pool-jobs` holds job pages only (e2e-pool) */
+  .pool-guides h2,
   .pool-jobs h2 {
     margin: 0 0 0.5rem;
     font-family: var(--font-display), 'Arial Narrow', sans-serif;
