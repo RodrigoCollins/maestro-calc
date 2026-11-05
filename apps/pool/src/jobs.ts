@@ -10,6 +10,7 @@ import {
   valueIn,
 } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
@@ -17,7 +18,7 @@ import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -64,18 +65,29 @@ const CHLORINE_MAIN = 1;
 const LIQUID = 'liquid-12-5';
 
 /**
- * The baking soda jobs: the same pool sizes, raising total alkalinity by 10, 20 or 30 ppm up to
- * 100 ppm, the calculator's own target; the 10 ppm raise is the large figure.
+ * The baking soda jobs: the salt sizes and a 40,000 gallon pool, raising total alkalinity by 10,
+ * 20 or 30 ppm up to 100 ppm, the calculator's own target; the 10 ppm raise is the large figure.
  */
-const ALKALINITY_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const ALKALINITY_GALLONS = [5000, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000, 40_000] as const;
 const ALKALINITY_READINGS = [90, 80, 70] as const;
 const ALKALINITY_TARGET = 100;
 
 /**
- * The stabilizer jobs: the same pool sizes, from fresh water (0 ppm, the large figure) and from 10
- * or 20 ppm up to 30 ppm, the calculator's own target.
+ * The stabilizer jobs: the same sizes as baking soda, from fresh water (0 ppm, the large figure)
+ * and from 10 or 20 ppm up to 30 ppm, the calculator's own target.
  */
-const STABILIZER_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const STABILIZER_GALLONS = ALKALINITY_GALLONS;
+
+/**
+ * The calcium chloride jobs: 10,000 to 30,000 gallons raised by 10, 50 or 100 ppm up to 250 ppm,
+ * inside the 200 to 400 ppm of Hayward's manual; the 100 ppm raise, the methodology's own case,
+ * is the large figure. Over 3 lb per 10,000 gallons the label splits the dose 12 hours apart, so
+ * every row gives the first addition the calculator gives.
+ */
+const CALCIUM_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const CALCIUM_READINGS = [240, 200, 150] as const;
+const CALCIUM_TARGET = 250;
+const CALCIUM_MAIN = 2;
 const STABILIZER_READINGS = [0, 10, 20] as const;
 const STABILIZER_TARGET = 30;
 
@@ -392,6 +404,7 @@ const outputsOf = (
     | typeof poolHeater
     | typeof poolFillTime
     | typeof poolPh
+    | typeof poolCalcium
     | typeof poolVolume,
   raw: Raw,
 ): { readonly values: ReadonlyMap<string, unknown>; readonly bags: bigint } => {
@@ -702,6 +715,57 @@ const phPage = (gallons: number): JobPage => {
   };
 };
 
+const calciumPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = CALCIUM_READINGS.map((current) => {
+    const raw = {
+      gallons: String(gallons),
+      current: String(current),
+      target: String(CALCIUM_TARGET),
+    };
+    const { values } = outputsOf(poolCalcium, raw);
+    return {
+      raw,
+      cells: [
+        `${String(current)} ppm`,
+        outputText('pounds', values.get('pounds')),
+        outputText('firstAddition', values.get('firstAddition')),
+      ],
+    };
+  });
+  const main = rows[CALCIUM_MAIN];
+  if (main === undefined) throw new Error('a calcium job needs its 100 ppm row');
+  const [from = '', pounds = '', first = ''] = main.cells;
+  // the lead says the label splits the large figure's dose: a build error if it does not
+  if (first === pounds) throw new Error('a calcium job needs a split dose as its large figure');
+  const raise = `from ${from.replace(' ppm', '')} to ${String(CALCIUM_TARGET)} ppm`;
+  return {
+    path: `/how-much-calcium-chloride-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Calcium Chloride for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The pounds of calcium chloride (calcium hardness increaser) that raise calcium hardness in a ${size} gallon pool by 10, 50 or 100 ppm, and how much to add first.`,
+    h1: `How much calcium chloride for a ${size} gallon pool`,
+    lead: `Raising calcium hardness ${raise} in a ${size} gallon pool takes ${pounds} lb of calcium chloride flake. That is over 3 lb per 10,000 gallons, so the label splits it: add ${first} lb, run the pump 12 hours, test, then add the rest.`,
+    figure: {
+      value: pounds,
+      unit: 'LB',
+      caption: `${first} lb first, the rest at least 12 hours later, ${raise}.`,
+    },
+    head: ['Calcium hardness now', 'Calcium chloride (lb)', 'Add first (lb)'],
+    rows,
+    calculator: {
+      path: CALCIUM.path,
+      href: linkTo(poolCalcium, CALCIUM.path, main.raw),
+      label: 'Work it out for your reading',
+    },
+    method: `${CALCIUM.method} ${CALCIUM.note}`,
+    card: {
+      title: `Calcium chloride for ${size} gallons`,
+      summary: `${pounds} lb for 100 ppm more.`,
+    },
+    gallons,
+  };
+};
+
 const volumePage = ({
   slug,
   name,
@@ -755,6 +819,7 @@ export const JOB_PAGES: readonly JobPage[] = [
   ...HEATER_GALLONS.map(heaterPage),
   ...FILL_GALLONS.map(fillPage),
   ...PH_GALLONS.map(phPage),
+  ...CALCIUM_GALLONS.map(calciumPage),
 ];
 
 /** How many job pages of its calculator a job page links: its nearest sizes, so pages stay distinct. */
