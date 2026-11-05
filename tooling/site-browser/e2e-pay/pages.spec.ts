@@ -71,12 +71,14 @@ test('links every page to the methodology of its language, and it shows the work
     await page.goto(path);
     await page.locator(`footer a[href="${method}"]`).click();
     await expect(page).toHaveURL(new RegExp(`${method}$`));
-    // four time card weeks, then three weeks of the overtime calculator
-    await expect(page.locator('.examples')).toHaveCount(2);
+    // four time card weeks, three weeks of the overtime calculator, then five hours conversions
+    await expect(page.locator('.examples')).toHaveCount(3);
     await expect(page.locator('.examples').first().locator('li')).toHaveCount(4);
     await expect(page.locator('.examples li').first()).toContainText('$1,193.50');
-    await expect(page.locator('.examples').last().locator('li')).toHaveCount(3);
-    await expect(page.locator('.examples').last().locator('li').nth(1)).toContainText('$968.00');
+    await expect(page.locator('.examples').nth(1).locator('li')).toHaveCount(3);
+    await expect(page.locator('.examples').nth(1).locator('li').nth(1)).toContainText('$968.00');
+    await expect(page.locator('.examples').last().locator('li')).toHaveCount(5);
+    await expect(page.locator('.examples').last().locator('li').nth(1)).toContainText('8.25');
   }
 });
 

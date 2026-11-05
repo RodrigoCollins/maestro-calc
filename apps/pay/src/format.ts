@@ -1,4 +1,6 @@
-import { toCents, toDecimalParts, type Money, type Rational } from '@maestro-calc/core';
+import { Rational, toCents, toDecimalParts, type Money } from '@maestro-calc/core';
+
+const SIXTY = Rational.of(60);
 
 /** Thousands grouped with commas: `1234567` is `1,234,567`. */
 const grouped = (integer: bigint): string =>
@@ -15,6 +17,18 @@ export const hoursText = (hours: Rational): string => {
   const { integer, fraction } = toDecimalParts(hours, 2);
   const trimmed = fraction.replace(/0+$/, '');
   return trimmed === '' ? grouped(integer) : `${grouped(integer)}.${trimmed}`;
+};
+
+/** Decimal hours as a time card writes them, always two places, to the nearest: `8.33`, `8.00`. */
+export const decimalHoursText = (hours: Rational): string => {
+  const { integer, fraction } = toDecimalParts(hours, 2);
+  return `${grouped(integer)}.${fraction}`;
+};
+
+/** Hours as hours and whole minutes, to the nearest minute, in both languages: `8 h 15 min`. */
+export const hoursMinutesText = (hours: Rational): string => {
+  const minutes = toDecimalParts(hours.mul(SIXTY), 0).integer;
+  return `${grouped(minutes / 60n)} h ${String(minutes % 60n)} min`;
 };
 
 /** A time of day as the field shows it, `7:00 am`; no time is an empty field. */

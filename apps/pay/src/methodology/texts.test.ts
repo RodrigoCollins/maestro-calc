@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { EXAMPLES, OVERTIME_EXAMPLES } from './examples.ts';
+import { EXAMPLES, HOURS_EXAMPLES, OVERTIME_EXAMPLES } from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
 const OFFICIAL = new Set(['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov']);
@@ -37,6 +37,17 @@ describe('methodology texts', () => {
     for (const texts of Object.values(METHODOLOGY_TEXTS)) {
       expect(Object.keys(texts.examples)).toEqual(EXAMPLES.map(({ id }) => id));
       expect(Object.keys(texts.overtimeExamples)).toEqual(OVERTIME_EXAMPLES.map(({ id }) => id));
+      expect(Object.keys(texts.hoursExamples)).toEqual(HOURS_EXAMPLES.map(({ id }) => id));
+    }
+  });
+
+  it('explains the hours calculator and decimal hours, and how decimals are rounded', () => {
+    for (const texts of Object.values(METHODOLOGY_TEXTS)) {
+      const ids = texts.sections.map(({ id }) => id);
+      expect(ids).toContain('hours-calculator');
+      expect(ids).toContain('decimal-hours');
+      const decimal = texts.sections.find(({ id }) => id === 'decimal-hours');
+      expect(decimal?.paragraphs.join(' ')).toContain('8.33');
     }
   });
 

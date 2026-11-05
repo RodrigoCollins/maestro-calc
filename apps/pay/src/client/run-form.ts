@@ -8,7 +8,19 @@ import {
   type Money,
   type OutputDescriptor,
 } from '@maestro-calc/core';
-import { hoursText, moneyText } from '../format.ts';
+import {
+  clockFieldText,
+  decimalHoursText,
+  hoursMinutesText,
+  hoursText,
+  moneyText,
+} from '../format.ts';
+
+/** How an hours output is written, by the `data-format` of its node; plain `hoursText` otherwise. */
+const HOURS_FORMATS: Readonly<Record<string, (hours: Rational) => string>> = {
+  decimal: decimalHoursText,
+  'hours-minutes': hoursMinutesText,
+};
 
 /** A money value read back from the URL state (its other kinds are plain values). */
 const moneyOf = (value: unknown): Money | null =>
@@ -16,8 +28,10 @@ const moneyOf = (value: unknown): Money | null =>
 
 /**
  * Runs a calculator whose outputs are money or hours on every edit of `form`: writes each output
- * into its `[data-out]`, marks the fields it cannot read, shows the `[data-when]` fields of the chosen
- * `source` and keeps the state in the URL (the defaults are the clean URL).
+ * into its `[data-out]` (an hours output in the `data-format` of the node), marks the fields it
+ * cannot read, shows the `[data-when]` fields of the chosen `source`, shows each `[data-warning]`
+ * only while the run returns its code, and keeps the state in the URL (the defaults are the clean
+ * URL).
  */
 export const runForm = <const I extends readonly InputDescriptor[]>(
   form: HTMLFormElement | null,
@@ -37,12 +51,13 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
   if (location.search !== '') {
     const { state } = decode(calculator, location.search.slice(1));
     const values: Readonly<Record<string, unknown>> = state;
-    for (const { key } of calculator.inputs) {
+    for (const { key, kind } of calculator.inputs) {
       const field = fieldOf(key);
       const value = values[key];
       if (field === null) continue;
       const money = moneyOf(value);
-      if (money !== null) {
+      if (kind === 'clock') field.value = clockFieldText(value as number | null);
+      else if (money !== null) {
         const { integer, fraction } = toDecimalParts(money.amount, 2);
         field.value = `${String(integer)}.${fraction}`;
       } else if (value instanceof Rational) field.value = hoursText(value);
@@ -62,14 +77,19 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
       return;
     }
     for (const { key, value } of ran.value.outputs) {
-      const text =
-        typeof value === 'object' && 'currency' in value
-          ? moneyText(value)
-          : value instanceof Rational
-            ? hoursText(value)
-            : null;
-      if (text === null) continue;
-      for (const node of document.querySelectorAll(`[data-out="${key}"]`)) node.textContent = text;
+      for (const node of document.querySelectorAll<HTMLElement>(`[data-out="${key}"]`)) {
+        const text =
+          typeof value === 'object' && 'currency' in value
+            ? moneyText(value)
+            : value instanceof Rational
+              ? (HOURS_FORMATS[node.dataset['format'] ?? ''] ?? hoursText)(value)
+              : null;
+        if (text !== null) node.textContent = text;
+      }
+    }
+    const codes = new Set(ran.value.warnings.map(({ code }) => code));
+    for (const node of document.querySelectorAll<HTMLElement>('[data-warning]')) {
+      node.hidden = !codes.has(node.dataset['warning'] ?? '');
     }
     const query = encoded(raw);
     if (query !== null) {

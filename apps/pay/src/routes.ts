@@ -5,6 +5,7 @@ import { PAY_STUB_GUIDE_PATHS, UNPAID_WAGES_GUIDE_PATHS } from './guide/paths.ts
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
 import { EMBED_PATHS } from './embed/texts.ts';
+import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
 
@@ -26,6 +27,8 @@ export const ROUTES: readonly Route[] = [
     es: '/es/calculadora-de-horas-trabajadas',
   },
   { id: 'overtime', kind: 'calculator', ...OVERTIME_PATHS },
+  { id: 'hours', kind: 'calculator', ...HOURS_PATHS },
+  { id: 'decimal-hours', kind: 'calculator', ...DECIMAL_HOURS_PATHS },
   { id: 'hourly-to-salary', kind: 'calculator', ...PATHS.hourly },
   { id: 'salary-to-hourly', kind: 'calculator', ...PATHS.salary },
   { id: 'no-tax-on-overtime', kind: 'calculator', ...DEDUCTION_PATHS.overtime },
