@@ -570,3 +570,62 @@ describe('the calculators each guide explains', () => {
     ]);
   });
 });
+
+// A search answer quotes the opening: its first two sentences answer the question with the number,
+// and the number is the calculator's own, to the digit, or the source's as the guide cites it.
+describe('the opening of each top guide', () => {
+  const opening = (lead: string): string =>
+    lead
+      .split(/(?<=[.:]) (?=[A-Z])/)
+      .slice(0, 2)
+      .join(' ');
+
+  it('shocks with the cal-hypo dose for 10,000 gallons and the reentry level', () => {
+    const dose = figure(
+      CHLORINE.path,
+      { gallons: '10000', current: '0', target: '10', product: 'cal-hypo-65' },
+      'dry',
+    );
+    expect(opening(SHOCK_GUIDE.lead)).toContain(`${dose} oz of 65% cal-hypo`);
+    expect(opening(SHOCK_GUIDE.lead)).toContain('10,000 gallons');
+    expect(opening(SHOCK_GUIDE.lead)).toContain('4 ppm');
+    expect(textOf(SHOCK_GUIDE)).toContain('prohibits reentry above 4 ppm');
+  });
+
+  it('lowers pH with the muriatic acid a drop of the acid demand test takes', () => {
+    const dose = figure(
+      PH.path,
+      { gallons: '10000', product: 'muriatic-31-45', drops: '1' },
+      'liquid',
+    );
+    expect(opening(PH_GUIDE.lead)).toContain(`${dose} fl oz of 31.45% muriatic acid`);
+    expect(opening(PH_GUIDE.lead)).toContain('10,000 gallons');
+  });
+
+  it('raises calcium hardness with the label’s dose and its most at a time', () => {
+    const dose = figure(
+      CALCIUM.path,
+      { gallons: '10000', current: '200', target: '210' },
+      'ounces',
+    );
+    expect(opening(CALCIUM_GUIDE.lead)).toContain(`${dose} oz of calcium chloride flake`);
+    expect(opening(CALCIUM_GUIDE.lead)).toContain('3 lb per 10,000 gallons');
+  });
+
+  it('runs the pump the 6 hours of the standard’s flow', () => {
+    const flow = figure(PUMP.path, { gallons: '20000' }, 'flow');
+    expect(opening(PUMP_RUN_GUIDE.lead)).toContain('6 hours');
+    expect(opening(PUMP_RUN_GUIDE.lead)).toContain(`${flow} gpm for 20,000 gallons`);
+  });
+
+  it('gives the salt level of a salt water pool', () => {
+    expect(opening(SALT_VS_CHLORINE_GUIDE.lead)).toContain('3,200 ppm');
+    expect(textOf(SALT_VS_CHLORINE_GUIDE)).toContain('2,700 to 3,400 ppm, 3,200 the best');
+  });
+
+  it('gives the home ranges of the water chemistry chart', () => {
+    const home = (id: string) => CHEMISTRY_CHART.rows.find((row) => row.id === id)?.home ?? '?';
+    for (const id of ['chlorine', 'ph', 'alkalinity'])
+      expect(opening(CHEMISTRY_CHART.lead)).toContain(home(id));
+  });
+});

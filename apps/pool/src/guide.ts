@@ -289,7 +289,7 @@ export const PUMP_RUN_GUIDE = {
   description:
     'How many hours a day to run your pool pump: one turnover of all the water, the flow the standard sizes, DOE’s 6 hours to start from, and variable speed.',
   h1: 'How long to run your pool pump',
-  lead: 'Long enough to move all the water through the filter once a day. Work out the hours from your gallons and the flow of your pump, start at 6, and trim or add half an hour at a time.',
+  lead: 'Run the pump long enough to move all the water through the filter once a day: 6 hours at the flow the pool standard sizes, which is 55.6 gpm for 20,000 gallons. Work out the hours from your gallons and the flow of your own pump, start at 6, and trim or add half an hour at a time.',
   note: 'Follow the manual of your pump and of each piece of equipment where it differs from this guide, and any local rule for the turnover.',
   sources: PUMP_RUN_SOURCES,
   steps: PUMP_RUN_STEPS,
@@ -397,7 +397,7 @@ export const SALT_VS_CHLORINE_GUIDE = {
   description:
     'A salt water pool is a chlorine pool whose cell makes the chlorine. What differs: the salt level, the salt, the stabilizer and the cell care, per maker.',
   h1: 'Salt water pool vs chlorine pool: what actually differs',
-  lead: 'A salt water pool is a chlorine pool: its cell makes the chlorine from salt, so the water targets are the same. What differs is the equipment, the salt level your cell asks for, and the care the cell needs.',
+  lead: 'A salt water pool is a chlorine pool: its cell makes the chlorine from salt kept at 3,200 ppm for Hayward’s AquaRite, within its 2,700 to 3,400 ppm, so the water targets are the same. What differs is the equipment, the salt level your cell asks for, and the care the cell needs.',
   note: 'Follow the manual of your own generator where it differs from this guide: the salt level, the stabilizer and the wait on new plaster all vary by maker.',
   sources: SALT_VS_CHLORINE_SOURCES,
   steps: SALT_VS_CHLORINE_STEPS,
@@ -500,7 +500,7 @@ export const SHOCK_GUIDE = {
   description:
     'How to shock a pool and how much shock to add: the label’s shock level for cal-hypo or dichlor, the dose for your gallons, and when you can swim again.',
   h1: 'How to shock a pool',
-  lead: 'Shocking raises free chlorine to the level on your product’s label for a while. Balance the pH, work out the dose from your reading to that level, add it in the evening with the pump running, and swim once the chlorine is back down.',
+  lead: 'To shock a pool, raise free chlorine to the shock level on your product’s label: from 0 ppm, 10,000 gallons take 20.5 oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm. Swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Balance the pH first, work out the dose from your own reading, and add it in the evening with the pump running.',
   note: 'Follow the label of your own product where it differs from this guide: its strength, its shock dose and its reentry level all vary by product.',
   sources: SHOCK_SOURCES,
   steps: SHOCK_STEPS,
@@ -608,7 +608,7 @@ export const PH_GUIDE = {
   description:
     'How to lower pH in a pool and how much muriatic acid to add, from the acid demand test of your kit, and how to raise pH with soda ash.',
   h1: 'How to lower pH in a pool (and when to raise it)',
-  lead: 'Test the pH, bring the alkalinity into range, then run the acid demand test of your kit and count the drops: they size the muriatic acid for your gallons. Add it to the deep end with the pump running, and test again before you add more. To raise the pH, the base demand test sizes the soda ash.',
+  lead: 'To lower pH, add muriatic acid: each drop the acid demand test of your kit takes is 9.2 fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart. HASA’s label adds at most one quart per 20,000 gallons a day, poured into the deep end with the pump running, with a test before each part. Bring the alkalinity into range first; to raise the pH, the base demand test sizes the soda ash.',
   note: 'Follow the label of your own product where it differs from this guide: the strength of the acid, how much goes in at a time and the wait before you retest all vary by product.',
   sources: PH_SOURCES,
   steps: PH_STEPS,
@@ -702,7 +702,7 @@ export const CALCIUM_GUIDE = {
   description:
     'How to raise calcium hardness in a pool with calcium chloride, how much to add and when to split it, and why only a partial drain and refill lowers it.',
   h1: 'How to raise calcium hardness in a pool (and why you can’t lower it with chemicals)',
-  lead: 'Test the calcium hardness, work out the calcium chloride for your gallons from the label’s dose, and add it dissolved, at most 3 lb per 10,000 gallons at a time, 12 hours apart. No chemical lowers it: only draining part of the water and refilling with softer water does, and plain dilution says how much to drain.',
+  lead: 'To raise calcium hardness 10 ppm, add 20.0 oz of calcium chloride flake per 10,000 gallons, the label’s dose, dissolved first and at most 3 lb per 10,000 gallons at a time, 12 hours apart. No chemical lowers it: only draining part of the water and refilling with softer water does, and plain dilution says how much to drain.',
   note: 'Follow the label of your own calcium product where it differs from this guide, since strengths vary. Ask whoever built your pool before you drain a large share of it.',
   sources: CALCIUM_SOURCES,
   steps: CALCIUM_STEPS,

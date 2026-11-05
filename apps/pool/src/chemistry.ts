@@ -133,6 +133,13 @@ const ROWS: readonly ChartRow[] = [
   },
 ];
 
+/** The home-pool range of the row `id`, as the chart prints it. */
+const homeOf = (id: string): string => {
+  const found = ROWS.find((row) => row.id === id);
+  if (found === undefined) throw new Error(`no chart row ${id}`);
+  return found.home;
+};
+
 /**
  * The target ranges of pool water in one chart: the home-pool levels of Hayward's AquaRite manual
  * (the levels APSP recommends), CDC's home-pool minimums where they differ, and the public-pool
@@ -148,7 +155,7 @@ export const CHEMISTRY_CHART = {
   description:
     'Free chlorine, pH, alkalinity, stabilizer, calcium and salt: the target range for a home pool and the public-pool limit, each from its source.',
   h1: 'Pool water chemistry chart',
-  lead: 'The range to keep each level in for a home pool, from the manufacturer’s manual, beside the limit the CDC’s code sets for a public pool. Each dose links to the calculator that sizes it.',
+  lead: `Keep a home pool at ${homeOf('chlorine')} free chlorine, pH ${homeOf('ph')} and ${homeOf('alkalinity')} total alkalinity, the levels of the manufacturer’s manual. Each level is below with the limit the CDC’s code sets for a public pool, and each dose links to the calculator that sizes it.`,
   gallons: {
     text: 'Every dose depends on how much water the pool holds.',
     href: VOLUME_TEXTS.path,
