@@ -26,7 +26,7 @@ export const HUBS = {
   'hub-drywall': { calculators: ['drywall'], guides: ['guide-drywall-estimate'] },
   'hub-landscaping': {
     calculators: ['gravel', 'mulch', 'topsoil'],
-    guides: ['guide-gravel-driveway', 'guide-raised-bed-soil'],
+    guides: ['guide-gravel-driveway', 'guide-raised-bed-soil', 'guide-mulch', 'guide-cubic-yards'],
   },
   'hub-measurement': {
     calculators: ['rectangle-area', 'feet-inches'],

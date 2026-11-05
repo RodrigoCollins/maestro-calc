@@ -122,6 +122,14 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-much-concrete-for-a-fence-post',
       es: '/es/guias/cuanto-concreto-para-un-poste-de-cerca',
     });
+    expect(ROUTES['guide-mulch']).toEqual({
+      en: '/guides/how-much-mulch-do-i-need',
+      es: '/es/guias/cuanto-mulch-necesito',
+    });
+    expect(ROUTES['guide-cubic-yards']).toEqual({
+      en: '/guides/how-to-calculate-cubic-yards',
+      es: '/es/guias/como-calcular-yardas-cubicas',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['concrete-slab-10x10']).toEqual({
       en: '/concrete/10x10-slab',
