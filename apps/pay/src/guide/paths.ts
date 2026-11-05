@@ -26,3 +26,9 @@ export const SHIFT_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/night-shift-differential-and-overtime',
   es: '/es/guias/diferencial-nocturno-y-horas-extra',
 };
+
+/** The tip credit guide: the tipped minimum wage and when the employer must top up. */
+export const TIP_CREDIT_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/tipped-minimum-wage-and-tip-credit',
+  es: '/es/guias/salario-minimo-con-propinas-y-credito-por-propinas',
+};
