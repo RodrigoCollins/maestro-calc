@@ -12,6 +12,8 @@ import {
   ptoFiguresOf,
   SHIFT_EXAMPLES,
   shiftFiguresOf,
+  TIPPED_EXAMPLES,
+  tippedFiguresOf,
   type Figures,
 } from '../methodology/examples.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
@@ -64,6 +66,10 @@ const ptoRows = PTO_EXAMPLES.map((example) => ({
 const shiftRows = SHIFT_EXAMPLES.map((example) => ({
   label: t.shiftExamples[example.id],
   ...shiftFiguresOf(example),
+}));
+const tippedRows = TIPPED_EXAMPLES.map((example) => ({
+  label: t.tippedExamples[example.id],
+  ...tippedFiguresOf(example),
 }));
 ---
 
@@ -203,6 +209,32 @@ const shiftRows = SHIFT_EXAMPLES.map((example) => ({
               <div class="example-pay">
                 <dt>{t.shiftColumns.pay}</dt>
                 <dd>{row.pay}</dd>
+              </div>
+            </dl>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section aria-labelledby="tipped-examples">
+      <h2 id="tipped-examples">{t.tippedExamplesHeading}</h2>
+      <p>{t.tippedExamplesLead}</p>
+      <ul class="examples">
+        {tippedRows.map((row) => (
+          <li>
+            <p class="example-label">{row.label}</p>
+            <dl>
+              <div>
+                <dt>{t.tippedColumns.perHour}</dt>
+                <dd>{row.perHour}</dd>
+              </div>
+              <div>
+                <dt>{t.tippedColumns.topUp}</dt>
+                <dd>{row.topUp}</dd>
+              </div>
+              <div class="example-pay">
+                <dt>{t.tippedColumns.totalPay}</dt>
+                <dd>{row.totalPay}</dd>
               </div>
             </dl>
           </li>

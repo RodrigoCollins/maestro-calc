@@ -7,6 +7,7 @@ import {
   OVERTIME_EXAMPLES,
   PTO_EXAMPLES,
   SHIFT_EXAMPLES,
+  TIPPED_EXAMPLES,
 } from './examples.ts';
 import { METHODOLOGY_TEXTS } from './texts.ts';
 
@@ -82,6 +83,21 @@ describe('methodology texts', () => {
         'www.ecfr.gov',
       ]);
       expect(Object.keys(texts.shiftExamples)).toEqual(SHIFT_EXAMPLES.map(({ id }) => id));
+    }
+  });
+
+  it('explains the tipped wage on the federal figures, citing DOL Fact Sheet #15', () => {
+    for (const texts of Object.values(METHODOLOGY_TEXTS)) {
+      const tipped = texts.sections.find(({ id }) => id === 'tipped-wage');
+      const paragraphs = tipped?.paragraphs.join(' ') ?? '';
+      for (const figure of ['$2.13', '$5.12', '$7.25', '$54.80', '$14.50', '$408.22']) {
+        expect(paragraphs, figure).toContain(figure);
+      }
+      expect(tipped?.sources.map(({ href }) => href)).toEqual([
+        'https://www.dol.gov/agencies/whd/fact-sheets/15-tipped-employees-flsa',
+        'https://www.dol.gov/agencies/whd/state/minimum-wage/tipped',
+      ]);
+      expect(Object.keys(texts.tippedExamples)).toEqual(TIPPED_EXAMPLES.map(({ id }) => id));
     }
   });
 

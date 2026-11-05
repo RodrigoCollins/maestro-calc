@@ -5,6 +5,7 @@ import type {
   OvertimeExample,
   PtoExample,
   ShiftExample,
+  TippedExample,
 } from './examples.ts';
 
 export interface Source {
@@ -60,6 +61,14 @@ export interface MethodologyTexts {
     readonly pay: string;
   };
   readonly shiftExamples: Readonly<Record<ShiftExample['id'], string>>;
+  readonly tippedExamplesHeading: string;
+  readonly tippedExamplesLead: string;
+  readonly tippedColumns: {
+    readonly perHour: string;
+    readonly topUp: string;
+    readonly totalPay: string;
+  };
+  readonly tippedExamples: Readonly<Record<TippedExample['id'], string>>;
   readonly sourcesLabel: string;
   readonly reviewed: string;
   readonly cta: { readonly label: string; readonly href: string };
@@ -124,6 +133,23 @@ const ECFR_115: Source = {
 const ECFR_115_ES: Source = {
   label: '29 CFR 778.115, trabajo a dos o más tarifas (en inglés)',
   href: ECFR_115.href,
+};
+const DOL_TIPPED: Source = {
+  label: 'U.S. Department of Labor, Fact Sheet #15: Tipped Employees Under the FLSA',
+  href: 'https://www.dol.gov/agencies/whd/fact-sheets/15-tipped-employees-flsa',
+};
+const DOL_TIPPED_ES: Source = {
+  label:
+    'Departamento de Trabajo de EE. UU., Hoja de datos #15 (empleados que reciben propinas, en inglés)',
+  href: DOL_TIPPED.href,
+};
+const DOL_TIPPED_STATES: Source = {
+  label: 'U.S. Department of Labor, Minimum Wages for Tipped Employees (by state)',
+  href: 'https://www.dol.gov/agencies/whd/state/minimum-wage/tipped',
+};
+const DOL_TIPPED_STATES_ES: Source = {
+  label: 'Departamento de Trabajo de EE. UU., salario mínimo con propinas por estado (en inglés)',
+  href: DOL_TIPPED_STATES.href,
 };
 const DLSE_LETTER: Source = {
   label: 'DLSE opinion letter 2000.01.19, no pyramiding of overtime hours',
@@ -212,6 +238,17 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'The FLSA does not require extra pay for night or weekend work; it is a matter of agreement with the employer. Pay is rounded to the cent and the calculator uses the federal 40-hour week.',
         ],
         sources: [DOL_NIGHT, ECFR_207, ECFR_115],
+      },
+      {
+        id: 'tipped-wage',
+        heading: 'Tipped wage: the tip credit and the top-up',
+        paragraphs: [
+          'The tipped wage calculator adds the cash wage of the week and the tips, and divides by the hours. Under the FLSA an employer that counts tips toward the minimum wage pays a cash wage of at least $2.13 an hour and takes a tip credit of at most $5.12, the gap to the $7.25 federal minimum, and never more than the tips the employee got.',
+          'Cash wage and tips must reach $7.25 an hour over the workweek; when they do not, the employer makes up the difference. At $2.13, 40 hours pay $85.20; with $150 in tips the week is $235.20, short of 40 × $7.25 = $290 by $54.80, which the employer owes.',
+          'Overtime is figured on the full $7.25, not on the cash wage, and the tip credit is no larger in the hours over 40: each one adds half of $7.25, $3.625, paid by the employer. 44 hours at $2.13 with $300 in tips are $93.72 + $14.50 + $300 = $408.22. A cash wage of $7.25 or more takes no tip credit and is the rate the overtime is figured on; tips never enter it.',
+          'States can require more: a higher minimum wage, a higher cash wage, or no tip credit at all. The calculator uses the federal rules; the DOL table lists the rules of each state. Pay is rounded to the cent.',
+        ],
+        sources: [DOL_TIPPED, DOL_TIPPED_STATES],
       },
       {
         id: 'pay',
@@ -311,6 +348,20 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'dollar-fifty': '$1.50 more an hour, 24 h base and 16 h on the shift',
       'nights-overtime': '$2 more an hour, 45 h all on the shift',
     },
+    tippedExamplesHeading: 'Tipped wage examples',
+    tippedExamplesLead:
+      'Each example is run through the tipped wage calculator at the federal cash wage of $2.13.',
+    tippedColumns: {
+      perHour: 'Pay per hour',
+      topUp: 'Top-up owed',
+      totalPay: 'Pay of the week',
+    },
+    tippedExamples: {
+      'good-week': '40 h with $250 in tips',
+      'slow-week': '40 h with $150 in tips',
+      overtime: '44 h with $300 in tips',
+      'slow-overtime': '44 h with $100 in tips',
+    },
     sourcesLabel: 'Sources',
     reviewed: 'Reviewed November 5, 2026.',
     cta: { label: 'Open the time card', href: '/time-card-calculator' },
@@ -396,6 +447,17 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
           'La FLSA no exige pago extra por trabajar de noche ni en fin de semana; es un acuerdo con el empleador. El pago se redondea al centavo y la calculadora usa la semana federal de 40 horas.',
         ],
         sources: [DOL_NIGHT_ES, ECFR_207_ES, ECFR_115_ES],
+      },
+      {
+        id: 'tipped-wage',
+        heading: 'Propinas por hora: el crédito por propinas y lo que se completa',
+        paragraphs: [
+          'La calculadora de propinas por hora suma el salario en efectivo de la semana y las propinas, y divide por las horas. Según la FLSA, el empleador que cuenta las propinas para el salario mínimo paga un salario en efectivo de al menos $2.13 la hora y toma un crédito por propinas de como máximo $5.12, lo que falta hasta el mínimo federal de $7.25, y nunca más que las propinas que recibió el empleado.',
+          'El salario en efectivo y las propinas deben llegar a $7.25 la hora en la semana laboral; si no llegan, el empleador completa la diferencia. A $2.13, 40 horas pagan $85.20; con $150 de propinas la semana suma $235.20, y faltan $54.80 para 40 × $7.25 = $290, que debe el empleador.',
+          'Las horas extra se calculan sobre los $7.25 completos, no sobre el salario en efectivo, y el crédito por propinas no crece en las horas después de 40: cada una suma la mitad de $7.25, $3.625, que paga el empleador. 44 horas a $2.13 con $300 de propinas son $93.72 + $14.50 + $300 = $408.22. Un salario en efectivo de $7.25 o más no toma crédito por propinas y es la tarifa de las horas extra; las propinas nunca entran en ella.',
+          'Los estados pueden exigir más: un salario mínimo más alto, un salario en efectivo más alto o ningún crédito por propinas. La calculadora usa las reglas federales; la tabla del DOL muestra las reglas de cada estado. El pago se redondea al centavo.',
+        ],
+        sources: [DOL_TIPPED_ES, DOL_TIPPED_STATES_ES],
       },
       {
         id: 'pay',
@@ -498,6 +560,20 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
       'ten-percent-overtime': '10% más, 24 h base y 24 h en el turno',
       'dollar-fifty': '$1.50 más por hora, 24 h base y 16 h en el turno',
       'nights-overtime': '$2 más por hora, 45 h todas en el turno',
+    },
+    tippedExamplesHeading: 'Ejemplos de propinas por hora',
+    tippedExamplesLead:
+      'Cada ejemplo pasa por la calculadora de propinas por hora, con el salario federal en efectivo de $2.13.',
+    tippedColumns: {
+      perHour: 'Pago por hora',
+      topUp: 'Lo que debe completar',
+      totalPay: 'Pago de la semana',
+    },
+    tippedExamples: {
+      'good-week': '40 h con $250 de propinas',
+      'slow-week': '40 h con $150 de propinas',
+      overtime: '44 h con $300 de propinas',
+      'slow-overtime': '44 h con $100 de propinas',
     },
     sourcesLabel: 'Fuentes',
     reviewed: 'Revisado el 5 de noviembre de 2026.',

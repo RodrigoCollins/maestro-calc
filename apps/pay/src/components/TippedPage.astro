@@ -1,0 +1,121 @@
+---
+import { Rational, toDecimalParts, type Money } from '@maestro-calc/core';
+import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
+import { hoursText, moneyText } from '../format.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { TIPPED_PATHS, TIPPED_TEXTS, type TippedOutput } from '../tipped/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same calculator in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+const t = TIPPED_TEXTS[lang];
+// The page renders the engine's own figures for the defaults, so it reads without JavaScript.
+const ran = tippedWage.run({});
+if (!ran.ok) throw new Error('the defaults of the tipped wage calculator must run');
+const isMoney = (value: unknown): value is Money =>
+  typeof value === 'object' && value !== null && 'currency' in value;
+const [primary, ...rest] = ran.value.outputs;
+if (primary?.key !== 'perHour' || !isMoney(primary.value)) {
+  throw new Error('the tipped wage calculator must lead with the pay per hour');
+}
+const textOf = (value: unknown): string => {
+  if (isMoney(value)) return moneyText(value);
+  if (value instanceof Rational) return hoursText(value);
+  throw new Error('a tipped wage output is money or hours');
+};
+const rows = rest.map(({ key, value }) => ({
+  key,
+  label: t.outputs[key as TippedOutput],
+  text: textOf(value),
+}));
+const fields = t.fields.map((field) => {
+  const input = tippedWage.inputs.find(({ key }) => key === field.key);
+  if (input === undefined) throw new Error(`no input ${field.key}`);
+  const value = isMoney(input.default)
+    ? (({ integer, fraction }) => `${String(integer)}.${fraction}`)(
+        toDecimalParts(input.default.amount, 2),
+      )
+    : input.default instanceof Rational
+      ? hoursText(input.default)
+      : String(input.default);
+  return { ...field, value };
+});
+const warnings = Object.entries(t.warnings);
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={TIPPED_PATHS}
+  otherLang={t.otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+
+    <form class="deduction" data-tipped-wage novalidate>
+      {fields.map((field) => (
+        <label class="field">
+          {field.label}
+          <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
+        </label>
+      ))}
+    </form>
+
+    {warnings.map(([code, text]) => (
+      <p class="warning" data-warning={code} hidden>
+        {text}
+      </p>
+    ))}
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {t.figureLabel}
+        </p>
+        <p class="result-figure" data-out="perHour">
+          {moneyText(primary.value)}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={t.figures}>
+        {rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-out={row.key}>{row.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ul class="rules">
+      {t.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <ul class="link-list">
+      <li>
+        <a href={t.stateLink.href} rel="noopener">
+          {t.stateLink.label}
+        </a>
+      </li>
+      {t.links.map((link) => (
+        <li>
+          <a href={link.href}>{link.label}</a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <script src="../client/tipped-wage.ts"></script>
+</SiteLayout>

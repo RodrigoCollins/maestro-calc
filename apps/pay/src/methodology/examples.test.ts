@@ -11,7 +11,31 @@ import {
   ptoFiguresOf,
   SHIFT_EXAMPLES,
   shiftFiguresOf,
+  TIPPED_EXAMPLES,
+  tippedFiguresOf,
 } from './examples.ts';
+
+// The tipped wage calculator, verified by hand on the FLSA (DOL Fact Sheet #15) at a $2.13 cash
+// wage: 40 x $2.13 = $85.20 + $250 = $335.20, $8.38 an hour, no top-up (>= 40 x $7.25 = $290);
+// $150 in tips: $290 - $235.20 = $54.80 owed, $290, $7.25 an hour;
+// 44 h, $300: $93.72 + 4 x $3.625 = $14.50 + $300 = $408.22, $408.22 / 44 = $9.28;
+// 44 h, $100: 44 x $7.25 = $319, $319 - $193.72 = $125.28 owed, + $14.50 = $333.50, $7.58.
+const TIPPED_HAND = {
+  'good-week': { perHour: '$8.38', topUp: '$0.00', totalPay: '$335.20' },
+  'slow-week': { perHour: '$7.25', topUp: '$54.80', totalPay: '$290.00' },
+  overtime: { perHour: '$9.28', topUp: '$0.00', totalPay: '$408.22' },
+  'slow-overtime': { perHour: '$7.58', topUp: '$125.28', totalPay: '$333.50' },
+} as const;
+
+describe('tipped wage examples', () => {
+  it('publishes exactly the hand-verified cases, in order', () => {
+    expect(TIPPED_EXAMPLES.map(({ id }) => id)).toEqual(Object.keys(TIPPED_HAND));
+  });
+
+  it.each(TIPPED_EXAMPLES)('$id: the engine gives the hand-verified figures', (example) => {
+    expect(tippedFiguresOf(example)).toEqual(TIPPED_HAND[example.id]);
+  });
+});
 
 // The shift differential calculator, verified by hand at $20 an hour (29 CFR 778.115, 778.207(b)):
 // 10% is $22: 24 h x $20 + 16 h x $22 = $832 over 40 h, regular rate $20.80;
