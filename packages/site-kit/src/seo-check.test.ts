@@ -118,6 +118,18 @@ describe('seoProblems', () => {
     ]);
   });
 
+  it('finds the node of the type of the page in a @graph, at the canonical', () => {
+    const crumbs = '{"@type":"BreadcrumbList","itemListElement":[]}';
+    expect(
+      check(head({}, [`{"@graph":[${crumbs},{"@type":"Article","url":"https://x.test/guide"}]}`])),
+    ).toEqual([]);
+    expect(check(head({}, [`{"@graph":[${crumbs}]}`]))).toEqual([
+      'guide.html: the JSON-LD @type must be "Article", found "BreadcrumbList"',
+      'guide.html: the JSON-LD url must be "https://x.test/guide", found none',
+    ]);
+    expect(check(head({}, ['{"@graph":[]}']))).toHaveLength(2);
+  });
+
   it('reads the types of a page from the path of its canonical', () => {
     const home = head(
       {

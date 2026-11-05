@@ -1,7 +1,9 @@
 // Checks the built `dist` of Pool Figures: the byte budgets (`@maestro-calc/site-kit/check-site`),
 // then the link preview and the JSON-LD of every indexable page (`@maestro-calc/site-kit/seo-check`)
-// the rules that make each embed safe to frame and invisible to search (`.../embed`), and the
-// internal links between calculators, job pages and guides (`src/site-check/links.ts`).
+// the rules that make each embed safe to frame and invisible to search (`.../embed`), the
+// internal links between calculators, job pages and guides (`src/site-check/links.ts`), and the
+// search rules of `src/site-check/seo.ts`: unique, measured titles and descriptions, the sitemap
+// equal to the indexable pages, the size and the breadcrumb of each job page, and robots.txt.
 // Usage: node apps/pool/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -16,6 +18,7 @@ import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
 import { canonicalPath } from '../src/seo/sitemap.ts';
 import { linkProblems } from '../src/site-check/links.ts';
 import { CALCULATOR_PAGES } from '../src/site-check/pages.ts';
+import { seoAuditProblems } from '../src/site-check/seo.ts';
 import { SITE } from '../src/site.config.ts';
 
 const given = process.argv[2];
@@ -30,6 +33,7 @@ const sitemap = [
   ),
 ].map(([, loc = '']) => new URL(loc).pathname);
 const site = new Map([...html].map(([file, text]) => [canonicalPath(`/${file}`), text]));
+const robotsFile = join(dist, 'robots.txt');
 const all = [
   ...problems,
   ...seoProblems(html, {
@@ -59,6 +63,12 @@ const all = [
     })),
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
   }),
+  ...seoAuditProblems(site, {
+    origin: SITE.origin,
+    sitemap,
+    jobs: JOB_PAGES.map((page) => ({ path: page.path, calculator: page.calculator.path })),
+    robots: existsSync(robotsFile) ? readFileSync(robotsFile, 'utf8') : undefined,
+  }),
   ...imageProblems('og.png', existsSync(image) ? readFileSync(image) : undefined),
 ];
 for (const { file, bytes } of pages) console.log(`${file}: ${bytes.toLocaleString('en-US')} B`);
@@ -67,5 +77,5 @@ if (all.length > 0) {
   process.exit(1);
 }
 console.log(
-  `check:site: ${String(pages.length)} pages within budget, each with its link preview, ${String(EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
+  `check:site: ${String(pages.length)} pages within budget, each with its link preview and its own title and description, ${String(EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
 );

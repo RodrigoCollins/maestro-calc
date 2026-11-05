@@ -64,6 +64,28 @@ export const articleLd = ({
   publisher: { '@type': 'Organization', name: publisher },
 });
 
+/** The trail from the home to a page (a job page: home, its calculator, itself), each item at its 1-based position. */
+export const breadcrumbListLd = (
+  items: readonly { readonly name: string; readonly url: string }[],
+) => ({
+  '@context': CONTEXT,
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map(({ name, url }, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name,
+    item: url,
+  })),
+});
+
+/** Several nodes of one page as one document: one `@context`, the nodes in its `@graph`. */
+export const graphLd = (...nodes: readonly { readonly '@context': string }[]) => ({
+  '@context': CONTEXT,
+  '@graph': nodes.map((node) =>
+    Object.fromEntries(Object.entries(node).filter(([key]) => key !== '@context')),
+  ),
+});
+
 /** The JSON text of a document for a `<script type="application/ld+json">`: `<`, `>` and `&` escaped, so it stays inside its script. */
 export const serializeJsonLd = (value: unknown): string =>
   JSON.stringify(value)
