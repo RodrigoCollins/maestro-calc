@@ -114,7 +114,7 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await page.goto('/');
   await page.locator('footer a[href="/methodology"]').click();
   await expect(page).toHaveURL(/\/methodology$/);
-  await expect(page.locator('.pool-method li strong')).toHaveCount(18);
+  await expect(page.locator('.pool-method li strong')).toHaveCount(23);
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
 });
 
@@ -175,7 +175,7 @@ test('leads from the home to the spring guide, whose calculator links all answer
   const hrefs = await page
     .locator('.pool-steps a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  expect(hrefs).toHaveLength(3);
+  expect(hrefs).toHaveLength(5);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 
@@ -188,6 +188,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/opening-your-pool',
     '/closing-your-pool',
     '/pool-water-chemistry-chart',
+    '/pool-chemical-dosing-chart',
     '/how-long-to-run-pool-pump',
     '/salt-water-pool-vs-chlorine-pool',
     '/how-to-shock-a-pool',
@@ -216,9 +217,36 @@ test('charts six levels, each with its section, and every calculator link answer
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  // the gallons, then chlorine, pH, alkalinity, stabilizer, calcium and salt
-  expect(hrefs).toHaveLength(7);
+  // the gallons, the dosing chart, then chlorine, pH, alkalinity, stabilizer, calcium and salt
+  expect(hrefs).toHaveLength(8);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('charts the doses of eight pool sizes in three tables, each one cited', async ({ page }) => {
+  await page.goto('/pool-chemical-dosing-chart');
+  await expect(page.locator('.pool-chart')).toHaveCount(3);
+  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(24);
+  // 10,000 gallons: 10.24 fl oz of 12.5% liquid chlorine per ppm (10,000 x 3.785 L x 1 mg / 0.125)
+  await expect(page.locator('.pool-chart').first().locator('tbody tr').nth(1)).toContainText(
+    '10.2',
+  );
+  await expect(page.locator('.pool-cite a')).toHaveAttribute(
+    'href',
+    'https://poolfigures.com/pool-chemical-dosing-chart',
+  );
+  const hrefs = await page
+    .locator('main a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('serves llms.txt with the site, its calculators and its guides', async ({ request }) => {
+  const response = await request.get('/llms.txt');
+  expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toContain('text/plain');
+  const text = await response.text();
+  expect(text.startsWith('# Pool Figures\n')).toBe(true);
+  expect(text).toContain('(https://poolfigures.com/pool-chemical-dosing-chart)');
 });
 
 test('numbers the pump run time steps, whose calculator links all answer', async ({ page }) => {

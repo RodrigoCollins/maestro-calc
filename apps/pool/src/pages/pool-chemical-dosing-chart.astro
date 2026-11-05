@@ -1,0 +1,171 @@
+---
+import Layout from '../components/Layout.astro';
+import { DOSING_CHART } from '../dosing.ts';
+
+const { title, description, h1, lead, gallons, ranges, tables, sources, cite } = DOSING_CHART;
+const sourceOf = (key: string) => sources[key as keyof typeof sources];
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">Chart · doses by pool size</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <p>
+      {gallons.text} <a href={gallons.href}>{gallons.label}</a>. {ranges.text}{' '}
+      <a href={ranges.href}>{ranges.label}</a>.
+    </p>
+    {tables.map(({ id, caption, columns, rows }) => (
+      <section class="pool-dose" aria-labelledby={id}>
+        <h2 {id}>{caption}</h2>
+        <div class="pool-scroll" role="region" aria-label={`${caption} table`} tabindex="0">
+          <table class="pool-chart">
+            <thead>
+              <tr>
+                <th scope="col">Gallons</th>
+                {columns.map(({ head, unit }) => (
+                  <th scope="col">
+                    {head} <span class="pool-unit">({unit})</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ size, cells }) => (
+                <tr>
+                  <th scope="row">{size}</th>
+                  {cells.map((value) => (
+                    <td>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <dl class="pool-columns">
+          {columns.map(({ head, assumption, sources: keys, link, method }) => (
+            <>
+              <dt>{head}</dt>
+              <dd>
+                <p>{assumption}</p>
+                <p>
+                  <a href={link.href}>{link.label}</a> · <a href={method}>How it is worked out</a>
+                </p>
+                <p class="pool-level-source">
+                  Source:{' '}
+                  {keys.map((key, index) => (
+                    <>
+                      {index > 0 && ', '}
+                      <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+                    </>
+                  ))}
+                </p>
+              </dd>
+            </>
+          ))}
+        </dl>
+      </section>
+    ))}
+    <section class="pool-dose" aria-labelledby="cite">
+      <h2 id="cite">Cite this chart</h2>
+      <p>
+        Every figure is worked out by this site’s calculators when the page is built, from the
+        sources above. To cite it:
+      </p>
+      <p class="pool-cite">
+        {cite.text} <a href={cite.url}>{cite.url}</a>
+      </p>
+    </section>
+    <p class="pool-note">
+      Every figure is an estimate for the product strength its column names. Read the label of each
+      product before you add it, and follow it where it differs from this chart.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .pool-dose {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .pool-dose h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-dose p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* a narrow phone scrolls the table, never the page */
+  .pool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-chart {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-chart th,
+  .pool-chart td {
+    padding: 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: right;
+    vertical-align: top;
+  }
+
+  .pool-chart th[scope='row'],
+  .pool-chart thead th:first-child {
+    text-align: left;
+  }
+
+  .pool-chart thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-weight: 600;
+  }
+
+  .pool-unit {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .pool-columns {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .pool-columns dt {
+    font-weight: 600;
+  }
+
+  .pool-columns dd {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .pool-level-source {
+    font-size: 0.875rem;
+  }
+
+  .pool-cite {
+    padding: 1rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    overflow-wrap: anywhere;
+  }
+</style>
