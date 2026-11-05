@@ -69,15 +69,16 @@ const JURISDICTIONS = [
   'Wyoming',
 ];
 
-// Spot checks copied by hand from the DOL table (cash wage, tip credit, minimum, in cents), and
-// New York from the New York State Department of Labor.
+// Spot checks copied by hand from the DOL table (cash wage, tip credit, minimum, in cents), New
+// York from the New York State Department of Labor, and Florida from the Florida Constitution,
+// Art. X, s. 24 ($15.00 on September 30, 2026, less the 2003 federal tip credit of $3.02).
 const HAND: Readonly<Record<string, readonly [number, number, number]>> = {
   Alabama: [213, 512, 725],
   California: [1690, 0, 1690],
   Washington: [1713, 0, 1713],
   Arizona: [1215, 300, 1515],
   'District of Columbia': [1030, 810, 1840],
-  Florida: [1098, 302, 1400],
+  Florida: [1198, 302, 1500],
   Illinois: [900, 600, 1500],
   'New York': [1135, 565, 1700],
   Pennsylvania: [283, 442, 725],
@@ -124,7 +125,7 @@ describe('the tipped minimum wage by state', () => {
   it('cites a primary source for every row, with its as-of date', () => {
     for (const { name, source } of TIPPED_STATES) {
       expect(TIPPED_STATES_SOURCES[source].href, name.en).toMatch(
-        /^https:\/\/(www\.dol\.gov|dol\.ny\.gov)\//,
+        /^https:\/\/(www\.dol\.gov|dol\.ny\.gov|www\.flsenate\.gov)\//,
       );
     }
     expect(TIPPED_STATES_SOURCES.dol.href).toBe(
