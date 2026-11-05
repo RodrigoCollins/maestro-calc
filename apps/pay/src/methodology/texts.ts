@@ -139,7 +139,8 @@ const DOL_TIPPED: Source = {
   href: 'https://www.dol.gov/agencies/whd/fact-sheets/15-tipped-employees-flsa',
 };
 const DOL_TIPPED_ES: Source = {
-  label: 'Departamento de Trabajo de EE. UU., Hoja de datos #15 (empleados que reciben propinas, en inglés)',
+  label:
+    'Departamento de Trabajo de EE. UU., Hoja de datos #15 (empleados que reciben propinas, en inglés)',
   href: DOL_TIPPED.href,
 };
 const DOL_TIPPED_STATES: Source = {

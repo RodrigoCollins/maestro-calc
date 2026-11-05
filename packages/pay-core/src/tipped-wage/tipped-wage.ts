@@ -34,7 +34,13 @@ const smallerOf = (a: Money, b: Money): Money => (compareMoney(a, b) <= 0 ? a : 
 export const tippedWage = defineCalculator({
   id: 'tipped-wage',
   inputs: [
-    moneyInput({ key: 'cashWage', urlKey: 'c', default: CASH_WAGE, min: CASH_WAGE, max: usd(1000) }),
+    moneyInput({
+      key: 'cashWage',
+      urlKey: 'c',
+      default: CASH_WAGE,
+      min: CASH_WAGE,
+      max: usd(1000),
+    }),
     moneyInput({ key: 'tips', urlKey: 't', default: usd(250), max: usd(100000) }),
     decimalInput({
       key: 'hours',

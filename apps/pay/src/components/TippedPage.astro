@@ -106,7 +106,9 @@ const warnings = Object.entries(t.warnings);
     </ul>
     <ul class="link-list">
       <li>
-        <a href={t.stateLink.href} rel="noopener">{t.stateLink.label}</a>
+        <a href={t.stateLink.href} rel="noopener">
+          {t.stateLink.label}
+        </a>
       </li>
       {t.links.map((link) => (
         <li>

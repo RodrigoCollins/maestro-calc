@@ -84,7 +84,10 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
       'Overtime is figured on the full $7.25, not on $2.13: each hour over 40 adds half of $7.25, which the employer pays. 44 hours with $300 in tips pay $93.72 + $14.50 + $300 = $408.22.',
       'Many states set a higher minimum wage or cash wage, and some allow no tip credit at all, such as California, Washington and Alaska: check your state. The calculator uses the federal rules and rounds to the cent.',
     ],
-    stateLink: { label: 'Tipped minimum wage by state (U.S. Department of Labor)', href: DOL_STATE_TABLE },
+    stateLink: {
+      label: 'Tipped minimum wage by state (U.S. Department of Labor)',
+      href: DOL_STATE_TABLE,
+    },
     links: [
       { label: 'Work out your overtime by day', href: '/overtime-calculator' },
       { label: 'Add up a week on the time card', href: '/time-card-calculator' },
@@ -126,7 +129,8 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
       'Muchos estados fijan un salario mínimo o en efectivo más alto, y algunos no permiten el crédito por propinas, como California, Washington y Alaska: revisa tu estado. La calculadora usa las reglas federales y redondea al centavo.',
     ],
     stateLink: {
-      label: 'Salario mínimo con propinas por estado (Departamento de Trabajo de EE. UU., en inglés)',
+      label:
+        'Salario mínimo con propinas por estado (Departamento de Trabajo de EE. UU., en inglés)',
       href: DOL_STATE_TABLE,
     },
     links: [
