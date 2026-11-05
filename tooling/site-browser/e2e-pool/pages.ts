@@ -8,6 +8,7 @@ export const PAGES = [
   '/how-long-to-run-pool-pump',
   '/salt-water-pool-vs-chlorine-pool',
   '/how-to-shock-a-pool',
+  '/how-to-lower-ph-in-a-pool',
   '/privacy',
   '/about',
   '/embed-calculators',
