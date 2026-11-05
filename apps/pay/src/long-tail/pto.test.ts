@@ -80,9 +80,8 @@ describe('PTO long-tail pages', () => {
     const ten = longTailPageOf(ptoOf(10), 'en');
     expect(ten.h1).toBe('How much PTO do I earn per paycheck with 10 days a year?');
     expect(ten.figure).toBe('3.08 hours');
-    expect(ten.title).toBe(
-      'How much PTO do I earn per paycheck with 10 days a year? 3.08 hours | Cuenta Horas',
-    );
+    // too long with the site name for a result to show whole, so the answer keeps the room
+    expect(ten.title).toBe('How much PTO do I earn per paycheck with 10 days a year? 3.08 hours');
     expect(ten.lead).toBe(
       'With 10 paid days off a year of 8 hours and a 40-hour week, you earn 3.08 PTO hours every two weeks. That is 80 PTO hours a year over 26 biweekly paychecks, or 1 hour off for every 26 hours you work.',
     );

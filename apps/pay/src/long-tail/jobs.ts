@@ -3,6 +3,7 @@ import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { moneyText } from '../format.ts';
 import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { differentialLinksOf, differentialPageOf } from './differentials.ts';
@@ -138,7 +139,8 @@ export interface LongTailPage {
     readonly label: string;
     readonly value: string;
   }[];
-  readonly calculator: { readonly href: string; readonly label: string };
+  /** The calculator the page answers for: its link, prefilled, and its title, for the breadcrumb. */
+  readonly calculator: { readonly href: string; readonly label: string; readonly title: string };
   readonly note: string;
   readonly paths: Readonly<Record<Lang, string>>;
   readonly others: CommonLinks;
@@ -222,8 +224,11 @@ const overtimePageOf = (job: Job, lang: Lang): LongTailPage => {
   if (!validated.ok) throw new Error(`the overtime week of ${job.amount} must validate`);
   return {
     kicker: w.kicker,
-    title: `${question} ${short(figure)} | Cuenta Horas`,
-    description: `${answer} ${rows.map(({ label, value }) => `${label}: ${short(value)}`).join('; ')}.`,
+    title: titleOf(`${question} ${short(figure)}`),
+    description: descriptionOf(
+      answer,
+      rows.map(({ label, value }) => `${label}: ${short(value)}`),
+    ),
     h1: question,
     lead: answer,
     figure,
@@ -233,6 +238,7 @@ const overtimePageOf = (job: Job, lang: Lang): LongTailPage => {
     calculator: {
       href: `${TIME_CARD_PATHS[lang]}?${encode(timeCard, validated.value)}`,
       label: w.edit,
+      title: TIME_CARD_TEXTS[lang].title,
     },
     note: TIME_CARD_TEXTS[lang].note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
@@ -271,8 +277,11 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   const answer = w.answer(given, short(figure), w.ask[job.per]);
   return {
     kicker: t.kicker,
-    title: `${question} ${short(figure)} | Cuenta Horas`,
-    description: `${answer} ${rows.map(({ label, value }) => `${label}: ${short(value)}`).join('; ')}.`,
+    title: titleOf(`${question} ${short(figure)}`),
+    description: descriptionOf(
+      answer,
+      rows.map(({ label, value }) => `${label}: ${short(value)}`),
+    ),
     h1: question,
     lead: answer,
     figure,
@@ -282,6 +291,7 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
     calculator: {
       href: `${PATHS[variant][lang]}?${encode(payConverter, validated.value)}`,
       label: w.edit,
+      title: t.variants[variant].title,
     },
     note: t.note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },

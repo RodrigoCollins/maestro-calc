@@ -2,6 +2,7 @@ import { encode, Rational, toDecimalParts } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { decimalHoursText, hoursMinutesText, hoursText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { nearestOf } from './nearest.ts';
@@ -153,8 +154,11 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   if (!validated.ok) throw new Error(`the shift ${shift.slug.en} must validate`);
   return {
     kicker: t.kicker,
-    title: `${question} ${figure} | Cuenta Horas`,
-    description: lead,
+    title: titleOf(`${question} ${figure}`),
+    description: descriptionOf(
+      lead,
+      rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
+    ),
     h1: question,
     lead,
     figure,
@@ -164,6 +168,7 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     calculator: {
       href: `${HOURS_PATHS[lang]}?${encode(hoursBetween, validated.value)}`,
       label: w.edit,
+      title: t.title,
     },
     note,
     paths: { en: pathOf(shift, 'en'), es: pathOf(shift, 'es') },

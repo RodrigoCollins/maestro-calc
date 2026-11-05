@@ -2,6 +2,7 @@ import { encode, type Money, type Rational } from '@maestro-calc/core';
 import { shiftDifferential } from '@maestro-calc/pay-core/shift-differential';
 import { moneyText } from '../format.ts';
 import { SHIFT_PATHS, SHIFT_TEXTS } from '../shift/texts.ts';
+import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { nearestOf } from './nearest.ts';
@@ -141,8 +142,11 @@ export const differentialPageOf = (job: Differential, lang: Lang): LongTailPage 
   if (note === undefined) throw new Error('the shift differential calculator must state the law');
   return {
     kicker: t.kicker,
-    title: `${question} ${short(figure)} | Cuenta Horas`,
-    description: `${answer} ${rows.map(({ label, value }) => `${label}: ${short(value)}`).join('; ')}.`,
+    title: titleOf(`${question} ${short(figure)}`),
+    description: descriptionOf(
+      answer,
+      rows.map(({ label, value }) => `${label}: ${short(value)}`),
+    ),
     h1: question,
     lead: answer,
     figure,
@@ -152,6 +156,7 @@ export const differentialPageOf = (job: Differential, lang: Lang): LongTailPage 
     calculator: {
       href: `${SHIFT_PATHS[lang]}?${encode(shiftDifferential, validated.value)}`,
       label: w.edit,
+      title: t.title,
     },
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
