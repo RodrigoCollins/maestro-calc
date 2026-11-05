@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { ABOUT, NAMED_SOURCES } from './about.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import {
+  CALCIUM_GUIDE,
   CLOSING_GUIDE,
   OPENING_GUIDE,
   PH_GUIDE,
@@ -32,6 +33,7 @@ const cited = [
     SALT_VS_CHLORINE_GUIDE,
     SHOCK_GUIDE,
     PH_GUIDE,
+    CALCIUM_GUIDE,
   ].flatMap(({ sources }) => Object.values<GuideSource>(sources).map(({ name }) => name)),
 ];
 
@@ -67,6 +69,7 @@ describe('the about page', () => {
     expect(text).toContain('a salt water pool with a chlorine one');
     expect(text).toContain('how to shock the pool');
     expect(text).toContain('how to lower or raise the pH');
+    expect(text).toContain('how to raise calcium hardness and why only draining lowers it');
   });
 
   it('gives the address readers write to', () => {

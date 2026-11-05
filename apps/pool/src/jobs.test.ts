@@ -33,7 +33,7 @@ import {
   STABILIZER,
 } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
-import { GUIDES, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
+import { CALCIUM_GUIDE, GUIDES, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import {
   guideJobLinksOf,
   JOB_PAGES,
@@ -377,6 +377,16 @@ describe('the long-tail job pages', () => {
     );
   });
 
+  it('links every calcium page from the calcium guide, and each links it back', () => {
+    const calcium = JOB_PAGES.filter(({ calculator }) => calculator.path === CALCIUM.path);
+    expect(calcium.length).toBeGreaterThan(0);
+    for (const page of calcium)
+      expect(page.guide).toEqual({ href: CALCIUM_GUIDE.path, label: CALCIUM_GUIDE.card.title });
+    expect(guideJobLinksOf(CALCIUM_GUIDE.path)).toEqual(
+      calcium.map(({ path, h1 }) => ({ href: path, label: h1 })),
+    );
+  });
+
   // worked by hand: 5,000 × 3,200 × 8.34 ÷ 1,000,000 = 133.44 lb, 4 bags; 35,000 gal is 934.08
   // lb, 23.35 bags so 24; and 10.24 fl oz of 12.5% liquid per ppm per 10,000 gal: 5,000 gal from
   // 1 to 3 ppm is 10.24 fl oz, 30,000 gal 61.44
@@ -616,7 +626,8 @@ describe('the shock job pages', () => {
       shock.map(({ path, h1 }) => ({ href: path, label: h1 })),
     );
     for (const { path } of GUIDES.filter(
-      ({ path }) => path !== SHOCK_GUIDE.path && path !== PH_GUIDE.path,
+      ({ path }) =>
+        path !== SHOCK_GUIDE.path && path !== PH_GUIDE.path && path !== CALCIUM_GUIDE.path,
     ))
       expect(guideJobLinksOf(path)).toEqual([]);
   });

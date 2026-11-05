@@ -21,7 +21,7 @@ import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
-import { PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
+import { CALCIUM_GUIDE, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 type Raw = Readonly<Record<string, string>>;
@@ -826,6 +826,7 @@ const calciumPage = (gallons: number): JobPage => {
       href: linkTo(poolCalcium, CALCIUM.path, main.raw),
       label: 'Work it out for your reading',
     },
+    guide: { href: CALCIUM_GUIDE.path, label: CALCIUM_GUIDE.card.title },
     method: `${CALCIUM.method} ${CALCIUM.note}`,
     card: {
       title: `Calcium chloride for ${size} gallons`,
