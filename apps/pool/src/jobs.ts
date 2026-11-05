@@ -413,6 +413,16 @@ const VOLUME_JOBS = [
   },
 ] as const;
 
+/** A size as the volume calculator reads it: a raw with no shape is a rectangle, a round has no width. */
+const sizeKey = ({ shape = 'rectangle', length = '', width = '' }: Raw): string =>
+  `${shape} ${length} ${shape === 'round' ? '' : width}`;
+
+/** The volume job page of a pool size (`shape`, `length`, `width`), when the site has one. */
+export const volumeJobPathOf = (size: Raw): string | undefined => {
+  const found = VOLUME_JOBS.find((job) => sizeKey(job.size) === sizeKey(size));
+  return found === undefined ? undefined : `/${found.slug}`;
+};
+
 /** The outputs of one engine run, by key; a run that fails is a build error. */
 const outputsOf = (
   engine:

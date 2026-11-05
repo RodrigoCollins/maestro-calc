@@ -2,7 +2,8 @@
 import Layout from '../components/Layout.astro';
 import { DOSING_CHART } from '../dosing.ts';
 
-const { title, description, h1, lead, gallons, ranges, tables, sources, cite } = DOSING_CHART;
+const { title, description, h1, lead, gallons, chart, ranges, tables, sources, cite } =
+  DOSING_CHART;
 const sourceOf = (key: string) => sources[key as keyof typeof sources];
 ---
 
@@ -12,8 +13,9 @@ const sourceOf = (key: string) => sources[key as keyof typeof sources];
     <h1>{h1}</h1>
     <p>{lead}</p>
     <p>
-      {gallons.text} <a href={gallons.href}>{gallons.label}</a>. {ranges.text}{' '}
-      <a href={ranges.href}>{ranges.label}</a>.
+      {gallons.text} <a href={gallons.href}>{gallons.label}</a>, {chart.text}{' '}
+      <a href={chart.href}>{chart.label}</a>. {ranges.text} <a href={ranges.href}>{ranges.label}</a>
+      .
     </p>
     {tables.map(({ id, caption, columns, rows }) => (
       <section class="pool-dose" aria-labelledby={id}>

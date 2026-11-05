@@ -189,6 +189,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/closing-your-pool',
     '/pool-water-chemistry-chart',
     '/pool-chemical-dosing-chart',
+    '/pool-volume-chart',
     '/how-long-to-run-pool-pump',
     '/salt-water-pool-vs-chlorine-pool',
     '/how-to-shock-a-pool',
@@ -238,6 +239,25 @@ test('charts the doses of eight pool sizes in three tables, each one cited', asy
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('charts the gallons of 23 pool sizes in three tables, each one cited', async ({ page }) => {
+  await page.goto('/pool-volume-chart');
+  await expect(page.locator('.pool-chart')).toHaveCount(3);
+  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(23);
+  // 24 ft round, 4 ft deep: pi x 24^2 / 4 x 4 ft = 1,809.6 cubic feet, x 1,728 / 231 = 13,536 gallons
+  await expect(page.locator('.pool-chart').first().locator('tbody tr').nth(4)).toContainText(
+    '13,536',
+  );
+  await expect(page.locator('.pool-cite a')).toHaveAttribute(
+    'href',
+    'https://poolfigures.com/pool-volume-chart',
+  );
+  const hrefs = await page
+    .locator('main a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  for (const href of new Set(hrefs))
+    expect((await page.request.get(href)).status(), href).toBe(200);
 });
 
 test('serves llms.txt with the site, its calculators and its guides', async ({ request }) => {

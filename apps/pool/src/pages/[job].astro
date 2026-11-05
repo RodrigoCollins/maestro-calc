@@ -4,6 +4,7 @@ import Layout from '../components/Layout.astro';
 import JobLinks from '../components/JobLinks.astro';
 import { JOB_PAGES, type JobPage } from '../jobs.ts';
 import { jobTrailOf } from '../seo/breadcrumb.ts';
+import { VOLUME_CHART } from '../volume/chart.ts';
 
 // One page per common job, its figures worked out by the engines at build time (no script).
 export const getStaticPaths = (() =>
@@ -60,6 +61,11 @@ const here = trail.at(-1);
     <p>
       <a href={page.calculator.href}>{page.calculator.label}</a>
     </p>
+    {page.calculator.path === VOLUME_CHART.calculator.href && (
+      <p>
+        <a href={VOLUME_CHART.path}>Every common size in the pool volume chart</a>
+      </p>
+    )}
     {page.guide !== undefined && (
       <p>
         <a href={page.guide.href}>{page.guide.label}</a>

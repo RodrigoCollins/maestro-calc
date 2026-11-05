@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART } from './dosing.ts';
+import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import {
   CALCIUM_GUIDE,
@@ -480,6 +481,7 @@ describe('the guides', () => {
       CLOSING_GUIDE.path,
       CHEMISTRY_CHART.path,
       DOSING_CHART.path,
+      VOLUME_CHART.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
@@ -513,19 +515,21 @@ describe('the calculators each guide explains', () => {
               columns.map(({ calculator }) => calculator),
             ),
           ]
-        : [
-            OPENING_GUIDE,
-            CLOSING_GUIDE,
-            PUMP_RUN_GUIDE,
-            SALT_VS_CHLORINE_GUIDE,
-            SHOCK_GUIDE,
-            PH_GUIDE,
-            CALCIUM_GUIDE,
-          ]
-            .filter(({ path }) => path === guide.path)
-            .flatMap(({ steps }) =>
-              steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
-            );
+        : guide.path === VOLUME_CHART.path
+          ? [VOLUME_CHART.calculator.href]
+          : [
+              OPENING_GUIDE,
+              CLOSING_GUIDE,
+              PUMP_RUN_GUIDE,
+              SALT_VS_CHLORINE_GUIDE,
+              SHOCK_GUIDE,
+              PH_GUIDE,
+              CALCIUM_GUIDE,
+            ]
+              .filter(({ path }) => path === guide.path)
+              .flatMap(({ steps }) =>
+                steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
+              );
 
   // a calculator page links back each guide that names it (`src/site-check/links.ts` checks the build)
   it.each(GUIDES.map((guide) => [guide.path, guide] as const))(
