@@ -5,6 +5,7 @@ export const PAGES = [
   '/opening-your-pool',
   '/closing-your-pool',
   '/pool-water-chemistry-chart',
+  '/how-long-to-run-pool-pump',
   '/privacy',
   '/about',
   '/embed-calculators',

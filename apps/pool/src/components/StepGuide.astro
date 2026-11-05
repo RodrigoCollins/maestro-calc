@@ -10,12 +10,22 @@ interface Props {
     readonly description: string;
     readonly h1: string;
     readonly lead: string;
+    readonly note?: string;
     readonly sources: Readonly<Record<string, GuideSource>>;
     readonly steps: readonly GuideStep[];
   };
 }
 
-const { kicker, title, description, h1, lead, steps, sources } = Astro.props.guide;
+const {
+  kicker,
+  title,
+  description,
+  h1,
+  lead,
+  note = 'Read the label of each product before you add it, and follow it where it differs from this guide.',
+  steps,
+  sources,
+} = Astro.props.guide;
 const sourceOf = (key: string): GuideSource => {
   const source = sources[key];
   if (source === undefined) throw new Error(`no source ${key}`);
@@ -52,10 +62,7 @@ const sourceOf = (key: string): GuideSource => {
         </li>
       ))}
     </ol>
-    <p class="pool-note">
-      Read the label of each product before you add it, and follow it where it differs from this
-      guide.
-    </p>
+    <p class="pool-note">{note}</p>
   </main>
 </Layout>
 

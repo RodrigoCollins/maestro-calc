@@ -187,6 +187,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/opening-your-pool',
     '/closing-your-pool',
     '/pool-water-chemistry-chart',
+    '/how-long-to-run-pool-pump',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
@@ -211,5 +212,19 @@ test('charts six levels, each with its section, and every calculator link answer
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
   expect(hrefs).toHaveLength(5);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('numbers the pump run time steps, whose calculator links all answer', async ({ page }) => {
+  await page.goto('/how-long-to-run-pool-pump');
+  await expect(page.locator('.pool-steps > li')).toHaveCount(9);
+  const hrefs = await page
+    .locator('.pool-steps a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toEqual([
+    '/pool-volume-calculator',
+    '/pool-pump-size-calculator',
+    '/pool-heater-size-calculator',
+  ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
