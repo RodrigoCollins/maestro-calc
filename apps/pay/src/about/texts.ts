@@ -21,7 +21,12 @@ export interface AboutTexts {
 export const ABOUT_PATHS: Readonly<Record<Lang, string>> = { en: '/about', es: '/es/acerca' };
 
 /** The hosts of the sources the methodology cites; the about page names these and no others. */
-export const PRIMARY_SOURCE_HOSTS = ['www.dol.gov', 'www.dir.ca.gov', 'www.irs.gov'] as const;
+export const PRIMARY_SOURCE_HOSTS = [
+  'www.dol.gov',
+  'www.ecfr.gov',
+  'www.dir.ca.gov',
+  'www.irs.gov',
+] as const;
 
 /** Who runs Cuenta Horas and how it works, in each language (the about page). */
 export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
@@ -51,7 +56,7 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
         id: 'sources',
         heading: 'Sources',
         paragraphs: [
-          'We cite primary sources only: the U.S. Department of Labor (dol.gov) for federal overtime, the California Labor Commissioner (dir.ca.gov) for California overtime, and the IRS (irs.gov) for the deductions for tips and overtime. Each page names the source it uses.',
+          'We cite primary sources only: the U.S. Department of Labor (dol.gov) for federal overtime and its regulations in the Code of Federal Regulations (ecfr.gov), the California Labor Commissioner (dir.ca.gov) for California overtime, and the IRS (irs.gov) for the deductions for tips and overtime. Each page names the source it uses.',
         ],
       },
       {
@@ -105,7 +110,7 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
         id: 'fuentes',
         heading: 'Fuentes',
         paragraphs: [
-          'Citamos solo fuentes primarias: el Departamento de Trabajo de EE. UU. (dol.gov) para las horas extra federales, el Comisionado Laboral de California (dir.ca.gov) para las horas extra de California, y el IRS (irs.gov) para las deducciones por propinas y horas extra. Cada página nombra la fuente que usa.',
+          'Citamos solo fuentes primarias: el Departamento de Trabajo de EE. UU. (dol.gov) para las horas extra federales y sus reglamentos en el Código de Regulaciones Federales (ecfr.gov), el Comisionado Laboral de California (dir.ca.gov) para las horas extra de California, y el IRS (irs.gov) para las deducciones por propinas y horas extra. Cada página nombra la fuente que usa.',
         ],
       },
       {
