@@ -292,7 +292,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
           'California overtime after 8 hours a day and 40 a week, double time after 12, the seventh-day rule and why an hour is overtime only once, with examples.',
         kicker: 'California · guide',
         h1: 'California overtime by the day and by the week',
-        lead: 'California pays overtime by the day as well as by the week. This guide covers the general rule of the Labor Commissioner, the seventh consecutive day, why the same hour is never paid twice as overtime, and weeks run through the time card.',
+        lead: 'California pays overtime by the day as well as by the week: one and a half times the regular rate after 8 hours in a workday or 40 in a workweek, and double time after 12 hours in a workday. This guide covers the general rule of the Labor Commissioner, the seventh consecutive day, why the same hour is never paid twice as overtime, and weeks run through the time card.',
         sections: [
           {
             id: 'the-rule',
@@ -372,7 +372,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
           'Horas extra en California después de 8 horas al día y 40 a la semana, doble después de 12, el séptimo día y por qué una hora es extra una sola vez.',
         kicker: 'California · guía',
         h1: 'Horas extra en California por día y por semana',
-        lead: 'California paga horas extra por día además de por semana. Esta guía explica la regla general del Comisionado Laboral, el séptimo día seguido, por qué la misma hora nunca se paga dos veces como extra, y semanas resueltas con la tarjeta de horas.',
+        lead: 'California paga horas extra por día además de por semana: una vez y media la tarifa regular después de 8 horas en una jornada o 40 en una semana laboral, y el doble después de 12 horas en una jornada. Esta guía explica la regla general del Comisionado Laboral, el séptimo día seguido, por qué la misma hora nunca se paga dos veces como extra, y semanas resueltas con la tarjeta de horas.',
         sections: [
           {
             id: 'la-regla',

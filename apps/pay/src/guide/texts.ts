@@ -110,7 +110,7 @@ export const GUIDE_TEXTS: Readonly<Record<Lang, GuideTexts>> = {
       'Who qualifies for the tips and overtime deductions, where the amounts are on your 2026 W-2, and where they go on Schedule 1-A of your return.',
     kicker: 'Tax year 2026 · guide',
     h1: 'How to claim no tax on tips and overtime on your 2026 return',
-    lead: 'For tax year 2026, the return most people file in early 2027, two deductions can lower the federal income tax on tips and on overtime pay. This guide covers who qualifies, where the amounts come from and where they go on the return.',
+    lead: 'For tax year 2026, the return most people file in early 2027, you can deduct up to $25,000 of qualified tips and up to $12,500 of qualified overtime compensation ($25,000 on a joint return) on your federal income tax return. Both shrink when modified adjusted gross income is over $150,000 ($300,000 on a joint return). This guide covers who qualifies, where the amounts come from and where they go on the return.',
     sections: [
       {
         id: 'who-qualifies',
@@ -175,7 +175,7 @@ export const GUIDE_TEXTS: Readonly<Record<Lang, GuideTexts>> = {
       'Quién califica para las deducciones de propinas y horas extra, dónde están los montos en tu W-2 2026 y dónde van en el Schedule 1-A de tu declaración.',
     kicker: 'Año fiscal 2026 · guía',
     h1: 'Cómo deducir propinas y horas extra en tu declaración 2026',
-    lead: 'Para el año fiscal 2026, la declaración que la mayoría presenta a principios de 2027, dos deducciones pueden bajar el impuesto federal sobre la renta de las propinas y del pago de horas extra. Esta guía explica quién califica, de dónde salen los montos y dónde van en la declaración.',
+    lead: 'Para el año fiscal 2026, la declaración que la mayoría presenta a principios de 2027, puedes deducir hasta $25,000 de propinas calificadas y hasta $12,500 de compensación calificada por horas extra ($25,000 en una declaración conjunta) en tu declaración federal del impuesto sobre la renta. Las dos bajan cuando el ingreso bruto ajustado modificado pasa de $150,000 ($300,000 en una declaración conjunta). Esta guía explica quién califica, de dónde salen los montos y dónde van en la declaración.',
     sections: [
       {
         id: 'quien-califica',

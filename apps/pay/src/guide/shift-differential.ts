@@ -143,7 +143,7 @@ export const SHIFT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       'Is the night shift differential in your overtime rate? What federal law says, the weighted-average regular rate, and worked weeks.',
     kicker: 'Shift pay · guide',
     h1: 'Night shift differential and overtime: is the differential in the overtime rate?',
-    lead: 'A shift differential is the extra you get an hour for nights, evenings or weekends. This guide shows what federal law says about it, why it belongs in the rate your overtime is figured on, and how that rate is worked out when a week has hours at two rates.',
+    lead: 'A shift differential is the extra you get an hour for nights, evenings or weekends, such as $1.50 more an hour on the night shift, and under federal law it goes into the regular rate your overtime is figured on. This guide shows how that rate is worked out when a week has hours at two rates.',
     sections: [
       {
         id: 'not-required',
@@ -212,7 +212,7 @@ export const SHIFT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
       '¿El diferencial nocturno entra en tu tarifa de horas extra? Qué dice la ley federal, la tarifa regular como promedio ponderado y semanas resueltas.',
     kicker: 'Pago por turno · guía',
     h1: 'Diferencial nocturno y horas extra: ¿entra en la tarifa de horas extra?',
-    lead: 'El diferencial de turno es lo que te pagan de más por hora por trabajar de noche, de tarde o en fin de semana. Esta guía muestra qué dice la ley federal, por qué el diferencial entra en la tarifa sobre la que se calculan tus horas extra y cómo se calcula esa tarifa cuando una semana tiene horas a dos tarifas.',
+    lead: 'El diferencial de turno es lo que te pagan de más por hora por trabajar de noche, de tarde o en fin de semana, como $1.50 más por hora en el turno de noche, y según la ley federal entra en la tarifa regular sobre la que se calculan tus horas extra. Esta guía muestra cómo se calcula esa tarifa cuando una semana tiene horas a dos tarifas.',
     sections: [
       {
         id: 'no-es-obligatorio',
