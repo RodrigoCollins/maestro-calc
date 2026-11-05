@@ -292,8 +292,116 @@ export const PUMP_RUN_GUIDE = {
   steps: PUMP_RUN_STEPS,
 } as const satisfies StepGuide;
 
+const SALT_VS_CHLORINE_SOURCES = {
+  hayward: {
+    name: 'Hayward AquaRite owner’s manual, 092538 Rev D',
+    url: 'https://hayward.com/media/akeneo_connector/asset_files/0/9/092538_RevD_b778.pdf',
+  },
+  pentair: {
+    name: 'Pentair IntelliChlor installation and user’s guide, P/N 520589 Rev. R',
+    url: 'https://flowandfiltrationsolutions.pentair.com/content/dam/extranet/nam/pentair-pool/residential/sanitizers/intellichlor/intellichlor-installation-users-guide-ic15-ic20-ic40-ic60.pdf',
+  },
+  jandy: {
+    name: 'Jandy AquaPure installation and operation manual, H0567500G LI4011 Rev 7',
+    url: 'https://www.zodiacpoolsystems.com/-/media/9DD79DFAE8A441AE8E80289ABB0216B4.ashx',
+  },
+  cdc: {
+    name: 'CDC: Home Pool and Hot Tub Water Treatment and Testing',
+    url: 'https://www.cdc.gov/healthy-swimming/about/home-pool-and-hot-tub-water-treatment-and-testing.html',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** What a salt cell changes and what it leaves as it is, each difference from a maker's manual. */
+const SALT_VS_CHLORINE_STEPS: readonly GuideStep[] = [
+  {
+    title: 'A salt pool is a chlorine pool',
+    text: 'The salt is not the sanitizer: a generator turns it into chlorine as the water passes through its cell. Hayward’s AquaRite manual says the cell converts the salt into free chlorine, which kills bacteria and algae and reverts back to salt. Pentair’s IntelliChlor makes hypochlorite and hypochlorous acid by electrolysis; Jandy’s AquaPure calls what it makes sodium hypochlorite, liquid chlorine.',
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+  {
+    title: 'The water targets are the same',
+    text: 'CDC gives one floor for every home pool, salt or not: free chlorine at least 1 ppm, at least 2 ppm if you use cyanuric acid, and pH 7.0 to 7.8, tested at least twice a day, and more often when many people swim. Hayward’s manual says the only special requirements of its generator are the salt level and the stabilizer.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See every target range' },
+    sources: ['cdc', 'hayward'],
+  },
+  {
+    title: 'Every dose starts from your gallons',
+    text: 'The salt, the chlorine and every other dose depend on how much water the pool holds. Work it out once from the length, the width and the depth at each end.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'In a chlorine pool, you add the chlorine',
+    text: 'Without a generator, the chlorine goes in by hand, dosed to the reading: liquid chlorine, cal-hypo or dichlor. In 20,000 gallons, raising free chlorine from 1 to 3 ppm takes 41.0 fl oz of 12.5% liquid chlorine.',
+    link: { href: CHLORINE.path, label: 'Work out the chlorine' },
+  },
+  {
+    title: 'In a salt pool, the cell makes it',
+    text: 'Hayward says the cycle of salt to chlorine and back virtually eliminates adding sanitizing chemicals. You set the generator instead: its chlorine follows the filter hours each day, the output setting and the salt. Start the output at about 50% and test every few days; most owners turn it up at the peak of summer and down when it is colder, and below 50°F the AquaRite stops making chlorine. The cell does not measure the chlorine it makes, Pentair warns, so you still test the water.',
+    sources: ['hayward', 'pentair'],
+  },
+  {
+    title: 'Shock still comes from a product',
+    text: 'Hayward’s AquaRite has a super chlorinate setting for a heavy swim day or a lot of rain. When a pool first starts up, Pentair advises shocking it with a product from the pool store rather than with the cell.',
+    sources: ['hayward', 'pentair'],
+  },
+  {
+    title: 'Hold the salt at the level your cell asks for',
+    text: 'Each maker gives its own range. Hayward’s AquaRite: 2,700 to 3,400 ppm, 3,200 the best, and the water starts to taste salty at about 3,500 to 4,000. Pentair’s IntelliChlor: 3,600 ppm, off below 2,600, and above 4,500 a risk of corrosion. Jandy’s AquaPure: 3,000 to 3,500 ppm, and below 2,000 the cell fails early. Test before you add any: most pools already hold some salt. A 20,000-gallon pool reading 0 ppm takes 533.8 lb to reach 3,200.',
+    link: { href: SALT.path, label: 'Work out the salt' },
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+  {
+    title: 'Buy pure salt, and wait for new plaster',
+    text: 'Hayward asks for sodium chloride over 99% pure; Pentair and Jandy for at least 99.8%. None wants rock salt or salt with anti-caking agents such as yellow prussiate of soda, and Hayward rules out iodized salt. On new plaster the wait differs too: 10 to 14 days for Hayward, at least 4 weeks for Jandy, at least one month for Pentair.',
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+  {
+    title: 'The salt stays in the water',
+    text: 'Salt does not evaporate: you add more only after fresh water replaces what splashing, backwashing or draining after rain took out. And the only way to lower it is to drain part of the water and refill with fresh.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Keep the stabilizer your maker asks for',
+    text: 'Outdoors, stabilizer (cyanuric acid) shields the chlorine the cell makes from the sun, which destroys 90% of unstabilized chlorine within two hours, Pentair says. The makers differ: Hayward’s chart raises it to 40 ppm, Pentair keeps it at 30 to 50 ppm and none indoors, Jandy at 50 to 75. Test it whenever you test the salt, Hayward says: the two most likely drop together.',
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+  {
+    title: 'Look after the cell',
+    text: 'The cell is the part a chlorine pool does not have. It cleans itself by reversing, but hard water or water out of balance still leaves scale: Hayward says to open and inspect it every 3 months or after cleaning the filter, Pentair and Jandy every two months where it tends to scale. Rinse it with a garden hose, and soak it in 1 quart of muriatic acid to 1 gallon of water only when that fails. Pentair designs its cell for about 10,000 hours, roughly five years of average use, before it needs replacing.',
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+  {
+    title: 'Mind the stone, the metal and the dry acid',
+    text: 'Salt is corrosive. Pentair warns that any amount of it raises the likelihood of corrosion of the equipment and the surfaces in and around the pool, metal parts and steel pools above all, and Hayward advises asking a stone specialist before natural stone coping or decking. All three makers warn against dry acid (sodium bisulfate) for the pH where the water evaporates a lot and is rarely diluted: its by-products can damage the cell.',
+    sources: ['hayward', 'pentair', 'jandy'],
+  },
+];
+
+/**
+ * Salt water pool vs chlorine pool. A salt pool is a chlorine pool whose cell makes the chlorine,
+ * so the water targets are CDC's for both; the differences (salt level, salt, plaster wait,
+ * stabilizer, cell care, cell life, corrosion) are each maker's manual, side by side. No cost and
+ * no lifespan that a source does not give; each dose is its calculator's own.
+ */
+export const SALT_VS_CHLORINE_GUIDE = {
+  path: '/salt-water-pool-vs-chlorine-pool',
+  kicker: 'Guide · salt',
+  card: {
+    title: 'Salt water vs chlorine',
+    summary: 'What a salt cell changes, and what stays the same as in a chlorine pool.',
+  },
+  title: 'Salt Water Pool vs Chlorine Pool: What Differs | Pool Figures',
+  description:
+    'A salt water pool is a chlorine pool whose cell makes the chlorine. What differs: the salt level, the salt, the stabilizer and the cell care, per maker.',
+  h1: 'Salt water pool vs chlorine pool: what actually differs',
+  lead: 'A salt water pool is a chlorine pool: its cell makes the chlorine from salt, so the water targets are the same. What differs is the equipment, the salt level your cell asks for, and the care the cell needs.',
+  note: 'Follow the manual of your own generator where it differs from this guide: the salt level, the stabilizer and the wait on new plaster all vary by maker.',
+  sources: SALT_VS_CHLORINE_SOURCES,
+  steps: SALT_VS_CHLORINE_STEPS,
+} as const satisfies StepGuide;
+
 /** Every guide, in the order the home and the footer list them. */
 export const GUIDES: readonly {
   readonly path: string;
   readonly card: { readonly title: string; readonly summary: string };
-}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART, PUMP_RUN_GUIDE];
+}[] = [OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE];
