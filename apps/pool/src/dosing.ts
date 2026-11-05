@@ -21,24 +21,12 @@ import { VOLUME_TEXTS } from './volume/texts.ts';
 
 type Raw = Readonly<Record<string, string>>;
 
-/** The engine of each calculator a column runs, by its page. */
-const ENGINES = {
-  [SALT.path]: poolSalt,
-  [CHLORINE.path]: poolChlorine,
-  [PH.path]: poolPh,
-  [ALKALINITY.path]: poolAlkalinity,
-  [STABILIZER.path]: poolStabilizer,
-  [CALCIUM.path]: poolCalcium,
-} as const;
-
-type CalculatorPath = keyof typeof ENGINES;
-
 /** One column of the chart: a dose the calculator at `calculator` works out for every pool size. */
 export interface DoseColumn {
   readonly id: string;
   readonly head: string;
   readonly unit: string;
-  readonly calculator: CalculatorPath;
+  readonly calculator: string;
   /** The output of the calculator the cells print. */
   readonly key: string;
   /** The inputs the calculator runs on, for a pool of `gallons`. */
@@ -94,29 +82,51 @@ const GALLONS = [5000, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000, 40_000] a
 /** The row the lead quotes and each calculator link opens on. */
 const MAIN = 10_000;
 
-/** A dose of the calculator at `calculator`, as its page prints it; a run that fails is a build error. */
-const doseOf = (calculator: CalculatorPath, raw: Raw, key: string): string => {
-  const ran = ENGINES[calculator].run(raw);
-  if (!ran.ok) throw new Error(`${calculator} did not run on ${JSON.stringify(raw)}`);
-  return outputText(key, ran.value.outputs.find((output) => output.key === key)?.value);
-};
+/** What the chart asks of a calculator: a dose as its page prints it, and the page opened on it. */
+interface Runner {
+  readonly dose: (raw: Raw, key: string) => string;
+  readonly href: (raw: Raw) => string;
+}
 
-/** The calculator at `path` opened on `raw`, through its own URL state. */
-const linkTo = <const I extends readonly InputDescriptor[]>(
+/** The runner of `engine`, the calculator at `path`; a run that fails is a build error. */
+const runnerOf = <const I extends readonly InputDescriptor[]>(
   engine: Calculator<string, I, readonly OutputDescriptor[], readonly string[]>,
   path: string,
-  raw: Raw,
-): string => {
-  const validated = engine.validate(raw);
-  if (!validated.ok) throw new Error(`${engine.id} rejects ${JSON.stringify(raw)}`);
-  return `${path}?${encode(engine, validated.value)}`;
+): Runner => ({
+  dose: (raw, key) => {
+    const ran = engine.run(raw);
+    if (!ran.ok) throw new Error(`${engine.id} did not run on ${JSON.stringify(raw)}`);
+    return outputText(key, ran.value.outputs.find((output) => output.key === key)?.value);
+  },
+  href: (raw) => {
+    const validated = engine.validate(raw);
+    if (!validated.ok) throw new Error(`${engine.id} rejects ${JSON.stringify(raw)}`);
+    return `${path}?${encode(engine, validated.value)}`;
+  },
+});
+
+/** The calculator of each column, by its page. */
+const RUNNERS: ReadonlyMap<string, Runner> = new Map([
+  [SALT.path, runnerOf(poolSalt, SALT.path)],
+  [CHLORINE.path, runnerOf(poolChlorine, CHLORINE.path)],
+  [PH.path, runnerOf(poolPh, PH.path)],
+  [ALKALINITY.path, runnerOf(poolAlkalinity, ALKALINITY.path)],
+  [STABILIZER.path, runnerOf(poolStabilizer, STABILIZER.path)],
+  [CALCIUM.path, runnerOf(poolCalcium, CALCIUM.path)],
+]);
+
+/** The runner of the calculator page at `path`; a column of another page is a build error. */
+const runner = (path: string): Runner => {
+  const found = RUNNERS.get(path);
+  if (found === undefined) throw new Error(`no calculator for ${path}`);
+  return found;
 };
 
 type ColumnSpec = Omit<DoseColumn, 'link'> & { readonly label: string };
 
 const columnOf = ({ label, ...spec }: ColumnSpec): DoseColumn => ({
   ...spec,
-  link: { href: linkTo(ENGINES[spec.calculator], spec.calculator, spec.raw(MAIN)), label },
+  link: { href: runner(spec.calculator).href(spec.raw(MAIN)), label },
 });
 
 const of = (gallons: number): string => String(gallons);
@@ -246,7 +256,7 @@ const tableOf = (id: string, caption: string, columns: readonly ColumnSpec[]): D
   rows: GALLONS.map((gallons) => ({
     gallons,
     size: amountText(Rational.of(gallons)),
-    cells: columns.map(({ calculator, raw, key }) => doseOf(calculator, raw(gallons), key)),
+    cells: columns.map(({ calculator, raw, key }) => runner(calculator).dose(raw(gallons), key)),
   })),
 });
 
