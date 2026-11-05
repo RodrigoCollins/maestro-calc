@@ -16,6 +16,8 @@ export const NAMED_SOURCES = [
   'Pentair',
   'Jandy',
   'Taylor Technologies',
+  'HASA',
+  'Alliance Trading',
   'Oreq Corporation',
 ] as const;
 
@@ -48,7 +50,7 @@ export const ABOUT: About = {
       id: 'what',
       heading: 'What the site does',
       paragraphs: [
-        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, and another says how to shock the pool and how much shock to add. Each calculator shows the figure and the formula behind it.',
+        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, another says how to shock the pool and how much shock to add, and another how to lower or raise the pH. Each calculator shows the figure and the formula behind it.',
       ],
     },
     {
@@ -63,7 +65,7 @@ export const ABOUT: About = {
       id: 'sources',
       heading: 'Sources',
       paragraphs: [
-        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing and pump run time, ENERGY STAR (EPA) for pump energy, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, the pH dosage chart of Taylor Technologies’ test kits for acid and soda ash, and the manufacturer: the label of a calcium hardness increaser (ClearView, by Oreq Corporation) for calcium chloride, the Hayward manuals and guides for salt, water levels, pump turnover, opening and closing, the Pentair IntelliChlor and Jandy AquaPure manuals for how other salt cells differ, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
+        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing and pump run time, ENERGY STAR (EPA) for pump energy, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, the pH dosage chart of Taylor Technologies’ test kits for acid and soda ash, HASA’s directions for muriatic acid and a pH Up label made for Alliance Trading for how to add them, and the manufacturer: the label of a calcium hardness increaser (ClearView, by Oreq Corporation) for calcium chloride, the Hayward manuals and guides for salt, water levels, pump turnover, opening and closing, the Pentair IntelliChlor and Jandy AquaPure manuals for how other salt cells differ, and the EPA-registered label of a product for its strength. Each page names the source of its figures.',
       ],
     },
     {

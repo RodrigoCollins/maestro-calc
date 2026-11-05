@@ -1,5 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -505,6 +505,114 @@ export const SHOCK_GUIDE = {
   steps: SHOCK_STEPS,
 } as const satisfies StepGuide;
 
+const PH_SOURCES = {
+  taylor: {
+    name: 'Taylor Technologies, K-1003 test kit instructions (Instr. #5816): pH, acid demand and base demand tests, and the pH dosage charts',
+    url: 'https://www.novatech-usa.com/pdf/Taylor%20K-1003%20Instruction%20Manual.pdf',
+  },
+  hasa: {
+    name: 'HASA Muriatic Acid (31.45% hydrochloric acid), product page: directions for use',
+    url: 'https://hasa.com/hubfs/Product%20Assets/Muriatic%20Acid/Muriatic%20Acid%20-%20Product%20Page.pdf',
+  },
+  hasaDosing: {
+    name: 'HASA: Muriatic Acid, dosing instructions',
+    url: 'https://hasa.com/product/muriatic-acid',
+  },
+  hasaSds: {
+    name: 'HASA Muriatic Acid Safety Data Sheet, section 7: handling',
+    url: 'https://hasa.com/hubfs/Safety%20Data%20Sheets/SDS%20-%20Safety%20Data%20Sheets/HASA%20Muriatic%20Acid_2026.pdf',
+  },
+  sodaAsh: {
+    name: 'pH Up (sodium carbonate 100%) label, manufactured for Alliance Trading, Inc. (label 01616483, REV050824)',
+    url: 'https://www.propools.com/Manuals/66872_20248714245.pdf',
+  },
+  cdc: {
+    name: 'CDC: Home Pool and Hot Tub Water Treatment and Testing',
+    url: 'https://www.cdc.gov/healthy-swimming/about/home-pool-and-hot-tub-water-treatment-and-testing.html',
+  },
+} as const satisfies Record<string, GuideSource>;
+
+/** From the gallons to the retest: Taylor's demand test sizes the dose, the product's own directions add it. */
+const PH_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Know your gallons',
+    text: 'Every acid and soda ash dose depends on how much water the pool holds. Work it out once from the length, the width and the depth at each end, and keep the number.',
+    link: { href: VOLUME_TEXTS.path, label: 'Work out your gallons' },
+  },
+  {
+    title: 'Test the pH',
+    text: 'CDC advises testing the pH at least twice a day, and more often when many people swim. Its range for a home pool is 7.0 to 7.8; Taylor’s kit recommends 7.2 to 7.8. As the pH goes up, chlorine kills germs less well, above 8.0 above all; below 7.0 it kills them better, but the pipes are more likely to corrode, CDC says.',
+    link: { href: CHEMISTRY_CHART.path, label: 'See every target range' },
+    sources: ['cdc', 'taylor'],
+  },
+  {
+    title: 'Know what high and low pH do',
+    text: 'Too high, Taylor says, the pH brings scale deposits, cloudy water and poor sanitizer efficiency. Too low, it corrodes surfaces and irritates eyes and skin. Some sanitizers move it, and so does the water you add.',
+    sources: ['taylor'],
+  },
+  {
+    title: 'Bring the alkalinity into range first',
+    text: 'Taylor’s instructions say to always bring total alkalinity into its range, 80 to 120 ppm, before you adjust the pH. Alkalinity is the buffer that keeps the pH from bouncing.',
+    link: { href: ALKALINITY.path, label: 'Work out the baking soda' },
+    sources: ['taylor'],
+  },
+  {
+    title: 'Run the acid demand test',
+    text: 'Keep the treated sample from the pH test. To lower the pH, add acid demand reagent R-0015 a drop at a time; after each drop, count, mix and compare with the color standards until the sample matches the pH you want. The drops you counted size the dose. The test runs on your own water, so its alkalinity is already in the count.',
+    sources: ['taylor'],
+  },
+  {
+    title: 'Work out the muriatic acid',
+    text: 'Taylor’s chart gives 9.16 fl oz of 31.45% muriatic acid a drop for each 10,000 gallons. In 10,000 gallons that is 9.2 fl oz for 1 drop, 18.3 fl oz for 2 and 27.5 fl oz for 3; a 20,000-gallon pool that takes 2 drops needs 36.6 fl oz. The chart stops at 3 drops: add no more than the 3-drop dose at a time, then test again.',
+    link: { href: PH.path, label: 'Work out the muriatic acid' },
+    sources: ['taylor'],
+  },
+  {
+    title: 'Add it at the deep end, with the pump running',
+    text: 'HASA’s directions for its 31.45% acid: add acid to water, never water to acid. Pour it cautiously at the deep end, at least one foot from the wall, slowly and over as large an area as you can. The filter and the pump run while you add it and for at least 1 hour after. Wear goggles, old clothing and rubber gloves, and never mix it with chlorine bleaches or other household chemicals, its safety data sheet says.',
+    sources: ['hasaDosing', 'hasa', 'hasaSds'],
+  },
+  {
+    title: 'Retest before you add more',
+    text: 'HASA adds at most one quart per 20,000 gallons in 24 hours, 32 fl oz, and repeats at 24-hour intervals as needed, to hold the pH at 7.2 to 7.6; when in doubt, it says, use less. A larger dose goes in over more than one day, with a test before each part. An adjustment in pH can change total alkalinity, Taylor adds, so recheck total alkalinity after it.',
+    sources: ['hasa', 'taylor'],
+  },
+  {
+    title: 'To raise the pH, run the base demand test',
+    text: 'The base demand test is the same test with base demand reagent R-0016, and it sizes the soda ash (sodium carbonate). Taylor’s chart gives 5.13 oz a drop for each 10,000 gallons: in 10,000 gallons, 5.1 oz for 1 drop and 15.4 oz for 3; in 20,000 gallons, 20.5 oz for 2.',
+    link: { href: PH.path, label: 'Work out the soda ash' },
+    sources: ['taylor'],
+  },
+  {
+    title: 'Add the soda ash, then retest',
+    text: 'A soda ash pH Up label puts in at most 1 pound per 10,000 gallons at a time, straight into the deep end. Let the water recirculate 2 to 3 hours, recheck the pH and repeat if needed. Wear goggles or safety glasses and rubber gloves, and do not mix it with other chemicals, the label says.',
+    sources: ['sodaAsh'],
+  },
+];
+
+/**
+ * How to lower pH in a pool, and when to raise it. The range and the testing are CDC's and the
+ * Taylor kit's; each dose is the pH calculator's own, from the drops of Taylor's acid or base
+ * demand test, never past the chart's 3 drops; how to add the acid is HASA's directions for its
+ * 31.45% muriatic acid, and how to add soda ash a pH Up label's. No rule that a source does not give.
+ */
+export const PH_GUIDE = {
+  path: '/how-to-lower-ph-in-a-pool',
+  kicker: 'Guide · pH',
+  card: {
+    title: 'How to lower pool pH',
+    summary: 'How much muriatic acid lowers the pH, and how much soda ash raises it.',
+  },
+  title: 'How to Lower pH in a Pool: How Much Muriatic Acid | Pool Figures',
+  description:
+    'How to lower pH in a pool and how much muriatic acid to add, from the acid demand test of your kit, and how to raise pH with soda ash.',
+  h1: 'How to lower pH in a pool (and when to raise it)',
+  lead: 'Test the pH, bring the alkalinity into range, then run the acid demand test of your kit and count the drops: they size the muriatic acid for your gallons. Add it to the deep end with the pump running, and test again before you add more. To raise the pH, the base demand test sizes the soda ash.',
+  note: 'Follow the label of your own product where it differs from this guide: the strength of the acid, how much goes in at a time and the wait before you retest all vary by product.',
+  sources: PH_SOURCES,
+  steps: PH_STEPS,
+} as const satisfies StepGuide;
+
 /** A guide as the home, the footer and the calculator pages list it. */
 export interface GuideCard {
   readonly path: string;
@@ -543,6 +651,7 @@ export const GUIDES: readonly GuideCard[] = [
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
   stepsCard(SHOCK_GUIDE),
+  stepsCard(PH_GUIDE),
 ];
 
 /** The guides that explain the calculator at `path`, as links from its page, in `GUIDES` order. */
