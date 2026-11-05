@@ -235,6 +235,38 @@ export const ROUTES = {
     en: '/drywall/drywall-for-12x12-room',
     es: '/es/drywall/drywall-para-cuarto-de-12x12',
   },
+  'topsoil-raised-bed-4x4': {
+    en: '/landscaping/soil-for-4x4-raised-bed',
+    es: '/es/jardineria/tierra-para-cama-elevada-de-4x4',
+  },
+  'topsoil-raised-bed-4x8': {
+    en: '/landscaping/soil-for-4x8-raised-bed',
+    es: '/es/jardineria/tierra-para-cama-elevada-de-4x8',
+  },
+  'topsoil-10x10': {
+    en: '/landscaping/topsoil-for-10x10-area',
+    es: '/es/jardineria/tierra-para-area-de-10x10',
+  },
+  'topsoil-20x20': {
+    en: '/landscaping/topsoil-for-20x20-area',
+    es: '/es/jardineria/tierra-para-area-de-20x20',
+  },
+  'roofing-12x16': {
+    en: '/roofing/shingles-for-12x16-roof',
+    es: '/es/techos/tejas-para-techo-de-12x16',
+  },
+  'roofing-24x24': {
+    en: '/roofing/shingles-for-24x24-roof',
+    es: '/es/techos/tejas-para-techo-de-24x24',
+  },
+  'roofing-30x40': {
+    en: '/roofing/shingles-for-30x40-roof',
+    es: '/es/techos/tejas-para-techo-de-30x40',
+  },
+  'roofing-30x50': {
+    en: '/roofing/shingles-for-30x50-roof',
+    es: '/es/techos/tejas-para-techo-de-30x50',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',

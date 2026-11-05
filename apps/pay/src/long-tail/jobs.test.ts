@@ -6,6 +6,7 @@ import { moneyText } from '../format.ts';
 import { PATHS } from '../pay-converter/texts.ts';
 import {
   commonLinksOf,
+  DOUBLES,
   JOBS,
   LONG_TAIL_ROUTES,
   longTailPageOf,
@@ -46,10 +47,11 @@ const timeCardPay = (rate: string, hours: number): { overtime: string; week: str
 };
 
 // prettier-ignore
-const HOURLY = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '28', '30', '35', '40', '45', '50'];
+const HOURLY = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30', '32', '35', '40', '45', '50', '60'];
 // prettier-ignore
-const SALARIES = ['30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000', '75000', '80000', '90000', '100000', '120000', '150000'];
-const OVERTIME_RATES = ['15', '16', '17', '18', '19', '20', '22', '25', '30'];
+const SALARIES = ['30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000', '75000', '80000', '85000', '90000', '95000', '100000', '120000', '150000'];
+// prettier-ignore
+const OVERTIME_RATES = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '28', '30', '35', '40'];
 
 describe('long-tail pages', () => {
   it('take every figure from the pay converter, never from the text', () => {
@@ -91,6 +93,13 @@ describe('long-tail pages', () => {
     expect(longTailPageOf(jobOf('55000'), 'en').figure).toBe('$26.44');
     expect(longTailPageOf(jobOf('150000'), 'en').figure).toBe('$72.12');
     expect(longTailPageOf(jobOf('150000'), 'en').h1).toBe('$150,000 a year is how much an hour?');
+    // 27 x 2,080 = 56,160; 32 x 2,080 = 66,560; 60 x 2,080 = 124,800
+    expect(longTailPageOf(jobOf('27'), 'en').figure).toBe('$56,160.00');
+    expect(longTailPageOf(jobOf('32'), 'es').figure).toBe('$66,560.00');
+    expect(longTailPageOf(jobOf('60'), 'en').figure).toBe('$124,800.00');
+    // 85,000 / 2,080 = 40.865...; 95,000 / 2,080 = 45.673...
+    expect(longTailPageOf(jobOf('85000'), 'en').figure).toBe('$40.87');
+    expect(longTailPageOf(jobOf('95000'), 'es').figure).toBe('$45.67');
   });
 
   it('link the nearest amounts of their family, never every page of it', () => {
@@ -100,7 +109,7 @@ describe('long-tail pages', () => {
       ['16', '17', '18', '19', '20', '21'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
     );
     expect(others('30')).toEqual(
-      ['25', '26', '28', '35', '40', '45'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
+      ['26', '27', '28', '32', '35', '40'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
     );
     expect(others('50000')).toEqual(
       ['35000', '40000', '45000', '55000', '60000', '65000'].map(
@@ -108,7 +117,7 @@ describe('long-tail pages', () => {
       ),
     );
     expect(others('30', 'overtime')).toEqual(
-      ['17', '18', '19', '20', '22', '25'].map((a) => `/pay/time-and-a-half-for-${a}-an-hour`),
+      ['24', '25', '26', '28', '35', '40'].map((a) => `/pay/time-and-a-half-for-${a}-an-hour`),
     );
     for (const job of JOBS) {
       for (const lang of LANGS) {
@@ -145,7 +154,7 @@ describe('long-tail pages', () => {
 
   it('route one English and Spanish pair per job, each with its own title', () => {
     expect(LONG_TAIL_ROUTES).toHaveLength(
-      JOBS.length + SHIFTS.length + PTOS.length + MINUTES.length,
+      JOBS.length + SHIFTS.length + PTOS.length + MINUTES.length + DOUBLES.length,
     );
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
@@ -160,9 +169,9 @@ describe('long-tail pages', () => {
 
   it('are linked from the calculator of their kind, in each language', () => {
     for (const lang of LANGS) {
-      const linked = (['hour', 'year', 'overtime', 'shift', 'pto', 'minutes'] as const).flatMap(
-        (per) => commonLinksOf(per, lang).links.map(({ href }) => href),
-      );
+      const linked = (
+        ['hour', 'year', 'overtime', 'double', 'shift', 'pto', 'minutes'] as const
+      ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
     }
   });
@@ -199,6 +208,14 @@ describe('overtime long-tail pages', () => {
     expect(fifteen.rows.find(({ key }) => key === '10')?.value).toBe('$225.00');
     // 17 x 1.5 = 25.50
     expect(longTailPageOf(jobOf('17', 'overtime'), 'en').figure).toBe('$25.50');
+    // 28 x 1.5 = 42; 10 x 42 = 420; 40 x 28 + 420 = 1,540
+    expect(longTailPageOf(jobOf('28', 'overtime'), 'en').lead).toBe(
+      'Time and a half for $28 an hour is $42 an hour. Under the federal rule, 10 overtime hours past 40 in a week pay $420, and the 50-hour week comes to $1,540 before taxes.',
+    );
+    // 23 x 1.5 = 34.50; 35 x 1.5 = 52.50; 40 x 1.5 = 60
+    expect(longTailPageOf(jobOf('23', 'overtime'), 'es').figure).toBe('$34.50');
+    expect(longTailPageOf(jobOf('35', 'overtime'), 'en').figure).toBe('$52.50');
+    expect(longTailPageOf(jobOf('40', 'overtime'), 'en').figure).toBe('$60.00');
   });
 
   it('link the time card, prefilled with the 50-hour week at the rate', () => {

@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds eighty ids, so the site has a
-// hundred and sixty routable pages and two not-found pages.
-describe('end state of the gravel, paint and drywall job pages (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds eighty-eight ids, so the site has
+// a hundred and seventy-six routable pages and two not-found pages.
+describe('end state of the topsoil and roofing job pages (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has eighty page ids, a hundred and sixty routable paths and a hundred and sixty-two pages with the 404s', () => {
+  it('has eighty-eight page ids, a hundred and seventy-six routable paths and a hundred and seventy-eight pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -85,6 +85,14 @@ describe('end state of the gravel, paint and drywall job pages (site-routing-i18
       'drywall-room-10x10',
       'drywall-room-10x12',
       'drywall-room-12x12',
+      'topsoil-raised-bed-4x4',
+      'topsoil-raised-bed-4x8',
+      'topsoil-10x10',
+      'topsoil-20x20',
+      'roofing-12x16',
+      'roofing-24x24',
+      'roofing-30x40',
+      'roofing-30x50',
       'concrete',
       'rectangle-area',
       'gravel',
@@ -96,10 +104,10 @@ describe('end state of the gravel, paint and drywall job pages (site-routing-i18
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(160);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(160);
+    expect(staticPaths()).toHaveLength(176);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(176);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(162);
+    expect(pageCount(ROUTES)).toBe(178);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -126,11 +134,11 @@ describe('end state of the gravel, paint and drywall job pages (site-routing-i18
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly a hundred and sixty-two page title and description keys in %s',
+    'has exactly a hundred and seventy-eight page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(162);
+      ).toHaveLength(178);
     },
   );
 
@@ -142,7 +150,7 @@ describe('end state of the gravel, paint and drywall job pages (site-routing-i18
   });
 
   // spec: site-seo › [SE10]
-  it('lists a hundred and sixty URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(160);
+  it('lists a hundred and seventy-six URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(176);
   });
 });
