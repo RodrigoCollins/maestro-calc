@@ -14,12 +14,14 @@ import {
   hoursMinutesText,
   hoursText,
   moneyText,
+  rateText,
 } from '../format.ts';
 
 /** How an hours output is written, by the `data-format` of its node; plain `hoursText` otherwise. */
 const HOURS_FORMATS: Readonly<Record<string, (hours: Rational) => string>> = {
   decimal: decimalHoursText,
   'hours-minutes': hoursMinutesText,
+  rate: rateText,
 };
 
 /** A money value read back from the URL state (its other kinds are plain values). */

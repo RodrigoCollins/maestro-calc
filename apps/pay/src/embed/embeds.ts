@@ -3,6 +3,7 @@ import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import { PTO_TEXTS } from '../pto/texts.ts';
 import { ROUTES } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -31,6 +32,7 @@ const CALCULATORS: Readonly<
     name: (lang) => PAY_CONVERTER_TEXTS[lang].variants.salary.h1,
     height: 1100,
   },
+  'pto-accrual': { name: (lang) => PTO_TEXTS[lang].h1, height: 1100 },
   'no-tax-on-overtime': { name: (lang) => DEDUCTION_TEXTS[lang].overtime.h1, height: 1200 },
   'no-tax-on-tips': { name: (lang) => DEDUCTION_TEXTS[lang].tips.h1, height: 1200 },
 };

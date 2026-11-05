@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from '../hours/texts.ts';
 import { OVERTIME_PATHS } from '../overtime/texts.ts';
+import { PTO_PATHS } from '../pto/texts.ts';
 import { HOME_TEXTS } from './texts.ts';
 
 const pageFile = (href: string): string =>
@@ -39,6 +40,15 @@ describe('home texts', () => {
       const href = (id: string) => HOME_TEXTS[lang].tools.find((tool) => tool.id === id)?.href;
       expect(href('hours')).toBe(HOURS_PATHS[lang]);
       expect(href('decimal-hours')).toBe(DECIMAL_HOURS_PATHS[lang]);
+    }
+  });
+
+  it('links the PTO card to the PTO accrual calculator, after the pay converters', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const ids = HOME_TEXTS[lang].tools.map(({ id }) => id);
+      expect(ids.indexOf('pto-accrual')).toBe(ids.indexOf('salary-to-hourly') + 1);
+      const card = HOME_TEXTS[lang].tools.find(({ id }) => id === 'pto-accrual');
+      expect(card?.href).toBe(PTO_PATHS[lang]);
     }
   });
 

@@ -7,7 +7,30 @@ import {
   hoursOf,
   OVERTIME_EXAMPLES,
   overtimeFiguresOf,
+  PTO_EXAMPLES,
+  ptoFiguresOf,
 } from './examples.ts';
+
+// The PTO accrual calculator, verified by hand on 52 weeks a year: 10 days x 8 h = 80 h over
+// 40 x 52 = 2,080 h worked, 80/26 = 3.0769 every two weeks, 80/2,080 = 0.0385 per hour worked;
+// 15 days = 120 h, 120/26 = 4.6154, 120/2,080 = 0.0577; 10 days x 6 h = 60 h over 30 x 52 =
+// 1,560 h, 60/26 = 2.3077, 60/1,560 = 0.0385; 20 days = 160 h, 160/26 = 6.1538, 160/2,080 = 0.0769.
+const PTO_HAND = {
+  'two-weeks': { annual: '80', biweekly: '3.08', perHour: '0.0385' },
+  'three-weeks': { annual: '120', biweekly: '4.62', perHour: '0.0577' },
+  'part-time': { annual: '60', biweekly: '2.31', perHour: '0.0385' },
+  'four-weeks': { annual: '160', biweekly: '6.15', perHour: '0.0769' },
+} as const;
+
+describe('PTO accrual examples', () => {
+  it('publishes exactly the hand-verified cases, in order', () => {
+    expect(PTO_EXAMPLES.map(({ id }) => id)).toEqual(Object.keys(PTO_HAND));
+  });
+
+  it.each(PTO_EXAMPLES)('$id: the engine gives the hand-verified figures', (example) => {
+    expect(ptoFiguresOf(example)).toEqual(PTO_HAND[example.id]);
+  });
+});
 
 // The worked examples the methodology page publishes, verified by hand at $22 an hour
 // (overtime $33, double time $44). The page renders what the engine returns; this pins it.

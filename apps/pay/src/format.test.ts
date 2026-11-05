@@ -6,6 +6,7 @@ import {
   hoursMinutesText,
   hoursText,
   moneyText,
+  rateText,
   shiftText,
 } from './format.ts';
 
@@ -20,6 +21,18 @@ describe('decimalHoursText', () => {
     [Rational.of(1234), '1,234.00'],
   ])('writes %o hours as %s, always two places', (hours, text) => {
     expect(decimalHoursText(hours)).toBe(text);
+  });
+});
+
+describe('rateText', () => {
+  it.each([
+    [Rational.of(1, 26), '0.0385'],
+    [Rational.of(3, 52), '0.0577'],
+    [Rational.of(1, 40), '0.025'],
+    [Rational.of(1), '1'],
+    [Rational.of(1, 100_000), '0'],
+  ])('writes the rate %o to four places at most, as %s', (rate, text) => {
+    expect(rateText(rate)).toBe(text);
   });
 });
 

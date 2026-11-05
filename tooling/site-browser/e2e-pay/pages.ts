@@ -28,6 +28,8 @@ export const PAGES = [
   { path: '/salary-to-hourly-calculator', lang: 'en' },
   { path: '/es/de-pago-por-hora-a-sueldo-anual', lang: 'es' },
   { path: '/es/de-sueldo-anual-a-pago-por-hora', lang: 'es' },
+  { path: '/pto-accrual-calculator', lang: 'en' },
+  { path: '/es/calculadora-de-vacaciones-pagadas', lang: 'es' },
   { path: '/no-tax-on-overtime-calculator', lang: 'en' },
   { path: '/no-tax-on-tips-calculator', lang: 'en' },
   { path: '/es/calculadora-horas-extra-sin-impuestos', lang: 'es' },
@@ -62,6 +64,10 @@ export const DECIMAL_HOURS = PAGES.filter(({ path }) =>
   ['/minutes-to-decimal-hours', '/es/minutos-a-horas-decimales'].includes(path),
 );
 
+export const PTO = PAGES.filter(({ path }) =>
+  ['/pto-accrual-calculator', '/es/calculadora-de-vacaciones-pagadas'].includes(path),
+);
+
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
 const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',
@@ -76,6 +82,8 @@ const CALCULATOR_PATHS: readonly string[] = [
   '/salary-to-hourly-calculator',
   '/es/de-pago-por-hora-a-sueldo-anual',
   '/es/de-sueldo-anual-a-pago-por-hora',
+  '/pto-accrual-calculator',
+  '/es/calculadora-de-vacaciones-pagadas',
   '/no-tax-on-overtime-calculator',
   '/no-tax-on-tips-calculator',
   '/es/calculadora-horas-extra-sin-impuestos',

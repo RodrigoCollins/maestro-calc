@@ -2,7 +2,9 @@ import { Rational, type Money } from '@maestro-calc/core';
 import { decimalHours } from '@maestro-calc/pay-core/decimal-hours';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { overtime } from '@maestro-calc/pay-core/overtime';
+import { ptoAccrual } from '@maestro-calc/pay-core/pto-accrual';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
+import { decimalHoursText, hoursText, rateText } from '../format.ts';
 import { outputOf } from '../time-card/receipt.ts';
 
 /** A worked example of the methodology page: raw time card fields over the default week. */
@@ -146,6 +148,42 @@ export const hoursOf = (example: HoursExample): Rational => {
   const value = ran.value.outputs.find((output) => output.key === key)?.value;
   if (!(value instanceof Rational)) throw new Error(`no hours ${key} in ${example.id}`);
   return value;
+};
+
+/** A worked example of the PTO accrual calculator: its raw fields over the defaults. */
+export interface PtoExample {
+  readonly id: 'two-weeks' | 'three-weeks' | 'part-time' | 'four-weeks';
+  readonly inputs: Readonly<Record<string, string>>;
+}
+
+export const PTO_EXAMPLES: readonly PtoExample[] = [
+  { id: 'two-weeks', inputs: {} },
+  { id: 'three-weeks', inputs: { ptoDays: '15' } },
+  { id: 'part-time', inputs: { hoursPerDay: '6', hoursPerWeek: '30' } },
+  { id: 'four-weeks', inputs: { ptoDays: '20' } },
+];
+
+/** The figures the page shows for a PTO example, written as the calculator writes them. */
+export interface PtoFigures {
+  readonly annual: string;
+  readonly biweekly: string;
+  readonly perHour: string;
+}
+
+/** The figures of a PTO example; a failing example is a build error. */
+export const ptoFiguresOf = (example: PtoExample): PtoFigures => {
+  const ran = ptoAccrual.run(example.inputs);
+  if (!ran.ok) throw new Error(`methodology example ${example.id} does not run`);
+  const hours = (key: string): Rational => {
+    const value = ran.value.outputs.find((output) => output.key === key)?.value;
+    if (!(value instanceof Rational)) throw new Error(`no hours ${key} in ${example.id}`);
+    return value;
+  };
+  return {
+    annual: hoursText(hours('annualHours')),
+    biweekly: decimalHoursText(hours('biweekly')),
+    perHour: rateText(hours('perHourWorked')),
+  };
 };
 
 /** A worked example of the overtime calculator: the hours of each day, every other day off. */
