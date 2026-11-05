@@ -33,7 +33,10 @@ const fields = calculator.inputs.map((input) => {
         ? input.default
         : input.kind === 'decimal'
           ? amountText(input.default).replaceAll(',', '')
-          : '',
+          : input.kind === 'count'
+            ? String(input.default)
+            : '',
+    inputmode: input.kind === 'count' ? ('numeric' as const) : ('decimal' as const),
     options: copy.options === undefined ? undefined : Object.entries(copy.options),
   };
 });
@@ -56,7 +59,12 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
         <label>
           {field.label}
           {field.options === undefined ? (
-            <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
+            <input
+              name={field.key}
+              inputmode={field.inputmode}
+              autocomplete="off"
+              value={field.value}
+            />
           ) : (
             <select name={field.key}>
               {field.options.map(([value, label]) => (

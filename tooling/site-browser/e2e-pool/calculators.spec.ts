@@ -48,6 +48,25 @@ test('shows the dose of the chlorine product the visitor picks', async ({ page }
   await expect(page.locator('[data-out="dry"]').first()).toHaveText('8.2');
 });
 
+test('shows the soda ash dose to raise pH, and notes a count past the 3-drop chart', async ({
+  page,
+}) => {
+  await page.goto('/pool-ph-calculator');
+  const acid = page.locator('[data-out="liquid"]').first();
+  const soda = page.locator('[data-out="dry"]').first();
+  const past = page.locator('[data-warning="pastChart"]');
+  await expect(acid).toBeVisible();
+  await expect(soda).toBeHidden();
+  await expect(past).toBeHidden();
+  await page.locator('[name="product"]').selectOption('soda-ash');
+  // Taylor: 5.13 oz a drop of base demand per 10,000 gal, x 2 drops x 2 (20,000 gal)
+  await expect(soda).toHaveText('20.5');
+  await expect(acid).toBeHidden();
+  await page.locator('[name="drops"]').fill('4');
+  await expect(soda).toHaveText('41.0');
+  await expect(past).toBeVisible();
+});
+
 test('redraws the side view of the pool as the visitor types', async ({ page }) => {
   await page.goto('/pool-volume-calculator');
   const drawing = page.locator('svg[data-side]');

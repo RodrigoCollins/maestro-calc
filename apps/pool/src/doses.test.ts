@@ -2,17 +2,19 @@ import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText } from './format.ts';
 
 const CASES = [
   ['salt', SALT, poolSalt],
   ['chlorine', CHLORINE, poolChlorine],
   ['pump', PUMP, poolPump],
+  ['pH', PH, poolPh],
   ['alkalinity', ALKALINITY, poolAlkalinity],
   ['stabilizer', STABILIZER, poolStabilizer],
   ['heater', HEATER, poolHeater],
@@ -39,6 +41,26 @@ describe('dose pages', () => {
     );
   });
 
+  it('labels both pH products, each shown by one result', () => {
+    const product = poolPh.inputs.find(({ key }) => key === 'product');
+    const options = product?.kind === 'select' ? product.options : [];
+    expect(Object.keys(PH.fields['product']?.options ?? {})).toEqual(options);
+    expect(PH.results.map(({ forms }) => forms)).toEqual([['muriatic-31-45'], ['soda-ash']]);
+  });
+
+  // Taylor Technologies' pH dosage charts (K-1003, Instr. #5816) per drop per 10,000 gallons
+  it('states the Taylor chart figures, the strength they assume and the safety rules', () => {
+    expect(PH.method).toContain('Taylor');
+    expect(PH.method).toContain('9.16 fl oz');
+    expect(PH.method).toContain('5.13 oz');
+    expect(PH.method).toContain('approximate');
+    expect(PH.note).toContain('31.45%');
+    expect(PH.note).toContain('Add acid to water, never water to acid');
+    expect(PH.note).toContain('pump running');
+    expect(PH.note).toContain('wait time on the label');
+    expect(PH.warnings?.['pastChart']).toContain('3 drops');
+  });
+
   it('gives the chlorine page the strip picker on its reading, and no other page one', () => {
     const current = poolChlorine.inputs.find(({ key }) => key === 'current');
     expect(CHLORINE.strip?.field).toBe('current');
@@ -49,14 +71,16 @@ describe('dose pages', () => {
     }
     expect(SALT.strip).toBeUndefined();
     expect(PUMP.strip).toBeUndefined();
+    expect(PH.strip).toBeUndefined();
     expect(ALKALINITY.strip).toBeUndefined();
     expect(STABILIZER.strip).toBeUndefined();
     expect(HEATER.strip).toBeUndefined();
     expect(FILL_TIME.strip).toBeUndefined();
   });
 
-  it('names every warning of the salt, alkalinity and stabilizer engines', () => {
+  it('names every warning of the salt, pH, alkalinity and stabilizer engines', () => {
     expect(Object.keys(SALT.warnings ?? {})).toEqual(poolSalt.warnings);
+    expect(Object.keys(PH.warnings ?? {})).toEqual(poolPh.warnings);
     expect(Object.keys(ALKALINITY.warnings ?? {})).toEqual(poolAlkalinity.warnings);
     expect(Object.keys(STABILIZER.warnings ?? {})).toEqual(poolStabilizer.warnings);
   });
@@ -94,6 +118,8 @@ describe('dose pages', () => {
     expect(text(poolChlorine, 'dry', { product: 'cal-hypo-65' })).toBe('8.2');
     expect(text(poolPump, 'flow')).toBe('55.6');
     expect(text(poolPump, 'eightHour')).toBe('41.7');
+    expect(text(poolPh, 'liquid')).toBe('36.6');
+    expect(text(poolPh, 'dry', { product: 'soda-ash' })).toBe('20.5');
     expect(text(poolAlkalinity, 'pounds')).toBe('8.4');
     expect(text(poolAlkalinity, 'ounces')).toBe('134.5');
     expect(text(poolStabilizer, 'pounds')).toBe('5.0');
