@@ -1,7 +1,7 @@
 ---
 id: hub-landscaping
 locale: es
-updated: 2026-11-02
+updated: 2026-11-05
 ownerReview: approved
 ---
 
@@ -18,3 +18,5 @@ Para una cama elevada, la segunda guía da la profundidad para cada cultivo, con
 Para el mulch, la tercera guía da la profundidad a la que se esparce y convierte un cantero en yardas cúbicas y bolsas de 2 o 3 pies cúbicos.
 
 La cuarta guía muestra la cuenta detrás de todas estas calculadoras: largo × ancho × profundidad en pies, entre 27, con pulgadas a pies y círculos.
+
+La quinta guía da los pies cuadrados que cubre una tonelada de grava con 2, 3 y 4 in de profundidad, compactada y suelta, y las toneladas para un área.

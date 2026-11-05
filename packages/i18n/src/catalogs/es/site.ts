@@ -228,6 +228,9 @@ export const esSite = {
   'page.guide-paint-coverage.title': '¿Cuánto cubre un galón de pintura? | Maestro Calc',
   'page.guide-paint-coverage.description':
     'Un galón de pintura látex de interior cubre de 350 a 400 pies cuadrados por mano: el rendimiento según las manos y las latas para un cuarto de 12x12.',
+  'page.guide-gravel-coverage.title': '¿Cuánto cubre una tonelada de grava? | Maestro Calc',
+  'page.guide-gravel-coverage.description':
+    'Una tonelada de grava compactada cubre unos 88 pies cuadrados con 2 in, 59 con 3 in y 44 con 4 in: el rendimiento por profundidad, suelta también.',
   'page.hub-concrete.title': 'Calculadoras y guías de concreto | Maestro Calc',
   'page.hub-concrete.description':
     'Calculadoras y guías de concreto para losas, zapatas, columnas y escalones: yardas cúbicas, bolsas o camión, y cómo cotizar un trabajo.',

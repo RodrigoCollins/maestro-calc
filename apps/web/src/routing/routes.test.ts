@@ -138,6 +138,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-much-does-a-gallon-of-paint-cover',
       es: '/es/guias/cuanto-cubre-un-galon-de-pintura',
     });
+    expect(ROUTES['guide-gravel-coverage']).toEqual({
+      en: '/guides/how-much-does-a-ton-of-gravel-cover',
+      es: '/es/guias/cuanto-cubre-una-tonelada-de-grava',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['concrete-slab-10x10']).toEqual({
       en: '/concrete/10x10-slab',
