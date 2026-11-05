@@ -34,6 +34,8 @@ export interface Site {
   readonly guides: Readonly<Record<string, string>>;
   /** The calculator pages each trade hub lists (`HUBS`), by hub id; empty when none. */
   readonly hubs: Readonly<Record<string, readonly string[]>>;
+  /** The calculator page of each job page (`JOBS`), by job id in table order; empty when none. */
+  readonly jobs: Readonly<Record<string, string>>;
 }
 
 /**

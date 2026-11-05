@@ -2,6 +2,7 @@
 import { hoursText, moneyText } from '../format.ts';
 import type { GuideTexts, LedgerLine } from '../guide/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import type { CommonLinks } from '../long-tail/jobs.ts';
 import { figuresOf, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -15,9 +16,11 @@ interface Props {
   readonly weeks?: readonly WorkedWeek[];
   /** The lines of a worked ledger (a sample pay stub), computed by the guide's module. */
   readonly ledger?: readonly LedgerLine[];
+  /** Related pages listed under a heading, such as the long-tail pages of a calculator. */
+  readonly links?: CommonLinks;
 }
 
-const { lang, texts: t, paths, weeks = [], ledger = [] } = Astro.props;
+const { lang, texts: t, paths, weeks = [], ledger = [], links } = Astro.props;
 const examples = t.examples;
 if (weeks.length > 0 && examples === undefined) throw new Error(`${paths.en} has no example texts`);
 // The rows are the engine's own figures for each week (the guide's test pins them).
@@ -142,5 +145,18 @@ const ledgerRows = ledger.map((line) => {
         {cta.label}
       </a>
     ))}
+
+    {links !== undefined && links.links.length > 0 && (
+      <section aria-labelledby="related-heading">
+        <h2 id="related-heading">{links.heading}</h2>
+        <ul class="link-list">
+          {links.links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
 </SiteLayout>

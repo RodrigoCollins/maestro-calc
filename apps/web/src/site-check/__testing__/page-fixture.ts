@@ -103,6 +103,7 @@ export const fixtureSite = (routes: RouteTable = FIXTURE_ROUTES): Site => {
     externalLinks: {},
     guides: {},
     hubs: {},
+    jobs: {},
   };
 };
 
@@ -178,6 +179,7 @@ const calculatorMain = (id: string, locale: Locale, site: Site): string => {
     `<ul>${(site.externalLinks[id] ?? [QUIKRETE_URL, NIST_URL]).map((url) => `<li><a href="${url}" rel="external noreferrer">${SOURCE_NAMES[url] ?? url}</a></li>`).join('')}</ul>`,
     `<p><time datetime="${updated}">${updated}</time></p>`,
     guideLinksOf(id, locale, site),
+    jobLinksOf(id, locale, site),
     hubLinkOf(id, locale, site),
     '</main>',
   ].join('');
@@ -193,6 +195,33 @@ const guideLinksOf = (id: string, locale: Locale, site: Site): string => {
     : `<aside class="guide-links" aria-label="Guides"><p>Guides</p><ul>${items.join('')}</ul></aside>`;
 };
 
+/** The links of `jobs`, one item each, as the job lists of a page hold them. */
+const jobItems = (jobs: readonly string[], locale: Locale, site: Site): string =>
+  jobs.map((job) => `<li><a href="${pathOf(job, locale, site.routes)}">${job}</a></li>`).join('');
+
+/** The jobs of `calculator`, in table order. */
+const jobsOf = (calculator: string, site: Site): string[] =>
+  Object.keys(site.jobs).filter((job) => site.jobs[job] === calculator);
+
+/** The box of a calculator page that lists its job pages, or '' when it has none. */
+const jobLinksOf = (id: string, locale: Locale, site: Site): string => {
+  const jobs = jobsOf(id, site);
+  return jobs.length === 0
+    ? ''
+    : `<aside class="job-links" aria-label="Common jobs"><p>Common jobs</p><ul>${jobItems(jobs, locale, site)}</ul></aside>`;
+};
+
+/** What a job page links: its calculator, then every other job of that calculator; '' for any other page. */
+const jobPageLinksOf = (id: string, locale: Locale, site: Site): string => {
+  const calculator = site.jobs[id];
+  if (calculator === undefined) return '';
+  const others = jobsOf(calculator, site).filter((job) => job !== id);
+  return (
+    `<p class="job-calculator"><a href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></p>` +
+    (others.length === 0 ? '' : `<ul class="job-more">${jobItems(others, locale, site)}</ul>`)
+  );
+};
+
 /** The line of a calculator page that links its trade hub, or '' when no hub lists it. */
 const hubLinkOf = (id: string, locale: Locale, site: Site): string => {
   const hub = Object.keys(site.hubs).find((candidate) => site.hubs[candidate]?.includes(id));
@@ -201,12 +230,18 @@ const hubLinkOf = (id: string, locale: Locale, site: Site): string => {
     : `<p class="hub-link">More tools: <a href="${pathOf(hub, locale, site.routes)}">${hub}</a></p>`;
 };
 
+/** The job list of a hub directory: the jobs of its calculators, or '' when they have none. */
+const jobDirectoryOf = (calculators: readonly string[], locale: Locale, site: Site): string => {
+  const jobs = calculators.flatMap((calculator) => jobsOf(calculator, site));
+  return jobs.length === 0 ? '' : `<h2>Common jobs</h2><ul>${jobItems(jobs, locale, site)}</ul>`;
+};
+
 /** The directory of a hub page, one link per calculator it lists, or '' for any other page. */
 const hubDirectoryOf = (id: string, locale: Locale, site: Site): string => {
   const calculators = site.hubs[id];
   return calculators === undefined
     ? ''
-    : `<section class="hub-directory" aria-label="Calculators"><h2>Calculators</h2><ul>${calculators.map((calculator) => `<li><a href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></li>`).join('')}</ul></section>`;
+    : `<section class="hub-directory" aria-label="Calculators"><h2>Calculators</h2><ul>${calculators.map((calculator) => `<li><a href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></li>`).join('')}</ul>${jobDirectoryOf(calculators, locale, site)}</section>`;
 };
 
 /** The box a guide page ends in, linking its calculator page, or '' for any other page. */
@@ -335,7 +370,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${jobPageLinksOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

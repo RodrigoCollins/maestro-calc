@@ -3,8 +3,15 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, FILL_TIME, HEATER, PUMP } from './doses.ts';
-import { CLOSING_GUIDE, GUIDES, OPENING_GUIDE, PUMP_RUN_GUIDE, type GuideSource } from './guide.ts';
+import { CHLORINE, FILL_TIME, HEATER, PUMP, SALT } from './doses.ts';
+import {
+  CLOSING_GUIDE,
+  GUIDES,
+  OPENING_GUIDE,
+  PUMP_RUN_GUIDE,
+  SALT_VS_CHLORINE_GUIDE,
+  type GuideSource,
+} from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -17,13 +24,18 @@ const layout = readFileSync(
 const footer = /<footer[\s\S]*<\/footer>/.exec(layout)?.[0] ?? '';
 
 const textOf = (
-  guide: typeof OPENING_GUIDE | typeof CLOSING_GUIDE | typeof PUMP_RUN_GUIDE,
+  guide:
+    | typeof OPENING_GUIDE
+    | typeof CLOSING_GUIDE
+    | typeof PUMP_RUN_GUIDE
+    | typeof SALT_VS_CHLORINE_GUIDE,
 ): string => guide.steps.map(({ text }) => text).join(' ');
 
 describe.each([
   ['spring opening', OPENING_GUIDE],
   ['winter closing', CLOSING_GUIDE],
   ['pump run time', PUMP_RUN_GUIDE],
+  ['salt water vs chlorine', SALT_VS_CHLORINE_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -124,6 +136,75 @@ describe('the pump run time guide', () => {
   });
 });
 
+describe('the salt water vs chlorine guide', () => {
+  const text = textOf(SALT_VS_CHLORINE_GUIDE);
+
+  it('says a salt pool is a chlorine pool, as the three makers describe their cells', () => {
+    expect(SALT_VS_CHLORINE_GUIDE.lead).toContain('A salt water pool is a chlorine pool');
+    expect(text).toContain('reverts back to salt');
+    expect(text).toContain('hypochlorous acid');
+    expect(text).toContain('sodium hypochlorite, liquid chlorine');
+  });
+
+  // the figures come from the sources as published; a changed one must be checked against them again
+  it('gives the same water targets as CDC publishes them for every home pool', () => {
+    expect(text).toContain('at least 1 ppm');
+    expect(text).toContain('at least 2 ppm');
+    expect(text).toContain('pH 7.0 to 7.8');
+    expect(text).toContain('at least twice a day');
+  });
+
+  it('gives each maker’s salt level, salt purity and plaster wait exactly as its manual does', () => {
+    expect(text).toContain('2,700 to 3,400 ppm, 3,200 the best');
+    expect(text).toContain('3,500 to 4,000');
+    expect(text).toContain('3,600 ppm');
+    expect(text).toContain('below 2,600');
+    expect(text).toContain('above 4,500');
+    expect(text).toContain('3,000 to 3,500 ppm');
+    expect(text).toContain('below 2,000');
+    expect(text).toContain('over 99% pure');
+    expect(text).toContain('at least 99.8%');
+    expect(text).toContain('10 to 14 days');
+    expect(text).toContain('at least 4 weeks');
+    expect(text).toContain('at least one month');
+  });
+
+  it('gives the stabilizer, the cell care and the cell life exactly as the manuals do', () => {
+    expect(text).toContain('40 ppm');
+    expect(text).toContain('30 to 50 ppm');
+    expect(text).toContain('50 to 75');
+    expect(text).toContain('90%');
+    expect(text).toContain('below 50°F');
+    expect(text).toContain('about 50%');
+    expect(text).toContain('every 3 months');
+    expect(text).toContain('every two months');
+    expect(text).toContain('1 quart of muriatic acid to 1 gallon of water');
+    expect(text).toContain('about 10,000 hours, roughly five years of average use');
+    expect(text).toContain('dry acid');
+  });
+
+  it('prices nothing: no cost figure that no source gives', () => {
+    expect(`${SALT_VS_CHLORINE_GUIDE.lead} ${text}`).not.toMatch(/\$/);
+  });
+
+  // a figure a calculator works out is the calculator's own, to the digit
+  it('works out the salt and the chlorine as their calculators do', () => {
+    expect(text).toContain(
+      `${figure(SALT.path, { gallons: '20000', current: '0', target: '3200' }, 'pounds')} lb`,
+    );
+    expect(text).toContain(
+      `${figure(CHLORINE.path, { gallons: '20000', current: '1', target: '3', product: 'liquid-12-5' }, 'liquid')} fl oz`,
+    );
+  });
+
+  it('links the chart, the volume, the chlorine and the salt calculators', () => {
+    const links = SALT_VS_CHLORINE_GUIDE.steps.flatMap(({ link }) =>
+      link === undefined ? [] : [link.href],
+    );
+    expect(links).toEqual([CHEMISTRY_CHART.path, VOLUME_TEXTS.path, CHLORINE.path, SALT.path]);
+  });
+});
+
 describe('the guides', () => {
   it('lists every guide once, each with a short card', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
@@ -131,6 +212,7 @@ describe('the guides', () => {
       CLOSING_GUIDE.path,
       CHEMISTRY_CHART.path,
       PUMP_RUN_GUIDE.path,
+      SALT_VS_CHLORINE_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);

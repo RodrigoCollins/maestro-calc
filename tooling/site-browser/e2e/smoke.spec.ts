@@ -28,9 +28,12 @@ const declared = (name: string): string =>
 
 const ORANGE = 'rgb(240, 106, 29)';
 const TARGET = 44;
-// A calculator page has up to about thirty controls between the header and the footer, and the
-// footer holds thirteen links; reaching the skip link from the open menu wraps the whole page.
-const MAX_TABS = 60;
+// Everything the Tab key can stop on. The bound of `tabTo` is this count on the page itself, so a
+// page that gains links (a calculator's "Common jobs" list, #273) needs no edit here: one lap of the
+// whole page, plus the browser chrome stop, reaches any target, wrapping from the open menu.
+const TABBABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), ' +
+  'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const CLEAN = { foreign: [], scripts: [], violations: [] };
 
@@ -58,9 +61,10 @@ const loadedFromElsewhere = async (page: Page, baseURL: string | undefined, path
   return { foreign, scripts, violations };
 };
 
-/** Presses Tab until `target` has focus, failing after a bounded number of presses. */
+/** Presses Tab until `target` has focus, failing after one lap of the page's tab stops. */
 const tabTo = async (page: Page, target: Locator): Promise<void> => {
-  for (let press = 0; press < MAX_TABS; press += 1) {
+  const lap = (await page.locator(TABBABLE).count()) + 2;
+  for (let press = 0; press < lap; press += 1) {
     await page.keyboard.press('Tab');
     if (await target.evaluate((element) => element === document.activeElement)) return;
   }

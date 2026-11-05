@@ -1,0 +1,36 @@
+---
+/** The job pages of a calculator page (growth plan, lever 1): one link to each, by its short label. */
+interface Props {
+  label: string;
+  jobs: readonly { href: string; label: string }[];
+}
+const { label, jobs } = Astro.props;
+---
+
+<aside class="job-links" aria-label={label}>
+  <p>{label}</p>
+  <ul>
+    {jobs.map((job) => (
+      <li>
+        <a href={job.href}>{job.label}</a>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<style is:global>
+  /* Global, so the dozen links of a calculator carry no scope class each (the HTML budget). */
+  .job-links {
+    margin-block: var(--space-4);
+  }
+
+  .job-links p {
+    margin: 0 0 var(--space-2);
+    font-weight: 600;
+  }
+
+  .job-links ul {
+    margin: 0;
+    padding-inline-start: var(--space-4);
+  }
+</style>

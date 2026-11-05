@@ -3,7 +3,13 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { ABOUT, NAMED_SOURCES } from './about.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CLOSING_GUIDE, OPENING_GUIDE, PUMP_RUN_GUIDE, type GuideSource } from './guide.ts';
+import {
+  CLOSING_GUIDE,
+  OPENING_GUIDE,
+  PUMP_RUN_GUIDE,
+  SALT_VS_CHLORINE_GUIDE,
+  type GuideSource,
+} from './guide.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { pageKindOf } from './seo/json-ld.ts';
@@ -16,9 +22,13 @@ const layout = readFileSync(
 const text = [ABOUT.lead, ...ABOUT.sections.flatMap(({ paragraphs }) => paragraphs)].join('\n');
 const cited = [
   ...METHOD_SECTIONS.flatMap(({ sources }) => sources.map(({ name }) => name)),
-  ...[OPENING_GUIDE, CLOSING_GUIDE, CHEMISTRY_CHART, PUMP_RUN_GUIDE].flatMap(({ sources }) =>
-    Object.values<GuideSource>(sources).map(({ name }) => name),
-  ),
+  ...[
+    OPENING_GUIDE,
+    CLOSING_GUIDE,
+    CHEMISTRY_CHART,
+    PUMP_RUN_GUIDE,
+    SALT_VS_CHLORINE_GUIDE,
+  ].flatMap(({ sources }) => Object.values<GuideSource>(sources).map(({ name }) => name)),
 ];
 
 describe('the about page', () => {
@@ -50,6 +60,7 @@ describe('the about page', () => {
     expect(text).toContain('closing it for winter');
     expect(text).toContain('water chemistry chart');
     expect(text).toContain('how long to run the pump');
+    expect(text).toContain('a salt water pool with a chlorine one');
   });
 
   it('gives the address readers write to', () => {

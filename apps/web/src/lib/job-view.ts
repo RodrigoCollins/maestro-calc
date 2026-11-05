@@ -25,12 +25,13 @@ import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
-import { JOBS, jobsOf, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
+import { JOBS, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
+import { jobLinks } from './job-links.ts';
 import { roofing } from './roofing.ts';
 import { siteText } from './site-text.ts';
 
@@ -685,8 +686,6 @@ export const jobView = (id: JobId, locale: Locale): JobView => {
     note: text(`site.job.note.${calculator}`),
     cta: table.rows[0].href,
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
-    others: jobsOf(calculator)
-      .filter((other) => other !== id)
-      .map((other) => ({ href: pathOf(other, locale), title: text(`page.${other}.heading`) })),
+    others: jobLinks(calculator, locale, id),
   };
 };

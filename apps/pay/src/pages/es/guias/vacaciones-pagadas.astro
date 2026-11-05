@@ -1,0 +1,7 @@
+---
+import GuidePage from '../../../components/GuidePage.astro';
+import { PTO_GUIDE, PTO_GUIDE_PATHS } from '../../../guide/pto.ts';
+import { ptoLinksOf } from '../../../long-tail/pto.ts';
+---
+
+<GuidePage lang="es" texts={PTO_GUIDE.es} paths={PTO_GUIDE_PATHS} links={ptoLinksOf('es')} />
