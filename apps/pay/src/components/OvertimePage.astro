@@ -3,6 +3,7 @@ import { toDecimalParts, type Money, type Rational } from '@maestro-calc/core';
 import { overtime } from '@maestro-calc/pay-core/overtime';
 import { hoursText, moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { commonLinksOf } from '../long-tail/jobs.ts';
 import { OVERTIME_PATHS, OVERTIME_TEXTS } from '../overtime/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -15,6 +16,7 @@ interface Props {
 
 const { lang, embed = false } = Astro.props;
 const t = OVERTIME_TEXTS[lang];
+const common = commonLinksOf('double', lang);
 // The page renders the engine's own figures for the default week, so it reads without JavaScript.
 const ran = overtime.run({});
 if (!ran.ok) throw new Error('the default week of the overtime calculator must run');
@@ -132,6 +134,17 @@ const figures = [
     <p class="note">
       {t.disclaimer} <a href={t.timeCard.href}>{t.timeCard.label}</a>
     </p>
+
+    <section aria-labelledby="common-heading">
+      <h2 id="common-heading">{common.heading}</h2>
+      <ul class="link-list">
+        {common.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/overtime.ts"></script>
 </SiteLayout>

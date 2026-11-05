@@ -10,7 +10,7 @@ const LANGS = ['en', 'es'] as const;
 
 /** The common shifts people ask the hours of, as `start-end` on a 24-hour clock. */
 // prettier-ignore
-const ASKED = ['7:00-15:00', '7:00-16:00', '7:00-19:00', '8:00-16:00', '8:00-16:30', '8:00-17:00', '8:30-17:00', '9:00-17:00', '9:00-18:00', '10:00-18:00', '10:00-19:00', '11:00-19:00', '12:00-20:00', '15:00-23:00', '19:00-7:00', '23:00-7:00'];
+const ASKED = ['6:00-14:00', '6:00-18:00', '7:00-15:00', '7:00-16:00', '7:00-19:00', '8:00-16:00', '8:00-16:30', '8:00-17:00', '8:30-17:00', '9:00-17:00', '9:00-18:00', '10:00-18:00', '10:00-19:00', '11:00-19:00', '12:00-20:00', '15:00-23:00', '19:00-7:00', '23:00-7:00'];
 
 const clock = (minutes: number): string =>
   `${String(Math.floor(minutes / 60))}:${String(minutes % 60).padStart(2, '0')}`;
@@ -118,6 +118,11 @@ describe('shift long-tail pages', () => {
     expect(night.figure).toBe('12 hours');
     expect(rowOf(shiftOf('19:00-7:00'), 'decimal')).toBe('12.00');
     expect(rowOf(shiftOf('19:00-7:00'), 'week60')).toBe('55 h 0 min (55.00)');
+    // 6:00 to 14:00 is 8 h; 6:00 to 18:00 is 12 h, less 60 min is 11 h
+    expect(longTailPageOf(shiftOf('6:00-14:00'), 'en').h1).toBe('How many hours is 6 am to 2 pm?');
+    expect(longTailPageOf(shiftOf('6:00-14:00'), 'en').figure).toBe('8 hours');
+    expect(longTailPageOf(shiftOf('6:00-18:00'), 'es').figure).toBe('12 horas');
+    expect(rowOf(shiftOf('6:00-18:00'), 'break60')).toBe('11 h 0 min (11.00)');
     // the Spanish twin
     const nueve = longTailPageOf(nine, 'es');
     expect(nueve.h1).toBe('¿Cuántas horas son de 9 am a 5 pm?');
@@ -152,12 +157,12 @@ describe('shift long-tail pages', () => {
     const others = (name: string): string[] =>
       longTailPageOf(shiftOf(name), 'en').others.links.map(({ href }) => href);
     expect(others('7:00-15:00')).toEqual(
-      ['8am-to-4pm', '9am-to-5pm', '10am-to-6pm', '11am-to-7pm', '12pm-to-8pm', '3pm-to-11pm'].map(
+      ['6am-to-2pm', '8am-to-4pm', '9am-to-5pm', '10am-to-6pm', '11am-to-7pm', '12pm-to-8pm'].map(
         (shift) => `/pay/how-many-hours-is-${shift}`,
       ),
     );
     expect(others('19:00-7:00')).toEqual(
-      ['8-30am-to-5pm', '7am-to-4pm', '8am-to-5pm', '9am-to-6pm', '10am-to-7pm', '7am-to-7pm'].map(
+      ['7am-to-4pm', '8am-to-5pm', '9am-to-6pm', '10am-to-7pm', '6am-to-6pm', '7am-to-7pm'].map(
         (shift) => `/pay/how-many-hours-is-${shift}`,
       ),
     );
