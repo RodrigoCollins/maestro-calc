@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds ninety-nine ids, so the site has
-// a hundred and ninety-eight routable pages and two not-found pages.
-describe('end state of the concrete bag coverage guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred ids, so the site has
+// two hundred routable pages and two not-found pages.
+describe('end state of the paint coverage guide go-live (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has ninety-nine page ids, a hundred and ninety-eight routable paths and two hundred pages with the 404s', () => {
+  it('has a hundred page ids, two hundred routable paths and two hundred and two pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -39,6 +39,7 @@ describe('end state of the concrete bag coverage guide go-live (site-routing-i18
       'guide-mulch',
       'guide-cubic-yards',
       'guide-concrete-bag-coverage',
+      'guide-paint-coverage',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -115,10 +116,10 @@ describe('end state of the concrete bag coverage guide go-live (site-routing-i18
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(198);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(198);
+    expect(staticPaths()).toHaveLength(200);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(200);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(200);
+    expect(pageCount(ROUTES)).toBe(202);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -145,23 +146,23 @@ describe('end state of the concrete bag coverage guide go-live (site-routing-i18
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred page title and description keys in %s',
+    'has exactly two hundred and two page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(200);
+      ).toHaveLength(202);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: seventy-eight content entries in all
-  it('has fifty-eight trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(58);
+  // two entries per calculator page: eighty content entries in all
+  it('has sixty trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(60);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists a hundred and ninety-eight URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(198);
+  it('lists two hundred URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(200);
   });
 });

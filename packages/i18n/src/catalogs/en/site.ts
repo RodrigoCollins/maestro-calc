@@ -217,6 +217,9 @@ export const enSite = {
   'page.guide-concrete-bag-coverage.title': 'How Much Does a Bag of Concrete Cover? | Maestro Calc',
   'page.guide-concrete-bag-coverage.description':
     'Square feet per bag of 40, 60 and 80 lb concrete mix at 4 and 6 in thick, and the bags for a 10x10 slab with the extra, from the bag yields.',
+  'page.guide-paint-coverage.title': 'How Much Does a Gallon of Paint Cover? | Maestro Calc',
+  'page.guide-paint-coverage.description':
+    'One gallon of interior latex covers about 350 to 400 sq ft in one coat: square feet per gallon by coats, and the gallons and cans for a 12x12 room.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

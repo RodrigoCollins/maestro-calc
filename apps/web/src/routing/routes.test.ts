@@ -134,6 +134,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/guides/how-much-does-a-bag-of-concrete-cover',
       es: '/es/guias/cuanto-cubre-una-bolsa-de-concreto',
     });
+    expect(ROUTES['guide-paint-coverage']).toEqual({
+      en: '/guides/how-much-does-a-gallon-of-paint-cover',
+      es: '/es/guias/cuanto-cubre-un-galon-de-pintura',
+    });
     expect(ROUTES['hub-paint']).toEqual({ en: '/painting', es: '/es/pintura' });
     expect(ROUTES['concrete-slab-10x10']).toEqual({
       en: '/concrete/10x10-slab',

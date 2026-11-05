@@ -8,7 +8,7 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 /*
- * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17], [GU18]): each
+ * The worked examples of the guides that show calculator figures (guides › [GU16], [GU17], [GU18], [GU19]): each
  * case is a link the calculator page loads, with the figures that page shows for it, hand-verified
  * and pinned here. The engine must still show them, and the guide must print every one of them, in
  * both languages, next to a link to the calculator that computes it.
@@ -26,7 +26,10 @@ interface GuideCase {
 
 const GUIDE_CASES: Readonly<
   Record<
-    Extract<GuideId, 'guide-mulch' | 'guide-cubic-yards' | 'guide-concrete-bag-coverage'>,
+    Extract<
+      GuideId,
+      'guide-mulch' | 'guide-cubic-yards' | 'guide-concrete-bag-coverage' | 'guide-paint-coverage'
+    >,
     readonly GuideCase[]
   >
 > = {
@@ -103,6 +106,32 @@ const GUIDE_CASES: Readonly<
       bags: '92',
     },
   ],
+  'guide-paint-coverage': [
+    // the page's starting room: 12 ft × 12 ft, 8 ft walls, one door, two windows, two coats at
+    // 350 ft² a gallon: 384 ft² of walls, 334 ft² to paint, 668 ÷ 350 = 1.91 gal, 2 cans
+    {
+      calculator: 'paint',
+      query: '',
+      figures: { wallArea: '384.00', paintArea: '334.00', gallons: '1.91', liters: '7.22' },
+      bags: '2',
+    },
+    // the same room in one coat and in three
+    { calculator: 'paint', query: '?v=1&c=1', figures: { gallons: '0.95' }, bags: '1' },
+    { calculator: 'paint', query: '?v=1&c=3', figures: { gallons: '2.86' }, bags: '3' },
+    // a 10 ft × 10 ft room and a 12 ft × 16 ft room, same walls and openings, two coats
+    {
+      calculator: 'paint',
+      query: '?v=1&l=120&w=120',
+      figures: { paintArea: '270.00', gallons: '1.54' },
+      bags: '2',
+    },
+    {
+      calculator: 'paint',
+      query: '?v=1&w=192',
+      figures: { paintArea: '398.00', gallons: '2.27' },
+      bags: '3',
+    },
+  ],
 };
 
 const moduleOf = (id: CalculatorPageId) => CONTENT_ROWS[id].module;
@@ -137,7 +166,7 @@ const PAIRS = GUIDES_WITH_CASES.flatMap(([id, cases]) =>
   LOCALES.map((locale) => [id, locale, cases] as const),
 );
 
-describe('guide worked examples (guides › [GU16], [GU17], [GU18])', () => {
+describe('guide worked examples (guides › [GU16], [GU17], [GU18], [GU19])', () => {
   it.each(GUIDES_WITH_CASES)('the engine shows the pinned figures of %s', (_id, cases) => {
     expect(caseProblems(cases, real)).toEqual([]);
   });
