@@ -39,14 +39,12 @@ const tube = (diameter: number, depth: number): JobCase => ({
 });
 
 /**
- * A slab of `area` square feet, as the calculator takes it: a rectangle of `length` by `width` feet
- * whose product is the area, 4, 5 and 6 in thick. Any rectangle of that area takes the same concrete.
+ * A slab of so many square feet, as the calculator takes it: a rectangle of `length` by `width` feet
+ * whose product is the area (the jobs test holds it to the id), 4, 5 and 6 in thick. Any rectangle
+ * of that area takes the same concrete.
  */
-const slabOfArea = (area: number, length: number, width: number) => {
-  if (length * width !== area)
-    throw new Error(`${String(length)} × ${String(width)} is not ${String(area)} sq ft`);
-  return [slab(length, width, 4), slab(length, width, 5), slab(length, width, 6)] as const;
-};
+const slabOfArea = (length: number, width: number) =>
+  [slab(length, width, 4), slab(length, width, 5), slab(length, width, 6)] as const;
 
 /**
  * One cubic yard of mulch in a bag of `bag` cubic feet (the select's option id): a bed of 9 by 9 ft,
@@ -119,17 +117,17 @@ export const JOBS = {
   'concrete-slab-500-sq-ft': {
     calculator: 'concrete',
     updated: '2026-11-04',
-    cases: slabOfArea(500, 25, 20),
+    cases: slabOfArea(25, 20),
   },
   'concrete-slab-650-sq-ft': {
     calculator: 'concrete',
     updated: '2026-11-04',
-    cases: slabOfArea(650, 26, 25),
+    cases: slabOfArea(26, 25),
   },
   'concrete-slab-1000-sq-ft': {
     calculator: 'concrete',
     updated: '2026-11-04',
-    cases: slabOfArea(1000, 40, 25),
+    cases: slabOfArea(40, 25),
   },
   'concrete-pad-4x4': {
     calculator: 'concrete',
