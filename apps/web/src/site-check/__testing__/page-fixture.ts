@@ -121,6 +121,36 @@ export const calculatorSite = (): Site => ({
   externalLinks: { concrete: [QUIKRETE_URL, NIST_URL] },
 });
 
+/**
+ * The calculator fixture with the hub `hub-concrete` and three concrete job pages, in table order:
+ * the slab of 10 by 10, the slab of 12 by 12 (between the other two) and the tube of 12 in.
+ */
+export const jobSite = (): Site => {
+  const site = calculatorSite();
+  const added = {
+    'hub-concrete': { en: '/concrete', es: '/es/concreto' },
+    'concrete-slab-10x10': { en: '/concrete-slab-10x10', es: '/es/losa-de-concreto-10x10' },
+    'concrete-slab-12x12': { en: '/concrete-slab-12x12', es: '/es/losa-de-concreto-12x12' },
+    'concrete-tube-12': { en: '/concrete-tube-12', es: '/es/tubo-de-concreto-12' },
+  };
+  return {
+    ...site,
+    routes: { ...site.routes, ...added },
+    updates: {
+      ...site.updates,
+      ...Object.fromEntries(
+        Object.keys(added).flatMap((id) => LOCALES.map((locale) => [`${locale}/${id}`, UPDATED])),
+      ),
+    },
+    hubs: { 'hub-concrete': ['concrete'] },
+    jobs: {
+      'concrete-slab-10x10': 'concrete',
+      'concrete-slab-12x12': 'concrete',
+      'concrete-tube-12': 'concrete',
+    },
+  };
+};
+
 /** The CSS of a valid page: the palette, a light scheme and four swapped same-origin fonts. */
 export const VALID_CSS =
   ':root{color-scheme:light;--a:#0e2240;--b:#1d4ed8;--c:#f06a1d;--d:#56616b;--e:#eef1ef;--f:#fff;--g:#1faf5a}' +
@@ -287,6 +317,43 @@ const guideBreadcrumbOf = (id: string, locale: Locale, site: Site): string =>
     ? ''
     : `<ol aria-label="Breadcrumb"><li><a href="${pathOf('home', locale, site.routes)}">Home</a></li><li>${headingOf(id)}</li></ol>`;
 
+/** The pages above a job page: the home, its calculator's hub (when one lists it), its calculator. */
+const jobTrailOf = (id: string, locale: Locale, site: Site) => {
+  const calculator = site.jobs[id] ?? '';
+  const hub = Object.keys(site.hubs).find((candidate) =>
+    site.hubs[candidate]?.includes(calculator),
+  );
+  return [
+    { name: locale === 'en' ? 'Home' : 'Inicio', path: pathOf('home', locale, site.routes) },
+    ...(hub === undefined
+      ? []
+      : [{ name: headingOf(hub), path: pathOf(hub, locale, site.routes) }]),
+    { name: headingOf(calculator), path: pathOf(calculator, locale, site.routes) },
+  ];
+};
+
+/** The one JSON-LD node of a valid job page: its breadcrumb, home → hub → calculator → job. */
+export const jobJsonLdOf = (id: string, locale: Locale, site: Site) => ({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        ...jobTrailOf(id, locale, site).map(({ name, path }) => ({ name, item: urlOf(path) })),
+        { name: headingOf(id), item: urlOf(pathOf(id, locale, site.routes)) },
+      ].map((item, index) => ({ '@type': 'ListItem', position: index + 1, ...item })),
+    },
+  ],
+});
+
+/** The labelled breadcrumb a job page shows before its h1, or '' for any other page. */
+const jobBreadcrumbOf = (id: string, locale: Locale, site: Site): string =>
+  site.jobs[id] === undefined
+    ? ''
+    : `<ol aria-label="Breadcrumb">${jobTrailOf(id, locale, site)
+        .map(({ name, path }) => `<li><a href="${path}">${name}</a></li>`)
+        .join('')}<li>${headingOf(id)}</li></ol>`;
+
 /** The three JSON-LD nodes of a valid calculator page. */
 export const calculatorJsonLd = (id: string, locale: Locale, site: Site) => {
   const canonical = urlOf(pathOf(id, locale, site.routes));
@@ -326,6 +393,16 @@ export const calculatorJsonLd = (id: string, locale: Locale, site: Site) => {
   };
 };
 
+/** The link preview of a routable page: its title, description, canonical and the site image. */
+const linkPreviewOf = (id: string, locale: Locale, site: Site): string =>
+  [
+    `<meta property="og:title" content="${site.catalogs[locale][`page.${id}.title`] ?? ''}">`,
+    `<meta property="og:description" content="${site.catalogs[locale][`page.${id}.description`] ?? ''}">`,
+    `<meta property="og:url" content="${urlOf(pathOf(id, locale, site.routes))}">`,
+    `<meta property="og:image" content="${site.config.url}/og.png">`,
+    '<meta name="twitter:card" content="summary_large_image">',
+  ].join('');
+
 /** One valid built page for `id` in `locale`, shaped like the Astro output. */
 export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()): string => {
   const { routes } = site;
@@ -350,6 +427,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
       ({ hreflang, href }) => `<link rel="alternate" hreflang="${hreflang}" href="${href}">`,
     ),
     routable ? '' : '<meta name="robots" content="noindex">',
+    routable ? linkPreviewOf(id, locale, site) : '',
     '<link rel="icon" type="image/svg+xml" href="/favicon.svg">',
     id === 'home'
       ? `<script type="application/ld+json">${serializeJsonLd(homeJsonLd(locale))}</script>`
@@ -358,6 +436,9 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
       ? ''
       : '<meta property="og:type" content="article">' +
         `<script type="application/ld+json">${serializeJsonLd(guideJsonLdOf(id, locale, site))}</script>`,
+    site.jobs[id] === undefined
+      ? ''
+      : `<script type="application/ld+json">${serializeJsonLd(jobJsonLdOf(id, locale, site))}</script>`,
     calculator
       ? `<script type="application/ld+json">${serializeJsonLd(calculatorJsonLd(id, locale, site))}</script>` +
         `<script type="module" src="/${ENTRY_FILE}"></script>`
@@ -370,7 +451,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${jobPageLinksOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}${jobBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${jobPageLinksOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

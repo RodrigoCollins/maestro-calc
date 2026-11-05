@@ -22,18 +22,29 @@ export const homeJsonLd = (locale: Locale) => ({
   ],
 });
 
-/** The two-item breadcrumb of a page under the home: the home, then the page itself. */
-const breadcrumbOf = (name: string, canonical: string, locale: Locale, routes: RouteTable) => ({
+/** A page between the home and the page itself on a breadcrumb: its page id and its h1. */
+export interface Crumb {
+  readonly id: string;
+  readonly name: string;
+}
+
+/** The breadcrumb of a page: the home, each page of `trail` in order, then the page itself. */
+const breadcrumbOf = (
+  name: string,
+  canonical: string,
+  locale: Locale,
+  routes: RouteTable,
+  trail: readonly Crumb[] = [],
+) => ({
   '@type': 'BreadcrumbList',
   itemListElement: [
     {
-      '@type': 'ListItem',
-      position: 1,
       name: siteText(locale)('site.calculator.breadcrumbHome'),
       item: urlOf(pathOf('home', locale, routes)),
     },
-    { '@type': 'ListItem', position: 2, name, item: canonical },
-  ],
+    ...trail.map((crumb) => ({ name: crumb.name, item: urlOf(pathOf(crumb.id, locale, routes)) })),
+    { name, item: canonical },
+  ].map((item, index) => ({ '@type': 'ListItem', position: index + 1, ...item })),
 });
 
 /** What the structured data of a calculator page needs: its page id and the text of its h1. */
@@ -116,6 +127,27 @@ export const guideJsonLd = (
     ],
   };
 };
+
+/** What the structured data of a job page needs: its page id, its h1 and the pages above it. */
+export interface JobPage {
+  readonly id: string;
+  readonly name: string;
+  /** The pages between the home and the job: its calculator's hub, then its calculator. */
+  readonly trail: readonly Crumb[];
+}
+
+/**
+ * The `@graph` of a job page (growth plan, lever 1): its breadcrumb, home → hub → calculator →
+ * job, and nothing else; its table of figures is no FAQ, how-to or product.
+ */
+export const jobJsonLd = (
+  { id, name, trail }: JobPage,
+  locale: Locale,
+  routes: RouteTable = ROUTES,
+) => ({
+  '@context': 'https://schema.org',
+  '@graph': [breadcrumbOf(name, urlOf(pathOf(id, locale, routes)), locale, routes, trail)],
+});
 
 /** JSON for a `<script type="application/ld+json">`: `</script>` and entities cannot be injected. */
 export const serializeJsonLd = (value: unknown): string =>

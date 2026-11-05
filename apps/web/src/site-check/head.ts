@@ -165,6 +165,56 @@ const indexingProblems = (page: Page, site: Site): Problem[] => {
   ];
 };
 
+/** The Open Graph tags (`og:*`) and the Twitter card of a page, by property, in document order. */
+const previewTags = (page: Page): Map<string, string[]> => {
+  const tags = new Map<string, string[]>();
+  for (const meta of page.root.querySelectorAll('meta')) {
+    const key = meta.getAttribute('property') ?? meta.getAttribute('name') ?? '';
+    if (!key.startsWith('og:') && key !== 'twitter:card') continue;
+    tags.set(key, [...(tags.get(key) ?? []), meta.getAttribute('content') ?? '']);
+  }
+  return tags;
+};
+
+/**
+ * open-graph (plans/growth/PLAN.md › G7): a routable page is shared with its own title,
+ * description and canonical, the one site image and a large card; the not-found page with none.
+ */
+const linkPreviewProblems = (page: Page, site: Site): Problem[] => {
+  const tags = previewTags(page);
+  if (!page.routable) {
+    return tags.size === 0
+      ? []
+      : [problem(page.file, 'link-preview', 'a not-found page must have no link preview')];
+  }
+  // The catalog, not the built tags: a wrong <title> is the title rule's problem, reported once.
+  const catalog = site.catalogs[page.locale];
+  const title = catalog[`page.${page.id}.title`];
+  const wanted: [string, string | undefined, string][] = [
+    ['og:title', title, `page.${page.id}.title "${String(title)}"`],
+    ['og:description', catalog[`page.${page.id}.description`], `page.${page.id}.description`],
+    ['og:url', urlOfPage(page, site), `the canonical ${urlOfPage(page, site)}`],
+    ['og:image', `${site.config.url}/og.png`, `${site.config.url}/og.png`],
+    ['twitter:card', 'summary_large_image', 'summary_large_image'],
+  ];
+  return wanted.flatMap(([key, expected, label]) => {
+    const values = tags.get(key) ?? [];
+    const [value] = values;
+    if (values.length !== 1 || value === undefined) {
+      return [
+        problem(
+          page.file,
+          'link-preview',
+          `expected exactly one ${key}, found ${String(values.length)}`,
+        ),
+      ];
+    }
+    return value === expected
+      ? []
+      : [problem(page.file, 'link-preview', `${key} must be ${label}, found "${value}"`)];
+  });
+};
+
 /** Every alternate must be a page of the build that lists this page back (site-routing-i18n › [SR10]). */
 const reciprocityProblems = (pages: readonly Page[], site: Site): Problem[] => {
   const routable = pages.filter((page) => page.routable);
@@ -195,6 +245,7 @@ export const headProblems = ({ pages, site }: CheckContext): Problem[] => [
     ...titleProblems(page, site),
     ...descriptionProblems(page, site),
     ...indexingProblems(page, site),
+    ...linkPreviewProblems(page, site),
   ]),
   ...uniqueProblems(
     pages,

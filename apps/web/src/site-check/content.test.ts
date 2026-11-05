@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { contentProblems, countPending, OLD_ADDRESS, sourceUrlsOf, updatedOf } from './content.ts';
 import { SITE } from '../site.config.ts';
-import { calculatorSite, contextOf, fixtureSite, validDist } from './__testing__/page-fixture.ts';
+import {
+  calculatorSite,
+  contextOf,
+  fixtureSite,
+  jobSite,
+  validDist,
+} from './__testing__/page-fixture.ts';
 
 type Edit = (text: string) => string;
 
@@ -1030,5 +1036,129 @@ describe('source links of a calculator entry (calculator-page › [CP8]; site-ro
     expect(sourceUrlsOf('no frontmatter\nurl: https://example.com')).toEqual([]);
     expect(sourceUrlsOf('---\nid: x\n---\nurl: https://example.com\n')).toEqual([]);
     expect(sourceUrlsOf('---\nsources:\n  - url: http://example.com\n---\n')).toEqual([]);
+  });
+});
+
+// ---- the job pages: one BreadcrumbList, home → hub → calculator → job, the trail they show ----
+
+const JOB_PAGE = 'concrete-slab-12x12.html';
+const JOB_ES = 'es/losa-de-concreto-12x12.html';
+
+/** Content problems of a valid job site, after `edit` changed a job page's JSON-LD graph or its HTML. */
+const jobProblemsAfter = (
+  edits: Readonly<Record<string, (graph: Node[]) => Node[]>> = {},
+  html: Readonly<Record<string, Edit>> = {},
+) => {
+  const site = jobSite();
+  const dist = validDist(site);
+  for (const [file, edit] of Object.entries(edits)) {
+    dist.set(
+      file,
+      (dist.get(file) ?? '').replace(LD, (_match, json: string) => {
+        const graph = JSON.parse(json) as Graph;
+        return `<script type="application/ld+json">${JSON.stringify({ ...graph, '@graph': edit(graph['@graph']) })}</script>`;
+      }),
+    );
+  }
+  for (const [file, edit] of Object.entries(html)) dist.set(file, edit(dist.get(file) ?? ''));
+  return contentProblems(contextOf(dist, site));
+};
+
+const TRAIL_EN =
+  'the BreadcrumbList must be Home (https://maestrocalc.com/), Heading of hub-concrete (https://maestrocalc.com/concrete), Heading of concrete (https://maestrocalc.com/concrete-calculator), then the page (name and canonical)';
+
+// spec: growth › lever 1, the job pages: the structured data of the trail a job page sits on
+describe('job page structured data (growth › job pages › check:site)', () => {
+  it('accepts a valid build: the four-item breadcrumb in both languages', () => {
+    expect(jobProblemsAfter()).toEqual([]);
+  });
+
+  it('requires the BreadcrumbList and nothing else', () => {
+    expect(messagesOf(jobProblemsAfter({ [JOB_PAGE]: () => [] }), JOB_PAGE)).toEqual([
+      'expected exactly one BreadcrumbList, found 0',
+    ]);
+    expect(
+      messagesOf(
+        jobProblemsAfter({ [JOB_PAGE]: (graph) => [...graph, { '@type': 'FAQPage' }] }),
+        JOB_PAGE,
+      ),
+    ).toEqual(['FAQPage is not allowed on this page']);
+  });
+
+  it.each<[string, (graph: Node[]) => void]>([
+    [
+      'no hub',
+      (graph) => {
+        listOf(graph, 'BreadcrumbList', 'itemListElement').splice(1, 1);
+      },
+    ],
+    [
+      'another calculator name',
+      (graph) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 2)['name'] = 'Concrete';
+      },
+    ],
+    [
+      'the hub item at another address',
+      (graph) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 1)['item'] =
+          'https://maestrocalc.com/es/concreto';
+      },
+    ],
+    [
+      'the page last at another address',
+      (graph) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 3)['item'] =
+          'https://maestrocalc.com/concrete-slab-10x10';
+      },
+    ],
+    [
+      'positions out of order',
+      (graph) => {
+        at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 3)['position'] = 5;
+      },
+    ],
+  ])('fails a BreadcrumbList with %s', (_name, edit) => {
+    expect(
+      messagesOf(
+        jobProblemsAfter({
+          [JOB_PAGE]: (graph) => {
+            edit(graph);
+            return graph;
+          },
+        }),
+        JOB_PAGE,
+      ),
+    ).toEqual([TRAIL_EN]);
+  });
+
+  it('names the trail in the language of the page', () => {
+    expect(
+      messagesOf(
+        jobProblemsAfter({
+          [JOB_ES]: (graph) => {
+            at(listOf(graph, 'BreadcrumbList', 'itemListElement'), 0)['name'] = 'Home';
+            return graph;
+          },
+        }),
+        JOB_ES,
+      ),
+    ).toEqual([
+      'the BreadcrumbList must be Inicio (https://maestrocalc.com/es), Heading of hub-concrete (https://maestrocalc.com/es/concreto), Heading of concrete (https://maestrocalc.com/es/calculadora-de-concreto), then the page (name and canonical)',
+    ]);
+  });
+
+  it('requires the visible breadcrumb to link the same trail', () => {
+    expect(
+      messagesOf(
+        jobProblemsAfter(
+          {},
+          { [JOB_PAGE]: (html) => html.replace(/<li><a href="\/concrete">[^<]*<\/a><\/li>/, '') },
+        ),
+        JOB_PAGE,
+      ),
+    ).toEqual([
+      'the visible breadcrumb must link Home (/), Heading of hub-concrete (/concrete), Heading of concrete (/concrete-calculator), then name the page',
+    ]);
   });
 });
