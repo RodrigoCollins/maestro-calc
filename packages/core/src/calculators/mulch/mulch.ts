@@ -13,13 +13,14 @@ import { selectInput } from '../../calculator/kinds/select.ts';
 
 const HUNDRED = Rational.of(100);
 
-/** The bag sizes in cubic feet, in the order the select offers them. */
-const BAG_SIZES = ['2', '3'] as const;
+/** The bag sizes in cubic feet, in the order the select offers them (`1-5` is 1.5 cu ft). */
+const BAG_SIZES = ['1-5', '2', '3'] as const;
 
 type BagSize = (typeof BAG_SIZES)[number];
 
 /** A bag holds what its label says: a `2` bag is 2 cubic feet. No material data is involved. */
 const BAG_VOLUME = {
+  '1-5': quantity(Rational.of(3, 2), ft3),
   '2': quantity(2, ft3),
   '3': quantity(3, ft3),
 } as const satisfies Record<BagSize, unknown>;

@@ -8,6 +8,7 @@ export const enMulch = {
   'calc.mulch.inputs.bag': 'Bag size',
   'calc.mulch.inputs.bagPrice': 'Price per bag ($)',
   'calc.mulch.inputs.yardPrice': 'Bulk price per cubic yard ($)',
+  'calc.mulch.options.bag.1-5': '1.5 cu ft',
   'calc.mulch.options.bag.2': '2 cu ft',
   'calc.mulch.options.bag.3': '3 cu ft',
   'calc.mulch.outputs.volumeYd3': 'Mulch needed (cubic yards)',

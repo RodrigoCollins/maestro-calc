@@ -11,6 +11,7 @@ export const esMulch = {
   'calc.mulch.inputs.bag': 'Tamaño de la bolsa',
   'calc.mulch.inputs.bagPrice': 'Precio por bolsa ($)',
   'calc.mulch.inputs.yardPrice': 'Precio a granel por yarda cúbica ($)',
+  'calc.mulch.options.bag.1-5': '1.5 cu ft',
   'calc.mulch.options.bag.2': '2 cu ft',
   'calc.mulch.options.bag.3': '3 cu ft',
   'calc.mulch.outputs.volumeYd3': 'Mulch necesario (yardas cúbicas)',

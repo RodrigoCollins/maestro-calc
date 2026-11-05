@@ -53,6 +53,16 @@ describe('mulch page: the answer through the controller (calc-mulch)', () => {
       '?v=1&u=m',
       'A 6.10 m by 1.22 m bed, 7.62 cm deep, needs 0.59 cubic meters of mulch: 11 bags of 2 cu ft.',
     ],
+    [
+      'en',
+      '?v=1&bg=1-5',
+      'A 20 ft by 4 ft bed, 3 in deep, needs 0.78 cubic yards of mulch: 14 bags of 1.5 cu ft.',
+    ],
+    [
+      'es',
+      '?v=1&bg=1-5',
+      'Un área de 20 ft por 4 ft, de 3 in de profundidad, lleva 0.78 yardas cúbicas de mulch: 14 bolsas de 1.5 cu ft.',
+    ],
   ] as const)('says the %s answer of %s', (locale, search, sentence) => {
     expect(viewOf(locale, search).answer).toBe(sentence);
   });
@@ -67,6 +77,13 @@ describe('mulch page: the answer through the controller (calc-mulch)', () => {
     });
     expect(view.panel.shopping).toEqual([
       { material: 'mulch', unit: 'bag-2', fills: { size: '2' }, qty: '11' },
+    ]);
+  });
+
+  // hand-verified: 21 ft³ ÷ 1.5 = 14 bags exactly
+  it('writes the 1.5 cu ft bag line with its size as the label prints it', () => {
+    expect(viewOf('en', '?v=1&bg=1-5').panel.shopping).toEqual([
+      { material: 'mulch', unit: 'bag-1-5', fills: { size: '1.5' }, qty: '14' },
     ]);
   });
 

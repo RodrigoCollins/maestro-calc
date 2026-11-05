@@ -22,7 +22,7 @@ La calculadora te dice cuánto mulch lleva un área de jardín, en yardas cúbic
 
 1. Mide el largo y el ancho del área, y decide qué profundidad tendrá el mulch. Escríbelos como los lees en la cinta: 20 ft, 12 ft 6 in o 5 ft 3 1/2 in. Un número solo se lee en pies para el largo y el ancho, y en pulgadas para la profundidad.
 2. Deja el 5 por ciento de extra, o cámbialo. El mulch se asienta después de esparcirlo, y siempre se pierde algo en la carretilla y en los bordes.
-3. Elige el tamaño de bolsa que vas a comprar: 2 o 3 pies cúbicos, los tamaños impresos en la mayoría de las bolsas de tienda.
+3. Elige el tamaño de bolsa que vas a comprar: 1.5, 2 o 3 pies cúbicos, los tamaños impresos en la mayoría de las bolsas de tienda.
 4. Para ver el costo, escribe el precio por bolsa, el precio por yarda cúbica entregada a granel, o los dos.
 
 El resultado empieza por las yardas cúbicas. También muestra el mismo volumen en pies cúbicos y metros cúbicos, el volumen sin el extra y la cantidad de bolsas del tamaño que elegiste.
@@ -74,7 +74,7 @@ Multiplica largo × ancho × profundidad, con la profundidad en pies, y suma el 
 
 ### ¿Cuántas bolsas de mulch hay en una yarda?
 
-Una yarda cúbica es exactamente 27 pies cúbicos, así que lleva 13.5 bolsas de 2 cu ft o 9 bolsas de 3 cu ft. Redondea hacia arriba a bolsas enteras cuando compres.
+Una yarda cúbica es exactamente 27 pies cúbicos, así que lleva 18 bolsas de 1.5 cu ft, 13.5 bolsas de 2 cu ft o 9 bolsas de 3 cu ft. Redondea hacia arriba a bolsas enteras cuando compres.
 
 ### ¿Qué profundidad debe tener el mulch?
 

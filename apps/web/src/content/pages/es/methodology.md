@@ -103,7 +103,7 @@ Las fórmulas:
 - Yardas cúbicas = volumen total ÷ 27, con el volumen en pies cúbicos.
 - Bolsas = volumen total ÷ tamaño de la bolsa, redondeado hacia arriba a una bolsa entera.
 
-No interviene ninguna constante del material: una bolsa contiene el volumen impreso en ella, 2 o 3 pies cúbicos, y una yarda cúbica es exactamente 27 pies cúbicos. Las cifras métricas usan un pie como exactamente 0.3048 metros (NIST SP 811, apéndice B). La cantidad de bolsas es la única cifra que se redondea en el cálculo, siempre hacia arriba. Los volúmenes se redondean a dos decimales solo cuando te los mostramos.
+No interviene ninguna constante del material: una bolsa contiene el volumen impreso en ella, 1.5, 2 o 3 pies cúbicos, y una yarda cúbica es exactamente 27 pies cúbicos. Las cifras métricas usan un pie como exactamente 0.3048 metros (NIST SP 811, apéndice B). La cantidad de bolsas es la única cifra que se redondea en el cálculo, siempre hacia arriba. Los volúmenes se redondean a dos decimales solo cuando te los mostramos.
 
 Casos verificados a mano. Las pruebas automáticas ejecutan estos casos en la calculadora y comparan cada cifra de abajo con el resultado.
 
