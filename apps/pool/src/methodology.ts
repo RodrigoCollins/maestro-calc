@@ -147,6 +147,14 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         name: 'Taylor Technologies, K-1004 test kit instructions (Instr. #5817): the same muriatic acid chart',
         url: 'https://waterlinetechnologies.com/content/Taylor/K-1004%20Instrustions.pdf',
       },
+      {
+        name: 'HASA Muriatic Acid (31.45% hydrochloric acid), product page, directions for use: one quart per 20,000 gallons of pool water per 24 hours, repeated at 24-hour intervals as necessary',
+        url: 'https://hasa.com/hubfs/Product%20Assets/Muriatic%20Acid/Muriatic%20Acid%20-%20Product%20Page.pdf',
+      },
+      {
+        name: 'pH Up (sodium carbonate 100%) label, manufactured for Alliance Trading, Inc. (label 01616483, REV050824): a maximum of 1 pound per 10,000 gallons, recirculated 2 to 3 hours before the pH is rechecked and the treatment repeated',
+        url: 'https://www.propools.com/Manuals/66872_20248714245.pdf',
+      },
     ],
     cases: [
       {
@@ -162,6 +170,41 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         key: 'dry',
         result: '20.5',
         unit: 'oz',
+      },
+      {
+        text: '20,000 gallons, 2 drops of acid demand reagent: 20,000 ÷ 10,000 × 2 × 9.16 fl oz =',
+        raw: { gallons: '20000', product: 'muriatic-31-45', drops: '2' },
+        key: 'liquid',
+        result: '36.6',
+        unit: 'fl oz',
+      },
+      {
+        text: 'HASA’s label adds at most one quart per 20,000 gallons a day: 20,000 × 32 ÷ 20,000 =',
+        raw: { gallons: '20000', product: 'muriatic-31-45', drops: '2' },
+        key: 'liquidPerDay',
+        result: '32.0',
+        unit: 'fl oz a day',
+      },
+      {
+        text: 'So the 36.64 fl oz go in over 36.64 ÷ 32 = 1.145 days, rounded up:',
+        raw: { gallons: '20000', product: 'muriatic-31-45', drops: '2' },
+        key: 'days',
+        result: '2',
+        unit: 'days',
+      },
+      {
+        text: 'The pH Up label adds at most 1 lb of soda ash per 10,000 gallons at a time: 20,000 ÷ 10,000 × 16 oz =',
+        raw: { gallons: '20000', product: 'soda-ash', drops: '2' },
+        key: 'dryPerAddition',
+        result: '32.0',
+        unit: 'oz',
+      },
+      {
+        text: 'So the 20.52 oz go in 20.52 ÷ 32 = 0.64 additions, rounded up:',
+        raw: { gallons: '20000', product: 'soda-ash', drops: '2' },
+        key: 'additions',
+        result: '1',
+        unit: 'addition',
       },
     ],
   },

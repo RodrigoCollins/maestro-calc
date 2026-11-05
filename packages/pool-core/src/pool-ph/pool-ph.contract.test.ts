@@ -15,6 +15,10 @@ describe('pool-ph contract', () => {
     expect(poolPh.outputs.map(({ key, role }) => [key, role])).toEqual([
       ['liquid', 'primary'],
       ['dry', 'secondary'],
+      ['liquidPerDay', 'secondary'],
+      ['days', 'secondary'],
+      ['dryPerAddition', 'secondary'],
+      ['additions', 'secondary'],
     ]);
   });
 });

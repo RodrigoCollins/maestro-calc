@@ -563,9 +563,9 @@ const PH_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Work out the muriatic acid',
-    text: 'Taylor’s chart gives 9.16 fl oz of 31.45% muriatic acid a drop for each 10,000 gallons. In 10,000 gallons that is 9.2 fl oz for 1 drop, 18.3 fl oz for 2 and 27.5 fl oz for 3; a 20,000-gallon pool that takes 2 drops needs 36.6 fl oz. The chart stops at 3 drops: add no more than the 3-drop dose at a time, then test again.',
+    text: 'Taylor’s chart gives 9.16 fl oz of 31.45% muriatic acid a drop for each 10,000 gallons. In 10,000 gallons that is 9.2 fl oz for 1 drop, 18.3 fl oz for 2 and 27.5 fl oz for 3; a 20,000-gallon pool that takes 2 drops needs 36.6 fl oz. That is over HASA’s 32.0 fl oz a day, so it goes in over 2 days. In 10,000 gallons the label allows 16.0 fl oz a day: the 3-drop dose of 10,000 gallons takes 2 days. The chart stops at 3 drops: add no more than the 3-drop dose at a time, then test again.',
     link: { href: PH.path, label: 'Work out the muriatic acid' },
-    sources: ['taylor'],
+    sources: ['taylor', 'hasa'],
   },
   {
     title: 'Add it at the deep end, with the pump running',
@@ -585,7 +585,7 @@ const PH_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Add the soda ash, then retest',
-    text: 'A soda ash pH Up label puts in at most 1 pound per 10,000 gallons at a time, straight into the deep end. Let the water recirculate 2 to 3 hours, recheck the pH and repeat if needed. Wear goggles or safety glasses and rubber gloves, and do not mix it with other chemicals, the label says.',
+    text: 'A soda ash pH Up label puts in at most 1 pound per 10,000 gallons at a time, straight into the deep end: in 20,000 gallons, 32.0 oz, so the 2-drop dose goes in at once. Let the water recirculate 2 to 3 hours, recheck the pH and repeat if needed. Wear goggles or safety glasses and rubber gloves, and do not mix it with other chemicals, the label says.',
     sources: ['sodaAsh'],
   },
 ];
