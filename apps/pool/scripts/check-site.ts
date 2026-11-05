@@ -73,10 +73,12 @@ const all = [
   ...imageProblems('og.png', existsSync(image) ? readFileSync(image) : undefined),
 ];
 for (const { file, bytes } of pages) console.log(`${file}: ${bytes.toLocaleString('en-US')} B`);
+// `exitCode`, never `process.exit`: exiting drops what a full pipe still has queued.
 if (all.length > 0) {
   console.error(all.join('\n'));
-  process.exit(1);
+  process.exitCode = 1;
+} else {
+  console.log(
+    `check:site: ${String(pages.length)} pages within budget, each with its link preview and its own title and description, ${String(EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
+  );
 }
-console.log(
-  `check:site: ${String(pages.length)} pages within budget, each with its link preview and its own title and description, ${String(EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
-);

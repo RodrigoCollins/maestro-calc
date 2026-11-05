@@ -22,7 +22,11 @@ const smoke = async (): Promise<void> => {
       return;
     }
     process.stderr.write(`smoke attempt ${String(attempt)}:\n${problems.join('\n')}\n`);
-    if (attempt === ATTEMPTS) process.exit(1);
+    // `exitCode`, never `process.exit`: exiting drops what a full pipe still has queued.
+    if (attempt === ATTEMPTS) {
+      process.exitCode = 1;
+      return;
+    }
     await sleep(PAUSE_MS);
   }
 };
@@ -42,5 +46,5 @@ if (command === 'smoke') await smoke();
 else if (command === 'indexnow') await indexnow();
 else {
   process.stderr.write('usage: production.ts smoke | indexnow [--dry-run]\n');
-  process.exit(2);
+  process.exitCode = 2;
 }

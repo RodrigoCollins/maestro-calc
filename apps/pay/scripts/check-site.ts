@@ -71,10 +71,12 @@ const fewest = [...inbound].sort(([, a], [, b]) => a - b).slice(0, 3);
 console.log(
   `check:site: inbound links, fewest ${fewest.map(([path, count]) => `${path} ${String(count)}`).join(', ')}`,
 );
+// `exitCode`, never `process.exit`: exiting drops what a full pipe still has queued.
 if (all.length > 0) {
   console.error(all.join('\n'));
-  process.exit(1);
+  process.exitCode = 1;
+} else {
+  console.log(
+    `check:site: ${String(pages.length)} pages within budget, each with its search head, ${String(EMBEDS.length)} embeds, ${String(sitemapPages.size)} pages linked as the rules say`,
+  );
 }
-console.log(
-  `check:site: ${String(pages.length)} pages within budget, each with its search head, ${String(EMBEDS.length)} embeds, ${String(sitemapPages.size)} pages linked as the rules say`,
-);
