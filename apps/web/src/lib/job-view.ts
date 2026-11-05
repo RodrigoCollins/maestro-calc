@@ -1,4 +1,5 @@
 import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
@@ -7,6 +8,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
+import { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
 import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
@@ -16,6 +18,7 @@ import { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
+import { esFeetInches } from '@maestro-calc/i18n/catalogs/es/feet-inches';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
@@ -89,10 +92,11 @@ export const METHODOLOGY_ANCHOR = {
   drywall: { en: 'drywall', es: 'drywall' },
   topsoil: { en: 'topsoil', es: 'tierra-para-jardin' },
   roofing: { en: 'roofing', es: 'tejas' },
+  'feet-inches': { en: 'feet-and-inches', es: 'pies-y-pulgadas' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
-/** `10ft` as `10 ft`: the sizes read the same in both languages. */
-const sizeText = (value: string): string => value.replace(/^(\d+)(ft|in)$/, '$1 $2');
+/** `10ft` as `10 ft`, `7.5in` as `7.5 in`: the sizes read the same in both languages. */
+const sizeText = (value: string): string => value.replace(/^(\d+(?:\.\d+)?)(ft|in)$/, '$1 $2');
 
 /** The first item and the rest mapped, keeping the list non-empty for the type. */
 const mapCases = <T>(
@@ -632,6 +636,81 @@ const roofingTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/* Feet and inches: a tape measurement divided into equal parts, on the tape and in feet and inches. */
+
+const feetInchesCatalogs = {
+  en: createTranslator(enFeetInches),
+  es: createTranslator(esFeetInches),
+};
+
+const feetInchesState = (raw: JobCase) => {
+  const result = feetInches.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+/**
+ * The figures of a division, in the order of its columns: the result on the tape (inches alone, to
+ * the nearest 1/16 in, the result output shown in inches), then the outputs as the calculator shows
+ * them.
+ */
+const divisionCells = (raw: JobCase): string[] => {
+  const { outputs } = feetInches.compute(feetInchesState(raw));
+  const result = outputOf(feetInches.outputs, 'result', 'feet and inches');
+  return [
+    outputText(
+      { ...result, display: { unit: 'in', format: 'fraction', denominator: 16 } },
+      outputs.result,
+    ),
+    outputText(result, outputs.result),
+    outputText(outputOf(feetInches.outputs, 'resultIn', 'feet and inches'), outputs.resultIn),
+    outputText(outputOf(feetInches.outputs, 'resultM', 'feet and inches'), outputs.resultM),
+  ];
+};
+
+const feetInchesTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = feetInchesCatalogs[locale];
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = feetInchesState(raw);
+    return {
+      label: `÷ ${String(state.factor)}`,
+      href: `${pathOf('feet-inches', locale)}?${encode(feetInches, state, { unitSystem: 'imperial' })}`,
+      cells: divisionCells(raw),
+    };
+  });
+  const [raw] = cases;
+  const first = raw['first'] ?? '';
+  const factor = raw['factor'] ?? '';
+  const [tape = '', feetAndInches = '', inches = '', meters = ''] = rows[0].cells;
+  // a length typed in feet is answered in feet and inches, one typed in inches on the tape
+  const inFeet = first.includes('ft');
+  const tapeLabel = siteText(locale)('site.job.tape');
+  return {
+    lead: `${calc('calc.feet-inches.inputs.first')}: ${first} ÷ ${factor}`,
+    answer: calc('calc.feet-inches.page.answer.divide', {
+      first,
+      factor,
+      result: inFeet ? feetAndInches : tape,
+    }),
+    facts: [
+      inFeet
+        ? { label: tapeLabel, value: tape }
+        : { label: calc('calc.feet-inches.outputs.result'), value: feetAndInches },
+      { label: calc('calc.feet-inches.outputs.resultIn'), value: inches },
+      { label: calc('calc.feet-inches.outputs.resultM'), value: meters },
+    ],
+    columns: [
+      calc('calc.feet-inches.inputs.factor'),
+      tapeLabel,
+      calc('calc.feet-inches.outputs.result'),
+      calc('calc.feet-inches.outputs.resultIn'),
+      calc('calc.feet-inches.outputs.resultM'),
+    ],
+    rows,
+    calculatorName: calc('calc.feet-inches.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
@@ -642,6 +721,7 @@ const TABLES = {
   drywall: drywallTable,
   topsoil: topsoilTable,
   roofing: roofingTable,
+  'feet-inches': feetInchesTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
 /**

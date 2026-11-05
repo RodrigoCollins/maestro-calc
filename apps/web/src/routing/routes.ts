@@ -157,6 +157,10 @@ export const ROUTES = {
     en: '/roofing/7-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-7-12',
   },
+  'roof-pitch-7-5-12': {
+    en: '/roofing/7-5-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-7-5-12',
+  },
   'roof-pitch-8-12': {
     en: '/roofing/8-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-8-12',
@@ -304,6 +308,30 @@ export const ROUTES = {
   'roofing-30x50': {
     en: '/roofing/shingles-for-30x50-roof',
     es: '/es/techos/tejas-para-techo-de-30x50',
+  },
+  'divide-29-1-4-in-by-2': {
+    en: '/measurement/29-1-4-inches-divided-by-2',
+    es: '/es/medidas/29-1-4-pulgadas-entre-2',
+  },
+  'divide-23-5-8-in-by-2': {
+    en: '/measurement/23-5-8-inches-divided-by-2',
+    es: '/es/medidas/23-5-8-pulgadas-entre-2',
+  },
+  'divide-35-5-in-by-2': {
+    en: '/measurement/35-5-inches-divided-by-2',
+    es: '/es/medidas/35-5-pulgadas-entre-2',
+  },
+  'divide-22-in-by-10': {
+    en: '/measurement/22-inches-divided-by-10',
+    es: '/es/medidas/22-pulgadas-entre-10',
+  },
+  'divide-9-ft-6-in-by-2': {
+    en: '/measurement/9-feet-6-inches-divided-by-2',
+    es: '/es/medidas/9-pies-6-pulgadas-entre-2',
+  },
+  'divide-3-ft-9-in-by-2': {
+    en: '/measurement/3-feet-9-inches-divided-by-2',
+    es: '/es/medidas/3-pies-9-pulgadas-entre-2',
   },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {

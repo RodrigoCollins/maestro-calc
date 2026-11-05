@@ -49,6 +49,9 @@ export const enSite = {
     'The figures add 10% for settling, the topsoil calculator’s default, and round up to whole bags of 0.75 or 1.5 cu ft. A cubic yard is 27 cubic feet. Each depth opens the calculator with its measurements filled in.',
   'site.job.note.roofing':
     'The sizes are the footprint of the roof with its overhangs. The figures add 10% extra, the roofing calculator’s default, and round up to whole bundles, three to a square of 100 sq ft, and whole rolls of synthetic underlayment. Each pitch opens the calculator with its measurements filled in.',
+  'site.job.note.feet-inches':
+    'Each length is divided exactly, and only what the page shows is rounded: the tape and the feet and inches to the nearest 1/16 in, the inches to two places, the meters to three. Each number opens the calculator with the length filled in.',
+  'site.job.tape': 'On the tape (inches, to 1/16)',
   'site.job.cubicFeet': 'cubic feet',
   'site.job.bagsFor': 'Bags for',
   'site.job.area': 'Area',
@@ -358,6 +361,11 @@ export const enSite = {
     'A 7/12 roof pitch is 30.26 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-7-12.heading': '7/12 roof pitch: 30.26° and the rafter length',
   'page.roof-pitch-7-12.label': '7/12 pitch',
+  'page.roof-pitch-7-5-12.title': '7.5/12 Roof Pitch in Degrees: 32.01° | Maestro Calc',
+  'page.roof-pitch-7-5-12.description':
+    'A 7.5/12 roof pitch is 32.01 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-7-5-12.heading': '7.5/12 roof pitch: 32.01° and the rafter length',
+  'page.roof-pitch-7-5-12.label': '7.5/12 pitch',
   'page.roof-pitch-8-12.title': '8/12 Roof Pitch in Degrees: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'An 8/12 roof pitch is 33.69 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
@@ -621,6 +629,37 @@ export const enSite = {
   'page.roofing-30x50.label': '30x50 roof',
   'page.roofing-30x50.intro':
     'A 30 by 50 ft footprint covers a one-story ranch house. Measure the footprint to the edge of the overhangs, not to the walls.',
+  'page.divide-29-1-4-in-by-2.title': '29 1/4 Divided by 2 on a Tape: 14 5/8 in | Maestro Calc',
+  'page.divide-29-1-4-in-by-2.description':
+    '29 1/4 in divided by 2 is 14 5/8 in on a tape measure (14.63 in, 1 ft 2 5/8 in), to the nearest 1/16 in. Also 29 1/4 in divided by 3 and by 4.',
+  'page.divide-29-1-4-in-by-2.heading': 'What is 29 1/4 in divided by 2 on a tape measure?',
+  'page.divide-29-1-4-in-by-2.label': '29 1/4 in ÷ 2',
+  'page.divide-23-5-8-in-by-2.title':
+    'Half of 23 5/8 on a Tape Measure: 11 13/16 in | Maestro Calc',
+  'page.divide-23-5-8-in-by-2.description':
+    'Half of 23 5/8 in, or 23 5/8 in divided by 2, is 11 13/16 in on a tape measure (11.81 in), to the nearest 1/16 in. Also divided by 3 and by 4.',
+  'page.divide-23-5-8-in-by-2.heading': 'Half of 23 5/8 in on a tape measure: 23 5/8 divided by 2',
+  'page.divide-23-5-8-in-by-2.label': '23 5/8 in ÷ 2',
+  'page.divide-35-5-in-by-2.title': '35.5 Inches Divided by 2: 17 3/4 in | Maestro Calc',
+  'page.divide-35-5-in-by-2.description':
+    '35.5 inches divided by 2 is 17 3/4 in on a tape measure (17.75 in, 1 ft 5 3/4 in). Also 35.5 in divided by 3 and by 4, to the nearest 1/16 in.',
+  'page.divide-35-5-in-by-2.heading': 'What is 35.5 inches divided by 2?',
+  'page.divide-35-5-in-by-2.label': '35.5 in ÷ 2',
+  'page.divide-22-in-by-10.title': '22 Inches Divided by 10: 2 3/16 in | Maestro Calc',
+  'page.divide-22-in-by-10.description':
+    '22 inches divided by 10 is 2.20 in, or 2 3/16 in on a tape measure to the nearest 1/16 in. Also 22 in divided by 2, 3 and 4.',
+  'page.divide-22-in-by-10.heading': 'What is 22 inches divided by 10?',
+  'page.divide-22-in-by-10.label': '22 in ÷ 10',
+  'page.divide-9-ft-6-in-by-2.title': '9 Feet 6 Inches Divided by 2: 4 ft 9 in | Maestro Calc',
+  'page.divide-9-ft-6-in-by-2.description':
+    'Half of 9 feet 6 inches: 9 ft 6 in divided by 2 is 4 ft 9 in, or 57 in on a tape measure (57.00 in, 1.448 m). Also divided by 3 and by 4.',
+  'page.divide-9-ft-6-in-by-2.heading': 'What is 9 feet 6 inches divided by 2?',
+  'page.divide-9-ft-6-in-by-2.label': '9 ft 6 in ÷ 2',
+  'page.divide-3-ft-9-in-by-2.title': '3 Feet 9 Inches Divided by 2: 1 ft 10 1/2 in | Maestro Calc',
+  'page.divide-3-ft-9-in-by-2.description':
+    'Half of 3 feet 9 inches: 3 ft 9 in divided by 2 is 1 ft 10 1/2 in, or 22 1/2 in on a tape measure (22.50 in, 0.572 m). Also divided by 3 and by 4.',
+  'page.divide-3-ft-9-in-by-2.heading': 'What is 3 feet 9 inches divided by 2?',
+  'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',

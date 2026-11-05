@@ -26,7 +26,10 @@ describe('roof pitch to degrees table (growth plan › lever 1: figures from the
   it.each(LOCALES)('links every pitch that has a job page, and no other, in %s', (locale) => {
     const { rows } = pitchDegreesView(locale);
     const linked = rows.flatMap(({ href }) => (href === undefined ? [] : [href]));
-    expect(linked).toEqual(jobsOf('roof-pitch').map((id) => pathOf(id, locale)));
+    // the table holds the whole pitches: the 7.5/12 job page is not one of its rows
+    const whole = jobsOf('roof-pitch').filter((id) => /^roof-pitch-\d+-12$/.test(id));
+    expect(whole).not.toContain('roof-pitch-7-5-12');
+    expect(linked).toEqual(whole.map((id) => pathOf(id, locale)));
   });
 
   it.each(LOCALES)('names the table and its columns in %s', (locale) => {

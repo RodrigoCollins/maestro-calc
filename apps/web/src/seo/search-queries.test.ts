@@ -25,9 +25,9 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   });
 
   it('names the pitch of each roof pitch job page in its title', () => {
-    // query: "6 12 roof pitch calculator"
+    // queries: "6 12 roof pitch calculator", "7.5/12 roof pitch" (the rise 7.5 is `7-5` in the id)
     for (const id of jobsOf('roof-pitch')) {
-      const pitch = id.replace('roof-pitch-', '').replace('-', '/');
+      const pitch = id.replace('roof-pitch-', '').replace(/-12$/, '/12').replace('-', '.');
       expect(siteText('en')(`page.${id}.title`)).toContain(`${pitch} Roof Pitch`);
       expect(siteText('es')(`page.${id}.title`)).toContain(`Pendiente de techo ${pitch}`);
     }
@@ -212,6 +212,37 @@ describe('titles from real queries (growth plan › lever 4)', () => {
       );
       expect(siteText('es')(`page.${id}.title`)).toContain(`Tejas para techo de ${size}`);
     }
+  });
+
+  // target queries of the tape division job pages (growth plan › lever 1, Search Console 28 days to
+  // 2026-11-03): "29 1/4 divided by 2 on a tape measure", "what is half of 23 5/8 on a tape
+  // measure", "35.5 inches divided by 2", "22 inches divided by 10", "9 feet 6 inches divided by
+  // 2", "3 feet 9 inches divided by 2"
+  it('states the result of each tape measure division in its title, heading and description', () => {
+    for (const id of jobsOf('feet-inches')) {
+      const factor = id.replace(/^.*-by-/, '');
+      // a length in feet is answered in feet and inches, a length in inches on the tape
+      const shown = id.includes('-ft-') ? 1 : 0;
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        const { rows, facts, answer } = jobView(id, locale);
+        const result = rows[0].cells[shown] ?? '';
+        expect(answer, id).toContain(` ${result} `);
+        expect(text(`page.${id}.title`), id).toContain(`: ${result} |`);
+        expect(text(`page.${id}.heading`), id).toContain(factor);
+        expect(text(`page.${id}.description`), id).toContain(` ${result}`);
+        expect(text(`page.${id}.description`), id).toContain(`${facts[1]?.value ?? ''} in`);
+      }
+      expect(siteText('en')(`page.${id}.description`), id).toContain(`divided by ${factor}`);
+      expect(siteText('es')(`page.${id}.description`), id).toContain(`entre ${factor}`);
+    }
+    const en = siteText('en');
+    expect(en('page.divide-29-1-4-in-by-2.title')).toMatch(/^29 1\/4 Divided by 2 on a Tape/);
+    expect(en('page.divide-23-5-8-in-by-2.title')).toMatch(/^Half of 23 5\/8 on a Tape Measure/);
+    expect(en('page.divide-35-5-in-by-2.title')).toMatch(/^35\.5 Inches Divided by 2/);
+    expect(en('page.divide-22-in-by-10.title')).toMatch(/^22 Inches Divided by 10/);
+    expect(en('page.divide-9-ft-6-in-by-2.title')).toMatch(/^9 Feet 6 Inches Divided by 2/);
+    expect(en('page.divide-3-ft-9-in-by-2.title')).toMatch(/^3 Feet 9 Inches Divided by 2/);
   });
 
   it('answers the bags of mulch in a cubic yard in the title and the description', () => {
