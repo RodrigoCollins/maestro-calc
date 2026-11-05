@@ -4,7 +4,7 @@ import type { BreadcrumbView } from './model.ts';
 interface Props {
   breadcrumb: BreadcrumbView;
 }
-const { label, homeLabel, homeHref, current } = Astro.props.breadcrumb;
+const { label, homeLabel, homeHref, trail = [], current } = Astro.props.breadcrumb;
 ---
 
 <ol class="calc-breadcrumb" aria-label={label}>
@@ -13,5 +13,12 @@ const { label, homeLabel, homeHref, current } = Astro.props.breadcrumb;
       {homeLabel}
     </a>
   </li>
+  {trail.map(({ href, label: name }) => (
+    <li>
+      <a class="tap-target" {href}>
+        {name}
+      </a>
+    </li>
+  ))}
   <li aria-current="page">{current}</li>
 </ol>

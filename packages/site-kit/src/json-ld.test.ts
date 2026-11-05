@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   articleLd,
+  breadcrumbListLd,
   graphLd,
   serializeJsonLd,
   webApplicationLd,
@@ -109,11 +110,47 @@ describe('withBreadcrumb', () => {
       ],
     });
   });
+});
 
+describe('breadcrumbListLd', () => {
+  it('lists the trail from the home to the page, each item at its position', () => {
+    expect(
+      breadcrumbListLd([
+        { name: 'Pool Figures', url: 'https://x.test/' },
+        { name: 'Pool salt calculator', url: 'https://x.test/salt' },
+      ]),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Pool Figures', item: 'https://x.test/' },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Pool salt calculator',
+          item: 'https://x.test/salt',
+        },
+      ],
+    });
+  });
+});
+
+describe('graphLd', () => {
   it('is the graph of its nodes without their own contexts', () => {
-    expect(graphLd([{ '@context': 'https://schema.org', '@type': 'Thing' }])).toEqual({
+    expect(graphLd({ '@context': 'https://schema.org', '@type': 'Thing' })).toEqual({
       '@context': 'https://schema.org',
       '@graph': [{ '@type': 'Thing' }],
+    });
+  });
+
+  it('joins nodes into one document with one @context', () => {
+    const page = { url: 'https://x.test/', inLanguage: 'en-US' };
+    expect(graphLd(webSiteLd({ name: 'X', ...page }), breadcrumbListLd([]))).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [
+        { '@type': 'WebSite', name: 'X', ...page },
+        { '@type': 'BreadcrumbList', itemListElement: [] },
+      ],
     });
   });
 });

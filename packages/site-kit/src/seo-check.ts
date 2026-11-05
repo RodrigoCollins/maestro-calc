@@ -81,7 +81,7 @@ const jsonLdProblems = (
     return [`${file}: the JSON-LD block is not valid JSON`];
   }
   const nodes = nodesOf(document);
-  const [main] = nodes;
+  const main = nodes.find((node) => fieldOf(node, '@type') === schema) ?? nodes[0];
   const types = new Set(nodes.map((node) => fieldOf(node, '@type')));
   const home = rules.breadcrumbHomeOf?.(new URL(url).pathname);
   return [
@@ -126,7 +126,8 @@ const pageProblems = (file: string, html: string, rules: SeoRules): string[] => 
 /**
  * Every built page (`file` to HTML) that is indexable (no `noindex`) needs one canonical, the
  * Open Graph tags of its link preview (`og:url` at the canonical, the one absolute image) with a
- * large Twitter card, and exactly one JSON-LD block of its schema.org type at the canonical.
+ * large Twitter card, and exactly one JSON-LD block of its schema.org type at the canonical (the
+ * document itself, or a node of its `@graph`).
  */
 export const seoProblems = (pages: ReadonlyMap<string, string>, rules: SeoRules): string[] =>
   [...pages].flatMap(([file, html]) => pageProblems(file, html, rules));

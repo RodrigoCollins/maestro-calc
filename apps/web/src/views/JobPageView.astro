@@ -8,6 +8,10 @@ import { siteText } from '../lib/site-text.ts';
 import { JOBS, type JobId } from '../routing/jobs.ts';
 import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
+import { jobJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
+import { getEntry } from 'astro:content';
+import { headingOf } from '../content/heading.ts';
+import { hubOfCalculator } from '../routing/hubs.ts';
 
 /*
  * A job page (growth plan, lever 1): the answer for one common job and its table, every figure
@@ -21,21 +25,32 @@ interface Props {
 const { id, locale } = Astro.props;
 const text = siteText(locale);
 const view = jobView(id, locale);
-const { updated } = JOBS[id];
+const { updated, calculator } = JOBS[id];
 // The date is a calendar day, so it is formatted in UTC: no timezone can move it.
 const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
   dateStyle: 'long',
   timeZone: 'UTC',
 }).format(new Date(`${updated}T00:00:00Z`));
+// The trail the page sits on, each page named by its h1: its calculator's hub, then the calculator.
+const hub = hubOfCalculator(calculator);
+if (hub === undefined) throw new Error(`the calculator of job ${id} has no hub`);
+const hubEntry = await getEntry('pages', `${locale}/${hub}`);
+if (hubEntry === undefined) throw new Error(`no content entry for ${locale}/${hub}`);
+const trail = [
+  { id: hub, name: headingOf(hubEntry.body ?? '') },
+  { id: calculator, name: view.calculatorName },
+];
 const breadcrumb = {
   label: text('site.calculator.breadcrumb'),
   homeLabel: text('site.calculator.breadcrumbHome'),
   homeHref: pathOf('home', locale),
+  trail: trail.map((crumb) => ({ href: pathOf(crumb.id, locale), label: crumb.name })),
   current: view.heading,
 };
+const jsonLd = serializeJsonLd(jobJsonLd({ id, name: view.heading, trail }, locale));
 ---
 
-<BaseLayout {locale} {id} head={headFor(id, locale, text)}>
+<BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
   <Breadcrumb {breadcrumb} />
   <article class="prose">
     <h1>{view.heading}</h1>

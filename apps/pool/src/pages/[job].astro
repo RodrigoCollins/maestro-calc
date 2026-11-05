@@ -3,6 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import Layout from '../components/Layout.astro';
 import JobLinks from '../components/JobLinks.astro';
 import { JOB_PAGES, type JobPage } from '../jobs.ts';
+import { jobTrailOf } from '../seo/breadcrumb.ts';
 
 // One page per common job, its figures worked out by the engines at build time (no script).
 export const getStaticPaths = (() =>
@@ -12,10 +13,22 @@ export const getStaticPaths = (() =>
   }))) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: JobPage };
+const trail = jobTrailOf(page);
+const here = trail.at(-1);
 ---
 
-<Layout title={page.title} description={page.description}>
+<Layout title={page.title} description={page.description} {trail}>
   <main class="pool-page">
+    <nav aria-label="Breadcrumb">
+      <ol class="pool-crumbs">
+        {trail.slice(0, -1).map(({ name, path }) => (
+          <li>
+            <a href={path}>{name}</a>
+          </li>
+        ))}
+        <li aria-current="page">{here?.name}</li>
+      </ol>
+    </nav>
     <h1>{page.h1}</h1>
     <p>{page.lead}</p>
     <figure class="pool-job-figure">
@@ -53,6 +66,21 @@ const { page } = Astro.props as { page: JobPage };
 </Layout>
 
 <style>
+  .pool-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  .pool-crumbs li + li::before {
+    content: '/';
+    margin-right: 0.5rem;
+  }
+
   .pool-job-figure {
     display: grid;
     gap: 0.5rem;
