@@ -42,6 +42,8 @@ export const PAGES = [
   { path: '/guides/unpaid-overtime-and-wages', lang: 'en' },
   { path: '/guides/paid-time-off-pto', lang: 'en' },
   { path: '/es/guias/vacaciones-pagadas', lang: 'es' },
+  { path: '/guides/night-shift-differential-and-overtime', lang: 'en' },
+  { path: '/es/guias/diferencial-nocturno-y-horas-extra', lang: 'es' },
   { path: '/es/guias/como-leer-tu-talon-de-pago', lang: 'es' },
   { path: '/es/guias/si-no-te-pagan-las-horas-extra', lang: 'es' },
   { path: '/es/guias/como-calcular-horas-extra', lang: 'es' },

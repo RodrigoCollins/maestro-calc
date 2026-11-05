@@ -43,7 +43,7 @@ for (const path of PAGES) {
   });
 }
 
-// The volume, dose, pH, heater and fill time calculators link the job pages they work out
+// The volume, dose, pH, calcium, heater and fill time calculators link the job pages they work out
 // ("Common pool sizes").
 for (const calculator of [
   '/pool-volume-calculator',
@@ -54,6 +54,7 @@ for (const calculator of [
   '/pool-stabilizer-calculator',
   '/pool-heater-size-calculator',
   '/pool-fill-time-calculator',
+  '/pool-calcium-hardness-calculator',
 ]) {
   test(`links the job pages of ${calculator}, each one answering with no WCAG violation`, async ({
     page,

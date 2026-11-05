@@ -20,3 +20,9 @@ export const PTO_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/paid-time-off-pto',
   es: '/es/guias/vacaciones-pagadas',
 };
+
+/** The night shift differential guide: whether the differential is in the overtime rate. */
+export const SHIFT_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/night-shift-differential-and-overtime',
+  es: '/es/guias/diferencial-nocturno-y-horas-extra',
+};
