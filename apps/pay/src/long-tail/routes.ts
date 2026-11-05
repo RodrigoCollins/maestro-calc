@@ -295,8 +295,78 @@ export const DIFFERENTIALS: readonly Differential[] = [
   dollarsOn('2', '25'),
 ];
 
+/**
+ * A tipped week at the $2.13 federal cash wage people ask about: the tipped wage calculator's.
+ * An `owed` week asks whether the employer owes a top-up to the $7.25 minimum, an `overtime` week
+ * asks what the hours over 40 add, and a `perHour` week asks the tips per hour. Only the tips and
+ * the hours are given; every figure of its page is the engine's.
+ */
+export interface Tipped {
+  readonly kind: 'tipped';
+  readonly question: 'owed' | 'overtime' | 'perHour';
+  readonly tips: string;
+  readonly hours: string;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const owed = (tips: string): Tipped => ({
+  kind: 'tipped',
+  question: 'owed',
+  tips,
+  hours: '40',
+  slug: {
+    en: `2-13-an-hour-plus-${tips}-in-tips-for-40-hours`,
+    es: `2-13-la-hora-mas-${tips}-de-propinas-en-40-horas`,
+  },
+});
+
+/** The tips of every tipped overtime week: enough to cover the tip credit up to 60 hours. */
+const OVERTIME_TIPS = '400';
+
+const tippedOvertime = (hours: string): Tipped => ({
+  kind: 'tipped',
+  question: 'overtime',
+  tips: OVERTIME_TIPS,
+  hours,
+  slug: {
+    en: `tipped-overtime-for-${hours}-hours-at-2-13-an-hour`,
+    es: `horas-extra-con-propinas-${hours}-horas-a-2-13-la-hora`,
+  },
+});
+
+const tipsPerHour = (tips: string, hours: string): Tipped => ({
+  kind: 'tipped',
+  question: 'perHour',
+  tips,
+  hours,
+  slug: {
+    en: `${tips}-in-tips-over-${hours}-hours-is-how-much-an-hour`,
+    es: `${tips}-de-propinas-en-${hours}-horas-cuanto-es-por-hora`,
+  },
+});
+
+/**
+ * The top-up weeks by tips, the overtime weeks by hours, then the tips per hour by hours and by
+ * tips: the tipped wage calculator lists them, and a page links its nearest, so.
+ */
+export const TIPPED: readonly Tipped[] = [
+  owed('100'),
+  owed('150'),
+  owed('200'),
+  owed('250'),
+  owed('300'),
+  tippedOvertime('45'),
+  tippedOvertime('50'),
+  tippedOvertime('55'),
+  tippedOvertime('60'),
+  tipsPerHour('200', '20'),
+  tipsPerHour('300', '25'),
+  tipsPerHour('500', '40'),
+  tipsPerHour('800', '40'),
+];
+
 /** A long-tail page's job, of any family. */
-export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential;
+export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential | Tipped;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
 export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
@@ -306,6 +376,7 @@ export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
   ...MINUTES,
   ...DOUBLES,
   ...DIFFERENTIALS,
+  ...TIPPED,
 ];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>

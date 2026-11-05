@@ -7,6 +7,7 @@ import {
   pathOf,
   PTOS,
   SHIFTS,
+  TIPPED,
   type LongTailJob,
 } from '../long-tail/routes.ts';
 import { ROUTES, type Route } from '../routes.ts';
@@ -36,6 +37,7 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
   { calculator: 'pto-accrual', members: PTOS },
   { calculator: 'decimal-hours', members: MINUTES },
   { calculator: 'shift-differential', members: DIFFERENTIALS },
+  { calculator: 'tipped-wage', members: TIPPED },
 ];
 
 /**
