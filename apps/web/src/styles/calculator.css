@@ -422,13 +422,7 @@
    page chrome, the tools that need a screen and the long article are left out, and the reserves
    for the script collapse, since nothing moves on paper. */
 @media print {
-  html body {
-    background: #fff;
-  }
-
-  body .skip-link,
-  body .site-header,
-  body .site-footer,
+  /* The page chrome and the white ground are printed by base.css, on every page. */
   .calc-copy,
   .calc-notice,
   .calc-steppers,
