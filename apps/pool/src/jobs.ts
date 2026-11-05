@@ -11,10 +11,12 @@ import {
 } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
+import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
+import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { ALKALINITY, CHLORINE, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -64,7 +66,7 @@ const LIQUID = 'liquid-12-5';
  * The baking soda jobs: the same pool sizes, raising total alkalinity by 10, 20 or 30 ppm up to
  * 100 ppm, the calculator's own target; the 10 ppm raise is the large figure.
  */
-const ALKALINITY_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const ALKALINITY_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const ALKALINITY_READINGS = [90, 80, 70] as const;
 const ALKALINITY_TARGET = 100;
 
@@ -72,9 +74,25 @@ const ALKALINITY_TARGET = 100;
  * The stabilizer jobs: the same pool sizes, from fresh water (0 ppm, the large figure) and from 10
  * or 20 ppm up to 30 ppm, the calculator's own target.
  */
-const STABILIZER_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const STABILIZER_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const STABILIZER_READINGS = [0, 10, 20] as const;
 const STABILIZER_TARGET = 30;
+
+/**
+ * The heater jobs: the same pool sizes, warmed by 10 °F (the calculator's own default, the large
+ * figure), 15 or 20 °F over 24 hours, its default time.
+ */
+const HEATER_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const HEATER_RISES = [10, 15, 20] as const;
+const HEATER_HOURS = 24;
+
+/**
+ * The fill time jobs: the same pool sizes, at 10 gallons a minute (the starting figure the
+ * calculator fills in for a hose, the large figure), and at a slower 5 and a faster 20.
+ */
+const FILL_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const FILL_FLOWS = [5, 10, 20] as const;
+const FILL_MAIN = 1;
 
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
@@ -269,6 +287,8 @@ const outputsOf = (
     | typeof poolChlorine
     | typeof poolAlkalinity
     | typeof poolStabilizer
+    | typeof poolHeater
+    | typeof poolFillTime
     | typeof poolVolume,
   raw: Raw,
 ): { readonly values: ReadonlyMap<string, unknown>; readonly bags: bigint } => {
@@ -458,6 +478,84 @@ const stabilizerPage = (gallons: number): JobPage => {
   };
 };
 
+const heaterPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = HEATER_RISES.map((rise) => {
+    const raw = { gallons: String(gallons), rise: String(rise), hours: String(HEATER_HOURS) };
+    const { values } = outputsOf(poolHeater, raw);
+    return {
+      raw,
+      cells: [
+        `${String(rise)} °F in ${String(HEATER_HOURS)} hours`,
+        outputText('btuPerHour', values.get('btuPerHour')),
+        outputText('btu', values.get('btu')),
+      ],
+    };
+  });
+  const [main] = rows;
+  if (main === undefined) throw new Error('a heater job needs its 10 °F row');
+  const [warm = '', perHour = '', heat = ''] = main.cells;
+  return {
+    path: `/what-size-pool-heater-for-a-${String(gallons)}-gallon-pool`,
+    title: `What Size Pool Heater for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The BTU per hour a heater must put out to warm a ${size} gallon pool by 10, 15 or 20 °F in 24 hours, from the weight of the water.`,
+    h1: `What size pool heater for a ${size} gallon pool`,
+    lead: `Warming a ${size} gallon pool by ${warm} takes a heater that puts ${perHour} BTU an hour into the water. A pool loses heat while it warms, so a real heater is sized larger; the calculator takes your own rise and hours.`,
+    figure: {
+      value: perHour,
+      unit: 'BTU/H',
+      caption: `${heat} BTU warm ${size} gallons by ${warm}, before any heat lost.`,
+    },
+    head: ['Warm by', 'Heater output (BTU/h)', 'Heat (BTU)'],
+    rows,
+    calculator: {
+      path: HEATER.path,
+      href: linkTo(poolHeater, HEATER.path, main.raw),
+      label: 'Work it out for your rise and hours',
+    },
+    method: `${HEATER.method} ${HEATER.note}`,
+    card: { title: `Heater for ${size} gallons`, summary: `${perHour} BTU/h, 10 °F in 24 hours.` },
+    gallons,
+  };
+};
+
+const fillPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = FILL_FLOWS.map((flow) => {
+    const raw = { gallons: String(gallons), flow: String(flow) };
+    const { values } = outputsOf(poolFillTime, raw);
+    return {
+      raw,
+      cells: [
+        `${String(flow)} gallons a minute`,
+        outputText('time', values.get('time')),
+        outputText('minutes', values.get('minutes')),
+      ],
+    };
+  });
+  const main = rows[FILL_MAIN];
+  if (main === undefined) throw new Error('a fill time job needs its 10 gallons a minute row');
+  const [flow = '', time = '', minutes = ''] = main.cells;
+  return {
+    path: `/how-long-to-fill-a-${String(gallons)}-gallon-pool`,
+    title: `How Long to Fill a ${size} Gallon Pool? | Pool Figures`,
+    description: `How many hours and minutes a hose takes to fill a ${size} gallon pool at 5, 10 or 20 gallons a minute.`,
+    h1: `How long to fill a ${size} gallon pool`,
+    lead: `At ${flow}, the starting figure the calculator gives a hose, a ${size} gallon pool takes ${time} to fill. Hoses vary: time a 5-gallon bucket to measure yours, and find a slower or faster flow below.`,
+    figure: { value: time, unit: 'HOURS AND MINUTES', caption: `${minutes} minutes at ${flow}.` },
+    head: ['Hose flow', 'Time to fill', 'Minutes'],
+    rows,
+    calculator: {
+      path: FILL_TIME.path,
+      href: linkTo(poolFillTime, FILL_TIME.path, main.raw),
+      label: 'Work it out for your hose',
+    },
+    method: `${FILL_TIME.method} ${FILL_TIME.note}`,
+    card: { title: `Filling ${size} gallons`, summary: `${time} at ${flow}.` },
+    gallons,
+  };
+};
+
 const volumePage = ({
   slug,
   name,
@@ -508,6 +606,8 @@ export const JOB_PAGES: readonly JobPage[] = [
   ...CHLORINE_GALLONS.map(chlorinePage),
   ...ALKALINITY_GALLONS.map(alkalinityPage),
   ...STABILIZER_GALLONS.map(stabilizerPage),
+  ...HEATER_GALLONS.map(heaterPage),
+  ...FILL_GALLONS.map(fillPage),
 ];
 
 /** How many job pages of its calculator a job page links: its nearest sizes, so pages stay distinct. */

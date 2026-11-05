@@ -11,11 +11,13 @@ import {
 } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
+import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
+import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
 import { JOB_PAGES, jobLinksOf, NEIGHBORS, neighborsOf, type JobPage } from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -26,8 +28,8 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
 
 /**
  * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
- * liters of liquid chlorine, pounds and ounces of baking soda or stabilizer, or gallons and liters
- * of water.
+ * liters of liquid chlorine, pounds and ounces of baking soda or stabilizer, BTU per hour and
+ * BTU of heat, the fill time and its minutes, or gallons and liters of water.
  */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
   const ran =
@@ -39,11 +41,19 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
           ? poolAlkalinity.run(raw)
           : path === STABILIZER.path
             ? poolStabilizer.run(raw)
-            : poolVolume.run(raw);
+            : path === HEATER.path
+              ? poolHeater.run(raw)
+              : path === FILL_TIME.path
+                ? poolFillTime.run(raw)
+                : poolVolume.run(raw);
   if (!ran.ok) throw new Error(`${path} did not run`);
   const value = (key: string): unknown => ran.value.outputs.find((out) => out.key === key)?.value;
   if (path === ALKALINITY.path || path === STABILIZER.path)
     return [outputText('pounds', value('pounds')), outputText('ounces', value('ounces'))];
+  if (path === HEATER.path)
+    return [outputText('btuPerHour', value('btuPerHour')), outputText('btu', value('btu'))];
+  if (path === FILL_TIME.path)
+    return [outputText('time', value('time')), outputText('minutes', value('minutes'))];
   if (path === SALT.path)
     return [outputText('pounds', value('pounds')), String(ran.value.shopping[0]?.qty)];
   if (path === CHLORINE.path) {
@@ -102,6 +112,8 @@ describe('the long-tail job pages', () => {
         CHLORINE.path,
         ALKALINITY.path,
         STABILIZER.path,
+        HEATER.path,
+        FILL_TIME.path,
         VOLUME_TEXTS.path,
       ]).toContain(calculator.path);
       expect(pageFiles).toContain(calculator.path);
@@ -115,6 +127,9 @@ describe('the long-tail job pages', () => {
         expectOpensOn(poolAlkalinity, query, main?.raw ?? {});
       else if (calculator.path === STABILIZER.path)
         expectOpensOn(poolStabilizer, query, main?.raw ?? {});
+      else if (calculator.path === HEATER.path) expectOpensOn(poolHeater, query, main?.raw ?? {});
+      else if (calculator.path === FILL_TIME.path)
+        expectOpensOn(poolFillTime, query, main?.raw ?? {});
       else expectOpensOn(poolVolume, query, main?.raw ?? {});
     }
   });
@@ -193,6 +208,43 @@ describe('the long-tail job pages', () => {
     expect(page.lead).not.toMatch(/ideal/i);
   });
 
+  // worked by hand: 30,000 gal × 3.785411784 L = 113,562 L; × 30 mg = 3.407 kg = 7.51 lb of
+  // stabilizer, and × 10 ppm × 1.6788 mg = 1.906 kg = 4.20 lb of baking soda
+  it('works out stabilizer and baking soda for 30,000 gallons as by hand', () => {
+    expect(byPath('/how-much-stabilizer-for-a-30000-gallon-pool').figure.value).toBe('7.5');
+    expect(byPath('/how-much-baking-soda-for-a-30000-gallon-pool').figure.value).toBe('4.2');
+  });
+
+  // worked by hand: 20,000 gal × 8.34 lb × 10 °F = 1,668,000 BTU, ÷ 24 h = 69,500 BTU an hour
+  // (HEATER.method); 15 °F is 2,502,000 BTU, 104,250 an hour; 20 °F 3,336,000, 139,000 an hour
+  it('works out the heater for 20,000 gallons, 10, 15 and 20 °F in 24 hours, as by hand', () => {
+    const page = byPath('/what-size-pool-heater-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '69,500', unit: 'BTU/H' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['10 °F in 24 hours', '69,500', '1,668,000'],
+      ['15 °F in 24 hours', '104,250', '2,502,000'],
+      ['20 °F in 24 hours', '139,000', '3,336,000'],
+    ]);
+    // 15,000 gal × 8.34 × 10 = 1,251,000 BTU, ÷ 24 = 52,125 an hour
+    expect(byPath('/what-size-pool-heater-for-a-15000-gallon-pool').figure.value).toBe('52,125');
+    // the water's heat only: the page says a real heater is sized larger
+    expect(page.lead).toMatch(/larger/);
+  });
+
+  // worked by hand: 15,000 gal ÷ 10 gpm = 1,500 min = 25 h 0 min (FILL_TIME.method); at 5 gpm
+  // 3,000 min = 50 h 0 min, at 20 gpm 750 min = 12 h 30 min
+  it('works out filling 15,000 gallons at 5, 10 and 20 gallons a minute as by hand', () => {
+    const page = byPath('/how-long-to-fill-a-15000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '25 h 0 min' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['5 gallons a minute', '50 h 0 min', '3,000'],
+      ['10 gallons a minute', '25 h 0 min', '1,500'],
+      ['20 gallons a minute', '12 h 30 min', '750'],
+    ]);
+    // 20,000 gal ÷ 10 gpm = 2,000 min = 33 h 20 min, the calculator's own worked example
+    expect(byPath('/how-long-to-fill-a-20000-gallon-pool').figure.value).toBe('33 h 20 min');
+  });
+
   // worked by hand: π × 15² × 4 ft = 2,827.43 ft³, × 1,728 ÷ 231 = 21,151; π × 6² × 4 = 3,384
   it('works out the 12, 15, 27 and 30 ft round pools at 4 ft as by hand', () => {
     expect(byPath('/30-ft-round-pool-gallons').figure.value).toBe('21,151');
@@ -231,6 +283,15 @@ describe('the long-tail job pages', () => {
       '/how-much-stabilizer-for-a-10000-gallon-pool',
       '/how-much-stabilizer-for-a-15000-gallon-pool',
       '/how-much-stabilizer-for-a-25000-gallon-pool',
+      '/how-much-stabilizer-for-a-30000-gallon-pool',
+    ]);
+    expect(
+      neighborsOf(byPath('/how-long-to-fill-a-10000-gallon-pool')).map(({ href }) => href),
+    ).toEqual([
+      '/how-long-to-fill-a-15000-gallon-pool',
+      '/how-long-to-fill-a-20000-gallon-pool',
+      '/how-long-to-fill-a-25000-gallon-pool',
+      '/how-long-to-fill-a-30000-gallon-pool',
     ]);
     // the 30 ft round (21,151 gal) sits between the 15 x 30 (19,356) and the 16 x 32 (22,023)
     expect(neighborsOf(byPath('/30-ft-round-pool-gallons')).map(({ href }) => href)).toEqual([
@@ -254,6 +315,8 @@ describe('the long-tail job pages', () => {
       CHLORINE.path,
       ALKALINITY.path,
       STABILIZER.path,
+      HEATER.path,
+      FILL_TIME.path,
     ]) {
       const linked = jobLinksOf(path).map(({ href }) => href);
       const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
@@ -274,6 +337,17 @@ describe('the long-tail job pages', () => {
       '/how-much-chlorine-for-a-20000-gallon-pool',
       '/how-much-chlorine-for-a-25000-gallon-pool',
     ]);
+    expect(jobLinksOf(HEATER.path).map(({ href }) => href)).toEqual([
+      '/what-size-pool-heater-for-a-10000-gallon-pool',
+      '/what-size-pool-heater-for-a-15000-gallon-pool',
+      '/what-size-pool-heater-for-a-20000-gallon-pool',
+      '/what-size-pool-heater-for-a-25000-gallon-pool',
+      '/what-size-pool-heater-for-a-30000-gallon-pool',
+    ]);
+    expect(jobLinksOf(FILL_TIME.path)).toContainEqual({
+      href: '/how-long-to-fill-a-25000-gallon-pool',
+      label: 'How long to fill a 25,000 gallon pool',
+    });
     expect(jobLinksOf(PUMP.path)).toEqual([]);
   });
 });

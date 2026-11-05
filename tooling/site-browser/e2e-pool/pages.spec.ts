@@ -43,13 +43,16 @@ for (const path of PAGES) {
   });
 }
 
-// The volume and dose calculators link the job pages they work out ("Common pool sizes").
+// The volume, dose, heater and fill time calculators link the job pages they work out
+// ("Common pool sizes").
 for (const calculator of [
   '/pool-volume-calculator',
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
   '/pool-alkalinity-calculator',
   '/pool-stabilizer-calculator',
+  '/pool-heater-size-calculator',
+  '/pool-fill-time-calculator',
 ]) {
   test(`links the job pages of ${calculator}, each one answering with no WCAG violation`, async ({
     page,
