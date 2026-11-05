@@ -193,6 +193,12 @@ export const enSite = {
   'page.guide-fence-post-concrete.title': 'How Much Concrete for a Fence Post? | Maestro Calc',
   'page.guide-fence-post-concrete.description':
     'Size the hole for a fence post, work out the concrete and the bags for one post or a whole fence, and set the post step by step.',
+  'page.guide-mulch.title': 'How Much Mulch Do I Need? | Maestro Calc',
+  'page.guide-mulch.description':
+    'Measure the bed, choose a depth, and turn length × width × depth into cubic feet, cubic yards and bags of mulch of 2 or 3 cubic feet.',
+  'page.guide-cubic-yards.title': 'How to Calculate Cubic Yards | Maestro Calc',
+  'page.guide-cubic-yards.description':
+    'Length × width × depth in feet, divided by 27: cubic yards of concrete, gravel, topsoil and mulch, with inches to feet, circles and worked examples.',
   'page.hub-concrete.title': 'Concrete Calculators and Guides | Maestro Calc',
   'page.hub-concrete.description':
     'Concrete calculators and guides for slabs, footings, columns and steps: cubic yards, bags or a truck, and how to quote a concrete job.',

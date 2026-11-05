@@ -14,3 +14,7 @@ Each one also works in meters and centimeters, and shows the cost when you enter
 The guide goes further for a driveway: the layers and their depth, the crown that sheds water, the gravel for the top, and how much to order by the ton or by the cubic yard.
 
 For a raised bed, the second guide gives the depth for each crop, what to fill it with, and how much topsoil and compost to buy.
+
+For mulch, the third guide gives the depth to spread and turns a bed into cubic yards and bags of 2 or 3 cubic feet.
+
+The fourth guide shows the math behind every one of these calculators: length × width × depth in feet, divided by 27, with inches to feet and circles.
