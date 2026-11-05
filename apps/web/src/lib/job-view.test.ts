@@ -7,6 +7,9 @@ import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
 import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
 import { LOCALES } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
+import { drywall } from './drywall.ts';
+import { gravel } from './gravel.ts';
+import { paint } from './paint.ts';
 import { jobView, METHODOLOGY_ANCHOR } from './job-view.ts';
 import { siteText } from './site-text.ts';
 
@@ -27,6 +30,21 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
   if (calculator === 'mulch') {
     const state = mulch.validate(raw);
     expect(state.ok && decode(mulch, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'gravel') {
+    const state = gravel.validate(raw);
+    expect(state.ok && decode(gravel, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'paint') {
+    const state = paint.validate(raw);
+    expect(state.ok && decode(paint, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'drywall') {
+    const state = drywall.validate(raw);
+    expect(state.ok && decode(drywall, query).state).toEqual(state.ok && state.value);
     return;
   }
   const state = rectangleArea.validate(raw);
@@ -143,6 +161,138 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.note).toContain('13.5');
     expect(view.note).toContain(view.facts[1]?.value ?? '');
   });
+
+  // hand-verified: 10 × 20 × 1/3 ft = 66.67 ft³ = 2.47 yd³, + 5% = 2.59 yd³; compacted at
+  // 3,660 lb/yd³ = 9,489 lb = 4.74 tons (4.30 t); the yard sells loose at 2,580 lb/yd³: 3.68 yd³.
+  // At 6 in: 7.12 tons, 5.52 yd³; at 8 in: 9.49 tons, 7.36 yd³
+  it('works the gravel for a 10 × 20 ft driveway out as the gravel calculator does', () => {
+    const view = jobView('gravel-driveway-10x20', 'en');
+    expect(view.lead).toBe('Length × Width × Depth: 10 ft × 20 ft × 4 in');
+    expect(view.answer).toBe('4.74 tons');
+    expect(view.facts).toEqual([
+      { label: 'Volume to order (cubic yards)', value: '3.68' },
+      { label: 'Gravel needed (metric tonnes)', value: '4.30' },
+    ]);
+    expect(view.columns).toEqual([
+      'Length × Width × Depth',
+      'Gravel needed (tons)',
+      'Volume to order (cubic yards)',
+      'Gravel needed (metric tonnes)',
+    ]);
+    expect(view.rows).toEqual([
+      {
+        label: '10 ft × 20 ft × 4 in',
+        href: '/gravel-calculator?v=1&l=120&w=240',
+        cells: ['4.74', '3.68', '4.30'],
+      },
+      {
+        label: '10 ft × 20 ft × 6 in',
+        href: '/gravel-calculator?v=1&l=120&w=240&d=6',
+        cells: ['7.12', '5.52', '6.46'],
+      },
+      {
+        label: '10 ft × 20 ft × 8 in',
+        href: '/gravel-calculator?v=1&l=120&w=240&d=8',
+        cells: ['9.49', '7.36', '8.61'],
+      },
+    ]);
+    expect(view.calculatorName).toBe('Gravel Calculator');
+    expect(view.methodology).toBe('/methodology#gravel');
+    // hand-verified: 12 × 50 × 1/3 ft = 200 ft³ = 7.41 yd³, + 5% = 7.78 yd³ = 14.23 tons, 11.03 yd³
+    const long = jobView('gravel-driveway-12x50', 'es');
+    expect(long.answer).toBe('14.23 toneladas');
+    expect(long.rows[0].cells).toEqual(['14.23', '11.03', '12.91']);
+    expect(long.methodology).toBe('/es/metodologia#grava');
+  });
+
+  // hand-verified: walls 2 × (12 + 12) × 8 = 384 ft², less a 20 ft² door and two 15 ft² windows =
+  // 334 ft²; two coats at 350 ft² a gallon: 668 ÷ 350 = 1.91 gal, 2 cans. At 9 ft: 382 ft², 2.18
+  // gal, 3 cans; at 10 ft: 430 ft², 2.46 gal, 3 cans
+  it('works the paint for a 12 × 12 ft room out as the paint calculator does', () => {
+    const view = jobView('paint-room-12x12', 'en');
+    expect(view.lead).toBe('Room length × Room width × Wall height: 12 ft × 12 ft × 8 ft');
+    expect(view.answer).toBe('1.91 gallons');
+    expect(view.facts).toEqual([
+      { label: 'Paint, gallon cans', value: '2' },
+      { label: 'Area to paint (square feet)', value: '334.00' },
+    ]);
+    expect(view.columns).toEqual([
+      'Room length × Room width × Wall height',
+      'Paint needed (gallons)',
+      'Paint, gallon cans',
+      'Area to paint (square feet)',
+    ]);
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['12 ft × 12 ft × 8 ft', '1.91', '2', '334.00'],
+      ['12 ft × 12 ft × 9 ft', '2.18', '3', '382.00'],
+      ['12 ft × 12 ft × 10 ft', '2.46', '3', '430.00'],
+    ]);
+    // the length, the width and the height of 8 ft are the calculator's defaults
+    expect(view.rows[0].href).toBe('/paint-calculator?v=1');
+    expect(view.methodology).toBe('/methodology#paint');
+    // hand-verified: 2 × 20 × 8 = 320 ft² − 50 = 270 ft², × 2 ÷ 350 = 1.54 gal; 2 × 22 × 8 = 352 −
+    // 50 = 302 ft², 1.73 gal
+    expect(jobView('paint-room-10x10', 'es').answer).toBe('1.54 galones');
+    expect(jobView('paint-room-10x12', 'en').rows[0].cells).toEqual(['1.73', '2', '302.00']);
+  });
+
+  // hand-verified: walls 384 − 50 = 334 ft² + a 144 ft² ceiling = 478 ft²; + 10% = 525.8 ft²:
+  // 16.4 sheets of 32 ft², so 17, and 10.95 of 48 ft², so 11; 4.30 gal of compound (1 pail of
+  // 4.5 gal) and 176.86 ft of tape (1 roll of 500 ft)
+  it('works the drywall for a 12 × 12 ft room out as the drywall calculator does', () => {
+    const view = jobView('drywall-room-12x12', 'en');
+    expect(view.lead).toBe('Room length × Room width × Wall height: 12 ft × 12 ft × 8 ft');
+    expect(view.answer).toBe('17 sheets of 4 × 8 ft');
+    expect(view.facts).toEqual([
+      { label: 'Drywall, 4 × 12 ft sheets', value: '11' },
+      { label: 'Area to cover (square feet)', value: '478.00' },
+      { label: 'Joint compound, 4.5 gal pails', value: '1' },
+      { label: 'Paper joint tape, 500 ft rolls', value: '1' },
+    ]);
+    expect(view.columns).toEqual([
+      'Room length × Room width × Wall height',
+      'Area to cover (square feet)',
+      'Drywall, 4 × 8 ft sheets',
+      'Drywall, 4 × 12 ft sheets',
+    ]);
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['12 ft × 12 ft × 8 ft', '478.00', '17', '11'],
+      ['12 ft × 12 ft × 9 ft', '526.00', '19', '13'],
+      ['12 ft × 12 ft × 10 ft', '574.00', '20', '14'],
+    ]);
+    expect(view.rows[0].href).toBe('/drywall-calculator?v=1');
+    expect(view.methodology).toBe('/methodology#drywall');
+    // hand-verified: 10 × 10: 320 − 50 + 100 = 370 ft², + 10% = 407 ft²: 12.7 so 13 and 8.5 so 9;
+    // 10 × 12: 352 − 50 + 120 = 422 ft², + 10% = 464.2 ft²: 14.5 so 15 and 9.7 so 10
+    const small = jobView('drywall-room-10x10', 'es');
+    expect(small.answer).toBe('13 placas de 4 × 8 ft');
+    expect(small.rows[0].cells).toEqual(['370.00', '13', '9']);
+    expect(jobView('drywall-room-10x12', 'en').rows[0].cells).toEqual(['422.00', '15', '10']);
+  });
+
+  // the notes restate the defaults of the engines: they must be the engine's
+  it.each(LOCALES)(
+    'states the defaults of the gravel, paint and drywall engines in %s',
+    (locale) => {
+      const defaultOf = (inputs: readonly { key: string; default: unknown }[], key: string) =>
+        String(inputs.find((input) => input.key === key)?.default);
+      expect(defaultOf(gravel.inputs, 'waste')).toBe('5');
+      expect(defaultOf(gravel.inputs, 'placement')).toBe('compacted');
+      expect(jobView('gravel-driveway-10x20', locale).note).toContain('5%');
+      expect(defaultOf(paint.inputs, 'doors')).toBe('1');
+      expect(defaultOf(paint.inputs, 'windows')).toBe('2');
+      expect(defaultOf(paint.inputs, 'coats')).toBe('2');
+      expect(jobView('paint-room-12x12', locale).note).toContain('350');
+      expect(defaultOf(drywall.inputs, 'waste')).toBe('10');
+      expect(defaultOf(drywall.inputs, 'surfaces')).toBe('walls-ceiling');
+      expect(defaultOf(drywall.inputs, 'doors')).toBe('1');
+      expect(defaultOf(drywall.inputs, 'windows')).toBe('2');
+      expect(jobView('drywall-room-12x12', locale).note).toContain('10%');
+      for (const id of [...jobsOf('gravel'), ...jobsOf('paint'), ...jobsOf('drywall')]) {
+        expect(jobView(id, locale).intro, id).toMatch(/\S/);
+      }
+    },
+  );
 
   // hand-verified: π × (0.5 ft)² × 4 ft = 3.14 ft³, + 10% = 3.46 ft³ = 0.13 yd³; 5.8, 7.7, 11.5 bags
   it('works a 12 in tube, 48 in deep, out as the calculator does', () => {
@@ -290,6 +440,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       METHODOLOGY_ROWS['rectangle-area'].anchor[locale],
     );
     expect(METHODOLOGY_ANCHOR.mulch[locale]).toBe(METHODOLOGY_ROWS.mulch.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR.gravel[locale]).toBe(METHODOLOGY_ROWS.gravel.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR.paint[locale]).toBe(METHODOLOGY_ROWS.paint.anchor[locale]);
+    expect(METHODOLOGY_ANCHOR.drywall[locale]).toBe(METHODOLOGY_ROWS.drywall.anchor[locale]);
     expect(jobView('roof-pitch-4-12', locale).methodology).toMatch(
       new RegExp(`#${METHODOLOGY_ANCHOR['roof-pitch'][locale]}$`),
     );

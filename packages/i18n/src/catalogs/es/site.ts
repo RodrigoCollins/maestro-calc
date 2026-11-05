@@ -41,6 +41,13 @@ export const esSite = {
     'El área de un rectángulo es su largo por su ancho. Una yarda cuadrada son 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus valores ya cargados.',
   'site.job.note.mulch':
     'Una yarda cúbica es exactamente 27 pies cúbicos, y una bolsa contiene el volumen impreso en ella. Las cantidades no suman extra y se redondean hacia arriba a bolsas enteras: 27 ÷ 2 = 13.5, así que 14 bolsas de 2 cu ft. Cada tamaño abre la calculadora de mulch con un área de 9 por 9 ft y 4 in de profundidad: una yarda cúbica.',
+  'site.job.note.gravel':
+    'Cada cifra es grava compactada, como se coloca la base de una entrada, con un 5% extra, los valores iniciales de la calculadora de grava. El proveedor vende la grava por su volumen suelto, así que las yardas cúbicas a pedir son más que el espacio que llena. Cada profundidad abre la calculadora con sus valores ya cargados.',
+  'site.job.note.paint':
+    'Las cifras pintan las cuatro paredes, sin una puerta de 20 pies cuadrados ni dos ventanas de 15 cada una, en dos manos a 350 pies cuadrados por galón, los valores iniciales de la calculadora de pintura, y se redondean a latas de un galón enteras. Cada altura abre la calculadora con sus valores ya cargados.',
+  'site.job.note.drywall':
+    'Las cifras cubren las cuatro paredes y el techo, sin una puerta de 20 pies cuadrados ni dos ventanas de 15 cada una, con un 10% extra por cortes, los valores iniciales de la calculadora de drywall, y se redondean a placas enteras. Cada altura abre la calculadora con sus valores ya cargados.',
+  'site.job.sheetsOf': 'placas de',
   'site.job.cubicFeet': 'pies cúbicos',
   'site.job.bagsFor': 'Bolsas para',
   'site.job.area': 'Área',
@@ -405,6 +412,54 @@ export const esSite = {
   'page.mulch-bags-per-yard.heading': '¿Cuántas bolsas de mulch hay en una yarda cúbica?',
   'page.mulch-bags-per-yard.intro':
     'El mulch se vende en bolsas de 1.5, 2 o 3 pies cúbicos, y a granel por yarda cúbica. Divide 27 entre el tamaño de la bolsa y redondea hacia arriba: una yarda cúbica lleva 18 bolsas de 1.5 cu ft, 14 de 2 cu ft o 9 de 3 cu ft.',
+  'page.gravel-driveway-10x20.title': 'Grava para entrada de 10x20: 4.74 toneladas | Maestro Calc',
+  'page.gravel-driveway-10x20.description':
+    'Una entrada de 10 por 20 ft y 4 in de profundidad lleva 4.74 toneladas de grava compactada, 3.68 yardas cúbicas a pedir con 5% de extra, y a 6 u 8 in.',
+  'page.gravel-driveway-10x20.heading': '¿Cuánta grava para una entrada de 10x20?',
+  'page.gravel-driveway-10x20.intro':
+    'Un área de 10 por 20 ft da lugar para un auto, o amplía la entrada junto al garaje. La base de una entrada se compacta por capas, así que la grava se calcula con su peso compactado.',
+  'page.gravel-driveway-12x50.title': 'Grava para entrada de 12x50: 14.23 toneladas | Maestro Calc',
+  'page.gravel-driveway-12x50.description':
+    'Una entrada de 12 por 50 ft y 4 in de profundidad lleva 14.23 toneladas de grava compactada, 11.03 yardas cúbicas a pedir con 5% de extra, y a 6 u 8 in.',
+  'page.gravel-driveway-12x50.heading': '¿Cuánta grava para una entrada de 12x50?',
+  'page.gravel-driveway-12x50.intro':
+    'Una entrada de 12 por 50 ft es un carril desde la calle hasta un garaje alejado de ella. Una entrada nueva suele llevar primero una base más profunda y después una capa de acabado.',
+  'page.paint-room-10x10.title': 'Pintura para un cuarto de 10x10: 1.54 galones | Maestro Calc',
+  'page.paint-room-10x10.description':
+    'Un cuarto de 10 por 10 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.54 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
+  'page.paint-room-10x10.heading': '¿Cuánta pintura para un cuarto de 10x10?',
+  'page.paint-room-10x10.intro':
+    'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
+  'page.paint-room-10x12.title': 'Pintura para un cuarto de 10x12: 1.73 galones | Maestro Calc',
+  'page.paint-room-10x12.description':
+    'Un cuarto de 10 por 12 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.73 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
+  'page.paint-room-10x12.heading': '¿Cuánta pintura para un cuarto de 10x12?',
+  'page.paint-room-10x12.intro':
+    'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
+  'page.paint-room-12x12.title': 'Pintura para un cuarto de 12x12: 1.91 galones | Maestro Calc',
+  'page.paint-room-12x12.description':
+    'Un cuarto de 12 por 12 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.91 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',
+  'page.paint-room-12x12.heading': '¿Cuánta pintura para un cuarto de 12x12?',
+  'page.paint-room-12x12.intro':
+    'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. La tabla pinta solo las paredes; el techo y los marcos llevan su propia pintura.',
+  'page.drywall-room-10x10.title': 'Drywall para cuarto de 10x10: 13 placas | Maestro Calc',
+  'page.drywall-room-10x10.description':
+    'Un cuarto de 10 por 10 ft con paredes de 8 ft lleva 13 placas de drywall de 4x8 o 9 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
+  'page.drywall-room-10x10.heading': '¿Cuántas placas de drywall para un cuarto de 10x10?',
+  'page.drywall-room-10x10.intro':
+    'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+  'page.drywall-room-10x12.title': 'Drywall para cuarto de 10x12: 15 placas | Maestro Calc',
+  'page.drywall-room-10x12.description':
+    'Un cuarto de 10 por 12 ft con paredes de 8 ft lleva 15 placas de drywall de 4x8 o 10 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
+  'page.drywall-room-10x12.heading': '¿Cuántas placas de drywall para un cuarto de 10x12?',
+  'page.drywall-room-10x12.intro':
+    'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+  'page.drywall-room-12x12.title': 'Drywall para cuarto de 12x12: 17 placas | Maestro Calc',
+  'page.drywall-room-12x12.description':
+    'Un cuarto de 12 por 12 ft con paredes de 8 ft lleva 17 placas de drywall de 4x8 u 11 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
+  'page.drywall-room-12x12.heading': '¿Cuántas placas de drywall para un cuarto de 12x12?',
+  'page.drywall-room-12x12.intro':
+    'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',

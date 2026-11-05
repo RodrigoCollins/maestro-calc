@@ -38,6 +38,13 @@ export const enSite = {
     'The area of a rectangle is its length times its width. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
   'site.job.note.mulch':
     'A cubic yard is exactly 27 cubic feet, and a bag holds the volume printed on it. The counts add no extra and round up to whole bags: 27 ÷ 2 = 13.5, so 14 bags of 2 cu ft. Each size opens the mulch calculator with a 9 by 9 ft bed, 4 in deep: one cubic yard.',
+  'site.job.note.gravel':
+    'Every figure is compacted gravel, the way a driveway base is laid, with 5% extra, the gravel calculator’s defaults. The yard sells gravel by its loose volume, so the cubic yards to order are more than the space the gravel fills. Each depth opens the calculator with its measurements filled in.',
+  'site.job.note.paint':
+    'The figures paint the four walls, less one door of 20 sq ft and two windows of 15 sq ft each, in two coats at 350 sq ft per gallon, the paint calculator’s defaults, and round up to whole gallon cans. Each height opens the calculator with its measurements filled in.',
+  'site.job.note.drywall':
+    'The figures cover the four walls and the ceiling, less one door of 20 sq ft and two windows of 15 sq ft each, with 10% extra for cuts, the drywall calculator’s defaults, and round up to whole sheets. Each height opens the calculator with its measurements filled in.',
+  'site.job.sheetsOf': 'sheets of',
   'site.job.cubicFeet': 'cubic feet',
   'site.job.bagsFor': 'Bags for',
   'site.job.area': 'Area',
@@ -396,6 +403,54 @@ export const enSite = {
   'page.mulch-bags-per-yard.heading': 'How many bags of mulch in a cubic yard?',
   'page.mulch-bags-per-yard.intro':
     'Mulch comes in bags of 1.5, 2 or 3 cubic feet, and in bulk by the cubic yard. Divide 27 by the bag size and round up: a cubic yard takes 18 bags of 1.5 cu ft, 14 of 2 cu ft or 9 of 3 cu ft.',
+  'page.gravel-driveway-10x20.title': 'Gravel for a 10x20 Driveway: 4.74 Tons | Maestro Calc',
+  'page.gravel-driveway-10x20.description':
+    'A 10 by 20 ft driveway 4 in deep takes 4.74 tons of compacted gravel, 3.68 cubic yards to order with 5% extra, and the same driveway at 6 or 8 in.',
+  'page.gravel-driveway-10x20.heading': 'How much gravel for a 10x20 driveway?',
+  'page.gravel-driveway-10x20.intro':
+    'A 10 by 20 ft pad parks one car, or widens a driveway beside the garage. A driveway base is compacted in layers, so the gravel is worked out at its compacted weight.',
+  'page.gravel-driveway-12x50.title': 'Gravel for a 12x50 Driveway: 14.23 Tons | Maestro Calc',
+  'page.gravel-driveway-12x50.description':
+    'A 12 by 50 ft driveway 4 in deep takes 14.23 tons of compacted gravel, 11.03 cubic yards to order with 5% extra, and the same driveway at 6 or 8 in.',
+  'page.gravel-driveway-12x50.heading': 'How much gravel for a 12x50 driveway?',
+  'page.gravel-driveway-12x50.intro':
+    'A 12 by 50 ft driveway is one lane from the street to a garage set back from the road. A new driveway often takes a deeper base course first and a top layer after.',
+  'page.paint-room-10x10.title': 'Paint for a 10x10 Room: 1.54 Gallons | Maestro Calc',
+  'page.paint-room-10x10.description':
+    'A 10 by 10 ft room with 8 ft walls, one door and two windows takes 1.54 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
+  'page.paint-room-10x10.heading': 'How much paint for a 10x10 room?',
+  'page.paint-room-10x10.intro':
+    'A 10 by 10 ft room is a small bedroom or a home office. The table paints the walls only; the ceiling and the trim take paint of their own.',
+  'page.paint-room-10x12.title': 'Paint for a 10x12 Room: 1.73 Gallons | Maestro Calc',
+  'page.paint-room-10x12.description':
+    'A 10 by 12 ft room with 8 ft walls, one door and two windows takes 1.73 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
+  'page.paint-room-10x12.heading': 'How much paint for a 10x12 room?',
+  'page.paint-room-10x12.intro':
+    'A 10 by 12 ft room is a common size for a bedroom or a nursery. The table paints the walls only; the ceiling and the trim take paint of their own.',
+  'page.paint-room-12x12.title': 'Paint for a 12x12 Room: 1.91 Gallons | Maestro Calc',
+  'page.paint-room-12x12.description':
+    'A 12 by 12 ft room with 8 ft walls, one door and two windows takes 1.91 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',
+  'page.paint-room-12x12.heading': 'How much paint for a 12x12 room?',
+  'page.paint-room-12x12.intro':
+    'A 12 by 12 ft room is a typical main bedroom or a small living room. The table paints the walls only; the ceiling and the trim take paint of their own.',
+  'page.drywall-room-10x10.title': 'Drywall for a 10x10 Room: 13 Sheets of 4x8 | Maestro Calc',
+  'page.drywall-room-10x10.description':
+    'A 10 by 10 ft room with 8 ft walls takes 13 sheets of 4x8 drywall or 9 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
+  'page.drywall-room-10x10.heading': 'How many sheets of drywall for a 10x10 room?',
+  'page.drywall-room-10x10.intro':
+    'A 10 by 10 ft room is a small bedroom or a home office. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+  'page.drywall-room-10x12.title': 'Drywall for a 10x12 Room: 15 Sheets of 4x8 | Maestro Calc',
+  'page.drywall-room-10x12.description':
+    'A 10 by 12 ft room with 8 ft walls takes 15 sheets of 4x8 drywall or 10 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
+  'page.drywall-room-10x12.heading': 'How many sheets of drywall for a 10x12 room?',
+  'page.drywall-room-10x12.intro':
+    'A 10 by 12 ft room is a common size for a bedroom or a nursery. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+  'page.drywall-room-12x12.title': 'Drywall for a 12x12 Room: 17 Sheets of 4x8 | Maestro Calc',
+  'page.drywall-room-12x12.description':
+    'A 12 by 12 ft room with 8 ft walls takes 17 sheets of 4x8 drywall or 11 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
+  'page.drywall-room-12x12.heading': 'How many sheets of drywall for a 12x12 room?',
+  'page.drywall-room-12x12.intro':
+    'A 12 by 12 ft room is a typical main bedroom or a small living room. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',

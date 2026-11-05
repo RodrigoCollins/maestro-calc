@@ -4,9 +4,8 @@ import type { CalculatorPageId } from './templates.ts';
 /*
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
  * out at build time: concrete for a slab (by its sides or by its area) or a tube, roof pitch for a
- * pitch in 12, square footage for a common room or area, and the bags of mulch in a cubic yard. A
- * job id is also
- * its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
+ * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
+ * gravel for a driveway, and the paint and the drywall for a room. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -18,7 +17,7 @@ export interface Job {
   /** The calculator that works the figures out; the page links to it, prefilled with each case. */
   readonly calculator: Extract<
     CalculatorPageId,
-    'concrete' | 'roof-pitch' | 'rectangle-area' | 'mulch'
+    'concrete' | 'roof-pitch' | 'rectangle-area' | 'mulch' | 'gravel' | 'paint' | 'drywall'
   >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
@@ -57,6 +56,32 @@ const yardOfMulch = (bag: string): JobCase => ({
   waste: '0',
   bag,
 });
+
+/**
+ * A driveway of `length` by `width` feet, 4, 6 and 8 in deep: compacted with 5% extra, the gravel
+ * calculator's defaults, so the case names only the sizes.
+ */
+const driveway = (length: number, width: number) => {
+  const deep = (depth: number): JobCase => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+    depth: `${String(depth)}in`,
+  });
+  return [deep(4), deep(6), deep(8)] as const;
+};
+
+/**
+ * A room of `length` by `width` feet with walls 8, 9 and 10 ft high: one door and two windows, as
+ * the paint and the drywall calculators default to, so the case names only the sizes.
+ */
+const room = (length: number, width: number) => {
+  const high = (height: number): JobCase => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+    height: `${String(height)}ft`,
+  });
+  return [high(8), high(9), high(10)] as const;
+};
 
 /** The rafter runs (half the span) of a roof pitch table, in feet. */
 const RAFTER_RUNS = [8, 10, 12, 14, 16] as const;
@@ -218,6 +243,22 @@ export const JOBS = {
     updated: '2026-11-04',
     cases: [yardOfMulch('1-5'), yardOfMulch('2'), yardOfMulch('3')],
   },
+  'gravel-driveway-10x20': {
+    calculator: 'gravel',
+    updated: '2026-11-04',
+    cases: driveway(10, 20),
+  },
+  'gravel-driveway-12x50': {
+    calculator: 'gravel',
+    updated: '2026-11-04',
+    cases: driveway(12, 50),
+  },
+  'paint-room-10x10': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 10) },
+  'paint-room-10x12': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 12) },
+  'paint-room-12x12': { calculator: 'paint', updated: '2026-11-04', cases: room(12, 12) },
+  'drywall-room-10x10': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 10) },
+  'drywall-room-10x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 12) },
+  'drywall-room-12x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(12, 12) },
 } as const satisfies Record<string, Job>;
 
 export type JobId = keyof typeof JOBS;
