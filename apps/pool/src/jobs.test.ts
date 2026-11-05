@@ -13,11 +13,12 @@ import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PUMP, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT, STABILIZER } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
 import { JOB_PAGES, jobLinksOf, NEIGHBORS, neighborsOf, type JobPage } from './jobs.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -28,7 +29,7 @@ const pageFiles = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
 
 /**
  * The figures of one engine run, as a table row writes them: pounds and bags, fluid ounces and
- * liters of liquid chlorine, pounds and ounces of baking soda or stabilizer, BTU per hour and
+ * liters of liquid chlorine or muriatic acid, pounds and ounces of baking soda or stabilizer, BTU per hour and
  * BTU of heat, the fill time and its minutes, or gallons and liters of water.
  */
 const engineCells = (path: string, raw: Readonly<Record<string, string>>): string[] => {
@@ -45,7 +46,9 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
               ? poolHeater.run(raw)
               : path === FILL_TIME.path
                 ? poolFillTime.run(raw)
-                : poolVolume.run(raw);
+                : path === PH.path
+                  ? poolPh.run(raw)
+                  : poolVolume.run(raw);
   if (!ran.ok) throw new Error(`${path} did not run`);
   const value = (key: string): unknown => ran.value.outputs.find((out) => out.key === key)?.value;
   if (path === ALKALINITY.path || path === STABILIZER.path)
@@ -56,7 +59,7 @@ const engineCells = (path: string, raw: Readonly<Record<string, string>>): strin
     return [outputText('time', value('time')), outputText('minutes', value('minutes'))];
   if (path === SALT.path)
     return [outputText('pounds', value('pounds')), String(ran.value.shopping[0]?.qty)];
-  if (path === CHLORINE.path) {
+  if (path === CHLORINE.path || path === PH.path) {
     const liquid = value('liquid');
     if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
     return [outputText('liquid', liquid), volumeText(liquid, liter, 2)];
@@ -114,6 +117,7 @@ describe('the long-tail job pages', () => {
         STABILIZER.path,
         HEATER.path,
         FILL_TIME.path,
+        PH.path,
         VOLUME_TEXTS.path,
       ]).toContain(calculator.path);
       expect(pageFiles).toContain(calculator.path);
@@ -130,6 +134,7 @@ describe('the long-tail job pages', () => {
       else if (calculator.path === HEATER.path) expectOpensOn(poolHeater, query, main?.raw ?? {});
       else if (calculator.path === FILL_TIME.path)
         expectOpensOn(poolFillTime, query, main?.raw ?? {});
+      else if (calculator.path === PH.path) expectOpensOn(poolPh, query, main?.raw ?? {});
       else expectOpensOn(poolVolume, query, main?.raw ?? {});
     }
   });
@@ -265,6 +270,71 @@ describe('the long-tail job pages', () => {
     ]);
   });
 
+  // worked by hand (Taylor's chart, PH.method): 9.16 fl oz a drop per 10,000 gal, so 20,000 gal is
+  // 18.32 fl oz a drop: 18.32, 36.64 and 54.96 fl oz for 1, 2 and 3 drops; × 29.5735 mL = 0.54,
+  // 1.08 and 1.63 L
+  it('works out muriatic acid for 20,000 gallons, 1 to 3 drops of acid demand, as by hand', () => {
+    const page = byPath('/how-much-muriatic-acid-for-a-20000-gallon-pool');
+    expect(page.figure).toMatchObject({ value: '36.6', unit: 'FL OZ' });
+    expect(page.rows.map(({ cells }) => cells)).toEqual([
+      ['1 drop', '18.3', '0.54'],
+      ['2 drops', '36.6', '1.08'],
+      ['3 drops', '55.0', '1.63'],
+    ]);
+    // 10,000 gal at 2 drops: 18.32 fl oz; 30,000 gal: 54.96
+    expect(byPath('/how-much-muriatic-acid-for-a-10000-gallon-pool').figure.value).toBe('18.3');
+    expect(byPath('/how-much-muriatic-acid-for-a-30000-gallon-pool').figure.value).toBe('55.0');
+  });
+
+  // Taylor's chart lists 1, 2 and 3 drops: a pH page never doses past it
+  it('keeps every pH page within the 3 drops of the chart, for 10,000 to 30,000 gallons', () => {
+    const ph = JOB_PAGES.filter(({ calculator }) => calculator.path === PH.path);
+    expect(ph.map(({ gallons }) => gallons)).toEqual([10_000, 15_000, 20_000, 25_000, 30_000]);
+    for (const { rows } of ph)
+      for (const { raw } of rows) {
+        expect(raw['product']).toBe('muriatic-31-45');
+        expect(Number(raw['drops'])).toBeLessThanOrEqual(3);
+        const ran = poolPh.run(raw);
+        expect(ran.ok && ran.value.warnings).toEqual([]);
+      }
+  });
+
+  // worked by hand: 5,000 × 3,200 × 8.34 ÷ 1,000,000 = 133.44 lb, 4 bags; 35,000 gal is 934.08
+  // lb, 23.35 bags so 24; and 10.24 fl oz of 12.5% liquid per ppm per 10,000 gal: 5,000 gal from
+  // 1 to 3 ppm is 10.24 fl oz, 30,000 gal 61.44
+  it('works out salt for 5,000 and 35,000 gallons and chlorine for 5,000 and 30,000 as by hand', () => {
+    expect(byPath('/how-much-salt-for-a-5000-gallon-pool').rows[0]?.cells).toEqual([
+      '0 ppm',
+      '133.4',
+      '4',
+    ]);
+    expect(byPath('/how-much-salt-for-a-35000-gallon-pool').rows[0]?.cells).toEqual([
+      '0 ppm',
+      '934.1',
+      '24',
+    ]);
+    expect(byPath('/how-much-chlorine-for-a-5000-gallon-pool').figure.value).toBe('10.2');
+    expect(byPath('/how-much-chlorine-for-a-30000-gallon-pool').figure.value).toBe('61.4');
+  });
+
+  // worked by hand: 200 ft² × 4 ft × 1,728 ÷ 231 = 5,984; 576 ft² × 5.75 ft = 3,312 ft³ = 24,775;
+  // 640 ft² × 5.75 ft = 3,680 ft³ = 27,528
+  it('works out the 10 x 20, 16 x 36 and 16 x 40 pools as by hand', () => {
+    expect(byPath('/10x20-pool-gallons').figure.value).toBe('5,984');
+    expect(byPath('/16x36-pool-gallons').figure.value).toBe('24,775');
+    expect(byPath('/16x40-pool-gallons').figure.value).toBe('27,528');
+  });
+
+  // worked by hand: π × 33² ÷ 4 × 4 ft = 3,421.19 ft³, × 1,728 ÷ 231 = 25,592; the ovals at 4 ft:
+  // π × 24 × 12 ÷ 4 = 226.19 ft² → 6,768, π × 32 × 16 ÷ 4 = 402.12 ft² → 12,032,
+  // π × 33 × 18 ÷ 4 = 466.53 ft² → 13,959
+  it('works out the 33 ft round and the 12 x 24, 16 x 32 and 18 x 33 ovals at 4 ft as by hand', () => {
+    expect(byPath('/33-ft-round-pool-gallons').figure.value).toBe('25,592');
+    expect(byPath('/12x24-oval-pool-gallons').figure.value).toBe('6,768');
+    expect(byPath('/16x32-oval-pool-gallons').figure.value).toBe('12,032');
+    expect(byPath('/18x33-oval-pool-gallons').figure.value).toBe('13,959');
+  });
+
   it('links each page to its nearest neighbors of the same calculator, by pool size', () => {
     for (const page of JOB_PAGES) {
       const links = neighborsOf(page);
@@ -293,18 +363,31 @@ describe('the long-tail job pages', () => {
       '/how-long-to-fill-a-25000-gallon-pool',
       '/how-long-to-fill-a-30000-gallon-pool',
     ]);
-    // the 30 ft round (21,151 gal) sits between the 15 x 30 (19,356) and the 16 x 32 (22,023)
+    // the 30 ft round (21,151 gal) sits between the 15 x 30 (19,356) and the 16 x 32 (22,023),
+    // then the 16 x 36 (24,775)
     expect(neighborsOf(byPath('/30-ft-round-pool-gallons')).map(({ href }) => href)).toEqual([
       '/27-ft-round-pool-gallons',
       '/15x30-pool-gallons',
       '/16x32-pool-gallons',
-      '/18x36-pool-gallons',
+      '/16x36-pool-gallons',
     ]);
+    // 3,384 gal, then the 15 ft round (5,288), the 10 x 20 (5,984), the 12 x 24 oval (6,768) and
+    // the 18 ft round (7,614)
     expect(neighborsOf(byPath('/12-ft-round-pool-gallons')).map(({ href }) => href)).toEqual([
       '/15-ft-round-pool-gallons',
+      '/10x20-pool-gallons',
+      '/12x24-oval-pool-gallons',
       '/18-ft-round-pool-gallons',
-      '/12x24-pool-gallons',
-      '/21-ft-round-pool-gallons',
+    ]);
+    expect(
+      neighborsOf(byPath('/how-much-muriatic-acid-for-a-20000-gallon-pool')).map(
+        ({ href }) => href,
+      ),
+    ).toEqual([
+      '/how-much-muriatic-acid-for-a-10000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-15000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-25000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-30000-gallon-pool',
     ]);
   });
 
@@ -317,6 +400,7 @@ describe('the long-tail job pages', () => {
       STABILIZER.path,
       HEATER.path,
       FILL_TIME.path,
+      PH.path,
     ]) {
       const linked = jobLinksOf(path).map(({ href }) => href);
       const own = JOB_PAGES.filter(({ calculator }) => calculator.path === path);
@@ -332,10 +416,19 @@ describe('the long-tail job pages', () => {
       label: 'How much salt for a 20,000 gallon pool',
     });
     expect(jobLinksOf(CHLORINE.path).map(({ href }) => href)).toEqual([
+      '/how-much-chlorine-for-a-5000-gallon-pool',
       '/how-much-chlorine-for-a-10000-gallon-pool',
       '/how-much-chlorine-for-a-15000-gallon-pool',
       '/how-much-chlorine-for-a-20000-gallon-pool',
       '/how-much-chlorine-for-a-25000-gallon-pool',
+      '/how-much-chlorine-for-a-30000-gallon-pool',
+    ]);
+    expect(jobLinksOf(PH.path).map(({ href }) => href)).toEqual([
+      '/how-much-muriatic-acid-for-a-10000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-15000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-20000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-25000-gallon-pool',
+      '/how-much-muriatic-acid-for-a-30000-gallon-pool',
     ]);
     expect(jobLinksOf(HEATER.path).map(({ href }) => href)).toEqual([
       '/what-size-pool-heater-for-a-10000-gallon-pool',

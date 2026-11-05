@@ -43,12 +43,13 @@ for (const path of PAGES) {
   });
 }
 
-// The volume, dose, heater and fill time calculators link the job pages they work out
+// The volume, dose, pH, heater and fill time calculators link the job pages they work out
 // ("Common pool sizes").
 for (const calculator of [
   '/pool-volume-calculator',
   '/pool-salt-calculator',
   '/pool-chlorine-calculator',
+  '/pool-ph-calculator',
   '/pool-alkalinity-calculator',
   '/pool-stabilizer-calculator',
   '/pool-heater-size-calculator',

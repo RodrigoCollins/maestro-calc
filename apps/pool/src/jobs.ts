@@ -13,10 +13,11 @@ import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
 import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, SALT, STABILIZER } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -47,7 +48,7 @@ export interface JobPage {
 }
 
 /** The salt jobs: the pool sizes people search for, from a fresh fill and from common readings. */
-const SALT_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const SALT_GALLONS = [5000, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000] as const;
 const READINGS = [0, 1000, 2000, 2400, 2800] as const;
 const TARGET = 3200;
 
@@ -56,7 +57,7 @@ const TARGET = 3200;
  * raising free chlorine from a low 1 ppm by 1, 2 or 3 ppm; the 1 to 3 ppm row, the calculator's
  * own defaults, is the large figure.
  */
-const CHLORINE_GALLONS = [10_000, 15_000, 20_000, 25_000] as const;
+const CHLORINE_GALLONS = [5000, 10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const CHLORINE_FROM = 1;
 const CHLORINE_TARGETS = [2, 3, 4] as const;
 const CHLORINE_MAIN = 1;
@@ -93,6 +94,16 @@ const HEATER_HOURS = 24;
 const FILL_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const FILL_FLOWS = [5, 10, 20] as const;
 const FILL_MAIN = 1;
+
+/**
+ * The pH jobs: muriatic acid (31.45%) to lower pH in 10,000 to 30,000 gallons, for the 1, 2 and 3
+ * drops of acid demand reagent Taylor's chart lists (never past it); 2 drops, the calculator's own
+ * default, is the large figure.
+ */
+const PH_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
+const PH_DROPS = [1, 2, 3] as const;
+const PH_MAIN = 1;
+const MURIATIC = 'muriatic-31-45';
 
 /** The volume jobs: the common pool sizes people search for, at the depths they come in; `main` is the large figure. */
 const VOLUME_JOBS = [
@@ -278,6 +289,97 @@ const VOLUME_JOBS = [
     ],
     main: 1,
   },
+  {
+    slug: '10x20-pool-gallons',
+    name: '10 x 20 pool',
+    title: '10x20 Pool',
+    pool: 'A 10 ft by 20 ft rectangle',
+    size: { length: '20 ft', width: '10 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '5 ft'],
+      ['3 ft 6 in', '6 ft'],
+    ],
+    main: 0,
+  },
+  {
+    slug: '16x36-pool-gallons',
+    name: '16 x 36 pool',
+    title: '16x36 Pool',
+    pool: 'A 16 ft by 36 ft rectangle',
+    size: { length: '36 ft', width: '16 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
+  },
+  {
+    slug: '16x40-pool-gallons',
+    name: '16 x 40 pool',
+    title: '16x40 Pool',
+    pool: 'A 16 ft by 40 ft rectangle',
+    size: { length: '40 ft', width: '16 ft' },
+    depths: [
+      ['4 ft', '4 ft'],
+      ['3 ft', '6 ft'],
+      ['3 ft 6 in', '8 ft'],
+    ],
+    main: 2,
+  },
+  {
+    slug: '33-ft-round-pool-gallons',
+    name: '33 ft round pool',
+    title: '33 Ft Round Pool',
+    pool: 'A round pool 33 ft across',
+    size: { shape: 'round', length: '33 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '12x24-oval-pool-gallons',
+    name: '12 x 24 oval pool',
+    title: '12x24 Oval Pool',
+    pool: 'A 12 ft by 24 ft oval',
+    size: { shape: 'oval', length: '24 ft', width: '12 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '16x32-oval-pool-gallons',
+    name: '16 x 32 oval pool',
+    title: '16x32 Oval Pool',
+    pool: 'A 16 ft by 32 ft oval',
+    size: { shape: 'oval', length: '32 ft', width: '16 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
+  {
+    slug: '18x33-oval-pool-gallons',
+    name: '18 x 33 oval pool',
+    title: '18x33 Oval Pool',
+    pool: 'A 18 ft by 33 ft oval',
+    size: { shape: 'oval', length: '33 ft', width: '18 ft' },
+    depths: [
+      ['3 ft 6 in', '3 ft 6 in'],
+      ['4 ft', '4 ft'],
+      ['4 ft 6 in', '4 ft 6 in'],
+    ],
+    main: 1,
+  },
 ] as const;
 
 /** The outputs of one engine run, by key; a run that fails is a build error. */
@@ -289,6 +391,7 @@ const outputsOf = (
     | typeof poolStabilizer
     | typeof poolHeater
     | typeof poolFillTime
+    | typeof poolPh
     | typeof poolVolume,
   raw: Raw,
 ): { readonly values: ReadonlyMap<string, unknown>; readonly bags: bigint } => {
@@ -556,6 +659,49 @@ const fillPage = (gallons: number): JobPage => {
   };
 };
 
+const phPage = (gallons: number): JobPage => {
+  const size = amountText(Rational.of(gallons));
+  const rows = PH_DROPS.map((drops) => {
+    const raw = { gallons: String(gallons), product: MURIATIC, drops: String(drops) };
+    const { values } = outputsOf(poolPh, raw);
+    const liquid = values.get('liquid');
+    if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
+    return {
+      raw,
+      cells: [
+        `${String(drops)} ${drops === 1 ? 'drop' : 'drops'}`,
+        outputText('liquid', liquid),
+        volumeText(liquid, liter, 2),
+      ],
+    };
+  });
+  const main = rows[PH_MAIN];
+  if (main === undefined) throw new Error('a pH job needs its 2 drops row');
+  const [drops = '', ounces = '', liters = ''] = main.cells;
+  return {
+    path: `/how-much-muriatic-acid-for-a-${String(gallons)}-gallon-pool`,
+    title: `How Much Muriatic Acid for a ${size} Gallon Pool? | Pool Figures`,
+    description: `The fluid ounces of 31.45% muriatic acid that lower pH in a ${size} gallon pool, for 1, 2 or 3 drops of the acid demand test of a Taylor kit.`,
+    h1: `How much muriatic acid for a ${size} gallon pool`,
+    lead: `When the acid demand test of a Taylor kit takes ${drops}, a ${size} gallon pool needs ${ounces} fl oz of 31.45% muriatic acid to lower its pH. The table stops at 3 drops, where Taylor’s chart does; the calculator also raises pH with soda ash.`,
+    figure: {
+      value: ounces,
+      unit: 'FL OZ',
+      caption: `${liters} L of 31.45% muriatic acid, for ${drops} of acid demand reagent.`,
+    },
+    head: ['Acid demand test', 'Muriatic acid (fl oz)', 'Liters'],
+    rows,
+    calculator: {
+      path: PH.path,
+      href: linkTo(poolPh, PH.path, main.raw),
+      label: 'Work it out for your test',
+    },
+    method: `${PH.method} ${PH.note}`,
+    card: { title: `Muriatic acid for ${size} gallons`, summary: `${ounces} fl oz for ${drops}.` },
+    gallons,
+  };
+};
+
 const volumePage = ({
   slug,
   name,
@@ -608,6 +754,7 @@ export const JOB_PAGES: readonly JobPage[] = [
   ...STABILIZER_GALLONS.map(stabilizerPage),
   ...HEATER_GALLONS.map(heaterPage),
   ...FILL_GALLONS.map(fillPage),
+  ...PH_GALLONS.map(phPage),
 ];
 
 /** How many job pages of its calculator a job page links: its nearest sizes, so pages stay distinct. */
