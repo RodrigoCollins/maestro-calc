@@ -8,7 +8,7 @@ export const mulchStateArb = fc.record({
   width: inches(12000),
   depth: inches(24),
   waste: fc.integer({ min: 0, max: 500 }).map((tenths) => Rational.of(tenths, 10)),
-  bag: fc.constantFrom('2', '3'),
+  bag: fc.constantFrom('1-5', '2', '3'),
   bagPrice: cents,
   yardPrice: cents,
 });

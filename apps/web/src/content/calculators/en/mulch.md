@@ -22,7 +22,7 @@ The calculator tells you how much mulch a bed needs, in cubic yards for a bulk d
 
 1. Measure the length and the width of the bed, and decide how deep the mulch will be. Type them the way you read a tape: 20 ft, 12 ft 6 in or 5 ft 3 1/2 in. A plain number is read in feet for the length and the width, and in inches for the depth.
 2. Keep the 5 percent extra, or change it. Mulch settles after it is spread, and some is always lost to the wheelbarrow and the edges.
-3. Choose the bag size you will buy: 2 or 3 cubic feet, the sizes printed on most retail bags.
+3. Choose the bag size you will buy: 1.5, 2 or 3 cubic feet, the sizes printed on most retail bags.
 4. To see the cost, type the price per bag, the price per cubic yard delivered in bulk, or both.
 
 The result leads with the cubic yards. It also shows the same volume in cubic feet and cubic meters, the volume before the extra, and the number of bags of the size you chose.
@@ -74,7 +74,7 @@ Multiply length × width × depth, with the depth in feet, then add the extra. A
 
 ### How many bags of mulch are in a yard?
 
-A cubic yard is exactly 27 cubic feet, so it takes 13.5 bags of 2 cu ft or 9 bags of 3 cu ft. Round up to whole bags when you buy.
+A cubic yard is exactly 27 cubic feet, so it takes 18 bags of 1.5 cu ft, 13.5 bags of 2 cu ft or 9 bags of 3 cu ft. Round up to whole bags when you buy.
 
 ### How deep should mulch be?
 

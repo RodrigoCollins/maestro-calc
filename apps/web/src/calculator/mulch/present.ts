@@ -7,9 +7,15 @@ import { dimensionText, groupedInteger } from '../present.ts';
 /** A length in inches, the unit of the plan's ratio. */
 export const inches = (length: Quantity<'length'>): number => valueIn(length, inch).toNumber();
 
+/** The bag sizes as the label writes them: the option `1-5` is the 1.5 cu ft bag. */
+const SIZES: Readonly<Record<string, string>> = { '1-5': '1.5', '2': '2', '3': '3' };
+
+/** The size text of a bag option. */
+export const sizeOf = (bag: string): string => required(SIZES[bag], `bag ${bag}`);
+
 /** The bag line's fills: the size of the pressed bag (it follows the choice even while invalid). */
 export const bagFills = (moment: Moment<typeof mulch>): Readonly<Record<string, string>> => ({
-  size: moment.choices.bag,
+  size: sizeOf(moment.choices.bag),
 });
 
 /**
@@ -28,6 +34,6 @@ export const answerValues = (
     depth: dimensionText(valid.depth, system),
     volume: primary,
     bags: groupedInteger(required(line, 'bag line').qty),
-    size: valid.bag,
+    size: sizeOf(valid.bag),
   };
 };

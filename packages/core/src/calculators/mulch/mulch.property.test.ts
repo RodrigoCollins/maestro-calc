@@ -17,6 +17,9 @@ const totalOf = ({ length, width, depth, waste }: State): Rational =>
     .mul(valueIn(depth, ft))
     .mul(Rational.ONE.add(waste.div(Rational.of(100))));
 
+/** The volume of each bag size, in cubic feet. */
+const BAG = { '1-5': Rational.of(3, 2), '2': Rational.of(2), '3': Rational.of(3) } as const;
+
 describe('mulch properties (calc-mulch › Volume, bags and costs)', () => {
   it('gives the total volume and the fewest whole bags that hold it', () => {
     fc.assert(
@@ -26,7 +29,7 @@ describe('mulch properties (calc-mulch › Volume, bags and costs)', () => {
         if (!isQuantityOf(total, 'volume')) throw new Error('shape');
         expect(valueIn(total, ft3)).toEqual(totalOf(state));
         const qty = shopping[0]?.qty ?? -1n;
-        const bag = Rational.of(Number(state.bag));
+        const bag = BAG[state.bag];
         // the bags hold the total, and one bag fewer would not
         expect(Rational.of(qty).mul(bag).compare(totalOf(state))).toBeGreaterThanOrEqual(0);
         if (qty > 0n)

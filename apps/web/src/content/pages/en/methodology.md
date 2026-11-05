@@ -103,7 +103,7 @@ The formulas:
 - Cubic yards = total volume ÷ 27, with the volume in cubic feet.
 - Bags = total volume ÷ bag size, rounded up to a whole bag.
 
-No material constant is involved: a bag holds the volume printed on it, 2 or 3 cubic feet, and one cubic yard is exactly 27 cubic feet. The metric figures use one foot as exactly 0.3048 meters (NIST SP 811, Appendix B). The bag count is the only figure rounded in the calculation, always up. The volumes are rounded to two decimals only when they are shown.
+No material constant is involved: a bag holds the volume printed on it, 1.5, 2 or 3 cubic feet, and one cubic yard is exactly 27 cubic feet. The metric figures use one foot as exactly 0.3048 meters (NIST SP 811, Appendix B). The bag count is the only figure rounded in the calculation, always up. The volumes are rounded to two decimals only when they are shown.
 
 Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
 

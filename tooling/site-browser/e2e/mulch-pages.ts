@@ -16,6 +16,8 @@ type Figures = readonly [string, string, string];
  */
 const DEFAULTS: Figures = ['0.78', '0.59', '11'];
 const BAG_3: Figures = ['0.78', '0.59', '7'];
+/** 21 ft³ ÷ 1.5 = 14 bags of 1.5 cu ft, exactly. */
+const BAG_1_5: Figures = ['0.78', '0.59', '14'];
 const NO_EXTRA: Figures = ['0.74', '0.57', '10'];
 const SQUARE: Figures = ['1.30', '0.99', '18'];
 const PATH: Figures = ['0.58', '0.45', '8'];
@@ -39,7 +41,7 @@ export const MULCH: E2eSpec = {
   figures: ['volumeYd3', 'volumeM3', 'shopping:0'],
   defaults: DEFAULTS,
   primary: { en: '0.78 cubic yards', es: '0.78 yardas cúbicas' },
-  controls: 11,
+  controls: 12,
   typed: {
     key: 'length',
     text: '30',
@@ -51,6 +53,7 @@ export const MULCH: E2eSpec = {
   states: [
     { name: 'default 20 ft by 4 ft by 3 in, 2 cu ft bags', query: '?v=1', figures: DEFAULTS },
     { name: '3 cu ft bags', query: '?v=1&bg=3', figures: BAG_3 },
+    { name: '1.5 cu ft bags', query: '?v=1&bg=1-5', figures: BAG_1_5 },
     { name: 'no extra', query: '?v=1&ws=0', figures: NO_EXTRA },
     { name: '10 ft by 10 ft by 4 in', query: '?v=1&l=120&w=120&d=4', figures: SQUARE },
     { name: '30 ft by 3 ft by 2 in', query: '?v=1&l=360&w=36&d=2', figures: PATH },
@@ -75,6 +78,7 @@ export const MULCH: E2eSpec = {
     '#calc-width',
     '#calc-depth',
     '#calc-waste',
+    '[data-choice="bag"] [value="1-5"]',
     '[data-choice="bag"] [value="2"]',
     '[data-choice="bag"] [value="3"]',
     '#calc-bagPrice',
@@ -113,15 +117,17 @@ export const MULCH: E2eSpec = {
     suffix: '&bg=3',
     price: { input: 'bagPrice', text: '5', suffix: '&bp=5', output: 'bagCost', value: '$55.00' },
   },
-  // The hand-verified cases in both unit systems and both bag sizes: the sentences whose length the
+  // The hand-verified cases in both unit systems and every bag size: the sentences whose length the
   // answer reserve is measured on (calculator-page › [CP60]).
   layoutQueries: [
     '?v=1',
     '?v=1&bg=3',
+    '?v=1&bg=1-5',
     '?v=1&l=120&w=120&d=4',
     '?v=1&l=360&w=36&d=2',
     '?v=1&u=m',
     '?v=1&u=m&bg=3',
+    '?v=1&u=m&bg=1-5',
     '?v=1&u=m&l=120&w=120&d=4',
     '?v=1&u=m&l=360&w=36&d=2',
   ],

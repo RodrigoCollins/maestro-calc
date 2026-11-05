@@ -6,7 +6,7 @@ New capability. The mulch calculator of `@maestro-calc/core` (`mulch`) and its c
 
 ### Requirement: Inputs
 
-In order: `length` (default 20 ft, ft or m, 0 to 1,000 ft, URL `l`), `width` (default 4 ft, same, URL `w`), `depth` (default 3 in, in or cm, 0 to 2 ft, URL `d`), `waste` (percent, default 5, 0 to 50, URL `ws`), `bag` (select `2` | `3` cubic feet, default `2`, URL `bg`), `bagPrice` (money, URL `bp`), `yardPrice` (money per cubic yard, URL `yp`).
+In order: `length` (default 20 ft, ft or m, 0 to 1,000 ft, URL `l`), `width` (default 4 ft, same, URL `w`), `depth` (default 3 in, in or cm, 0 to 2 ft, URL `d`), `waste` (percent, default 5, 0 to 50, URL `ws`), `bag` (select `1-5` | `2` | `3` cubic feet, `1-5` being 1.5, default `2`, URL `bg`), `bagPrice` (money, URL `bp`), `yardPrice` (money per cubic yard, URL `yp`).
 
 #### Scenario: [MU1] Defaults
 - GIVEN no input
@@ -24,6 +24,10 @@ Net volume = `length × width × depth`; total = net × (1 + waste / 100); bags 
 #### Scenario: [MU3] 3 cu ft bags and costs
 - GIVEN the defaults, `bag = 3`, `bagPrice = $5`, `yardPrice = $36`
 - THEN 7 bags (21 ÷ 3), a bag cost of $35.00 and a bulk cost of $28.00 (7/9 × 36) (a unit test)
+
+#### Scenario: [MU5] 1.5 cu ft bags and a cubic yard
+- GIVEN the defaults with `bag = 1-5`, then a bed of 9 ft by 9 ft by 4 in with no extra (27 ft³, exactly 1 yd³)
+- THEN 14 bags of 1.5 cu ft (21 ÷ 1.5), and for the cubic yard 18 bags of 1.5 cu ft, 14 of 2 cu ft (13.5 rounded up) and 9 of 3 cu ft (a unit test)
 
 ### Requirement: URL and catalog
 

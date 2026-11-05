@@ -60,6 +60,20 @@ describe('mulch volume, bags and costs (calc-mulch › Volume, bags and costs)',
     expect(output(raw, 'bulkCost')).toEqual(usd(28));
   });
 
+  // spec: calc-mulch › [MU5] 1.5 cu ft bags: 21 ÷ 1.5 = 14 exactly; a cubic yard is 27 ÷ 1.5 = 18
+  it('counts 14 bags of 1.5 cu ft for the default bed, and 18 for a cubic yard', () => {
+    expect(ran({ bag: '1-5' }).shopping).toEqual([
+      { materialId: 'mulch', purchaseUnit: 'bag-1-5', qty: 14n },
+    ]);
+    const yard = { length: '9ft', width: '9ft', depth: '4in', waste: '0' };
+    expect(volume(yard, 'volumeYd3', yd3)).toEqual(Rational.ONE);
+    expect(['1-5', '2', '3'].map((bag) => ran({ ...yard, bag }).shopping[0]?.qty)).toEqual([
+      18n,
+      14n,
+      9n,
+    ]);
+  });
+
   it('needs no bag for an empty bed and adds no extra at 0 %', () => {
     expect(ran({ depth: '0' }).shopping[0]?.qty).toBe(0n);
     expect(volume({ waste: '0' }, 'volumeFt3')).toEqual(Rational.of(20));

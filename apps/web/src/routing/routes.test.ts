@@ -151,6 +151,18 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/24x24-slab',
       es: '/es/concreto/losa-de-24x24',
     });
+    expect(ROUTES['concrete-slab-500-sq-ft']).toEqual({
+      en: '/concrete/500-sq-ft-slab',
+      es: '/es/concreto/losa-de-500-pies-cuadrados',
+    });
+    expect(ROUTES['concrete-slab-650-sq-ft']).toEqual({
+      en: '/concrete/650-sq-ft-slab',
+      es: '/es/concreto/losa-de-650-pies-cuadrados',
+    });
+    expect(ROUTES['concrete-slab-1000-sq-ft']).toEqual({
+      en: '/concrete/1000-sq-ft-slab',
+      es: '/es/concreto/losa-de-1000-pies-cuadrados',
+    });
     expect(ROUTES['concrete-pad-4x4']).toEqual({
       en: '/concrete/4x4-pad',
       es: '/es/concreto/base-de-4x4',
@@ -246,6 +258,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ROUTES['square-feet-20x20']).toEqual({
       en: '/measurement/20x20-square-feet',
       es: '/es/medidas/20x20-pies-cuadrados',
+    });
+    expect(ROUTES['mulch-bags-per-yard']).toEqual({
+      en: '/landscaping/bags-of-mulch-per-yard',
+      es: '/es/jardineria/bolsas-de-mulch-por-yarda',
     });
     expect(ROUTES['hub-concrete']).toEqual({ en: '/concrete', es: '/es/concreto' });
     expect(ROUTES['hub-roofing']).toEqual({ en: '/roofing', es: '/es/techos' });

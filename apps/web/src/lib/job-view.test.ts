@@ -1,4 +1,5 @@
 import { decode } from '@maestro-calc/core';
+import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { describe, expect, it } from 'vitest';
@@ -21,6 +22,11 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
   if (calculator === 'roof-pitch') {
     const state = roofPitch.validate(raw);
     expect(state.ok && decode(roofPitch, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'mulch') {
+    const state = mulch.validate(raw);
+    expect(state.ok && decode(mulch, query).state).toEqual(state.ok && state.value);
     return;
   }
   const state = rectangleArea.validate(raw);
@@ -52,6 +58,90 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       label: '20 ft × 20 ft × 4 in',
       cells: ['5.43', '245', '326', '489'],
     });
+  });
+
+  // hand-verified: 650 ft² as 26 × 25 ft, × 1/3 ft = 216.67 ft³ (8.02 yd³), + 10% = 238.33 ft³ =
+  // 8.83 yd³; bags of 0.60, 0.45 and 0.30 ft³: 397.2, 529.6 and 794.4, rounded up. At 5 in,
+  // 270.83 ft³ + 10% = 297.92 ft³ = 11.03 yd³; at 6 in, 325 ft³ + 10% = 357.5 ft³ = 13.24 yd³
+  it('works the 650 sq ft slab out as a 26 × 25 ft slab', () => {
+    const view = jobView('concrete-slab-650-sq-ft', 'en');
+    expect(view.rows[0]).toEqual({
+      label: '26 ft × 25 ft × 4 in',
+      href: '/concrete-calculator?v=1&l=312&w=300',
+      cells: ['8.83', '398', '530', '795'],
+    });
+    expect(view.rows.map(({ cells }) => cells[0])).toEqual(['8.83', '11.03', '13.24']);
+    expect(view.lead).toBe('Length × Width × Thickness: 26 ft × 25 ft × 4 in');
+    expect(view.answer).toBe('8.83 cubic yards');
+    expect(view.intro).toContain('650');
+    expect(view.intro).toContain('26 by 25 ft');
+  });
+
+  // hand-verified: 500 ft² (25 × 20 ft) × 1/3 ft = 166.67 ft³ (6.17 yd³), + 10% = 183.33 ft³ =
+  // 6.79 yd³, bags 305.6, 407.4, 611.1; 1000 ft² (40 × 25 ft) = 333.33 ft³ (12.35 yd³), + 10% =
+  // 366.67 ft³ = 13.58 yd³, bags 611.1, 814.8, 1222.2
+  it('works the 500 and the 1000 sq ft slabs out in both languages', () => {
+    for (const locale of LOCALES) {
+      expect(jobView('concrete-slab-500-sq-ft', locale).rows[0]).toMatchObject({
+        label: '25 ft × 20 ft × 4 in',
+        cells: ['6.79', '306', '408', '612'],
+      });
+      expect(jobView('concrete-slab-1000-sq-ft', locale).rows[0]).toMatchObject({
+        label: '40 ft × 25 ft × 4 in',
+        cells: ['13.58', '612', '815', '1,223'],
+      });
+    }
+    expect(jobView('concrete-slab-650-sq-ft', 'es').intro).toContain('26 por 25 ft');
+  });
+
+  // hand-verified: 9 × 9 ft × 1/3 ft = 27 ft³ = 1 yd³, no extra; 27 ÷ 1.5 = 18, 27 ÷ 2 = 13.5 so 14,
+  // 27 ÷ 3 = 9; two yards (8 in deep) 36, 27, 18; three yards (12 in deep) 54, 40.5 so 41, 27
+  it('works the bags of mulch in a cubic yard out as the mulch calculator does', () => {
+    const view = jobView('mulch-bags-per-yard', 'en');
+    expect(view.lead).toBe('Length × Width × Depth: 9 ft × 9 ft × 4 in');
+    expect(view.answer).toBe('27.00 cubic feet');
+    expect(view.facts).toEqual([
+      { label: 'Mulch, 1.5 cu ft bags', value: '18' },
+      { label: 'Mulch, 2 cu ft bags', value: '14' },
+      { label: 'Mulch, 3 cu ft bags', value: '9' },
+    ]);
+    expect(view.columns).toEqual([
+      'Bag size',
+      'Bags for 1 yd³',
+      'Bags for 2 yd³',
+      'Bags for 3 yd³',
+    ]);
+    expect(view.rows).toEqual([
+      {
+        label: '1.5 cu ft',
+        href: '/mulch-calculator?v=1&l=108&w=108&d=4&ws=0&bg=1-5',
+        cells: ['18', '36', '54'],
+      },
+      {
+        label: '2 cu ft',
+        href: '/mulch-calculator?v=1&l=108&w=108&d=4&ws=0',
+        cells: ['14', '27', '41'],
+      },
+      {
+        label: '3 cu ft',
+        href: '/mulch-calculator?v=1&l=108&w=108&d=4&ws=0&bg=3',
+        cells: ['9', '18', '27'],
+      },
+    ]);
+    expect(view.calculatorName).toBe('Mulch Calculator');
+    expect(view.methodology).toBe('/methodology#mulch');
+    const es = jobView('mulch-bags-per-yard', 'es');
+    expect(es.answer).toBe('27.00 pies cúbicos');
+    expect(es.columns[1]).toBe('Bolsas para 1 yd³');
+  });
+
+  it.each(LOCALES)('says the mulch figures of the engine in the copy of %s', (locale) => {
+    const view = jobView('mulch-bags-per-yard', locale);
+    // the intro and the note restate the bag counts: they must be the engine's
+    for (const { value } of view.facts) expect(view.intro).toContain(` ${value} `);
+    expect(view.note).toContain('27');
+    expect(view.note).toContain('13.5');
+    expect(view.note).toContain(view.facts[1]?.value ?? '');
   });
 
   // hand-verified: π × (0.5 ft)² × 4 ft = 3.14 ft³, + 10% = 3.46 ft³ = 0.13 yd³; 5.8, 7.7, 11.5 bags
@@ -154,6 +244,8 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     for (const intro of intros) expect(intro).toMatch(/\S/);
     expect(new Set(intros).size).toBe(intros.length);
     expect(jobView('concrete-slab-10x10', locale).intro).toBeUndefined();
+    expect(jobView('concrete-slab-1000-sq-ft', locale).intro).toMatch(/\S/);
+    expect(jobView('mulch-bags-per-yard', locale).intro).toMatch(/\S/);
     expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');
   });
 
@@ -197,6 +289,7 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(METHODOLOGY_ANCHOR['rectangle-area'][locale]).toBe(
       METHODOLOGY_ROWS['rectangle-area'].anchor[locale],
     );
+    expect(METHODOLOGY_ANCHOR.mulch[locale]).toBe(METHODOLOGY_ROWS.mulch.anchor[locale]);
     expect(jobView('roof-pitch-4-12', locale).methodology).toMatch(
       new RegExp(`#${METHODOLOGY_ANCHOR['roof-pitch'][locale]}$`),
     );
