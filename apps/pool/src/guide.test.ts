@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
+import { DOSING_CHART } from './dosing.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import {
   CALCIUM_GUIDE,
@@ -478,6 +479,7 @@ describe('the guides', () => {
       OPENING_GUIDE.path,
       CLOSING_GUIDE.path,
       CHEMISTRY_CHART.path,
+      DOSING_CHART.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
@@ -504,19 +506,26 @@ describe('the calculators each guide explains', () => {
           CHEMISTRY_CHART.gallons.href,
           ...CHEMISTRY_CHART.rows.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
         ]
-      : [
-          OPENING_GUIDE,
-          CLOSING_GUIDE,
-          PUMP_RUN_GUIDE,
-          SALT_VS_CHLORINE_GUIDE,
-          SHOCK_GUIDE,
-          PH_GUIDE,
-          CALCIUM_GUIDE,
-        ]
-          .filter(({ path }) => path === guide.path)
-          .flatMap(({ steps }) =>
-            steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
-          );
+      : guide.path === DOSING_CHART.path
+        ? [
+            DOSING_CHART.gallons.href,
+            ...DOSING_CHART.tables.flatMap(({ columns }) =>
+              columns.map(({ calculator }) => calculator),
+            ),
+          ]
+        : [
+            OPENING_GUIDE,
+            CLOSING_GUIDE,
+            PUMP_RUN_GUIDE,
+            SALT_VS_CHLORINE_GUIDE,
+            SHOCK_GUIDE,
+            PH_GUIDE,
+            CALCIUM_GUIDE,
+          ]
+            .filter(({ path }) => path === guide.path)
+            .flatMap(({ steps }) =>
+              steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
+            );
 
   // a calculator page links back each guide that names it (`src/site-check/links.ts` checks the build)
   it.each(GUIDES.map((guide) => [guide.path, guide] as const))(
@@ -532,6 +541,7 @@ describe('the calculators each guide explains', () => {
     expect(guidesOf(PH.path).map(({ path }) => path)).toEqual([
       OPENING_GUIDE.path,
       CHEMISTRY_CHART.path,
+      DOSING_CHART.path,
       SHOCK_GUIDE.path,
       PH_GUIDE.path,
     ]);
@@ -540,6 +550,7 @@ describe('the calculators each guide explains', () => {
   it('send the calcium calculator to the chart and the calcium guide', () => {
     expect(guidesOf(CALCIUM.path).map(({ path }) => path)).toEqual([
       CHEMISTRY_CHART.path,
+      DOSING_CHART.path,
       CALCIUM_GUIDE.path,
     ]);
   });

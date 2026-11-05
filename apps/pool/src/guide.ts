@@ -1,4 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
+import { DOSING_CHART } from './dosing.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -741,6 +742,12 @@ export const GUIDES: readonly GuideCard[] = [
   cardOf(CHEMISTRY_CHART, [
     CHEMISTRY_CHART.gallons,
     ...CHEMISTRY_CHART.rows.map(({ link }) => link),
+  ]),
+  cardOf(DOSING_CHART, [
+    DOSING_CHART.gallons,
+    ...DOSING_CHART.tables.flatMap(({ columns }) =>
+      columns.map(({ calculator, link }) => ({ href: calculator, label: link.label })),
+    ),
   ]),
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),

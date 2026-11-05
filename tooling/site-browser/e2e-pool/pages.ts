@@ -5,6 +5,7 @@ export const PAGES = [
   '/opening-your-pool',
   '/closing-your-pool',
   '/pool-water-chemistry-chart',
+  '/pool-chemical-dosing-chart',
   '/how-long-to-run-pool-pump',
   '/salt-water-pool-vs-chlorine-pool',
   '/how-to-shock-a-pool',
