@@ -33,7 +33,7 @@ import {
   STABILIZER,
 } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
-import { GUIDES, SHOCK_GUIDE } from './guide.ts';
+import { GUIDES, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import {
   guideJobLinksOf,
   JOB_PAGES,
@@ -347,6 +347,15 @@ describe('the long-tail job pages', () => {
       }
   });
 
+  it('links every pH page from the pH guide, and each links it back', () => {
+    const ph = JOB_PAGES.filter(({ calculator }) => calculator.path === PH.path);
+    for (const page of ph)
+      expect(page.guide).toEqual({ href: PH_GUIDE.path, label: PH_GUIDE.card.title });
+    expect(guideJobLinksOf(PH_GUIDE.path)).toEqual(
+      ph.map(({ path, h1 }) => ({ href: path, label: h1 })),
+    );
+  });
+
   // worked by hand: 5,000 × 3,200 × 8.34 ÷ 1,000,000 = 133.44 lb, 4 bags; 35,000 gal is 934.08
   // lb, 23.35 bags so 24; and 10.24 fl oz of 12.5% liquid per ppm per 10,000 gal: 5,000 gal from
   // 1 to 3 ppm is 10.24 fl oz, 30,000 gal 61.44
@@ -585,7 +594,9 @@ describe('the shock job pages', () => {
     expect(guideJobLinksOf(SHOCK_GUIDE.path)).toEqual(
       shock.map(({ path, h1 }) => ({ href: path, label: h1 })),
     );
-    for (const { path } of GUIDES.filter(({ path }) => path !== SHOCK_GUIDE.path))
+    for (const { path } of GUIDES.filter(
+      ({ path }) => path !== SHOCK_GUIDE.path && path !== PH_GUIDE.path,
+    ))
       expect(guideJobLinksOf(path)).toEqual([]);
   });
 

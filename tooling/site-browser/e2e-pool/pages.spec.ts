@@ -191,6 +191,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/how-long-to-run-pool-pump',
     '/salt-water-pool-vs-chlorine-pool',
     '/how-to-shock-a-pool',
+    '/how-to-lower-ph-in-a-pool',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
@@ -259,6 +260,22 @@ test('numbers the pool shock steps, whose links all answer', async ({ page }) =>
     '/pool-ph-calculator',
     '/pool-water-chemistry-chart',
     '/pool-chlorine-calculator',
+  ]);
+  for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('numbers the pool pH steps, whose links all answer', async ({ page }) => {
+  await page.goto('/how-to-lower-ph-in-a-pool');
+  await expect(page.locator('.pool-steps > li')).toHaveCount(10);
+  const hrefs = await page
+    .locator('.pool-steps a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toEqual([
+    '/pool-volume-calculator',
+    '/pool-water-chemistry-chart',
+    '/pool-alkalinity-calculator',
+    '/pool-ph-calculator',
+    '/pool-ph-calculator',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });

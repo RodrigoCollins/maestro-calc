@@ -3,12 +3,13 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { ALKALINITY, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import {
   CLOSING_GUIDE,
   GUIDES,
   guidesOf,
   OPENING_GUIDE,
+  PH_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
   SHOCK_GUIDE,
@@ -32,7 +33,8 @@ const textOf = (
     | typeof CLOSING_GUIDE
     | typeof PUMP_RUN_GUIDE
     | typeof SALT_VS_CHLORINE_GUIDE
-    | typeof SHOCK_GUIDE,
+    | typeof SHOCK_GUIDE
+    | typeof PH_GUIDE,
 ): string => guide.steps.map(({ text }) => text).join(' ');
 
 describe.each([
@@ -41,6 +43,7 @@ describe.each([
   ['pump run time', PUMP_RUN_GUIDE],
   ['salt water vs chlorine', SALT_VS_CHLORINE_GUIDE],
   ['pool shock', SHOCK_GUIDE],
+  ['pool pH', PH_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -280,6 +283,77 @@ describe('the pool shock guide', () => {
   });
 });
 
+describe('the pool pH guide', () => {
+  const text = textOf(PH_GUIDE);
+  const acid = (gallons: string, drops: string): string =>
+    figure(PH.path, { gallons, product: 'muriatic-31-45', drops }, 'liquid');
+  const soda = (gallons: string, drops: string): string =>
+    figure(PH.path, { gallons, product: 'soda-ash', drops }, 'dry');
+
+  it('sizes the acid and the soda ash from the demand test, as the pH calculator does', () => {
+    expect(PH_GUIDE.lead).toContain('acid demand test');
+    expect(text).toContain('base demand test');
+  });
+
+  // the figures come from the sources as published; a changed one must be checked against them again
+  it('gives Taylor’s range, test and chart exactly as its K-1003 instructions publish them', () => {
+    expect(text).toContain('7.2 to 7.8');
+    expect(text).toContain('80 to 120 ppm');
+    expect(text).toContain('R-0015');
+    expect(text).toContain('R-0016');
+    expect(text).toContain('9.16 fl oz');
+    expect(text).toContain('5.13 oz');
+    expect(text).toContain('3 drops');
+    expect(text).toContain('recheck total alkalinity');
+  });
+
+  it('gives CDC’s home pool range and its testing exactly as CDC publishes them', () => {
+    expect(text).toContain('7.0 to 7.8');
+    expect(text).toContain('at least twice a day');
+    expect(text).toContain('above 8.0');
+    expect(text).toContain('below 7.0');
+  });
+
+  it('adds the acid as HASA’s directions say, and no faster', () => {
+    expect(text).toContain('31.45%');
+    expect(text).toContain('add acid to water, never water to acid');
+    expect(text).toContain('at least one foot from the wall');
+    expect(text).toContain('at least 1 hour after');
+    expect(text).toContain('one quart per 20,000 gallons in 24 hours');
+    expect(text).toContain('7.2 to 7.6');
+    expect(text).toContain('chlorine');
+  });
+
+  it('adds the soda ash as its label says', () => {
+    expect(text).toContain('1 pound per 10,000 gallons');
+    expect(text).toContain('2 to 3 hours');
+    expect(text).toContain('do not mix it with other chemicals');
+  });
+
+  // a figure a calculator works out is the calculator's own, to the digit
+  it('works out every dose as the pH calculator does, never past the chart’s 3 drops', () => {
+    expect(text).toContain(`${acid('10000', '1')} fl oz`);
+    expect(text).toContain(`${acid('10000', '2')} fl oz`);
+    expect(text).toContain(`${acid('10000', '3')} fl oz`);
+    expect(text).toContain(`${acid('20000', '2')} fl oz`);
+    expect(text).toContain(`${soda('10000', '1')} oz`);
+    expect(text).toContain(`${soda('10000', '3')} oz`);
+    expect(text).toContain(`${soda('20000', '2')} oz`);
+    expect(`${PH_GUIDE.lead} ${text}`).not.toMatch(/\b([4-9]|10) drops\b/);
+  });
+
+  it('links the volume, the alkalinity and the pH calculators and the chart', () => {
+    const links = PH_GUIDE.steps.flatMap(({ link }) => (link === undefined ? [] : [link.href]));
+    expect(links).toEqual([
+      VOLUME_TEXTS.path,
+      CHEMISTRY_CHART.path,
+      ALKALINITY.path,
+      PH.path,
+      PH.path,
+    ]);
+  });
+});
+
 describe('the guides', () => {
   it('lists every guide once, each with a short card', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
@@ -289,6 +363,7 @@ describe('the guides', () => {
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
+      PH_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);
@@ -310,7 +385,14 @@ describe('the calculators each guide explains', () => {
           CHEMISTRY_CHART.gallons.href,
           ...CHEMISTRY_CHART.rows.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
         ]
-      : [OPENING_GUIDE, CLOSING_GUIDE, PUMP_RUN_GUIDE, SALT_VS_CHLORINE_GUIDE, SHOCK_GUIDE]
+      : [
+          OPENING_GUIDE,
+          CLOSING_GUIDE,
+          PUMP_RUN_GUIDE,
+          SALT_VS_CHLORINE_GUIDE,
+          SHOCK_GUIDE,
+          PH_GUIDE,
+        ]
           .filter(({ path }) => path === guide.path)
           .flatMap(({ steps }) =>
             steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
@@ -331,6 +413,7 @@ describe('the calculators each guide explains', () => {
       OPENING_GUIDE.path,
       CHEMISTRY_CHART.path,
       SHOCK_GUIDE.path,
+      PH_GUIDE.path,
     ]);
   });
 
