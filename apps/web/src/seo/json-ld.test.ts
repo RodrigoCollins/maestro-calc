@@ -1,7 +1,65 @@
 import { describe, expect, it } from 'vitest';
 import { siteText } from '../lib/site-text.ts';
 import { ROUTES } from '../routing/routes.ts';
-import { calculatorJsonLd, guideJsonLd, homeJsonLd, serializeJsonLd } from './json-ld.ts';
+import {
+  calculatorJsonLd,
+  guideJsonLd,
+  homeJsonLd,
+  jobJsonLd,
+  serializeJsonLd,
+} from './json-ld.ts';
+
+// spec: growth › lever 1, the job pages: the trail a job page sits on, and nothing else
+describe('job page structured data (growth › job pages builder side)', () => {
+  it('describes a job page as its breadcrumb: home, hub, calculator, then the page', () => {
+    expect(
+      jobJsonLd(
+        {
+          id: 'concrete-slab-10x10',
+          name: 'Concreto para una losa de 10 × 10',
+          trail: [
+            { id: 'hub-concrete', name: 'Concreto' },
+            { id: 'concrete', name: 'Calculadora de concreto' },
+          ],
+        },
+        'es',
+      ),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            {
+              '@type': 'ListItem',
+              position: 1,
+              name: 'Inicio',
+              item: 'https://maestrocalc.com/es',
+            },
+            {
+              '@type': 'ListItem',
+              position: 2,
+              name: 'Concreto',
+              item: 'https://maestrocalc.com/es/concreto',
+            },
+            {
+              '@type': 'ListItem',
+              position: 3,
+              name: 'Calculadora de concreto',
+              item: 'https://maestrocalc.com/es/calculadora-de-concreto',
+            },
+            {
+              '@type': 'ListItem',
+              position: 4,
+              name: 'Concreto para una losa de 10 × 10',
+              item: 'https://maestrocalc.com/es/concreto/losa-de-10x10',
+            },
+          ],
+        },
+      ],
+    });
+  });
+});
 
 const organization = {
   '@type': 'Organization',

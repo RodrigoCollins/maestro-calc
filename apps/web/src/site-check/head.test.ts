@@ -406,3 +406,67 @@ describe('indexing (site-routing-i18n › [SR14], site-seo › [SE13])', () => {
     ).toEqual([]);
   });
 });
+
+describe('link preview (plans/growth/PLAN.md › G7)', () => {
+  const tag = (property: string) => new RegExp(`<meta property="${property}" content="[^"]*">`);
+
+  it('names each preview tag a routable page lacks', () => {
+    for (const property of ['og:title', 'og:description', 'og:url', 'og:image']) {
+      expect(
+        problemsAfter({ 'about.html': (h) => h.replace(tag(property), '') }).map(
+          ({ file, rule, message }) => `${file} ${rule}: ${message}`,
+        ),
+      ).toEqual([`about.html link-preview: expected exactly one ${property}, found 0`]);
+    }
+    expect(
+      rulesOf(
+        problemsAfter({
+          'about.html': (h) =>
+            h.replace('<meta name="twitter:card" content="summary_large_image">', ''),
+        }),
+        'about.html',
+      ),
+    ).toEqual(['link-preview']);
+  });
+
+  it('ties og:title, og:description and og:url to the title, the description and the canonical', () => {
+    expect(
+      problemsAfter({
+        'es/sobre-nosotros.html': (h) =>
+          h
+            .replace(tag('og:title'), '<meta property="og:title" content="Other">')
+            .replace(tag('og:description'), '<meta property="og:description" content="Other">')
+            .replace(
+              tag('og:url'),
+              '<meta property="og:url" content="https://maestrocalc.com/about">',
+            ),
+      }).map(({ message }) => message),
+    ).toEqual([
+      'og:title must be page.about.title "about es | Maestro Calc", found "Other"',
+      'og:description must be page.about.description, found "Other"',
+      'og:url must be the canonical https://maestrocalc.com/es/sobre-nosotros, found "https://maestrocalc.com/about"',
+    ]);
+  });
+
+  it('requires the one site image on every routable page', () => {
+    expect(
+      problemsAfter({
+        'about.html': (h) => h.replace('/og.png"', '/other.png"'),
+      }).map(({ message }) => message),
+    ).toEqual([
+      'og:image must be https://maestrocalc.com/og.png, found "https://maestrocalc.com/other.png"',
+    ]);
+  });
+
+  it('forbids a preview on the not-found pages', () => {
+    expect(
+      rulesOf(
+        problemsAfter({
+          '404.html': (h) =>
+            h.replace('<link rel="icon"', '<meta property="og:title" content="x"><link rel="icon"'),
+        }),
+        '404.html',
+      ),
+    ).toEqual(['link-preview']);
+  });
+});
