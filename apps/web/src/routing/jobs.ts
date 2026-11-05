@@ -179,6 +179,39 @@ const rectangle = (length: number, width: number) => {
   return [side(0), side(1), side(2)] as const;
 };
 
+/**
+ * The slab sizes of the concrete chart, smallest area first: every size of a slab job, the 4 ft pad,
+ * and the common sizes between and beyond them (a walk, a shed, a two-car garage).
+ */
+const CHART_SLABS = [
+  [4, 4],
+  [6, 6],
+  [8, 8],
+  [10, 10],
+  [10, 12],
+  [12, 12],
+  [10, 20],
+  [12, 20],
+  [16, 16],
+  [12, 24],
+  [20, 20],
+  [24, 24],
+  [30, 30],
+] as const;
+
+/** Every slab of the chart at 4, 5 and 6 in thick, in that order. */
+const slabChart = () => {
+  const [[length, width], ...rest] = CHART_SLABS;
+  return [
+    slab(length, width, 4),
+    slab(length, width, 5),
+    slab(length, width, 6),
+    ...rest.flatMap(([others, wide]) =>
+      [4, 5, 6].map((thickness) => slab(others, wide, thickness)),
+    ),
+  ] as const;
+};
+
 export const JOBS = {
   'concrete-slab-10x10': {
     calculator: 'concrete',
@@ -234,6 +267,11 @@ export const JOBS = {
     calculator: 'concrete',
     updated: '2026-11-04',
     cases: slabOfArea(40, 25),
+  },
+  'concrete-slab-chart': {
+    calculator: 'concrete',
+    updated: '2026-11-05',
+    cases: slabChart(),
   },
   'concrete-pad-4x4': {
     calculator: 'concrete',
@@ -412,6 +450,15 @@ export type JobId = keyof typeof JOBS;
 
 /** Whether `id` is a job page id. */
 export const isJobPage = (id: string): id is JobId => Object.hasOwn(JOBS, id);
+
+/** Whether a job id names a reference chart: it ends in `-chart` (`check:site` reads the rule). */
+export const isChartId = (id: string): boolean => id.endsWith('-chart');
+
+/**
+ * Whether job `id` is a reference chart: one table of many sizes, made to be linked and cited. Its
+ * page shows the table first, its sources and how to cite it; its id ends in `-chart`.
+ */
+export const isChartJob = (id: string): boolean => isJobPage(id) && isChartId(id);
 
 /** The job ids, in table order. */
 export const JOB_IDS: readonly JobId[] = Object.keys(JOBS).filter(isJobPage);

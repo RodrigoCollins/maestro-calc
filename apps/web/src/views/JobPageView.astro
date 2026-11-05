@@ -4,11 +4,12 @@ import Breadcrumb from '../components/calculator/Breadcrumb.astro';
 import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { jobView } from '../lib/job-view.ts';
+import { calendarDay } from '../lib/calendar-day.ts';
 import { siteText } from '../lib/site-text.ts';
 import { JOBS, type JobId } from '../routing/jobs.ts';
-import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
+import { pathOf } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
-import { jobJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
+import { jobJsonLd, serializeJsonLd, type JobPage } from '../seo/json-ld.ts';
 import { getEntry } from 'astro:content';
 import { headingOf } from '../content/heading.ts';
 import { hubOfCalculator } from '../routing/hubs.ts';
@@ -25,12 +26,11 @@ interface Props {
 const { id, locale } = Astro.props;
 const text = siteText(locale);
 const view = jobView(id, locale);
+const { chart } = view;
+const retrieved = chart === undefined ? '' : calendarDay(chart.source.retrieved, locale);
 const { updated, calculator } = JOBS[id];
 // The date is a calendar day, so it is formatted in UTC: no timezone can move it.
-const shown = new Intl.DateTimeFormat(LOCALE_TAGS[locale], {
-  dateStyle: 'long',
-  timeZone: 'UTC',
-}).format(new Date(`${updated}T00:00:00Z`));
+const shown = calendarDay(updated, locale);
 // The trail the page sits on, each page named by its h1: its calculator's hub, then the calculator.
 const hub = hubOfCalculator(calculator);
 if (hub === undefined) throw new Error(`the calculator of job ${id} has no hub`);
@@ -47,7 +47,21 @@ const breadcrumb = {
   trail: trail.map((crumb) => ({ href: pathOf(crumb.id, locale), label: crumb.name })),
   current: view.heading,
 };
-const jsonLd = serializeJsonLd(jobJsonLd({ id, name: view.heading, trail }, locale));
+// A reference chart is also a dataset: its description, its day and the data sheet it rests on.
+const page: JobPage =
+  chart === undefined
+    ? { id, name: view.heading, trail }
+    : {
+        id,
+        name: view.heading,
+        trail,
+        dataset: {
+          description: text(`page.${id}.description`),
+          updated,
+          basedOn: chart.source.url,
+        },
+      };
+const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
 ---
 
 <BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
@@ -55,20 +69,24 @@ const jsonLd = serializeJsonLd(jobJsonLd({ id, name: view.heading, trail }, loca
   <article class="prose">
     <h1>{view.heading}</h1>
     {view.intro !== undefined && <p>{view.intro}</p>}
-    <p class="job-size">{view.lead}</p>
-    <p class="job-answer">{view.answer}</p>
-    <dl class="job-facts">
-      {view.facts.map(({ label, value }) => (
-        <div>
-          <dt>{label}</dt>
-          <dd>{value}</dd>
-        </div>
-      ))}
-    </dl>
+    {chart === undefined && (
+      <>
+        <p class="job-size">{view.lead}</p>
+        <p class="job-answer">{view.answer}</p>
+        <dl class="job-facts">
+          {view.facts.map(({ label, value }) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </>
+    )}
     <p>
       {view.note} <a href={view.methodology}>{text('site.job.methodology')}</a>
     </p>
-    <h2>{text('site.job.cases')}</h2>
+    <h2>{text(chart === undefined ? 'site.job.cases' : 'site.job.chart.table')}</h2>
     <div class="job-table">
       <table>
         <thead>
@@ -92,6 +110,27 @@ const jsonLd = serializeJsonLd(jobJsonLd({ id, name: view.heading, trail }, loca
         </tbody>
       </table>
     </div>
+    {chart !== undefined && (
+      <>
+        <h2>{text('site.job.chart.sources')}</h2>
+        <p>
+          {text('site.job.chart.source')}: {chart.source.name}, <code>{chart.source.url}</code>,{' '}
+          {text('site.job.chart.retrieved')} {retrieved}.
+        </p>
+        <h3>{text('site.job.chart.yields')}</h3>
+        <dl class="job-facts">
+          {chart.yields.map(({ label, value }) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <h2>{text('site.job.chart.cite')}</h2>
+        <p>{text('site.job.chart.citeLead')}</p>
+        <p class="job-cite">{chart.citation}</p>
+      </>
+    )}
     <GuideCta label={text('site.guide.cta')} href={view.cta} name={view.calculatorName} />
     {view.others.length > 0 && (
       <>
@@ -135,6 +174,12 @@ const jsonLd = serializeJsonLd(jobJsonLd({ id, name: view.heading, trail }, loca
   .job-facts dd {
     margin: 0;
     font-weight: 700;
+  }
+
+  .job-cite {
+    padding: var(--space-2);
+    border-left: 3px solid var(--color-line);
+    overflow-wrap: anywhere;
   }
 
   /* A phone scrolls the table, never the page. */

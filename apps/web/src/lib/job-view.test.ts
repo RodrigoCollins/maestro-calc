@@ -1,4 +1,5 @@
 import { decode } from '@maestro-calc/core';
+import { concreteMix } from '@maestro-calc/data';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
@@ -7,7 +8,8 @@ import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
 import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
-import { LOCALES } from '../routing/routes.ts';
+import { LOCALES, pathOf, urlOf } from '../routing/routes.ts';
+import { calendarDay } from './calendar-day.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
@@ -84,6 +86,35 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.answer).toBe('1.36 cubic yards');
     expect(view.facts.map(({ value }) => value)).toEqual(['62', '82', '123']);
     expect(view.columns).toHaveLength(5);
+  });
+
+  // hand-verified: 4 × 4 × 1/3 ft = 5.33 ft³, + 10% = 5.87 ft³ = 0.22 yd³ (9.8, 13.0 and 19.6
+  // bags); 30 × 30 × 1/2 ft = 450 ft³, + 10% = 495 ft³ = 18.33 yd³: 825, 1,100 and 1,650 bags
+  it.each(LOCALES)('charts every slab with its source and its citation in %s', (locale) => {
+    const view = jobView('concrete-slab-chart', locale);
+    expect(view.rows).toHaveLength(JOBS['concrete-slab-chart'].cases.length);
+    expect(view.rows[0]).toMatchObject({
+      label: '4 ft × 4 ft × 4 in',
+      cells: ['0.22', '10', '14', '20'],
+    });
+    expect(view.rows.at(-1)).toMatchObject({
+      label: '30 ft × 30 ft × 6 in',
+      cells: ['18.33', '825', '1,100', '1,650'],
+    });
+    const { chart } = view;
+    expect(chart?.source).toEqual(concreteMix.source);
+    expect(chart?.yields.map(({ value }) => value)).toEqual(['0.60 ft³', '0.45 ft³', '0.30 ft³']);
+    expect(chart?.yields.map(({ label }) => label)).toEqual(view.columns.slice(2));
+    const url = urlOf(pathOf('concrete-slab-chart', locale));
+    expect(chart?.url).toBe(url);
+    expect(chart?.citation).toBe(
+      `Maestro Calc, “${view.heading}”, ${calendarDay(JOBS['concrete-slab-chart'].updated, locale)}, ${url}`,
+    );
+    expect(view.intro).toMatch(/\S/);
+  });
+
+  it.each(LOCALES)('gives no chart block to a job of one size in %s', (locale) => {
+    expect(jobView('concrete-slab-10x10', locale).chart).toBeUndefined();
   });
 
   // hand-verified: 20 × 20 × 1/3 ft = 133.33 ft³, + 10% = 146.67 ft³ = 5.43 yd³;

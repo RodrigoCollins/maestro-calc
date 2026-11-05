@@ -61,6 +61,13 @@ export const enSite = {
   'site.pitchDegrees.pitch': 'Pitch',
   'site.job.multiplier': 'Rafter multiplier (feet of rafter per foot of run)',
   'site.job.methodology': 'How we work out the figures',
+  'site.job.chart.table': 'Cubic yards and bags by slab size',
+  'site.job.chart.sources': 'Sources and assumptions',
+  'site.job.chart.yields': 'What one bag makes',
+  'site.job.chart.source': 'Bag yields',
+  'site.job.chart.retrieved': 'retrieved',
+  'site.job.chart.cite': 'Cite this chart',
+  'site.job.chart.citeLead': 'To link to this chart or quote its figures, use its address:',
   'site.job.more': 'More jobs',
   'site.hub.more': 'More tools:',
   'site.guides.business': 'The business',
@@ -306,6 +313,13 @@ export const enSite = {
   'page.concrete-slab-1000-sq-ft.label': '1000 sq ft slab',
   'page.concrete-slab-1000-sq-ft.intro':
     'A 1000 sq ft slab is worked out here as 40 by 25 ft. Any length and width that multiply to 1000 sq ft take the same concrete at the same thickness, so type your own sides in the calculator if they differ.',
+  'page.concrete-slab-chart.title': 'Concrete Slab Chart: Bags and Cubic Yards | Maestro Calc',
+  'page.concrete-slab-chart.description':
+    'Cubic yards and 40, 60 or 80 lb bags of concrete for common slabs from 4x4 to 30x30 ft, at 4, 5 and 6 in thick, with 10% extra. Sources and a citation.',
+  'page.concrete-slab-chart.heading': 'Concrete slab chart: cubic yards and bags by size',
+  'page.concrete-slab-chart.label': 'Slab chart, every size',
+  'page.concrete-slab-chart.intro':
+    'Find your slab size and thickness in the chart below: each row gives the cubic yards of concrete to order and the bags of 80, 60 or 40 lb to buy, worked out by the concrete calculator with 10% extra for waste.',
   'page.concrete-pad-4x4.title': 'Bags of Concrete for a 4x4 Pad | Maestro Calc',
   'page.concrete-pad-4x4.description':
     'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',

@@ -122,6 +122,7 @@ export const ROUTES = {
     en: '/concrete/1000-sq-ft-slab',
     es: '/es/concreto/losa-de-1000-pies-cuadrados',
   },
+  'concrete-slab-chart': { en: '/concrete/slab-chart', es: '/es/concreto/tabla-de-losas' },
   'concrete-pad-4x4': { en: '/concrete/4x4-pad', es: '/es/concreto/base-de-4x4' },
   'concrete-tube-8': {
     en: '/concrete/8-inch-sonotube',

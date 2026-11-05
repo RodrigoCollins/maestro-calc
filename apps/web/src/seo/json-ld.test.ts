@@ -59,6 +59,40 @@ describe('job page structured data (growth › job pages builder side)', () => {
       ],
     });
   });
+
+  // a reference chart is a table of figures a search engine can list as a dataset
+  it('adds a Dataset to a chart: its h1, description, canonical, day, creator and source', () => {
+    const { '@graph': graph } = jobJsonLd(
+      {
+        id: 'concrete-slab-chart',
+        name: 'Concrete slab chart',
+        trail: [{ id: 'hub-concrete', name: 'Concrete' }],
+        dataset: {
+          description: 'Cubic yards and bags',
+          updated: '2026-11-05',
+          basedOn: 'https://example.com/data-sheet.pdf',
+        },
+      },
+      'en',
+    );
+    expect(graph.map((node) => node['@type'])).toEqual(['BreadcrumbList', 'Dataset']);
+    expect(graph[1]).toEqual({
+      '@type': 'Dataset',
+      name: 'Concrete slab chart',
+      description: 'Cubic yards and bags',
+      url: 'https://maestrocalc.com/concrete/slab-chart',
+      inLanguage: 'en-US',
+      dateModified: '2026-11-05',
+      isAccessibleForFree: true,
+      isBasedOn: 'https://example.com/data-sheet.pdf',
+      creator: {
+        '@type': 'Organization',
+        '@id': 'https://maestrocalc.com/#organization',
+        name: 'Maestro Calc',
+        url: 'https://maestrocalc.com',
+      },
+    });
+  });
 });
 
 const organization = {

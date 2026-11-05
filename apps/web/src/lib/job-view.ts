@@ -1,4 +1,6 @@
-import { encode, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { encode, ft3, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import { concreteMix, type MaterialSource } from '@maestro-calc/data';
+import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
@@ -28,8 +30,10 @@ import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
-import { JOBS, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
-import { pathOf } from '../routing/routes.ts';
+import { isChartJob, JOBS, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
+import { pathOf, urlOf } from '../routing/routes.ts';
+import { SITE } from '../site.config.ts';
+import { calendarDay } from './calendar-day.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
@@ -67,6 +71,21 @@ interface JobTable {
   readonly calculatorName: string;
 }
 
+/**
+ * What a reference chart adds to its table (see `isChartJob`): the published source of the figures
+ * it rests on and the citation a site can copy, all derived, none typed.
+ */
+export interface JobChart {
+  /** The source of the bag yields: the material record of the data package. */
+  readonly source: Required<MaterialSource>;
+  /** What one bag of each size of the table makes, in the order of its columns. */
+  readonly yields: readonly JobFact[];
+  /** The canonical address of the chart in its language. */
+  readonly url: string;
+  /** `Maestro Calc, “<h1>”, <updated day>, <url>`. */
+  readonly citation: string;
+}
+
 export interface JobView extends JobTable {
   readonly heading: string;
   /** The sentence that opens a job with an intro (see `hasIntro`): `page.<id>.intro`. */
@@ -77,6 +96,8 @@ export interface JobView extends JobTable {
   readonly cta: string;
   readonly methodology: string;
   readonly others: readonly { readonly href: string; readonly title: string }[];
+  /** The sources and the citation of a reference chart; `undefined` for a job of one size. */
+  readonly chart: JobChart | undefined;
 }
 
 type JobCalculator = Job['calculator'];
@@ -738,6 +759,7 @@ type IntroJobId = Extract<
   | `drywall-${string}`
   | `topsoil-${string}`
   | `roofing-${string}`
+  | `${string}-chart`
 >;
 
 /** The calculators whose every job opens with its own sentence. */
@@ -752,20 +774,44 @@ const INTRO_CALCULATORS: readonly JobCalculator[] = [
 ];
 
 const hasIntro = (id: JobId): id is IntroJobId =>
-  INTRO_CALCULATORS.includes(JOBS[id].calculator) || id.endsWith('-sq-ft');
+  INTRO_CALCULATORS.includes(JOBS[id].calculator) || id.endsWith('-sq-ft') || isChartJob(id);
+
+/** The bag yields of the concrete chart, labelled as its bag columns are. */
+const concreteYields = (locale: Locale): JobFact[] =>
+  BAGS.map((bagLb) => ({
+    label: concreteCatalogs[locale]('calc.concrete.page.shoppingLine', { bagLb }),
+    value: `${volumeText(CONCRETE_MIX_YIELDS[`bag-${bagLb}`], ft3)} ft³`,
+  }));
+
+const chartOf = (id: JobId, heading: string, locale: Locale): JobChart | undefined => {
+  if (!isChartJob(id)) return undefined;
+  // the one chart so far is the concrete one: a chart of another calculator needs its own source
+  if (JOBS[id].calculator !== 'concrete') throw new Error(`no source for the chart ${id}`);
+  const { name, url: sourceUrl, retrieved } = concreteMix.source;
+  if (sourceUrl === undefined) throw new Error(`the source of the chart ${id} has no address`);
+  const url = urlOf(pathOf(id, locale));
+  return {
+    source: { name, url: sourceUrl, retrieved },
+    yields: concreteYields(locale),
+    url,
+    citation: `${SITE.name}, “${heading}”, ${calendarDay(JOBS[id].updated, locale)}, ${url}`,
+  };
+};
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
 export const jobView = (id: JobId, locale: Locale): JobView => {
   const text = siteText(locale);
   const { calculator, cases } = JOBS[id];
   const table = TABLES[calculator](cases, locale);
+  const heading = text(`page.${id}.heading`);
   return {
     ...table,
-    heading: text(`page.${id}.heading`),
+    heading,
     intro: hasIntro(id) ? text(`page.${id}.intro`) : undefined,
     note: text(`site.job.note.${calculator}`),
     cta: table.rows[0].href,
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
     others: jobLinks(calculator, locale, id),
+    chart: chartOf(id, heading, locale),
   };
 };

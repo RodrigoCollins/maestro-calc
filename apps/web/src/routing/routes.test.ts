@@ -175,6 +175,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/1000-sq-ft-slab',
       es: '/es/concreto/losa-de-1000-pies-cuadrados',
     });
+    expect(ROUTES['concrete-slab-chart']).toEqual({
+      en: '/concrete/slab-chart',
+      es: '/es/concreto/tabla-de-losas',
+    });
     expect(ROUTES['concrete-pad-4x4']).toEqual({
       en: '/concrete/4x4-pad',
       es: '/es/concreto/base-de-4x4',
