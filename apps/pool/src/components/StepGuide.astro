@@ -1,10 +1,12 @@
 ---
+import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 import type { GuideSource, GuideStep } from '../guide.ts';
 
 /** A guide of numbered steps, each tile with its calculator link and its sources (`guide.ts`). */
 interface Props {
   readonly guide: {
+    readonly path: string;
     readonly kicker: string;
     readonly title: string;
     readonly description: string;
@@ -17,6 +19,7 @@ interface Props {
 }
 
 const {
+  path,
   kicker,
   title,
   description,
@@ -63,6 +66,7 @@ const sourceOf = (key: string): GuideSource => {
       ))}
     </ol>
     <p class="pool-note">{note}</p>
+    <JobLinks guide={path} />
   </main>
 </Layout>
 

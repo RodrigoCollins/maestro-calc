@@ -4,11 +4,15 @@ export interface LinkRules {
   readonly origin: string;
   /** The canonical paths of the sitemap: every one must be linked from another of them. */
   readonly sitemap: readonly string[];
-  /** Each job page, its calculator and its nearest siblings (`neighborsOf` of `src/jobs.ts`). */
+  /**
+   * Each job page, its calculator, its nearest siblings (`neighborsOf` of `src/jobs.ts`) and the
+   * guide whose dose it works out, when it has one.
+   */
   readonly jobs: readonly {
     readonly path: string;
     readonly calculator: string;
     readonly neighbors: readonly string[];
+    readonly guide?: string;
   }[];
   /** Each guide and the calculators it explains (`GUIDES` of `src/guide.ts`). */
   readonly guides: readonly { readonly path: string; readonly calculators: readonly string[] }[];
@@ -53,7 +57,8 @@ export const inboundOf = (
 
 /**
  * The internal links the build is missing: a job page and its calculator link each other, a job
- * page links its nearest siblings (each in its `<main>`), every guide is in the home Guides list and in the footer of
+ * page links its nearest siblings, a job page and the guide whose dose it works out link each
+ * other (each in its `<main>`), every guide is in the home Guides list and in the footer of
  * every page, a guide and each calculator it explains link each other, and no sitemap page is an
  * orphan.
  */
@@ -78,10 +83,16 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
   const guides = rules.guides.map(({ path }) => path);
   const inbound = inboundOf(site, rules);
   return [
-    ...rules.jobs.flatMap(({ path, calculator, neighbors }) => [
+    ...rules.jobs.flatMap(({ path, calculator, neighbors, guide }) => [
       ...must(calculator, [path], 'must link its job page'),
       ...must(path, [calculator], 'must link its calculator'),
       ...must(path, neighbors, 'must link its sibling'),
+      ...(guide === undefined
+        ? []
+        : [
+            ...must(path, [guide], 'must link its guide'),
+            ...must(guide, [path], 'must link its job page'),
+          ]),
     ]),
     ...must('/', guides, 'the Guides list must link', HOME_GUIDES),
     ...rules.sitemap.flatMap((path) =>

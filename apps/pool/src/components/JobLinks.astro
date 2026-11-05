@@ -1,6 +1,6 @@
 ---
 import { guidesOf } from '../guide.ts';
-import { jobLinksOf, neighborsOf, type JobPage } from '../jobs.ts';
+import { guideJobLinksOf, jobLinksOf, neighborsOf, type JobPage } from '../jobs.ts';
 
 type Props =
   /**
@@ -9,13 +9,17 @@ type Props =
    */
   | { readonly path: string; readonly embed: boolean }
   /** On a job page: its nearest sizes only, so the pages stay distinct. */
-  | { readonly page: JobPage };
+  | { readonly page: JobPage }
+  /** On a guide: the job pages that work out its dose, by pool size. */
+  | { readonly guide: string };
 
 const props = Astro.props;
 const [links, heading] =
   'page' in props
     ? [neighborsOf(props.page), 'Nearby pool sizes']
-    : [jobLinksOf(props.path), 'Common pool sizes'];
+    : 'guide' in props
+      ? [guideJobLinksOf(props.guide), 'Common pool sizes']
+      : [jobLinksOf(props.path), 'Common pool sizes'];
 const guides = 'path' in props && !props.embed ? guidesOf(props.path) : [];
 ---
 

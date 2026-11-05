@@ -60,6 +60,7 @@ const all = [
       path: page.path,
       calculator: page.calculator.path,
       neighbors: neighborsOf(page).map(({ href }) => href),
+      ...(page.guide === undefined ? {} : { guide: page.guide.href }),
     })),
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
   }),
