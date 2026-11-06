@@ -60,6 +60,26 @@ describe('job page structured data (growth › job pages builder side)', () => {
     });
   });
 
+  // a chart that rests on several published sources lists each of them, in order
+  it('lists every source of a chart that rests on more than one', () => {
+    const { '@graph': graph } = jobJsonLd(
+      {
+        id: 'concrete-slab-chart',
+        name: 'Weight chart',
+        trail: [{ id: 'hub-concrete', name: 'Concrete' }],
+        dataset: {
+          description: 'Pounds per cubic yard',
+          updated: '2026-11-05',
+          basedOn: ['https://example.com/a.pdf', 'https://example.com/b.pdf'],
+        },
+      },
+      'en',
+    );
+    expect(graph[1]).toMatchObject({
+      isBasedOn: ['https://example.com/a.pdf', 'https://example.com/b.pdf'],
+    });
+  });
+
   // a reference chart is a table of figures a search engine can list as a dataset
   it('adds a Dataset to a chart: its h1, description, canonical, day, creator and source', () => {
     const { '@graph': graph } = jobJsonLd(

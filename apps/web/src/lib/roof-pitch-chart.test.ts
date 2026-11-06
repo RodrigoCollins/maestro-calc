@@ -48,7 +48,7 @@ describe('roof pitch chart (growth plan › reference charts)', () => {
   it.each(LOCALES)('links each pitch to the calculator with its rise and run in %s', (locale) => {
     const table = roofPitchChartTable(cases, locale);
     table.rows.forEach((row, index) => {
-      const query = row.href.split('?')[1] ?? '';
+      const query = row.href?.split('?')[1] ?? '';
       const state = roofPitch.validate(cases[index] ?? {});
       expect(state.ok && decode(roofPitch, query).state).toEqual(state.ok && state.value);
     });

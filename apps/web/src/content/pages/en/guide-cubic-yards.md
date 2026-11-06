@@ -63,8 +63,8 @@ A circle's area is π × radius × radius, and the radius is half the diameter. 
 
 Split the area into rectangles and circles, work out the cubic feet of each, add them, and divide the total by 27 once. Dividing at the end keeps the rounding to one step.
 
-Then round your order up, not down: a little left over costs less than a second trip or a second delivery. The gravel calculator below works out a layer in cubic yards and tons; each calculator linked above does the same for its material.
+Then round your order up, not down: a little left over costs less than a second trip or a second delivery. The gravel calculator below works out a layer in cubic yards and tons; each calculator linked above does the same for its material. To turn cubic yards into pounds or tons, see [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart).
 
 ## Sources
 
-- Every figure in this guide is arithmetic: a foot is 12 inches and a cubic yard is 27 cubic feet by definition. The 10 percent extra is the concrete calculator's default. No weight, density or price is given, because those vary by material, by supplier and by year.
+- Every figure in this guide is arithmetic: a foot is 12 inches and a cubic yard is 27 cubic feet by definition. The 10 percent extra is the concrete calculator's default. No price is given, because prices vary by supplier and by year. Weights vary by material and by moisture, so the chart linked above gives each one with its published source.

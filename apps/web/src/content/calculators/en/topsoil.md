@@ -38,7 +38,7 @@ The calculator works from the size of the area to what you buy:
 - Cubic yards = total volume in cubic feet ÷ 27.
 - Bags = total volume ÷ bag size, rounded up to a whole bag.
 
-No weight or density is involved. A bag holds the volume printed on it, and a cubic yard is exactly 27 cubic feet. A foot is exactly 0.3048 meters (NIST SP 811), which gives the cubic meters.
+No weight or density is involved. A bag holds the volume printed on it, and a cubic yard is exactly 27 cubic feet. A foot is exactly 0.3048 meters (NIST SP 811), which gives the cubic meters. To know what a cubic yard of topsoil or fill dirt weighs, see [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart).
 
 Worked example: a garden area 10 ft long, 10 ft wide and 4 in deep, with 10 percent extra and 0.75 cu ft bags.
 

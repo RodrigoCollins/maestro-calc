@@ -45,7 +45,7 @@ The pages [How much gravel for a 10x20 driveway?](/landscaping/gravel-for-10x20-
 
 ## Order by the ton or by the yard
 
-Order by weight when the yard sells by the ton. If it sells by the cubic yard, order the loose volume, not the volume in place: the calculator shows it next to the tons. The guide [How to calculate cubic yards](/guides/how-to-calculate-cubic-yards) explains the volume math, inches to feet included. Then round your order up, not down: a little left over costs less than a second delivery.
+Order by weight when the yard sells by the ton. If it sells by the cubic yard, order the loose volume, not the volume in place: the calculator shows it next to the tons. The guide [How to calculate cubic yards](/guides/how-to-calculate-cubic-yards) explains the volume math, inches to feet included. Then round your order up, not down: a little left over costs less than a second delivery. What a cubic yard of gravel, sand, topsoil, concrete or mulch weighs is in [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart).
 
 ## Sources
 

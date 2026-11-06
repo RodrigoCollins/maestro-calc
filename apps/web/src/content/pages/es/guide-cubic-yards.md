@@ -63,8 +63,8 @@ El área de un círculo es π × radio × radio, y el radio es la mitad del diá
 
 Divide el área en rectángulos y círculos, calcula los pies cúbicos de cada uno, súmalos y divide el total entre 27 una sola vez. Dividir al final deja el redondeo en un solo paso.
 
-Después redondea el pedido hacia arriba, no hacia abajo: que sobre un poco cuesta menos que un segundo viaje o una segunda entrega. La calculadora de grava de abajo calcula una capa en yardas cúbicas y toneladas; cada calculadora de arriba hace lo mismo para su material.
+Después redondea el pedido hacia arriba, no hacia abajo: que sobre un poco cuesta menos que un segundo viaje o una segunda entrega. La calculadora de grava de abajo calcula una capa en yardas cúbicas y toneladas; cada calculadora de arriba hace lo mismo para su material. Para pasar las yardas cúbicas a libras o toneladas, consulta [¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica).
 
 ## Fuentes
 
-- Todas las cifras de esta guía son aritmética: un pie son 12 pulgadas y una yarda cúbica son 27 pies cúbicos por definición. El 10 por ciento de extra es el valor por defecto de la calculadora de concreto. No damos pesos, densidades ni precios, porque cambian según el material, el proveedor y el año.
+- Todas las cifras de esta guía son aritmética: un pie son 12 pulgadas y una yarda cúbica son 27 pies cúbicos por definición. El 10 por ciento de extra es el valor por defecto de la calculadora de concreto. No damos precios, porque cambian según el proveedor y el año. Los pesos cambian según el material y la humedad, así que la tabla enlazada arriba da cada uno con su fuente publicada.

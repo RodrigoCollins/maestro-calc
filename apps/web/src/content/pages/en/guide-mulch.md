@@ -45,7 +45,7 @@ A bag holds the cubic feet printed on it, most often 2 or 3. Divide the volume b
 
 The bigger the bed, the more bags it takes. A bed 30 ft by 10 ft at 3 in takes 30 × 10 × 1/4 = 75.00 cubic feet, or 78.75 with the extra: 2.92 cubic yards in bulk, or 40 bags of 2 cubic feet. Ask the supplier for the price per cubic yard, any minimum order and the delivery charge, and compare that with the price of the bags.
 
-The [mulch calculator](/mulch-calculator) works out the cubic yards and the bags for your bed, at the depth you choose, and both costs when you enter your prices. The guide [How to calculate cubic yards](/guides/how-to-calculate-cubic-yards) shows the same math for concrete, gravel and topsoil.
+The [mulch calculator](/mulch-calculator) works out the cubic yards and the bags for your bed, at the depth you choose, and both costs when you enter your prices. The guide [How to calculate cubic yards](/guides/how-to-calculate-cubic-yards) shows the same math for concrete, gravel and topsoil, and [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart) gives what a cubic yard of wood chip mulch weighs, dry or fresh.
 
 ## Sources
 

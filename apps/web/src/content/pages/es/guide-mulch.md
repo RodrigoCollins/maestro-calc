@@ -45,7 +45,7 @@ Una bolsa trae los pies cúbicos impresos en ella, casi siempre 2 o 3. Divide el
 
 Cuanto más grande el cantero, más bolsas lleva. Un cantero de 30 ft por 10 ft a 3 in lleva 30 × 10 × 1/4 = 75.00 pies cúbicos, o 78.75 con el extra: 2.92 yardas cúbicas a granel, o 40 bolsas de 2 pies cúbicos. Pide al proveedor el precio por yarda cúbica, el pedido mínimo y el costo del envío, y compáralo con el precio de las bolsas.
 
-La [calculadora de mulch](/es/calculadora-de-mulch) calcula las yardas cúbicas y las bolsas para tu cantero, a la profundidad que elijas, y los dos costos cuando escribes tus precios. La guía [Cómo calcular yardas cúbicas](/es/guias/como-calcular-yardas-cubicas) muestra la misma cuenta para el concreto, la grava y la tierra para jardín.
+La [calculadora de mulch](/es/calculadora-de-mulch) calcula las yardas cúbicas y las bolsas para tu cantero, a la profundidad que elijas, y los dos costos cuando escribes tus precios. La guía [Cómo calcular yardas cúbicas](/es/guias/como-calcular-yardas-cubicas) muestra la misma cuenta para el concreto, la grava y la tierra para jardín, y [¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica) da lo que pesa una yarda cúbica de mulch de astillas, seco o fresco.
 
 ## Fuentes
 

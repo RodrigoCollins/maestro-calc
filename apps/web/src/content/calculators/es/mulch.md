@@ -38,7 +38,7 @@ La calculadora va del tamaño del área a lo que compras:
 - Yardas cúbicas = volumen total en pies cúbicos ÷ 27.
 - Bolsas = volumen total ÷ tamaño de la bolsa, redondeado hacia arriba a una bolsa entera.
 
-No interviene ningún peso ni densidad. Una bolsa contiene el volumen impreso en ella, y una yarda cúbica es exactamente 27 pies cúbicos. Un pie es exactamente 0.3048 metros (NIST SP 811), y de ahí salen los metros cúbicos.
+No interviene ningún peso ni densidad. Una bolsa contiene el volumen impreso en ella, y una yarda cúbica es exactamente 27 pies cúbicos. Un pie es exactamente 0.3048 metros (NIST SP 811), y de ahí salen los metros cúbicos. Para saber cuánto pesa una yarda cúbica de mulch de astillas, seco o fresco, consulta [¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica).
 
 Ejemplo resuelto: un área junto a una cerca, de 20 ft de largo, 4 ft de ancho y 3 in de profundidad, con 5 por ciento de extra y bolsas de 2 cu ft.
 

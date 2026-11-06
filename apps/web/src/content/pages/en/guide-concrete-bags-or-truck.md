@@ -21,7 +21,7 @@ Ready-mix is sold by the cubic yard, and a cubic yard is 27 cubic feet. A bag of
 - 60 bags of 60 lb, or
 - 90 bags of 40 lb.
 
-That is about 3,600 pounds of dry mix to haul, mix and place by hand for every cubic yard.
+That is about 3,600 pounds of dry mix to haul, mix and place by hand for every cubic yard. Once it hardens, a cubic yard of concrete weighs about 3,915 to 4,050 lb ([How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart)).
 
 ## What a small truck load costs
 

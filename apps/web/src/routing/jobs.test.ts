@@ -88,6 +88,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'gravel-driveway-10x20',
       'gravel-driveway-12x50',
       'gravel-driveway-12x100',
+      'cubic-yard-weight-chart',
     ]);
     expect(jobsOf('paint')).toEqual([
       'paint-room-10x10',
@@ -237,7 +238,11 @@ describe('job pages (growth plan › lever 1)', () => {
     }
     expect(sizes.length).toBeGreaterThanOrEqual(12);
     expect(isChartJob('concrete-slab-chart')).toBe(true);
-    expect(JOB_IDS.filter(isChartJob)).toEqual(['concrete-slab-chart', 'roof-pitch-chart']);
+    expect(JOB_IDS.filter(isChartJob)).toEqual([
+      'concrete-slab-chart',
+      'roof-pitch-chart',
+      'cubic-yard-weight-chart',
+    ]);
     expect(ROUTES['concrete-slab-chart']).toEqual({
       en: '/concrete/slab-chart',
       es: '/es/concreto/tabla-de-losas',
@@ -266,6 +271,24 @@ describe('job pages (growth plan › lever 1)', () => {
       en: '/roofing/roof-pitch-chart',
       es: '/es/techos/tabla-de-pendientes-de-techo',
     });
+  });
+
+  // queries: "how much does a yard of gravel weigh", "weight of a cubic yard of dirt": the chart
+  // opens the gravel calculator on one cubic yard (9 ft × 9 ft × 4 in = 27 ft³, no extra), compacted
+  // then loose
+  it('opens the cubic yard weight chart on one cubic yard of gravel, compacted then loose', () => {
+    const { calculator, cases } = JOBS['cubic-yard-weight-chart'];
+    expect(calculator).toBe('gravel');
+    expect(cases).toEqual(
+      ['compacted', 'loose'].map((placement) => ({
+        length: '9ft',
+        width: '9ft',
+        depth: '4in',
+        placement,
+        waste: '0',
+      })),
+    );
+    expect(isChartJob('cubic-yard-weight-chart')).toBe(true);
   });
 
   // query: "how many bags of concrete for a footing": a continuous footing of the calculator, its
@@ -312,7 +335,7 @@ describe('job pages (growth plan › lever 1)', () => {
   ] as const)(
     'names each %s job after the length and the width of its cases',
     (calculator, prefix, varying, values) => {
-      for (const id of jobsOf(calculator)) {
+      for (const id of jobsOf(calculator).filter((each) => !isChartJob(each))) {
         const size = id.replace(prefix, '');
         const [length, width] = size.split('x');
         for (const each of JOBS[id].cases) {
@@ -331,7 +354,7 @@ describe('job pages (growth plan › lever 1)', () => {
   );
 
   it('routes the gravel, paint and drywall jobs by their size', () => {
-    for (const id of jobsOf('gravel')) {
+    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each))) {
       const size = id.replace('gravel-driveway-', '');
       expect(ROUTES[id].en, id).toBe(`/landscaping/gravel-for-${size}-driveway`);
       expect(ROUTES[id].es, id).toBe(`/es/jardineria/grava-para-entrada-de-${size}`);
