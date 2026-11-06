@@ -564,10 +564,11 @@ describe('the calculators each guide explains', () => {
     expect(calculators.filter((href) => !explained.has(href))).toEqual([]);
   });
 
-  it('send the opening guide’s water level to the fill time and its test to the pH dose', () => {
+  it('send the opening guide’s water level to the fill time and its balance to the doses', () => {
     expect(GUIDES.find(({ path }) => path === OPENING_GUIDE.path)?.calculators).toEqual([
       FILL_TIME.path,
       VOLUME_TEXTS.path,
+      ALKALINITY.path,
       PH.path,
       SALT.path,
       CHLORINE.path,
@@ -594,6 +595,49 @@ describe('the opening of each top guide', () => {
     expect(opening(SHOCK_GUIDE.lead)).toContain('10,000 gallons');
     expect(opening(SHOCK_GUIDE.lead)).toContain('4 ppm');
     expect(textOf(SHOCK_GUIDE)).toContain('prohibits reentry above 4 ppm');
+  });
+
+  it('opens a pool in its order, with the doses for 10,000 gallons', () => {
+    const soda = figure(
+      ALKALINITY.path,
+      { gallons: '10000', current: '80', target: '90' },
+      'pounds',
+    );
+    const acid = figure(
+      PH.path,
+      { gallons: '10000', product: 'muriatic-31-45', drops: '1' },
+      'liquid',
+    );
+    const shock = figure(
+      CHLORINE.path,
+      { gallons: '10000', current: '0', target: '10', product: 'cal-hypo-65' },
+      'dry',
+    );
+    const lead = opening(OPENING_GUIDE.lead);
+    expect(lead).toContain('10,000 gallons');
+    expect(lead).toContain(`${soda} lb of baking soda`);
+    expect(lead).toContain(`${acid} fl oz of 31.45% muriatic acid`);
+    expect(lead).toContain(`${shock} oz of 65% cal-hypo`);
+  });
+
+  it('balances alkalinity before pH and doses each step as its calculator does', () => {
+    const titles = OPENING_GUIDE.steps.map(({ title }) => title);
+    expect(titles.indexOf('Bring the alkalinity into range first')).toBeLessThan(
+      titles.indexOf('Then correct the pH'),
+    );
+    expect(titles.indexOf('Then correct the pH')).toBeLessThan(
+      titles.indexOf('Shock, then raise the chlorine'),
+    );
+    const step = (title: string) => OPENING_GUIDE.steps.find((s) => s.title === title);
+    expect(step('Bring the alkalinity into range first')?.sources).toEqual(['taylor']);
+    expect(step('Then correct the pH')?.text).toContain('one quart per 20,000 gallons');
+    const salt = figure(SALT.path, { gallons: '10000', current: '3000', target: '3200' }, 'pounds');
+    expect(step('Bring the salt up, if you have a salt cell')?.text).toContain(`${salt} lb`);
+    expect(step('Shock, then raise the chlorine')?.text).toContain('4 ppm');
+    expect(OPENING_GUIDE.sources.taylor).toEqual(PH_GUIDE.sources.taylor);
+    expect(OPENING_GUIDE.sources.hasa).toEqual(PH_GUIDE.sources.hasa);
+    expect(OPENING_GUIDE.sources.calHypo).toEqual(SHOCK_GUIDE.sources.calHypo);
+    expect(OPENING_GUIDE.sources.manual).toEqual(CHEMISTRY_CHART.sources.hayward);
   });
 
   it('lowers pH with the muriatic acid a drop of the acid demand test takes', () => {

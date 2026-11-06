@@ -1,5 +1,5 @@
 import { CHEMISTRY_CHART } from './chemistry.ts';
-import { DOSING_CHART } from './dosing.ts';
+import { DOSING_CHART, doseOf } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -41,7 +41,24 @@ const SOURCES = {
     name: 'Hayward: Opening Your Pool',
     url: 'https://www.hayward.com/maintenance/opening-your-pool',
   },
+  // as the dosing chart, the pH and the shock guides cite them (`guide.test.ts`)
+  manual: DOSING_CHART.sources.hayward,
+  taylor: DOSING_CHART.sources.taylor,
+  hasa: DOSING_CHART.sources.hasa,
+  calHypo: DOSING_CHART.sources.calHypo,
 } as const satisfies Record<string, GuideSource>;
+
+/** The doses of a 10,000 gallon pool the opening quotes, each its calculator's own. */
+const OPENING = {
+  soda: doseOf(ALKALINITY.path, { gallons: '10000', current: '80', target: '90' }, 'pounds'),
+  acid: doseOf(PH.path, { gallons: '10000', product: 'muriatic-31-45', drops: '1' }, 'liquid'),
+  salt: doseOf(SALT.path, { gallons: '10000', current: '3000', target: '3200' }, 'pounds'),
+  shock: doseOf(
+    CHLORINE.path,
+    { gallons: '10000', current: '0', target: '10', product: 'cal-hypo-65' },
+    'dry',
+  ),
+} as const;
 
 /** The steps, in order; each names the sources its figures come from. */
 const STEPS: readonly GuideStep[] = [
@@ -73,20 +90,32 @@ const STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Test the water',
-    text: 'Test free chlorine and pH with a DPD test kit. For a home pool, CDC recommends free chlorine of at least 1 ppm, at least 2 ppm if you use cyanuric acid or a stabilized chlorine such as dichlor or trichlor, and pH 7.0 to 7.8. Hayward’s opening guide aims for 1 to 3 ppm and a pH of 7.2 to 7.8.',
-    link: { href: PH.path, label: 'Work out the pH dose' },
+    text: 'Test free chlorine and pH with a DPD test kit, and total alkalinity too. For a home pool, CDC recommends free chlorine of at least 1 ppm, at least 2 ppm if you use cyanuric acid or a stabilized chlorine such as dichlor or trichlor, and pH 7.0 to 7.8. Hayward’s opening guide aims for 1 to 3 ppm and a pH of 7.2 to 7.8.',
     sources: ['cdc', 'hayward'],
   },
   {
+    title: 'Bring the alkalinity into range first',
+    text: `Taylor’s instructions say to bring total alkalinity into its range, 80 to 120 ppm, before you adjust the pH: it is the buffer that keeps the pH from bouncing. Each 10 ppm takes ${OPENING.soda} lb of baking soda (sodium bicarbonate) per 10,000 gallons.`,
+    link: { href: ALKALINITY.path, label: 'Work out the baking soda' },
+    sources: ['taylor'],
+  },
+  {
+    title: 'Then correct the pH',
+    text: `To lower it, run the acid demand test of your kit: each drop it takes is ${OPENING.acid} fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart. HASA’s label adds at most one quart per 20,000 gallons in 24 hours, poured into the deep end with the pump running, so a larger dose goes in over several days.`,
+    link: { href: PH.path, label: 'Work out the pH dose' },
+    sources: ['taylor', 'hasa'],
+  },
+  {
     title: 'Bring the salt up, if you have a salt cell',
-    text: 'Salt does not evaporate, but rain and the fresh water you add to top the pool up dilute it. Test it, then add the pounds to reach the level your cell asks for, three quarters first and the rest after a day of circulation.',
+    text: `Salt does not evaporate, but rain and the fresh water you add to top the pool up dilute it. Test it, then add the pounds to reach the level your cell asks for, three quarters first and the rest after a day of circulation. From 3,000 to the 3,200 ppm Hayward’s AquaRite manual calls the best, 10,000 gallons take ${OPENING.salt} lb.`,
     link: { href: SALT.path, label: 'Work out the salt' },
+    sources: ['manual'],
   },
   {
     title: 'Shock, then raise the chlorine',
-    text: 'Shock the pool once the water is balanced, as the sun goes down so the sunlight does not burn the chlorine off, and bring free chlorine to your target with the product you have.',
+    text: `Shock the pool once the water is balanced, as the sun goes down so the sunlight does not burn the chlorine off. From 0 ppm, 10,000 gallons take ${OPENING.shock} oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm; swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Then keep free chlorine at your target with the product you have.`,
     link: { href: CHLORINE.path, label: 'Work out the chlorine' },
-    sources: ['hayward'],
+    sources: ['hayward', 'calHypo'],
   },
   {
     title: 'Vacuum the next day',
@@ -116,7 +145,7 @@ export const OPENING_GUIDE = {
   description:
     'Open your pool in the order that saves a second trip to the store: cover, equipment, water level, salt, pH, then chlorine, each dose sized to your pool.',
   h1: 'Opening your pool this spring',
-  lead: 'The order that saves a second trip to the store: the cover and the equipment first, then the water level, the salt, the pH and the chlorine last. Each dose is sized to your own pool.',
+  lead: `Open a pool in this order: the cover and the equipment, the water level, a test, then alkalinity before pH, the salt, and the shock last. For 10,000 gallons, each 10 ppm of alkalinity takes ${OPENING.soda} lb of baking soda, each drop of the acid demand test ${OPENING.acid} fl oz of 31.45% muriatic acid, and a shock from 0 to 10 ppm ${OPENING.shock} oz of 65% cal-hypo. Each dose below is sized to your own pool by its calculator.`,
   sources: SOURCES,
   steps: STEPS,
 } as const satisfies StepGuide;
