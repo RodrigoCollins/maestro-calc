@@ -208,9 +208,9 @@ describe('the minimum wage by state', () => {
       expect(law.es, state).toMatch(/1 de enero/);
       // why it is not confirmed: what the state's own pages showed on the day we read them, or
       // that they refused us; never a claim we could not check
-      const read = /read on November 6, 2026/.test(unread.en);
-      expect(read || /refused our request/.test(unread.en), state).toBe(true);
-      expect(/leímos el 6 de noviembre de 2026/.test(unread.es), state).toBe(read);
+      const read = unread.en.includes('read on November 6, 2026');
+      expect(read || unread.en.includes('refused our request'), state).toBe(true);
+      expect(unread.es.includes('leímos el 6 de noviembre de 2026'), state).toBe(read);
       if (!read) expect(unread.es, state).toMatch(/rechazaron nuestra consulta/);
       expect(`${unread.en} ${unread.es}`, state).not.toMatch(/not yet|not posted|todavía no/i);
     }
