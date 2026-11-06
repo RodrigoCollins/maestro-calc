@@ -179,9 +179,9 @@ const DOL: GuideSource = {
 };
 
 const unconfirmedOf = (lang: Lang): MinimumWage2027Texts['unconfirmed']['items'] =>
-  UNCONFIRMED_2027.map(({ state, reason, check }) => ({
+  UNCONFIRMED_2027.map(({ state, law, unread, check }) => ({
     name: nameOf(state, lang),
-    reason: reason[lang],
+    reason: `${law[lang]} ${unread[lang]}`,
     label: check.label,
     href: check.href,
   }));
@@ -215,7 +215,7 @@ export const MINIMUM_WAGE_2027_GUIDE: Readonly<Record<Lang, MinimumWage2027Texts
     unconfirmed: {
       heading: 'Not yet confirmed',
       intro:
-        'These states change their minimum wage on January 1, but we could not read their 2027 rate from a primary source: the state page refused our request or did not yet give it. They are not in the table until we can; check the agency named.',
+        'Under the law each item names, these states change their minimum wage on January 1, 2027, but we could not read the 2027 rate from a primary source. They are not in the table until we can; check the agency named.',
       check: 'Check',
       items: unconfirmedOf('en'),
     },
@@ -272,7 +272,7 @@ export const MINIMUM_WAGE_2027_GUIDE: Readonly<Record<Lang, MinimumWage2027Texts
     unconfirmed: {
       heading: 'Todavía sin confirmar',
       intro:
-        'Estos estados cambian su salario mínimo el 1 de enero, pero no pudimos leer su tarifa de 2027 en una fuente oficial: la página del estado rechazó la consulta o todavía no la daba. No están en la tabla hasta que podamos leerla; consulta a la agencia indicada.',
+        'Según la ley que nombra cada punto, estos estados cambian su salario mínimo el 1 de enero de 2027, pero no pudimos leer la tarifa de 2027 en una fuente oficial. No están en la tabla hasta que podamos leerla; consulta a la agencia indicada.',
       check: 'Consulta',
       items: unconfirmedOf('es'),
     },

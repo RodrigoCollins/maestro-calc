@@ -121,7 +121,12 @@ describe('the minimum wage increases of January 1, 2027', () => {
     expect(t.unconfirmed.items.map(({ href }) => href)).toEqual(
       UNCONFIRMED_2027.map(({ check }) => check.href),
     );
-    for (const item of t.unconfirmed.items) expect(item.reason.length).toBeGreaterThan(0);
+    expect(t.unconfirmed.items.map(({ reason }) => reason)).toEqual(
+      UNCONFIRMED_2027.map(({ law, unread }) => `${law[lang]} ${unread[lang]}`),
+    );
+    // the intro claims only what holds for every state on the list
+    expect(t.unconfirmed.intro).toMatch(lang === 'en' ? /January 1, 2027/ : /1 de enero de 2027/);
+    expect(t.unconfirmed.intro).not.toMatch(/not yet give|todavía no la daba/);
   });
 
   it('cites the DOL first and every source of a row or of the unchanged list', () => {
