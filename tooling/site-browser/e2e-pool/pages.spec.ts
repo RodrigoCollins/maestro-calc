@@ -32,6 +32,15 @@ for (const path of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
+    // The loader runs on poolfigures.com only, so the browser tests send nothing to Google.
+    // One load per page and its own test: a loop over every page in one test outgrows the timeout.
+    test('carries the analytics loader, with the measurement id and the host', async ({ page }) => {
+      await page.goto(path);
+      const loader = page.locator('script[src="/analytics.js"]');
+      await expect(loader).toHaveAttribute('data-ga', 'G-VE973PXMS4');
+      await expect(loader).toHaveAttribute('data-host', 'poolfigures.com');
+    });
+
     test('is open to search engines, with its canonical URL', async ({ page }) => {
       await page.goto(path);
       await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
@@ -125,18 +134,6 @@ test('links the privacy page from the footer, and it describes Google Analytics'
   await page.locator('footer a[href="/privacy"]').click();
   await expect(page).toHaveURL(/\/privacy$/);
   await expect(page.locator('#analytics')).toHaveText('Analytics and cookies');
-});
-
-// The loader runs on poolfigures.com only, so the browser tests send nothing to Google.
-test('carries the analytics loader on every page, with the measurement id and the host', async ({
-  page,
-}) => {
-  for (const path of PAGES) {
-    await page.goto(path);
-    const loader = page.locator('script[src="/analytics.js"]');
-    await expect(loader, path).toHaveAttribute('data-ga', 'G-VE973PXMS4');
-    await expect(loader, path).toHaveAttribute('data-host', 'poolfigures.com');
-  }
 });
 
 test('sends the security headers with every page', async ({ request }) => {
