@@ -18,6 +18,19 @@ const WIDTHS = [
   879, 880, 887, 888, 919, 920, 927, 928, 983, 984, 1023, 1024, 1280,
 ] as const;
 
+/**
+ * WIDTHS in runs of ten: a test that loads or measures the page at every width takes one run, so
+ * each stays inside the default timeout however many widths and pages are added (one test over
+ * every width took 57 s on CI, 2026-11-06, and needed `test.slow()`).
+ */
+const RUN = 10;
+const RUNS: readonly (readonly number[])[] = Array.from(
+  { length: Math.ceil(WIDTHS.length / RUN) },
+  (_, index) => WIDTHS.slice(index * RUN, (index + 1) * RUN),
+);
+const spanOf = (run: readonly number[]): string =>
+  `${String(run[0])} to ${String(run[run.length - 1])} px`;
+
 type Block = 'answer' | 'notice' | 'copy';
 
 /**
@@ -240,22 +253,23 @@ const shiftOf = async (page: Page): Promise<number> => {
 for (const calculator of calculatorPages) {
   test.describe(`${calculator.path} layout (calculator-page › Layout stability, ${calculator.locale})`, () => {
     // spec: calculator-page › [CP44], site-quality › [SQ19] the load shifts nothing, with and without a state
+    // Each load waits for the network to idle (500 ms) and 250 ms more, so a test takes one run of
+    // widths: the 70 widths in one test took 57 s on CI.
     for (const query of ['', calculator.spec.restored?.query ?? typedQuery(calculator.spec)]) {
-      test(`shifts the layout by at most 0.01 on load at every width${query === '' ? '' : ' with a state in the link'}`, async ({
-        page,
-      }) => {
-        // 18 loads, each waiting for the network to idle (500 ms) and 250 ms more: about 15 s
-        // locally, so the default 30 s leaves no margin on a slower runner; slow() gives 90 s.
-        test.slow();
-        await page.addInitScript(collectShifts);
-        for (const width of WIDTHS) {
-          await page.setViewportSize({ width, height: 844 });
-          await open(page, calculator, query);
-          await page.waitForLoadState('networkidle');
-          await page.waitForTimeout(250);
-          expect(await shiftOf(page), `${String(width)} px`).toBeLessThanOrEqual(0.01);
-        }
-      });
+      for (const run of RUNS) {
+        test(`shifts the layout by at most 0.01 on load at ${spanOf(run)}${query === '' ? '' : ' with a state in the link'}`, async ({
+          page,
+        }) => {
+          await page.addInitScript(collectShifts);
+          for (const width of run) {
+            await page.setViewportSize({ width, height: 844 });
+            await open(page, calculator, query);
+            await page.waitForLoadState('networkidle');
+            await page.waitForTimeout(250);
+            expect(await shiftOf(page), `${String(width)} px`).toBeLessThanOrEqual(0.01);
+          }
+        });
+      }
     }
 
     // spec: site-shell › [SS33] the web fonts arriving after the first paint move nothing: the
@@ -353,98 +367,102 @@ for (const id of ids) {
     // the fallback, so a shorter reserve would move the page when the font swaps). The fit check
     // reads the web font only, the same on every platform; the unused check takes the tallest
     // content of both, since the fallback font differs per platform and only ever adds height.
-    test('fits every reserved block at every width with less than one line unused', async ({
-      browser,
-    }) => {
-      test.slow();
-      await withPages(browser, [true, true], async ([web, fallback]) => {
-        if (web === undefined || fallback === undefined) throw new Error('no page');
-        await fallback.route(
-          (url) => url.pathname.endsWith('.woff2'),
-          (route) => route.abort(),
-        );
-        const measured = new Map<number, [string, boolean, Probes, BlockEdges][]>();
-        for (const [page, webFont] of [
-          [web, true],
-          [fallback, false],
-        ] as const) {
-          for (const calculator of pages) {
-            await open(page, calculator);
-            const sentences: string[] = ['—'];
-            if (calculator.spec.answer !== undefined) {
-              for (const query of calculator.spec.layoutQueries) {
-                await open(page, calculator, query);
-                sentences.push((await answer(page).textContent()) ?? '');
+    for (const run of RUNS) {
+      test(`fits every reserved block at ${spanOf(run)} with less than one line unused`, async ({
+        browser,
+      }) => {
+        await withPages(browser, [true, true], async ([web, fallback]) => {
+          if (web === undefined || fallback === undefined) throw new Error('no page');
+          await fallback.route(
+            (url) => url.pathname.endsWith('.woff2'),
+            (route) => route.abort(),
+          );
+          const measured = new Map<number, [string, boolean, Probes, BlockEdges][]>();
+          for (const [page, webFont] of [
+            [web, true],
+            [fallback, false],
+          ] as const) {
+            for (const calculator of pages) {
+              await open(page, calculator);
+              const sentences: string[] = ['—'];
+              if (calculator.spec.answer !== undefined) {
+                for (const query of calculator.spec.layoutQueries) {
+                  await open(page, calculator, query);
+                  sentences.push((await answer(page).textContent()) ?? '');
+                }
+              }
+              const edges = blockEdgesOf(await cssOf(page));
+              const variants: Variants = {
+                answers: sentences,
+                notices: [
+                  await messageOf(page, 'errors.INVALID_VALUE'),
+                  await messageOf(page, 'errors.UNSUPPORTED_VERSION'),
+                ],
+                copied: await messageOf(page, 'copy.copied'),
+              };
+              for (const width of run) {
+                await page.setViewportSize({ width, height: 900 });
+                measured.set(width, [
+                  ...(measured.get(width) ?? []),
+                  [calculator.locale, webFont, await probeBlocks(page, variants), edges],
+                ]);
               }
             }
-            const edges = blockEdgesOf(await cssOf(page));
-            const variants: Variants = {
-              answers: sentences,
-              notices: [
-                await messageOf(page, 'errors.INVALID_VALUE'),
-                await messageOf(page, 'errors.UNSUPPORTED_VERSION'),
-              ],
-              copied: await messageOf(page, 'copy.copied'),
-            };
-            for (const width of WIDTHS) {
-              await page.setViewportSize({ width, height: 900 });
-              measured.set(width, [
-                ...(measured.get(width) ?? []),
-                [calculator.locale, webFont, await probeBlocks(page, variants), edges],
-              ]);
+          }
+          for (const [width, rows] of measured) {
+            for (const block of ['answer', 'notice', 'copy'] as const) {
+              const probes = rows.flatMap(([locale, webFont, probes, edges]) =>
+                probes[block] === undefined
+                  ? []
+                  : [{ locale, webFont, edges: edges[block], ...probes[block] }],
+              );
+              const expected = pages.filter(
+                ({ spec }) => block !== 'answer' || spec.answer !== undefined,
+              ).length;
+              expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(2 * expected);
+              const tallest = Math.max(...probes.map(({ natural }) => natural));
+              for (const { locale, edges, reserved, line, natural } of probes.filter(
+                ({ webFont }) => webFont,
+              )) {
+                const label = `${block} ${locale} at ${String(width)} px`;
+                // soft: one run reports every width and block that misses, not the first one
+                expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
+                expect
+                  .soft(reserved - tallest, `${label}: unused reserve`)
+                  .toBeLessThan((nearBreakpoint(edges, width) ? 2 : UNUSED_LINES) * line);
+              }
             }
           }
-        }
-        for (const [width, rows] of measured) {
-          for (const block of ['answer', 'notice', 'copy'] as const) {
-            const probes = rows.flatMap(([locale, webFont, probes, edges]) =>
-              probes[block] === undefined
-                ? []
-                : [{ locale, webFont, edges: edges[block], ...probes[block] }],
-            );
-            const expected = pages.filter(
-              ({ spec }) => block !== 'answer' || spec.answer !== undefined,
-            ).length;
-            expect(probes, `${block} probes at ${String(width)} px`).toHaveLength(2 * expected);
-            const tallest = Math.max(...probes.map(({ natural }) => natural));
-            for (const { locale, edges, reserved, line, natural } of probes.filter(
-              ({ webFont }) => webFont,
-            )) {
-              const label = `${block} ${locale} at ${String(width)} px`;
-              // soft: one run reports every width and block that misses, not the first one
-              expect.soft(natural, `${label}: content fits`).toBeLessThanOrEqual(reserved + 0.05);
-              expect
-                .soft(reserved - tallest, `${label}: unused reserve`)
-                .toBeLessThan((nearBreakpoint(edges, width) ? 2 : UNUSED_LINES) * line);
-            }
-          }
-        }
+        });
       });
-    });
+    }
 
     // spec: calculator-page › [CP62], [CP63] the server HTML and the mounted page have the same boxes at every width
     const [first] = pages;
     const stated =
       first === undefined ? [] : [first.spec.restored?.query ?? typedQuery(first.spec)];
     for (const query of ['', ...stated]) {
-      test(`puts the reserved blocks and what follows them where the script-free page puts them${query === '' ? '' : ' with a state in the link'}`, async ({
-        browser,
-      }) => {
-        for (const calculator of pages) {
-          await withPages(browser, [true, false], async ([mounted, plain]) => {
-            if (mounted === undefined || plain === undefined) throw new Error('no page');
-            await open(mounted, calculator, query);
-            await plain.goto(calculator.path);
-            for (const width of WIDTHS) {
-              await mounted.setViewportSize({ width, height: 900 });
-              await plain.setViewportSize({ width, height: 900 });
-              expect(await boxesOf(mounted), `${calculator.locale} at ${String(width)} px`).toEqual(
-                await boxesOf(plain),
-              );
-            }
+      for (const calculator of pages) {
+        for (const run of RUNS) {
+          test(`puts the reserved blocks and what follows them where the script-free page puts them, ${calculator.locale} at ${spanOf(run)}${query === '' ? '' : ' with a state in the link'}`, async ({
+            browser,
+          }) => {
+            await withPages(browser, [true, false], async ([mounted, plain]) => {
+              if (mounted === undefined || plain === undefined) throw new Error('no page');
+              await open(mounted, calculator, query);
+              await plain.goto(calculator.path);
+              for (const width of run) {
+                await mounted.setViewportSize({ width, height: 900 });
+                await plain.setViewportSize({ width, height: 900 });
+                expect(
+                  await boxesOf(mounted),
+                  `${calculator.locale} at ${String(width)} px`,
+                ).toEqual(await boxesOf(plain));
+              }
+            });
           });
         }
-      });
+      }
     }
   });
 }
