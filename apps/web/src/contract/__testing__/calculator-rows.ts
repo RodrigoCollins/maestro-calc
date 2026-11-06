@@ -402,7 +402,7 @@ export const CONTENT_ROWS = {
   },
   'feet-inches': {
     module: feetInchesPage,
-    updated: '2026-11-03',
+    updated: '2026-11-05',
     sources: () => [NIST],
     engine: feetInchesShown,
     // the example is the page's starting values: Formulas names both lengths as written

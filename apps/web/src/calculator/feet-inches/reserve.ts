@@ -9,5 +9,5 @@ import type { Reserve } from '../../lib/reserve.ts';
  * client bundle carries them.
  */
 export const feetInchesReserve = {
-  answer: [2, [31, 1]],
+  answer: [3, [24, 2], [44.5, 1]],
 } as const satisfies Reserve;

@@ -13,6 +13,16 @@ describe('feet and inches url state (calc-feet-inches › URL and catalog)', () 
     expect(decode(feetInches, 'v=1&o=subtract&b=24').state).toEqual(state.value);
   });
 
+  it('encodes a fit and decodes it back, and keeps reading the released operations', () => {
+    const state = feetInches.validate({ operation: 'fit', first: '20 ft', second: '16 in' });
+    if (!state.ok) throw new Error('invalid');
+    expect(encode(feetInches, state.value, {})).toBe('v=1&a=240&o=fit&b=16');
+    expect(decode(feetInches, 'v=1&a=240&o=fit&b=16').state).toEqual(state.value);
+    for (const operation of ['add', 'subtract', 'multiply', 'divide']) {
+      expect(decode(feetInches, `v=1&o=${operation}`).state.operation).toBe(operation);
+    }
+  });
+
   // spec: calc-feet-inches › [FI6] every valid state survives the link
   it('round-trips every valid state', () => {
     fc.assert(

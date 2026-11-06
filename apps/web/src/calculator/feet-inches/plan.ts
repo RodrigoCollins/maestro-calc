@@ -4,6 +4,7 @@ import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { required } from '../controller.ts';
 import type { Frame, Ready } from '../page-module.ts';
 import { dimensionText, outputText } from '../present.ts';
+import { numberOf } from './present.ts';
 import {
   ANSWER,
   LABEL,
@@ -19,8 +20,8 @@ import {
 /*
  * The plan of the feet and inches page: the lengths as bars to scale, as tape measurements laid
  * side by side. A sum or a difference draws both lengths and the result; a product or a quotient
- * draws the length and the result, the longer of the two split into its parts. Each bar carries its
- * text above it, as the answer writes it, so the plan is language-free and names no message.
+ * draws the length and the result, the longer of the two split into its parts; a fit draws the
+ * length cut after each whole piece, the piece, and what is left. Each bar carries its text above it, as the answer writes it, so the plan is language-free and names no message.
  */
 
 /** The viewBox of the drawing, the same in every state. */
@@ -31,7 +32,7 @@ export const MESSAGES: readonly string[] = [];
 
 type Moment = Ready<typeof feetInches>;
 
-/** The height of a bar, the room between rows, and the most parts a bar is split into. */
+/** The height of a bar, the room between rows, and the most parts (or pieces) a bar is split into. */
 const BAR = 16;
 const GAP = 12;
 const MOST_PARTS = 16;
@@ -41,9 +42,15 @@ const ROW = LINE * LABEL + PAD + BAR;
 interface Row {
   readonly length: Quantity<'length'>;
   readonly text: string;
-  /** How many equal parts the bar shows (1: none). */
-  readonly parts: number;
+  /** Where the bar is cut, as fractions of its length (none: an empty list). */
+  readonly cuts: readonly number[];
 }
+
+/** The cuts of a bar split into `parts` equal parts (1: none). */
+const equal = (parts: number): readonly number[] =>
+  Array.from({ length: parts - 1 }, (_, k) => (k + 1) / parts);
+
+const NO_CUT: readonly number[] = [];
 
 /** The result as the large figure writes it in the moment's unit system. */
 const resultText = ({ result, system }: Moment): string => {
@@ -63,6 +70,20 @@ const resultText = ({ result, system }: Moment): string => {
   return system === 'metric' ? `${figure} m` : figure;
 };
 
+const inches = (length: Quantity<'length'>): number => valueIn(length, inch).toNumber();
+
+/**
+ * The cuts of the first length of a fit: one after each whole piece, none at its very end (an
+ * exact fit leaves nothing past the last piece), and none past `MOST_PARTS` pieces.
+ */
+const fitCuts = (moment: Moment, left: Quantity<'length'>): readonly number[] => {
+  const count = Number(numberOf(moment, 'pieces').floor());
+  if (count > MOST_PARTS) return NO_CUT;
+  const step = inches(moment.valid.second) / inches(moment.valid.first);
+  const cuts = Array.from({ length: count }, (_, k) => (k + 1) * step);
+  return valueIn(left, inch).isZero() ? cuts.slice(0, -1) : cuts;
+};
+
 const rowsOf = (moment: Moment): readonly Row[] => {
   const { valid, result, system } = moment;
   const outcome = required(
@@ -70,30 +91,27 @@ const rowsOf = (moment: Moment): readonly Row[] => {
     'result',
   ).value;
   const first = { length: valid.first, text: dimensionText(valid.first, system) };
+  const second = { length: valid.second, text: dimensionText(valid.second, system), cuts: NO_CUT };
   const last = { length: outcome, text: resultText(moment) };
-  const parts = valid.factor <= MOST_PARTS ? valid.factor : 1;
+  const parts = equal(valid.factor <= MOST_PARTS ? valid.factor : 1);
   switch (valid.operation) {
     case 'add':
     case 'subtract':
-      return [
-        { ...first, parts: 1 },
-        { length: valid.second, text: dimensionText(valid.second, system), parts: 1 },
-        { ...last, parts: 1 },
-      ];
+      return [{ ...first, cuts: NO_CUT }, second, { ...last, cuts: NO_CUT }];
     case 'multiply':
       return [
-        { ...first, parts: 1 },
-        { ...last, parts },
+        { ...first, cuts: NO_CUT },
+        { ...last, cuts: parts },
       ];
     case 'divide':
       return [
-        { ...first, parts },
-        { ...last, parts: 1 },
+        { ...first, cuts: parts },
+        { ...last, cuts: NO_CUT },
       ];
+    case 'fit':
+      return [{ ...first, cuts: fitCuts(moment, outcome) }, second, { ...last, cuts: NO_CUT }];
   }
 };
-
-const inches = (length: Quantity<'length'>): number => valueIn(length, inch).toNumber();
 
 /** The plan of a ready moment, or `null` when every length is zero (nothing to scale). */
 export const planOf = (moment: Moment): Plan | null => {
@@ -108,8 +126,8 @@ export const planOf = (moment: Moment): Plan | null => {
     return { row, y, w, barY: round(y + LINE * LABEL + PAD) };
   });
   const splits = placed.flatMap(({ row, w, barY }) =>
-    Array.from({ length: row.parts - 1 }, (_, k) => {
-      const x = num(MARGIN + (w * (k + 1)) / row.parts);
+    row.cuts.map((cut) => {
+      const x = num(MARGIN + w * cut);
       return `M${x} ${num(barY)}L${x} ${num(barY + BAR)}`;
     }),
   );
