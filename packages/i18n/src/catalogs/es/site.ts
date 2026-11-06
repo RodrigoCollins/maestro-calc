@@ -553,6 +553,56 @@ export const esSite = {
   'page.gravel-driveway-12x100.label': 'Entrada de 12x100',
   'page.gravel-driveway-12x100.intro':
     'Una entrada de 12 por 100 ft es un camino largo hasta una casa o un granero alejado de la calle. A este largo la grava llega por camión, así que pídela en toneladas al proveedor.',
+  'page.cubic-yard-weight-chart.title':
+    'Peso de una yarda cúbica: tabla de materiales | Maestro Calc',
+  'page.cubic-yard-weight-chart.description':
+    'Cuánto pesa una yarda cúbica en libras y toneladas: grava, concreto, arena, tierra para jardín, tierra de relleno y mulch, también por pie cúbico y por m³.',
+  'page.cubic-yard-weight-chart.heading': '¿Cuánto pesa una yarda cúbica? Tabla de materiales',
+  'page.cubic-yard-weight-chart.label': 'Peso por yarda cúbica',
+  'page.cubic-yard-weight-chart.intro':
+    'Una yarda cúbica de grava pesa aproximadamente 1.29 toneladas suelta y 1.83 toneladas compactada, las cifras de la calculadora de grava. Una yarda cúbica de concreto pesa aproximadamente de 3,915 a 4,050 lb, la arena aproximadamente 1.45 toneladas, la tierra para jardín y la tierra de relleno aproximadamente 0.80 toneladas, y el mulch de astillas de madera de 243 lb seco a 473 lb fresco. La tabla da cada material en libras y toneladas por yarda cúbica, libras por pie cúbico y kilogramos por metro cúbico, con la fuente publicada de cada cifra.',
+  'page.cubic-yard-weight-chart.note':
+    'Cada peso es aproximado. El agua agrega peso: la arena mojada, la tierra mojada y las astillas frescas pesan más que secas, y la grava y la tierra pesan más una vez compactadas. Cada cifra es la que publica su fuente, convertida con exactitud: una tonelada son 2,000 lb, una yarda cúbica son 27 pies cúbicos y una libra por yarda cúbica son 0.593 kilogramos por metro cúbico. Pregúntale a tu proveedor cuánto pesa su material. La grava compactada y la suelta abren la calculadora de grava con una yarda cúbica.',
+  'page.cubic-yard-weight-chart.table': 'Peso de una yarda cúbica, por material',
+  'page.cubic-yard-weight-chart.basis': 'Qué supone cada cifra',
+  'page.cubic-yard-weight-chart.material': 'Material',
+  'page.cubic-yard-weight-chart.lbYd3': 'Libras por yarda cúbica',
+  'page.cubic-yard-weight-chart.tonYd3': 'Toneladas por yarda cúbica',
+  'page.cubic-yard-weight-chart.lbFt3': 'Libras por pie cúbico',
+  'page.cubic-yard-weight-chart.kgM3': 'Kilogramos por metro cúbico',
+  'page.cubic-yard-weight-chart.materials.gravel-compacted': 'Base de grava, compactada',
+  'page.cubic-yard-weight-chart.materials.gravel-loose': 'Base de grava, suelta',
+  'page.cubic-yard-weight-chart.materials.gravel': 'Grava de 1/4 a 2 in',
+  'page.cubic-yard-weight-chart.materials.pit-run-gravel': 'Grava de banco (sin cribar)',
+  'page.cubic-yard-weight-chart.materials.concrete': 'Concreto',
+  'page.cubic-yard-weight-chart.materials.sand': 'Arena',
+  'page.cubic-yard-weight-chart.materials.topsoil': 'Tierra para jardín',
+  'page.cubic-yard-weight-chart.materials.fill-dirt': 'Tierra de relleno',
+  'page.cubic-yard-weight-chart.materials.soil-in-place': 'Suelo en el terreno, seco',
+  'page.cubic-yard-weight-chart.materials.wood-chips-green': 'Mulch de astillas, fresco',
+  'page.cubic-yard-weight-chart.materials.wood-chips-dry': 'Mulch de astillas, seco',
+  'page.cubic-yard-weight-chart.conditions.gravel-compacted':
+    'Base densa de 3/4 in, compactada en su lugar: de 1.80 a 1.86 toneladas (WisDOT)',
+  'page.cubic-yard-weight-chart.conditions.gravel-loose':
+    'La misma base suelta, repartida sobre su expansión de compactada a suelta de 36 a 47 por ciento (punto medio)',
+  'page.cubic-yard-weight-chart.conditions.gravel':
+    'Un factor de volumen a toneladas; la fuente no indica humedad ni compactación',
+  'page.cubic-yard-weight-chart.conditions.pit-run-gravel':
+    'Un factor de volumen a toneladas; la fuente no indica humedad ni compactación',
+  'page.cubic-yard-weight-chart.conditions.concrete':
+    'Concreto endurecido de peso normal sin varilla: de 145 lb por pie cúbico (FHWA, resistencia de hasta 5,000 psi) a 150 (WSDOT); la varilla agrega unas 5 (WSDOT)',
+  'page.cubic-yard-weight-chart.conditions.sand':
+    'Un factor de volumen a toneladas; la fuente no indica humedad, y la arena mojada pesa más',
+  'page.cubic-yard-weight-chart.conditions.topsoil':
+    'Un factor de volumen a toneladas; la fuente no indica humedad, y la tierra mojada pesa más',
+  'page.cubic-yard-weight-chart.conditions.fill-dirt':
+    'Un factor de volumen a toneladas; la fuente no indica humedad, y la tierra mojada pesa más',
+  'page.cubic-yard-weight-chart.conditions.soil-in-place':
+    'Densidad aparente seca (peso seco sobre volumen) de un suelo de textura media con cerca de 50 por ciento de poros (NRCS)',
+  'page.cubic-yard-weight-chart.conditions.wood-chips-green':
+    'Astillas de madera verdes (frescas), como factor de volumen a peso',
+  'page.cubic-yard-weight-chart.conditions.wood-chips-dry':
+    'Astillas de madera secas, como factor de volumen a peso',
   'page.paint-room-10x10.title': 'Pintura para un cuarto de 10x10: 1.54 galones | Maestro Calc',
   'page.paint-room-10x10.description':
     'Un cuarto de 10 por 10 ft con paredes de 8 ft, una puerta y dos ventanas lleva 1.54 galones de pintura en dos manos: 2 latas, y con paredes de 9 o 10 ft.',

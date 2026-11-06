@@ -242,6 +242,10 @@ export const ROUTES = {
     en: '/landscaping/gravel-for-12x100-driveway',
     es: '/es/jardineria/grava-para-entrada-de-12x100',
   },
+  'cubic-yard-weight-chart': {
+    en: '/landscaping/cubic-yard-weight-chart',
+    es: '/es/jardineria/tabla-de-peso-por-yarda-cubica',
+  },
   'paint-room-10x10': {
     en: '/painting/paint-for-10x10-room',
     es: '/es/pintura/pintura-para-cuarto-de-10x10',

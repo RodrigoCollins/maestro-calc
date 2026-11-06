@@ -540,6 +540,56 @@ export const enSite = {
   'page.gravel-driveway-12x100.label': '12x100 driveway',
   'page.gravel-driveway-12x100.intro':
     'A 12 by 100 ft driveway is a long lane to a house or a barn set well back from the road. At this length the gravel comes by the truckload, so order it in tons from the yard.',
+  'page.cubic-yard-weight-chart.title':
+    'Cubic Yard Weight Chart: Gravel, Sand, Dirt | Maestro Calc',
+  'page.cubic-yard-weight-chart.description':
+    'How much a cubic yard weighs in pounds and tons: gravel, concrete, sand, topsoil, fill dirt and wood chip mulch, per cubic foot and per m³ too, with sources.',
+  'page.cubic-yard-weight-chart.heading': 'How much does a cubic yard weigh? Materials chart',
+  'page.cubic-yard-weight-chart.label': 'Cubic yard weight chart',
+  'page.cubic-yard-weight-chart.intro':
+    'A cubic yard of gravel weighs about 1.29 tons loose and 1.83 tons compacted, the figures of the gravel calculator. A cubic yard of concrete weighs about 3,915 to 4,050 lb, sand about 1.45 tons, topsoil and fill dirt about 0.80 tons, and wood chip mulch 243 lb dry to 473 lb fresh. The chart gives each material in pounds and tons per cubic yard, pounds per cubic foot and kilograms per cubic meter, with the published source of each figure.',
+  'page.cubic-yard-weight-chart.note':
+    'Every weight is approximate. Water adds weight: wet sand, wet soil and fresh wood chips weigh more than dry ones, and gravel and soil weigh more once they are compacted. Each figure is the one its source publishes, converted exactly: a ton is 2,000 lb, a cubic yard is 27 cubic feet, and a pound per cubic yard is 0.593 kilograms per cubic meter. Ask your supplier what its material weighs. Compacted and loose gravel open the gravel calculator on one cubic yard.',
+  'page.cubic-yard-weight-chart.table': 'Weight of a cubic yard, by material',
+  'page.cubic-yard-weight-chart.basis': 'What each figure assumes',
+  'page.cubic-yard-weight-chart.material': 'Material',
+  'page.cubic-yard-weight-chart.lbYd3': 'Pounds per cubic yard',
+  'page.cubic-yard-weight-chart.tonYd3': 'Tons per cubic yard',
+  'page.cubic-yard-weight-chart.lbFt3': 'Pounds per cubic foot',
+  'page.cubic-yard-weight-chart.kgM3': 'Kilograms per cubic meter',
+  'page.cubic-yard-weight-chart.materials.gravel-compacted': 'Gravel base, compacted',
+  'page.cubic-yard-weight-chart.materials.gravel-loose': 'Gravel base, loose',
+  'page.cubic-yard-weight-chart.materials.gravel': 'Gravel, 1/4 to 2 in',
+  'page.cubic-yard-weight-chart.materials.pit-run-gravel': 'Pit run gravel',
+  'page.cubic-yard-weight-chart.materials.concrete': 'Concrete',
+  'page.cubic-yard-weight-chart.materials.sand': 'Sand',
+  'page.cubic-yard-weight-chart.materials.topsoil': 'Topsoil',
+  'page.cubic-yard-weight-chart.materials.fill-dirt': 'Fill dirt',
+  'page.cubic-yard-weight-chart.materials.soil-in-place': 'Soil in the ground, dry',
+  'page.cubic-yard-weight-chart.materials.wood-chips-green': 'Wood chip mulch, fresh',
+  'page.cubic-yard-weight-chart.materials.wood-chips-dry': 'Wood chip mulch, dry',
+  'page.cubic-yard-weight-chart.conditions.gravel-compacted':
+    '3/4 in dense-graded base, compacted in place: 1.80 to 1.86 tons (WisDOT)',
+  'page.cubic-yard-weight-chart.conditions.gravel-loose':
+    'The same base loose, spread over its 36 to 47 percent compacted-to-loose expansion (midpoint)',
+  'page.cubic-yard-weight-chart.conditions.gravel':
+    'A volume-to-tons factor; the source states no moisture or compaction',
+  'page.cubic-yard-weight-chart.conditions.pit-run-gravel':
+    'A volume-to-tons factor; the source states no moisture or compaction',
+  'page.cubic-yard-weight-chart.conditions.concrete':
+    'Hardened normal-weight concrete with no rebar: 145 lb per cubic foot (FHWA, strength up to 5,000 psi) to 150 (WSDOT); rebar adds about 5 (WSDOT)',
+  'page.cubic-yard-weight-chart.conditions.sand':
+    'A volume-to-tons factor; the source states no moisture, and wet sand weighs more',
+  'page.cubic-yard-weight-chart.conditions.topsoil':
+    'A volume-to-tons factor; the source states no moisture, and wet topsoil weighs more',
+  'page.cubic-yard-weight-chart.conditions.fill-dirt':
+    'A volume-to-tons factor; the source states no moisture, and wet dirt weighs more',
+  'page.cubic-yard-weight-chart.conditions.soil-in-place':
+    'Dry bulk density (dry weight over volume) of a medium textured soil with about 50 percent pore space (NRCS)',
+  'page.cubic-yard-weight-chart.conditions.wood-chips-green':
+    'Green (fresh) wood chips, as a volume-to-weight factor',
+  'page.cubic-yard-weight-chart.conditions.wood-chips-dry':
+    'Dry wood chips, as a volume-to-weight factor',
   'page.paint-room-10x10.title': 'Paint for a 10x10 Room: 1.54 Gallons | Maestro Calc',
   'page.paint-room-10x10.description':
     'A 10 by 10 ft room with 8 ft walls, one door and two windows takes 1.54 gallons of paint for two coats: 2 gallon cans, and the room with 9 or 10 ft walls.',

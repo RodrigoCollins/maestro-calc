@@ -66,6 +66,8 @@ Bags and ready-mix are two ways to buy the same volume. Mixing dozens of bags by
 
 A 4 in slab is a common thickness for sidewalks and patios, and driveways are often thicker. Measure the actual thickness you plan to pour, because a small change in thickness changes the volume of a large slab quickly.
 
+Hardened concrete weighs about 3,915 to 4,050 lb per cubic yard, so plan the forms, the wheelbarrows and the help for that load. [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart) gives the figure with its sources, beside gravel, sand, topsoil and mulch.
+
 These are estimates. Confirm the quantities with your supplier and with your local building code before you order.
 
 <h2 id="faq">Frequently asked questions</h2>

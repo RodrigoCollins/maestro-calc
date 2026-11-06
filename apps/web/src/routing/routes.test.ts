@@ -179,6 +179,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/slab-chart',
       es: '/es/concreto/tabla-de-losas',
     });
+    expect(ROUTES['cubic-yard-weight-chart']).toEqual({
+      en: '/landscaping/cubic-yard-weight-chart',
+      es: '/es/jardineria/tabla-de-peso-por-yarda-cubica',
+    });
     expect(ROUTES['roof-pitch-chart']).toEqual({
       en: '/roofing/roof-pitch-chart',
       es: '/es/techos/tabla-de-pendientes-de-techo',

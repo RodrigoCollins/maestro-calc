@@ -134,8 +134,8 @@ export interface JobDataset {
   readonly description: string;
   /** The day the figures were last checked. */
   readonly updated: string;
-  /** The published source the figures rest on (a data sheet). */
-  readonly basedOn: string;
+  /** The published source the figures rest on (a data sheet), or each of them when several. */
+  readonly basedOn: string | readonly [string, string, ...string[]];
 }
 
 /** What the structured data of a job page needs: its page id, its h1 and the pages above it. */

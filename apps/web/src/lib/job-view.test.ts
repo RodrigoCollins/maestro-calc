@@ -103,7 +103,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       cells: ['18.33', '825', '1,100', '1,650'],
     });
     const { chart } = view;
-    expect(chart?.source).toEqual(concreteMix.source);
+    expect(chart?.sources).toEqual([
+      { label: siteText(locale)('page.concrete-slab-chart.source'), source: concreteMix.source },
+    ]);
     expect(chart?.facts.map(({ value }) => value)).toEqual(['0.60 ft³', '0.45 ft³', '0.30 ft³']);
     expect(chart?.facts.map(({ label }) => label)).toEqual(view.columns.slice(2));
     expect(chart?.reverse).toBeUndefined();
@@ -128,7 +130,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
         '1.118',
       ]);
       const { chart } = view;
-      expect(chart?.source).toEqual(IRC_R905);
+      expect(chart?.sources).toEqual([
+        { label: siteText(locale)('page.roof-pitch-chart.source'), source: IRC_R905 },
+      ]);
       expect(chart?.facts).toEqual(roofPitchChartBasis(cases, locale));
       expect(chart?.reverse).toEqual(roofPitchReverse(locale));
       expect(view.note).toBe(siteText(locale)('page.roof-pitch-chart.note'));
@@ -522,7 +526,7 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       ['÷ 3', '9 3/4 in', '9 3/4 in', '9.75', '0.248'],
       ['÷ 4', '7 5/16 in', '7 5/16 in', '7.31', '0.186'],
     ]);
-    expect(view.rows[0].href.split('?')[0]).toBe('/feet-and-inches-calculator');
+    expect(view.rows[0].href?.split('?')[0]).toBe('/feet-and-inches-calculator');
     expect(view.calculatorName).toBe('Feet and Inches Calculator');
     expect(view.methodology).toBe('/methodology#feet-and-inches');
     expect(view.intro).toBeUndefined();
@@ -687,21 +691,26 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');
   });
 
-  it.each(PAIRS)('links every row of %s in %s to the calculator in that case', (id, locale) => {
-    const view = jobView(id, locale);
-    expect(view.rows).toHaveLength(JOBS[id].cases.length);
-    view.rows.forEach((row, index) => {
-      const [path, query = ''] = row.href.split('?');
-      expect(path).toBe(view.cta.split('?')[0]);
-      expectRoundTrip(JOBS[id].calculator, JOBS[id].cases[index] ?? {}, query);
-    });
-    expect(view.cta).toBe(view.rows[0].href);
-  });
+  // the cubic yard weight chart has a row per material, not per case (its own test links them)
+  it.each(PAIRS.filter(([id]) => id !== 'cubic-yard-weight-chart'))(
+    'links every row of %s in %s to the calculator in that case',
+    (id, locale) => {
+      const view = jobView(id, locale);
+      expect(view.rows).toHaveLength(JOBS[id].cases.length);
+      view.rows.forEach((row, index) => {
+        const [path, query = ''] = (row.href ?? '').split('?');
+        expect(path).toBe(view.cta.split('?')[0]);
+        expectRoundTrip(JOBS[id].calculator, JOBS[id].cases[index] ?? {}, query);
+      });
+      expect(view.cta).toBe(view.rows[0].href);
+    },
+  );
 
   it.each(PAIRS)('names a column for every cell of %s in %s', (id, locale) => {
     const view = jobView(id, locale);
     for (const row of view.rows) expect(row.cells).toHaveLength(view.columns.length - 1);
-    expect(view.facts.length).toBeGreaterThan(0);
+    // a chart shows its table and its basis, not the facts of one case
+    if (view.chart === undefined) expect(view.facts.length).toBeGreaterThan(0);
     expect(view.answer).not.toBe('');
   });
 

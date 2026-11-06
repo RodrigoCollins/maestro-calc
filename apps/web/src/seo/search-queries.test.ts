@@ -81,6 +81,28 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     }
   });
 
+  it('names the cubic yard weight chart after the question and the materials people ask about', () => {
+    // queries: "how much does a cubic yard of gravel weigh", "weight of a yard of dirt", "how much
+    // does a yard of concrete weigh", "cubic yard of sand weight", "peso de una yarda cúbica"
+    const en = siteText('en');
+    expect(en('page.cubic-yard-weight-chart.title')).toContain('Cubic Yard Weight Chart');
+    expect(en('page.cubic-yard-weight-chart.heading')).toContain(
+      'How much does a cubic yard weigh?',
+    );
+    for (const material of ['gravel', 'concrete', 'sand', 'topsoil', 'dirt', 'mulch']) {
+      expect(en('page.cubic-yard-weight-chart.description')).toContain(material);
+    }
+    expect(en('page.cubic-yard-weight-chart.intro')).toMatch(
+      /^A cubic yard of gravel weighs about/,
+    );
+    expect(siteText('es')('page.cubic-yard-weight-chart.title')).toContain(
+      'Peso de una yarda cúbica',
+    );
+    expect(siteText('es')('page.cubic-yard-weight-chart.intro')).toMatch(
+      /^Una yarda cúbica de grava pesa aproximadamente/,
+    );
+  });
+
   it('states the angle of each roof pitch job page in its title, heading and description', () => {
     // queries: "8 12 pitch in degrees", "10 12 roof pitch", "what pitch is 26 degrees"
     for (const id of jobsOf('roof-pitch').filter((each) => !isChartJob(each))) {
@@ -163,7 +185,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   // target queries of the job pages batch 3 (growth plan › lever 1): "how much gravel for a 10x20
   // driveway", "how much paint for a 12x12 room", "how many sheets of drywall for a 12x12 room"
   it('states the tons of gravel of each driveway in its title, heading and description', () => {
-    for (const id of jobsOf('gravel')) {
+    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each))) {
       const size = id.replace('gravel-driveway-', '');
       for (const locale of ['en', 'es'] as const) {
         const text = siteText(locale);

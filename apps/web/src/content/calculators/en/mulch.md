@@ -38,7 +38,7 @@ The calculator works from the size of the bed to what you buy:
 - Cubic yards = total volume in cubic feet ÷ 27.
 - Bags = total volume ÷ bag size, rounded up to a whole bag.
 
-No weight or density is involved. A bag holds the volume printed on it, and a cubic yard is exactly 27 cubic feet. A foot is exactly 0.3048 meters (NIST SP 811), which gives the cubic meters.
+No weight or density is involved. A bag holds the volume printed on it, and a cubic yard is exactly 27 cubic feet. A foot is exactly 0.3048 meters (NIST SP 811), which gives the cubic meters. To know what a cubic yard of wood chip mulch weighs, dry or fresh, see [How much does a cubic yard weigh? Materials chart](/landscaping/cubic-yard-weight-chart).
 
 Worked example: a bed along a fence, 20 ft long, 4 ft wide and 3 in deep, with 5 percent extra and 2 cu ft bags.
 

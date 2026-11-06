@@ -66,6 +66,8 @@ Las bolsas y el premezclado son dos formas de comprar el mismo volumen. Mezclar 
 
 Una losa de 4 in es un espesor común para banquetas y patios, y las entradas de vehículos suelen ser más gruesas. Mide el espesor real que piensas vaciar, porque un cambio pequeño de espesor cambia rápido el volumen de una losa grande.
 
+El concreto endurecido pesa aproximadamente de 3,915 a 4,050 lb por yarda cúbica, así que planea las cimbras, las carretillas y la ayuda para esa carga. [¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica) da la cifra con sus fuentes, junto a la grava, la arena, la tierra y el mulch.
+
 Son estimaciones. Confirma las cantidades con tu proveedor y con el código de construcción local antes de hacer el pedido.
 
 <h2 id="preguntas-frecuentes">Preguntas frecuentes</h2>

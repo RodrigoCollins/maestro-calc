@@ -45,7 +45,7 @@ Las páginas [¿Cuánta grava para una entrada de 10x20?](/es/jardineria/grava-p
 
 ## Pide por tonelada o por yarda
 
-Pide por peso cuando el proveedor vende por tonelada. Si vende por yarda cúbica, pide el volumen suelto, no el volumen colocado: la calculadora lo muestra junto a las toneladas. La guía [Cómo calcular yardas cúbicas](/es/guias/como-calcular-yardas-cubicas) explica la cuenta del volumen, con el paso de pulgadas a pies. Después redondea tu pedido hacia arriba, no hacia abajo: que sobre un poco cuesta menos que una segunda entrega.
+Pide por peso cuando el proveedor vende por tonelada. Si vende por yarda cúbica, pide el volumen suelto, no el volumen colocado: la calculadora lo muestra junto a las toneladas. La guía [Cómo calcular yardas cúbicas](/es/guias/como-calcular-yardas-cubicas) explica la cuenta del volumen, con el paso de pulgadas a pies. Después redondea tu pedido hacia arriba, no hacia abajo: que sobre un poco cuesta menos que una segunda entrega. Lo que pesa una yarda cúbica de grava, arena, tierra, concreto o mulch está en [¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica).
 
 ## Fuentes
 

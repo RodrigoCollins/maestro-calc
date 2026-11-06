@@ -27,7 +27,6 @@ const { id, locale } = Astro.props;
 const text = siteText(locale);
 const view = jobView(id, locale);
 const { chart } = view;
-const retrieved = chart === undefined ? '' : calendarDay(chart.source.retrieved, locale);
 const { updated, calculator } = JOBS[id];
 // The date is a calendar day, so it is formatted in UTC: no timezone can move it.
 const shown = calendarDay(updated, locale);
@@ -47,6 +46,13 @@ const breadcrumb = {
   trail: trail.map((crumb) => ({ href: pathOf(crumb.id, locale), label: crumb.name })),
   current: view.heading,
 };
+// One source is named by its address, several by the list of them.
+const basedOnOf = ([first, ...rest]: NonNullable<typeof chart>['sources']) => {
+  const [second, ...more] = rest;
+  return second === undefined
+    ? first.source.url
+    : ([first.source.url, second.source.url, ...more.map(({ source }) => source.url)] as const);
+};
 // A reference chart is also a dataset: its description, its day and the data sheet it rests on.
 const page: JobPage =
   chart === undefined
@@ -58,7 +64,7 @@ const page: JobPage =
         dataset: {
           description: text(`page.${id}.description`),
           updated,
-          basedOn: chart.source.url,
+          basedOn: basedOnOf(chart.sources),
         },
       };
 const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
@@ -100,7 +106,7 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
           {view.rows.map((row) => (
             <tr>
               <th scope="row">
-                <a href={row.href}>{row.label}</a>
+                {row.href === undefined ? row.label : <a href={row.href}>{row.label}</a>}
               </th>
               {row.cells.map((cell) => (
                 <td>{cell}</td>
@@ -140,10 +146,23 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
     {chart !== undefined && (
       <>
         <h2>{text('site.job.chart.sources')}</h2>
-        <p>
-          {chart.sourceLabel}: {chart.source.name}, <code>{chart.source.url}</code>,{' '}
-          {text('site.job.chart.retrieved')} {retrieved}.
-        </p>
+        {chart.sources.length === 1 ? (
+          chart.sources.map(({ label, source }) => (
+            <p>
+              {label}: {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
+              {calendarDay(source.retrieved, locale)}.
+            </p>
+          ))
+        ) : (
+          <ul>
+            {chart.sources.map(({ label, source }) => (
+              <li>
+                {label}: {source.name}, <code>{source.url}</code>,{' '}
+                {text('site.job.chart.retrieved')} {calendarDay(source.retrieved, locale)}.
+              </li>
+            ))}
+          </ul>
+        )}
         <h3>{chart.basis}</h3>
         <dl class="job-facts">
           {chart.facts.map(({ label, value }) => (

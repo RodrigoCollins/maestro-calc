@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and ten ids, so the site
-// has two hundred and twenty routable pages and two not-found pages.
-describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and eleven ids, so the
+// site has two hundred and twenty-two routable pages and two not-found pages.
+describe('end state of the cubic yard weight chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and ten page ids, two hundred and twenty routable paths and two hundred and twenty-two pages with the 404s', () => {
+  it('has a hundred and eleven page ids, two hundred and twenty-two routable paths and two hundred and twenty-four pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -91,6 +91,7 @@ describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19]
       'gravel-driveway-10x20',
       'gravel-driveway-12x50',
       'gravel-driveway-12x100',
+      'cubic-yard-weight-chart',
       'paint-room-10x10',
       'paint-room-10x12',
       'paint-room-12x12',
@@ -126,10 +127,10 @@ describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19]
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(220);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(220);
+    expect(staticPaths()).toHaveLength(222);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(222);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(222);
+    expect(pageCount(ROUTES)).toBe(224);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -156,11 +157,11 @@ describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19]
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and twenty-two page title and description keys in %s',
+    'has exactly two hundred and twenty-four page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(222);
+      ).toHaveLength(224);
     },
   );
 
@@ -172,7 +173,7 @@ describe('end state of the roof pitch chart (site-routing-i18n › [SR1], [SR19]
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and twenty URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(220);
+  it('lists two hundred and twenty-two URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(222);
   });
 });

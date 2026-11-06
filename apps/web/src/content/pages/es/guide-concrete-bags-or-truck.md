@@ -21,7 +21,7 @@ El concreto premezclado se vende por yarda cúbica, y una yarda cúbica son 27 p
 - 60 bolsas de 60 lb, o
 - 90 bolsas de 40 lb.
 
-Son unas 3,600 libras de mezcla seca para cargar, mezclar y colocar a mano por cada yarda cúbica.
+Son unas 3,600 libras de mezcla seca para cargar, mezclar y colocar a mano por cada yarda cúbica. Ya endurecida, una yarda cúbica de concreto pesa aproximadamente de 3,915 a 4,050 lb ([¿Cuánto pesa una yarda cúbica? Tabla de materiales](/es/jardineria/tabla-de-peso-por-yarda-cubica)).
 
 ## Cuánto cuesta una carga chica
 

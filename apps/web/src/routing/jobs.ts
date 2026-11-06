@@ -95,6 +95,18 @@ const driveway = (length: number, width: number) => {
 };
 
 /**
+ * One cubic yard of gravel, 9 ft by 9 ft and 4 in deep (27 cubic feet), with no extra, placed as
+ * `placement`: the cubic yard weight chart opens the gravel calculator on it.
+ */
+const yardOfGravel = (placement: 'compacted' | 'loose'): JobCase => ({
+  length: '9ft',
+  width: '9ft',
+  depth: '4in',
+  placement,
+  waste: '0',
+});
+
+/**
  * A room of `length` by `width` feet with walls 8, 9 and 10 ft high: one door and two windows, as
  * the paint and the drywall calculators default to, so the case names only the sizes.
  */
@@ -400,6 +412,11 @@ export const JOBS = {
     calculator: 'gravel',
     updated: '2026-11-05',
     cases: driveway(12, 100),
+  },
+  'cubic-yard-weight-chart': {
+    calculator: 'gravel',
+    updated: '2026-11-05',
+    cases: [yardOfGravel('compacted'), yardOfGravel('loose')],
   },
   'paint-room-10x10': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 10) },
   'paint-room-10x12': { calculator: 'paint', updated: '2026-11-04', cases: room(10, 12) },
