@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HOURS_WORKED_GUIDE } from './hours-worked.ts';
 import { OVERTIME_GUIDES } from './overtime.ts';
+import { MINIMUM_WAGE_2027_GUIDE } from './minimum-wage-2027.ts';
 import { MINIMUM_WAGE_STATES_GUIDE } from './minimum-wage-states.ts';
 import { OVERTIME_STATES_GUIDE } from './overtime-states.ts';
 import { PAY_STUB_GUIDE } from './pay-stub.ts';
@@ -26,6 +27,7 @@ const GUIDES = {
   'hours-worked-guide': HOURS_WORKED_GUIDE,
   'overtime-states-guide': OVERTIME_STATES_GUIDE,
   'minimum-wage-states-guide': MINIMUM_WAGE_STATES_GUIDE,
+  'minimum-wage-2027-states-guide': MINIMUM_WAGE_2027_GUIDE,
 };
 
 /** The first sentence: up to the first full stop followed by a space, or the end. */
@@ -45,6 +47,7 @@ const KEY: Readonly<Record<keyof typeof GUIDES, string>> = {
   'hours-worked-guide': '8',
   'overtime-states-guide': '40',
   'minimum-wage-states-guide': '$7.25',
+  'minimum-wage-2027-states-guide': '$17.73',
 };
 
 describe('the opening of each guide', () => {

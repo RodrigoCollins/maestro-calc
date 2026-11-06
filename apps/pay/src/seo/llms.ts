@@ -5,6 +5,7 @@ import { DATA_TEXTS } from '../data/texts.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDES } from '../guide/overtime.ts';
+import { MINIMUM_WAGE_2027_GUIDE } from '../guide/minimum-wage-2027.ts';
 import { MINIMUM_WAGE_STATES_GUIDE } from '../guide/minimum-wage-states.ts';
 import { OVERTIME_STATES_GUIDE } from '../guide/overtime-states.ts';
 import { PAY_STUB_GUIDE } from '../guide/pay-stub.ts';
@@ -65,6 +66,7 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'hours-worked-guide': both(HOURS_WORKED_GUIDE),
   'overtime-states-guide': both(OVERTIME_STATES_GUIDE),
   'minimum-wage-states-guide': both(MINIMUM_WAGE_STATES_GUIDE),
+  'minimum-wage-2027-states-guide': both(MINIMUM_WAGE_2027_GUIDE),
   data: both(DATA_TEXTS),
   states: byLang(statesIndexOf),
   ...Object.fromEntries(

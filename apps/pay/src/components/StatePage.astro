@@ -51,6 +51,11 @@ const index = statesIndexOf(lang);
         {section.notes.map((note) => (
           <p>{note}</p>
         ))}
+        {section.rise !== undefined && (
+          <p>
+            <a href={section.rise.href}>{section.rise.label}</a>
+          </p>
+        )}
         <p class="sources">
           {page.labels.sources}:{' '}
           {section.sources.map((source, at) => (

@@ -12,6 +12,7 @@ import {
   minimumWageRowsOf,
   type MinimumWageState,
 } from '../guide/minimum-wage-states.ts';
+import { riseOf } from '../guide/minimum-wage-2027.ts';
 import {
   OVERTIME_STATES,
   OVERTIME_STATES_GUIDE,
@@ -94,6 +95,8 @@ export interface StateSection {
   readonly checked: string;
   /** The table the row comes from. */
   readonly table: { readonly label: string; readonly href: string };
+  /** The minimum wage section of a state with a 2027 rate: the line to the 2027 increases page. */
+  readonly rise?: { readonly label: string; readonly href: string };
 }
 
 export interface Example {
@@ -363,6 +366,7 @@ const minimumSection = (facts: StateFacts, lang: Lang): StateSection => {
   const sources = [plain(MINIMUM_WAGE_STATES_SOURCES[row.source])];
   if (row.scheduled !== undefined && row.scheduled.source !== row.source)
     sources.push(plain(MINIMUM_WAGE_STATES_SOURCES[row.scheduled.source]));
+  const rise = riseOf(row.name.en, lang);
   return {
     id: 'minimum',
     heading: w.sections.minimum,
@@ -382,6 +386,7 @@ const minimumSection = (facts: StateFacts, lang: Lang): StateSection => {
       label: MINIMUM_WAGE_STATES_GUIDE[lang].linkLabel,
       href: MINIMUM_WAGE_STATES_GUIDE_PATHS[lang],
     },
+    ...(rise === undefined ? {} : { rise }),
   };
 };
 

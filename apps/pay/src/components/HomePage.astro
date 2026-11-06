@@ -9,6 +9,10 @@ import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { HOURS_WORKED_GUIDE, HOURS_WORKED_GUIDE_PATHS } from '../guide/hours-worked.ts';
 import { TIP_CREDIT_GUIDE, TIP_CREDIT_GUIDE_PATHS } from '../guide/tip-credit.ts';
 import {
+  MINIMUM_WAGE_2027_GUIDE,
+  MINIMUM_WAGE_2027_GUIDE_PATHS,
+} from '../guide/minimum-wage-2027.ts';
+import {
   MINIMUM_WAGE_STATES_GUIDE,
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
 } from '../guide/minimum-wage-states.ts';
@@ -42,6 +46,7 @@ const guides = [
     href: MINIMUM_WAGE_STATES_GUIDE_PATHS[lang],
     label: MINIMUM_WAGE_STATES_GUIDE[lang].linkLabel,
   },
+  { href: MINIMUM_WAGE_2027_GUIDE_PATHS[lang], label: MINIMUM_WAGE_2027_GUIDE[lang].linkLabel },
   { href: HOURS_WORKED_GUIDE_PATHS[lang], label: HOURS_WORKED_GUIDE[lang].linkLabel },
   { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
 ];

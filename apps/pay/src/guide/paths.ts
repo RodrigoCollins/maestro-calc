@@ -56,3 +56,9 @@ export const MINIMUM_WAGE_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/minimum-wage-by-state',
   es: '/es/guias/salario-minimo-por-estado',
 };
+
+/** The minimum wage increases of January 1, 2027: each scheduled rate, the raise and the year. */
+export const MINIMUM_WAGE_2027_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/minimum-wage-increases-2027',
+  es: '/es/guias/aumentos-del-salario-minimo-2027',
+};
