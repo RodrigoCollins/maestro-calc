@@ -3,7 +3,7 @@ import type { enMulch } from '../en/mulch.ts';
 
 /** Copy of the `mulch` calculator, Spanish: the same keys as English. */
 export const esMulch = {
-  'calc.mulch.title': 'Calculadora de Mulch',
+  'calc.mulch.title': 'Calculadora de mulch',
   'calc.mulch.inputs.length': 'Largo',
   'calc.mulch.inputs.width': 'Ancho',
   'calc.mulch.inputs.depth': 'Profundidad',

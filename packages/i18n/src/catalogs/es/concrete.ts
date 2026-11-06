@@ -3,7 +3,7 @@ import type { enConcrete } from '../en/concrete.ts';
 
 /** Copy of the `concrete` calculator, Spanish (neutral tú): the same keys as English. */
 export const esConcrete = {
-  'calc.concrete.title': 'Calculadora de Concreto',
+  'calc.concrete.title': 'Calculadora de concreto',
   'calc.concrete.inputs.shape': 'Forma',
   'calc.concrete.inputs.length': 'Largo',
   'calc.concrete.inputs.width': 'Ancho',

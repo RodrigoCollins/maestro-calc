@@ -3,7 +3,7 @@ import type { enTopsoil } from '../en/topsoil.ts';
 
 /** Copy of the `topsoil` calculator, Spanish: the same keys as English. */
 export const esTopsoil = {
-  'calc.topsoil.title': 'Calculadora de Tierra para Jardín',
+  'calc.topsoil.title': 'Calculadora de tierra para jardín',
   'calc.topsoil.inputs.length': 'Largo',
   'calc.topsoil.inputs.width': 'Ancho',
   'calc.topsoil.inputs.depth': 'Profundidad',

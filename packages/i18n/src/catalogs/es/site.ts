@@ -825,16 +825,16 @@ export const esSite = {
   'page.paint.title': 'Calculadora de pintura: ¿cuántos galones? | Maestro Calc',
   'page.paint.description':
     '¿Cuántos galones de pintura necesitas? Calcula las paredes de un cuarto, sin puertas ni ventanas, y cuánto cubre un galón: unos 350 pies cuadrados por mano.',
-  'page.drywall.title': 'Calculadora de drywall: placas y compuesto | Maestro Calc',
+  'page.drywall.title': 'Calculadora de drywall: hojas y compuesto | Maestro Calc',
   'page.drywall.description':
-    'Calcula cuántas placas de drywall lleva un cuarto, paredes y techo, sin puertas ni ventanas, con el compuesto, la cinta y el costo. Gratis y al instante.',
+    'Calcula cuántas hojas de drywall lleva un cuarto, paredes y techo, sin puertas ni ventanas, con el compuesto, la cinta y el costo. Gratis y al instante.',
   'page.roof-pitch.title': 'Calculadora de pendiente de techo en grados | Maestro Calc',
   'page.roof-pitch.description':
     'Ingresa la subida y el recorrido, como 6 en 12, y obtén el ángulo en grados y el largo del cabio, con el mínimo del IRC para tejas o metal. Gratis.',
-  'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
+  'page.roofing.title': 'Calculadora de techo: cuadrados y tejas | Maestro Calc',
   'page.roofing.description':
-    'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
-  'page.feet-inches.title': 'Pies decimales a pies y pulgadas: calculadora | Maestro Calc',
+    '¿Cuántos paquetes de tejas necesitas? Calcula el área del techo en cuadrados según su planta y pendiente, y los rollos de fieltro, con las reglas del IRC.',
+  'page.feet-inches.title': 'Calculadora de pies y pulgadas con decimales | Maestro Calc',
   'page.feet-inches.description':
     'Convierte pies decimales a pies y pulgadas al 1/16, como 11.65 ft = 11 ft 7 13/16 in. También suma, resta, multiplica o divide medidas de la cinta. Gratis.',
   'page.notFound.heading': 'Página no encontrada',

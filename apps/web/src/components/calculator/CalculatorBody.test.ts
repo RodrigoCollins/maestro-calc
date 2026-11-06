@@ -87,7 +87,7 @@ describe('CalculatorBody, default result (calculator-page › Static render, [CP
   // spec: calculator-page › [CP2] built Spanish page
   it('renders the Spanish table with the same figures', async () => {
     const root = await render('es');
-    expect(root.querySelector('h1')?.text).toBe('Calculadora de Concreto');
+    expect(root.querySelector('h1')?.text).toBe('Calculadora de concreto');
     expect(root.querySelector('[data-answer]')?.text).toBe(
       'Losa (12 ft × 10 ft, 4 in de espesor): 1.63 yardas cúbicas con 10% de extra. Bolsas de 80 lb: 74.',
     );

@@ -3,7 +3,7 @@ import type { enFeetInches } from '../en/feet-inches.ts';
 
 /** Copy of the `feet-inches` calculator, Spanish: the same keys as English. */
 export const esFeetInches = {
-  'calc.feet-inches.title': 'Calculadora de Pies y Pulgadas',
+  'calc.feet-inches.title': 'Calculadora de pies y pulgadas',
   'calc.feet-inches.inputs.first': 'Primera medida',
   'calc.feet-inches.inputs.operation': 'Operación',
   'calc.feet-inches.inputs.second': 'Segunda medida',

@@ -11,6 +11,8 @@ import { siteText } from '../lib/site-text.ts';
 import { jobView } from '../lib/job-view.ts';
 import { isChartJob, JOBS, jobsOf } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
+import { PAGES } from '../lib/pages.ts';
 
 // Growth plan › lever 4: the title and the description of a page carry the words of the Search
 // Console queries that already show it (maestrocalc.com, 28 days to 2026-11-02), so the result
@@ -29,7 +31,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     );
     const es = siteText('es');
     expect(es('page.feet-inches.title')).toBe(
-      'Pies decimales a pies y pulgadas: calculadora | Maestro Calc',
+      'Calculadora de pies y pulgadas con decimales | Maestro Calc',
     );
     expect(es('page.feet-inches.description')).toMatch(
       /^Convierte pies decimales a pies y pulgadas al 1\/16, como 11\.65 ft = 11 ft 7 13\/16 in\./,
@@ -78,6 +80,40 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     expect(es('page.guide-tape-measure-fractions.description')).toContain('1/16');
     expect(es('page.concrete.description')).toMatch(/^¿Cuántas bolsas de concreto o yardas /);
     expect(es('page.concrete.description')).toContain('40, 60 u 80 lb');
+  });
+
+  // Search Console, 2026-11-06: the Spanish pages rank far behind the English ones (square footage
+  // 66.7 against 31.5). The Spanish head terms, as Spanish speakers in the US write them: GAF's
+  // es-us blog counts roofs in "cuadrados" and shingles in "paquetes" of "tejas", and Spanish drywall
+  // guides count "hojas de drywall"; the feet and inches page leads with its own name
+  it('puts the Spanish head term of the roofing, drywall and feet and inches pages in the title', () => {
+    const es = siteText('es');
+    expect(es('page.roofing.title')).toBe('Calculadora de techo: cuadrados y tejas | Maestro Calc');
+    expect(es('page.roofing.description')).toMatch(/^¿Cuántos paquetes de tejas necesitas\? /);
+    expect(es('page.roofing.description')).toContain('en cuadrados');
+    expect(es('page.drywall.title')).toBe(
+      'Calculadora de drywall: hojas y compuesto | Maestro Calc',
+    );
+    expect(es('page.drywall.description')).toMatch(/^Calcula cuántas hojas de drywall /);
+    expect(es('page.feet-inches.title')).toMatch(/^Calculadora de pies y pulgadas /);
+  });
+
+  // Spanish writes a heading in sentence case: only the first word and proper names take a capital
+  it.each(CALCULATOR_PAGES)('writes the Spanish %s heading in sentence case', (id) => {
+    const catalog: Readonly<Record<string, string>> = PAGES[id].catalogs.es;
+    const title = catalog[`calc.${id}.title`] ?? '';
+    expect(title).toMatch(/^Calculadora de /);
+    expect(title.slice(1)).toBe(title.slice(1).toLowerCase());
+  });
+
+  // The heading is also the last crumb of the breadcrumb. At 320 px, "Calculadora de pendiente de
+  // techo" ends within 2 px of the row's edge: on Linux CI the fallback face wrapped it and the web
+  // font did not, which shifted the layout by 0.048 when the fonts swapped in. The plural wraps in
+  // both faces with about 7 px to spare.
+  it('keeps the Spanish roof pitch heading clear of the breadcrumb edge', () => {
+    expect(PAGES['roof-pitch'].catalogs.es['calc.roof-pitch.title']).toBe(
+      'Calculadora de pendiente de techos',
+    );
   });
 
   // queries that rank the calculator instead of the job page that answers them: "how much concrete

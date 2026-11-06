@@ -3,7 +3,7 @@ import type { enRoofPitch } from '../en/roof-pitch.ts';
 
 /** Copy of the `roof-pitch` calculator, Spanish: the same keys as English. */
 export const esRoofPitch = {
-  'calc.roof-pitch.title': 'Calculadora de Pendiente de Techo',
+  'calc.roof-pitch.title': 'Calculadora de pendiente de techos',
   'calc.roof-pitch.inputs.rise': 'Subida',
   'calc.roof-pitch.inputs.run': 'Recorrido',
   'calc.roof-pitch.inputs.rafterRun': 'Recorrido del cabio (la mitad del claro)',

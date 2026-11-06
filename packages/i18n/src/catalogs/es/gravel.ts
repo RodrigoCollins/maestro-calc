@@ -3,7 +3,7 @@ import type { enGravel } from '../en/gravel.ts';
 
 /** Copy of the `gravel` calculator, Spanish: the same keys as English. */
 export const esGravel = {
-  'calc.gravel.title': 'Calculadora de Grava',
+  'calc.gravel.title': 'Calculadora de grava',
   'calc.gravel.inputs.length': 'Largo',
   'calc.gravel.inputs.width': 'Ancho',
   'calc.gravel.inputs.depth': 'Profundidad',
