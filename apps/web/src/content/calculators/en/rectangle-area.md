@@ -26,6 +26,8 @@ To work in metric, press Metric (m, cm). A plain number is then read in meters, 
 
 Use Copy link to send your exact numbers to a partner, a client or a supplier, and the Español link to open the same numbers in Spanish.
 
+For a common size, see [12x7 square feet](/measurement/7x12-square-feet), worked out in square yards and square meters too.
+
 <h2 id="formulas">Formulas and worked example</h2>
 
 The area of a rectangle is its length times its width:

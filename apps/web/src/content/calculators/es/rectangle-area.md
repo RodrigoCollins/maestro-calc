@@ -26,6 +26,8 @@ Para trabajar en métrico, presiona Métrico (m, cm). Un número solo se lee ent
 
 Usa Copiar enlace para enviar tus números exactos a un socio, a un cliente o a un proveedor, y el enlace English para abrir los mismos números en inglés.
 
+Para un tamaño común, mira [12x7 pies cuadrados](/es/medidas/7x12-pies-cuadrados), también en yardas y metros cuadrados.
+
 <h2 id="formulas">Fórmulas y ejemplo resuelto</h2>
 
 El área de un rectángulo es su largo por su ancho:

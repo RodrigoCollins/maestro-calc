@@ -2,26 +2,153 @@ import { yd3 } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { volumeText } from '../calculator/present.ts';
 import { concrete } from '../lib/concrete.ts';
+import { readEntries, sectionOf } from '../contract/content.ts';
+import { fromRoot } from '../contract/root.ts';
 import { siteText } from '../lib/site-text.ts';
 import { jobView } from '../lib/job-view.ts';
 import { isChartJob, JOBS, jobsOf } from '../routing/jobs.ts';
+import { pathOf } from '../routing/routes.ts';
 
 // Growth plan › lever 4: the title and the description of a page carry the words of the Search
 // Console queries that already show it (maestrocalc.com, 28 days to 2026-11-02), so the result
 // earns the click once the page climbs.
 describe('titles from real queries (growth plan › lever 4)', () => {
-  it('names the decimal conversion that shows the feet and inches page', () => {
-    // query: "decimal to feet and inches calculator", 126 impressions and no click
+  // Search Console, 28 days to 2026-11-04: the page has 192 impressions at position 43 and no click,
+  // while "decimal to feet and inches calculator" ranks it at 4.9, "convert 11.65 feet to feet and
+  // inches round to the nearest 1 16" at 3.0 and "75.5in to ft" at 7.0
+  it('names the decimal feet conversion that shows the feet and inches page', () => {
     const en = siteText('en');
     expect(en('page.feet-inches.title')).toBe(
-      'Decimal to Feet and Inches Calculator | Maestro Calc',
+      'Decimal Feet to Feet and Inches Calculator | Maestro Calc',
     );
-    expect(en('page.feet-inches.description')).toMatch(/^Convert decimal feet or inches to feet/);
+    expect(en('page.feet-inches.description')).toMatch(
+      /^Convert decimal feet to feet and inches to the nearest 1\/16, such as 11\.65 ft = 11 ft 7 13\/16 in\./,
+    );
     const es = siteText('es');
     expect(es('page.feet-inches.title')).toBe(
-      'Calculadora de decimales a pies y pulgadas | Maestro Calc',
+      'Pies decimales a pies y pulgadas: calculadora | Maestro Calc',
     );
-    expect(es('page.feet-inches.description')).toContain('decimales a pies y pulgadas');
+    expect(es('page.feet-inches.description')).toMatch(
+      /^Convierte pies decimales a pies y pulgadas al 1\/16, como 11\.65 ft = 11 ft 7 13\/16 in\./,
+    );
+  });
+
+  it.each([
+    ['en', 'how-to-use', /^To convert decimal feet to feet and inches, /],
+    ['es', 'como-usar', /^Para convertir pies decimales a pies y pulgadas, /],
+  ] as const)(
+    'opens the %s feet and inches page with the decimal conversion',
+    (locale, id, lead) => {
+      const entry = readEntries(fromRoot('apps/web/src/content/calculators')).find(
+        ({ path }) => path === `${locale}/feet-inches.md`,
+      );
+      const [, first = ''] = sectionOf(entry?.body ?? '', id).split('\n\n');
+      expect(first).toMatch(lead);
+      expect(first).toContain('11 ft 7 13/16 in');
+      expect(first).toContain(`](${pathOf('decimal-feet-chart', locale)})`);
+    },
+  );
+
+  // Search Console: /paint-calculator at 9.8 (19 impressions), /es/calculadora-de-pintura at 12.9
+  // (14), no visible query; "cuanto cubre un galon de pintura" (78) and "cuanto es un cuarto de galon
+  // de pintura" (6.0) for the Spanish page
+  it('asks the gallons question in the paint titles and descriptions', () => {
+    const en = siteText('en');
+    expect(en('page.paint.title')).toBe(
+      'Paint Calculator: How Many Gallons of Paint? | Maestro Calc',
+    );
+    expect(en('page.paint.description')).toMatch(/^How many gallons of paint do you need\? /);
+    expect(en('page.paint.description')).toContain('350 sq ft per gallon');
+    const es = siteText('es');
+    expect(es('page.paint.title')).toBe('Calculadora de pintura: ¿cuántos galones? | Maestro Calc');
+    expect(es('page.paint.description')).toMatch(/^¿Cuántos galones de pintura necesitas\? /);
+    expect(es('page.paint.description')).toContain('cuánto cubre un galón');
+  });
+
+  // Search Console: /es/guias/leer-la-cinta-metrica-y-sumar-fracciones at 8.5 (11 impressions) and
+  // /es/calculadora-de-concreto at 7.2 (4), both with no click
+  it('answers first in the Spanish tape measure guide and concrete descriptions', () => {
+    const es = siteText('es');
+    expect(es('page.guide-tape-measure-fractions.description')).toMatch(
+      /^Cómo leer la cinta métrica en pulgadas: /,
+    );
+    expect(es('page.guide-tape-measure-fractions.description')).toContain('1/16');
+    expect(es('page.concrete.description')).toMatch(/^¿Cuántas bolsas de concreto o yardas /);
+    expect(es('page.concrete.description')).toContain('40, 60 u 80 lb');
+  });
+
+  // queries that rank the calculator instead of the job page that answers them: "how much concrete
+  // for 650 sf slab" (9.5), "22 inches divided by 10" (42.5), "3 feet 9 inches divided by 2" (19),
+  // "29 1 4 divided by 2 on a tape measure" (55), "7.5/12 roof pitch" (31), "6 12 roof pitch
+  // calculator" (84), "12x7 square feet" (49): the first section of each calculator links the job
+  // page with the words of the query
+  it.each([
+    [
+      'en',
+      'concrete',
+      'how-to-use',
+      'how much concrete for a 650 sq ft slab',
+      'concrete-slab-650-sq-ft',
+    ],
+    [
+      'es',
+      'concrete',
+      'como-usar',
+      'cuánto concreto lleva una losa de 650 pies cuadrados',
+      'concrete-slab-650-sq-ft',
+    ],
+    ['en', 'feet-inches', 'how-to-use', '22 inches divided by 10', 'divide-22-in-by-10'],
+    ['es', 'feet-inches', 'como-usar', '22 pulgadas entre 10', 'divide-22-in-by-10'],
+    ['en', 'feet-inches', 'how-to-use', '3 feet 9 inches divided by 2', 'divide-3-ft-9-in-by-2'],
+    ['es', 'feet-inches', 'como-usar', '3 pies 9 pulgadas entre 2', 'divide-3-ft-9-in-by-2'],
+    [
+      'en',
+      'feet-inches',
+      'how-to-use',
+      '29 1/4 divided by 2 on a tape measure',
+      'divide-29-1-4-in-by-2',
+    ],
+    [
+      'es',
+      'feet-inches',
+      'como-usar',
+      '29 1/4 entre 2 en la cinta métrica',
+      'divide-29-1-4-in-by-2',
+    ],
+    ['en', 'roof-pitch', 'how-to-use', '7.5/12 roof pitch', 'roof-pitch-7-5-12'],
+    ['es', 'roof-pitch', 'como-usar', 'pendiente de techo 7.5/12', 'roof-pitch-7-5-12'],
+    ['en', 'roof-pitch', 'how-to-use', '6/12 roof pitch', 'roof-pitch-6-12'],
+    ['es', 'roof-pitch', 'como-usar', 'pendiente de techo 6/12', 'roof-pitch-6-12'],
+    ['en', 'rectangle-area', 'how-to-use', '12x7 square feet', 'square-feet-7x12'],
+    ['es', 'rectangle-area', 'como-usar', '12x7 pies cuadrados', 'square-feet-7x12'],
+  ] as const)(
+    'links the %s %s page to its job with the words of the query: %s',
+    (locale, calculator, section, anchor, job) => {
+      const entry = readEntries(fromRoot('apps/web/src/content/calculators')).find(
+        ({ path }) => path === `${locale}/${calculator}.md`,
+      );
+      expect(sectionOf(entry?.body ?? '', section)).toContain(
+        `[${anchor}](${pathOf(job, locale)})`,
+      );
+    },
+  );
+
+  it('names the decimal feet chart after the conversion people ask for', () => {
+    const en = siteText('en');
+    expect(en('page.decimal-feet-chart.title')).toContain('Decimal Feet to Feet and Inches Chart');
+    expect(en('page.decimal-feet-chart.heading')).toMatch(/^Decimal feet to feet and inches chart/);
+    expect(en('page.decimal-feet-chart.description')).toContain('0.10 to 0.99 ft');
+    expect(en('page.decimal-feet-chart.description')).toContain('1/16');
+    const es = siteText('es');
+    expect(es('page.decimal-feet-chart.title')).toContain('pies decimales a pies y pulgadas');
+    expect(es('page.decimal-feet-chart.description')).toContain('0.10 a 0.99 ft');
+    for (const locale of ['en', 'es'] as const) {
+      const view = jobView('decimal-feet-chart', locale);
+      const shown = (label: string) => view.rows.find((row) => row.label === label)?.cells[0];
+      expect(view.intro).toContain(`11.65 ft`);
+      expect(view.intro).toContain(shown('11.65 ft') ?? 'missing');
+      expect(view.intro).toContain(shown('0.50 ft') ?? 'missing');
+    }
   });
 
   // queries (28 days to 2026-11-03): "calculating square footage", "how to calculate square feet",
@@ -289,7 +416,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   // measure", "35.5 inches divided by 2", "22 inches divided by 10", "9 feet 6 inches divided by
   // 2", "3 feet 9 inches divided by 2"
   it('states the result of each tape measure division in its title, heading and description', () => {
-    for (const id of jobsOf('feet-inches')) {
+    for (const id of jobsOf('feet-inches').filter((each) => !isChartJob(each))) {
       const factor = id.replace(/^.*-by-/, '');
       // a length in feet is answered in feet and inches, a length in inches on the tape
       const shown = id.includes('-ft-') ? 1 : 0;

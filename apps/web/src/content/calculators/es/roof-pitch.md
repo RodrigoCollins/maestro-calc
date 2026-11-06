@@ -31,6 +31,8 @@ El resultado empieza por la pendiente en pulgadas de subida por cada 12 pulgadas
 
 Para trabajar en métrico, toca Métrico (m, cm). Las medidas se leen entonces en centímetros y metros, y el resultado empieza por el ángulo en grados. Cambiar de unidades nunca cambia tus números, solo cómo se escriben. Usa Copiar enlace para mandar tus números exactos a un socio, un cliente o el inspector, y el enlace English para abrir los mismos números en inglés.
 
+Dos pendientes comunes, resueltas con el largo de sus cabios: la [pendiente de techo 6/12](/es/techos/pendiente-de-techo-6-12) y la [pendiente de techo 7.5/12](/es/techos/pendiente-de-techo-7-5-12).
+
 <h2 id="formulas">Fórmulas y ejemplo resuelto</h2>
 
 La calculadora va de la subida y el recorrido al ángulo y al cabio:

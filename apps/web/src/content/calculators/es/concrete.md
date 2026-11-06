@@ -30,6 +30,8 @@ La calculadora convierte las medidas de tu colado en el concreto que necesitas y
 
 El resultado muestra el concreto en yardas cúbicas, pies cúbicos y metros cúbicos, el volumen antes del extra y la cantidad de bolsas enteras. Usa Copiar enlace para enviar tus números exactos a un socio o a un proveedor, y el enlace English para abrir los mismos números en inglés.
 
+Para un trabajo común, mira [cuánto concreto lleva una losa de 650 pies cuadrados](/es/concreto/losa-de-650-pies-cuadrados), con sus bolsas.
+
 <h2 id="formulas">Fórmulas y ejemplo resuelto</h2>
 
 Cada forma parte de un volumen, y el volumen es una fórmula geométrica sencilla:

@@ -757,15 +757,37 @@ export const enSite = {
     'Half of 3 feet 9 inches: 3 ft 9 in divided by 2 is 1 ft 10 1/2 in, or 22 1/2 in on a tape measure (22.50 in, 0.572 m). Also divided by 3 and by 4.',
   'page.divide-3-ft-9-in-by-2.heading': 'What is 3 feet 9 inches divided by 2?',
   'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
+  'page.decimal-feet-chart.title': 'Decimal Feet to Feet and Inches Chart | Maestro Calc',
+  'page.decimal-feet-chart.description':
+    'Decimal feet to feet and inches chart: every length from 0.10 to 0.99 ft and common ones like 11.65 ft, to the nearest 1/16 in, and inches to decimal feet.',
+  'page.decimal-feet-chart.heading':
+    'Decimal feet to feet and inches chart, to the nearest 1/16 in',
+  'page.decimal-feet-chart.label': 'Decimal feet chart',
+  'page.decimal-feet-chart.intro':
+    '11.65 ft is 11 ft 7 13/16 in, and 0.50 ft is 6 in. To turn decimal feet into feet and inches, keep the whole feet and multiply the decimal part by 12 for the inches: 0.65 × 12 = 7.8 in, which is 7 13/16 in on the tape. Find your decimal in the chart below, worked out by the feet and inches calculator.',
+  'page.decimal-feet-chart.note':
+    'The inches are the decimal feet × 12, exactly. The feet and inches are rounded to the nearest 1/16 in and the inches to two places. Each length of a foot or more opens the calculator with it filled in.',
+  'page.decimal-feet-chart.table': 'Decimal feet to feet and inches',
+  'page.decimal-feet-chart.source': 'Exact conversion factors',
+  'page.decimal-feet-chart.basis': 'The factors and the rounding',
+  'page.decimal-feet-chart.decimal': 'Decimal feet',
+  'page.decimal-feet-chart.inches': 'Inches',
+  'page.decimal-feet-chart.foot': 'One foot',
+  'page.decimal-feet-chart.inch': 'One inch',
+  'page.decimal-feet-chart.rounding': 'Feet and inches rounded to',
+  'page.decimal-feet-chart.sixteenth': 'the nearest 1/16 in',
+  'page.decimal-feet-chart.reverse': 'Inches to decimal feet',
+  'page.decimal-feet-chart.reverseLead':
+    'Each whole inch as a decimal of a foot: the inches ÷ 12, to four places.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',
   'page.topsoil.title': 'Topsoil Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.topsoil.description':
     'Find how much topsoil a lawn, garden bed or fill needs in cubic yards and bags, with extra for settling and the cost in bags and in bulk. Free.',
-  'page.paint.title': 'Paint Calculator: Gallons for a Room | Maestro Calc',
+  'page.paint.title': 'Paint Calculator: How Many Gallons of Paint? | Maestro Calc',
   'page.paint.description':
-    'Find how many gallons of paint the walls of a room need, less doors and windows, for one to five coats, with the cans to buy and the cost. Free.',
+    'How many gallons of paint do you need? Enter the room size for the gallons the walls take, less doors and windows, at 350 sq ft per gallon, with cans and cost.',
   'page.drywall.title': 'Drywall Calculator: Sheets, Mud and Tape | Maestro Calc',
   'page.drywall.description':
     'Find how many drywall sheets a room needs, walls and ceiling, less doors and windows, with the joint compound, the tape and the cost. Free and instant.',
@@ -775,9 +797,9 @@ export const enSite = {
   'page.roofing.title': 'Roofing Calculator: Squares and Bundles | Maestro Calc',
   'page.roofing.description':
     'Find the area of a roof in squares from its footprint and pitch, and the shingle bundles and underlayment rolls to buy, with the IRC rules. Free.',
-  'page.feet-inches.title': 'Decimal to Feet and Inches Calculator | Maestro Calc',
+  'page.feet-inches.title': 'Decimal Feet to Feet and Inches Calculator | Maestro Calc',
   'page.feet-inches.description':
-    'Convert decimal feet or inches to feet, inches and fractions to the nearest 1/16 inch, and add, subtract, multiply or divide them like a tape measure. Free.',
+    'Convert decimal feet to feet and inches to the nearest 1/16, such as 11.65 ft = 11 ft 7 13/16 in. Also add, subtract, multiply or divide tape lengths. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

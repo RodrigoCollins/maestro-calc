@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pies y pulgadas</h2>
 
-La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, multiplica o divide una medida por un número entero, o te dice cuántas piezas de una medida caben en otra. Para pasar un decimal a pies y pulgadas, escríbelo y multiplícalo por 1: 11.65 ft son 11 ft 7 13/16 in. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+Para convertir pies decimales a pies y pulgadas, escribe el decimal, como 11.65, y multiplícalo por 1: la calculadora muestra 11 ft 7 13/16 in, al 1/16 de pulgada más cercano. La [tabla de pies decimales a pies y pulgadas](/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas) da cada medida de 0.10 a 0.99 ft. La calculadora también hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, multiplica o divide una medida por un número entero, o te dice cuántas piezas de una medida caben en otra. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Escribe la primera medida como la lees en la cinta: 12 ft 6 in, 12' 6", 6 1/2 in o 75.5 in. Un número solo se lee en pies.
 2. Elige la operación: Sumar, Restar, Multiplicar, Dividir o Cuántas caben.
@@ -25,6 +25,8 @@ La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas e
 El resultado empieza con pies, pulgadas y la fracción al 1/16 de pulgada más cercano, la marca que ves en la cinta. También muestra el resultado en pulgadas con decimales y en metros. Si restas una medida más larga de una más corta, la calculadora da la diferencia y dice cuál es la más larga. Cuántas caben empieza con las piezas enteras, la respuesta agrega el cociente y las filas de abajo muestran el sobrante.
 
 Para trabajar en métrico, toca Métrico (m, cm). Las medidas se leen entonces en metros y el resultado empieza con metros. Cambiar de unidades nunca cambia tus números, solo cómo se escriben. Usa Copiar enlace para mandar tus números exactos a un socio o a un cliente, y el enlace English para abrir los mismos números en inglés.
+
+Trabajos comunes, resueltos paso a paso: [22 pulgadas entre 10](/es/medidas/22-pulgadas-entre-10), [3 pies 9 pulgadas entre 2](/es/medidas/3-pies-9-pulgadas-entre-2) y [29 1/4 entre 2 en la cinta métrica](/es/medidas/29-1-4-pulgadas-entre-2).
 
 <h2 id="formulas">Fórmulas y ejemplo resuelto</h2>
 

@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="how-to-use">How to use the feet and inches calculator</h2>
 
-The calculator does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, multiplies or divides one length by a whole number, or tells you how many pieces of one length fit in another. To turn a decimal into feet and inches, type it and multiply it by 1: 11.65 ft is 11 ft 7 13/16 in. The result updates as you type, so there is nothing to submit.
+To convert decimal feet to feet and inches, type the decimal, such as 11.65, and multiply it by 1: the calculator shows 11 ft 7 13/16 in, to the nearest 1/16 of an inch. The [decimal feet to feet and inches chart](/measurement/decimal-feet-to-feet-and-inches-chart) lists every length from 0.10 to 0.99 ft. The calculator also does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, multiplies or divides one length by a whole number, or tells you how many pieces of one length fit in another. The result updates as you type, so there is nothing to submit.
 
 1. Type the first length the way you read it on the tape: 12 ft 6 in, 12' 6", 6 1/2 in or 75.5 in. A plain number is read in feet.
 2. Choose the operation: Add, Subtract, Multiply, Divide or How many fit.
@@ -25,6 +25,8 @@ The calculator does tape-measure math: it adds or subtracts two lengths in feet,
 The result leads with feet, inches and the fraction to the nearest 1/16 of an inch, the mark you find on a tape. It also shows the result in decimal inches and in meters. When you subtract a longer length from a shorter one, the calculator gives the difference and says which length is longer. How many fit leads with the whole pieces, the answer adds the quotient, and the rows below show the length left over.
 
 To work in metric, press Metric (m, cm). Lengths are then read in meters, and the result leads with meters. Switching units never changes your numbers, only how they are written. Use Copy link to send your exact numbers to a partner or a client, and the Español link to open the same numbers in Spanish.
+
+Common jobs, worked out step by step: [22 inches divided by 10](/measurement/22-inches-divided-by-10), [3 feet 9 inches divided by 2](/measurement/3-feet-9-inches-divided-by-2) and [29 1/4 divided by 2 on a tape measure](/measurement/29-1-4-inches-divided-by-2).
 
 <h2 id="formulas">Formulas and worked example</h2>
 

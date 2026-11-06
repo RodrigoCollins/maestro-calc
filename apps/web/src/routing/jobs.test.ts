@@ -135,6 +135,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'divide-22-in-by-10',
       'divide-9-ft-6-in-by-2',
       'divide-3-ft-9-in-by-2',
+      'decimal-feet-chart',
     ]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
@@ -242,6 +243,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'concrete-slab-chart',
       'roof-pitch-chart',
       'cubic-yard-weight-chart',
+      'decimal-feet-chart',
     ]);
     expect(ROUTES['concrete-slab-chart']).toEqual({
       en: '/concrete/slab-chart',
@@ -447,7 +449,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'divide-9-ft-6-in-by-2': ['9 ft 6 in', '9-feet-6-inches', '9-pies-6-pulgadas'],
       'divide-3-ft-9-in-by-2': ['3 ft 9 in', '3-feet-9-inches', '3-pies-9-pulgadas'],
     } as const;
-    for (const id of jobsOf('feet-inches')) {
+    for (const id of jobsOf('feet-inches').filter((each) => !isChartJob(each))) {
       expect(Object.hasOwn(LENGTHS, id), id).toBe(true);
       if (!Object.hasOwn(LENGTHS, id)) continue;
       const [first, en, es] = LENGTHS[id as keyof typeof LENGTHS];
@@ -459,6 +461,18 @@ describe('job pages (growth plan › lever 1)', () => {
       expect(ROUTES[id].en, id).toBe(`/measurement/${en}-divided-by-${factor}`);
       expect(ROUTES[id].es, id).toBe(`/es/medidas/${es}-entre-${factor}`);
     }
+  });
+
+  // queries: "decimal to feet and inches calculator" (4.9), "convert 11.65 feet to feet and inches
+  // round to the nearest 1 16" (3.0): a chart that opens the feet and inches calculator on each
+  // decimal length times 1, which it writes back in feet and inches
+  it('routes the decimal feet chart under measurement', () => {
+    expect(JOBS['decimal-feet-chart'].calculator).toBe('feet-inches');
+    expect(isChartJob('decimal-feet-chart')).toBe(true);
+    expect(ROUTES['decimal-feet-chart']).toEqual({
+      en: '/measurement/decimal-feet-to-feet-and-inches-chart',
+      es: '/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas',
+    });
   });
 
   it('lists every job under a hub that holds its calculator', () => {

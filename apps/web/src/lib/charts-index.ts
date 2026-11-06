@@ -20,6 +20,7 @@ export const CHART_OWNERS = {
   'concrete-slab-chart': ['QUIKRETE'],
   'roof-pitch-chart': ['International Residential Code'],
   'cubic-yard-weight-chart': ['WisDOT', 'New Mexico EMNRD', 'FHWA', 'WSDOT', 'USDA NRCS', 'US EPA'],
+  'decimal-feet-chart': ['NIST'],
 } as const satisfies Record<ChartId, readonly [string, ...string[]]>;
 
 /** One chart of the index. */
