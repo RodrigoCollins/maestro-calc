@@ -1,5 +1,5 @@
-import { decode, type Money } from '@maestro-calc/core';
-import { overtime } from '@maestro-calc/pay-core/overtime';
+import { decode, type Money, type Rational } from '@maestro-calc/core';
+import { NEVADA_MINIMUM_WAGE, overtime, type Rule } from '@maestro-calc/pay-core/overtime';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
 import { describe, expect, it } from 'vitest';
@@ -39,7 +39,7 @@ const queryOf = (href: string): string => new URL(href, 'https://cuentahoras.com
 const ran = (outputs: readonly { key: string; value: unknown }[], key: string): string =>
   moneyText(outputs.find((output) => output.key === key)?.value as Money);
 const dollarsOf = (cents: number): string => (cents / 100).toFixed(2);
-const runWeek = (rate: number, rule: 'federal' | 'california', day: number) => {
+const runWeek = (rate: number, rule: Rule, day: number) => {
   const result = overtime.run({
     rate: dollarsOf(rate),
     rule,
@@ -185,7 +185,7 @@ describe('statePageOf', () => {
 describe('the worked examples of a state page', () => {
   it('pays 40 and 45 hours at the state minimum with the overtime engine, on its rule', () => {
     for (const { facts, lang, page } of PAGES) {
-      const rule = facts.slug.en === 'california' ? 'california' : 'federal';
+      const rule: Rule = facts.overtime.daily === undefined ? 'federal' : (facts.slug.en as Rule);
       const forty = exampleOf(page, 'week40');
       const fortyFive = exampleOf(page, 'week45');
       expect(forty.value).toBe(ran(runWeek(facts.minimum.wage, rule, 8), 'pay'));
@@ -265,13 +265,83 @@ describe('the worked examples of a state page', () => {
     }
   });
 
-  it('says when the calculator applies the federal rule to a state with its own daily rule', () => {
+  it('opens the overtime calculator on the state’s own rule wherever the table has a daily rule', () => {
+    for (const { facts, page } of PAGES) {
+      const { state } = decode(overtime, queryOf(exampleOf(page, 'week45').href ?? ''));
+      const daily = facts.overtime.daily !== undefined;
+      expect(state.rule !== 'federal', facts.slug.en).toBe(daily);
+      if (daily) expect(state.rule, facts.slug.en).toBe(facts.slug.en);
+    }
+  });
+
+  it('no longer says the calculator applies the federal rule to a state with a daily rule', () => {
+    for (const { lang, page } of PAGES) {
+      for (const note of page.examples.notes) {
+        expect(note).not.toContain(
+          lang === 'en'
+            ? 'applies the federal rule and California'
+            : 'aplica la regla federal y la de California',
+        );
+      }
+    }
+  });
+
+  it('says how Alaska, Nevada and Colorado count an hour once, which their sources leave open', () => {
     for (const { facts, lang, page } of PAGES) {
-      const daily = facts.overtime.daily !== undefined && facts.slug.en !== 'california';
       const said = page.examples.notes.some((note) =>
-        note.includes(lang === 'en' ? 'daily rule' : 'regla por día'),
+        note.includes(lang === 'en' ? 'counts each hour once' : 'cuenta cada hora una vez'),
       );
-      expect(said, facts.slug.en).toBe(daily);
+      expect(said, facts.slug.en).toBe(['alaska', 'nevada', 'colorado'].includes(facts.slug.en));
+    }
+  });
+
+  it('says on the Colorado page that the 12 consecutive hours across two days are not applied', () => {
+    for (const { facts, lang, page } of PAGES) {
+      const said = page.examples.notes.some((note) =>
+        note.includes(lang === 'en' ? '12 consecutive hours' : '12 horas seguidas'),
+      );
+      expect(said, facts.slug.en).toBe(facts.slug.en === 'colorado');
+    }
+  });
+
+  it('gives Nevada its wage line, $18.00, from the $12.00 minimum of the table', () => {
+    for (const { facts, page } of PAGES) {
+      if (facts.slug.en !== 'nevada') continue;
+      expect(page.examples.notes.join(' ')).toContain('$18.00');
+    }
+  });
+});
+
+describe('the overtime engine and the state tables', () => {
+  it('holds the Nevada minimum wage of the minimum wage table', () => {
+    const nevada = STATE_FACTS.find(({ slug }) => slug.en === 'nevada');
+    expect(moneyText(NEVADA_MINIMUM_WAGE)).toBe(centsText(nevada?.minimum.wage ?? 0));
+  });
+
+  it('pays past the daily hours of the overtime table, and not at them, in each daily state', () => {
+    for (const facts of STATE_FACTS) {
+      const daily = facts.overtime.daily;
+      if (daily === undefined) continue;
+      const rule = facts.slug.en as Rule;
+      const hours = (day: number) => {
+        // one long Monday at $15, under Nevada's line, and nothing else
+        const result = overtime.run({
+          rate: '15',
+          rule,
+          mon: String(day),
+          tue: '0',
+          wed: '0',
+          thu: '0',
+          fri: '0',
+          sat: '0',
+          sun: '0',
+        });
+        if (!result.ok) throw new Error('the day must run');
+        const value = result.value.outputs.find(({ key }) => key === 'overtimeHours')?.value;
+        return (value as Rational).sign();
+      };
+      expect(hours(daily), facts.slug.en).toBe(0);
+      expect(hours(daily + 1), facts.slug.en).toBe(1);
     }
   });
 });

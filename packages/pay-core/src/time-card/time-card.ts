@@ -10,7 +10,7 @@ import {
   shiftMinutes,
   usd,
 } from '@maestro-calc/core';
-import { payOf, RULES, splitWeek } from '../overtime/split.ts';
+import { payOf, splitWeek, TIME_CARD_RULES } from '../overtime/split.ts';
 
 /** The days of the week, Monday first; the key of a day is its clock-in field. */
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
@@ -90,7 +90,7 @@ export const timeCard = defineCalculator({
     selectInput({
       key: 'rule',
       urlKey: 'ru',
-      options: RULES,
+      options: TIME_CARD_RULES,
       default: 'federal',
     }),
     ...dayFields('mon'),
@@ -133,6 +133,7 @@ export const timeCard = defineCalculator({
     const split = splitWeek(
       inputs.rule,
       DAYS.map((day) => hours(workedOf(day))),
+      inputs.rate,
     );
     const { regularPay, overtimePay, doublePay, pay } = payOf(inputs.rate, split);
     return {

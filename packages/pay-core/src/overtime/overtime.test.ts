@@ -121,3 +121,33 @@ describe('overtime calculator', () => {
     }
   });
 });
+
+describe('overtime calculator, the state rules', () => {
+  // four 10 h days: Alaska pays 8 h past 8 a day, 32 x $22 + 8 x $33 = $968.00
+  it('pays four 10 h days in Alaska like California, without double time', () => {
+    const four = { ...OFF, mon: '10', tue: '10', wed: '10', thu: '10' };
+    expect(outputsOf({ ...four, rule: 'alaska' })['pay']).toEqual(usd(968));
+    // a 13 h Monday: 8 + 5 overtime, no double; 8 x 22 + 5 x 33 = $341.00
+    expect(outputsOf({ ...OFF, rule: 'alaska', mon: '13' })['doubleHours']).toEqual(r(0));
+    expect(outputsOf({ ...OFF, rule: 'alaska', mon: '13' })['pay']).toEqual(usd(341));
+  });
+
+  it('pays Nevada by the day below $18.00 an hour and by the week from $18.00', () => {
+    const four = { ...OFF, mon: '10', tue: '10', wed: '10', thu: '10', rule: 'nevada' };
+    // $15: 32 x 15 + 8 x 22.50 = 480 + 180 = $660.00; $18: 40 x 18 = $720.00
+    expect(outputsOf({ ...four, rate: '15' })['pay']).toEqual(usd(660));
+    expect(outputsOf({ ...four, rate: '18' })['overtimeHours']).toEqual(r(0));
+    expect(outputsOf({ ...four, rate: '18' })['pay']).toEqual(usd(720));
+  });
+
+  it('pays Colorado past 12 h a day: three 14 h days at $22 are $990.00', () => {
+    // 36 x 22 = 792 + 6 x 33 = 198
+    const days = { ...OFF, mon: '14', tue: '14', wed: '14', rule: 'colorado' };
+    expect(outputsOf(days)['pay']).toEqual(usd(990));
+  });
+
+  it('keeps the time card on the federal and California rules', () => {
+    const rule = timeCard.inputs.find(({ key }) => key === 'rule');
+    expect(rule?.kind === 'select' ? rule.options : []).toEqual(['federal', 'california']);
+  });
+});

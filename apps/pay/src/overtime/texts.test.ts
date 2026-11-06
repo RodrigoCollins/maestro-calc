@@ -28,6 +28,18 @@ describe('overtime texts', () => {
         expect(Object.keys(texts.rules)).toEqual(rule.options);
       });
 
+      it('explains the state rules: Alaska past 8, Nevada below $18.00, Colorado past 12', () => {
+        const notes = texts.notes.join(' ');
+        for (const word of ['Alaska', 'Nevada', '$18.00', '$12.00', 'Colorado', '12']) {
+          expect(notes, word).toContain(word);
+        }
+      });
+
+      it('says what the Colorado rule leaves out: 12 consecutive hours across two days', () => {
+        const colorado = texts.notes.find((note) => note.startsWith('Colorado')) ?? '';
+        expect(colorado).toMatch(lang === 'en' ? /consecutive/ : /seguidas/);
+      });
+
       it('links the time card of its own language', () => {
         expect(existsSync(pageOf(texts.timeCard.href)), texts.timeCard.href).toBe(true);
         expect(texts.timeCard.href.startsWith('/es/')).toBe(lang === 'es');

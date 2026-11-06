@@ -22,7 +22,8 @@ describe('overtime contract', () => {
     const [rate, rule, ...days] = overtime.inputs;
     expect(rate.default).toEqual(usd(22));
     expect(rate.max).toEqual(usd(1000));
-    expect(rule.options).toEqual(['federal', 'california']);
+    // appended, never reordered: `ru=california` must keep meaning California
+    expect(rule.options).toEqual(['federal', 'california', 'alaska', 'nevada', 'colorado']);
     expect(rule.default).toBe('federal');
     expect(days.map((day) => day.default)).toEqual([
       Rational.of(9),

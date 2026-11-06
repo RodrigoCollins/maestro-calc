@@ -48,7 +48,7 @@ export const overtime = defineCalculator({
   warnings: [],
   compute: (inputs) => {
     const { mon, tue, wed, thu, fri, sat, sun } = inputs;
-    const split = splitWeek(inputs.rule, [mon, tue, wed, thu, fri, sat, sun]);
+    const split = splitWeek(inputs.rule, [mon, tue, wed, thu, fri, sat, sun], inputs.rate);
     return {
       outputs: {
         ...payOf(inputs.rate, split),

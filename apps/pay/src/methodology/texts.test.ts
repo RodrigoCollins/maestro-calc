@@ -48,6 +48,21 @@ describe('methodology texts', () => {
     }
   });
 
+  it('explains the state daily rules, citing the sources of the overtime table', () => {
+    for (const texts of Object.values(METHODOLOGY_TEXTS)) {
+      const section = texts.sections.find(({ id }) => id === 'state-overtime');
+      const paragraphs = section?.paragraphs.join(' ') ?? '';
+      for (const word of ['Alaska', 'Nevada', '$18.00', 'Colorado', '12', '$968', '$660', '$990']) {
+        expect(paragraphs, word).toContain(word);
+      }
+      // the DOL table names the three daily thresholds and Nevada's wage line; each state page
+      // cites its own agency besides
+      expect(section?.sources.map(({ href }) => href)).toEqual([
+        'https://www.dol.gov/agencies/whd/minimum-wage/state',
+      ]);
+    }
+  });
+
   it('explains the hours calculator and decimal hours, and how decimals are rounded', () => {
     for (const texts of Object.values(METHODOLOGY_TEXTS)) {
       const ids = texts.sections.map(({ id }) => id);
