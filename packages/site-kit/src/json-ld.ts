@@ -43,17 +43,40 @@ export const webApplicationLd = ({
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
 });
 
+/**
+ * The organization behind an article: its name alone, or with its home page and the page of its
+ * editorial policy (`publishingPrinciples`).
+ */
+export type OrganizationRef =
+  | string
+  | {
+      readonly name: string;
+      readonly url?: string;
+      readonly publishingPrinciples?: string;
+    };
+
+const organizationLd = (organization: OrganizationRef) => ({
+  '@type': 'Organization',
+  ...(typeof organization === 'string' ? { name: organization } : organization),
+});
+
 export const articleLd = ({
   headline,
   description,
   url,
   inLanguage,
   publisher,
+  author,
+  dateModified,
 }: Page & {
   readonly headline: string;
   readonly description: string;
-  /** The name of the site that publishes it. */
-  readonly publisher: string;
+  /** The site that publishes it: its name, or the organization with its address and policy. */
+  readonly publisher: OrganizationRef;
+  /** Who wrote it, when the site names it (an organization: its editorial team). */
+  readonly author?: OrganizationRef;
+  /** The day the page was last reviewed, as `YYYY-MM-DD`, when the page carries one. */
+  readonly dateModified?: string;
 }) => ({
   '@context': CONTEXT,
   '@type': 'Article',
@@ -61,7 +84,9 @@ export const articleLd = ({
   description,
   url,
   inLanguage,
-  publisher: { '@type': 'Organization', name: publisher },
+  ...(author === undefined ? {} : { author: organizationLd(author) }),
+  publisher: organizationLd(publisher),
+  ...(dateModified === undefined ? {} : { dateModified }),
 });
 
 /** The trail from the home to a page (a job page: home, its calculator, itself), each item at its 1-based position. */
