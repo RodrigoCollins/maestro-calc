@@ -1,4 +1,5 @@
 import { CONTACT_EMAIL } from './privacy.ts';
+import { hrefOf, type Lang } from './routes.ts';
 
 /**
  * The sources the about page names, each as it appears in the source names the methodology and the
@@ -93,3 +94,62 @@ export const ABOUT: About = {
   ],
   reviewed: 'Last updated November 4, 2026.',
 };
+
+/** The about page in Spanish: the same sections, sources and address. */
+const ABOUT_ES: About = {
+  title: 'Acerca de | Pool Figures',
+  description:
+    'Quién hace Pool Figures, qué hacen sus calculadoras gratis para piscina, de dónde salen sus cifras y cómo escribirnos.',
+  h1: 'Acerca de Pool Figures',
+  lead: `Pool Figures es un sitio independiente con calculadoras gratis para dueños de piscinas en casa en Estados Unidos. Lo hace el equipo de Maestro Calc y Cuenta Horas. Puedes escribirnos a ${CONTACT_EMAIL}.`,
+  sections: [
+    {
+      id: 'what',
+      heading: 'Qué hace el sitio',
+      paragraphs: [
+        'Pool Figures calcula el volumen de tu piscina, la sal, el cloro, la dosis para el pH y el cloruro de calcio que debes agregar, y el caudal que necesita tu bomba. Las guías paso a paso explican cómo abrir la piscina en primavera y cómo cerrarla para el invierno, una tabla de química del agua da el rango de cada nivel, una guía calcula cuántas horas prender la bomba, otra compara una piscina de agua salada con una de cloro, otra explica el tratamiento de choque y cuánto producto agregar, otra cómo bajar o subir el pH, otra cómo subir la dureza de calcio y por qué solo vaciar agua la baja, y otra cuánto esperar para nadar después de cada químico. Por ahora las guías están en inglés. Cada calculadora muestra la cifra y la fórmula que hay detrás.',
+      ],
+    },
+    {
+      id: 'method',
+      heading: 'Cómo se calculan las cifras',
+      paragraphs: [
+        'Cada calculadora hace aritmética exacta y solo redondea la cifra que lees. Cada fórmula se prueba con casos resueltos a mano, y la página de metodología muestra esos casos. Usamos herramientas de IA para ayudar a escribir textos y código; las fórmulas se comprueban con esos casos antes de publicar una página.',
+      ],
+      link: { href: hrefOf('methodology', 'es'), label: 'Cómo lo calculamos (en inglés)' },
+    },
+    {
+      id: 'sources',
+      heading: 'Fuentes',
+      paragraphs: [
+        'Solo citamos fuentes primarias: el NIST Handbook 44 para el tamaño de un galón, el USGS para el peso del agua, el Department of Energy de Estados Unidos para el tamaño del calentador y las horas de bomba, ENERGY STAR (EPA) para el consumo de la bomba, la norma ANSI/APSP/ICC-15 para el caudal de la bomba, los CDC para los niveles del agua y los límites de piscinas públicas, la tabla de dosis de pH de los kits de Taylor Technologies para el ácido y el carbonato de sodio, las instrucciones de HASA para el ácido muriático y una etiqueta de pH Up hecha para Alliance Trading para cómo agregarlos, y el fabricante: la etiqueta de un aumentador de dureza de calcio (ClearView, de Oreq Corporation) para el cloruro de calcio, los manuales y guías de Hayward para la sal, el nivel del agua, la recirculación de la bomba, la apertura y el cierre, los manuales de Pentair IntelliChlor y Jandy AquaPure para cómo cambian otras celdas de sal, y la etiqueta registrada ante la EPA de cada producto para su concentración. Cada página nombra la fuente de sus cifras.',
+      ],
+    },
+    {
+      id: 'estimates',
+      heading: 'Estimaciones, no instrucciones',
+      paragraphs: [
+        'Las cifras son estimaciones. Los químicos de piscina pueden hacerte daño si se usan mal: lee la etiqueta de tu producto y síguela, y mide el agua después de cada dosis. Si tienes un problema que no puedes resolver, consulta a un profesional de piscinas.',
+      ],
+    },
+    {
+      id: 'data',
+      heading: 'Tus datos',
+      paragraphs: [
+        'El sitio no tiene cuentas, y las calculadoras funcionan en tu navegador: los valores que escribes no nos llegan. No vendemos datos. Hoy el sitio no tiene publicidad. La página de privacidad describe los registros del hosting y la analítica que usamos.',
+      ],
+      link: { href: hrefOf('privacy', 'es'), label: 'Privacidad' },
+    },
+    {
+      id: 'contact',
+      heading: 'Contacto y correcciones',
+      paragraphs: [
+        `¿Encontraste un error? Escribe a ${CONTACT_EMAIL}. Leemos cada mensaje y corregimos los errores confirmados.`,
+      ],
+    },
+  ],
+  reviewed: 'Actualizado el 6 de noviembre de 2026.',
+};
+
+/** The about page in each language. */
+export const ABOUT_TEXTS: Readonly<Record<Lang, About>> = { en: ABOUT, es: ABOUT_ES };

@@ -1,0 +1,289 @@
+---
+import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
+import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
+import Layout from './Layout.astro';
+import { GUIDES } from '../guide.ts';
+import { HOME_TEXTS, toolsOf } from '../home.ts';
+import { JOB_PAGES } from '../jobs.ts';
+import { labelOf } from '../layout.ts';
+import { hrefOf, routeOf, type Lang } from '../routes.ts';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = HOME_TEXTS[lang];
+// the job pages are English only for now, so the Spanish home leaves their list out
+const jobs = lang === 'en' ? JOB_PAGES : [];
+// the guides at their page in this language once it is built, named in this language
+const guides = GUIDES.map(({ path, card }) => {
+  const id = routeOf(path)?.id ?? '';
+  return lang === 'en'
+    ? { href: path, title: card.title, summary: card.summary }
+    : { href: hrefOf(id, lang), title: labelOf(id, lang) ?? card.title, summary: undefined };
+});
+
+// The sample shows the volume engine's own default, worked out at build time (no script).
+const ran = poolVolume.run({});
+if (!ran.ok) throw new Error('the pool volume calculator must run at its defaults');
+const value = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+if (!isQuantityOf(value, 'volume')) throw new Error('gallons must be a volume');
+const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(
+  valueIn(value, gal).toNumber(),
+);
+---
+
+<Layout title={text.title} description={text.description}>
+  <main class="pool-home">
+    <section class="pool-hero">
+      <div class="pool-hero-text">
+        <h1>{text.h1}</h1>
+        <p>{text.lead}</p>
+        <p class="pool-actions">
+          <a class="pool-button" href={hrefOf('volume', lang)}>
+            {text.volumeButton}
+          </a>
+          <a class="pool-button pool-button-line" href={hrefOf('salt', lang)}>
+            {text.saltButton}
+          </a>
+        </p>
+      </div>
+      <figure class="pool-sample">
+        <p class="pool-marker">
+          {gallons}
+          <small>{text.unit}</small>
+        </p>
+        <figcaption>{text.caption}</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="pool-tools">
+      <h2 id="pool-tools">{text.toolsHeading}</h2>
+      <ul class="pool-tools" role="list">
+        {toolsOf(lang).map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>
+            <p>{summary}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {jobs.length > 0 && (
+      <section aria-labelledby="pool-jobs">
+        <h2 id="pool-jobs">{text.jobsHeading}</h2>
+        <ul class="pool-tools" role="list">
+          {jobs.map(({ path, card }) => (
+            <li>
+              <a href={path}>{card.title}</a>
+              <p>{card.summary}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    <section class="pool-band" aria-labelledby="pool-spring">
+      <div>
+        <h2 id="pool-spring">{text.bandHeading}</h2>
+        <p>{text.band}</p>
+      </div>
+      <a class="pool-button pool-button-light" href={hrefOf('opening-guide', lang)}>
+        {text.bandButton}
+      </a>
+    </section>
+
+    <section aria-labelledby="pool-guides">
+      <h2 id="pool-guides">{text.guidesHeading}</h2>
+      <ul class="pool-tools" role="list">
+        {guides.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>
+            {summary !== undefined && <p>{summary}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .pool-home {
+    max-width: 70rem;
+    margin: 0 auto;
+    padding: 3rem 1rem 4rem;
+    display: grid;
+    gap: 3rem;
+  }
+
+  .pool-hero {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: stretch;
+  }
+
+  .pool-hero-text {
+    flex: 999 1 30rem;
+    min-width: 0;
+    display: grid;
+    align-content: start;
+    gap: 1rem;
+  }
+
+  h1,
+  h2,
+  .pool-tools a {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 0.95;
+  }
+
+  h1 {
+    font-size: clamp(3rem, 9vw, 5.25rem);
+  }
+
+  h2 {
+    margin-bottom: 1rem;
+    font-size: 2.5rem;
+  }
+
+  .pool-hero-text p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.1875rem;
+    line-height: 1.5;
+  }
+
+  .pool-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Deep teal is for actions only; the second action is outlined in ink. */
+  .pool-button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3.5rem;
+    padding: 0 1.625rem;
+    border: 3px solid var(--teal);
+    background: var(--teal);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .pool-button-line {
+    border-color: var(--ink);
+    background: #ffffff;
+    color: var(--ink);
+  }
+
+  .pool-button:hover {
+    text-decoration: underline;
+  }
+
+  .pool-sample {
+    flex: 1 1 20rem;
+    min-width: 0;
+    margin: 0;
+    padding: 1.25rem;
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    border: 4px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-sample .pool-marker {
+    justify-self: start;
+    margin: 0;
+  }
+
+  .pool-sample figcaption {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .pool-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* One card per calculator; its title link covers the card. */
+  .pool-tools li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    min-height: 9rem;
+    padding: 1.125rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-tools li:hover,
+  .pool-tools li:focus-within {
+    outline: 3px solid var(--teal);
+  }
+
+  .pool-tools a {
+    color: var(--ink);
+    font-size: 1.75rem;
+    text-decoration: none;
+  }
+
+  .pool-tools a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The one ink band of the home: the spring guide. */
+  .pool-band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.75rem;
+    background: var(--ink);
+    color: #ffffff;
+  }
+
+  .pool-band div {
+    flex: 999 1 26rem;
+    min-width: 0;
+  }
+
+  .pool-band h2 {
+    margin: 0 0 0.375rem;
+    font-size: 2.25rem;
+  }
+
+  .pool-band p {
+    margin: 0;
+    line-height: 1.5;
+    color: #d4d6d3;
+  }
+
+  .pool-button-light {
+    border-color: #ffffff;
+    background: #ffffff;
+    color: var(--ink);
+  }
+
+  .pool-tools p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+</style>

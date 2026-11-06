@@ -1,0 +1,50 @@
+---
+import Layout from './Layout.astro';
+import { ABOUT_TEXTS } from '../about.ts';
+import type { Lang } from '../routes.ts';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { title, description, h1, lead, sections, reviewed } = ABOUT_TEXTS[Astro.props.lang];
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    {sections.map(({ id, heading, paragraphs, link }) => (
+      <section class="pool-about" aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {link !== undefined && (
+          <p>
+            <a href={link.href}>{link.label}</a>
+          </p>
+        )}
+      </section>
+    ))}
+    <p class="pool-about-note">{reviewed}</p>
+  </main>
+</Layout>
+
+<style>
+  .pool-about {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .pool-about h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 2rem;
+    text-transform: uppercase;
+  }
+
+  .pool-page .pool-about-note {
+    font-size: 0.875rem;
+  }
+</style>

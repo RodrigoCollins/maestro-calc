@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
@@ -19,17 +19,14 @@ import {
   type GuideSource,
 } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
+import { footerLinksOf } from './layout.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
   .filter((name) => name.endsWith('.astro'))
   .map((name) => `/${name.replace(/\.astro$/, '').replace(/^index$/, '')}`);
-const layout = readFileSync(
-  fileURLToPath(new URL('components/Layout.astro', import.meta.url)),
-  'utf8',
-);
-const footer = /<footer[\s\S]*<\/footer>/.exec(layout)?.[0] ?? '';
+const footer = footerLinksOf('en').map(({ href }) => href);
 
 const textOf = (
   guide:
@@ -498,7 +495,7 @@ describe('the guides', () => {
   });
 
   it('links every guide from the footer of every page', () => {
-    for (const { path } of GUIDES) expect(footer, path).toContain(`href="${path}"`);
+    for (const { path } of GUIDES) expect(footer, path).toContain(path);
   });
 });
 

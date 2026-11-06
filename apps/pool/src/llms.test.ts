@@ -40,7 +40,13 @@ describe('llms.txt', () => {
 
   it('lists the calculators, the guides and the pool sizes in sections, the sizes optional', () => {
     const sections = lines.filter((line) => line.startsWith('## '));
-    expect(sections).toEqual(['## Calculators', '## Guides and charts', '## About', '## Optional']);
+    expect(sections).toEqual([
+      '## Calculators',
+      '## Guides and charts',
+      '## About',
+      '## En español',
+      '## Optional',
+    ]);
     expect(lines.filter((line) => line.startsWith('# '))).toHaveLength(1);
   });
 
@@ -74,6 +80,17 @@ describe('llms.txt', () => {
     for (const { path, card } of GUIDES)
       expect(text).toContain(`- [${card.title}](${SITE.origin}${path}): ${card.summary}`);
   });
+});
+
+// the Spanish pages, each by its Spanish title (as `apps/pay/src/seo/llms.ts`)
+it('lists every Spanish page in its own section, the Spanish home first', () => {
+  const section = text.split('## En español')[1]?.split('\n## ')[0] ?? '';
+  const spanish = ROUTES.flatMap(({ es }) => (es === undefined ? [] : [es]));
+  expect(spanish.length).toBeGreaterThan(0);
+  const listed = [...section.matchAll(/\]\((https:\/\/[^)]+)\)/g)].map(([, url = '']) =>
+    pathOf(url),
+  );
+  expect(listed).toEqual(spanish);
 });
 
 describe('robots.txt', () => {

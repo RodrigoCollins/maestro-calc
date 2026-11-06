@@ -1,13 +1,13 @@
 ---
 import { Font } from 'astro:assets';
-import { CHARTS_INDEX } from '../charts.ts';
-import { NAV_LINKS } from '../home.ts';
+import { footerLinksOf, LAYOUT_TEXTS, navOf, switchOf } from '../layout.ts';
 import type { Crumb } from '../seo/breadcrumb.ts';
 import { langOf } from '../routes.ts';
 import { alternatesOf, embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
+import { embedPathOf } from '@maestro-calc/site-kit/embed';
 
 interface Props {
   readonly title: string;
@@ -33,6 +33,11 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
 const lang = langOf(path);
 // the hreflang pair only on an indexed page whose route has its twin (never on an embed)
 const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.origin) : [];
+const texts = LAYOUT_TEXTS[lang];
+const home = lang === 'en' ? '/' : '/es';
+// the other language's page, when this one has its twin; an embed switches to the twin's embed
+const twin = indexed ? switchOf(path) : undefined;
+const other = twin === undefined || !embed ? twin : { ...twin, href: embedPathOf(twin.href) };
 ---
 
 <!doctype html>
@@ -79,72 +84,37 @@ const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.o
   </head>
   <body>
     <header class="pool-header">
-      <a class="pool-brand" href={embed ? canonical : '/'}>
+      <a class="pool-brand" href={embed ? canonical : home}>
         {SITE.name}
       </a>
       {!embed && (
-        <nav aria-label="Calculators">
-          {NAV_LINKS.map(({ href, title }) => (
+        <nav aria-label={texts.navLabel}>
+          {navOf(lang).map(({ href, title }) => (
             <a {href}>{title}</a>
           ))}
         </nav>
       )}
+      {other !== undefined && (
+        <a
+          class="pool-lang"
+          href={other.href}
+          hreflang={other.lang}
+          lang={other.lang}
+          target={embed ? '_self' : undefined}
+        >
+          {other.label}
+        </a>
+      )}
     </header>
     <slot />
     <footer class="pool-footer">
-      <p>Every figure is an estimate. Read the label of your product before you add it.</p>
-      {!embed && (
-        <>
+      <p>{texts.warning}</p>
+      {!embed &&
+        footerLinksOf(lang).map(({ href, label }) => (
           <p>
-            <a href="/methodology">How we work it out</a>
+            <a {href}>{label}</a>
           </p>
-          <p>
-            <a href="/opening-your-pool">Opening your pool</a>
-          </p>
-          <p>
-            <a href="/closing-your-pool">Closing your pool</a>
-          </p>
-          <p>
-            <a href="/pool-water-chemistry-chart">Water chemistry chart</a>
-          </p>
-          <p>
-            <a href="/pool-chemical-dosing-chart">Chemical dosing chart</a>
-          </p>
-          <p>
-            <a href="/pool-volume-chart">Pool volume chart</a>
-          </p>
-          <p>
-            <a href={CHARTS_INDEX.path}>{CHARTS_INDEX.name}</a>
-          </p>
-          <p>
-            <a href="/how-long-to-run-pool-pump">How long to run your pump</a>
-          </p>
-          <p>
-            <a href="/salt-water-pool-vs-chlorine-pool">Salt water vs chlorine</a>
-          </p>
-          <p>
-            <a href="/how-to-shock-a-pool">How to shock a pool</a>
-          </p>
-          <p>
-            <a href="/how-to-lower-ph-in-a-pool">How to lower pool pH</a>
-          </p>
-          <p>
-            <a href="/how-to-raise-calcium-hardness-in-a-pool">How to raise calcium hardness</a>
-          </p>
-          <p>
-            <a href="/how-long-after-adding-chemicals-can-you-swim">When to swim after chemicals</a>
-          </p>
-          <p>
-            <a href="/privacy">Privacy</a>
-          </p>
-          <p>
-            <a href="/about">About</a>
-          </p>
-          <p>
-            <a href="/embed-calculators">Embed our calculators</a>
-          </p>
-        </>
-      )}
+        ))}
     </footer>
   </body>
 </html>

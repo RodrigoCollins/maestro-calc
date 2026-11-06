@@ -94,11 +94,49 @@ for (const calculator of [
   });
 }
 
-test('answers an unknown path with the 404 page', async ({ page }) => {
+test('answers an unknown path with the 404 page, which links both homes', async ({ page }) => {
   const response = await page.goto('/no-such-page');
   expect(response?.status()).toBe(404);
   await expect(page.locator('h1')).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+  await expect(page.locator('main a[href="/"]')).toHaveCount(1);
+  await expect(page.locator('main a[href="/es"]')).toHaveCount(1);
+});
+
+// the pages that have their Spanish twin: the switch in the header and the hreflang pair agree
+for (const [english, spanish] of [
+  ['/', '/es'],
+  ['/about', '/es/acerca'],
+  ['/privacy', '/es/privacidad'],
+  ['/embed-calculators', '/es/calculadoras-para-tu-sitio'],
+] as const) {
+  test(`switches between ${english} and ${spanish}, each naming the other`, async ({ page }) => {
+    await page.goto(english);
+    await page.locator('header a[hreflang="es"]').click();
+    await expect(page).toHaveURL(new RegExp(`${spanish}$`));
+    await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+    await expect(page.locator('link[rel="alternate"][hreflang="es-US"]')).toHaveAttribute(
+      'href',
+      `https://poolfigures.com${spanish}`,
+    );
+    await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveAttribute(
+      'href',
+      `https://poolfigures.com${english}`,
+    );
+    await page.locator('header a[hreflang="en"]').click();
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      `https://poolfigures.com${english}`,
+    );
+  });
+}
+
+// a page with no twin yet carries no alternate and no switch
+test('gives a page with no Spanish twin no alternate and no switch', async ({ page }) => {
+  await page.goto('/methodology');
+  await expect(page.locator('link[rel="alternate"]')).toHaveCount(0);
+  await expect(page.locator('header a[hreflang]')).toHaveCount(0);
 });
 
 test('links every calculator from the home and the header to a page that answers', async ({

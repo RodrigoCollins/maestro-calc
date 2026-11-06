@@ -5,6 +5,7 @@ export interface Page {
 }
 
 const en = (path: string): Page => ({ path, lang: 'en' });
+const es = (path: string): Page => ({ path, lang: 'es' });
 
 /** Every page of Pool Figures, Spanish ones as they are built; the e2e suites run over all of them. */
 export const PAGES: readonly Page[] = [
@@ -35,6 +36,10 @@ export const PAGES: readonly Page[] = [
   en('/pool-calcium-hardness-calculator'),
   en('/pool-heater-size-calculator'),
   en('/pool-fill-time-calculator'),
+  es('/es'),
+  es('/es/acerca'),
+  es('/es/privacidad'),
+  es('/es/calculadoras-para-tu-sitio'),
 ];
 
 /**

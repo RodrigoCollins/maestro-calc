@@ -48,3 +48,57 @@ export const PRIVACY = {
   ],
   reviewed: 'Last updated November 4, 2026.',
 } as const;
+
+/** The privacy page in Spanish: the same sections and paragraphs, the same promises. */
+const PRIVACY_ES = {
+  title: 'Privacidad | Pool Figures',
+  description:
+    'Qué hace Pool Figures con la información: registros del hosting, Google Analytics sin los valores que escribes y calculadoras que funcionan en tu navegador.',
+  h1: 'Privacidad',
+  lead: 'Esta página describe qué hace hoy Pool Figures con la información. Solo cubre lo que el sitio hace ahora.',
+  sections: [
+    {
+      id: 'hosting',
+      heading: 'Hosting',
+      paragraphs: [
+        'Pool Figures está alojado en Cloudflare. Cuando cargas una página, Cloudflare procesa los registros normales de cada solicitud, que pueden incluir tu dirección IP, la página que pediste y tu tipo de navegador.',
+      ],
+    },
+    {
+      id: 'analytics',
+      heading: 'Analítica y cookies',
+      paragraphs: [
+        'Pool Figures usa Google Analytics para contar visitas y ver qué páginas se usan. Empieza después de que la página termina de cargar. El sitio no tiene publicidad ni cuentas.',
+        'Google Analytics recibe la página que visitas sin los valores que escribiste, tu tipo de navegador y de dispositivo, el tamaño de tu pantalla y una ubicación aproximada que Google deduce de tu dirección IP. Fuera del Espacio Económico Europeo, el Reino Unido y Suiza, puede guardar cookies propias, como _ga, para distinguir una visita de otra.',
+        'En el Espacio Económico Europeo, el Reino Unido y Suiza, Google Analytics no guarda ninguna cookie: solo recibe una señal de que se vio una página. Lo mismo pasa en cualquier lugar si tu navegador envía la señal Global Privacy Control. El almacenamiento para publicidad y la personalización de anuncios están apagados en todas partes.',
+        'También puedes bloquear las cookies en tu navegador o instalar el complemento de Google para inhabilitar Google Analytics.',
+      ],
+    },
+    {
+      id: 'calculators',
+      heading: 'Calculadoras',
+      paragraphs: [
+        'Las calculadoras funcionan en tu navegador. Nada de lo que escribes, como el tamaño de tu piscina o las lecturas de tu agua, se envía a nosotros ni a Google Analytics. Los valores que ingresas quedan en la dirección de la página, así que puedes copiar el enlace y compartirlo. Abrir o compartir esa dirección la envía como cualquier solicitud de página, así que puede aparecer en los registros de Cloudflare. La dirección con tus valores también queda en el historial de tu navegador, como cualquier página que visitas.',
+      ],
+    },
+    {
+      id: 'email',
+      heading: 'Correo',
+      paragraphs: [
+        `Si escribes a ${CONTACT_EMAIL}, usamos tu mensaje y tu dirección solo para responderte. El mismo equipo hace Pool Figures, Cuenta Horas y Maestro Calc.`,
+      ],
+    },
+    {
+      id: 'changes',
+      heading: 'Cambios',
+      paragraphs: ['Actualizaremos esta página antes de agregar publicidad.'],
+    },
+  ],
+  reviewed: 'Actualizado el 6 de noviembre de 2026.',
+} as const;
+
+/** The privacy page in each language. */
+export const PRIVACY_TEXTS: {
+  readonly en: typeof PRIVACY;
+  readonly es: typeof PRIVACY_ES;
+} = { en: PRIVACY, es: PRIVACY_ES };

@@ -19,7 +19,7 @@ export interface Route {
 
 /** The page files of `src/pages` (the 404 and the embeds are not routes), in the order of the site. */
 const PAGE_ROUTES: readonly Route[] = [
-  { id: 'home', kind: 'home', en: '/' },
+  { id: 'home', kind: 'home', en: '/', es: '/es' },
   { id: 'volume', kind: 'calculator', en: '/pool-volume-calculator' },
   { id: 'salt', kind: 'calculator', en: '/pool-salt-calculator' },
   { id: 'chlorine', kind: 'calculator', en: '/pool-chlorine-calculator' },
@@ -43,9 +43,9 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'calcium-guide', kind: 'article', en: '/how-to-raise-calcium-hardness-in-a-pool' },
   { id: 'swim-guide', kind: 'article', en: '/how-long-after-adding-chemicals-can-you-swim' },
   { id: 'methodology', kind: 'article', en: '/methodology' },
-  { id: 'about', kind: 'article', en: '/about' },
-  { id: 'privacy', kind: 'article', en: '/privacy' },
-  { id: 'embed', kind: 'article', en: '/embed-calculators' },
+  { id: 'about', kind: 'article', en: '/about', es: '/es/acerca' },
+  { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
+  { id: 'embed', kind: 'article', en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },
 ];
 
 /** Every page: the page files, then the job pages `[job].astro` builds (English only for now). */
@@ -68,3 +68,10 @@ export const routeOf = (path: string, routes: readonly Route[] = ROUTES): Route 
 /** The language of an address: `/es` and every page below it are Spanish. */
 export const langOf = (path: string): Lang =>
   path === '/es' || path.startsWith('/es/') ? 'es' : 'en';
+
+/** The page of route `id` in `lang`: its Spanish twin once it is built, the English page until then. */
+export const hrefOf = (id: string, lang: Lang): string => {
+  const route = ROUTES.find((candidate) => candidate.id === id);
+  if (route === undefined) throw new Error(`no route ${id}`);
+  return lang === 'es' ? (route.es ?? route.en) : route.en;
+};

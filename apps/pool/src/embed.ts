@@ -12,6 +12,7 @@ import {
 } from './doses.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
+import type { Lang } from './routes.ts';
 import { SITE } from './site.config.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -86,3 +87,30 @@ export const EMBED_PAGE = {
   ],
   calculatorsHeading: 'The calculators',
 } as const;
+
+/** The embed page in Spanish: the same steps and notes. */
+const EMBED_PAGE_ES = {
+  path: '/es/calculadoras-para-tu-sitio',
+  title: 'Calculadoras de piscina para tu sitio web | Pool Figures',
+  description:
+    'Pon gratis en tu sitio web las calculadoras de volumen, químicos, bomba, calentador y llenado de Pool Figures: copia el código y pégalo.',
+  h1: 'Calculadoras para tu sitio',
+  lead: 'Puedes poner cualquier calculadora de Pool Figures en tu sitio web, gratis. Funciona igual que en nuestro sitio: las mismas fórmulas, las mismas cifras y el enlace que tus visitantes pueden compartir.',
+  howHeading: 'Cómo poner una calculadora',
+  steps: [
+    'Busca la calculadora abajo y selecciona todo su código.',
+    'Pega el código en tu página donde quieras que aparezca la calculadora. La mayoría de los creadores de sitios lo llaman bloque HTML o bloque para insertar.',
+    'Deja el enlace debajo de la calculadora. Les dice a tus visitantes de dónde salen las cifras, y es lo único que te pedimos a cambio.',
+  ],
+  notes: [
+    'La calculadora se abre al ancho de tu página. Si se ve muy corta o muy alta, cambia el número que va después de height en el código.',
+    'La calculadora insertada no rastrea a tus visitantes y no carga anuncios. Sus cifras salen de las mismas fórmulas y fuentes que nuestras páginas, descritas en nuestra metodología.',
+    `¿Preguntas, o necesitas una calculadora? Escríbenos a ${CONTACT_EMAIL}.`,
+  ],
+  calculatorsHeading: 'Las calculadoras (en inglés por ahora)',
+} as const;
+
+/** The embed page in each language. */
+export const EMBED_PAGE_TEXTS: {
+  readonly [lang in Lang]: lang extends 'en' ? typeof EMBED_PAGE : typeof EMBED_PAGE_ES;
+} = { en: EMBED_PAGE, es: EMBED_PAGE_ES };

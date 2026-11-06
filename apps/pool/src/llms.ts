@@ -1,11 +1,12 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
-import { ABOUT } from './about.ts';
+import { ABOUT, ABOUT_TEXTS } from './about.ts';
 import { CHARTS_INDEX } from './charts.ts';
-import { EMBED_PAGE } from './embed.ts';
+import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
-import { HOME_TOOLS } from './home.ts';
+import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
 import { JOB_PAGES } from './jobs.ts';
-import { PRIVACY } from './privacy.ts';
+import { PRIVACY, PRIVACY_TEXTS } from './privacy.ts';
+import { ROUTES } from './routes.ts';
 import { SITE } from './site.config.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
@@ -33,6 +34,22 @@ const ABOUT_PAGES: readonly Entry[] = [
   { name: 'Privacy', path: '/privacy', note: PRIVACY.description },
 ];
 
+/** The Spanish page of each route that has one, by route id: its Spanish name and description. */
+const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
+  home: { name: 'Pool Figures en español', note: HOME_TEXTS.es.description },
+  about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
+  privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
+  embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },
+};
+
+/** Every Spanish page, in the order of the route table (as `apps/pay/src/seo/llms.ts`). */
+const SPANISH_PAGES: readonly Entry[] = ROUTES.flatMap(({ id, es }) => {
+  if (es === undefined) return [];
+  const entry = SPANISH[id];
+  if (entry === undefined) throw new Error(`no llms.txt entry for the Spanish page ${es}`);
+  return [{ ...entry, path: es }];
+});
+
 const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
   [
     'Calculators',
@@ -50,6 +67,7 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
     ],
   ],
   ['About', ABOUT_PAGES],
+  ['En español', SPANISH_PAGES],
   // llmstxt.org: the links of an `Optional` section can be skipped when a shorter context is needed
   ['Optional', JOB_PAGES.map(({ path, h1, card }) => ({ name: h1, path, note: card.summary }))],
 ];
