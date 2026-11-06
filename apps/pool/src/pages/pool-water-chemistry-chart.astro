@@ -1,4 +1,5 @@
 ---
+import DataLink from '../components/DataLink.astro';
 import Layout from '../components/Layout.astro';
 import { CHEMISTRY_CHART } from '../chemistry.ts';
 import { DOSING_CHART } from '../dosing.ts';
@@ -78,6 +79,7 @@ const sourceOf = (key: string) => sources[key as keyof typeof sources];
       Home-pool ranges are the manufacturer’s; your state may set its own rules for a public pool.
       Read the label of each product before you add it.
     </p>
+    <DataLink path={CHEMISTRY_CHART.path} />
   </main>
 </Layout>
 

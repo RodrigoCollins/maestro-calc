@@ -289,6 +289,8 @@ const PATH = '/pool-chemical-dosing-chart';
  */
 export const DOSING_CHART = {
   path: PATH,
+  /** The day every dose was last checked against its source. */
+  checked: '2026-11-05',
   card: {
     title: 'Chemical dosing chart',
     summary:

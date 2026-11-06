@@ -179,6 +179,8 @@ const SOURCE = {
  */
 export const VOLUME_CHART = {
   path: PATH,
+  /** The day the factors were last checked against their source. */
+  checked: '2026-11-05',
   card: {
     title: 'Pool volume chart',
     summary: 'Gallons of round, oval and rectangle pools, 12 to 33 ft, at common depths.',

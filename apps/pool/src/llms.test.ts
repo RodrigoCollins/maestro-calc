@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { CHARTS_INDEX } from './charts.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
 import { JOB_PAGES } from './jobs.ts';
@@ -62,6 +63,13 @@ describe('llms.txt', () => {
     const paths = links.map(({ url }) => pathOf(url));
     expect(new Set(paths).size).toBe(paths.length);
     expect([...paths].sort()).toEqual(sitemap.filter((path) => path !== '/'));
+  });
+
+  it('lists the data index with the guides and charts', () => {
+    const section = text.split('## Guides and charts')[1]?.split('\n## ')[0] ?? '';
+    expect(section).toContain(
+      `- [${CHARTS_INDEX.name}](${SITE.origin}${CHARTS_INDEX.path}): ${CHARTS_INDEX.description}`,
+    );
   });
 
   it('describes each calculator and guide as the home lists it', () => {

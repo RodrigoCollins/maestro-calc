@@ -1,4 +1,5 @@
 ---
+import DataLink from '../components/DataLink.astro';
 import Layout from '../components/Layout.astro';
 import type { GuideSource } from '../guide.ts';
 import { SWIM_GUIDE } from '../swim.ts';
@@ -91,6 +92,7 @@ const sourceOf = (key: string): GuideSource => {
       Follow the label of your own product where it differs from this guide: its strength and its
       reentry level vary by product. When in doubt, test again before anyone swims.
     </p>
+    <DataLink path={SWIM_GUIDE.path} />
   </main>
 </Layout>
 

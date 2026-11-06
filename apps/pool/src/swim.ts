@@ -172,6 +172,8 @@ const ROWS: readonly SwimRow[] = [
  */
 export const SWIM_GUIDE = {
   path: '/how-long-after-adding-chemicals-can-you-swim',
+  /** The day every reading was last checked against its label or source. */
+  checked: '2026-11-05',
   kicker: 'Guide · swimming',
   card: {
     title: 'When to swim after chemicals',
@@ -194,6 +196,7 @@ export const SWIM_GUIDE = {
   rows: ROWS,
 } as const satisfies {
   path: string;
+  checked: string;
   kicker: string;
   card: { title: string; summary: string };
   title: string;

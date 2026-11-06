@@ -11,6 +11,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
+import { CHARTS_INDEX, DATA_PAGES } from '../src/charts.ts';
 import { EMBEDS } from '../src/embed.ts';
 import { GUIDES } from '../src/guide.ts';
 import { JOB_PAGES, neighborsOf } from '../src/jobs.ts';
@@ -65,6 +66,7 @@ const all = [
       ...(page.guide === undefined ? {} : { guide: page.guide.href }),
     })),
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
+    data: { index: CHARTS_INDEX.path, pages: DATA_PAGES.map(({ path }) => path) },
   }),
   ...seoAuditProblems(site, {
     origin: SITE.origin,
