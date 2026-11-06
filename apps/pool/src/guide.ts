@@ -2,6 +2,7 @@ import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART, doseOf } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -785,6 +786,10 @@ export const GUIDES: readonly GuideCard[] = [
   stepsCard(SHOCK_GUIDE),
   stepsCard(PH_GUIDE),
   stepsCard(CALCIUM_GUIDE),
+  cardOf(
+    SWIM_GUIDE,
+    SWIM_GUIDE.rows.flatMap(({ link, guide }) => [link, guide]),
+  ),
 ];
 
 /** The guides that explain the calculator at `path`, as links from its page, in `GUIDES` order. */

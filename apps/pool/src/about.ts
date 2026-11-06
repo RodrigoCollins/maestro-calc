@@ -50,7 +50,7 @@ export const ABOUT: About = {
       id: 'what',
       heading: 'What the site does',
       paragraphs: [
-        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, another says how to shock the pool and how much shock to add, another how to lower or raise the pH, and another how to raise calcium hardness and why only draining lowers it. Each calculator shows the figure and the formula behind it.',
+        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, another says how to shock the pool and how much shock to add, another how to lower or raise the pH, and another how to raise calcium hardness and why only draining lowers it, and another how long to wait to swim after adding each chemical. Each calculator shows the figure and the formula behind it.',
       ],
     },
     {

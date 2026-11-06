@@ -1,0 +1,172 @@
+---
+import Layout from '../components/Layout.astro';
+import type { GuideSource } from '../guide.ts';
+import { SWIM_GUIDE } from '../swim.ts';
+
+const { kicker, title, description, h1, lead, rules, charts, rows, sources } = SWIM_GUIDE;
+const sourceOf = (key: string): GuideSource => {
+  const source = (sources as Readonly<Record<string, GuideSource>>)[key];
+  if (source === undefined) throw new Error(`no source ${key}`);
+  return source;
+};
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">{kicker}</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <div class="pool-scroll" role="region" aria-label="When to swim, by chemical" tabindex="0">
+      <table class="pool-chart">
+        <caption>When to swim again (ppm is parts per million)</caption>
+        <thead>
+          <tr>
+            <th scope="col">Chemical</th>
+            <th scope="col">Swim again when</th>
+            <th scope="col">Time the source gives</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ id, chemical, when, time }) => (
+            <tr>
+              <th scope="row">
+                <a href={`#${id}`}>{chemical}</a>
+              </th>
+              <td>{when}</td>
+              <td>{time}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>{rules.text}</p>
+    <p class="pool-level-source">
+      Source:{' '}
+      {rules.sources.map((key, index) => (
+        <>
+          {index > 0 && ', '}
+          <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+        </>
+      ))}
+    </p>
+    <p>
+      {charts.map(({ href, label }, index) => (
+        <>
+          {index > 0 && ' · '}
+          <a {href}>{label}</a>
+        </>
+      ))}
+    </p>
+    {rows.map(({ id, chemical, when, time, text, link, guide, sources: keys }) => (
+      <section class="pool-level" aria-labelledby={id}>
+        <h2 {id}>{chemical}</h2>
+        <dl>
+          <dt>Swim again when</dt>
+          <dd>{when}</dd>
+          <dt>Time</dt>
+          <dd>{time}</dd>
+        </dl>
+        <p>{text}</p>
+        <p>
+          <a href={link.href}>{link.label}</a>
+          {guide !== undefined && (
+            <>
+              {' · '}
+              <a href={guide.href}>{guide.label}</a>
+            </>
+          )}
+        </p>
+        <p class="pool-level-source">
+          Source:{' '}
+          {keys.map((key, index) => (
+            <>
+              {index > 0 && ', '}
+              <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+            </>
+          ))}
+        </p>
+      </section>
+    ))}
+    <p class="pool-note">
+      Follow the label of your own product where it differs from this guide: its strength and its
+      reentry level vary by product. When in doubt, test again before anyone swims.
+    </p>
+  </main>
+</Layout>
+
+<style>
+  /* a narrow phone scrolls the table, never the page */
+  .pool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-chart {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+  }
+
+  .pool-chart caption {
+    padding-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .pool-chart th,
+  .pool-chart td {
+    padding: 0.625rem 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .pool-chart thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+  }
+
+  .pool-level {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-level h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-level dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 1rem;
+    margin: 0;
+  }
+
+  .pool-level dt {
+    font-weight: 600;
+  }
+
+  .pool-level dd {
+    margin: 0;
+  }
+
+  .pool-level p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .pool-level-source {
+    font-size: 0.875rem;
+  }
+</style>
