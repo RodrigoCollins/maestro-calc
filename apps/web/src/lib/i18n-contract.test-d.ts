@@ -89,6 +89,8 @@ type FeetInchesPageKeys =
   | 'calc.feet-inches.page.example'
   | 'calc.feet-inches.page.result'
   | 'calc.feet-inches.page.resultM'
+  | 'calc.feet-inches.page.pieces'
+  | 'calc.feet-inches.page.piecesOne'
   | 'calc.feet-inches.page.answer.add'
   | 'calc.feet-inches.page.answer.subtract'
   | 'calc.feet-inches.page.answer.longer'

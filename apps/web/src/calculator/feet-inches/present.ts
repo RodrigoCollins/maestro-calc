@@ -1,8 +1,8 @@
 import { Rational } from '@maestro-calc/core';
-import type { feetInches } from '@maestro-calc/core/calculators/feet-inches';
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { required } from '../controller.ts';
 import type { Ready } from '../page-module.ts';
-import { decimalText, dimensionText, groupedInteger } from '../present.ts';
+import { decimalText, dimensionText, groupedInteger, outputText } from '../present.ts';
 
 type Moment = Ready<typeof feetInches>;
 
@@ -38,7 +38,28 @@ export const answerCase = (moment: Moment): string => {
     : operation;
 };
 
-/** The placeholder values of the answer: both lengths as text, the number, the pieces and quotient of a fit, and the result the slot hands over. */
+/**
+ * The length left over from a fit as the large figure of the other operations writes it: feet and
+ * inches to 1/16 in, or meters to three places. The large figure of a fit is the pieces.
+ */
+const leftoverText = ({ result, system }: Moment): string => {
+  const key = system === 'metric' ? 'resultM' : 'result';
+  const output = required(
+    feetInches.outputs.find((each) => each.key === key),
+    key,
+  );
+  const value = required(
+    result.outputs.find((each) => each.key === key),
+    key,
+  ).value;
+  const figure = outputText(output, value);
+  return system === 'metric' ? `${figure} m` : figure;
+};
+
+/**
+ * The placeholder values of the answer: both lengths as text, the number, the pieces and quotient
+ * of a fit, and the result: the length the slot hands over, or the length left over from a fit.
+ */
 export const answerValues = (moment: Moment, primary: string): Record<string, string> => {
   const { valid, system } = moment;
   return {
@@ -47,6 +68,6 @@ export const answerValues = (moment: Moment, primary: string): Record<string, st
     factor: String(valid.factor),
     pieces: groupedInteger(numberOf(moment, 'pieces').floor()),
     ratio: ratioText(numberOf(moment, 'ratio')),
-    result: primary,
+    result: valid.operation === 'fit' ? leftoverText(moment) : primary,
   };
 };

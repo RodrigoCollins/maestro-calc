@@ -22,6 +22,8 @@ export const enFeetInches = {
   'calc.feet-inches.page.example': 'Example: 12 ft 6 in plus 3 ft 8 1/4 in is 16 ft 2 1/4 in.',
   'calc.feet-inches.page.result': '{value}',
   'calc.feet-inches.page.resultM': '{value} m',
+  'calc.feet-inches.page.pieces': '{value} pieces',
+  'calc.feet-inches.page.piecesOne': '{value} piece',
   'calc.feet-inches.page.answer.add': '{first} plus {second} is {result}.',
   'calc.feet-inches.page.answer.subtract': '{first} minus {second} is {result}.',
   'calc.feet-inches.page.answer.longer': '{second} is longer than {first} by {result}.',

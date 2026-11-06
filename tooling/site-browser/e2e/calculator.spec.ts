@@ -359,6 +359,9 @@ for (const calculator of calculatorPages) {
       }) => {
         await open(page, calculator, state.query);
         await expectFigures(page, calculator, state.figures);
+        if (state.primary !== undefined) {
+          await expect(page.locator('.calc-primary')).toHaveText(state.primary[calculator.locale]);
+        }
       });
     }
 

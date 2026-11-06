@@ -108,9 +108,43 @@ describe('feet and inches page: the answer through the controller (calc-feet-inc
     expect(view.panel.shopping).toEqual([]);
   });
 
-  it('shows what is left of a fit as the figures, and writes no figure of the pieces', () => {
+  // calc-feet-inches › [FI7]: how many fit is the question, so the pieces are the large figure
+  it.each([
+    ['en', '?v=1&o=fit&a=240&b=7', '34', ' pieces'],
+    ['es', '?v=1&o=fit&a=240&b=7', '34', ' piezas'],
+    ['en', '?v=1&u=m&o=fit&a=240&b=16', '15', ' pieces'],
+    ['en', '?v=1&o=fit&a=120&b=150', '0', ' pieces'],
+    ['en', '?v=1&o=fit&b=0', '0', ' pieces'],
+    ['en', '?v=1&o=fit&a=120&b=100', '1', ' piece'],
+    ['es', '?v=1&u=m&o=fit&a=120&b=100', '1', ' pieza'],
+  ] as const)(
+    'shows the pieces of the %s fit %s as the large figure',
+    (locale, search, value, after) => {
+      expect(viewOf(locale, search).panel.primary).toEqual({
+        key: 'pieces',
+        before: '',
+        value,
+        after,
+      });
+    },
+  );
+
+  it('shows what is left of a fit in the three rows, the result row no longer hidden', () => {
     const view = viewOf('en', '?v=1&o=fit&a=240&b=7');
-    expect(view.panel.primary).toMatchObject({ key: 'result', value: '2 in' });
-    expect(view.panel.figures).toEqual({ result: '2 in', resultIn: '2.00', resultM: '0.051' });
+    expect(view.panel.figures).toEqual({
+      result: '2 in',
+      resultIn: '2.00',
+      resultM: '0.051',
+      pieces: '34',
+    });
+  });
+
+  it('keeps the result as the large figure of the other operations', () => {
+    expect(viewOf('en', '?v=1&o=divide&n=7').panel.primary).toMatchObject({ key: 'result' });
+    expect(viewOf('en', '?v=1&u=m&o=subtract').panel.primary).toMatchObject({
+      key: 'resultM',
+      value: '2.686',
+      after: ' m',
+    });
   });
 });
