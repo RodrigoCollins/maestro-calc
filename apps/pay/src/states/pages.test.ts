@@ -193,10 +193,31 @@ describe('statePageOf', () => {
     expect(new Set(PAGES.map(({ page }) => page.description)).size).toBe(102);
     const california = STATE_FACTS.find(({ slug }) => slug.en === 'california');
     if (california === undefined) throw new Error('no California');
+    // the search it answers: "california overtime law calculator"
     expect(statePageOf(california, 'en').title).toBe(
-      'California wage and hour laws, 2026 | Cuenta Horas',
+      'California overtime law and minimum wage, 2026 | Cuenta Horas',
     );
-    expect(statePageOf(california, 'es').h1).toBe('Leyes de salario y horas en California, 2026');
+    expect(statePageOf(california, 'es').h1).toBe(
+      'Ley de horas extra y salario mínimo en California, 2026',
+    );
+  });
+
+  it('opens the overtime calculator on the state’s rule from a link right under the answer', () => {
+    for (const { facts, page } of PAGES) {
+      const rule: Rule = facts.overtime.daily === undefined ? 'federal' : (facts.slug.en as Rule);
+      expect(page.calculate.href).toBe(exampleOf(page, 'week45').href);
+      const { state, issues } = decode(overtime, queryOf(page.calculate.href));
+      expect(issues).toEqual([]);
+      expect(state.rule).toBe(rule);
+    }
+    const label = (slug: string, lang: (typeof LANGS)[number]): string | undefined =>
+      PAGES.find((each) => each.facts.slug.en === slug && each.lang === lang)?.page.calculate.label;
+    expect(label('california', 'en')).toBe('Calculate California overtime');
+    expect(label('california', 'es')).toBe('Calcula las horas extra en California');
+    expect(label('district-of-columbia', 'en')).toBe('Calculate District of Columbia overtime');
+    expect(label('district-of-columbia', 'es')).toBe(
+      'Calcula las horas extra en el Distrito de Columbia',
+    );
   });
 });
 

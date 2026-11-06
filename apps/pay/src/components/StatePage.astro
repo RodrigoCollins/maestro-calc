@@ -34,6 +34,9 @@ const index = statesIndexOf(lang);
       <h1>{page.h1}</h1>
     </div>
     <p class="lead">{page.lead}</p>
+    <a class="button" href={page.calculate.href}>
+      {page.calculate.label}
+    </a>
 
     {page.sections.map((section) => (
       <section aria-labelledby={section.id}>

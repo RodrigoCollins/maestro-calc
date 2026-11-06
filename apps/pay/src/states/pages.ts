@@ -115,6 +115,8 @@ export interface StatePage {
   readonly kicker: string;
   readonly h1: string;
   readonly lead: string;
+  /** The overtime calculator opened on the state's rule, its 45-hour week at the minimum. */
+  readonly calculate: { readonly label: string; readonly href: string };
   readonly paths: Words;
   readonly sections: readonly StateSection[];
   readonly examples: {
@@ -203,7 +205,7 @@ const outsideFlsa = (rule: OvertimeState): boolean => rule.weekly > 40;
 
 const WORDS = {
   en: {
-    title: (name: string) => `${name} wage and hour laws, 2026`,
+    title: (name: string) => `${name} overtime law and minimum wage, 2026`,
     kicker: 'Laws by state · data',
     federal: (row: MinimumWageState, the: string) =>
       row.stateRate === undefined
@@ -263,6 +265,7 @@ const WORDS = {
         ? `With no tip credit, the employer pays the full ${centsText(tipped.minimum)} an hour for the 30 hours, before tips; the tips are on top.`
         : `The employer pays ${wages} in cash wages (${centsText(tipped.cash)} an hour) and may count up to ${credit} of tips toward the rest; if tips fall short, the employer makes up the difference.`,
     overtimeLink: 'Open this week in the overtime calculator',
+    calculate: (name: string) => `Calculate ${name} overtime`,
     annualLink: 'Open it in the hourly to salary calculator',
     tippedLink: 'Open these 30 hours in the tipped wage calculator',
     countNote: (name: string) =>
@@ -279,7 +282,7 @@ const WORDS = {
       'A summary of what these agencies and statutes say, not legal advice. Cities and counties may set higher minimum wages, and exemptions or industry rules can change what you are owed: check your state’s labor department.',
   },
   es: {
-    title: (name: string) => `Leyes de salario y horas en ${name}, 2026`,
+    title: (name: string) => `Ley de horas extra y salario mínimo en ${name}, 2026`,
     kicker: 'Leyes por estado · datos',
     federal: (row: MinimumWageState, the: string) =>
       row.stateRate === undefined
@@ -339,6 +342,7 @@ const WORDS = {
         ? `Sin crédito por propinas, el empleador paga el mínimo completo de ${centsText(tipped.minimum)} la hora por las 30 horas, antes de propinas; las propinas van aparte.`
         : `El empleador paga ${wages} de salario en efectivo (${centsText(tipped.cash)} la hora) y puede contar hasta ${credit} de propinas para el resto; si las propinas no alcanzan, el empleador completa la diferencia.`,
     overtimeLink: 'Abre esta semana en la calculadora de horas extra',
+    calculate: (the: string) => `Calcula las horas extra en ${the}`,
     annualLink: 'Ábrelo en la calculadora de pago por hora a sueldo anual',
     tippedLink: 'Abre estas 30 horas en la calculadora de propinas por hora',
     countNote: (name: string) =>
@@ -560,19 +564,23 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
     ...(facts.minimum.scheduled === undefined ? [] : [w.scheduled(facts.minimum.scheduled.wage)]),
   ].join(' ');
   const h1 = w.title(lang === 'en' ? facts.tipped.name.en : the);
+  const examples = examplesOf(facts, lang);
+  const week45 = examples.items.find(({ id }) => id === 'week45')?.href;
+  if (week45 === undefined) throw new Error(`no 45-hour week for ${facts.slug.en}`);
   return {
     title: titleOf(h1),
     description: descriptionOf(lead),
     kicker: w.kicker,
     h1,
     lead,
+    calculate: { label: w.calculate(lang === 'en' ? facts.tipped.name.en : the), href: week45 },
     paths: { en: route.en, es: route.es },
     sections: [
       minimumSection(facts, lang),
       tippedSection(facts, lang),
       overtimeSection(facts, lang),
     ],
-    examples: examplesOf(facts, lang),
+    examples,
     labels: w.labels,
     index: { label: w.index, href: STATES_INDEX_PATHS[lang] },
     disclaimer: w.disclaimer,

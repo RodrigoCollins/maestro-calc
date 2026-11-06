@@ -93,7 +93,7 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Estimate the new tips deduction: up to $25,000 of qualified tips, with the income phase-out of Schedule 1-A, and about what it saves. Free.',
         kicker: 'Tax year 2026 · free',
         h1: 'No tax on tips calculator',
-        lead: 'Enter the tips you received in the year and your income. You get the deduction and about what it saves.',
+        lead: 'Up to $25,000 of qualified tips comes off your federal taxable income for 2026, and the tax it saves is that deduction times your tax bracket. Enter the tips you received in the year and your income to get the deduction and about what it saves.',
         fields: [
           {
             key: 'tips',
@@ -165,7 +165,7 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Calcula la nueva deducción de propinas: hasta $25,000 de propinas calificadas, con el límite de ingresos del Schedule 1-A, y cuánto te ahorras.',
         kicker: 'Año fiscal 2026 · gratis',
         h1: 'Calculadora de propinas sin impuestos',
-        lead: 'Anota las propinas que recibiste en el año y tus ingresos. Te da la deducción y más o menos cuánto te ahorras.',
+        lead: 'Hasta $25,000 de propinas calificadas se restan de tu ingreso gravable federal en 2026, y el impuesto que te ahorras es esa deducción por tu tramo. Anota las propinas que recibiste en el año y tus ingresos: te da la deducción y más o menos cuánto te ahorras.',
         fields: [
           {
             key: 'tips',
