@@ -30,6 +30,8 @@ The calculator turns the size of a pour into the concrete you need and the bags 
 
 The result shows the concrete in cubic yards, cubic feet and cubic meters, the volume before the extra, and the number of whole bags. Use Copy link to send your exact numbers to a partner or a supplier, and the Español link to open the same numbers in Spanish.
 
+For a common job, see [how much concrete for a 650 sq ft slab](/concrete/650-sq-ft-slab), at 4, 5 and 6 in thick, with the bags of each size.
+
 <h2 id="formulas">Formulas and worked example</h2>
 
 Every shape starts from a volume, and the volume is a plain geometric formula:

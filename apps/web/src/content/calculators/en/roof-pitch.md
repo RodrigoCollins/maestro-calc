@@ -31,6 +31,8 @@ The result leads with the pitch in inches of rise per 12 inches of run, the way 
 
 To work in metric, press Metric (m, cm). Lengths are then read in centimeters and meters, and the result leads with the angle in degrees. Switching units never changes your numbers, only how they are written. Use Copy link to send your exact numbers to a partner, a client or the inspector, and the Español link to open the same numbers in Spanish.
 
+Two common pitches, worked out with their rafter lengths: the [6/12 roof pitch](/roofing/6-12-roof-pitch) and the [7.5/12 roof pitch](/roofing/7-5-12-roof-pitch).
+
 <h2 id="formulas">Formulas and worked example</h2>
 
 The calculator works from the rise and the run to the angle and the rafter:

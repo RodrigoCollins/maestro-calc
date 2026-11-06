@@ -6,7 +6,7 @@ import type { CalculatorPageId } from './templates.ts';
  * out at build time: concrete for a slab (by its sides or by its area), a tube or a footing, roof pitch for a
  * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
  * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
- * area, the shingles for a roof, and a tape measurement divided into equal parts. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
+ * area, the shingles for a roof, a tape measurement divided into equal parts, and decimal feet in feet and inches. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -189,6 +189,40 @@ const pitchChart = () => {
 const divide = (first: string, factor: number) => {
   const by = (each: number): JobCase => ({ first, operation: 'divide', factor: String(each) });
   return [by(factor), ...[2, 3, 4].filter((each) => each !== factor).map(by)] as const;
+};
+
+/**
+ * The lengths of the decimal feet chart: every hundredth of a foot from 0.10 to 0.99, then common
+ * decimal lengths (11.65 ft is a query), smallest first.
+ */
+const DECIMAL_FEET = [
+  ...Array.from({ length: 90 }, (_, index) => (10 + index) / 100),
+  1.25,
+  1.5,
+  1.75,
+  2.5,
+  3.33,
+  4.75,
+  5.5,
+  6.25,
+  7.5,
+  8.33,
+  10.5,
+  11.65,
+];
+
+/**
+ * Each length of the chart times 1, typed in decimal feet (`0.10`, a plain number is read in feet):
+ * the feet and inches calculator writes it back in feet, inches and sixteenths.
+ */
+const decimalFeetChart = () => {
+  const once = (feet: number): JobCase => ({
+    first: feet.toFixed(2),
+    operation: 'multiply',
+    factor: '1',
+  });
+  const [first = 0.1, ...rest] = DECIMAL_FEET;
+  return [once(first), ...rest.map(once)] as const;
 };
 
 /**
@@ -473,6 +507,11 @@ export const JOBS = {
     calculator: 'feet-inches',
     updated: '2026-11-05',
     cases: divide('3 ft 9 in', 2),
+  },
+  'decimal-feet-chart': {
+    calculator: 'feet-inches',
+    updated: '2026-11-06',
+    cases: decimalFeetChart(),
   },
 } as const satisfies Record<string, Job>;
 

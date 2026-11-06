@@ -11,6 +11,12 @@ import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.t
 import { LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { calendarDay } from './calendar-day.ts';
 import { IRC_R905, roofPitchChartBasis, roofPitchReverse } from './roof-pitch-chart.ts';
+import {
+  decimalFeetChartBasis,
+  decimalFeetChartTable,
+  decimalFeetReverse,
+  NIST_SP_811,
+} from './decimal-feet-chart.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
@@ -146,6 +152,27 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       expect(view.intro).toContain(`6/12`);
       expect(view.intro).toContain(angleOf('6/12'));
       expect(view.intro).toContain(`${angleOf('12/12').replace('.00°', '')}°`);
+    },
+  );
+
+  it.each(LOCALES)(
+    'charts decimal feet in feet and inches with the NIST source and its citation in %s',
+    (locale) => {
+      const view = jobView('decimal-feet-chart', locale);
+      const { cases, updated } = JOBS['decimal-feet-chart'];
+      expect(view.rows).toEqual(decimalFeetChartTable(cases, locale).rows);
+      const { chart } = view;
+      expect(chart?.sources).toEqual([
+        { label: siteText(locale)('page.decimal-feet-chart.source'), source: NIST_SP_811 },
+      ]);
+      expect(chart?.facts).toEqual(decimalFeetChartBasis(locale));
+      expect(chart?.reverse).toEqual(decimalFeetReverse(locale));
+      expect(view.note).toBe(siteText(locale)('page.decimal-feet-chart.note'));
+      const url = urlOf(pathOf('decimal-feet-chart', locale));
+      expect(chart?.citation).toBe(
+        `Maestro Calc, “${view.heading}”, ${calendarDay(updated, locale)}, ${url}`,
+      );
+      expect(view.cta).toBe(pathOf('feet-inches', locale));
     },
   );
 
@@ -691,8 +718,9 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');
   });
 
-  // the cubic yard weight chart has a row per material, not per case (its own test links them)
-  it.each(PAIRS.filter(([id]) => id !== 'cubic-yard-weight-chart'))(
+  // the cubic yard weight chart has a row per material, and the decimal feet chart links only its
+  // lengths of a foot or more (their own tests link them)
+  it.each(PAIRS.filter(([id]) => id !== 'cubic-yard-weight-chart' && id !== 'decimal-feet-chart'))(
     'links every row of %s in %s to the calculator in that case',
     (id, locale) => {
       const view = jobView(id, locale);

@@ -52,6 +52,12 @@ import {
   cubicYardWeightSources,
   cubicYardWeightTable,
 } from './cubic-yard-weight-chart.ts';
+import {
+  decimalFeetChartBasis,
+  decimalFeetChartTable,
+  decimalFeetReverse,
+  NIST_SP_811,
+} from './decimal-feet-chart.ts';
 import { siteText } from './site-text.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
@@ -841,12 +847,18 @@ const CHART_BASES = {
     facts: cubicYardWeightBasis(locale),
     reverse: undefined,
   }),
+  'decimal-feet-chart': (locale) => ({
+    sources: [{ label: siteText(locale)('page.decimal-feet-chart.source'), source: NIST_SP_811 }],
+    facts: decimalFeetChartBasis(locale),
+    reverse: decimalFeetReverse(locale),
+  }),
 } as const satisfies Record<ChartId, (locale: Locale) => ChartBasis>;
 
 /** The charts whose table is not the job table of their calculator. */
 const CHART_TABLES: Partial<Record<ChartId, (cases: Job['cases'], locale: Locale) => JobTable>> = {
   'roof-pitch-chart': roofPitchChartTable,
   'cubic-yard-weight-chart': cubicYardWeightTable,
+  'decimal-feet-chart': decimalFeetChartTable,
 };
 
 const isChart = (id: JobId): id is ChartId => isChartJob(id);
@@ -874,7 +886,13 @@ const tableOf = (id: JobId, locale: Locale): JobTable => {
 /** What the figures assume: a chart with its own table says it in `page.<id>.note`. */
 const noteOf = (id: JobId, locale: Locale): string => {
   const text = siteText(locale);
-  if (id === 'roof-pitch-chart' || id === 'cubic-yard-weight-chart') return text(`page.${id}.note`);
+  if (
+    id === 'roof-pitch-chart' ||
+    id === 'cubic-yard-weight-chart' ||
+    id === 'decimal-feet-chart'
+  ) {
+    return text(`page.${id}.note`);
+  }
   return text(`site.job.note.${JOBS[id].calculator}`);
 };
 

@@ -200,7 +200,7 @@ export const esSite = {
   'page.guide-tape-measure-fractions.title':
     'Cómo leer la cinta métrica y sumar fracciones | Maestro Calc',
   'page.guide-tape-measure-fractions.description':
-    'Qué significa cada marca de la cinta métrica, hasta 1/16 de pulgada, y cómo sumar, restar y dividir pies, pulgadas y fracciones sin errores.',
+    'Cómo leer la cinta métrica en pulgadas: qué fracción es cada marca, de 1/2 a 1/16 de pulgada, y cómo sumar, restar y dividir pies, pulgadas y fracciones.',
   'page.guide-square-footage.title': 'Cómo calcular pies cuadrados | Maestro Calc',
   'page.guide-square-footage.description':
     'Cómo calcular pies cuadrados: multiplica el largo por el ancho. Saca los pies cuadrados de un cuarto, una pared o un área en L, y pásalos a yardas y metros.',
@@ -527,7 +527,7 @@ export const esSite = {
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
   'page.concrete.title': 'Calculadora de concreto en yardas y bolsas | Maestro Calc',
   'page.concrete.description':
-    'Calcula las yardas cúbicas y las bolsas de concreto para una losa, zapata, columna o escalones. Gratis, al instante, en pies, pulgadas o metros.',
+    '¿Cuántas bolsas de concreto o yardas cúbicas necesitas? Calcula una losa, zapata, columna o escalones, con bolsas de 40, 60 u 80 lb. Gratis, en pies o metros.',
   'page.rectangle-area.title': 'Calculadora para calcular pies cuadrados | Maestro Calc',
   'page.rectangle-area.description':
     'Calcula los pies cuadrados de un cuarto, piso o pared: multiplica el largo por el ancho. Con yardas y metros cuadrados, en pies, pulgadas o metros. Gratis.',
@@ -770,15 +770,37 @@ export const esSite = {
     'La mitad de 3 pies 9 pulgadas: 3 ft 9 in entre 2 da 1 ft 10 1/2 in, o 22 1/2 in en la cinta métrica (22.50 in, 0.572 m). También entre 3 y entre 4.',
   'page.divide-3-ft-9-in-by-2.heading': '¿Cuánto es 3 pies 9 pulgadas entre 2?',
   'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
+  'page.decimal-feet-chart.title': 'Tabla de pies decimales a pies y pulgadas | Maestro Calc',
+  'page.decimal-feet-chart.description':
+    'Tabla de pies decimales a pies y pulgadas: cada medida de 0.10 a 0.99 ft y otras comunes como 11.65 ft, al 1/16 de pulgada, y de pulgadas a pies decimales.',
+  'page.decimal-feet-chart.heading':
+    'Tabla de pies decimales a pies y pulgadas, al 1/16 de pulgada',
+  'page.decimal-feet-chart.label': 'Tabla de pies decimales',
+  'page.decimal-feet-chart.intro':
+    '11.65 ft son 11 ft 7 13/16 in, y 0.50 ft son 6 in. Para pasar pies decimales a pies y pulgadas, deja los pies enteros y multiplica la parte decimal por 12 para las pulgadas: 0.65 × 12 = 7.8 in, que en la cinta son 7 13/16 in. Busca tu decimal en la tabla de abajo, calculada con la calculadora de pies y pulgadas.',
+  'page.decimal-feet-chart.note':
+    'Las pulgadas son los pies decimales × 12, exactas. Los pies y pulgadas se redondean al 1/16 de pulgada más cercano y las pulgadas a dos decimales. Cada medida de un pie o más abre la calculadora con ella ya escrita.',
+  'page.decimal-feet-chart.table': 'Pies decimales a pies y pulgadas',
+  'page.decimal-feet-chart.source': 'Factores de conversión exactos',
+  'page.decimal-feet-chart.basis': 'Los factores y el redondeo',
+  'page.decimal-feet-chart.decimal': 'Pies decimales',
+  'page.decimal-feet-chart.inches': 'Pulgadas',
+  'page.decimal-feet-chart.foot': 'Un pie',
+  'page.decimal-feet-chart.inch': 'Una pulgada',
+  'page.decimal-feet-chart.rounding': 'Pies y pulgadas redondeados',
+  'page.decimal-feet-chart.sixteenth': 'al 1/16 de pulgada más cercano',
+  'page.decimal-feet-chart.reverse': 'Pulgadas a pies decimales',
+  'page.decimal-feet-chart.reverseLead':
+    'Cada pulgada entera como decimal de un pie: las pulgadas ÷ 12, con cuatro decimales.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',
   'page.topsoil.title': 'Calculadora de tierra para jardín en yardas | Maestro Calc',
   'page.topsoil.description':
     'Calcula cuánta tierra lleva un césped, una jardinera o un relleno en yardas cúbicas y bolsas, con extra por asentamiento y el costo en bolsas y a granel.',
-  'page.paint.title': 'Calculadora de pintura: galones por cuarto | Maestro Calc',
+  'page.paint.title': 'Calculadora de pintura: ¿cuántos galones? | Maestro Calc',
   'page.paint.description':
-    'Calcula cuántos galones de pintura llevan las paredes de un cuarto, sin puertas ni ventanas, para una a cinco manos, con las latas y el costo. Gratis.',
+    '¿Cuántos galones de pintura necesitas? Calcula las paredes de un cuarto, sin puertas ni ventanas, y cuánto cubre un galón: unos 350 pies cuadrados por mano.',
   'page.drywall.title': 'Calculadora de drywall: placas y compuesto | Maestro Calc',
   'page.drywall.description':
     'Calcula cuántas placas de drywall lleva un cuarto, paredes y techo, sin puertas ni ventanas, con el compuesto, la cinta y el costo. Gratis y al instante.',
@@ -788,9 +810,9 @@ export const esSite = {
   'page.roofing.title': 'Calculadora de tejas para techo | Maestro Calc',
   'page.roofing.description':
     'Calcula el área de un techo en cuadrados según su planta y pendiente, los paquetes de tejas asfálticas y los rollos de fieltro, con las reglas del IRC. Gratis.',
-  'page.feet-inches.title': 'Calculadora de decimales a pies y pulgadas | Maestro Calc',
+  'page.feet-inches.title': 'Pies decimales a pies y pulgadas: calculadora | Maestro Calc',
   'page.feet-inches.description':
-    'Convierte medidas de decimales a pies y pulgadas con fracciones al 1/16 de pulgada, y suma, resta, multiplica o divide pies y pulgadas como en la cinta. Gratis.',
+    'Convierte pies decimales a pies y pulgadas al 1/16, como 11.65 ft = 11 ft 7 13/16 in. También suma, resta, multiplica o divide medidas de la cinta. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

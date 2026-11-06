@@ -343,6 +343,10 @@ export const ROUTES = {
     en: '/measurement/3-feet-9-inches-divided-by-2',
     es: '/es/medidas/3-pies-9-pulgadas-entre-2',
   },
+  'decimal-feet-chart': {
+    en: '/measurement/decimal-feet-to-feet-and-inches-chart',
+    es: '/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
