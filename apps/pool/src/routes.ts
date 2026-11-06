@@ -128,9 +128,24 @@ const PAGE_ROUTES: readonly Route[] = [
     en: '/salt-water-pool-vs-chlorine-pool',
     es: '/es/piscina-de-agua-salada-o-de-cloro',
   },
-  { id: 'shock-guide', kind: 'article', en: '/how-to-shock-a-pool' },
-  { id: 'ph-guide', kind: 'article', en: '/how-to-lower-ph-in-a-pool' },
-  { id: 'calcium-guide', kind: 'article', en: '/how-to-raise-calcium-hardness-in-a-pool' },
+  {
+    id: 'shock-guide',
+    kind: 'article',
+    en: '/how-to-shock-a-pool',
+    es: '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
+  },
+  {
+    id: 'ph-guide',
+    kind: 'article',
+    en: '/how-to-lower-ph-in-a-pool',
+    es: '/es/como-bajar-el-ph-de-la-piscina',
+  },
+  {
+    id: 'calcium-guide',
+    kind: 'article',
+    en: '/how-to-raise-calcium-hardness-in-a-pool',
+    es: '/es/como-subir-la-dureza-de-calcio-de-la-piscina',
+  },
   {
     id: 'swim-guide',
     kind: 'article',

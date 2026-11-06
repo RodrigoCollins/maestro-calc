@@ -107,7 +107,7 @@ const ABOUT_ES: About = {
       id: 'what',
       heading: 'Qué hace el sitio',
       paragraphs: [
-        'Pool Figures calcula el volumen de tu piscina, la sal, el cloro, la dosis para el pH y el cloruro de calcio que debes agregar, y el caudal que necesita tu bomba. Las guías paso a paso explican cómo abrir la piscina en primavera y cómo cerrarla para el invierno, una tabla de química del agua da el rango de cada nivel, una guía calcula cuántas horas prender la bomba, otra compara una piscina de agua salada con una de cloro, otra explica el tratamiento de choque y cuánto producto agregar, otra cómo bajar o subir el pH, otra cómo subir la dureza de calcio y por qué solo vaciar agua la baja, y otra cuánto esperar para nadar después de cada químico. Por ahora las tablas y algunas guías están en inglés. Cada calculadora muestra la cifra y la fórmula que hay detrás.',
+        'Pool Figures calcula el volumen de tu piscina, la sal, el cloro, la dosis para el pH y el cloruro de calcio que debes agregar, y el caudal que necesita tu bomba. Las guías paso a paso explican cómo abrir la piscina en primavera y cómo cerrarla para el invierno, una tabla de química del agua da el rango de cada nivel, una guía calcula cuántas horas prender la bomba, otra compara una piscina de agua salada con una de cloro, otra explica el tratamiento de choque y cuánto producto agregar, otra cómo bajar o subir el pH, otra cómo subir la dureza de calcio y por qué solo vaciar agua la baja, y otra cuánto esperar para nadar después de cada químico. Cada calculadora muestra la cifra y la fórmula que hay detrás.',
       ],
     },
     {

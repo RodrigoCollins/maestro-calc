@@ -68,9 +68,17 @@ describe('ROUTES', () => {
         '/es/cuantas-horas-prender-la-bomba-de-la-piscina',
       ],
       ['salt-guide', '/salt-water-pool-vs-chlorine-pool', '/es/piscina-de-agua-salada-o-de-cloro'],
-      ['shock-guide', '/how-to-shock-a-pool', undefined],
-      ['ph-guide', '/how-to-lower-ph-in-a-pool', undefined],
-      ['calcium-guide', '/how-to-raise-calcium-hardness-in-a-pool', undefined],
+      [
+        'shock-guide',
+        '/how-to-shock-a-pool',
+        '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
+      ],
+      ['ph-guide', '/how-to-lower-ph-in-a-pool', '/es/como-bajar-el-ph-de-la-piscina'],
+      [
+        'calcium-guide',
+        '/how-to-raise-calcium-hardness-in-a-pool',
+        '/es/como-subir-la-dureza-de-calcio-de-la-piscina',
+      ],
       [
         'swim-guide',
         '/how-long-after-adding-chemicals-can-you-swim',

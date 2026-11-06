@@ -1,9 +1,12 @@
 import {
+  CALCIUM_GUIDE,
   CLOSING_GUIDE,
   OPENING,
   OPENING_GUIDE,
+  PH_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
+  SHOCK_GUIDE,
   type GuideStep,
   type StepGuide,
 } from './guide.ts';
@@ -325,4 +328,218 @@ export const SALT_VS_CHLORINE_GUIDE_ES = {
   note: 'Sigue el manual de tu propio generador donde sea distinto de esta guía: el nivel de sal, el estabilizador y la espera con el yeso nuevo cambian según el fabricante.',
   sources: SALT_VS_CHLORINE_GUIDE.sources,
   steps: SALT_VS_CHLORINE_STEPS,
+} as const satisfies StepGuide;
+
+const SHOCK_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Conoce tus galones',
+    text: 'Cada dosis de choque depende de cuánta agua tiene la piscina. Calcúlala una vez con el largo, el ancho y la profundidad de cada extremo, y guarda el número.',
+    link: gallons,
+  },
+  {
+    title: 'Primero balancea el pH',
+    text: 'Las dos etiquetas piden el pH entre 7.2 y 7.6: la etiqueta del hipoclorito de calcio dice que siempre lo ajustes antes de agregar el producto, y la del dicloro lo mantiene ahí en cada uso.',
+    link: linkTo('ph', 'Calcula la dosis para el pH'),
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Mide el cloro libre',
+    text: 'Mide con un kit de prueba DPD, como aconsejan los CDC. El mínimo de los CDC para una piscina en casa es cloro libre de al menos 1 ppm, al menos 2 ppm si usas ácido cianúrico. El choque lo sube muy por encima de eso por un tiempo, y luego dejas que vuelva a bajar.',
+    link: linkTo('chemistry-chart', 'Mira cada rango'),
+    sources: ['cdc'],
+  },
+  {
+    title: 'Lee el nivel de choque en tu etiqueta',
+    text: 'Una etiqueta de hipoclorito de calcio (cal-hypo) granulado de 65% de cloro disponible hace el choque cada 7 días, o cuando haga falta, con 10 a 20 oz por cada 10,000 galones para dar de 5 a 10 ppm de cloro disponible. Una etiqueta de dicloro de 56% de cloro disponible hace el choque con 2 oz por cada 1,000 galones; en una piscina nueva, dice, eso da 8.7 ppm.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Calcula tu dosis',
+    text: 'La dosis de choque es la dosis de cloro desde tu lectura hasta el nivel de choque, así que la calculadora te la da para el producto que tienes. Desde 0 ppm, 10,000 galones requieren 10.3 oz de hipoclorito de calcio al 65% para llegar a 5 ppm y 20.5 oz para llegar a 10, los 10 a 20 oz de la etiqueta, y 1,000 galones requieren 2.1 oz de dicloro para llegar a 8.7 ppm, las 2 oz de la etiqueta. Una piscina de 20,000 galones con 1 ppm requiere 37.0 oz de hipoclorito de calcio, o 184.3 fl oz de cloro líquido al 12.5%, para llegar a 10.',
+    link: linkTo('chlorine', 'Calcula la dosis de choque'),
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Agrégalo de noche, con la bomba funcionando',
+    text: 'La etiqueta del hipoclorito de calcio dice que lo agregues en las horas de la noche mientras funciona la bomba del filtro, esparcido sobre una zona amplia de la parte honda, y que cepilles los gránulos que se asienten. Hayward también espera a que empiece a caer el sol. Para que no se decolore un liner de vinilo o la pintura, las dos etiquetas lo vierten despacio en el skimmer, con el filtro prendido y el skimmer sin ningún otro químico.',
+    sources: ['calHypo', 'dichlor', 'hayward'],
+  },
+  {
+    title: 'Nunca lo mezcles con nada',
+    text: 'La etiqueta del dicloro: no lo mezcles con ningún otro químico, no le agregues agua y no lo agregues a agua en una cubeta. La etiqueta del hipoclorito de calcio: no lo mezcles antes, agrégalo directo a la piscina o al skimmer. La contaminación puede causar una explosión o liberar gases tóxicos, advierten las dos.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Nada solo cuando el cloro haya bajado',
+    text: 'Las etiquetas dan una lectura, no un número de horas. La etiqueta del hipoclorito de calcio prohíbe volver a entrar por encima de 4 ppm, la del dicloro por encima de 3 ppm. Mide otra vez antes de que alguien nade, y espera a que el cloro libre esté en el nivel de tu etiqueta o por debajo.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Repite el choque cuando la piscina lo necesite',
+    text: 'La etiqueta del hipoclorito de calcio agrega un choque después de lluvia y vientos fuertes, muchos bañistas, agua más caliente o más uso, y para corregir algas visibles, olores o irritación de los ojos. La etiqueta del dicloro hace el choque cada semana con calor o después de lluvias fuertes, y menos seguido con tiempo fresco.',
+    sources: ['calHypo', 'dichlor'],
+  },
+  {
+    title: 'Después de una diarrea en el agua, sigue a los CDC',
+    text: 'Para el personal de piscinas, los CDC suben el cloro libre con cloro sin estabilizar, como el hipoclorito de sodio, y mantienen el agua con un pH de 7.5 o menos. Sin estabilizador: 20 ppm durante 12.75 horas. Con ácido cianúrico de 1 a 15 ppm: 20 ppm durante 28 horas; por encima de 15 ppm, primero vacía parte del agua y vuelve a llenar. Para heces sólidas, 2 ppm durante 25 a 30 minutos. En 20,000 galones, de 2 a 20 ppm requiere 368.6 fl oz de cloro líquido al 12.5%. Muchos kits de prueba no miden tan alto, advierten los CDC, y nadie nada hasta que el nivel vuelva a su rango.',
+    sources: ['cdcFecal'],
+  },
+];
+
+export const SHOCK_GUIDE_ES = {
+  path: '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
+  kicker: 'Guía · choque',
+  card: {
+    title: 'Cómo hacer un tratamiento de choque',
+    summary: 'Cuánto producto de choque agregar, cuándo, y cuándo puedes volver a nadar.',
+  },
+  title: 'Cómo hacer un tratamiento de choque a la piscina | Pool Figures',
+  description:
+    'Cómo hacer un choque a la piscina y cuánto producto agregar: el nivel de la etiqueta del cal-hypo o el dicloro, la dosis para tus galones y cuándo nadar.',
+  h1: 'Cómo hacer un tratamiento de choque a la piscina',
+  lead: 'Para hacer un tratamiento de choque, sube el cloro libre al nivel de choque de la etiqueta de tu producto: desde 0 ppm, 10,000 galones requieren 20.5 oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta. Vuelve a nadar cuando el cloro libre baje a 4 ppm o menos, el nivel de reingreso de esa etiqueta. Primero balancea el pH, calcula la dosis con tu propia lectura y agrégala de noche con la bomba funcionando.',
+  note: 'Sigue la etiqueta de tu propio producto donde sea distinta de esta guía: su concentración, su dosis de choque y su nivel de reingreso cambian según el producto.',
+  sources: SHOCK_GUIDE.sources,
+  steps: SHOCK_STEPS,
+} as const satisfies StepGuide;
+
+const PH_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Conoce tus galones',
+    text: 'Cada dosis de ácido y de carbonato de sodio depende de cuánta agua tiene la piscina. Calcúlala una vez con el largo, el ancho y la profundidad de cada extremo, y guarda el número.',
+    link: gallons,
+  },
+  {
+    title: 'Mide el pH',
+    text: 'Los CDC aconsejan medir el pH al menos dos veces al día, y más seguido cuando nada mucha gente. Su rango para una piscina en casa es de 7.0 a 7.8; el kit de Taylor recomienda de 7.2 a 7.8. A medida que sube el pH, el cloro mata peor los gérmenes, sobre todo por encima de 8.0; por debajo de 7.0 los mata mejor, pero es más probable que la tubería se corroa, dicen los CDC.',
+    link: linkTo('chemistry-chart', 'Mira cada rango'),
+    sources: ['cdc', 'taylor'],
+  },
+  {
+    title: 'Conoce lo que hace un pH alto o bajo',
+    text: 'Muy alto, dice Taylor, el pH trae depósitos de sarro, agua turbia y un desinfectante que funciona mal. Muy bajo, corroe las superficies e irrita los ojos y la piel. Algunos desinfectantes lo mueven, y también el agua que agregas.',
+    sources: ['taylor'],
+  },
+  {
+    title: 'Primero pon la alcalinidad en su rango',
+    text: 'Las instrucciones de Taylor dicen que siempre pongas la alcalinidad total en su rango, de 80 a 120 ppm, antes de ajustar el pH. La alcalinidad es el amortiguador que evita que el pH suba y baje.',
+    link: linkTo('alkalinity', 'Calcula el bicarbonato de sodio'),
+    sources: ['taylor'],
+  },
+  {
+    title: 'Haz la prueba de demanda de ácido',
+    text: 'Guarda la muestra tratada de la prueba de pH. Para bajar el pH, agrega el reactivo de demanda de ácido R-0015 gota a gota; después de cada gota, cuenta, mezcla y compara con los colores de referencia hasta que la muestra tenga el pH que quieres. Las gotas que contaste dan la dosis. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta.',
+    sources: ['taylor'],
+  },
+  {
+    title: 'Calcula el ácido muriático',
+    text: 'La tabla de Taylor da 9.16 fl oz de ácido muriático al 31.45% por gota por cada 10,000 galones. En 10,000 galones son 9.2 fl oz para 1 gota, 18.3 fl oz para 2 y 27.5 fl oz para 3; una piscina de 20,000 galones que necesita 2 gotas requiere 36.6 fl oz. Es más que las 32.0 fl oz al día de HASA, así que se agrega en 2 días. En 10,000 galones la etiqueta permite 16.0 fl oz al día: la dosis de 3 gotas de 10,000 galones toma 2 días. La tabla llega hasta 3 gotas: no agregues más que la dosis de 3 gotas de una vez, y luego mide otra vez.',
+    link: linkTo('ph', 'Calcula el ácido muriático'),
+    sources: ['taylor', 'hasa'],
+  },
+  {
+    title: 'Agrégalo en la parte honda, con la bomba funcionando',
+    text: 'Las instrucciones de HASA para su ácido al 31.45%: agrega el ácido al agua, nunca el agua al ácido. Viértelo con cuidado en la parte honda, al menos a un pie de la pared, despacio y sobre la zona más amplia que puedas. El filtro y la bomba funcionan mientras lo agregas y al menos 1 hora después. Usa gafas protectoras, ropa vieja y guantes de hule, y nunca lo mezcles con blanqueadores de cloro ni con otros químicos de la casa, dice su hoja de datos de seguridad.',
+    sources: ['hasaDosing', 'hasa', 'hasaSds'],
+  },
+  {
+    title: 'Mide otra vez antes de agregar más',
+    text: 'HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, 32 fl oz, y lo repite cada 24 horas si hace falta, para mantener el pH entre 7.2 y 7.6; si tienes dudas, dice, usa menos. Una dosis más grande se agrega en más de un día, con una prueba antes de cada parte. Un ajuste del pH puede cambiar la alcalinidad total, agrega Taylor, así que vuelve a medir la alcalinidad total después.',
+    sources: ['hasa', 'taylor'],
+  },
+  {
+    title: 'Para subir el pH, haz la prueba de demanda de base',
+    text: 'La prueba de demanda de base es la misma prueba con el reactivo de demanda de base R-0016, y da la dosis de carbonato de sodio (soda ash). La tabla de Taylor da 5.13 oz por gota por cada 10,000 galones: en 10,000 galones, 5.1 oz para 1 gota y 15.4 oz para 3; en 20,000 galones, 20.5 oz para 2.',
+    link: linkTo('ph', 'Calcula el carbonato de sodio'),
+    sources: ['taylor'],
+  },
+  {
+    title: 'Agrega el carbonato de sodio y mide otra vez',
+    text: 'Una etiqueta de pH Up de carbonato de sodio agrega como máximo 1 libra por cada 10,000 galones de una vez, directo en la parte honda: en 20,000 galones, 32.0 oz, así que la dosis de 2 gotas se agrega de una vez. Deja recircular el agua de 2 a 3 horas, vuelve a medir el pH y repite si hace falta. Usa gafas protectoras o lentes de seguridad y guantes de hule, y no lo mezcles con otros químicos, dice la etiqueta.',
+    sources: ['sodaAsh'],
+  },
+];
+
+export const PH_GUIDE_ES = {
+  path: '/es/como-bajar-el-ph-de-la-piscina',
+  kicker: 'Guía · pH',
+  card: {
+    title: 'Cómo bajar el pH',
+    summary: 'Cuánto ácido muriático baja el pH, y cuánto carbonato de sodio lo sube.',
+  },
+  title: 'Cómo bajar el pH de la piscina: ácido muriático | Pool Figures',
+  description:
+    'Cómo bajar el pH de la piscina y cuánto ácido muriático agregar, según la prueba de demanda de ácido de tu kit, y cómo subirlo con carbonato de sodio.',
+  h1: 'Cómo bajar el pH de la piscina (y cuándo subirlo)',
+  lead: 'Para bajar el pH, agrega ácido muriático: cada gota que necesita la prueba de demanda de ácido de tu kit equivale a 9.2 fl oz de ácido muriático al 31.45% por cada 10,000 galones, según la tabla de Taylor. La etiqueta de HASA agrega como máximo un cuarto de galón por cada 20,000 galones al día, vertido en la parte honda con la bomba funcionando, con una prueba antes de cada parte. Primero pon la alcalinidad en su rango; para subir el pH, la prueba de demanda de base da la dosis de carbonato de sodio.',
+  note: 'Sigue la etiqueta de tu propio producto donde sea distinta de esta guía: la concentración del ácido, cuánto se agrega de una vez y la espera antes de volver a medir cambian según el producto.',
+  sources: PH_GUIDE.sources,
+  steps: PH_STEPS,
+} as const satisfies StepGuide;
+
+const CALCIUM_STEPS: readonly GuideStep[] = [
+  {
+    title: 'Conoce tus galones',
+    text: 'Cada dosis de cloruro de calcio, y cada vaciado para bajarlo, depende de cuánta agua tiene la piscina. Calcúlala una vez con el largo, el ancho y la profundidad de cada extremo, y guarda el número.',
+    link: gallons,
+  },
+  {
+    title: 'Mide la dureza de calcio',
+    text: 'El manual de AquaRite de Hayward mantiene la dureza de calcio entre 200 y 400 ppm, el nivel que recomienda APSP para una piscina en casa. La etiqueta de ClearView dice que se debe mantener entre 150 y 350 ppm. Para una piscina pública, el Model Aquatic Health Code de los CDC la limita a 2,500 ppm.',
+    link: linkTo('chemistry-chart', 'Mira cada rango'),
+    sources: ['hayward', 'label', 'mahc'],
+  },
+  {
+    title: 'Conoce lo que hace el calcio bajo o alto',
+    text: 'El índice de saturación relaciona el calcio y la alcalinidad con el balance del agua, dice el manual de Hayward. Con el índice por debajo de -0.2, el agua es corrosiva y disuelve las paredes de yeso (plaster) de la piscina; por encima de +0.2, aparecen sarro y manchas. Una acumulación en una celda de sal indica un nivel de calcio inusualmente alto, y casi siempre la causa es el agua vieja de la piscina.',
+    sources: ['hayward'],
+  },
+  {
+    title: 'Calcula el cloruro de calcio',
+    text: 'La etiqueta de ClearView: para subir la dureza de calcio 10 ppm, usa 2 onzas por cada 1,000 galones, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Su hoja de datos de seguridad da cloruro de calcio en escamas de 74 a 100% en peso. Así, 10,000 galones de 200 a 220 ppm requieren 2.5 lb, y 20,000 galones de 180 a 200 ppm requieren 5.0 lb. Evita agregar de más, dice la etiqueta.',
+    link: linkTo('calcium', 'Calcula el cloruro de calcio'),
+    sources: ['label', 'sds'],
+  },
+  {
+    title: 'Divide una dosis grande, con 12 horas entre partes',
+    text: 'La etiqueta: “Si se necesitan más de 3 libras de este producto por cada 10,000 galones de agua de piscina, separa las dosis y aplica este producto con al menos 12 horas de diferencia”, para que el agua se ajuste sin ponerse turbia. Subir 20,000 galones de 150 a 250 ppm requiere 25.0 lb, más de 3 lb por cada 10,000 galones, así que agrega 6.0 lb primero, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma. En 10,000 galones, 12.5 lb empiezan con 3.0 lb.',
+    link: linkTo('calcium', 'Calcula la primera parte'),
+    sources: ['label'],
+  },
+  {
+    title: 'Disuélvelo y luego viértelo',
+    text: 'Disuélvelo antes en una cubeta con agua, 1/2 libra de producto por galón de agua, y vierte la mezcla en la parte honda de la piscina con la bomba funcionando, dice la etiqueta; repite hasta agregar toda la cantidad. La hoja de datos de seguridad dice que siempre uses agua fría para disolver el cloruro de calcio: “El calor que se libera es importante.” Usa lentes de seguridad con protección lateral o gafas para químicos, y guantes de PVC, neopreno o nitrilo grueso; los de cuero no protegen.',
+    sources: ['label', 'sds'],
+  },
+  {
+    title: 'Entiende por qué ningún químico lo baja',
+    text: 'La dureza de calcio solo sube: nada de lo que viertes saca el calcio, y se queda cuando el agua se evapora y completas el nivel. Si le das a la calculadora de calcio una lectura por encima del nivel deseado, no agrega nada: para 20,000 galones de 600 a 400 ppm, la calculadora agrega 0.0 lb y te dice que vacíes parte del agua y vuelvas a llenar con agua más blanda.',
+  },
+  {
+    title: 'Calcula cuánta agua vaciar',
+    text: 'Primero mide el agua con la que vas a volver a llenar: si no es más blanda que tu nivel deseado, volver a llenar no te lleva ahí. Vaciar y volver a llenar es una simple dilución, así que galones que vaciar = galones × (lectura − nivel deseado) ÷ (lectura − agua de llenado). Una piscina de 20,000 galones con 600 ppm, bajada a 400 ppm con agua de llenado de 100 ppm, vacía 8,000 galones: 12,000 galones con 600 ppm y 8,000 galones con 100 ppm dan 20,000 galones con 400 ppm.',
+    link: linkTo('fill-time', 'Calcula el tiempo para volver a llenar'),
+  },
+  {
+    title: 'Vuelve a balancear después de llenar',
+    text: 'El agua nueva también diluye el resto del agua. Mide otra vez el cloro libre, el pH, la alcalinidad, el estabilizador y la sal, y pon cada uno en su rango antes de agregar más calcio.',
+    link: linkTo('chemistry-chart', 'Mira cada rango'),
+  },
+];
+
+export const CALCIUM_GUIDE_ES = {
+  path: '/es/como-subir-la-dureza-de-calcio-de-la-piscina',
+  kicker: 'Guía · dureza de calcio',
+  card: {
+    title: 'Cómo subir la dureza de calcio',
+    summary: 'Cuánto cloruro de calcio la sube, y cuánta agua vaciar para bajarla.',
+  },
+  title: 'Cómo subir la dureza de calcio de la piscina | Pool Figures',
+  description:
+    'Cómo subir la dureza de calcio de la piscina con cloruro de calcio, cuánto agregar y cuándo dividirlo, y por qué solo vaciar parte del agua la baja.',
+  h1: 'Cómo subir la dureza de calcio de la piscina (y por qué no puedes bajarla con químicos)',
+  lead: 'Para subir la dureza de calcio 10 ppm, agrega 20.0 oz de cloruro de calcio en escamas por cada 10,000 galones, la dosis de la etiqueta, disuelto primero y como máximo 3 lb por cada 10,000 galones de una vez, con 12 horas entre partes. Ningún químico la baja: solo vaciar parte del agua y volver a llenar con agua más blanda, y una simple dilución dice cuánto vaciar.',
+  note: 'Sigue la etiqueta de tu propio producto de calcio donde sea distinta de esta guía, porque las concentraciones cambian. Consulta a quien construyó tu piscina antes de vaciar una parte grande.',
+  sources: CALCIUM_GUIDE.sources,
+  steps: CALCIUM_STEPS,
 } as const satisfies StepGuide;

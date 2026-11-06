@@ -60,6 +60,9 @@ export const PAGES: readonly Page[] = [
   es('/es/como-cerrar-tu-piscina'),
   es('/es/cuantas-horas-prender-la-bomba-de-la-piscina'),
   es('/es/piscina-de-agua-salada-o-de-cloro'),
+  es('/es/como-hacer-un-tratamiento-de-choque-a-la-piscina'),
+  es('/es/como-bajar-el-ph-de-la-piscina'),
+  es('/es/como-subir-la-dureza-de-calcio-de-la-piscina'),
 ];
 
 /**

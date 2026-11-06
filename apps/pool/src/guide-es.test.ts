@@ -1,16 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CALCIUM_GUIDE,
   CLOSING_GUIDE,
   OPENING_GUIDE,
+  PH_GUIDE,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
+  SHOCK_GUIDE,
   type StepGuide,
 } from './guide.ts';
 import {
+  CALCIUM_GUIDE_ES,
   CLOSING_GUIDE_ES,
   OPENING_GUIDE_ES,
+  PH_GUIDE_ES,
   PUMP_RUN_GUIDE_ES,
   SALT_VS_CHLORINE_GUIDE_ES,
+  SHOCK_GUIDE_ES,
 } from './guide-es.ts';
 import { hrefOf, routeOf } from './routes.ts';
 
@@ -19,6 +25,9 @@ const PAIRS: readonly (readonly [string, StepGuide, StepGuide])[] = [
   ['closing-guide', CLOSING_GUIDE, CLOSING_GUIDE_ES],
   ['pump-guide', PUMP_RUN_GUIDE, PUMP_RUN_GUIDE_ES],
   ['salt-guide', SALT_VS_CHLORINE_GUIDE, SALT_VS_CHLORINE_GUIDE_ES],
+  ['shock-guide', SHOCK_GUIDE, SHOCK_GUIDE_ES],
+  ['ph-guide', PH_GUIDE, PH_GUIDE_ES],
+  ['calcium-guide', CALCIUM_GUIDE, CALCIUM_GUIDE_ES],
 ];
 
 /** The numbers of a text, a thousands comma read inside its number: "20,000" is 20000. */
@@ -91,6 +100,30 @@ describe('the Spanish step guides', () => {
       });
     });
   }
+
+  const stepsOf = (guide: StepGuide): string => guide.steps.map(({ text }) => text).join(' ');
+
+  it('keeps the acid safety rules of the English pH guide', () => {
+    const text = stepsOf(PH_GUIDE_ES);
+    expect(text).toContain('agrega el ácido al agua, nunca el agua al ácido');
+    expect(text).toContain('nunca lo mezcles con blanqueadores de cloro');
+    expect(text).toContain('ácido muriático');
+    expect(text).toContain('carbonato de sodio');
+  });
+
+  it('keeps the never-mix rules of the English shock guide', () => {
+    const text = stepsOf(SHOCK_GUIDE_ES);
+    expect(text).toContain('no lo mezcles con ningún otro químico');
+    expect(text).toContain('no le agregues agua');
+    expect(text).toContain('explosión');
+    expect(text).toContain('hipoclorito de calcio (cal-hypo)');
+  });
+
+  it('keeps the calcium chloride handling of the English calcium guide', () => {
+    const text = stepsOf(CALCIUM_GUIDE_ES);
+    expect(text).toContain('agua fría');
+    expect(text).toContain('con la bomba funcionando');
+  });
 
   it('keeps the acid safety rule of the English salt guide', () => {
     expect(SALT_VS_CHLORINE_GUIDE_ES.steps.map(({ text }) => text).join(' ')).toContain(

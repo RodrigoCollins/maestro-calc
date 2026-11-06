@@ -17,10 +17,13 @@ import { DOSING_CHART_ES } from './dosing-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import {
+  CALCIUM_GUIDE_ES,
   CLOSING_GUIDE_ES,
   OPENING_GUIDE_ES,
+  PH_GUIDE_ES,
   PUMP_RUN_GUIDE_ES,
   SALT_VS_CHLORINE_GUIDE_ES,
+  SHOCK_GUIDE_ES,
 } from './guide-es.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
 import { JOB_PAGES } from './jobs.ts';
@@ -80,6 +83,9 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'closing-guide': { name: CLOSING_GUIDE_ES.h1, note: CLOSING_GUIDE_ES.description },
   'pump-guide': { name: PUMP_RUN_GUIDE_ES.h1, note: PUMP_RUN_GUIDE_ES.description },
   'salt-guide': { name: SALT_VS_CHLORINE_GUIDE_ES.h1, note: SALT_VS_CHLORINE_GUIDE_ES.description },
+  'shock-guide': { name: SHOCK_GUIDE_ES.h1, note: SHOCK_GUIDE_ES.description },
+  'ph-guide': { name: PH_GUIDE_ES.h1, note: PH_GUIDE_ES.description },
+  'calcium-guide': { name: CALCIUM_GUIDE_ES.h1, note: CALCIUM_GUIDE_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },
