@@ -12,6 +12,7 @@ import {
   TIP_CREDIT_GUIDE_PATHS,
   TIPPED_STATES_GUIDE_PATHS,
   UNPAID_WAGES_GUIDE_PATHS,
+  W2_BOX_12_GUIDE_PATHS,
 } from './guide/paths.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
@@ -53,6 +54,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'no-tax-on-overtime', kind: 'calculator', ...DEDUCTION_PATHS.overtime },
   { id: 'no-tax-on-tips', kind: 'calculator', ...DEDUCTION_PATHS.tips },
   { id: 'tax-guide', kind: 'article', ...GUIDE_PATHS },
+  { id: 'w2-box-12-guide', kind: 'article', ...W2_BOX_12_GUIDE_PATHS },
   { id: 'overtime-guide', kind: 'article', ...OVERTIME_GUIDE_PATHS.federal },
   { id: 'california-overtime-guide', kind: 'article', ...OVERTIME_GUIDE_PATHS.california },
   { id: 'pay-stub-guide', kind: 'article', ...PAY_STUB_GUIDE_PATHS },

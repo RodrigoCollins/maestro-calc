@@ -60,6 +60,7 @@ export const LONG_TAIL_RULES: readonly LongTailRule[] = FAMILIES.flatMap(
 /** The calculators (route ids) each guide (a route id) explains: they link it, and it links them. */
 export const GUIDE_CALCULATORS: Readonly<Record<string, readonly string[]>> = {
   'tax-guide': ['no-tax-on-overtime', 'no-tax-on-tips'],
+  'w2-box-12-guide': ['no-tax-on-tips', 'no-tax-on-overtime'],
   'overtime-guide': ['overtime'],
   'california-overtime-guide': ['overtime'],
   'pay-stub-guide': ['time-card', 'overtime'],

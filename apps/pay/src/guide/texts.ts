@@ -103,6 +103,15 @@ const FLSA: GuideSource = {
   href: 'https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay',
 };
 
+/** The IRS pages other tax guides cite as well, so each is spelled once. */
+export const IRS_SOURCES = {
+  w2: W2,
+  schedule1a: SCHEDULE_1A_2026,
+  overtime: OVERTIME_FACTS,
+  overtimeQa: OVERTIME_QA,
+  tippedOccupations: TIPPED,
+} as const;
+
 export const GUIDE_TEXTS: Readonly<Record<Lang, GuideTexts>> = {
   en: {
     title: 'How to Claim No Tax on Tips and Overtime (2026) | Cuenta Horas',

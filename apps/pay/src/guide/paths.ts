@@ -62,3 +62,9 @@ export const MINIMUM_WAGE_2027_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/minimum-wage-increases-2027',
   es: '/es/guias/aumentos-del-salario-minimo-2027',
 };
+
+/** The W-2 box 12 guide: codes TP and TT, the tips and overtime amounts of the 2026 W-2. */
+export const W2_BOX_12_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/w-2-box-12-codes-tp-tt',
+  es: '/es/guias/codigos-tp-y-tt-casilla-12-del-w-2',
+};
