@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { areaLabel, rectanglePlan } from './area.ts';
 import {
-  areaLabel,
   CHAR,
   CLAMP,
   clampedRatio,
@@ -9,7 +9,6 @@ import {
   fitRectangle,
   labelBox,
   rectangleGutters,
-  rectanglePlan,
   textWidth,
   type Gutters,
 } from './drawing.ts';

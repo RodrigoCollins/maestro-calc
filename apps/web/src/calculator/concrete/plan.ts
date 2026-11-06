@@ -2,14 +2,14 @@ import { inch, valueIn, type UnitSystem } from '@maestro-calc/core';
 import type { concrete } from '../../lib/concrete.ts';
 import type { Frame, Ready } from '../page-module.ts';
 import { dimensionText } from '../present.ts';
+import { circleShape } from '../slots/circle.ts';
+import { markLabel } from '../slots/mark.ts';
+import { stairShape } from '../slots/stair.ts';
 import {
   ANSWER,
-  circleShape,
-  markLabel,
   noteAbove,
   noteBelow,
   rectangleShape,
-  stairShape,
   type Box,
   type Label,
   type Plan,

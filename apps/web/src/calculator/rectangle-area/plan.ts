@@ -3,7 +3,8 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { required } from '../controller.ts';
 import type { Frame, Ready } from '../page-module.ts';
 import { dimensionText, outputText } from '../present.ts';
-import { rectanglePlan, type Plan, type RectangleTexts } from '../slots/drawing.ts';
+import { rectanglePlan, type RectangleTexts } from '../slots/area.ts';
+import type { Plan } from '../slots/drawing.ts';
 
 /*
  * The plan of the square footage page (blueprint-drawing › [BD1]): the rectangle of the last valid
