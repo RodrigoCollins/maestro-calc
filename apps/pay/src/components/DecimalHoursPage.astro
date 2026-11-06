@@ -6,6 +6,7 @@ import { CHART_ROWS } from '../hours/chart.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import { DECIMAL_HOURS_PATHS, DECIMAL_HOURS_TEXTS } from '../hours/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -96,6 +97,8 @@ const [hoursInput, minutesInput, decimalInput] = decimalHours.inputs;
           </p>
         </div>
       </section>
+
+      <ShareLink lang={lang} title={t.title} path={DECIMAL_HOURS_PATHS[lang]} />
     </form>
 
     <ul class="rules">

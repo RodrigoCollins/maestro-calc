@@ -36,18 +36,4 @@ export const receiptMessage = (result: Result, lang: Lang, url: string): string 
   return `${words.lead}: ${hours(outputOf(result, 'totalHours'))}, ${moneyText(pay)}${detail}.\n${url}`;
 };
 
-/** A WhatsApp link that opens the chat picker with the message filled in. */
-export const whatsappHref = (message: string): string =>
-  `https://wa.me/?text=${encodeURIComponent(message)}`;
-
-/**
- * The address a receipt shares: the current one with the path of the page's canonical. A page's
- * canonical is its own path; an embed's is the full page, so a receipt sent from another site's
- * frame opens the real page, on the origin that served the frame.
- */
-export const sharedUrlOf = (canonical: string | null, href: string): string => {
-  if (canonical === null || !URL.canParse(canonical)) return href;
-  const url = new URL(href);
-  url.pathname = new URL(canonical).pathname;
-  return url.href;
-};
+export { sharedUrlOf, whatsappHref } from '../share/href.ts';

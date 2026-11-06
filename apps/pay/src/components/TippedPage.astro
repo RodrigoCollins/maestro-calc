@@ -6,6 +6,7 @@ import { HOME_TEXTS } from '../home/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import { TIPPED_PATHS, TIPPED_TEXTS, type TippedOutput } from '../tipped/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -100,6 +101,8 @@ const warnings = Object.entries(t.warnings);
         ))}
       </ul>
     </section>
+
+    <ShareLink lang={lang} title={t.title} path={TIPPED_PATHS[lang]} />
 
     <ul class="rules">
       {t.notes.map((note) => (

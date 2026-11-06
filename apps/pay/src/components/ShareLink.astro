@@ -1,0 +1,42 @@
+---
+import { shareOf } from '../share/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+
+/*
+ * "Share on WhatsApp": a plain link to wa.me with the page's name and canonical address, so it
+ * works with no script. On a calculator page the script (`client/share.ts`) puts the current
+ * state in the address after every edit; the words before it stay in `data-share`.
+ */
+interface Props {
+  readonly lang: Lang;
+  readonly title: string;
+  /** The page's own path in `lang`. */
+  readonly path: string;
+}
+
+const { lang, title, path } = Astro.props;
+const share = shareOf(lang, title, path);
+---
+
+<p class="share">
+  <a
+    class="button button-secondary"
+    data-share={share.text}
+    href={share.href}
+    rel="noopener"
+    aria-label={share.ariaLabel}
+  >
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path d="M4 20l1.4-4.2A8 8 0 1 1 8.6 19z"></path>
+    </svg>
+    {share.label}
+  </a>
+</p>

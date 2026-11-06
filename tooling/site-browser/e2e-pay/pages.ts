@@ -101,7 +101,7 @@ export const TIPPED = PAGES.filter(({ path }) =>
 );
 
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
-const CALCULATOR_PATHS: readonly string[] = [
+export const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',
   '/es/calculadora-de-horas-trabajadas',
   '/overtime-calculator',

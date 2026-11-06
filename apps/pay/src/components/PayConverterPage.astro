@@ -5,6 +5,7 @@ import { HOME_TEXTS } from '../home/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import { PATHS, PAY_CONVERTER_TEXTS, type Variant } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -101,6 +102,8 @@ const common = commonLinksOf(v.per, lang);
         ))}
       </ul>
     </section>
+
+    <ShareLink lang={lang} title={v.title} path={PATHS[variant][lang]} />
 
     <p class="note">
       {t.note} <a href={t.timeCard.href}>{t.timeCard.label}</a>

@@ -24,6 +24,8 @@ import {
 } from '../src/site-check/link-rules.ts';
 import { inboundOf, linkProblems } from '../src/site-check/links.ts';
 import { siteSeoProblems } from '../src/site-check/seo.ts';
+import { shareProblems } from '../src/site-check/share.ts';
+import { STATE_ROUTES } from '../src/states/routes.ts';
 import { CALCULATOR_PAGES } from '../src/site-check/pages.ts';
 import { SITE } from '../src/site.config.ts';
 
@@ -64,6 +66,14 @@ const all = [
     guides: [...GUIDE_RULES, ...DATA_RULES, ...STATE_RULES, ...STATE_RULES_OF_TABLES],
     hubs: HUBS,
   }),
+  // every calculator and every state page shares itself on WhatsApp, with no script
+  ...shareProblems(
+    sitemapPages,
+    SITE.origin,
+    [...ROUTES.filter(({ kind }) => kind === 'calculator'), ...STATE_ROUTES].flatMap(
+      ({ en, es }) => [en, es],
+    ),
+  ),
   ...EMBEDS.flatMap(({ path, page, other }) => {
     const html = read(path);
     if (html === undefined) return [`${path}: an embed the build does not hold`];
