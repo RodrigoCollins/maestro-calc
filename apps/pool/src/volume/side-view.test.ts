@@ -18,6 +18,17 @@ describe('depthText', () => {
   });
 });
 
+describe('sideViewOf in Spanish', () => {
+  it('names the drawing in the language of the page, the markers as a US depth marker reads', () => {
+    const view = sideViewOf({ length: 384, shallow: 42, deep: 96 }, 'es');
+    expect(view.name).toBe(
+      'Vista lateral de la piscina, sin escala: 32 ft de largo, 3½ ft de profundidad en la parte baja y 8 ft en la parte honda',
+    );
+    expect(view.markers.map(({ text }) => text)).toEqual(['3½ FT', '8 FT']);
+    expect(sideViewOf({ length: 384, shallow: 42, deep: 96 }).name).toContain('Side view');
+  });
+});
+
 describe('sideViewOf', () => {
   it('fixes the frame the page reserves', () => {
     expect(SIDE_VIEW).toEqual({ width: 330, height: 170 });

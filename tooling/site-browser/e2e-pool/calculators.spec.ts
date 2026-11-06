@@ -119,6 +119,18 @@ test('redraws the side view of the pool as the visitor types', async ({ page }) 
   await expect(drawing.locator('[data-side="mark1"]')).toHaveText('10 FT');
 });
 
+test('names the redrawn side view in Spanish on the Spanish page', async ({ page }) => {
+  await page.goto('/es/calculadora-de-volumen-de-piscina');
+  const drawing = page.locator('svg[data-side]');
+  await expect(drawing).toHaveAttribute('aria-label', /^Vista lateral de la piscina/);
+  await page.locator('[name="deep"]').fill('10 ft');
+  await expect(drawing.locator('[data-side="mark1"]')).toHaveText('10 FT');
+  await expect(drawing).toHaveAttribute(
+    'aria-label',
+    /3½ ft de profundidad en la parte baja y 10 ft en la parte honda$/,
+  );
+});
+
 test('sets the chlorine reading from a tapped test strip pad', async ({ page }) => {
   await page.goto('/pool-chlorine-calculator');
   const field = page.locator('[name="current"]');

@@ -32,6 +32,8 @@ export interface DosePage {
   readonly warnings?: Readonly<Record<string, string>>;
   readonly method: string;
   readonly note: string;
+  /** The section of the methodology with its hand-worked cases (the Spanish pages link it). */
+  readonly methodLink?: { readonly href: string; readonly label: string };
 }
 
 const gallons = { label: 'Pool volume (gallons)' };

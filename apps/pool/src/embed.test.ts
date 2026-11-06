@@ -12,7 +12,15 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { EMBED_PAGE, EMBED_PAGE_TEXTS, EMBEDS, snippets } from './embed.ts';
+import {
+  ALL_EMBEDS,
+  EMBED_PAGE,
+  EMBED_PAGE_TEXTS,
+  EMBEDS,
+  EMBEDS_ES,
+  snippets,
+  snippetsOf,
+} from './embed.ts';
 import { HOME_TOOLS } from './home.ts';
 import { footerLinksOf } from './layout.ts';
 import { pathsOf, ROUTES } from './routes.ts';
@@ -27,9 +35,18 @@ describe('EMBEDS', () => {
     for (const { path, page } of EMBEDS) expect(path).toBe(`/embed${page}`);
   });
 
+  it('embeds every calculator that has its Spanish page at /embed + that page', () => {
+    const spanish = ROUTES.filter(({ kind, es }) => kind === 'calculator' && es !== undefined);
+    expect(EMBEDS_ES.map(({ page }) => page)).toEqual(spanish.map(({ es }) => es));
+    for (const { path, page } of EMBEDS_ES) expect(path).toBe(`/embed${page}`);
+    expect(ALL_EMBEDS).toEqual([...EMBEDS, ...EMBEDS_ES]);
+  });
+
   it('has one source page per embed under src/pages/embed, and no other', () => {
-    const files = readdirSync(resolve(pagesDir, 'embed'));
-    expect(files.sort()).toEqual(EMBEDS.map(({ page }) => `${page.slice(1)}.astro`).sort());
+    const files = readdirSync(resolve(pagesDir, 'embed'), { recursive: true, encoding: 'utf8' })
+      .filter((file) => file.endsWith('.astro'))
+      .sort();
+    expect(files).toEqual(ALL_EMBEDS.map(({ page }) => `${page.slice(1)}.astro`).sort());
     for (const file of files) {
       expect(readFileSync(resolve(pagesDir, 'embed', file), 'utf8'), file).toMatch(/\bembed\b/);
     }
@@ -37,7 +54,7 @@ describe('EMBEDS', () => {
 
   it('lets each built embed load its one calculator script (the budgets of site-check)', () => {
     expect([...EMBED_PAGES].sort()).toEqual(
-      EMBEDS.map(({ path }) => `${path.slice(1)}.html`).sort(),
+      ALL_EMBEDS.map(({ path }) => `${path.slice(1)}.html`).sort(),
     );
     for (const page of EMBED_PAGES) expect(CALCULATOR_PAGES).toContain(page);
   });
@@ -92,6 +109,27 @@ describe('the embed page', () => {
 
   it('asks to keep the link under the frame', () => {
     expect(EMBED_PAGE.steps.join(' ')).toContain('Keep the link');
+  });
+});
+
+describe('snippetsOf', () => {
+  it('gives the Spanish page the Spanish embed of a calculator that has one, credited in Spanish', () => {
+    const es = snippetsOf('es');
+    expect(es).toHaveLength(EMBEDS.length);
+    expect(es[1]?.code).toBe(
+      [
+        '<iframe src="https://poolfigures.com/embed/es/calculadora-de-sal-para-piscina" title="Calculadora de sal para piscina" width="100%" height="1100" style="border:0" loading="lazy"></iframe>',
+        '<p><a href="https://poolfigures.com/es/calculadora-de-sal-para-piscina">Calculadora de sal para piscina de Pool Figures</a></p>',
+      ].join('\n'),
+    );
+    expect(snippetsOf('en')).toEqual(snippets);
+  });
+
+  it('says on the Spanish page which calculators are still in English', () => {
+    for (const [index, { name, code }] of snippetsOf('es').entries()) {
+      const english = !code.includes('/embed/es/');
+      expect(name.endsWith(' (en inglés)'), String(index)).toBe(english);
+    }
   });
 });
 

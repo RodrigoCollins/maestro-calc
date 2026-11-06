@@ -1,0 +1,10 @@
+---
+import PhScript from '../../islands/PhScript.astro';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
+import DosePage from '../../components/DosePage.astro';
+import { PH_ES } from '../../doses-es.ts';
+---
+
+<DosePage page={PH_ES} calculator={poolPh}>
+  <PhScript />
+</DosePage>

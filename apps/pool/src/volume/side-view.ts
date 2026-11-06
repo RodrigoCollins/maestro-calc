@@ -68,16 +68,19 @@ const markerAt = (text: string, side: 'left' | 'right'): Marker => {
   return { x, width, center: x + width / 2, text };
 };
 
-/** The side view of a pool of `length`, `shallow` and `deep`, all in inches. */
-export const sideViewOf = ({
-  length,
-  shallow,
-  deep,
-}: {
-  readonly length: number;
-  readonly shallow: number;
-  readonly deep: number;
-}): SideView => {
+/** The side view of a pool of `length`, `shallow` and `deep`, all in inches, named in `lang`. */
+export const sideViewOf = (
+  {
+    length,
+    shallow,
+    deep,
+  }: {
+    readonly length: number;
+    readonly shallow: number;
+    readonly deep: number;
+  },
+  lang: 'en' | 'es' = 'en',
+): SideView => {
   const deepest = Math.max(shallow, deep);
   const left = String(floorOf(shallow, deepest));
   const right = String(floorOf(deep, deepest));
@@ -90,6 +93,9 @@ export const sideViewOf = ({
     wall: `M${String(LEFT)} ${String(COPING)}${floor}V${String(COPING)}`,
     length: depthText(length),
     markers: [markerAt(depthText(shallow), 'left'), markerAt(depthText(deep), 'right')],
-    name: `Side view of the pool, not to scale: ${texts[0] ?? ''} long, ${texts[1] ?? ''} deep at the shallow end and ${texts[2] ?? ''} at the deep end`,
+    name:
+      lang === 'en'
+        ? `Side view of the pool, not to scale: ${texts[0] ?? ''} long, ${texts[1] ?? ''} deep at the shallow end and ${texts[2] ?? ''} at the deep end`
+        : `Vista lateral de la piscina, sin escala: ${texts[0] ?? ''} de largo, ${texts[1] ?? ''} de profundidad en la parte baja y ${texts[2] ?? ''} en la parte honda`,
   };
 };

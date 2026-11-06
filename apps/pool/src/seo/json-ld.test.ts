@@ -17,6 +17,7 @@ describe('pageKindOf', () => {
   it('reads the kind from the route table, not from the end of the address', () => {
     expect(pageKindOf('/how-much-salt-for-a-10000-gallon-pool')).toBe('article');
     expect(pageKindOf('/pool-volume-calculator')).toBe('calculator');
+    expect(pageKindOf('/es/calculadora-de-sal-para-piscina')).toBe('calculator');
   });
 });
 
@@ -114,6 +115,18 @@ describe('jsonLdOf', () => {
       headline: 'Acerca de',
       inLanguage: 'es-US',
     });
+  });
+
+  it('describes a Spanish calculator in Spanish, named by its title without the site', () => {
+    const salt = { title: 'Calculadora de sal para piscina | Pool Figures', description: 'Sal.' };
+    expect(JSON.parse(jsonLdOf('/es/calculadora-de-sal-para-piscina', salt, ORIGIN))).toMatchObject(
+      {
+        '@type': 'WebApplication',
+        name: 'Calculadora de sal para piscina',
+        inLanguage: 'es-US',
+        url: `${ORIGIN}/es/calculadora-de-sal-para-piscina`,
+      },
+    );
   });
 
   it('cannot break out of its script element', () => {
