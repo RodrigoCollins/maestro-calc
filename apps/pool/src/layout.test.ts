@@ -1,7 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { GUIDES } from './guide.ts';
+import { GUIDES, guidesOf } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
-import { footerLinksOf, guideLinksOf, LAYOUT_TEXTS, navOf, switchOf } from './layout.ts';
+import {
+  calculatorGuidesOf,
+  footerLinksOf,
+  guideLinksOf,
+  labelOf,
+  LAYOUT_TEXTS,
+  navOf,
+  switchOf,
+} from './layout.ts';
 import { hrefOf, routeOf } from './routes.ts';
 
 describe('the footer', () => {
@@ -48,6 +56,37 @@ describe('the footer', () => {
   });
 
   // the Spanish home names each guide in Spanish, and says which pages are still in English
+  // a calculator page links the guides that explain it; in Spanish, only the guides built in Spanish
+  it('lists the guides of a calculator in its language', () => {
+    expect(calculatorGuidesOf('/pool-salt-calculator')).toEqual(
+      guidesOf('/pool-salt-calculator').map(({ path, card }) => ({
+        href: path,
+        title: card.title,
+      })),
+    );
+    for (const { calculators } of GUIDES) {
+      for (const calculator of calculators) {
+        const spanish = routeOf(calculator)?.es;
+        if (spanish === undefined) continue;
+        const built = guidesOf(calculator).filter(({ path }) => routeOf(path)?.es !== undefined);
+        expect(calculatorGuidesOf(spanish), spanish).toEqual(
+          built.map(({ path }) => {
+            const route = routeOf(path);
+            return { href: route?.es, title: labelOf(route?.id ?? '', 'es') };
+          }),
+        );
+      }
+    }
+    expect(calculatorGuidesOf('/es/calculadora-de-bomba-para-piscina')).toContainEqual({
+      href: '/es/cuantas-horas-prender-la-bomba-de-la-piscina',
+      title: 'Cuántas horas prender la bomba',
+    });
+    expect(calculatorGuidesOf('/es/calculadora-de-sal-para-piscina')).toContainEqual({
+      href: '/es/piscina-de-agua-salada-o-de-cloro',
+      title: 'Agua salada o cloro',
+    });
+  });
+
   it('lists every guide at its page in each language, marking the English ones', () => {
     expect(guideLinksOf('en')).toEqual(
       GUIDES.map(({ path, card }) => ({ href: path, title: card.title, summary: card.summary })),

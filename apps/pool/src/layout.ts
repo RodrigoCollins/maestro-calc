@@ -1,5 +1,5 @@
 import { CHARTS_INDEX } from './charts.ts';
-import { GUIDES } from './guide.ts';
+import { GUIDES, guidesOf } from './guide.ts';
 import { hrefOf, langOf, routeOf, type Lang } from './routes.ts';
 
 export { navOf } from './home.ts';
@@ -83,6 +83,25 @@ export const guideLinksOf = (
     const title = labelOf(id, lang) ?? card.title;
     return { href, title: href === routeOf(href)?.en ? `${title} (en inglés)` : title };
   });
+
+/**
+ * The guides that explain the calculator at `path` (`guidesOf`), as its page lists them in the
+ * page's language: in English with their card title; in Spanish by their footer label, and only
+ * the guides whose Spanish twin is built, so a Spanish page links Spanish pages.
+ */
+export const calculatorGuidesOf = (
+  path: string,
+): { readonly href: string; readonly title: string }[] => {
+  const english = routeOf(path)?.en ?? path;
+  const guides = guidesOf(english);
+  if (langOf(path) === 'en')
+    return guides.map(({ path, card }) => ({ href: path, title: card.title }));
+  return guides.flatMap(({ path: guide }) => {
+    const route = routeOf(guide);
+    const title = labelOf(route?.id ?? '', 'es');
+    return route?.es === undefined || title === undefined ? [] : [{ href: route.es, title }];
+  });
+};
 
 const NAMES = { en: 'English', es: 'Español' } as const;
 
