@@ -1,19 +1,20 @@
-import { findUnit, ft2, ft3, type DimensionName } from '@maestro-calc/core';
+import { findUnit, ft2, ft3, type DimensionName, type OutputDescriptor } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { calculators } from '../lib/calculators.ts';
 import { DISPLAY_UNITS, displayUnitOf } from './display-units.ts';
 
 /** Every `[dimension, unit id]` a decimal display hint of a registry calculator names, once each. */
 const hinted = (): readonly (readonly [DimensionName, string])[] => {
-  const pairs = calculators.flatMap(({ outputs }) =>
-    outputs.flatMap(({ measure, display }) =>
-      display?.format === 'decimal' &&
-      measure !== 'money' &&
-      measure !== 'hours' &&
-      measure !== 'number'
-        ? [[measure, display.unit] as const]
-        : [],
-    ),
+  const outputs = calculators.flatMap(
+    (calculator): readonly OutputDescriptor[] => calculator.outputs,
+  );
+  const pairs = outputs.flatMap(({ measure, display }) =>
+    display?.format === 'decimal' &&
+    measure !== 'money' &&
+    measure !== 'hours' &&
+    measure !== 'number'
+      ? [[measure, display.unit] as const]
+      : [],
   );
   return [...new Map(pairs.map((pair) => [pair.join(':'), pair])).values()];
 };

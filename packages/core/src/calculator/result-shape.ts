@@ -1,8 +1,6 @@
 import type { ComputeResult, OutputDescriptor, RunOutput, RunResult } from './descriptors.ts';
 import type { Runnable } from './run.ts';
 
-type Output = RunOutput<readonly OutputDescriptor[]>;
-
 /**
  * The shape of a `compute` result without the checks of `result-checks.ts`, which a page script
  * loads in their place (`skipResultChecks` of the web client build): the outputs listed in
@@ -13,18 +11,13 @@ type Output = RunOutput<readonly OutputDescriptor[]>;
  */
 export const shapeOf = (
   { outputs }: Pick<Runnable, 'id' | 'outputs' | 'warnings'>,
-  result: unknown,
-): RunResult<readonly OutputDescriptor[], string> => {
-  // the contract this module trusts: `compute` returned its declared outputs, lines and warnings
-  const computed = result as ComputeResult<readonly OutputDescriptor[], string>;
-  const values = computed.outputs as Readonly<Record<string, Output['value']>>;
-  return {
-    outputs: outputs.map(({ key, role }): Output => ({
-      key,
-      role,
-      value: values[key] as Output['value'],
-    })),
-    shopping: computed.shopping,
-    warnings: computed.warnings,
-  };
-};
+  { outputs: values, shopping, warnings }: ComputeResult<readonly OutputDescriptor[], string>,
+): RunResult<readonly OutputDescriptor[], string> => ({
+  // every declared key is there on a result that keeps the contract, so none is skipped
+  outputs: outputs.flatMap(({ key, role }): RunOutput<readonly OutputDescriptor[]>[] => {
+    const value = values[key];
+    return value === undefined ? [] : [{ key, role, value }];
+  }),
+  shopping,
+  warnings,
+});
