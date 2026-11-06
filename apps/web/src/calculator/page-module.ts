@@ -44,6 +44,11 @@ export type MoneyKey<C extends AnyCalculator> = Extract<
   { readonly kind: 'money' }
 >['key'];
 export type OutputKey<C extends AnyCalculator> = C['outputs'][number]['key'];
+/** The options of the select `S`. */
+export type OptionOf<C extends AnyCalculator, S extends SelectKey<C>> = Extract<
+  Input<C>,
+  { readonly kind: 'select'; readonly key: S }
+>['options'][number];
 export type StateOf<C extends AnyCalculator> = InputsOf<C['inputs']>;
 export type ResultOf<C extends AnyCalculator> = RunResult<C['outputs'], C['warnings'][number]>;
 
@@ -131,11 +136,27 @@ export interface DrawingSlot<C extends AnyCalculator> {
   plan(moment: Ready<C>): Plan | null;
 }
 
+/** The output of the large figure in each unit system. */
+export type Primaries<C extends AnyCalculator> = Readonly<Record<UnitSystem, OutputKey<C>>>;
+
+/**
+ * The large figure of the options of one select that change it (the pieces of a fit); an option
+ * it does not name keeps the module's figure of the unit system.
+ */
+export type PrimaryBy<C extends AnyCalculator> = {
+  readonly [S in SelectKey<C>]: {
+    readonly select: S;
+    readonly options: Readonly<Partial<Record<OptionOf<C, S>, Primaries<C>>>>;
+  };
+}[SelectKey<C>];
+
+export type PrimarySpec<C extends AnyCalculator> = Primaries<C> & { readonly by?: PrimaryBy<C> };
+
 export interface PageModule<C extends AnyCalculator> {
   /** The id of the registry calculator, taken from its definition. */
   readonly id: C['id'];
   readonly calculator: C;
-  readonly primary?: Readonly<Record<UnitSystem, OutputKey<C>>>;
+  readonly primary?: PrimarySpec<C>;
   readonly choices?: ChoiceSlot<C>;
   readonly steppers?: StepperSlot<C>;
   readonly shopping?: ShoppingSlot<C>;
@@ -188,21 +209,68 @@ export function definePage(spec: PageSpec<AnyCalculator>): AnyPageModule {
 }
 
 /**
- * The output the large figure shows for a unit system: the module's choice, else the one with the
+ * The output the large figure shows for a unit system and the options pressed: the module's choice
+ * for the option its select holds, else its choice for the unit system, else the one with the
  * primary role. One rule for the two readers (the builder writes the sentence, the controller reads
  * it), so a module whose primary has no such output fails the same way in both.
  */
-export const primaryOutputOf = (module: AnyPageModule, system: UnitSystem): OutputDescriptor => {
+export const primaryOutputOf = (
+  module: AnyPageModule,
+  system: UnitSystem,
+  choices: Readonly<Record<string, string>>,
+): OutputDescriptor => {
+  const { primary } = module;
+  const by = primary?.by;
+  const chosen = (by === undefined ? undefined : by.options[choices[by.select] ?? '']) ?? primary;
   const output = module.calculator.outputs.find(({ key, role }) =>
-    module.primary === undefined ? role === 'primary' : key === module.primary[system],
+    chosen === undefined ? role === 'primary' : key === chosen[system],
   );
   if (output === undefined) throw new TypeError('missing primary output');
   return output;
 };
 
-/** The name of the primary sentence in the page messages: the measure, with the display unit when it has one. */
-export const sentenceNameOf = ({ measure, display }: OutputDescriptor): string =>
-  display === undefined ? measure : `${measure}.${display.unit}`;
+/** Every output the large figure may show, once each: those of the unit systems, then those of the options. */
+export const primaryOutputsOf = (module: AnyPageModule): readonly OutputDescriptor[] => {
+  const by = module.primary?.by;
+  const options =
+    by === undefined ? [] : Object.keys(by.options).map((key) => ({ [by.select]: key }));
+  const systems = ['imperial', 'metric'] as const;
+  return [
+    ...new Set(
+      [{}, ...options].flatMap((choices) =>
+        systems.map((system) => primaryOutputOf(module, system, choices)),
+      ),
+    ),
+  ];
+};
+
+/**
+ * A `number` output is a count to a page (core gives it no display hint): a whole figure that only a
+ * large figure shows, never a row, in a sentence of its own that names its unit (`15 pieces`).
+ */
+export const isCount = ({ measure }: OutputDescriptor): boolean => measure === 'number';
+
+/**
+ * The outputs the panel writes: every output with a display hint, every money output, and every
+ * count a large figure may show.
+ */
+export const figuredOf = (module: AnyPageModule): readonly OutputDescriptor[] => {
+  const counts = new Set(primaryOutputsOf(module).filter(isCount));
+  return module.calculator.outputs.filter(
+    (output) => output.display !== undefined || output.measure === 'money' || counts.has(output),
+  );
+};
+
+/**
+ * The name of the primary sentence in the page messages: the measure, with the display unit when it
+ * has one; a count's own, `count.<key>`, and `count.<key>.one` for a `figure` of exactly one (the
+ * plural rule of English and Spanish alike).
+ */
+export const sentenceNameOf = (output: OutputDescriptor, figure?: string): string => {
+  const { key, measure, display } = output;
+  if (isCount(output)) return `count.${key}${figure === '1' ? '.one' : ''}`;
+  return display === undefined ? measure : `${measure}.${display.unit}`;
+};
 
 /** The option a select holds in a valid state; a state that holds none breaks an invariant. */
 export const optionOf = (valid: StateOf<AnyCalculator>, key: string): string => {

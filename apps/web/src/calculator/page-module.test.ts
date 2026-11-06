@@ -1,12 +1,18 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import type { ShoppingLine } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import { hintedCalculator, pageModuleErrorOf } from '../__testing__/page-fixtures.ts';
+import {
+  countCalculator,
+  hintedCalculator,
+  pageModuleErrorOf,
+} from '../__testing__/page-fixtures.ts';
 import { concrete } from '../lib/concrete.ts';
 import {
   definePage,
+  figuredOf,
   PageModuleError,
   primaryOutputOf,
+  primaryOutputsOf,
   sentenceNameOf,
   shoppingLinesOf,
   type AnyPageModule,
@@ -87,14 +93,14 @@ describe('primaryOutputOf and sentenceNameOf (calculator-web-core › Page-modul
 
   it('takes the output the module names for each unit system', () => {
     const module = definePage({ calculator, primary: { imperial: 'span', metric: 'edge' } });
-    expect(primaryOutputOf(module, 'imperial').key).toBe('span');
-    expect(primaryOutputOf(module, 'metric').key).toBe('edge');
+    expect(primaryOutputOf(module, 'imperial', {}).key).toBe('span');
+    expect(primaryOutputOf(module, 'metric', {}).key).toBe('edge');
   });
 
   it('falls back to the output with the primary role when the module names none', () => {
     const module = definePage({ calculator });
-    expect(primaryOutputOf(module, 'imperial').key).toBe('span');
-    expect(primaryOutputOf(module, 'metric').key).toBe('span');
+    expect(primaryOutputOf(module, 'imperial', {}).key).toBe('span');
+    expect(primaryOutputOf(module, 'metric', {}).key).toBe('span');
   });
 
   it('fails for a unit system whose named output the calculator lacks', () => {
@@ -103,8 +109,8 @@ describe('primaryOutputOf and sentenceNameOf (calculator-web-core › Page-modul
       calculator,
       primary: { imperial: 'span', metric: 'nope' },
     };
-    expect(primaryOutputOf(drifted, 'imperial').key).toBe('span');
-    expect(() => primaryOutputOf(drifted, 'metric')).toThrow(
+    expect(primaryOutputOf(drifted, 'imperial', {}).key).toBe('span');
+    expect(() => primaryOutputOf(drifted, 'metric', {})).toThrow(
       new TypeError('missing primary output'),
     );
   });
@@ -113,5 +119,52 @@ describe('primaryOutputOf and sentenceNameOf (calculator-web-core › Page-modul
     const [span, edge] = calculator.outputs;
     expect(sentenceNameOf(span)).toBe('length');
     expect(sentenceNameOf(edge)).toBe('length.in');
+  });
+});
+
+describe('a primary per option of a select (calculator-web-core › Page-module contract: primary output)', () => {
+  const module = definePage({
+    calculator: countCalculator,
+    primary: {
+      imperial: 'total',
+      metric: 'total',
+      by: { select: 'mode', options: { count: { imperial: 'pieces', metric: 'pieces' } } },
+    },
+  });
+
+  it('takes the output of the option the select holds, in each unit system', () => {
+    expect(primaryOutputOf(module, 'imperial', { mode: 'count' }).key).toBe('pieces');
+    expect(primaryOutputOf(module, 'metric', { mode: 'count' }).key).toBe('pieces');
+  });
+
+  it('keeps the output of the unit system for an option that names none', () => {
+    expect(primaryOutputOf(module, 'imperial', { mode: 'length' }).key).toBe('total');
+    expect(primaryOutputOf(module, 'metric', {}).key).toBe('total');
+  });
+
+  it('lists every output a large figure may show once, the unit systems first', () => {
+    expect(primaryOutputsOf(module).map(({ key }) => key)).toEqual(['total', 'pieces']);
+    const inch = { unit: 'in', format: 'decimal', places: 2 } as const;
+    const hinted = hintedCalculator({ edge: inch });
+    const plain = definePage({ calculator: hinted, primary: { imperial: 'span', metric: 'edge' } });
+    expect(primaryOutputsOf(plain).map(({ key }) => key)).toEqual(['span', 'edge']);
+    const bare = definePage({ calculator: hinted });
+    expect(primaryOutputsOf(bare).map(({ key }) => key)).toEqual(['span']);
+  });
+
+  it('writes the figures with a hint and the counts a large figure may show, no other number', () => {
+    expect(figuredOf(module).map(({ key }) => key)).toEqual(['total', 'pieces']);
+    expect(figuredOf(definePage({ calculator: countCalculator })).map(({ key }) => key)).toEqual([
+      'total',
+    ]);
+  });
+
+  // English and Spanish agree: 1 piece, 1 pieza; 0 and 2 or more take the plural
+  it('names the sentence of a count by its key, with the singular for exactly one', () => {
+    const [, pieces] = countCalculator.outputs;
+    expect(sentenceNameOf(pieces, '15')).toBe('count.pieces');
+    expect(sentenceNameOf(pieces, '0')).toBe('count.pieces');
+    expect(sentenceNameOf(pieces, '1')).toBe('count.pieces.one');
+    expect(sentenceNameOf(pieces, '1,001')).toBe('count.pieces');
   });
 });

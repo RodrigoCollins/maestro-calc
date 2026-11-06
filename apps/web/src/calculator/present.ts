@@ -207,10 +207,10 @@ export const boundText = (field: InputDescriptor, bound: string, system: UnitSys
 };
 
 /**
- * The figure of an output for its row: money through `moneyText`, a quantity in the unit of its
- * display hint at the hint's places, thousands grouped. A value of the other kind than the
- * descriptor's measure, or a fraction hint (no calculator asks for one yet), fails loudly naming
- * the output rather than rendering a wrong figure.
+ * The figure of an output: money through `moneyText`, a number as a whole count (the pieces of a
+ * fit, shown only as a large figure), a quantity in the unit of its display hint at the hint's
+ * places, thousands grouped. A value of the other kind than the descriptor's measure fails loudly
+ * naming the output rather than rendering a wrong figure.
  */
 export const outputText = (
   output: OutputDescriptor,
@@ -221,7 +221,12 @@ export const outputText = (
     throw new TypeError(`${key} is hours, which a Maestro Calc page does not show`);
   }
   if (measure === 'number') {
-    throw new TypeError(`${key} is a number, which a Maestro Calc page does not show`);
+    if (!(value instanceof Rational) || value.den !== 1n) {
+      throw new TypeError(
+        `${key} is a number, which a Maestro Calc page shows only as a whole count`,
+      );
+    }
+    return groupedInteger(value.num);
   }
   if (measure === 'money') {
     if (isQuantity(value) || value instanceof Rational) {

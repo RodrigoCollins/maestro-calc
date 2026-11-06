@@ -1,4 +1,4 @@
-import { ALL_ERROR_CODES, type OutputDescriptor, type UnitSystem } from '@maestro-calc/core';
+import { ALL_ERROR_CODES, type OutputDescriptor } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import type {
   AreaField,
@@ -14,8 +14,10 @@ import { checkModule, required, mustBeOk, type Messages } from '../calculator/co
 import { formOf } from '../calculator/form-layout.ts';
 import {
   fail,
+  isCount,
   isTextInput,
   primaryOutputOf,
+  primaryOutputsOf,
   sentenceNameOf,
   type AnyCalculator,
   type AnyPageModule,
@@ -39,8 +41,6 @@ const pageKey = (id: string, suffix: string): string => `calc.${id}.page.${suffi
 
 /** The page is built from the default state of the engine, with no query and the US unit system. */
 const SYSTEM = 'imperial';
-
-const UNIT_SYSTEMS = ['imperial', 'metric'] as const;
 
 /** The state of a fresh page: no query, the US system, every select at its default, the engine run on it. */
 const defaultMomentOf = (module: AnyPageModule): Ready<AnyCalculator> => {
@@ -181,9 +181,26 @@ const fillSplitOf = (
     : { name, before, value: required(fills[name], name), after };
 };
 
-/** The primary sentence of a unit system: the page key of its output when the catalog has it, else the bare value. */
-const sentenceOf = (module: AnyPageModule, catalog: Messages, system: UnitSystem): string =>
-  catalog[pageKey(module.id, primaryOutputOf(module, system).key)] ?? '{value}';
+/**
+ * The sentences of the large figure by the name the controller reads them (`sentenceNameOf`), for
+ * every output it may show: the page key of the output when the catalog has it; a count has two,
+ * `<key>` and the singular `<key>One`, both required (a missing one throws `PAGE_KEY` naming it).
+ */
+const sentencesOf = (module: AnyPageModule, catalog: Messages): ReadonlyMap<string, string> => {
+  const { id } = module;
+  return new Map(
+    primaryOutputsOf(module).flatMap((output) => {
+      if (isCount(output)) {
+        return [
+          [sentenceNameOf(output), messageOf(catalog, id, pageKey(id, output.key))],
+          [sentenceNameOf(output, '1'), messageOf(catalog, id, pageKey(id, `${output.key}One`))],
+        ] as const;
+      }
+      const sentence = catalog[pageKey(id, output.key)];
+      return sentence === undefined ? [] : [[sentenceNameOf(output), sentence] as const];
+    }),
+  );
+};
 
 /** The result panel of a module at `moment`, the default state (see `resultViewOf`). */
 const resultViewAt = (
@@ -204,16 +221,18 @@ const resultViewAt = (
         descriptor.key,
       ).value,
     );
-  const primary = primaryOutputOf(module, SYSTEM);
-  const [before = '', after = ''] = sentenceOf(module, catalog, SYSTEM).split('{value}');
-  const prefixed = UNIT_SYSTEMS.some(
-    (system) => !sentenceOf(module, catalog, system).startsWith('{value}'),
-  );
+  // the figure and the sentence the script shows on load, so the page does not change under it
+  const primary = primaryOutputOf(module, SYSTEM, moment.choices);
+  const value = figureOf(primary);
+  const sentences = sentencesOf(module, catalog);
+  const sentence = sentences.get(sentenceNameOf(primary, value)) ?? '{value}';
+  const [before = '', after = ''] = sentence.split('{value}');
+  const prefixed = [...sentences.values()].some((each) => !each.startsWith('{value}'));
   const views = shopping === undefined ? [] : shopping.view(moment);
 
   return {
     heading: text('site.calculator.resultHeading'),
-    primary: { key: primary.key, prefixed, before, value: figureOf(primary), after },
+    primary: { key: primary.key, prefixed, before, value, after },
     ...(drawing === undefined ? {} : { drawing: drawing.frame }),
     rows: outputs
       .filter(({ display }) => display !== undefined)
@@ -260,9 +279,10 @@ const resultViewAt = (
 /**
  * The result panel of a module for the default state: the primary figure, a row for every output
  * that has a display hint, one entry per declared shopping line, and the cost rows. Money outputs
- * show only through the cost slot. Labels are `calc.<id>.outputs.*`; the primary sentence is
- * `calc.<id>.page.<outputKey>` when the catalog has it (else the bare value); line, hint and note
- * texts are the page keys the slots name.
+ * show only through the cost slot, a count only as the primary figure. Labels are
+ * `calc.<id>.outputs.*`; the primary sentence is `calc.<id>.page.<outputKey>` when the catalog has
+ * it (else the bare value; a count requires it and `<outputKey>One`); line, hint and note texts are
+ * the page keys the slots name.
  */
 export const resultViewOf = (
   module: AnyPageModule,
@@ -275,8 +295,9 @@ export const resultViewOf = (
  * the answer templates of the slot, the messages of the drawing slot, the copy states, the share
  * text, one hint per length unit (the distinct default
  * units in input order, then the distinct metric ones) and the sentence of each primary figure that
- * has a page key. A name is the id of its `<template>` entry; the primary sentence is named
- * `<measure>.<unit>`, as the controller looks it up.
+ * has a page key (`sentencesOf`). A name is the id of its `<template>` entry; the primary sentence
+ * is named `<measure>.<unit>`, or `count.<key>` and `count.<key>.one`, as the controller looks it
+ * up.
  */
 const messagesOf = (
   module: AnyPageModule,
@@ -290,13 +311,6 @@ const messagesOf = (
     ...lengths.map(({ defaultUnit }) => defaultUnit),
     ...lengths.map(({ metricDefaultUnit }) => metricDefaultUnit),
   ]);
-  const primaries = new Map(
-    UNIT_SYSTEMS.flatMap((system) => {
-      const output = primaryOutputOf(module, system);
-      const sentence = catalog[pageKey(id, output.key)];
-      return sentence === undefined ? [] : [[sentenceNameOf(output), sentence] as const];
-    }),
-  );
   return [
     ...ALL_ERROR_CODES.map((code) => [`errors.${code}`, text(`errors.${code}`)] as const),
     ...(answer?.templates ?? []).map((name) => [name, text(pageKey(id, name))] as const),
@@ -305,7 +319,7 @@ const messagesOf = (
     ['copy.failed', text('site.calculator.copyFailed')] as const,
     ['share.text', text('site.calculator.shareText')] as const,
     ...[...units].map((unit) => [`hint.${unit}`, text(hintKeyOf(unit))] as const),
-    ...primaries,
+    ...sentencesOf(module, catalog),
   ];
 };
 

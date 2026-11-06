@@ -3,6 +3,7 @@ import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { describe, expect, it } from 'vitest';
 import {
   choiceCalculator,
+  countCalculator,
   hintedCalculator,
   moneyCalculator,
   pageModuleErrorOf,
@@ -10,7 +11,7 @@ import {
   shoppingCalculator,
 } from '../__testing__/page-fixtures.ts';
 import { controllerOf, type Environment, type UiEvent } from './controller.ts';
-import { definePage, type Ready } from './page-module.ts';
+import { definePage, type AnyPageModule, type Ready } from './page-module.ts';
 import { choiceSlot } from './slots/choices.ts';
 import { answerValues as rectangleAnswer } from './rectangle-area/present.ts';
 import { answerSlot } from './slots/answer.ts';
@@ -254,6 +255,88 @@ describe('the output check at creation (calculator-web-core › [CWC3])', () => 
     expect(pageModuleErrorOf(() => controllerOf(broken)).cause).toEqual({
       id: 'hinted-fixture',
       at: 'edge',
+    });
+  });
+
+  it('checks the primary of each option a module names', () => {
+    const calculator = hintedCalculator({ span: decimal });
+    const by = { select: 'mode', options: { x: { imperial: 'edge', metric: 'edge' } } };
+    const broken: AnyPageModule = {
+      id: calculator.id,
+      calculator,
+      primary: { imperial: 'span', metric: 'span', by },
+    };
+    expect(pageModuleErrorOf(() => controllerOf(broken)).cause).toEqual({
+      id: 'hinted-fixture',
+      at: 'edge',
+    });
+  });
+});
+
+describe('a primary per option, a count (calculator-web-core › Page-module contract: primary output)', () => {
+  const controller = controllerOf(
+    definePage({
+      calculator: countCalculator,
+      primary: {
+        imperial: 'total',
+        metric: 'total',
+        by: { select: 'mode', options: { count: { imperial: 'pieces', metric: 'pieces' } } },
+      },
+    }),
+  );
+  const env: Environment = {
+    ...ENV,
+    messages: { 'count.pieces': '{value} pieces', 'count.pieces.one': '{value} piece' },
+  };
+
+  it('shows the output of the unit system while the select holds an option that names none', () => {
+    const { view } = controller.start(env, '');
+    expect(view.panel.primary).toEqual({ key: 'total', before: '', value: '0.00', after: '' });
+    expect(view.panel.figures).toEqual({ total: '0.00', pieces: '15' });
+  });
+
+  it('shows the count of the option the link holds, in the sentence of its plural', () => {
+    for (const search of ['?v=1&m1=count', '?v=1&m1=count&u=m']) {
+      expect(controller.start(env, search).view.panel.primary).toEqual({
+        key: 'pieces',
+        before: '',
+        value: '15',
+        after: ' pieces',
+      });
+    }
+    expect(controller.start(env, '?v=1&m1=count&c1=0').view.panel.primary.after).toBe(' pieces');
+    expect(controller.start(env, '?v=1&m1=count&c1=1').view.panel.primary).toEqual({
+      key: 'pieces',
+      before: '',
+      value: '1',
+      after: ' piece',
+    });
+  });
+
+  it('moves the large figure with the option pressed, and back', () => {
+    const { state } = controller.start(env, '');
+    const count = controller.applyEvent(env, state, {
+      type: 'choice',
+      select: 'mode',
+      option: 'count',
+    });
+    expect(count.view.panel.primary).toMatchObject({ key: 'pieces', value: '15' });
+    const back = controller.applyEvent(env, count.state, {
+      type: 'choice',
+      select: 'mode',
+      option: 'length',
+    });
+    expect(back.view.panel.primary).toMatchObject({ key: 'total', value: '0.00' });
+  });
+
+  it('keeps the sentence of the count around the dash while a field is invalid', () => {
+    const { state } = controller.start(env, '?v=1&m1=count');
+    const invalid = controller.applyEvent(env, state, { type: 'text', key: 'qty', text: 'x' });
+    expect(invalid.view.panel.primary).toEqual({
+      key: 'pieces',
+      before: '',
+      value: '—',
+      after: ' pieces',
     });
   });
 });

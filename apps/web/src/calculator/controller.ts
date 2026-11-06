@@ -4,7 +4,6 @@ import {
   Rational,
   type FieldError,
   type InputDescriptor,
-  type OutputDescriptor,
   type Result,
   type UnitSystem,
   type UrlIssue,
@@ -12,8 +11,10 @@ import {
 import { errorId, helpId, hintId } from './ids.ts';
 import {
   fail,
+  figuredOf,
   optionOf,
   primaryOutputOf,
+  primaryOutputsOf,
   sentenceNameOf,
   shoppingLinesOf,
   type AnyCalculator,
@@ -159,10 +160,6 @@ const noticeOf = (env: Environment, issues: readonly UrlIssue[]): string => {
   return first === undefined ? '' : message(env, `errors.${first.code}`);
 };
 
-/** The outputs the panel writes: every output with a display hint and every money output. */
-const figuredOf = (calculator: AnyCalculator): readonly OutputDescriptor[] =>
-  calculator.outputs.filter(({ display, measure }) => display !== undefined || measure === 'money');
-
 /** The option of each select of a valid state, by select key. */
 const choicesOf = (
   calculator: AnyCalculator,
@@ -177,15 +174,16 @@ const choicesOf = (
 /**
  * The checks a module passes once, with the result of its defaults, before a controller runs it:
  * the engine's shopping lines match the declared ones (K15; an empty list for a module with no
- * shopping slot), every figure the panel shows can be written from its hint, and the primary of
- * each unit system is one of them. The page builder replays them at build time, so a module that
- * would render a static page and die at mount fails `astro build` instead.
+ * shopping slot), every figure the panel shows can be written from its hint, and every primary
+ * (of each unit system and of each option the module names) is one of them. The page builder
+ * replays them at build time, so a module that would render a static page and die at mount fails
+ * `astro build` instead.
  */
 export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalculator>): void => {
   const { calculator, shopping } = module;
   const declared = shopping?.lines.map(({ material }) => material) ?? [];
   shoppingLinesOf(calculator.id, declared, defaults.shopping);
-  const figured = figuredOf(calculator);
+  const figured = figuredOf(module);
   for (const descriptor of figured) {
     const output = required(
       defaults.outputs.find(({ key }) => key === descriptor.key),
@@ -196,8 +194,7 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
     outputText(descriptor, output.value);
   }
   const figuredKeys = new Set(figured.map(({ key }) => key));
-  for (const system of ['imperial', 'metric'] as const) {
-    const { key } = primaryOutputOf(module, system);
+  for (const { key } of primaryOutputsOf(module)) {
     if (!figuredKeys.has(key)) fail('OUTPUT_HINT', calculator.id, key);
   }
   // the page writes only the declared messages into its template: a plan that names another
@@ -237,8 +234,7 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   const selects = calculator.inputs.flatMap((input) => (input.kind === 'select' ? [input] : []));
   const groups = choices?.groups ?? [];
   const driven: ReadonlySet<string> = new Set(groups.flatMap((group) => group.driven));
-  const figured = figuredOf(calculator);
-  const primaryOf = (system: UnitSystem) => primaryOutputOf(module, system);
+  const figured = figuredOf(module);
 
   const textAt = (state: State<Calc>, key: string): string => required(state.texts[key], 'text');
   const shownOf = (state: State<Calc>): readonly string[] =>
@@ -329,10 +325,8 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   };
 
   const panelOf = (env: Environment, moment: Moment<Calc>) => {
-    const { system, valid, result } = moment;
-    const output = primaryOf(system);
-    const name = sentenceNameOf(output);
-    const [before = '', after = ''] = message(env, name).split('{value}');
+    const { system, choices: pressed, valid, result } = moment;
+    const output = primaryOutputOf(module, system, pressed);
     const figures = Object.fromEntries(
       figured.map((descriptor) => [
         descriptor.key,
@@ -347,8 +341,10 @@ export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
             ),
       ]),
     );
+    const value = required(figures[output.key], 'figure');
+    const [before = '', after = ''] = message(env, sentenceNameOf(output, value)).split('{value}');
     return {
-      primary: { key: output.key, before, value: required(figures[output.key], 'figure'), after },
+      primary: { key: output.key, before, value, after },
       figures,
       costs: costs?.visible(valid) ?? {},
       shopping: shopping?.view(moment) ?? [],

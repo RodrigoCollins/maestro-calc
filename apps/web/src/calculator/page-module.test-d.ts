@@ -1,15 +1,17 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { describe, expectTypeOf, it } from 'vitest';
+import { countCalculator } from '../__testing__/page-fixtures.ts';
 import { concrete } from '../lib/concrete.ts';
 import { controllerOf, type Controller, type FieldView } from './controller.ts';
-import type {
-  AnyPageModule,
-  DrawingSlot,
-  Frame,
-  PageModule,
-  Ready,
-  SelectKey,
-  TextKey,
+import {
+  definePage,
+  type AnyPageModule,
+  type DrawingSlot,
+  type Frame,
+  type PageModule,
+  type Ready,
+  type SelectKey,
+  type TextKey,
 } from './page-module.ts';
 import { rectangleAreaPage } from './rectangle-area/page.ts';
 import type { Plan } from './slots/drawing.ts';
@@ -43,6 +45,34 @@ describe('the page-module types (calculator-web-core › Page-module contract, K
   it('assigns the module of each calculator to AnyPageModule', () => {
     expectTypeOf<PageModule<typeof concrete>>().toExtend<AnyPageModule>();
     expectTypeOf<PageModule<typeof rectangleArea>>().toExtend<AnyPageModule>();
+  });
+
+  // a primary per option names a select of the calculator, its options and its outputs only
+  it('types the primary of each option by the select, its options and the outputs', () => {
+    const primary = { imperial: 'total', metric: 'total' } as const;
+    const pieces = { imperial: 'pieces', metric: 'pieces' } as const;
+    definePage({
+      calculator: countCalculator,
+      primary: { ...primary, by: { select: 'mode', options: { count: pieces } } },
+    });
+    definePage({
+      calculator: countCalculator,
+      // @ts-expect-error `qty` is a count, not a select
+      primary: { ...primary, by: { select: 'qty', options: { count: pieces } } },
+    });
+    definePage({
+      calculator: countCalculator,
+      // @ts-expect-error `huge` is not an option of `mode`
+      primary: { ...primary, by: { select: 'mode', options: { huge: pieces } } },
+    });
+    definePage({
+      calculator: countCalculator,
+      primary: {
+        ...primary,
+        // @ts-expect-error `nope` is not an output
+        by: { select: 'mode', options: { count: { imperial: 'nope', metric: 'pieces' } } },
+      },
+    });
   });
 
   // K10: the erased controller keeps the keys of its own calculator at the boundary
