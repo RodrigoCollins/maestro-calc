@@ -1,3 +1,4 @@
+import { OVERTIME_STATES_SOURCES } from '../guide/overtime-states.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type {
   Example,
@@ -193,10 +194,20 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
         sources: [DLSE_FAQ, DLSE_LETTER],
       },
       {
+        id: 'state-overtime',
+        heading: 'Alaska, Nevada and Colorado: daily overtime',
+        paragraphs: [
+          'Alaska pays one and a half times the rate after 8 hours in a day or 40 in a week, for employers with 4 or more employees. Nevada pays it after 8 hours in a day only to employees paid less than 1.5 times the $12.00 state minimum, $18.00 an hour, and after 40 in a week to everyone. Colorado pays it after 12 hours in a day or 40 in a week. None of the three has double time.',
+          'These sources set the two thresholds without saying how they combine, so the calculator counts each hour once, as it does for California: the hours past the daily limit first, then the regular hours past 40. A week pays the larger of the daily and the weekly count. At $22 an hour, four 10-hour days are 32 regular and 8 overtime hours in Alaska, $968; in Nevada at $15 an hour the same days pay $660, and at $22, over the $18.00 line, $880 with no overtime; three 14-hour days in Colorado are 36 regular and 6 overtime hours, $990.',
+          'Colorado also owes overtime after 12 consecutive hours that run into the next workday. The calculator takes hours by day, not clock times, so it does not apply that part.',
+        ],
+        sources: [OVERTIME_STATES_SOURCES.dol],
+      },
+      {
         id: 'overtime-calculator',
         heading: 'The overtime calculator: hours by day',
         paragraphs: [
-          'The overtime calculator takes the hours you worked each day, Monday to Sunday, instead of clock times, and splits them with the same federal or California rule as the time card. A day can be from 0 to 24 hours, in decimals: 8.25 is 8 hours 15 minutes.',
+          'The overtime calculator takes the hours you worked each day, Monday to Sunday, instead of clock times, and splits them with the federal rule or California’s, the two rules of the time card, or with the daily rule of Alaska, Nevada or Colorado. A day can be from 0 to 24 hours, in decimals: 8.25 is 8 hours 15 minutes.',
           'It also shows your overtime rate, 1.5 times your hourly rate, and your double-time rate, 2 times it, rounded to the cent.',
         ],
         sources: [],
@@ -304,11 +315,15 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
     },
     overtimeExamplesHeading: 'Overtime calculator examples',
     overtimeExamplesLead:
-      'Each example is the hours of each day run through the overtime calculator at $22 an hour.',
+      'Each example is the hours of each day run through the overtime calculator at $22 an hour, unless it says another rate.',
     overtimeExamples: {
       'four-tens-federal': 'Federal: 10 h a day, Mon-Thu (40 h)',
       'four-tens-california': 'California: the same four 10 h days',
       'long-day-california': 'California: a 13 h Monday, then 8 h Tue-Fri',
+      'four-tens-alaska': 'Alaska: the same four 10 h days',
+      'four-tens-nevada': 'Nevada at $15 an hour: the same four 10 h days',
+      'four-tens-nevada-high': 'Nevada at $22 an hour, over the $18.00 line',
+      'long-days-colorado': 'Colorado: 14 h a day, Mon-Wed (42 h)',
     },
     overtimeCta: { label: 'Open the overtime calculator', href: '/overtime-calculator' },
     hoursExamplesHeading: 'Hours and decimal hours examples',
@@ -405,10 +420,20 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
         sources: [DLSE_FAQ, DLSE_LETTER],
       },
       {
+        id: 'state-overtime',
+        heading: 'Alaska, Nevada y Colorado: horas extra por día',
+        paragraphs: [
+          'Alaska paga una vez y media la tarifa después de 8 horas en un día o de 40 en la semana, en empleadores con 4 o más empleados. Nevada la paga después de 8 horas en un día solo a quien gana menos de 1.5 veces el mínimo estatal de $12.00, $18.00 la hora, y después de 40 en la semana a todos. Colorado la paga después de 12 horas en un día o de 40 en la semana. Ninguno de los tres tiene tiempo doble.',
+          'Estas fuentes fijan los dos límites sin decir cómo se combinan, así que la calculadora cuenta cada hora una vez, como en California: primero las horas que pasan del límite del día, después las horas regulares que pasan de 40. La semana paga la mayor de las dos cuentas. A $22 la hora, cuatro días de 10 horas son 32 horas regulares y 8 extra en Alaska, $968; en Nevada a $15 la hora los mismos días pagan $660, y a $22, por encima de la línea de $18.00, $880 sin horas extra; tres días de 14 horas en Colorado son 36 horas regulares y 6 extra, $990.',
+          'Colorado también paga horas extra después de 12 horas seguidas que pasan al siguiente día de trabajo. La calculadora toma las horas por día, no la hora de entrada y salida, así que no aplica esa parte.',
+        ],
+        sources: [OVERTIME_STATES_SOURCES.dol],
+      },
+      {
         id: 'overtime-calculator',
         heading: 'La calculadora de horas extra: horas por día',
         paragraphs: [
-          'La calculadora de horas extra toma las horas que trabajaste cada día, de lunes a domingo, en vez de la hora de entrada y salida, y las reparte con la misma regla federal o de California que la tarjeta de horas. Un día puede tener de 0 a 24 horas, con decimales: 8.25 son 8 horas y 15 minutos.',
+          'La calculadora de horas extra toma las horas que trabajaste cada día, de lunes a domingo, en vez de la hora de entrada y salida, y las reparte con la regla federal o la de California, las dos reglas de la tarjeta de horas, o con la regla por día de Alaska, Nevada o Colorado. Un día puede tener de 0 a 24 horas, con decimales: 8.25 son 8 horas y 15 minutos.',
           'También muestra tu tarifa de hora extra, 1.5 veces tu pago por hora, y tu tarifa de hora doble, 2 veces, redondeadas al centavo.',
         ],
         sources: [],
@@ -516,11 +541,15 @@ export const METHODOLOGY_TEXTS: Readonly<Record<Lang, MethodologyTexts>> = {
     },
     overtimeExamplesHeading: 'Ejemplos de la calculadora de horas extra',
     overtimeExamplesLead:
-      'Cada ejemplo son las horas de cada día pasadas por la calculadora de horas extra a $22 la hora.',
+      'Cada ejemplo son las horas de cada día pasadas por la calculadora de horas extra a $22 la hora, salvo que diga otra tarifa.',
     overtimeExamples: {
       'four-tens-federal': 'Federal: 10 h por día, lun-jue (40 h)',
       'four-tens-california': 'California: los mismos cuatro días de 10 h',
       'long-day-california': 'California: un lunes de 13 h y 8 h de mar a vie',
+      'four-tens-alaska': 'Alaska: los mismos cuatro días de 10 h',
+      'four-tens-nevada': 'Nevada a $15 la hora: los mismos cuatro días de 10 h',
+      'four-tens-nevada-high': 'Nevada a $22 la hora, por encima de la línea de $18.00',
+      'long-days-colorado': 'Colorado: 14 h por día, lun-mié (42 h)',
     },
     overtimeCta: {
       label: 'Abrir la calculadora de horas extra',

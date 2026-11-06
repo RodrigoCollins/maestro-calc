@@ -1,8 +1,19 @@
-import { addMoney, Rational, scaleMoney, type Money } from '@maestro-calc/core';
+import { addMoney, compareMoney, Rational, scaleMoney, usd, type Money } from '@maestro-calc/core';
 
-/** The overtime rules a week can be paid under. */
-export const RULES = ['federal', 'california'] as const;
+/** The overtime rules a week can be paid under; appended only, a link names one by its value. */
+export const RULES = ['federal', 'california', 'alaska', 'nevada', 'colorado'] as const;
 export type Rule = (typeof RULES)[number];
+
+/** The rules of the time card, whose form offers the federal week and California's. */
+export const TIME_CARD_RULES = ['federal', 'california'] as const;
+
+/**
+ * The Nevada minimum wage, $12.00 an hour (NRS 608.250; the DOL table "State Minimum Wage Laws",
+ * July 1, 2026). Daily overtime is owed only below 1.5 times it (NRS 608.018), $18.00. The
+ * Cuenta Horas minimum wage table holds the same figure; a test there keeps the two equal.
+ */
+export const NEVADA_MINIMUM_WAGE = usd(12);
+const NEVADA_DAILY_BELOW = scaleMoney(NEVADA_MINIMUM_WAGE, Rational.of(3, 2));
 
 /** The hours of a week split by the rate they are paid at. */
 export interface Split {
@@ -55,9 +66,44 @@ const california = (days: readonly Rational[]): Split => {
   return { regular: regular.sub(excess), overtime: overtime.add(excess), double };
 };
 
-/** The hours worked each day of a Monday-to-Sunday week, split under `rule`. */
-export const splitWeek = (rule: Rule, days: readonly Rational[]): Split =>
-  rule === 'california' ? california(days) : federal(days);
+/**
+ * Past `limit` hours in a day or 40 in the week at 1.5x, each hour counted once: the hours past
+ * `limit` each day are overtime, then the regular hours past 40 become overtime, so the week pays
+ * the greater of the daily and the weekly count. No double time and no seventh-day rule.
+ */
+const daily =
+  (limit: Rational) =>
+  (days: readonly Rational[]): Split => {
+    const regular = sum(days.map((hours) => min(hours, limit)));
+    const overtime = sum(days.map((hours) => max(hours.sub(limit), ZERO)));
+    const excess = max(regular.sub(H40), ZERO);
+    return { regular: regular.sub(excess), overtime: overtime.add(excess), double: ZERO };
+  };
+
+/** Alaska (AS 23.10.060), and Nevada below its line (NRS 608.018): past 8 h a day or 40 a week. */
+const pastEight = daily(H8);
+/** Colorado (DOL table, COMPS Order #39): past 12 h a day or 40 h a week. */
+const colorado = daily(H12);
+
+/**
+ * The hours worked each day of a Monday-to-Sunday week at an hourly `rate`, split under `rule`.
+ * Nevada (NRS 608.018) pays past 8 h a day only below 1.5 times its minimum wage, and past 40 h
+ * a week at any rate.
+ */
+export const splitWeek = (rule: Rule, days: readonly Rational[], rate: Money): Split => {
+  switch (rule) {
+    case 'california':
+      return california(days);
+    case 'alaska':
+      return pastEight(days);
+    case 'colorado':
+      return colorado(days);
+    case 'nevada':
+      return compareMoney(rate, NEVADA_DAILY_BELOW) < 0 ? pastEight(days) : federal(days);
+    case 'federal':
+      return federal(days);
+  }
+};
 
 /** The pay of a split week at an hourly `rate`: regular at 1x, overtime at 1.5x, double at 2x. */
 export const payOf = (

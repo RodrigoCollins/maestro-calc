@@ -272,7 +272,14 @@ export const tippedFiguresOf = (example: TippedExample): TippedFigures => {
 
 /** A worked example of the overtime calculator: the hours of each day, every other day off. */
 export interface OvertimeExample {
-  readonly id: 'four-tens-federal' | 'four-tens-california' | 'long-day-california';
+  readonly id:
+    | 'four-tens-federal'
+    | 'four-tens-california'
+    | 'long-day-california'
+    | 'four-tens-alaska'
+    | 'four-tens-nevada'
+    | 'four-tens-nevada-high'
+    | 'long-days-colorado';
   readonly inputs: Readonly<Record<string, string>>;
 }
 
@@ -285,6 +292,13 @@ export const OVERTIME_EXAMPLES: readonly OvertimeExample[] = [
   {
     id: 'long-day-california',
     inputs: { ...OFF, rule: 'california', mon: '13', tue: '8', wed: '8', thu: '8', fri: '8' },
+  },
+  { id: 'four-tens-alaska', inputs: { ...FOUR_TENS, rule: 'alaska' } },
+  { id: 'four-tens-nevada', inputs: { ...FOUR_TENS, rule: 'nevada', rate: '15' } },
+  { id: 'four-tens-nevada-high', inputs: { ...FOUR_TENS, rule: 'nevada' } },
+  {
+    id: 'long-days-colorado',
+    inputs: { ...OFF, rule: 'colorado', mon: '14', tue: '14', wed: '14' },
   },
 ];
 

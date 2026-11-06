@@ -124,6 +124,13 @@ const OVERTIME_HAND = {
   'four-tens-federal': { regular: '40', overtime: '0', double: '0', pay: '$880.00' },
   'four-tens-california': { regular: '32', overtime: '8', double: '0', pay: '$968.00' },
   'long-day-california': { regular: '40', overtime: '4', double: '1', pay: '$1,056.00' },
+  // Alaska, past 8 a day: the same 32 + 8 as California, $968; Nevada below $18.00, at $15:
+  // 32 x 15 + 8 x 22.50 = $660; Nevada at $22, at or over $18.00: by the week alone, $880;
+  // Colorado, three 14 h days past 12 a day: 36 x 22 + 6 x 33 = $990.
+  'four-tens-alaska': { regular: '32', overtime: '8', double: '0', pay: '$968.00' },
+  'four-tens-nevada': { regular: '32', overtime: '8', double: '0', pay: '$660.00' },
+  'four-tens-nevada-high': { regular: '40', overtime: '0', double: '0', pay: '$880.00' },
+  'long-days-colorado': { regular: '36', overtime: '6', double: '0', pay: '$990.00' },
 } as const;
 
 // The hours calculator and the decimal hours converter, verified by hand: 9:00 to 17:30 less 30 min

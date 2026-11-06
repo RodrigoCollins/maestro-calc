@@ -41,7 +41,7 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
         id: 'what',
         heading: 'What the site does',
         paragraphs: [
-          'Cuenta Horas adds up the hours on a time card, applies federal and California overtime, converts hourly pay to a yearly salary and back, and estimates the federal deductions for tips and overtime. Each calculator shows the figure and how it got there.',
+          'Cuenta Horas adds up the hours on a time card, applies federal overtime and the daily rules of California, Alaska, Nevada and Colorado, converts hourly pay to a yearly salary and back, and estimates the federal deductions for tips and overtime. Each calculator shows the figure and how it got there.',
         ],
       },
       {
@@ -95,7 +95,7 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
         id: 'que-hace',
         heading: 'Qué hace el sitio',
         paragraphs: [
-          'Cuenta Horas suma las horas de una tarjeta de tiempo, aplica las horas extra federales y de California, convierte el pago por hora en sueldo anual y al revés, y estima las deducciones federales por propinas y horas extra. Cada calculadora muestra el resultado y cómo se llegó a él.',
+          'Cuenta Horas suma las horas de una tarjeta de tiempo, aplica las horas extra federales y las reglas por día de California, Alaska, Nevada y Colorado, convierte el pago por hora en sueldo anual y al revés, y estima las deducciones federales por propinas y horas extra. Cada calculadora muestra el resultado y cómo se llegó a él.',
         ],
       },
       {

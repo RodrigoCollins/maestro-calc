@@ -1,5 +1,5 @@
 import { encode, subMoney, type Money } from '@maestro-calc/core';
-import { overtime } from '@maestro-calc/pay-core/overtime';
+import { overtime, RULES, type Rule } from '@maestro-calc/pay-core/overtime';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
 import { DATA_PAGES, dayText } from '../data/pages.ts';
@@ -128,12 +128,24 @@ const dollarsOf = (cents: number): string => (cents / 100).toFixed(2);
 /** `$676.00` stays whole in a figure; `$676` reads better in a sentence. */
 const short = (text: string): string => text.replace(/\.00$/, '');
 
-/** The overtime engine's rule for the state: the California rule there, the FLSA elsewhere. */
-const engineRuleOf = (facts: StateFacts): 'federal' | 'california' =>
-  facts.slug.en === 'california' ? 'california' : 'federal';
+/** The states whose daily rule the engine counts by a rule of its own, named by the state. */
+const DAILY_RULES: readonly string[] = RULES.filter((rule) => rule !== 'federal');
+
+/**
+ * The overtime engine's rule for the state: its own rule where the overtime table gives it a
+ * daily threshold (the build stops on a daily state the engine has no rule for), the FLSA
+ * elsewhere.
+ */
+const engineRuleOf = (facts: StateFacts): Rule => {
+  if (facts.overtime.daily === undefined) return 'federal';
+  const rule = RULES.find((each) => each === facts.slug.en);
+  if (rule === undefined || !DAILY_RULES.includes(rule))
+    throw new Error(`no overtime rule for ${facts.slug.en}`);
+  return rule;
+};
 
 /** A Monday-to-Friday week of `day` hours each at `cents` an hour, as the overtime engine takes it. */
-const weekOf = (cents: number, rule: 'federal' | 'california', day: number) => {
+const weekOf = (cents: number, rule: Rule, day: number) => {
   const hours = String(day);
   return {
     rate: dollarsOf(cents),
@@ -250,8 +262,12 @@ const WORDS = {
     overtimeLink: 'Open this week in the overtime calculator',
     annualLink: 'Open it in the hourly to salary calculator',
     tippedLink: 'Open these 30 hours in the tipped wage calculator',
-    dailyNote: (name: string, daily: number) =>
-      `The overtime calculator applies the federal rule and California’s. For these 9-hour days, ${name}’s daily rule after ${String(daily)} hours owes no more overtime, but the calculator will not apply that daily rule to a longer day you enter.`,
+    countNote: (name: string) =>
+      `The overtime calculator opens on ${name}’s rule. Its sources set the daily and the weekly threshold without saying how they combine; the calculator counts each hour once, daily overtime first and then the regular hours over 40, so a week pays the larger of the two counts.`,
+    nevadaNote: (line: string) =>
+      `The daily rule covers employees paid less than ${line} an hour, 1.5 times the state minimum; from ${line}, the calculator owes overtime only after 40 hours a week.`,
+    coloradoNote:
+      'Colorado also owes overtime after 12 consecutive hours that run into the next workday. The calculator takes hours by day, so it does not apply that part; the Colorado Department of Labor and Employment has the rule.',
     outsideNote: (name: string, weekly: number) =>
       `These weeks follow the federal 40-hour rule, which covers most workers in ${name}; the state’s ${String(weekly)}-hour rule applies only to work the FLSA does not cover.`,
     labels: { sources: 'Sources', checked: 'Checked', table: 'The full table' },
@@ -322,8 +338,12 @@ const WORDS = {
     overtimeLink: 'Abre esta semana en la calculadora de horas extra',
     annualLink: 'Ábrelo en la calculadora de pago por hora a sueldo anual',
     tippedLink: 'Abre estas 30 horas en la calculadora de propinas por hora',
-    dailyNote: (name: string, daily: number) =>
-      `La calculadora de horas extra aplica la regla federal y la de California. Con estos días de 9 horas, la regla por día de ${name} después de ${String(daily)} horas no suma más horas extra, pero la calculadora no aplicará esa regla por día a un día más largo que anotes.`,
+    countNote: (name: string) =>
+      `La calculadora de horas extra se abre con la regla de ${name}. Sus fuentes fijan el límite por día y el semanal sin decir cómo se combinan; la calculadora cuenta cada hora una vez, primero las extra del día y después las horas regulares que pasan de 40, así que la semana paga la mayor de las dos cuentas.`,
+    nevadaNote: (line: string) =>
+      `La regla por día cubre a quien gana menos de ${line} la hora, 1.5 veces el mínimo estatal; desde ${line}, la calculadora paga horas extra solo después de 40 horas a la semana.`,
+    coloradoNote:
+      'Colorado también paga horas extra después de 12 horas seguidas que pasan al siguiente día de trabajo. La calculadora toma las horas por día, así que no aplica esa parte; el Departamento de Trabajo y Empleo de Colorado tiene la regla.',
     outsideNote: (name: string, weekly: number) =>
       `Estas semanas siguen la regla federal de 40 horas, que cubre a la mayoría de los trabajadores en ${name}; la regla estatal de ${String(weekly)} horas solo se aplica al trabajo que la FLSA no cubre.`,
     labels: { sources: 'Fuentes', checked: 'Revisado el', table: 'La tabla completa' },
@@ -446,9 +466,12 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
   };
   const tippedHref = `${TIPPED_PATHS[lang]}?${encode(tippedWage, valid(tippedWage.validate(tippedWeek), TIPPED_PATHS[lang]))}`;
   const name = nameIn(facts, lang);
-  const daily = facts.overtime.daily;
   const notes = [
-    ...(daily !== undefined && rule === 'federal' ? [w.dailyNote(capital(name), daily)] : []),
+    // California's way of counting is the Labor Commissioner's; the other daily states' sources
+    // name the thresholds only
+    ...(rule === 'federal' || rule === 'california' ? [] : [w.countNote(name)]),
+    ...(rule === 'nevada' ? [w.nevadaNote(centsText((facts.minimum.wage * 3) / 2))] : []),
+    ...(rule === 'colorado' ? [w.coloradoNote] : []),
     ...(outsideFlsa(facts.overtime) ? [w.outsideNote(name, facts.overtime.weekly)] : []),
   ];
   return {
