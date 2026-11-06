@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { dataCards } from '../data/pages.ts';
+import { statesIndexOf } from '../states/pages.ts';
 import { jsonLdOf } from './json-ld.ts';
 
 const page = { title: 'Time Card Calculator | Cuenta Horas', description: 'Add up your hours.' };
@@ -72,6 +73,28 @@ describe('jsonLdOf', () => {
       },
     });
     expect(breadcrumb?.['@type']).toBe('BreadcrumbList');
+  });
+
+  it('describes the state index as a CollectionPage of every state page, by name', () => {
+    const index = statesIndexOf('es');
+    const route = { id: 'states', kind: 'collection', ...index.paths } as const;
+    const [collection] = (
+      JSON.parse(jsonLdOf(route, 'es', index, ORIGIN)) as { '@graph': Record<string, unknown>[] }
+    )['@graph'];
+    expect(collection?.['mainEntity']).toEqual({
+      '@type': 'ItemList',
+      itemListElement: index.items.map(({ name, href }, at) => ({
+        '@type': 'ListItem',
+        position: at + 1,
+        name,
+        url: `https://cuentahoras.com${href}`,
+      })),
+    });
+  });
+
+  it('refuses a collection it has no list for', () => {
+    const route = { id: 'nothing', kind: 'collection', en: '/n', es: '/es/n' } as const;
+    expect(() => jsonLdOf(route, 'en', page, ORIGIN)).toThrow(/no list/);
   });
 
   it('describes the home as the web site, with no breadcrumb', () => {

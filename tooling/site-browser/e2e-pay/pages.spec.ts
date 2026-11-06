@@ -60,7 +60,7 @@ for (const { path, lang } of PAGES) {
       ) as LdNode & { '@graph'?: LdNode[] };
       // a home is one WebSite node; every other page leads a @graph its BreadcrumbList follows
       const data = document['@graph']?.[0] ?? document;
-      expect(['WebSite', 'WebApplication', 'Article']).toContain(data['@type']);
+      expect(['WebSite', 'WebApplication', 'Article', 'CollectionPage']).toContain(data['@type']);
       expect(data.url).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
       await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     });

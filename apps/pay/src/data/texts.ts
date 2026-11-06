@@ -18,6 +18,8 @@ export interface DataTexts {
   readonly linkLabel: string;
   /** The line a table ends with, linking this page. */
   readonly indexLabel: string;
+  /** The words before the link to the state pages, the same figures one state at a time. */
+  readonly statesLine: string;
 }
 
 export const DATA_TEXTS: Readonly<Record<Lang, DataTexts>> = {
@@ -35,6 +37,7 @@ export const DATA_TEXTS: Readonly<Record<Lang, DataTexts>> = {
     },
     linkLabel: 'Data and tables',
     indexLabel: 'Every table and its sources: data and tables',
+    statesLine: 'The same figures one state at a time, with worked examples:',
   },
   es: {
     title: 'Datos de pago por estado para citar | Cuenta Horas',
@@ -50,5 +53,6 @@ export const DATA_TEXTS: Readonly<Record<Lang, DataTexts>> = {
     },
     linkLabel: 'Datos y tablas',
     indexLabel: 'Todas las tablas y sus fuentes: datos y tablas',
+    statesLine: 'Las mismas cifras estado por estado, con ejemplos:',
   },
 };

@@ -8,6 +8,8 @@ import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, type Parent } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
+import { STATES_INDEX_PATHS } from '../states/routes.ts';
+import { statesIndexOf } from '../states/pages.ts';
 import '../styles/site.css';
 
 interface Props {
@@ -145,6 +147,7 @@ const embedLink =
           <a href={about.href}>{about.label}</a>
           <a href={embedLink.href}>{embedLink.label}</a>
           <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].linkLabel}</a>
+          <a href={STATES_INDEX_PATHS[lang]}>{statesIndexOf(lang).linkLabel}</a>
         </div>
       </footer>
     )}

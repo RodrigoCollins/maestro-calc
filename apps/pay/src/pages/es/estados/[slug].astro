@@ -1,0 +1,13 @@
+---
+import StatePage from '../../../components/StatePage.astro';
+import { STATE_FACTS, type StateFacts } from '../../../states/pages.ts';
+
+export const getStaticPaths = () =>
+  STATE_FACTS.map((facts) => ({ params: { slug: facts.slug.es }, props: { facts } }));
+
+interface Props {
+  readonly facts: StateFacts;
+}
+---
+
+<StatePage lang="es" facts={Astro.props.facts} />

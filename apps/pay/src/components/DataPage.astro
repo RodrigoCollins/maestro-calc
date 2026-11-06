@@ -2,6 +2,7 @@
 import { dataCards } from '../data/pages.ts';
 import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { statesIndexOf } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -17,6 +18,7 @@ interface Props {
 const { lang } = Astro.props;
 const t = DATA_TEXTS[lang];
 const cards = dataCards(lang);
+const states = statesIndexOf(lang);
 ---
 
 <SiteLayout
@@ -42,6 +44,9 @@ const cards = dataCards(lang);
         </li>
       ))}
     </ul>
+    <p>
+      {t.statesLine} <a href={states.paths[lang]}>{states.h1}</a>
+    </p>
 
     <section aria-labelledby="press">
       <h2 id="press">{t.press.heading}</h2>

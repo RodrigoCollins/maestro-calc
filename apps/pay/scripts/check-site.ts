@@ -19,6 +19,8 @@ import {
   HUBS,
   LONG_TAIL_RULES,
   SITEMAP_PATHS,
+  STATE_RULES,
+  STATE_RULES_OF_TABLES,
 } from '../src/site-check/link-rules.ts';
 import { inboundOf, linkProblems } from '../src/site-check/links.ts';
 import { siteSeoProblems } from '../src/site-check/seo.ts';
@@ -59,7 +61,7 @@ const all = [
     origin: SITE.origin,
     pages: sitemapPages,
     longTail: LONG_TAIL_RULES,
-    guides: [...GUIDE_RULES, ...DATA_RULES],
+    guides: [...GUIDE_RULES, ...DATA_RULES, ...STATE_RULES, ...STATE_RULES_OF_TABLES],
     hubs: HUBS,
   }),
   ...EMBEDS.flatMap(({ path, page, other }) => {

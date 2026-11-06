@@ -1,0 +1,75 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { statesIndexOf } from '../states/pages.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+/* The index of the state pages: every state and DC with its figures in a line, then the tables. */
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const index = statesIndexOf(lang);
+---
+
+<SiteLayout
+  lang={lang}
+  title={index.title}
+  description={index.description}
+  paths={index.paths}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <div>
+      <p class="kicker">{index.kicker}</p>
+      <h1>{index.h1}</h1>
+    </div>
+    <p class="lead">{index.lead}</p>
+
+    <ul class="link-list state-list" role="list">
+      {index.items.map((item) => (
+        <li>
+          <a href={item.href}>{item.name}</a>
+          <span>{item.summary}</span>
+        </li>
+      ))}
+    </ul>
+
+    <section aria-labelledby="tables">
+      <h2 id="tables">{index.tablesHeading}</h2>
+      <ul class="link-list" role="list">
+        {index.tables.map((table) => (
+          <li>
+            <a href={table.href}>{table.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>
+
+<style>
+  .state-list {
+    padding: 0;
+    list-style: none;
+  }
+
+  .state-list li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+    align-items: baseline;
+  }
+
+  .state-list a {
+    font-weight: 700;
+  }
+
+  .state-list span {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+</style>

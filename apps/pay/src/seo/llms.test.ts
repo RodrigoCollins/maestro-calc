@@ -3,6 +3,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { describe, expect, it } from 'vitest';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
 import { ROUTES } from '../routes.ts';
+import { STATE_ROUTES } from '../states/routes.ts';
 import { SITE } from '../site.config.ts';
 import { LLMS_PAGES, llmsTxt } from './llms.ts';
 
@@ -34,10 +35,28 @@ describe('llms.txt', () => {
     expect(headings).toEqual([
       '## Calculators',
       '## Guides',
+      '## Laws by state',
       '## En español: calculadoras',
       '## En español: guías',
+      '## En español: leyes por estado',
       '## Optional',
     ]);
+  });
+
+  it('lists every state page under the laws by state of its language', () => {
+    const sectionOf = (heading: string): string[] => {
+      const start = lines.indexOf(heading);
+      const end = lines.findIndex((line, at) => at > start && line.startsWith('## '));
+      return lines.slice(start + 1, end);
+    };
+    const urls = (heading: string): string[] =>
+      sectionOf(heading).flatMap((line) => LINK.exec(line)?.[2] ?? []);
+    expect(urls('## Laws by state')).toEqual(
+      STATE_ROUTES.map(({ en }) => canonicalUrl(en, SITE.origin)),
+    );
+    expect(urls('## En español: leyes por estado')).toEqual(
+      STATE_ROUTES.map(({ es }) => canonicalUrl(es, SITE.origin)),
+    );
   });
 
   it('links every calculator and article of the route table, in both languages, once', () => {
