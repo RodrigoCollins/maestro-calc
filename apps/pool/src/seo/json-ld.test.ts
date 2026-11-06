@@ -82,8 +82,8 @@ describe('jsonLdOf', () => {
     const guide = { title: 'Opening your pool | Pool Figures', description: 'Steps.' };
     for (const path of ['/opening-your-pool', '/es/como-abrir-tu-piscina']) {
       const node = JSON.parse(jsonLdOf(path, guide, ORIGIN)) as Record<string, unknown>;
-      expect(node.author, path).toEqual(team);
-      expect(node.publisher, path).toEqual(team);
+      expect(node['author'], path).toEqual(team);
+      expect(node['publisher'], path).toEqual(team);
     }
   });
 
