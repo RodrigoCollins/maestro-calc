@@ -128,6 +128,43 @@ export const guideJsonLd = (
   };
 };
 
+/** What the structured data of an index page needs: its id, its h1, its description and its items. */
+export interface CollectionPage {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  /** The pages it lists, in order, each by its page id and the name the index shows. */
+  readonly items: readonly Crumb[];
+}
+
+/**
+ * The structured data of an index page (the data and charts index): a `CollectionPage` published
+ * by the organization, whose `ItemList` is every page it links, each at its canonical. No
+ * breadcrumb: a page that is neither a calculator, a guide nor a job declares none.
+ */
+export const collectionJsonLd = (
+  { id, name, description, items }: CollectionPage,
+  locale: Locale,
+  routes: RouteTable = ROUTES,
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name,
+  description,
+  url: urlOf(pathOf(id, locale, routes)),
+  inLanguage: LOCALE_TAGS[locale],
+  publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: SITE.name, url: SITE.url },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: urlOf(pathOf(item.id, locale, routes)),
+    })),
+  },
+});
+
 /** What the `Dataset` of a reference chart needs beyond the page: see `isChartJob`. */
 export interface JobDataset {
   /** The description of the page: its `page.<id>.description`. */

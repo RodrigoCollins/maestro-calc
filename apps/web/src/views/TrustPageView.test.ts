@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readEntries } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { chartCards } from '../lib/charts-index.ts';
 import { LOCALE_TAGS, LOCALES, ROUTES, urlOf, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { templateOf } from '../routing/templates.ts';
@@ -110,5 +111,36 @@ describe('TrustPageView guide header and index (guides)', () => {
     ).toEqual(ids);
     const about = await render({ id: 'about', locale: 'en' });
     expect(about.querySelector('.guide-toc, .guide-kicker')).toBeNull();
+  });
+});
+
+// the data and charts index declares a CollectionPage of every chart; no other trust page does
+describe('TrustPageView data and charts index (structured data)', () => {
+  const scriptsOf = async (page: { id: PageId; locale: 'en' | 'es' }) =>
+    (await render(page)).querySelectorAll('script[type="application/ld+json"]');
+
+  it.each(LOCALES)('declares the index a CollectionPage of every chart in %s', async (locale) => {
+    const document = await render({ id: 'charts', locale });
+    const [script] = document.querySelectorAll('script[type="application/ld+json"]');
+    const data = JSON.parse(script?.text ?? '{}') as {
+      '@type': string;
+      name: string;
+      url: string;
+      mainEntity: { itemListElement: { url: string; name: string }[] };
+    };
+    expect(data['@type']).toBe('CollectionPage');
+    // an index is no article: only a guide is an Open Graph article
+    expect(document.querySelector('meta[property="og:type"]')?.getAttribute('content')).not.toBe(
+      'article',
+    );
+    expect(data.name).toBe(document.querySelector('main h1')?.text.trim());
+    expect(data.url).toBe(urlOf(pathOf('charts', locale)));
+    expect(data.mainEntity.itemListElement.map(({ url }) => url)).toEqual(
+      chartCards(locale).map(({ href }) => urlOf(href)),
+    );
+  });
+
+  it('declares no structured data on a page that is neither a guide nor an index', async () => {
+    expect(await scriptsOf({ id: 'about', locale: 'en' })).toHaveLength(0);
   });
 });

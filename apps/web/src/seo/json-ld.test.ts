@@ -3,6 +3,7 @@ import { siteText } from '../lib/site-text.ts';
 import { ROUTES } from '../routing/routes.ts';
 import {
   calculatorJsonLd,
+  collectionJsonLd,
   guideJsonLd,
   homeJsonLd,
   jobJsonLd,
@@ -322,6 +323,51 @@ describe('calculator structured data (site-seo › [SE19], [SE20] builder side)'
           ],
         },
       ],
+    });
+  });
+});
+
+// the data and charts index: a CollectionPage whose ItemList is every chart it links
+describe('collection page structured data (the data and charts index)', () => {
+  it('describes the index as a CollectionPage of its charts, in its language', () => {
+    expect(
+      collectionJsonLd(
+        {
+          id: 'charts',
+          name: 'Datos y tablas',
+          description: 'Las tablas de referencia.',
+          items: [
+            { id: 'roof-pitch-chart', name: 'Tabla de pendientes' },
+            { id: 'concrete-slab-chart', name: 'Tabla de losas' },
+          ],
+        },
+        'es',
+      ),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Datos y tablas',
+      description: 'Las tablas de referencia.',
+      url: 'https://maestrocalc.com/es/tablas',
+      inLanguage: 'es-US',
+      publisher: organization,
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Tabla de pendientes',
+            url: 'https://maestrocalc.com/es/techos/tabla-de-pendientes-de-techo',
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Tabla de losas',
+            url: 'https://maestrocalc.com/es/concreto/tabla-de-losas',
+          },
+        ],
+      },
     });
   });
 });

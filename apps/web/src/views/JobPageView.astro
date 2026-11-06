@@ -175,6 +175,9 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
         <h2>{text('site.job.chart.cite')}</h2>
         <p>{text('site.job.chart.citeLead')}</p>
         <p class="job-cite">{chart.citation}</p>
+        <p>
+          <a href={pathOf('charts', locale)}>{text('site.job.chart.index')}</a>
+        </p>
       </>
     )}
     <GuideCta label={text('site.guide.cta')} href={view.cta} name={view.calculatorName} />

@@ -13,6 +13,7 @@ export const enSite = {
   'site.footer.embed-calculators': 'Embed our calculators',
   'site.footer.glossary': 'Construction glossary',
   'site.footer.guides': 'All guides',
+  'site.footer.charts': 'Data and charts',
   'site.glossary.term': 'English',
   'site.glossary.other': 'Spanish',
   'site.glossary.definition': 'What it means',
@@ -66,6 +67,12 @@ export const enSite = {
   'site.job.chart.cite': 'Cite this chart',
   'site.job.chart.citeLead': 'To link to this chart or quote its figures, use its address:',
   'site.job.more': 'More jobs',
+  'site.job.chart.index': 'Every chart and its sources: data and charts',
+  'site.charts.checked': 'Checked',
+  'site.charts.sources': 'Sources from',
+  'site.charts.press.heading': 'For journalists and bloggers',
+  'site.charts.press.text':
+    'The figures on these charts are free to cite and republish with a link to the chart they come from. Each chart ends with the line to cite it by. For a question about a figure, a source or the method, write to press@maestrocalc.com.',
   'site.hub.more': 'More tools:',
   'site.guides.business': 'The business',
   'site.guide.links': 'Learn more in our guides',
@@ -178,6 +185,9 @@ export const enSite = {
   'page.guides.title': 'Guides for the Job, by Trade | Maestro Calc',
   'page.guides.description':
     'Every Maestro Calc guide by trade: concrete, roofing, drywall, landscaping, measurement, painting and the business, each ending in its calculator.',
+  'page.charts.title': 'Data and Charts You Can Cite | Maestro Calc',
+  'page.charts.description':
+    'Every Maestro Calc reference chart: concrete slabs, roof pitch and cubic yard weights, each with its sources, the day it was checked and how to cite it.',
   'page.guide-concrete-bags-or-truck.title': 'Concrete in Bags or From a Truck? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'When bags of concrete mix beat a ready-mix truck and when they do not: what a cubic yard is in bags, short-load charges and how to compare.',

@@ -16,6 +16,7 @@ export const esSite = {
   'site.footer.embed-calculators': 'Calculadoras para tu sitio',
   'site.footer.glossary': 'Glosario de obra',
   'site.footer.guides': 'Todas las guías',
+  'site.footer.charts': 'Datos y tablas',
   'site.glossary.term': 'Español',
   'site.glossary.other': 'Inglés',
   'site.glossary.definition': 'Qué significa',
@@ -69,6 +70,12 @@ export const esSite = {
   'site.job.chart.cite': 'Cita esta tabla',
   'site.job.chart.citeLead': 'Para enlazar esta tabla o citar sus cifras, usa su dirección:',
   'site.job.more': 'Más trabajos',
+  'site.job.chart.index': 'Todas las tablas y sus fuentes: datos y tablas',
+  'site.charts.checked': 'Revisada el',
+  'site.charts.sources': 'Fuentes de',
+  'site.charts.press.heading': 'Para periodistas y blogueros',
+  'site.charts.press.text':
+    'Puedes citar y reproducir las cifras de estas tablas gratis, con un enlace a la tabla de donde salen. Cada tabla termina con la línea para citarla. Si tienes una pregunta sobre una cifra, una fuente o el método, escribe a press@maestrocalc.com.',
   'site.hub.more': 'Más herramientas:',
   'site.guides.business': 'El negocio',
   'site.guide.links': 'Aprende más en nuestras guías',
@@ -184,6 +191,9 @@ export const esSite = {
   'page.guides.title': 'Guías para la obra, por oficio | Maestro Calc',
   'page.guides.description':
     'Todas las guías de Maestro Calc por oficio: concreto, techos, drywall, jardinería, medidas, pintura y el negocio, cada una con su calculadora.',
+  'page.charts.title': 'Datos y tablas para citar | Maestro Calc',
+  'page.charts.description':
+    'Las tablas de referencia de Maestro Calc: losas de concreto, pendientes de techo y peso por yarda cúbica, con sus fuentes, su fecha y cómo citarlas.',
   'page.guide-concrete-bags-or-truck.title': '¿Concreto en bolsas o en camión? | Maestro Calc',
   'page.guide-concrete-bags-or-truck.description':
     'Cuándo conviene comprar bolsas de mezcla para concreto y cuándo un camión de premezclado: una yarda cúbica en bolsas, cargos por carga chica y cómo comparar.',

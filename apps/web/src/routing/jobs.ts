@@ -493,6 +493,14 @@ export const isChartJob = (id: string): boolean => isJobPage(id) && isChartId(id
 /** The job ids, in table order. */
 export const JOB_IDS: readonly JobId[] = Object.keys(JOBS).filter(isJobPage);
 
+/** A reference chart: a job whose id ends in `-chart`. */
+export type ChartId = Extract<JobId, `${string}-chart`>;
+
+const isChart = (id: JobId): id is ChartId => isChartId(id);
+
+/** The reference charts, in table order: the data and charts index lists them. */
+export const CHART_IDS: readonly ChartId[] = JOB_IDS.filter(isChart);
+
 /** The jobs a calculator page works out, in table order: its hub lists them. */
 export const jobsOf = (calculator: CalculatorPageId): JobId[] =>
   JOB_IDS.filter((id) => JOBS[id].calculator === calculator);

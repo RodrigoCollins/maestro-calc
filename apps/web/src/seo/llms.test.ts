@@ -42,8 +42,9 @@ describe('llms.txt (llmstxt.org, derived from the route table)', () => {
 
   it('lists every calculator, chart, guide and hub in English, each once, in table order', () => {
     expect(sectionOf('Calculators')).toEqual(CALCULATOR_PAGES.map((id) => itemOf(id, 'en')));
+    // the data and charts index first, then each chart
     expect(sectionOf('Reference charts')).toEqual(
-      JOB_IDS.filter(isChartJob).map((id) => itemOf(id, 'en')),
+      (['charts', ...JOB_IDS.filter(isChartJob)] as const).map((id) => itemOf(id, 'en')),
     );
     expect(sectionOf('Guides')).toEqual(GUIDE_IDS.map((id) => itemOf(id, 'en')));
     expect(sectionOf('Trades')).toEqual(HUB_IDS.map((id) => itemOf(id, 'en')));
@@ -56,8 +57,8 @@ describe('llms.txt (llmstxt.org, derived from the route table)', () => {
 
   it('lists the Spanish calculators, charts and guides, and every other job as optional', () => {
     expect(sectionOf('Español')).toEqual(
-      [...CALCULATOR_PAGES, ...JOB_IDS.filter(isChartJob), ...GUIDE_IDS].map((id) =>
-        itemOf(id, 'es'),
+      [...CALCULATOR_PAGES, 'charts' as const, ...JOB_IDS.filter(isChartJob), ...GUIDE_IDS].map(
+        (id) => itemOf(id, 'es'),
       ),
     );
     expect(sectionOf('Optional')).toEqual(

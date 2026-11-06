@@ -32,7 +32,8 @@ const sectionOf = (heading: string, ids: readonly PageId[], locale: Locale): str
 
 /** The body of `/llms.txt`. */
 export const llmsTxt = (): string => {
-  const charts = JOB_IDS.filter(isChartJob);
+  // the data and charts index first, then each chart
+  const charts = ['charts' as const, ...JOB_IDS.filter(isChartJob)];
   const jobs = JOB_IDS.filter((id) => !isChartJob(id));
   return `${[
     `# ${SITE.name}`,
