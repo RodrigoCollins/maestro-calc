@@ -167,13 +167,36 @@ describe('the overtime laws by state', () => {
     expect(named('California').doubleTime?.en).toMatch(/12/);
     expect(named('Nevada').notes?.en).toMatch(/1\.5 times/);
     expect(named('Alaska').notes?.en).toMatch(/4 or more/);
+    expect(named('Nevada').notes?.es).toMatch(/1\.5 veces el salario mínimo/);
+  });
+
+  it('notes the industry and consecutive-hour rules the daily column leaves out', () => {
+    const oregon = named('Oregon');
+    expect(oregon.daily).toBeUndefined();
+    expect(oregon.notesSource).toBe('or');
+    for (const text of [oregon.notes?.en, oregon.notes?.es]) {
+      expect(text).toMatch(/10 h/);
+      expect(text).toMatch(/ORS 652\.020/);
+      expect(text).toMatch(/ORS 653\.265/);
+    }
+    expect(oregon.notes?.en).toMatch(/manufacturing/);
+    expect(oregon.notes?.es).toMatch(/manufactura/);
+    expect(OVERTIME_STATES_SOURCES.or.label).toMatch(/checked November 5, 2026/);
+
+    const colorado = named('Colorado');
+    expect(colorado.daily).toBe(12);
+    expect(colorado.notesSource).toBe('co');
+    expect(colorado.notes?.en).toMatch(/COMPS Order #39.*consecutive hours.*CDLE/);
+    expect(colorado.notes?.es).toMatch(/COMPS Order #39.*horas seguidas.*CDLE/);
   });
 
   it('cites a government source for every row, with a link and the date it was checked', () => {
-    for (const { name, source } of OVERTIME_STATES) {
-      expect(OVERTIME_STATES_SOURCES[source].href, name.en).toMatch(
-        /^https:\/\/(www\.dol\.gov|www\.dir\.ca\.gov|labor\.alaska\.gov|www\.revisor\.mn\.gov|www\.kslegislature\.gov)\//,
-      );
+    for (const { name, source, notesSource } of OVERTIME_STATES) {
+      for (const key of notesSource === undefined ? [source] : [source, notesSource]) {
+        expect(OVERTIME_STATES_SOURCES[key].href, name.en).toMatch(
+          /^https:\/\/(www\.dol\.gov|www\.dir\.ca\.gov|labor\.alaska\.gov|www\.revisor\.mn\.gov|www\.kslegislature\.gov|www\.oregon\.gov\/boli|cdle\.colorado\.gov)\//,
+        );
+      }
     }
     expect(named('California').source).toBe('ca');
     expect(named('Alaska').source).toBe('ak');

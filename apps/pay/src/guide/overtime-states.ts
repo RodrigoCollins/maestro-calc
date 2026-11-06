@@ -29,6 +29,15 @@ export const OVERTIME_STATES_SOURCES = {
     label: 'Kansas Statutes, K.S.A. 44-1204 (overtime after 46 hours)',
     href: 'https://www.kslegislature.gov/li/b2025_26/statute/044_000_0000_chapter/044_012_0000_article/044_012_0004_section/044_012_0004_k/',
   },
+  or: {
+    label:
+      'Oregon Bureau of Labor and Industries (BOLI), Daily overtime: manufacturing and canneries (ORS 652.020, ORS 653.265; checked November 5, 2026)',
+    href: 'https://www.oregon.gov/boli/employers/pages/overtime-manufacturing-and-canneries.aspx',
+  },
+  co: {
+    label: 'Colorado Department of Labor and Employment (CDLE), Overtime (COMPS Order #39)',
+    href: 'https://cdle.colorado.gov/dlss-home-page/wage-and-hour-law/overtime',
+  },
 } as const satisfies Readonly<Record<string, GuideSource>>;
 
 type Words = Readonly<Record<Lang, string>>;
@@ -45,6 +54,8 @@ export interface OvertimeState {
   readonly doubleTime?: Words;
   readonly seventhDay?: Words;
   readonly notes?: Words;
+  /** The source of the note when it is not the row's own source. */
+  readonly notesSource?: keyof typeof OVERTIME_STATES_SOURCES;
   readonly source: keyof typeof OVERTIME_STATES_SOURCES;
 }
 
@@ -54,6 +65,7 @@ interface Extra {
   readonly doubleTime?: Words;
   readonly seventhDay?: Words;
   readonly notes?: Words;
+  readonly notesSource?: keyof typeof OVERTIME_STATES_SOURCES;
   readonly source?: OvertimeState['source'];
 }
 
@@ -116,7 +128,14 @@ export const OVERTIME_STATES: readonly OvertimeState[] = [
     },
     source: 'ca',
   }),
-  state('Colorado', 'Colorado', { daily: 12 }),
+  state('Colorado', 'Colorado', {
+    daily: 12,
+    notes: {
+      en: 'COMPS Order #39 also owes overtime for a long run of consecutive hours, even one that crosses into the next workday; see the Colorado Department of Labor and Employment (CDLE) for that threshold.',
+      es: 'La COMPS Order #39 también exige horas extra por una racha larga de horas seguidas, aunque pase al siguiente día de trabajo; consulta el umbral en el Departamento de Trabajo y Empleo de Colorado (CDLE).',
+    },
+    notesSource: 'co',
+  }),
   state('Connecticut', 'Connecticut'),
   flsa('Delaware', 'Delaware'),
   state('District of Columbia', 'Distrito de Columbia'),
@@ -164,7 +183,13 @@ export const OVERTIME_STATES: readonly OvertimeState[] = [
   state('North Dakota', 'Dakota del Norte'),
   state('Ohio', 'Ohio'),
   flsa('Oklahoma', 'Oklahoma'),
-  state('Oregon', 'Oregón'),
+  state('Oregon', 'Oregón', {
+    notes: {
+      en: 'Daily overtime in some industries, per BOLI: over 10 h a day in manufacturing establishments (ORS 652.020) and in canneries, driers and packing plants, except those on a farm processing its own crops (ORS 653.265).',
+      es: 'Horas extra por día en algunas industrias, según BOLI: más de 10 h al día en establecimientos de manufactura (ORS 652.020) y en enlatadoras, secaderos y empacadoras, salvo las que están en una granja y procesan sus propios cultivos (ORS 653.265).',
+    },
+    notesSource: 'or',
+  }),
   state('Pennsylvania', 'Pensilvania'),
   state('Rhode Island', 'Rhode Island'),
   flsa('South Carolina', 'Carolina del Sur'),
@@ -260,7 +285,7 @@ export const OVERTIME_STATES_GUIDE: Readonly<Record<Lang, OvertimeStatesTexts>> 
     kicker: 'Overtime · data',
     h1: 'Overtime laws by state, 2026',
     lead: `Federal law (the FLSA) requires overtime at 1.5 times the regular rate after 40 hours in a workweek, in every state. ${String(dailyStates.length)} states also pay overtime by the day (${listOf('en')}), only California requires double time, and for ${String(flsaOnly)} states the Department of Labor lists no state overtime rule, so the FLSA applies.`,
-    asOf: 'Figures from the U.S. Department of Labor table “State Minimum Wage Laws” (premium pay after designated hours), updated July 1, 2026; California from the Labor Commissioner; Alaska from its Department of Labor; Kansas and Minnesota from their statutes. Checked November 5, 2026. Territories are not listed.',
+    asOf: 'Figures from the U.S. Department of Labor table “State Minimum Wage Laws” (premium pay after designated hours), updated July 1, 2026; California from the Labor Commissioner; Alaska from its Department of Labor; Kansas and Minnesota from their statutes; the Oregon and Colorado notes from BOLI and CDLE. Checked November 5, 2026. Territories are not listed.',
     table: {
       caption: 'Overtime rules by state: time and a half after',
       state: 'State',
@@ -304,7 +329,7 @@ export const OVERTIME_STATES_GUIDE: Readonly<Record<Lang, OvertimeStatesTexts>> 
     kicker: 'Horas extra · datos',
     h1: 'Leyes de horas extra por estado, 2026',
     lead: `La ley federal (la FLSA) exige pagar horas extra a 1.5 veces la tarifa regular después de 40 horas en la semana laboral, en todos los estados. ${String(dailyStates.length)} estados también pagan horas extra por día (${listOf('es')}), solo California exige tiempo doble, y para ${String(flsaOnly)} estados el Departamento de Trabajo no registra una regla estatal, así que se aplica la FLSA.`,
-    asOf: 'Cifras de la tabla del Departamento de Trabajo de EE. UU. “State Minimum Wage Laws” (pago adicional después de ciertas horas), actualizada el 1 de julio de 2026; California, del Comisionado Laboral; Alaska, de su Departamento de Trabajo; Kansas y Minnesota, de sus leyes. Revisado el 5 de noviembre de 2026. No incluye los territorios.',
+    asOf: 'Cifras de la tabla del Departamento de Trabajo de EE. UU. “State Minimum Wage Laws” (pago adicional después de ciertas horas), actualizada el 1 de julio de 2026; California, del Comisionado Laboral; Alaska, de su Departamento de Trabajo; Kansas y Minnesota, de sus leyes; las notas de Oregón y Colorado, de BOLI y el CDLE. Revisado el 5 de noviembre de 2026. No incluye los territorios.',
     table: {
       caption: 'Reglas de horas extra por estado: tiempo y medio después de',
       state: 'Estado',
