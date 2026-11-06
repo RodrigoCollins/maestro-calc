@@ -5,6 +5,7 @@ import {
   TIPPED_STATES_GUIDE_PATHS,
   TIPPED_STATES_SOURCES,
 } from '../guide/tipped-states.ts';
+import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -96,6 +97,9 @@ const sources = Object.values(TIPPED_STATES_SOURCES);
     <section aria-labelledby="cite">
       <h2 id="cite">{t.cite.heading}</h2>
       <p class="cite">{t.cite.text}</p>
+      <p>
+        <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].indexLabel}</a>
+      </p>
     </section>
 
     <p class="note">

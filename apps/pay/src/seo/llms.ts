@@ -1,6 +1,7 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT_TEXTS } from '../about/texts.ts';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
+import { DATA_TEXTS } from '../data/texts.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDES } from '../guide/overtime.ts';
@@ -63,6 +64,7 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'hours-worked-guide': both(HOURS_WORKED_GUIDE),
   'overtime-states-guide': both(OVERTIME_STATES_GUIDE),
   'minimum-wage-states-guide': both(MINIMUM_WAGE_STATES_GUIDE),
+  data: both(DATA_TEXTS),
   methodology: both(METHODOLOGY_TEXTS),
   about: both(ABOUT_TEXTS),
   embed: both(EMBED_TEXTS),
@@ -92,7 +94,9 @@ export const llmsTxt = (routes: readonly Route[], origin: string): string => {
       return `- [${nameOf(head.title)}](${url}): ${head.description}`;
     });
   const calculator = (route: Route): boolean => route.kind === 'calculator';
-  const guide = (route: Route): boolean => route.id.endsWith('-guide');
+  // the data index sits with the guides: it lists the citable tables
+  const guide = (route: Route): boolean =>
+    route.id.endsWith('-guide') || route.kind === 'collection';
   const other = (route: Route): boolean => !calculator(route) && !guide(route);
   const section = (heading: string, items: readonly string[]): string[] => [
     '',

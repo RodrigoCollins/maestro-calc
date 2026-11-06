@@ -3,6 +3,7 @@ import { NEIGHBORS } from '../long-tail/nearest.ts';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
 import { ROUTES } from '../routes.ts';
 import {
+  DATA_RULES,
   GUIDE_CALCULATORS,
   GUIDE_RULES,
   HUBS,
@@ -71,6 +72,17 @@ describe('GUIDE_RULES', () => {
         expect(calculator.startsWith('/es/'), path).toBe(path.startsWith('/es/'));
       }
     }
+  });
+});
+
+describe('DATA_RULES', () => {
+  it('has the data index of each language link every citable table, which links it back', () => {
+    const tables = ROUTES.filter(({ id }) => id.endsWith('-states-guide'));
+    expect(tables.length).toBeGreaterThan(0);
+    expect(DATA_RULES).toEqual([
+      { path: '/data', calculators: tables.map(({ en }) => en) },
+      { path: '/es/datos', calculators: tables.map(({ es }) => es) },
+    ]);
   });
 });
 

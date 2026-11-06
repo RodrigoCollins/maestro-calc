@@ -25,7 +25,10 @@ interface GrowthSite {
   readonly indexNowKey: string;
   readonly sitemapXml: string;
   /** Every page, by absolute URL; `page` has no JSON-LD of its own. */
-  readonly pages: readonly { url: string; kind: 'home' | 'calculator' | 'article' | 'page' }[];
+  readonly pages: readonly {
+    url: string;
+    kind: 'home' | 'calculator' | 'article' | 'collection' | 'page';
+  }[];
   /** The head of the page at `url`; `undefined` is the 404. */
   readonly headOf: (url: string | undefined, text: Text) => Head;
   readonly jsonLdOf: (url: string, text: Text) => string | undefined;
@@ -51,7 +54,12 @@ const { imageProblems } = await importFromRoot<{
 }>('packages/site-kit/src/seo-check.ts');
 
 const PROBE: Text = { title: 'Probe title', description: 'Probe description.' };
-const SCHEMA = { home: 'WebSite', calculator: 'WebApplication', article: 'Article' } as const;
+const SCHEMA = {
+  home: 'WebSite',
+  calculator: 'WebApplication',
+  article: 'Article',
+  collection: 'CollectionPage',
+} as const;
 
 /** Every schema.org node of a JSON-LD document: the document itself or each of its `@graph`. */
 const nodesOf = (jsonLd: string): Record<string, unknown>[] => {

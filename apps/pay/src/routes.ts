@@ -15,6 +15,7 @@ import {
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
 import { EMBED_PATHS } from './embed/texts.ts';
+import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
@@ -26,7 +27,7 @@ import { TIPPED_PATHS } from './tipped/texts.ts';
 export interface Route {
   readonly id: string;
   /** What the page is, for its structured data. */
-  readonly kind: 'home' | 'calculator' | 'article';
+  readonly kind: 'home' | 'calculator' | 'article' | 'collection';
   readonly en: string;
   readonly es: string;
 }
@@ -61,6 +62,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'hours-worked-guide', kind: 'article', ...HOURS_WORKED_GUIDE_PATHS },
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
+  { id: 'data', kind: 'collection', ...DATA_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
