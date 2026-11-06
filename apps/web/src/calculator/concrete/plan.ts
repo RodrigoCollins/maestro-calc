@@ -51,42 +51,42 @@ const inSystems = <T>(moment: Moment, texts: (system: UnitSystem) => T): readonl
 const countMarks = (box: Box, count: number) =>
   count > 1 ? [markLabel(box, `× ${String(count)}`)] : [];
 
-/** A shape's plan: its outline and lines, its labels, its note under it and any count mark. */
-const planWith = (shape: Shape, note: Label, marks: Plan['labels'] = []): Plan => ({
+/** A shape's plan: its outline and lines, then its labels and `extra` (its note, any count mark). */
+const planWith = (shape: Shape, extra: Plan['labels']): Plan => ({
   name: ANSWER,
   outline: shape.outline,
   lines: shape.lines,
-  labels: [...shape.labels, noteBelow(FRAME, shape.box, note), ...marks],
+  labels: [...shape.labels, ...extra],
 });
 
-const slab = (moment: Moment): Plan => {
-  const { valid, system } = moment;
+/**
+ * A slab or footings in plan: the length along the top by `width` on the left, the note under it
+ * and the count mark of `count` pieces (the slab's volume does not use the count, so it passes 1).
+ */
+const rectangle = (
+  moment: Moment,
+  width: 'width' | 'footingWidth',
+  note: Label,
+  count: number,
+): Plan => {
+  const { valid } = moment;
   const all = inSystems<SideTexts>(moment, (each) => ({
     length: dimensionText(valid.length, each),
-    width: dimensionText(valid.width, each),
+    width: dimensionText(valid[width], each),
   }));
-  const thickness = dimensionText(valid.thickness, system);
-  // the slab's volume does not use the count, so the plan does not mark it
-  return planWith(rectangleShape(FRAME, inches(valid.length), inches(valid.width), all), {
-    message: 'drawing.slab.note',
-    fills: { thickness },
-  });
+  const shape = rectangleShape(FRAME, inches(valid.length), inches(valid[width]), all);
+  return planWith(shape, [noteBelow(FRAME, shape.box, note), ...countMarks(shape.box, count)]);
 };
 
-const footing = (moment: Moment): Plan => {
-  const { valid, system } = moment;
-  const all = inSystems<SideTexts>(moment, (each) => ({
-    length: dimensionText(valid.length, each),
-    width: dimensionText(valid.footingWidth, each),
-  }));
-  const depth = dimensionText(valid.footingDepth, system);
-  const shape = rectangleShape(FRAME, inches(valid.length), inches(valid.footingWidth), all);
-  return planWith(
-    shape,
-    { message: 'drawing.footing.note', fills: { depth } },
-    countMarks(shape.box, valid.count),
-  );
-};
+const slab = ({ valid, system }: Moment): Label => ({
+  message: 'drawing.slab.note',
+  fills: { thickness: dimensionText(valid.thickness, system) },
+});
+
+const footing = ({ valid, system }: Moment): Label => ({
+  message: 'drawing.footing.note',
+  fills: { depth: dimensionText(valid.footingDepth, system) },
+});
 
 const column = (moment: Moment): Plan => {
   const { valid, system } = moment;
@@ -101,11 +101,8 @@ const column = (moment: Moment): Plan => {
     w: 2 * half,
     h: half,
   };
-  return planWith(
-    shape,
-    { message: 'drawing.column.note', fills: { height } },
-    countMarks(lower, valid.count),
-  );
+  const note = { message: 'drawing.column.note', fills: { height } };
+  return planWith(shape, [noteBelow(FRAME, shape.box, note), ...countMarks(lower, valid.count)]);
 };
 
 const steps = (moment: Moment): Plan | null => {
@@ -120,25 +117,17 @@ const steps = (moment: Moment): Plan | null => {
     { run: inches(valid.run), rise: inches(valid.rise), count: valid.stepCount },
     all,
   );
-  const count = String(valid.stepCount);
-  return {
-    name: ANSWER,
-    outline: shape.outline,
-    lines: shape.lines,
-    labels: [
-      ...shape.labels,
-      noteAbove(FRAME, shape.box, { message: 'drawing.steps.note', fills: { count } }),
-    ],
-  };
+  const note = { message: 'drawing.steps.note', fills: { count: String(valid.stepCount) } };
+  return planWith(shape, [noteAbove(FRAME, shape.box, note)]);
 };
 
 /** The plan of a ready moment, by the shape of its valid state; `null` for a stair of no steps. */
 export const planOf = (moment: Moment): Plan | null => {
   switch (moment.valid.shape) {
     case 'slab':
-      return slab(moment);
+      return rectangle(moment, 'width', slab(moment), 1);
     case 'footing':
-      return footing(moment);
+      return rectangle(moment, 'footingWidth', footing(moment), moment.valid.count);
     case 'column':
       return column(moment);
     default:
