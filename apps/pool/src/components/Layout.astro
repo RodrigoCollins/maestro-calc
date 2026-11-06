@@ -1,5 +1,6 @@
 ---
 import { Font } from 'astro:assets';
+import { CHARTS_INDEX } from '../charts.ts';
 import { NAV_LINKS } from '../home.ts';
 import type { Crumb } from '../seo/breadcrumb.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
@@ -101,6 +102,9 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
           </p>
           <p>
             <a href="/pool-volume-chart">Pool volume chart</a>
+          </p>
+          <p>
+            <a href={CHARTS_INDEX.path}>{CHARTS_INDEX.name}</a>
           </p>
           <p>
             <a href="/how-long-to-run-pool-pump">How long to run your pump</a>

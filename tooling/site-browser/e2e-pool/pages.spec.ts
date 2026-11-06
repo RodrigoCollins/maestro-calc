@@ -207,10 +207,32 @@ test('tables when to swim after nine chemicals, each with its section, and every
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  // the two charts, then each chemical's calculator and, for five of them, its guide
-  expect(hrefs).toHaveLength(16);
+  // the two charts, each chemical's calculator and, for five of them, its guide, then the data index
+  expect(hrefs).toHaveLength(17);
   for (const href of new Set(hrefs))
     expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('lists the four data pages, each dated and sourced, and gives the press address', async ({
+  page,
+}) => {
+  await page.goto('/charts');
+  const hrefs = await page
+    .locator('.pool-data h2 a')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  expect(hrefs).toEqual([
+    '/pool-chemical-dosing-chart',
+    '/pool-volume-chart',
+    '/pool-water-chemistry-chart',
+    '/how-long-after-adding-chemicals-can-you-swim',
+  ]);
+  await expect(page.locator('.pool-data time')).toHaveCount(4);
+  await expect(page.locator('a[href="mailto:press@maestrocalc.com"]')).toBeVisible();
+  for (const href of hrefs) {
+    expect((await page.request.get(href)).status(), href).toBe(200);
+    await page.goto(href);
+    await expect(page.locator('main a[href="/charts"]'), href).toHaveCount(1);
+  }
 });
 
 test('numbers the winter steps, whose calculator links all answer', async ({ page }) => {
@@ -232,8 +254,8 @@ test('charts six levels, each with its section, and every calculator link answer
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  // the gallons, the dosing chart, then chlorine, pH, alkalinity, stabilizer, calcium and salt
-  expect(hrefs).toHaveLength(8);
+  // the gallons, the dosing chart, chlorine, pH, alkalinity, stabilizer, calcium, salt, the data index
+  expect(hrefs).toHaveLength(9);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 

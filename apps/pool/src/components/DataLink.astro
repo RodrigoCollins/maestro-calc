@@ -1,0 +1,23 @@
+---
+import { CHARTS_INDEX, DATA_PAGES, checkedText } from '../charts.ts';
+
+interface Props {
+  /** The data page this line closes; one the index does not list throws at build time. */
+  readonly path: string;
+}
+
+const { path } = Astro.props;
+const page = DATA_PAGES.find((candidate) => candidate.path === path);
+if (page === undefined) throw new Error(`${path} is not in the data index`);
+---
+
+<p class="pool-data-link">
+  Figures checked {checkedText(page.checked)}. See all our{' '}
+  <a href={CHARTS_INDEX.path}>{CHARTS_INDEX.name.toLowerCase()}</a>, free to cite with a link.
+</p>
+
+<style>
+  .pool-data-link {
+    font-size: 1rem;
+  }
+</style>

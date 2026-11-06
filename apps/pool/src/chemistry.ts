@@ -147,6 +147,8 @@ const homeOf = (id: string): string => {
  */
 export const CHEMISTRY_CHART = {
   path: '/pool-water-chemistry-chart',
+  /** The day every range was last checked against its source. */
+  checked: '2026-11-04',
   card: {
     title: 'Water chemistry chart',
     summary: 'The range of every level, for a home pool and a public one.',
@@ -165,6 +167,7 @@ export const CHEMISTRY_CHART = {
   rows: ROWS,
 } as const satisfies {
   path: string;
+  checked: string;
   card: { title: string; summary: string };
   title: string;
   description: string;

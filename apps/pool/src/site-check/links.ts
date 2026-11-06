@@ -16,6 +16,8 @@ export interface LinkRules {
   }[];
   /** Each guide and the calculators it explains (`GUIDES` of `src/guide.ts`). */
   readonly guides: readonly { readonly path: string; readonly calculators: readonly string[] }[];
+  /** The data index and the citable pages it lists (`DATA_PAGES` of `src/charts.ts`). */
+  readonly data?: { readonly index: string; readonly pages: readonly string[] };
 }
 
 const ANCHOR = /<a\b[^>]*?\shref="([^"]*)"/g;
@@ -59,8 +61,8 @@ export const inboundOf = (
  * The internal links the build is missing: a job page and its calculator link each other, a job
  * page links its nearest siblings, a job page and the guide whose dose it works out link each
  * other (each in its `<main>`), every guide is in the home Guides list and in the footer of
- * every page, a guide and each calculator it explains link each other, and no sitemap page is an
- * orphan.
+ * every page, a guide and each calculator it explains link each other, the data index and each
+ * data page link each other (the index in every footer too), and no sitemap page is an orphan.
  */
 export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules): string[] => {
   const missing = [
@@ -82,6 +84,7 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
   };
   const guides = rules.guides.map(({ path }) => path);
   const inbound = inboundOf(site, rules);
+  const { data } = rules;
   return [
     ...rules.jobs.flatMap(({ path, calculator, neighbors, guide }) => [
       ...must(calculator, [path], 'must link its job page'),
@@ -102,6 +105,15 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
       ...calculators.flatMap((calculator) => must(calculator, [path], 'must link its guide')),
       ...must(path, calculators, 'must link the calculator it explains,'),
     ]),
+    ...(data === undefined
+      ? []
+      : [
+          ...data.pages.flatMap((path) => must(path, [data.index], 'must link the data index')),
+          ...must(data.index, data.pages, 'must list the data page'),
+          ...rules.sitemap.flatMap((path) =>
+            must(path, [data.index], 'the footer must link the data index', FOOTER),
+          ),
+        ]),
     ...rules.sitemap
       .filter((path) => inbound.get(path) === 0)
       .map((path) => `${path}: no other page in the sitemap links it`),

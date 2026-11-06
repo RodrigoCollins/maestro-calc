@@ -138,6 +138,47 @@ describe('linkProblems', () => {
     );
   });
 
+  describe('the data index', () => {
+    const DATA_FOOTER = `${FOOTER}${a('/data')}`;
+    const rules: LinkRules = {
+      ...RULES,
+      sitemap: [...RULES.sitemap, '/data'],
+      data: { index: '/data', pages: ['/guide'] },
+    };
+    const pages: readonly (readonly [string, string])[] = [
+      ...SITE,
+      ['/guide', page(`${a('/calc')}${a('/data')}`, FOOTER)],
+      ['/data', page(a('/guide'), FOOTER)],
+    ];
+    const linked = new Map(
+      pages.map(([path, html]) => [
+        path,
+        html.replace(`${FOOTER}</footer>`, `${DATA_FOOTER}</footer>`),
+      ]),
+    );
+
+    it('passes when the index and each data page link each other, and every footer links it', () => {
+      expect(linkProblems(linked, rules)).toEqual([]);
+    });
+
+    it('names a data page that does not link the index', () => {
+      const site = new Map([...linked, ['/guide', page(a('/calc'), DATA_FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual(['/guide: must link the data index /data']);
+    });
+
+    it('names a data page the index does not list', () => {
+      const site = new Map([...linked, ['/data', page('', DATA_FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual(['/data: must list the data page /guide']);
+    });
+
+    it('names a page whose footer leaves the index out', () => {
+      const site = new Map([...linked, ['/job-2', page(`${a('/calc')}${a('/job-1')}`, FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual([
+        '/job-2: the footer must link the data index /data',
+      ]);
+    });
+  });
+
   it('names a sitemap page no other page links', () => {
     const rules = { ...RULES, sitemap: [...RULES.sitemap, '/lost'] };
     const site = new Map([...SITE, ['/lost', page(a('/lost'), FOOTER)]]);

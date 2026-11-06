@@ -1,4 +1,5 @@
 ---
+import DataLink from '../components/DataLink.astro';
 import Layout from '../components/Layout.astro';
 import { DOSING_CHART } from '../dosing.ts';
 
@@ -82,6 +83,7 @@ const sourceOf = (key: string) => sources[key as keyof typeof sources];
       Every figure is an estimate for the product strength its column names. Read the label of each
       product before you add it, and follow it where it differs from this chart.
     </p>
+    <DataLink path={DOSING_CHART.path} />
   </main>
 </Layout>
 

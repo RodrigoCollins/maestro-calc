@@ -1,5 +1,6 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT } from './about.ts';
+import { CHARTS_INDEX } from './charts.ts';
 import { EMBED_PAGE } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
@@ -43,7 +44,10 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
   ],
   [
     'Guides and charts',
-    GUIDES.map(({ path, card }) => ({ name: card.title, path, note: card.summary })),
+    [
+      ...GUIDES.map(({ path, card }) => ({ name: card.title, path, note: card.summary })),
+      { name: CHARTS_INDEX.name, path: CHARTS_INDEX.path, note: CHARTS_INDEX.description },
+    ],
   ],
   ['About', ABOUT_PAGES],
   // llmstxt.org: the links of an `Optional` section can be skipped when a shorter context is needed
