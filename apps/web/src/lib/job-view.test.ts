@@ -17,6 +17,12 @@ import {
   decimalFeetReverse,
   NIST_SP_811,
 } from './decimal-feet-chart.ts';
+import {
+  NIST_SP_811_AREA,
+  squareMetersChartBasis,
+  squareMetersChartTable,
+  squareMetersReverse,
+} from './square-meters-chart.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
@@ -173,6 +179,28 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
         `Maestro Calc, “${view.heading}”, ${calendarDay(updated, locale)}, ${url}`,
       );
       expect(view.cta).toBe(pathOf('feet-inches', locale));
+    },
+  );
+
+  it.each(LOCALES)(
+    'charts square feet in square meters with the NIST source and its citation in %s',
+    (locale) => {
+      const id = 'square-feet-to-square-meters-chart';
+      const view = jobView(id, locale);
+      const { cases, updated } = JOBS[id];
+      expect(view.rows).toEqual(squareMetersChartTable(cases, locale).rows);
+      const { chart } = view;
+      expect(chart?.sources).toEqual([
+        { label: siteText(locale)(`page.${id}.source`), source: NIST_SP_811_AREA },
+      ]);
+      expect(chart?.facts).toEqual(squareMetersChartBasis(locale));
+      expect(chart?.reverse).toEqual(squareMetersReverse(locale));
+      expect(view.note).toBe(siteText(locale)(`page.${id}.note`));
+      const url = urlOf(pathOf(id, locale));
+      expect(chart?.citation).toBe(
+        `Maestro Calc, “${view.heading}”, ${calendarDay(updated, locale)}, ${url}`,
+      );
+      expect(view.cta).toBe(pathOf('rectangle-area', locale));
     },
   );
 
@@ -718,21 +746,25 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');
   });
 
-  // the cubic yard weight chart has a row per material, and the decimal feet chart links only its
-  // lengths of a foot or more (their own tests link them)
-  it.each(PAIRS.filter(([id]) => id !== 'cubic-yard-weight-chart' && id !== 'decimal-feet-chart'))(
-    'links every row of %s in %s to the calculator in that case',
-    (id, locale) => {
-      const view = jobView(id, locale);
-      expect(view.rows).toHaveLength(JOBS[id].cases.length);
-      view.rows.forEach((row, index) => {
-        const [path, query = ''] = (row.href ?? '').split('?');
-        expect(path).toBe(view.cta.split('?')[0]);
-        expectRoundTrip(JOBS[id].calculator, JOBS[id].cases[index] ?? {}, query);
-      });
-      expect(view.cta).toBe(view.rows[0].href);
-    },
-  );
+  // the cubic yard weight chart has a row per material, the decimal feet chart links only its
+  // lengths of a foot or more and the square meters chart links none (their own tests say so)
+  it.each(
+    PAIRS.filter(
+      ([id]) =>
+        id !== 'cubic-yard-weight-chart' &&
+        id !== 'decimal-feet-chart' &&
+        id !== 'square-feet-to-square-meters-chart',
+    ),
+  )('links every row of %s in %s to the calculator in that case', (id, locale) => {
+    const view = jobView(id, locale);
+    expect(view.rows).toHaveLength(JOBS[id].cases.length);
+    view.rows.forEach((row, index) => {
+      const [path, query = ''] = (row.href ?? '').split('?');
+      expect(path).toBe(view.cta.split('?')[0]);
+      expectRoundTrip(JOBS[id].calculator, JOBS[id].cases[index] ?? {}, query);
+    });
+    expect(view.cta).toBe(view.rows[0].href);
+  });
 
   it.each(PAIRS)('names a column for every cell of %s in %s', (id, locale) => {
     const view = jobView(id, locale);

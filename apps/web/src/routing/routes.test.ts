@@ -184,6 +184,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/landscaping/cubic-yard-weight-chart',
       es: '/es/jardineria/tabla-de-peso-por-yarda-cubica',
     });
+    expect(ROUTES['square-feet-to-square-meters-chart']).toEqual({
+      en: '/measurement/square-feet-to-square-meters-chart',
+      es: '/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados',
+    });
     expect(ROUTES['decimal-feet-chart']).toEqual({
       en: '/measurement/decimal-feet-to-feet-and-inches-chart',
       es: '/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas',

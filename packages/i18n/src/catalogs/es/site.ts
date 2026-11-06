@@ -528,9 +528,9 @@ export const esSite = {
   'page.concrete.title': 'Calculadora de concreto en yardas y bolsas | Maestro Calc',
   'page.concrete.description':
     '¿Cuántas bolsas de concreto o yardas cúbicas necesitas? Calcula una losa, zapata, columna o escalones, con bolsas de 40, 60 u 80 lb. Gratis, en pies o metros.',
-  'page.rectangle-area.title': 'Calculadora para calcular pies cuadrados | Maestro Calc',
+  'page.rectangle-area.title': 'Calculadora de pies cuadrados para un cuarto | Maestro Calc',
   'page.rectangle-area.description':
-    'Calcula los pies cuadrados de un cuarto, piso o pared: multiplica el largo por el ancho. Con yardas y metros cuadrados, en pies, pulgadas o metros. Gratis.',
+    'Calculadora de pies cuadrados gratis: multiplica el largo por el ancho de un cuarto, piso o pared, en pies y pulgadas o metros, con yardas y metros cuadrados.',
   'page.gravel.title': 'Calculadora de grava en toneladas y yardas | Maestro Calc',
   'page.gravel.description':
     'Calcula cuántas toneladas de grava pedir para una entrada, camino o base, compactada o suelta, con las yardas cúbicas y el costo. Gratis y al instante.',
@@ -792,6 +792,30 @@ export const esSite = {
   'page.decimal-feet-chart.reverse': 'Pulgadas a pies decimales',
   'page.decimal-feet-chart.reverseLead':
     'Cada pulgada entera como decimal de un pie: las pulgadas ÷ 12, con cuatro decimales.',
+  'page.square-feet-to-square-meters-chart.title':
+    'Tabla de pies cuadrados a metros cuadrados | Maestro Calc',
+  'page.square-feet-to-square-meters-chart.description':
+    'Tabla de pies cuadrados a metros cuadrados: áreas comunes de 10 a 2,000 pies cuadrados en m², como 188 ft² = 17.47 m², y de metros cuadrados a pies cuadrados.',
+  'page.square-feet-to-square-meters-chart.heading':
+    'Tabla de pies cuadrados a metros cuadrados, de 10 a 2,000 ft²',
+  'page.square-feet-to-square-meters-chart.label': 'Tabla de ft² a m²',
+  'page.square-feet-to-square-meters-chart.intro':
+    'Una alfombra de 188 ft² mide 17.47 m². Para pasar pies cuadrados a metros cuadrados, multiplica por 0.09290304, el número exacto de metros cuadrados que tiene un pie cuadrado (un pie mide exactamente 0.3048 m): 188 × 0.09290304 = 17.4658 m². Busca tu área en la tabla de abajo, calculada con la calculadora de pies cuadrados, y debajo los metros cuadrados pasados a pies cuadrados.',
+  'page.square-feet-to-square-meters-chart.note':
+    'Los metros cuadrados son los pies cuadrados × 0.09290304, exactos, redondeados a dos decimales. Para volver, divide los metros cuadrados entre 0.09290304. Abre la calculadora para sacar cualquier otro cuarto con su largo y su ancho.',
+  'page.square-feet-to-square-meters-chart.table': 'Pies cuadrados a metros cuadrados',
+  'page.square-feet-to-square-meters-chart.source': 'Factores de conversión exactos',
+  'page.square-feet-to-square-meters-chart.basis': 'Los factores y el redondeo',
+  'page.square-feet-to-square-meters-chart.squareFeet': 'Pies cuadrados',
+  'page.square-feet-to-square-meters-chart.squareMeters': 'Metros cuadrados',
+  'page.square-feet-to-square-meters-chart.foot': 'Un pie',
+  'page.square-feet-to-square-meters-chart.squareFoot': 'Un pie cuadrado',
+  'page.square-feet-to-square-meters-chart.squareMeter': 'Un metro cuadrado, con cuatro decimales',
+  'page.square-feet-to-square-meters-chart.rounding': 'Áreas redondeadas a',
+  'page.square-feet-to-square-meters-chart.places': 'dos decimales',
+  'page.square-feet-to-square-meters-chart.reverse': 'Metros cuadrados a pies cuadrados',
+  'page.square-feet-to-square-meters-chart.reverseLead':
+    'Cada área en metros cuadrados pasada a pies cuadrados: los metros cuadrados ÷ 0.09290304, con dos decimales.',
   'page.mulch.title': 'Calculadora de mulch en yardas y bolsas | Maestro Calc',
   'page.mulch.description':
     'Calcula cuánto mulch lleva un área de jardín en yardas cúbicas y bolsas de 1.5, 2 o 3 cu ft, con el costo en bolsas y a granel. Gratis y al instante.',

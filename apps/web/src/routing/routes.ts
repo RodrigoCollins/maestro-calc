@@ -227,6 +227,10 @@ export const ROUTES = {
     en: '/measurement/20x20-square-feet',
     es: '/es/medidas/20x20-pies-cuadrados',
   },
+  'square-feet-to-square-meters-chart': {
+    en: '/measurement/square-feet-to-square-meters-chart',
+    es: '/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados',
+  },
   'mulch-bags-per-yard': {
     en: '/landscaping/bags-of-mulch-per-yard',
     es: '/es/jardineria/bolsas-de-mulch-por-yarda',

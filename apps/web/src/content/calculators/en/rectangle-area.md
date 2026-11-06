@@ -1,7 +1,7 @@
 ---
 id: rectangle-area
 locale: en
-updated: 2026-10-27
+updated: 2026-11-06
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (conversion factors)
@@ -26,7 +26,7 @@ To work in metric, press Metric (m, cm). A plain number is then read in meters, 
 
 Use Copy link to send your exact numbers to a partner, a client or a supplier, and the Español link to open the same numbers in Spanish.
 
-For a common size, see [12x7 square feet](/measurement/7x12-square-feet), worked out in square yards and square meters too.
+For a common size, see [12x7 square feet](/measurement/7x12-square-feet), worked out in square yards and square meters too. To convert an area you already have, see the [square feet to square meters chart](/measurement/square-feet-to-square-meters-chart), from 10 to 2,000 sq ft.
 
 <h2 id="formulas">Formulas and worked example</h2>
 

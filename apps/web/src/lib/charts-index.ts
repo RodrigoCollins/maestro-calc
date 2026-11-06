@@ -19,6 +19,7 @@ import { siteText } from './site-text.ts';
 export const CHART_OWNERS = {
   'concrete-slab-chart': ['QUIKRETE'],
   'roof-pitch-chart': ['International Residential Code'],
+  'square-feet-to-square-meters-chart': ['NIST'],
   'cubic-yard-weight-chart': ['WisDOT', 'New Mexico EMNRD', 'FHWA', 'WSDOT', 'USDA NRCS', 'US EPA'],
   'decimal-feet-chart': ['NIST'],
 } as const satisfies Record<ChartId, readonly [string, ...string[]]>;

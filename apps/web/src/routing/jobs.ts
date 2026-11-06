@@ -6,7 +6,7 @@ import type { CalculatorPageId } from './templates.ts';
  * out at build time: concrete for a slab (by its sides or by its area), a tube or a footing, roof pitch for a
  * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
  * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
- * area, the shingles for a roof, a tape measurement divided into equal parts, and decimal feet in feet and inches. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
+ * area, the shingles for a roof, a tape measurement divided into equal parts, decimal feet in feet and inches, and square feet in square meters. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
  * and its keys.
  */
@@ -226,6 +226,25 @@ const decimalFeetChart = () => {
 };
 
 /**
+ * The areas of the square feet to square meters chart, smallest first: small rooms and closets,
+ * bedrooms and rugs (188 ft² is a query), then floors and houses up to 2,000 ft².
+ */
+const SQUARE_FEET = [
+  10, 20, 25, 30, 40, 50, 60, 64, 70, 75, 80, 90, 100, 120, 144, 150, 160, 168, 180, 188, 200, 225,
+  250, 300, 350, 400, 450, 500, 600, 700, 750, 800, 900, 1000, 1200, 1250, 1500, 1750, 2000,
+];
+
+/**
+ * Each area of the chart as a strip that many feet long and 1 ft wide: the square footage engine
+ * works its square meters out (any rectangle of that area has the same).
+ */
+const squareMetersChart = () => {
+  const strip = (area: number): JobCase => ({ length: `${String(area)}ft`, width: '1ft' });
+  const [first = 10, ...rest] = SQUARE_FEET;
+  return [strip(first), ...rest.map(strip)] as const;
+};
+
+/**
  * A rectangle of `length` by `width` feet, then the same length a foot and two feet wider: the
  * sizes a tape reads when the room is a little larger than its plan.
  */
@@ -426,6 +445,11 @@ export const JOBS = {
     calculator: 'rectangle-area',
     updated: '2026-11-04',
     cases: rectangle(20, 20),
+  },
+  'square-feet-to-square-meters-chart': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-06',
+    cases: squareMetersChart(),
   },
   'mulch-bags-per-yard': {
     calculator: 'mulch',

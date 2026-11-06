@@ -82,6 +82,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'square-feet-12x14',
       'square-feet-12x30',
       'square-feet-20x20',
+      'square-feet-to-square-meters-chart',
     ]);
     expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
     expect(jobsOf('gravel')).toEqual([
@@ -147,7 +148,7 @@ describe('job pages (growth plan › lever 1)', () => {
   });
 
   it('names each square footage job after the length and the width of its first case', () => {
-    for (const id of jobsOf('rectangle-area')) {
+    for (const id of jobsOf('rectangle-area').filter((each) => !isChartJob(each))) {
       const [first] = JOBS[id].cases;
       expect(
         `square-feet-${first['length'] ?? ''}x${first['width'] ?? ''}`.replaceAll('ft', ''),
@@ -242,6 +243,7 @@ describe('job pages (growth plan › lever 1)', () => {
     expect(JOB_IDS.filter(isChartJob)).toEqual([
       'concrete-slab-chart',
       'roof-pitch-chart',
+      'square-feet-to-square-meters-chart',
       'cubic-yard-weight-chart',
       'decimal-feet-chart',
     ]);
@@ -472,6 +474,17 @@ describe('job pages (growth plan › lever 1)', () => {
     expect(ROUTES['decimal-feet-chart']).toEqual({
       en: '/measurement/decimal-feet-to-feet-and-inches-chart',
       es: '/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas',
+    });
+  });
+
+  // query: "the area of a large rug is 188 ft2. what is this area in units of m2?" (11.0): a chart
+  // the square footage engine works out, each area as a strip that long and 1 ft wide
+  it('routes the square feet to square meters chart under measurement', () => {
+    expect(JOBS['square-feet-to-square-meters-chart'].calculator).toBe('rectangle-area');
+    expect(isChartJob('square-feet-to-square-meters-chart')).toBe(true);
+    expect(ROUTES['square-feet-to-square-meters-chart']).toEqual({
+      en: '/measurement/square-feet-to-square-meters-chart',
+      es: '/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados',
     });
   });
 
