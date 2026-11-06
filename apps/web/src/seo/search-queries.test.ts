@@ -1,7 +1,10 @@
 import { yd3 } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { volumeText } from '../calculator/present.ts';
+import { rectangleAreaPage } from '../calculator/rectangle-area/page.ts';
+import { faqOf } from '../content/faq.ts';
 import { concrete } from '../lib/concrete.ts';
+import { shownFigures } from '../contract/__testing__/shown-figures.ts';
 import { readEntries, sectionOf } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
 import { siteText } from '../lib/site-text.ts';
@@ -133,6 +136,68 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     },
   );
 
+  // Search Console, 2026-11-06: "calculadora pies cuadrados" (72.0), "calculadora de pies
+  // cuadrados" (74.0), "25 pies cuadrados" (33.0): the Spanish page opens with the words of the
+  // query and a room measured in feet and inches, worked out with its square meters
+  it('opens the Spanish square footage page with the query and a room in feet and inches', () => {
+    const entry = readEntries(fromRoot('apps/web/src/content/calculators')).find(
+      ({ path }) => path === 'es/rectangle-area.md',
+    );
+    const body = entry?.body ?? '';
+    const [, first = ''] = sectionOf(body, 'como-usar').split('\n\n');
+    expect(first).toMatch(/^La calculadora de pies cuadrados /);
+    // 11 ft 6 in by 13 ft 3 in is 138 in by 159 in
+    const { figures } = shownFigures(rectangleAreaPage, 'v=1&l=138&w=159');
+    expect(first).toContain('11 ft 6 in por 13 ft 3 in');
+    expect(first).toContain(`${figures['areaFt2'] ?? 'missing'} pies cuadrados`);
+    expect(first).toContain(`${figures['areaM2'] ?? 'missing'} metros cuadrados`);
+    const formulas = sectionOf(body, 'formulas');
+    for (const figure of [figures['areaFt2'], figures['areaYd2'], figures['areaM2']]) {
+      expect(formulas).toContain(figure ?? 'missing');
+    }
+    const faq = faqOf(body);
+    expect(faq).toHaveLength(8);
+    const meters = faq.find(({ question }) => question.includes('25 pies cuadrados'));
+    // hand-verified: 25 × 0.09290304 = 2.322576 m²
+    expect(meters?.answer).toContain('2.32 metros cuadrados');
+  });
+
+  // query: "the area of a large rug is 188 ft2. what is this area in units of m2?" (11.0)
+  it('names the square meters chart after the conversion and answers the rug in its intro', () => {
+    const id = 'square-feet-to-square-meters-chart';
+    const en = siteText('en');
+    expect(en(`page.${id}.title`)).toBe('Square Feet to Square Meters Chart | Maestro Calc');
+    expect(en(`page.${id}.heading`)).toMatch(/^Square feet to square meters chart/);
+    expect(en(`page.${id}.description`)).toContain('10 to 2,000 sq ft');
+    const es = siteText('es');
+    expect(es(`page.${id}.title`)).toBe(
+      'Tabla de pies cuadrados a metros cuadrados | Maestro Calc',
+    );
+    expect(es(`page.${id}.description`)).toContain('10 a 2,000 pies cuadrados');
+    for (const locale of ['en', 'es'] as const) {
+      const view = jobView(id, locale);
+      const shown = view.rows.find((row) => row.label === '188 ft²')?.cells[0] ?? 'missing';
+      expect(view.intro).toContain('188');
+      expect(view.intro).toContain(shown);
+      expect(view.intro).toContain('0.09290304');
+    }
+  });
+
+  it.each([
+    ['en', 'how-to-use', 'square feet to square meters chart'],
+    ['es', 'como-usar', 'tabla de pies cuadrados a metros cuadrados'],
+  ] as const)(
+    'links the %s square footage calculator to the square meters chart',
+    (locale, section, anchor) => {
+      const entry = readEntries(fromRoot('apps/web/src/content/calculators')).find(
+        ({ path }) => path === `${locale}/rectangle-area.md`,
+      );
+      expect(sectionOf(entry?.body ?? '', section)).toContain(
+        `[${anchor}](${pathOf('square-feet-to-square-meters-chart', locale)})`,
+      );
+    },
+  );
+
   it('names the decimal feet chart after the conversion people ask for', () => {
     const en = siteText('en');
     expect(en('page.decimal-feet-chart.title')).toContain('Decimal Feet to Feet and Inches Chart');
@@ -164,12 +229,15 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     expect(en('page.rectangle-area.description')).toMatch(
       /^Calculate square footage: multiply the length by the width\. .*room, floor or wall/,
     );
+    // "calculadora pies cuadrados" (72.0) and "calculadora de pies cuadrados" (74.0), 2026-11-06:
+    // the Spanish title and description open with the words of the query
     expect(es('page.rectangle-area.title')).toBe(
-      'Calculadora para calcular pies cuadrados | Maestro Calc',
+      'Calculadora de pies cuadrados para un cuarto | Maestro Calc',
     );
     expect(es('page.rectangle-area.description')).toMatch(
-      /^Calcula los pies cuadrados de un cuarto, piso o pared: multiplica el largo por el ancho\./,
+      /^Calculadora de pies cuadrados gratis: multiplica el largo por el ancho de un cuarto, piso o pared/,
     );
+    expect(es('page.rectangle-area.description')).toContain('pies y pulgadas');
     expect(en('page.guide-square-footage.description')).toMatch(
       /^How to calculate square feet: multiply the length by the width\. .*room, a wall/,
     );
@@ -248,7 +316,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   it('names the size and the square feet of each square footage job page in its title', () => {
     // queries: "12x7 square feet", "30 by 12 square feet", "5 by 10 in square feet",
     // "14 11 square feet", "16 11 square feet", "25 pies cuadrados"
-    for (const id of jobsOf('rectangle-area')) {
+    for (const id of jobsOf('rectangle-area').filter((each) => !isChartJob(each))) {
       const size = id.replace('square-feet-', '');
       const feet = jobView(id, 'en').rows[0].cells[0]?.replace(/\.00$/, '') ?? '';
       expect(siteText('en')(`page.${id}.title`)).toMatch(

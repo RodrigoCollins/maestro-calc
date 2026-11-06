@@ -1,7 +1,7 @@
 ---
 id: rectangle-area
 locale: es
-updated: 2026-10-27
+updated: 2026-11-06
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (factores de conversión)
@@ -16,7 +16,7 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pies cuadrados</h2>
 
-Para calcular pies cuadrados, multiplica el largo por el ancho. La calculadora lo hace por ti para un cuarto, un piso, una pared o cualquier otro rectángulo, en pies cuadrados, yardas cuadradas y metros cuadrados. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+La calculadora de pies cuadrados multiplica el largo por el ancho por ti, para un cuarto, un piso, una pared o cualquier otro rectángulo. Escribe las medidas como las lees en la cinta, en pies y pulgadas o en metros, y lee el área en pies cuadrados, yardas cuadradas y metros cuadrados: un cuarto de 11 ft 6 in por 13 ft 3 in mide 152.38 pies cuadrados, o 14.16 metros cuadrados. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Mide el largo y el ancho de la superficie con una cinta métrica.
 2. Ingresa las dos medidas como las lees en la cinta: 12 ft, 12 ft 6 in o 12 ft 6 1/2 in. Un número solo se lee en pies. También puedes escribir tú mismo la unidad, por ejemplo 150 in o 4 yd.
@@ -26,7 +26,7 @@ Para trabajar en métrico, presiona Métrico (m, cm). Un número solo se lee ent
 
 Usa Copiar enlace para enviar tus números exactos a un socio, a un cliente o a un proveedor, y el enlace English para abrir los mismos números en inglés.
 
-Para un tamaño común, mira [12x7 pies cuadrados](/es/medidas/7x12-pies-cuadrados), también en yardas y metros cuadrados.
+Para un tamaño común, mira [12x7 pies cuadrados](/es/medidas/7x12-pies-cuadrados), también en yardas y metros cuadrados. Para pasar un área que ya tienes, mira la [tabla de pies cuadrados a metros cuadrados](/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados), de 10 a 2,000 pies cuadrados.
 
 <h2 id="formulas">Fórmulas y ejemplo resuelto</h2>
 
@@ -44,7 +44,12 @@ Ejemplo resuelto: un cuarto de 12 ft de largo y 10 ft de ancho.
 - En yardas cuadradas, 120 ÷ 9 = 13.33 yardas cuadradas.
 - En metros cuadrados, 120 × 0.09290304 = 11.1483648, que se redondea a 11.15 metros cuadrados.
 
-Si el mismo cuarto midiera 12 ft 6 in de largo, el área sería 12.5 × 10 = 125.00 pies cuadrados, es decir 13.89 yardas cuadradas y 11.61 metros cuadrados.
+Ejemplo con pies y pulgadas: un cuarto de 11 ft 6 in por 13 ft 3 in.
+
+- Pasa las pulgadas a pies: 6 in son 6 ÷ 12 = 0.5 ft, así que el largo es 11.5 ft; 3 in son 0.25 ft, así que el ancho es 13.25 ft.
+- El área es 11.5 × 13.25 = 152.375, que se redondea a 152.38 pies cuadrados.
+- En yardas cuadradas, 152.375 ÷ 9 = 16.93 yardas cuadradas.
+- En metros cuadrados, 152.375 × 0.09290304 = 14.156..., que se redondea a 14.16 metros cuadrados.
 
 La calculadora conserva fracciones exactas desde el primer dato hasta el último paso, y redondea las cifras solo cuando te las muestra. La página [Cómo calculamos](/es/metodologia#pies-cuadrados) detalla las fórmulas y los casos que probamos.
 
@@ -98,9 +103,9 @@ La calculadora no agrega nada por desperdicio. Los instaladores suelen agregar a
 
 Multiplica el ancho de la pared por su altura. Una pared de 12 ft de ancho y 8 ft de alto tiene 96 pies cuadrados. Para pintar, resta cada puerta y cada ventana como su propio rectángulo, y luego compara el resultado con la cobertura que trae la etiqueta de la pintura.
 
-### ¿Puedo usar metros y centímetros?
+### ¿Cuántos metros cuadrados son 25 pies cuadrados?
 
-Sí. Presiona Métrico (m, cm) y escribe metros o centímetros, por ejemplo 3.5 m o 350 cm. Un número solo se lee en metros, y el resultado empieza por los metros cuadrados. Cambiar de unidad nunca cambia tus números, solo cómo se escriben.
+25 pies cuadrados son 2.32 metros cuadrados: 25 × 0.09290304 = 2.322576. Es el área de un cuarto de 5 ft por 5 ft, como un baño pequeño o un clóset. Para volver, divide los metros cuadrados entre 0.09290304.
 
 <h2 id="fuentes">Fuentes y fecha de revisión</h2>
 

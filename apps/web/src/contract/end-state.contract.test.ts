@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and thirteen ids, so the
-// site has two hundred and twenty-six routable pages and two not-found pages.
-describe('end state of the decimal feet chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and fourteen ids, so the
+// site has two hundred and twenty-eight routable pages and two not-found pages.
+describe('end state of the square feet to square meters chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and thirteen page ids, two hundred and twenty-six routable paths and two hundred and twenty-eight pages with the 404s', () => {
+  it('has a hundred and fourteen page ids, two hundred and twenty-eight routable paths and two hundred and thirty pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -88,6 +88,7 @@ describe('end state of the decimal feet chart (site-routing-i18n › [SR1], [SR1
       'square-feet-12x14',
       'square-feet-12x30',
       'square-feet-20x20',
+      'square-feet-to-square-meters-chart',
       'mulch-bags-per-yard',
       'gravel-driveway-10x20',
       'gravel-driveway-12x50',
@@ -129,10 +130,10 @@ describe('end state of the decimal feet chart (site-routing-i18n › [SR1], [SR1
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(226);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(226);
+    expect(staticPaths()).toHaveLength(228);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(228);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(228);
+    expect(pageCount(ROUTES)).toBe(230);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -159,11 +160,11 @@ describe('end state of the decimal feet chart (site-routing-i18n › [SR1], [SR1
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and twenty-eight page title and description keys in %s',
+    'has exactly two hundred and thirty page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(228);
+      ).toHaveLength(230);
     },
   );
 
@@ -175,7 +176,7 @@ describe('end state of the decimal feet chart (site-routing-i18n › [SR1], [SR1
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and twenty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(226);
+  it('lists two hundred and twenty-eight URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(228);
   });
 });

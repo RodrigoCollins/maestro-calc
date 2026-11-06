@@ -779,6 +779,30 @@ export const enSite = {
   'page.decimal-feet-chart.reverse': 'Inches to decimal feet',
   'page.decimal-feet-chart.reverseLead':
     'Each whole inch as a decimal of a foot: the inches ÷ 12, to four places.',
+  'page.square-feet-to-square-meters-chart.title':
+    'Square Feet to Square Meters Chart | Maestro Calc',
+  'page.square-feet-to-square-meters-chart.description':
+    'Square feet to square meters chart: common areas from 10 to 2,000 sq ft in m², such as 188 sq ft = 17.47 m², and square meters back to square feet.',
+  'page.square-feet-to-square-meters-chart.heading':
+    'Square feet to square meters chart, from 10 to 2,000 sq ft',
+  'page.square-feet-to-square-meters-chart.label': 'Square feet to m² chart',
+  'page.square-feet-to-square-meters-chart.intro':
+    'A rug of 188 ft² is 17.47 m². To convert square feet to square meters, multiply by 0.09290304, the exact number of square meters in a square foot (a foot is exactly 0.3048 m): 188 × 0.09290304 = 17.4658 m². Find your area in the chart below, worked out by the square footage calculator, with square meters back to square feet under it.',
+  'page.square-feet-to-square-meters-chart.note':
+    'The square meters are the square feet × 0.09290304, exactly, rounded to two places. To go back, divide the square meters by 0.09290304. Open the calculator to work out any other room from its length and width.',
+  'page.square-feet-to-square-meters-chart.table': 'Square feet to square meters',
+  'page.square-feet-to-square-meters-chart.source': 'Exact conversion factors',
+  'page.square-feet-to-square-meters-chart.basis': 'The factors and the rounding',
+  'page.square-feet-to-square-meters-chart.squareFeet': 'Square feet',
+  'page.square-feet-to-square-meters-chart.squareMeters': 'Square meters',
+  'page.square-feet-to-square-meters-chart.foot': 'One foot',
+  'page.square-feet-to-square-meters-chart.squareFoot': 'One square foot',
+  'page.square-feet-to-square-meters-chart.squareMeter': 'One square meter, to four places',
+  'page.square-feet-to-square-meters-chart.rounding': 'Areas rounded to',
+  'page.square-feet-to-square-meters-chart.places': 'two decimal places',
+  'page.square-feet-to-square-meters-chart.reverse': 'Square meters to square feet',
+  'page.square-feet-to-square-meters-chart.reverseLead':
+    'Each area in square meters in square feet: the square meters ÷ 0.09290304, to two places.',
   'page.mulch.title': 'Mulch Calculator: Cubic Yards and Bags | Maestro Calc',
   'page.mulch.description':
     'Find how much mulch a garden bed needs in cubic yards and 1.5, 2 or 3 cu ft bags, with the cost in bags and in bulk. Free and instant.',

@@ -58,6 +58,12 @@ import {
   decimalFeetReverse,
   NIST_SP_811,
 } from './decimal-feet-chart.ts';
+import {
+  NIST_SP_811_AREA,
+  squareMetersChartBasis,
+  squareMetersChartTable,
+  squareMetersReverse,
+} from './square-meters-chart.ts';
 import { siteText } from './site-text.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
@@ -842,6 +848,16 @@ const CHART_BASES = {
     facts: roofPitchChartBasis(JOBS['roof-pitch-chart'].cases, locale),
     reverse: roofPitchReverse(locale),
   }),
+  'square-feet-to-square-meters-chart': (locale) => ({
+    sources: [
+      {
+        label: siteText(locale)('page.square-feet-to-square-meters-chart.source'),
+        source: NIST_SP_811_AREA,
+      },
+    ],
+    facts: squareMetersChartBasis(locale),
+    reverse: squareMetersReverse(locale),
+  }),
   'cubic-yard-weight-chart': (locale) => ({
     sources: cubicYardWeightSources(locale),
     facts: cubicYardWeightBasis(locale),
@@ -857,6 +873,7 @@ const CHART_BASES = {
 /** The charts whose table is not the job table of their calculator. */
 const CHART_TABLES: Partial<Record<ChartId, (cases: Job['cases'], locale: Locale) => JobTable>> = {
   'roof-pitch-chart': roofPitchChartTable,
+  'square-feet-to-square-meters-chart': squareMetersChartTable,
   'cubic-yard-weight-chart': cubicYardWeightTable,
   'decimal-feet-chart': decimalFeetChartTable,
 };
@@ -888,6 +905,7 @@ const noteOf = (id: JobId, locale: Locale): string => {
   const text = siteText(locale);
   if (
     id === 'roof-pitch-chart' ||
+    id === 'square-feet-to-square-meters-chart' ||
     id === 'cubic-yard-weight-chart' ||
     id === 'decimal-feet-chart'
   ) {

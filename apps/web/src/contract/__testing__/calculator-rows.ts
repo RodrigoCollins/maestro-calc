@@ -274,7 +274,7 @@ export const CONTENT_ROWS = {
   },
   'rectangle-area': {
     module: rectangleAreaPage,
-    updated: '2026-10-27',
+    updated: '2026-11-06',
     sources: () => [NIST],
     engine: rectangleAreaShown,
     // the example's link is 144 in by the 120 in default: Formulas names both sides as written
