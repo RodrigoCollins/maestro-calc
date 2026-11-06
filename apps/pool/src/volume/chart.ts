@@ -164,6 +164,51 @@ const FACTORS = {
   round: amountText(gallonsOf({ ...ONE, shape: 'round' }), 1),
 } as const;
 
+/** The volume chart in one language: its tables, worked out once, and the copy around them. */
+export interface VolumeChart {
+  readonly path: string;
+  readonly checked: string;
+  readonly card: { readonly title: string; readonly summary: string };
+  readonly title: string;
+  readonly description: string;
+  readonly h1: string;
+  readonly lead: string;
+  readonly tables: readonly VolumeTable[];
+  readonly factors: { readonly cubicFoot: string; readonly round: string };
+  readonly assumptions: readonly string[];
+  readonly shortcuts: readonly string[];
+  readonly calculator: { readonly href: string; readonly label: string };
+  readonly method: string;
+  readonly source: GuideSource;
+  readonly cite: { readonly url: string; readonly text: string };
+  /** The headings and lines of the page around the tables. */
+  readonly page: {
+    readonly kicker: string;
+    readonly notHere: string;
+    /** The line before and after the link to the dosing chart. */
+    readonly doses: string;
+    readonly dosesAfter: string;
+    /** The name of the scrolling region of a table, by its caption. */
+    readonly region: (caption: string) => string;
+    readonly size: string;
+    /** The average depth of a sloped column, as its head prints it. */
+    readonly average: (average: string) => string;
+    readonly calculator: string;
+    readonly open: string;
+    /** The accessible name of a row's calculator link, by its label. */
+    readonly openLabel: (label: string) => string;
+    readonly gallons: string;
+    readonly assumptionsHeading: string;
+    readonly shortcuts: string;
+    readonly method: string;
+    readonly methodAfter: string;
+    readonly source: string;
+    readonly citeHeading: string;
+    readonly citeText: string;
+    readonly note: string;
+  };
+}
+
 const H1 = 'Pool volume chart: gallons by size and shape';
 const PATH = '/pool-volume-chart';
 
@@ -210,4 +255,26 @@ export const VOLUME_CHART = {
     url: canonicalUrl(PATH, SITE.origin),
     text: `Pool Figures, “${H1}”, updated November 2026.`,
   },
-} as const;
+  page: {
+    kicker: 'Chart · gallons by pool size',
+    notHere: 'Your size is not here?',
+    doses: 'Once you know the gallons, the',
+    dosesAfter: 'gives the dose of each chemical.',
+    region: (caption: string) => `${caption} table`,
+    size: 'Size',
+    average: (average: string) => `(average ${average})`,
+    calculator: 'Calculator',
+    open: 'Open',
+    openLabel: (label: string) => `Open the ${label} pool in the calculator`,
+    gallons: 'US gallons.',
+    assumptionsHeading: 'How the gallons are worked out',
+    shortcuts: 'The same figures in your head, close enough for a dose:',
+    method: 'How it is worked out',
+    methodAfter: ', with the cases worked by hand.',
+    source: 'Source:',
+    citeHeading: 'Cite this chart',
+    citeText:
+      'Every figure is worked out by this site’s volume calculator when the page is built. To cite it:',
+    note: 'Every figure is an estimate for a pool of the shape and depths its table names. Measure your own pool inside the walls for the closest figure.',
+  },
+} as const satisfies VolumeChart;

@@ -1,0 +1,179 @@
+---
+import DataLink from './DataLink.astro';
+import Layout from './Layout.astro';
+import { DOSING_CHARTS } from '../dosing-es.ts';
+import type { GuideSource } from '../guide.ts';
+import type { Lang } from '../routes.ts';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const chart = DOSING_CHARTS[Astro.props.lang];
+const { title, description, h1, lead, gallons, ranges, tables, sources, cite, page } = chart;
+const sourceOf = (key: string): GuideSource => {
+  const source = sources[key];
+  if (source === undefined) throw new Error(`no source ${key}`);
+  return source;
+};
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">{page.kicker}</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <p>
+      {gallons.text} <a href={gallons.href}>{gallons.label}</a>, {chart.chart.text}{' '}
+      <a href={chart.chart.href}>{chart.chart.label}</a>. {ranges.text}{' '}
+      <a href={ranges.href}>{ranges.label}</a>.
+    </p>
+    {tables.map(({ id, caption, columns, rows }) => (
+      <section class="pool-dose" aria-labelledby={id}>
+        <h2 {id}>{caption}</h2>
+        <div class="pool-scroll" role="region" aria-label={page.region(caption)} tabindex="0">
+          <table class="pool-chart">
+            <thead>
+              <tr>
+                <th scope="col">{page.gallons}</th>
+                {columns.map(({ head, unit }) => (
+                  <th scope="col">
+                    {head} <span class="pool-unit">({unit})</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ size, cells }) => (
+                <tr>
+                  <th scope="row">{size}</th>
+                  {cells.map((value) => (
+                    <td>{value}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <dl class="pool-columns">
+          {columns.map(({ head, assumption, sources: keys, link, method }) => (
+            <>
+              <dt>{head}</dt>
+              <dd>
+                <p>{assumption}</p>
+                <p>
+                  <a href={link.href}>{link.label}</a> · <a href={method}>{page.method}</a>
+                </p>
+                <p class="pool-level-source">
+                  {page.source}{' '}
+                  {keys.map((key, index) => (
+                    <>
+                      {index > 0 && ', '}
+                      <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+                    </>
+                  ))}
+                </p>
+              </dd>
+            </>
+          ))}
+        </dl>
+      </section>
+    ))}
+    <section class="pool-dose" aria-labelledby="cite">
+      <h2 id="cite">{page.citeHeading}</h2>
+      <p>{page.citeText}</p>
+      <p class="pool-cite">
+        {cite.text} <a href={cite.url}>{cite.url}</a>
+      </p>
+    </section>
+    <p class="pool-note">{page.note}</p>
+    <DataLink path={chart.path} />
+  </main>
+</Layout>
+
+<style>
+  .pool-dose {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .pool-dose h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-dose p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  /* a narrow phone scrolls the table, never the page */
+  .pool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-chart {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-chart th,
+  .pool-chart td {
+    padding: 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: right;
+    vertical-align: top;
+  }
+
+  .pool-chart th[scope='row'],
+  .pool-chart thead th:first-child {
+    text-align: left;
+  }
+
+  .pool-chart thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-weight: 600;
+  }
+
+  .pool-unit {
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .pool-columns {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .pool-columns dt {
+    font-weight: 600;
+  }
+
+  .pool-columns dd {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .pool-level-source {
+    font-size: 0.875rem;
+  }
+
+  .pool-cite {
+    padding: 1rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    overflow-wrap: anywhere;
+  }
+</style>

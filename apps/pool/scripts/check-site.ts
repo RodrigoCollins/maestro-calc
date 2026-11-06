@@ -12,9 +12,9 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
-import { CHARTS_INDEX, DATA_PAGES } from '../src/charts.ts';
+import { CHARTS_INDEXES, DATA_PAGES_OF } from '../src/charts.ts';
 import { ALL_EMBEDS } from '../src/embed.ts';
-import { routeOf } from '../src/routes.ts';
+import { langOf, localHrefOf, routeOf } from '../src/routes.ts';
 import { GUIDES } from '../src/guide.ts';
 import { JOB_PAGES, neighborsOf } from '../src/jobs.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
@@ -71,7 +71,14 @@ const all = [
       ...(page.guide === undefined ? {} : { guide: page.guide.href }),
     })),
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
-    data: { index: CHARTS_INDEX.path, pages: DATA_PAGES.map(({ path }) => path) },
+    // a Spanish footer links the Spanish twin of a guide once it is built
+    localize: (target, path) => localHrefOf(target, langOf(path)),
+    // each language's footer links the data index of that language
+    data: (['en', 'es'] as const).map((lang) => ({
+      index: CHARTS_INDEXES[lang].path,
+      pages: DATA_PAGES_OF[lang].map(({ path }) => path),
+      footers: sitemap.filter((path) => langOf(path) === lang),
+    })),
   }),
   ...seoAuditProblems(site, {
     origin: SITE.origin,

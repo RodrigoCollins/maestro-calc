@@ -51,6 +51,11 @@ export const PAGES: readonly Page[] = [
   es('/es/calculadora-de-dureza-de-calcio-para-piscina'),
   es('/es/calculadora-de-calentador-para-piscina'),
   es('/es/calculadora-de-tiempo-de-llenado-de-piscina'),
+  es('/es/tabla-de-quimica-del-agua-de-piscina'),
+  es('/es/tabla-de-dosis-de-quimicos-para-piscina'),
+  es('/es/tabla-de-volumen-de-piscina'),
+  es('/es/datos-y-tablas'),
+  es('/es/cuanto-esperar-para-nadar-despues-de-agregar-quimicos'),
 ];
 
 /**

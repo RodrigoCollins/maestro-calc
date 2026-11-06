@@ -65,7 +65,7 @@ const SOURCES = {
 } as const satisfies Record<string, GuideSource>;
 
 /** The 12.5% liquid chlorine of 10,000 gallons from 0 ppm to its label's 5 and 10 ppm. */
-const liquid = (target: string): string =>
+export const liquidDoseOf = (target: string): string =>
   doseOf(
     CHLORINE.path,
     { gallons: '10000', current: '0', target, product: 'liquid-12-5' },
@@ -101,7 +101,7 @@ const ROWS: readonly SwimRow[] = [
     chemical: 'Liquid chlorine, 12.5%',
     when: 'Free chlorine at 4 ppm or less',
     time: 'The label gives no hours: a test reading',
-    text: `The label super-chlorinates with 52 to 104 fl. oz. per 10,000 gallons to yield 5 to 10 ppm, and says: “Do not enter treated pool above 4 ppm chlorine level due to risk of bodily harm.” In 10,000 gallons from 0 ppm, the calculator gives ${liquid('5')} fl oz for 5 ppm and ${liquid('10')} fl oz for 10.`,
+    text: `The label super-chlorinates with 52 to 104 fl. oz. per 10,000 gallons to yield 5 to 10 ppm, and says: “Do not enter treated pool above 4 ppm chlorine level due to risk of bodily harm.” In 10,000 gallons from 0 ppm, the calculator gives ${liquidDoseOf('5')} fl oz for 5 ppm and ${liquidDoseOf('10')} fl oz for 10.`,
     sources: ['liquid'],
     link: { href: CHLORINE.path, label: 'Work out the liquid chlorine' },
   },
@@ -194,17 +194,42 @@ export const SWIM_GUIDE = {
   ],
   sources: SOURCES,
   rows: ROWS,
-} as const satisfies {
-  path: string;
-  checked: string;
-  kicker: string;
-  card: { title: string; summary: string };
-  title: string;
-  description: string;
-  h1: string;
-  lead: string;
-  rules: { text: string; sources: readonly string[] };
-  charts: readonly { href: string; label: string }[];
-  sources: Record<string, GuideSource>;
-  rows: readonly SwimRow[];
-};
+  page: {
+    region: 'When to swim, by chemical',
+    caption: 'When to swim again (ppm is parts per million)',
+    chemical: 'Chemical',
+    when: 'Swim again when',
+    time: 'Time the source gives',
+    timeShort: 'Time',
+    source: 'Source:',
+    note: 'Follow the label of your own product where it differs from this guide: its strength and its reentry level vary by product. When in doubt, test again before anyone swims.',
+  },
+} as const satisfies SwimGuide;
+
+/** The guide in one language: its rows, its sources and the copy around them. */
+export interface SwimGuide {
+  readonly path: string;
+  readonly checked: string;
+  readonly kicker: string;
+  readonly card: { readonly title: string; readonly summary: string };
+  readonly title: string;
+  readonly description: string;
+  readonly h1: string;
+  readonly lead: string;
+  readonly rules: { readonly text: string; readonly sources: readonly string[] };
+  readonly charts: readonly { readonly href: string; readonly label: string }[];
+  readonly sources: Readonly<Record<string, GuideSource>>;
+  readonly rows: readonly SwimRow[];
+  /** The headings and lines of the page around the rows. */
+  readonly page: {
+    readonly region: string;
+    readonly caption: string;
+    readonly chemical: string;
+    readonly when: string;
+    readonly time: string;
+    /** The time of a row, as its own section names it. */
+    readonly timeShort: string;
+    readonly source: string;
+    readonly note: string;
+  };
+}

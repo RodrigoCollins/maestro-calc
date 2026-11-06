@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GUIDES } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
-import { footerLinksOf, LAYOUT_TEXTS, navOf, switchOf } from './layout.ts';
+import { footerLinksOf, guideLinksOf, LAYOUT_TEXTS, navOf, switchOf } from './layout.ts';
 import { hrefOf, routeOf } from './routes.ts';
 
 describe('the footer', () => {
@@ -45,6 +45,22 @@ describe('the footer', () => {
       }
     }
     expect(footerLinksOf('es').map(({ href }) => href)).toContain('/es/privacidad');
+  });
+
+  // the Spanish home names each guide in Spanish, and says which pages are still in English
+  it('lists every guide at its page in each language, marking the English ones', () => {
+    expect(guideLinksOf('en')).toEqual(
+      GUIDES.map(({ path, card }) => ({ href: path, title: card.title, summary: card.summary })),
+    );
+    const spanish = guideLinksOf('es');
+    expect(spanish).toHaveLength(GUIDES.length);
+    GUIDES.forEach(({ path }, index) => {
+      const route = routeOf(path);
+      const link = spanish[index];
+      expect(link?.href).toBe(hrefOf(route?.id ?? '', 'es'));
+      expect(link?.title.endsWith(' (en inglés)'), path).toBe(link?.href === route?.en);
+      expect(link?.summary).toBeUndefined();
+    });
   });
 
   it('warns that every figure is an estimate in each language', () => {

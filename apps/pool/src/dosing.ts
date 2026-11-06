@@ -279,6 +279,38 @@ const at = (id: string): string => {
   throw new Error(`no ${id} dose at ${String(MAIN)} gallons`);
 };
 
+/** The dosing chart in one language: its tables, worked out once, and the copy around them. */
+export interface DosingChart {
+  readonly path: string;
+  readonly checked: string;
+  readonly card: { readonly title: string; readonly summary: string };
+  readonly title: string;
+  readonly description: string;
+  readonly h1: string;
+  readonly lead: string;
+  readonly gallons: { readonly text: string; readonly href: string; readonly label: string };
+  readonly chart: { readonly text: string; readonly href: string; readonly label: string };
+  readonly ranges: { readonly text: string; readonly href: string; readonly label: string };
+  readonly tables: readonly DoseTable[];
+  readonly sources: Readonly<Record<string, GuideSource>>;
+  readonly cite: { readonly url: string; readonly text: string };
+  /** The headings and lines of the page around the tables. */
+  readonly page: {
+    readonly kicker: string;
+    readonly gallons: string;
+    /** The name of the scrolling region of a table, by its caption. */
+    readonly region: (caption: string) => string;
+    readonly method: string;
+    readonly source: string;
+    readonly citeHeading: string;
+    readonly citeText: string;
+    readonly note: string;
+  };
+}
+
+/** The dose of column `id` at 10,000 gallons, as the chart prints it (the Spanish lead quotes it). */
+export const mainDoseOf = (id: string): string => at(id);
+
 const H1 = 'Pool chemical dosing chart by pool size';
 const PATH = '/pool-chemical-dosing-chart';
 
@@ -318,4 +350,15 @@ export const DOSING_CHART = {
     url: canonicalUrl(PATH, SITE.origin),
     text: `Pool Figures, “${H1}”, updated November 2026.`,
   },
-} as const;
+  page: {
+    kicker: 'Chart · doses by pool size',
+    gallons: 'Gallons',
+    region: (caption: string) => `${caption} table`,
+    method: 'How it is worked out',
+    source: 'Source:',
+    citeHeading: 'Cite this chart',
+    citeText:
+      'Every figure is worked out by this site’s calculators when the page is built, from the sources above. To cite it:',
+    note: 'Every figure is an estimate for the product strength its column names. Read the label of each product before you add it, and follow it where it differs from this chart.',
+  },
+} as const satisfies DosingChart;

@@ -1,6 +1,7 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT, ABOUT_TEXTS } from './about.ts';
-import { CHARTS_INDEX } from './charts.ts';
+import { CHARTS_INDEX, CHARTS_INDEX_ES } from './charts.ts';
+import { CHEMISTRY_CHART_ES } from './chemistry-es.ts';
 import {
   ALKALINITY_ES,
   CALCIUM_ES,
@@ -12,6 +13,7 @@ import {
   SALT_ES,
   STABILIZER_ES,
 } from './doses-es.ts';
+import { DOSING_CHART_ES } from './dosing-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
@@ -20,6 +22,8 @@ import { METHOD_PAGE } from './methodology.ts';
 import { PRIVACY, PRIVACY_TEXTS } from './privacy.ts';
 import { ROUTES } from './routes.ts';
 import { SITE } from './site.config.ts';
+import { SWIM_GUIDE_ES } from './swim-es.ts';
+import { VOLUME_CHART_ES } from './volume/chart-es.ts';
 import { VOLUME_TEXTS_ES } from './volume/texts.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
@@ -61,6 +65,11 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   heater: { name: HEATER_ES.h1, note: HEATER_ES.description },
   'fill-time': { name: FILL_TIME_ES.h1, note: FILL_TIME_ES.description },
   methodology: { name: METHOD_PAGE.es.h1, note: METHOD_PAGE.es.description },
+  'chemistry-chart': { name: CHEMISTRY_CHART_ES.h1, note: CHEMISTRY_CHART_ES.description },
+  'dosing-chart': { name: DOSING_CHART_ES.h1, note: DOSING_CHART_ES.description },
+  'volume-chart': { name: VOLUME_CHART_ES.h1, note: VOLUME_CHART_ES.description },
+  charts: { name: CHARTS_INDEX_ES.h1, note: CHARTS_INDEX_ES.description },
+  'swim-guide': { name: SWIM_GUIDE_ES.h1, note: SWIM_GUIDE_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },

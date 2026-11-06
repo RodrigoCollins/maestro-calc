@@ -12,8 +12,14 @@ const pagesDir = new URL('pages/', import.meta.url);
 const files = readdirSync(fileURLToPath(pagesDir)).filter((name) => name.endsWith('.astro'));
 const pathOf = (file: string): string => `/${file.replace(/\.astro$/, '')}`;
 const listed = DATA_PAGES.map(({ path }) => path);
-const sourceOf = (path: string): string =>
-  readFileSync(fileURLToPath(new URL(`${path.slice(1)}.astro`, pagesDir)), 'utf8');
+/** The source of a page, with the component it renders in each language when it is one. */
+const sourceOf = (path: string): string => {
+  const page = readFileSync(fileURLToPath(new URL(`${path.slice(1)}.astro`, pagesDir)), 'utf8');
+  const component = /from '\.\.\/components\/(\w+\.astro)'/.exec(page)?.[1];
+  return component === undefined
+    ? page
+    : `${page}${readFileSync(fileURLToPath(new URL(`../components/${component}`, pagesDir)), 'utf8')}`;
+};
 
 describe('the data and charts index', () => {
   it('lives at its own page, with a title and a description search engines can show whole', () => {

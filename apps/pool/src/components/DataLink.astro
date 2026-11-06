@@ -1,5 +1,6 @@
 ---
-import { CHARTS_INDEX, DATA_PAGES, checkedText } from '../charts.ts';
+import { CHARTS_INDEXES, DATA_PAGES_OF, DATA_TEXTS, checkedText } from '../charts.ts';
+import { langOf } from '../routes.ts';
 
 interface Props {
   /** The data page this line closes; one the index does not list throws at build time. */
@@ -7,13 +8,17 @@ interface Props {
 }
 
 const { path } = Astro.props;
-const page = DATA_PAGES.find((candidate) => candidate.path === path);
+const lang = langOf(path);
+const index = CHARTS_INDEXES[lang];
+const text = DATA_TEXTS[lang];
+const page = DATA_PAGES_OF[lang].find((candidate) => candidate.path === path);
 if (page === undefined) throw new Error(`${path} is not in the data index`);
 ---
 
 <p class="pool-data-link">
-  Figures checked {checkedText(page.checked)}. See all our{' '}
-  <a href={CHARTS_INDEX.path}>{CHARTS_INDEX.name.toLowerCase()}</a>, free to cite with a link.
+  {text.checked} {checkedText(page.checked, lang)}. {text.all}{' '}
+  <a href={index.path}>{index.name.toLowerCase()}</a>
+  {text.free}
 </p>
 
 <style>
