@@ -12,14 +12,14 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { EMBED_PAGE, EMBEDS, snippets } from './embed.ts';
+import { EMBED_PAGE, EMBED_PAGE_TEXTS, EMBEDS, snippets } from './embed.ts';
 import { HOME_TOOLS } from './home.ts';
+import { footerLinksOf } from './layout.ts';
 import { pathsOf, ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, EMBED_PAGES } from './site-check/pages.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pagesDir = resolve(import.meta.dirname, 'pages');
-const layout = readFileSync(resolve(import.meta.dirname, 'components/Layout.astro'), 'utf8');
 
 describe('EMBEDS', () => {
   it('embeds every calculator of the home at /embed + its path', () => {
@@ -79,8 +79,8 @@ describe('the embed page', () => {
   });
 
   it('is linked from the footer of every page', () => {
-    const footer = /<footer[\s\S]*<\/footer>/.exec(layout)?.[0] ?? '';
-    expect(footer).toContain(`href="${EMBED_PAGE.path}"`);
+    expect(footerLinksOf('en').map(({ href }) => href)).toContain(EMBED_PAGE.path);
+    expect(footerLinksOf('es').map(({ href }) => href)).toContain(EMBED_PAGE_TEXTS.es.path);
   });
 
   it('keeps its title under 70 characters and a description search engines show whole', () => {
@@ -92,5 +92,23 @@ describe('the embed page', () => {
 
   it('asks to keep the link under the frame', () => {
     expect(EMBED_PAGE.steps.join(' ')).toContain('Keep the link');
+  });
+});
+
+describe('the Spanish embed page', () => {
+  const es = EMBED_PAGE_TEXTS.es;
+
+  it('is the English page at its Spanish address, with its own title and description', () => {
+    expect(EMBED_PAGE_TEXTS.en).toBe(EMBED_PAGE);
+    expect(es.path).toBe('/es/calculadoras-para-tu-sitio');
+    expect(es.steps).toHaveLength(EMBED_PAGE.steps.length);
+    expect(es.notes).toHaveLength(EMBED_PAGE.notes.length);
+    expect(es.title.length).toBeLessThanOrEqual(65);
+    expect(es.description.length).toBeGreaterThan(50);
+    expect(es.description.length).toBeLessThanOrEqual(160);
+  });
+
+  it('asks to keep the link under the frame', () => {
+    expect(es.steps.join(' ')).toContain('Deja el enlace');
   });
 });

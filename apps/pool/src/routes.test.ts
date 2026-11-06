@@ -2,7 +2,7 @@ import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { JOB_PAGES } from './jobs.ts';
-import { langOf, pathsOf, routeOf, ROUTES } from './routes.ts';
+import { hrefOf, langOf, pathsOf, routeOf, ROUTES } from './routes.ts';
 
 const pagesDir = resolve(import.meta.dirname, 'pages');
 
@@ -25,7 +25,7 @@ describe('ROUTES', () => {
     expect(
       ROUTES.filter(({ id }) => !id.startsWith('job:')).map(({ id, en, es }) => [id, en, es]),
     ).toEqual([
-      ['home', '/', undefined],
+      ['home', '/', '/es'],
       ['volume', '/pool-volume-calculator', undefined],
       ['salt', '/pool-salt-calculator', undefined],
       ['chlorine', '/pool-chlorine-calculator', undefined],
@@ -49,9 +49,9 @@ describe('ROUTES', () => {
       ['calcium-guide', '/how-to-raise-calcium-hardness-in-a-pool', undefined],
       ['swim-guide', '/how-long-after-adding-chemicals-can-you-swim', undefined],
       ['methodology', '/methodology', undefined],
-      ['about', '/about', undefined],
-      ['privacy', '/privacy', undefined],
-      ['embed', '/embed-calculators', undefined],
+      ['about', '/about', '/es/acerca'],
+      ['privacy', '/privacy', '/es/privacidad'],
+      ['embed', '/embed-calculators', '/es/calculadoras-para-tu-sitio'],
     ]);
   });
 
@@ -96,5 +96,18 @@ describe('langOf and pathsOf', () => {
   it('lists the English page, then its Spanish twin when it has one', () => {
     expect(pathsOf({ id: 'a', kind: 'article', en: '/a' })).toEqual(['/a']);
     expect(pathsOf({ id: 'a', kind: 'article', en: '/a', es: '/es/a' })).toEqual(['/a', '/es/a']);
+  });
+});
+
+describe('hrefOf', () => {
+  it('leads to the page in the language asked, or to the English page until its twin is built', () => {
+    expect(hrefOf('about', 'en')).toBe('/about');
+    expect(hrefOf('about', 'es')).toBe('/es/acerca');
+    expect(hrefOf('home', 'es')).toBe('/es');
+    expect(hrefOf('methodology', 'es')).toBe('/methodology');
+  });
+
+  it('refuses an id that is not a route', () => {
+    expect(() => hrefOf('nowhere', 'en')).toThrow('no route nowhere');
   });
 });

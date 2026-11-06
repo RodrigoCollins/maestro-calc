@@ -12,7 +12,8 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { HOME_TOOLS, NAV_LINKS } from './home.ts';
+import { HOME_TEXTS, HOME_TOOLS, NAV_LINKS, toolsOf } from './home.ts';
+import { hrefOf, routeOf } from './routes.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -58,5 +59,46 @@ describe('home calculator cards', () => {
     const text = HOME_TOOLS.map(({ summary }) => summary.toLowerCase()).join(' ');
     expect(text).not.toContain('kidney');
     expect(text).not.toContain('bleach');
+  });
+});
+
+describe('the Spanish home', () => {
+  it('lists the same calculators in the same order, each at its Spanish page once it is built', () => {
+    const cards = toolsOf('es');
+    expect(cards).toHaveLength(HOME_TOOLS.length);
+    for (const [index, { href }] of HOME_TOOLS.entries()) {
+      const id = routeOf(href)?.id ?? href;
+      expect(cards[index]?.href, href).toBe(hrefOf(id, 'es'));
+    }
+    expect(toolsOf('en')).toEqual(HOME_TOOLS);
+  });
+
+  it('says on a Spanish card when its calculator is still in English', () => {
+    for (const { href, summary } of toolsOf('es'))
+      expect(summary.endsWith(' (en inglés)'), href).toBe(!href.startsWith('/es/'));
+  });
+
+  it('gives each card a short Spanish title and a one-line summary', () => {
+    for (const { title, summary } of toolsOf('es')) {
+      expect(title.length).toBeGreaterThan(0);
+      expect(title.length).toBeLessThanOrEqual(16);
+      expect(summary.length).toBeLessThanOrEqual(90);
+    }
+  });
+
+  // US units stay, and "alberca" once for the readers who search it (plans/pool/SPANISH.md)
+  it('keeps US units and says alberca once', () => {
+    const text = JSON.stringify([HOME_TEXTS.es, toolsOf('es')]);
+    expect(text).toContain('galones');
+    expect(text).toContain('libras');
+    expect(text.match(/alberca/g)).toHaveLength(1);
+  });
+
+  it('titles the Spanish home for search, its own title and description', () => {
+    const { title, description } = HOME_TEXTS.es;
+    expect(title.length).toBeLessThanOrEqual(65);
+    expect(description.length).toBeGreaterThanOrEqual(50);
+    expect(description.length).toBeLessThanOrEqual(160);
+    expect(title).not.toBe(HOME_TEXTS.en.title);
   });
 });
