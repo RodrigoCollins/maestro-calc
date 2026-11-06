@@ -61,6 +61,10 @@ describe('the footer', () => {
       expect(link?.title.endsWith(' (en inglés)'), path).toBe(link?.href === route?.en);
       expect(link?.summary).toBeUndefined();
     });
+    expect(spanish[0]).toEqual({
+      href: '/es/como-abrir-tu-piscina',
+      title: 'Cómo abrir tu piscina',
+    });
   });
 
   it('warns that every figure is an estimate in each language', () => {

@@ -126,6 +126,19 @@ describe('linkProblems', () => {
     expect(linkProblems(site, RULES)).toContain('/job-2: the footer must link the guide /guide');
   });
 
+  // a Spanish page's footer links the Spanish twin of a guide, the page in its own language
+  it('reads each footer link in the language of its page, when the rules say how', () => {
+    const site = new Map([...SITE, ['/es', page(a('/'), a('/es/guia'))]]);
+    const plain: LinkRules = { ...RULES, sitemap: [...RULES.sitemap, '/es'] };
+    const rules: LinkRules = {
+      ...plain,
+      localize: (target, path) =>
+        path.startsWith('/es') && target === '/guide' ? '/es/guia' : target,
+    };
+    expect(linkProblems(site, rules).filter((line) => line.includes('footer'))).toEqual([]);
+    expect(linkProblems(site, plain)).toContain('/es: the footer must link the guide /guide');
+  });
+
   it('names a calculator that does not link a guide that explains it', () => {
     const site = without('/calc', page(`${a('/job-1')}${a('/job-2')}`, FOOTER));
     expect(linkProblems(site, RULES)).toContain('/calc: must link its guide /guide');

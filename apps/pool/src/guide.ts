@@ -19,7 +19,7 @@ export interface GuideStep {
 }
 
 /** A guide of numbered steps (`components/StepGuide.astro`). */
-interface StepGuide {
+export interface StepGuide {
   path: string;
   kicker: string;
   card: { title: string; summary: string };
@@ -50,7 +50,7 @@ const SOURCES = {
 } as const satisfies Record<string, GuideSource>;
 
 /** The doses of a 10,000 gallon pool the opening quotes, each its calculator's own. */
-const OPENING = {
+export const OPENING = {
   soda: doseOf(ALKALINITY.path, { gallons: '10000', current: '80', target: '90' }, 'pounds'),
   acid: doseOf(PH.path, { gallons: '10000', product: 'muriatic-31-45', drops: '1' }, 'liquid'),
   salt: doseOf(SALT.path, { gallons: '10000', current: '3000', target: '3200' }, 'pounds'),
