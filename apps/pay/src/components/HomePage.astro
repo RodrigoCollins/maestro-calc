@@ -8,6 +8,10 @@ import { SHIFT_GUIDE, SHIFT_GUIDE_PATHS } from '../guide/shift-differential.ts';
 import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { HOURS_WORKED_GUIDE, HOURS_WORKED_GUIDE_PATHS } from '../guide/hours-worked.ts';
 import { TIP_CREDIT_GUIDE, TIP_CREDIT_GUIDE_PATHS } from '../guide/tip-credit.ts';
+import {
+  MINIMUM_WAGE_STATES_GUIDE,
+  MINIMUM_WAGE_STATES_GUIDE_PATHS,
+} from '../guide/minimum-wage-states.ts';
 import { OVERTIME_STATES_GUIDE, OVERTIME_STATES_GUIDE_PATHS } from '../guide/overtime-states.ts';
 import { TIPPED_STATES_GUIDE, TIPPED_STATES_GUIDE_PATHS } from '../guide/tipped-states.ts';
 import { UNPAID_WAGES_GUIDE, UNPAID_WAGES_GUIDE_PATHS } from '../guide/unpaid-wages.ts';
@@ -34,6 +38,10 @@ const guides = [
   { href: TIP_CREDIT_GUIDE_PATHS[lang], label: TIP_CREDIT_GUIDE[lang].linkLabel },
   { href: TIPPED_STATES_GUIDE_PATHS[lang], label: TIPPED_STATES_GUIDE[lang].linkLabel },
   { href: OVERTIME_STATES_GUIDE_PATHS[lang], label: OVERTIME_STATES_GUIDE[lang].linkLabel },
+  {
+    href: MINIMUM_WAGE_STATES_GUIDE_PATHS[lang],
+    label: MINIMUM_WAGE_STATES_GUIDE[lang].linkLabel,
+  },
   { href: HOURS_WORKED_GUIDE_PATHS[lang], label: HOURS_WORKED_GUIDE[lang].linkLabel },
   { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
 ];

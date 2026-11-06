@@ -1,3 +1,4 @@
+import { MINIMUM_WAGE_STATES_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 /** The two pages of the pay converter: same engine, opposite starting point. */
@@ -32,6 +33,8 @@ export interface PayConverterTexts {
   >;
   readonly note: string;
   readonly timeCard: { readonly label: string; readonly href: string };
+  /** The minimum wage table, linked from both pages. */
+  readonly minimumWage: { readonly label: string; readonly href: string };
   readonly otherLang: string;
   readonly variants: Readonly<Record<Variant, VariantTexts>>;
 }
@@ -68,6 +71,10 @@ export const PAY_CONVERTER_TEXTS: Readonly<Record<Lang, PayConverterTexts>> = {
     },
     note: 'Gross pay, before taxes and deductions. Overtime is not included: for weeks over 40 hours, use the time card.',
     timeCard: { label: 'Open the time card', href: '/time-card-calculator' },
+    minimumWage: {
+      label: 'Minimum wage by state, 2026',
+      href: MINIMUM_WAGE_STATES_GUIDE_PATHS.en,
+    },
     otherLang: 'Español',
     variants: {
       hourly: {
@@ -120,6 +127,10 @@ export const PAY_CONVERTER_TEXTS: Readonly<Record<Lang, PayConverterTexts>> = {
     },
     note: 'Es el pago bruto, antes de impuestos y descuentos. No incluye horas extra: para semanas de más de 40 horas, usa la tarjeta de horas.',
     timeCard: { label: 'Abrir la tarjeta de horas', href: '/es/calculadora-de-horas-trabajadas' },
+    minimumWage: {
+      label: 'Salario mínimo por estado, 2026',
+      href: MINIMUM_WAGE_STATES_GUIDE_PATHS.es,
+    },
     otherLang: 'English',
     variants: {
       hourly: {

@@ -1,7 +1,11 @@
 import { SITE } from '../site.config.ts';
 import { TIPPED_PATHS } from '../tipped/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
-import { TIP_CREDIT_GUIDE_PATHS, TIPPED_STATES_GUIDE_PATHS } from './paths.ts';
+import {
+  MINIMUM_WAGE_STATES_GUIDE_PATHS,
+  TIP_CREDIT_GUIDE_PATHS,
+  TIPPED_STATES_GUIDE_PATHS,
+} from './paths.ts';
 import type { GuideSection, GuideSource } from './texts.ts';
 
 export { TIPPED_STATES_GUIDE_PATHS } from './paths.ts';
@@ -293,6 +297,7 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     ctas: [
       { label: 'Open the tipped wage calculator', href: TIPPED_PATHS.en },
       { label: 'How the tip credit works', href: TIP_CREDIT_GUIDE_PATHS.en },
+      { label: 'Minimum wage by state, 2026', href: MINIMUM_WAGE_STATES_GUIDE_PATHS.en },
     ],
     linkLabel: 'Tipped minimum wage by state, 2026',
   },
@@ -336,6 +341,7 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     ctas: [
       { label: 'Abrir la calculadora de propinas por hora', href: TIPPED_PATHS.es },
       { label: 'Cómo funciona el crédito por propinas', href: TIP_CREDIT_GUIDE_PATHS.es },
+      { label: 'Salario mínimo por estado, 2026', href: MINIMUM_WAGE_STATES_GUIDE_PATHS.es },
     ],
     linkLabel: 'Salario mínimo con propinas por estado, 2026',
   },
