@@ -151,6 +151,36 @@ describe('linkProblems', () => {
     );
   });
 
+  // a Spanish guide and the Spanish calculator it explains link each other, like their English twins
+  describe('the Spanish guides', () => {
+    const rules: LinkRules = {
+      ...RULES,
+      sitemap: [...RULES.sitemap, '/es/calc', '/es/guide'],
+      spanishGuides: [{ path: '/es/guide', calculators: ['/es/calc'] }],
+    };
+    const linked = new Map([
+      ...SITE,
+      ['/es/calc', page(a('/es/guide'), FOOTER)],
+      ['/es/guide', page(a('/es/calc'), FOOTER)],
+    ]);
+
+    it('passes a Spanish guide and calculator that link each other', () => {
+      expect(linkProblems(linked, rules)).toEqual([]);
+    });
+
+    it('names a Spanish calculator that does not link its Spanish guide', () => {
+      const site = new Map([...linked, ['/es/calc', page('', FOOTER)]]);
+      expect(linkProblems(site, rules)).toContain('/es/calc: must link its guide /es/guide');
+    });
+
+    it('names a Spanish guide that does not link the calculator it explains', () => {
+      const site = new Map([...linked, ['/es/guide', page('', FOOTER)]]);
+      expect(linkProblems(site, rules)).toContain(
+        '/es/guide: must link the calculator it explains, /es/calc',
+      );
+    });
+  });
+
   describe('the data index', () => {
     const DATA_FOOTER = `${FOOTER}${a('/data')}`;
     const rules: LinkRules = {

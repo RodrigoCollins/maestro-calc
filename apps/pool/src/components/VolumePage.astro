@@ -127,8 +127,8 @@ const rows = [
         <a href={t.methodLink.href}>{t.methodLink.label}</a>
       </p>
     )}
-    {/* the job pages and the guides are English for now: the Spanish page leaves their links out */}
-    {lang === 'en' && <JobLinks path={t.path} {embed} />}
+    {/* the guides in the page's language; the job pages are English only */}
+    <JobLinks path={t.path} {embed} />
   </main>
   <slot />
 </Layout>

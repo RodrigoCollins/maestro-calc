@@ -71,6 +71,12 @@ const all = [
       ...(page.guide === undefined ? {} : { guide: page.guide.href }),
     })),
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
+    // a built Spanish guide and the Spanish calculators it explains link each other
+    spanishGuides: GUIDES.flatMap(({ path, calculators }) => {
+      const spanish = routeOf(path)?.es;
+      if (spanish === undefined) return [];
+      return [{ path: spanish, calculators: calculators.flatMap((c) => routeOf(c)?.es ?? []) }];
+    }),
     // a Spanish footer links the Spanish twin of a guide once it is built
     localize: (target, path) => localHrefOf(target, langOf(path)),
     // each language's footer links the data index of that language

@@ -1,11 +1,13 @@
 ---
-import { guidesOf } from '../guide.ts';
+import { calculatorGuidesOf } from '../layout.ts';
+import { langOf } from '../routes.ts';
 import { guideJobLinksOf, jobLinksOf, neighborsOf, type JobPage } from '../jobs.ts';
 
 type Props =
   /**
-   * On a calculator page: the guides that explain it (left out of an embed, whose frame height is
-   * fixed), then every job page that calculator works out.
+   * On a calculator page: the guides that explain it in the page's language (left out of an
+   * embed, whose frame height is fixed), then every job page that calculator works out (English
+   * only: a Spanish calculator has none).
    */
   | { readonly path: string; readonly embed: boolean }
   /** On a job page: its nearest sizes only, so the pages stay distinct. */
@@ -20,16 +22,17 @@ const [links, heading] =
     : 'guide' in props
       ? [guideJobLinksOf(props.guide), 'Common pool sizes']
       : [jobLinksOf(props.path), 'Common pool sizes'];
-const guides = 'path' in props && !props.embed ? guidesOf(props.path) : [];
+const guides = 'path' in props && !props.embed ? calculatorGuidesOf(props.path) : [];
+const guidesHeading = 'path' in props && langOf(props.path) === 'es' ? 'Guías' : 'Guides';
 ---
 
 {guides.length > 0 && (
   <section class="pool-guides" aria-labelledby="guides-heading">
-    <h2 id="guides-heading">Guides</h2>
+    <h2 id="guides-heading">{guidesHeading}</h2>
     <ul class="link-list">
-      {guides.map(({ path, card }) => (
+      {guides.map(({ href, title }) => (
         <li>
-          <a href={path}>{card.title}</a>
+          <a href={href}>{title}</a>
         </li>
       ))}
     </ul>

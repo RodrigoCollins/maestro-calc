@@ -17,6 +17,14 @@ export interface LinkRules {
   /** Each guide and the calculators it explains (`GUIDES` of `src/guide.ts`). */
   readonly guides: readonly { readonly path: string; readonly calculators: readonly string[] }[];
   /**
+   * Each Spanish guide that is built and the Spanish calculators it explains: they link each other
+   * as their English twins do (the home list and the footers are checked through `guides`).
+   */
+  readonly spanishGuides?: readonly {
+    readonly path: string;
+    readonly calculators: readonly string[];
+  }[];
+  /**
    * The page of `target` a footer of the page at `path` links, in that page's language: the
    * Spanish twin of a guide once it is built (`localHrefOf` of `src/routes.ts`). By default, itself.
    */
@@ -81,7 +89,10 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
     ...new Set([
       ...rules.sitemap,
       ...rules.jobs.flatMap(({ path, calculator }) => [path, calculator]),
-      ...rules.guides.flatMap(({ path, calculators }) => [path, ...calculators]),
+      ...[...rules.guides, ...(rules.spanishGuides ?? [])].flatMap(({ path, calculators }) => [
+        path,
+        ...calculators,
+      ]),
     ]),
   ].filter((path) => !site.has(path));
   if (missing.length > 0) return missing.map((path) => `${path}: a page the build does not hold`);
@@ -118,7 +129,7 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
         FOOTER,
       ),
     ),
-    ...rules.guides.flatMap(({ path, calculators }) => [
+    ...[...rules.guides, ...(rules.spanishGuides ?? [])].flatMap(({ path, calculators }) => [
       ...calculators.flatMap((calculator) => must(calculator, [path], 'must link its guide')),
       ...must(path, calculators, 'must link the calculator it explains,'),
     ]),

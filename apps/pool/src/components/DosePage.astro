@@ -2,7 +2,6 @@
 import type { Calculator, InputDescriptor, OutputDescriptor } from '@maestro-calc/core';
 import type { DosePage } from '../doses.ts';
 import { amountText, outputText } from '../format.ts';
-import { langOf } from '../routes.ts';
 import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 
@@ -51,7 +50,6 @@ const shown = (forms: readonly string[] | undefined): boolean =>
   forms === undefined || forms.includes(product ?? '');
 const reading = fields.find(({ key }) => key === page.strip?.field)?.value;
 const warned = new Set(ran.value.warnings.map(({ code }) => code));
-const lang = langOf(page.path);
 ---
 
 <Layout title={page.title} description={page.description} {embed}>
@@ -136,8 +134,8 @@ const lang = langOf(page.path);
         <a href={page.methodLink.href}>{page.methodLink.label}</a>
       </p>
     )}
-    {/* the job pages and the guides are English for now: the Spanish page leaves their links out */}
-    {lang === 'en' && <JobLinks path={page.path} {embed} />}
+    {/* the guides in the page's language; the job pages are English only */}
+    <JobLinks path={page.path} {embed} />
   </main>
   <slot />
 </Layout>
