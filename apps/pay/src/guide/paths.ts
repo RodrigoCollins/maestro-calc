@@ -50,3 +50,9 @@ export const OVERTIME_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/overtime-laws-by-state',
   es: '/es/guias/leyes-de-horas-extra-por-estado',
 };
+
+/** The minimum wage by state: each state's rate, the federal fallback and the 2027 changes. */
+export const MINIMUM_WAGE_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/minimum-wage-by-state',
+  es: '/es/guias/salario-minimo-por-estado',
+};

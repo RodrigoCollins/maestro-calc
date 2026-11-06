@@ -3,6 +3,7 @@ import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import {
   HOURS_WORKED_GUIDE_PATHS,
+  MINIMUM_WAGE_STATES_GUIDE_PATHS,
   OVERTIME_STATES_GUIDE_PATHS,
   PAY_STUB_GUIDE_PATHS,
   PTO_GUIDE_PATHS,
@@ -59,6 +60,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'tipped-states-guide', kind: 'article', ...TIPPED_STATES_GUIDE_PATHS },
   { id: 'hours-worked-guide', kind: 'article', ...HOURS_WORKED_GUIDE_PATHS },
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
+  { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
