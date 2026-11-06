@@ -92,7 +92,8 @@ describe('the Spanish dose pages', () => {
       });
 
       it('links the section of the methodology that works it out', () => {
-        expect(es.methodLink?.href).toBe(`/methodology#${id}`);
+        expect(es.methodLink?.href).toBe(`/es/metodologia#${id}`);
+        expect(es.methodLink?.label).not.toContain('inglés');
         expect(en.methodLink).toBeUndefined();
       });
 
@@ -155,6 +156,6 @@ describe('the Spanish volume page', () => {
     expect(VOLUME_TEXTS_ES.description.length).toBeGreaterThanOrEqual(50);
     expect(VOLUME_TEXTS_ES.description.length).toBeLessThanOrEqual(160);
     expect(VOLUME_TEXTS_ES.lead).toContain('alberca');
-    expect(VOLUME_TEXTS_ES.methodLink.href).toBe('/methodology#volume');
+    expect(VOLUME_TEXTS_ES.methodLink.href).toBe('/es/metodologia#volume');
   });
 });

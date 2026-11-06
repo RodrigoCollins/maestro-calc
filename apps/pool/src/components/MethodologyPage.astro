@@ -1,0 +1,104 @@
+---
+import Layout from './Layout.astro';
+import { METHOD_PAGE, methodSectionsOf } from '../methodology.ts';
+import type { Lang } from '../routes.ts';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = METHOD_PAGE[lang];
+const METHOD_SECTIONS = methodSectionsOf(lang);
+---
+
+<Layout title={t.title} description={t.description}>
+  <main class="pool-page">
+    <h1>{t.h1}</h1>
+    <p>{t.lead}</p>
+    <nav aria-label={t.sectionsLabel}>
+      <ul class="pool-method-index">
+        {METHOD_SECTIONS.map(({ id, title }) => (
+          <li>
+            <a href={`#${id}`}>{title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    {METHOD_SECTIONS.map(({ id, title, href, method, note, sources, cases }) => (
+      <section class="pool-method" aria-labelledby={id}>
+        <h2 {id}>{title}</h2>
+        <p>{method}</p>
+        <p>{note}</p>
+        <h3>{cases.length === 1 ? t.example : t.examples}</h3>
+        <ul>
+          {cases.map(({ text, result, unit }) => (
+            <li>
+              {text}{' '}
+              <strong>
+                {result} {unit}
+              </strong>
+            </li>
+          ))}
+        </ul>
+        <h3>{sources.length === 1 ? t.source : t.sources}</h3>
+        <ul>
+          {sources.map(({ name, url }) => (
+            <li>{url === undefined ? name : <a href={url}>{name}</a>}</li>
+          ))}
+        </ul>
+        <p>
+          <a {href}>{t.open(title)}</a>
+        </p>
+      </section>
+    ))}
+  </main>
+</Layout>
+
+<style>
+  .pool-method-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-weight: 600;
+  }
+
+  .pool-method {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-method h2,
+  .pool-method h3 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+  }
+
+  .pool-method h2 {
+    font-size: 2rem;
+  }
+
+  .pool-method h3 {
+    font-size: 1.25rem;
+  }
+
+  .pool-method ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .pool-method strong {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+</style>

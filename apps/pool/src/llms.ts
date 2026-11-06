@@ -16,6 +16,7 @@ import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
 import { JOB_PAGES } from './jobs.ts';
+import { METHOD_PAGE } from './methodology.ts';
 import { PRIVACY, PRIVACY_TEXTS } from './privacy.ts';
 import { ROUTES } from './routes.ts';
 import { SITE } from './site.config.ts';
@@ -59,6 +60,7 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   calcium: { name: CALCIUM_ES.h1, note: CALCIUM_ES.description },
   heater: { name: HEATER_ES.h1, note: HEATER_ES.description },
   'fill-time': { name: FILL_TIME_ES.h1, note: FILL_TIME_ES.description },
+  methodology: { name: METHOD_PAGE.es.h1, note: METHOD_PAGE.es.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },

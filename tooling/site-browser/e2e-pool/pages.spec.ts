@@ -134,7 +134,7 @@ for (const [english, spanish] of [
 
 // a page with no twin yet carries no alternate and no switch
 test('gives a page with no Spanish twin no alternate and no switch', async ({ page }) => {
-  await page.goto('/methodology');
+  await page.goto('/how-much-salt-for-a-15000-gallon-pool');
   await expect(page.locator('link[rel="alternate"]')).toHaveCount(0);
   await expect(page.locator('header a[hreflang]')).toHaveCount(0);
 });
@@ -165,6 +165,16 @@ test('links the methodology from the footer, and it shows the worked examples', 
   await expect(page).toHaveURL(/\/methodology$/);
   await expect(page.locator('.pool-method li strong')).toHaveCount(23);
   await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 gallons');
+});
+
+test('shows the same worked examples on the Spanish methodology, linked from its footer', async ({
+  page,
+}) => {
+  await page.goto('/es');
+  await page.locator('footer a[href="/es/metodologia"]').click();
+  await expect(page).toHaveURL(/\/es\/metodologia$/);
+  await expect(page.locator('.pool-method li strong')).toHaveCount(23);
+  await expect(page.locator('.pool-method li strong').first()).toHaveText('22,023 galones');
 });
 
 test('links the privacy page from the footer, and it describes Google Analytics', async ({

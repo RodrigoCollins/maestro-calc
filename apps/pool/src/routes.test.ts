@@ -60,7 +60,7 @@ describe('ROUTES', () => {
       ['ph-guide', '/how-to-lower-ph-in-a-pool', undefined],
       ['calcium-guide', '/how-to-raise-calcium-hardness-in-a-pool', undefined],
       ['swim-guide', '/how-long-after-adding-chemicals-can-you-swim', undefined],
-      ['methodology', '/methodology', undefined],
+      ['methodology', '/methodology', '/es/metodologia'],
       ['about', '/about', '/es/acerca'],
       ['privacy', '/privacy', '/es/privacidad'],
       ['embed', '/embed-calculators', '/es/calculadoras-para-tu-sitio'],
@@ -116,7 +116,10 @@ describe('hrefOf', () => {
     expect(hrefOf('about', 'en')).toBe('/about');
     expect(hrefOf('about', 'es')).toBe('/es/acerca');
     expect(hrefOf('home', 'es')).toBe('/es');
-    expect(hrefOf('methodology', 'es')).toBe('/methodology');
+    expect(hrefOf('methodology', 'es')).toBe('/es/metodologia');
+    expect(hrefOf('job:how-much-salt-for-a-15000-gallon-pool', 'es')).toBe(
+      '/how-much-salt-for-a-15000-gallon-pool',
+    );
   });
 
   it('refuses an id that is not a route', () => {

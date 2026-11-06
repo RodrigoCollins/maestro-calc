@@ -92,7 +92,7 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'ph-guide', kind: 'article', en: '/how-to-lower-ph-in-a-pool' },
   { id: 'calcium-guide', kind: 'article', en: '/how-to-raise-calcium-hardness-in-a-pool' },
   { id: 'swim-guide', kind: 'article', en: '/how-long-after-adding-chemicals-can-you-swim' },
-  { id: 'methodology', kind: 'article', en: '/methodology' },
+  { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'about', kind: 'article', en: '/about', es: '/es/acerca' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'embed', kind: 'article', en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },

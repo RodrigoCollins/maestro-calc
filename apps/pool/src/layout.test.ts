@@ -77,7 +77,7 @@ describe('the header', () => {
     expect(switchOf('/about')).toEqual({ href: '/es/acerca', lang: 'es', label: 'Español' });
     expect(switchOf('/es/acerca')).toEqual({ href: '/about', lang: 'en', label: 'English' });
     expect(switchOf('/es')).toEqual({ href: '/', lang: 'en', label: 'English' });
-    expect(switchOf('/methodology')).toBeUndefined();
+    expect(switchOf('/how-much-salt-for-a-15000-gallon-pool')).toBeUndefined();
     expect(switchOf('/404')).toBeUndefined();
   });
 });

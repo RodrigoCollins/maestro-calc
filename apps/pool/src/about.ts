@@ -116,7 +116,7 @@ const ABOUT_ES: About = {
       paragraphs: [
         'Cada calculadora hace aritmética exacta y solo redondea la cifra que lees. Cada fórmula se prueba con casos resueltos a mano, y la página de metodología muestra esos casos. Usamos herramientas de IA para ayudar a escribir textos y código; las fórmulas se comprueban con esos casos antes de publicar una página.',
       ],
-      link: { href: hrefOf('methodology', 'es'), label: 'Cómo lo calculamos (en inglés)' },
+      link: { href: hrefOf('methodology', 'es'), label: 'Cómo lo calculamos' },
     },
     {
       id: 'sources',
