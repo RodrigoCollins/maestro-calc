@@ -133,6 +133,32 @@ const ROWS: readonly ChartRow[] = [
   },
 ];
 
+/** The water chemistry chart in one language: its rows, its sources and the copy around them. */
+export interface ChemistryChart {
+  readonly path: string;
+  readonly checked: string;
+  readonly card: { readonly title: string; readonly summary: string };
+  readonly title: string;
+  readonly description: string;
+  readonly h1: string;
+  readonly lead: string;
+  readonly gallons: { readonly text: string; readonly href: string; readonly label: string };
+  readonly sources: Readonly<Record<string, GuideSource>>;
+  readonly rows: readonly ChartRow[];
+  /** The headings and lines of the page around the rows. */
+  readonly page: {
+    readonly kicker: string;
+    readonly caption: string;
+    readonly level: string;
+    readonly home: string;
+    readonly publicPool: string;
+    /** The line before the link to the dosing chart. */
+    readonly doses: string;
+    readonly source: string;
+    readonly note: string;
+  };
+}
+
 /** The home-pool range of the row `id`, as the chart prints it. */
 const homeOf = (id: string): string => {
   const found = ROWS.find((row) => row.id === id);
@@ -165,15 +191,14 @@ export const CHEMISTRY_CHART = {
   },
   sources: SOURCES,
   rows: ROWS,
-} as const satisfies {
-  path: string;
-  checked: string;
-  card: { title: string; summary: string };
-  title: string;
-  description: string;
-  h1: string;
-  lead: string;
-  gallons: { text: string; href: string; label: string };
-  sources: Record<string, GuideSource>;
-  rows: readonly ChartRow[];
-};
+  page: {
+    kicker: 'Guide · water chemistry',
+    caption: 'Target levels (ppm is parts per million)',
+    level: 'Level',
+    home: 'Home pool',
+    publicPool: 'Public pool',
+    doses: 'The dose of each chemical for pools of 5,000 to 40,000 gallons is in the',
+    source: 'Source:',
+    note: 'Home-pool ranges are the manufacturer’s; your state may set its own rules for a public pool. Read the label of each product before you add it.',
+  },
+} as const satisfies ChemistryChart;

@@ -143,7 +143,7 @@ describe('linkProblems', () => {
     const rules: LinkRules = {
       ...RULES,
       sitemap: [...RULES.sitemap, '/data'],
-      data: { index: '/data', pages: ['/guide'] },
+      data: [{ index: '/data', pages: ['/guide'] }],
     };
     const pages: readonly (readonly [string, string])[] = [
       ...SITE,
@@ -175,6 +175,66 @@ describe('linkProblems', () => {
       const site = new Map([...linked, ['/job-2', page(`${a('/calc')}${a('/job-1')}`, FOOTER)]]);
       expect(linkProblems(site, rules)).toEqual([
         '/job-2: the footer must link the data index /data',
+      ]);
+    });
+  });
+
+  // a footer links each guide in the language of its page: the Spanish twin once it is built
+  describe('the guides of a Spanish footer', () => {
+    const rules: LinkRules = {
+      ...RULES,
+      sitemap: [...RULES.sitemap, '/es/guia'],
+      localize: (target, path) =>
+        path.startsWith('/es/') && target === '/guide' ? '/es/guia' : target,
+    };
+    const site = new Map([
+      ...SITE,
+      ['/calc', page(`${a('/job-1')}${a('/job-2')}${a('/guide')}${a('/es/guia')}`, FOOTER)],
+      ['/es/guia', page(a('/calc'), a('/es/guia'))],
+    ]);
+
+    it('passes when the Spanish footer links the Spanish guide', () => {
+      expect(linkProblems(site, rules)).toEqual([]);
+    });
+
+    it('names a Spanish footer that links the English guide only', () => {
+      const broken = new Map([...site, ['/es/guia', page(a('/calc'), FOOTER)]]);
+      expect(linkProblems(broken, rules)).toContain(
+        '/es/guia: the footer must link the guide /es/guia',
+      );
+    });
+  });
+
+  // each language has its own index: a page's footer links the index of its own language
+  describe('a data index per language', () => {
+    const rules: LinkRules = {
+      ...RULES,
+      sitemap: [...RULES.sitemap, '/data', '/es/data', '/es/guide'],
+      data: [
+        { index: '/data', pages: ['/guide'], footers: [...RULES.sitemap, '/data'] },
+        { index: '/es/data', pages: ['/es/guide'], footers: ['/es/data', '/es/guide'] },
+      ],
+    };
+    const en = `${FOOTER}${a('/data')}`;
+    const es = `${FOOTER}${a('/es/data')}`;
+    const site = new Map([
+      ...[...SITE].map(
+        ([path, html]) => [path, html.replace(`${FOOTER}</footer>`, `${en}</footer>`)] as const,
+      ),
+      ['/guide', page(`${a('/calc')}${a('/data')}`, en)],
+      ['/data', page(`${a('/guide')}${a('/es/data')}`, en)],
+      ['/es/guide', page(a('/es/data'), es)],
+      ['/es/data', page(a('/es/guide'), es)],
+    ]);
+
+    it('passes when every footer links the index of its language', () => {
+      expect(linkProblems(site, rules)).toEqual([]);
+    });
+
+    it('names a Spanish page whose footer links the English index only', () => {
+      const broken = new Map([...site, ['/es/guide', page(a('/es/data'), en)]]);
+      expect(linkProblems(broken, rules)).toEqual([
+        '/es/guide: the footer must link the data index /es/data',
       ]);
     });
   });

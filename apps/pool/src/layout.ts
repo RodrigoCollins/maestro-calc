@@ -1,4 +1,5 @@
 import { CHARTS_INDEX } from './charts.ts';
+import { GUIDES } from './guide.ts';
 import { hrefOf, langOf, routeOf, type Lang } from './routes.ts';
 
 export { navOf } from './home.ts';
@@ -67,6 +68,21 @@ export const footerLinksOf = (lang: Lang): { readonly href: string; readonly lab
 /** The footer label of route `id` in `lang`: the Spanish home names its English guides by it. */
 export const labelOf = (id: string, lang: Lang): string | undefined =>
   LAYOUT_TEXTS[lang].footer.find((link) => link.id === id)?.label;
+
+/**
+ * The guides as the home lists them in `lang`: in English with their card; in Spanish by their
+ * footer label, at the Spanish twin once it is built, and marked while the page is still English.
+ */
+export const guideLinksOf = (
+  lang: Lang,
+): { readonly href: string; readonly title: string; readonly summary?: string }[] =>
+  GUIDES.map(({ path, card }) => {
+    if (lang === 'en') return { href: path, title: card.title, summary: card.summary };
+    const id = routeOf(path)?.id ?? '';
+    const href = hrefOf(id, lang);
+    const title = labelOf(id, lang) ?? card.title;
+    return { href, title: href === routeOf(href)?.en ? `${title} (en inglés)` : title };
+  });
 
 const NAMES = { en: 'English', es: 'Español' } as const;
 

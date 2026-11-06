@@ -5,8 +5,8 @@ import Layout from './Layout.astro';
 import { GUIDES } from '../guide.ts';
 import { HOME_TEXTS, toolsOf } from '../home.ts';
 import { JOB_PAGES } from '../jobs.ts';
-import { labelOf } from '../layout.ts';
-import { hrefOf, routeOf, type Lang } from '../routes.ts';
+import { guideLinksOf } from '../layout.ts';
+import { hrefOf, type Lang } from '../routes.ts';
 
 interface Props {
   readonly lang: Lang;
@@ -17,12 +17,7 @@ const text = HOME_TEXTS[lang];
 // the job pages are English only for now, so the Spanish home leaves their list out
 const jobs = lang === 'en' ? JOB_PAGES : [];
 // the guides at their page in this language once it is built, named in this language
-const guides = GUIDES.map(({ path, card }) => {
-  const id = routeOf(path)?.id ?? '';
-  return lang === 'en'
-    ? { href: path, title: card.title, summary: card.summary }
-    : { href: hrefOf(id, lang), title: labelOf(id, lang) ?? card.title, summary: undefined };
-});
+const guides = guideLinksOf(lang);
 
 // The sample shows the volume engine's own default, worked out at build time (no script).
 const ran = poolVolume.run({});

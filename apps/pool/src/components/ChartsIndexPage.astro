@@ -1,0 +1,73 @@
+---
+import Layout from './Layout.astro';
+import { CHARTS_INDEXES, DATA_PAGES_OF, checkedText } from '../charts.ts';
+import type { Lang } from '../routes.ts';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { title, description, h1, lead, press, page } = CHARTS_INDEXES[lang];
+const pages = DATA_PAGES_OF[lang];
+---
+
+<Layout {title} {description}>
+  <main class="pool-page">
+    <p class="pool-kicker">{page.kicker}</p>
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <ul class="pool-data">
+      {pages.map(({ path, name, summary, checked, owners }) => (
+        <li>
+          <h2>
+            <a href={path}>{name}</a>
+          </h2>
+          <p>{summary}</p>
+          <p class="pool-data-meta">
+            {page.checked} <time datetime={checked}>{checkedText(checked, lang)}</time>.{' '}
+            {page.sources} {owners.join(', ')}.
+          </p>
+        </li>
+      ))}
+    </ul>
+    <section class="pool-press" aria-labelledby="press">
+      <h2 id="press">{press.heading}</h2>
+      <p>
+        {press.text} <a href={`mailto:${press.email}`}>{press.email}</a>.
+      </p>
+    </section>
+  </main>
+</Layout>
+
+<style>
+  .pool-data {
+    display: grid;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pool-data li,
+  .pool-press {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+  }
+
+  .pool-data h2,
+  .pool-press h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-data-meta {
+    font-size: 1rem;
+  }
+</style>

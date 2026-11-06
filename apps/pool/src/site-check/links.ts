@@ -16,8 +16,20 @@ export interface LinkRules {
   }[];
   /** Each guide and the calculators it explains (`GUIDES` of `src/guide.ts`). */
   readonly guides: readonly { readonly path: string; readonly calculators: readonly string[] }[];
-  /** The data index and the citable pages it lists (`DATA_PAGES` of `src/charts.ts`). */
-  readonly data?: { readonly index: string; readonly pages: readonly string[] };
+  /**
+   * The page of `target` a footer of the page at `path` links, in that page's language: the
+   * Spanish twin of a guide once it is built (`localHrefOf` of `src/routes.ts`). By default, itself.
+   */
+  readonly localize?: (target: string, path: string) => string;
+  /**
+   * The data index of each language and the citable pages it lists (`DATA_PAGES_OF` of
+   * `src/charts.ts`), with the sitemap pages whose footer links it (every one when unnamed).
+   */
+  readonly data?: readonly {
+    readonly index: string;
+    readonly pages: readonly string[];
+    readonly footers?: readonly string[];
+  }[];
 }
 
 const ANCHOR = /<a\b[^>]*?\shref="([^"]*)"/g;
@@ -84,7 +96,7 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
   };
   const guides = rules.guides.map(({ path }) => path);
   const inbound = inboundOf(site, rules);
-  const { data } = rules;
+  const { data, localize = (target: string) => target } = rules;
   return [
     ...rules.jobs.flatMap(({ path, calculator, neighbors, guide }) => [
       ...must(calculator, [path], 'must link its job page'),
@@ -99,21 +111,24 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
     ]),
     ...must('/', guides, 'the Guides list must link', HOME_GUIDES),
     ...rules.sitemap.flatMap((path) =>
-      must(path, guides, 'the footer must link the guide', FOOTER),
+      must(
+        path,
+        guides.map((guide) => localize(guide, path)),
+        'the footer must link the guide',
+        FOOTER,
+      ),
     ),
     ...rules.guides.flatMap(({ path, calculators }) => [
       ...calculators.flatMap((calculator) => must(calculator, [path], 'must link its guide')),
       ...must(path, calculators, 'must link the calculator it explains,'),
     ]),
-    ...(data === undefined
-      ? []
-      : [
-          ...data.pages.flatMap((path) => must(path, [data.index], 'must link the data index')),
-          ...must(data.index, data.pages, 'must list the data page'),
-          ...rules.sitemap.flatMap((path) =>
-            must(path, [data.index], 'the footer must link the data index', FOOTER),
-          ),
-        ]),
+    ...(data ?? []).flatMap(({ index, pages, footers = rules.sitemap }) => [
+      ...pages.flatMap((path) => must(path, [index], 'must link the data index')),
+      ...must(index, pages, 'must list the data page'),
+      ...footers.flatMap((path) =>
+        must(path, [index], 'the footer must link the data index', FOOTER),
+      ),
+    ]),
     ...rules.sitemap
       .filter((path) => inbound.get(path) === 0)
       .map((path) => `${path}: no other page in the sitemap links it`),

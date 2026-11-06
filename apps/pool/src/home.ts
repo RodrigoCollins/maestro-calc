@@ -179,6 +179,6 @@ export const HOME_TEXTS = {
     bandHeading: '¿Vas a abrir tu piscina esta primavera?',
     band: 'El orden que te ahorra otra vuelta a la tienda: nivel del agua, sal, pH y luego cloro. Cada dosis, a la medida de tu piscina.',
     bandButton: 'Lee la guía de apertura (en inglés)',
-    guidesHeading: 'Guías (en inglés)',
+    guidesHeading: 'Guías',
   },
 } as const satisfies Record<Lang, Record<string, string>>;

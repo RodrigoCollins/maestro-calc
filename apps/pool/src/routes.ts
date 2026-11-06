@@ -80,10 +80,30 @@ const PAGE_ROUTES: readonly Route[] = [
     en: '/pool-fill-time-calculator',
     es: '/es/calculadora-de-tiempo-de-llenado-de-piscina',
   },
-  { id: 'chemistry-chart', kind: 'article', en: '/pool-water-chemistry-chart' },
-  { id: 'dosing-chart', kind: 'article', en: '/pool-chemical-dosing-chart' },
-  { id: 'volume-chart', kind: 'article', en: '/pool-volume-chart' },
-  { id: 'charts', kind: 'article', en: '/charts' },
+  {
+    id: 'chemistry-chart',
+    kind: 'article',
+    en: '/pool-water-chemistry-chart',
+    es: '/es/tabla-de-quimica-del-agua-de-piscina',
+  },
+  {
+    id: 'dosing-chart',
+    kind: 'article',
+    en: '/pool-chemical-dosing-chart',
+    es: '/es/tabla-de-dosis-de-quimicos-para-piscina',
+  },
+  {
+    id: 'volume-chart',
+    kind: 'article',
+    en: '/pool-volume-chart',
+    es: '/es/tabla-de-volumen-de-piscina',
+  },
+  {
+    id: 'charts',
+    kind: 'article',
+    en: '/charts',
+    es: '/es/datos-y-tablas',
+  },
   { id: 'opening-guide', kind: 'article', en: '/opening-your-pool' },
   { id: 'closing-guide', kind: 'article', en: '/closing-your-pool' },
   { id: 'pump-guide', kind: 'article', en: '/how-long-to-run-pool-pump' },
@@ -91,7 +111,12 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'shock-guide', kind: 'article', en: '/how-to-shock-a-pool' },
   { id: 'ph-guide', kind: 'article', en: '/how-to-lower-ph-in-a-pool' },
   { id: 'calcium-guide', kind: 'article', en: '/how-to-raise-calcium-hardness-in-a-pool' },
-  { id: 'swim-guide', kind: 'article', en: '/how-long-after-adding-chemicals-can-you-swim' },
+  {
+    id: 'swim-guide',
+    kind: 'article',
+    en: '/how-long-after-adding-chemicals-can-you-swim',
+    es: '/es/cuanto-esperar-para-nadar-despues-de-agregar-quimicos',
+  },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'about', kind: 'article', en: '/about', es: '/es/acerca' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
@@ -124,4 +149,15 @@ export const hrefOf = (id: string, lang: Lang): string => {
   const route = ROUTES.find((candidate) => candidate.id === id);
   if (route === undefined) throw new Error(`no route ${id}`);
   return lang === 'es' ? (route.es ?? route.en) : route.en;
+};
+
+/**
+ * An English link of the site in `lang`, its query or fragment kept: the Spanish twin of its page
+ * once it is built, the English page until then.
+ */
+export const localHrefOf = (href: string, lang: Lang): string => {
+  if (lang === 'en') return href;
+  const at = href.search(/[?#]/);
+  const path = at < 0 ? href : href.slice(0, at);
+  return `${routeOf(path)?.es ?? path}${at < 0 ? '' : href.slice(at)}`;
 };
