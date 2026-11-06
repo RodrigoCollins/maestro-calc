@@ -17,7 +17,11 @@ const templateOf = (path: string): string =>
     ? 'pay/[slug].astro'
     : path.startsWith('/es/pago/')
       ? 'es/pago/[slug].astro'
-      : fileOf(path);
+      : path.startsWith('/states/')
+        ? 'states/[slug].astro'
+        : path.startsWith('/es/estados/')
+          ? 'es/estados/[slug].astro'
+          : fileOf(path);
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {

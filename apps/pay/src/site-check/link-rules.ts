@@ -12,6 +12,7 @@ import {
 } from '../long-tail/routes.ts';
 import { DATA_PAGES } from '../data/pages.ts';
 import { ROUTES, type Route } from '../routes.ts';
+import { STATE_ROUTES } from '../states/routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
 const LANGS = ['en', 'es'] as const;
@@ -89,6 +90,27 @@ export const DATA_RULES: readonly GuideRule[] = LANGS.map((lang) => ({
   path: routeOf('data')[lang],
   calculators: DATA_PAGES.map(({ paths }) => paths[lang]),
 }));
+
+/**
+ * The state index of each language and the state pages: it links each one, and each one links it
+ * back (a guide rule, the state pages in the place of calculators).
+ */
+export const STATE_RULES: readonly GuideRule[] = LANGS.map((lang) => ({
+  path: routeOf('states')[lang],
+  calculators: STATE_ROUTES.map((route) => route[lang]),
+}));
+
+/** Each state table links the page of every state on its row, and every state page links it. */
+export const STATE_RULES_OF_TABLES: readonly GuideRule[] = [
+  'minimum-wage-states-guide',
+  'tipped-states-guide',
+  'overtime-states-guide',
+].flatMap((table) =>
+  LANGS.map((lang) => ({
+    path: routeOf(table)[lang],
+    calculators: STATE_ROUTES.map((route) => route[lang]),
+  })),
+);
 
 export const HUBS: readonly string[] = LANGS.map((lang) => routeOf('home')[lang]);
 

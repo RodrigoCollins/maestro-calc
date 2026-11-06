@@ -1,0 +1,121 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { statePageOf, statesIndexOf, type StateFacts } from '../states/pages.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+/*
+ * One state's page: the answer first, then its row of each state table with the sources and the
+ * day it was checked, then the worked examples the engines computed, each opening its calculator.
+ */
+interface Props {
+  readonly lang: Lang;
+  readonly facts: StateFacts;
+}
+
+const { lang, facts } = Astro.props;
+const page = statePageOf(facts, lang);
+const index = statesIndexOf(lang);
+---
+
+<SiteLayout
+  lang={lang}
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  parent={{ title: index.title, path: index.paths[lang] }}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    {page.sections.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        <table class="ledger facts">
+          <tbody>
+            {section.facts.map((fact) => (
+              <tr>
+                <th scope="row">{fact.label}</th>
+                <td class:list={{ words: fact.value.length > 12 }}>{fact.value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {section.notes.map((note) => (
+          <p>{note}</p>
+        ))}
+        <p class="sources">
+          {page.labels.sources}:{' '}
+          {section.sources.map((source, at) => (
+            <>
+              {at > 0 && '; '}
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </>
+          ))}
+          {`. ${page.labels.checked} ${section.checked}. ${page.labels.table}: `}
+          <a href={section.table.href}>{section.table.label}</a>
+        </p>
+      </section>
+    ))}
+
+    <section aria-labelledby="examples">
+      <h2 id="examples">{page.examples.heading}</h2>
+      <ul class="examples" role="list">
+        {page.examples.items.map((example) => (
+          <li>
+            <p class="example-label">
+              {example.label}: <span class="example-value">{example.value}</span>
+            </p>
+            <p>{example.detail}</p>
+            {example.href !== undefined && (
+              <p>
+                <a href={example.href}>{example.linkLabel}</a>
+              </p>
+            )}
+          </li>
+        ))}
+      </ul>
+      {page.examples.notes.map((note) => (
+        <p class="note">{note}</p>
+      ))}
+    </section>
+
+    <p class="note">{page.disclaimer}</p>
+    <a class="button button-secondary" href={page.index.href}>
+      {page.index.label}
+    </a>
+  </main>
+</SiteLayout>
+
+<style>
+  .facts th {
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .facts td {
+    font-family: var(--font-mono);
+    text-align: right;
+  }
+
+  /* a rule in words (double time, the seventh day) wraps: the ledger keeps figures on one line */
+  .facts td.words {
+    font-family: inherit;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .example-value {
+    font-family: var(--font-mono);
+    color: var(--money);
+  }
+</style>

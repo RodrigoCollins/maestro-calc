@@ -2,8 +2,11 @@ import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
 import { ROUTES } from '../routes.ts';
+import { STATE_ROUTES } from '../states/routes.ts';
 import {
   DATA_RULES,
+  STATE_RULES,
+  STATE_RULES_OF_TABLES,
   GUIDE_CALCULATORS,
   GUIDE_RULES,
   HUBS,
@@ -83,6 +86,33 @@ describe('DATA_RULES', () => {
       { path: '/data', calculators: tables.map(({ en }) => en) },
       { path: '/es/datos', calculators: tables.map(({ es }) => es) },
     ]);
+  });
+});
+
+describe('STATE_RULES', () => {
+  it('has the state index of each language link every state page, and every state page links it back', () => {
+    expect(STATE_RULES).toEqual([
+      { path: '/states', calculators: STATE_ROUTES.map(({ en }) => en) },
+      { path: '/es/estados', calculators: STATE_ROUTES.map(({ es }) => es) },
+    ]);
+  });
+
+  it('has each state table link the page of every state, which links the table back', () => {
+    for (const table of [
+      'minimum-wage-states-guide',
+      'tipped-states-guide',
+      'overtime-states-guide',
+    ]) {
+      const route = ROUTES.find(({ id }) => id === table);
+      expect(STATE_RULES_OF_TABLES).toContainEqual({
+        path: route?.en,
+        calculators: STATE_ROUTES.map(({ en }) => en),
+      });
+      expect(STATE_RULES_OF_TABLES).toContainEqual({
+        path: route?.es,
+        calculators: STATE_ROUTES.map(({ es }) => es),
+      });
+    }
   });
 });
 

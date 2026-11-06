@@ -7,6 +7,7 @@ import {
 } from '../guide/overtime-states.ts';
 import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { statePathOf } from '../states/routes.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -53,7 +54,9 @@ const sources = Object.values(OVERTIME_STATES_SOURCES);
         <tbody>
           {rows.map((row) => (
             <tr>
-              <th scope="row">{row.name}</th>
+              <th scope="row">
+                <a href={statePathOf(row.name, lang)}>{row.name}</a>
+              </th>
               <td>{row.daily ?? t.table.none}</td>
               <td>{row.weekly}</td>
               <td class="words">{row.doubleTime ?? t.table.none}</td>

@@ -21,6 +21,7 @@ import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
 import type { Route } from '../routes.ts';
 import { SHIFT_TEXTS } from '../shift/texts.ts';
+import { STATE_FACTS, statePageOf, statesIndexOf } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { TIPPED_TEXTS } from '../tipped/texts.ts';
@@ -65,6 +66,13 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'overtime-states-guide': both(OVERTIME_STATES_GUIDE),
   'minimum-wage-states-guide': both(MINIMUM_WAGE_STATES_GUIDE),
   data: both(DATA_TEXTS),
+  states: byLang(statesIndexOf),
+  ...Object.fromEntries(
+    STATE_FACTS.map((facts) => [
+      `state-${facts.slug.en}`,
+      byLang((lang) => statePageOf(facts, lang)),
+    ]),
+  ),
   methodology: both(METHODOLOGY_TEXTS),
   about: both(ABOUT_TEXTS),
   embed: both(EMBED_TEXTS),
@@ -81,8 +89,8 @@ const ABOUT_SITE =
 
 /**
  * `llms.txt` (llmstxt.org): the site name, a one-line summary, then the calculators and the
- * guides of each language with their canonical URL and description, from the route table the
- * sitemap is built from. The long-tail pages and the privacy notice are left out.
+ * guides of each language with their canonical URL and description, then the state pages, from
+ * the route table the sitemap is built from. The long-tail pages and the privacy notice are left out.
  */
 export const llmsTxt = (routes: readonly Route[], origin: string): string => {
   const listed = routes.filter(({ id }) => LLMS_PAGES[id] !== undefined);
@@ -97,7 +105,8 @@ export const llmsTxt = (routes: readonly Route[], origin: string): string => {
   // the data index sits with the guides: it lists the citable tables
   const guide = (route: Route): boolean =>
     route.id.endsWith('-guide') || route.kind === 'collection';
-  const other = (route: Route): boolean => !calculator(route) && !guide(route);
+  const state = (route: Route): boolean => route.id.startsWith('state-');
+  const other = (route: Route): boolean => !calculator(route) && !guide(route) && !state(route);
   const section = (heading: string, items: readonly string[]): string[] => [
     '',
     `## ${heading}`,
@@ -112,8 +121,10 @@ export const llmsTxt = (routes: readonly Route[], origin: string): string => {
     ABOUT_SITE,
     ...section('Calculators', linksOf('en', calculator)),
     ...section('Guides', linksOf('en', guide)),
+    ...section('Laws by state', linksOf('en', state)),
     ...section('En español: calculadoras', linksOf('es', calculator)),
     ...section('En español: guías', linksOf('es', guide)),
+    ...section('En español: leyes por estado', linksOf('es', state)),
     ...section('Optional', [...linksOf('en', other), ...linksOf('es', other)]),
     '',
   ].join('\n');

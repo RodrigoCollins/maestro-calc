@@ -18,6 +18,7 @@ import { EMBED_PATHS } from './embed/texts.ts';
 import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
+import { STATE_ROUTES, STATES_ROUTE } from './states/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
 import { PTO_PATHS } from './pto/texts.ts';
 import { SHIFT_PATHS } from './shift/texts.ts';
@@ -63,9 +64,11 @@ export const ROUTES: readonly Route[] = [
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
   { id: 'data', kind: 'collection', ...DATA_PATHS },
+  STATES_ROUTE,
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
   { id: 'embed', kind: 'article', ...EMBED_PATHS },
   ...LONG_TAIL_ROUTES,
+  ...STATE_ROUTES,
 ];

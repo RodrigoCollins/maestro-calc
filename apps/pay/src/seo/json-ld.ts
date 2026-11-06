@@ -8,6 +8,7 @@ import {
 import { dataCards } from '../data/pages.ts';
 import type { Route } from '../routes.ts';
 import { SITE } from '../site.config.ts';
+import { statesIndexOf } from '../states/pages.ts';
 
 /** The page name without the ` | Cuenta Horas` suffix of its title. */
 const nameOf = (title: string): string => title.replace(/\s*\|\s*Cuenta Horas$/, '');
@@ -15,35 +16,48 @@ const nameOf = (title: string): string => title.replace(/\s*\|\s*Cuenta Horas$/,
 /** The name of a page in a breadcrumb: its name short of a `: subtitle`. */
 const crumbOf = (title: string): string => nameOf(title).replace(/: .*$/, '');
 
+/** The pages a collection lists, by route id: the data index its tables, the state index its states. */
+const LISTS: Readonly<
+  Record<string, (lang: 'en' | 'es') => readonly { name: string; href: string }[]>
+> = {
+  data: (lang) => dataCards(lang).map(({ title, href }) => ({ name: title, href })),
+  states: (lang) => statesIndexOf(lang).items.map(({ name, href }) => ({ name, href })),
+};
+
 /**
- * The data index: a CollectionPage published by the site, whose ItemList is every table it
- * lists (`dataCards`), each at its canonical.
+ * A collection (the data index, the state index): a CollectionPage published by the site, whose
+ * ItemList is every page it lists (`LISTS`), each at its canonical.
  */
 const collectionLd = (
+  id: string,
   name: string,
   description: string,
   url: string,
   inLanguage: string,
   lang: 'en' | 'es',
   origin: string,
-) => ({
-  '@context': 'https://schema.org',
-  '@type': 'CollectionPage',
-  name,
-  description,
-  url,
-  inLanguage,
-  publisher: { '@type': 'Organization', name: SITE.name },
-  mainEntity: {
-    '@type': 'ItemList',
-    itemListElement: dataCards(lang).map(({ title, href }, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: title,
-      url: new URL(href, origin).href,
-    })),
-  },
-});
+) => {
+  const list = LISTS[id];
+  if (list === undefined) throw new Error(`no list for the collection ${id}`);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name,
+    description,
+    url,
+    inLanguage,
+    publisher: { '@type': 'Organization', name: SITE.name },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: list(lang).map(({ name: item, href }, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item,
+        url: new URL(href, origin).href,
+      })),
+    },
+  };
+};
 
 /** The page a long-tail page answers for: the calculator's title and its path. */
 export interface Parent {
@@ -79,7 +93,7 @@ export const jsonLdOf = (
           applicationCategory: 'FinanceApplication',
         })
       : route.kind === 'collection'
-        ? collectionLd(nameOf(page.title), description, url, inLanguage, lang, origin)
+        ? collectionLd(route.id, nameOf(page.title), description, url, inLanguage, lang, origin)
         : articleLd({
             headline: nameOf(page.title),
             description,

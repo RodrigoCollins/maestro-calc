@@ -1,7 +1,14 @@
 import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
+import { STATE_ROUTES, STATES_INDEX_PATHS } from '../../../apps/pay/src/states/routes.ts';
 
 /** The long-tail pages, read from their table (a module with no run-time import), in both languages. */
 const LONG_TAIL = LONG_TAIL_ROUTES.flatMap(({ en, es }) => [
+  { path: en, lang: 'en' as const },
+  { path: es, lang: 'es' as const },
+]);
+
+/** The state index and the page of every state and DC, read from their table (no run-time import). */
+const STATES = [STATES_INDEX_PATHS, ...STATE_ROUTES].flatMap(({ en, es }) => [
   { path: en, lang: 'en' as const },
   { path: es, lang: 'es' as const },
 ]);
@@ -55,6 +62,7 @@ export const PAGES = [
   { path: '/es/guias/como-calcular-horas-extra', lang: 'es' },
   { path: '/es/guias/horas-extra-en-california', lang: 'es' },
   ...LONG_TAIL,
+  ...STATES,
 ] as const;
 
 export const TIME_CARD = PAGES.filter(({ path }) =>
