@@ -106,6 +106,16 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     expect(title.slice(1)).toBe(title.slice(1).toLowerCase());
   });
 
+  // The heading is also the last crumb of the breadcrumb. At 320 px, "Calculadora de pendiente de
+  // techo" ends within 2 px of the row's edge: on Linux CI the fallback face wrapped it and the web
+  // font did not, which shifted the layout by 0.048 when the fonts swapped in. The plural wraps in
+  // both faces with about 7 px to spare.
+  it('keeps the Spanish roof pitch heading clear of the breadcrumb edge', () => {
+    expect(PAGES['roof-pitch'].catalogs.es['calc.roof-pitch.title']).toBe(
+      'Calculadora de pendiente de techos',
+    );
+  });
+
   // queries that rank the calculator instead of the job page that answers them: "how much concrete
   // for 650 sf slab" (9.5), "22 inches divided by 10" (42.5), "3 feet 9 inches divided by 2" (19),
   // "29 1 4 divided by 2 on a tape measure" (55), "7.5/12 roof pitch" (31), "6 12 roof pitch
