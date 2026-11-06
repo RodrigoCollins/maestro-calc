@@ -58,7 +58,7 @@ export const VOLUME_TEXTS_ES = {
     'Galones = la superficie de la forma × el promedio de las dos profundidades, a 231 pulgadas cúbicas por galón. Una piscina redonda es π × diámetro² / 4, una ovalada π × largo × ancho / 4.',
   note: 'Una estimación para una piscina con una pendiente recta entre los extremos. Mide por dentro de las paredes.',
   methodLink: {
-    href: '/methodology#volume',
-    label: 'Cómo lo calculamos, con casos resueltos a mano (en inglés)',
+    href: '/es/metodologia#volume',
+    label: 'Cómo lo calculamos, con casos resueltos a mano',
   },
 } as const satisfies VolumeTexts;

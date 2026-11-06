@@ -11,10 +11,10 @@ import { STRIP } from './strip.ts';
 const gallons = { label: 'Volumen de la piscina (galones)' };
 const target = { label: 'Nivel deseado (ppm)' };
 
-/** The hand-worked cases of each calculator are on the methodology page (English for now). */
+/** The hand-worked cases of each calculator, in its section of the Spanish methodology. */
 const methodLink = (id: string) => ({
-  href: `/methodology#${id}`,
-  label: 'Cómo lo calculamos, con casos resueltos a mano (en inglés)',
+  href: `/es/metodologia#${id}`,
+  label: 'Cómo lo calculamos, con casos resueltos a mano',
 });
 
 export const SALT_ES: DosePage = {

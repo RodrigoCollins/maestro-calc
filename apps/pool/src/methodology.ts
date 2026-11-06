@@ -9,7 +9,19 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { VOLUME_TEXTS } from './volume/texts.ts';
+import {
+  ALKALINITY_ES,
+  CALCIUM_ES,
+  CHLORINE_ES,
+  FILL_TIME_ES,
+  HEATER_ES,
+  PH_ES,
+  PUMP_ES,
+  SALT_ES,
+  STABILIZER_ES,
+} from './doses-es.ts';
+import { routeOf, type Lang } from './routes.ts';
+import { VOLUME_TEXTS, VOLUME_TEXTS_ES } from './volume/texts.ts';
 
 /** The public-pool limits of the alkalinity and stabilizer pages: MAHC 5.7.4.4.1 and 5.7.3.1.3.2. */
 const MAHC = {
@@ -367,3 +379,250 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
     ],
   },
 ];
+
+/** The public-pool limits of the alkalinity and stabilizer pages, as the Spanish sections cite them. */
+const MAHC_ES =
+  'CDC, Model Aquatic Health Code de 2024, 5.ª edición: alcalinidad total de 60 a 180 ppm (5.7.4.4.1), CYA de 90 ppm o menos (5.7.3.1.3.2)';
+/** The Spanish text of a section, by id: its title, its sources and the text and unit of each case. */
+interface SpanishSection {
+  readonly title: string;
+  readonly sources: readonly string[];
+  readonly cases: readonly (readonly [text: string, unit: string])[];
+}
+
+/*
+ * The Spanish methodology (plans/pool/SPANISH.md, slice 5): the same sections, sources (by their
+ * links) and cases as the English one, each case's inputs and figure taken from it, so the engine
+ * run that checks the English figure checks the Spanish one. `methodology.test.ts` holds every
+ * figure of each Spanish case and source to its English twin.
+ */
+const SPANISH: Readonly<Record<string, SpanishSection>> = {
+  volume: {
+    title: 'Volumen de la piscina',
+    sources: ['NIST Handbook 44, apéndice C: un galón de EE. UU. tiene 231 pulgadas cúbicas'],
+    cases: [
+      [
+        'Un rectángulo de 32 × 16 ft, de 3 ft 6 in y 8 ft de profundidad: 512 ft² × 5.75 ft = 2,944 ft³, y 2,944 × 1,728 ÷ 231 =',
+        'galones',
+      ],
+      [
+        'Una piscina redonda de 24 ft de diámetro y 4 ft de profundidad: π × 24² ÷ 4 = 452.4 ft², × 4 ft = 1,809.6 ft³, y × 1,728 ÷ 231 =',
+        'galones',
+      ],
+    ],
+  },
+  salt: {
+    title: 'Sal',
+    sources: ['Manual del usuario de Hayward AquaRite, 092538 Rev D'],
+    cases: [['20,000 galones de 2,400 a 3,200 ppm: 20,000 × 800 × 8.34 ÷ 1,000,000 =', 'lb']],
+  },
+  chlorine: {
+    title: 'Cloro',
+    sources: [
+      'Etiqueta de hipoclorito de calcio, EPA Reg. No. 1258-1232',
+      'Etiqueta de dicloro, EPA Reg. No. 7124-31',
+    ],
+    cases: [
+      [
+        '20,000 galones de 1 a 3 ppm con cloro líquido al 12.5%: 10.24 fl oz × 2 ppm × 2 =',
+        'fl oz',
+      ],
+    ],
+  },
+  pump: {
+    title: 'Tamaño de bomba',
+    sources: ['ICC CodeNotes: circulación y velocidad del ISPSC de 2021 (ANSI/APSP/ICC-15)'],
+    cases: [['20,000 galones filtrados en 6 horas: 20,000 ÷ 360 =', 'gpm']],
+  },
+  ph: {
+    title: 'pH',
+    sources: [
+      'Taylor Technologies, instrucciones del kit K-1003 (Instr. #5816), tablas de dosis de pH: 9.16 fl oz de ácido muriático (31.45% de HCl) por gota de reactivo de demanda de ácido R-0015, y 5.13 oz de carbonato de sodio (100%) por gota de reactivo de demanda de base R-0016, por cada 10,000 galones, de 1 a 3 gotas',
+      'Taylor Technologies, instrucciones del kit K-1004 (Instr. #5817): la misma tabla de ácido muriático',
+      'HASA Muriatic Acid (31.45% de ácido clorhídrico), ficha del producto, modo de uso: un cuarto de galón por cada 20,000 galones de agua de piscina cada 24 horas, repetido cada 24 horas si hace falta',
+      'Etiqueta de pH Up (carbonato de sodio 100%), fabricado para Alliance Trading, Inc. (etiqueta 01616483, REV050824): como máximo 1 libra por cada 10,000 galones, con 2 a 3 horas de recirculación antes de medir otra vez el pH y repetir',
+    ],
+    cases: [
+      [
+        '10,000 galones, 2 gotas de reactivo de demanda de ácido: 10,000 ÷ 10,000 × 2 × 9.16 fl oz =',
+        'fl oz',
+      ],
+      [
+        '20,000 galones, 2 gotas de reactivo de demanda de base: 20,000 ÷ 10,000 × 2 × 5.13 oz =',
+        'oz',
+      ],
+      [
+        '20,000 galones, 2 gotas de reactivo de demanda de ácido: 20,000 ÷ 10,000 × 2 × 9.16 fl oz =',
+        'fl oz',
+      ],
+      [
+        'La etiqueta de HASA agrega como máximo un cuarto de galón por cada 20,000 galones al día: 20,000 × 32 ÷ 20,000 =',
+        'fl oz al día',
+      ],
+      [
+        'Así que las 36.64 fl oz se agregan en 36.64 ÷ 32 = 1.145 días, redondeado hacia arriba:',
+        'días',
+      ],
+      [
+        'La etiqueta de pH Up agrega como máximo 1 lb de carbonato de sodio por cada 10,000 galones de una vez: 20,000 ÷ 10,000 × 16 oz =',
+        'oz',
+      ],
+      [
+        'Así que las 20.52 oz se agregan en 20.52 ÷ 32 = 0.64 veces, redondeado hacia arriba:',
+        'vez',
+      ],
+    ],
+  },
+  alkalinity: {
+    title: 'Alcalinidad',
+    sources: [MAHC_ES],
+    cases: [
+      [
+        '10,000 galones de 80 a 90 ppm: 37,854.1 L × 10 × 1.6788 mg = 635.5 g, y 635.5 ÷ 453.6 =',
+        'lb',
+      ],
+      [
+        '20,000 galones de 70 a 100 ppm: 75,708.2 L × 30 × 1.6788 mg = 3,813.0 g, y 3,813.0 ÷ 28.35 =',
+        'oz',
+      ],
+    ],
+  },
+  stabilizer: {
+    title: 'Estabilizador',
+    sources: [MAHC_ES],
+    cases: [
+      ['10,000 galones de 20 a 30 ppm: 37,854.1 L × 10 mg = 378.5 g, y 378.5 ÷ 28.35 =', 'oz'],
+      ['20,000 galones de 0 a 30 ppm: 75,708.2 L × 30 mg = 2,271.2 g, y 2,271.2 ÷ 453.6 =', 'lb'],
+    ],
+  },
+  calcium: {
+    title: 'Dureza de calcio',
+    sources: [
+      'ClearView Calcium Increaser, información crítica de uso (Oreq Corporation): cloruro de calcio, 2 oz por cada 1,000 galones suben la dureza de calcio 10 ppm; por encima de 3 lb por cada 10,000 galones, dosis separadas por al menos 12 horas',
+      'Hoja de datos de seguridad de ClearView Calcium Increaser (Oreq Corporation): cloruro de calcio en escamas, de 74 a 100% en peso',
+      'Manual del usuario de Hayward AquaRite, 092538 Rev D: química del agua, dureza de calcio de 200 a 400 ppm',
+      'CDC, Model Aquatic Health Code de 2024, 5.ª edición: dureza de calcio de 2,500 ppm como máximo en una piscina pública',
+    ],
+    cases: [
+      ['10,000 galones de 200 a 210 ppm: 10,000 ÷ 1,000 × 2 oz =', 'oz'],
+      ['20,000 galones de 150 a 250 ppm: 20,000 × 100 ÷ 80,000 =', 'lb'],
+      [
+        'Es más de 3 lb por cada 10,000 galones, así que la primera vez se agregan 20,000 ÷ 10,000 × 3 lb =',
+        'lb',
+      ],
+    ],
+  },
+  heater: {
+    title: 'Tamaño de calentador',
+    sources: [
+      'USGS Water Science School: el agua pesa 62.366 lb por pie cúbico a 60 °F, y 62.366 × 231 ÷ 1,728 = 8.34 lb por galón',
+      'Departamento de Energía de EE. UU., Energy Saver: Gas Pool Heaters (superficie de la piscina × aumento de temperatura × 12; copia archivada del 1 de mayo de 2026)',
+    ],
+    cases: [
+      [
+        '20,000 galones calentados 10 °F en 24 horas: 20,000 × 8.34 × 10 = 1,668,000 BTU, y 1,668,000 ÷ 24 =',
+        'BTU por hora',
+      ],
+      ['15,000 galones calentados 8 °F: 15,000 × 8.34 × 8 =', 'BTU'],
+    ],
+  },
+  'fill-time': {
+    title: 'Tiempo de llenado',
+    sources: [
+      'NIST SP 811, tabla 6: 1 h = 60 min y 1 min = 60 s, así que una cubeta de 5 galones que se llena en S segundos da 5 × 60 ÷ S = 300 ÷ S galones por minuto',
+    ],
+    cases: [
+      [
+        '20,000 galones a 10 galones por minuto: 20,000 ÷ 10 = 2,000 minutos, y 2,000 ÷ 60 =',
+        'para llenarse',
+      ],
+      ['15,000 galones a 12 galones por minuto: 15,000 ÷ 12 =', 'minutos'],
+    ],
+  },
+};
+
+/** The formula and note of each Spanish section, its calculator page's own, by section id. */
+const SPANISH_PAGES: Readonly<Record<string, { readonly method: string; readonly note: string }>> =
+  {
+    volume: VOLUME_TEXTS_ES,
+    salt: SALT_ES,
+    chlorine: CHLORINE_ES,
+    pump: PUMP_ES,
+    ph: PH_ES,
+    alkalinity: ALKALINITY_ES,
+    stabilizer: STABILIZER_ES,
+    calcium: CALCIUM_ES,
+    heater: HEATER_ES,
+    'fill-time': FILL_TIME_ES,
+  };
+
+const METHOD_SECTIONS_ES: readonly MethodSection[] = METHOD_SECTIONS.map((section) => {
+  const texts = SPANISH[section.id];
+  const page = SPANISH_PAGES[section.id];
+  const href = routeOf(section.href)?.es;
+  if (texts === undefined || page === undefined || href === undefined)
+    throw new Error(`no Spanish methodology for ${section.id}`);
+  return {
+    id: section.id,
+    title: texts.title,
+    href,
+    method: page.method,
+    note: page.note,
+    sources: section.sources.map(({ url }, index) => ({
+      name: texts.sources[index] ?? '',
+      ...(url === undefined ? {} : { url }),
+    })),
+    cases: section.cases.map((worked, index) => {
+      const [text, unit] = texts.cases[index] ?? ['', ''];
+      return { ...worked, text, unit };
+    }),
+  };
+});
+
+/** The sections of the methodology in `lang`. */
+export const methodSectionsOf = (lang: Lang): readonly MethodSection[] =>
+  lang === 'en' ? METHOD_SECTIONS : METHOD_SECTIONS_ES;
+
+/** The words of the methodology page around its sections, in each language. */
+export const METHOD_PAGE = {
+  en: {
+    title: 'How we work it out | Pool Figures',
+    description:
+      'The formulas, sources and worked examples behind every Pool Figures calculator, from volume, salt and chlorine to pH, calcium hardness, pump and heater size.',
+    h1: 'How we work it out',
+    lead: 'Every calculator does exact arithmetic and rounds only the figure you read. Each section gives the formula, where its numbers come from and a case worked out by hand, which the calculator must match to the last digit.',
+    sectionsLabel: 'Sections',
+    example: 'Worked example',
+    examples: 'Worked examples',
+    source: 'Source',
+    sources: 'Sources',
+    open: (title: string) => `Open the ${title.toLowerCase()} calculator`,
+  },
+  es: {
+    title: 'Cómo lo calculamos: fórmulas y fuentes | Pool Figures',
+    description:
+      'Las fórmulas, fuentes y casos resueltos de cada calculadora de Pool Figures: volumen, sal, cloro, pH, dureza de calcio, bomba y calentador.',
+    h1: 'Cómo lo calculamos',
+    lead: 'Cada calculadora hace aritmética exacta y solo redondea la cifra que lees. Cada sección da la fórmula, de dónde salen sus números y un caso resuelto a mano, que la calculadora debe dar hasta el último dígito.',
+    sectionsLabel: 'Secciones',
+    example: 'Caso resuelto',
+    examples: 'Casos resueltos',
+    source: 'Fuente',
+    sources: 'Fuentes',
+    open: (title: string) => `Abre la calculadora: ${title.toLowerCase()}`,
+  },
+} as const satisfies Record<
+  Lang,
+  {
+    readonly title: string;
+    readonly description: string;
+    readonly h1: string;
+    readonly lead: string;
+    readonly sectionsLabel: string;
+    readonly example: string;
+    readonly examples: string;
+    readonly source: string;
+    readonly sources: string;
+    readonly open: (title: string) => string;
+  }
+>;

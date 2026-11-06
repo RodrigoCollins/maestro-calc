@@ -40,6 +40,7 @@ export const PAGES: readonly Page[] = [
   es('/es/acerca'),
   es('/es/privacidad'),
   es('/es/calculadoras-para-tu-sitio'),
+  es('/es/metodologia'),
   es('/es/calculadora-de-volumen-de-piscina'),
   es('/es/calculadora-de-sal-para-piscina'),
   es('/es/calculadora-de-cloro-para-piscina'),
