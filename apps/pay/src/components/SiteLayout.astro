@@ -83,6 +83,7 @@ const embedLink =
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />
     <meta name="twitter:card" content={preview['twitter:card']} />
+    {SITE.pinterestVerify !== '' && <meta name="p:domain_verify" content={SITE.pinterestVerify} />}
     {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     {embedded && <base target="_blank" />}
     {embedded && <link rel="canonical" href={canonical} />}
