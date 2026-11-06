@@ -62,6 +62,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
   it('lists the trust pages with translated Spanish slugs', () => {
     expect(ROUTES.methodology).toEqual({ en: '/methodology', es: '/es/metodologia' });
     expect(ROUTES.about).toEqual({ en: '/about', es: '/es/sobre-nosotros' });
+    expect(ROUTES['editorial-policy']).toEqual({
+      en: '/editorial-policy',
+      es: '/es/politica-editorial',
+    });
     expect(ROUTES.privacy).toEqual({ en: '/privacy', es: '/es/privacidad' });
     expect(ROUTES.terms).toEqual({ en: '/terms', es: '/es/terminos' });
     expect(ROUTES.contact).toEqual({ en: '/contact', es: '/es/contacto' });

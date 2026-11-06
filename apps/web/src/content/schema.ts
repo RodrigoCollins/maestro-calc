@@ -5,6 +5,7 @@ import { LOCALES } from '../routing/routes.ts';
 export const TRUST_IDS = [
   'methodology',
   'about',
+  'editorial-policy',
   'privacy',
   'terms',
   'contact',

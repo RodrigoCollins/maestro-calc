@@ -11,10 +11,11 @@ const valid = {
 
 // spec: trust-pages › [TP2] (schema side)
 describe('pageSchema', () => {
-  it('lists the thirty-two trust ids', () => {
+  it('lists the thirty-three trust ids', () => {
     expect(TRUST_IDS).toEqual([
       'methodology',
       'about',
+      'editorial-policy',
       'privacy',
       'terms',
       'contact',

@@ -9,6 +9,9 @@ import GlossaryTable from '../components/GlossaryTable.astro';
 import GuideCta from '../components/GuideCta.astro';
 import GuidesIndex from '../components/GuidesIndex.astro';
 import ChartsIndex from '../components/ChartsIndex.astro';
+import SourceIndex from '../components/SourceIndex.astro';
+import { sourceIndex } from '../lib/source-index.ts';
+import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { guideGroups } from '../lib/guides-index.ts';
 import { chartCards } from '../lib/charts-index.ts';
 import type { GuideId } from '../routing/guides.ts';
@@ -62,6 +65,20 @@ const guideIndex =
         })),
       )
     : undefined;
+// The editorial policy ends with every source of the calculator entries of its locale.
+const sources =
+  id === 'editorial-policy'
+    ? sourceIndex(
+        await Promise.all(
+          CALCULATOR_PAGES.map(async (calculator) => {
+            const entry = await getEntry('calculators', `${locale}/${calculator}`);
+            if (entry === undefined)
+              throw new Error(`no calculator entry for ${locale}/${calculator}`);
+            return entry.data;
+          }),
+        ),
+      )
+    : undefined;
 const hubView =
   hub === undefined
     ? undefined
@@ -101,6 +118,13 @@ const hubView =
         guides={hubView.guides}
         jobsLabel={siteText(locale)('site.hub.jobs')}
         jobs={hubView.jobs}
+      />
+    )}
+    {sources !== undefined && (
+      <SourceIndex
+        id={locale === 'en' ? 'all-sources' : 'todas-las-fuentes'}
+        heading={siteText(locale)('site.editorial.sources')}
+        {sources}
       />
     )}
     {id === 'hub-roofing' && <PitchDegreesTable view={pitchDegreesView(locale)} />}

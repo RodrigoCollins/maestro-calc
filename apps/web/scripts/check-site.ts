@@ -78,15 +78,19 @@ const updates = {
   // a job page has no entry: its row carries the day it was checked
   ...JOB_UPDATES,
 };
-// A calculator page may link the sources of its entry, in either locale, and nothing else outbound.
-const externalLinks = Object.fromEntries(
-  CALCULATOR_PAGES.map((id) => [
-    id,
-    calculatorEntries
-      .filter(([file]) => file.endsWith(`/${id}.md`))
-      .flatMap(([, text]) => sourceUrlsOf(text)),
-  ]),
-);
+// A calculator page may link the sources of its entry, in either locale, and the editorial policy
+// every source of every entry; nothing else links outbound.
+const externalLinks = {
+  ...Object.fromEntries(
+    CALCULATOR_PAGES.map((id) => [
+      id,
+      calculatorEntries
+        .filter(([file]) => file.endsWith(`/${id}.md`))
+        .flatMap(([, text]) => sourceUrlsOf(text)),
+    ]),
+  ),
+  'editorial-policy': [...new Set(calculatorEntries.flatMap(([, text]) => sourceUrlsOf(text)))],
+};
 
 const files = filesUnder(dist);
 const built = new Map(files);

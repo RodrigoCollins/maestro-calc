@@ -14,6 +14,12 @@ export const enSite = {
   'site.footer.glossary': 'Construction glossary',
   'site.footer.guides': 'All guides',
   'site.footer.charts': 'Data and charts',
+  'site.footer.editorial-policy': 'Editorial policy',
+  'site.byline.by': 'By',
+  'site.byline.team': 'the Maestro Calc editorial team',
+  'site.byline.reviewed': 'Reviewed',
+  'site.byline.sources': 'Sources',
+  'site.editorial.sources': 'Every source our calculators cite',
   'site.glossary.term': 'English',
   'site.glossary.other': 'Spanish',
   'site.glossary.definition': 'What it means',
@@ -170,6 +176,9 @@ export const enSite = {
   'page.about.title': 'About | Maestro Calc',
   'page.about.description':
     'Who writes Maestro Calc, how we use AI and how to report an error. Our editorial policy in plain language.',
+  'page.editorial-policy.title': 'Editorial policy | Maestro Calc',
+  'page.editorial-policy.description':
+    'Who builds Maestro Calc, where every number comes from, how we test the figures, when we review pages and how to report an error.',
   'page.privacy.title': 'Privacy | Maestro Calc',
   'page.privacy.description':
     'What Maestro Calc collects and what it does not: no cookies, no analytics, no advertising and no accounts. Hosted on Cloudflare.',

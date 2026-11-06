@@ -33,6 +33,7 @@ export const FOOTER_PAGES = [
   'charts',
   'embed-calculators',
   'glossary',
+  'editorial-policy',
   'privacy',
   'terms',
   'contact',

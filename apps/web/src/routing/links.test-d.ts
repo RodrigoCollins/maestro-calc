@@ -11,6 +11,7 @@ describe('link lists keep the id literals (site-shell › [SS12, SS13])', () => 
       | 'charts'
       | 'embed-calculators'
       | 'glossary'
+      | 'editorial-policy'
       | 'privacy'
       | 'terms'
       | 'contact'

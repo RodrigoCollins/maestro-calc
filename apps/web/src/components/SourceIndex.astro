@@ -1,0 +1,22 @@
+---
+import type { Source } from '../lib/source-index.ts';
+
+/** The end of the editorial policy: every source the calculators cite, each linked once. */
+interface Props {
+  id: string;
+  heading: string;
+  sources: readonly Source[];
+}
+const { id, heading, sources } = Astro.props;
+---
+
+<h2 {id}>{heading}</h2>
+<ul>
+  {sources.map(({ name, url }) => (
+    <li>
+      <a href={url} rel="external noreferrer">
+        {name}
+      </a>
+    </li>
+  ))}
+</ul>
