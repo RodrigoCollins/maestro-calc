@@ -2,6 +2,7 @@
 import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 import type { GuideSource, GuideStep } from '../guide.ts';
+import { langOf } from '../routes.ts';
 
 /** A guide of numbered steps, each tile with its calculator link and its sources (`guide.ts`). */
 interface Props {
@@ -18,17 +19,20 @@ interface Props {
   };
 }
 
-const {
-  path,
-  kicker,
-  title,
-  description,
-  h1,
-  lead,
-  note = 'Read the label of each product before you add it, and follow it where it differs from this guide.',
-  steps,
-  sources,
-} = Astro.props.guide;
+const { path, kicker, title, description, h1, lead, note, steps, sources } = Astro.props.guide;
+const lang = langOf(path);
+/** The copy the guide writes around its steps, in its language. */
+const TEXTS = {
+  en: {
+    note: 'Read the label of each product before you add it, and follow it where it differs from this guide.',
+    source: 'Source:',
+  },
+  es: {
+    note: 'Lee la etiqueta de cada producto antes de agregarlo, y síguela donde sea distinta de esta guía.',
+    source: 'Fuente:',
+  },
+} as const;
+const text = TEXTS[lang];
 const sourceOf = (key: string): GuideSource => {
   const source = sources[key];
   if (source === undefined) throw new Error(`no source ${key}`);
@@ -53,7 +57,7 @@ const sourceOf = (key: string): GuideSource => {
           )}
           {step.sources !== undefined && (
             <p class="pool-step-source">
-              Source:{' '}
+              {text.source}{' '}
               {step.sources.map((key, index) => (
                 <>
                   {index > 0 && ', '}
@@ -65,8 +69,9 @@ const sourceOf = (key: string): GuideSource => {
         </li>
       ))}
     </ol>
-    <p class="pool-note">{note}</p>
-    <JobLinks guide={path} />
+    <p class="pool-note">{note ?? text.note}</p>
+    {/* the job pages are English for now: the Spanish guide leaves their links out */}
+    {lang === 'en' && <JobLinks guide={path} />}
   </main>
 </Layout>
 

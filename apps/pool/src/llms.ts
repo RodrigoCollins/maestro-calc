@@ -16,6 +16,12 @@ import {
 import { DOSING_CHART_ES } from './dosing-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
+import {
+  CLOSING_GUIDE_ES,
+  OPENING_GUIDE_ES,
+  PUMP_RUN_GUIDE_ES,
+  SALT_VS_CHLORINE_GUIDE_ES,
+} from './guide-es.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
 import { JOB_PAGES } from './jobs.ts';
 import { METHOD_PAGE } from './methodology.ts';
@@ -70,6 +76,10 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'volume-chart': { name: VOLUME_CHART_ES.h1, note: VOLUME_CHART_ES.description },
   charts: { name: CHARTS_INDEX_ES.h1, note: CHARTS_INDEX_ES.description },
   'swim-guide': { name: SWIM_GUIDE_ES.h1, note: SWIM_GUIDE_ES.description },
+  'opening-guide': { name: OPENING_GUIDE_ES.h1, note: OPENING_GUIDE_ES.description },
+  'closing-guide': { name: CLOSING_GUIDE_ES.h1, note: CLOSING_GUIDE_ES.description },
+  'pump-guide': { name: PUMP_RUN_GUIDE_ES.h1, note: PUMP_RUN_GUIDE_ES.description },
+  'salt-guide': { name: SALT_VS_CHLORINE_GUIDE_ES.h1, note: SALT_VS_CHLORINE_GUIDE_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },

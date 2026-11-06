@@ -56,6 +56,10 @@ export const PAGES: readonly Page[] = [
   es('/es/tabla-de-volumen-de-piscina'),
   es('/es/datos-y-tablas'),
   es('/es/cuanto-esperar-para-nadar-despues-de-agregar-quimicos'),
+  es('/es/como-abrir-tu-piscina'),
+  es('/es/como-cerrar-tu-piscina'),
+  es('/es/cuantas-horas-prender-la-bomba-de-la-piscina'),
+  es('/es/piscina-de-agua-salada-o-de-cloro'),
 ];
 
 /**
