@@ -296,10 +296,10 @@ export const UNCONFIRMED_2027: readonly {
       en: 'Adjusted each January 1 for inflation (Colorado Constitution, art. XVIII, § 15).',
       es: 'Se ajusta cada 1 de enero por inflación (Constitución de Colorado, art. XVIII, § 15).',
     },
-    unread: refused({
-      en: 'the Colorado Department of Labor and Employment',
-      es: 'del Departamento de Trabajo y Empleo de Colorado',
-    }),
+    unread: {
+      en: 'Colorado sets the new rate each year in a PAY CALC Order; the Code of Colorado Regulations, read on November 6, 2026, still holds the 2026 PAY CALC Order (7 CCR 1103-14), and the pages of the Colorado Department of Labor and Employment refused our request.',
+      es: 'Colorado fija la nueva tarifa cada año en una PAY CALC Order; el Code of Colorado Regulations, que leímos el 6 de noviembre de 2026, aún tiene la 2026 PAY CALC Order (7 CCR 1103-14), y las páginas del Departamento de Trabajo y Empleo de Colorado rechazaron nuestra consulta.',
+    },
     check: {
       label: 'Colorado Department of Labor and Employment',
       href: 'https://cdle.colorado.gov/',
@@ -347,11 +347,14 @@ export const UNCONFIRMED_2027: readonly {
       en: 'Rises each January 1 by inflation or 5%, whichever is smaller (21 V.S.A. § 384).',
       es: 'Sube cada 1 de enero según la inflación o 5%, lo que sea menor (21 V.S.A. § 384).',
     },
-    unread: refused({
-      en: 'the Vermont Department of Labor',
-      es: 'del Departamento de Trabajo de Vermont',
-    }),
-    check: { label: 'Vermont Department of Labor', href: 'https://labor.vermont.gov/' },
+    unread: {
+      en: 'The minimum wage page of the Vermont Department of Labor, read on November 6, 2026, gives the $14.42 of January 1, 2026 and no 2027 rate.',
+      es: 'La página de salario mínimo del Departamento de Trabajo de Vermont, que leímos el 6 de noviembre de 2026, da los $14.42 del 1 de enero de 2026 y ninguna tarifa de 2027.',
+    },
+    check: {
+      label: 'Vermont Department of Labor, Rights and Wages',
+      href: 'https://labor.vermont.gov/rights-and-wages',
+    },
   },
 ];
 
