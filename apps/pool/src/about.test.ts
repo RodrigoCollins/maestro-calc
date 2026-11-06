@@ -131,3 +131,10 @@ describe('the Spanish about page', () => {
     expect(spanish).toContain('No vendemos');
   });
 });
+
+// every page the Spanish about page names has its Spanish twin, so it says none is in English
+describe('the Spanish about page', () => {
+  it('says no page it names is in English', () => {
+    expect(JSON.stringify(ABOUT_TEXTS.es)).not.toContain('inglés');
+  });
+});
