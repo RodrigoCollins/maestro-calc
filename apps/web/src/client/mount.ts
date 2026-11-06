@@ -1,5 +1,5 @@
 import {
-  controllerOf,
+  builtControllerOf,
   copyAddress,
   copyOutcome,
   shareHref,
@@ -314,7 +314,7 @@ const showCopy = (ui: Ui, env: Environment, address: string, copied: boolean): v
  * when the entry passes it. A failure before the end leaves the static page.
  */
 export const mount = (module: AnyPageModule, hooks: Hooks = {}): void => {
-  const controller = controllerOf(module);
+  const controller = builtControllerOf(module);
   const keys = textKeysOf(module.calculator);
   const ui = collect(document, keys);
   const env: Environment = {

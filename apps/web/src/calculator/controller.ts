@@ -220,10 +220,20 @@ export const checkModule = (module: AnyPageModule, defaults: ResultOf<AnyCalcula
  */
 export function controllerOf<C extends AnyCalculator>(module: PageModule<C>): Controller<C>;
 export function controllerOf(module: AnyPageModule): Controller<AnyCalculator> {
+  checkModule(module, mustBeOk(module.calculator.run({}), 'run of the defaults'));
+  return builtControllerOf(module);
+}
+
+/**
+ * The controller of a module whose page `astro build` rendered: the page builder replays
+ * `checkModule` on the same module (`lib/page-view.ts`), so a module that fails it has no page, and
+ * the page script skips the check and its run of the defaults (the mount; about 0.8 KB less of
+ * script, as `skipDefinitionChecks` does for core). Every other caller uses `controllerOf`.
+ */
+export function builtControllerOf(module: AnyPageModule): Controller<AnyCalculator> {
   type Calc = AnyCalculator;
   const { calculator, choices, steppers, shopping, costs, answer, drawing } = module;
   const declared = shopping?.lines.map(({ material }) => material) ?? [];
-  checkModule(module, mustBeOk(calculator.run({}), 'run of the defaults'));
 
   const descriptorOf = (key: string): InputDescriptor =>
     required(

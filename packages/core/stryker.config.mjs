@@ -132,9 +132,15 @@ export const shards = {
     deps: kernel,
   },
   'calculator-run': {
-    mutate: ['src/calculator/message-keys.ts', 'src/calculator/run.ts'],
+    mutate: [
+      'src/calculator/message-keys.ts',
+      'src/calculator/result-checks.ts',
+      'src/calculator/result-shape.ts',
+      'src/calculator/run.ts',
+    ],
     tests: [
       'src/calculator/message-keys.test.ts',
+      'src/calculator/result-shape.test.ts',
       'src/calculator/run-language-free.test.ts',
       'src/calculator/run.test.ts',
       'src/index.test.ts',

@@ -102,6 +102,18 @@ describe.each(CALCULATOR_PAGES)(
       ).toEqual([]);
     });
 
+    // the shipped bundle skips the shape checks of a compute result (`skipResultChecks`), which the
+    // property tests of every calculator run in Node, and the module checks of the controller,
+    // which the page builder replays at `astro build` (the reason codes below exist only there)
+    it('carries no result check and no module check', async () => {
+      const { code } = await buildClient(source);
+      expect(
+        ['INVALID_RESULT', 'OUTPUT_KEYS', 'OUTPUT_MEASURE', 'OUTPUT_HINT', 'PAGE_KEY'].filter(
+          (reason) => code.includes(reason),
+        ),
+      ).toEqual([]);
+    });
+
     // spec: site-shell › [SS23], calculator-page › [CP47] no storage, network, message text or foreign origin
     it('holds no storage or network API, no catalog message and no foreign origin', async () => {
       const { code } = await buildClient(source);

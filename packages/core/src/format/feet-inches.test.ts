@@ -7,7 +7,7 @@ import { Rational } from '../rational/rational.ts';
 import { ft, in2, inch } from '../units/catalog.ts';
 import { add } from '../units/ops.ts';
 import { quantity, type Quantity } from '../units/quantity.ts';
-import { formatFeetInches } from './feet-inches.ts';
+import { feetInchesParts, formatFeetInches, inchesText } from './feet-inches.ts';
 import { roundToFraction, type RoundingMode } from './rounding.ts';
 
 const inches = (value: Rational): Quantity<'length'> => quantity(value, inch);
@@ -177,5 +177,40 @@ describe('formatFeetInches (fraction-format › Feet-inch-fraction formatting)',
       ),
       { numRuns },
     );
+  });
+});
+
+describe('feetInchesParts and inchesText (the parts without the canonical text)', () => {
+  it('is the parts of formatFeetInches, for every denominator and mode', () => {
+    fc.assert(
+      fc.property(
+        rationalArb,
+        fc.integer({ min: 2, max: 64 }),
+        fc.constantFrom<RoundingMode>('nearest', 'up', 'down'),
+        (value, denominator, mode) => {
+          const options = { denominator, mode };
+          expect(feetInchesParts(inches(value), options)).toEqual(
+            formatFeetInches(inches(value), options).parts,
+          );
+        },
+      ),
+      { numRuns },
+    );
+  });
+
+  it('rounds to the nearest tick by default', () => {
+    expect(feetInchesParts(inches(Rational.of(127, 2)), { denominator: 16 })).toEqual({
+      negative: false,
+      feet: 5n,
+      inches: 3n,
+      fraction: { numerator: 1n, denominator: 2n },
+    });
+  });
+
+  it('writes whole inches, a reduced fraction alone, or both with one space', () => {
+    expect(inchesText(3n, 0n, 1n)).toBe('3');
+    expect(inchesText(0n, 1n, 2n)).toBe('1/2');
+    expect(inchesText(3n, 1n, 2n)).toBe('3 1/2');
+    expect(inchesText(0n, 0n, 1n)).toBe('0');
   });
 });

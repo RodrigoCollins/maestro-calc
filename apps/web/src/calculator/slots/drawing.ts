@@ -98,9 +98,9 @@ export const LABEL = 17;
 export const NOTE = 15;
 /** The right margin of a rectangle plan. */
 export const MARGIN = 6;
-/** The area goes inside when it leaves this much room across and the rectangle is this tall. */
-const INSET = 12;
-const INSIDE_HEIGHT = 29;
+/** A text goes inside a box when it leaves this much room across and the box is this tall. */
+export const INSET = 12;
+export const INSIDE_HEIGHT = 29;
 
 /** `n` rounded to a tenth, the precision of every coordinate. */
 export const round = (n: number): number => Math.round(n * 10) / 10;
@@ -136,11 +136,12 @@ export const fitRectangle = (
   };
 };
 
-const segment = (from: Point, to: Point): string =>
+/** A straight path from `from` to `to`. */
+export const segment = (from: Point, to: Point): string =>
   `M${num(from.x)} ${num(from.y)}L${num(to.x)} ${num(to.y)}`;
 
 /** A 45° tick through `at`, from lower left to upper right. */
-const tick = (at: Point): string =>
+export const tick = (at: Point): string =>
   segment({ x: at.x - TICK, y: at.y + TICK }, { x: at.x + TICK, y: at.y - TICK });
 
 /**
@@ -198,24 +199,6 @@ export const fitLabel = (label: PlanLabel, frame: Frame, room?: string): PlanLab
 export const longest = (texts: readonly string[]): string =>
   texts.reduce((a, b) => (b.length > a.length ? b : a), '');
 
-/**
- * The area note of an outline box: centred inside when `room` (the longest text it takes, `text`
- * by default) leaves 6 units each side and the box is 29 tall, else centred in the row below it,
- * fitted to the frame. Shared by every plan that writes an area under or in its shape.
- */
-export const areaLabel = (frame: Frame, box: Box, text: string, room: string = text): PlanLabel => {
-  const inside = textWidth(room, NOTE) <= box.w - INSET && box.h >= INSIDE_HEIGHT;
-  const label: PlanLabel = {
-    x: round(box.x + box.w / 2),
-    y: round(inside ? box.y + box.h / 2 : box.y + box.h + PAD + (LINE * NOTE) / 2),
-    anchor: 'middle',
-    size: NOTE,
-    tone: 'note',
-    label: { text },
-  };
-  return fitLabel(label, frame, room);
-};
-
 /** The gutters of a rectangle plan: the top label row, the bottom row, a margin and the width label. */
 export const rectangleGutters = (widthText: string): Gutters => ({
   top: round(OFFSET + PAD + LINE * LABEL),
@@ -228,24 +211,6 @@ export const rectangleGutters = (widthText: string): Gutters => ({
 export interface SideTexts {
   readonly length: string;
   readonly width: string;
-}
-
-/** The three texts of a rectangle plan in one unit system. */
-export interface RectangleTexts extends SideTexts {
-  readonly area: string;
-}
-
-/** What a rectangle plan is drawn from: the two sides (any unit, only their ratio counts) and the texts. */
-export interface RectangleSpec {
-  readonly length: number;
-  readonly width: number;
-  readonly texts: RectangleTexts;
-  /**
-   * The texts of the same moment in the other unit systems. The layout keeps room for the longest
-   * of each (the left gutter, the area inside or below, the fitted `x`), so a toggle moves nothing.
-   */
-  readonly others?: readonly RectangleTexts[];
-  readonly name: Label;
 }
 
 /** A drawn shape: its box, its outline, its dimension lines and their labels. */
@@ -283,104 +248,11 @@ export const rectangleShape = (
   };
 };
 
-/** A rectangle in plan with the area inside when it fits with 6 units each side and is 29 tall, else in the bottom row. */
-export const rectanglePlan = (frame: Frame, spec: RectangleSpec): Plan => {
-  const all = [spec.texts, ...(spec.others ?? [])] as const;
-  const shape = rectangleShape(frame, spec.length, spec.width, all);
-  const area = longest(all.map((each) => each.area));
-  return {
-    name: spec.name,
-    outline: shape.outline,
-    lines: shape.lines,
-    labels: [...shape.labels, areaLabel(frame, shape.box, spec.texts.area, area)],
-  };
-};
-
-/**
- * A circle of radius `r` centred across the frame and above the note row, with one horizontal
- * diameter line through its centre (orange ticks at both ends) and its label above the line. The
- * box is the circle's square, so a note goes under the circle.
- */
-export const circleShape = (frame: Frame, r: number, label: Label): Shape => {
-  const cx = round(frame.width / 2);
-  const cy = round((frame.height - PAD - LINE * NOTE) / 2);
-  const [from, to] = [
-    { x: cx - r, y: cy },
-    { x: cx + r, y: cy },
-  ];
-  return {
-    box: { x: cx - r, y: cy - r, w: 2 * r, h: 2 * r },
-    outline: [{ kind: 'circle', cx, cy, r }],
-    lines: [
-      { d: segment(from, to), tone: 'helper' },
-      { d: `${tick(from)}${tick(to)}`, tone: 'tick' },
-    ],
-    labels: [
-      {
-        x: cx,
-        y: round(cy - PAD - (LINE * LABEL) / 2),
-        anchor: 'middle',
-        size: LABEL,
-        tone: 'dimension',
-        label,
-      },
-    ],
-  };
-};
-
 /** The two texts of a rise over a run (a stair profile, a roof slope) in one unit system. */
 export interface StairTexts {
   readonly rise: string;
   readonly run: string;
 }
-
-/**
- * A stair in side view, rising to the right: `count` treads, each `run` long and `rise` tall, the
- * whole profile clamped like a rectangle of `count · run` by `count · rise` (so its ratio is the
- * step's). The rise is measured on the left of the first riser and the run under the first tread;
- * the top row is left for a note. `all` holds the texts of every unit system, the active one first.
- */
-export const stairShape = (
-  frame: Frame,
-  { run, rise, count }: { readonly run: number; readonly rise: number; readonly count: number },
-  all: readonly [StairTexts, ...StairTexts[]],
-): Shape => {
-  const [texts] = all;
-  const room = (key: keyof StairTexts) => longest(all.map((each) => each[key]));
-  const gutters: Gutters = {
-    top: round(PAD + LINE * NOTE),
-    right: MARGIN,
-    bottom: round(OFFSET + PAD + LINE * LABEL),
-    left: round(OFFSET + PAD + textWidth(room('rise'), LABEL)),
-  };
-  const box = fitRectangle(frame, gutters, count * run, count * rise);
-  const [tread, riser] = [box.w / count, box.h / count];
-  const ground = box.y + box.h;
-  // each corner once, so a riser is vertical whatever the rounding of its two treads
-  const across = (k: number): string => num(box.x + k * tread);
-  const steps = Array.from({ length: count }, (_, k) => {
-    const y = num(ground - (k + 1) * riser);
-    return `L${across(k)} ${y}L${across(k + 1)} ${y}`;
-  });
-  const first = { x: box.x, y: round(ground - riser) };
-  const runEnd = { x: round(box.x + tread), y: ground };
-  const riseLine = dimensionLine({ x: box.x, y: ground }, first, 'left', { text: texts.rise });
-  const runLine = dimensionLine({ x: box.x, y: ground }, runEnd, 'bottom', { text: texts.run });
-  return {
-    box,
-    outline: [
-      {
-        kind: 'path',
-        d: `M${num(box.x)} ${num(ground)}${steps.join('')}L${across(count)} ${num(ground)}Z`,
-      },
-    ],
-    lines: [...riseLine.lines, ...runLine.lines],
-    labels: [
-      ...riseLine.labels,
-      ...runLine.labels.map((label) => fitLabel(label, frame, room('run'))),
-    ],
-  };
-};
 
 /**
  * A note in words in the row above a box, centred on the frame: its text is filled later and differs
@@ -405,21 +277,5 @@ export const noteBelow = (frame: Frame, box: Box, label: Label): PlanLabel => ({
   tone: 'note',
   label,
 });
-
-/**
- * A language-free mark (the count `× 3`) centred in a box when it leaves 6 units each side and the
- * box is 29 tall, else at the start of the top row of the frame, where no plan writes.
- */
-export const markLabel = (box: Box, text: string): PlanLabel => {
-  const inside = textWidth(text, LABEL) <= box.w - INSET && box.h >= INSIDE_HEIGHT;
-  return {
-    x: inside ? round(box.x + box.w / 2) : 0,
-    y: inside ? round(box.y + box.h / 2) : round((LINE * LABEL) / 2),
-    anchor: inside ? 'middle' : 'start',
-    size: LABEL,
-    tone: 'dimension',
-    label: { text },
-  };
-};
 
 export { CHAR };

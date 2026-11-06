@@ -1,12 +1,12 @@
 import * as fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import { rectanglePlan } from './area.ts';
 import {
   CLAMP,
   clampedRatio,
   fitRectangle,
   labelBox,
   rectangleGutters,
-  rectanglePlan,
   type Box,
 } from './drawing.ts';
 
