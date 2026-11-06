@@ -303,12 +303,12 @@ for (const { calculator, group } of drawn) {
 
     // spec: blueprint-drawing › [BD20] the box is the same size with and without the script, and
     // nothing below it moves, at every width, for the default and each recorded state
+    // one test per width: two fresh pages each, so a test stays inside the default timeout
     for (const query of ['', ...group.queries]) {
-      test(`keeps the box size and what follows it with the script at every width${query === '' ? '' : ` (${query})`}`, async ({
-        browser,
-      }) => {
-        test.slow();
-        for (const width of WIDTHS) {
+      for (const width of WIDTHS) {
+        test(`keeps the box size and what follows it with the script at ${String(width)} px${query === '' ? '' : ` (${query})`}`, async ({
+          browser,
+        }) => {
           const sizes: { width: number; height: number; next: number }[] = [];
           for (const javaScriptEnabled of [false, true]) {
             await withPage(browser, { javaScriptEnabled }, async (page) => {
@@ -323,8 +323,8 @@ for (const { calculator, group } of drawn) {
             });
           }
           expect(sizes[1], `${String(width)} px`).toEqual(sizes[0]);
-        }
-      });
+        });
+      }
     }
 
     // spec: blueprint-drawing › [BD20] from 48rem the panel is two columns, the drawing on the
