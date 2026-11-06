@@ -23,3 +23,28 @@ export const skipDefinitionChecks = (): Plugin => ({
   },
   load: (id) => (id === STUB ? 'export const checkDefinition = () => {};' : null),
 });
+
+/** The module of core that holds the shape checks of a `compute` result, and its unchecked twin. */
+const RESULT_CHECKS = '/packages/core/src/calculator/result-checks.ts';
+const RESULT_SHAPE = 'result-shape.ts';
+
+/**
+ * Loads core's `result-shape.ts` instead of `result-checks.ts` in a client build (about 1.2 KB):
+ * every calculator a page ships keeps the result contract on every input, which its property tests
+ * prove in Node with the checks in place, and on such a result the two modules give the same
+ * (`result-shape.test.ts`). Only the client environment is redirected, so the page builder and
+ * Node keep the checks; registered beside `skipDefinitionChecks` in `astro.config.mjs` and in the
+ * build the contract tests weigh.
+ */
+export const skipResultChecks = (): Plugin => ({
+  name: 'maestro-skip-result-checks',
+  enforce: 'pre',
+  async resolveId(source, importer, options) {
+    if (!source.endsWith('result-checks.ts') || this.environment.config.consumer !== 'client') {
+      return null;
+    }
+    const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
+    if (resolved?.id.endsWith(RESULT_CHECKS) !== true) return null;
+    return this.resolve(`./${RESULT_SHAPE}`, resolved.id, { ...options, skipSelf: true });
+  },
+});
