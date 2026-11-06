@@ -49,6 +49,33 @@ for (const lang of ['en', 'es'] as const) {
       expect(new URL(t.stateLink.href).hostname).toBe('www.dol.gov');
     });
 
+    it('states the hand-verified state case: Arizona, $15.15 with a $3.00 tip credit, $20 owed', () => {
+      const notes = t.notes.join(' ');
+      for (const figure of [
+        'Arizona',
+        '$12.15',
+        '$3.00',
+        '$15.15',
+        '$486',
+        '$100',
+        '$20',
+        '$606',
+      ]) {
+        expect(notes, figure).toContain(figure);
+      }
+    });
+
+    it('labels the minimum wage and the tip credit with their federal figures', () => {
+      const label = (key: string): string =>
+        t.fields.find((field) => field.key === key)?.label ?? '';
+      expect(label('minimumWage')).toContain('$7.25');
+      expect(label('maxTipCredit')).toContain('$5.12');
+    });
+
+    it('warns of a top-up against the minimum the form holds, not the federal $7.25 alone', () => {
+      expect(t.warnings.topUpOwed).not.toContain('$7.25');
+    });
+
     it('says nothing about the tax deduction for tips', () => {
       expect(JSON.stringify(t)).not.toMatch(/IRS|deduction|deducci|impuesto|\btax/i);
     });

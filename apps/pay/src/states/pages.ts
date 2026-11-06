@@ -5,7 +5,6 @@ import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
 import { DATA_PAGES, dayText } from '../data/pages.ts';
 import { moneyText } from '../format.ts';
 import {
-  FEDERAL_MINIMUM_WAGE,
   MINIMUM_WAGE_STATES,
   MINIMUM_WAGE_STATES_GUIDE,
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
@@ -255,8 +254,6 @@ const WORDS = {
       `The overtime calculator applies the federal rule and California’s. For these 9-hour days, ${name}’s daily rule after ${String(daily)} hours owes no more overtime, but the calculator will not apply that daily rule to a longer day you enter.`,
     outsideNote: (name: string, weekly: number) =>
       `These weeks follow the federal 40-hour rule, which covers most workers in ${name}; the state’s ${String(weekly)}-hour rule applies only to work the FLSA does not cover.`,
-    tippedNote: (minimum: string) =>
-      `The tipped wage calculator applies the federal $7.25 minimum, so it does not open on the ${minimum} minimum that applies here.`,
     labels: { sources: 'Sources', checked: 'Checked', table: 'The full table' },
     index: 'Wage and hour laws in every state',
     disclaimer:
@@ -329,8 +326,6 @@ const WORDS = {
       `La calculadora de horas extra aplica la regla federal y la de California. Con estos días de 9 horas, la regla por día de ${name} después de ${String(daily)} horas no suma más horas extra, pero la calculadora no aplicará esa regla por día a un día más largo que anotes.`,
     outsideNote: (name: string, weekly: number) =>
       `Estas semanas siguen la regla federal de 40 horas, que cubre a la mayoría de los trabajadores en ${name}; la regla estatal de ${String(weekly)} horas solo se aplica al trabajo que la FLSA no cubre.`,
-    tippedNote: (minimum: string) =>
-      `La calculadora de propinas por hora aplica el mínimo federal de $7.25, así que no se abre con el mínimo de ${minimum} que rige aquí.`,
     labels: { sources: 'Fuentes', checked: 'Revisado el', table: 'La tabla completa' },
     index: 'Leyes de salario y horas en cada estado',
     disclaimer:
@@ -441,23 +436,20 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
   const tipped = facts.tipped;
   const guaranteed = runWeek(weekOf(tipped.minimum, 'federal', 6))('pay');
   const cashWages = runWeek(weekOf(tipped.cash, 'federal', 6))('pay');
-  const tippedWeek = { cashWage: dollarsOf(tipped.cash), tips: '0', hours: '30' };
-  // the tipped wage calculator tops a week up to the federal $7.25: it holds only those states
-  const tippedHref =
-    tipped.minimum === FEDERAL_MINIMUM_WAGE
-      ? {
-          href: `${TIPPED_PATHS[lang]}?${encode(tippedWage, valid(tippedWage.validate(tippedWeek), TIPPED_PATHS[lang]))}`,
-          linkLabel: w.tippedLink,
-        }
-      : {};
+  // the state's row of the tipped table: its cash wage, full minimum and maximum tip credit
+  const tippedWeek = {
+    cashWage: dollarsOf(tipped.cash),
+    minimumWage: dollarsOf(tipped.minimum),
+    maxTipCredit: dollarsOf(tipped.credit),
+    tips: '0',
+    hours: '30',
+  };
+  const tippedHref = `${TIPPED_PATHS[lang]}?${encode(tippedWage, valid(tippedWage.validate(tippedWeek), TIPPED_PATHS[lang]))}`;
   const name = nameIn(facts, lang);
   const daily = facts.overtime.daily;
   const notes = [
     ...(daily !== undefined && rule === 'federal' ? [w.dailyNote(capital(name), daily)] : []),
     ...(outsideFlsa(facts.overtime) ? [w.outsideNote(name, facts.overtime.weekly)] : []),
-    ...(tipped.minimum === FEDERAL_MINIMUM_WAGE
-      ? []
-      : [w.tippedNote(short(centsText(tipped.minimum)))]),
   ];
   return {
     heading: w.examples,
@@ -510,7 +502,8 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
           short(moneyText(cashWages)),
           short(moneyText(subMoney(guaranteed, cashWages))),
         ),
-        ...tippedHref,
+        href: tippedHref,
+        linkLabel: w.tippedLink,
       },
     ],
     notes,

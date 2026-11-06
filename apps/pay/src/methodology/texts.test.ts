@@ -93,6 +93,10 @@ describe('methodology texts', () => {
       for (const figure of ['$2.13', '$5.12', '$7.25', '$54.80', '$14.50', '$408.22']) {
         expect(paragraphs, figure).toContain(figure);
       }
+      // a state's figures: Arizona's $15.15 minimum and $3.00 tip credit cap what tips count
+      for (const figure of ['Arizona', '$15.15', '$3.00', '$120', '$400.80']) {
+        expect(paragraphs, figure).toContain(figure);
+      }
       expect(tipped?.sources.map(({ href }) => href)).toEqual([
         'https://www.dol.gov/agencies/whd/fact-sheets/15-tipped-employees-flsa',
         'https://www.dol.gov/agencies/whd/state/minimum-wage/tipped',

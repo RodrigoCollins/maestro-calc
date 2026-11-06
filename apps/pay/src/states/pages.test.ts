@@ -226,23 +226,42 @@ describe('the worked examples of a state page', () => {
     }
   });
 
-  it('opens the tipped wage calculator on the 30 hours only where it applies the state minimum', () => {
+  it('opens the tipped wage calculator on the 30 hours with the state’s figures, in every state', () => {
     for (const { facts, lang, page } of PAGES) {
       const tipped = exampleOf(page, 'tipped30');
-      if (facts.tipped.minimum !== 725) {
-        expect(tipped.href).toBeUndefined();
-        continue;
-      }
-      expect(tipped.href?.startsWith(`${TIPPED_PATHS[lang]}?`)).toBe(true);
+      expect(tipped.href?.startsWith(`${TIPPED_PATHS[lang]}?`), facts.slug.en).toBe(true);
       const { state, issues } = decode(tippedWage, queryOf(tipped.href ?? ''));
       expect(issues).toEqual([]);
-      const week = { cashWage: dollarsOf(facts.tipped.cash), tips: '0', hours: '30' };
-      const validated = tippedWage.validate(week);
-      if (!validated.ok) throw new Error('the tipped week must validate');
-      expect(state).toEqual(validated.value);
-      const result = tippedWage.run(week);
+      // the link holds the three figures of the state's row of the tipped table
+      expect(moneyText(state.cashWage)).toBe(centsText(facts.tipped.cash));
+      expect(moneyText(state.minimumWage)).toBe(centsText(facts.tipped.minimum));
+      expect(moneyText(state.maxTipCredit)).toBe(centsText(facts.tipped.credit));
+      const result = tippedWage.run({
+        cashWage: dollarsOf(facts.tipped.cash),
+        minimumWage: dollarsOf(facts.tipped.minimum),
+        maxTipCredit: dollarsOf(facts.tipped.credit),
+        tips: '0',
+        hours: '30',
+      });
       if (!result.ok) throw new Error('the tipped week must run');
       expect(ran(result.value.outputs, 'totalPay')).toBe(tipped.value);
+      expect(tipped.linkLabel).toBe(
+        lang === 'en'
+          ? 'Open these 30 hours in the tipped wage calculator'
+          : 'Abre estas 30 horas en la calculadora de propinas por hora',
+      );
+    }
+  });
+
+  it('keeps the federal link of a federal state as it was: only the cash wage, tips and hours', () => {
+    const alabama = PAGES.find(({ facts, lang }) => facts.slug.en === 'alabama' && lang === 'en');
+    if (alabama === undefined) throw new Error('no Alabama');
+    expect(exampleOf(alabama.page, 'tipped30').href).toBe(`${TIPPED_PATHS.en}?v=1&t=0&h=30`);
+  });
+
+  it('no longer says the tipped wage calculator applies only the federal minimum', () => {
+    for (const { page } of PAGES) {
+      for (const note of page.examples.notes) expect(note).not.toContain('$7.25');
     }
   });
 
