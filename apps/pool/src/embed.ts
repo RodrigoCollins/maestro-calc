@@ -10,7 +10,17 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { ALKALINITY_ES, CHLORINE_ES, PH_ES, SALT_ES } from './doses-es.ts';
+import {
+  ALKALINITY_ES,
+  CALCIUM_ES,
+  CHLORINE_ES,
+  FILL_TIME_ES,
+  HEATER_ES,
+  PH_ES,
+  PUMP_ES,
+  SALT_ES,
+  STABILIZER_ES,
+} from './doses-es.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { routeOf, type Lang } from './routes.ts';
@@ -44,6 +54,11 @@ const SPANISH_NAMES: Readonly<Record<string, string>> = {
   [CHLORINE.path]: CHLORINE_ES.h1,
   [PH.path]: PH_ES.h1,
   [ALKALINITY.path]: ALKALINITY_ES.h1,
+  [PUMP.path]: PUMP_ES.h1,
+  [STABILIZER.path]: STABILIZER_ES.h1,
+  [CALCIUM.path]: CALCIUM_ES.h1,
+  [HEATER.path]: HEATER_ES.h1,
+  [FILL_TIME.path]: FILL_TIME_ES.h1,
 };
 
 export interface Embed {

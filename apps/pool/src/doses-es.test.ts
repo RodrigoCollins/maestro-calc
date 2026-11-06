@@ -1,6 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { ALKALINITY, CHLORINE, PH, SALT, type DosePage } from './doses.ts';
-import { ALKALINITY_ES, CHLORINE_ES, PH_ES, SALT_ES } from './doses-es.ts';
+import {
+  ALKALINITY,
+  CALCIUM,
+  CHLORINE,
+  FILL_TIME,
+  HEATER,
+  PH,
+  PUMP,
+  SALT,
+  STABILIZER,
+  type DosePage,
+} from './doses.ts';
+import {
+  ALKALINITY_ES,
+  CALCIUM_ES,
+  CHLORINE_ES,
+  FILL_TIME_ES,
+  HEATER_ES,
+  PH_ES,
+  PUMP_ES,
+  SALT_ES,
+  STABILIZER_ES,
+} from './doses-es.ts';
 import { routeOf } from './routes.ts';
 import { VOLUME_TEXTS, VOLUME_TEXTS_ES } from './volume/texts.ts';
 
@@ -9,6 +30,11 @@ const PAIRS: readonly (readonly [string, DosePage, DosePage])[] = [
   ['chlorine', CHLORINE, CHLORINE_ES],
   ['ph', PH, PH_ES],
   ['alkalinity', ALKALINITY, ALKALINITY_ES],
+  ['stabilizer', STABILIZER, STABILIZER_ES],
+  ['calcium', CALCIUM, CALCIUM_ES],
+  ['pump', PUMP, PUMP_ES],
+  ['heater', HEATER, HEATER_ES],
+  ['fill-time', FILL_TIME, FILL_TIME_ES],
 ];
 
 /** The numbers of a text, a thousands comma read inside its number: "20,000" is 20000. */
@@ -86,7 +112,7 @@ describe('the Spanish dose pages', () => {
   });
 
   it('names the products as the US labels do, with their Spanish name', () => {
-    const text = JSON.stringify([CHLORINE_ES, PH_ES, ALKALINITY_ES]);
+    const text = JSON.stringify([CHLORINE_ES, PH_ES, ALKALINITY_ES, STABILIZER_ES, CALCIUM_ES]);
     for (const name of [
       'cloro líquido',
       'hipoclorito de calcio (cal-hypo)',
@@ -94,8 +120,15 @@ describe('the Spanish dose pages', () => {
       'ácido muriático',
       'carbonato de sodio',
       'bicarbonato de sodio',
+      'ácido cianúrico (estabilizador)',
+      'cloruro de calcio',
     ])
       expect(text, name).toContain(name);
+  });
+
+  it('keeps the calcium chloride handling of the English calcium page', () => {
+    expect(CALCIUM_ES.note).toContain('Disuélvelo primero');
+    expect(CALCIUM_ES.note).toContain('con la bomba funcionando');
   });
 
   it('says alberca once in the salt lead, for the readers who search it', () => {

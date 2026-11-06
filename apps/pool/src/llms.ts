@@ -1,7 +1,17 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT, ABOUT_TEXTS } from './about.ts';
 import { CHARTS_INDEX } from './charts.ts';
-import { ALKALINITY_ES, CHLORINE_ES, PH_ES, SALT_ES } from './doses-es.ts';
+import {
+  ALKALINITY_ES,
+  CALCIUM_ES,
+  CHLORINE_ES,
+  FILL_TIME_ES,
+  HEATER_ES,
+  PH_ES,
+  PUMP_ES,
+  SALT_ES,
+  STABILIZER_ES,
+} from './doses-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
@@ -42,8 +52,13 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   volume: { name: VOLUME_TEXTS_ES.h1, note: VOLUME_TEXTS_ES.description },
   salt: { name: SALT_ES.h1, note: SALT_ES.description },
   chlorine: { name: CHLORINE_ES.h1, note: CHLORINE_ES.description },
+  pump: { name: PUMP_ES.h1, note: PUMP_ES.description },
   ph: { name: PH_ES.h1, note: PH_ES.description },
   alkalinity: { name: ALKALINITY_ES.h1, note: ALKALINITY_ES.description },
+  stabilizer: { name: STABILIZER_ES.h1, note: STABILIZER_ES.description },
+  calcium: { name: CALCIUM_ES.h1, note: CALCIUM_ES.description },
+  heater: { name: HEATER_ES.h1, note: HEATER_ES.description },
+  'fill-time': { name: FILL_TIME_ES.h1, note: FILL_TIME_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },

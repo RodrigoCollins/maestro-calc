@@ -1,0 +1,10 @@
+---
+import PumpSizeScript from '../../../islands/PumpSizeScript.astro';
+import { poolPump } from '@maestro-calc/pool-core/pool-pump';
+import DosePage from '../../../components/DosePage.astro';
+import { PUMP_ES } from '../../../doses-es.ts';
+---
+
+<DosePage embed page={PUMP_ES} calculator={poolPump}>
+  <PumpSizeScript />
+</DosePage>

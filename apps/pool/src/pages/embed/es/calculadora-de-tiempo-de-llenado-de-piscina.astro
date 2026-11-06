@@ -1,0 +1,10 @@
+---
+import FillTimeScript from '../../../islands/FillTimeScript.astro';
+import { poolFillTime } from '@maestro-calc/pool-core/pool-fill-time';
+import DosePage from '../../../components/DosePage.astro';
+import { FILL_TIME_ES } from '../../../doses-es.ts';
+---
+
+<DosePage embed page={FILL_TIME_ES} calculator={poolFillTime}>
+  <FillTimeScript />
+</DosePage>
