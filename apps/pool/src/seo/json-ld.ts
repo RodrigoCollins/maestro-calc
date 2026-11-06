@@ -6,15 +6,14 @@ import {
   webApplicationLd,
   webSiteLd,
 } from '@maestro-calc/site-kit/json-ld';
+import { langOf, routeOf, type PageKind } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 import type { Crumb } from './breadcrumb.ts';
 
-/** What a page is to search engines and link previews: the home, a calculator or an article. */
-export type PageKind = 'home' | 'calculator' | 'article';
+export type { PageKind } from '../routes.ts';
 
-/** The home is `/`, a calculator is a `*-calculator` page (as `CALCULATOR_PAGES`), any other page is an article. */
-export const pageKindOf = (path: string): PageKind =>
-  path === '/' ? 'home' : path.endsWith('-calculator') ? 'calculator' : 'article';
+/** The kind of the route at `path` (`src/routes.ts`), in either language; any other path is an article. */
+export const pageKindOf = (path: string): PageKind => routeOf(path)?.kind ?? 'article';
 
 /** The `og:type` of a page: an article (a guide, the methodology) is an Open Graph article. */
 export const ogTypeOf = (kind: PageKind): 'website' | 'article' =>
@@ -29,8 +28,8 @@ export const schemaTypeOf = (kind: PageKind): string => SCHEMA_TYPES[kind];
 const nameOf = (title: string): string => title.replace(/\s*\|\s*Pool Figures$/, '');
 
 /**
- * The JSON-LD of the page at `path` (`@maestro-calc/site-kit/json-ld`), ready for its script
- * element; a page with a `trail` (a job page, `breadcrumb.ts`) also carries its `BreadcrumbList`,
+ * The JSON-LD of the page at `path` (`@maestro-calc/site-kit/json-ld`), in the language of its
+ * address (`en-US`, or `es-US` under `/es`), ready for its script element; a page with a `trail` (a job page, `breadcrumb.ts`) also carries its `BreadcrumbList`,
  * both nodes in one `@graph`.
  */
 export const jsonLdOf = (
@@ -40,7 +39,7 @@ export const jsonLdOf = (
   trail?: readonly Crumb[],
 ): string => {
   const url = new URL(path, origin).href;
-  const inLanguage = 'en-US';
+  const inLanguage = langOf(path) === 'es' ? 'es-US' : 'en-US';
   const { description } = page;
   const kind = pageKindOf(path);
   const node =

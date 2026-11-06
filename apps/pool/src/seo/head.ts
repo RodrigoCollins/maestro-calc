@@ -1,7 +1,28 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { pagePathOf } from '@maestro-calc/site-kit/embed';
 import { linkPreviewOf } from '@maestro-calc/site-kit/link-preview';
+import type { Alternate } from '@maestro-calc/site-kit/sitemap';
+import { routeOf, ROUTES, type Route } from '../routes.ts';
 import { SITE } from '../site.config.ts';
+
+/**
+ * The hreflang alternates of the page at `path`: en-US, es-US and x-default (the English page)
+ * when its route has a Spanish twin, none otherwise, so no page names one that does not exist.
+ */
+export const alternatesOf = (
+  path: string,
+  origin: string,
+  routes: readonly Route[] = ROUTES,
+): Alternate[] => {
+  const route = routeOf(path, routes);
+  if (route?.es === undefined) return [];
+  const en = canonicalUrl(route.en, origin);
+  return [
+    { hreflang: 'en-US', href: en },
+    { hreflang: 'es-US', href: canonicalUrl(route.es, origin) },
+    { hreflang: 'x-default', href: en },
+  ];
+};
 
 /**
  * What the layout writes about the page at `path`: its canonical while the site is indexable and

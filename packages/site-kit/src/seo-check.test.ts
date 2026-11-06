@@ -358,6 +358,61 @@ describe('headProblems', () => {
   });
 });
 
+/** A page with no alternate at all: one that has no twin yet in a language rollout. */
+const single = (lang: string, path: string): string =>
+  [
+    `<!doctype html><html lang="${lang}"><head>`,
+    `<title>Title ${path}</title>`,
+    `<meta name="description" content="About the page ${path}">`,
+    `<link rel="canonical" href="https://x.test${path}">`,
+    '</head><body></body></html>',
+  ].join('');
+
+describe('headProblems during a language rollout (partial)', () => {
+  const both = { 'a.html': page('en', PAIR), 'es/a.html': page('es', PAIR) };
+  const plain = '<url><loc>https://x.test/b</loc></url>';
+  const rollout = (pages: Record<string, string>, sitemap: string): string[] =>
+    headProblems(new Map(Object.entries(pages)), { ...HEAD, sitemap, partial: true });
+
+  it('refuses a page with no alternate when the rollout is not declared', () => {
+    expect(site({ ...both, 'b.html': single('en', '/b') }, `${SITEMAP}${plain}`)).toEqual(
+      expect.arrayContaining([
+        'b.html: needs one en-US alternate, found 0',
+        'b.html: the canonical "https://x.test/b" is none of its alternates',
+      ]),
+    );
+  });
+
+  it('accepts a page with no alternate beside a full pair, its sitemap line plain', () => {
+    expect(rollout({ ...both, 'b.html': single('en', '/b') }, `${SITEMAP}${plain}`)).toEqual([]);
+  });
+
+  it('needs the language of a page with no alternate to be one of the languages', () => {
+    expect(rollout({ ...both, 'b.html': single('fr', '/b') }, `${SITEMAP}${plain}`)).toEqual([
+      'b.html: <html lang> is "fr", none of en-US, es-US',
+    ]);
+  });
+
+  it('still needs a page with any alternate to hold them all, and its twin to exist', () => {
+    const lost = page('en', PAIR).replace(/<link rel="alternate" hreflang="es-US"[^>]*>/, '');
+    expect(rollout({ ...both, 'a.html': lost }, SITEMAP)).toContain(
+      'a.html: needs one es-US alternate, found 0',
+    );
+    expect(
+      rollout({ 'a.html': page('en', PAIR) }, `<urlset>${entry('/a', PAIR)}</urlset>`),
+    ).toEqual([
+      'a.html: its es-US alternate "https://x.test/es/a" is not an indexable page of the build',
+    ]);
+  });
+
+  it('still needs the sitemap line of a page with no alternate to carry none', () => {
+    const paired = entry('/b', { en: '/b', es: '/es/b' });
+    expect(rollout({ ...both, 'b.html': single('en', '/b') }, `${SITEMAP}${paired}`)).toEqual([
+      'sitemap.xml: the alternates of "https://x.test/b" are not those of its page',
+    ]);
+  });
+});
+
 /** A PNG signature and the start of an IHDR chunk of `width` by `height`. */
 const png = (width: number, height: number): Uint8Array => {
   const bytes = Buffer.alloc(24);

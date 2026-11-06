@@ -1,16 +1,9 @@
-/** The built calculator pages: the `*-calculator.astro` files of `src/pages`. */
-export const ROUTED_PAGES = [
-  'pool-volume-calculator.html',
-  'pool-salt-calculator.html',
-  'pool-chlorine-calculator.html',
-  'pool-pump-size-calculator.html',
-  'pool-ph-calculator.html',
-  'pool-alkalinity-calculator.html',
-  'pool-stabilizer-calculator.html',
-  'pool-calcium-hardness-calculator.html',
-  'pool-heater-size-calculator.html',
-  'pool-fill-time-calculator.html',
-] as const;
+import { pathsOf, ROUTES } from '../routes.ts';
+
+/** The built calculator pages: every calculator route of `src/routes.ts`, in each language it has. */
+export const ROUTED_PAGES: readonly string[] = ROUTES.filter(({ kind }) => kind === 'calculator')
+  .flatMap(pathsOf)
+  .map((path) => `${path.slice(1)}.html`);
 
 /** The embed of each (`src/embed.ts`): `/embed` + its path, the same one calculator script. */
 export const EMBED_PAGES = ROUTED_PAGES.map((page) => `embed/${page}`);

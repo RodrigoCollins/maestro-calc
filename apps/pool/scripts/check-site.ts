@@ -3,7 +3,8 @@
 // the rules that make each embed safe to frame and invisible to search (`.../embed`), the
 // internal links between calculators, job pages and guides (`src/site-check/links.ts`), and the
 // search rules of `src/site-check/seo.ts`: unique, measured titles and descriptions, the sitemap
-// equal to the indexable pages, the size and the breadcrumb of each job page, and robots.txt.
+// equal to the indexable pages, the size and the breadcrumb of each job page, robots.txt, and the
+// hreflang pairs of the Spanish rollout.
 // Usage: node apps/pool/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -19,7 +20,7 @@ import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
 import { canonicalPath } from '../src/seo/sitemap.ts';
 import { linkProblems } from '../src/site-check/links.ts';
 import { CALCULATOR_PAGES } from '../src/site-check/pages.ts';
-import { seoAuditProblems } from '../src/site-check/seo.ts';
+import { pairProblems, seoAuditProblems } from '../src/site-check/seo.ts';
 import { SITE } from '../src/site.config.ts';
 
 const given = process.argv[2];
@@ -28,11 +29,10 @@ const { pages, problems } = checkSite(dist, CALCULATOR_PAGES);
 const html = new Map(pages.map(({ file }) => [file, readFileSync(join(dist, file), 'utf8')]));
 const image = join(dist, 'og.png');
 const sitemapFile = join(dist, 'sitemap.xml');
-const sitemap = [
-  ...(existsSync(sitemapFile) ? readFileSync(sitemapFile, 'utf8') : '').matchAll(
-    /<loc>([^<]+)<\/loc>/g,
-  ),
-].map(([, loc = '']) => new URL(loc).pathname);
+const sitemapText = existsSync(sitemapFile) ? readFileSync(sitemapFile, 'utf8') : '';
+const sitemap = [...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+  ([, loc = '']) => new URL(loc).pathname,
+);
 const site = new Map([...html].map(([file, text]) => [canonicalPath(`/${file}`), text]));
 const robotsFile = join(dist, 'robots.txt');
 const all = [
@@ -74,6 +74,8 @@ const all = [
     jobs: JOB_PAGES.map((page) => ({ path: page.path, calculator: page.calculator.path })),
     robots: existsSync(robotsFile) ? readFileSync(robotsFile, 'utf8') : undefined,
   }),
+  // the hreflang pairs that exist, both ways and in the sitemap; a page with no twin names none
+  ...pairProblems(html, sitemapText),
   ...imageProblems('og.png', existsSync(image) ? readFileSync(image) : undefined),
 ];
 for (const { file, bytes } of pages) console.log(`${file}: ${bytes.toLocaleString('en-US')} B`);
