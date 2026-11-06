@@ -29,4 +29,13 @@ describe('time card texts', () => {
       expect(texts.description.length).toBeLessThanOrEqual(160);
     }
   });
+
+  // the searches the page answers: "time card calculator with overtime", "time clock calculator"
+  it('names the overtime it computes from punched times in its heading and its snippet', () => {
+    expect(TIME_CARD_TEXTS.en.h1).toBe('Time card calculator with overtime');
+    expect(TIME_CARD_TEXTS.en.description).toMatch(/^Time clock calculator with overtime:/);
+    expect(TIME_CARD_TEXTS.en.lead).toContain('overtime');
+    expect(TIME_CARD_TEXTS.es.h1).toBe('Calculadora de horas trabajadas y horas extra');
+    expect(TIME_CARD_TEXTS.es.description).toContain('horas extra');
+  });
 });

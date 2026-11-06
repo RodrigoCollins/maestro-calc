@@ -83,8 +83,9 @@ for (const { path } of OVERTIME) {
   });
 }
 
-// A state page with a daily rule opens the calculator on it: Nevada's 40 hours at its $12.00
-// minimum, under the $18.00 line.
+// A state page with a daily rule opens the calculator on it from the link under its answer:
+// Nevada's 45 hours (five 9-hour days) at its $12.00 minimum, under the $18.00 line, so each day
+// past 8 pays $18.00: 40 × $12.00 + 5 × $18.00 = $570.00.
 for (const [state, calculator] of [
   ['/states/nevada', '/overtime-calculator'],
   ['/es/estados/nevada', '/es/calculadora-de-horas-extra'],
@@ -94,6 +95,6 @@ for (const [state, calculator] of [
     await page.locator(`a[href^="${calculator}?"]`).first().click();
     await expect(page.locator('select[name="rule"]')).toHaveValue('nevada');
     await expect(page.locator('input[name="rate"]')).toHaveValue('12.00');
-    await expect(page.locator('.result-figure')).toHaveText('$480.00');
+    await expect(page.locator('.result-figure')).toHaveText('$570.00');
   });
 }

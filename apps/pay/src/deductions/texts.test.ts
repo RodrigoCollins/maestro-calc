@@ -46,4 +46,14 @@ describe('deduction texts', () => {
       expect(paths.es.startsWith('/es/')).toBe(true);
     }
   });
+
+  // the search the tips page answers first: "how to calculate taxes on tips"
+  it('opens the tips page with how the deduction lowers the tax on tips', () => {
+    expect(DEDUCTION_TEXTS.en.tips.lead).toMatch(
+      /^Up to \$25,000 of qualified tips comes off your federal taxable income .*bracket\./,
+    );
+    expect(DEDUCTION_TEXTS.es.tips.lead).toMatch(
+      /^Hasta \$25,000 de propinas calificadas se restan de tu ingreso gravable federal .*tramo\./,
+    );
+  });
 });

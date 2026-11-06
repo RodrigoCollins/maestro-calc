@@ -78,8 +78,8 @@ describe('snippetsFor', () => {
     expect(snippetsFor('es')).toHaveLength(calculators.length);
     expect(first?.code).toBe(
       [
-        '<iframe src="https://cuentahoras.com/embed/time-card-calculator" title="Time card calculator" width="100%" height="1500" style="border:0" loading="lazy"></iframe>',
-        '<p><a href="https://cuentahoras.com/time-card-calculator">Time card calculator by Cuenta Horas</a></p>',
+        '<iframe src="https://cuentahoras.com/embed/time-card-calculator" title="Time card calculator with overtime" width="100%" height="1500" style="border:0" loading="lazy"></iframe>',
+        '<p><a href="https://cuentahoras.com/time-card-calculator">Time card calculator with overtime by Cuenta Horas</a></p>',
       ].join('\n'),
     );
   });
@@ -87,7 +87,7 @@ describe('snippetsFor', () => {
   it('credits the site in Spanish on a Spanish embed', () => {
     const [first] = snippetsFor('es');
     expect(first?.code).toContain(
-      '<a href="https://cuentahoras.com/es/calculadora-de-horas-trabajadas">Calculadora de horas trabajadas de Cuenta Horas</a>',
+      '<a href="https://cuentahoras.com/es/calculadora-de-horas-trabajadas">Calculadora de horas trabajadas y horas extra de Cuenta Horas</a>',
     );
   });
 });

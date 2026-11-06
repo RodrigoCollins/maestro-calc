@@ -51,4 +51,16 @@ describe('the tax guide', () => {
     }
     expect(GUIDE_PATHS.es.startsWith('/es/')).toBe(true);
   });
+
+  // the search it answers first: "how to calculate taxes on tips"
+  it('answers how tips are taxed in the first sentence, with the example the guide prints', () => {
+    const first = (lead: string): string => /^.+?[.!?](?=\s|$)/.exec(lead)?.[0] ?? lead;
+    expect(first(GUIDE_TEXTS.en.lead)).toMatch(/^Tips are taxed as wages, but /);
+    expect(first(GUIDE_TEXTS.es.lead)).toMatch(/^Las propinas pagan impuestos como salario, pero /);
+    for (const { lead } of Object.values(GUIDE_TEXTS)) {
+      expect(first(lead)).toContain(money(GUIDE_EXAMPLES.tips.savings));
+      expect(first(lead)).toContain(money(GUIDE_EXAMPLES.tips.deduction));
+      expect(lead).toContain('Medicare');
+    }
+  });
 });

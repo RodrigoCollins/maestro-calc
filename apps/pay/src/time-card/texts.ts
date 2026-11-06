@@ -46,10 +46,10 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
   en: {
     title: 'Time Card Calculator with Overtime | Cuenta Horas',
     description:
-      'Add up your hours for the week from clock-in and clock-out times, with breaks and overtime, and see your gross pay. Free, in English and Spanish.',
+      'Time clock calculator with overtime: add up your week from clock-in and clock-out times, with breaks, and see your gross pay. Free, in English and Spanish.',
     kicker: 'Time card · free',
-    h1: 'Time card calculator',
-    lead: 'Enter when you clocked in and out each day. You get your hours, your overtime and what you are owed.',
+    h1: 'Time card calculator with overtime',
+    lead: 'Enter when you clocked in and out each day, as on a time clock. You get your hours, your overtime under the federal or the California rule, and what you are owed.',
     rate: 'Hourly rate',
     rule: 'Overtime rule',
     federal: 'Federal (40 h a week)',
@@ -82,8 +82,8 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
     description:
       'Suma tus horas de la semana con la hora de entrada y salida, los descansos y las horas extra, y mira cuánto te tienen que pagar. Gratis, en español e inglés.',
     kicker: 'Tarjeta de horas · gratis',
-    h1: 'Calculadora de horas trabajadas',
-    lead: 'Anota la entrada y la salida de cada día. Te da las horas, las extra y lo que te tienen que pagar.',
+    h1: 'Calculadora de horas trabajadas y horas extra',
+    lead: 'Anota la entrada y la salida de cada día, como en un reloj checador. Te da las horas, las extra con la regla federal o la de California, y lo que te tienen que pagar.',
     rate: 'Pago por hora',
     rule: 'Regla de horas extra',
     federal: 'Federal (40 h semana)',

@@ -69,7 +69,7 @@ test('works inside another site, switches language in the frame and shares the f
 }) => {
   await openHost(page, `${baseURL ?? ''}/embed/time-card-calculator`);
   const frame = page.frameLocator('iframe');
-  await expect(frame.locator('h1')).toHaveText('Time card calculator');
+  await expect(frame.locator('h1')).toHaveText('Time card calculator with overtime');
   await frame.locator('input[name="monOut"]').fill('5:30 pm');
   await expect(frame.locator('[data-out="pay"]')).toHaveText('$1,226.50');
   const href = decodeURIComponent(
@@ -80,7 +80,7 @@ test('works inside another site, switches language in the frame and shares the f
   expect(href).not.toContain('/embed/');
   await frame.locator('header a.lang').click();
   await expect(frame.locator('html')).toHaveAttribute('lang', 'es');
-  await expect(frame.locator('h1')).toHaveText('Calculadora de horas trabajadas');
+  await expect(frame.locator('h1')).toHaveText('Calculadora de horas trabajadas y horas extra');
 });
 
 test('a site page refuses to be framed', async ({ page, baseURL }) => {
