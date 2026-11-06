@@ -231,7 +231,8 @@ export const shiftFiguresOf = (example: ShiftExample): ShiftFigures => {
 
 /** A worked example of the tipped wage calculator: its raw fields over the defaults. */
 export interface TippedExample {
-  readonly id: 'good-week' | 'slow-week' | 'overtime' | 'slow-overtime';
+  readonly id:
+    'good-week' | 'slow-week' | 'overtime' | 'slow-overtime' | 'arizona-week' | 'arizona-capped';
   readonly inputs: Readonly<Record<string, string>>;
 }
 
@@ -240,6 +241,12 @@ export const TIPPED_EXAMPLES: readonly TippedExample[] = [
   { id: 'slow-week', inputs: { tips: '150' } },
   { id: 'overtime', inputs: { hours: '44', tips: '300' } },
   { id: 'slow-overtime', inputs: { hours: '44', tips: '100' } },
+  // Arizona's figures (DOL tipped table, July 1, 2026): $12.15 cash, $3.00 credit, $15.15
+  {
+    id: 'arizona-week',
+    inputs: { cashWage: '12.15', minimumWage: '15.15', maxTipCredit: '3', tips: '100' },
+  },
+  { id: 'arizona-capped', inputs: { minimumWage: '15.15', maxTipCredit: '3', tips: '500' } },
 ];
 
 /** The figures the page shows for a tipped wage example, written as the calculator does. */

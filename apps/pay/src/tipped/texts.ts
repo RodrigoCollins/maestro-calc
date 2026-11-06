@@ -12,7 +12,7 @@ export interface Link {
 }
 
 /** The inputs of the tipped wage calculator, in the order the engine declares them. */
-export type TippedInput = 'cashWage' | 'tips' | 'hours';
+export type TippedInput = 'cashWage' | 'tips' | 'hours' | 'minimumWage' | 'maxTipCredit';
 
 /** The secondary outputs of the tipped wage calculator, in the engine's order. */
 export type TippedOutput =
@@ -54,14 +54,16 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
   en: {
     title: 'Tipped Wage Calculator: Pay Per Hour With Tips | Cuenta Horas',
     description:
-      'Add your cash wage and tips, divide by your hours and see if your employer owes you a top-up to the $7.25 federal minimum. Overtime included. Free.',
+      'Add your cash wage and tips, divide by your hours and see if your employer owes you a top-up to the $7.25 federal minimum or your state’s. Overtime included.',
     kicker: 'Tipped pay · free',
     h1: 'Tipped wage calculator',
-    lead: 'Enter your cash wage, the tips of the week and the hours you worked. You get your pay per hour with tips, the tip credit your employer takes and whether it owes you the difference to the $7.25 federal minimum.',
+    lead: 'Enter your cash wage, the tips of the week and the hours you worked. You get your pay per hour with tips, the tip credit your employer takes and whether it owes you the difference to the minimum wage: the $7.25 federal minimum, or your state’s minimum and tip credit.',
     fields: [
       { key: 'cashWage', label: 'Cash wage per hour (at least $2.13)' },
       { key: 'tips', label: 'Tips this week ($)' },
       { key: 'hours', label: 'Hours worked this week' },
+      { key: 'minimumWage', label: 'Minimum wage per hour (federal $7.25)' },
+      { key: 'maxTipCredit', label: 'Max tip credit per hour (federal $5.12; 0 if none)' },
     ],
     figureLabel: 'Your pay per hour, with tips',
     figures: 'Your week in detail',
@@ -76,14 +78,15 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
     },
     warnings: {
       topUpOwed:
-        'Your cash wage and tips come to less than $7.25 an hour this week: your employer owes you the difference, the top-up below.',
+        'Your cash wage and the tips your employer may count come to less than the minimum wage this week: your employer owes you the difference, the top-up below.',
     },
     notes: [
       'At the federal cash wage of $2.13 an hour, 40 hours pay $85.20. With $250 in tips the week comes to $335.20, or $8.38 an hour, above the $7.25 minimum: the employer owes nothing more.',
       'With $150 in tips, $85.20 + $150 = $235.20 falls short of 40 × $7.25 = $290: the employer makes up the $54.80 difference, and you earn $7.25 an hour.',
       'The tip credit is the part of the minimum wage your tips cover: at most $5.12 an hour ($7.25 − $2.13), never more than the tips you got, and checked over each workweek. Your employer must tell you about it before taking it (DOL Fact Sheet #15).',
       'Overtime is figured on the full $7.25, not on $2.13: each hour over 40 adds half of $7.25, which the employer pays. 44 hours with $300 in tips pay $93.72 + $14.50 + $300 = $408.22.',
-      'Many states set a higher minimum wage or cash wage, and some allow no tip credit at all, such as California, Washington and Alaska: check your state. The calculator uses the federal rules and rounds to the cent.',
+      'Many states set a higher minimum wage or cash wage, and some allow no tip credit at all, such as California, Washington and Alaska: enter your state’s minimum wage and tip credit (0 where it allows none). The calculator rounds to the cent.',
+      'In Arizona the cash wage is $12.15 and the tip credit at most $3.00, toward a $15.15 minimum. 40 hours pay $486 in cash wages; with $100 in tips the employer counts the $100 and owes the $20 left of the $120 credit: $606, or $15.15 an hour.',
     ],
     stateLink: {
       label: 'Tipped minimum wage by state (U.S. Department of Labor)',
@@ -100,14 +103,19 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
   es: {
     title: 'Calculadora de Propinas por Hora: Salario con Propinas | Cuenta Horas',
     description:
-      'Suma tu salario en efectivo y tus propinas, divide por tus horas y mira si tu empleador te debe completar el mínimo federal de $7.25. Con horas extra. Gratis.',
+      'Suma tu salario en efectivo y tus propinas, divide por tus horas y mira si tu empleador te debe completar el mínimo federal de $7.25 o el de tu estado.',
     kicker: 'Pago con propinas · gratis',
     h1: 'Calculadora de propinas por hora',
-    lead: 'Ingresa tu salario en efectivo, las propinas de la semana y las horas que trabajaste. Te da tu pago por hora con propinas, el crédito por propinas que toma tu empleador y si te debe la diferencia hasta el mínimo federal de $7.25.',
+    lead: 'Ingresa tu salario en efectivo, las propinas de la semana y las horas que trabajaste. Te da tu pago por hora con propinas, el crédito por propinas que toma tu empleador y si te debe la diferencia hasta el salario mínimo: el mínimo federal de $7.25, o el mínimo y el crédito por propinas de tu estado.',
     fields: [
       { key: 'cashWage', label: 'Salario en efectivo por hora (mínimo $2.13)' },
       { key: 'tips', label: 'Propinas de esta semana ($)' },
       { key: 'hours', label: 'Horas trabajadas esta semana' },
+      { key: 'minimumWage', label: 'Salario mínimo por hora (federal $7.25)' },
+      {
+        key: 'maxTipCredit',
+        label: 'Crédito máximo por propinas por hora (federal $5.12; 0 si no hay)',
+      },
     ],
     figureLabel: 'Tu pago por hora, con propinas',
     figures: 'Tu semana en detalle',
@@ -122,14 +130,15 @@ export const TIPPED_TEXTS: Readonly<Record<Lang, TippedTexts>> = {
     },
     warnings: {
       topUpOwed:
-        'Tu salario en efectivo y tus propinas suman menos de $7.25 la hora esta semana: tu empleador te debe la diferencia, que ves abajo.',
+        'Tu salario en efectivo y las propinas que tu empleador puede contar suman menos que el salario mínimo esta semana: tu empleador te debe la diferencia, que ves abajo.',
     },
     notes: [
       'Con el salario federal en efectivo de $2.13 la hora, 40 horas pagan $85.20. Con $250 de propinas la semana suma $335.20, o $8.38 la hora, más que el mínimo de $7.25: el empleador no debe nada más.',
       'Con $150 de propinas, $85.20 + $150 = $235.20 no llega a 40 × $7.25 = $290: el empleador completa la diferencia de $54.80, y ganas $7.25 la hora.',
       'El crédito por propinas es la parte del salario mínimo que cubren tus propinas: como máximo $5.12 la hora ($7.25 − $2.13), nunca más que las propinas que recibiste, y se revisa en cada semana laboral. Tu empleador debe avisarte antes de tomarlo (DOL Fact Sheet #15).',
       'Las horas extra se calculan sobre los $7.25 completos, no sobre $2.13: cada hora después de 40 suma la mitad de $7.25, que paga el empleador. 44 horas con $300 de propinas pagan $93.72 + $14.50 + $300 = $408.22.',
-      'Muchos estados fijan un salario mínimo o en efectivo más alto, y algunos no permiten el crédito por propinas, como California, Washington y Alaska: revisa tu estado. La calculadora usa las reglas federales y redondea al centavo.',
+      'Muchos estados fijan un salario mínimo o en efectivo más alto, y algunos no permiten el crédito por propinas, como California, Washington y Alaska: ingresa el salario mínimo y el crédito por propinas de tu estado (0 donde no lo permite). La calculadora redondea al centavo.',
+      'En Arizona el salario en efectivo es $12.15 y el crédito por propinas, como máximo $3.00, para un mínimo de $15.15. 40 horas pagan $486 de salario en efectivo; con $100 de propinas el empleador cuenta los $100 y debe los $20 que faltan del crédito de $120: $606, o $15.15 la hora.',
     ],
     stateLink: {
       label:

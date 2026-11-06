@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { decimalHoursText, hoursMinutesText, hoursText, moneyText } from '../format.ts';
+import { TIPPED_STATES } from '../guide/tipped-states.ts';
 import {
   EXAMPLES,
   figuresOf,
@@ -20,11 +21,16 @@ import {
 // $150 in tips: $290 - $235.20 = $54.80 owed, $290, $7.25 an hour;
 // 44 h, $300: $93.72 + 4 x $3.625 = $14.50 + $300 = $408.22, $408.22 / 44 = $9.28;
 // 44 h, $100: 44 x $7.25 = $319, $319 - $193.72 = $125.28 owed, + $14.50 = $333.50, $7.58.
+// Arizona ($12.15 cash, $3.00 max credit, $15.15 minimum), 40 h, $100: $486 + $100 counted of
+// the $120 credit, $20 owed: $606, $15.15; at $2.13 with $500: only $120 of tips count, so
+// $520.80 - $120 = $400.80 owed, $85.20 + $400.80 + $500 = $986, $24.65 an hour.
 const TIPPED_HAND = {
   'good-week': { perHour: '$8.38', topUp: '$0.00', totalPay: '$335.20' },
   'slow-week': { perHour: '$7.25', topUp: '$54.80', totalPay: '$290.00' },
   overtime: { perHour: '$9.28', topUp: '$0.00', totalPay: '$408.22' },
   'slow-overtime': { perHour: '$7.58', topUp: '$125.28', totalPay: '$333.50' },
+  'arizona-week': { perHour: '$15.15', topUp: '$20.00', totalPay: '$606.00' },
+  'arizona-capped': { perHour: '$24.65', topUp: '$400.80', totalPay: '$986.00' },
 } as const;
 
 describe('tipped wage examples', () => {
@@ -34,6 +40,11 @@ describe('tipped wage examples', () => {
 
   it.each(TIPPED_EXAMPLES)('$id: the engine gives the hand-verified figures', (example) => {
     expect(tippedFiguresOf(example)).toEqual(TIPPED_HAND[example.id]);
+  });
+
+  it('takes the Arizona figures of the state table, so the examples follow its row', () => {
+    const arizona = TIPPED_STATES.find(({ name }) => name.en === 'Arizona');
+    expect([arizona?.cash, arizona?.credit, arizona?.minimum]).toEqual([1215, 300, 1515]);
   });
 });
 

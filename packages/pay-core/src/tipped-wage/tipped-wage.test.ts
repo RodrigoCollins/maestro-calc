@@ -104,4 +104,70 @@ describe('tipped wage', () => {
     expect(tippedWage.run({ hours: '168' }).ok).toBe(true);
     expect(tippedWage.run({ hours: '168.5' }).ok).toBe(false);
   });
+
+  // A state's figures (DOL table "Minimum Wages for Tipped Employees", July 1, 2026), by hand:
+  // Arizona, $12.15 cash wage, $3.00 max tip credit, $15.15 minimum. 40 h: $486 in cash wages,
+  // a $606 minimum; $100 in tips cover $100 of the $120 credit, $20 owed: $606, $15.15 an hour.
+  it('tops up to a state minimum: Arizona, 40 hours with $100 in tips owe $20', () => {
+    const { outputs, warnings } = runOf({
+      cashWage: '12.15',
+      minimumWage: '15.15',
+      maxTipCredit: '3',
+      tips: '100',
+    });
+    expect(outputs['wages']).toEqual(usd(486));
+    expect(outputs['tipCredit']).toEqual(usd(100));
+    expect(outputs['topUp']).toEqual(usd(20));
+    expect(outputs['totalPay']).toEqual(usd(606));
+    expect(outputs['perHour']).toEqual(usd(r(1515, 100)));
+    expect(warnings).toEqual(['topUpOwed']);
+  });
+
+  it('never counts more of the tips than the state allows: $2.13 in Arizona owes $400.80', () => {
+    // $2.13 x 40 = $85.20; the gap to $15.15 is $13.02 x 40 = $520.80, but at most $3.00 x 40 =
+    // $120 of tips count: $400.80 owed, $85.20 + $400.80 + $500 = $986, $24.65 an hour
+    const { outputs, warnings } = runOf({ minimumWage: '15.15', maxTipCredit: '3', tips: '500' });
+    expect(outputs['tipCredit']).toEqual(usd(120));
+    expect(outputs['topUp']).toEqual(usd(r(40080, 100)));
+    expect(outputs['totalPay']).toEqual(usd(986));
+    expect(outputs['perHour']).toEqual(usd(r(2465, 100)));
+    expect(warnings).toEqual(['topUpOwed']);
+  });
+
+  it('takes no tip credit where the state allows none: California, $16.90 for every hour', () => {
+    // $16.90 x 40 = $676 + $200 in tips = $876, $21.90 an hour; 44 h: $743.60 + 4 x $8.45 =
+    // $33.80 + $200 = $977.40
+    const week = { cashWage: '16.90', minimumWage: '16.90', maxTipCredit: '0', tips: '200' };
+    const { outputs, warnings } = runOf(week);
+    expect(outputs['tipCredit']).toEqual(usd(0));
+    expect(outputs['topUp']).toEqual(usd(0));
+    expect(outputs['totalPay']).toEqual(usd(876));
+    expect(outputs['perHour']).toEqual(usd(r(2190, 100)));
+    expect(warnings).toEqual([]);
+    const long = runOf({ ...week, hours: '44' }).outputs;
+    expect(long['overtimePremium']).toEqual(usd(r(3380, 100)));
+    expect(long['totalPay']).toEqual(usd(r(97740, 100)));
+  });
+
+  it('figures overtime on the state minimum: 44 hours in Arizona add 4 x $7.575 = $30.30', () => {
+    const { outputs } = runOf({
+      cashWage: '12.15',
+      minimumWage: '15.15',
+      maxTipCredit: '3',
+      tips: '300',
+      hours: '44',
+    });
+    expect(outputs['overtimePremium']).toEqual(usd(r(3030, 100)));
+  });
+
+  it('refuses a minimum wage under the federal $7.25 and a negative tip credit', () => {
+    expect(tippedWage.run({ minimumWage: '7.24' }).ok).toBe(false);
+    expect(tippedWage.run({ minimumWage: '7.25' }).ok).toBe(true);
+    expect(tippedWage.run({ minimumWage: '1000' }).ok).toBe(true);
+    expect(tippedWage.run({ minimumWage: '1000.01' }).ok).toBe(false);
+    expect(tippedWage.run({ maxTipCredit: '0' }).ok).toBe(true);
+    expect(tippedWage.run({ maxTipCredit: '-1' }).ok).toBe(false);
+    expect(tippedWage.run({ maxTipCredit: '1000' }).ok).toBe(true);
+    expect(tippedWage.run({ maxTipCredit: '1000.01' }).ok).toBe(false);
+  });
 });

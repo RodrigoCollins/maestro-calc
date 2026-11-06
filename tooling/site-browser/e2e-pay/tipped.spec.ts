@@ -37,5 +37,40 @@ for (const { path } of TIPPED) {
       await cash.fill('2');
       await expect(cash).toHaveAttribute('aria-invalid', 'true');
     });
+
+    test('takes a state minimum and tip credit: Arizona, $100 in tips owe $20', async ({
+      page,
+    }) => {
+      // $12.15 x 40 = $486; the $15.15 minimum is $606; $100 of the $120 credit, $20 owed
+      await page.goto(path);
+      await page.locator('input[name="cashWage"]').fill('12.15');
+      await page.locator('input[name="minimumWage"]').fill('15.15');
+      await page.locator('input[name="maxTipCredit"]').fill('3');
+      await page.locator('input[name="tips"]').fill('100');
+      await expect(page.locator('[data-out="topUp"]')).toHaveText('$20.00');
+      await expect(page.locator('.result-figure')).toHaveText('$15.15');
+      await expect(page.locator('[data-warning="topUpOwed"]')).toBeVisible();
+    });
+  });
+}
+
+// A state page opens the calculator on its row of the tipped table: Arizona's 30 hours with no
+// tips are 30 x $15.15 = $454.50, of which $90 (30 x $3.00) the employer tops up.
+for (const [state, lang] of [
+  ['/states/arizona', 'en'],
+  ['/es/estados/arizona', 'es'],
+] as const) {
+  test(`${state} opens the tipped wage calculator on Arizona's figures`, async ({ page }) => {
+    await page.goto(state);
+    await page
+      .locator(
+        `a[href^="${lang === 'en' ? '/tipped-wage-calculator' : '/es/calculadora-de-propinas-por-hora'}?"]`,
+      )
+      .click();
+    await expect(page.locator('input[name="cashWage"]')).toHaveValue('12.15');
+    await expect(page.locator('input[name="minimumWage"]')).toHaveValue('15.15');
+    await expect(page.locator('input[name="maxTipCredit"]')).toHaveValue('3.00');
+    await expect(page.locator('[data-out="totalPay"]')).toHaveText('$454.50');
+    await expect(page.locator('[data-out="topUp"]')).toHaveText('$90.00');
   });
 }
