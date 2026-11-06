@@ -16,6 +16,8 @@ import { sideViewOf, type SideView } from '../volume/side-view.ts';
 const form = document.querySelector<HTMLFormElement>('form[data-calculator="pool-volume"]');
 const UNITS = { gallons: [gal, 0], liters: [liter, 0], cubicFeet: [ft3, 1] } as const;
 const side = document.querySelector('svg[data-side]');
+// the page names its drawing in its own language
+const lang = document.documentElement.lang === 'es' ? 'es' : 'en';
 
 /** Redraws the server's side view: the same nodes, new attributes and texts. */
 const drawSide = (view: SideView): void => {
@@ -83,7 +85,7 @@ if (form !== null) {
     if (validated.ok) {
       const { length, shallow, deep } = validated.value;
       drawSide(
-        sideViewOf({ length: inches(length), shallow: inches(shallow), deep: inches(deep) }),
+        sideViewOf({ length: inches(length), shallow: inches(shallow), deep: inches(deep) }, lang),
       );
     }
     const query = encoded(raw);

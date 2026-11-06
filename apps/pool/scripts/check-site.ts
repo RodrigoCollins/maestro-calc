@@ -10,10 +10,11 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
-import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
+import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
 import { CHARTS_INDEX, DATA_PAGES } from '../src/charts.ts';
-import { EMBEDS } from '../src/embed.ts';
+import { ALL_EMBEDS } from '../src/embed.ts';
+import { routeOf } from '../src/routes.ts';
 import { GUIDES } from '../src/guide.ts';
 import { JOB_PAGES, neighborsOf } from '../src/jobs.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
@@ -45,12 +46,16 @@ const all = [
       return { og: ogTypeOf(kind), schema: schemaTypeOf(kind) };
     },
   }),
-  ...EMBEDS.flatMap(({ path, page }) => {
+  ...ALL_EMBEDS.flatMap(({ path, page }) => {
     const embed = html.get(`${path.slice(1)}.html`);
     if (embed === undefined) return [`${path}: an embed the build does not hold`];
+    // a calculator with its twin switches language inside the frame, to the twin's embed
+    const route = routeOf(page);
+    const twin = route?.es === undefined ? undefined : page === route.en ? route.es : route.en;
     return embedPageProblems(embed, {
       canonical: canonicalUrl(page, SITE.origin),
       scripts: moduleScriptsOf(html.get(`${page.slice(1)}.html`) ?? ''),
+      other: twin === undefined ? undefined : embedPathOf(twin),
     }).map((message) => `${path}: ${message}`);
   }),
   ...(sitemap.length === 0 ? ['sitemap.xml: no page listed'] : []),
@@ -85,6 +90,6 @@ if (all.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `check:site: ${String(pages.length)} pages within budget, each with its link preview and its own title and description, ${String(EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
+    `check:site: ${String(pages.length)} pages within budget, each with its link preview and its own title and description, ${String(ALL_EMBEDS.length)} embeds, ${String(sitemap.length)} sitemap pages linked`,
   );
 }

@@ -40,13 +40,18 @@ export const PAGES: readonly Page[] = [
   es('/es/acerca'),
   es('/es/privacidad'),
   es('/es/calculadoras-para-tu-sitio'),
+  es('/es/calculadora-de-volumen-de-piscina'),
+  es('/es/calculadora-de-sal-para-piscina'),
+  es('/es/calculadora-de-cloro-para-piscina'),
+  es('/es/calculadora-de-ph-para-piscina'),
+  es('/es/calculadora-de-alcalinidad-para-piscina'),
 ];
 
 /**
  * Each calculator: the figure it shows at its defaults (worked out at build time, so it reads with no
  * script), and one edit worked out by hand with the figure it must show after it.
  */
-export const CALCULATORS = [
+const ENGLISH = [
   {
     path: '/pool-volume-calculator',
     out: 'gallons',
@@ -129,5 +134,31 @@ export const CALCULATORS = [
   },
 ] as const;
 
+/** The Spanish page of each calculator that has one (`apps/pool/src/routes.ts`). */
+const SPANISH: Readonly<Partial<Record<(typeof ENGLISH)[number]['path'], string>>> = {
+  '/pool-volume-calculator': '/es/calculadora-de-volumen-de-piscina',
+  '/pool-salt-calculator': '/es/calculadora-de-sal-para-piscina',
+  '/pool-chlorine-calculator': '/es/calculadora-de-cloro-para-piscina',
+  '/pool-ph-calculator': '/es/calculadora-de-ph-para-piscina',
+  '/pool-alkalinity-calculator': '/es/calculadora-de-alcalinidad-para-piscina',
+};
+
+/**
+ * Every calculator page in each language it has. A Spanish page runs the same engine and writes its
+ * numbers as the English one does (en-US, as Cuenta Horas keeps), so it shows the same figures and
+ * takes the same hand-worked edit.
+ */
+export const CALCULATORS = [
+  ...ENGLISH.map((calculator) => ({ ...calculator, lang: 'en' as const })),
+  ...ENGLISH.flatMap((calculator) => {
+    const path = SPANISH[calculator.path];
+    return path === undefined ? [] : [{ ...calculator, path, lang: 'es' as const }];
+  }),
+];
+
 /** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
-export const EMBEDS = CALCULATORS.map(({ path: page }) => ({ embed: `/embed${page}`, page }));
+export const EMBEDS = CALCULATORS.map(({ path: page, lang }) => ({
+  embed: `/embed${page}`,
+  page,
+  lang,
+}));

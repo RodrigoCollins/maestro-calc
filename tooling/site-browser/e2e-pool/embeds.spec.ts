@@ -86,10 +86,37 @@ test('offers the code of every embed, each one answering', async ({ page }) => {
   const codes = await page
     .locator('pre.embed-code')
     .evaluateAll((blocks) => blocks.map((block) => block.textContent));
-  expect(codes).toHaveLength(EMBEDS.length);
-  for (const [index, { embed, page: full }] of EMBEDS.entries()) {
+  const english = EMBEDS.filter(({ lang }) => lang === 'en');
+  expect(codes).toHaveLength(english.length);
+  for (const [index, { embed, page: full }] of english.entries()) {
     expect(codes[index]).toContain(`<iframe src="https://poolfigures.com${embed}"`);
     expect(codes[index]).toContain(`<a href="https://poolfigures.com${full}">`);
     expect((await page.request.get(embed)).status(), embed).toBe(200);
   }
+});
+
+// the Spanish page offers the Spanish embed of each calculator that has one, the English otherwise
+test('offers the Spanish embeds on the Spanish page, each one answering', async ({ page }) => {
+  await page.goto('/es/calculadoras-para-tu-sitio');
+  const codes = (
+    await page
+      .locator('pre.embed-code')
+      .evaluateAll((blocks) => blocks.map((block) => block.textContent))
+  ).join('\n');
+  for (const { embed, page: full } of EMBEDS.filter(({ lang }) => lang === 'es')) {
+    expect(codes).toContain(`<iframe src="https://poolfigures.com${embed}"`);
+    expect(codes).toContain(`<a href="https://poolfigures.com${full}">`);
+    expect((await page.request.get(embed)).status(), embed).toBe(200);
+  }
+});
+
+test('switches language inside the frame, from embed to embed', async ({ page }) => {
+  await page.goto('/embed/pool-salt-calculator');
+  const toSpanish = page.locator('header a[hreflang="es"]');
+  await expect(toSpanish).toHaveAttribute('target', '_self');
+  await toSpanish.click();
+  await expect(page).toHaveURL(/\/embed\/es\/calculadora-de-sal-para-piscina$/);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'es');
+  await page.locator('header a[hreflang="en"]').click();
+  await expect(page).toHaveURL(/\/embed\/pool-salt-calculator$/);
 });

@@ -20,12 +20,37 @@ export interface Route {
 /** The page files of `src/pages` (the 404 and the embeds are not routes), in the order of the site. */
 const PAGE_ROUTES: readonly Route[] = [
   { id: 'home', kind: 'home', en: '/', es: '/es' },
-  { id: 'volume', kind: 'calculator', en: '/pool-volume-calculator' },
-  { id: 'salt', kind: 'calculator', en: '/pool-salt-calculator' },
-  { id: 'chlorine', kind: 'calculator', en: '/pool-chlorine-calculator' },
+  {
+    id: 'volume',
+    kind: 'calculator',
+    en: '/pool-volume-calculator',
+    es: '/es/calculadora-de-volumen-de-piscina',
+  },
+  {
+    id: 'salt',
+    kind: 'calculator',
+    en: '/pool-salt-calculator',
+    es: '/es/calculadora-de-sal-para-piscina',
+  },
+  {
+    id: 'chlorine',
+    kind: 'calculator',
+    en: '/pool-chlorine-calculator',
+    es: '/es/calculadora-de-cloro-para-piscina',
+  },
   { id: 'pump', kind: 'calculator', en: '/pool-pump-size-calculator' },
-  { id: 'ph', kind: 'calculator', en: '/pool-ph-calculator' },
-  { id: 'alkalinity', kind: 'calculator', en: '/pool-alkalinity-calculator' },
+  {
+    id: 'ph',
+    kind: 'calculator',
+    en: '/pool-ph-calculator',
+    es: '/es/calculadora-de-ph-para-piscina',
+  },
+  {
+    id: 'alkalinity',
+    kind: 'calculator',
+    en: '/pool-alkalinity-calculator',
+    es: '/es/calculadora-de-alcalinidad-para-piscina',
+  },
   { id: 'stabilizer', kind: 'calculator', en: '/pool-stabilizer-calculator' },
   { id: 'calcium', kind: 'calculator', en: '/pool-calcium-hardness-calculator' },
   { id: 'heater', kind: 'calculator', en: '/pool-heater-size-calculator' },

@@ -1,6 +1,6 @@
 ---
 import Layout from './Layout.astro';
-import { EMBED_PAGE_TEXTS, snippets } from '../embed.ts';
+import { EMBED_PAGE_TEXTS, snippetsOf } from '../embed.ts';
 import { labelOf } from '../layout.ts';
 import { hrefOf, type Lang } from '../routes.ts';
 
@@ -33,7 +33,7 @@ const { title, description, h1, lead, howHeading, steps, notes, calculatorsHeadi
     </section>
     <section class="pool-embed" aria-labelledby="calculators">
       <h2 id="calculators">{calculatorsHeading}</h2>
-      {snippets.map(({ name, code }, index) => (
+      {snippetsOf(lang).map(({ name, code }, index) => (
         <section aria-labelledby={`embed-${String(index)}`}>
           <h3 id={`embed-${String(index)}`}>{name}</h3>
           <pre class="embed-code"><code>{code}</code></pre>

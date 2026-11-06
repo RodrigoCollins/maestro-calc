@@ -5,14 +5,18 @@ import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 import { lengthFieldText, volumeText } from '../format.ts';
 import { SIDE_VIEW, sideViewOf } from '../volume/side-view.ts';
-import { VOLUME_TEXTS as t } from '../volume/texts.ts';
+import type { Lang } from '../routes.ts';
+import { VOLUME_TEXTS, VOLUME_TEXTS_ES, type VolumeTexts } from '../volume/texts.ts';
 
 interface Props {
+  /** The language of the page: its texts and the name of its drawing. */
+  readonly lang?: Lang;
   /** The embed of the page (`src/embed.ts`): the same calculator in the slim shell. */
   readonly embed?: boolean;
 }
 
-const { embed = false } = Astro.props;
+const { lang = 'en', embed = false } = Astro.props;
+const t: VolumeTexts = lang === 'en' ? VOLUME_TEXTS : VOLUME_TEXTS_ES;
 // The page renders the engine's default result, so it reads complete with no script; the page
 // that uses it puts the script in its slot.
 const ran = poolVolume.run({});
@@ -35,11 +39,10 @@ const inchesOf = (key: string): number => {
   return valueIn(input.default, inch).toNumber();
 };
 // the side view of the default pool; the script redraws it from each valid edit
-const view = sideViewOf({
-  length: inchesOf('length'),
-  shallow: inchesOf('shallow'),
-  deep: inchesOf('deep'),
-});
+const view = sideViewOf(
+  { length: inchesOf('length'), shallow: inchesOf('shallow'), deep: inchesOf('deep') },
+  lang,
+);
 const rows = [
   { key: 'liters', label: t.rows.liters, value: volumeText(volume('liters'), liter) },
   { key: 'cubicFeet', label: t.rows.cubicFeet, value: volumeText(volume('cubicFeet'), ft3, 1) },
@@ -119,7 +122,13 @@ const rows = [
     </section>
     <p class="pool-note">{t.method}</p>
     <p class="pool-note">{t.note}</p>
-    <JobLinks path={t.path} {embed} />
+    {t.methodLink !== undefined && (
+      <p class="pool-note">
+        <a href={t.methodLink.href}>{t.methodLink.label}</a>
+      </p>
+    )}
+    {/* the job pages and the guides are English for now: the Spanish page leaves their links out */}
+    {lang === 'en' && <JobLinks path={t.path} {embed} />}
   </main>
   <slot />
 </Layout>

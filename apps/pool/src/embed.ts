@@ -10,11 +10,12 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
+import { ALKALINITY_ES, CHLORINE_ES, PH_ES, SALT_ES } from './doses-es.ts';
 import { HOME_TOOLS } from './home.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
-import type { Lang } from './routes.ts';
+import { routeOf, type Lang } from './routes.ts';
 import { SITE } from './site.config.ts';
-import { VOLUME_TEXTS } from './volume/texts.ts';
+import { VOLUME_TEXTS, VOLUME_TEXTS_ES } from './volume/texts.ts';
 
 /*
  * The embeds of Pool Figures (plans/growth/PLAN.md › lever 2), as Maestro Calc's `/embed`: every
@@ -36,6 +37,15 @@ const CALCULATORS: Readonly<Record<string, { readonly name: string; readonly hei
   [FILL_TIME.path]: { name: FILL_TIME.h1, height: 1000 },
 };
 
+/** The Spanish name of each calculator that has its Spanish page, by English page path. */
+const SPANISH_NAMES: Readonly<Record<string, string>> = {
+  [VOLUME_TEXTS.path]: VOLUME_TEXTS_ES.h1,
+  [SALT.path]: SALT_ES.h1,
+  [CHLORINE.path]: CHLORINE_ES.h1,
+  [PH.path]: PH_ES.h1,
+  [ALKALINITY.path]: ALKALINITY_ES.h1,
+};
+
 export interface Embed {
   /** Where the embed is served. */
   readonly path: string;
@@ -52,19 +62,41 @@ export const EMBEDS: readonly Embed[] = HOME_TOOLS.map(({ href }) => {
   return { path: embedPathOf(href), page: href, ...calculator };
 });
 
-/** Every calculator's snippet: the frame, then the visible link to the full page outside it. */
-export const snippets: readonly { readonly name: string; readonly code: string }[] = EMBEDS.map(
-  ({ page, name, height }) => ({
-    name,
-    code: embedSnippetOf({
-      origin: SITE.origin,
-      page,
-      name,
-      credit: `${name} by ${SITE.name}`,
-      height,
-    }),
-  }),
-);
+/** The embed of every calculator that has its Spanish page, at `/embed` + that page, in home order. */
+export const EMBEDS_ES: readonly Embed[] = EMBEDS.flatMap(({ page, height }) => {
+  const es = routeOf(page)?.es;
+  if (es === undefined) return [];
+  const name = SPANISH_NAMES[page];
+  if (name === undefined) throw new Error(`no Spanish name for the calculator ${page}`);
+  return [{ path: embedPathOf(es), page: es, name, height }];
+});
+
+/** Every embed the build holds, English then Spanish. */
+export const ALL_EMBEDS: readonly Embed[] = [...EMBEDS, ...EMBEDS_ES];
+
+const snippetOf = ({ page, name, height }: Embed, credit: string) =>
+  embedSnippetOf({ origin: SITE.origin, page, name, credit, height });
+
+/**
+ * Every calculator's snippet in `lang`: the frame, then the visible link to the full page outside
+ * it. The Spanish page offers the Spanish embed of a calculator that has one, and says which are
+ * still in English.
+ */
+export const snippetsOf = (
+  lang: Lang,
+): readonly { readonly name: string; readonly code: string }[] =>
+  EMBEDS.map((embed) => {
+    const spanish = EMBEDS_ES.find(({ page }) => page === routeOf(embed.page)?.es);
+    if (lang === 'en' || spanish === undefined)
+      return {
+        name: lang === 'en' ? embed.name : `${embed.name} (en inglés)`,
+        code: snippetOf(embed, `${embed.name} by ${SITE.name}`),
+      };
+    return { name: spanish.name, code: snippetOf(spanish, `${spanish.name} de ${SITE.name}`) };
+  });
+
+/** Every calculator's English snippet (`snippetsOf('en')`). */
+export const snippets = snippetsOf('en');
 
 /** The page that offers every calculator to other sites. */
 export const EMBED_PAGE = {
@@ -107,7 +139,7 @@ const EMBED_PAGE_ES = {
     'La calculadora insertada no rastrea a tus visitantes y no carga anuncios. Sus cifras salen de las mismas fórmulas y fuentes que nuestras páginas, descritas en nuestra metodología.',
     `¿Preguntas, o necesitas una calculadora? Escríbenos a ${CONTACT_EMAIL}.`,
   ],
-  calculatorsHeading: 'Las calculadoras (en inglés por ahora)',
+  calculatorsHeading: 'Las calculadoras',
 } as const;
 
 /** The embed page in each language. */

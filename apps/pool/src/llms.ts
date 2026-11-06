@@ -1,6 +1,7 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT, ABOUT_TEXTS } from './about.ts';
 import { CHARTS_INDEX } from './charts.ts';
+import { ALKALINITY_ES, CHLORINE_ES, PH_ES, SALT_ES } from './doses-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TEXTS, HOME_TOOLS } from './home.ts';
@@ -8,6 +9,7 @@ import { JOB_PAGES } from './jobs.ts';
 import { PRIVACY, PRIVACY_TEXTS } from './privacy.ts';
 import { ROUTES } from './routes.ts';
 import { SITE } from './site.config.ts';
+import { VOLUME_TEXTS_ES } from './volume/texts.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
 interface Entry {
@@ -37,6 +39,11 @@ const ABOUT_PAGES: readonly Entry[] = [
 /** The Spanish page of each route that has one, by route id: its Spanish name and description. */
 const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   home: { name: 'Pool Figures en español', note: HOME_TEXTS.es.description },
+  volume: { name: VOLUME_TEXTS_ES.h1, note: VOLUME_TEXTS_ES.description },
+  salt: { name: SALT_ES.h1, note: SALT_ES.description },
+  chlorine: { name: CHLORINE_ES.h1, note: CHLORINE_ES.description },
+  ph: { name: PH_ES.h1, note: PH_ES.description },
+  alkalinity: { name: ALKALINITY_ES.h1, note: ALKALINITY_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },

@@ -1,0 +1,10 @@
+---
+import AlkalinityScript from '../../islands/AlkalinityScript.astro';
+import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import DosePage from '../../components/DosePage.astro';
+import { ALKALINITY_ES } from '../../doses-es.ts';
+---
+
+<DosePage page={ALKALINITY_ES} calculator={poolAlkalinity}>
+  <AlkalinityScript />
+</DosePage>
