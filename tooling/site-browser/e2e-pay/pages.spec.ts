@@ -41,6 +41,29 @@ for (const { path, lang } of PAGES) {
       expect(response?.status()).toBe(200);
       await expect(page.locator('html')).toHaveAttribute('lang', lang === 'en' ? 'es' : 'en');
     });
+
+    // One load per page and its own test: a loop over every page in one test outgrew the timeout.
+    test('describes itself in its head: link preview, structured data and open to search engines', async ({
+      page,
+    }) => {
+      await page.goto(path);
+      const meta = (property: string) =>
+        page.locator(`meta[property="${property}"]`).getAttribute('content');
+      expect(await meta('og:title')).toBe(await page.title());
+      expect(await meta('og:description')).toBe(
+        await page.locator('meta[name="description"]').getAttribute('content'),
+      );
+      expect(await meta('og:image')).toBe('https://cuentahoras.com/og.png');
+      type LdNode = { '@type'?: string; url?: string };
+      const document = JSON.parse(
+        (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
+      ) as LdNode & { '@graph'?: LdNode[] };
+      // a home is one WebSite node; every other page leads a @graph its BreadcrumbList follows
+      const data = document['@graph']?.[0] ?? document;
+      expect(['WebSite', 'WebApplication', 'Article']).toContain(data['@type']);
+      expect(data.url).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+    });
   });
 }
 
@@ -108,42 +131,11 @@ test('sends the security headers with every page', async ({ request }) => {
   }
 });
 
-test('gives every page a link preview: its title, description and the shared image', async ({
-  page,
-  request,
-}) => {
+test('serves the shared link preview image as a PNG', async ({ request }) => {
   expect((await request.get('/og.png')).headers()['content-type']).toBe('image/png');
-  for (const { path } of PAGES) {
-    await page.goto(path);
-    const meta = (property: string) =>
-      page.locator(`meta[property="${property}"]`).getAttribute('content');
-    expect(await meta('og:title'), path).toBe(await page.title());
-    expect(await meta('og:description'), path).toBe(
-      await page.locator('meta[name="description"]').getAttribute('content'),
-    );
-    expect(await meta('og:image'), path).toBe('https://cuentahoras.com/og.png');
-  }
 });
 
-test('describes every page with structured data whose url is its canonical', async ({ page }) => {
-  for (const { path } of PAGES) {
-    await page.goto(path);
-    type LdNode = { '@type'?: string; url?: string };
-    const document = JSON.parse(
-      (await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}',
-    ) as LdNode & { '@graph'?: LdNode[] };
-    // a home is one WebSite node; every other page leads a @graph its BreadcrumbList follows
-    const data = document['@graph']?.[0] ?? document;
-    expect(['WebSite', 'WebApplication', 'Article'], path).toContain(data['@type']);
-    expect(data.url, path).toBe(await page.locator('link[rel="canonical"]').getAttribute('href'));
-  }
-});
-
-test('lets search engines index every page but the 404', async ({ page }) => {
-  for (const { path } of PAGES) {
-    await page.goto(path);
-    await expect(page.locator('meta[name="robots"]'), path).toHaveCount(0);
-  }
+test('keeps the 404 page out of search engines', async ({ page }) => {
   await page.goto('/no-such-page');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
 });
