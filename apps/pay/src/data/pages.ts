@@ -3,7 +3,9 @@ import {
   MINIMUM_WAGE_STATES_SOURCES,
 } from '../guide/minimum-wage-states.ts';
 import { OVERTIME_STATES_GUIDE, OVERTIME_STATES_SOURCES } from '../guide/overtime-states.ts';
+import { MINIMUM_WAGE_2027_GUIDE, MINIMUM_WAGE_2027_SOURCES } from '../guide/minimum-wage-2027.ts';
 import {
+  MINIMUM_WAGE_2027_GUIDE_PATHS,
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
   OVERTIME_STATES_GUIDE_PATHS,
   TIPPED_STATES_GUIDE_PATHS,
@@ -56,7 +58,14 @@ export const DATA_PAGES: readonly DataPage[] = [
     paths: MINIMUM_WAGE_STATES_GUIDE_PATHS,
     texts: MINIMUM_WAGE_STATES_GUIDE,
     sources: MINIMUM_WAGE_STATES_SOURCES,
-    checked: '2026-11-05',
+    checked: '2026-11-06',
+  },
+  {
+    id: 'minimum-wage-2027-states-guide',
+    paths: MINIMUM_WAGE_2027_GUIDE_PATHS,
+    texts: MINIMUM_WAGE_2027_GUIDE,
+    sources: MINIMUM_WAGE_2027_SOURCES,
+    checked: '2026-11-06',
   },
 ];
 

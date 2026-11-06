@@ -9,6 +9,8 @@ import {
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
   MINIMUM_WAGE_STATES_SOURCES,
   minimumWageRowsOf,
+  UNCHANGED_2027,
+  UNCONFIRMED_2027,
 } from './minimum-wage-states.ts';
 import { TIPPED_STATES, TIPPED_STATES_GUIDE } from './tipped-states.ts';
 
@@ -69,7 +71,8 @@ const DOL_BASIC: Readonly<Record<string, number>> = {
 };
 
 // The rates of January 1, 2027, copied by hand from the page that states each one: the DOL table
-// for Michigan, the state labor department (or its governor) for the rest.
+// for Michigan, the state labor department (or its governor) for the rest; Ohio from the 2027 poster
+// of the Ohio Department of Commerce (rev. 9/30/26).
 const SCHEDULED: Readonly<Record<string, number>> = {
   California: 1740,
   Connecticut: 1748,
@@ -77,6 +80,7 @@ const SCHEDULED: Readonly<Record<string, number>> = {
   Minnesota: 1187,
   Montana: 1120,
   'New Jersey': 1648,
+  Ohio: 1140,
   'South Dakota': 1230,
   Virginia: 1375,
   Washington: 1773,
@@ -172,6 +176,38 @@ describe('the minimum wage by state', () => {
     expect(named('Michigan').scheduled?.source).toBe('dol');
   });
 
+  it('notes the Ohio employer threshold of 2027 from the same poster', () => {
+    const ohio = named('Ohio').scheduled;
+    expect(ohio?.source).toBe('oh');
+    expect(ohio?.notes?.en).toMatch(/\$419,000/);
+    expect(ohio?.notes?.es).toMatch(/\$419,000/);
+    expect(MINIMUM_WAGE_STATES_SOURCES.oh.href).toMatch(/^https:\/\/dam\.assets\.ohio\.gov\//);
+  });
+
+  it('lists New York, whose labor department says its rate stays the same in 2027', () => {
+    expect(UNCHANGED_2027.map(({ state }) => state)).toEqual(['New York']);
+    for (const { state, source } of UNCHANGED_2027) {
+      expect(named(state).scheduled, state).toBeUndefined();
+      expect(MINIMUM_WAGE_STATES_SOURCES[source].label, state).toMatch(/2027/);
+    }
+  });
+
+  it('lists the states whose 2027 rate no primary source we could read confirms', () => {
+    const states = UNCONFIRMED_2027.map(({ state }) => state);
+    expect(states).toEqual(['Arizona', 'Colorado', 'Maine', 'Nebraska', 'Rhode Island', 'Vermont']);
+    for (const { state, check, reason } of UNCONFIRMED_2027) {
+      // never both confirmed and unconfirmed
+      expect(named(state).scheduled, state).toBeUndefined();
+      expect(
+        UNCHANGED_2027.some((each) => each.state === state),
+        state,
+      ).toBe(false);
+      expect(check.href, state).toMatch(/^https:\/\/[a-z.]+\.gov\/?/);
+      expect(reason.en.length, state).toBeGreaterThan(0);
+      expect(reason.es.length, state).toBeGreaterThan(0);
+    }
+  });
+
   it('cites a government source for every row, with a link and the dates', () => {
     for (const { name, source } of MINIMUM_WAGE_STATES) {
       expect(MINIMUM_WAGE_STATES_SOURCES[source].href, name.en).toMatch(
@@ -183,7 +219,7 @@ describe('the minimum wage by state', () => {
     for (const lang of ['en', 'es'] as const) {
       expect(MINIMUM_WAGE_STATES_GUIDE[lang].asOf).toMatch(/July 1, 2026|1 de julio de 2026/);
       expect(MINIMUM_WAGE_STATES_GUIDE[lang].asOf).toMatch(
-        /November 5, 2026|5 de noviembre de 2026/,
+        /November 6, 2026|6 de noviembre de 2026/,
       );
     }
   });

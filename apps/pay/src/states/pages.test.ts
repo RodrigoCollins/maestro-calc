@@ -9,6 +9,7 @@ import {
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
   MINIMUM_WAGE_STATES_SOURCES,
 } from '../guide/minimum-wage-states.ts';
+import { MINIMUM_WAGE_2027_GUIDE_PATHS, riseOf } from '../guide/minimum-wage-2027.ts';
 import { OVERTIME_STATES_GUIDE_PATHS, OVERTIME_STATES_SOURCES } from '../guide/overtime-states.ts';
 import {
   centsText,
@@ -97,6 +98,21 @@ describe('statePageOf', () => {
     },
   );
 
+  it.each(LANGS)('links the 2027 increases from each state that has one, in %s', (lang) => {
+    for (const { facts, page } of PAGES.filter((each) => each.lang === lang)) {
+      const section = page.sections.find(({ id }) => id === 'minimum');
+      expect(section?.rise, facts.tipped.name.en).toEqual(riseOf(facts.tipped.name.en, lang));
+      if (facts.minimum.scheduled !== undefined)
+        expect(section?.rise?.href).toBe(MINIMUM_WAGE_2027_GUIDE_PATHS[lang]);
+    }
+    const ohio = PAGES.find(
+      ({ facts, lang: at }) => at === lang && facts.tipped.name.en === 'Ohio',
+    );
+    expect(ohio?.page.sections[0]?.rise?.label).toBe(
+      lang === 'en' ? 'Rises to $11.40 on January 1, 2027' : 'Sube a $11.40 el 1 de enero de 2027',
+    );
+  });
+
   it.each(LANGS)('shows the cash wage, tip credit and full minimum of the table in %s', (lang) => {
     for (const { facts, page } of PAGES.filter((each) => each.lang === lang)) {
       const { tipped } = facts;
@@ -131,7 +147,9 @@ describe('statePageOf', () => {
   it.each(LANGS)('dates every section with the day its table was checked, in %s', (lang) => {
     for (const { page } of PAGES.filter((each) => each.lang === lang))
       for (const section of page.sections)
-        expect(section.checked).toBe(dayText('2026-11-05', lang));
+        expect(section.checked).toBe(
+          dayText(section.id === 'minimum' ? '2026-11-06' : '2026-11-05', lang),
+        );
   });
 
   it('answers first: the minimum wage, then when overtime is owed', () => {

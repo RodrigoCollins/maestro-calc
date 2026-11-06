@@ -1,0 +1,159 @@
+---
+import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
+import {
+  increasesOf,
+  MINIMUM_WAGE_2027_GUIDE,
+  MINIMUM_WAGE_2027_GUIDE_PATHS,
+  MINIMUM_WAGE_2027_SOURCES,
+} from '../guide/minimum-wage-2027.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+/*
+ * The minimum wage increases of January 1, 2027: the table of every scheduled rate, New York's
+ * confirmed pause, the states not yet confirmed, how the figures are computed and the cite block.
+ */
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = MINIMUM_WAGE_2027_GUIDE[lang];
+const rows = increasesOf(lang);
+const sources = Object.values(MINIMUM_WAGE_2027_SOURCES);
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={MINIMUM_WAGE_2027_GUIDE_PATHS}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+    <p class="note">{t.asOf}</p>
+
+    <div class="table-scroll" role="region" aria-labelledby="increases-caption" tabindex="0">
+      <table class="ledger states">
+        <caption id="increases-caption">{t.table.caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{t.table.state}</th>
+            <th scope="col">{t.table.current}</th>
+            <th scope="col">{t.table.next}</th>
+            <th scope="col">{t.table.increase}</th>
+            <th scope="col">{t.table.percent}</th>
+            <th scope="col">{t.table.annual}</th>
+            <th scope="col">{t.table.source}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">
+                <a href={row.href}>{row.name}</a>
+              </th>
+              <td>{row.current}</td>
+              <td>{row.next}</td>
+              <td>{row.increase}</td>
+              <td>{row.percent}</td>
+              <td>{row.annual}</td>
+              <td>
+                <a href={row.source.href} rel="noopener">
+                  {row.source.short}
+                </a>
+                {row.notes !== undefined && ` · ${row.notes}`}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="sources">
+      {t.sourcesLabel}:{' '}
+      {sources.map((source, index) => (
+        <>
+          {index > 0 && '; '}
+          <a href={source.href} rel="noopener">
+            {source.label}
+          </a>
+        </>
+      ))}
+    </p>
+
+    <section aria-labelledby="unchanged">
+      <h2 id="unchanged">{t.unchanged.heading}</h2>
+      {t.unchanged.items.map((item) => (
+        <p>
+          {item.text}{' '}
+          <a href={item.source.href} rel="noopener">
+            {item.source.short}
+          </a>
+        </p>
+      ))}
+    </section>
+
+    <section aria-labelledby="unconfirmed">
+      <h2 id="unconfirmed">{t.unconfirmed.heading}</h2>
+      <p>{t.unconfirmed.intro}</p>
+      <ul>
+        {t.unconfirmed.items.map((item) => (
+          <li>
+            <strong>{item.name}</strong>: {item.reason} {t.unconfirmed.check}:{' '}
+            <a href={item.href} rel="noopener">
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    {t.sections.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <p class="sources">
+          {t.sourcesLabel}:{' '}
+          {section.sources.map((source, index) => (
+            <>
+              {index > 0 && '; '}
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </>
+          ))}
+        </p>
+      </section>
+    ))}
+
+    <section aria-labelledby="cite">
+      <h2 id="cite">{t.cite.heading}</h2>
+      <p class="cite">{t.cite.text}</p>
+      <p>
+        <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].indexLabel}</a>
+      </p>
+    </section>
+
+    <p class="note">
+      {t.disclaimer} {t.reviewed}
+    </p>
+    {t.ctas.map((cta, index) => (
+      <a
+        class:list={['button', index === 0 ? 'button-primary' : 'button-secondary']}
+        href={cta.href}
+      >
+        {cta.label}
+      </a>
+    ))}
+  </main>
+</SiteLayout>

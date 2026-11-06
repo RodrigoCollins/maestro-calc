@@ -1,4 +1,4 @@
-import { MINIMUM_WAGE_STATES_GUIDE_PATHS } from '../guide/paths.ts';
+import { MINIMUM_WAGE_2027_GUIDE_PATHS, MINIMUM_WAGE_STATES_GUIDE_PATHS } from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 /** The two pages of the pay converter: same engine, opposite starting point. */
@@ -35,6 +35,8 @@ export interface PayConverterTexts {
   readonly timeCard: { readonly label: string; readonly href: string };
   /** The minimum wage table, linked from both pages. */
   readonly minimumWage: { readonly label: string; readonly href: string };
+  /** The minimum wage increases of January 1, 2027, linked from both pages. */
+  readonly minimumWage2027: { readonly label: string; readonly href: string };
   readonly otherLang: string;
   readonly variants: Readonly<Record<Variant, VariantTexts>>;
 }
@@ -74,6 +76,10 @@ export const PAY_CONVERTER_TEXTS: Readonly<Record<Lang, PayConverterTexts>> = {
     minimumWage: {
       label: 'Minimum wage by state, 2026',
       href: MINIMUM_WAGE_STATES_GUIDE_PATHS.en,
+    },
+    minimumWage2027: {
+      label: 'Minimum wage increases on January 1, 2027',
+      href: MINIMUM_WAGE_2027_GUIDE_PATHS.en,
     },
     otherLang: 'Español',
     variants: {
@@ -130,6 +136,10 @@ export const PAY_CONVERTER_TEXTS: Readonly<Record<Lang, PayConverterTexts>> = {
     minimumWage: {
       label: 'Salario mínimo por estado, 2026',
       href: MINIMUM_WAGE_STATES_GUIDE_PATHS.es,
+    },
+    minimumWage2027: {
+      label: 'Aumentos del salario mínimo el 1 de enero de 2027',
+      href: MINIMUM_WAGE_2027_GUIDE_PATHS.es,
     },
     otherLang: 'English',
     variants: {

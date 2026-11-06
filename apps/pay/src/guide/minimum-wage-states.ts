@@ -1,7 +1,11 @@
 import { PATHS } from '../pay-converter/texts.ts';
 import { SITE } from '../site.config.ts';
 import type { Lang } from '../time-card/receipt.ts';
-import { MINIMUM_WAGE_STATES_GUIDE_PATHS, TIPPED_STATES_GUIDE_PATHS } from './paths.ts';
+import {
+  MINIMUM_WAGE_2027_GUIDE_PATHS,
+  MINIMUM_WAGE_STATES_GUIDE_PATHS,
+  TIPPED_STATES_GUIDE_PATHS,
+} from './paths.ts';
 import type { GuideSection, GuideSource } from './texts.ts';
 import { centsText, TIPPED_STATES, TIPPED_STATES_SOURCES } from './tipped-states.ts';
 
@@ -46,6 +50,17 @@ export const MINIMUM_WAGE_STATES_SOURCES = {
     label: 'Montana Department of Labor and Industry, State minimum wage (effective 1/1/2027)',
     href: 'https://erd.dli.mt.gov/labor-standards/state-minimum-wage',
     short: 'Montana DLI',
+  },
+  ny: {
+    label:
+      'New York State Department of Labor, Minimum Wage: on January 1, 2027, the minimum wage will stay the same',
+    href: 'https://dol.ny.gov/minimum-wage-0',
+    short: 'New York DOL',
+  },
+  oh: {
+    label: 'Ohio Department of Commerce, State of Ohio 2027 Minimum Wage poster (rev. 9/30/26)',
+    href: 'https://dam.assets.ohio.gov/image/upload/com.ohio.gov/DICO/WageAndHour/2027_Minumum_Wage_Poster.pdf',
+    short: 'Ohio Commerce',
   },
   nj: {
     label:
@@ -176,7 +191,13 @@ const EXTRA: Readonly<Record<string, Extra>> = {
       es: 'Ciudad de Nueva York, Long Island y Westchester. Resto del estado: $16.00.',
     },
   },
-  Ohio: { notes: 'tipped' },
+  Ohio: {
+    notes: 'tipped',
+    scheduled: scheduled(1140, 'oh', {
+      en: 'Employers grossing $419,000 or more a year; smaller employers and employees under 16: the federal $7.25.',
+      es: 'Empleadores con ingresos brutos de $419,000 o más al año; empleadores más pequeños y empleados menores de 16 años: el federal de $7.25.',
+    }),
+  },
   Oklahoma: {
     notes: {
       en: 'Employers with 10 or more full-time employees at one location or gross sales over $100,000; other employers: $2.00. State law excludes employment covered by the FLSA.',
@@ -231,6 +252,77 @@ export const MINIMUM_WAGE_STATES: readonly MinimumWageState[] = TIPPED_STATES.ma
     ...(next === undefined ? {} : { scheduled: next }),
   };
 });
+
+/**
+ * States whose rate adjusts on January 1 by a formula and whose labor department says it stays the
+ * same in 2027: New York, where an off-ramp of the indexing law was met.
+ */
+export const UNCHANGED_2027: readonly { readonly state: string; readonly source: SourceKey }[] = [
+  { state: 'New York', source: 'ny' },
+];
+
+/**
+ * States that change their rate on January 1, by inflation or by a law, whose 2027 rate no primary
+ * source we could read on the day we checked states: the state page refused the request or did not
+ * give the rate yet. Each names the agency to check; a rate moves to `scheduled` once one is read.
+ */
+export const UNCONFIRMED_2027: readonly {
+  readonly state: string;
+  readonly reason: Words;
+  readonly check: { readonly label: string; readonly href: string };
+}[] = [
+  {
+    state: 'Arizona',
+    reason: {
+      en: 'Adjusted for inflation each January 1.',
+      es: 'Se ajusta por inflación cada 1 de enero.',
+    },
+    check: { label: 'Industrial Commission of Arizona', href: 'https://www.azica.gov/' },
+  },
+  {
+    state: 'Colorado',
+    reason: {
+      en: 'Adjusted for inflation each January 1.',
+      es: 'Se ajusta por inflación cada 1 de enero.',
+    },
+    check: {
+      label: 'Colorado Department of Labor and Employment',
+      href: 'https://cdle.colorado.gov/',
+    },
+  },
+  {
+    state: 'Maine',
+    reason: {
+      en: 'Adjusted for inflation each January 1.',
+      es: 'Se ajusta por inflación cada 1 de enero.',
+    },
+    check: { label: 'Maine Department of Labor', href: 'https://www.maine.gov/labor/' },
+  },
+  {
+    state: 'Nebraska',
+    reason: {
+      en: 'Adjusted each January 1 from 2027, by a rate the state publishes by October 15.',
+      es: 'Se ajusta cada 1 de enero desde 2027, con una tarifa que el estado publica antes del 15 de octubre.',
+    },
+    check: { label: 'Nebraska Department of Labor', href: 'https://dol.nebraska.gov/' },
+  },
+  {
+    state: 'Rhode Island',
+    reason: {
+      en: 'Set by state law; the state page could not be read.',
+      es: 'La fija la ley del estado; no pudimos leer la página del estado.',
+    },
+    check: { label: 'Rhode Island Department of Labor and Training', href: 'https://dlt.ri.gov/' },
+  },
+  {
+    state: 'Vermont',
+    reason: {
+      en: 'Rises each January 1 by inflation or 5%, whichever is smaller; the state had not posted the 2027 rate.',
+      es: 'Sube cada 1 de enero según la inflación o 5%, lo que sea menor; el estado no había publicado la tarifa de 2027.',
+    },
+    check: { label: 'Vermont Department of Labor', href: 'https://labor.vermont.gov/' },
+  },
+];
 
 const BASIS: Readonly<
   Record<Lang, { state: string; same: string; noLaw: string; lower: (rate: string) => string }>
@@ -344,7 +436,7 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     kicker: 'Hourly pay · data',
     h1: 'Minimum wage by state, 2026',
     lead: `The federal minimum wage is $7.25 an hour. ${String(above)} of the 50 states and DC set a higher rate, ${String(federalOnly)} states pay the federal $7.25 because they have no minimum wage law or a lower one, and the highest rate is ${centsText(highest.wage)} in the ${highest.name.en}.`,
-    asOf: `Rates from the U.S. Department of Labor table “State Minimum Wage Laws”, updated July 1, 2026; Florida from Article X, Section 24 of the Florida Constitution ($15.00 since September 30, 2026). The January 1, 2027 rate is shown for ${String(changing)} states, only where the DOL table or the state’s labor department states it. Some cities and counties set higher minimum wages; the DOL table does not list them, and neither does this one. Checked November 5, 2026.`,
+    asOf: `Rates from the U.S. Department of Labor table “State Minimum Wage Laws”, updated July 1, 2026; Florida from Article X, Section 24 of the Florida Constitution ($15.00 since September 30, 2026). The January 1, 2027 rate is shown for ${String(changing)} states, only where the DOL table or the state’s own agency states it. Some cities and counties set higher minimum wages; the DOL table does not list them, and neither does this one. Checked November 6, 2026.`,
     table: {
       caption: 'Minimum wage by state, per hour',
       state: 'State',
@@ -373,11 +465,15 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies publish, not legal advice. Rates change, often on January 1 or July 1: check your state’s labor department and your city.',
-    reviewed: 'Checked against the Department of Labor and state pages on November 5, 2026.',
+    reviewed: 'Checked against the Department of Labor and state pages on November 6, 2026.',
     ctas: [
       { label: 'Turn an hourly wage into a salary', href: PATHS.hourly.en },
       { label: 'Turn a salary into an hourly rate', href: PATHS.salary.en },
       { label: 'Tipped minimum wage by state, 2026', href: TIPPED_STATES_GUIDE_PATHS.en },
+      {
+        label: 'Minimum wage increases on January 1, 2027',
+        href: MINIMUM_WAGE_2027_GUIDE_PATHS.en,
+      },
     ],
     linkLabel: 'Minimum wage by state, 2026',
   },
@@ -388,7 +484,7 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     kicker: 'Pago por hora · datos',
     h1: 'Salario mínimo por estado, 2026',
     lead: `El salario mínimo federal es $7.25 la hora. ${String(above)} de los 50 estados y DC fijan una tarifa más alta, en ${String(federalOnly)} estados rige el federal de $7.25 porque no tienen ley de salario mínimo o la suya es menor, y la tarifa más alta es ${centsText(highest.wage)} en el ${highest.name.es}.`,
-    asOf: `Tarifas de la tabla del Departamento de Trabajo de EE. UU. “State Minimum Wage Laws”, actualizada el 1 de julio de 2026; Florida, del artículo X, sección 24 de la Constitución de Florida ($15.00 desde el 30 de septiembre de 2026). La tarifa del 1 de enero de 2027 aparece en ${String(changing)} estados, solo donde la indica la tabla del DOL o el departamento de trabajo del estado. Algunas ciudades y condados fijan salarios mínimos más altos; la tabla del DOL no los muestra, y esta tampoco. Revisado el 5 de noviembre de 2026.`,
+    asOf: `Tarifas de la tabla del Departamento de Trabajo de EE. UU. “State Minimum Wage Laws”, actualizada el 1 de julio de 2026; Florida, del artículo X, sección 24 de la Constitución de Florida ($15.00 desde el 30 de septiembre de 2026). La tarifa del 1 de enero de 2027 aparece en ${String(changing)} estados, solo donde la indica la tabla del DOL o la agencia del propio estado. Algunas ciudades y condados fijan salarios mínimos más altos; la tabla del DOL no los muestra, y esta tampoco. Revisado el 6 de noviembre de 2026.`,
     table: {
       caption: 'Salario mínimo por estado, por hora',
       state: 'Estado',
@@ -418,11 +514,15 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     disclaimer:
       'Un resumen de lo que publican estas agencias, no asesoría legal. Las tarifas cambian, a menudo el 1 de enero o el 1 de julio: consulta al departamento de trabajo de tu estado y a tu ciudad.',
     reviewed:
-      'Revisado con las páginas del Departamento de Trabajo y de los estados el 5 de noviembre de 2026.',
+      'Revisado con las páginas del Departamento de Trabajo y de los estados el 6 de noviembre de 2026.',
     ctas: [
       { label: 'Convierte tu pago por hora en sueldo anual', href: PATHS.hourly.es },
       { label: 'Convierte un sueldo anual en pago por hora', href: PATHS.salary.es },
       { label: 'Salario mínimo con propinas por estado, 2026', href: TIPPED_STATES_GUIDE_PATHS.es },
+      {
+        label: 'Aumentos del salario mínimo el 1 de enero de 2027',
+        href: MINIMUM_WAGE_2027_GUIDE_PATHS.es,
+      },
     ],
     linkLabel: 'Salario mínimo por estado, 2026',
   },
