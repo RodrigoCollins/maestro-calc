@@ -1,0 +1,46 @@
+---
+import { bylinePageOf } from '../bylines.ts';
+import { BYLINE_TEXTS, SOURCES_ID } from '../editorial.ts';
+import { langOf } from '../routes.ts';
+
+/** The sources section a byline links to: every source the page cites, once each (`src/bylines.ts`). */
+interface Props {
+  readonly path: string;
+}
+
+const { path } = Astro.props;
+const { sources } = bylinePageOf(path);
+---
+
+<section class="pool-sources" aria-labelledby={SOURCES_ID}>
+  <h2 id={SOURCES_ID}>{BYLINE_TEXTS[langOf(path)].sources}</h2>
+  <ul>
+    {sources.map(({ name, url }) => (
+      <li>{url === undefined ? name : <a href={url}>{name}</a>}</li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .pool-sources {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .pool-sources h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .pool-sources ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding-left: 1.25rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+</style>

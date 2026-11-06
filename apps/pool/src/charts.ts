@@ -156,9 +156,8 @@ export const CHARTS_INDEXES: Readonly<Record<Lang, ChartsIndex>> = {
 
 /** The line that closes each data page, to the index of its language. */
 export const DATA_TEXTS = {
-  en: { checked: 'Figures checked', all: 'See all our', free: ', free to cite with a link.' },
+  en: { all: 'See all our', free: ', free to cite with a link.' },
   es: {
-    checked: 'Cifras revisadas el',
     all: 'Mira todos nuestros',
     free: ', libres para citar con un enlace.',
   },

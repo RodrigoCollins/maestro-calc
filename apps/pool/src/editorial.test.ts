@@ -73,7 +73,10 @@ describe('the editorial policy page', () => {
     for (const lang of ['en', 'es'] as const) {
       const list = EDITORIAL_TEXTS[lang].sections.find(({ id }) => id === 'sources')?.sources;
       expect(list?.length, lang).toBe(OFFICIAL_SOURCES.length);
-      for (const { url } of list ?? []) expect(cited.has(url), url).toBe(true);
+      for (const { url } of list ?? []) {
+        expect(url, lang).toMatch(/^https:\/\//);
+        expect(cited.has(url), url).toBe(true);
+      }
     }
   });
 

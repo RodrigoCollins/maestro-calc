@@ -4,7 +4,7 @@
 // internal links between calculators, job pages and guides (`src/site-check/links.ts`), and the
 // search rules of `src/site-check/seo.ts`: unique, measured titles and descriptions, the sitemap
 // equal to the indexable pages, the size and the breadcrumb of each job page, robots.txt, and the
-// hreflang pairs of the Spanish rollout.
+// hreflang pairs of the Spanish rollout, and the byline of every guide, data and job page.
 // Usage: node apps/pool/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -12,6 +12,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
+import { BYLINE_PAGES } from '../src/bylines.ts';
 import { CHARTS_INDEXES, DATA_PAGES_OF } from '../src/charts.ts';
 import { ALL_EMBEDS } from '../src/embed.ts';
 import { langOf, localHrefOf, routeOf } from '../src/routes.ts';
@@ -19,6 +20,7 @@ import { GUIDES } from '../src/guide.ts';
 import { JOB_PAGES, neighborsOf } from '../src/jobs.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
 import { canonicalPath } from '../src/seo/sitemap.ts';
+import { bylineProblems } from '../src/site-check/byline.ts';
 import { linkProblems } from '../src/site-check/links.ts';
 import { CALCULATOR_PAGES } from '../src/site-check/pages.ts';
 import { pairProblems, seoAuditProblems } from '../src/site-check/seo.ts';
@@ -92,6 +94,8 @@ const all = [
     jobs: JOB_PAGES.map((page) => ({ path: page.path, calculator: page.calculator.path })),
     robots: existsSync(robotsFile) ? readFileSync(robotsFile, 'utf8') : undefined,
   }),
+  // the byline of the editorial team under the h1 of every guide, data and job page
+  ...bylineProblems(site, BYLINE_PAGES),
   // the hreflang pairs that exist, both ways and in the sitemap; a page with no twin names none
   ...pairProblems(html, sitemapText),
   ...imageProblems('og.png', existsSync(image) ? readFileSync(image) : undefined),

@@ -17,9 +17,14 @@ import { hrefOf, type Lang } from './routes.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 
-/** Every source the site cites: the methodology's, then those of the guides and the charts. */
+/**
+ * Every linked source the site cites: the methodology's (a source there may have no public link),
+ * then those of the guides and the charts.
+ */
 export const citedSources = (): GuideSource[] => [
-  ...METHOD_SECTIONS.flatMap(({ sources }) => sources),
+  ...METHOD_SECTIONS.flatMap(({ sources }) =>
+    sources.flatMap(({ name, url }) => (url === undefined ? [] : [{ name, url }])),
+  ),
   ...[
     OPENING_GUIDE,
     CLOSING_GUIDE,
