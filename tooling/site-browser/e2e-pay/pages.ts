@@ -49,6 +49,8 @@ export const PAGES = [
   { path: '/guides/california-overtime', lang: 'en' },
   { path: '/guides/how-to-read-a-pay-stub', lang: 'en' },
   { path: '/guides/unpaid-overtime-and-wages', lang: 'en' },
+  { path: '/guides/w-2-box-12-codes-tp-tt', lang: 'en' },
+  { path: '/es/guias/codigos-tp-y-tt-casilla-12-del-w-2', lang: 'es' },
   { path: '/guides/paid-time-off-pto', lang: 'en' },
   { path: '/es/guias/vacaciones-pagadas', lang: 'es' },
   { path: '/guides/night-shift-differential-and-overtime', lang: 'en' },

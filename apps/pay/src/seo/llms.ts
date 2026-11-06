@@ -15,6 +15,7 @@ import { GUIDE_TEXTS } from '../guide/texts.ts';
 import { TIP_CREDIT_GUIDE } from '../guide/tip-credit.ts';
 import { TIPPED_STATES_GUIDE } from '../guide/tipped-states.ts';
 import { UNPAID_WAGES_GUIDE } from '../guide/unpaid-wages.ts';
+import { W2_BOX_12_GUIDE } from '../guide/w2-box-12.ts';
 import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
@@ -55,6 +56,7 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'no-tax-on-overtime': byLang((lang) => DEDUCTION_TEXTS[lang].overtime),
   'no-tax-on-tips': byLang((lang) => DEDUCTION_TEXTS[lang].tips),
   'tax-guide': both(GUIDE_TEXTS),
+  'w2-box-12-guide': both(W2_BOX_12_GUIDE),
   'overtime-guide': both(OVERTIME_GUIDES.federal),
   'california-overtime-guide': both(OVERTIME_GUIDES.california),
   'pay-stub-guide': both(PAY_STUB_GUIDE),

@@ -11,6 +11,7 @@ import { GUIDE_TEXTS } from './texts.ts';
 import { TIP_CREDIT_GUIDE } from './tip-credit.ts';
 import { TIPPED_STATES_GUIDE } from './tipped-states.ts';
 import { UNPAID_WAGES_GUIDE } from './unpaid-wages.ts';
+import { W2_BOX_12_GUIDE } from './w2-box-12.ts';
 
 // What an answer engine or a featured snippet lifts is the first paragraph: it must answer the
 // question the title asks, with the number that answers it, before it says what the guide covers.
@@ -28,6 +29,7 @@ const GUIDES = {
   'overtime-states-guide': OVERTIME_STATES_GUIDE,
   'minimum-wage-states-guide': MINIMUM_WAGE_STATES_GUIDE,
   'minimum-wage-2027-states-guide': MINIMUM_WAGE_2027_GUIDE,
+  'w2-box-12-guide': W2_BOX_12_GUIDE,
 };
 
 /** The first sentence: up to the first full stop followed by a space, or the end. */
@@ -48,6 +50,7 @@ const KEY: Readonly<Record<keyof typeof GUIDES, string>> = {
   'overtime-states-guide': '40',
   'minimum-wage-states-guide': '$7.25',
   'minimum-wage-2027-states-guide': '$17.73',
+  'w2-box-12-guide': '$12,500',
 };
 
 describe('the opening of each guide', () => {
