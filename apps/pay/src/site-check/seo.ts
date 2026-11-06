@@ -15,7 +15,12 @@ export interface SeoSite {
   readonly longTail: readonly string[];
 }
 
-const SCHEMA = { home: 'WebSite', calculator: 'WebApplication', article: 'Article' } as const;
+const SCHEMA = {
+  home: 'WebSite',
+  calculator: 'WebApplication',
+  article: 'Article',
+  collection: 'CollectionPage',
+} as const;
 
 const HOMES = new Set(['/', '/es']);
 

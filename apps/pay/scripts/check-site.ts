@@ -13,7 +13,13 @@ import { imageProblems } from '@maestro-calc/site-kit/seo-check';
 import { LONG_TAIL_ROUTES } from '../src/long-tail/routes.ts';
 import { ROUTES } from '../src/routes.ts';
 import { EMBEDS } from '../src/embed/embeds.ts';
-import { GUIDE_RULES, HUBS, LONG_TAIL_RULES, SITEMAP_PATHS } from '../src/site-check/link-rules.ts';
+import {
+  DATA_RULES,
+  GUIDE_RULES,
+  HUBS,
+  LONG_TAIL_RULES,
+  SITEMAP_PATHS,
+} from '../src/site-check/link-rules.ts';
 import { inboundOf, linkProblems } from '../src/site-check/links.ts';
 import { siteSeoProblems } from '../src/site-check/seo.ts';
 import { CALCULATOR_PAGES } from '../src/site-check/pages.ts';
@@ -53,7 +59,7 @@ const all = [
     origin: SITE.origin,
     pages: sitemapPages,
     longTail: LONG_TAIL_RULES,
-    guides: GUIDE_RULES,
+    guides: [...GUIDE_RULES, ...DATA_RULES],
     hubs: HUBS,
   }),
   ...EMBEDS.flatMap(({ path, page, other }) => {

@@ -1,0 +1,68 @@
+---
+import { dataCards } from '../data/pages.ts';
+import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+/*
+ * The data index: every citable table with its line, the day its figures were checked and who
+ * publishes its sources, then the note for journalists.
+ */
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = DATA_TEXTS[lang];
+const cards = dataCards(lang);
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={DATA_PATHS}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <h1>{t.h1}</h1>
+    <p class="lead">{t.lead}</p>
+
+    <ul class="data-index" role="list">
+      {cards.map((card) => (
+        <li>
+          <a href={card.href}>{card.title}</a>
+          <p>{card.summary}</p>
+          <p class="note">
+            {t.checkedLabel} {card.checked} · {t.sourcesLabel} {card.sources}
+          </p>
+        </li>
+      ))}
+    </ul>
+
+    <section aria-labelledby="press">
+      <h2 id="press">{t.press.heading}</h2>
+      <p>{t.press.text}</p>
+    </section>
+  </main>
+</SiteLayout>
+
+<style>
+  .data-index {
+    display: grid;
+    gap: 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .data-index a {
+    font-weight: 700;
+  }
+
+  .data-index p {
+    margin: 0.25rem 0 0;
+  }
+</style>

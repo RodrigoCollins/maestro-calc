@@ -4,6 +4,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import type { Lang } from '../time-card/receipt.ts';
 import { ROUTES } from '../routes.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
+import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, type Parent } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
@@ -143,6 +144,7 @@ const embedLink =
           <a href={privacy.href}>{privacy.label}</a>
           <a href={about.href}>{about.label}</a>
           <a href={embedLink.href}>{embedLink.label}</a>
+          <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].linkLabel}</a>
         </div>
       </footer>
     )}

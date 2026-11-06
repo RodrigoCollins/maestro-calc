@@ -5,6 +5,7 @@ import {
   webSiteLd,
   withBreadcrumb,
 } from '@maestro-calc/site-kit/json-ld';
+import { dataCards } from '../data/pages.ts';
 import type { Route } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 
@@ -13,6 +14,36 @@ const nameOf = (title: string): string => title.replace(/\s*\|\s*Cuenta Horas$/,
 
 /** The name of a page in a breadcrumb: its name short of a `: subtitle`. */
 const crumbOf = (title: string): string => nameOf(title).replace(/: .*$/, '');
+
+/**
+ * The data index: a CollectionPage published by the site, whose ItemList is every table it
+ * lists (`dataCards`), each at its canonical.
+ */
+const collectionLd = (
+  name: string,
+  description: string,
+  url: string,
+  inLanguage: string,
+  lang: 'en' | 'es',
+  origin: string,
+) => ({
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name,
+  description,
+  url,
+  inLanguage,
+  publisher: { '@type': 'Organization', name: SITE.name },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: dataCards(lang).map(({ title, href }, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: title,
+      url: new URL(href, origin).href,
+    })),
+  },
+});
 
 /** The page a long-tail page answers for: the calculator's title and its path. */
 export interface Parent {
@@ -47,13 +78,15 @@ export const jsonLdOf = (
           inLanguage,
           applicationCategory: 'FinanceApplication',
         })
-      : articleLd({
-          headline: nameOf(page.title),
-          description,
-          url,
-          inLanguage,
-          publisher: SITE.name,
-        });
+      : route.kind === 'collection'
+        ? collectionLd(nameOf(page.title), description, url, inLanguage, lang, origin)
+        : articleLd({
+            headline: nameOf(page.title),
+            description,
+            url,
+            inLanguage,
+            publisher: SITE.name,
+          });
   const home = { name: SITE.name, url: new URL(lang === 'en' ? '/' : '/es', origin).href };
   const above =
     parent === undefined

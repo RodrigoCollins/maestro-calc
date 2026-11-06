@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { dataCards } from '../data/pages.ts';
 import { jsonLdOf } from './json-ld.ts';
 
 const page = { title: 'Time Card Calculator | Cuenta Horas', description: 'Add up your hours.' };
@@ -45,6 +46,32 @@ describe('jsonLdOf', () => {
         },
       ],
     });
+  });
+
+  it('describes the data index as a CollectionPage of every table it lists, under its home', () => {
+    const route = { id: 'data', kind: 'collection', en: '/data', es: '/es/datos' } as const;
+    const index = { title: 'Pay Data | Cuenta Horas', description: 'Every table.' };
+    const [collection, breadcrumb] = (
+      JSON.parse(jsonLdOf(route, 'es', index, ORIGIN)) as { '@graph': Record<string, unknown>[] }
+    )['@graph'];
+    expect(collection).toEqual({
+      '@type': 'CollectionPage',
+      name: 'Pay Data',
+      description: 'Every table.',
+      url: 'https://cuentahoras.com/es/datos',
+      inLanguage: 'es-US',
+      publisher: { '@type': 'Organization', name: 'Cuenta Horas' },
+      mainEntity: {
+        '@type': 'ItemList',
+        itemListElement: dataCards('es').map(({ title, href }, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: title,
+          url: `https://cuentahoras.com${href}`,
+        })),
+      },
+    });
+    expect(breadcrumb?.['@type']).toBe('BreadcrumbList');
   });
 
   it('describes the home as the web site, with no breadcrumb', () => {

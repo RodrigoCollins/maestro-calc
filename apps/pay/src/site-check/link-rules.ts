@@ -10,6 +10,7 @@ import {
   TIPPED,
   type LongTailJob,
 } from '../long-tail/routes.ts';
+import { DATA_PAGES } from '../data/pages.ts';
 import { ROUTES, type Route } from '../routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
@@ -80,6 +81,15 @@ export const GUIDE_RULES: readonly GuideRule[] = Object.entries(GUIDE_CALCULATOR
 );
 
 /** The home of each language: one of them links every guide. */
+/**
+ * The data index of each language and the citable tables it lists (`DATA_PAGES`): it links each
+ * one, and each one links it back (a guide rule, the tables in the place of calculators).
+ */
+export const DATA_RULES: readonly GuideRule[] = LANGS.map((lang) => ({
+  path: routeOf('data')[lang],
+  calculators: DATA_PAGES.map(({ paths }) => paths[lang]),
+}));
+
 export const HUBS: readonly string[] = LANGS.map((lang) => routeOf('home')[lang]);
 
 /** Every page of the sitemap, which is built from the same route table. */
