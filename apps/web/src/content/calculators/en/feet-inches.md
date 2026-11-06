@@ -22,7 +22,7 @@ The calculator does tape-measure math: it adds or subtracts two lengths in feet,
 2. Choose the operation: Add, Subtract, Multiply, Divide or How many fit.
 3. To add, subtract or see how many fit, type the second length. To multiply or divide, type the number: 3 to triple a length, 4 to cut a board into four equal pieces.
 
-The result leads with feet, inches and the fraction to the nearest 1/16 of an inch, the mark you find on a tape. It also shows the result in decimal inches and in meters. When you subtract a longer length from a shorter one, the calculator gives the difference and says which length is longer. How many fit answers with the whole pieces and the quotient, and the figures show the length left over.
+The result leads with feet, inches and the fraction to the nearest 1/16 of an inch, the mark you find on a tape. It also shows the result in decimal inches and in meters. When you subtract a longer length from a shorter one, the calculator gives the difference and says which length is longer. How many fit leads with the whole pieces, the answer adds the quotient, and the rows below show the length left over.
 
 To work in metric, press Metric (m, cm). Lengths are then read in meters, and the result leads with meters. Switching units never changes your numbers, only how they are written. Use Copy link to send your exact numbers to a partner or a client, and the Español link to open the same numbers in Spanish.
 

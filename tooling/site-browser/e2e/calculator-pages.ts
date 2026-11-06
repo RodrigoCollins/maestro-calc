@@ -36,6 +36,11 @@ export interface E2eState {
   readonly name: string;
   readonly query: string;
   readonly figures: Figures;
+  /**
+   * The large figure (`.calc-primary`) with its sentence, per language, for a state whose large
+   * figure is another output than the default's (the pieces of a fit).
+   */
+  readonly primary?: Readonly<Record<E2eLanguage, string>>;
 }
 
 /** One option of a choice group that drives the form, with what pressing it shows. */

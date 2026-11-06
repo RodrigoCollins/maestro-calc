@@ -122,11 +122,18 @@ describe('prices and output figures (calculator-web-core › [CWC5], K5)', () =>
     );
   });
 
-  // a number output (BTU, minutes) belongs to the pool site; no Maestro Calc page declares one
-  it('refuses a number output, naming the key', () => {
-    const btu: OutputDescriptor = { key: 'btu', measure: 'number', role: 'primary' };
-    expect(() => outputText(btu, Rational.of(69_500))).toThrow(
-      new TypeError('btu is a number, which a Maestro Calc page does not show'),
+  // spec: calc-feet-inches › [FI7] a Maestro Calc page shows a number only as a count: the pieces
+  // of a fit as the large figure (a number with a unit, BTU or minutes, belongs to the pool site)
+  it('writes a number as a grouped whole count, and refuses a fraction or a quantity', () => {
+    const pieces: OutputDescriptor = { key: 'pieces', measure: 'number', role: 'intermediate' };
+    expect(outputText(pieces, Rational.of(15))).toBe('15');
+    expect(outputText(pieces, Rational.ZERO)).toBe('0');
+    expect(outputText(pieces, Rational.of(767_999))).toBe('767,999');
+    expect(() => outputText(pieces, Rational.of(3, 2))).toThrow(
+      new TypeError('pieces is a number, which a Maestro Calc page shows only as a whole count'),
+    );
+    expect(() => outputText(pieces, quantity(1, inch))).toThrow(
+      new TypeError('pieces is a number, which a Maestro Calc page shows only as a whole count'),
     );
   });
 

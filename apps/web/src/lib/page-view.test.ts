@@ -9,6 +9,7 @@ import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import {
   choiceCalculator,
+  countCalculator,
   fieldsOf,
   formCalculator,
   hintedCalculator,
@@ -936,7 +937,7 @@ describe('the primary sentence protocol (the builder writes what the controller 
       const messages = Object.fromEntries(pageViewOf(module, 'en', catalog).messages);
       const controller = controllerOf(module);
       for (const system of ['imperial', 'metric'] as const) {
-        const output = primaryOutputOf(module, system);
+        const output = primaryOutputOf(module, system, {});
         const sentence = catalog[`calc.${module.id}.page.${output.key}`] ?? '{value}';
         expect(messages[sentenceNameOf(output)] ?? '{value}').toBe(sentence);
         const start = controller.start(env(messages), '');
@@ -949,4 +950,64 @@ describe('the primary sentence protocol (the builder writes what the controller 
       }
     },
   );
+
+  /** The count fixture with the pieces as the large figure of `option`. */
+  const countPage = (option: 'length' | 'count') =>
+    definePage({
+      calculator: countCalculator,
+      primary: {
+        imperial: 'total',
+        metric: 'total',
+        by: { select: 'mode', options: { [option]: { imperial: 'pieces', metric: 'pieces' } } },
+      },
+    });
+  const counted = catalogOf(() => false, {
+    'calc.count-fixture.page.pieces': '{value} pieces',
+    'calc.count-fixture.page.piecesOne': '{value} piece',
+  });
+
+  // calc-feet-inches › [FI7]: the plural and the singular sentence of a count, by the name the controller reads
+  it('gives the controller the two sentences of a count primary, after the unit sentences', () => {
+    const { messages } = pageViewOf(countPage('count'), 'en', counted);
+    expect(messages.slice(-3)).toEqual([
+      ['length.ft', 'calc.count-fixture.page.total'],
+      ['count.pieces', '{value} pieces'],
+      ['count.pieces.one', '{value} piece'],
+    ]);
+    const controller = controllerOf(countPage('count'));
+    const named = env(Object.fromEntries(messages));
+    expect(controller.start(named, '?v=1&m1=count').view.panel.primary.after).toBe(' pieces');
+    expect(controller.start(named, '?v=1&m1=count&c1=1').view.panel.primary.after).toBe(' piece');
+  });
+
+  it('names the singular page key of a count primary the catalog lacks', () => {
+    const lacking = catalogOf((key) => key === 'calc.count-fixture.page.piecesOne', {
+      'calc.count-fixture.page.pieces': '{value} pieces',
+    });
+    const error = pageModuleErrorOf(() => pageViewOf(countPage('count'), 'en', lacking));
+    expect(error.code).toBe('PAGE_KEY');
+    expect(error.cause).toEqual({
+      id: 'count-fixture',
+      at: 'calc.count-fixture.page.piecesOne',
+    });
+  });
+
+  // no-JS: the page shows the large figure the script shows once it has loaded
+  it('renders the large figure of the default option as the script shows it on load', () => {
+    for (const option of ['length', 'count'] as const) {
+      const module = countPage(option);
+      const view = pageViewOf(module, 'en', counted);
+      const { primary } = controllerOf(module).start(env(Object.fromEntries(view.messages)), '')
+        .view.panel;
+      const { key, before, value, after } = view.result.primary;
+      expect({ key, before, value, after }).toEqual(primary);
+    }
+    expect(resultViewOf(countPage('length'), 'en', counted).primary.key).toBe('pieces');
+  });
+
+  // a count shows as the large figure only: the rows stay those of the measured outputs
+  it('gives a count no row', () => {
+    const { rows } = resultViewOf(countPage('count'), 'en', counted);
+    expect(rows.map(({ key, hidden }) => [key, hidden])).toEqual([['total', true]]);
+  });
 });

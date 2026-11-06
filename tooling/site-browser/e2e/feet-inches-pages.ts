@@ -21,6 +21,8 @@ const DIVIDE_7: Figures = ['1 ft 9 7/16 in', '21.43', '0.544'];
 /** How many fit, the figures being what is left: 240 / 16 = 15, nothing; 240 / 7 = 34, 2 in. */
 const FIT_16: Figures = ['0 in', '0.00', '0.000'];
 const FIT_7: Figures = ['2 in', '2.00', '0.051'];
+/** 120 / 100 = 1.2: one piece, 20 in = 1 ft 8 in = 0.508 m left. */
+const FIT_ONCE: Figures = ['1 ft 8 in', '20.00', '0.508'];
 /** 20 ft + 3 ft 8 1/4 in = 284.25 in = 23 ft 8 1/4 in = 7.220 m. */
 const FIRST_20: Figures = ['23 ft 8 1/4 in', '284.25', '7.220'];
 /** 2 m + 1.5 m typed as bare numbers: 3.5 m = 137.80 in = 11 ft 5 13/16 in. */
@@ -62,8 +64,31 @@ export const FEET_INCHES: E2eSpec = {
     { name: 'second length longer', query: '?v=1&o=subtract&a=120&b=150', figures: LONGER },
     { name: 'multiplication', query: '?v=1&o=multiply', figures: MULTIPLY },
     { name: 'division into 7', query: '?v=1&o=divide&n=7', figures: DIVIDE_7 },
-    { name: '16 in fitting in 20 ft', query: '?v=1&o=fit&a=240&b=16', figures: FIT_16 },
-    { name: '7 in fitting in 20 ft', query: '?v=1&o=fit&a=240&b=7', figures: FIT_7 },
+    // how many fit is the question, so the pieces are the large figure, the rows what is left
+    {
+      name: '16 in fitting in 20 ft',
+      query: '?v=1&o=fit&a=240&b=16',
+      figures: FIT_16,
+      primary: { en: '15 pieces', es: '15 piezas' },
+    },
+    {
+      name: '7 in fitting in 20 ft',
+      query: '?v=1&o=fit&a=240&b=7',
+      figures: FIT_7,
+      primary: { en: '34 pieces', es: '34 piezas' },
+    },
+    {
+      name: '8 ft 4 in fitting once in 10 ft',
+      query: '?v=1&o=fit&a=120&b=100',
+      figures: FIT_ONCE,
+      primary: { en: '1 piece', es: '1 pieza' },
+    },
+    {
+      name: '16 in fitting in 20 ft, in meters',
+      query: '?v=1&u=m&o=fit&a=240&b=16',
+      figures: FIT_16,
+      primary: { en: '15 pieces', es: '15 piezas' },
+    },
   ],
   metric: {
     query: '?v=1&u=m',

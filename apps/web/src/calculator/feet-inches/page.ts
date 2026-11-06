@@ -5,10 +5,18 @@ import { choiceSlot } from '../slots/choices.ts';
 import { FRAME, MESSAGES, planOf } from './plan.ts';
 import { answerCase, answerValues } from './present.ts';
 
-/** The feet and inches page: the operation drives the second field, the answer reads the result (the pieces of a fit), the bars draw it. Language-free. */
+/**
+ * The feet and inches page: the operation drives the second field, the large figure is the result
+ * or, for a fit, the pieces (how many fit is the question), the answer reads both, the bars draw
+ * them. Language-free.
+ */
 export const feetInchesPage: PageModule<typeof feetInches> = definePage({
   calculator: feetInches,
-  primary: { imperial: 'result', metric: 'resultM' },
+  primary: {
+    imperial: 'result',
+    metric: 'resultM',
+    by: { select: 'operation', options: { fit: { imperial: 'pieces', metric: 'pieces' } } },
+  },
   choices: choiceSlot(feetInches, [
     {
       select: 'operation',

@@ -248,3 +248,21 @@ export const hintedCalculator = (hints: {
       warnings: [],
     }),
   });
+
+/**
+ * A select `mode` whose option `count` makes the count `pieces` (as many as `qty`) the large figure
+ * in both unit systems; the option `length` keeps the primary `total`.
+ */
+export const countCalculator = defineCalculator({
+  id: 'count-fixture',
+  inputs: [
+    selectInput({ key: 'mode', urlKey: 'm1', options: ['length', 'count'], default: 'length' }),
+    countInput({ key: 'qty', urlKey: 'c1', default: 15, min: 0, max: 2000 }),
+  ],
+  outputs: [total, { key: 'pieces', measure: 'number', role: 'intermediate' }],
+  compute: ({ qty }) => ({
+    outputs: { total: zero, pieces: Rational.of(qty) },
+    shopping: [],
+    warnings: [],
+  }),
+});

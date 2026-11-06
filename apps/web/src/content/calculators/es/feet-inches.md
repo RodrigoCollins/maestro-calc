@@ -22,7 +22,7 @@ La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas e
 2. Elige la operación: Sumar, Restar, Multiplicar, Dividir o Cuántas caben.
 3. Para sumar, restar o ver cuántas caben, escribe la segunda medida. Para multiplicar o dividir, escribe el número: 3 para triplicar una medida, 4 para cortar una tabla en cuatro partes iguales.
 
-El resultado empieza con pies, pulgadas y la fracción al 1/16 de pulgada más cercano, la marca que ves en la cinta. También muestra el resultado en pulgadas con decimales y en metros. Si restas una medida más larga de una más corta, la calculadora da la diferencia y dice cuál es la más larga. Cuántas caben responde con las piezas enteras y el cociente, y las cifras muestran el sobrante.
+El resultado empieza con pies, pulgadas y la fracción al 1/16 de pulgada más cercano, la marca que ves en la cinta. También muestra el resultado en pulgadas con decimales y en metros. Si restas una medida más larga de una más corta, la calculadora da la diferencia y dice cuál es la más larga. Cuántas caben empieza con las piezas enteras, la respuesta agrega el cociente y las filas de abajo muestran el sobrante.
 
 Para trabajar en métrico, toca Métrico (m, cm). Las medidas se leen entonces en metros y el resultado empieza con metros. Cambiar de unidades nunca cambia tus números, solo cómo se escriben. Usa Copiar enlace para mandar tus números exactos a un socio o a un cliente, y el enlace English para abrir los mismos números en inglés.
 
