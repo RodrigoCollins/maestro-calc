@@ -8,7 +8,9 @@ import EmbedSnippets from '../components/EmbedSnippets.astro';
 import GlossaryTable from '../components/GlossaryTable.astro';
 import GuideCta from '../components/GuideCta.astro';
 import GuidesIndex from '../components/GuidesIndex.astro';
+import ChartsIndex from '../components/ChartsIndex.astro';
 import { guideGroups } from '../lib/guides-index.ts';
+import { chartCards } from '../lib/charts-index.ts';
 import type { GuideId } from '../routing/guides.ts';
 import HubDirectory from '../components/HubDirectory.astro';
 import { getEntry } from 'astro:content';
@@ -80,6 +82,17 @@ const hubView =
     {id === 'embed-calculators' && <EmbedSnippets snippets={snippetsFor(locale)} />}
     {id === 'glossary' && <GlossaryTable view={glossaryView(locale)} />}
     {guideIndex !== undefined && <GuidesIndex groups={guideIndex} />}
+    {id === 'charts' && (
+      <ChartsIndex
+        cards={chartCards(locale)}
+        checkedLabel={siteText(locale)('site.charts.checked')}
+        sourcesLabel={siteText(locale)('site.charts.sources')}
+        press={{
+          heading: siteText(locale)('site.charts.press.heading'),
+          text: siteText(locale)('site.charts.press.text'),
+        }}
+      />
+    )}
     {hubView !== undefined && (
       <HubDirectory
         calculatorsLabel={siteText(locale)('site.hub.calculators')}

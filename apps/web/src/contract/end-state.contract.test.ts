@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and eleven ids, so the
-// site has two hundred and twenty-two routable pages and two not-found pages.
-describe('end state of the cubic yard weight chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and twelve ids, so the
+// site has two hundred and twenty-four routable pages and two not-found pages.
+describe('end state of the charts index (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and eleven page ids, two hundred and twenty-two routable paths and two hundred and twenty-four pages with the 404s', () => {
+  it('has a hundred and twelve page ids, two hundred and twenty-four routable paths and two hundred and twenty-six pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -24,6 +24,7 @@ describe('end state of the cubic yard weight chart (site-routing-i18n › [SR1],
       'embed-calculators',
       'glossary',
       'guides',
+      'charts',
       'guide-concrete-bags-or-truck',
       'guide-tape-measure-fractions',
       'guide-square-footage',
@@ -127,10 +128,10 @@ describe('end state of the cubic yard weight chart (site-routing-i18n › [SR1],
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(222);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(222);
+    expect(staticPaths()).toHaveLength(224);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(224);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(224);
+    expect(pageCount(ROUTES)).toBe(226);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -157,23 +158,23 @@ describe('end state of the cubic yard weight chart (site-routing-i18n › [SR1],
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and twenty-four page title and description keys in %s',
+    'has exactly two hundred and twenty-six page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(224);
+      ).toHaveLength(226);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
-  // two entries per calculator page: eighty-two content entries in all
-  it('has sixty-two trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(62);
+  // two entries per calculator page: eighty-four content entries in all
+  it('has sixty-four trust entries and twenty calculator entries', () => {
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(64);
     expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and twenty-two URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(222);
+  it('lists two hundred and twenty-four URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(224);
   });
 });

@@ -253,6 +253,19 @@ const jobPageLinksOf = (id: string, locale: Locale, site: Site): string => {
   );
 };
 
+/**
+ * Once the table has the data and charts index: what the index lists (every reference chart) and
+ * what a chart links (the index); '' for any other page.
+ */
+const chartIndexLinksOf = (id: string, locale: Locale, site: Site): string => {
+  if (!Object.hasOwn(site.routes, 'charts')) return '';
+  const charts = Object.keys(site.jobs).filter(isChartId);
+  if (id === 'charts') return `<ul class="charts-cards">${jobItems(charts, locale, site)}</ul>`;
+  return charts.includes(id)
+    ? `<p><a href="${pathOf('charts', locale, site.routes)}">charts</a></p>`
+    : '';
+};
+
 /** The line of a calculator page that links its trade hub, or '' when no hub lists it. */
 const hubLinkOf = (id: string, locale: Locale, site: Site): string => {
   const hub = Object.keys(site.hubs).find((candidate) => site.hubs[candidate]?.includes(id));
@@ -465,7 +478,7 @@ export const validPage = (id: string, locale: Locale, site: Site = fixtureSite()
     `<a href="${language.href}" lang="${language.lang}" hreflang="${language.hreflang}">${catalog['site.switch.label'] ?? ''}</a></nav></header>`,
     calculator
       ? calculatorMain(id, locale, site)
-      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}${jobBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${jobPageLinksOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
+      : `<main id="main">${guideBreadcrumbOf(id, locale, site)}${jobBreadcrumbOf(id, locale, site)}<h1>${headingOf(id)}</h1>${guideCtaOf(id, locale, site)}${jobPageLinksOf(id, locale, site)}${chartIndexLinksOf(id, locale, site)}${hubDirectoryOf(id, locale, site)}${updatedLine(id, locale, site)}</main>`,
     `<footer><p>Contact us at <a href="mailto:${SITE.contactEmail}">${SITE.contactEmail}</a></p>`,
     footerLinks === '' ? '' : `<ul>${footerLinks}</ul>`,
     '</footer></body></html>',

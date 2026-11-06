@@ -10,7 +10,8 @@ import { hubOfCalculator } from '../routing/hubs.ts';
 import { LOCALE_TAGS, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
-import { guideJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
+import { collectionJsonLd, guideJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
+import { chartCards } from '../lib/charts-index.ts';
 
 interface Props {
   /** A route id with Markdown copy: every id of the table except `home`. */
@@ -44,15 +45,36 @@ const hub =
 const minutes = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 200));
 const sections = guide ? headings.filter(({ depth }) => depth === 2) : [];
 const head = headFor(id, locale, text);
+// The data and charts index is a CollectionPage of every chart it lists.
+const collection =
+  id === 'charts'
+    ? collectionJsonLd(
+        {
+          id,
+          name: headingOf(entry.body ?? ''),
+          description: text(`page.${id}.description`),
+          items: chartCards(locale).map((card) => ({ id: card.id, name: card.title })),
+        },
+        locale,
+      )
+    : undefined;
 const jsonLd = guide
   ? serializeJsonLd(guideJsonLd({ id, name: heading, updated }, locale))
-  : undefined;
+  : collection === undefined
+    ? undefined
+    : serializeJsonLd(collection);
 ---
 
 <BaseLayout
   {locale}
   {id}
-  head={jsonLd === undefined ? head : { ...head, jsonLd, ogType: 'article' }}
+  head={
+    jsonLd === undefined
+      ? head
+      : guide
+        ? { ...head, jsonLd, ogType: 'article' }
+        : { ...head, jsonLd }
+  }
 >
   {guide && <Breadcrumb {breadcrumb} />}
   <div class:list={[{ 'guide-layout': guide }]}>
