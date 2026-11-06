@@ -10,6 +10,13 @@ describe('pageKindOf', () => {
     expect(pageKindOf('/pool-salt-calculator')).toBe('calculator');
     expect(pageKindOf('/opening-your-pool')).toBe('article');
     expect(pageKindOf('/methodology')).toBe('article');
+    expect(pageKindOf('/404')).toBe('article');
+  });
+
+  // the kind is the route's, so a Spanish slug (calculadora-de-...) is a calculator too
+  it('reads the kind from the route table, not from the end of the address', () => {
+    expect(pageKindOf('/how-much-salt-for-a-10000-gallon-pool')).toBe('article');
+    expect(pageKindOf('/pool-volume-calculator')).toBe('calculator');
   });
 });
 
@@ -96,6 +103,16 @@ describe('jsonLdOf', () => {
           ],
         },
       ],
+    });
+  });
+
+  it('says the language of the address: en-US, or es-US under /es', () => {
+    const about = { title: 'Acerca de | Pool Figures', description: 'Quiénes somos.' };
+    expect(JSON.parse(jsonLdOf('/about', about, ORIGIN))).toMatchObject({ inLanguage: 'en-US' });
+    expect(JSON.parse(jsonLdOf('/es/acerca', about, ORIGIN))).toMatchObject({
+      '@type': 'Article',
+      headline: 'Acerca de',
+      inLanguage: 'es-US',
     });
   });
 

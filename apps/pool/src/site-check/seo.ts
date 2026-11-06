@@ -1,3 +1,4 @@
+import { headProblems } from '@maestro-calc/site-kit/seo-check';
 /**
  * The search rules of the built site beyond the link preview of `@maestro-calc/site-kit/seo-check`:
  * every indexable page has its own title and description, of a length a result shows whole, a
@@ -209,3 +210,18 @@ export const seoAuditProblems = (
     ...robotsProblems(rules.robots, rules.origin),
   ];
 };
+
+/**
+ * The hreflang pairs of the built site during the Spanish rollout (`headProblems` of
+ * `@maestro-calc/site-kit/seo-check`, `partial`): a page with a twin names en-US, es-US and
+ * x-default both ways, with its `<html lang>`, and its sitemap lines carry the same; a page with no
+ * twin yet names none and is English or Spanish.
+ */
+export const pairProblems = (pages: ReadonlyMap<string, string>, sitemap: string): string[] =>
+  headProblems(pages, {
+    languages: ['en-US', 'es-US'],
+    title: { max: TITLE_MAX },
+    description: { min: DESCRIPTION_RANGE[0], max: DESCRIPTION_RANGE[1] },
+    sitemap,
+    partial: true,
+  });

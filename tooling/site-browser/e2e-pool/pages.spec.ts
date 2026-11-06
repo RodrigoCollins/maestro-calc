@@ -5,9 +5,11 @@ import { PAGES } from './pages.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
-for (const path of PAGES) {
+for (const { path, lang } of PAGES) {
   test.describe(path, () => {
-    test('serves the page in English with one heading and no console error', async ({ page }) => {
+    test('serves the page in its language with one heading and no console error', async ({
+      page,
+    }) => {
       const errors: string[] = [];
       page.on('console', (message) => {
         if (message.type() === 'error') errors.push(message.text());
@@ -15,7 +17,7 @@ for (const path of PAGES) {
       page.on('pageerror', (error) => errors.push(error.message));
       const response = await page.goto(path);
       expect(response?.status()).toBe(200);
-      await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+      await expect(page.locator('html')).toHaveAttribute('lang', lang);
       await expect(page.locator('h1')).toHaveCount(1);
       expect(errors).toEqual([]);
     });
@@ -137,7 +139,7 @@ test('links the privacy page from the footer, and it describes Google Analytics'
 });
 
 test('sends the security headers with every page', async ({ request }) => {
-  for (const path of PAGES) {
+  for (const { path } of PAGES) {
     const response = await request.get(path);
     expect(response.headers()['content-security-policy'], path).toContain("script-src 'self'");
     expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
@@ -156,7 +158,7 @@ test('serves a sitemap with every page and job page, and robots that point to it
   expect(jobs.length).toBeGreaterThan(0);
   const xml = await (await request.get('/sitemap.xml')).text();
   expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length + jobs.length);
-  for (const path of [...PAGES, ...jobs])
+  for (const path of [...PAGES.map(({ path: at }) => at), ...jobs])
     expect(xml, path).toContain(`<loc>https://poolfigures.com${path}</loc>`);
   const robots = await (await request.get('/robots.txt')).text();
   expect(robots).toContain('Sitemap: https://poolfigures.com/sitemap.xml');

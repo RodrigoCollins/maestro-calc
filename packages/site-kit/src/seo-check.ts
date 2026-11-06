@@ -142,6 +142,12 @@ export interface HeadRules {
   readonly description: { readonly min: number; readonly max: number };
   /** The text of `sitemap.xml`. */
   readonly sitemap: string;
+  /**
+   * A language rollout in progress: a page with no alternate at all (no twin yet) is a
+   * one-language page, its `<html lang>` one of the languages and its sitemap line plain. A page
+   * with any alternate still needs them all. Off by default: then every page needs its pair.
+   */
+  readonly partial?: boolean;
 }
 
 /** What the head of one indexable page says about itself. */
@@ -207,8 +213,15 @@ const textProblems = (heads: readonly Head[], rules: HeadRules): string[] => {
   return [...lengths, ...shared('title'), ...shared('description')];
 };
 
+/** The language of a page with no twin must still be one the site publishes. */
+const singleProblems = ({ file, lang }: Head, rules: HeadRules): string[] =>
+  rules.languages.some((hreflang) => hreflang.split('-')[0] === lang)
+    ? []
+    : [`${file}: <html lang> is ${shown(lang)}, none of ${rules.languages.join(', ')}`];
+
 const alternateProblems = (head: Head, byUrl: ReadonlyMap<string, Head>, rules: HeadRules) => {
   const { file, canonical, alternates } = head;
+  if (rules.partial === true && alternates.length === 0) return singleProblems(head, rules);
   const [first = ''] = rules.languages;
   const hrefOf = (hreflang: string): string | undefined =>
     alternates.find(([candidate]) => candidate === hreflang)?.[1];
@@ -278,7 +291,8 @@ const sitemapProblems = (heads: readonly Head[], byUrl: ReadonlyMap<string, Head
  * `<html lang>` that is not the language of the canonical; alternates that do not hold each
  * language and x-default once (x-default at the first language), that miss the canonical, or
  * that lead to a page that does not name the same alternates back; and a sitemap that does not
- * list exactly these pages, each with the alternates of its page.
+ * list exactly these pages, each with the alternates of its page. With `partial`, a page with no
+ * alternate is checked as a one-language page instead (a language rollout).
  */
 export const headProblems = (pages: ReadonlyMap<string, string>, rules: HeadRules): string[] => {
   const heads = [...pages].flatMap(([file, html]) => headOf(file, html) ?? []);

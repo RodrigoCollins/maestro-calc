@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { headTextOf, seoAuditProblems, type SeoAuditRules } from './seo.ts';
+import { langOf, type Route } from '../routes.ts';
+import { alternatesOf } from '../seo/head.ts';
+import { sitemapXml } from '../seo/sitemap.ts';
+import { headTextOf, pairProblems, seoAuditProblems, type SeoAuditRules } from './seo.ts';
 
 const ORIGIN = 'https://poolfigures.com';
 
@@ -179,6 +182,50 @@ describe('seoAuditProblems', () => {
     expect(audit({}, { robots: 'User-agent: *\nDisallow: /\n' })).toEqual([
       'robots.txt: "Disallow: /" keeps search engines out',
       `robots.txt: must name the sitemap ${ORIGIN}/sitemap.xml`,
+    ]);
+  });
+});
+
+describe('pairProblems', () => {
+  const routes: readonly Route[] = [
+    { id: 'home', kind: 'home', en: '/', es: '/es' },
+    { id: 'charts', kind: 'article', en: '/charts' },
+  ];
+  /** A built page as the layout writes it: its language, its canonical and its alternates. */
+  const built = (path: string, title: string): string =>
+    [
+      `<html lang="${langOf(path)}"><head><title>${title}</title>`,
+      `<meta name="description" content="${title}, a description long enough for a result.">`,
+      `<link rel="canonical" href="${ORIGIN}${path}">`,
+      ...alternatesOf(path, ORIGIN, routes).map(
+        ({ hreflang, href }) => `<link rel="alternate" hreflang="${hreflang}" href="${href}">`,
+      ),
+      '</head></html>',
+    ].join('');
+  const home = built('/', 'Pool Figures home');
+  const spanish = built('/es', 'Pool Figures en español');
+  const charts = built('/charts', 'Pool data and charts');
+  const sitemap = sitemapXml(routes, ORIGIN);
+  const check = (pages: Record<string, string>): string[] =>
+    pairProblems(new Map(Object.entries(pages)), sitemap);
+
+  // the rollout: a page with a twin carries the full pair, one without carries none
+  it('accepts the pairs that exist beside the pages that have no twin yet', () => {
+    expect(check({ 'index.html': home, 'es.html': spanish, 'charts.html': charts })).toEqual([]);
+  });
+
+  it('refuses an alternate to a Spanish page the build does not hold', () => {
+    expect(check({ 'index.html': home, 'charts.html': charts })).toEqual(
+      expect.arrayContaining([
+        `index.html: its es-US alternate "${ORIGIN}/es" is not an indexable page of the build`,
+      ]),
+    );
+  });
+
+  it('refuses a page in a language the site does not publish', () => {
+    const french = charts.replace('lang="en"', 'lang="fr"');
+    expect(check({ 'index.html': home, 'es.html': spanish, 'charts.html': french })).toEqual([
+      'charts.html: <html lang> is "fr", none of en-US, es-US',
     ]);
   });
 });

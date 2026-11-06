@@ -1,25 +1,7 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
-import { sitemapXml as sitemapOf } from '@maestro-calc/site-kit/sitemap';
-
-/**
- * The paths of the page files (`./methodology.astro` is `/methodology`, `./index.astro` is `/`),
- * sorted; the 404 is never listed. A dynamic file (`./[job].astro`) stands for the paths `dynamic`
- * gives it, and one it does not name throws, so a dynamic page cannot drop out of the sitemap.
- */
-export const pagePaths = (
-  files: readonly string[],
-  dynamic: Readonly<Record<string, readonly string[]>> = {},
-): string[] =>
-  files
-    .flatMap((file) => {
-      if (!file.includes('[')) return [file.replace(/^\.\//, '/').replace(/\.astro$/, '')];
-      const paths = dynamic[file];
-      if (paths === undefined) throw new Error(`no paths for the dynamic page ${file}`);
-      return paths;
-    })
-    .filter((path) => path !== '/404')
-    .map((path) => (path === '/index' ? '/' : path))
-    .sort();
+import { localizedUrls, sitemapXml as sitemapOf } from '@maestro-calc/site-kit/sitemap';
+import type { Route } from '../routes.ts';
+import { alternatesOf } from './head.ts';
 
 /** The public path of a page as the build names it: `/methodology.html` is `/methodology`, `/index.html` is `/`. */
 export const canonicalPath = (pathname: string): string =>
@@ -28,6 +10,19 @@ export const canonicalPath = (pathname: string): string =>
     .replace(/(^|\/)index$/, '/')
     .replace(/^\/\/$/, '/');
 
-/** The sitemap of the site: one `<loc>` per path on the origin. */
-export const sitemapXml = (paths: readonly string[], origin: string): string =>
-  sitemapOf(paths.map((path) => ({ loc: canonicalUrl(path, origin) })));
+/**
+ * The sitemap of the site, from the route table, sorted by English address: a page with a Spanish
+ * twin gives both addresses, each with the pair and x-default at English; a page with no twin yet
+ * is one plain `<loc>`, so the sitemap never names a page that does not exist.
+ */
+export const sitemapXml = (routes: readonly Route[], origin: string): string =>
+  sitemapOf(
+    [...routes]
+      .sort((a, b) => (a.en < b.en ? -1 : a.en > b.en ? 1 : 0))
+      .flatMap((route) => {
+        const alternates = alternatesOf(route.en, origin, [route]);
+        return alternates.length === 0
+          ? [{ loc: canonicalUrl(route.en, origin) }]
+          : localizedUrls(alternates);
+      }),
+  );

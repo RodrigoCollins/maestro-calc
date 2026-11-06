@@ -3,7 +3,8 @@ import { Font } from 'astro:assets';
 import { CHARTS_INDEX } from '../charts.ts';
 import { NAV_LINKS } from '../home.ts';
 import type { Crumb } from '../seo/breadcrumb.ts';
-import { embedHeadOf, headOf } from '../seo/head.ts';
+import { langOf } from '../routes.ts';
+import { alternatesOf, embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
@@ -29,15 +30,21 @@ const embedHead = embed ? embedHeadOf(here, { title, description }) : undefined;
 const path = embedHead?.page ?? here;
 const { canonical, robots, preview } = embedHead ?? headOf(path, { title, description }, indexed);
 const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
+const lang = langOf(path);
+// the hreflang pair only on an indexed page whose route has its twin (never on an embed)
+const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.origin) : [];
 ---
 
 <!doctype html>
-<html lang="en">
+<html {lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {robots !== undefined && <meta name="robots" content={robots} />}
     {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    {alternates.map(({ hreflang, href }) => (
+      <link rel="alternate" {hreflang} {href} />
+    ))}
     {embed && <base target="_blank" />}
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -47,7 +54,10 @@ const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
     <meta property="og:title" content={preview['og:title']} />
     <meta property="og:description" content={preview['og:description']} />
     {canonical !== undefined && <meta property="og:url" content={canonical} />}
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
+    {alternates.length > 0 && (
+      <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
+    )}
     <meta property="og:image" content={preview['og:image']} />
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />

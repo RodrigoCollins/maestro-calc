@@ -4,17 +4,13 @@ import { describe, expect, it } from 'vitest';
 import { CHARTS_INDEX } from './charts.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
-import { JOB_PAGES } from './jobs.ts';
 import { llmsTxt } from './llms.ts';
-import { pagePaths } from './seo/sitemap.ts';
+import { pathsOf, ROUTES } from './routes.ts';
 import { SITE } from './site.config.ts';
 
 const pagesDir = new URL('pages/', import.meta.url);
-const files = readdirSync(fileURLToPath(pagesDir))
-  .filter((name) => name.endsWith('.astro'))
-  .map((name) => `./${name}`);
-// the sitemap's own list (`pages/sitemap.xml.ts`)
-const sitemap = pagePaths(files, { './[job].astro': JOB_PAGES.map(({ path }) => path) });
+// the sitemap's own list (`src/seo/sitemap.ts`): every route in each language it has
+const sitemap = ROUTES.flatMap(pathsOf).sort();
 
 const text = llmsTxt();
 const lines = text.split('\n');

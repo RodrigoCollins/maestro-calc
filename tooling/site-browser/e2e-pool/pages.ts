@@ -1,39 +1,41 @@
-/** Every page of Pool Figures (English only); the e2e suites run over all of them. */
-export const PAGES = [
-  '/',
-  '/methodology',
-  '/opening-your-pool',
-  '/closing-your-pool',
-  '/pool-water-chemistry-chart',
-  '/pool-chemical-dosing-chart',
-  '/pool-volume-chart',
-  '/charts',
-  '/how-long-to-run-pool-pump',
-  '/salt-water-pool-vs-chlorine-pool',
-  '/how-to-shock-a-pool',
-  '/how-to-lower-ph-in-a-pool',
-  '/how-to-raise-calcium-hardness-in-a-pool',
-  '/how-long-after-adding-chemicals-can-you-swim',
-  '/privacy',
-  '/about',
-  '/embed-calculators',
-  '/pool-volume-calculator',
-  '/pool-salt-calculator',
-  '/pool-chlorine-calculator',
-  '/pool-pump-size-calculator',
-  '/pool-ph-calculator',
-  '/pool-alkalinity-calculator',
-  '/pool-stabilizer-calculator',
-  '/pool-calcium-hardness-calculator',
-  '/pool-heater-size-calculator',
-  '/pool-fill-time-calculator',
-] as const;
+/** A page of Pool Figures and the language it is written in (`<html lang>`). */
+export interface Page {
+  readonly path: string;
+  readonly lang: 'en' | 'es';
+}
 
-/** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
-export const EMBEDS = PAGES.filter((path) => path.endsWith('-calculator')).map((page) => ({
-  embed: `/embed${page}`,
-  page,
-}));
+const en = (path: string): Page => ({ path, lang: 'en' });
+
+/** Every page of Pool Figures, Spanish ones as they are built; the e2e suites run over all of them. */
+export const PAGES: readonly Page[] = [
+  en('/'),
+  en('/methodology'),
+  en('/opening-your-pool'),
+  en('/closing-your-pool'),
+  en('/pool-water-chemistry-chart'),
+  en('/pool-chemical-dosing-chart'),
+  en('/pool-volume-chart'),
+  en('/charts'),
+  en('/how-long-to-run-pool-pump'),
+  en('/salt-water-pool-vs-chlorine-pool'),
+  en('/how-to-shock-a-pool'),
+  en('/how-to-lower-ph-in-a-pool'),
+  en('/how-to-raise-calcium-hardness-in-a-pool'),
+  en('/how-long-after-adding-chemicals-can-you-swim'),
+  en('/privacy'),
+  en('/about'),
+  en('/embed-calculators'),
+  en('/pool-volume-calculator'),
+  en('/pool-salt-calculator'),
+  en('/pool-chlorine-calculator'),
+  en('/pool-pump-size-calculator'),
+  en('/pool-ph-calculator'),
+  en('/pool-alkalinity-calculator'),
+  en('/pool-stabilizer-calculator'),
+  en('/pool-calcium-hardness-calculator'),
+  en('/pool-heater-size-calculator'),
+  en('/pool-fill-time-calculator'),
+];
 
 /**
  * Each calculator: the figure it shows at its defaults (worked out at build time, so it reads with no
@@ -121,3 +123,6 @@ export const CALCULATORS = [
     edited: '16 h 40 min',
   },
 ] as const;
+
+/** Each calculator page is embedded at `/embed` + its path (`apps/pool/src/embed.ts`). */
+export const EMBEDS = CALCULATORS.map(({ path: page }) => ({ embed: `/embed${page}`, page }));

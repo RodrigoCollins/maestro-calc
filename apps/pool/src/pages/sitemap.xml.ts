@@ -1,14 +1,11 @@
 import type { APIRoute } from 'astro';
-import { JOB_PAGES } from '../jobs.ts';
-import { pagePaths, sitemapXml } from '../seo/sitemap.ts';
+import { ROUTES } from '../routes.ts';
+import { sitemapXml } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
 
-// Every page file of this directory is a page of the sitemap, so a new page cannot be left out;
-// the job pages of `[job].astro` are listed by the paths they build.
-const files = Object.keys(import.meta.glob('./*.astro'));
-const dynamic = { './[job].astro': JOB_PAGES.map(({ path }) => path) };
-
+// Every route of `src/routes.ts`, the job pages included; a test holds the table equal to the
+// page files, so a new page cannot be left out.
 export const GET: APIRoute = () =>
-  new Response(sitemapXml(pagePaths(files, dynamic), SITE.origin), {
+  new Response(sitemapXml(ROUTES, SITE.origin), {
     headers: { 'Content-Type': 'application/xml; charset=utf-8' },
   });

@@ -14,7 +14,7 @@ import {
 } from './doses.ts';
 import { EMBED_PAGE, EMBEDS, snippets } from './embed.ts';
 import { HOME_TOOLS } from './home.ts';
-import { pagePaths } from './seo/sitemap.ts';
+import { pathsOf, ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, EMBED_PAGES } from './site-check/pages.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -72,8 +72,7 @@ describe('snippets', () => {
 
 describe('the embed page', () => {
   it('is a page of the sitemap at /embed-calculators, and the embeds are not', () => {
-    const files = readdirSync(pagesDir).map((name) => `./${name}`);
-    const paths = pagePaths(files.filter((name) => name.endsWith('.astro') && !name.includes('[')));
+    const paths = ROUTES.flatMap(pathsOf);
     expect(EMBED_PAGE.path).toBe('/embed-calculators');
     expect(paths).toContain(EMBED_PAGE.path);
     expect(paths.some((path) => path.startsWith('/embed/'))).toBe(false);
