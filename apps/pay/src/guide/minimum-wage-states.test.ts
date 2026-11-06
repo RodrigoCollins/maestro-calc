@@ -195,7 +195,7 @@ describe('the minimum wage by state', () => {
   it('lists the states whose 2027 rate no primary source we could read confirms', () => {
     const states = UNCONFIRMED_2027.map(({ state }) => state);
     expect(states).toEqual(['Arizona', 'Colorado', 'Maine', 'Nebraska', 'Rhode Island', 'Vermont']);
-    for (const { state, check, reason } of UNCONFIRMED_2027) {
+    for (const { state, check, law, unread } of UNCONFIRMED_2027) {
       // never both confirmed and unconfirmed
       expect(named(state).scheduled, state).toBeUndefined();
       expect(
@@ -203,9 +203,44 @@ describe('the minimum wage by state', () => {
         state,
       ).toBe(false);
       expect(check.href, state).toMatch(/^https:\/\/[a-z.]+\.gov\/?/);
-      expect(reason.en.length, state).toBeGreaterThan(0);
-      expect(reason.es.length, state).toBeGreaterThan(0);
+      // why it changes: the law, in both languages
+      expect(law.en, state).toMatch(/January 1/);
+      expect(law.es, state).toMatch(/1 de enero/);
+      // why it is not confirmed: the state's own pages, never a claim we could not check
+      expect(unread.en, state).toMatch(/refused our request/);
+      expect(unread.es, state).toMatch(/rechazaron nuestra consulta/);
+      expect(`${unread.en} ${unread.es}`, state).not.toMatch(/not yet|not posted|todavía no/i);
     }
+  });
+
+  it('names the law that changes each unconfirmed rate on January 1, 2027', () => {
+    const laws = Object.fromEntries(UNCONFIRMED_2027.map(({ state, law }) => [state, law]));
+    expect(laws).toEqual({
+      Arizona: {
+        en: 'Rises each January 1 by inflation (A.R.S. § 23-363).',
+        es: 'Sube cada 1 de enero según la inflación (A.R.S. § 23-363).',
+      },
+      Colorado: {
+        en: 'Adjusted each January 1 for inflation (Colorado Constitution, art. XVIII, § 15).',
+        es: 'Se ajusta cada 1 de enero por inflación (Constitución de Colorado, art. XVIII, § 15).',
+      },
+      Maine: {
+        en: 'Rises each January 1 by inflation (26 M.R.S. § 664).',
+        es: 'Sube cada 1 de enero según la inflación (26 M.R.S. § 664).',
+      },
+      Nebraska: {
+        en: 'Rises each January 1 from 2027 under state law (Neb. Rev. Stat. § 48-1203).',
+        es: 'Sube cada 1 de enero desde 2027 según la ley del estado (Neb. Rev. Stat. § 48-1203).',
+      },
+      'Rhode Island': {
+        en: 'A state law signed in 2025 raises it on January 1, 2027 (R.I. Gen. Laws § 28-12-3).',
+        es: 'Una ley del estado firmada en 2025 la sube el 1 de enero de 2027 (R.I. Gen. Laws § 28-12-3).',
+      },
+      Vermont: {
+        en: 'Rises each January 1 by inflation or 5%, whichever is smaller (21 V.S.A. § 384).',
+        es: 'Sube cada 1 de enero según la inflación o 5%, lo que sea menor (21 V.S.A. § 384).',
+      },
+    });
   });
 
   it('cites a government source for every row, with a link and the dates', () => {

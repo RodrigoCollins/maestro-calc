@@ -261,30 +261,45 @@ export const UNCHANGED_2027: readonly { readonly state: string; readonly source:
   { state: 'New York', source: 'ny' },
 ];
 
+/** Why a state is on the unconfirmed list: the state's own pages refused our request. */
+const refused = (agency: Words): Words => ({
+  en: `The pages of ${agency.en} refused our request, so we could not read the 2027 rate.`,
+  es: `Las páginas ${agency.es} rechazaron nuestra consulta, así que no pudimos leer la tarifa de 2027.`,
+});
+
 /**
- * States that change their rate on January 1, by inflation or by a law, whose 2027 rate no primary
- * source we could read on the day we checked states: the state page refused the request or did not
- * give the rate yet. Each names the agency to check; a rate moves to `scheduled` once one is read.
+ * States whose rate changes on January 1, 2027 under a law, `law` naming it, but whose 2027 rate
+ * no primary source we could read gives: `unread` says why. Each names the agency to check; a rate
+ * moves to `scheduled` once one is read.
  */
 export const UNCONFIRMED_2027: readonly {
   readonly state: string;
-  readonly reason: Words;
+  readonly law: Words;
+  readonly unread: Words;
   readonly check: { readonly label: string; readonly href: string };
 }[] = [
   {
     state: 'Arizona',
-    reason: {
-      en: 'Adjusted for inflation each January 1.',
-      es: 'Se ajusta por inflación cada 1 de enero.',
+    law: {
+      en: 'Rises each January 1 by inflation (A.R.S. § 23-363).',
+      es: 'Sube cada 1 de enero según la inflación (A.R.S. § 23-363).',
     },
+    unread: refused({
+      en: 'the Industrial Commission of Arizona',
+      es: 'de la Industrial Commission of Arizona',
+    }),
     check: { label: 'Industrial Commission of Arizona', href: 'https://www.azica.gov/' },
   },
   {
     state: 'Colorado',
-    reason: {
-      en: 'Adjusted for inflation each January 1.',
-      es: 'Se ajusta por inflación cada 1 de enero.',
+    law: {
+      en: 'Adjusted each January 1 for inflation (Colorado Constitution, art. XVIII, § 15).',
+      es: 'Se ajusta cada 1 de enero por inflación (Constitución de Colorado, art. XVIII, § 15).',
     },
+    unread: refused({
+      en: 'the Colorado Department of Labor and Employment',
+      es: 'del Departamento de Trabajo y Empleo de Colorado',
+    }),
     check: {
       label: 'Colorado Department of Labor and Employment',
       href: 'https://cdle.colorado.gov/',
@@ -292,34 +307,50 @@ export const UNCONFIRMED_2027: readonly {
   },
   {
     state: 'Maine',
-    reason: {
-      en: 'Adjusted for inflation each January 1.',
-      es: 'Se ajusta por inflación cada 1 de enero.',
+    law: {
+      en: 'Rises each January 1 by inflation (26 M.R.S. § 664).',
+      es: 'Sube cada 1 de enero según la inflación (26 M.R.S. § 664).',
     },
+    unread: refused({
+      en: 'the Maine Department of Labor',
+      es: 'del Departamento de Trabajo de Maine',
+    }),
     check: { label: 'Maine Department of Labor', href: 'https://www.maine.gov/labor/' },
   },
   {
     state: 'Nebraska',
-    reason: {
-      en: 'Adjusted each January 1 from 2027, by a rate the state publishes by October 15.',
-      es: 'Se ajusta cada 1 de enero desde 2027, con una tarifa que el estado publica antes del 15 de octubre.',
+    law: {
+      en: 'Rises each January 1 from 2027 under state law (Neb. Rev. Stat. § 48-1203).',
+      es: 'Sube cada 1 de enero desde 2027 según la ley del estado (Neb. Rev. Stat. § 48-1203).',
     },
+    unread: refused({
+      en: 'the Nebraska Legislature and Department of Labor',
+      es: 'de la Legislatura y del Departamento de Trabajo de Nebraska',
+    }),
     check: { label: 'Nebraska Department of Labor', href: 'https://dol.nebraska.gov/' },
   },
   {
     state: 'Rhode Island',
-    reason: {
-      en: 'Set by state law; the state page could not be read.',
-      es: 'La fija la ley del estado; no pudimos leer la página del estado.',
+    law: {
+      en: 'A state law signed in 2025 raises it on January 1, 2027 (R.I. Gen. Laws § 28-12-3).',
+      es: 'Una ley del estado firmada en 2025 la sube el 1 de enero de 2027 (R.I. Gen. Laws § 28-12-3).',
     },
+    unread: refused({
+      en: 'the Rhode Island General Assembly and Department of Labor and Training',
+      es: 'de la Asamblea General y del Departamento de Trabajo y Capacitación de Rhode Island',
+    }),
     check: { label: 'Rhode Island Department of Labor and Training', href: 'https://dlt.ri.gov/' },
   },
   {
     state: 'Vermont',
-    reason: {
-      en: 'Rises each January 1 by inflation or 5%, whichever is smaller; the state had not posted the 2027 rate.',
-      es: 'Sube cada 1 de enero según la inflación o 5%, lo que sea menor; el estado no había publicado la tarifa de 2027.',
+    law: {
+      en: 'Rises each January 1 by inflation or 5%, whichever is smaller (21 V.S.A. § 384).',
+      es: 'Sube cada 1 de enero según la inflación o 5%, lo que sea menor (21 V.S.A. § 384).',
     },
+    unread: refused({
+      en: 'the Vermont Department of Labor',
+      es: 'del Departamento de Trabajo de Vermont',
+    }),
     check: { label: 'Vermont Department of Labor', href: 'https://labor.vermont.gov/' },
   },
 ];
