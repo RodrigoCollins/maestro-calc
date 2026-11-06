@@ -90,6 +90,7 @@ export const ABOUT: About = {
       paragraphs: [
         `Found an error? Write to ${CONTACT_EMAIL}. We read every message and fix confirmed errors.`,
       ],
+      link: { href: '/editorial-policy', label: 'Editorial policy' },
     },
   ],
   reviewed: 'Last updated November 4, 2026.',
@@ -146,6 +147,7 @@ const ABOUT_ES: About = {
       paragraphs: [
         `¿Encontraste un error? Escribe a ${CONTACT_EMAIL}. Leemos cada mensaje y corregimos los errores confirmados.`,
       ],
+      link: { href: hrefOf('editorial', 'es'), label: 'Política editorial' },
     },
   ],
   reviewed: 'Actualizado el 6 de noviembre de 2026.',

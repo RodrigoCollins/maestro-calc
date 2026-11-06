@@ -154,6 +154,7 @@ const PAGE_ROUTES: readonly Route[] = [
   },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'about', kind: 'article', en: '/about', es: '/es/acerca' },
+  { id: 'editorial', kind: 'article', en: '/editorial-policy', es: '/es/politica-editorial' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'embed', kind: 'article', en: '/embed-calculators', es: '/es/calculadoras-para-tu-sitio' },
 ];
