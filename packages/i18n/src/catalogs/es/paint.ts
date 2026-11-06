@@ -3,7 +3,7 @@ import type { enPaint } from '../en/paint.ts';
 
 /** Copy of the `paint` calculator, Spanish: the same keys as English. */
 export const esPaint = {
-  'calc.paint.title': 'Calculadora de Pintura',
+  'calc.paint.title': 'Calculadora de pintura',
   'calc.paint.inputs.length': 'Largo del cuarto',
   'calc.paint.inputs.width': 'Ancho del cuarto',
   'calc.paint.inputs.height': 'Altura de las paredes',

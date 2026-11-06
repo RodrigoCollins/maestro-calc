@@ -3,7 +3,7 @@ import type { enRoofing } from '../en/roofing.ts';
 
 /** Copy of the `roofing` calculator, Spanish: the same keys as English. */
 export const esRoofing = {
-  'calc.roofing.title': 'Calculadora de Tejas para Techo',
+  'calc.roofing.title': 'Calculadora de tejas para techo',
   'calc.roofing.inputs.length': 'Largo (con aleros)',
   'calc.roofing.inputs.width': 'Ancho (con aleros)',
   'calc.roofing.inputs.pitch': 'Pendiente (subida en 12)',

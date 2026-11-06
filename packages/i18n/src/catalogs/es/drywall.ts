@@ -3,7 +3,7 @@ import type { enDrywall } from '../en/drywall.ts';
 
 /** Copy of the `drywall` calculator, Spanish: the same keys as English. */
 export const esDrywall = {
-  'calc.drywall.title': 'Calculadora de Drywall',
+  'calc.drywall.title': 'Calculadora de drywall',
   'calc.drywall.inputs.length': 'Largo del cuarto',
   'calc.drywall.inputs.width': 'Ancho del cuarto',
   'calc.drywall.inputs.height': 'Altura de las paredes',

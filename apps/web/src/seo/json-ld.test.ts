@@ -222,13 +222,13 @@ describe('calculator structured data (site-seo › [SE19], [SE20] builder side)'
 
   it('describes the Spanish page with es-US, Inicio and the Spanish URLs', () => {
     const [app, list, questions] = calculatorJsonLd(
-      { id: 'concrete', name: 'Calculadora de Concreto' },
+      { id: 'concrete', name: 'Calculadora de concreto' },
       'es',
       faq,
       routes,
     )['@graph'];
     expect(app).toMatchObject({
-      name: 'Calculadora de Concreto',
+      name: 'Calculadora de concreto',
       url: 'https://maestrocalc.com/es/calculadora-de-concreto',
       inLanguage: 'es-US',
     });

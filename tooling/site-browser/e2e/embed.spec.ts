@@ -51,7 +51,7 @@ test.describe('embed (embed)', () => {
     const frame = page.frameLocator('iframe');
     await frame.locator('header a[hreflang]').click();
     await expect(frame.locator('html')).toHaveAttribute('lang', 'es-US');
-    await expect(frame.locator('h1')).toHaveText('Calculadora de Concreto');
+    await expect(frame.locator('h1')).toHaveText('Calculadora de concreto');
   });
 
   test('is kept out of search and opens its other links in a new tab', async ({ page }) => {

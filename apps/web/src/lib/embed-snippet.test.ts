@@ -32,8 +32,8 @@ describe('embed snippets (embed › The snippet)', () => {
     if (embed === undefined) return;
     expect(spanish[0]).toEqual({
       id: 'concrete',
-      name: 'Calculadora de Concreto',
-      code: snippetOf(embed, 'Calculadora de Concreto', 'Calculadora de Concreto de Maestro Calc'),
+      name: 'Calculadora de concreto',
+      code: snippetOf(embed, 'Calculadora de concreto', 'Calculadora de concreto de Maestro Calc'),
     });
   });
 });

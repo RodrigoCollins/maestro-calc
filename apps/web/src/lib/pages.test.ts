@@ -16,14 +16,14 @@ describe('the per-id page table (calculator-web-core › [CWC23], [CWC26], [CWC2
     expect(PAGES.concrete.module).toBe(concretePage);
     expect(Object.keys(PAGES.concrete.catalogs)).toEqual(['en', 'es']);
     expect(PAGES.concrete.catalogs.en['calc.concrete.title']).toBe('Concrete Calculator');
-    expect(PAGES.concrete.catalogs.es['calc.concrete.title']).toBe('Calculadora de Concreto');
+    expect(PAGES.concrete.catalogs.es['calc.concrete.title']).toBe('Calculadora de concreto');
   });
 
   // spec: calculator-web-core › [CWC27] the page id picks the module
   it.each(['en', 'es'] as const)('builds the %s view of the module the id names', (locale) => {
     const view = pageView('concrete', locale);
     expect(view.id).toBe('concrete');
-    expect(view.title).toBe(locale === 'en' ? 'Concrete Calculator' : 'Calculadora de Concreto');
+    expect(view.title).toBe(locale === 'en' ? 'Concrete Calculator' : 'Calculadora de concreto');
   });
 
   // every module the site builds a page for passes the creation checks of the controller (K15,

@@ -5,7 +5,7 @@ import { placeholdersOf } from './translate.ts';
 
 /** key, en, es: the rows of the ICW12 table, the derived keys, the material keys and the page copy. */
 const ROWS = [
-  ['calc.concrete.title', 'Concrete Calculator', 'Calculadora de Concreto'],
+  ['calc.concrete.title', 'Concrete Calculator', 'Calculadora de concreto'],
   ['calc.concrete.inputs.shape', 'Shape', 'Forma'],
   ['calc.concrete.inputs.length', 'Length', 'Largo'],
   ['calc.concrete.inputs.width', 'Width', 'Ancho'],
