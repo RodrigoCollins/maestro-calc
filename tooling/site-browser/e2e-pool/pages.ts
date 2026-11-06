@@ -45,6 +45,11 @@ export const PAGES: readonly Page[] = [
   es('/es/calculadora-de-cloro-para-piscina'),
   es('/es/calculadora-de-ph-para-piscina'),
   es('/es/calculadora-de-alcalinidad-para-piscina'),
+  es('/es/calculadora-de-bomba-para-piscina'),
+  es('/es/calculadora-de-estabilizador-para-piscina'),
+  es('/es/calculadora-de-dureza-de-calcio-para-piscina'),
+  es('/es/calculadora-de-calentador-para-piscina'),
+  es('/es/calculadora-de-tiempo-de-llenado-de-piscina'),
 ];
 
 /**
@@ -139,8 +144,13 @@ const SPANISH: Readonly<Partial<Record<(typeof ENGLISH)[number]['path'], string>
   '/pool-volume-calculator': '/es/calculadora-de-volumen-de-piscina',
   '/pool-salt-calculator': '/es/calculadora-de-sal-para-piscina',
   '/pool-chlorine-calculator': '/es/calculadora-de-cloro-para-piscina',
+  '/pool-pump-size-calculator': '/es/calculadora-de-bomba-para-piscina',
   '/pool-ph-calculator': '/es/calculadora-de-ph-para-piscina',
   '/pool-alkalinity-calculator': '/es/calculadora-de-alcalinidad-para-piscina',
+  '/pool-stabilizer-calculator': '/es/calculadora-de-estabilizador-para-piscina',
+  '/pool-calcium-hardness-calculator': '/es/calculadora-de-dureza-de-calcio-para-piscina',
+  '/pool-heater-size-calculator': '/es/calculadora-de-calentador-para-piscina',
+  '/pool-fill-time-calculator': '/es/calculadora-de-tiempo-de-llenado-de-piscina',
 };
 
 /**

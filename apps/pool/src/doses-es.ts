@@ -181,3 +181,116 @@ export const ALKALINITY_ES: DosePage = {
   note: 'Usa bicarbonato de sodio puro (baking soda): revisa que la etiqueta del aumentador de alcalinidad lo diga. Para piscinas públicas, el Model Aquatic Health Code de los CDC mantiene la alcalinidad total entre 60 y 180 ppm.',
   methodLink: methodLink('alkalinity'),
 };
+
+/** The CDC's Model Aquatic Health Code, the one source of the public-pool limits these pages cite. */
+const CODE = 'el Model Aquatic Health Code de los CDC';
+
+export const STABILIZER_ES: DosePage = {
+  path: '/es/calculadora-de-estabilizador-para-piscina',
+  title: 'Calculadora de estabilizador: ácido cianúrico | Pool Figures',
+  description:
+    'Cuántas libras y onzas de ácido cianúrico (estabilizador o acondicionador) suben el CYA de tu piscina de su lectura al nivel que buscas.',
+  kicker: 'Estabilizador · gratis',
+  h1: 'Calculadora de estabilizador para piscina',
+  lead: 'Ingresa los galones de tu piscina, la lectura de ácido cianúrico (CYA) de hoy y el nivel que quieres. Obtienes las libras de ácido cianúrico (estabilizador) que debes agregar.',
+  fields: { gallons, current: { label: 'CYA actual (ppm)' }, target },
+  results: [
+    { key: 'pounds', label: 'Estabilizador que debes agregar', unit: 'LB' },
+    { key: 'ounces', label: 'Onzas', unit: 'oz' },
+  ],
+  warnings: {
+    drainToLower:
+      'Tu CYA está por encima del nivel deseado. El ácido cianúrico no se gasta: la única forma de bajarlo es vaciar parte del agua y volver a llenar.',
+    overCodeLimit: `Tu nivel deseado pasa de 90 ppm, lo más que permite ${CODE} en una piscina pública.`,
+  },
+  method: `1 ppm es 1 mg por litro, así que los gramos de ácido cianúrico = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000: 13.35 oz por cada 10 ppm por cada 10,000 galones. Para piscinas públicas, ${CODE} mantiene el CYA en 90 ppm o menos.`,
+  note: 'La dosis es para un producto de 100% ácido cianúrico. Lee la etiqueta del tuyo: para un estabilizador líquido o mezclado, divide la dosis entre su porcentaje y multiplica por 100. El dicloro y el tricloro también suben el CYA.',
+  methodLink: methodLink('stabilizer'),
+};
+
+export const CALCIUM_ES: DosePage = {
+  path: '/es/calculadora-de-dureza-de-calcio-para-piscina',
+  title: 'Dureza de calcio: ¿cuánto cloruro de calcio? | Pool Figures',
+  description:
+    'Cuántas libras de cloruro de calcio suben la dureza de calcio de tu piscina de su lectura al nivel que buscas, con la dosis de la etiqueta.',
+  kicker: 'Dureza de calcio · gratis',
+  h1: 'Calculadora de dureza de calcio para piscina',
+  lead: 'Ingresa los galones de tu piscina, la dureza de calcio de hoy y el nivel que quieres. Obtienes las libras de cloruro de calcio que debes agregar, y cuánto agregar primero.',
+  fields: { gallons, current: { label: 'Dureza de calcio actual (ppm)' }, target },
+  results: [
+    { key: 'pounds', label: 'Cloruro de calcio que debes agregar', unit: 'LB' },
+    { key: 'ounces', label: 'Onzas', unit: 'oz' },
+    { key: 'firstAddition', label: 'Agrega esto primero y espera 12 horas', unit: 'lb' },
+  ],
+  warnings: {
+    dilutionToLower:
+      'Tu dureza de calcio está por encima del nivel deseado. El calcio no se gasta y ningún producto lo quita: la única forma de bajarla es vaciar parte del agua y volver a llenar con agua más blanda.',
+    splitDose:
+      'Es más de 3 lb por cada 10,000 galones, así que la etiqueta lo divide: agrega la primera cantidad, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma.',
+  },
+  method:
+    'Según la etiqueta de un aumentador de dureza de calcio (ClearView, Oreq Corporation): 2 oz de cloruro de calcio en escamas por cada 1,000 galones suben la dureza de calcio 10 ppm, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Libras = galones × (nivel deseado − lectura) ÷ 80,000. Comprobado con la química: 10 ppm como carbonato de calcio en 10,000 galones requieren 0.925 lb de cloruro de calcio puro, 1.25 lb de escamas al 74%.',
+  note: `El manual de AquaRite de Hayward mantiene la dureza de calcio entre 200 y 400 ppm; para piscinas públicas, ${CODE} la limita a 2,500 ppm. La dosis es para cloruro de calcio en escamas, el aumentador de dureza de calcio más común; un producto anhidro (94% o más) es más fuerte, así que sigue la etiqueta del tuyo. Disuélvelo primero, más o menos ½ lb por galón de agua, y viértelo en la parte honda con la bomba funcionando.`,
+  methodLink: methodLink('calcium'),
+};
+
+export const PUMP_ES: DosePage = {
+  path: '/es/calculadora-de-bomba-para-piscina',
+  title: 'Calculadora de bomba para piscina: caudal en GPM | Pool Figures',
+  description:
+    'El caudal de bomba que necesita tu piscina para filtrar toda su agua en 6 horas, como pide la norma de piscinas residenciales, y en 8.',
+  kicker: 'Tamaño de bomba · gratis',
+  h1: 'Calculadora de tamaño de bomba para piscina',
+  lead: 'Ingresa los galones de tu piscina. Obtienes el caudal, en galones por minuto, que filtra toda el agua en 6 horas.',
+  fields: { gallons },
+  results: [
+    { key: 'flow', label: 'Caudal de bomba para filtrar todo en 6 horas', unit: 'GPM' },
+    { key: 'eightHour', label: 'Más suave, en 8 horas', unit: 'gpm' },
+  ],
+  method:
+    'Caudal = galones ÷ 360 minutos, nunca menos de 36 gpm: la tasa de filtración residencial de ANSI/APSP/ICC-15, a la que remite el ISPSC de 2021.',
+  note: 'Dimensiona también la tubería para ese caudal: la norma mantiene el agua por debajo de 8 pies por segundo en el retorno y de 6 en la succión.',
+  methodLink: methodLink('pump'),
+};
+
+export const HEATER_ES: DosePage = {
+  path: '/es/calculadora-de-calentador-para-piscina',
+  title: 'Calentador para piscina: ¿cuántos BTU por hora? | Pool Figures',
+  description:
+    'Los BTU por hora que debe dar un calentador para subir tu piscina los grados que quieres en las horas que le das, según el peso del agua.',
+  kicker: 'Tamaño de calentador · gratis',
+  h1: 'Calculadora de calentador para piscina',
+  lead: 'Ingresa los galones de tu piscina, cuántos grados quieres subirla y en cuántas horas. Obtienes los BTU por hora que debe dar un calentador.',
+  fields: {
+    gallons,
+    rise: { label: 'Aumento de temperatura (°F)' },
+    hours: { label: 'Horas para calentar' },
+  },
+  results: [
+    { key: 'btuPerHour', label: 'Potencia del calentador', unit: 'BTU/H' },
+    { key: 'btu', label: 'Calor para calentar el agua', unit: 'BTU' },
+  ],
+  method:
+    'Un BTU calienta 1 lb de agua 1 °F, y un galón de agua pesa unas 8.34 lb. BTU = galones × 8.34 × aumento, y BTU por hora = ese calor ÷ las horas: 20,000 galones calentados 10 °F requieren 1,668,000 BTU, 69,500 por hora en 24 horas.',
+  note: 'Es el calor que guarda el agua, sin pérdidas. El viento, la evaporación y las noches frescas se llevan calor mientras se calienta, así que un calentador real se elige más grande, y una cubierta guarda más calor. El Departamento de Energía de EE. UU. dimensiona un calentador de gas por la superficie: pies cuadrados × (temperatura de la piscina − temperatura media del aire del mes más frío) × 12 BTU por hora, para subir de 1 a 1¼ °F por hora con un viento de 3½ mph.',
+  methodLink: methodLink('heater'),
+};
+
+export const FILL_TIME_ES: DosePage = {
+  path: '/es/calculadora-de-tiempo-de-llenado-de-piscina',
+  title: '¿Cuánto tarda en llenarse tu piscina? Calculadora | Pool Figures',
+  description:
+    'Cuántas horas y minutos tarda una manguera en llenar tu piscina, según sus galones y el caudal en galones por minuto.',
+  kicker: 'Tiempo de llenado · gratis',
+  h1: 'Calculadora de tiempo de llenado de piscina',
+  lead: 'Ingresa los galones de tu piscina y el caudal de tu manguera en galones por minuto. Obtienes las horas y los minutos que tarda en llenarse.',
+  fields: { gallons, flow: { label: 'Caudal (galones por minuto)' } },
+  results: [
+    { key: 'time', label: 'Tiempo de llenado', unit: 'HORAS Y MINUTOS' },
+    { key: 'minutes', label: 'En minutos', unit: 'min' },
+  ],
+  method:
+    'Minutos = galones ÷ galones por minuto, y horas = minutos ÷ 60: 20,000 galones a 10 galones por minuto tardan 2,000 minutos, 33 h 20 min.',
+  note: 'Mide tu propio caudal: cronometra en segundos cuánto tarda en llenarse una cubeta de 5 galones con la manguera; galones por minuto = 300 ÷ esos segundos (30 segundos son 10 galones por minuto). Los 10 galones por minuto que ya aparecen son solo una cifra de partida.',
+  methodLink: methodLink('fill-time'),
+};

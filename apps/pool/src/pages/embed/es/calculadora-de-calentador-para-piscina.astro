@@ -1,0 +1,10 @@
+---
+import HeaterSizeScript from '../../../islands/HeaterSizeScript.astro';
+import { poolHeater } from '@maestro-calc/pool-core/pool-heater';
+import DosePage from '../../../components/DosePage.astro';
+import { HEATER_ES } from '../../../doses-es.ts';
+---
+
+<DosePage embed page={HEATER_ES} calculator={poolHeater}>
+  <HeaterSizeScript />
+</DosePage>
