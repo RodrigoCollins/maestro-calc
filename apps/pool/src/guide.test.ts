@@ -19,6 +19,7 @@ import {
   type GuideSource,
 } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
+import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
@@ -487,6 +488,7 @@ describe('the guides', () => {
       SHOCK_GUIDE.path,
       PH_GUIDE.path,
       CALCIUM_GUIDE.path,
+      SWIM_GUIDE.path,
     ]);
     for (const { card } of GUIDES) {
       expect(card.title.length).toBeGreaterThan(0);
@@ -517,19 +519,21 @@ describe('the calculators each guide explains', () => {
           ]
         : guide.path === VOLUME_CHART.path
           ? [VOLUME_CHART.calculator.href]
-          : [
-              OPENING_GUIDE,
-              CLOSING_GUIDE,
-              PUMP_RUN_GUIDE,
-              SALT_VS_CHLORINE_GUIDE,
-              SHOCK_GUIDE,
-              PH_GUIDE,
-              CALCIUM_GUIDE,
-            ]
-              .filter(({ path }) => path === guide.path)
-              .flatMap(({ steps }) =>
-                steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
-              );
+          : guide.path === SWIM_GUIDE.path
+            ? SWIM_GUIDE.rows.map(({ link }) => link.href)
+            : [
+                OPENING_GUIDE,
+                CLOSING_GUIDE,
+                PUMP_RUN_GUIDE,
+                SALT_VS_CHLORINE_GUIDE,
+                SHOCK_GUIDE,
+                PH_GUIDE,
+                CALCIUM_GUIDE,
+              ]
+                .filter(({ path }) => path === guide.path)
+                .flatMap(({ steps }) =>
+                  steps.flatMap(({ link }) => (link === undefined ? [] : [link.href])),
+                );
 
   // a calculator page links back each guide that names it (`src/site-check/links.ts` checks the build)
   it.each(GUIDES.map((guide) => [guide.path, guide] as const))(
@@ -548,14 +552,16 @@ describe('the calculators each guide explains', () => {
       DOSING_CHART.path,
       SHOCK_GUIDE.path,
       PH_GUIDE.path,
+      SWIM_GUIDE.path,
     ]);
   });
 
-  it('send the calcium calculator to the chart and the calcium guide', () => {
+  it('send the calcium calculator to the chart, the calcium guide and the swim guide', () => {
     expect(guidesOf(CALCIUM.path).map(({ path }) => path)).toEqual([
       CHEMISTRY_CHART.path,
       DOSING_CHART.path,
       CALCIUM_GUIDE.path,
+      SWIM_GUIDE.path,
     ]);
   });
 

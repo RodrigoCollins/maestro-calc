@@ -16,6 +16,7 @@ import {
 import { METHOD_SECTIONS } from './methodology.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { pageKindOf } from './seo/json-ld.ts';
+import { SWIM_GUIDE } from './swim.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)));
 const layout = readFileSync(
@@ -34,6 +35,7 @@ const cited = [
     SHOCK_GUIDE,
     PH_GUIDE,
     CALCIUM_GUIDE,
+    SWIM_GUIDE,
   ].flatMap(({ sources }) => Object.values<GuideSource>(sources).map(({ name }) => name)),
 ];
 
@@ -70,6 +72,7 @@ describe('the about page', () => {
     expect(text).toContain('how to shock the pool');
     expect(text).toContain('how to lower or raise the pH');
     expect(text).toContain('how to raise calcium hardness and why only draining lowers it');
+    expect(text).toContain('how long to wait to swim after adding each chemical');
   });
 
   it('gives the address readers write to', () => {

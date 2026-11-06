@@ -12,6 +12,7 @@ export const PAGES = [
   '/how-to-shock-a-pool',
   '/how-to-lower-ph-in-a-pool',
   '/how-to-raise-calcium-hardness-in-a-pool',
+  '/how-long-after-adding-chemicals-can-you-swim',
   '/privacy',
   '/about',
   '/embed-calculators',

@@ -192,8 +192,25 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/how-to-shock-a-pool',
     '/how-to-lower-ph-in-a-pool',
     '/how-to-raise-calcium-hardness-in-a-pool',
+    '/how-long-after-adding-chemicals-can-you-swim',
   ]);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+});
+
+test('tables when to swim after nine chemicals, each with its section, and every link answers', async ({
+  page,
+}) => {
+  await page.goto('/how-long-after-adding-chemicals-can-you-swim');
+  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(9);
+  await expect(page.locator('.pool-level')).toHaveCount(9);
+  await expect(page.locator('.pool-chart tbody tr').first()).toContainText('4 ppm or less');
+  const hrefs = await page
+    .locator('main a[href^="/"]')
+    .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
+  // the two charts, then each chemical's calculator and, for five of them, its guide
+  expect(hrefs).toHaveLength(16);
+  for (const href of new Set(hrefs))
+    expect((await page.request.get(href)).status(), href).toBe(200);
 });
 
 test('numbers the winter steps, whose calculator links all answer', async ({ page }) => {
