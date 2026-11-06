@@ -4,6 +4,7 @@ import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDES } from '../guide/overtime.ts';
+import { OVERTIME_STATES_GUIDE } from '../guide/overtime-states.ts';
 import { PAY_STUB_GUIDE } from '../guide/pay-stub.ts';
 import { PTO_GUIDE } from '../guide/pto.ts';
 import { SHIFT_GUIDE } from '../guide/shift-differential.ts';
@@ -59,6 +60,7 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'tip-credit-guide': both(TIP_CREDIT_GUIDE),
   'tipped-states-guide': both(TIPPED_STATES_GUIDE),
   'hours-worked-guide': both(HOURS_WORKED_GUIDE),
+  'overtime-states-guide': both(OVERTIME_STATES_GUIDE),
   methodology: both(METHODOLOGY_TEXTS),
   about: both(ABOUT_TEXTS),
   embed: both(EMBED_TEXTS),

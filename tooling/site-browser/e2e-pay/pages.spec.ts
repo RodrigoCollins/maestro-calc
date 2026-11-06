@@ -112,6 +112,9 @@ test('gives every page a link preview: its title, description and the shared ima
   page,
   request,
 }) => {
+  // one navigation per page of the route table, over 300 of them: the default 30 s leaves no
+  // margin on a slower runner, slow() gives 90 s
+  test.slow();
   expect((await request.get('/og.png')).headers()['content-type']).toBe('image/png');
   for (const { path } of PAGES) {
     await page.goto(path);
@@ -126,6 +129,9 @@ test('gives every page a link preview: its title, description and the shared ima
 });
 
 test('describes every page with structured data whose url is its canonical', async ({ page }) => {
+  // one navigation per page of the route table, over 300 of them: the default 30 s leaves no
+  // margin on a slower runner, slow() gives 90 s
+  test.slow();
   for (const { path } of PAGES) {
     await page.goto(path);
     type LdNode = { '@type'?: string; url?: string };
@@ -140,6 +146,9 @@ test('describes every page with structured data whose url is its canonical', asy
 });
 
 test('lets search engines index every page but the 404', async ({ page }) => {
+  // one navigation per page of the route table, over 300 of them: the default 30 s leaves no
+  // margin on a slower runner, slow() gives 90 s
+  test.slow();
   for (const { path } of PAGES) {
     await page.goto(path);
     await expect(page.locator('meta[name="robots"]'), path).toHaveCount(0);

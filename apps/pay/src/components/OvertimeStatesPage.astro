@@ -1,0 +1,115 @@
+---
+import {
+  overtimeRowsOf,
+  OVERTIME_STATES_GUIDE,
+  OVERTIME_STATES_GUIDE_PATHS,
+  OVERTIME_STATES_SOURCES,
+} from '../guide/overtime-states.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = OVERTIME_STATES_GUIDE[lang];
+const rows = overtimeRowsOf(lang);
+const sources = Object.values(OVERTIME_STATES_SOURCES);
+---
+
+<SiteLayout
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={OVERTIME_STATES_GUIDE_PATHS}
+  otherLang={TIME_CARD_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page prose">
+    <div>
+      <p class="kicker">{t.kicker}</p>
+      <h1>{t.h1}</h1>
+    </div>
+    <p class="lead">{t.lead}</p>
+    <p class="note">{t.asOf}</p>
+
+    <div class="table-scroll" role="region" aria-labelledby="states-caption" tabindex="0">
+      <table class="ledger states">
+        <caption id="states-caption">{t.table.caption}</caption>
+        <thead>
+          <tr>
+            <th scope="col">{t.table.state}</th>
+            <th scope="col">{t.table.daily}</th>
+            <th scope="col">{t.table.weekly}</th>
+            <th scope="col">{t.table.doubleTime}</th>
+            <th scope="col">{t.table.seventhDay}</th>
+            <th scope="col">{t.table.notes}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">{row.name}</th>
+              <td>{row.daily ?? t.table.none}</td>
+              <td>{row.weekly}</td>
+              <td class="words">{row.doubleTime ?? t.table.none}</td>
+              <td class="words">{row.seventhDay ?? t.table.none}</td>
+              <td>{row.notes ?? ''}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="sources">
+      {t.sourcesLabel}:{' '}
+      {sources.map((source, index) => (
+        <>
+          {index > 0 && '; '}
+          <a href={source.href} rel="noopener">
+            {source.label}
+          </a>
+        </>
+      ))}
+    </p>
+
+    {t.sections.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <p class="sources">
+          {t.sourcesLabel}:{' '}
+          {section.sources.map((source, index) => (
+            <>
+              {index > 0 && '; '}
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </>
+          ))}
+        </p>
+      </section>
+    ))}
+
+    <section aria-labelledby="cite">
+      <h2 id="cite">{t.cite.heading}</h2>
+      <p class="cite">{t.cite.text}</p>
+    </section>
+
+    <p class="note">
+      {t.disclaimer} {t.reviewed}
+    </p>
+    {t.ctas.map((cta, index) => (
+      <a
+        class:list={['button', index === 0 ? 'button-primary' : 'button-secondary']}
+        href={cta.href}
+      >
+        {cta.label}
+      </a>
+    ))}
+  </main>
+</SiteLayout>

@@ -44,3 +44,9 @@ export const TIPPED_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/tipped-minimum-wage-by-state',
   es: '/es/guias/salario-minimo-con-propinas-por-estado',
 };
+
+/** The overtime laws by state: the daily and weekly thresholds, double time and the seventh day. */
+export const OVERTIME_STATES_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/overtime-laws-by-state',
+  es: '/es/guias/leyes-de-horas-extra-por-estado',
+};
