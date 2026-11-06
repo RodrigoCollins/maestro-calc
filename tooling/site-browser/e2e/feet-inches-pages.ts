@@ -18,6 +18,9 @@ const SUBTRACT: Figures = ['8 ft 9 3/4 in', '105.75', '2.686'];
 const LONGER: Figures = ['2 ft 6 in', '30.00', '0.762'];
 const MULTIPLY: Figures = ['25 ft', '300.00', '7.620'];
 const DIVIDE_7: Figures = ['1 ft 9 7/16 in', '21.43', '0.544'];
+/** How many fit, the figures being what is left: 240 / 16 = 15, nothing; 240 / 7 = 34, 2 in. */
+const FIT_16: Figures = ['0 in', '0.00', '0.000'];
+const FIT_7: Figures = ['2 in', '2.00', '0.051'];
 /** 20 ft + 3 ft 8 1/4 in = 284.25 in = 23 ft 8 1/4 in = 7.220 m. */
 const FIRST_20: Figures = ['23 ft 8 1/4 in', '284.25', '7.220'];
 /** 2 m + 1.5 m typed as bare numbers: 3.5 m = 137.80 in = 11 ft 5 13/16 in. */
@@ -44,7 +47,7 @@ export const FEET_INCHES: E2eSpec = {
   figures: ['result', 'resultIn', 'resultM'],
   defaults: DEFAULTS,
   primary: { en: '16 ft 2 1/4 in', es: '16 ft 2 1/4 in' },
-  controls: 10,
+  controls: 11,
   typed: {
     key: 'first',
     text: '20',
@@ -59,6 +62,8 @@ export const FEET_INCHES: E2eSpec = {
     { name: 'second length longer', query: '?v=1&o=subtract&a=120&b=150', figures: LONGER },
     { name: 'multiplication', query: '?v=1&o=multiply', figures: MULTIPLY },
     { name: 'division into 7', query: '?v=1&o=divide&n=7', figures: DIVIDE_7 },
+    { name: '16 in fitting in 20 ft', query: '?v=1&o=fit&a=240&b=16', figures: FIT_16 },
+    { name: '7 in fitting in 20 ft', query: '?v=1&o=fit&a=240&b=7', figures: FIT_7 },
   ],
   metric: {
     query: '?v=1&u=m',
@@ -81,6 +86,7 @@ export const FEET_INCHES: E2eSpec = {
     '[data-choice="operation"] [value="subtract"]',
     '[data-choice="operation"] [value="multiply"]',
     '[data-choice="operation"] [value="divide"]',
+    '[data-choice="operation"] [value="fit"]',
     '#calc-second',
     '.calc-result a',
     '[data-copy]',
@@ -92,16 +98,25 @@ export const FEET_INCHES: E2eSpec = {
   bounds: [
     { key: 'first', text: '1001 ft', code: 'ABOVE_MAX', bound: '1,000 ft', restore: '12 ft 6 in' },
   ],
-  // The longest sentences of each case of the answer in both unit systems (calculator-page › [CP60]).
+  // The longest sentences of each case of the answer in both unit systems (calculator-page › [CP60]);
+  // a fit is longest with the longest first length, two pieces just short of three (2.99) and
+  // 333 ft 3 15/16 in left, or one piece (1.99) and 499 ft 11 15/16 in left.
   layoutQueries: [
     '?v=1',
     '?v=1&o=subtract&a=120&b=150',
     '?v=1&o=divide&n=7',
     '?v=1&a=767999/64&b=767999/64',
+    '?v=1&o=fit&a=767999/64&b=256001/64',
+    '?v=1&o=fit&a=767999/64&b=384003/64',
+    '?v=1&o=fit&a=767999/64&b=1/64',
+    '?v=1&o=fit&a=767999/64&b=0',
     '?v=1&u=m',
     '?v=1&u=m&o=subtract&a=120&b=150',
     '?v=1&u=m&o=divide&n=7',
     '?v=1&u=m&a=767999/64&b=767999/64',
+    '?v=1&u=m&o=fit&a=767999/64&b=256001/64',
+    '?v=1&u=m&o=fit&a=767999/64&b=1/64',
+    '?v=1&u=m&o=fit&a=767999/64&b=0',
   ],
   answer: {
     default: ANSWER_DEFAULT,
@@ -136,14 +151,14 @@ export const FEET_INCHES: E2eSpec = {
       labels: ['15 ft', '3 ft 8 1/4 in', '18 ft 8 1/4 in'],
     },
     metric: ['3.81 m', '1.12 m', '4.934 m'],
-    toggles: ['?v=1&o=subtract&a=120&b=150', '?v=1&o=divide&n=7'],
+    toggles: ['?v=1&o=subtract&a=120&b=150', '?v=1&o=divide&n=7', '?v=1&o=fit&a=120&b=36'],
     // the longest labels the fields accept, and a bar far shorter than the other
     longest: [
       '?v=1&a=767999/64&b=767999/64',
       '?v=1&u=m&a=767999/64&b=767999/64',
       '?v=1&a=1&b=767999/64',
     ],
-    queries: ['?v=1&o=multiply', '?v=1&o=divide&n=7'],
+    queries: ['?v=1&o=multiply', '?v=1&o=divide&n=7', '?v=1&o=fit&a=120&b=36'],
   },
   hints: [
     { key: 'first', site: 'site.calculator.hintFt', describedBy: 'calc-first-hint' },

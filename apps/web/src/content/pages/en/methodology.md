@@ -233,7 +233,7 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 
 <h2 id="feet-and-inches">Feet and inches calculator</h2>
 
-The [feet and inches calculator](/feet-and-inches-calculator) adds or subtracts two lengths in feet, inches and fractions, or multiplies or divides one length by a whole number. Every length is kept as an exact number, and the result is rounded only when it is shown.
+The [feet and inches calculator](/feet-and-inches-calculator) adds or subtracts two lengths in feet, inches and fractions, multiplies or divides one length by a whole number, or says how many pieces of the second length fit in the first. Every length is kept as an exact number, and the result is rounded only when it is shown.
 
 The formulas:
 
@@ -241,18 +241,22 @@ The formulas:
 - Subtract: first − second, or second − first when the second length is the longer, with a note that says so.
 - Multiply: first × number.
 - Divide: first ÷ number.
+- How many fit: first ÷ second gives the pieces, and what is left over is first − pieces × second, where the pieces are the whole part of the quotient. The quotient shows two decimal places, cut and never rounded up, so its whole part is always the number of whole pieces. A second length of zero fits no piece and leaves the whole first length, with a note that says so.
 
-The feet-and-inches figure is rounded to the nearest 1/16 of an inch; the decimal inches show two places and the meters three. A foot is exactly 12 inches and an inch is exactly 0.0254 meters (NIST SP 811, Appendix B). No other constant is involved.
+The feet-and-inches figure (for a fit, the length left over) is rounded to the nearest 1/16 of an inch; the decimal inches show two places and the meters three. A foot is exactly 12 inches and an inch is exactly 0.0254 meters (NIST SP 811, Appendix B). No other constant is involved.
 
 Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
 
-| Case                                                                  | Feet and inches | Inches | Meters |
-| --------------------------------------------------------------------- | --------------- | ------ | ------ |
-| 12 ft 6 in + 3 ft 8 1/4 in (starting values)                          | 16 ft 2 1/4 in  | 194.25 | 4.934  |
-| 12 ft 6 in − 3 ft 8 1/4 in (`?v=1&o=subtract`)                        | 8 ft 9 3/4 in   | 105.75 | 2.686  |
-| 10 ft − 12 ft 6 in, the second longer (`?v=1&o=subtract&a=120&b=150`) | 2 ft 6 in       | 30.00  | 0.762  |
-| 12 ft 6 in × 2 (`?v=1&o=multiply`)                                    | 25 ft           | 300.00 | 7.620  |
-| 12 ft 6 in ÷ 7 (`?v=1&o=divide&n=7`)                                  | 1 ft 9 7/16 in  | 21.43  | 0.544  |
+| Case                                                                     | Feet and inches | Inches | Meters |
+| ------------------------------------------------------------------------ | --------------- | ------ | ------ |
+| 12 ft 6 in + 3 ft 8 1/4 in (starting values)                             | 16 ft 2 1/4 in  | 194.25 | 4.934  |
+| 12 ft 6 in − 3 ft 8 1/4 in (`?v=1&o=subtract`)                           | 8 ft 9 3/4 in   | 105.75 | 2.686  |
+| 10 ft − 12 ft 6 in, the second longer (`?v=1&o=subtract&a=120&b=150`)    | 2 ft 6 in       | 30.00  | 0.762  |
+| 12 ft 6 in × 2 (`?v=1&o=multiply`)                                       | 25 ft           | 300.00 | 7.620  |
+| 12 ft 6 in ÷ 7 (`?v=1&o=divide&n=7`)                                     | 1 ft 9 7/16 in  | 21.43  | 0.544  |
+| 20 ft ÷ 16 in: 15 pieces, what is left (`?v=1&o=fit&a=240&b=16`)         | 0 in            | 0.00   | 0.000  |
+| 20 ft ÷ 7 in: 34 pieces (34.28), what is left (`?v=1&o=fit&a=240&b=7`)   | 2 in            | 2.00   | 0.051  |
+| 12 ft 6 in ÷ 3 ft 8 1/4 in: 3 pieces (3.38), what is left (`?v=1&o=fit`) | 1 ft 5 1/4 in   | 17.25  | 0.438  |
 
 ## Corrections
 

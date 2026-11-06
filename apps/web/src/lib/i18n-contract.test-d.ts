@@ -93,7 +93,10 @@ type FeetInchesPageKeys =
   | 'calc.feet-inches.page.answer.subtract'
   | 'calc.feet-inches.page.answer.longer'
   | 'calc.feet-inches.page.answer.multiply'
-  | 'calc.feet-inches.page.answer.divide';
+  | 'calc.feet-inches.page.answer.divide'
+  | 'calc.feet-inches.page.answer.fit'
+  | 'calc.feet-inches.page.answer.fitOne'
+  | 'calc.feet-inches.page.answer.zeroPiece';
 
 /** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
 type RoofingPageKeys =

@@ -50,6 +50,53 @@ describe('feet and inches page: the answer through the controller (calc-feet-inc
       '12 ft 6 in dividido en 7 partes iguales da 1 ft 9 7/16 in cada una.',
     ],
     ['en', '?v=1&u=m', '3.81 m plus 1.12 m is 4.934 m.'],
+    // calc-feet-inches › [FI7]: 240 / 16 = 15, nothing left; 240 / 7 = 34.2857, 34 pieces, 2 in
+    // left; 150 / 44.25 = 3.3898, 3 pieces, 17.25 in left; 120 / 100 = 1.2, 1 piece, 20 in left;
+    // 120 / 150 = 0.8, none, 120 in left. The quotient is cut, not rounded, to two places.
+    ['en', '?v=1&o=fit&a=240&b=16', '20 ft ÷ 1 ft 4 in = 15: 15 whole pieces and 0 in left over.'],
+    [
+      'es',
+      '?v=1&o=fit&a=240&b=16',
+      '20 ft ÷ 1 ft 4 in = 15: 15 piezas enteras y un sobrante de 0 in.',
+    ],
+    ['en', '?v=1&o=fit&a=240&b=7', '20 ft ÷ 7 in = 34.28: 34 whole pieces and 2 in left over.'],
+    [
+      'en',
+      '?v=1&o=fit',
+      '12 ft 6 in ÷ 3 ft 8 1/4 in = 3.38: 3 whole pieces and 1 ft 5 1/4 in left over.',
+    ],
+    [
+      'en',
+      '?v=1&o=fit&a=120&b=100',
+      '10 ft ÷ 8 ft 4 in = 1.2: 1 whole piece and 1 ft 8 in left over.',
+    ],
+    [
+      'es',
+      '?v=1&o=fit&a=120&b=100',
+      '10 ft ÷ 8 ft 4 in = 1.2: 1 pieza entera y un sobrante de 1 ft 8 in.',
+    ],
+    [
+      'en',
+      '?v=1&o=fit&a=120&b=150',
+      '10 ft ÷ 12 ft 6 in = 0.8: 0 whole pieces and 10 ft left over.',
+    ],
+    ['en', '?v=1&o=fit&b=0', 'Enter a second length above 0 to see how many fit in 12 ft 6 in.'],
+    [
+      'es',
+      '?v=1&o=fit&b=0',
+      'Ingresa una segunda medida mayor que 0 para ver cuántas caben en 12 ft 6 in.',
+    ],
+    [
+      'en',
+      '?v=1&u=m&o=fit&a=240&b=16',
+      '6.10 m ÷ 40.64 cm = 15: 15 whole pieces and 0.000 m left over.',
+    ],
+    // a quotient that rounds up to the next whole is cut: 1199/600 = 1.9983, one piece
+    [
+      'en',
+      '?v=1&o=fit&a=1199&b=600',
+      '99 ft 11 in ÷ 50 ft = 1.99: 1 whole piece and 49 ft 11 in left over.',
+    ],
   ] as const)('says the %s answer of %s', (locale, search, sentence) => {
     expect(viewOf(locale, search).answer).toBe(sentence);
   });
@@ -59,5 +106,11 @@ describe('feet and inches page: the answer through the controller (calc-feet-inc
     expect(view.panel.primary).toMatchObject({ key: 'result', value: '16 ft 2 1/4 in' });
     expect(view.panel.figures).toMatchObject({ resultIn: '194.25', resultM: '4.934' });
     expect(view.panel.shopping).toEqual([]);
+  });
+
+  it('shows what is left of a fit as the figures, and writes no figure of the pieces', () => {
+    const view = viewOf('en', '?v=1&o=fit&a=240&b=7');
+    expect(view.panel.primary).toMatchObject({ key: 'result', value: '2 in' });
+    expect(view.panel.figures).toEqual({ result: '2 in', resultIn: '2.00', resultM: '0.051' });
   });
 });

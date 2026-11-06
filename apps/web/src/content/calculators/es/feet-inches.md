@@ -1,7 +1,7 @@
 ---
 id: feet-inches
 locale: es
-updated: 2026-11-03
+updated: 2026-11-05
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (factores de conversión)
@@ -16,13 +16,13 @@ workedExample:
 
 <h2 id="como-usar">Cómo usar la calculadora de pies y pulgadas</h2>
 
-La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, o multiplica o divide una medida por un número entero. Para pasar un decimal a pies y pulgadas, escríbelo y multiplícalo por 1: 11.65 ft son 11 ft 7 13/16 in. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
+La calculadora hace las cuentas de la cinta métrica: suma o resta dos medidas en pies, pulgadas y fracciones, multiplica o divide una medida por un número entero, o te dice cuántas piezas de una medida caben en otra. Para pasar un decimal a pies y pulgadas, escríbelo y multiplícalo por 1: 11.65 ft son 11 ft 7 13/16 in. El resultado se actualiza mientras escribes, así que no hay nada que enviar.
 
 1. Escribe la primera medida como la lees en la cinta: 12 ft 6 in, 12' 6", 6 1/2 in o 75.5 in. Un número solo se lee en pies.
-2. Elige la operación: Sumar, Restar, Multiplicar o Dividir.
-3. Para sumar o restar, escribe la segunda medida. Para multiplicar o dividir, escribe el número: 3 para triplicar una medida, 4 para cortar una tabla en cuatro partes iguales.
+2. Elige la operación: Sumar, Restar, Multiplicar, Dividir o Cuántas caben.
+3. Para sumar, restar o ver cuántas caben, escribe la segunda medida. Para multiplicar o dividir, escribe el número: 3 para triplicar una medida, 4 para cortar una tabla en cuatro partes iguales.
 
-El resultado empieza con pies, pulgadas y la fracción al 1/16 de pulgada más cercano, la marca que ves en la cinta. También muestra el resultado en pulgadas con decimales y en metros. Si restas una medida más larga de una más corta, la calculadora da la diferencia y dice cuál es la más larga.
+El resultado empieza con pies, pulgadas y la fracción al 1/16 de pulgada más cercano, la marca que ves en la cinta. También muestra el resultado en pulgadas con decimales y en metros. Si restas una medida más larga de una más corta, la calculadora da la diferencia y dice cuál es la más larga. Cuántas caben responde con las piezas enteras y el cociente, y las cifras muestran el sobrante.
 
 Para trabajar en métrico, toca Métrico (m, cm). Las medidas se leen entonces en metros y el resultado empieza con metros. Cambiar de unidades nunca cambia tus números, solo cómo se escriben. Usa Copiar enlace para mandar tus números exactos a un socio o a un cliente, y el enlace English para abrir los mismos números en inglés.
 
@@ -34,6 +34,7 @@ La calculadora pasa cada medida a pulgadas, hace la operación exacta y escribe 
 - Restar: primera − segunda; si la segunda es más larga, segunda − primera.
 - Multiplicar: primera × número.
 - Dividir: primera ÷ número.
+- Cuántas caben: primera ÷ segunda; las piezas enteras son su parte entera, y el sobrante es primera − piezas × segunda.
 - Pies y pulgadas: pies enteros = pulgadas ÷ 12, redondeado hacia abajo; el resto queda en pulgadas, redondeado al 1/16 de pulgada más cercano.
 
 Ejemplo resuelto: suma 3 ft 8 1/4 in a 12 ft 6 in.
@@ -103,9 +104,9 @@ Divide las pulgadas por 12. 7 in son 7 ÷ 12 = 0.583 ft, y 5 ft 7 in son 5.583 f
 
 Doce. Un pie son exactamente 12 pulgadas, y una pulgada son exactamente 2.54 centímetros.
 
-### ¿Puedo usar metros?
+### ¿Cuántas piezas de 16 pulgadas caben en 20 pies?
 
-Sí. Toca Métrico (m, cm) y escribe las medidas en metros. El resultado empieza con metros. Cambiar de unidades nunca cambia tus números, solo cómo se escriben.
+Quince. Elige Cuántas caben y escribe 20 ft y 16 in: 20 ft son 240 pulgadas, y 240 ÷ 16 = 15, así que caben 15 piezas enteras sin sobrante. Con piezas de 7 pulgadas, 240 ÷ 7 = 34.28: 34 piezas enteras y un sobrante de 2 pulgadas. Deja lugar para la hoja de la sierra: cada corte se lleva cerca de 1/8 de pulgada.
 
 <h2 id="fuentes">Fuentes y fecha de revisión</h2>
 

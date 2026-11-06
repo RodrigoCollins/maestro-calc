@@ -5,18 +5,24 @@ import { choiceSlot } from '../slots/choices.ts';
 import { FRAME, MESSAGES, planOf } from './plan.ts';
 import { answerCase, answerValues } from './present.ts';
 
-/** The feet and inches page: the operation drives the second field, the answer reads the sum, the bars draw it. Language-free. */
+/** The feet and inches page: the operation drives the second field, the answer reads the result (the pieces of a fit), the bars draw it. Language-free. */
 export const feetInchesPage: PageModule<typeof feetInches> = definePage({
   calculator: feetInches,
   primary: { imperial: 'result', metric: 'resultM' },
   choices: choiceSlot(feetInches, [
     {
       select: 'operation',
-      shows: { add: ['second'], subtract: ['second'], multiply: ['factor'], divide: ['factor'] },
+      shows: {
+        add: ['second'],
+        subtract: ['second'],
+        multiply: ['factor'],
+        divide: ['factor'],
+        fit: ['second'],
+      },
     },
   ]),
   answer: answerSlot(feetInches, {
-    cases: ['add', 'subtract', 'longer', 'multiply', 'divide'],
+    cases: ['add', 'subtract', 'longer', 'multiply', 'divide', 'fit', 'fitOne', 'zeroPiece'],
     pick: answerCase,
     values: answerValues,
   }),

@@ -1,7 +1,7 @@
 ---
 id: feet-inches
 locale: en
-updated: 2026-11-03
+updated: 2026-11-05
 ownerReview: approved
 sources:
   - name: NIST SP 811, Appendix B (conversion factors)
@@ -16,13 +16,13 @@ workedExample:
 
 <h2 id="how-to-use">How to use the feet and inches calculator</h2>
 
-The calculator does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, or multiplies or divides one length by a whole number. To turn a decimal into feet and inches, type it and multiply it by 1: 11.65 ft is 11 ft 7 13/16 in. The result updates as you type, so there is nothing to submit.
+The calculator does tape-measure math: it adds or subtracts two lengths in feet, inches and fractions, multiplies or divides one length by a whole number, or tells you how many pieces of one length fit in another. To turn a decimal into feet and inches, type it and multiply it by 1: 11.65 ft is 11 ft 7 13/16 in. The result updates as you type, so there is nothing to submit.
 
 1. Type the first length the way you read it on the tape: 12 ft 6 in, 12' 6", 6 1/2 in or 75.5 in. A plain number is read in feet.
-2. Choose the operation: Add, Subtract, Multiply or Divide.
-3. To add or subtract, type the second length. To multiply or divide, type the number: 3 to triple a length, 4 to cut a board into four equal pieces.
+2. Choose the operation: Add, Subtract, Multiply, Divide or How many fit.
+3. To add, subtract or see how many fit, type the second length. To multiply or divide, type the number: 3 to triple a length, 4 to cut a board into four equal pieces.
 
-The result leads with feet, inches and the fraction to the nearest 1/16 of an inch, the mark you find on a tape. It also shows the result in decimal inches and in meters. When you subtract a longer length from a shorter one, the calculator gives the difference and says which length is longer.
+The result leads with feet, inches and the fraction to the nearest 1/16 of an inch, the mark you find on a tape. It also shows the result in decimal inches and in meters. When you subtract a longer length from a shorter one, the calculator gives the difference and says which length is longer. How many fit answers with the whole pieces and the quotient, and the figures show the length left over.
 
 To work in metric, press Metric (m, cm). Lengths are then read in meters, and the result leads with meters. Switching units never changes your numbers, only how they are written. Use Copy link to send your exact numbers to a partner or a client, and the Español link to open the same numbers in Spanish.
 
@@ -34,6 +34,7 @@ The calculator turns every length into inches, does the operation exactly, and w
 - Subtract: first − second; when the second length is longer, second − first.
 - Multiply: first × number.
 - Divide: first ÷ number.
+- How many fit: first ÷ second; the whole pieces are its whole part, and the length left over is first − pieces × second.
 - Feet and inches: whole feet = inches ÷ 12, rounded down; the rest stays in inches, rounded to the nearest 1/16 of an inch.
 
 Worked example: add 3 ft 8 1/4 in to 12 ft 6 in.
@@ -103,9 +104,9 @@ Divide the inches by 12. 7 in is 7 ÷ 12 = 0.583 ft, and 5 ft 7 in is 5.583 ft. 
 
 Twelve. A foot is exactly 12 inches, and an inch is exactly 2.54 centimeters.
 
-### Can I use meters?
+### How many 16-inch pieces fit in 20 feet?
 
-Yes. Press Metric (m, cm), then type the lengths in meters. The result leads with meters. Switching units never changes your numbers, only how they are written.
+Fifteen. Choose How many fit, type 20 ft and 16 in: 20 ft is 240 inches, and 240 ÷ 16 = 15, so 15 whole pieces with nothing left over. With 7-inch pieces, 240 ÷ 7 = 34.28: 34 whole pieces and 2 inches left over. Leave room for the saw blade: each cut takes about 1/8 of an inch.
 
 <h2 id="sources">Sources and review date</h2>
 

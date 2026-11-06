@@ -233,7 +233,7 @@ Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calc
 
 <h2 id="pies-y-pulgadas">Calculadora de pies y pulgadas</h2>
 
-La [calculadora de pies y pulgadas](/es/calculadora-de-pies-y-pulgadas) suma o resta dos medidas en pies, pulgadas y fracciones, o multiplica o divide una medida por un número entero. Cada medida se guarda como un número exacto, y el resultado se redondea solo al mostrarlo.
+La [calculadora de pies y pulgadas](/es/calculadora-de-pies-y-pulgadas) suma o resta dos medidas en pies, pulgadas y fracciones, multiplica o divide una medida por un número entero, o dice cuántas piezas de la segunda medida caben en la primera. Cada medida se guarda como un número exacto, y el resultado se redondea solo al mostrarlo.
 
 Las fórmulas:
 
@@ -241,8 +241,9 @@ Las fórmulas:
 - Restar: primera − segunda, o segunda − primera cuando la segunda es más larga, con una nota que lo dice.
 - Multiplicar: primera × número.
 - Dividir: primera ÷ número.
+- Cuántas caben: primera ÷ segunda da las piezas, y el sobrante es primera − piezas × segunda, donde las piezas son la parte entera del cociente. El cociente muestra dos decimales, truncado: nunca se redondea hacia arriba, así que su parte entera siempre es el número de piezas enteras. Una segunda medida de cero no cabe como pieza y deja la primera medida entera, con una nota que lo dice.
 
-La cifra en pies y pulgadas se redondea al 1/16 de pulgada más cercano; las pulgadas con decimales muestran dos decimales y los metros tres. Un pie son exactamente 12 pulgadas y una pulgada son exactamente 0.0254 metros (NIST SP 811, Apéndice B). No interviene ninguna otra constante.
+La cifra en pies y pulgadas (en Cuántas caben, el sobrante) se redondea al 1/16 de pulgada más cercano; las pulgadas con decimales muestran dos decimales y los metros tres. Un pie son exactamente 12 pulgadas y una pulgada son exactamente 0.0254 metros (NIST SP 811, Apéndice B). No interviene ninguna otra constante.
 
 Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calculadora y comparan cada cifra de abajo con el resultado.
 
@@ -253,6 +254,9 @@ Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calc
 | 10 ft − 12 ft 6 in, la segunda más larga (`?v=1&o=subtract&a=120&b=150`) | 2 ft 6 in       | 30.00    | 0.762  |
 | 12 ft 6 in × 2 (`?v=1&o=multiply`)                                       | 25 ft           | 300.00   | 7.620  |
 | 12 ft 6 in ÷ 7 (`?v=1&o=divide&n=7`)                                     | 1 ft 9 7/16 in  | 21.43    | 0.544  |
+| 20 ft ÷ 16 in: 15 piezas, el sobrante (`?v=1&o=fit&a=240&b=16`)          | 0 in            | 0.00     | 0.000  |
+| 20 ft ÷ 7 in: 34 piezas (34.28), el sobrante (`?v=1&o=fit&a=240&b=7`)    | 2 in            | 2.00     | 0.051  |
+| 12 ft 6 in ÷ 3 ft 8 1/4 in: 3 piezas (3.38), el sobrante (`?v=1&o=fit`)  | 1 ft 5 1/4 in   | 17.25    | 0.438  |
 
 ## Correcciones
 

@@ -472,12 +472,30 @@ export const METHODOLOGY_ROWS = {
       es: '[calculadora de pies y pulgadas](/es/calculadora-de-pies-y-pulgadas)',
     },
     formulas: {
-      en: ['first + second', 'first − second', 'first × number', 'first ÷ number'],
-      es: ['primera + segunda', 'primera − segunda', 'primera × número', 'primera ÷ número'],
+      en: [
+        'first + second',
+        'first − second',
+        'first × number',
+        'first ÷ number',
+        'first ÷ second',
+        'first − pieces × second',
+      ],
+      es: [
+        'primera + segunda',
+        'primera − segunda',
+        'primera × número',
+        'primera ÷ número',
+        'primera ÷ segunda',
+        'primera − piezas × segunda',
+      ],
     },
     honesty: {
-      en: [/nearest 1\/16 of an inch/, /exactly 0\.0254 meters/],
-      es: [/1\/16 de pulgada más cercano/, /exactamente 0\.0254 metros/],
+      en: [/nearest 1\/16 of an inch/, /exactly 0\.0254 meters/, /never rounded up/],
+      es: [
+        /1\/16 de pulgada más cercano/,
+        /exactamente 0\.0254 metros/,
+        /nunca se redondea hacia arriba/,
+      ],
     },
     columns: ['result', 'resultIn', 'resultM'],
     figuresOf: (shown) => [
@@ -491,6 +509,9 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&o=subtract&a=120&b=150', figures: ['2 ft 6 in', '30.00', '0.762'] },
       { query: '?v=1&o=multiply', figures: ['25 ft', '300.00', '7.620'] },
       { query: '?v=1&o=divide&n=7', figures: ['1 ft 9 7/16 in', '21.43', '0.544'] },
+      { query: '?v=1&o=fit&a=240&b=16', figures: ['0 in', '0.00', '0.000'] },
+      { query: '?v=1&o=fit&a=240&b=7', figures: ['2 in', '2.00', '0.051'] },
+      { query: '?v=1&o=fit', figures: ['1 ft 5 1/4 in', '17.25', '0.438'] },
     ],
   },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

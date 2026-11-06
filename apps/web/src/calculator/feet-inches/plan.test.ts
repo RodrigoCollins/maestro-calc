@@ -90,6 +90,32 @@ describe('the feet and inches plan (blueprint-drawing, calc-feet-inches)', () =>
     expect(planOf(momentOf({ operation: 'divide', factor: '17' }))?.lines).toEqual([]);
   });
 
+  // calc-feet-inches › [FI7]: 10 ft ÷ 3 ft is 3 pieces of 36 in and 12 in left over
+  it('draws a fit as the length cut into pieces of the second, the piece and what is left', () => {
+    const plan = planOf(momentOf({ operation: 'fit', first: '10', second: '3' }));
+    expect(texts(plan)).toEqual(['10 ft', '3 ft', '1 ft']);
+    // 36 / 120 × 288 = 86.4 a piece, 12 / 120 × 288 = 28.8 left
+    expect(widths(plan)).toEqual([288, 86.4, 28.8]);
+    // a cut after each whole piece, 6 + 86.4 k for k = 1, 2, 3, on the first bar
+    expect(plan?.lines).toEqual([
+      { d: 'M92.4 50.4L92.4 66.4M178.8 50.4L178.8 66.4M265.2 50.4L265.2 66.4', tone: 'tick' },
+    ]);
+  });
+
+  it('cuts no fit at the end of an exact length, nor into more than 16 pieces', () => {
+    // 20 ft ÷ 16 in: 15 pieces, nothing left, so 14 cuts
+    const exact = planOf(momentOf({ operation: 'fit', first: '20', second: '16 in' }));
+    expect(exact?.lines[0]?.d.match(/M/g)).toHaveLength(14);
+    expect(widths(exact)?.[2]).toBe(0);
+    expect(planOf(momentOf({ operation: 'fit', first: '20', second: '1 in' }))?.lines).toEqual([]);
+  });
+
+  it('draws a fit of a zero piece as the whole length left, with no cut', () => {
+    const plan = planOf(momentOf({ operation: 'fit', second: '0' }));
+    expect(texts(plan)).toEqual(['12 ft 6 in', '0 in', '12 ft 6 in']);
+    expect(plan?.lines).toEqual([]);
+  });
+
   it('draws nothing when every length is zero', () => {
     expect(planOf(momentOf({ first: '0', second: '0' }))).toBeNull();
   });
