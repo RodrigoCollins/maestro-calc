@@ -1,8 +1,8 @@
 import {
   cm,
-  findUnit,
-  formatFeetInches,
+  feetInchesParts,
   inch,
+  inchesText,
   isQuantity,
   isQuantityOf,
   m,
@@ -22,6 +22,7 @@ import {
   type Unit,
   type UnitSystem,
 } from '@maestro-calc/core';
+import { displayUnitOf } from './display-units.ts';
 
 /*
  * The text of every number a calculator page shows. Pure and language-free: `,` groups thousands
@@ -94,13 +95,6 @@ const placesOf = (denominator: bigint): number | undefined => {
   return rest === 1n && places <= MAX_PLACES ? places : undefined;
 };
 
-/** `3 1/2`, `1/2` or `3`: whole inches with a reduced fraction. */
-const inchesPart = (whole: bigint, numerator: bigint, denominator: bigint): string => {
-  if (numerator === 0n) return String(whole);
-  const fraction = `${String(numerator)}/${String(denominator)}`;
-  return whole === 0n ? fraction : `${String(whole)} ${fraction}`;
-};
-
 interface UsStyle {
   /** Total inches even above a foot (`16 in`), as a field with an inch unit shows them. */
   readonly inchesOnly: boolean;
@@ -110,8 +104,8 @@ interface UsStyle {
 
 /** A length as feet, inches and a fraction rounded to the nearest `1/denominator` of an inch. */
 const usText = (length: Length, denominator: number, { inchesOnly, grouped }: UsStyle): string => {
-  const { feet, inches, fraction } = formatFeetInches(length, { denominator }).parts;
-  const rest = (whole: bigint) => inchesPart(whole, fraction.numerator, fraction.denominator);
+  const { feet, inches, fraction } = feetInchesParts(length, { denominator });
+  const rest = (whole: bigint) => inchesText(whole, fraction.numerator, fraction.denominator);
   if (inchesOnly || feet === 0n) return `${rest(feet * 12n + inches)} in`;
   const feetText = `${grouped ? groupedInteger(feet) : String(feet)} ft`;
   return inches === 0n && fraction.numerator === 0n ? feetText : `${feetText} ${rest(inches)} in`;
@@ -240,7 +234,7 @@ export const outputText = (
     return usText(value, display.denominator, { inchesOnly: display.unit === 'in', grouped: true });
   }
   if (display?.format !== 'decimal') throw new TypeError(`${key} has no decimal hint`);
-  const unit = findUnit(measure, display.unit);
+  const unit = displayUnitOf(measure, display.unit);
   if (unit === undefined) throw new TypeError(`${key} has no unit ${display.unit}`);
   return decimalText(valueIn(value, unit), display.places, true);
 };

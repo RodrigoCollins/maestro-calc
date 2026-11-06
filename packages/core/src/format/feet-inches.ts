@@ -27,7 +27,8 @@ export interface FeetInches {
   readonly text: string;
 }
 
-const inchesText = (whole: bigint, numerator: bigint, denominator: bigint): string => {
+/** Whole inches and a reduced fraction of an inch: `3 1/2`, `1/2` or `3`. */
+export const inchesText = (whole: bigint, numerator: bigint, denominator: bigint): string => {
   if (numerator === 0n) return String(whole);
   const fraction = `${String(numerator)}/${String(denominator)}`;
   return whole === 0n ? fraction : `${String(whole)} ${fraction}`;
@@ -38,12 +39,13 @@ const inchesText = (whole: bigint, numerator: bigint, denominator: bigint): stri
  * then splits the rounded total into feet, inches and a reduced fraction. Rounding comes first,
  * so a carry across an inch or a foot is correct by construction. Throws `INVALID_DENOMINATOR`
  * for a denominator outside 2..64, `INVALID_MODE` for an unknown `mode` and `DIMENSION_MISMATCH`
- * for a quantity that is not a length (untyped callers).
+ * for a quantity that is not a length (untyped callers). The parts alone, for a caller that writes
+ * its own text (a page script then carries no canonical text it never shows).
  */
-export const formatFeetInches = (
+export const feetInchesParts = (
   length: Quantity<'length'>,
   { denominator, mode = 'nearest' }: FeetInchesOptions,
-): FeetInches => {
+): FeetInchesParts => {
   const ticks = roundToFraction(valueIn(length, inch), denominator, mode);
   const negative = ticks < 0n;
   const magnitude = negative ? -ticks : ticks;
@@ -51,12 +53,21 @@ export const formatFeetInches = (
   const wholeInches = magnitude / perInch;
   // Rational reduces the leftover ticks, and a zero fraction comes out as 0/1.
   const fraction = Rational.of(magnitude % perInch, perInch);
-  const parts: FeetInchesParts = {
+  return {
     negative,
     feet: wholeInches / INCHES_PER_FOOT,
     inches: wholeInches % INCHES_PER_FOOT,
     fraction: { numerator: fraction.num, denominator: fraction.den },
   };
-  const body = inchesText(parts.inches, fraction.num, fraction.den);
-  return { parts, text: `${negative ? '-' : ''}${String(parts.feet)}' ${body}"` };
+};
+
+/** `feetInchesParts` with the canonical text, for example `5' 3 1/2"`. */
+export const formatFeetInches = (
+  length: Quantity<'length'>,
+  options: FeetInchesOptions,
+): FeetInches => {
+  const parts = feetInchesParts(length, options);
+  const { numerator, denominator } = parts.fraction;
+  const body = inchesText(parts.inches, numerator, denominator);
+  return { parts, text: `${parts.negative ? '-' : ''}${String(parts.feet)}' ${body}"` };
 };

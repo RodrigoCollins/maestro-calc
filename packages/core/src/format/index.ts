@@ -1,6 +1,8 @@
 export { toDecimalParts, type DecimalParts } from './decimal-parts.ts';
 export {
+  feetInchesParts,
   formatFeetInches,
+  inchesText,
   type FeetInches,
   type FeetInchesOptions,
   type FeetInchesParts,
