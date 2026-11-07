@@ -17,6 +17,12 @@ export const esSite = {
   'site.footer.glossary': 'Glosario de obra',
   'site.footer.guides': 'Todas las guías',
   'site.footer.charts': 'Datos y tablas',
+  'site.footer.editorial-policy': 'Política editorial',
+  'site.byline.by': 'Por',
+  'site.byline.team': 'el equipo editorial de Maestro Calc',
+  'site.byline.reviewed': 'Revisado el',
+  'site.byline.sources': 'Fuentes',
+  'site.editorial.sources': 'Todas las fuentes que citan nuestras calculadoras',
   'site.glossary.term': 'Español',
   'site.glossary.other': 'Inglés',
   'site.glossary.definition': 'Qué significa',
@@ -176,6 +182,9 @@ export const esSite = {
   'page.about.title': 'Sobre nosotros | Maestro Calc',
   'page.about.description':
     'Quién escribe Maestro Calc, cómo usamos la IA y cómo avisarnos de un error. Nuestra política editorial, en lenguaje claro.',
+  'page.editorial-policy.title': 'Política editorial | Maestro Calc',
+  'page.editorial-policy.description':
+    'Quién hace Maestro Calc, de dónde sale cada número, cómo probamos las cifras, cuándo revisamos las páginas y cómo avisarnos de un error.',
   'page.privacy.title': 'Privacidad | Maestro Calc',
   'page.privacy.description':
     'Qué recopila Maestro Calc y qué no: sin cookies, sin analítica, sin publicidad y sin cuentas. El sitio se aloja en Cloudflare.',

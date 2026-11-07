@@ -1,7 +1,7 @@
 ---
 id: about
 locale: en
-updated: 2026-10-23
+updated: 2026-11-06
 ownerReview: approved
 ---
 
@@ -13,13 +13,13 @@ Everything on this site comes from the Maestro Calc Editorial Team. We do not pu
 
 <h2 id="editorial-policy">Editorial policy</h2>
 
-Each policy and methodology page says when it was last updated. We present estimates as estimates. The [methodology page](/methodology) explains how each number is worked out. The site has no advertising or sponsors today, so nothing here is shaped by one.
+Each policy and methodology page says when it was last updated. We present estimates as estimates. The [methodology page](/methodology) explains how each number is worked out, and our [editorial policy](/editorial-policy) says where the numbers come from, how we check them and when we review them. The site has no advertising or sponsors today, so nothing here is shaped by one.
 
 <!-- Raw h2 elements keep each section anchor stable if a heading is reworded. -->
 
 <h2 id="ai-use">How we use AI</h2>
 
-Our content is AI-assisted and verified by people. We use AI tools to help write text and code. People review the text, every formula is tested against cases checked by hand, and each calculator page will cite its sources.
+Our content is AI-assisted and verified by people. We use AI tools to help write text and code. People review the text, every formula is tested against cases checked by hand, and each calculator page cites its sources.
 
 <h2 id="corrections">Corrections</h2>
 

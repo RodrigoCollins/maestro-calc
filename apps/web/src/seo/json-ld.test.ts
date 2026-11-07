@@ -111,16 +111,19 @@ describe('job page structured data (growth › job pages builder side)', () => {
         '@id': 'https://maestrocalc.com/#organization',
         name: 'Maestro Calc',
         url: 'https://maestrocalc.com',
+        publishingPrinciples: 'https://maestrocalc.com/editorial-policy',
       },
     });
   });
 });
 
+// The organization signs every page; its publishing principles are the editorial policy.
 const organization = {
   '@type': 'Organization',
   '@id': 'https://maestrocalc.com/#organization',
   name: 'Maestro Calc',
   url: 'https://maestrocalc.com',
+  publishingPrinciples: 'https://maestrocalc.com/editorial-policy',
 };
 
 describe('structured data (site-seo › Structured data)', () => {
@@ -302,7 +305,7 @@ describe('calculator structured data (site-seo › [SE19], [SE20] builder side)'
           url: 'https://maestrocalc.com/es/guias/como-medir-la-pendiente-de-un-techo',
           inLanguage: 'es-US',
           dateModified: '2026-11-01',
-          author: { '@id': 'https://maestrocalc.com/#organization' },
+          author: organization,
           publisher: organization,
         },
         {

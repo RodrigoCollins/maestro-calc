@@ -7,11 +7,23 @@ import { SITE } from '../site.config.ts';
 
 const ORGANIZATION_ID = `${SITE.url}/#organization`;
 
+/**
+ * The organization that writes, publishes and creates every page: the site itself, never a person.
+ * Its publishing principles are the English editorial policy (one organization, one address).
+ */
+const ORGANIZATION = {
+  '@type': 'Organization',
+  '@id': ORGANIZATION_ID,
+  name: SITE.name,
+  url: SITE.url,
+  publishingPrinciples: urlOf(pathOf('editorial-policy', 'en')),
+} as const;
+
 /** The `@graph` of a home page: the organization and the website in that locale. */
 export const homeJsonLd = (locale: Locale) => ({
   '@context': 'https://schema.org',
   '@graph': [
-    { '@type': 'Organization', '@id': ORGANIZATION_ID, name: SITE.name, url: SITE.url },
+    ORGANIZATION,
     {
       '@type': 'WebSite',
       name: SITE.name,
@@ -115,13 +127,8 @@ export const guideJsonLd = (
         url: canonical,
         inLanguage: LOCALE_TAGS[locale],
         dateModified: updated,
-        author: { '@id': ORGANIZATION_ID },
-        publisher: {
-          '@type': 'Organization',
-          '@id': ORGANIZATION_ID,
-          name: SITE.name,
-          url: SITE.url,
-        },
+        author: ORGANIZATION,
+        publisher: ORGANIZATION,
       },
       breadcrumbOf(name, canonical, locale, routes),
     ],
@@ -153,7 +160,7 @@ export const collectionJsonLd = (
   description,
   url: urlOf(pathOf(id, locale, routes)),
   inLanguage: LOCALE_TAGS[locale],
-  publisher: { '@type': 'Organization', '@id': ORGANIZATION_ID, name: SITE.name, url: SITE.url },
+  publisher: ORGANIZATION,
   mainEntity: {
     '@type': 'ItemList',
     itemListElement: items.map((item, index) => ({
@@ -213,12 +220,7 @@ export const jobJsonLd = (
               dateModified: dataset.updated,
               isAccessibleForFree: true,
               isBasedOn: dataset.basedOn,
-              creator: {
-                '@type': 'Organization',
-                '@id': ORGANIZATION_ID,
-                name: SITE.name,
-                url: SITE.url,
-              },
+              creator: ORGANIZATION,
             },
           ]),
     ],

@@ -2,6 +2,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { getEntry, render } from 'astro:content';
 import Breadcrumb from '../components/calculator/Breadcrumb.astro';
+import Byline from '../components/Byline.astro';
 import { headingOf } from '../content/heading.ts';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { siteText } from '../lib/site-text.ts';
@@ -12,6 +13,7 @@ import type { PageId } from '../routing/routes.ts';
 import { headFor } from '../seo/head.ts';
 import { collectionJsonLd, guideJsonLd, serializeJsonLd } from '../seo/json-ld.ts';
 import { chartCards } from '../lib/charts-index.ts';
+import { bylineOf, calculatorSourcesHref } from '../lib/byline.ts';
 
 interface Props {
   /** A route id with Markdown copy: every id of the table except `home`. */
@@ -42,6 +44,16 @@ const breadcrumb = {
 const calculator = guideOf(id)?.calculator;
 const hub =
   calculator === undefined || calculator === null ? undefined : hubOfCalculator(calculator);
+// A guide is signed by the editorial team, on the day of its entry, with its calculator's sources.
+const byline = guide
+  ? bylineOf(
+      locale,
+      updated,
+      calculator === undefined || calculator === null
+        ? undefined
+        : calculatorSourcesHref(calculator, locale),
+    )
+  : undefined;
 const minutes = Math.max(1, Math.round((entry.body ?? '').split(/\s+/).length / 200));
 const sections = guide ? headings.filter(({ depth }) => depth === 2) : [];
 const head = headFor(id, locale, text);
@@ -104,11 +116,14 @@ const jsonLd = guide
           </span>
         </p>
       )}
+      {byline !== undefined && <Byline {byline} />}
       <Content />
       <slot />
-      <p class="updated">
-        {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
-      </p>
+      {byline === undefined && (
+        <p class="updated">
+          {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
+        </p>
+      )}
     </article>
   </div>
 </BaseLayout>

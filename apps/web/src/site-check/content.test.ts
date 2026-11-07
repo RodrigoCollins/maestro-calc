@@ -289,16 +289,16 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
       'a logo',
       (json: string) =>
         json.replace(
-          '"name":"Maestro Calc","url":"https://maestrocalc.com"}',
-          '"name":"Maestro Calc","url":"https://maestrocalc.com","logo":"x"}',
+          '"name":"Maestro Calc","url":"https://maestrocalc.com",',
+          '"name":"Maestro Calc","url":"https://maestrocalc.com","logo":"x",',
         ),
     ],
     [
       'an image',
       (json: string) =>
         json.replace(
-          '"name":"Maestro Calc","url":"https://maestrocalc.com"}',
-          '"name":"Maestro Calc","url":"https://maestrocalc.com","image":"x"}',
+          '"name":"Maestro Calc","url":"https://maestrocalc.com",',
+          '"name":"Maestro Calc","url":"https://maestrocalc.com","image":"x",',
         ),
     ],
     [
@@ -312,7 +312,7 @@ describe('structured data (site-seo › [SE6], [SE7], [SE8])', () => {
     [
       'the wrong organization url',
       (json: string) =>
-        json.replace('"url":"https://maestrocalc.com"}', '"url":"https://example.com"}'),
+        json.replace('"url":"https://maestrocalc.com",', '"url":"https://example.com",'),
     ],
     [
       'the wrong website url',

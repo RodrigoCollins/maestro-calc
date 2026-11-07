@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { readEntries } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
 import { renderComponent } from '../__testing__/render-component.ts';
+import { calculatorSourcesHref } from '../lib/byline.ts';
 import { chartCards } from '../lib/charts-index.ts';
+import { GUIDES } from '../routing/guides.ts';
+import type { GuideId } from '../routing/guides.ts';
 import { LOCALE_TAGS, LOCALES, ROUTES, urlOf, pathOf } from '../routing/routes.ts';
 import type { PageId } from '../routing/routes.ts';
 import { templateOf } from '../routing/templates.ts';
@@ -111,6 +114,31 @@ describe('TrustPageView guide header and index (guides)', () => {
     ).toEqual(ids);
     const about = await render({ id: 'about', locale: 'en' });
     expect(about.querySelector('.guide-toc, .guide-kicker')).toBeNull();
+  });
+});
+
+// editorial policy: a guide is signed by the editorial team, with its review day and its sources
+describe('TrustPageView guide byline (editorial policy)', () => {
+  const guides = (Object.keys(GUIDES) as GuideId[]).flatMap((id) =>
+    LOCALES.map((locale) => ({ id, locale })),
+  );
+
+  it.each(guides)('signs $id in $locale with the team, the day and the sources', async (page) => {
+    const document = await render(page);
+    const byline = document.querySelector('main .byline');
+    const links = byline?.querySelectorAll('a').map((link) => link.getAttribute('href')) ?? [];
+    const { calculator } = GUIDES[page.id];
+    expect(links).toEqual([
+      pathOf('editorial-policy', page.locale),
+      ...(calculator === null ? [] : [calculatorSourcesHref(calculator, page.locale)]),
+    ]);
+    expect(byline?.querySelector('time')?.getAttribute('datetime')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(byline?.text).toContain(page.locale === 'en' ? 'editorial team' : 'equipo editorial');
+  });
+
+  it('signs no page that is not a guide', async () => {
+    const about = await render({ id: 'about', locale: 'en' });
+    expect(about.querySelector('.byline')).toBeNull();
   });
 });
 

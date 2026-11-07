@@ -225,9 +225,9 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
   );
 
   it.each([
-    ['en', /will cite its sources/],
-    ['es', /citará sus fuentes/],
-  ] as const)('says in %s that sources will appear on calculator pages', (locale, future) => {
+    ['en', /cites its sources/],
+    ['es', /cita sus fuentes/],
+  ] as const)('says in %s that each calculator page cites its sources', (locale, future) => {
     expect(sectionOf(bodyOf(`${locale}/about.md`), anchors[locale][1])).toMatch(future);
   });
 
@@ -247,6 +247,69 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
     expect(sectionOf(body, 'a')).not.toContain('beta');
     expect(sectionOf(body, 'b')).toContain('beta');
     expect(sectionOf(body, 'zz')).toBe('');
+  });
+});
+
+describe('editorial policy (trust-pages, E-E-A-T)', () => {
+  const anchors = {
+    en: ['who-we-are', 'sources', 'checks', 'reviews', 'corrections', 'no-advice'],
+    es: ['quienes-somos', 'fuentes', 'verificacion', 'revisiones', 'correcciones', 'sin-asesoria'],
+  } as const;
+  const team = {
+    en: 'Maestro Calc editorial team',
+    es: 'Equipo editorial de Maestro Calc',
+  } as const;
+  const policy = (locale: (typeof LOCALES)[number]): string =>
+    bodyOf(`${locale}/editorial-policy.md`);
+
+  it.each(LOCALES)('anchors its six sections once each, in order, in %s', (locale) => {
+    expect(h2Ids(policy(locale))).toEqual(anchors[locale]);
+  });
+
+  it.each(LOCALES)(
+    'signs as the editorial team, with no person or structured data, in %s',
+    (locale) => {
+      const body = policy(locale);
+      expect(body).toContain(team[locale]);
+      expect(present(body, ['ld+json', '"@type"', '@context', 'Rodrigo', 'Collins'])).toEqual([]);
+    },
+  );
+
+  it.each([
+    ['en', /not contractors, engineers or building inspectors/],
+    ['es', /No somos contratistas, ingenieros ni inspectores de obra/],
+  ] as const)('claims no credential it does not hold in %s', (locale, disclaimer) => {
+    expect(sectionOf(policy(locale), anchors[locale][0])).toMatch(disclaimer);
+  });
+
+  it.each(LOCALES)('names the kinds of source and links the methodology in %s', (locale) => {
+    const sources = sectionOf(policy(locale), anchors[locale][1]);
+    expect(present(sources, ['NIST SP 811', 'International Residential Code'])).toHaveLength(2);
+    expect(sectionOf(policy(locale), anchors[locale][2])).toContain(
+      `](${pathOf('methodology', locale)})`,
+    );
+  });
+
+  it.each(LOCALES)(
+    'gives the address to report an error and the corrections log in %s',
+    (locale) => {
+      const section = sectionOf(policy(locale), anchors[locale][4]);
+      expect(section).toContain(SITE.contactEmail);
+      expect(section).toContain(
+        `](${pathOf('about', locale)}#${locale === 'en' ? 'corrections' : 'correcciones'})`,
+      );
+    },
+  );
+
+  it.each([
+    ['en', /not professional advice/],
+    ['es', /no es asesoría profesional/],
+  ] as const)('says the figures are not advice in %s', (locale, advice) => {
+    expect(sectionOf(policy(locale), anchors[locale][5])).toMatch(advice);
+  });
+
+  it.each(LOCALES)('is linked from the about page in %s', (locale) => {
+    expect(bodyOf(`${locale}/about.md`)).toContain(`](${pathOf('editorial-policy', locale)})`);
   });
 });
 

@@ -1,0 +1,23 @@
+---
+import type { Byline } from '../lib/byline.ts';
+
+/** The byline of a guide or a chart: the editorial team, the review day and the sources. */
+interface Props {
+  byline: Byline;
+}
+const { by, team, teamHref, reviewed, updated, shown, sources } = Astro.props.byline;
+// Its one rule is global, not scoped, so no element of the line carries an extra class.
+---
+
+<p class="byline">
+  {by} <a href={teamHref}>{team}</a> · {reviewed} <time datetime={updated}>{shown}</time>
+  {sources !== undefined && ' · '}
+  {sources !== undefined && <a href={sources.href}>{sources.label}</a>}
+</p>
+
+<style is:global>
+  .byline {
+    color: var(--color-text-secondary);
+    font-size: var(--text-small);
+  }
+</style>

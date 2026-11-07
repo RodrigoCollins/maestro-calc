@@ -1,9 +1,11 @@
 ---
 import type { Locale } from '@maestro-calc/i18n';
 import Breadcrumb from '../components/calculator/Breadcrumb.astro';
+import Byline from '../components/Byline.astro';
 import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { jobView } from '../lib/job-view.ts';
+import { bylineOf, calculatorSourcesHref, CHART_SOURCES_ID } from '../lib/byline.ts';
 import { calendarDay } from '../lib/calendar-day.ts';
 import { siteText } from '../lib/site-text.ts';
 import { JOBS, type JobId } from '../routing/jobs.ts';
@@ -28,8 +30,13 @@ const text = siteText(locale);
 const view = jobView(id, locale);
 const { chart } = view;
 const { updated, calculator } = JOBS[id];
-// The date is a calendar day, so it is formatted in UTC: no timezone can move it.
-const shown = calendarDay(updated, locale);
+// Signed by the editorial team on the day its row was checked: a chart points at its own sources,
+// any other job at the sources of its calculator.
+const byline = bylineOf(
+  locale,
+  updated,
+  chart === undefined ? calculatorSourcesHref(calculator, locale) : `#${CHART_SOURCES_ID}`,
+);
 // The trail the page sits on, each page named by its h1: its calculator's hub, then the calculator.
 const hub = hubOfCalculator(calculator);
 if (hub === undefined) throw new Error(`the calculator of job ${id} has no hub`);
@@ -74,6 +81,7 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
   <Breadcrumb {breadcrumb} />
   <article class="prose">
     <h1>{view.heading}</h1>
+    <Byline {byline} />
     {view.intro !== undefined && <p>{view.intro}</p>}
     {chart === undefined && (
       <>
@@ -145,7 +153,7 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
     )}
     {chart !== undefined && (
       <>
-        <h2>{text('site.job.chart.sources')}</h2>
+        <h2 id={CHART_SOURCES_ID}>{text('site.job.chart.sources')}</h2>
         {chart.sources.length === 1 ? (
           chart.sources.map(({ label, source }) => (
             <p>
@@ -193,9 +201,6 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
         </ul>
       </>
     )}
-    <p class="updated">
-      {text('site.trust.updated')}: <time datetime={updated}>{shown}</time>
-    </p>
   </article>
 </BaseLayout>
 
