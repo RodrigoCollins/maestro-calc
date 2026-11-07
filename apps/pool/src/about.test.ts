@@ -120,9 +120,13 @@ describe('the Spanish about page', () => {
     expect(spanish).toContain(CONTACT_EMAIL);
   });
 
-  it('links the methodology and the privacy page in Spanish once they are built', () => {
+  it('links the methodology, the privacy page and the editorial policy in Spanish', () => {
     const links = es.sections.flatMap(({ link }) => (link === undefined ? [] : [link.href]));
-    expect(links).toEqual([hrefOf('methodology', 'es'), hrefOf('privacy', 'es')]);
+    expect(links).toEqual([
+      hrefOf('methodology', 'es'),
+      hrefOf('privacy', 'es'),
+      hrefOf('editorial', 'es'),
+    ]);
   });
 
   it('says the figures are estimates, that there are no accounts and that no data is sold', () => {

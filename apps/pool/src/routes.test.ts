@@ -86,6 +86,7 @@ describe('ROUTES', () => {
       ],
       ['methodology', '/methodology', '/es/metodologia'],
       ['about', '/about', '/es/acerca'],
+      ['editorial', '/editorial-policy', '/es/politica-editorial'],
       ['privacy', '/privacy', '/es/privacidad'],
       ['embed', '/embed-calculators', '/es/calculadoras-para-tu-sitio'],
     ]);

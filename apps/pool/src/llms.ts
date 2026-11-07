@@ -1,5 +1,6 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT, ABOUT_TEXTS } from './about.ts';
+import { EDITORIAL_TEXTS } from './editorial.ts';
 import { CHARTS_INDEX, CHARTS_INDEX_ES } from './charts.ts';
 import { CHEMISTRY_CHART_ES } from './chemistry-es.ts';
 import {
@@ -56,6 +57,7 @@ const ABOUT_PAGES: readonly Entry[] = [
     note: 'The formulas, sources and worked examples behind every calculator.',
   },
   { name: 'About', path: '/about', note: ABOUT.description },
+  { name: 'Editorial policy', path: '/editorial-policy', note: EDITORIAL_TEXTS.en.description },
   { name: 'Embed our calculators', path: EMBED_PAGE.path, note: EMBED_PAGE.description },
   { name: 'Privacy', path: '/privacy', note: PRIVACY.description },
 ];
@@ -87,6 +89,7 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'ph-guide': { name: PH_GUIDE_ES.h1, note: PH_GUIDE_ES.description },
   'calcium-guide': { name: CALCIUM_GUIDE_ES.h1, note: CALCIUM_GUIDE_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
+  editorial: { name: EDITORIAL_TEXTS.es.h1, note: EDITORIAL_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },
   embed: { name: EMBED_PAGE_TEXTS.es.h1, note: EMBED_PAGE_TEXTS.es.description },
 };

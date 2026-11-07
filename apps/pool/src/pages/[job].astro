@@ -1,7 +1,9 @@
 ---
 import type { GetStaticPaths } from 'astro';
+import Byline from '../components/Byline.astro';
 import Layout from '../components/Layout.astro';
 import JobLinks from '../components/JobLinks.astro';
+import Sources from '../components/Sources.astro';
 import { JOB_PAGES, type JobPage } from '../jobs.ts';
 import { jobTrailOf } from '../seo/breadcrumb.ts';
 import { VOLUME_CHART } from '../volume/chart.ts';
@@ -31,6 +33,7 @@ const here = trail.at(-1);
       </ol>
     </nav>
     <h1>{page.h1}</h1>
+    <Byline path={page.path} />
     <p>{page.lead}</p>
     <figure class="pool-job-figure">
       <p class="pool-marker">
@@ -72,6 +75,7 @@ const here = trail.at(-1);
       </p>
     )}
     <p class="pool-job-method">{page.method}</p>
+    <Sources path={page.path} />
     <JobLinks page={page} />
   </main>
 </Layout>

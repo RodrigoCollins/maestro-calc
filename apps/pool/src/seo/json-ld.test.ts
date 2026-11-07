@@ -67,8 +67,35 @@ describe('jsonLdOf', () => {
       '@type': 'Article',
       headline: 'Opening your pool',
       url: 'https://poolfigures.com/opening-your-pool',
-      publisher: { '@type': 'Organization', name: 'Pool Figures' },
     });
+  });
+
+  // E-E-A-T: the organization, never a person, writes and publishes every article, and names the
+  // English editorial policy as its publishing principles
+  it('names the Pool Figures organization as author and publisher, with its editorial policy', () => {
+    const team = {
+      '@type': 'Organization',
+      name: 'Pool Figures',
+      url: 'https://poolfigures.com/',
+      publishingPrinciples: 'https://poolfigures.com/editorial-policy',
+    };
+    const guide = { title: 'Opening your pool | Pool Figures', description: 'Steps.' };
+    for (const path of ['/opening-your-pool', '/es/como-abrir-tu-piscina']) {
+      const node = JSON.parse(jsonLdOf(path, guide, ORIGIN)) as Record<string, unknown>;
+      expect(node['author'], path).toEqual(team);
+      expect(node['publisher'], path).toEqual(team);
+    }
+  });
+
+  it('gives an article the day it was last reviewed only when the page carries one', () => {
+    const chart = { title: 'Chart | Pool Figures', description: 'C.', modified: '2026-11-05' };
+    expect(JSON.parse(jsonLdOf('/pool-volume-chart', chart, ORIGIN))).toMatchObject({
+      dateModified: '2026-11-05',
+    });
+    const guide = { title: 'Opening your pool | Pool Figures', description: 'Steps.' };
+    expect(JSON.parse(jsonLdOf('/opening-your-pool', guide, ORIGIN))).not.toHaveProperty(
+      'dateModified',
+    );
   });
 
   it('gives a page with a trail its node and the BreadcrumbList of the trail, in one @graph', () => {

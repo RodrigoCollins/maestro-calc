@@ -68,6 +68,37 @@ describe('articleLd', () => {
       publisher: { '@type': 'Organization', name: 'Pool Figures' },
     });
   });
+
+  // opt-in: a site that names its organization's address and editorial policy, and the day the
+  // page was last reviewed, gets them; a site that passes only a name (Cuenta Horas) keeps the above
+  it('names the organization as author and publisher, with its policy, and the day it changed', () => {
+    const team = {
+      name: 'Pool Figures',
+      url: 'https://x.test/',
+      publishingPrinciples: 'https://x.test/editorial-policy',
+    };
+    expect(
+      articleLd({
+        headline: 'Opening your pool',
+        description: 'Step by step.',
+        url: 'https://x.test/open',
+        inLanguage: 'en-US',
+        publisher: team,
+        author: team,
+        dateModified: '2026-11-05',
+      }),
+    ).toEqual({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: 'Opening your pool',
+      description: 'Step by step.',
+      url: 'https://x.test/open',
+      inLanguage: 'en-US',
+      author: { '@type': 'Organization', ...team },
+      publisher: { '@type': 'Organization', ...team },
+      dateModified: '2026-11-05',
+    });
+  });
 });
 
 describe('withBreadcrumb', () => {

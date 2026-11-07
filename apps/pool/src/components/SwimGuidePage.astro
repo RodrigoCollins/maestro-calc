@@ -1,6 +1,8 @@
 ---
+import Byline from './Byline.astro';
 import DataLink from './DataLink.astro';
 import Layout from './Layout.astro';
+import Sources from './Sources.astro';
 import type { GuideSource } from '../guide.ts';
 import type { Lang } from '../routes.ts';
 import { SWIM_GUIDES } from '../swim-es.ts';
@@ -18,10 +20,11 @@ const sourceOf = (key: string): GuideSource => {
 };
 ---
 
-<Layout {title} {description}>
+<Layout {title} {description} modified={guide.checked}>
   <main class="pool-page">
     <p class="pool-kicker">{kicker}</p>
     <h1>{h1}</h1>
+    <Byline path={guide.path} />
     <p>{lead}</p>
     <div class="pool-scroll" role="region" aria-label={page.region} tabindex="0">
       <table class="pool-chart">
@@ -94,6 +97,7 @@ const sourceOf = (key: string): GuideSource => {
         </p>
       </section>
     ))}
+    <Sources path={guide.path} />
     <p class="pool-note">{page.note}</p>
     <DataLink path={guide.path} />
   </main>

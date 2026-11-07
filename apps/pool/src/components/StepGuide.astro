@@ -1,6 +1,8 @@
 ---
+import Byline from './Byline.astro';
 import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
+import Sources from './Sources.astro';
 import type { GuideSource, GuideStep } from '../guide.ts';
 import { langOf } from '../routes.ts';
 
@@ -44,6 +46,7 @@ const sourceOf = (key: string): GuideSource => {
   <main class="pool-page">
     <p class="pool-kicker">{kicker}</p>
     <h1>{h1}</h1>
+    <Byline {path} />
     <p>{lead}</p>
     <ol class="pool-steps">
       {steps.map((step) => (
@@ -69,6 +72,7 @@ const sourceOf = (key: string): GuideSource => {
         </li>
       ))}
     </ol>
+    <Sources {path} />
     <p class="pool-note">{note ?? text.note}</p>
     {/* the job pages are English for now: the Spanish guide leaves their links out */}
     {lang === 'en' && <JobLinks guide={path} />}

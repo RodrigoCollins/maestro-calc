@@ -1,0 +1,40 @@
+---
+import { bylinePageOf } from '../bylines.ts';
+import { bylineOf } from '../editorial.ts';
+import { langOf } from '../routes.ts';
+
+/** The byline under the h1 of a guide, a data page or a job page (`src/bylines.ts`). */
+interface Props {
+  readonly path: string;
+}
+
+const { path } = Astro.props;
+const { checked } = bylinePageOf(path);
+const { by, team, reviewed, sources } = bylineOf(langOf(path), {
+  ...(checked === undefined ? {} : { checked }),
+  sources: true,
+});
+---
+
+<p class="pool-byline">
+  {by} <a href={team.href}>{team.label}</a>
+  {reviewed !== undefined && (
+    <>
+      {' · '}
+      {reviewed.label} <time datetime={reviewed.datetime}>{reviewed.text}</time>
+    </>
+  )}
+  {sources !== undefined && (
+    <>
+      {' · '}
+      <a href={sources.href}>{sources.label}</a>
+    </>
+  )}
+</p>
+
+<style>
+  .pool-byline {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+</style>

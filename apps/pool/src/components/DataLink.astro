@@ -1,5 +1,5 @@
 ---
-import { CHARTS_INDEXES, DATA_PAGES_OF, DATA_TEXTS, checkedText } from '../charts.ts';
+import { CHARTS_INDEXES, DATA_PAGES_OF, DATA_TEXTS } from '../charts.ts';
 import { langOf } from '../routes.ts';
 
 interface Props {
@@ -16,8 +16,7 @@ if (page === undefined) throw new Error(`${path} is not in the data index`);
 ---
 
 <p class="pool-data-link">
-  {text.checked} {checkedText(page.checked, lang)}. {text.all}{' '}
-  <a href={index.path}>{index.name.toLowerCase()}</a>
+  {text.all} <a href={index.path}>{index.name.toLowerCase()}</a>
   {text.free}
 </p>
 

@@ -1,6 +1,8 @@
 ---
+import Byline from './Byline.astro';
 import DataLink from './DataLink.astro';
 import Layout from './Layout.astro';
+import Sources from './Sources.astro';
 import { DOSING_CHARTS } from '../dosing-es.ts';
 import type { GuideSource } from '../guide.ts';
 import type { Lang } from '../routes.ts';
@@ -18,10 +20,11 @@ const sourceOf = (key: string): GuideSource => {
 };
 ---
 
-<Layout {title} {description}>
+<Layout {title} {description} modified={chart.checked}>
   <main class="pool-page">
     <p class="pool-kicker">{page.kicker}</p>
     <h1>{h1}</h1>
+    <Byline path={chart.path} />
     <p>{lead}</p>
     <p>
       {gallons.text} <a href={gallons.href}>{gallons.label}</a>, {chart.chart.text}{' '}
@@ -86,6 +89,7 @@ const sourceOf = (key: string): GuideSource => {
         {cite.text} <a href={cite.url}>{cite.url}</a>
       </p>
     </section>
+    <Sources path={chart.path} />
     <p class="pool-note">{page.note}</p>
     <DataLink path={chart.path} />
   </main>

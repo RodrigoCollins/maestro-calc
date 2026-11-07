@@ -6,7 +6,7 @@ import {
   webApplicationLd,
   webSiteLd,
 } from '@maestro-calc/site-kit/json-ld';
-import { langOf, routeOf, type PageKind } from '../routes.ts';
+import { hrefOf, langOf, routeOf, type PageKind } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 import type { Crumb } from './breadcrumb.ts';
 
@@ -28,13 +28,28 @@ export const schemaTypeOf = (kind: PageKind): string => SCHEMA_TYPES[kind];
 const nameOf = (title: string): string => title.replace(/\s*\|\s*Pool Figures$/, '');
 
 /**
+ * Pool Figures as the organization that writes and publishes every article (its editorial team,
+ * never a person): its home and the English editorial policy as its publishing principles.
+ */
+const organizationOf = (origin: string) => ({
+  name: SITE.name,
+  url: new URL('/', origin).href,
+  publishingPrinciples: new URL(hrefOf('editorial', 'en'), origin).href,
+});
+
+/**
  * The JSON-LD of the page at `path` (`@maestro-calc/site-kit/json-ld`), in the language of its
  * address (`en-US`, or `es-US` under `/es`), ready for its script element; a page with a `trail` (a job page, `breadcrumb.ts`) also carries its `BreadcrumbList`,
  * both nodes in one `@graph`.
  */
 export const jsonLdOf = (
   path: string,
-  page: { readonly title: string; readonly description: string },
+  page: {
+    readonly title: string;
+    readonly description: string;
+    /** The day the page's data says it was last checked (`YYYY-MM-DD`), when it carries one. */
+    readonly modified?: string;
+  },
   origin: string,
   trail?: readonly Crumb[],
 ): string => {
@@ -58,7 +73,9 @@ export const jsonLdOf = (
             description,
             url,
             inLanguage,
-            publisher: SITE.name,
+            author: organizationOf(origin),
+            publisher: organizationOf(origin),
+            ...(page.modified === undefined ? {} : { dateModified: page.modified }),
           });
   if (trail === undefined) return serializeJsonLd(node);
   const items = trail.map(({ name, path: at }) => ({ name, url: new URL(at, origin).href }));

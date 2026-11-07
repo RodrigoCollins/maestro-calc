@@ -39,6 +39,7 @@ describe('the footer', () => {
       },
       { href: '/privacy', label: 'Privacy' },
       { href: '/about', label: 'About' },
+      { href: '/editorial-policy', label: 'Editorial policy' },
       { href: '/embed-calculators', label: 'Embed our calculators' },
     ]);
   });

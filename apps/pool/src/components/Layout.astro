@@ -22,14 +22,21 @@ interface Props {
   readonly embed?: boolean;
   /** The breadcrumb of a job page (`src/seo/breadcrumb.ts`): its `BreadcrumbList` joins the JSON-LD. */
   readonly trail?: readonly Crumb[];
+  /** The day the page's data says its figures were last checked (`YYYY-MM-DD`), for its JSON-LD. */
+  readonly modified?: string;
 }
 
-const { title, description, indexed = true, embed = false, trail } = Astro.props;
+const { title, description, indexed = true, embed = false, trail, modified } = Astro.props;
 const here = canonicalPath(Astro.url.pathname);
 const embedHead = embed ? embedHeadOf(here, { title, description }) : undefined;
 const path = embedHead?.page ?? here;
 const { canonical, robots, preview } = embedHead ?? headOf(path, { title, description }, indexed);
-const jsonLd = jsonLdOf(path, { title, description }, SITE.origin, trail);
+const jsonLd = jsonLdOf(
+  path,
+  { title, description, ...(modified === undefined ? {} : { modified }) },
+  SITE.origin,
+  trail,
+);
 const lang = langOf(path);
 // the hreflang pair only on an indexed page whose route has its twin (never on an embed)
 const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.origin) : [];
