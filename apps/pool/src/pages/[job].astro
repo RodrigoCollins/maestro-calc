@@ -20,7 +20,7 @@ const trail = jobTrailOf(page);
 const here = trail.at(-1);
 ---
 
-<Layout title={page.title} description={page.description} {trail}>
+<Layout title={page.title} description={page.description} {trail} modified={page.checked}>
   <main class="pool-page">
     <nav aria-label="Breadcrumb">
       <ol class="pool-crumbs">

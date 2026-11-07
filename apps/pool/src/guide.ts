@@ -21,6 +21,11 @@ export interface GuideStep {
 /** A guide of numbered steps (`components/StepGuide.astro`). */
 export interface StepGuide {
   path: string;
+  /**
+   * The day its steps, figures and sources were last checked (`YYYY-MM-DD`): the last change to
+   * the guide's own steps and sources in this module. Its Spanish twin carries the same day.
+   */
+  checked: string;
   kicker: string;
   card: { title: string; summary: string };
   title: string;
@@ -137,6 +142,7 @@ const STEPS: readonly GuideStep[] = [
  */
 export const OPENING_GUIDE = {
   path: '/opening-your-pool',
+  checked: '2026-11-05',
   kicker: 'Guide · spring',
   card: {
     title: 'Opening your pool',
@@ -215,6 +221,7 @@ const CLOSING_STEPS: readonly GuideStep[] = [
  */
 export const CLOSING_GUIDE = {
   path: '/closing-your-pool',
+  checked: '2026-11-04',
   kicker: 'Guide · winter',
   card: {
     title: 'Closing your pool',
@@ -311,6 +318,7 @@ const PUMP_RUN_STEPS: readonly GuideStep[] = [
  */
 export const PUMP_RUN_GUIDE = {
   path: '/how-long-to-run-pool-pump',
+  checked: '2026-11-05',
   kicker: 'Guide · pump',
   card: {
     title: 'How long to run your pump',
@@ -419,6 +427,7 @@ const SALT_VS_CHLORINE_STEPS: readonly GuideStep[] = [
  */
 export const SALT_VS_CHLORINE_GUIDE = {
   path: '/salt-water-pool-vs-chlorine-pool',
+  checked: '2026-11-05',
   kicker: 'Guide · salt',
   card: {
     title: 'Salt water vs chlorine',
@@ -522,6 +531,7 @@ const SHOCK_STEPS: readonly GuideStep[] = [
  */
 export const SHOCK_GUIDE = {
   path: '/how-to-shock-a-pool',
+  checked: '2026-11-05',
   kicker: 'Guide · shock',
   card: {
     title: 'How to shock a pool',
@@ -630,6 +640,7 @@ const PH_STEPS: readonly GuideStep[] = [
  */
 export const PH_GUIDE = {
   path: '/how-to-lower-ph-in-a-pool',
+  checked: '2026-11-05',
   kicker: 'Guide · pH',
   card: {
     title: 'How to lower pool pH',
@@ -724,6 +735,7 @@ const CALCIUM_STEPS: readonly GuideStep[] = [
  */
 export const CALCIUM_GUIDE = {
   path: '/how-to-raise-calcium-hardness-in-a-pool',
+  checked: '2026-11-05',
   kicker: 'Guide · Calcium hardness',
   card: {
     title: 'How to raise calcium hardness',

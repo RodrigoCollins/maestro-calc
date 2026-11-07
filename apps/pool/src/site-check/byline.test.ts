@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { bylineProblems } from './byline.ts';
 
-const page = (main: string): string =>
-  `<html><body><header><a href="/">Home</a></header><main class="pool-page">${main}</main></body></html>`;
+const ld = (day: string): string =>
+  `<script type="application/ld+json">{"@type":"Article","dateModified":"${day}"}</script>`;
+const page = (main: string, head = ''): string =>
+  `<html><head>${head}</head><body><header><a href="/">Home</a></header><main class="pool-page">${main}</main></body></html>`;
 const byline = (inner: string): string =>
   `<p class="pool-byline astro-7mgjudca">By <a href="/editorial-policy">the team</a>${inner}</p>`;
 const dated = ` · Reviewed <time datetime="2026-11-05">November 5, 2026</time>`;
@@ -15,7 +17,10 @@ describe('bylineProblems', () => {
     const site = new Map([
       [
         '/chart',
-        page(`<p>Kicker</p><h1>Chart</h1>\n  ${byline(dated + sources)}<p>Lead</p>${section}`),
+        page(
+          `<p>Kicker</p><h1>Chart</h1>\n  ${byline(dated + sources)}<p>Lead</p>${section}`,
+          ld('2026-11-05'),
+        ),
       ],
       [
         '/es/guia',
@@ -53,7 +58,7 @@ describe('bylineProblems', () => {
 
   it('wants the date the data carries, no other, and a sources section with every source', () => {
     const site = new Map([
-      ['/a', page(`<h1>A</h1>${byline(sources)}${section}`)],
+      ['/a', page(`<h1>A</h1>${byline(sources)}${section}`, ld('2026-11-05'))],
       ['/b', page(`<h1>B</h1>${byline(dated + sources)}${section}`)],
       ['/c', page(`<h1>C</h1>${byline(sources)}<a href="https://s.test">S</a>`)],
       ['/d', page(`<h1>D</h1>${byline('')}${section}`)],
@@ -74,6 +79,27 @@ describe('bylineProblems', () => {
       '/c: the page has no #sources section',
       '/d: the byline must link the #sources section',
       '/e: the sources section does not link https://t.test',
+    ]);
+  });
+
+  it('wants the JSON-LD dateModified to be the review day, and none on an undated page', () => {
+    const body = (h1: string): string => `<h1>${h1}</h1>${byline(dated + sources)}${section}`;
+    const site = new Map([
+      ['/a', page(body('A'))],
+      ['/b', page(body('B'), ld('2026-11-04'))],
+      ['/c', page(`<h1>C</h1>${byline(sources)}${section}`, ld('2026-11-05'))],
+    ]);
+    const one = [{ name: 'S', url: 'https://s.test' }];
+    expect(
+      bylineProblems(site, [
+        { path: '/a', checked: '2026-11-05', sources: one },
+        { path: '/b', checked: '2026-11-05', sources: one },
+        { path: '/c', sources: one },
+      ]),
+    ).toEqual([
+      '/a: the JSON-LD must give dateModified 2026-11-05',
+      '/b: the JSON-LD must give dateModified 2026-11-05',
+      '/c: the JSON-LD gives a dateModified the page data does not carry',
     ]);
   });
 });

@@ -10,6 +10,8 @@ import { langOf } from '../routes.ts';
 interface Props {
   readonly guide: {
     readonly path: string;
+    /** The day its figures were last checked (`YYYY-MM-DD`), for its byline and its JSON-LD. */
+    readonly checked: string;
     readonly kicker: string;
     readonly title: string;
     readonly description: string;
@@ -21,7 +23,8 @@ interface Props {
   };
 }
 
-const { path, kicker, title, description, h1, lead, note, steps, sources } = Astro.props.guide;
+const { path, checked, kicker, title, description, h1, lead, note, steps, sources } =
+  Astro.props.guide;
 const lang = langOf(path);
 /** The copy the guide writes around its steps, in its language. */
 const TEXTS = {
@@ -42,7 +45,7 @@ const sourceOf = (key: string): GuideSource => {
 };
 ---
 
-<Layout {title} {description}>
+<Layout {title} {description} modified={checked}>
   <main class="pool-page">
     <p class="pool-kicker">{kicker}</p>
     <h1>{h1}</h1>

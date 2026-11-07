@@ -21,16 +21,36 @@ describe('the pages with a byline', () => {
     for (const path of paths) expect(routeOf(path), path).toBeDefined();
   });
 
-  // the date is the one the page's data carries: the data pages have it, the others print none
-  it('give the day a data page was last checked, and no day to a page whose data has none', () => {
+  // the date is the one the page's data carries: every byline page has one, a real calendar day
+  it('give every page the day its data was last checked, a data page the day of its data', () => {
     for (const lang of ['en', 'es'] as const)
       for (const { path, checked } of DATA_PAGES_OF[lang])
         expect(bylinePageOf(path).checked, path).toBe(checked);
-    const dated = new Set(
-      (['en', 'es'] as const).flatMap((lang) => DATA_PAGES_OF[lang].map(({ path }) => path)),
-    );
-    for (const { path, checked } of BYLINE_PAGES)
-      if (!dated.has(path)) expect(checked, path).toBeUndefined();
+    for (const { path, checked } of BYLINE_PAGES) {
+      expect(checked, path).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(new Date(`${checked ?? ''}T00:00:00Z`).toISOString().slice(0, 10), path).toBe(checked);
+    }
+  });
+
+  // a Spanish guide restates its English twin's figures, so it was checked the same day
+  it('give a guide and its Spanish twin the same day', () => {
+    for (const { path } of GUIDES) {
+      const twin = routeOf(path)?.es;
+      expect(twin, path).toBeDefined();
+      if (twin !== undefined)
+        expect(bylinePageOf(twin).checked, twin).toBe(bylinePageOf(path).checked);
+    }
+  });
+
+  // the pages of a calculator are worked out by the same code from the same sources
+  it('give the job pages of one calculator the same day', () => {
+    const days = new Map<string, Set<string | undefined>>();
+    for (const { path, calculator } of JOB_PAGES)
+      days.set(
+        calculator.path,
+        (days.get(calculator.path) ?? new Set()).add(bylinePageOf(path).checked),
+      );
+    for (const [calculator, set] of days) expect(set.size, calculator).toBe(1);
   });
 
   it('list the sources of each page once each, every page with at least one', () => {

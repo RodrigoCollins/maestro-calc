@@ -154,7 +154,7 @@ const EDITORIAL: Editorial = {
       id: 'reviews',
       heading: 'When pages are reviewed',
       paragraphs: [
-        'Each chart and reference page shows the day its figures were last checked against their sources. We recheck a figure when the label or the standard it comes from changes, and we recheck every source at least once a year.',
+        'Each guide, chart and reference page shows the day its figures were last checked against their sources. We recheck a figure when the label or the standard it comes from changes, and we recheck every source at least once a year.',
       ],
     },
     {
@@ -210,7 +210,7 @@ const EDITORIAL_ES: Editorial = {
       id: 'reviews',
       heading: 'Cuándo se revisan las páginas',
       paragraphs: [
-        'Cada tabla y página de referencia muestra el día en que se revisaron sus cifras contra sus fuentes. Revisamos una cifra cuando cambia la etiqueta o la norma de la que sale, y revisamos cada fuente al menos una vez al año.',
+        'Cada guía, tabla y página de referencia muestra el día en que se revisaron sus cifras contra sus fuentes. Revisamos una cifra cuando cambia la etiqueta o la norma de la que sale, y revisamos cada fuente al menos una vez al año.',
       ],
     },
     {

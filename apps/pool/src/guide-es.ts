@@ -101,6 +101,7 @@ const OPENING_STEPS: readonly GuideStep[] = [
 
 export const OPENING_GUIDE_ES = {
   path: '/es/como-abrir-tu-piscina',
+  checked: OPENING_GUIDE.checked,
   kicker: 'Guía · primavera',
   card: {
     title: 'Cómo abrir tu piscina',
@@ -167,6 +168,7 @@ const CLOSING_STEPS: readonly GuideStep[] = [
 
 export const CLOSING_GUIDE_ES = {
   path: '/es/como-cerrar-tu-piscina',
+  checked: CLOSING_GUIDE.checked,
   kicker: 'Guía · invierno',
   card: {
     title: 'Cómo cerrar tu piscina',
@@ -233,6 +235,7 @@ const PUMP_RUN_STEPS: readonly GuideStep[] = [
 
 export const PUMP_RUN_GUIDE_ES = {
   path: '/es/cuantas-horas-prender-la-bomba-de-la-piscina',
+  checked: PUMP_RUN_GUIDE.checked,
   kicker: 'Guía · bomba',
   card: {
     title: 'Cuántas horas prender la bomba',
@@ -315,6 +318,7 @@ const SALT_VS_CHLORINE_STEPS: readonly GuideStep[] = [
 
 export const SALT_VS_CHLORINE_GUIDE_ES = {
   path: '/es/piscina-de-agua-salada-o-de-cloro',
+  checked: SALT_VS_CHLORINE_GUIDE.checked,
   kicker: 'Guía · sal',
   card: {
     title: 'Agua salada o cloro',
@@ -388,6 +392,7 @@ const SHOCK_STEPS: readonly GuideStep[] = [
 
 export const SHOCK_GUIDE_ES = {
   path: '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
+  checked: SHOCK_GUIDE.checked,
   kicker: 'Guía · choque',
   card: {
     title: 'Cómo hacer un tratamiento de choque',
@@ -462,6 +467,7 @@ const PH_STEPS: readonly GuideStep[] = [
 
 export const PH_GUIDE_ES = {
   path: '/es/como-bajar-el-ph-de-la-piscina',
+  checked: PH_GUIDE.checked,
   kicker: 'Guía · pH',
   card: {
     title: 'Cómo bajar el pH',
@@ -529,6 +535,7 @@ const CALCIUM_STEPS: readonly GuideStep[] = [
 
 export const CALCIUM_GUIDE_ES = {
   path: '/es/como-subir-la-dureza-de-calcio-de-la-piscina',
+  checked: CALCIUM_GUIDE.checked,
   kicker: 'Guía · dureza de calcio',
   card: {
     title: 'Cómo subir la dureza de calcio',
