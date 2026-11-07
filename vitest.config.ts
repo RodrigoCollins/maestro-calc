@@ -26,6 +26,7 @@ export default defineConfig({
         'packages/pets-core/src/**': full,
         'packages/lawn-core/src/**': full,
         'packages/pool-core/src/**': full,
+        'packages/cobro-core/src/**': full,
         'packages/site-kit/src/**': full,
         'packages/data/src/**': ninety,
         'packages/i18n/src/**': ninety,

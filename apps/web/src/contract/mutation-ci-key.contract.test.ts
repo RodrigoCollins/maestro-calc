@@ -15,7 +15,9 @@ const lawnCore = await importFromRoot<PackageConfig>('packages/lawn-core/stryker
 const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.config.mjs');
 const petsCore = await importFromRoot<PackageConfig>('packages/pets-core/stryker.config.mjs');
 const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
+const cobroCore = await importFromRoot<PackageConfig>('packages/cobro-core/stryker.config.mjs');
 const allShards = [
+  ...cobroCore.shardNames,
   ...core.shardNames,
   ...data.shardNames,
   ...lawnCore.shardNames,
@@ -70,6 +72,7 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
   const identity = (entry: Entry): string[] => {
     const owner = (
       [
+        ['cobro-core', cobroCore],
         ['core', core],
         ['data', data],
         ['lawn-core', lawnCore],

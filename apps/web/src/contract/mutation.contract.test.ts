@@ -64,6 +64,9 @@ const lawnCoreModule = await importFromRoot<StrykerModule>('packages/lawn-core/s
 const payCoreModule = await importFromRoot<StrykerModule>('packages/pay-core/stryker.config.mjs');
 const petsCoreModule = await importFromRoot<StrykerModule>('packages/pets-core/stryker.config.mjs');
 const poolCoreModule = await importFromRoot<StrykerModule>('packages/pool-core/stryker.config.mjs');
+const cobroCoreModule = await importFromRoot<StrykerModule>(
+  'packages/cobro-core/stryker.config.mjs',
+);
 // The default export follows STRYKER_SHARD, so assertions about all of core read it explicitly.
 const config = module_.optionsFor('all');
 const scripts = (relativePath: string): Record<string, string> =>
@@ -673,6 +676,25 @@ describe('pool-core mutation shard (Pool Figures)', () => {
   });
 });
 
+describe('cobro-core mutation shard (Cuánto Le Cobro)', () => {
+  const options = cobroCoreModule.default;
+
+  it('is the one shard named cobro-core, with the gate options of core', () => {
+    expect(cobroCoreModule.shardNames).toEqual(['cobro-core']);
+    const exclusions = config.mutate.filter((glob) => glob.startsWith('!'));
+    expect(options.mutate).toEqual(['src/**/*.ts', ...exclusions]);
+    expect(options.commandRunner.command).toBe(config.commandRunner.command);
+    expect(options.incrementalFile).toMatch(
+      /^reports\/stryker-incremental-[0-9a-f]{16}-cobro-core\.json$/,
+    );
+    const own = ['mutate', 'commandRunner', 'incrementalFile', 'htmlReporter', 'jsonReporter'];
+    const shared = (source: StrykerConfig) =>
+      Object.fromEntries(Object.entries(source).filter(([key]) => !own.includes(key)));
+    expect(shared(options)).toEqual(shared(config));
+    expect(scripts('packages/cobro-core/package.json')['mutation']).toBe('stryker run');
+  });
+});
+
 describe('mutation runner script (scripts/mutation.mjs)', () => {
   interface Runner {
     selectShards: (argv: string[], names: string[]) => string[];
@@ -685,6 +707,7 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
 
   it('lists the shards and rejects an unknown one without running Stryker', () => {
     expect(run('--list').stdout.trim().split('\n')).toEqual([
+      ...cobroCoreModule.shardNames,
       ...module_.shardNames,
       ...dataModule.shardNames,
       ...lawnCoreModule.shardNames,
@@ -730,7 +753,9 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
     expect(owners.get('pay-core')).toBe(fromRoot('packages/pay-core'));
     expect(owners.get('pets-core')).toBe(fromRoot('packages/pets-core'));
     expect(owners.get('pool-core')).toBe(fromRoot('packages/pool-core'));
+    expect(owners.get('cobro-core')).toBe(fromRoot('packages/cobro-core'));
     expect([...owners.keys()]).toEqual([
+      ...cobroCoreModule.shardNames,
       ...module_.shardNames,
       ...dataModule.shardNames,
       ...lawnCoreModule.shardNames,
@@ -743,6 +768,7 @@ describe('mutation runner script (scripts/mutation.mjs)', () => {
       existsSync(fromRoot('packages', name, 'stryker.config.mjs')),
     );
     expect(withConfig.sort()).toEqual([
+      'cobro-core',
       'core',
       'data',
       'lawn-core',

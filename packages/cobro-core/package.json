@@ -1,0 +1,22 @@
+{
+  "name": "@maestro-calc/cobro-core",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./cleaning": "./src/cleaning/index.ts",
+    "./painting": "./src/painting/index.ts",
+    "./drywall": "./src/drywall/index.ts",
+    "./concrete": "./src/concrete/index.ts",
+    "./landscaping": "./src/landscaping/index.ts",
+    "./quote": "./src/quote/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
+    "mutation": "stryker run"
+  },
+  "dependencies": {
+    "@maestro-calc/core": "*"
+  }
+}
