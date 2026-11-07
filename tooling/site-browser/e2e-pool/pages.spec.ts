@@ -257,8 +257,9 @@ test('tables when to swim after nine chemicals, each with its section, and every
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  // the two charts, each chemical's calculator and, for five of them, its guide, then the data index
-  expect(hrefs).toHaveLength(17);
+  // the editorial policy of the byline, the two charts, each chemical's calculator and, for five
+  // of them, its guide, then the data index
+  expect(hrefs).toHaveLength(18);
   for (const href of new Set(hrefs))
     expect((await page.request.get(href)).status(), href).toBe(200);
 });
@@ -304,8 +305,9 @@ test('charts six levels, each with its section, and every calculator link answer
   const hrefs = await page
     .locator('main a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  // the gallons, the dosing chart, chlorine, pH, alkalinity, stabilizer, calcium, salt, the data index
-  expect(hrefs).toHaveLength(9);
+  // the editorial policy of the byline, the gallons, the dosing chart, chlorine, pH, alkalinity,
+  // stabilizer, calcium, salt, the data index
+  expect(hrefs).toHaveLength(10);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 
