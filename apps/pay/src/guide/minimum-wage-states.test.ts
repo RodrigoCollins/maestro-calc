@@ -206,11 +206,25 @@ describe('the minimum wage by state', () => {
       // why it changes: the law, in both languages
       expect(law.en, state).toMatch(/January 1/);
       expect(law.es, state).toMatch(/1 de enero/);
-      // why it is not confirmed: the state's own pages, never a claim we could not check
-      expect(unread.en, state).toMatch(/refused our request/);
-      expect(unread.es, state).toMatch(/rechazaron nuestra consulta/);
+      // why it is not confirmed: what the state's own pages showed on the day we read them, or
+      // that they refused us; never a claim we could not check
+      const read = unread.en.includes('read on November 6, 2026');
+      expect(read || unread.en.includes('refused our request'), state).toBe(true);
+      expect(unread.es.includes('leímos el 6 de noviembre de 2026'), state).toBe(read);
+      if (!read) expect(unread.es, state).toMatch(/rechazaron nuestra consulta/);
       expect(`${unread.en} ${unread.es}`, state).not.toMatch(/not yet|not posted|todavía no/i);
     }
+  });
+
+  // checked November 6, 2026: the pages these two states publish the new rate on, as they stood
+  it('says what the Colorado and Vermont sources showed when read, and links the page read', () => {
+    const of = (state: string) => UNCONFIRMED_2027.find((each) => each.state === state);
+    expect(of('Vermont')?.unread.en).toMatch(/\$14\.42/);
+    expect(of('Vermont')?.check.href).toBe('https://labor.vermont.gov/rights-and-wages');
+    expect(of('Colorado')?.unread.en).toMatch(/2026 PAY CALC Order/);
+    expect(of('Colorado')?.unread.es).toMatch(/2026 PAY CALC Order/);
+    for (const state of ['Arizona', 'Maine', 'Nebraska', 'Rhode Island'])
+      expect(of(state)?.unread.en, state).toMatch(/refused our request/);
   });
 
   it('names the law that changes each unconfirmed rate on January 1, 2027', () => {
