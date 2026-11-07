@@ -149,6 +149,9 @@ const dataShards = await importFromRoot<{ shardNames: string[] }>(
 const payCoreShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/pay-core/stryker.config.mjs',
 );
+const petsCoreShards = await importFromRoot<{ shardNames: string[] }>(
+  'packages/pets-core/stryker.config.mjs',
+);
 const poolCoreShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/pool-core/stryker.config.mjs',
 );
@@ -157,6 +160,7 @@ const shardNames = [
   ...coreShards.shardNames,
   ...dataShards.shardNames,
   ...payCoreShards.shardNames,
+  ...petsCoreShards.shardNames,
   ...poolCoreShards.shardNames,
 ];
 
