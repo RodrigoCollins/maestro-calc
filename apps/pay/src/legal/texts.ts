@@ -16,7 +16,7 @@ export interface PrivacyTexts {
 }
 
 /** The address readers write to; the same team runs Maestro Calc and Cuenta Horas. */
-export const CONTACT_EMAIL = 'contacto@maestrocalc.com';
+export const CONTACT_EMAIL = 'hola@cuentahoras.com';
 
 /** What Cuenta Horas does with information today, in each language (the privacy page). */
 export const PRIVACY_TEXTS: Readonly<Record<Lang, PrivacyTexts>> = {

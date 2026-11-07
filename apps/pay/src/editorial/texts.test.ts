@@ -92,6 +92,8 @@ describe('the editorial policy', () => {
       EDITORIAL_TEXTS[lang].sections.flatMap(({ link }) => link?.href ?? []);
     expect(links('en')).toContain('/methodology');
     expect(links('es')).toContain('/es/metodologia');
+    // the site's own address, which the error reports go to
+    expect(CONTACT_EMAIL).toBe('hola@cuentahoras.com');
     for (const lang of LANGS) expect(textOf(lang)).toContain(CONTACT_EMAIL);
     expect(textOf('en')).toContain('not legal or tax advice');
     expect(textOf('en')).toContain('Wage and Hour Division');
