@@ -1,4 +1,4 @@
-// Build-time checks of a built site: Node only (file system and paths), never shipped to a page.
+// Build-time checks of a built site (Node only), and `track.ts`, the DOM-free usage events the calculator bundles ship.
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": { "types": ["node"] },

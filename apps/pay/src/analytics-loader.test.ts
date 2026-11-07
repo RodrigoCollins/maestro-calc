@@ -7,6 +7,10 @@ const source = readFileSync(resolve(import.meta.dirname, '../public/analytics.js
 
 interface Run {
   readonly dataLayer: unknown[] | undefined;
+  /** The `gtag` the loader left on `window` for the calculator scripts. */
+  readonly gtag: unknown;
+  /** Clicks `target` (an element with `closest`), as the browser would deliver it to the document. */
+  readonly click: (target: unknown) => void;
   readonly appended: string[];
   /** Fires the page's load event and the idle callback, as the browser would. */
   readonly finish: () => void;
@@ -15,9 +19,16 @@ interface Run {
 /** Runs the loader in a bare context: a tag with `attrs`, on `hostname`, with `gpc` as the signal. */
 const run = (
   attrs: Readonly<Record<string, string>>,
-  { hostname = 'cuentahoras.com', gpc = false, search = '?d=0900-1700&r=20' } = {},
+  {
+    hostname = 'cuentahoras.com',
+    gpc = false,
+    search = '?d=0900-1700&r=20',
+    pathname = '/time-card-calculator',
+    modules = 0,
+  } = {},
 ): Run => {
   const appended: string[] = [];
+  const clicks: ((event: { target: unknown }) => void)[] = [];
   const pending: (() => void)[] = [];
   const window: Record<string, unknown> = {};
   const context = {
@@ -25,7 +36,7 @@ const run = (
     location: {
       hostname,
       origin: `https://${hostname}`,
-      pathname: '/time-card-calculator',
+      pathname,
       search,
     },
     navigator: gpc ? { globalPrivacyControl: true } : {},
@@ -35,6 +46,11 @@ const run = (
       currentScript: { getAttribute: (name: string) => attrs[name] ?? null },
       createElement: () => ({ async: false, src: '' }),
       head: { appendChild: (script: { src: string }) => appended.push(script.src) },
+      querySelectorAll: (selector: string) =>
+        selector === 'script[type=module]' ? Array.from({ length: modules }) : [],
+      addEventListener: (type: string, listener: (event: { target: unknown }) => void) => {
+        if (type === 'click') clicks.push(listener);
+      },
     },
     addEventListener: (_type: string, listener: () => void) => pending.push(listener),
     setTimeout: (callback: () => void) => pending.push(callback),
@@ -44,6 +60,12 @@ const run = (
   return {
     get dataLayer() {
       return window['dataLayer'] as unknown[] | undefined;
+    },
+    get gtag() {
+      return window['gtag'];
+    },
+    click: (target) => {
+      for (const listener of clicks) listener({ target });
     },
     appended,
     finish: () => {
@@ -69,6 +91,7 @@ describe('the analytics loader', () => {
     ]) {
       loaded.finish();
       expect(loaded.dataLayer).toBeUndefined();
+      expect(loaded.gtag).toBeUndefined();
       expect(loaded.appended).toEqual([]);
     }
   });
@@ -128,5 +151,34 @@ describe('the analytics loader', () => {
     expect(loaded.appended).toEqual([]);
     loaded.finish();
     expect(loaded.appended).toEqual(['https://www.googletagmanager.com/gtag/js?id=G-TEST1']);
+  });
+
+  // analytics-events: the calculator scripts send their usage events through this gtag
+  it('leaves gtag on window, queueing on the same data layer', () => {
+    const loaded = run(TAG);
+    expect(typeof loaded.gtag).toBe('function');
+    (loaded.gtag as (...args: unknown[]) => void)('event', 'calc_action', { calc_id: 'overtime' });
+    expect(calls(loaded.dataLayer, 'event')).toEqual([
+      ['event', 'calc_action', { calc_id: 'overtime' }],
+    ]);
+  });
+
+  // a page with no calculator (a state page) has no script of its own to count its share link
+  it('counts a share link click on a page without a calculator, under the page path', () => {
+    const link = { closest: (selector: string) => (selector === 'a[data-share]' ? {} : null) };
+    const other = { closest: () => null };
+    const loaded = run(TAG, { pathname: '/minimum-wage/texas' });
+    loaded.click(other);
+    loaded.click(link);
+    expect(calls(loaded.dataLayer, 'event')).toEqual([
+      ['event', 'calc_action', { calc_action: 'share', calc_id: '/minimum-wage/texas' }],
+    ]);
+  });
+
+  it('leaves the share link of a calculator page to its script, which names the calculator', () => {
+    const link = { closest: () => ({}) };
+    const loaded = run(TAG, { modules: 1 });
+    loaded.click(link);
+    expect(calls(loaded.dataLayer, 'event')).toEqual([]);
   });
 });
