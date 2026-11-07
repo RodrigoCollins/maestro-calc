@@ -5,6 +5,7 @@ import type { Lang } from '../time-card/receipt.ts';
 import { ROUTES } from '../routes.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
+import { EDITORIAL_PATHS } from '../editorial/paths.ts';
 import { embedHeadOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, type Parent } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
@@ -23,6 +24,8 @@ interface Props {
   readonly paths?: Readonly<Record<Lang, string>>;
   /** The calculator a long-tail page answers for: the middle step of its breadcrumb. */
   readonly parent?: Parent;
+  /** The day the page's data says it was last checked, `YYYY-MM-DD`: its JSON-LD `dateModified`. */
+  readonly modified?: string;
   readonly otherLang: string;
   readonly footer: string;
   readonly wide?: boolean;
@@ -34,7 +37,17 @@ interface Props {
   readonly embed?: boolean;
 }
 
-const { lang, title, description, paths, parent, otherLang, footer, wide = false } = Astro.props;
+const {
+  lang,
+  title,
+  description,
+  paths,
+  parent,
+  modified,
+  otherLang,
+  footer,
+  wide = false,
+} = Astro.props;
 const embedded = Astro.props.embed === true && paths !== undefined;
 const other: Lang = lang === 'en' ? 'es' : 'en';
 const embedHead = embedded ? embedHeadOf(paths, lang, { title, description }) : undefined;
@@ -44,7 +57,13 @@ const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === p
 const jsonLd =
   route === undefined || embedded
     ? undefined
-    : jsonLdOf(route, lang, { title, description }, SITE.origin, parent);
+    : jsonLdOf(
+        route,
+        lang,
+        { title, description, ...(modified === undefined ? {} : { modified }) },
+        SITE.origin,
+        parent,
+      );
 const homeHref = embedded ? canonical : lang === 'en' ? '/' : '/es';
 const href = (path: string): string => canonicalUrl(path, SITE.origin);
 const method =
@@ -57,6 +76,7 @@ const privacy =
     : { href: '/es/privacidad', label: 'Privacidad' };
 const about =
   lang === 'en' ? { href: '/about', label: 'About' } : { href: '/es/acerca', label: 'Acerca de' };
+const editorial = lang === 'en' ? 'Editorial policy' : 'Política editorial';
 const embedLink =
   lang === 'en'
     ? { href: '/embed-calculators', label: EMBED_TEXTS.en.footerLabel }
@@ -146,6 +166,7 @@ const embedLink =
           <a href={method.href}>{method.label}</a>
           <a href={privacy.href}>{privacy.label}</a>
           <a href={about.href}>{about.label}</a>
+          <a href={EDITORIAL_PATHS[lang]}>{editorial}</a>
           <a href={embedLink.href}>{embedLink.label}</a>
           <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].linkLabel}</a>
           <a href={STATES_INDEX_PATHS[lang]}>{statesIndexOf(lang).linkLabel}</a>

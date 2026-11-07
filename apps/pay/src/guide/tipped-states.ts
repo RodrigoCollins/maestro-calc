@@ -244,7 +244,6 @@ export interface TippedStatesTexts {
   readonly cite: { readonly heading: string; readonly text: string };
   readonly sourcesLabel: string;
   readonly disclaimer: string;
-  readonly reviewed: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
   /** The text of the link other pages give to this page. */
   readonly linkLabel: string;
@@ -292,8 +291,6 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies publish, not legal advice. Rates change, often on January 1: check your state’s labor department.',
-    reviewed:
-      'Checked against the Department of Labor pages and the Florida Constitution on November 5, 2026.',
     ctas: [
       { label: 'Open the tipped wage calculator', href: TIPPED_PATHS.en },
       { label: 'How the tip credit works', href: TIP_CREDIT_GUIDE_PATHS.en },
@@ -336,8 +333,6 @@ export const TIPPED_STATES_GUIDE: Readonly<Record<Lang, TippedStatesTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Un resumen de lo que publican estas agencias, no asesoría legal. Las tarifas cambian, a menudo el 1 de enero: consulta al departamento de trabajo de tu estado.',
-    reviewed:
-      'Revisado con las páginas del Departamento de Trabajo y la Constitución de Florida el 5 de noviembre de 2026.',
     ctas: [
       { label: 'Abrir la calculadora de propinas por hora', href: TIPPED_PATHS.es },
       { label: 'Cómo funciona el crédito por propinas', href: TIP_CREDIT_GUIDE_PATHS.es },

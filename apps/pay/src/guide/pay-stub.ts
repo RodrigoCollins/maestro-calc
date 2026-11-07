@@ -214,8 +214,7 @@ export const PAY_STUB_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to reading a pay stub, not legal or tax advice. Your employer’s payroll, your W-4 and your state rules decide the real amounts.',
-    reviewed:
-      'Checked against IRS, Department of Labor and California Labor Commissioner sources on November 4, 2026.',
+    checked: '2026-11-04',
     ctas: [
       { label: 'Check your hours with the time card', href: TIME_CARD_PATHS.en },
       { label: 'Open the overtime calculator', href: OVERTIME_PATHS.en },
@@ -310,8 +309,7 @@ export const PAY_STUB_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía para leer un talón de pago, no asesoría legal ni fiscal. La nómina de tu empleador, tu W-4 y las reglas de tu estado deciden los montos reales.',
-    reviewed:
-      'Revisada con fuentes del IRS, del Departamento de Trabajo y del Comisionado Laboral de California el 4 de noviembre de 2026.',
+    checked: '2026-11-04',
     ctas: [
       { label: 'Revisa tus horas con la tarjeta de horas', href: TIME_CARD_PATHS.es },
       { label: 'Abrir la calculadora de horas extra', href: OVERTIME_PATHS.es },

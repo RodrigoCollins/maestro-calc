@@ -29,6 +29,8 @@ export const PAGES = [
   { path: '/es/metodologia', lang: 'es' },
   { path: '/about', lang: 'en' },
   { path: '/es/acerca', lang: 'es' },
+  { path: '/editorial-policy', lang: 'en' },
+  { path: '/es/politica-editorial', lang: 'es' },
   { path: '/embed-calculators', lang: 'en' },
   { path: '/es/calculadoras-para-tu-sitio', lang: 'es' },
   { path: '/hourly-to-salary-calculator', lang: 'en' },

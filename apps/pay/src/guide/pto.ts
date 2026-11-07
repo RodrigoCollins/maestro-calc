@@ -181,8 +181,7 @@ export const PTO_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to what these agencies publish, not legal advice. For your own case, check your state’s labor department and your employer’s written policy.',
-    reviewed:
-      'Checked against Department of Labor, California, Colorado and Washington agency pages on November 5, 2026.',
+    checked: '2026-11-05',
     ctas: [
       { label: 'Open the PTO accrual calculator', href: PTO_PATHS.en },
       { label: 'If your final pay is short', href: UNPAID_WAGES_GUIDE_PATHS.en },
@@ -261,8 +260,7 @@ export const PTO_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de lo que publican estas agencias, no asesoría legal. Para tu caso, consulta al departamento de trabajo de tu estado y la política escrita de tu empleador.',
-    reviewed:
-      'Revisada con páginas del Departamento de Trabajo y de las agencias de California, Colorado y Washington el 5 de noviembre de 2026.',
+    checked: '2026-11-05',
     ctas: [
       { label: 'Abrir la calculadora de vacaciones pagadas', href: PTO_PATHS.es },
       { label: 'Si tu último pago llega corto', href: UNPAID_WAGES_GUIDE_PATHS.es },

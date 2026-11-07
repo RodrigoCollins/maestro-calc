@@ -167,7 +167,6 @@ export interface MinimumWage2027Texts {
   readonly cite: { readonly heading: string; readonly text: string };
   readonly sourcesLabel: string;
   readonly disclaimer: string;
-  readonly reviewed: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
   readonly linkLabel: string;
 }
@@ -237,7 +236,6 @@ export const MINIMUM_WAGE_2027_GUIDE: Readonly<Record<Lang, MinimumWage2027Texts
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies publish, not legal advice. Check your state’s labor department and your city.',
-    reviewed: 'Checked against the state and Department of Labor pages on November 6, 2026.',
     ctas: [
       { label: 'Turn an hourly wage into a salary', href: PATHS.hourly.en },
       { label: 'Minimum wage by state, 2026', href: MINIMUM_WAGE_STATES_GUIDE_PATHS.en },
@@ -294,8 +292,6 @@ export const MINIMUM_WAGE_2027_GUIDE: Readonly<Record<Lang, MinimumWage2027Texts
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Un resumen de lo que publican estas agencias, no asesoría legal. Consulta al departamento de trabajo de tu estado y a tu ciudad.',
-    reviewed:
-      'Revisado con las páginas de los estados y del Departamento de Trabajo el 6 de noviembre de 2026.',
     ctas: [
       { label: 'Convierte tu pago por hora en sueldo anual', href: PATHS.hourly.es },
       { label: 'Salario mínimo por estado, 2026', href: MINIMUM_WAGE_STATES_GUIDE_PATHS.es },

@@ -127,8 +127,7 @@ export const UNPAID_WAGES_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to the federal and California complaint processes, not legal advice. For your own case, ask the agency or a lawyer.',
-    reviewed:
-      'Checked against Department of Labor and California Labor Commissioner sources on November 4, 2026.',
+    checked: '2026-11-04',
     ctas: [
       { label: 'Open the overtime calculator', href: OVERTIME_PATHS.en },
       { label: 'Check your hours with the time card', href: TIME_CARD_PATHS.en },
@@ -214,8 +213,7 @@ export const UNPAID_WAGES_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de los procesos de queja federal y de California, no asesoría legal. Para tu caso, consulta a la agencia o a un abogado.',
-    reviewed:
-      'Revisada con fuentes del Departamento de Trabajo y del Comisionado Laboral de California el 4 de noviembre de 2026.',
+    checked: '2026-11-04',
     ctas: [
       { label: 'Abrir la calculadora de horas extra', href: OVERTIME_PATHS.es },
       { label: 'Revisa tus horas con la tarjeta de horas', href: TIME_CARD_PATHS.es },

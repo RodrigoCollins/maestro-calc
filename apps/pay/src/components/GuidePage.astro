@@ -1,11 +1,13 @@
 ---
 import { hoursText, moneyText } from '../format.ts';
 import type { GuideTexts, LedgerLine } from '../guide/texts.ts';
+import { guideSourcesOf } from '../editorial/bylines.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import type { CommonLinks } from '../long-tail/jobs.ts';
 import { figuresOf, type WorkedWeek } from '../methodology/examples.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import Byline from './Byline.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -44,6 +46,8 @@ const ledgerRows = ledger.map((line) => {
   if (label === undefined) throw new Error(`${paths[lang]} has no label for ${line.id}`);
   return { label, kind: line.kind, detail: line.detail, amount: moneyText(line.amount) };
 });
+// every source of the sections, each once: the section the byline links
+const sources = guideSourcesOf(t);
 ---
 
 <SiteLayout
@@ -51,6 +55,7 @@ const ledgerRows = ledger.map((line) => {
   title={t.title}
   description={t.description}
   paths={paths}
+  modified={t.checked}
   otherLang={TIME_CARD_TEXTS[lang].otherLang}
   footer={HOME_TEXTS[lang].sources}
 >
@@ -58,6 +63,7 @@ const ledgerRows = ledger.map((line) => {
     <div>
       <p class="kicker">{t.kicker}</p>
       <h1>{t.h1}</h1>
+      <Byline lang={lang} checked={t.checked} />
     </div>
     <p class="lead">{t.lead}</p>
 
@@ -134,9 +140,20 @@ const ledgerRows = ledger.map((line) => {
       </section>
     )}
 
-    <p class="note">
-      {t.disclaimer} {t.reviewed}
-    </p>
+    <section aria-labelledby="sources">
+      <h2 id="sources">{t.sourcesLabel}</h2>
+      <ul class="link-list">
+        {sources.map((source) => (
+          <li>
+            <a href={source.href} rel="noopener">
+              {source.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <p class="note">{t.disclaimer}</p>
     {t.ctas.map((cta, index) => (
       <a
         class:list={['button', index === 0 ? 'button-primary' : 'button-secondary']}

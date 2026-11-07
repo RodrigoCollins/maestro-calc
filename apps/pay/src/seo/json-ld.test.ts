@@ -127,6 +127,34 @@ describe('jsonLdOf', () => {
     });
   });
 
+  // E-E-A-T: the organization, never a person, writes and publishes every article, and names the
+  // English editorial policy as its publishing principles
+  it('names the Cuenta Horas organization as author and publisher, with its editorial policy', () => {
+    const team = {
+      '@type': 'Organization',
+      name: 'Cuenta Horas',
+      url: 'https://cuentahoras.com/',
+      publishingPrinciples: 'https://cuentahoras.com/editorial-policy',
+    };
+    const route = { id: 'pto-guide', kind: 'article', en: '/guides/x', es: '/es/guias/x' } as const;
+    for (const lang of ['en', 'es'] as const) {
+      const [article] = (
+        JSON.parse(jsonLdOf(route, lang, page, ORIGIN)) as { '@graph': Record<string, unknown>[] }
+      )['@graph'];
+      expect(article?.['author'], lang).toEqual(team);
+      expect(article?.['publisher'], lang).toEqual(team);
+    }
+  });
+
+  it('gives an article the day it was last reviewed only when the page carries one', () => {
+    const route = { id: 'pto-guide', kind: 'article', en: '/guides/x', es: '/es/guias/x' } as const;
+    const graphOf = (text: string) => (JSON.parse(text) as { '@graph': object[] })['@graph'][0];
+    expect(
+      graphOf(jsonLdOf(route, 'en', { ...page, modified: '2026-11-05' }, ORIGIN)),
+    ).toMatchObject({ dateModified: '2026-11-05' });
+    expect(graphOf(jsonLdOf(route, 'en', page, ORIGIN))).not.toHaveProperty('dateModified');
+  });
+
   it('names a long-tail page under the calculator it answers for, short of its subtitle', () => {
     const route = {
       id: 'pay-15-an-hour',

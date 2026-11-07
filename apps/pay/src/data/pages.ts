@@ -28,12 +28,10 @@ export const isDataPage = (id: string): boolean => id.endsWith('-states-guide');
 export interface DataPage {
   readonly id: string;
   readonly paths: Readonly<Record<Lang, string>>;
-  readonly texts: Readonly<
-    Record<Lang, { readonly h1: string; readonly description: string; readonly reviewed: string }>
-  >;
+  readonly texts: Readonly<Record<Lang, { readonly h1: string; readonly description: string }>>;
   /** The sources of its rows, the U.S. Department of Labor first. */
   readonly sources: Readonly<Record<string, GuideSource>>;
-  /** The day its figures were last checked, `YYYY-MM-DD`: the day its `reviewed` line names. */
+  /** The day its figures were last checked, `YYYY-MM-DD`: the day its byline names. */
   readonly checked: string;
 }
 
@@ -68,6 +66,13 @@ export const DATA_PAGES: readonly DataPage[] = [
     checked: '2026-11-06',
   },
 ];
+
+/** The day the table of route `id` was last checked, `YYYY-MM-DD`. */
+export const checkedOf = (id: string): string => {
+  const page = DATA_PAGES.find((each) => each.id === id);
+  if (page === undefined) throw new Error(`no data page ${id}`);
+  return page.checked;
+};
 
 /** A calendar day (`YYYY-MM-DD`) in the long form of `lang`, in UTC so no timezone moves it. */
 export const dayText = (iso: string, lang: Lang): string =>

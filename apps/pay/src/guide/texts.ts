@@ -57,7 +57,8 @@ export interface GuideTexts {
   readonly ledger?: GuideLedgerTexts;
   readonly sourcesLabel: string;
   readonly disclaimer: string;
-  readonly reviewed: string;
+  /** The day the guide was last checked against its sources, `YYYY-MM-DD` (its byline). */
+  readonly checked: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
   /** The text of the link other pages give to this guide. */
   readonly linkLabel: string;
@@ -171,7 +172,7 @@ export const GUIDE_TEXTS: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to the federal rules, not tax advice. Your return, credits and state taxes decide the real amount.',
-    reviewed: 'Checked against IRS sources on November 3, 2026.',
+    checked: '2026-11-03',
     ctas: [
       { label: 'No tax on overtime calculator', href: DEDUCTION_PATHS.overtime.en },
       { label: 'No tax on tips calculator', href: DEDUCTION_PATHS.tips.en },
@@ -236,7 +237,7 @@ export const GUIDE_TEXTS: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de las reglas federales, no asesoría fiscal. Tu declaración, los créditos y los impuestos estatales deciden el monto real.',
-    reviewed: 'Revisada con fuentes del IRS el 3 de noviembre de 2026.',
+    checked: '2026-11-03',
     ctas: [
       { label: 'Calculadora de horas extra sin impuestos', href: DEDUCTION_PATHS.overtime.es },
       { label: 'Calculadora de propinas sin impuestos', href: DEDUCTION_PATHS.tips.es },

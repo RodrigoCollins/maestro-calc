@@ -364,6 +364,13 @@ h1 {
   color: var(--muted);
 }
 
+/* the editorial team, the review day and the sources, under the h1 (`Byline.astro`) */
+.byline {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .warning {
   margin: 0;
   padding: 0.75rem;

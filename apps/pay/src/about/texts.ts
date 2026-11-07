@@ -1,3 +1,4 @@
+import { EDITORIAL_PATHS } from '../editorial/paths.ts';
 import { CONTACT_EMAIL } from '../legal/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
@@ -53,6 +54,14 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
         link: { href: '/methodology', label: 'How we calculate' },
       },
       {
+        id: 'editorial',
+        heading: 'Who writes the pages',
+        paragraphs: [
+          'Every guide, table and state page is written and reviewed by the Cuenta Horas editorial team, and shows under its title the day its figures were last checked. The editorial policy says where the numbers come from, how they are checked and when pages are reviewed.',
+        ],
+        link: { href: EDITORIAL_PATHS.en, label: 'Editorial policy' },
+      },
+      {
         id: 'sources',
         heading: 'Sources',
         paragraphs: [
@@ -105,6 +114,14 @@ export const ABOUT_TEXTS: Readonly<Record<Lang, AboutTexts>> = {
           'Cada calculadora sigue reglas escritas, y cada regla se prueba con ejemplos calculados a mano. La página de metodología muestra las reglas y pasa sus ejemplos por la misma calculadora que usas. Usamos herramientas de IA para ayudar a escribir textos y código; las fórmulas se comprueban con esos ejemplos antes de publicar una página.',
         ],
         link: { href: '/es/metodologia', label: 'Cómo calculamos' },
+      },
+      {
+        id: 'editorial',
+        heading: 'Quién escribe las páginas',
+        paragraphs: [
+          'Cada guía, tabla y página de estado la escribe y revisa el equipo editorial de Cuenta Horas, y muestra bajo su título el día en que se revisaron sus cifras por última vez. La política editorial explica de dónde salen las cifras, cómo se comprueban y cuándo se revisan las páginas.',
+        ],
+        link: { href: EDITORIAL_PATHS.es, label: 'Política editorial' },
       },
       {
         id: 'fuentes',

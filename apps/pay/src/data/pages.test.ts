@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ROUTES } from '../routes.ts';
-import { dataCards, DATA_PAGES, dayText, isDataPage } from './pages.ts';
+import { checkedOf, dataCards, DATA_PAGES, dayText, isDataPage } from './pages.ts';
 
 const LANGS = ['en', 'es'] as const;
 
@@ -28,9 +28,10 @@ describe('DATA_PAGES (the data index of Cuenta Horas)', () => {
     }
   });
 
-  it.each(LANGS)('keeps the checked day the same as the one each page shows in %s', (lang) => {
-    for (const { id, texts, checked } of DATA_PAGES)
-      expect(texts[lang].reviewed, id).toContain(dayText(checked, lang));
+  // the page shows the day in its byline (`src/editorial/bylines.test.ts`, `check:site`)
+  it('gives the checked day of each table by its route id', () => {
+    for (const { id, checked } of DATA_PAGES) expect(checkedOf(id), id).toBe(checked);
+    expect(() => checkedOf('nothing')).toThrow(/no data page/);
   });
 
   it('names the U.S. Department of Labor first and counts the other sources of each table', () => {

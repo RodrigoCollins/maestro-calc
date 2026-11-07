@@ -2,6 +2,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT_TEXTS } from '../about/texts.ts';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { DATA_TEXTS } from '../data/texts.ts';
+import { EDITORIAL_TEXTS } from '../editorial/texts.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDES } from '../guide/overtime.ts';
@@ -79,6 +80,7 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   ),
   methodology: both(METHODOLOGY_TEXTS),
   about: both(ABOUT_TEXTS),
+  'editorial-policy': both(EDITORIAL_TEXTS),
   embed: both(EMBED_TEXTS),
 };
 

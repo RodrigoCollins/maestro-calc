@@ -158,7 +158,6 @@ describe('the minimum wage increases of January 1, 2027', () => {
       expect(t.title.length, t.title).toBeLessThanOrEqual(70);
       expect(t.description.length, t.description).toBeLessThanOrEqual(160);
       expect(t.disclaimer).toMatch(/not legal advice|no asesoría legal/);
-      expect(t.reviewed).toMatch(/November 6, 2026|6 de noviembre de 2026/);
       for (const { href } of t.ctas) expect(href.startsWith('/es/'), href).toBe(lang === 'es');
       expect(PAY_CONVERTER_TEXTS[lang].minimumWage2027.href).toBe(
         MINIMUM_WAGE_2027_GUIDE_PATHS[lang],
