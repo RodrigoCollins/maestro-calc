@@ -26,7 +26,7 @@ import { VOLUME_CHARTS } from './volume/chart-es.ts';
 
 /**
  * A page that carries the byline of the editorial team: its address, the day its data says its
- * figures were last checked (only a data page has one), and the sources its sources section lists.
+ * figures were last checked, and the sources its sources section lists.
  */
 export interface BylinePage {
   readonly path: string;
@@ -85,7 +85,11 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       sources: [VOLUME_CHARTS[lang].source],
     },
   ]),
-  ...JOB_PAGES.map(({ path, calculator }) => ({ path, sources: jobSourcesOf(calculator.path) })),
+  ...JOB_PAGES.map(({ path, checked, calculator }) => ({
+    path,
+    checked,
+    sources: jobSourcesOf(calculator.path),
+  })),
 ];
 
 /** The byline page at `path`; a page with no byline throws at build time. */
