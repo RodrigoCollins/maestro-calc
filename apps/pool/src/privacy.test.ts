@@ -27,8 +27,8 @@ describe('the privacy page', () => {
     for (const { paragraphs } of PRIVACY.sections) expect(paragraphs.length).toBeGreaterThan(0);
   });
 
-  it('writes to the same address as Cuenta Horas and Maestro Calc', () => {
-    expect(CONTACT_EMAIL).toBe('contacto@maestrocalc.com');
+  it('writes to its own address on its own domain', () => {
+    expect(CONTACT_EMAIL).toBe('hola@poolfigures.com');
     expect(text).toContain(CONTACT_EMAIL);
   });
 

@@ -1,5 +1,5 @@
-/** The address readers write to; the same team runs Pool Figures, Cuenta Horas and Maestro Calc. */
-export const CONTACT_EMAIL = 'contacto@maestrocalc.com';
+/** The address readers write to, on the site's own domain (it forwards to the team's inbox). */
+export const CONTACT_EMAIL = 'hola@poolfigures.com';
 
 /** What Pool Figures does with information today (the privacy page, as Cuenta Horas' `/privacy`). */
 export const PRIVACY = {
