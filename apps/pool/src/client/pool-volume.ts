@@ -10,6 +10,7 @@ import {
   type Quantity,
 } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
+import { watchUsage } from '@maestro-calc/site-kit/track';
 import { lengthFieldText, volumeText } from '../format.ts';
 import { sideViewOf, type SideView } from '../volume/side-view.ts';
 
@@ -96,4 +97,6 @@ if (form !== null) {
 
   render();
   form.addEventListener('input', render);
+  // usage events for analytics: the action and the calculator, never a value (analytics-events)
+  watchUsage(window, poolVolume.id, form, document);
 }

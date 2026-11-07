@@ -1,6 +1,7 @@
 import { decode, encode, toDecimalParts } from '@maestro-calc/core';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { clockFieldText, hoursText, moneyText } from '../format.ts';
+import { watchUsage } from '@maestro-calc/site-kit/track';
 import {
   outputOf,
   receiptMessage,
@@ -73,6 +74,13 @@ const render = (): void => {
 restore();
 render();
 form?.addEventListener('input', render);
+// usage events for analytics: the action and the calculator, never a value (analytics-events)
+if (form !== null) {
+  watchUsage(window, timeCard.id, form, document, {
+    share: 'a[data-whatsapp]',
+    print: '[data-print]',
+  });
+}
 document.querySelector('[data-print]')?.addEventListener('click', () => {
   print();
 });

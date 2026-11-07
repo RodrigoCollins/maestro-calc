@@ -12,6 +12,16 @@
   function gtag() {
     dataLayer.push(arguments);
   }
+  // The calculator scripts send their usage events through it (@maestro-calc/site-kit/track).
+  window.gtag = gtag;
+  // A page with no calculator (a state page) has no script of its own: the loader counts its
+  // WhatsApp share link, under the page path. A calculator page's script counts its own.
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest || !target.closest('a[data-share]')) return;
+    if (document.querySelectorAll('script[type=module]').length > 0) return;
+    gtag('event', 'calc_action', { calc_action: 'share', calc_id: location.pathname });
+  });
   // No advertising yet: ad storage stays denied everywhere. Analytics is denied by default in the
   // EEA, the United Kingdom and Switzerland (no consent banner yet), and for a Global Privacy
   // Control signal.

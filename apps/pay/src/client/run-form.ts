@@ -17,6 +17,7 @@ import {
   rateText,
 } from '../format.ts';
 import { refreshShare } from './share.ts';
+import { watchUsage } from '@maestro-calc/site-kit/track';
 
 /** How an hours output is written, by the `data-format` of its node; plain `hoursText` otherwise. */
 const HOURS_FORMATS: Readonly<Record<string, (hours: Rational) => string>> = {
@@ -103,4 +104,6 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
 
   render();
   form.addEventListener('input', render);
+  // usage events for analytics: the action and the calculator, never a value (analytics-events)
+  watchUsage(window, calculator.id, form, document, { share: 'a[data-share]' });
 };

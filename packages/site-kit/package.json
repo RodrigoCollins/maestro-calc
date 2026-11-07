@@ -13,7 +13,8 @@
     "./json-ld": "./src/json-ld.ts",
     "./link-preview": "./src/link-preview.ts",
     "./seo-check": "./src/seo-check.ts",
-    "./sitemap": "./src/sitemap.ts"
+    "./sitemap": "./src/sitemap.ts",
+    "./track": "./src/track.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"

@@ -6,6 +6,7 @@ import {
   type InputDescriptor,
   type OutputDescriptor,
 } from '@maestro-calc/core';
+import { watchUsage } from '@maestro-calc/site-kit/track';
 import { amountText, outputText } from '../format.ts';
 
 /**
@@ -76,4 +77,6 @@ export const runDose = <const I extends readonly InputDescriptor[]>(
 
   render();
   form.addEventListener('input', render);
+  // usage events for analytics: the action and the calculator, never a value (analytics-events)
+  watchUsage(window, calculator.id, form, document);
 };

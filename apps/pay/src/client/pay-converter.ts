@@ -2,6 +2,7 @@ import { decode, encode, Rational, toDecimalParts } from '@maestro-calc/core';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { hoursText, moneyText } from '../format.ts';
 import { refreshShare } from './share.ts';
+import { watchUsage } from '@maestro-calc/site-kit/track';
 
 // The pay converter script: every edit reruns the converter, writes the figures and keeps the
 // state in the URL. The page's own starting point (hourly or salary) is its clean URL.
@@ -64,3 +65,5 @@ const render = (): void => {
 restore();
 render();
 form?.addEventListener('input', render);
+// usage events for analytics: the action and the calculator, never a value (analytics-events)
+if (form !== null) watchUsage(window, payConverter.id, form, document, { share: 'a[data-share]' });
