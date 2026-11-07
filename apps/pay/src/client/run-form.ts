@@ -16,6 +16,7 @@ import {
   moneyText,
   rateText,
 } from '../format.ts';
+import { refreshShare } from './share.ts';
 
 /** How an hours output is written, by the `data-format` of its node; plain `hoursText` otherwise. */
 const HOURS_FORMATS: Readonly<Record<string, (hours: Rational) => string>> = {
@@ -97,6 +98,7 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
     if (query !== null) {
       history.replaceState(null, '', query === start ? location.pathname : `?${query}`);
     }
+    refreshShare();
   };
 
   render();

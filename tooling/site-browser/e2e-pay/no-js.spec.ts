@@ -95,3 +95,15 @@ test('the pay converter shows its starting figures without JavaScript', async ({
   await page.goto('/es/de-sueldo-anual-a-pago-por-hora');
   await expect(page.locator('.result-figure')).toHaveText('$28.85');
 });
+
+// with no script, the share link is the page's canonical address in a WhatsApp message
+for (const path of ['/states/texas', '/es/estados/texas', '/overtime-calculator']) {
+  test(`${path} links WhatsApp with its own address without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    const link = page.locator('a[data-share]');
+    await expect(link).toHaveCount(1);
+    const href = (await link.getAttribute('href')) ?? '';
+    expect(href.startsWith('https://wa.me/?text=')).toBe(true);
+    expect(decodeURIComponent(href)).toMatch(new RegExp(`\\nhttps://cuentahoras\\.com${path}$`));
+  });
+}
