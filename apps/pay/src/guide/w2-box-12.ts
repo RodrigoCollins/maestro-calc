@@ -166,7 +166,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to the federal rules, not tax advice. Your return, credits and state taxes decide the real amount.',
-    reviewed: 'Checked against IRS sources on November 6, 2026.',
+    checked: '2026-11-06',
     ctas: [
       { label: 'No tax on tips calculator', href: DEDUCTION_PATHS.tips.en },
       { label: 'No tax on overtime calculator', href: DEDUCTION_PATHS.overtime.en },
@@ -247,7 +247,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de las reglas federales, no asesoría fiscal. Tu declaración, los créditos y los impuestos estatales deciden el monto real.',
-    reviewed: 'Revisada con fuentes del IRS el 6 de noviembre de 2026.',
+    checked: '2026-11-06',
     ctas: [
       { label: 'Calculadora de propinas sin impuestos', href: DEDUCTION_PATHS.tips.es },
       { label: 'Calculadora de horas extra sin impuestos', href: DEDUCTION_PATHS.overtime.es },

@@ -1,0 +1,25 @@
+---
+import { dayText } from '../data/pages.ts';
+import { EDITORIAL_PATHS } from '../editorial/paths.ts';
+import { BYLINE_TEXTS } from '../editorial/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+
+/*
+ * The byline under the h1 of a guide, a table and a state page (`BYLINE_PAGES` of
+ * `src/editorial/bylines.ts`, held by `src/site-check/byline.ts`): the editorial team at the
+ * policy of the page's language, the day its data says it was last checked, and its sources.
+ */
+interface Props {
+  readonly lang: Lang;
+  /** The day the page's figures were last checked, `YYYY-MM-DD`, from its data. */
+  readonly checked: string;
+}
+
+const { lang, checked } = Astro.props;
+const t = BYLINE_TEXTS[lang];
+---
+
+<p class="byline">
+  {t.by} <a href={EDITORIAL_PATHS[lang]}>{t.team}</a> · {t.reviewed}{' '}
+  <time datetime={checked}>{dayText(checked, lang)}</time> · <a href="#sources">{t.sources}</a>
+</p>

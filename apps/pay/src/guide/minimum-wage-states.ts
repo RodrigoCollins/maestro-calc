@@ -446,7 +446,6 @@ export interface MinimumWageStatesTexts {
   readonly cite: { readonly heading: string; readonly text: string };
   readonly sourcesLabel: string;
   readonly disclaimer: string;
-  readonly reviewed: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
   /** The text of the link other pages give to this page. */
   readonly linkLabel: string;
@@ -499,7 +498,6 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies publish, not legal advice. Rates change, often on January 1 or July 1: check your state’s labor department and your city.',
-    reviewed: 'Checked against the Department of Labor and state pages on November 6, 2026.',
     ctas: [
       { label: 'Turn an hourly wage into a salary', href: PATHS.hourly.en },
       { label: 'Turn a salary into an hourly rate', href: PATHS.salary.en },
@@ -547,8 +545,6 @@ export const MINIMUM_WAGE_STATES_GUIDE: Readonly<Record<Lang, MinimumWageStatesT
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Un resumen de lo que publican estas agencias, no asesoría legal. Las tarifas cambian, a menudo el 1 de enero o el 1 de julio: consulta al departamento de trabajo de tu estado y a tu ciudad.',
-    reviewed:
-      'Revisado con las páginas del Departamento de Trabajo y de los estados el 6 de noviembre de 2026.',
     ctas: [
       { label: 'Convierte tu pago por hora en sueldo anual', href: PATHS.hourly.es },
       { label: 'Convierte un sueldo anual en pago por hora', href: PATHS.salary.es },

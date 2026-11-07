@@ -3,6 +3,7 @@ import { HOME_TEXTS } from '../home/texts.ts';
 import { statePageOf, statesIndexOf, type StateFacts } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import Byline from './Byline.astro';
 import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
@@ -25,6 +26,7 @@ const index = statesIndexOf(lang);
   title={page.title}
   description={page.description}
   paths={page.paths}
+  modified={page.reviewed}
   parent={{ title: index.title, path: index.paths[lang] }}
   otherLang={TIME_CARD_TEXTS[lang].otherLang}
   footer={HOME_TEXTS[lang].sources}
@@ -33,6 +35,7 @@ const index = statesIndexOf(lang);
     <div>
       <p class="kicker">{page.kicker}</p>
       <h1>{page.h1}</h1>
+      <Byline lang={lang} checked={page.reviewed} />
     </div>
     <p class="lead">{page.lead}</p>
     <a class="button" href={page.calculate.href}>
@@ -96,6 +99,19 @@ const index = statesIndexOf(lang);
       {page.examples.notes.map((note) => (
         <p class="note">{note}</p>
       ))}
+    </section>
+
+    <section aria-labelledby="sources">
+      <h2 id="sources">{page.labels.sources}</h2>
+      <ul class="link-list">
+        {page.sources.map((source) => (
+          <li>
+            <a href={source.href} rel="noopener">
+              {source.label}
+            </a>
+          </li>
+        ))}
+      </ul>
     </section>
 
     <p class="note">{page.disclaimer}</p>

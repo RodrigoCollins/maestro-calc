@@ -2,7 +2,7 @@ import { encode, subMoney, type Money } from '@maestro-calc/core';
 import { overtime, RULES, type Rule } from '@maestro-calc/pay-core/overtime';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
-import { DATA_PAGES, dayText } from '../data/pages.ts';
+import { checkedOf, dayText } from '../data/pages.ts';
 import { moneyText } from '../format.ts';
 import {
   MINIMUM_WAGE_STATES,
@@ -71,13 +71,6 @@ export const STATE_FACTS: readonly StateFacts[] = TIPPED_STATES.map((tipped, ind
   };
 });
 
-/** The day each table was last checked, `YYYY-MM-DD`, from the data index. */
-const checkedOf = (id: string): string => {
-  const page = DATA_PAGES.find((each) => each.id === id);
-  if (page === undefined) throw new Error(`no data page ${id}`);
-  return page.checked;
-};
-
 export interface Fact {
   readonly key: string;
   readonly label: string;
@@ -125,6 +118,13 @@ export interface StatePage {
     readonly notes: readonly string[];
   };
   readonly labels: { readonly sources: string; readonly checked: string; readonly table: string };
+  /**
+   * The day the page was last reviewed, `YYYY-MM-DD`: the oldest checked day of its three tables,
+   * so every figure on the page was checked on that day or later (its byline).
+   */
+  readonly reviewed: string;
+  /** Every source of its sections, each once, in the order they cite them (its sources section). */
+  readonly sources: readonly GuideSource[];
   readonly index: { readonly label: string; readonly href: string };
   readonly disclaimer: string;
 }
@@ -567,6 +567,12 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
   const examples = examplesOf(facts, lang);
   const week45 = examples.items.find(({ id }) => id === 'week45')?.href;
   if (week45 === undefined) throw new Error(`no 45-hour week for ${facts.slug.en}`);
+  const sections = [
+    minimumSection(facts, lang),
+    tippedSection(facts, lang),
+    overtimeSection(facts, lang),
+  ];
+  const cited = sections.flatMap(({ sources }) => sources);
   return {
     title: titleOf(h1),
     description: descriptionOf(lead),
@@ -575,13 +581,15 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
     lead,
     calculate: { label: w.calculate(lang === 'en' ? facts.tipped.name.en : the), href: week45 },
     paths: { en: route.en, es: route.es },
-    sections: [
-      minimumSection(facts, lang),
-      tippedSection(facts, lang),
-      overtimeSection(facts, lang),
-    ],
+    sections,
     examples,
     labels: w.labels,
+    reviewed: [
+      checkedOf('minimum-wage-states-guide'),
+      checkedOf('tipped-states-guide'),
+      checkedOf('overtime-states-guide'),
+    ].reduce((oldest, day) => (day < oldest ? day : oldest)),
+    sources: cited.filter(({ href }, at) => cited.findIndex((each) => each.href === href) === at),
     index: { label: w.index, href: STATES_INDEX_PATHS[lang] },
     disclaimer: w.disclaimer,
   };

@@ -265,7 +265,6 @@ export interface OvertimeStatesTexts {
   readonly cite: { readonly heading: string; readonly text: string };
   readonly sourcesLabel: string;
   readonly disclaimer: string;
-  readonly reviewed: string;
   readonly ctas: readonly { readonly label: string; readonly href: string }[];
   /** The text of the link other pages give to this page. */
   readonly linkLabel: string;
@@ -314,8 +313,6 @@ export const OVERTIME_STATES_GUIDE: Readonly<Record<Lang, OvertimeStatesTexts>> 
     sourcesLabel: 'Sources',
     disclaimer:
       'A summary of what these agencies and statutes say, not legal advice. Exemptions, industry rules and alternative schedules can change what you are owed: check your state’s labor department.',
-    reviewed:
-      'Checked against the Department of Labor, the California and Alaska labor agencies and the Kansas and Minnesota statutes on November 5, 2026.',
     ctas: [
       { label: 'Open the overtime calculator', href: OVERTIME_PATHS.en },
       { label: 'If your overtime was not paid', href: UNPAID_WAGES_GUIDE_PATHS.en },
@@ -358,8 +355,6 @@ export const OVERTIME_STATES_GUIDE: Readonly<Record<Lang, OvertimeStatesTexts>> 
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Un resumen de lo que dicen estas agencias y leyes, no asesoría legal. Las exenciones, las reglas de cada industria y los horarios alternativos pueden cambiar lo que te deben: consulta al departamento de trabajo de tu estado.',
-    reviewed:
-      'Revisado con el Departamento de Trabajo, las agencias laborales de California y Alaska y las leyes de Kansas y Minnesota el 5 de noviembre de 2026.',
     ctas: [
       { label: 'Abrir la calculadora de horas extra', href: OVERTIME_PATHS.es },
       { label: 'Si no te pagaron las horas extra', href: UNPAID_WAGES_GUIDE_PATHS.es },

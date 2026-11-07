@@ -199,7 +199,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to what these rules and agencies publish, not legal advice. For your own case, check your state’s labor department.',
-    reviewed: 'Checked against the eCFR and Department of Labor pages on November 5, 2026.',
+    checked: '2026-11-05',
     ctas: [
       { label: 'Open the tipped wage calculator', href: TIPPED_PATHS.en },
       { label: 'Tipped minimum wage by state, 2026', href: TIPPED_STATES_GUIDE_PATHS.en },
@@ -277,8 +277,7 @@ export const TIP_CREDIT_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de lo que publican estas reglas y agencias, no asesoría legal. Para tu caso, consulta al departamento de trabajo de tu estado.',
-    reviewed:
-      'Revisada con el eCFR y páginas del Departamento de Trabajo el 5 de noviembre de 2026.',
+    checked: '2026-11-05',
     ctas: [
       { label: 'Abrir la calculadora de propinas por hora', href: TIPPED_PATHS.es },
       { label: 'Salario mínimo con propinas por estado, 2026', href: TIPPED_STATES_GUIDE_PATHS.es },

@@ -10,6 +10,8 @@ import { HOME_TEXTS } from '../home/texts.ts';
 import { statePathOf } from '../states/routes.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
+import { checkedOf } from '../data/pages.ts';
+import Byline from './Byline.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -20,6 +22,8 @@ const { lang } = Astro.props;
 const t = MINIMUM_WAGE_STATES_GUIDE[lang];
 const rows = minimumWageRowsOf(lang);
 const sources = Object.values(MINIMUM_WAGE_STATES_SOURCES);
+// the day the data index says the table was last checked (its byline and JSON-LD)
+const checked = checkedOf('minimum-wage-states-guide');
 ---
 
 <SiteLayout
@@ -27,6 +31,7 @@ const sources = Object.values(MINIMUM_WAGE_STATES_SOURCES);
   title={t.title}
   description={t.description}
   paths={MINIMUM_WAGE_STATES_GUIDE_PATHS}
+  modified={checked}
   otherLang={TIME_CARD_TEXTS[lang].otherLang}
   footer={HOME_TEXTS[lang].sources}
 >
@@ -34,6 +39,7 @@ const sources = Object.values(MINIMUM_WAGE_STATES_SOURCES);
     <div>
       <p class="kicker">{t.kicker}</p>
       <h1>{t.h1}</h1>
+      <Byline lang={lang} checked={checked} />
     </div>
     <p class="lead">{t.lead}</p>
     <p class="note">{t.asOf}</p>
@@ -77,7 +83,7 @@ const sources = Object.values(MINIMUM_WAGE_STATES_SOURCES);
         </tbody>
       </table>
     </div>
-    <p class="sources">
+    <p class="sources" id="sources">
       {t.sourcesLabel}:{' '}
       {sources.map((source, index) => (
         <>
@@ -117,9 +123,7 @@ const sources = Object.values(MINIMUM_WAGE_STATES_SOURCES);
       </p>
     </section>
 
-    <p class="note">
-      {t.disclaimer} {t.reviewed}
-    </p>
+    <p class="note">{t.disclaimer}</p>
     {t.ctas.map((cta, index) => (
       <a
         class:list={['button', index === 0 ? 'button-primary' : 'button-secondary']}

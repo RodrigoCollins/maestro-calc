@@ -193,7 +193,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         sourcesLabel: 'Sources',
         disclaimer:
           'A guide to the federal rules, not legal advice. Your state law, your contract or an exemption can change what you are owed.',
-        reviewed: 'Checked against U.S. Department of Labor sources on November 4, 2026.',
+        checked: '2026-11-04',
         ctas: [
           { label: 'Open the overtime calculator', href: CALCULATOR.en },
           {
@@ -274,7 +274,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         sourcesLabel: 'Fuentes',
         disclaimer:
           'Una guía de las reglas federales, no asesoría legal. La ley de tu estado, tu contrato o una exención pueden cambiar lo que te deben.',
-        reviewed: 'Revisada con fuentes del Departamento de Trabajo el 4 de noviembre de 2026.',
+        checked: '2026-11-04',
         ctas: [
           { label: 'Abrir la calculadora de horas extra', href: CALCULATOR.es },
           {
@@ -360,7 +360,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         sourcesLabel: 'Sources',
         disclaimer:
           'A guide to the general California rule, not legal advice. Your wage order, an exemption or an alternative workweek schedule can change what you are owed.',
-        reviewed: 'Checked against California Labor Commissioner sources on November 4, 2026.',
+        checked: '2026-11-04',
         ctas: [
           { label: 'Open the overtime calculator', href: CALCULATOR.en },
           { label: 'Federal overtime under the FLSA', href: OVERTIME_GUIDE_PATHS.federal.en },
@@ -441,8 +441,7 @@ export const OVERTIME_GUIDES: Readonly<Record<OvertimeGuide, Readonly<Record<Lan
         sourcesLabel: 'Fuentes',
         disclaimer:
           'Una guía de la regla general de California, no asesoría legal. Tu orden salarial, una exención o un horario de semana laboral alternativa pueden cambiar lo que te deben.',
-        reviewed:
-          'Revisada con fuentes del Comisionado Laboral de California el 4 de noviembre de 2026.',
+        checked: '2026-11-04',
         ctas: [
           { label: 'Abrir la calculadora de horas extra', href: CALCULATOR.es },
           {

@@ -16,6 +16,7 @@ import {
 } from './guide/paths.ts';
 import { GUIDE_PATHS } from './guide/texts.ts';
 import { ABOUT_PATHS } from './about/texts.ts';
+import { EDITORIAL_PATHS } from './editorial/paths.ts';
 import { EMBED_PATHS } from './embed/texts.ts';
 import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
@@ -72,6 +73,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'privacy', kind: 'article', en: '/privacy', es: '/es/privacidad' },
   { id: 'about', kind: 'article', ...ABOUT_PATHS },
+  { id: 'editorial-policy', kind: 'article', ...EDITORIAL_PATHS },
   { id: 'embed', kind: 'article', ...EMBED_PATHS },
   ...LONG_TAIL_ROUTES,
   ...STATE_ROUTES,

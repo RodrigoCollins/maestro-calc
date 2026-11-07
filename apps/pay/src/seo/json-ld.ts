@@ -6,9 +6,20 @@ import {
   withBreadcrumb,
 } from '@maestro-calc/site-kit/json-ld';
 import { dataCards } from '../data/pages.ts';
+import { EDITORIAL_PATHS } from '../editorial/paths.ts';
 import type { Route } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 import { statesIndexOf } from '../states/pages.ts';
+
+/**
+ * Cuenta Horas as the organization that writes and publishes every article (its editorial team,
+ * never a person): its home and the English editorial policy as its publishing principles.
+ */
+const organizationOf = (origin: string) => ({
+  name: SITE.name,
+  url: new URL('/', origin).href,
+  publishingPrinciples: new URL(EDITORIAL_PATHS.en, origin).href,
+});
 
 /** The page name without the ` | Cuenta Horas` suffix of its title. */
 const nameOf = (title: string): string => title.replace(/\s*\|\s*Cuenta Horas$/, '');
@@ -74,7 +85,12 @@ export interface Parent {
 export const jsonLdOf = (
   route: Route,
   lang: 'en' | 'es',
-  page: { readonly title: string; readonly description: string },
+  page: {
+    readonly title: string;
+    readonly description: string;
+    /** The day the page's data says it was last checked (`YYYY-MM-DD`), when it carries one. */
+    readonly modified?: string;
+  },
   origin: string,
   parent?: Parent,
 ): string => {
@@ -99,7 +115,9 @@ export const jsonLdOf = (
             description,
             url,
             inLanguage,
-            publisher: SITE.name,
+            author: organizationOf(origin),
+            publisher: organizationOf(origin),
+            ...(page.modified === undefined ? {} : { dateModified: page.modified }),
           });
   const home = { name: SITE.name, url: new URL(lang === 'en' ? '/' : '/es', origin).href };
   const above =
