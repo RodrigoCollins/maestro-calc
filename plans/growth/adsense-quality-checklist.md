@@ -1,6 +1,6 @@
 # AdSense quality checklist (every site)
 
-Lessons of the maestrocalc.com "Low value content" rejection of 2026-11-07 (`plans/growth/adsense-low-value-audit-2026-11-08.md`), written for every site of this repository: Maestro Calc (`apps/web`), Cuenta Horas (`apps/pay`), Pool Figures (`apps/pool`) and the sites still to come (Bowl Figures, Lawn Figures, Cuánto Le Cobro). Run it before asking AdSense to review a site, and before a re-review.
+Lessons of the maestrocalc.com "Low value content" rejection of 2026-11-07 (`plans/growth/adsense-low-value-audit-2026-11-08.md`), written for every site of this repository: Maestro Calc (`apps/web`), Cuenta Horas (`apps/pay`), Pool Figures (`apps/pool`), Lawn Figures (`apps/lawn`) and the sites still to come (Bowl Figures, Cuánto Le Cobro). Run it before asking AdSense to review a site, and before a re-review.
 
 ## The measuring tool
 
@@ -13,6 +13,7 @@ Build the site, then run it on its own `dist`:
 | Maestro Calc | `npm run build`      | `npm run audit:content -- apps/web/dist`   |
 | Cuenta Horas | `npm run build:pay`  | `npm run audit:content -- apps/pay/dist`   |
 | Pool Figures | `npm run build:pool` | `npm run audit:content -- apps/pool/dist`  |
+| Lawn Figures | `npm run build:lawn` | `npm run audit:content -- apps/lawn/dist`  |
 | A new app    | its build            | `npm run audit:content -- apps/<app>/dist` |
 
 Options: `--limit <n>` (rows of the thinnest list, default 30), `--thin <words>` (default 120), `--json <file>` (the full report, every page). A site whose main content uses other chrome classes can pass its own `chrome` selector to `auditSite` from a script of its own.

@@ -192,6 +192,12 @@ Indexable pages under 120 unique words: 142 of 230 before, 98 after. HTML budget
 
 One trade-off, stated plainly: the buying advice is shared by the pages of a kind, so the template share of a family rose (near-duplicate pairs 292 to 398, the highest 0.71 between two roof pitches). The unique text per page still nearly doubled, and each page now explains and checks its own answer. If the re-review fails again, the next lever is the noindex step above, not more shared text.
 
+### PR 2: hubs, about, and a reusable audit
+
+- `/drywall`, `/painting` and `/measurement` (and their Spanish pages) get a sourced four-step plan of their job, linking the calculator, a room or size page and the guide; the measurement hub now links the construction glossary from main content. Words / unique words, before and after: `/drywall` 180 / 95 to 422 / 302, `/painting` 232 / 104 to 453 / 305, `/measurement` 350 / 106 to 537 / 267; Spanish the same within a few words.
+- `/about` explains how a calculator is checked (sources, exact fractions, hand-verified cases, job pages worked by the same engine) inside its editorial policy section, keeping the three pinned anchors: 195 / 181 to 341 / 311.
+- The measurement script of this audit is now `packages/site-kit/src/content-audit.ts`, run as `npm run audit:content -- apps/<app>/dist`, and the lessons are in `plans/growth/adsense-quality-checklist.md` for every site.
+
 ## Recommendation: when to request the re-review
 
 Do not request it right after these merges. Wait until:
