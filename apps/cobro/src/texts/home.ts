@@ -14,7 +14,12 @@ export interface HomeText {
   readonly rateLink: string;
   readonly guidesH2: string;
   readonly guideSummaries: Readonly<Record<'quote-guide' | 'markup-guide' | 'rate-guide', string>>;
+  readonly trustH2: string;
+  readonly trustBody: string;
 }
+
+/** The pages the home links in its closing section, so none is reached from the footer alone. */
+export const TRUST_PAGES = ['about', 'editorial', 'privacy', 'embed'] as const;
 
 export const HOME_TEXTS: Readonly<Record<Lang, HomeText>> = {
   es: {
@@ -56,6 +61,9 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeText>> = {
       'markup-guide': 'Por qué sumar 20 % al costo no deja 20 % de ganancia.',
       'rate-guide': 'Cuánto necesitas ganar y cuántas horas puedes cobrar de verdad.',
     },
+    trustH2: 'Quién hace este sitio',
+    trustBody:
+      'Quién escribe y revisa estas páginas, cómo elegimos las fuentes, qué datos guarda el sitio y cómo poner una calculadora en tu propia página:',
   },
   en: {
     title: 'Cuánto Le Cobro: quotes for cleaning, painting and more',
@@ -96,5 +104,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeText>> = {
       'markup-guide': 'Why adding 20% to the cost does not leave 20% profit.',
       'rate-guide': 'What you need to earn and how many hours you can really bill.',
     },
+    trustH2: 'Who makes this site',
+    trustBody:
+      'Who writes and checks these pages, how we choose the sources, what the site keeps and how to put a calculator on your own page:',
   },
 };

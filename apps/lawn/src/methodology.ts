@@ -57,7 +57,7 @@ const ARKANSAS = {
   name: 'University of Arkansas MP476, “Establishing Seeded Zoysiagrass on Lawns and Golf Courses” (Aaron Patton)',
   url: 'https://www.uaex.uada.edu/publications/PDF/MP476.pdf',
 };
-const PSU_LIME = {
+export const PSU_LIME = {
   name: 'Penn State Agricultural Analytical Services Lab, “Lime recommendations, turf”',
   url: 'https://agsci.psu.edu/aasl/soil-testing/fertility/handbooks/turf/tables/lime-recommendations-turf',
 };
