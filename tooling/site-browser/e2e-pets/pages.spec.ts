@@ -39,11 +39,14 @@ for (const path of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
-    // closed until the owner buys the domain and flips `SITE.indexable`: no canonical, noindex
-    test('is closed to search engines until launch', async ({ page }) => {
+    // open since 2026-11-08 (`SITE.indexable`): no robots meta, and the canonical names the page
+    test('is open to search engines, with its canonical URL', async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
-      await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://bowlfigures.com${path}`,
+      );
     });
 
     // no measurement id yet: the loader is not on the page, so nothing can reach Google

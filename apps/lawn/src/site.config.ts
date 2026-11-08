@@ -3,11 +3,8 @@ export const SITE = {
   name: 'Lawn Figures',
   origin: 'https://lawnfigures.com',
   locales: ['en'],
-  /**
-   * Launch switch: closed until the owner buys the domain and flips it (pages carry `noindex`, no
-   * canonical). Months before the March to April fertilizer peak (plans/lawn/PLAN.md).
-   */
-  indexable: false,
+  /** Launch switch: open to search engines on 2026-11-08, months before the March to April fertilizer peak. */
+  indexable: true,
   /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). */
   gaId: 'G-L7CC69GZMG' as string,
   /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */
