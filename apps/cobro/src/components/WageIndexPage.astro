@@ -1,0 +1,80 @@
+---
+import { WAGES_CHECKED } from '../bylines.ts';
+import { hrefOf, TRADE_PATHS, WAGE_STEMS, type Lang, type TradeId } from '../routes.ts';
+import { titleOf } from '../seo/meta.ts';
+import { WAGE_TEXTS } from '../texts/wages.ts';
+import { TRADE_TEXTS } from '../texts/trades.ts';
+import { tradeIndexViewOf } from '../wages/view.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+
+interface Props {
+  readonly trade: TradeId;
+  readonly lang: Lang;
+}
+
+const { trade, lang } = Astro.props;
+const view = tradeIndexViewOf(trade, lang);
+const text = WAGE_TEXTS[lang];
+const items = view.rows.map((row) => ({ name: row.state, path: row.href }));
+---
+
+<Layout
+  title={titleOf(view.title)}
+  description={view.description}
+  extras={{
+    parent: { name: text.crumb, path: hrefOf('wages', lang) },
+    items,
+    modified: WAGES_CHECKED,
+  }}
+>
+  <article class="prose">
+    <ul class="crumbs">
+      <li>
+        <a href={hrefOf('wages', lang)}>{text.crumb}</a>
+      </li>
+      <li>{TRADE_TEXTS[lang][trade].name}</li>
+    </ul>
+    <h1>{view.h1}</h1>
+    <Byline {lang} checked={WAGES_CHECKED} sourcesId="source" />
+    <p class="lead">{view.lead}</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label={view.h1}>
+      <table>
+        <thead>
+          <tr>
+            <th>{text.table.state}</th>
+            <th class="num">{text.table.mean}</th>
+            <th class="num">{text.table.median}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>{view.national.state}</th>
+            <td class="num">{view.national.mean}</td>
+            <td class="num">{view.national.median}</td>
+          </tr>
+          {view.rows.map((row) => (
+            <tr>
+              <th>
+                <a href={row.href}>{row.state}</a>
+              </th>
+              <td class="num">{row.mean}</td>
+              <td class="num">{row.median}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      <a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a>
+    </p>
+    <ShareLink {lang} name={view.h1} path={WAGE_STEMS[trade][lang]} />
+    <p id="source" class="byline">
+      {view.source}{' '}
+      <a href="https://www.bls.gov/oes/" rel="noopener">
+        bls.gov/oes
+      </a>
+    </p>
+  </article>
+</Layout>

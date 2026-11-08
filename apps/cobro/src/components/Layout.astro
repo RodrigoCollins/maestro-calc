@@ -1,0 +1,132 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/site.css';
+import { embedPathOf } from '@maestro-calc/site-kit/embed';
+import { footerOf, switchOf } from '../layout.ts';
+import { hrefOf, langOf, routeOf } from '../routes.ts';
+import { alternatesOf, embedHeadOf, headOf } from '../seo/head.ts';
+import { jsonLdOf, type Extras } from '../seo/json-ld.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
+import { SITE } from '../site.config.ts';
+import { COMMON } from '../texts/common.ts';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+  /** False for a page that is never indexed and has no canonical: the 404. */
+  readonly indexed?: boolean;
+  /**
+   * The embed of a calculator page (`src/embed/embeds.ts`), another site's frame: canonical at the
+   * full page, `noindex`, no JSON-LD or analytics, every link in a new tab, no navigation.
+   */
+  readonly embed?: boolean;
+  /** What the page adds to its JSON-LD: its parent crumb, the pages it lists, its questions. */
+  readonly extras?: Extras;
+}
+
+const { title, description, indexed = true, embed = false, extras } = Astro.props;
+const here = canonicalPath(Astro.url.pathname);
+const embedHead = embed ? embedHeadOf(here, { title, description }) : undefined;
+const path = embedHead?.page ?? here;
+const { canonical, robots, preview } = embedHead ?? headOf(path, { title, description }, indexed);
+const route = routeOf(path);
+const lang = langOf(path);
+const texts = COMMON[lang];
+const jsonLd =
+  route === undefined || !indexed
+    ? undefined
+    : jsonLdOf(route, lang, { title, description }, SITE.origin, hrefOf('editorial', 'en'), extras);
+const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.origin) : [];
+const other = route === undefined ? undefined : switchOf(route, lang);
+const otherHref = other === undefined ? undefined : embed ? embedPathOf(other.href) : other.href;
+const home = lang === 'es' ? '/' : '/en';
+---
+
+<!doctype html>
+<html {lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#121212" />
+    {robots !== undefined && <meta name="robots" content={robots} />}
+    {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    {alternates.map(({ hreflang, href }) => (
+      <link rel="alternate" {hreflang} {href} />
+    ))}
+    {embed && <base target="_blank" />}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={route?.kind === 'article' ? 'article' : 'website'} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
+    {canonical !== undefined && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
+    {alternates.length > 0 && (
+      <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
+    )}
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
+    <meta name="twitter:card" content={preview['twitter:card']} />
+    {jsonLd !== undefined && !embed && (
+      <script type="application/ld+json" is:inline set:html={jsonLd} />
+    )}
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '800' }]} />
+    {SITE.gaId !== '' && !embed && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-ga={SITE.gaId}
+        data-host={new URL(SITE.origin).hostname}
+        defer
+      />
+    )}
+  </head>
+  <body>
+    {!embed && (
+      <a class="skip" href="#content">
+        {texts.skip}
+      </a>
+    )}
+    <header class="site-header">
+      <a class="brand" href={embed ? canonical : home}>
+        {SITE.name}
+      </a>
+      {other !== undefined && otherHref !== undefined && (
+        <a
+          class="lang"
+          href={otherHref}
+          hreflang={other.lang}
+          lang={other.lang}
+          target={embed ? '_self' : undefined}
+        >
+          {other.label}
+        </a>
+      )}
+    </header>
+    <main id="content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div>
+        <p>{texts.footerWarning}</p>
+        {!embed &&
+          footerOf(lang).map(({ title: group, links }) => (
+            <nav aria-label={group}>
+              <ul>
+                {links.map(({ href, label }) => (
+                  <li>
+                    <a {href}>{label}</a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+      </div>
+    </footer>
+  </body>
+</html>

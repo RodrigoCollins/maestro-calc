@@ -1,0 +1,60 @@
+---
+import { WAGES_CHECKED } from '../bylines.ts';
+import { chipsOf } from '../layout.ts';
+import { fill } from '../receipt/details.ts';
+import { hrefOf, WAGE_STEMS, type Lang } from '../routes.ts';
+import { titleOf } from '../seo/meta.ts';
+import { OCCUPATION_TEXTS, WAGE_TEXTS } from '../texts/wages.ts';
+import { nationalOf, wageText } from '../wages/view.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = WAGE_TEXTS[lang];
+const trades = chipsOf(lang).map((chip) => {
+  const [mean, median] = nationalOf(chip.id);
+  return {
+    name: chip.label,
+    noun: OCCUPATION_TEXTS[lang][chip.id].plural,
+    href: WAGE_STEMS[chip.id][lang],
+    line: fill(text.hubCard, { mean: wageText(mean), median: wageText(median) }),
+  };
+});
+---
+
+<Layout
+  title={titleOf(text.hubTitle)}
+  description={text.hubDescription}
+  extras={{
+    items: trades.map(({ name, href }) => ({ name, path: href })),
+    modified: WAGES_CHECKED,
+  }}
+>
+  <article class="prose">
+    <h1>{text.hubH1}</h1>
+    <Byline {lang} checked={WAGES_CHECKED} sourcesId="source" />
+    <p class="lead">{text.hubLead}</p>
+    <ul class="cards">
+      {trades.map((trade) => (
+        <li>
+          <a href={trade.href}>
+            <b>{trade.name}</b>
+            <span>{trade.line}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <ShareLink {lang} name={text.hubH1} path={hrefOf('wages', lang)} />
+    <p id="source" class="byline">
+      {fill(text.hubSource, { accessed: WAGES_CHECKED })}
+      <a href="https://www.bls.gov/oes/" rel="noopener">
+        bls.gov/oes
+      </a>
+    </p>
+  </article>
+</Layout>
