@@ -99,6 +99,18 @@ const PAGE_ROUTES: readonly Route[] = [
     es: '/es/tabla-de-volumen-de-piscina',
   },
   {
+    id: 'gallons-guide',
+    kind: 'article',
+    en: '/how-many-gallons-is-my-pool',
+    es: '/es/cuantos-galones-tiene-mi-piscina',
+  },
+  {
+    id: 'olympic-guide',
+    kind: 'article',
+    en: '/how-many-gallons-in-an-olympic-pool',
+    es: '/es/cuantos-galones-tiene-una-piscina-olimpica',
+  },
+  {
     id: 'charts',
     kind: 'article',
     en: '/charts',

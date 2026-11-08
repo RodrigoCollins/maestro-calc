@@ -27,6 +27,8 @@ describe('the footer', () => {
       { href: '/pool-water-chemistry-chart', label: 'Water chemistry chart' },
       { href: '/pool-chemical-dosing-chart', label: 'Chemical dosing chart' },
       { href: '/pool-volume-chart', label: 'Pool volume chart' },
+      { href: '/how-many-gallons-is-my-pool', label: 'How many gallons is my pool' },
+      { href: '/how-many-gallons-in-an-olympic-pool', label: 'Gallons in an Olympic pool' },
       { href: '/charts', label: 'Data and charts' },
       { href: '/how-long-to-run-pool-pump', label: 'How long to run your pump' },
       { href: '/salt-water-pool-vs-chlorine-pool', label: 'Salt water vs chlorine' },

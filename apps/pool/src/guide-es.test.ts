@@ -18,6 +18,8 @@ import {
   SALT_VS_CHLORINE_GUIDE_ES,
   SHOCK_GUIDE_ES,
 } from './guide-es.ts';
+import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
 import { hrefOf, routeOf } from './routes.ts';
 
 const PAIRS: readonly (readonly [string, StepGuide, StepGuide])[] = [
@@ -28,6 +30,8 @@ const PAIRS: readonly (readonly [string, StepGuide, StepGuide])[] = [
   ['shock-guide', SHOCK_GUIDE, SHOCK_GUIDE_ES],
   ['ph-guide', PH_GUIDE, PH_GUIDE_ES],
   ['calcium-guide', CALCIUM_GUIDE, CALCIUM_GUIDE_ES],
+  ['gallons-guide', GALLONS_GUIDE, GALLONS_GUIDE_ES],
+  ['olympic-guide', OLYMPIC_GUIDE, OLYMPIC_GUIDE_ES],
 ];
 
 /** The numbers of a text, a thousands comma read inside its number: "20,000" is 20000. */
