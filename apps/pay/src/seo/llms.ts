@@ -4,6 +4,7 @@ import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { DATA_TEXTS } from '../data/texts.ts';
 import { EDITORIAL_TEXTS } from '../editorial/texts.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
+import { FULL_TIME_GUIDE, PART_TIME_GUIDE } from '../guide/full-part-time.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDES } from '../guide/overtime.ts';
 import { MINIMUM_WAGE_2027_GUIDE } from '../guide/minimum-wage-2027.ts';
@@ -67,6 +68,8 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   'tip-credit-guide': both(TIP_CREDIT_GUIDE),
   'tipped-states-guide': both(TIPPED_STATES_GUIDE),
   'hours-worked-guide': both(HOURS_WORKED_GUIDE),
+  'full-time-guide': both(FULL_TIME_GUIDE),
+  'part-time-guide': both(PART_TIME_GUIDE),
   'overtime-states-guide': both(OVERTIME_STATES_GUIDE),
   'minimum-wage-states-guide': both(MINIMUM_WAGE_STATES_GUIDE),
   'minimum-wage-2027-states-guide': both(MINIMUM_WAGE_2027_GUIDE),

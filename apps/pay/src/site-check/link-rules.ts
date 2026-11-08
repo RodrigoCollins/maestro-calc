@@ -70,6 +70,8 @@ export const GUIDE_CALCULATORS: Readonly<Record<string, readonly string[]>> = {
   'tip-credit-guide': ['tipped-wage'],
   'tipped-states-guide': ['tipped-wage'],
   'hours-worked-guide': ['hours', 'decimal-hours'],
+  'full-time-guide': ['hours'],
+  'part-time-guide': ['hours'],
   'overtime-states-guide': ['overtime'],
   'minimum-wage-states-guide': ['hourly-to-salary', 'salary-to-hourly'],
   'minimum-wage-2027-states-guide': ['hourly-to-salary'],

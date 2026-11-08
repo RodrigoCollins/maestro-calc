@@ -1,4 +1,8 @@
-import { HOURS_WORKED_GUIDE_PATHS } from '../guide/paths.ts';
+import {
+  FULL_TIME_GUIDE_PATHS,
+  HOURS_WORKED_GUIDE_PATHS,
+  PART_TIME_GUIDE_PATHS,
+} from '../guide/paths.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
 export const HOURS_PATHS = {
@@ -96,6 +100,8 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
       },
       { label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' },
       { label: 'Which breaks count as hours worked?', href: HOURS_WORKED_GUIDE_PATHS.en },
+      { label: 'How many hours is full time?', href: FULL_TIME_GUIDE_PATHS.en },
+      { label: 'How many hours is part time?', href: PART_TIME_GUIDE_PATHS.en },
     ],
     otherLang: 'Español',
   },
@@ -134,6 +140,8 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
       },
       { label: 'Convierte minutos a horas decimales', href: '/es/minutos-a-horas-decimales' },
       { label: '¿Qué descansos cuentan como horas trabajadas?', href: HOURS_WORKED_GUIDE_PATHS.es },
+      { label: '¿Cuántas horas son tiempo completo?', href: FULL_TIME_GUIDE_PATHS.es },
+      { label: '¿Cuántas horas son medio tiempo?', href: PART_TIME_GUIDE_PATHS.es },
     ],
     otherLang: 'English',
   },

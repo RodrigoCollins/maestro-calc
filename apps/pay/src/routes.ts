@@ -2,10 +2,12 @@ import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import {
+  FULL_TIME_GUIDE_PATHS,
   HOURS_WORKED_GUIDE_PATHS,
   MINIMUM_WAGE_2027_GUIDE_PATHS,
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
   OVERTIME_STATES_GUIDE_PATHS,
+  PART_TIME_GUIDE_PATHS,
   PAY_STUB_GUIDE_PATHS,
   PTO_GUIDE_PATHS,
   SHIFT_GUIDE_PATHS,
@@ -65,6 +67,8 @@ export const ROUTES: readonly Route[] = [
   { id: 'tip-credit-guide', kind: 'article', ...TIP_CREDIT_GUIDE_PATHS },
   { id: 'tipped-states-guide', kind: 'article', ...TIPPED_STATES_GUIDE_PATHS },
   { id: 'hours-worked-guide', kind: 'article', ...HOURS_WORKED_GUIDE_PATHS },
+  { id: 'full-time-guide', kind: 'article', ...FULL_TIME_GUIDE_PATHS },
+  { id: 'part-time-guide', kind: 'article', ...PART_TIME_GUIDE_PATHS },
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-2027-states-guide', kind: 'article', ...MINIMUM_WAGE_2027_GUIDE_PATHS },

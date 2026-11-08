@@ -1,4 +1,10 @@
 import { DATA_PAGES } from '../data/pages.ts';
+import {
+  FULL_TIME_GUIDE,
+  FULL_TIME_GUIDE_PATHS,
+  PART_TIME_GUIDE,
+  PART_TIME_GUIDE_PATHS,
+} from '../guide/full-part-time.ts';
 import { HOURS_WORKED_GUIDE } from '../guide/hours-worked.ts';
 import { OVERTIME_GUIDE_PATHS, OVERTIME_GUIDES } from '../guide/overtime.ts';
 import {
@@ -54,6 +60,8 @@ export const BYLINE_GUIDES: readonly {
   { paths: SHIFT_GUIDE_PATHS, texts: SHIFT_GUIDE },
   { paths: TIP_CREDIT_GUIDE_PATHS, texts: TIP_CREDIT_GUIDE },
   { paths: HOURS_WORKED_GUIDE_PATHS, texts: HOURS_WORKED_GUIDE },
+  { paths: FULL_TIME_GUIDE_PATHS, texts: FULL_TIME_GUIDE },
+  { paths: PART_TIME_GUIDE_PATHS, texts: PART_TIME_GUIDE },
 ];
 
 const LANGS = ['en', 'es'] as const;
