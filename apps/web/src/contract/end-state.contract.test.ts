@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and fifteen ids, so the
-// site has two hundred and thirty routable pages and two not-found pages.
-describe('end state of the square feet to square meters chart (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and eighteen ids, so the
+// site has two hundred and thirty-six routable pages and two not-found pages.
+describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and fifteen page ids, two hundred and thirty routable paths and two hundred and thirty-two pages with the 404s', () => {
+  it('has a hundred and eighteen page ids, two hundred and thirty-six routable paths and two hundred and thirty-eight pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -89,6 +89,9 @@ describe('end state of the square feet to square meters chart (site-routing-i18n
       'square-feet-12x14',
       'square-feet-12x30',
       'square-feet-20x20',
+      'square-feet-in-an-acre',
+      'square-feet-in-a-half-acre',
+      'square-feet-in-a-quarter-acre',
       'square-feet-to-square-meters-chart',
       'mulch-bags-per-yard',
       'gravel-driveway-10x20',
@@ -131,10 +134,10 @@ describe('end state of the square feet to square meters chart (site-routing-i18n
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(230);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(230);
+    expect(staticPaths()).toHaveLength(236);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(236);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(232);
+    expect(pageCount(ROUTES)).toBe(238);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -161,11 +164,11 @@ describe('end state of the square feet to square meters chart (site-routing-i18n
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and thirty-two page title and description keys in %s',
+    'has exactly two hundred and thirty-eight page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(232);
+      ).toHaveLength(238);
     },
   );
 
@@ -177,7 +180,7 @@ describe('end state of the square feet to square meters chart (site-routing-i18n
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and thirty URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(230);
+  it('lists two hundred and thirty-six URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(236);
   });
 });

@@ -228,6 +228,18 @@ export const ROUTES = {
     en: '/measurement/20x20-square-feet',
     es: '/es/medidas/20x20-pies-cuadrados',
   },
+  'square-feet-in-an-acre': {
+    en: '/measurement/square-feet-in-an-acre',
+    es: '/es/medidas/pies-cuadrados-en-un-acre',
+  },
+  'square-feet-in-a-half-acre': {
+    en: '/measurement/square-feet-in-a-half-acre',
+    es: '/es/medidas/pies-cuadrados-en-medio-acre',
+  },
+  'square-feet-in-a-quarter-acre': {
+    en: '/measurement/square-feet-in-a-quarter-acre',
+    es: '/es/medidas/pies-cuadrados-en-un-cuarto-de-acre',
+  },
   'square-feet-to-square-meters-chart': {
     en: '/measurement/square-feet-to-square-meters-chart',
     es: '/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados',

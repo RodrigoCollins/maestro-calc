@@ -6,7 +6,15 @@ import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText, groupedInteger, outputText } from '../calculator/present.ts';
-import { isChartJob, JOBS, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
+import {
+  ACRE_FT2,
+  isChartJob,
+  isLandJob,
+  JOBS,
+  type Job,
+  type JobCase,
+  type JobId,
+} from '../routing/jobs.ts';
 import { GRAVEL_DENSITIES } from '@maestro-calc/data/yields/gravel';
 import { ROOFING_COVERAGE } from '@maestro-calc/data/yields/roofing';
 import { concrete } from './concrete.ts';
@@ -123,7 +131,8 @@ const areaSteps = (id: JobId, locale: Locale): Steps => {
   const feet = two(valueIn(outputs.areaFt2, ft2));
   const length = feetOf(raw['length']);
   const width = feetOf(raw['width']);
-  return [
+  const squareMeters = two(valueIn(outputs.areaM2, m2));
+  const [area, yards, metric] = [
     {
       label: text('site.job.worked.area.feet'),
       math: `${length.toString()} ft × ${width.toString()} ft = ${feet} ft²`,
@@ -134,8 +143,29 @@ const areaSteps = (id: JobId, locale: Locale): Steps => {
     },
     {
       label: text('site.job.worked.area.metric'),
-      math: `${metersOf(length)} m × ${metersOf(width)} m = ${two(valueIn(outputs.areaM2, m2))} m²`,
+      math: `${metersOf(length)} m × ${metersOf(width)} m = ${squareMeters} m²`,
     },
+  ] as const;
+  // a lot of land is counted in acres and hectares, and takes nothing for cuts
+  if (isLandJob(id)) {
+    return [
+      area,
+      yards,
+      metric,
+      {
+        label: text('site.job.worked.land.acres'),
+        math: `${feet} ft² ÷ ${groupedInteger(BigInt(ACRE_FT2))} = ${two(valueIn(outputs.areaFt2, ft2).div(Rational.of(ACRE_FT2)))} ac`,
+      },
+      {
+        label: text('site.job.worked.land.hectares'),
+        math: `${squareMeters} m² ÷ 10,000 = ${decimalText(valueIn(outputs.areaM2, m2).div(Rational.of(10_000)), 4, true)} ha`,
+      },
+    ];
+  }
+  return [
+    area,
+    yards,
+    metric,
     {
       label: text('site.job.worked.area.cuts'),
       math: `${feet} ft² × 1.10 = ${two(valueIn(outputs.areaFt2, ft2).mul(Rational.of(11, 10)))} ft²`,
