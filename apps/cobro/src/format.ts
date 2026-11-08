@@ -23,3 +23,44 @@ export const fieldText = (value: Rational, places = 4): string =>
 
 /** Dollars for a field: `25`, `38.5`, no sign and no grouping. */
 export const dollarsFieldText = (money: Money): string => fieldText(money.amount, 2);
+
+const MONTHS = {
+  es: [
+    'enero',
+    'febrero',
+    'marzo',
+    'abril',
+    'mayo',
+    'junio',
+    'julio',
+    'agosto',
+    'septiembre',
+    'octubre',
+    'noviembre',
+    'diciembre',
+  ],
+  en: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ],
+} as const;
+
+/** A day (`2026-11-08`) as people write it: `8 de noviembre de 2026`, `November 8, 2026`. */
+export const dateText = (iso: string, lang: 'es' | 'en'): string => {
+  const [year = '', month = '', day = ''] = iso.split('-');
+  const name = MONTHS[lang][Number(month) - 1];
+  if (name === undefined) throw new Error(`not a day: ${iso}`);
+  return lang === 'es'
+    ? `${String(Number(day))} de ${name} de ${year}`
+    : `${name} ${String(Number(day))}, ${year}`;
+};

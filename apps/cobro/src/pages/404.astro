@@ -1,0 +1,20 @@
+---
+import Layout from '../components/Layout.astro';
+import { COMMON } from '../texts/common.ts';
+
+/*
+ * The 404 is served for any unknown address, so its language is unknown: it speaks both, Spanish
+ * first (the primary language of the site), and is never indexed.
+ */
+const es = COMMON.es.notFound;
+const en = COMMON.en.notFound;
+---
+
+<Layout title={`${es.title} | Cuánto Le Cobro`} description={es.body} indexed={false}>
+  <h1>{es.title}</h1>
+  <p class="lead">{es.body}</p>
+  <p><a class="button button-whatsapp" href="/">{es.home}</a></p>
+  <h2 lang="en">{en.title}</h2>
+  <p lang="en">{en.body}</p>
+  <p lang="en"><a href="/en">{en.home}</a></p>
+</Layout>

@@ -1,0 +1,185 @@
+---
+import { CASES } from '../cases.ts';
+import { moneyText, numberText } from '../format.ts';
+import { PAGE_LABELS } from '../layout.ts';
+import { hrefOf, TRADE_PATHS, type Lang } from '../routes.ts';
+import { titleOf } from '../seo/meta.ts';
+import { marginRows, markupRows, RATE_EXAMPLE, rateOfExample } from '../tables.ts';
+import { ARTICLES, type ArticleId, type Block } from '../texts/articles.ts';
+import { TRADE_TEXTS } from '../texts/trades.ts';
+import { Rational, usd } from '@maestro-calc/core';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+
+interface Props {
+  readonly id: ArticleId;
+  readonly lang: Lang;
+}
+
+const { id, lang } = Astro.props;
+const article = ARTICLES[lang][id];
+const sourcesId = lang === 'es' ? 'fuentes' : 'sources';
+const hasSources = article.sources.length > 0;
+const embeddedSources = article.blocks.some((block) => block.id === sourcesId);
+
+const WORDS = {
+  es: {
+    cases: ['Caso', 'Mano de obra', 'Materiales', 'Unidades', 'Total'],
+    markup: ['Recargo', 'Margen que deja'],
+    margin: ['Margen', 'Recargo que lo da'],
+    sources: 'Fuentes',
+    accessed: 'leída el',
+    per: 'por hora',
+    rate: [
+      'Lo que quieres ganar al año',
+      'Costos del negocio al año',
+      'Semanas que trabajas al año',
+      'Horas cobrables por semana',
+      'Horas cobrables al año',
+      'Tarifa por hora',
+    ],
+    open: 'Abrir la calculadora de',
+  },
+  en: {
+    cases: ['Case', 'Labor', 'Materials', 'Units', 'Total'],
+    markup: ['Markup', 'Margin it leaves'],
+    margin: ['Margin', 'Markup that gives it'],
+    sources: 'Sources',
+    accessed: 'read',
+    per: 'an hour',
+    rate: [
+      'What you want to earn in a year',
+      'Business costs in a year',
+      'Weeks you work in a year',
+      'Billable hours a week',
+      'Billable hours in a year',
+      'Hourly rate',
+    ],
+    open: 'Open the calculator for',
+  },
+}[lang];
+
+const caseRows = CASES.map((each) => [
+  each.name[lang],
+  `$${each.labor}`,
+  `$${each.materials}`,
+  String(each.units),
+  `$${each.total}`,
+]);
+const hoursPerYear = RATE_EXAMPLE.weeks * RATE_EXAMPLE.hoursPerWeek;
+const rateRows = [
+  moneyText(usd(RATE_EXAMPLE.income)),
+  moneyText(usd(RATE_EXAMPLE.costs)),
+  String(RATE_EXAMPLE.weeks),
+  String(RATE_EXAMPLE.hoursPerWeek),
+  numberText(Rational.of(hoursPerYear), 0),
+  `${moneyText(usd(rateOfExample()))} ${WORDS.per}`,
+];
+const tables = {
+  cases: { head: WORDS.cases, rows: caseRows, numeric: [1, 2, 3, 4] },
+  'markup-table': { head: WORDS.markup, rows: markupRows(lang), numeric: [0, 1] },
+  'margin-table': { head: WORDS.margin, rows: marginRows(lang), numeric: [0, 1] },
+} as const;
+const tradeIds = ['cleaning', 'painting', 'drywall', 'concrete', 'landscaping'] as const;
+const forBlock = (block: Block) => (block.generated === undefined ? undefined : block.generated);
+---
+
+<Layout
+  title={titleOf(article.title)}
+  description={article.description}
+  extras={{ modified: article.checked }}
+>
+  <article class="prose">
+    <h1>{article.h1}</h1>
+    <Byline {lang} checked={article.checked} sourcesId={hasSources ? sourcesId : undefined} />
+    <p class="lead">{article.lead}</p>
+    {article.blocks.map((block) => {
+      const generated = forBlock(block);
+      return (
+        <section>
+          <h2 id={block.id}>{block.h2}</h2>
+          {block.paragraphs?.map((text) => <p>{text}</p>)}
+          {generated === 'rate-example' && (
+            <ol>
+              {rateRows.map((value, index) => (
+                <li>
+                  {WORDS.rate[index]}: <strong>{value}</strong>
+                </li>
+              ))}
+            </ol>
+          )}
+          {generated !== undefined && generated !== 'rate-example' && (
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    {tables[generated].head.map((cell, index) => (
+                      <th class={tables[generated].numeric.includes(index) ? 'num' : undefined}>{cell}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {tables[generated].rows.map((row) => (
+                    <tr>
+                      {row.map((cell, index) => (
+                        <td class={tables[generated].numeric.includes(index) ? 'num' : undefined}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {block.list !== undefined && (
+            <ul>{block.list.map((item) => <li>{item}</li>)}</ul>
+          )}
+          {block.after?.map((text) => <p>{text}</p>)}
+          {block.id === sourcesId && (
+            <ul>
+              {article.sources.map((source) => (
+                <li>
+                  {source.url === undefined ? (
+                    source.name
+                  ) : (
+                    <a href={source.url} rel="noopener">{source.name}</a>
+                  )}{' '}
+                  ({WORDS.accessed} <time datetime={source.accessed}>{source.accessed}</time>)
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      );
+    })}
+    {hasSources && !embeddedSources && (
+      <section>
+        <h2 id={sourcesId}>{WORDS.sources}</h2>
+        <ul>
+          {article.sources.map((source) => (
+            <li>
+              {source.url === undefined ? (
+                source.name
+              ) : (
+                <a href={source.url} rel="noopener">{source.name}</a>
+              )}{' '}
+              ({WORDS.accessed} <time datetime={source.accessed}>{source.accessed}</time>)
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    {(id === 'quote-guide' || id === 'markup-guide' || id === 'rate-guide') && (
+      <section>
+        <h2>{lang === 'es' ? 'Calculadoras' : 'Calculators'}</h2>
+        <ul>
+          {tradeIds.map((trade) => (
+            <li>
+              <a href={TRADE_PATHS[trade][lang]}>{WORDS.open} {TRADE_TEXTS[lang][trade].name}</a>
+            </li>
+          ))}
+          <li><a href={hrefOf('wages', lang)}>{PAGE_LABELS[lang]['wages']}</a></li>
+        </ul>
+      </section>
+    )}
+  </article>
+</Layout>

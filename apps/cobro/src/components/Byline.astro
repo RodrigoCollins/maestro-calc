@@ -1,0 +1,27 @@
+---
+import { bylineOf } from '../bylines.ts';
+import { hrefOf, type Lang } from '../routes.ts';
+
+/** The byline under the h1 of a guide, an article or a wage page (`src/bylines.ts`). */
+interface Props {
+  readonly lang: Lang;
+  readonly checked: string;
+  /** The id of the sources section on the page, when it has one. */
+  readonly sourcesId?: string;
+}
+
+const { lang, checked, sourcesId } = Astro.props;
+const line = bylineOf(lang, checked, sourcesId !== undefined);
+---
+
+<p class="byline">
+  {line.by} <a href={hrefOf('editorial', lang)}>{line.team}</a>
+  {' · '}
+  {line.reviewed.label} <time datetime={line.reviewed.datetime}>{line.reviewed.text}</time>
+  {line.sources !== undefined && (
+    <>
+      {' · '}
+      <a href={`#${sourcesId}`}>{line.sources}</a>
+    </>
+  )}
+</p>

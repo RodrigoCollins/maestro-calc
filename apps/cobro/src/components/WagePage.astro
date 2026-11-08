@@ -1,0 +1,78 @@
+---
+import { WAGES_CHECKED } from '../bylines.ts';
+import { PAGE_LABELS } from '../layout.ts';
+import { fill } from '../receipt/details.ts';
+import { hrefOf, TRADE_PATHS, wagePathOf, WAGE_STEMS, type Lang, type TradeId } from '../routes.ts';
+import { titleOf } from '../seo/meta.ts';
+import { TRADE_TEXTS } from '../texts/trades.ts';
+import { WAGE_TEXTS } from '../texts/wages.ts';
+import { AREAS } from '../wages/areas.ts';
+import { stateWageViewOf } from '../wages/view.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+
+interface Props {
+  readonly trade: TradeId;
+  readonly fips: string;
+  readonly lang: Lang;
+}
+
+const { trade, fips, lang } = Astro.props;
+const view = stateWageViewOf(trade, fips, lang);
+const text = WAGE_TEXTS[lang];
+const state = AREAS.find((area) => area.fips === fips)?.name[lang] ?? '';
+const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][lang] };
+---
+
+<Layout
+  title={titleOf(view.title)}
+  description={view.description}
+  extras={{ parent: { name: text.crumb, path: index.path }, modified: WAGES_CHECKED }}
+>
+  <article class="prose">
+    <ul class="crumbs">
+      <li><a href={hrefOf('wages', lang)}>{text.crumb}</a></li>
+      <li><a href={WAGE_STEMS[trade][lang]}>{TRADE_TEXTS[lang][trade].name}</a></li>
+      <li>{state}</li>
+    </ul>
+    <h1>{view.h1}</h1>
+    <Byline {lang} checked={WAGES_CHECKED} sourcesId="source" />
+    <p class="lead">{view.lead}</p>
+    <div class="stats">
+      {view.stats.map((stat) => (
+        <div>
+          <span>{stat.label}</span>
+          <p class="big">{stat.value}</p>
+        </div>
+      ))}
+    </div>
+
+    <h2>{view.rankH2}</h2>
+    <p>{view.rank}</p>
+
+    <section class="card card-gold" aria-labelledby="rate-card">
+      <h2 id="rate-card">{view.rateH2}</h2>
+      <p>{text.rateBody}</p>
+      <ul>
+        <li><a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a></li>
+        <li><a href={hrefOf('rate-guide', lang)}>{text.guide}</a></li>
+      </ul>
+    </section>
+
+    {view.others.length > 0 && (
+      <section>
+        <h2>{fill(text.othersH2, { state })}</h2>
+        <ul>
+          {view.others.map((other) => (
+            <li><a href={other.href}>{other.label}</a></li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <ShareLink {lang} name={view.h1} path={wagePathOf(trade, fips, lang)} />
+    <p id="source" class="byline">
+      {view.source} <a href="https://www.bls.gov/oes/" rel="noopener">bls.gov/oes</a>
+    </p>
+  </article>
+</Layout>

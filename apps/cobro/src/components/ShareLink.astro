@@ -1,0 +1,28 @@
+---
+import { shareOf } from '../share.ts';
+import type { Lang } from '../routes.ts';
+
+/*
+ * "Share on WhatsApp" for a data page: a plain link to wa.me with the page's name and canonical
+ * address, so it works with no script. The analytics loader counts its click.
+ */
+interface Props {
+  readonly lang: Lang;
+  readonly name: string;
+  /** The page's own path in `lang`. */
+  readonly path: string;
+}
+
+const { lang, name, path } = Astro.props;
+const share = shareOf(lang, name, path);
+---
+
+<p>
+  <a
+    class="button button-whatsapp"
+    data-share
+    href={share.href}
+    rel="noopener"
+    target="_blank"
+    aria-label={share.ariaLabel}>{share.label}</a>
+</p>
