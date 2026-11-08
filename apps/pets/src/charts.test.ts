@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chartOf, CHARTS, CHARTS_INDEX } from './charts.ts';
+import { chartOf, CHARTS, CHARTS_GUIDE, CHARTS_INDEX } from './charts.ts';
 import { CALL_NOW } from './calc/chocolate.ts';
 import { ROUTES } from './routes.ts';
 
@@ -97,5 +97,29 @@ describe('every chart', () => {
   it('finds a chart by its path, and refuses another', () => {
     expect(chartOf('/puppy-feeding-chart').h1).toContain('Puppy');
     expect(() => chartOf('/nope')).toThrow('no chart /nope');
+  });
+});
+
+describe('the guide of the charts index', () => {
+  const text = CHARTS_GUIDE.paragraphs.join(' ');
+
+  it('reads its figures off the charts: energy follows weight to the 0.75 power', () => {
+    // 1,958 / 692 = 2.83
+    expect(text).toContain('1,958 calories a day against 692 for a 25 lb dog, 2.8 times');
+  });
+
+  it('compares a puppy under 4 months with one from 4 months at the same weight', () => {
+    expect(text).toContain('653 calories a day under 4 months and 435 from 4 months');
+  });
+
+  it('gives the grams of each chocolate for a 20 lb dog and says to call', () => {
+    expect(text).toContain('79 g of milk chocolate, 32 g of dark or 12 g of baking chocolate');
+    expect(text).toContain('call');
+  });
+
+  it('cites the sources of the charts it reads, once each', () => {
+    const urls = CHARTS_GUIDE.sources.map(({ url }) => url);
+    expect(new Set(urls).size).toBe(urls.length);
+    expect(urls.length).toBeGreaterThanOrEqual(3);
   });
 });

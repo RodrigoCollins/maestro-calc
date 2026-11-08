@@ -195,6 +195,33 @@ export const chartOf = (path: string): Chart => {
   return chart;
 };
 
+/** The cells of the row of `weight` in a chart: build-time data, so a missing row throws. */
+const cellsAt = (path: string, weight: number): readonly string[] => {
+  const row = chartOf(path).rows.find(([each]) => each === String(weight));
+  if (row === undefined) throw new Error(`no row ${String(weight)} in ${path}`);
+  return row;
+};
+
+const numberOfCell = (cell: string | undefined): number => Number((cell ?? '').replaceAll(',', ''));
+
+const [, bigDog = ''] = cellsAt('/dog-feeding-chart', 100);
+const [, smallDog = ''] = cellsAt('/dog-feeding-chart', 25);
+const [, youngPuppy = '', , , olderPuppy = ''] = cellsAt('/puppy-feeding-chart', 10);
+const [, milk = '', dark = '', baking = ''] = cellsAt('/dog-chocolate-toxicity-chart', 20);
+const ratio = Math.round((10 * numberOfCell(bigDog)) / numberOfCell(smallDog)) / 10;
+
+/** What the index says about its charts, each figure read off the charts themselves. */
+export const CHARTS_GUIDE = {
+  h2: 'What the charts show',
+  paragraphs: [
+    `A dog four times heavier does not need four times the food. The dog feeding chart gives a 100 lb dog ${bigDog} calories a day against ${smallDog} for a 25 lb dog, ${ratio.toLocaleString('en-US', { minimumFractionDigits: 1 })} times, because the energy a dog needs follows its weight in kilograms to the 0.75 power (Merck).`,
+    `A puppy needs the most for its weight while it is young. At 10 lb, the puppy chart gives ${youngPuppy} calories a day under 4 months and ${olderPuppy} from 4 months, as the factor drops from 3.0 to 2.0 times the resting energy (Merck and AAHA 2021).`,
+    `The darker the chocolate, the less it takes. For a 20 lb dog, ${milk} g of milk chocolate, ${dark} g of dark or ${baking} g of baking chocolate reach 20 mg/kg, the dose where Merck lists the first signs. Less is not safe: if your dog ate any, call your veterinarian or a poison line now.`,
+    'The feeding charts assume a food of 360 kcal a cup; the calories per cup on your own bag set the real amount, so use the calculator with that figure. Every chart is worked out by the same engine as the calculators and shows the day it was checked.',
+  ],
+  sources: [MERCK, MERCK_TABLE, AAHA, MERCK_CHOCOLATE],
+} as const;
+
 /** The index of the data pages, `/charts`. */
 export const CHARTS_INDEX = {
   path: '/charts',

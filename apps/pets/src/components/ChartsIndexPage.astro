@@ -1,6 +1,7 @@
 ---
-import { CHARTS, CHARTS_INDEX } from '../charts.ts';
+import { CHARTS, CHARTS_GUIDE, CHARTS_INDEX } from '../charts.ts';
 import Layout from './Layout.astro';
+import Sources from './Sources.astro';
 
 const { title, description, h1, lead } = CHARTS_INDEX;
 ---
@@ -19,5 +20,12 @@ const { title, description, h1, lead } = CHARTS_INDEX;
         </section>
       ))}
     </div>
+    <section class="bf-card" aria-labelledby="guide">
+      <h2 id="guide">{CHARTS_GUIDE.h2}</h2>
+      {CHARTS_GUIDE.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+    </section>
+    <Sources sources={CHARTS_GUIDE.sources} />
   </main>
 </Layout>
