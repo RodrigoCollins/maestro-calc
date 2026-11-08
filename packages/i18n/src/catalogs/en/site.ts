@@ -233,6 +233,41 @@ export const enSite = {
   'site.job.worked.feet-inches.divide': 'Divided into equal parts',
   'site.job.worked.feet-inches.tape': 'In sixteenths, to the nearest 1/16 in mark of the tape',
   'site.job.worked.feet-inches.metric': 'In metric, with 1 in = 0.0254 m exactly',
+  'site.job.land.heading': 'What an acre is, by law',
+  'site.job.land.definition':
+    'NIST Handbook 44, the handbook U.S. weights and measures officials work from, lists the acre as 43,560 square feet, which is 160 square rods, 10 square chains of 66 ft each, or 4,840 square yards. In metric an acre is exactly 4,046.856 422 4 square meters, or 0.404 685 642 24 hectare.',
+  'site.job.land.surveyFoot':
+    'Since January 1, 2023, the acre rests on the international foot of exactly 0.3048 m. NIST and the National Geodetic Survey retired the U.S. survey foot, about two parts per million longer, except for older records. An acre in survey feet is 4,046.873 square meters, about 0.17 square feet more: a difference no lot line or listing will ever show.',
+  'site.job.land.source': 'Source',
+  'site.job.land.shape': 'Shapes of a lot this size',
+  'site.job.land.glance': 'This area at a glance',
+  'site.job.land.acres': 'Acres',
+  'site.job.land.hectares': 'Hectares',
+  'site.job.land.side': 'Side of a square of this area',
+  'site.job.land.floor12': 'Rooms of 12 × 12 ft (144 sq ft)',
+  'site.job.land.floor20': 'Floors of 20 × 20 ft (400 sq ft)',
+  'site.job.land.floor24': 'Floors of 24 × 24 ft (576 sq ft)',
+  'site.job.land.cover.heading': 'Topsoil and mulch for the whole lot',
+  'site.job.land.cover.lead':
+    'Worked out over the first lot of the table by the topsoil calculator, with its 10% for settling, and by the mulch calculator, with its 5% extra. Each row opens the calculator with the lot filled in, so you can change the depth or the area you will actually cover.',
+  'site.job.land.cover.material': 'Material',
+  'site.job.land.cover.depth': 'Depth',
+  'site.job.land.cover.yards': 'Cubic yards',
+  'site.job.land.cover.topsoil': 'Topsoil',
+  'site.job.land.cover.mulch': 'Mulch',
+  'site.job.land.note':
+    'Each lot in the table is a rectangle of exactly this area. An acre has no fixed shape, so any outline of the same square footage is the same acreage. A square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
+  'site.job.guide.land.heading': 'Before you measure or buy for a lot',
+  'site.job.guide.land.tip1':
+    'Take the acreage from the deed, the plat or the county parcel record rather than pacing it off. A survey states the area to the hundredth of an acre and shows where the corners really are, which a tape stretched across a yard cannot.',
+  'site.job.guide.land.tip2':
+    'An irregular lot is a set of simpler shapes. Split it into rectangles and right triangles, work out each area (a triangle is half its base times its height), add them up, and divide the square feet by 43,560 for the acres.',
+  'site.job.guide.land.tip3':
+    'Order sod, seed and topsoil for the area you will plant, not for the whole lot. Subtract the house, the driveway, the patio and the beds first, then ask the supplier how many square feet one pallet or bag covers, because it varies by product.',
+  'site.job.guide.land.tip4':
+    'Price a fence by the perimeter, not the area. Two lots of the same acreage can need very different lengths of fence, since a long, narrow lot has far more boundary than a square one, so measure every side before you count posts and rails.',
+  'site.job.worked.land.acres': 'In acres, 43,560 square feet each',
+  'site.job.worked.land.hectares': 'In hectares, 10,000 square meters each',
   'site.job.more': 'More jobs',
   'site.job.chart.index': 'Every chart and its sources: data and charts',
   'site.charts.checked': 'Checked',
@@ -702,10 +737,10 @@ export const enSite = {
   'page.square-feet-12x12.title': '12x12 in Square Feet: 144 sq ft | Maestro Calc',
   'page.square-feet-12x12.description':
     'A 12 by 12 ft area is 144 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
-  'page.square-feet-12x12.heading': 'How many square feet is 12x12?',
+  'page.square-feet-12x12.heading': 'A 12x12 room is 144 square feet',
   'page.square-feet-12x12.label': '12x12 ft',
   'page.square-feet-12x12.intro':
-    'A 12 by 12 ft room is a standard bedroom, and a common size for a deck or a patio slab.',
+    'A 12 by 12 ft room is a standard bedroom, and a common size for a deck or a patio slab. Its 144 square feet are 16 square yards, the unit carpet is often priced in, or 13.38 square meters, and a roll of carpet 12 ft wide covers the floor in one piece with no seam.',
   'page.square-feet-12x14.title': '12x14 in Square Feet: 168 sq ft | Maestro Calc',
   'page.square-feet-12x14.description':
     'A 12 by 14 ft area is 168 square feet: the same in square meters and square yards, the formula, and the sizes a foot or two wider. Free.',
@@ -727,6 +762,39 @@ export const enSite = {
   'page.square-feet-20x20.label': '20x20 ft',
   'page.square-feet-20x20.intro':
     'A 20 by 20 ft area is the floor of a two-car garage or a large patio.',
+  'page.square-feet-in-an-acre.title': 'An Acre Is 43,560 Square Feet: Lot Sizes | Maestro Calc',
+  'page.square-feet-in-an-acre.description':
+    'How many square feet in an acre? 43,560 by NIST Handbook 44: 4,840 sq yd or 4,046.86 m², a square 208.71 ft on a side, and acre lot sizes worked out.',
+  'page.square-feet-in-an-acre.heading': 'An acre is 43,560 square feet',
+  'page.square-feet-in-an-acre.label': '1 acre',
+  'page.square-feet-in-an-acre.intro':
+    'An acre is 43,560 square feet: a strip one chain wide and one furlong long, 66 by 660 ft, the shape the unit was first measured in. In metric that is 4,046.86 square meters, about four tenths of a hectare.',
+  'page.square-feet-in-an-acre.shape1':
+    'An acre has no fixed shape. The law sets only its area, so a lot of one acre can be long and narrow, nearly square or any outline at all, and a deed or a plat gives its acreage, not its sides. The table above lists rectangles that are each exactly 43,560 square feet: 66 by 660 ft is the old surveyor’s acre, one chain by one furlong, and 198 by 220 ft is about as close to a square as whole feet allow. A perfectly square acre is 208.71 ft on each side, which is why you sometimes hear an acre called about 209 feet square.',
+  'page.square-feet-in-an-acre.shape2':
+    'For a sense of scale, an American football field measures 360 by 160 ft from the back of one end zone to the back of the other, 57,600 square feet, so an acre covers about three quarters of it. A section of the public land survey is a square mile of 640 acres. The outline changes the boundary a lot: walking around a 66 by 660 ft acre is 1,452 ft, more than a quarter mile, while around the square acre it is 834.84 ft, the same land with far less fence.',
+  'page.square-feet-in-a-half-acre.title': 'Half an Acre Is 21,780 Square Feet | Maestro Calc',
+  'page.square-feet-in-a-half-acre.description':
+    'How many square feet in half an acre? 21,780 sq ft (2,420 sq yd, 2,023.43 m²): a square 147.58 ft on a side, half-acre lot sizes and the topsoil for it.',
+  'page.square-feet-in-a-half-acre.heading': 'Half an acre is 21,780 square feet',
+  'page.square-feet-in-a-half-acre.label': '1/2 acre',
+  'page.square-feet-in-a-half-acre.intro':
+    'Half an acre, or a half acre, is 21,780 square feet: 2,420 square yards or 2,023.43 square meters. It is one chain by half a furlong, 66 by 330 ft, or any other outline of the same area.',
+  'page.square-feet-in-a-half-acre.shape1':
+    'The rectangles in the table are each exactly 21,780 square feet. 132 by 165 ft is two chains by two and a half, and 121 by 180 ft puts a 121 ft frontage on the street with a lot 180 ft deep behind it. A square half acre is 147.58 ft on a side, a little over 70% of the side of a square acre and not half of it: halving an area divides each side by the square root of 2, about 1.414, so the lot looks larger than half when you stand on it.',
+  'page.square-feet-in-a-half-acre.shape2':
+    'That rule matters when you fence or edge the lot. The boundary of a square half acre is 590.32 ft, and a 66 by 330 ft strip of the same area takes 792 ft of fence. Two half-acre lots make one acre. If the house and the driveway cover 3,000 square feet together, about 18,780 square feet are left to seed, sod or plant, which is the figure to give a landscaper or a sod farm rather than the full 21,780.',
+  'page.square-feet-in-a-quarter-acre.title': 'A Quarter Acre Is 10,890 Square Feet | Maestro Calc',
+  'page.square-feet-in-a-quarter-acre.description':
+    'How many square feet in a quarter acre? 10,890 sq ft (1,210 sq yd, 1,011.71 m²): a square 104.36 ft on a side, quarter-acre lot sizes and the topsoil for it.',
+  'page.square-feet-in-a-quarter-acre.heading': 'A quarter acre is 10,890 square feet',
+  'page.square-feet-in-a-quarter-acre.label': '1/4 acre',
+  'page.square-feet-in-a-quarter-acre.intro':
+    'A quarter acre is 10,890 square feet: 1,210 square yards or 1,011.71 square meters. One chain by a quarter furlong, 66 by 165 ft, is the classic outline, and it is a size real estate listings often quote for a suburban house lot.',
+  'page.square-feet-in-a-quarter-acre.shape1':
+    'The rectangles in the table are each exactly 10,890 square feet. A 75 by 145.2 ft lot gives a 75 ft frontage, while 90 by 121 ft and 99 by 110 ft are closer to square. A perfectly square quarter acre is 104.36 ft on each side, exactly half the side of a square acre: a quarter of the area is half of each side, because both sides shrink by the same factor of 2.',
+  'page.square-feet-in-a-quarter-acre.shape2':
+    'Most of a quarter acre is rarely lawn. A house footprint of 2,000 square feet, a 20 by 24 ft driveway (480 square feet) and a 12 by 16 ft patio (192 square feet) leave 8,218 square feet, about three quarters of the lot, to seed or sod. Measure what is left rather than ordering for the whole lot: the topsoil and mulch figures below cover all 10,890 square feet, so scale them by the share you actually plant.',
   'page.contact.title': 'Contact | Maestro Calc',
   'page.contact.description':
     'Contact Maestro Calc at contacto@maestrocalc.com. Found an error in a calculation or a page? Tell us and we will look into it.',

@@ -30,7 +30,14 @@ import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
 import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
-import { isChartJob, JOBS, type Job, type JobCase, type JobId } from '../routing/jobs.ts';
+import {
+  isChartJob,
+  isLandJob,
+  JOBS,
+  type Job,
+  type JobCase,
+  type JobId,
+} from '../routing/jobs.ts';
 import { pathOf, urlOf } from '../routing/routes.ts';
 import { SITE } from '../site.config.ts';
 import { calendarDay } from './calendar-day.ts';
@@ -880,6 +887,7 @@ const noteOf = (id: JobId, locale: Locale): string => {
   ) {
     return text(`page.${id}.note`);
   }
+  if (isLandJob(id)) return text('site.job.land.note');
   return text(`site.job.note.${JOBS[id].calculator}`);
 };
 

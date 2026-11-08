@@ -46,6 +46,25 @@ describe('jobWorked (the worked example of a job page)', () => {
     expect(mathOf(jobWorked('square-feet-10x10', 'en'))?.[2]).toBe('3.048 m × 3.048 m = 9.29 m²');
   });
 
+  // hand-verified: 66 × 0.3048 = 20.1168 m, 660 × 0.3048 = 201.168 m, their product 4,046.86 m²;
+  // 43,560 ÷ 9 = 4,840 yd²; 43,560 ÷ 43,560 = 1 acre; 4,046.86 ÷ 10,000 = 0.4047 ha. A lot of
+  // land takes no 10% for cuts: it is counted in acres and hectares instead
+  it('works a lot of land out in acres and hectares', () => {
+    expect(mathOf(jobWorked('square-feet-in-an-acre', 'en'))).toEqual([
+      '66 ft × 660 ft = 43,560.00 ft²',
+      '43,560.00 ft² ÷ 9 = 4,840.00 yd²',
+      '20.1168 m × 201.168 m = 4,046.86 m²',
+      '43,560.00 ft² ÷ 43,560 = 1.00 ac',
+      '4,046.86 m² ÷ 10,000 = 0.4047 ha',
+    ]);
+    expect(mathOf(jobWorked('square-feet-in-a-quarter-acre', 'es'))?.[3]).toBe(
+      '10,890.00 ft² ÷ 43,560 = 0.25 ac',
+    );
+    expect(jobWorked('square-feet-in-a-half-acre', 'en')?.steps[3]?.label).toBe(
+      'In acres, 43,560 square feet each',
+    );
+  });
+
   // hand-verified: 2 × (12 + 12) × 8 = 384 ft²; − 20 − 2 × 15 = 334 ft²; 334 × 2 ÷ 350 = 1.91 gal;
   // 1.9086 × 3.785411784 = 7.22 L; 2 cans
   it('works the paint for a 12 × 12 ft room 8 ft high out as the paint calculator does', () => {

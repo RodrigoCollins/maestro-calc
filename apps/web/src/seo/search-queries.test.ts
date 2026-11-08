@@ -352,7 +352,9 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   it('names the size and the square feet of each square footage job page in its title', () => {
     // queries: "12x7 square feet", "30 by 12 square feet", "5 by 10 in square feet",
     // "14 11 square feet", "16 11 square feet", "25 pies cuadrados"
-    for (const id of jobsOf('rectangle-area').filter((each) => !isChartJob(each))) {
+    for (const id of jobsOf('rectangle-area').filter((each) =>
+      /^square-feet-\d+x\d+$/.test(each),
+    )) {
       const size = id.replace('square-feet-', '');
       const feet = jobView(id, 'en').rows[0].cells[0]?.replace(/\.00$/, '') ?? '';
       expect(siteText('en')(`page.${id}.title`)).toMatch(
@@ -365,6 +367,53 @@ describe('titles from real queries (growth plan › lever 4)', () => {
       expect(siteText('es')(`page.${id}.description`)).toContain(`${feet} pies cuadrados`);
     }
     expect(siteText('en')('page.square-feet-7x12.title')).toContain('(12x7)');
+  });
+
+  // query: "how many square feet is a 12x12 room" (1.0K, KD 0, Ahrefs US 2026-11-08)
+  it('answers the 12x12 room in its h1 first, with the square yards carpet is priced in', () => {
+    expect(siteText('en')('page.square-feet-12x12.heading')).toBe(
+      'A 12x12 room is 144 square feet',
+    );
+    expect(siteText('es')('page.square-feet-12x12.heading')).toBe(
+      'Un cuarto de 12x12 tiene 144 pies cuadrados',
+    );
+    expect(siteText('en')('page.square-feet-12x12.intro')).toContain('16 square yards');
+    expect(siteText('es')('page.square-feet-12x12.intro')).toContain('16 yardas cuadradas');
+  });
+
+  // queries: "how many square feet in an acre" (57K, KD 7), "in a quarter acre" (1.3K), "in half
+  // an acre" (1.1K), "in a half acre" (1.0K), Ahrefs US 2026-11-08: the answer comes first
+  it('answers each acre page with its square feet in the title, the h1 and the description', () => {
+    const lots = [
+      ['square-feet-in-an-acre', 'An Acre Is', 'Un acre tiene', 'in an acre?', 'tiene un acre?'],
+      [
+        'square-feet-in-a-half-acre',
+        'Half an Acre Is',
+        'Medio acre tiene',
+        'in half an acre?',
+        'tiene medio acre?',
+      ],
+      [
+        'square-feet-in-a-quarter-acre',
+        'A Quarter Acre Is',
+        'Un cuarto de acre',
+        'in a quarter acre?',
+        'tiene un cuarto de acre?',
+      ],
+    ] as const;
+    for (const [id, enTitle, esTitle, enQuery, esQuery] of lots) {
+      const feet = jobView(id, 'en').rows[0].cells[0]?.replace(/\.00$/, '') ?? '';
+      const en = siteText('en');
+      const es = siteText('es');
+      expect(en(`page.${id}.title`), id).toMatch(new RegExp(`^${enTitle} ${feet} Square Feet`));
+      expect(es(`page.${id}.title`), id).toMatch(
+        new RegExp(`^${esTitle}.* ${feet} pies cuadrados`),
+      );
+      expect(en(`page.${id}.heading`), id).toContain(`${feet} square feet`);
+      expect(es(`page.${id}.heading`), id).toContain(`${feet} pies cuadrados`);
+      expect(en(`page.${id}.description`), id).toContain(`How many square feet ${enQuery}`);
+      expect(es(`page.${id}.description`), id).toContain(`¿Cuántos pies cuadrados ${esQuery}`);
+    }
   });
 
   it('states the cubic yards of each slab by area in its title and description', () => {

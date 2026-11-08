@@ -1,5 +1,7 @@
 import { CHEMISTRY_CHARTS } from './chemistry-es.ts';
 import { DOSING_CHARTS } from './dosing-es.ts';
+import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
 import {
   CALCIUM_GUIDE,
   CLOSING_GUIDE,
@@ -75,6 +77,10 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     SHOCK_GUIDE_ES,
     PH_GUIDE_ES,
     CALCIUM_GUIDE_ES,
+    GALLONS_GUIDE,
+    OLYMPIC_GUIDE,
+    GALLONS_GUIDE_ES,
+    OLYMPIC_GUIDE_ES,
   ].map(entryOf),
   ...(['en', 'es'] as const).flatMap((lang) => [
     entryOf(SWIM_GUIDES[lang]),

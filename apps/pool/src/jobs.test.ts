@@ -33,6 +33,7 @@ import {
   STABILIZER,
 } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
+import { GALLONS_GUIDE } from './gallons.ts';
 import { CALCIUM_GUIDE, GUIDES, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import {
   guideJobLinksOf,
@@ -627,7 +628,10 @@ describe('the shock job pages', () => {
     );
     for (const { path } of GUIDES.filter(
       ({ path }) =>
-        path !== SHOCK_GUIDE.path && path !== PH_GUIDE.path && path !== CALCIUM_GUIDE.path,
+        path !== SHOCK_GUIDE.path &&
+        path !== PH_GUIDE.path &&
+        path !== CALCIUM_GUIDE.path &&
+        path !== GALLONS_GUIDE.path,
     ))
       expect(guideJobLinksOf(path)).toEqual([]);
   });

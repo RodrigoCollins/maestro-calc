@@ -222,6 +222,16 @@ describe('statePageOf', () => {
 });
 
 describe('the worked examples of a state page', () => {
+  it('names the state in every worked example, so two states at one rate read apart', () => {
+    for (const { facts, lang, page } of PAGES)
+      for (const example of page.examples.items)
+        expect(example.detail, example.id).toContain(facts.tipped.name[lang]);
+    const texas = PAGES.find(({ facts, lang }) => facts.slug.en === 'texas' && lang === 'en');
+    expect(texas?.page.examples.items[0]?.detail).toBe(
+      'Five 8-hour days at the $7.25 minimum of Texas, before taxes: 40 regular hours, no overtime.',
+    );
+  });
+
   it('pays 40 and 45 hours at the state minimum with the overtime engine, on its rule', () => {
     for (const { facts, lang, page } of PAGES) {
       const rule: Rule = facts.overtime.daily === undefined ? 'federal' : (facts.slug.en as Rule);

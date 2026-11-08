@@ -3,7 +3,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
-import { isChartJob, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
+import { isChartJob, isLandJob, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
 import type { PageId } from '../routing/routes.ts';
 import { siteText } from './site-text.ts';
 
@@ -22,6 +22,7 @@ export const JOB_GUIDE_KINDS = [
   'concrete-footing',
   'roof-pitch',
   'rectangle-area',
+  'land',
   'mulch',
   'gravel',
   'paint',
@@ -40,6 +41,7 @@ const GUIDE_OF = {
   'concrete-footing': 'guide-cubic-yards',
   'roof-pitch': 'guide-roof-pitch',
   'rectangle-area': 'guide-square-footage',
+  land: 'guide-square-footage',
   mulch: 'guide-mulch',
   gravel: 'guide-gravel-driveway',
   paint: 'guide-paint-coverage',
@@ -56,9 +58,10 @@ export interface JobGuide {
   readonly read: (typeof GUIDE_OF)[JobGuideKind];
 }
 
-/** The kind of job `id`, or `undefined` for a reference chart. */
+/** The kind of job `id`, or `undefined` for a reference chart; a lot of land is not a room. */
 export const jobGuideKindOf = (id: JobId): JobGuideKind | undefined => {
   if (isChartJob(id)) return undefined;
+  if (isLandJob(id)) return 'land';
   const { calculator, cases } = JOBS[id];
   if (calculator !== 'concrete') return calculator;
   const shape = cases[0]['shape'];

@@ -5,6 +5,7 @@ import Byline from '../components/Byline.astro';
 import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
+import { jobLand } from '../lib/job-land.ts';
 import { jobView } from '../lib/job-view.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { bylineOf, calculatorSourcesHref, CHART_SOURCES_ID } from '../lib/byline.ts';
@@ -82,6 +83,8 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
 const guide = jobGuide(id, locale);
 const coverings = jobCoverings(id, locale);
 const worked = jobWorked(id, locale);
+// An acre page also says what an acre is by law, the shapes of its lot, what it holds and covers.
+const land = jobLand(id, locale);
 const guideEntry =
   guide === undefined ? undefined : await getEntry('pages', `${locale}/${guide.read}`);
 if (guide !== undefined && guideEntry === undefined) {
@@ -211,6 +214,55 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
         <p>
           <a href={pathOf('charts', locale)}>{text('site.job.chart.index')}</a>
         </p>
+      </>
+    )}
+    {land !== undefined && (
+      <>
+        <h2>{land.heading}</h2>
+        <p>{land.definition}</p>
+        <p>{land.surveyFoot}</p>
+        <p>
+          {land.sourceLabel}: {land.source.name}, <code>{land.source.url}</code>,{' '}
+          {text('site.job.chart.retrieved')} {calendarDay(land.source.retrieved, locale)}.
+        </p>
+        <h2>{land.shape.heading}</h2>
+        {land.shape.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <h2>{land.glance.heading}</h2>
+        <dl class="job-facts">
+          {land.glance.facts.map(({ label, value, href }) => (
+            <div>
+              <dt>{href === undefined ? label : <a {href}>{label}</a>}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <h2>{land.cover.heading}</h2>
+        <p>{land.cover.lead}</p>
+        <div class="job-table">
+          <table>
+            <thead>
+              <tr>
+                {land.cover.columns.map((label) => (
+                  <th scope="col">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {land.cover.rows.map((row) => (
+                <tr>
+                  <th scope="row">
+                    <a href={row.href}>{row.label}</a>
+                  </th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </>
     )}
     {coverings !== undefined && (

@@ -38,6 +38,13 @@ describe('jobGuide (the buying advice of a job page)', () => {
     expect(jobGuide('divide-22-in-by-10', 'en')?.read).toBe('guide-tape-measure-fractions');
   });
 
+  it('writes the lots of land their own advice, apart from the rooms of the same calculator', () => {
+    expect(jobGuideKindOf('square-feet-in-an-acre')).toBe('land');
+    expect(jobGuideKindOf('square-feet-in-a-quarter-acre')).toBe('land');
+    expect(jobGuideKindOf('square-feet-12x12')).toBe('rectangle-area');
+    expect(jobGuide('square-feet-in-a-half-acre', 'es')?.read).toBe('guide-square-footage');
+  });
+
   it('uses every kind, and no two kinds share a heading or a tip', () => {
     const used = new Set(JOBS_OF_ONE_SIZE.map(jobGuideKindOf));
     expect([...used].toSorted()).toEqual([...JOB_GUIDE_KINDS].toSorted());

@@ -10,7 +10,16 @@ import { gravel } from '../lib/gravel.ts';
 import { paint } from '../lib/paint.ts';
 import { roofing } from '../lib/roofing.ts';
 import { HUBS, hubOfCalculator } from './hubs.ts';
-import { isChartJob, isJobPage, JOB_IDS, JOBS, jobsOf } from './jobs.ts';
+import {
+  ACRE_FT2,
+  isChartJob,
+  isJobPage,
+  isLandJob,
+  JOB_IDS,
+  JOBS,
+  jobsOf,
+  LAND_ACRES,
+} from './jobs.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, templateOf } from './templates.ts';
 
@@ -82,6 +91,9 @@ describe('job pages (growth plan › lever 1)', () => {
       'square-feet-12x14',
       'square-feet-12x30',
       'square-feet-20x20',
+      'square-feet-in-an-acre',
+      'square-feet-in-a-half-acre',
+      'square-feet-in-a-quarter-acre',
       'square-feet-to-square-meters-chart',
     ]);
     expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
@@ -148,7 +160,8 @@ describe('job pages (growth plan › lever 1)', () => {
   });
 
   it('names each square footage job after the length and the width of its first case', () => {
-    for (const id of jobsOf('rectangle-area').filter((each) => !isChartJob(each))) {
+    const rooms = jobsOf('rectangle-area').filter((each) => !isChartJob(each) && !isLandJob(each));
+    for (const id of rooms) {
       const [first] = JOBS[id].cases;
       expect(
         `square-feet-${first['length'] ?? ''}x${first['width'] ?? ''}`.replaceAll('ft', ''),
@@ -491,5 +504,37 @@ describe('job pages (growth plan › lever 1)', () => {
   it('lists every job under a hub that holds its calculator', () => {
     const hubbed = Object.values(HUBS).flatMap(({ calculators }) => calculators);
     for (const id of JOB_IDS) expect(hubbed, id).toContain(JOBS[id].calculator);
+  });
+
+  // queries: "how many square feet in an acre" (57K), "in a quarter acre", "in half an acre"
+  // (Ahrefs US, 2026-11-08). NIST Handbook 44, Appendix C: 1 acre = 43,560 ft², 1 chain = 66 ft,
+  // 1 furlong = 660 ft; an acre is 1 chain by 1 furlong, so every lot below is exact
+  it('tables each lot of land as rectangles of exactly its acres, measured in whole chains first', () => {
+    expect(ACRE_FT2).toBe(43_560);
+    expect(JOB_IDS.filter(isLandJob)).toEqual([
+      'square-feet-in-an-acre',
+      'square-feet-in-a-half-acre',
+      'square-feet-in-a-quarter-acre',
+    ]);
+    expect(LAND_ACRES).toEqual({
+      'square-feet-in-an-acre': 1,
+      'square-feet-in-a-half-acre': 0.5,
+      'square-feet-in-a-quarter-acre': 0.25,
+    });
+    for (const id of JOB_IDS.filter(isLandJob)) {
+      expect(JOBS[id].calculator, id).toBe('rectangle-area');
+      const feet = JOBS[id].cases.map(
+        (raw) => Number.parseFloat(raw['length'] ?? '') * Number.parseFloat(raw['width'] ?? ''),
+      );
+      for (const area of feet) expect(area, id).toBeCloseTo(LAND_ACRES[id] * ACRE_FT2, 6);
+      // the first lot is one chain (66 ft) deep
+      expect(JOBS[id].cases[0]['length'], id).toBe('66ft');
+      expect(JOBS[id].cases.length, id).toBeGreaterThanOrEqual(4);
+    }
+    expect(isLandJob('square-feet-12x12')).toBe(false);
+    expect(ROUTES['square-feet-in-an-acre']).toEqual({
+      en: '/measurement/square-feet-in-an-acre',
+      es: '/es/medidas/pies-cuadrados-en-un-acre',
+    });
   });
 });

@@ -2,6 +2,7 @@ import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART, doseOf } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -793,6 +794,8 @@ export const GUIDES: readonly GuideCard[] = [
     ),
   ]),
   cardOf(VOLUME_CHART, [VOLUME_CHART.calculator]),
+  stepsCard(GALLONS_GUIDE),
+  stepsCard(OLYMPIC_GUIDE),
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
   stepsCard(SHOCK_GUIDE),

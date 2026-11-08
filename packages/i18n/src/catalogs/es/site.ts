@@ -241,6 +241,41 @@ export const esSite = {
   'site.job.worked.feet-inches.tape':
     'En dieciseisavos, a la marca de 1/16 in más cercana de la cinta',
   'site.job.worked.feet-inches.metric': 'En sistema métrico, con 1 in = 0.0254 m exactos',
+  'site.job.land.heading': 'Qué es un acre según la ley',
+  'site.job.land.definition':
+    'El Handbook 44 del NIST, el manual con el que trabajan los inspectores de pesas y medidas de Estados Unidos, define el acre como 43,560 pies cuadrados, que son 160 varas cuadradas, 10 cadenas cuadradas de 66 pies cada una o 4,840 yardas cuadradas. En el sistema métrico un acre son exactamente 4,046.856 422 4 metros cuadrados, o 0.404 685 642 24 hectáreas.',
+  'site.job.land.surveyFoot':
+    'Desde el 1 de enero de 2023, el acre se basa en el pie internacional de exactamente 0.3048 m. El NIST y el National Geodetic Survey retiraron el pie de agrimensor de Estados Unidos, unas dos partes por millón más largo, salvo para registros antiguos. Un acre en pies de agrimensor mide 4,046.873 metros cuadrados, unos 0.17 pies cuadrados más: una diferencia que ningún lindero ni anuncio va a mostrar.',
+  'site.job.land.source': 'Fuente',
+  'site.job.land.shape': 'Formas de un lote de este tamaño',
+  'site.job.land.glance': 'Esta área de un vistazo',
+  'site.job.land.acres': 'Acres',
+  'site.job.land.hectares': 'Hectáreas',
+  'site.job.land.side': 'Lado de un cuadrado de esta área',
+  'site.job.land.floor12': 'Cuartos de 12 × 12 pies (144 pies cuadrados)',
+  'site.job.land.floor20': 'Pisos de 20 × 20 pies (400 pies cuadrados)',
+  'site.job.land.floor24': 'Pisos de 24 × 24 pies (576 pies cuadrados)',
+  'site.job.land.cover.heading': 'Tierra y mulch para todo el lote',
+  'site.job.land.cover.lead':
+    'Calculado sobre el primer lote de la tabla con la calculadora de tierra para jardín, con su 10% por asentamiento, y con la calculadora de mulch, con su 5% extra. Cada fila abre la calculadora con el lote ya cargado, para que cambies la profundidad o el área que de verdad vas a cubrir.',
+  'site.job.land.cover.material': 'Material',
+  'site.job.land.cover.depth': 'Profundidad',
+  'site.job.land.cover.yards': 'Yardas cúbicas',
+  'site.job.land.cover.topsoil': 'Tierra para jardín',
+  'site.job.land.cover.mulch': 'Mulch',
+  'site.job.land.note':
+    'Cada lote de la tabla es un rectángulo de exactamente esta área. Un acre no tiene una forma fija, así que cualquier contorno con los mismos pies cuadrados tiene la misma superficie. Un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus valores ya cargados.',
+  'site.job.guide.land.heading': 'Antes de medir o comprar para un lote',
+  'site.job.guide.land.tip1':
+    'Toma la superficie de la escritura, del plano o del registro catastral del condado en vez de medirla a pasos. Un levantamiento da el área al centésimo de acre y muestra dónde están de verdad las esquinas, algo que una cinta tendida sobre el jardín no puede hacer.',
+  'site.job.guide.land.tip2':
+    'Un lote irregular es un conjunto de formas más simples. Divídelo en rectángulos y triángulos rectángulos, calcula cada área (un triángulo es la mitad de su base por su altura), súmalas y divide los pies cuadrados entre 43,560 para obtener los acres.',
+  'site.job.guide.land.tip3':
+    'Pide el pasto en rollo, la semilla y la tierra para el área que vas a plantar, no para todo el lote. Resta primero la casa, la entrada, el patio y los canteros, y pregunta al proveedor cuántos pies cuadrados cubre un palé o una bolsa, porque cambia según el producto.',
+  'site.job.guide.land.tip4':
+    'Cotiza una cerca por el perímetro, no por el área. Dos lotes con la misma superficie pueden necesitar largos de cerca muy distintos, porque un lote largo y angosto tiene mucho más borde que uno cuadrado, así que mide cada lado antes de contar postes y travesaños.',
+  'site.job.worked.land.acres': 'En acres, de 43,560 pies cuadrados cada uno',
+  'site.job.worked.land.hectares': 'En hectáreas, de 10,000 metros cuadrados cada una',
   'site.job.more': 'Más trabajos',
   'site.job.chart.index': 'Todas las tablas y sus fuentes: datos y tablas',
   'site.charts.checked': 'Revisada el',
@@ -720,10 +755,10 @@ export const esSite = {
   'page.square-feet-12x12.title': '12x12 en pies cuadrados: 144 pies cuadrados | Maestro Calc',
   'page.square-feet-12x12.description':
     'Un área de 12 por 12 ft mide 144 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
-  'page.square-feet-12x12.heading': '¿Cuántos pies cuadrados son 12x12?',
+  'page.square-feet-12x12.heading': 'Un cuarto de 12x12 tiene 144 pies cuadrados',
   'page.square-feet-12x12.label': '12x12 pies',
   'page.square-feet-12x12.intro':
-    'Un cuarto de 12 por 12 ft es un dormitorio estándar, y una medida común para una terraza o una losa de patio.',
+    'Un cuarto de 12 por 12 ft es un dormitorio estándar, y una medida común para una terraza o una losa de patio. Sus 144 pies cuadrados son 16 yardas cuadradas, la unidad en la que a menudo se cotiza la alfombra, o 13.38 metros cuadrados, y un rollo de alfombra de 12 pies de ancho cubre el piso en una sola pieza, sin uniones.',
   'page.square-feet-12x14.title': '12x14 en pies cuadrados: 168 pies cuadrados | Maestro Calc',
   'page.square-feet-12x14.description':
     'Un área de 12 por 14 ft mide 168 pies cuadrados: lo mismo en metros y yardas cuadradas, la fórmula y las medidas uno o dos pies más anchas. Gratis.',
@@ -745,6 +780,40 @@ export const esSite = {
   'page.square-feet-20x20.label': '20x20 pies',
   'page.square-feet-20x20.intro':
     'Un área de 20 por 20 ft es el piso de un garaje para dos autos o un patio grande.',
+  'page.square-feet-in-an-acre.title': 'Un acre tiene 43,560 pies cuadrados | Maestro Calc',
+  'page.square-feet-in-an-acre.description':
+    '¿Cuántos pies cuadrados tiene un acre? 43,560 según el Handbook 44 del NIST: 4,840 yardas cuadradas o 4,046.86 m², un cuadrado de 208.71 pies y tamaños de lote.',
+  'page.square-feet-in-an-acre.heading': 'Un acre tiene 43,560 pies cuadrados',
+  'page.square-feet-in-an-acre.label': '1 acre',
+  'page.square-feet-in-an-acre.intro':
+    'Un acre tiene 43,560 pies cuadrados: una franja de una cadena de ancho y un furlong de largo, 66 por 660 pies, la forma con la que se midió la unidad en su origen. En el sistema métrico son 4,046.86 metros cuadrados, unas cuatro décimas de hectárea.',
+  'page.square-feet-in-an-acre.shape1':
+    'Un acre no tiene una forma fija. La ley solo fija su área, así que un lote de un acre puede ser largo y angosto, casi cuadrado o de cualquier contorno, y la escritura o el plano dan su superficie, no sus lados. La tabla de arriba lista rectángulos de exactamente 43,560 pies cuadrados cada uno: 66 por 660 pies es el acre clásico del agrimensor, una cadena por un furlong, y 198 por 220 pies es lo más cercano a un cuadrado que permiten los pies enteros. Un acre perfectamente cuadrado mide 208.71 pies por lado, unos 63.61 metros.',
+  'page.square-feet-in-an-acre.shape2':
+    'Como referencia, una cancha de fútbol americano mide 360 por 160 pies de fondo a fondo de las zonas de anotación, 57,600 pies cuadrados, así que un acre cubre unas tres cuartas partes de ella. Una sección del catastro público de Estados Unidos es una milla cuadrada de 640 acres. El contorno cambia mucho el borde: rodear un acre de 66 por 660 pies son 1,452 pies, más de un cuarto de milla, y rodear el acre cuadrado son 834.84 pies, el mismo terreno con mucha menos cerca.',
+  'page.square-feet-in-a-half-acre.title': 'Medio acre tiene 21,780 pies cuadrados | Maestro Calc',
+  'page.square-feet-in-a-half-acre.description':
+    '¿Cuántos pies cuadrados tiene medio acre? 21,780 (2,420 yardas cuadradas, 2,023.43 m²): un cuadrado de 147.58 pies, medidas de lotes y la tierra para cubrirlo.',
+  'page.square-feet-in-a-half-acre.heading': 'Medio acre tiene 21,780 pies cuadrados',
+  'page.square-feet-in-a-half-acre.label': '1/2 acre',
+  'page.square-feet-in-a-half-acre.intro':
+    'Medio acre tiene 21,780 pies cuadrados: 2,420 yardas cuadradas o 2,023.43 metros cuadrados. Es una cadena por medio furlong, 66 por 330 pies, o cualquier otro contorno con la misma área.',
+  'page.square-feet-in-a-half-acre.shape1':
+    'Los rectángulos de la tabla tienen exactamente 21,780 pies cuadrados cada uno. 132 por 165 pies son dos cadenas por dos y media, y 121 por 180 pies deja un frente de 121 pies hacia la calle con un fondo de 180 pies. Medio acre cuadrado mide 147.58 pies por lado, algo más del 70% del lado de un acre cuadrado y no la mitad: dividir un área entre dos divide cada lado entre la raíz cuadrada de 2, unos 1.414, por eso el lote parece más grande que la mitad cuando lo recorres.',
+  'page.square-feet-in-a-half-acre.shape2':
+    'Esa regla importa cuando cercas o bordeas el lote. El perímetro de medio acre cuadrado es de 590.32 pies, y una franja de 66 por 330 pies con la misma área necesita 792 pies de cerca. Dos lotes de medio acre forman un acre. Si la casa y la entrada ocupan juntas 3,000 pies cuadrados, quedan unos 18,780 pies cuadrados para sembrar, poner pasto en rollo o plantar, y esa es la cifra que conviene dar al jardinero o al vivero, no los 21,780 completos.',
+  'page.square-feet-in-a-quarter-acre.title':
+    'Un cuarto de acre: 10,890 pies cuadrados | Maestro Calc',
+  'page.square-feet-in-a-quarter-acre.description':
+    '¿Cuántos pies cuadrados tiene un cuarto de acre? 10,890 (1,210 yardas cuadradas, 1,011.71 m²): un cuadrado de 104.36 pies, medidas de lotes y la tierra.',
+  'page.square-feet-in-a-quarter-acre.heading': 'Un cuarto de acre tiene 10,890 pies cuadrados',
+  'page.square-feet-in-a-quarter-acre.label': '1/4 de acre',
+  'page.square-feet-in-a-quarter-acre.intro':
+    'Un cuarto de acre tiene 10,890 pies cuadrados: 1,210 yardas cuadradas o 1,011.71 metros cuadrados. Una cadena por un cuarto de furlong, 66 por 165 pies, es el contorno clásico, y es una superficie que los anuncios inmobiliarios citan a menudo para un lote de casa en los suburbios.',
+  'page.square-feet-in-a-quarter-acre.shape1':
+    'Los rectángulos de la tabla tienen exactamente 10,890 pies cuadrados cada uno. Un lote de 75 por 145.2 pies da un frente de 75 pies, mientras que 90 por 121 pies y 99 por 110 pies se acercan más a un cuadrado. Un cuarto de acre perfectamente cuadrado mide 104.36 pies por lado, justo la mitad del lado de un acre cuadrado: un cuarto del área es la mitad de cada lado, porque los dos lados se reducen por el mismo factor de 2.',
+  'page.square-feet-in-a-quarter-acre.shape2':
+    'Casi nunca todo un cuarto de acre es césped. Una casa de 2,000 pies cuadrados de planta, una entrada de 20 por 24 pies (480 pies cuadrados) y un patio de 12 por 16 pies (192 pies cuadrados) dejan 8,218 pies cuadrados, unas tres cuartas partes del lote, para sembrar o poner pasto en rollo. Mide lo que queda en vez de pedir para todo el lote: las cifras de tierra y mulch de abajo cubren los 10,890 pies cuadrados completos, así que ajústalas a la parte que de verdad vas a plantar.',
   'page.contact.title': 'Contacto | Maestro Calc',
   'page.contact.description':
     'Escribe a Maestro Calc a contacto@maestrocalc.com. ¿Encontraste un error en un cálculo o en una página? Cuéntanos y lo revisaremos.',
