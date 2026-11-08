@@ -1,7 +1,7 @@
 ---
 import { chipsOf, PAGE_LABELS } from '../layout.ts';
 import { hrefOf, type Lang } from '../routes.ts';
-import { HOME_TEXTS } from '../texts/home.ts';
+import { HOME_TEXTS, TRUST_PAGES } from '../texts/home.ts';
 import { titleOf } from '../seo/meta.ts';
 import Layout from './Layout.astro';
 
@@ -55,6 +55,15 @@ const guides = ['quote-guide', 'markup-guide', 'rate-guide'] as const;
           <b>{PAGE_LABELS[lang][id]}</b>
           <span>{text.guideSummaries[id]}</span>
         </a>
+      </li>
+    ))}
+  </ul>
+  <h2>{text.trustH2}</h2>
+  <p>{text.trustBody}</p>
+  <ul>
+    {TRUST_PAGES.map((id) => (
+      <li>
+        <a href={hrefOf(id, lang)}>{PAGE_LABELS[lang][id]}</a>
       </li>
     ))}
   </ul>
