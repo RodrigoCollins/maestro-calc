@@ -4,6 +4,7 @@ import { hoursMinutesText, hoursText } from '../format.ts';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import type { CommonLinks } from '../long-tail/jobs.ts';
 import { pathOf, SHIFTS } from '../long-tail/routes.ts';
+import { SOURCES } from '../long-tail/sections.ts';
 import { shiftLinksOf } from '../long-tail/shifts.ts';
 import { titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -97,18 +98,12 @@ export const PART_TIME_GUIDE_LINKS: Readonly<Record<Lang, CommonLinks>> = {
   es: shiftPagesOf('es', 'Horas de turnos más cortos', PART_SHIFTS),
 };
 
-const IRS_FULL_TIME: GuideSource = {
-  label: 'IRS, Identifying full-time employees (Affordable Care Act)',
-  href: 'https://www.irs.gov/affordable-care-act/employers/identifying-full-time-employees',
-};
+const IRS_FULL_TIME: GuideSource = SOURCES.irsFullTime;
 const IRS_ALE: GuideSource = {
   label: 'IRS, Determining if an employer is an applicable large employer',
   href: 'https://www.irs.gov/affordable-care-act/employers/determining-if-an-employer-is-an-applicable-large-employer',
 };
-const BLS_CPS: GuideSource = {
-  label: 'U.S. Bureau of Labor Statistics, Current Population Survey: concepts and definitions',
-  href: 'https://www.bls.gov/cps/definitions.htm',
-};
+const BLS_CPS: GuideSource = SOURCES.blsCps;
 const DOL_FULL_TIME: GuideSource = {
   label: 'U.S. Department of Labor, Full-Time Employment',
   href: 'https://www.dol.gov/general/topic/workhours/full-time',

@@ -5,6 +5,7 @@ import { DECIMAL_HOURS_PATHS, DECIMAL_HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { minutesSectionsOf } from './time-sections.ts';
 import { nearestOf } from './nearest.ts';
 import { MINUTES, pathOf, type Minutes } from './routes.ts';
 
@@ -115,5 +116,6 @@ export const minutesPageOf = (job: Minutes, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: minutesLinksOf(lang, job),
+    ...minutesSectionsOf(job, lang),
   };
 };

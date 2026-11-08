@@ -5,6 +5,7 @@ import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIPPED_PATHS, TIPPED_TEXTS, type TippedOutput } from '../tipped/texts.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { tippedSectionsOf } from './wage-sections.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, TIPPED, type Tipped } from './routes.ts';
 
@@ -217,5 +218,6 @@ export const tippedPageOf = (job: Tipped, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: tippedLinksOf(lang, job),
+    ...tippedSectionsOf(job, lang),
   };
 };

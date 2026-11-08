@@ -5,6 +5,7 @@ import { SHIFT_PATHS, SHIFT_TEXTS } from '../shift/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { differentialSectionsOf } from './wage-sections.ts';
 import { nearestOf } from './nearest.ts';
 import { DIFFERENTIALS, pathOf, type Differential } from './routes.ts';
 
@@ -161,5 +162,6 @@ export const differentialPageOf = (job: Differential, lang: Lang): LongTailPage 
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: differentialLinksOf(lang, job),
+    ...differentialSectionsOf(job, lang),
   };
 };

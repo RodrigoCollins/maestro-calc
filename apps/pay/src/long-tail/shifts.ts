@@ -5,22 +5,16 @@ import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { clockOf, fieldOf } from './clock.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, SHIFTS, type Shift } from './routes.ts';
+import { shiftSectionsOf } from './shift-sections.ts';
 
 /** The days of the work week the weekly rows count. */
 const DAYS = 5;
 
 /** The unpaid breaks of the rows, in minutes. */
 const BREAKS = [30, 60] as const;
-
-/** `9 am`, `8:30 am`, `12 pm`: a time as people search it, the same in both languages. */
-const clockOf = (minutes: number): string => {
-  const hour = Math.floor(minutes / 60);
-  const clock = String(hour % 12 === 0 ? 12 : hour % 12);
-  const time = minutes % 60 === 0 ? clock : `${clock}:${String(minutes % 60).padStart(2, '0')}`;
-  return `${time} ${hour < 12 ? 'am' : 'pm'}`;
-};
 
 /** Minutes from midnight to noon: a morning time is before it. */
 const NOON = 720;
@@ -38,10 +32,6 @@ const searchedOf = (shift: Shift, lang: Lang): { readonly start: string; readonl
   const bare = (clock: string): string => clock.replace(/ [ap]m$/, '');
   return day ? { start: bare(start), end: bare(end) } : { start, end };
 };
-
-/** A time as the hours calculator reads it, on a 24-hour clock: `17:00`. */
-const fieldOf = (minutes: number): string =>
-  `${String(Math.floor(minutes / 60))}:${String(minutes % 60).padStart(2, '0')}`;
 
 /** Hours and whole minutes of `hours`, to the nearest minute. */
 const partsOf = (hours: Rational): { readonly h: number; readonly min: number } => {
@@ -197,5 +187,6 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(shift, 'en'), es: pathOf(shift, 'es') },
     others: shiftLinksOf(lang, shift),
+    ...shiftSectionsOf(shift, lang, figure),
   };
 };
