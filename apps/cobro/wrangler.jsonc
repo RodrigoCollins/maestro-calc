@@ -1,0 +1,20 @@
+// Cuánto Le Cobro on Cloudflare Workers Builds: static Astro output as assets only, no Worker script.
+// The Workers Builds project runs from the repository root and deploys with
+// `npx wrangler deploy --config apps/cobro/wrangler.jsonc`; wrangler runs the build below from this
+// directory, and npm resolves the workspace root above it.
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "cuanto-le-cobro",
+  "compatibility_date": "2026-11-07",
+  "build": {
+    "command": "npm run build -w @maestro-calc/cobro",
+  },
+  // Workers Builds deploys a non-production branch with `wrangler preview`, which needs this block.
+  "previews": {},
+  "assets": {
+    "directory": "./dist",
+    // Same rules as Maestro Calc: `build.format: 'file'` and `trailingSlash: 'never'`.
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+}
