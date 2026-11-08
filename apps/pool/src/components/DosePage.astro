@@ -4,6 +4,7 @@ import type { DosePage } from '../doses.ts';
 import { amountText, outputText } from '../format.ts';
 import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
+import WorkedExample from './WorkedExample.astro';
 
 interface Props {
   readonly page: DosePage;
@@ -134,6 +135,8 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
         <a href={page.methodLink.href}>{page.methodLink.label}</a>
       </p>
     )}
+    {/* an embed's frame height is fixed, so the worked example stays on the page itself */}
+    {!embed && <WorkedExample path={page.path} />}
     {/* the guides in the page's language; the job pages are English only */}
     <JobLinks path={page.path} {embed} />
   </main>

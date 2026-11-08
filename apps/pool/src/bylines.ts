@@ -19,6 +19,7 @@ import {
   SALT_VS_CHLORINE_GUIDE_ES,
   SHOCK_GUIDE_ES,
 } from './guide-es.ts';
+import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
 import { SWIM_GUIDES } from './swim-es.ts';
@@ -85,10 +86,10 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       sources: [VOLUME_CHARTS[lang].source],
     },
   ]),
-  ...JOB_PAGES.map(({ path, checked, calculator }) => ({
-    path,
-    checked,
-    sources: jobSourcesOf(calculator.path),
+  ...JOB_PAGES.map((page) => ({
+    path: page.path,
+    checked: page.checked,
+    sources: unique([...jobSourcesOf(page.calculator.path), ...jobDetailOf(page).sources]),
   })),
 ];
 

@@ -18,7 +18,7 @@ Build the site, then run it on its own `dist`:
 
 Options: `--as-open` (reads a closed site, `SITE.indexable: false`, as it will be once open: every page its sitemap lists counts as indexable whatever its robots meta says; without it a closed site reports 0 indexable pages), `--limit <n>` (rows of the thinnest list, default 30), `--thin <words>` (default 120), `--json <file>` (the full report, every page). A site whose main content uses other chrome classes can pass its own `chrome` selector to `auditSite` from a script of its own.
 
-Baseline on 2026-11-08 (`origin/main` plus the Maestro Calc job-page fix of PR #361): Maestro Calc 99 thin of 230 indexable pages; **Cuenta Horas 342 of 438**, the thinnest shift pages with 2 to 5 unique words and 96% template; **Pool Figures 98 of 136**, the stabilizer pages at 29 unique words and 85% template. Both are still in review; if either is rejected, this list is the fix order.
+Baseline on 2026-11-08 (`origin/main` plus the Maestro Calc job-page fix of PR #361): Maestro Calc 99 thin of 230 indexable pages; **Cuenta Horas 342 of 438**, the thinnest shift pages with 2 to 5 unique words and 96% template; **Pool Figures 98 of 136**, the stabilizer pages at 29 unique words and 85% template. Both are still in review; if either is rejected, this list is the fix order. Pool Figures after its content PR (same day): 0 thin of 136, the 98 pages that were thin at a median of 141 unique words (per family in `plans/growth/adsense-low-value-audit-2026-11-08.md`).
 
 ## The checklist
 

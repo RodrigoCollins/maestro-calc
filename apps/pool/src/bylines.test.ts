@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 import { DATA_PAGES_OF } from './charts.ts';
 import { GUIDES } from './guide.ts';
+import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
 import { routeOf } from './routes.ts';
@@ -62,12 +63,16 @@ describe('the pages with a byline', () => {
   });
 
   // a job page works its figure out with its calculator, so it cites the calculator's sources
-  it('give a job page the sources the methodology names for its calculator', () => {
+  it('give a job page the sources the methodology names for its calculator, then those its notes cite', () => {
     for (const page of JOB_PAGES) {
       const section = METHOD_SECTIONS.find(({ href }) => href === page.calculator.path);
       expect(section, page.path).toBeDefined();
       expect(bylinePageOf(page.path).sources.map(({ name, url }) => url ?? name)).toEqual([
-        ...new Set(section?.sources.map(({ name, url }) => url ?? name)),
+        ...new Set(
+          [...(section?.sources ?? []), ...jobDetailOf(page).sources].map(
+            ({ name, url }) => url ?? name,
+          ),
+        ),
       ]);
     }
   });
