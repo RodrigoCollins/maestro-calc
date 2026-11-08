@@ -29,6 +29,7 @@ export default defineConfig({
         'packages/cobro-core/src/**': full,
         'packages/site-kit/src/**': full,
         'packages/data/src/**': ninety,
+        'packages/lawn-data/src/**': ninety,
         'packages/i18n/src/**': ninety,
         'apps/web/src/calculator/**': full,
         'apps/web/src/lib/home-directory.ts': full,

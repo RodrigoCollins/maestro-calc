@@ -1,0 +1,108 @@
+---
+import { MAESTRO } from '../calculators.ts';
+import { HOME, HOME_GUIDES, HOME_TOOLS } from '../home.ts';
+import { hrefOf } from '../routes.ts';
+import Layout from './Layout.astro';
+---
+
+<Layout title={HOME.title} description={HOME.description}>
+  <Fragment slot="hero">
+    <section class="lawn-hero tall">
+      <p class="lawn-kicker">{HOME.kicker}</p>
+      <h1>{HOME.h1}</h1>
+      <p>{HOME.lead}</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main lifted">
+    <section class="lawn-card lawn-tools" aria-labelledby="tools">
+      <h2 id="tools">{HOME.toolsHeading}</h2>
+      <ul>
+        {HOME_TOOLS.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>
+            <span>{summary}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="lawn-section" aria-labelledby="frost">
+      <h2 id="frost">{HOME.frostHeading}</h2>
+      <p>{HOME.frostText}</p>
+      <p>
+        <a href={hrefOf('frost-index')}>{HOME.frostLink}</a>
+      </p>
+    </section>
+
+    <section class="lawn-section" aria-labelledby="guides">
+      <h2 id="guides">{HOME.guidesHeading}</h2>
+      <ul>
+        {HOME_GUIDES.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>: {summary}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="lawn-math" aria-labelledby="math">
+      <h2 id="math">{HOME.mathHeading}</h2>
+      <p>{HOME.mathText}</p>
+      <p>
+        <a href={hrefOf('methodology')}>{HOME.mathLink}</a>
+      </p>
+    </section>
+
+    <section class="lawn-section" aria-labelledby="more">
+      <h2 id="more">{HOME.moreHeading}</h2>
+      <p>{HOME.moreText}</p>
+      <ul>
+        {[MAESTRO.pages.mulch, MAESTRO.pages.gravel, MAESTRO.pages.topsoil, MAESTRO.pages.area].map(
+          ({ label, path }) => (
+            <li>
+              <a href={`${MAESTRO.origin}${path}`}>{label}</a>
+            </li>
+          ),
+        )}
+      </ul>
+    </section>
+  </main>
+  <slot />
+</Layout>
+
+<style is:global>
+  .lawn-tools {
+    gap: 0.75rem;
+  }
+
+  .lawn-tools ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .lawn-tools li {
+    display: grid;
+    gap: 0.125rem;
+  }
+
+  .lawn-tools li a {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 1.375rem;
+    color: var(--link);
+  }
+
+  .lawn-tools li span {
+    color: var(--muted);
+  }
+
+  .lawn-main .lawn-math {
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: var(--deep);
+    color: var(--on-stripe);
+  }
+
+  .lawn-main .lawn-math a {
+    color: var(--on-deep);
+  }
+</style>

@@ -1,0 +1,95 @@
+---
+import { METHOD_PAGE, METHOD_SECTIONS } from '../methodology.ts';
+import { pageTrailOf } from '../seo/breadcrumb.ts';
+import Layout from './Layout.astro';
+
+const t = METHOD_PAGE;
+---
+
+<Layout
+  title={t.title}
+  description={t.description}
+  trail={pageTrailOf({ path: '/methodology', title: t.title })}
+>
+  <Fragment slot="hero">
+    <section class="lawn-hero">
+      <h1>{t.h1}</h1>
+      <p>{t.lead}</p>
+      <p>{t.checked}</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main">
+    <nav aria-label="Sections">
+      <ul class="lawn-method-index">
+        {METHOD_SECTIONS.map(({ id, title }) => (
+          <li>
+            <a href={`#${id}`}>{title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    {METHOD_SECTIONS.map(({ id, title, href, method, note, sources, cases }) => (
+      <section class="lawn-section lawn-method" aria-labelledby={id}>
+        <h2 {id}>{title}</h2>
+        <p>{method}</p>
+        <p>{note}</p>
+        {cases.length > 0 && (
+          <>
+            <h3>{cases.length === 1 ? 'Worked case' : 'Worked cases'}</h3>
+            <ul>
+              {cases.map(({ text, result, unit }) => (
+                <li>
+                  {text}{' '}
+                  <strong>
+                    {result} {unit}
+                  </strong>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+        {sources.length > 0 && (
+          <>
+            <h3>{sources.length === 1 ? 'Source' : 'Sources'}</h3>
+            <ul>
+              {sources.map(({ name, url }) => (
+                <li>{url === undefined ? name : <a href={url}>{name}</a>}</li>
+              ))}
+            </ul>
+          </>
+        )}
+        <p>
+          <a {href}>
+            {id === 'frost' ? 'Open the frost dates' : `Open the ${title.toLowerCase()} calculator`}
+          </a>
+        </p>
+      </section>
+    ))}
+  </main>
+</Layout>
+
+<style is:global>
+  .lawn-method-index {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    padding: 0;
+    font-weight: 600;
+  }
+
+  .lawn-method {
+    padding: 1.25rem;
+    border-radius: 1rem;
+    background: var(--card);
+  }
+
+  .lawn-method h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+
+  .lawn-method strong {
+    white-space: nowrap;
+  }
+</style>

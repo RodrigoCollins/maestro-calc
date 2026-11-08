@@ -3,6 +3,7 @@ import {
   articleLd,
   breadcrumbListLd,
   graphLd,
+  organizationLd,
   serializeJsonLd,
   webApplicationLd,
   webSiteLd,
@@ -192,5 +193,26 @@ describe('serializeJsonLd', () => {
     const text = serializeJsonLd(value);
     expect(text).not.toMatch(/[<>&]/);
     expect(JSON.parse(text)).toEqual(value);
+  });
+});
+
+describe('organizationLd', () => {
+  it('gives a name alone, or the name with its home and its policy', () => {
+    expect(organizationLd('Lawn Figures')).toEqual({
+      '@type': 'Organization',
+      name: 'Lawn Figures',
+    });
+    expect(
+      organizationLd({
+        name: 'Lawn Figures',
+        url: 'https://x.test/',
+        publishingPrinciples: 'https://x.test/policy',
+      }),
+    ).toEqual({
+      '@type': 'Organization',
+      name: 'Lawn Figures',
+      url: 'https://x.test/',
+      publishingPrinciples: 'https://x.test/policy',
+    });
   });
 });

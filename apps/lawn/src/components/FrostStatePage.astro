@@ -1,0 +1,155 @@
+---
+import { FROST_CHECKED } from '../editorial.ts';
+import { frostPageOf, frostPathOf, FROST_PAGES, type FrostPage } from '../frost.ts';
+import { frostCopyOf, FROST_FOOTNOTE, FROST_TEXT } from '../frost-copy.ts';
+import { frostTrailOf } from '../seo/breadcrumb.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+import ZipLookup from './ZipLookup.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const page: FrostPage = frostPageOf(Astro.props.path);
+const copy = frostCopyOf(page);
+const { columns, alwaysFreezing } = FROST_TEXT;
+const siblings = FROST_PAGES.filter(({ state }) => state.slug === page.state.slug);
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  trail={frostTrailOf({ path: page.path, title: copy.title })}
+  modified={FROST_CHECKED}
+>
+  <Fragment slot="hero">
+    <section class="lawn-hero tall">
+      <h1>{copy.h1}</h1>
+      <Byline path={page.path} />
+      <p>{copy.lead}</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main lifted">
+    <ZipLookup />
+    {siblings.length > 1 && (
+      <nav class="lawn-section" aria-label={`${page.state.name} pages`}>
+        <ul class="lawn-parts">
+          {siblings.map((sibling) => (
+            <li>
+              {sibling.part === page.part ? (
+                <strong aria-current="page">Part {sibling.part}</strong>
+              ) : (
+                <a href={frostPathOf(sibling.state.slug, sibling.part)}>Part {sibling.part}</a>
+              )}{' '}
+              <span>
+                ({sibling.rows[0]?.name} to {sibling.rows.at(-1)?.name})
+              </span>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )}
+    <div
+      class="lawn-table"
+      role="region"
+      aria-label={`${page.state.name} frost dates`}
+      tabindex="0"
+    >
+      <table>
+        <thead>
+          <tr>
+            <th scope="col" rowspan="2">
+              {columns.station}
+            </th>
+            <th scope="colgroup" colspan="3">
+              {columns.springHeading}
+            </th>
+            <th scope="colgroup" colspan="3">
+              {columns.fallHeading}
+            </th>
+          </tr>
+          <tr>
+            {[...columns.levels, ...columns.levels].map((level) => (
+              <th scope="col">{level}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {page.rows.map(({ id, name, dates, alwaysFreezing: frozen }) => (
+            <tr {id}>
+              <th scope="row">{name}</th>
+              {frozen ? (
+                <td colspan="6">{alwaysFreezing}</td>
+              ) : (
+                dates.map((date) => <td>{date}</td>)
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <section class="lawn-section" aria-labelledby="reading">
+      <h2 id="reading">How to read the dates</h2>
+      {FROST_TEXT.reading.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+      <p>{FROST_FOOTNOTE}</p>
+      <p>
+        <a href="/frost-dates">All states</a>
+      </p>
+    </section>
+    <ShareLink title={copy.title} path={page.path} />
+    <Sources path={page.path} />
+  </main>
+  <slot />
+</Layout>
+
+<style is:global>
+  .lawn-parts {
+    list-style: none;
+    padding: 0;
+  }
+
+  .lawn-table {
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    background: var(--card);
+  }
+
+  .lawn-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lawn-table th,
+  .lawn-table td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .lawn-table thead th {
+    background: var(--deep);
+    color: var(--on-stripe);
+    text-align: center;
+  }
+
+  .lawn-table tbody th {
+    text-align: left;
+    font-weight: 600;
+    white-space: normal;
+    min-width: 9rem;
+  }
+
+  .lawn-table tbody tr:target th,
+  .lawn-table tbody tr:target td {
+    background: var(--yellow);
+    color: var(--on-yellow);
+  }
+</style>
