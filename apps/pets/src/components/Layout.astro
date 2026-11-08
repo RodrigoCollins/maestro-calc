@@ -263,6 +263,11 @@ const jsonLd = jsonLdOf(
     overflow-x: auto;
   }
 
+  /* a grid item is as wide as its content by default: a table inside a section must scroll, not widen the page */
+  .bf-page > * {
+    min-width: 0;
+  }
+
   [hidden] {
     display: none !important;
   }
