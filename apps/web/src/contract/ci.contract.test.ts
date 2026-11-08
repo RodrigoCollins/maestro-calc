@@ -97,6 +97,8 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
       'npm run check:site:pay',
       'npm run build:pool',
       'npm run check:site:pool',
+      'npm run build:lawn',
+      'npm run check:site:lawn',
       'npm run build:pets',
       'npm run check:site:pets',
       'npm run check:dist',
@@ -402,7 +404,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(shards?.strategy?.['fail-fast']).toBe(false);
     const entries = shards?.strategy?.matrix?.include ?? [];
     const suites = [...new Set(entries.map(({ suite }) => suite))];
-    expect(suites).toEqual(['web', 'pay', 'pool', 'pets']);
+    expect(suites).toEqual(['web', 'pay', 'pool', 'lawn', 'pets']);
     for (const suite of suites) {
       const own = entries.filter((entry) => entry.suite === suite);
       const total = own[0]?.total ?? 0;
@@ -415,6 +417,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
       'playwright.config.ts',
       'playwright.pay.config.ts',
       'playwright.pool.config.ts',
+      'playwright.lawn.config.ts',
       'playwright.pets.config.ts',
     ]) {
       const source = readFileSync(fromRoot(`tooling/site-browser/${config}`), 'utf8');
@@ -427,6 +430,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(suiteOf('npm run test:e2e')).toBe("matrix.suite == 'web'");
     expect(suiteOf('npm run test:e2e:pay')).toBe("matrix.suite == 'pay'");
     expect(suiteOf('npm run test:e2e:pool')).toBe("matrix.suite == 'pool'");
+    expect(suiteOf('npm run test:e2e:lawn')).toBe("matrix.suite == 'lawn'");
     expect(suiteOf('npm run test:e2e:pets')).toBe("matrix.suite == 'pets'");
     const lighthouse = steps.find(({ run }) => run === 'npm run lighthouse');
     expect(lighthouse?.if).toBe("matrix.suite == 'web' && matrix.shard == 1");
@@ -535,6 +539,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(runs).toContain('npm run test:e2e');
     expect(runs).toContain('npm run test:e2e:pay');
     expect(runs).toContain('npm run test:e2e:pool');
+    expect(runs).toContain('npm run test:e2e:lawn');
     expect(runs).toContain('npm run test:e2e:pets');
     const uploads = steps.filter((candidate) =>
       candidate.uses?.startsWith('actions/upload-artifact@'),

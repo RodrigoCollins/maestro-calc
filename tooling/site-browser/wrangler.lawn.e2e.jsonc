@@ -1,0 +1,13 @@
+// apps/lawn/wrangler.jsonc without its `build` command: the e2e run serves the `dist` that was
+// already built. `apps/lawn/src/deploy.test.ts` keeps the two `assets` blocks equal. The date is the
+// newest the wrangler of this package runs (it stops at 2026-10-26); a site of static assets only
+// with no Worker script behaves the same under either date.
+{
+  "name": "lawn-figures",
+  "compatibility_date": "2026-10-23",
+  "assets": {
+    "directory": "../../apps/lawn/dist",
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page",
+  },
+}

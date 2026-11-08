@@ -65,14 +65,16 @@ const extendsBase = (config: string): boolean =>
 
 describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
   // spec: Workspace enumeration [MW2]
-  it('resolves the workspace globs to exactly the thirteen workspaces', () => {
+  it('resolves the workspace globs to exactly the fifteen workspaces', () => {
     expect(rootManifest.workspaces).toEqual(['packages/*', 'apps/*']);
     expect([...workspaceNames].sort()).toEqual([
       '@maestro-calc/cobro-core',
       '@maestro-calc/core',
       '@maestro-calc/data',
       '@maestro-calc/i18n',
+      '@maestro-calc/lawn',
       '@maestro-calc/lawn-core',
+      '@maestro-calc/lawn-data',
       '@maestro-calc/pay',
       '@maestro-calc/pay-core',
       '@maestro-calc/pets',
@@ -87,7 +89,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
 
 describe('dependency direction (monorepo-workspace › Dependency direction)', () => {
   // spec: Dependency direction — exactly the allowed edges [MW5b, MD5]
-  it('has only the edges cobro-core to core, data to core, lawn-core to core, pay to core and pay-core, pay-core to core, pets to core and pets-core and site-kit, pets-core to core, pool to core and pool-core, pool-core to core, pay and pool to site-kit, and web to core, data, i18n and site-kit', () => {
+  it('has only the edges cobro-core to core, data to core, lawn to core, lawn-core and lawn-data, lawn-core to core, pay to core and pay-core, pay-core to core, pets to core and pets-core and site-kit, pets-core to core, pool to core and pool-core, pool-core to core, pay, pool and lawn to site-kit, and web to core, data, i18n and site-kit', () => {
     const edges = workspaceDirs.flatMap((dir) => {
       const manifest = readManifest(dir);
       return dependencyNames(manifest)
@@ -97,6 +99,10 @@ describe('dependency direction (monorepo-workspace › Dependency direction)', (
     expect(edges.sort()).toEqual([
       '@maestro-calc/cobro-core -> @maestro-calc/core',
       '@maestro-calc/data -> @maestro-calc/core',
+      '@maestro-calc/lawn -> @maestro-calc/core',
+      '@maestro-calc/lawn -> @maestro-calc/lawn-core',
+      '@maestro-calc/lawn -> @maestro-calc/lawn-data',
+      '@maestro-calc/lawn -> @maestro-calc/site-kit',
       '@maestro-calc/lawn-core -> @maestro-calc/core',
       '@maestro-calc/pay -> @maestro-calc/core',
       '@maestro-calc/pay -> @maestro-calc/pay-core',

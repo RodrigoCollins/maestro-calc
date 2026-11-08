@@ -1,0 +1,277 @@
+---
+import { Font } from 'astro:assets';
+import { footerLinks, LAYOUT_TEXT, navOf } from '../layout.ts';
+import type { Crumb } from '../seo/breadcrumb.ts';
+import { headOf } from '../seo/head.ts';
+import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
+import { SITE } from '../site.config.ts';
+import { DARK, declarationsOf, LIGHT } from '../tokens.ts';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+  /** False for a page that is never indexed and has no canonical: the 404. */
+  readonly indexed?: boolean;
+  /** The breadcrumb of a page below the home: its `BreadcrumbList` joins the JSON-LD. */
+  readonly trail?: readonly Crumb[];
+  /** The day the page's data says its figures were last checked (`YYYY-MM-DD`), for its JSON-LD. */
+  readonly modified?: string;
+}
+
+const { title, description, indexed = true, trail, modified } = Astro.props;
+const path = canonicalPath(Astro.url.pathname);
+const { canonical, robots, preview } = headOf(path, { title, description }, indexed);
+// the JSON-LD is written on every real page, indexable or not; only the 404 has none
+const jsonLd = indexed
+  ? jsonLdOf(
+      path,
+      {
+        title,
+        description,
+        ...(modified === undefined ? {} : { modified }),
+      },
+      SITE.origin,
+      trail,
+    )
+  : undefined;
+const tokenCss = `:root{color-scheme:light dark;${declarationsOf(LIGHT)}}@media (prefers-color-scheme:dark){:root{${declarationsOf(DARK)}}}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    {robots !== undefined && <meta name="robots" content={robots} />}
+    {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    <style is:inline set:html={tokenCss} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={ogTypeOf(pageKindOf(path))} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
+    {canonical !== undefined && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
+    <meta name="twitter:card" content={preview['twitter:card']} />
+    {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '400' }]} />
+    {SITE.gaId !== '' && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-ga={SITE.gaId}
+        data-host={new URL(SITE.origin).hostname}
+        defer
+      />
+    )}
+  </head>
+  <body>
+    <div class="lawn-top">
+      <header class="lawn-header">
+        <a class="lawn-brand" href="/">
+          {SITE.name}
+        </a>
+        <nav aria-label={LAYOUT_TEXT.navLabel}>
+          {navOf().map(({ href, title }) => (
+            <a {href}>{title}</a>
+          ))}
+        </nav>
+      </header>
+      <slot name="hero" />
+    </div>
+    <slot />
+    <footer class="lawn-footer">
+      <p>{LAYOUT_TEXT.warning}</p>
+      <nav aria-label="About">
+        {footerLinks().map(({ href, label }) => (
+          <a {href}>{label}</a>
+        ))}
+      </nav>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* Mowing stripes (plans/lawn/PLAN.md section 5): cream ground, green diagonal stripes, seed-bag yellow. */
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--font-body), Arial, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  .lawn-top {
+    background: repeating-linear-gradient(
+      135deg,
+      var(--stripe-a) 0 2.75rem,
+      var(--stripe-b) 2.75rem 5.5rem
+    );
+    color: var(--on-stripe);
+  }
+
+  .lawn-top a {
+    color: var(--on-stripe);
+  }
+
+  .lawn-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+    padding: 0.5rem max(1rem, calc((100% - 68rem) / 2));
+  }
+
+  .lawn-header a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    text-decoration: none;
+  }
+
+  .lawn-brand {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 1.5rem;
+  }
+
+  .lawn-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.25rem;
+    font-weight: 600;
+    font-size: 0.9375rem;
+  }
+
+  .lawn-header nav a:hover,
+  .lawn-header nav a:focus-visible {
+    text-decoration: underline;
+  }
+
+  .lawn-hero {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3.5rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .lawn-hero.tall {
+    padding-bottom: 6.5rem;
+  }
+
+  .lawn-hero .lawn-kicker {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lawn-hero h1 {
+    margin: 0;
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(2.25rem, 7vw, 3.5rem);
+    line-height: 1.05;
+  }
+
+  .lawn-hero p {
+    margin: 0;
+    font-size: 1.1875rem;
+  }
+
+  .lawn-main {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+    display: grid;
+    gap: 2rem;
+  }
+
+  .lawn-main.lifted {
+    padding-top: 0;
+    margin-top: -4.5rem;
+  }
+
+  .lawn-main a {
+    color: var(--link);
+  }
+
+  .lawn-main h2 {
+    margin: 0;
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1.15;
+  }
+
+  .lawn-main p {
+    margin: 0;
+  }
+
+  .lawn-main ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .lawn-section {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .lawn-byline {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+
+  .lawn-hero .lawn-byline a {
+    color: var(--on-stripe);
+  }
+
+  .lawn-footer {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.5rem max(1rem, calc((100% - 68rem) / 2));
+    border-top: 1px solid var(--line);
+    font-size: 0.9375rem;
+  }
+
+  .lawn-footer p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .lawn-footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 1.5rem;
+  }
+
+  .lawn-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--link);
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  summary:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 2px;
+  }
+</style>

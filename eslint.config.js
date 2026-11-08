@@ -228,6 +228,7 @@ export default defineConfig(
     'apps/pay/public/analytics.js',
     // Byte for byte the Cuenta Horas loader (apps/pool/src/deploy.test.ts), run by its unit test.
     'apps/pool/public/analytics.js',
+    'apps/lawn/public/analytics.js',
     'apps/pets/public/analytics.js',
     // The offline worker, the same: a plain script served as is, run by its unit test.
     'apps/web/public/sw.js',

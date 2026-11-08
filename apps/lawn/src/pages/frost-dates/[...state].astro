@@ -1,0 +1,18 @@
+---
+import type { GetStaticPaths } from 'astro';
+import FrostStatePage from '../../components/FrostStatePage.astro';
+import { FROST_PAGES } from '../../frost.ts';
+import FrostScript from '../../islands/FrostScript.astro';
+
+export const getStaticPaths = (() =>
+  FROST_PAGES.map(({ path }) => ({
+    params: { state: path.slice('/frost-dates/'.length) },
+    props: { path },
+  }))) satisfies GetStaticPaths;
+
+const { path } = Astro.props;
+---
+
+<FrostStatePage {path}>
+  <FrostScript />
+</FrostStatePage>

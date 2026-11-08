@@ -39,6 +39,9 @@ jobs:
       # Pool Figures (apps/pool): its own build and byte budgets.
       - run: npm run build:pool
       - run: npm run check:site:pool
+      # Lawn Figures (apps/lawn): its own build and byte budgets.
+      - run: npm run build:lawn
+      - run: npm run check:site:lawn
       # Bowl Figures (apps/pets): its own build and byte budgets.
       - run: npm run build:pets
       - run: npm run check:site:pets
@@ -58,6 +61,8 @@ jobs:
           retention-days: 1
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
+          name: lawn-dist
+          path: apps/lawn/dist
           name: pets-dist
           path: apps/pets/dist
           if-no-files-found: error
@@ -546,6 +551,7 @@ jobs:
           - { suite: web, shard: 6, total: 6 }
           - { suite: pay, shard: 1, total: 1 }
           - { suite: pool, shard: 1, total: 1 }
+          - { suite: lawn, shard: 1, total: 1 }
           - { suite: pets, shard: 1, total: 1 }
     timeout-minutes: 40
     env:
@@ -602,6 +608,13 @@ jobs:
           path: apps/pool/dist
       - if: matrix.suite == 'pool'
         run: npm run test:e2e:pool
+      - if: matrix.suite == 'lawn'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: lawn-dist
+          path: apps/lawn/dist
+      - if: matrix.suite == 'lawn'
+        run: npm run test:e2e:lawn
       - if: matrix.suite == 'pets'
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -640,6 +653,8 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
+          name: playwright-test-results-lawn-${{ matrix.suite }}-${{ matrix.shard }}
+          path: tooling/site-browser/test-results-lawn
           name: playwright-test-results-pets-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-pets
           if-no-files-found: ignore
