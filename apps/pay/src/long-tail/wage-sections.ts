@@ -50,9 +50,6 @@ const tippedRun = (tips: string, hours: string): Out => {
 };
 
 const SHIFT_HOURS = [8, 16, 24, 32, 40] as const;
-
-/** The base rates a flat differential is set against. */
-const BASES = ['15', '18', '20', '22', '25', '30'] as const;
 const TIP_FACTORS = [Rational.of(1, 2), Rational.of(1), Rational.of(3, 2), Rational.of(2)] as const;
 
 const WORDS = {
@@ -74,11 +71,6 @@ const WORDS = {
         'The calculator on weeks of shift hours only, up to the 40 that keep them straight time:',
       caption: (rate: string): string => `Hours at ${rate} an hour`,
       head: ['Hours on the shift', 'Pay', 'Of it, differential'],
-      basesHeading: (diff: string): string => `The same ${diff} differential at other base rates`,
-      basesIntro: (diff: string): string =>
-        `A flat differential is a smaller share of a higher rate. The calculator on one shift hour with ${diff} added to each rate:`,
-      basesCaption: (diff: string): string => `${diff} an hour on the shift`,
-      basesHead: ['Base rate', 'Shift rate', 'As a percent'],
     },
     tipped: {
       cash: (hours: string, wages: string): string =>
@@ -137,12 +129,6 @@ const WORDS = {
         'La calculadora con semanas solo de horas del turno, hasta las 40 que se pagan a tarifa normal:',
       caption: (rate: string): string => `Horas a ${rate} la hora`,
       head: ['Horas en el turno', 'Pago', 'De eso, diferencial'],
-      basesHeading: (diff: string): string =>
-        `El mismo diferencial de ${diff} con otras tarifas base`,
-      basesIntro: (diff: string): string =>
-        `Un diferencial fijo es una parte menor de una tarifa más alta. La calculadora con una hora del turno y ${diff} sumados a cada tarifa:`,
-      basesCaption: (diff: string): string => `${diff} la hora en el turno`,
-      basesHead: ['Tarifa base', 'Tarifa del turno', 'Como porcentaje'],
     },
     tipped: {
       cash: (hours: string, wages: string): string =>
@@ -225,29 +211,12 @@ export const differentialSectionsOf = (job: Differential, lang: Lang): JobSectio
           ),
         ],
       },
-      job.source === 'percent'
-        ? {
-            id: 'hours',
-            heading: w.tableHeading(rate),
-            paragraphs: [w.tableIntro],
-            table: { caption: w.caption(rate), head: w.head, rows },
-          }
-        : {
-            id: 'bases',
-            heading: w.basesHeading(diff),
-            paragraphs: [w.basesIntro(diff)],
-            table: {
-              caption: w.basesCaption(diff),
-              head: w.basesHead,
-              rows: BASES.map((amount) => {
-                const out = differentialRun({ ...job, amount }, 0, 1);
-                const percent = money(out, 'differentialPay')
-                  .amount.div(Rational.of(Number(amount)))
-                  .mul(Rational.of(100));
-                return [`$${amount}`, m(out, 'shiftRate'), `${hoursText(percent)}%`];
-              }),
-            },
-          },
+      {
+        id: 'hours',
+        heading: w.tableHeading(rate),
+        paragraphs: [w.tableIntro],
+        table: { caption: w.caption(rate), head: w.head, rows },
+      },
     ],
     sources: [SOURCES.ecfr778207, SOURCES.ecfr778115, SOURCES.factSheet23],
   };

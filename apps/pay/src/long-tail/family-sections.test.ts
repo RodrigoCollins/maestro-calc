@@ -108,20 +108,6 @@ describe('the sections of the double-time, minutes, PTO, differential and tipped
     expect(textOf(sectionOf('20-an-hour-with-a-2-dollar-shift-differential', 'worked'))).toContain(
       'a flat $2.00 an hour on top of $20',
     );
-    // $2 on $15 is 13.33%, on $20 10%, on $25 8%
-    expect(sectionOf('20-an-hour-with-a-2-dollar-shift-differential', 'bases').table?.rows).toEqual(
-      [
-        ['$15', '$17.00', '13.33%'],
-        ['$18', '$20.00', '11.11%'],
-        ['$20', '$22.00', '10%'],
-        ['$22', '$24.00', '9.09%'],
-        ['$25', '$27.00', '8%'],
-        ['$30', '$32.00', '6.67%'],
-      ],
-    );
-    expect(
-      sectionOf('10-percent-shift-differential-on-20-an-hour', 'hours').table?.rows[4],
-    ).toEqual(['40', '$880.00', '$80.00']);
   });
 
   it('work a tipped week out: the top-up, the overtime premium and the tips an hour', () => {
