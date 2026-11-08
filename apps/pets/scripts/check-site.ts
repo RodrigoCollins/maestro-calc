@@ -33,6 +33,7 @@ const robotsFile = join(dist, 'robots.txt');
 // the files of `public` a page may link without being a page itself
 const files = new Set(readdirSync(dist).map((name) => `/${name}`));
 const calculators = ROUTES.filter(({ kind }) => kind === 'calculator').map(({ path }) => path);
+const open = SITE.indexable;
 const all = [
   ...problems,
   ...seoProblems(html, {
@@ -77,6 +78,6 @@ if (all.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${SITE.indexable ? 'open to' : 'closed to'} search engines`,
+    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${open ? 'open to' : 'closed to'} search engines`,
   );
 }

@@ -179,7 +179,14 @@ const fields = calculator.inputs.map((input) => {
                 <span data-text="from">{text['from']}</span>
               </span>
             </p>
-            <div class="bf-strip" data-html="strip" set:html={html['strip']} />
+            <div
+              class="bf-strip"
+              tabindex="0"
+              role="region"
+              aria-label="Calendar strip of the due window, scrolls sideways on a narrow screen"
+              data-html="strip"
+              set:html={html['strip']}
+            />
             <p
               class="bf-note-hero"
               data-show="dayMovedBack"
@@ -228,6 +235,12 @@ const fields = calculator.inputs.map((input) => {
     border-radius: 36px;
     background: var(--hero);
     color: var(--hero-ink);
+  }
+
+  .bf-hero > *,
+  .bf-result,
+  .bf-due {
+    min-width: 0;
   }
 
   .bf-form {

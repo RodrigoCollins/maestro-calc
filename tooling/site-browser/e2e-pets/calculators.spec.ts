@@ -105,7 +105,7 @@ test('shares each calculator on WhatsApp with the state of the form', async ({ p
   await edit(page, 'weight', '80');
   const href = await page.locator('a[data-share]').getAttribute('href');
   expect(href).toMatch(/^https:\/\/wa\.me\/\?text=/);
-  expect(decodeURIComponent(href ?? '')).toContain('weight=80');
+  expect(decodeURIComponent(href ?? '')).toMatch(/[?&]w=80/);
 });
 
 for (const { path } of CALCULATORS) {

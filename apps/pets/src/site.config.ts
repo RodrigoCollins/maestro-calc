@@ -7,7 +7,7 @@ export const SITE = {
    * Launch switch: closed to search engines until the owner buys the domain and flips it (every
    * page is `noindex`, with no canonical, and robots.txt stays open so the switch is one edit).
    */
-  indexable: false,
+  indexable: false as boolean,
   /** Google Analytics 4 measurement id; empty until the owner creates the property (`public/analytics.js`). */
   gaId: '' as string,
   /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */

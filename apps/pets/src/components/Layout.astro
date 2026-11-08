@@ -47,7 +47,7 @@ const jsonLd = jsonLdOf(
     <meta property="og:image:height" content={preview['og:image:height']} />
     <meta name="twitter:card" content={preview['twitter:card']} />
     {canonical !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
-    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }, { weight: '700' }]} />
     <Font cssVariable="--font-display" preload={[{ weight: '900' }]} />
     {SITE.gaId !== '' && (
       <script
@@ -261,6 +261,10 @@ const jsonLd = jsonLdOf(
 
   .bf-scroll {
     overflow-x: auto;
+  }
+
+  [hidden] {
+    display: none !important;
   }
 
   .bf-share {

@@ -24,7 +24,12 @@ const { title, description, h1, lead, checked, columns, rows, notes, calculators
         {CALL_NOW} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
       </p>
     )}
-    <div class="bf-scroll">
+    <div
+      class="bf-scroll"
+      tabindex="0"
+      role="region"
+      aria-label={`${h1}, scrolls sideways on a narrow screen`}
+    >
       <table class="bf-table">
         <thead>
           <tr>
