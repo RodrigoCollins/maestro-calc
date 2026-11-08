@@ -9,6 +9,7 @@ import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { differentialLinksOf, differentialPageOf } from './differentials.ts';
 import { doubleLinksOf, doublePageOf } from './doubles.ts';
 import { nearestOf } from './nearest.ts';
+import type { LongTailSection, LongTailSource } from './sections.ts';
 import { minutesLinksOf, minutesPageOf } from './minutes.ts';
 import { ptoLinksOf, ptoPageOf } from './pto.ts';
 import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
@@ -170,6 +171,10 @@ export interface LongTailPage {
   readonly note: string;
   readonly paths: Readonly<Record<Lang, string>>;
   readonly others: CommonLinks;
+  /** The sections under the answer: the figures worked out, the page's own tables and rules. */
+  readonly sections?: readonly LongTailSection[];
+  /** The primary sources the sections cite, listed under a sources heading. */
+  readonly sources?: readonly LongTailSource[];
 }
 
 export interface CommonLinks {

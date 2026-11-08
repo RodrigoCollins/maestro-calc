@@ -829,3 +829,22 @@ a.tool:hover .tool-title {
     display: none;
   }
 }
+
+/* A long-tail page's own tables: a caption, small column heads, cells that wrap on a phone. */
+.figures caption {
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+  font-weight: 800;
+}
+
+.figures thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  vertical-align: bottom;
+}
+
+.figures td {
+  white-space: normal;
+}
