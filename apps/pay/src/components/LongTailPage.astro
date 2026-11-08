@@ -91,6 +91,9 @@ const page = longTailPageOf(job, lang);
             </table>
           </div>
         )}
+        {(section.after ?? []).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
       </section>
     ))}
 

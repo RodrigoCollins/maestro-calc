@@ -26,6 +26,8 @@ export interface LongTailSection {
   readonly steps?: readonly string[];
   /** A table, after the steps. */
   readonly table?: LongTailTable;
+  /** Paragraphs after the table. */
+  readonly after?: readonly string[];
 }
 
 /** The heading of the sources list of a long-tail page, in the words the content audit reads. */
@@ -36,6 +38,31 @@ export const SOURCES = {
   factSheet23: {
     label: 'U.S. Department of Labor, Fact Sheet #23: Overtime Pay Requirements of the FLSA',
     href: 'https://www.dol.gov/agencies/whd/fact-sheets/23-flsa-overtime-pay',
+  },
+  factSheet17a: {
+    label:
+      'U.S. Department of Labor, Fact Sheet #17A: Exemption for Executive, Administrative, Professional, Computer & Outside Sales Employees Under the FLSA',
+    href: 'https://www.dol.gov/agencies/whd/fact-sheets/17a-overtime',
+  },
+  ecfr778113: {
+    label: '29 CFR 778.113, Salaried employees: general (eCFR)',
+    href: 'https://www.ecfr.gov/current/title-29/section-778.113',
+  },
+  ecfr778207: {
+    label: '29 CFR 778.207, Other types of contract premium pay distinguished (eCFR)',
+    href: 'https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-778/subpart-C/section-778.207',
+  },
+  ecfr778115: {
+    label: '29 CFR 778.115, Employees working at two or more rates (eCFR)',
+    href: 'https://www.ecfr.gov/current/title-29/subtitle-B/chapter-V/subchapter-B/part-778/subpart-C/section-778.115',
+  },
+  factSheet15: {
+    label: 'U.S. Department of Labor, Fact Sheet #15: Tipped Employees Under the FLSA',
+    href: 'https://www.dol.gov/agencies/whd/fact-sheets/15-tipped-employees-flsa',
+  },
+  vacation: {
+    label: 'U.S. Department of Labor, Vacation Leave',
+    href: 'https://www.dol.gov/general/topic/workhours/vacation_leave',
   },
   breaks: {
     label: 'U.S. Department of Labor, Breaks and Meal Periods',

@@ -5,6 +5,7 @@ import { PTO_PATHS, PTO_TEXTS, type PtoOutput } from '../pto/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { ptoSectionsOf } from './time-sections.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, PTOS, type Pto } from './routes.ts';
 
@@ -104,5 +105,6 @@ export const ptoPageOf = (job: Pto, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: ptoLinksOf(lang, job),
+    ...ptoSectionsOf(job, lang),
   };
 };

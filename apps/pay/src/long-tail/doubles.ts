@@ -5,6 +5,7 @@ import { OVERTIME_PATHS, OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { doubleSectionsOf } from './doubles-sections.ts';
 import { nearestOf } from './nearest.ts';
 import { DOUBLES, pathOf, type DoubleTime } from './routes.ts';
 
@@ -132,5 +133,6 @@ export const doublePageOf = (job: DoubleTime, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: doubleLinksOf(lang, job),
+    ...doubleSectionsOf(job, lang),
   };
 };

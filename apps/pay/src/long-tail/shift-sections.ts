@@ -641,8 +641,13 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
     {
       id: 'clock-out',
       heading: w.clockOut.heading,
-      paragraphs: [
-        w.clockOut.intro(start, finish, figure),
+      paragraphs: [w.clockOut.intro(start, finish, figure)],
+      table: {
+        caption: w.clockOut.caption(start),
+        head: w.clockOut.head(finish, figure),
+        rows: clockOutRows,
+      },
+      after: [
         w.clockOut.rounding(
           clockOf(shift.start - ROUNDING),
           clockOf(shift.start + ROUNDING),
@@ -652,11 +657,6 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
           finish,
         ),
       ],
-      table: {
-        caption: w.clockOut.caption(start),
-        head: w.clockOut.head(finish, figure),
-        rows: clockOutRows,
-      },
     },
     { id: 'week', heading: w.week.heading, paragraphs: weekParagraphs },
     {

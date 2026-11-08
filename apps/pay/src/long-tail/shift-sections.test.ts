@@ -23,6 +23,7 @@ const textOf = (section: LongTailSection): string =>
   [
     ...section.paragraphs,
     ...(section.steps ?? []),
+    ...(section.after ?? []),
     ...(section.table?.rows.flat() ?? []),
     section.table?.caption ?? '',
   ].join(' ');
@@ -80,6 +81,10 @@ describe('the sections of a shift page', () => {
       ['60 min', '7 h 0 min (7.00)', '6 pm'],
     ]);
     expect(sectionOf('22:00-6:00', 'clock-out').table?.rows[1]?.[2]).toBe('7 am');
+    // a quarter-hour clock records a punch up to 7 minutes off as the time itself
+    expect(textOf(sectionOf('9:00-17:00', 'clock-out'))).toContain(
+      'a punch-in from 8:53 am to 9:07 am and a punch-out from 4:53 pm to 5:07 pm still record 9 am to 5 pm',
+    );
   });
 
   it('give the week, the pay period and the month, and the federal overtime of the week', () => {
