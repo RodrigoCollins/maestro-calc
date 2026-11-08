@@ -1,4 +1,7 @@
 import { CALCULATORS } from './calculators.ts';
+import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
+
+export { PLANTING_GUIDE, seedRateText, SPECIES_GUIDES, type SpeciesGuide } from './seed-guides.ts';
 
 /** A source a guide cites: its name as cited and its address. */
 export interface GuideSource {
@@ -12,6 +15,8 @@ export interface GuideSection {
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly items?: readonly string[];
+  /** Pages of the site the section points to, listed under it. */
+  readonly links?: readonly { readonly href: string; readonly label: string }[];
 }
 
 /** A question the guide answers in full. */
@@ -130,7 +135,7 @@ export const TIMING_GUIDE: Guide = {
 };
 
 /** Every guide of the site, in the order of the footer. */
-export const GUIDES: readonly Guide[] = [TIMING_GUIDE];
+export const GUIDES: readonly Guide[] = [TIMING_GUIDE, PLANTING_GUIDE, ...SPECIES_GUIDES];
 
 /** The guide at `path`; any other path throws at build time. */
 export const guideAt = (path: string): Guide => {

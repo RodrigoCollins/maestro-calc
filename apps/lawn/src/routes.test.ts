@@ -15,7 +15,7 @@ const filesIn = (dir: string, prefix = ''): string[] =>
 
 describe('routes', () => {
   it('pins the published addresses: they are a public contract', () => {
-    expect(ROUTES.slice(0, 11).map(({ path }) => path)).toEqual([
+    expect(ROUTES.slice(0, 16).map(({ path }) => path)).toEqual([
       '/',
       '/lawn-fertilizer-calculator',
       '/grass-seed-calculator',
@@ -23,6 +23,11 @@ describe('routes', () => {
       '/lawn-lime-calculator',
       '/frost-dates',
       '/when-to-fertilize-and-seed-your-lawn',
+      '/when-to-plant-grass-seed',
+      '/bermuda-grass-seed',
+      '/zoysia-grass-seed',
+      '/tall-fescue-grass-seed',
+      '/perennial-ryegrass-seed',
       '/methodology',
       '/about',
       '/editorial-policy',
