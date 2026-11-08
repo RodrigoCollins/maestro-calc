@@ -45,6 +45,9 @@ jobs:
       # Bowl Figures (apps/pets): its own build and byte budgets.
       - run: npm run build:pets
       - run: npm run check:site:pets
+      # Cuánto Le Cobro (apps/cobro): its own build and byte budgets.
+      - run: npm run build:cobro
+      - run: npm run check:site:cobro
       # MW11b: the packages ship source, so a build must leave no `dist` behind.
       - run: npm run check:dist
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -69,6 +72,12 @@ jobs:
         with:
           name: pets-dist
           path: apps/pets/dist
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cobro-dist
+          path: apps/cobro/dist
           if-no-files-found: error
           retention-days: 1
       # The site-browser job serves this exact build instead of rebuilding it.
@@ -557,6 +566,7 @@ jobs:
           - { suite: pool, shard: 1, total: 1 }
           - { suite: lawn, shard: 1, total: 1 }
           - { suite: pets, shard: 1, total: 1 }
+          - { suite: cobro, shard: 1, total: 1 }
     timeout-minutes: 40
     env:
       WRANGLER_SEND_METRICS: 'false'
@@ -626,6 +636,13 @@ jobs:
           path: apps/pets/dist
       - if: matrix.suite == 'pets'
         run: npm run test:e2e:pets
+      - if: matrix.suite == 'cobro'
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: cobro-dist
+          path: apps/cobro/dist
+      - if: matrix.suite == 'cobro'
+        run: npm run test:e2e:cobro
       # Lighthouse CI audits six pages on the runner's own Google Chrome (no second browser
       # download), through the same wrangler server settings as the Playwright tests.
       - run: npm run lighthouse
@@ -659,6 +676,12 @@ jobs:
         with:
           name: playwright-test-results-lawn-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-lawn
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
+          name: playwright-test-results-cobro-${{ matrix.suite }}-${{ matrix.shard }}
+          path: tooling/site-browser/test-results-cobro
           if-no-files-found: ignore
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()

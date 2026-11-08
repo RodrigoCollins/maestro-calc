@@ -68,6 +68,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
   it('resolves the workspace globs to exactly the fifteen workspaces', () => {
     expect(rootManifest.workspaces).toEqual(['packages/*', 'apps/*']);
     expect([...workspaceNames].sort()).toEqual([
+      '@maestro-calc/cobro',
       '@maestro-calc/cobro-core',
       '@maestro-calc/core',
       '@maestro-calc/data',
@@ -97,6 +98,10 @@ describe('dependency direction (monorepo-workspace › Dependency direction)', (
         .map((dependency) => `${manifest.name} -> ${dependency}`);
     });
     expect(edges.sort()).toEqual([
+      '@maestro-calc/cobro -> @maestro-calc/cobro-core',
+      '@maestro-calc/cobro -> @maestro-calc/core',
+      '@maestro-calc/cobro -> @maestro-calc/data',
+      '@maestro-calc/cobro -> @maestro-calc/site-kit',
       '@maestro-calc/cobro-core -> @maestro-calc/core',
       '@maestro-calc/data -> @maestro-calc/core',
       '@maestro-calc/lawn -> @maestro-calc/core',

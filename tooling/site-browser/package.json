@@ -10,7 +10,8 @@
     "test:pay": "playwright test --config playwright.pay.config.ts",
     "test:pets": "playwright test --config playwright.pets.config.ts",
     "test:pool": "playwright test --config playwright.pool.config.ts",
-    "test:lawn": "playwright test --config playwright.lawn.config.ts"
+    "test:lawn": "playwright test --config playwright.lawn.config.ts",
+    "test:cobro": "playwright test --config playwright.cobro.config.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",

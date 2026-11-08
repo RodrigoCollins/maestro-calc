@@ -1,0 +1,61 @@
+---
+import { chipsOf, PAGE_LABELS } from '../layout.ts';
+import { hrefOf, type Lang } from '../routes.ts';
+import { HOME_TEXTS } from '../texts/home.ts';
+import { titleOf } from '../seo/meta.ts';
+import Layout from './Layout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = HOME_TEXTS[lang];
+const guides = ['quote-guide', 'markup-guide', 'rate-guide'] as const;
+---
+
+<Layout title={titleOf(text.title)} description={text.description}>
+  <h1>{text.h1}</h1>
+  <p class="lead">{text.lead}</p>
+
+  <h2>{text.tradesH2}</h2>
+  <ul class="cards">
+    {chipsOf(lang).map((chip) => (
+      <li>
+        <a href={chip.href}>
+          <b>{chip.label}</b>
+          <span>{text.summaries[chip.id]}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>{text.stepsH2}</h2>
+  <ol>
+    {text.steps.map((step) => (
+      <li>
+        <strong>{step.title}.</strong> {step.body}
+      </li>
+    ))}
+  </ol>
+
+  <section class="card card-gold" aria-labelledby="rate">
+    <h2 id="rate">{text.rateH2}</h2>
+    <p>{text.rateBody}</p>
+    <p>
+      <a href={hrefOf('wages', lang)}>{text.rateLink}</a>
+    </p>
+  </section>
+
+  <h2>{text.guidesH2}</h2>
+  <ul class="cards">
+    {guides.map((id) => (
+      <li>
+        <a href={hrefOf(id, lang)}>
+          <b>{PAGE_LABELS[lang][id]}</b>
+          <span>{text.guideSummaries[id]}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Layout>

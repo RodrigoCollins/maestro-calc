@@ -1,0 +1,225 @@
+---
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { chipsOf, PAGE_LABELS } from '../layout.ts';
+import { fill } from '../receipt/details.ts';
+import { hrefOf, WAGE_STEMS, type Lang, type TradeId } from '../routes.ts';
+import { titleOf } from '../seo/meta.ts';
+import { SITE } from '../site.config.ts';
+import { COMMON } from '../texts/common.ts';
+import { TRADE_TEXTS } from '../texts/trades.ts';
+import { tradeViewOf } from '../trade-page.ts';
+import CleaningScript from '../islands/CleaningScript.astro';
+import ConcreteScript from '../islands/ConcreteScript.astro';
+import DrywallScript from '../islands/DrywallScript.astro';
+import LandscapingScript from '../islands/LandscapingScript.astro';
+import PaintingScript from '../islands/PaintingScript.astro';
+import Layout from './Layout.astro';
+
+interface Props {
+  readonly trade: TradeId;
+  readonly lang: Lang;
+  /** The embed of the page: the same calculator in the slim shell, with no navigation around it. */
+  readonly embed?: boolean;
+}
+
+const { trade, lang, embed = false } = Astro.props;
+const view = tradeViewOf(trade, lang);
+const text = TRADE_TEXTS[lang][trade];
+const common = COMMON[lang];
+const Script = {
+  cleaning: CleaningScript,
+  painting: PaintingScript,
+  drywall: DrywallScript,
+  concrete: ConcreteScript,
+  landscaping: LandscapingScript,
+}[trade];
+const title = titleOf(text.title);
+const chips = chipsOf(lang);
+const guides = ['quote-guide', 'markup-guide', 'rate-guide'] as const;
+const hasQuantity = text.unitOne !== '';
+const t = view.detailTexts;
+const national =
+  view.national === undefined ? undefined : fill(common.rateCard.national, view.national);
+const url = canonicalUrl(view.path, SITE.origin);
+// Cuenta Horas (apps/pay) serves the same audience: its overtime calculator, in each language
+const SISTER_OVERTIME = {
+  es: 'https://cuentahoras.com/es/calculadora-de-horas-extra',
+  en: 'https://cuentahoras.com/overtime-calculator',
+} as const;
+---
+
+<Layout
+  {title}
+  description={text.description}
+  {embed}
+  extras={{ parent: { name: common.nav.calculators, path: lang === 'es' ? '/' : '/en' } }}
+>
+  {!embed && (
+    <ul class="chips" aria-label={common.chips.label}>
+      {chips.map((chip) => (
+        <li>
+          <a href={chip.href} aria-current={chip.id === trade ? 'page' : undefined}>
+            {chip.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+  <h1>{text.h1}</h1>
+  <p class="lead">{text.lead}</p>
+
+  <form class="quote-form" data-calculator={view.calculatorId} novalidate>
+    {view.groups.map((group) => (
+      <fieldset>
+        <legend>{group.title}</legend>
+        <div class="row">
+          {group.fields.map((field) => (
+            <label
+              data-when={field.when}
+              hidden={field.when !== undefined && field.when !== 'hour'}
+            >
+              {field.label}
+              {field.options === undefined ? (
+                <input
+                  name={field.key}
+                  inputmode={field.inputmode}
+                  autocomplete="off"
+                  value={field.value}
+                />
+              ) : (
+                <select name={field.key}>
+                  {field.options.map(([value, label]) => (
+                    <option {value} selected={value === field.value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {field.hint !== undefined && <small>{field.hint}</small>}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+    ))}
+  </form>
+
+  <div class="receipt-wrap" aria-live="polite">
+    <section
+      class="receipt"
+      data-receipt
+      data-title={view.receiptTitle}
+      data-t-hour={t.hour}
+      data-t-hour-crew={t.hourCrew}
+      data-t-area={t.area}
+      data-t-one={t.one}
+      data-t-many={t.many}
+      data-t-overhead={t.overhead}
+      data-t-profit={t.profit}
+    >
+      <h2>{common.receipt.title}</h2>
+      <p class="what">{text.name}</p>
+      <ol class="lines">
+        {view.lines.map((line) => (
+          <li
+            data-line={line.id}
+            data-hide-zero={line.hideZero ? '' : undefined}
+            hidden={line.hideZero && line.amount === '$0.00'}
+          >
+            <span
+              class="name"
+              data-name={line.id === 'overhead' || line.id === 'profit' ? line.id : undefined}
+            >
+              {line.name}
+            </span>
+            {line.id === 'labor' && <small data-detail="labor">{line.detail}</small>}
+            {line.id === 'materials' && hasQuantity && (
+              <small data-detail="materials">{line.detail}</small>
+            )}
+            <b data-out={line.id}>{line.amount}</b>
+          </li>
+        ))}
+      </ol>
+      <p class="total">
+        <span data-total-label>{common.receipt.total}</span>
+        <b data-out="total">{view.total}</b>
+      </p>
+      <p class="example">{common.receipt.example}</p>
+    </section>
+  </div>
+
+  <div class="actions">
+    <a
+      class="button button-whatsapp"
+      data-share
+      href={view.shareHref}
+      rel="noopener"
+      target="_blank"
+      aria-label={`${common.actions.share}: ${text.name}`}
+    >
+      {common.actions.share}
+    </a>
+    <button class="button" type="button" data-print>
+      {common.actions.print}
+    </button>
+  </div>
+
+  {!embed && (
+    <>
+      <section class="card card-gold" aria-labelledby="rate-card">
+        <h2 id="rate-card">{common.rateCard.title}</h2>
+        <p>{common.rateCard.body}</p>
+        {national !== undefined && (
+          <p>
+            <strong>{national}</strong>
+          </p>
+        )}
+        <p>
+          <a href={WAGE_STEMS[trade][lang]}>{common.rateCard.link}</a>
+        </p>
+        <p>
+          {common.rateCard.helpers}{' '}
+          <a href={SISTER_OVERTIME[lang]} rel="noopener">
+            {common.rateCard.helpersLink}
+          </a>
+        </p>
+      </section>
+
+      <section class="prose">
+        <h2>{common.method.title}</h2>
+        <p>{text.how}</p>
+        <p>
+          <a href={hrefOf('methodology', lang)}>{common.method.link}</a>
+        </p>
+      </section>
+
+      <section class="prose">
+        <h2>{common.faq}</h2>
+        {text.faq.map(({ q, a }) => (
+          <details>
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))}
+      </section>
+
+      <section class="prose">
+        <h2>{common.related.guides}</h2>
+        <ul>
+          {guides.map((id) => (
+            <li>
+              <a href={hrefOf(id, lang)}>{PAGE_LABELS[lang][id]}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </>
+  )}
+  {embed && (
+    <p class="byline">
+      <a href={url}>
+        {text.name} · {SITE.name}
+      </a>
+    </p>
+  )}
+  <Script />
+</Layout>

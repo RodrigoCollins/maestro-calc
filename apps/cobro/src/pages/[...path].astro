@@ -1,0 +1,58 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { ARTICLE_ROUTE } from '../bylines.ts';
+import ArticlePage from '../components/ArticlePage.astro';
+import EmbedIndexPage from '../components/EmbedIndexPage.astro';
+import HomePage from '../components/HomePage.astro';
+import TradePage from '../components/TradePage.astro';
+import WageIndexPage from '../components/WageIndexPage.astro';
+import WagePage from '../components/WagePage.astro';
+import WagesHubPage from '../components/WagesHubPage.astro';
+import { EMBEDS } from '../embed.ts';
+import { ROUTES, type Lang, type TradeId } from '../routes.ts';
+import type { ArticleId } from '../texts/articles.ts';
+import { OCCUPATIONS } from '../wages/occupations.ts';
+
+/*
+ * One file builds every page of the site that is not the Spanish home (`index.astro`): each route
+ * of `src/routes.ts` in both languages, and the embeds. The route id says which page it is.
+ */
+export const getStaticPaths = (() => {
+  const pages = ROUTES.flatMap((route) =>
+    (['es', 'en'] as const).flatMap((lang) =>
+      route[lang] === '/'
+        ? []
+        : [{ params: { path: route[lang].slice(1) }, props: { id: route.id, lang } }],
+    ),
+  );
+  const embeds = EMBEDS.map(({ path, trade, lang }) => ({
+    params: { path: path.slice(1) },
+    props: { id: `embed:${trade}`, lang },
+  }));
+  return [...pages, ...embeds];
+}) satisfies GetStaticPaths;
+
+interface Props {
+  readonly id: string;
+  readonly lang: Lang;
+}
+
+const { id, lang } = Astro.props;
+const articleId = Object.entries(ARTICLE_ROUTE).find(([, route]) => route === id)?.[0] as
+  ArticleId | undefined;
+const tradeOf = (prefix: string): TradeId | undefined =>
+  OCCUPATIONS.find((occupation) => id === `${prefix}${occupation.id}`)?.id;
+const quote = tradeOf('quote-');
+const embed = tradeOf('embed:');
+const wages = tradeOf('wages-');
+const wage = /^wage-(\w+)-(\d+)$/.exec(id);
+---
+
+{id === 'home' && <HomePage {lang} />}
+{quote !== undefined && <TradePage trade={quote} {lang} />}
+{embed !== undefined && <TradePage trade={embed} {lang} embed />}
+{id === 'wages' && <WagesHubPage {lang} />}
+{wages !== undefined && <WageIndexPage trade={wages} {lang} />}
+{wage !== null && <WagePage trade={wage[1] as TradeId} fips={wage[2] ?? ''} {lang} />}
+{id === 'embed' && <EmbedIndexPage {lang} />}
+{articleId !== undefined && <ArticlePage id={articleId} {lang} />}

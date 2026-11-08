@@ -1,0 +1,37 @@
+---
+import { EMBED_PAGE_TEXTS, snippetsOf } from '../embed.ts';
+import type { Lang } from '../routes.ts';
+import Layout from './Layout.astro';
+
+interface Props {
+  readonly lang: Lang;
+}
+
+const { lang } = Astro.props;
+const text = EMBED_PAGE_TEXTS[lang];
+---
+
+<Layout title={text.title} description={text.description}>
+  <article class="prose">
+    <h1>{text.h1}</h1>
+    <p class="lead">{text.lead}</p>
+    <h2>{text.howHeading}</h2>
+    <ol>
+      {text.steps.map((step) => (
+        <li>{step}</li>
+      ))}
+    </ol>
+    <ul>
+      {text.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
+    <h2>{text.calculatorsHeading}</h2>
+    {snippetsOf(lang).map((snippet) => (
+      <section>
+        <h3>{snippet.name}</h3>
+        <pre class="code"><code>{snippet.code}</code></pre>
+      </section>
+    ))}
+  </article>
+</Layout>

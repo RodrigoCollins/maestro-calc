@@ -1,0 +1,565 @@
+/*
+ * Cuánto Le Cobro, direction "el presupuesto" (canvas SHKtFSBFDtNZCv6QCbYkwn): a phone-first dark
+ * site, near-black ground, marigold for the brand and the active chip, a paper receipt for the
+ * result. The design is dark by nature, so the tokens are dark only (`color-scheme: dark`); the
+ * print sheet at the bottom turns the receipt into black ink on white. Contrast measured on the
+ * tokens (WCAG formula): text #f5f5f0 on #121212 17.1:1, muted #b4b4aa on #121212 9.0:1, marigold
+ * #ffc233 on #121212 11.6:1, muted on a tile #1e1e1e 8.0:1 and on an input #2b2b2b 6.8:1, receipt
+ * ink #1a1a1a on #fffdf6 17.1:1 and its muted ink 8.8:1, dark text #0b1f12 on the green button
+ * #3ddc84 9.7:1, #121212 on marigold 11.6:1, error #ff8a7a on an input 6.2:1. `--font-body` and `--font-display` come from Astro's
+ * <Font> (astro.config.mjs), with metric-adjusted local faces as fallbacks.
+ */
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo'), local('Roboto');
+  size-adjust: 107%;
+  ascent-override: 90%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque Fallback';
+  src:
+    local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold'),
+    local('Roboto Bold');
+  font-weight: 800;
+  size-adjust: 100%;
+  ascent-override: 92%;
+  descent-override: 24%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --ground: #121212;
+  --text: #f5f5f0;
+  --muted: #b4b4aa;
+  --tile: #1e1e1e;
+  --tile-2: #2b2b2b;
+  --line: #3a3a3a;
+  --gold: #ffc233;
+  --green: #3ddc84;
+  --paper: #fffdf6;
+  --ink: #1a1a1a;
+  --ink-2: #4a4a44;
+  --danger: #ff8a7a;
+  color-scheme: dark;
+  color: var(--text);
+  background: var(--ground);
+  font-family: var(--font-body), 'Inter Fallback', sans-serif;
+  line-height: 1.5;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+}
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 1rem 3rem;
+}
+h1,
+h2,
+h3,
+.brand,
+.total b {
+  font-family: var(--font-display), 'Bricolage Grotesque Fallback', sans-serif;
+  font-weight: 800;
+  line-height: 1.1;
+}
+h1 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: clamp(1.9rem, 7.5vw, 2.75rem);
+}
+h2 {
+  margin: 2rem 0 0.5rem;
+  font-size: 1.5rem;
+}
+h3 {
+  margin: 1.25rem 0 0.25rem;
+  font-size: 1.125rem;
+}
+p,
+ul,
+ol {
+  margin: 0.5rem 0;
+}
+a {
+  color: var(--gold);
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+.skip {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  padding: 0.5rem 1rem;
+  background: var(--gold);
+  color: #121212;
+}
+.skip:focus {
+  left: 0;
+  z-index: 10;
+}
+.lead {
+  font-size: 1.125rem;
+  color: var(--muted);
+}
+
+/* header and footer */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 44rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  color: var(--text);
+  font-size: 1.125rem;
+  text-decoration: none;
+}
+.brand::before {
+  content: '';
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.375rem;
+  background: var(--gold);
+  box-shadow: inset 0 -0.35rem 0 rgb(0 0 0 / 0.18);
+}
+.lang {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--line);
+  border-radius: 2rem;
+  color: var(--text);
+  text-decoration: none;
+}
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 1.5rem 1rem 2rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.site-footer > div {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+.site-footer ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+.site-footer a {
+  display: inline-block;
+  padding: 0.5rem 0;
+}
+
+/* trade chips */
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 -1rem;
+  padding: 0.25rem 1rem 0.5rem;
+  overflow-x: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+.chips li {
+  flex: none;
+}
+.chips a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 2rem;
+  background: var(--tile-2);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+.chips a[aria-current='page'] {
+  background: var(--gold);
+  color: #121212;
+}
+
+/* form */
+.quote-form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+fieldset {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--tile);
+}
+legend {
+  padding: 0;
+  margin-bottom: 0.25rem;
+  float: left;
+  width: 100%;
+  font-family: var(--font-display), 'Bricolage Grotesque Fallback', sans-serif;
+  font-weight: 800;
+  font-size: 1.125rem;
+  color: var(--gold);
+}
+legend + * {
+  clear: both;
+}
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 0.75rem;
+}
+label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+label small {
+  color: var(--muted);
+  font-weight: 400;
+}
+input,
+select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 0.75rem;
+  background: var(--tile-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.0625rem;
+}
+input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+[hidden] {
+  display: none !important;
+}
+
+/* the receipt */
+.receipt-wrap {
+  margin: 2rem 0 1rem;
+  padding: 0 0.25rem 1.5rem;
+}
+.receipt {
+  position: relative;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 1rem;
+  background: var(--paper);
+  color: var(--ink);
+  transform: rotate(-1.2deg);
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 0.5);
+}
+.receipt::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.5rem;
+  height: 0.5rem;
+  background:
+    linear-gradient(135deg, var(--paper) 25%, transparent 25%) -0.4rem 0,
+    linear-gradient(225deg, var(--paper) 25%, transparent 25%) -0.4rem 0;
+  background-size: 0.8rem 0.8rem;
+}
+.receipt h2 {
+  margin: 0;
+  font-size: 0.9375rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-2);
+}
+.receipt .what {
+  margin: 0 0 0.5rem;
+  font-weight: 700;
+}
+.lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px dashed var(--ink-2);
+}
+.lines li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--ink-2);
+}
+.lines .name {
+  font-weight: 700;
+}
+.lines small {
+  grid-column: 1;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+.lines li > b {
+  grid-column: 2;
+  grid-row: 1;
+  font-variant-numeric: tabular-nums;
+}
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 0 0;
+}
+.total span {
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+.total b {
+  font-size: clamp(2.5rem, 13vw, 3.5rem);
+  font-variant-numeric: tabular-nums;
+}
+.receipt .example {
+  margin: 0.5rem 0 0;
+  color: var(--ink-2);
+  font-size: 0.8125rem;
+}
+.actions {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 28rem;
+  margin: 1.5rem auto 0;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.5rem;
+  padding: 0 1.25rem;
+  border: 2px solid var(--text);
+  border-radius: 1rem;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+.button-whatsapp {
+  border-color: var(--green);
+  background: var(--green);
+  color: #0b1f12;
+  font-size: 1.125rem;
+}
+/* the print button needs the script: with none, the browser's own print menu is the way */
+@media (scripting: none) {
+  button[data-print] {
+    display: none;
+  }
+}
+
+/* cards and prose */
+.card {
+  margin: 1.5rem 0;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: var(--tile);
+}
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+.card-gold {
+  border: 2px solid var(--gold);
+}
+.prose h2 {
+  font-size: 1.375rem;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.prose th,
+.prose td {
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  color: var(--muted);
+  font-weight: 700;
+}
+.table-scroll {
+  overflow-x: auto;
+}
+pre.code {
+  margin: 0.5rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  background: var(--tile);
+  color: var(--text);
+  font-size: 0.8125rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+  text-align: right !important;
+}
+.byline {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+details {
+  margin: 0.5rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--tile);
+}
+summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.cards {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+.cards a {
+  display: block;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--tile);
+  color: var(--text);
+  text-decoration: none;
+}
+.cards a b {
+  display: block;
+  color: var(--gold);
+}
+.cards a span {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.states {
+  columns: 2 12rem;
+  padding: 0;
+  list-style: none;
+}
+.states a {
+  display: inline-block;
+  padding: 0.375rem 0;
+}
+.crumbs {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+.crumbs li + li::before {
+  content: '/';
+  margin-right: 0.5rem;
+}
+.big {
+  font-family: var(--font-display), 'Bricolage Grotesque Fallback', sans-serif;
+  font-weight: 800;
+  font-size: clamp(2.25rem, 11vw, 3.25rem);
+  line-height: 1;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.stats > div {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: var(--tile);
+}
+.stats span {
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+@media (min-width: 40rem) {
+  .actions {
+    grid-template-columns: 1fr 1fr;
+    max-width: 36rem;
+  }
+  .button-whatsapp {
+    grid-column: 1 / -1;
+  }
+}
+
+/* print: the receipt alone, black ink on white, flat */
+@media print {
+  :root {
+    color: #000;
+    background: #fff;
+  }
+  body {
+    background: #fff;
+  }
+  .site-header,
+  .site-footer,
+  .chips,
+  .quote-form,
+  .actions,
+  .card,
+  main > :not(.receipt-wrap) {
+    display: none !important;
+  }
+  .receipt-wrap {
+    margin: 0;
+    padding: 0;
+  }
+  .receipt {
+    max-width: none;
+    transform: none;
+    box-shadow: none;
+    padding: 0;
+  }
+  .receipt::after {
+    display: none;
+  }
+}
