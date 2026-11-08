@@ -19,7 +19,9 @@ tooling/site-browser/.wrangler
 *.bak
 tooling/site-browser/playwright-report-pay
 tooling/site-browser/test-results-pay
+tooling/site-browser/playwright-report-pets
 tooling/site-browser/playwright-report-pool
+tooling/site-browser/test-results-pets
 tooling/site-browser/test-results-pool
 tooling/site-browser/playwright-report-lawn
 tooling/site-browser/test-results-lawn

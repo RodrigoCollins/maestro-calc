@@ -1,0 +1,21 @@
+---
+import { dogDueDate } from '@maestro-calc/pets-core/dog-due-date';
+import { DUE_DATE_PAGE, dueDateView } from '../calc/due-date.ts';
+import CalcPage from '../components/CalcPage.astro';
+import DueDateScript from '../islands/DueDateScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={{ ...DUE_DATE_PAGE }}
+  calculator={dogDueDate}
+  view={dueDateView}
+  kind="due-date"
+  method="The window is the date you know plus 58 to 72 days (first day of breeding), 64 to 66 days (LH surge) or 56 to 58 days (first day of diestrus), from the Merck Veterinary Manual."
+  related={[
+    { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
+    { href: hrefOf('dog'), label: 'Dog food calculator' },
+  ]}
+>
+  <DueDateScript />
+</CalcPage>

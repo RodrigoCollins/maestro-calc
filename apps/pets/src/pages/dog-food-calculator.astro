@@ -1,0 +1,24 @@
+---
+import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import { DOG_PAGE, dogView } from '../calc/dog.ts';
+import CalcPage from '../components/CalcPage.astro';
+import DogScript from '../islands/DogScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={DOG_PAGE}
+  calculator={dogFood}
+  view={dogView}
+  kind="dog"
+  method="Calories a day are 70 × (weight in kg)^0.75 × a life-stage factor, from the Merck Veterinary Manual and the 2021 AAHA guidelines; the amount is those calories over the calories in a cup, can or kilogram of your food."
+  related={[
+    { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
+    { href: hrefOf('dog-chart'), label: 'Dog feeding chart by weight' },
+    { href: hrefOf('label-guide'), label: 'How to read a pet food label' },
+    { href: hrefOf('breed-guide'), label: 'Dog food by breed' },
+    { href: hrefOf('chocolate'), label: 'Dog chocolate toxicity calculator' },
+  ]}
+>
+  <DogScript />
+</CalcPage>

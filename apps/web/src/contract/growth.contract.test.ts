@@ -172,8 +172,8 @@ const factsOf = async (app: string): Promise<SiteFacts> => {
 };
 
 describe('growth contract (plans/growth/PLAN.md › 4)', () => {
-  it('finds the sites in apps/*: Maestro Calc, Cuenta Horas, Pool Figures and Lawn Figures', () => {
-    expect(APPS).toEqual(['lawn', 'pay', 'pool', 'web']);
+  it('finds the sites in apps/*: Maestro Calc, Cuenta Horas, Pool Figures, Lawn Figures and Bowl Figures', () => {
+    expect(APPS).toEqual(['lawn', 'pay', 'pets', 'pool', 'web']);
   });
 
   it.each(APPS)('apps/%s ships G1, G2, G3, G7 and G8', async (app) => {

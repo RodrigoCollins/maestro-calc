@@ -214,7 +214,7 @@ no-js suites in `tooling/site-browser/e2e-<name>`, a new wrangler port) and the 
 
 ## 7. Open items for the owner
 
-- Buy the domain (bowlfigures.com), create the Workers Builds project for `apps/pets/wrangler.jsonc`
+- Domain: bowlfigures.com is bought (2026-11-08). Create the Workers Builds project for `apps/pets/wrangler.jsonc`
   (`npx wrangler deploy --config apps/pets/wrangler.jsonc`), create the GA4 property and set
   `gaId` in `apps/pets/src/site.config.ts`, then flip `indexable` to true in the same file and
   ship. Add the domain to Search Console and Bing.
@@ -225,6 +225,9 @@ no-js suites in `tooling/site-browser/e2e-<name>`, a new wrangler port) and the 
   pawcount.com, pawmath.com, petportions.com. Proposed: Bowl Figures (bowlfigures.com), the
   same family as Pool Figures; Kibble Figures as backup. USPTO not searched yet. Rodrigo buys
   the domain, then the Workers Builds project.
+- Built 2026-11-07/08 without: Spanish, embeds, job pages, FAQ JSON-LD (the shared SEO check refuses
+  FAQPage markup, as on the other sites), dog and cat age, raw and homemade portions (section 4
+  says why). Breeds are explained on /dog-food-by-breed, not modeled.
 - One month of Ahrefs or Semrush for keyword difficulty, ideally before building (the free Ahrefs
   data only gives Easy/Medium bands).
 - A veterinarian review of the methodology page before launch, if a reviewer can be found (YMYL).

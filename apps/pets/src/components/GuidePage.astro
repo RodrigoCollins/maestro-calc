@@ -1,0 +1,50 @@
+---
+import { guideOf } from '../guides.ts';
+import { ROUTES } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const guide = guideOf(Astro.props.path);
+const { title, description, h1, lead, checked, sections, calculators, sources } = guide;
+const LABELS: Readonly<Record<string, string>> = {
+  dog: 'Dog food calculator',
+  cat: 'Cat food calculator',
+  puppy: 'Puppy feeding calculator',
+  kitten: 'Kitten feeding calculator',
+};
+const tools = calculators.flatMap((path) => ROUTES.filter((route) => route.path === path));
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <section class="bf-card mint" aria-labelledby="bf-tools">
+      <h2 id="bf-tools">Calculators</h2>
+      <ul>
+        {tools.map(({ id, path }) => (
+          <li>
+            <a href={path}>{LABELS[id]}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <Sources {sources} />
+    <ShareLink path={guide.path} {title} />
+  </main>
+</Layout>

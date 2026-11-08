@@ -1,0 +1,21 @@
+---
+import { catFood } from '@maestro-calc/pets-core/cat-food';
+import { catView, KITTEN_PAGE } from '../calc/cat.ts';
+import CalcPage from '../components/CalcPage.astro';
+import CatScript from '../islands/CatScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={KITTEN_PAGE}
+  calculator={catFood}
+  view={catView}
+  kind="cat"
+  method="A kitten needs 2.5 times its resting calories (70 × kg^0.75), in both the Merck Veterinary Manual and the 2021 AAHA guidelines."
+  related={[
+    { href: hrefOf('cat'), label: 'Cat food calculator for adults' },
+    { href: hrefOf('label-guide'), label: 'How to read a pet food label' },
+  ]}
+>
+  <CatScript />
+</CalcPage>

@@ -1,0 +1,15 @@
+# Cloudflare Workers static assets headers (served by `wrangler dev` too, never as a file).
+# The same policy as Cuenta Horas and Pool Figures: the only other origins are Google Analytics,
+# which `/analytics.js` loads once the owner sets a measurement id. style-src keeps
+# 'unsafe-inline' because Astro inlines the page CSS (and the bowl, ruler and calendar drawings
+# carry their colors in style attributes); scripts are same-origin files and the Google tag, with no
+# inline script (the JSON-LD block is data, never run) and no eval.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.googletagmanager.com https://*.google-analytics.com; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://*.google.com; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+# Hashed fonts and scripts never change under one name.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable

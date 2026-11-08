@@ -1,0 +1,22 @@
+---
+import { catFood } from '@maestro-calc/pets-core/cat-food';
+import { CAT_PAGE, catView } from '../calc/cat.ts';
+import CalcPage from '../components/CalcPage.astro';
+import CatScript from '../islands/CatScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={CAT_PAGE}
+  calculator={catFood}
+  view={catView}
+  kind="cat"
+  method="Calories a day are 70 × (weight in kg)^0.75 × a life-stage factor, from the Merck Veterinary Manual and the 2021 AAHA guidelines; cups and cans split those calories by the share you choose and divide by the calories on each label."
+  related={[
+    { href: hrefOf('kitten'), label: 'Kitten feeding calculator' },
+    { href: hrefOf('label-guide'), label: 'How to read a pet food label' },
+    { href: hrefOf('dog'), label: 'Dog food calculator' },
+  ]}
+>
+  <CatScript />
+</CalcPage>

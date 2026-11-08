@@ -99,6 +99,7 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
     expect(job?.strategy?.['fail-fast']).toBe(false);
     expect(job?.strategy?.matrix?.include).toEqual([
       { app: 'pay', worker: 'cuenta-horas' },
+      { app: 'pets', worker: 'bowl-figures' },
       { app: 'pool', worker: 'pool-figures' },
       { app: 'lawn', worker: 'lawn-figures' },
     ]);

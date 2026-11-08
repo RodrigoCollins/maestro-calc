@@ -1,0 +1,21 @@
+---
+import { dogChocolate } from '@maestro-calc/pets-core/dog-chocolate';
+import { CHOCOLATE_PAGE, chocolateView } from '../calc/chocolate.ts';
+import CalcPage from '../components/CalcPage.astro';
+import ChocolateScript from '../islands/ChocolateScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={CHOCOLATE_PAGE}
+  calculator={dogChocolate}
+  view={chocolateView}
+  kind="chocolate"
+  method="The dose is the grams eaten × the milligrams of theobromine and caffeine per gram of that chocolate ÷ the dog’s weight in kg, set against the bands of the Merck Veterinary Manual."
+  related={[
+    { href: hrefOf('chocolate-chart'), label: 'Chocolate toxicity chart by dog weight' },
+    { href: hrefOf('dog'), label: 'Dog food calculator' },
+  ]}
+>
+  <ChocolateScript />
+</CalcPage>

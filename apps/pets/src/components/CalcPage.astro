@@ -1,0 +1,472 @@
+---
+import type { FeedingPage } from '../calc/dog.ts';
+import { CALL_NOW, POISON_LINE } from '../calc/chocolate.ts';
+import { patchOf, type AnyCalculator, type View } from '../calc/view.ts';
+import { hrefOf } from '../routes.ts';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+
+interface Props {
+  readonly page: FeedingPage & { readonly dayMovedBack?: string };
+  readonly calculator: AnyCalculator;
+  readonly view: View;
+  /** What the result looks like: the bowl, the bowl with a can, the chocolate ruler or the calendar strip. */
+  readonly kind: 'dog' | 'cat' | 'chocolate' | 'due-date';
+  /** Other pages worth a click from this one: their address and label. */
+  readonly related?: readonly { readonly href: string; readonly label: string }[];
+  /** The line of the methodology that works this calculator out. */
+  readonly method: string;
+}
+
+const { page, calculator, view, kind, related = [], method } = Astro.props;
+// The page renders the result of its starting values, so it reads complete with no script.
+const patch = patchOf(calculator, view, page.initial);
+if (patch === undefined) throw new Error(`${calculator.id} must run at its starting values`);
+const { text, html } = patch;
+const fields = calculator.inputs.map((input) => {
+  const copy = page.fields[input.key];
+  if (copy === undefined) throw new Error(`no label for ${input.key}`);
+  return {
+    key: input.key,
+    label: copy.label,
+    value: page.initial[input.key] ?? '',
+    options: copy.options === undefined ? undefined : Object.entries(copy.options),
+  };
+});
+---
+
+<Layout title={page.title} description={page.description}>
+  <main class="bf-page bf-calc">
+    <p class="bf-kicker">{page.kicker}</p>
+    <h1>{page.h1}</h1>
+    <p>{page.lead}</p>
+    {kind === 'chocolate' && (
+      <p class="bf-call" role="note">
+        {CALL_NOW} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+      </p>
+    )}
+    <section
+      class="bf-hero"
+      data-result
+      data-band={patch.flags['band']}
+      style={patch.vars['pos'] === undefined ? undefined : `--pos:${patch.vars['pos']}`}
+    >
+      <form class="bf-form" data-calculator={calculator.id} novalidate>
+        {fields.map((field) => (
+          <label>
+            {field.label}
+            {field.options === undefined ? (
+              <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
+            ) : (
+              <select name={field.key}>
+                {field.options.map(([value, label]) => (
+                  <option value={value} selected={value === field.value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            )}
+          </label>
+        ))}
+      </form>
+      <div class="bf-result" aria-live="polite">
+        {(kind === 'dog' || kind === 'cat') && (
+          <div class="bf-bowl-row">
+            <div class="bf-bowl">
+              <div data-html="bowl" set:html={html['bowl']} />
+              <p class="bf-meals">
+                <span>Morning</span>
+                <span>Evening</span>
+              </p>
+            </div>
+            <div class="bf-figures">
+              <p class="bf-figure" data-show="dry" hidden={patch.show['dry'] === false}>
+                <span class="bf-big" data-text="figure">
+                  {text['figure']}
+                </span>
+                <span class="bf-unit" data-text="unit">
+                  {text['unit']}
+                </span>
+                <span class="bf-exact" data-text="exact">
+                  {text['exact']}
+                </span>
+              </p>
+              {kind === 'cat' && (
+                <p class="bf-figure" data-show="wet" hidden={patch.show['wet'] === false}>
+                  <span class="bf-big" data-text="canFigure">
+                    {text['canFigure']}
+                  </span>
+                  <span class="bf-unit" data-text="canUnit">
+                    {text['canUnit']}
+                  </span>
+                  <span class="bf-exact" data-text="canExact">
+                    {text['canExact']}
+                  </span>
+                </p>
+              )}
+              <ul class="bf-chips">
+                <li>
+                  <strong data-text="kcal">{text['kcal']}</strong> kcal a day
+                </li>
+                <li>
+                  treats up to <strong data-text="treats">{text['treats']}</strong> kcal
+                </li>
+                <li>
+                  range <strong data-text="range">{text['range']}</strong> kcal
+                </li>
+                {kind === 'dog' && (
+                  <li>
+                    with treats: <strong data-text="withTreats">{text['withTreats']}</strong>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        )}
+        {kind === 'chocolate' && (
+          <div class="bf-choc">
+            <p class="bf-figure">
+              <span class="bf-big" data-text="figure">
+                {text['figure']}
+              </span>
+              <span class="bf-unit" data-text="unit">
+                {text['unit']}
+              </span>
+              <span class="bf-exact">
+                of theobromine and caffeine: <span data-text="total">{text['total']}</span> in all
+              </span>
+            </p>
+            <div class="bf-ruler" aria-hidden="true">
+              <span class="seg s0"></span>
+              <span class="seg s1"></span>
+              <span class="seg s2"></span>
+              <span class="seg s3"></span>
+              <span class="mark"></span>
+              <span class="tick t20">20</span>
+              <span class="tick t40">40–50</span>
+              <span class="tick t60">60</span>
+            </div>
+            <p class="bf-band" data-text="band">
+              {text['band']}
+            </p>
+            <p class="bf-call bf-call-result">
+              Call your veterinarian or the {POISON_LINE.name} at{' '}
+              <a href={POISON_LINE.href}>{POISON_LINE.phone}</a> now.
+            </p>
+            <ul class="bf-chips">
+              <li>
+                20 mg/kg at <strong data-text="reach20">{text['reach20']}</strong>
+              </li>
+              <li>
+                40 mg/kg at <strong data-text="reach40">{text['reach40']}</strong>
+              </li>
+              <li>
+                60 mg/kg at <strong data-text="reach60">{text['reach60']}</strong>
+              </li>
+            </ul>
+          </div>
+        )}
+        {kind === 'due-date' && (
+          <div class="bf-due">
+            <p class="bf-figure">
+              <span class="bf-unit">Due between</span>
+              <span class="bf-big bf-date">
+                <span data-text="earliest">{text['earliest']}</span> and{' '}
+                <span data-text="latest">{text['latest']}</span>
+              </span>
+              <span class="bf-exact">
+                counted <span data-text="window">{text['window']}</span> from{' '}
+                <span data-text="from">{text['from']}</span>
+              </span>
+            </p>
+            <div
+              class="bf-strip"
+              tabindex="0"
+              role="region"
+              aria-label="Calendar strip of the due window, scrolls sideways on a narrow screen"
+              data-html="strip"
+              set:html={html['strip']}
+            />
+            <p
+              class="bf-note-hero"
+              data-show="dayMovedBack"
+              hidden={patch.show['dayMovedBack'] !== true}
+            >
+              {page.dayMovedBack ?? ''}
+            </p>
+          </div>
+        )}
+      </div>
+    </section>
+    <section class="bf-notes">
+      {page.notes.map((note) => (
+        <p>{note}</p>
+      ))}
+      <p>
+        {method} <a href={hrefOf('methodology')}>How we work it out</a>.
+      </p>
+    </section>
+    <ShareLink path={page.path} title={page.title} />
+    {related.length > 0 && (
+      <section class="bf-card" aria-labelledby="bf-related">
+        <h2 id="bf-related">Related</h2>
+        <ul>
+          {related.map(({ href, label }) => (
+            <li>
+              <a {href}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </main>
+  <slot />
+</Layout>
+
+<style is:global>
+  .bf-calc {
+    max-width: 52rem;
+  }
+
+  .bf-hero {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border-radius: 36px;
+    background: var(--hero);
+    color: var(--hero-ink);
+  }
+
+  .bf-hero > *,
+  .bf-result,
+  .bf-due {
+    min-width: 0;
+  }
+
+  .bf-form {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr));
+  }
+
+  .bf-form label {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .bf-form input,
+  .bf-form select {
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    width: 100%;
+    padding: 0 1rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--field);
+    color: var(--field-ink);
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .bf-form input[aria-invalid='true'] {
+    outline: 3px solid var(--coral);
+  }
+
+  .bf-form :focus-visible {
+    outline: 3px solid var(--coral);
+    outline-offset: 2px;
+  }
+
+  .bf-bowl-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .bf-bowl svg {
+    display: block;
+    width: 11rem;
+    height: 11rem;
+  }
+
+  .bf-meals {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+
+  .bf-figures {
+    display: grid;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 12rem;
+  }
+
+  .bf-calc .bf-figure {
+    display: grid;
+    gap: 0;
+    margin: 0;
+  }
+
+  .bf-big {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: clamp(3rem, 14vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bf-date {
+    font-size: clamp(1.75rem, 7vw, 2.75rem);
+  }
+
+  .bf-unit {
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .bf-exact {
+    font-size: 0.9375rem;
+  }
+
+  .bf-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bf-chips li {
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    background: var(--field);
+    color: var(--field-ink);
+    font-size: 0.9375rem;
+  }
+
+  .bf-ruler {
+    position: relative;
+    display: grid;
+    grid-template-columns: 25fr 25fr 25fr 25fr;
+    height: 1.25rem;
+    margin: 1.5rem 0 1.75rem;
+    border-radius: 999px;
+  }
+
+  .bf-ruler .seg {
+    height: 100%;
+  }
+
+  .bf-ruler .s0 {
+    background: var(--mint);
+    border-radius: 999px 0 0 999px;
+  }
+
+  .bf-ruler .s1 {
+    background: var(--band-1);
+  }
+
+  .bf-ruler .s2 {
+    background: var(--band-2);
+  }
+
+  .bf-ruler .s3 {
+    background: var(--band-3);
+    border-radius: 0 999px 999px 0;
+  }
+
+  .bf-ruler .mark {
+    position: absolute;
+    top: -0.5rem;
+    left: var(--pos, 0%);
+    width: 0.375rem;
+    height: 2.25rem;
+    margin-left: -0.1875rem;
+    border-radius: 3px;
+    background: var(--field);
+    box-shadow: 0 0 0 2px var(--hero);
+  }
+
+  .bf-ruler .tick {
+    position: absolute;
+    top: 1.5rem;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .t20 {
+    left: 25%;
+  }
+
+  .t40 {
+    left: 50%;
+  }
+
+  .t60 {
+    left: 75%;
+  }
+
+  .bf-band {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .bf-calc .bf-call-result {
+    font-size: 1rem;
+  }
+
+  .bf-strip {
+    overflow-x: auto;
+  }
+
+  .bf-strip svg {
+    display: block;
+    min-width: 40rem;
+    width: 100%;
+    height: auto;
+  }
+
+  .bf-strip .day {
+    fill: var(--lilac);
+    opacity: 0.55;
+  }
+
+  .bf-strip .day.window {
+    fill: var(--coral);
+    opacity: 1;
+  }
+
+  .bf-strip .day.start {
+    fill: var(--hero-ink);
+    opacity: 1;
+  }
+
+  .bf-strip text {
+    fill: var(--hero-ink);
+  }
+
+  .bf-notes {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .bf-note-hero {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .bf-card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.25rem;
+  }
+</style>

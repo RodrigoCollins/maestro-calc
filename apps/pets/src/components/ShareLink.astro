@@ -1,0 +1,24 @@
+---
+import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { nameOf } from '../seo/json-ld.ts';
+import { shareMessage, whatsappHref } from '../share/href.ts';
+import { SITE } from '../site.config.ts';
+
+/** The WhatsApp share link of a page: plain words and its address, no script of WhatsApp's. */
+interface Props {
+  readonly path: string;
+  readonly title: string;
+}
+
+const { path, title } = Astro.props;
+const text = `${nameOf(title)}, on ${SITE.name}:`;
+---
+
+<a
+  class="bf-share"
+  data-share={text}
+  href={whatsappHref(shareMessage(text, canonicalUrl(path, SITE.origin)))}
+  aria-label={`Share on WhatsApp: ${nameOf(title)}`}
+>
+  Share on WhatsApp
+</a>

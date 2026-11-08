@@ -15,9 +15,11 @@
     "dev": "npm run dev -w @maestro-calc/web",
     "build": "npm run build -w @maestro-calc/web",
     "build:pay": "npm run build -w @maestro-calc/pay",
+    "build:pets": "npm run build -w @maestro-calc/pets",
     "build:pool": "npm run build -w @maestro-calc/pool",
     "build:lawn": "npm run build -w @maestro-calc/lawn",
     "check:site:lawn": "npm run check:site -w @maestro-calc/lawn",
+    "check:site:pets": "npm run check:site -w @maestro-calc/pets",
     "check:site:pool": "npm run check:site -w @maestro-calc/pool",
     "preview": "npm run preview -w @maestro-calc/web",
     "typecheck": "npm run typecheck --workspaces --if-present && tsc -p tsconfig.json",
@@ -31,6 +33,7 @@
     "check:site:pay": "npm run check:site -w @maestro-calc/pay",
     "test:e2e": "npm test --prefix tooling/site-browser",
     "test:e2e:pay": "npm run test:pay --prefix tooling/site-browser",
+    "test:e2e:pets": "npm run test:pets --prefix tooling/site-browser",
     "test:e2e:pool": "npm run test:pool --prefix tooling/site-browser",
     "test:e2e:lawn": "npm run test:lawn --prefix tooling/site-browser",
     "lighthouse": "npm run lighthouse --prefix tooling/site-browser",
@@ -39,7 +42,7 @@
     "lint:fast": "eslint . --max-warnings=0 --cache --cache-location node_modules/.cache/eslint/",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run build:pool && npm run check:site:pool && npm run build:lawn && npm run check:site:lawn && npm run check:dist"
+    "verify": "npm run format:check && npm run sync && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run build:pool && npm run check:site:pool && npm run build:lawn && npm run check:site:lawn && npm run build:pets && npm run check:site:pets && npm run check:dist"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
