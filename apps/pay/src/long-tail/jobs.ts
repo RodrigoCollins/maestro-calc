@@ -7,6 +7,7 @@ import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { jobSectionsOf } from './convert-sections.ts';
+import { daysLinksOf, daysPageOf } from './days.ts';
 import { differentialLinksOf, differentialPageOf } from './differentials.ts';
 import { doubleLinksOf, doublePageOf } from './doubles.ts';
 import { nearestOf } from './nearest.ts';
@@ -18,6 +19,7 @@ import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 import { tippedLinksOf, tippedPageOf } from './tipped.ts';
 
 export {
+  DAYS,
   DIFFERENTIALS,
   DOUBLES,
   JOBS,
@@ -27,6 +29,7 @@ export {
   PTOS,
   SHIFTS,
   TIPPED,
+  type Days,
   type Differential,
   type DoubleTime,
   type Job,
@@ -185,10 +188,18 @@ export interface CommonLinks {
 
 /**
  * A family of long-tail pages, listed together: hourly rates, salaries, overtime rates, double-time
- * rates, shifts, PTO days, minutes, shift differentials or tipped weeks.
+ * rates, shifts, PTO days, minutes, shift differentials, tipped weeks or hours in days.
  */
 export type Family =
-  Job['per'] | 'overtime' | 'double' | 'shift' | 'pto' | 'minutes' | 'differential' | 'tipped';
+  | Job['per']
+  | 'overtime'
+  | 'double'
+  | 'shift'
+  | 'pto'
+  | 'minutes'
+  | 'differential'
+  | 'tipped'
+  | 'days';
 
 const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : job.per);
 
@@ -210,6 +221,7 @@ export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonL
   if (family === 'double') return doubleLinksOf(lang);
   if (family === 'differential') return differentialLinksOf(lang);
   if (family === 'tipped') return tippedLinksOf(lang);
+  if (family === 'days') return daysLinksOf(lang);
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);
@@ -290,6 +302,7 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   if (job.kind === 'double') return doublePageOf(job, lang);
   if (job.kind === 'differential') return differentialPageOf(job, lang);
   if (job.kind === 'tipped') return tippedPageOf(job, lang);
+  if (job.kind === 'days') return daysPageOf(job, lang);
   if (job.kind === 'overtime') return overtimePageOf(job, lang);
   const validated = payConverter.validate({ amount: job.amount, per: job.per });
   const ran = payConverter.run({ amount: job.amount, per: job.per });

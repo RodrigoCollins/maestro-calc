@@ -6,6 +6,7 @@ import { moneyText } from '../format.ts';
 import { PATHS } from '../pay-converter/texts.ts';
 import {
   commonLinksOf,
+  DAYS,
   DIFFERENTIALS,
   DOUBLES,
   JOBS,
@@ -225,7 +226,8 @@ describe('long-tail pages', () => {
         MINUTES.length +
         DOUBLES.length +
         DIFFERENTIALS.length +
-        TIPPED.length,
+        TIPPED.length +
+        DAYS.length,
     );
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
@@ -251,6 +253,7 @@ describe('long-tail pages', () => {
           'minutes',
           'differential',
           'tipped',
+          'days',
         ] as const
       ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
