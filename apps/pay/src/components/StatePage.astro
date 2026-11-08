@@ -79,6 +79,42 @@ const index = statesIndexOf(lang);
       </section>
     ))}
 
+    {page.context.map((section) => (
+      <section aria-labelledby={section.id}>
+        <h2 id={section.id}>{section.heading}</h2>
+        {section.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {section.items !== undefined && (
+          <ul class="neighbours" role="list">
+            {section.items.map((item) => (
+              <li>
+                <a href={item.href}>{item.label}</a>
+                {item.text}
+              </li>
+            ))}
+          </ul>
+        )}
+        {section.links?.map((link) => (
+          <p>
+            <a href={link.href}>{link.label}</a>
+          </p>
+        ))}
+        <p class="sources">
+          {page.labels.sources}:{' '}
+          {section.sources.map((source, at) => (
+            <>
+              {at > 0 && '; '}
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </>
+          ))}
+          {'.'}
+        </p>
+      </section>
+    ))}
+
     <section aria-labelledby="examples">
       <h2 id="examples">{page.examples.heading}</h2>
       <ul class="examples" role="list">

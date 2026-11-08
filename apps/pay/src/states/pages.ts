@@ -1,11 +1,10 @@
-import { encode, subMoney, type Money } from '@maestro-calc/core';
-import { overtime, RULES, type Rule } from '@maestro-calc/pay-core/overtime';
+import { encode, subMoney } from '@maestro-calc/core';
+import { overtime } from '@maestro-calc/pay-core/overtime';
 import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { tippedWage } from '@maestro-calc/pay-core/tipped-wage';
 import { checkedOf, dayText } from '../data/pages.ts';
 import { moneyText } from '../format.ts';
 import {
-  MINIMUM_WAGE_STATES,
   MINIMUM_WAGE_STATES_GUIDE,
   MINIMUM_WAGE_STATES_GUIDE_PATHS,
   MINIMUM_WAGE_STATES_SOURCES,
@@ -14,7 +13,6 @@ import {
 } from '../guide/minimum-wage-states.ts';
 import { riseOf } from '../guide/minimum-wage-2027.ts';
 import {
-  OVERTIME_STATES,
   OVERTIME_STATES_GUIDE,
   OVERTIME_STATES_GUIDE_PATHS,
   OVERTIME_STATES_SOURCES,
@@ -23,7 +21,6 @@ import {
 import type { GuideSource } from '../guide/texts.ts';
 import {
   centsText,
-  TIPPED_STATES,
   TIPPED_STATES_GUIDE,
   TIPPED_STATES_GUIDE_PATHS,
   TIPPED_STATES_SOURCES,
@@ -34,7 +31,21 @@ import { PATHS } from '../pay-converter/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIPPED_PATHS } from '../tipped/texts.ts';
-import { STATE_ROUTES, STATE_SLUGS, STATES_INDEX_PATHS } from './routes.ts';
+import {
+  dollarsOf,
+  engineRuleOf,
+  nameIn,
+  outputsOf,
+  outsideFlsa,
+  runWeek,
+  short,
+  STATE_FACTS,
+  valid,
+  weekOf,
+  type StateFacts,
+} from './facts.ts';
+import { contextOf, type ContextSection } from './context.ts';
+import { STATE_ROUTES, STATES_INDEX_PATHS } from './routes.ts';
 
 /*
  * The state pages (`/states/<state>`, `/es/estados/<state>`): one state's rows of the three state
@@ -45,31 +56,7 @@ import { STATE_ROUTES, STATE_SLUGS, STATES_INDEX_PATHS } from './routes.ts';
 
 type Words = Readonly<Record<Lang, string>>;
 
-/** One state's rows of the three tables, and its slugs. */
-export interface StateFacts {
-  readonly slug: Words;
-  readonly tipped: TippedState;
-  readonly minimum: MinimumWageState;
-  readonly overtime: OvertimeState;
-}
-
-const rowOf = <R extends { readonly name: Words }>(rows: readonly R[], name: string): R => {
-  const row = rows.find((each) => each.name.en === name);
-  if (row === undefined) throw new Error(`no row for ${name}`);
-  return row;
-};
-
-/** The 50 states and DC, each with its row of every table, in the order of the slugs. */
-export const STATE_FACTS: readonly StateFacts[] = TIPPED_STATES.map((tipped, index) => {
-  const slug = STATE_SLUGS[index];
-  if (slug === undefined) throw new Error(`no slug for ${tipped.name.en}`);
-  return {
-    slug,
-    tipped,
-    minimum: rowOf(MINIMUM_WAGE_STATES, tipped.name.en),
-    overtime: rowOf(OVERTIME_STATES, tipped.name.en),
-  };
-});
+export { STATE_FACTS, type StateFacts } from './facts.ts';
 
 export interface Fact {
   readonly key: string;
@@ -112,6 +99,8 @@ export interface StatePage {
   readonly calculate: { readonly label: string; readonly href: string };
   readonly paths: Words;
   readonly sections: readonly StateSection[];
+  /** What the state's figures come to beside its rows: each section only where it applies. */
+  readonly context: readonly ContextSection[];
   readonly examples: {
     readonly heading: string;
     readonly items: readonly Example[];
@@ -129,79 +118,9 @@ export interface StatePage {
   readonly disclaimer: string;
 }
 
-const dollarsOf = (cents: number): string => (cents / 100).toFixed(2);
-/** `$676.00` stays whole in a figure; `$676` reads better in a sentence. */
-const short = (text: string): string => text.replace(/\.00$/, '');
-
-/** The states whose daily rule the engine counts by a rule of its own, named by the state. */
-const DAILY_RULES: readonly string[] = RULES.filter((rule) => rule !== 'federal');
-
-/**
- * The overtime engine's rule for the state: its own rule where the overtime table gives it a
- * daily threshold (the build stops on a daily state the engine has no rule for), the FLSA
- * elsewhere.
- */
-const engineRuleOf = (facts: StateFacts): Rule => {
-  if (facts.overtime.daily === undefined) return 'federal';
-  const rule = RULES.find((each) => each === facts.slug.en);
-  if (rule === undefined || !DAILY_RULES.includes(rule))
-    throw new Error(`no overtime rule for ${facts.slug.en}`);
-  return rule;
-};
-
-/** A Monday-to-Friday week of `day` hours each at `cents` an hour, as the overtime engine takes it. */
-const weekOf = (cents: number, rule: Rule, day: number) => {
-  const hours = String(day);
-  return {
-    rate: dollarsOf(cents),
-    rule,
-    mon: hours,
-    tue: hours,
-    wed: hours,
-    thu: hours,
-    fri: hours,
-    sat: '0',
-    sun: '0',
-  };
-};
-
-type Outputs = (key: string) => Money;
-
-const outputsOf = (outputs: readonly { key: string; value: unknown }[]): Outputs => {
-  const map = new Map(outputs.map(({ key, value }) => [key, value]));
-  return (key) => {
-    const value = map.get(key);
-    if (typeof value !== 'object' || value === null || !('currency' in value))
-      throw new Error(`no money output ${key}`);
-    return value as Money;
-  };
-};
-
-const runWeek = (week: ReturnType<typeof weekOf>): Outputs => {
-  const ran = overtime.run(week);
-  if (!ran.ok) throw new Error(`the week at ${week.rate} must run`);
-  return outputsOf(ran.value.outputs);
-};
-
-/** A validated state of a calculator, which its link encodes; an invalid one stops the build. */
-const valid = <T>(result: { ok: true; value: T } | { ok: false }, path: string): T => {
-  if (!result.ok) throw new Error(`the link to ${path} must validate`);
-  return result.value;
-};
-
-/** The state's name in a sentence: DC takes its article. */
-const nameIn = (facts: StateFacts, lang: Lang): string => {
-  const name = facts.tipped.name[lang];
-  if (facts.slug.en !== 'district-of-columbia') return name;
-  return lang === 'en' ? `the ${name}` : `el ${name}`;
-};
-
 const capital = (text: string): string => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 const lowerFirst = (text: string): string => `${text.charAt(0).toLowerCase()}${text.slice(1)}`;
 const stop = (text: string): string => (text.endsWith('.') ? text : `${text}.`);
-
-/** Whether the state's own weekly threshold is above 40 and applies only outside the FLSA. */
-const outsideFlsa = (rule: OvertimeState): boolean => rule.weekly > 40;
 
 const WORDS = {
   en: {
@@ -254,16 +173,16 @@ const WORDS = {
     week45: 'A 45-hour week',
     annual: 'A year of full time',
     tipped30: 'A tipped worker’s 30 hours',
-    week40Detail: (wage: string) =>
-      `Five 8-hour days at the ${wage} minimum, before taxes: 40 regular hours, no overtime.`,
-    week45Detail: (wage: string, rate: string, overtimePay: string) =>
-      `Five 9-hour days at the ${wage} minimum, before taxes: 40 regular hours and 5 overtime hours at ${rate} (1.5 times ${wage}), ${overtimePay} of overtime pay.`,
-    annualDetail: (wage: string, monthly: string) =>
-      `40 hours a week for 52 weeks at the ${wage} minimum, before taxes: ${monthly} a month.`,
-    tippedDetail: (tipped: TippedState, wages: string, credit: string) =>
+    week40Detail: (the: string, wage: string) =>
+      `Five 8-hour days at the ${wage} minimum of ${the}, before taxes: 40 regular hours, no overtime.`,
+    week45Detail: (the: string, wage: string, rate: string, overtimePay: string) =>
+      `Five 9-hour days at the ${wage} minimum of ${the}, before taxes: 40 regular hours and 5 overtime hours at ${rate} (1.5 times ${wage}), ${overtimePay} of overtime pay.`,
+    annualDetail: (the: string, wage: string, monthly: string) =>
+      `40 hours a week for 52 weeks at the ${wage} minimum of ${the}, before taxes: ${monthly} a month.`,
+    tippedDetail: (the: string, tipped: TippedState, wages: string, credit: string) =>
       tipped.credit === 0
-        ? `With no tip credit, the employer pays the full ${centsText(tipped.minimum)} an hour for the 30 hours, before tips; the tips are on top.`
-        : `The employer pays ${wages} in cash wages (${centsText(tipped.cash)} an hour) and may count up to ${credit} of tips toward the rest; if tips fall short, the employer makes up the difference.`,
+        ? `With no tip credit in ${the}, the employer pays the full ${centsText(tipped.minimum)} an hour for the 30 hours, before tips; the tips are on top.`
+        : `In ${the}, the employer pays ${wages} in cash wages (${centsText(tipped.cash)} an hour) and may count up to ${credit} of tips toward the rest; if tips fall short, the employer makes up the difference.`,
     overtimeLink: 'Open this week in the overtime calculator',
     calculate: (name: string) => `Calculate ${name} overtime`,
     annualLink: 'Open it in the hourly to salary calculator',
@@ -331,16 +250,16 @@ const WORDS = {
     week45: 'Una semana de 45 horas',
     annual: 'Un año de tiempo completo',
     tipped30: '30 horas de quien recibe propinas',
-    week40Detail: (wage: string) =>
-      `Cinco días de 8 horas al mínimo de ${wage}, antes de impuestos: 40 horas regulares, sin horas extra.`,
-    week45Detail: (wage: string, rate: string, overtimePay: string) =>
-      `Cinco días de 9 horas al mínimo de ${wage}, antes de impuestos: 40 horas regulares y 5 horas extra a ${rate} (1.5 veces ${wage}), ${overtimePay} de pago de horas extra.`,
-    annualDetail: (wage: string, monthly: string) =>
-      `40 horas a la semana durante 52 semanas al mínimo de ${wage}, antes de impuestos: ${monthly} al mes.`,
-    tippedDetail: (tipped: TippedState, wages: string, credit: string) =>
+    week40Detail: (the: string, wage: string) =>
+      `Cinco días de 8 horas al mínimo de ${wage} de ${the}, antes de impuestos: 40 horas regulares, sin horas extra.`,
+    week45Detail: (the: string, wage: string, rate: string, overtimePay: string) =>
+      `Cinco días de 9 horas al mínimo de ${wage} de ${the}, antes de impuestos: 40 horas regulares y 5 horas extra a ${rate} (1.5 veces ${wage}), ${overtimePay} de pago de horas extra.`,
+    annualDetail: (the: string, wage: string, monthly: string) =>
+      `40 horas a la semana durante 52 semanas al mínimo de ${wage} de ${the}, antes de impuestos: ${monthly} al mes.`,
+    tippedDetail: (the: string, tipped: TippedState, wages: string, credit: string) =>
       tipped.credit === 0
-        ? `Sin crédito por propinas, el empleador paga el mínimo completo de ${centsText(tipped.minimum)} la hora por las 30 horas, antes de propinas; las propinas van aparte.`
-        : `El empleador paga ${wages} de salario en efectivo (${centsText(tipped.cash)} la hora) y puede contar hasta ${credit} de propinas para el resto; si las propinas no alcanzan, el empleador completa la diferencia.`,
+        ? `Sin crédito por propinas en ${the}, el empleador paga el mínimo completo de ${centsText(tipped.minimum)} la hora por las 30 horas, antes de propinas; las propinas van aparte.`
+        : `En ${the}, el empleador paga ${wages} de salario en efectivo (${centsText(tipped.cash)} la hora) y puede contar hasta ${credit} de propinas para el resto; si las propinas no alcanzan, el empleador completa la diferencia.`,
     overtimeLink: 'Abre esta semana en la calculadora de horas extra',
     calculate: (the: string) => `Calcula las horas extra en ${the}`,
     annualLink: 'Ábrelo en la calculadora de pago por hora a sueldo anual',
@@ -490,7 +409,7 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
         id: 'week40',
         label: w.week40,
         value: moneyText(runWeek(forty)('pay')),
-        detail: w.week40Detail(wageText),
+        detail: w.week40Detail(name, wageText),
         href: `${OVERTIME_PATHS[lang]}?${encode(overtime, valid(overtime.validate(forty), OVERTIME_PATHS[lang]))}`,
         linkLabel: w.overtimeLink,
       },
@@ -499,6 +418,7 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
         label: w.week45,
         value: moneyText(long('pay')),
         detail: w.week45Detail(
+          name,
           wageText,
           moneyText(long('overtimeRate')),
           short(moneyText(long('overtimePay'))),
@@ -510,7 +430,7 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
         id: 'annual',
         label: w.annual,
         value: moneyText(year('annual')),
-        detail: w.annualDetail(wageText, short(moneyText(year('monthly')))),
+        detail: w.annualDetail(name, wageText, short(moneyText(year('monthly')))),
         href: `${PATHS.hourly[lang]}?${encode(
           payConverter,
           valid(
@@ -530,6 +450,7 @@ const examplesOf = (facts: StateFacts, lang: Lang): StatePage['examples'] => {
         label: w.tipped30,
         value: moneyText(guaranteed),
         detail: w.tippedDetail(
+          name,
           tipped,
           short(moneyText(cashWages)),
           short(moneyText(subMoney(guaranteed, cashWages))),
@@ -572,7 +493,8 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
     tippedSection(facts, lang),
     overtimeSection(facts, lang),
   ];
-  const cited = sections.flatMap(({ sources }) => sources);
+  const context = contextOf(facts, lang);
+  const cited = [...sections, ...context].flatMap(({ sources }) => sources);
   return {
     title: titleOf(h1),
     description: descriptionOf(lead),
@@ -582,6 +504,7 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
     calculate: { label: w.calculate(lang === 'en' ? facts.tipped.name.en : the), href: week45 },
     paths: { en: route.en, es: route.es },
     sections,
+    context,
     examples,
     labels: w.labels,
     reviewed: [

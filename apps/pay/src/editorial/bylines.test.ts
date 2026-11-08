@@ -41,7 +41,7 @@ describe('the byline pages', () => {
 
   // a state page holds a row of three tables: its review day is the oldest of their checked days,
   // so every figure on the page was checked on that day or later
-  it('give a state page the oldest checked day of its three tables, and all their sources', () => {
+  it('give a state page the oldest checked day of its three tables, and all its sources', () => {
     const oldest = DATA_PAGES.filter(({ id }) => id !== 'minimum-wage-2027-states-guide')
       .map(({ checked }) => checked)
       .sort()[0];
@@ -50,7 +50,11 @@ describe('the byline pages', () => {
         const page = statePageOf(facts, lang);
         expect(page.reviewed, page.h1).toBe(oldest);
         expect(page.sources.map(({ href }) => href)).toEqual([
-          ...new Set(page.sections.flatMap(({ sources }) => sources.map(({ href }) => href))),
+          ...new Set(
+            [...page.sections, ...page.context].flatMap(({ sources }) =>
+              sources.map(({ href }) => href),
+            ),
+          ),
         ]);
       }
   });
