@@ -35,7 +35,9 @@ describe('bylineProblems', () => {
   });
 
   it('wants the byline right under the h1', () => {
-    expect(run(page({ byline: '<p>no class</p>' }))).toEqual(['/guide: no byline right under the h1']);
+    expect(run(page({ byline: '<p>no class</p>' }))).toEqual([
+      '/guide: no byline right under the h1',
+    ]);
   });
 
   it('wants the team credited at the policy and the sources linked from the byline', () => {
@@ -72,7 +74,8 @@ describe('bylineProblems', () => {
 
   it('wants a sources section that links every source with a link', () => {
     expect(run(page({ sources: '' }))).toEqual(['/guide: the page has no #sources section']);
-    const partial = '<section aria-labelledby="sources"><a href="https://other.test">o</a></section>';
+    const partial =
+      '<section aria-labelledby="sources"><a href="https://other.test">o</a></section>';
     expect(run(page({ sources: partial }))).toEqual([
       '/guide: the sources section does not link https://a.test/x?a=1&b=2',
     ]);

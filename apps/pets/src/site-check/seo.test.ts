@@ -34,8 +34,22 @@ const closedSite = (): Map<string, string> =>
   ]);
 const openSite = (): Map<string, string> =>
   new Map([
-    ['/a', page({ title: 'A | Bowl Figures', description: `${DESCRIPTION} A`, canonical: `${ORIGIN}/a` })],
-    ['/b', page({ title: 'B | Bowl Figures', description: `${DESCRIPTION} B`, canonical: `${ORIGIN}/b` })],
+    [
+      '/a',
+      page({
+        title: 'A | Bowl Figures',
+        description: `${DESCRIPTION} A`,
+        canonical: `${ORIGIN}/a`,
+      }),
+    ],
+    [
+      '/b',
+      page({
+        title: 'B | Bowl Figures',
+        description: `${DESCRIPTION} B`,
+        canonical: `${ORIGIN}/b`,
+      }),
+    ],
     ['/404', page({ noindex: true })],
   ]);
 
@@ -111,7 +125,9 @@ describe('seoAuditProblems', () => {
     expect(seoAuditProblems(closedSite(), rules({ robots: undefined }))).toEqual([
       'robots.txt: not in the build',
     ]);
-    expect(seoAuditProblems(closedSite(), rules({ robots: 'User-agent: *\nDisallow: /\n' }))).toEqual([
+    expect(
+      seoAuditProblems(closedSite(), rules({ robots: 'User-agent: *\nDisallow: /\n' })),
+    ).toEqual([
       'robots.txt: "Disallow: /" keeps search engines out',
       'robots.txt: must name the sitemap https://bowlfigures.com/sitemap.xml',
     ]);

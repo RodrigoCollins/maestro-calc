@@ -21,7 +21,9 @@ describe('CALCULATOR_PAGES', () => {
   it('is exactly the pages whose source loads an island script', () => {
     const withScript = readdirSync(pages)
       .filter((name) => name.endsWith('.astro'))
-      .filter((name) => /Script from '..\/islands\//.test(readFileSync(resolve(pages, name), 'utf8')))
+      .filter((name) =>
+        /Script from '..\/islands\//.test(readFileSync(resolve(pages, name), 'utf8')),
+      )
       .map((name) => name.replace(/\.astro$/, '.html'));
     expect([...CALCULATOR_PAGES].sort()).toEqual(withScript.sort());
   });

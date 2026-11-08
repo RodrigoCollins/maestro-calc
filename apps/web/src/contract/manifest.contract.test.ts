@@ -68,9 +68,9 @@ describe('site scripts (monorepo-workspace › [MWW3], [MWW4])', () => {
     expect(scriptsOf('.')['test:e2e']).toBe('npm test --prefix tooling/site-browser');
   });
 
-  it('ends verify with build, check:site, the Cuenta Horas and Pool Figures builds and budgets, check:dist', () => {
+  it('ends verify with build, check:site, the Cuenta Horas, Pool Figures and Bowl Figures builds and budgets, check:dist', () => {
     expect(scriptsOf('.')['verify']).toMatch(
-      / && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run build:pool && npm run check:site:pool && npm run check:dist$/,
+      / && npm run build && npm run check:site && npm run build:pay && npm run check:site:pay && npm run build:pool && npm run check:site:pool && npm run build:pets && npm run check:site:pets && npm run check:dist$/,
     );
   });
 });

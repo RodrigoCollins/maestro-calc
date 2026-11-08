@@ -97,6 +97,8 @@ describe('CI workflow (quality-gates › Continuous integration workflow)', () =
       'npm run check:site:pay',
       'npm run build:pool',
       'npm run check:site:pool',
+      'npm run build:pets',
+      'npm run check:site:pets',
       'npm run check:dist',
     ]);
     for (const job of Object.values(workflow.jobs)) {

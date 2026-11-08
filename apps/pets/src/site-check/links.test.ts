@@ -54,7 +54,9 @@ describe('linkProblems', () => {
     orphaned.set('/', html('<a href="/b">b</a>'));
     orphaned.set('/b', html('<a href="/a">a</a>'));
     orphaned.set('/a', html('<a href="/b">b</a>'));
-    expect(linkProblems(orphaned, rules, files)).toEqual(['/: no other page in the sitemap links it']);
+    expect(linkProblems(orphaned, rules, files)).toEqual([
+      '/: no other page in the sitemap links it',
+    ]);
   });
 
   it('does not count a page linking itself', () => {
