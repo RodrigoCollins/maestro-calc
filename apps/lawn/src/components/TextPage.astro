@@ -1,0 +1,66 @@
+---
+import Layout from './Layout.astro';
+import { pageTrailOf } from '../seo/breadcrumb.ts';
+
+/** A page of prose sections: about, editorial policy, privacy. */
+interface Props {
+  readonly page: {
+    readonly path: string;
+    readonly title: string;
+    readonly description: string;
+    readonly h1: string;
+    readonly lead: string;
+    readonly sections: readonly {
+      readonly id: string;
+      readonly heading: string;
+      readonly paragraphs: readonly string[];
+      readonly sources?: readonly { readonly name: string; readonly url: string }[];
+      readonly link?: { readonly href: string; readonly label: string };
+    }[];
+    readonly reviewed: string;
+  };
+}
+
+const { page } = Astro.props;
+---
+
+<Layout title={page.title} description={page.description} trail={pageTrailOf(page)}>
+  <Fragment slot="hero">
+    <section class="lawn-hero">
+      <h1>{page.h1}</h1>
+      <p>{page.lead}</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main">
+    {page.sections.map(({ id, heading, paragraphs, sources, link }) => (
+      <section class="lawn-section" aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {sources !== undefined && (
+          <ul>
+            {sources.map(({ name, url }) => (
+              <li>
+                <a href={url}>{name}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+        {link !== undefined && (
+          <p>
+            <a href={link.href}>{link.label}</a>
+          </p>
+        )}
+      </section>
+    ))}
+    <p class="lawn-note">{page.reviewed}</p>
+  </main>
+</Layout>
+
+<style is:global>
+  .lawn-main .lawn-note {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+</style>

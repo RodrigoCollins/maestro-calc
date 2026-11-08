@@ -1,0 +1,15 @@
+{
+  "name": "@maestro-calc/lawn-data",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./frost/states": "./src/frost/states.ts",
+    "./frost/source": "./src/frost/source.ts",
+    "./frost/*": "./src/frost/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"
+  }
+}

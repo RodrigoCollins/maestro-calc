@@ -1,0 +1,83 @@
+---
+import { calculatorsOf, guideAt } from '../guide.ts';
+import { hrefOf } from '../routes.ts';
+import { pageTrailOf } from '../seo/breadcrumb.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const guide = guideAt(Astro.props.path);
+const calculators = calculatorsOf(guide);
+---
+
+<Layout
+  title={guide.title}
+  description={guide.description}
+  trail={pageTrailOf(guide)}
+  modified={guide.checked}
+>
+  <Fragment slot="hero">
+    <section class="lawn-hero">
+      <h1>{guide.h1}</h1>
+      <Byline path={guide.path} />
+      <p>{guide.lead}</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main">
+    {guide.sections.map(({ id, heading, paragraphs, items }) => (
+      <section class="lawn-section" aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {items !== undefined && (
+          <ul>
+            {items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        )}
+        {id === 'frost' && (
+          <p>
+            <a href={hrefOf('frost-index')}>Find your frost dates</a>
+          </p>
+        )}
+        {id === 'amounts' && (
+          <ul>
+            {calculators.map(({ path, h1 }) => (
+              <li>
+                <a href={path}>{h1}</a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    ))}
+    <section class="lawn-section" aria-labelledby="faq">
+      <h2 id="faq">Questions</h2>
+      {guide.questions.map(({ question, answer }) => (
+        <div class="lawn-qa">
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </div>
+      ))}
+    </section>
+    <Sources path={guide.path} />
+  </main>
+</Layout>
+
+<style is:global>
+  .lawn-qa {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .lawn-qa h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+</style>

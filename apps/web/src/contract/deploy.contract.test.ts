@@ -100,6 +100,7 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
     expect(job?.strategy?.matrix?.include).toEqual([
       { app: 'pay', worker: 'cuenta-horas' },
       { app: 'pool', worker: 'pool-figures' },
+      { app: 'lawn', worker: 'lawn-figures' },
     ]);
     expect(idsOf('niche-sites')).toEqual(['build', 'changed', 'indexnow']);
     const step = (id: string) => job?.steps.find((candidate) => candidate.id === id);

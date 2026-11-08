@@ -1,0 +1,29 @@
+---
+import { bylinePageOf } from '../bylines.ts';
+import { bylineOf } from '../editorial.ts';
+
+/** The byline under the h1 of a guide or a frost page (`src/bylines.ts`). */
+interface Props {
+  readonly path: string;
+}
+
+const { path } = Astro.props;
+const { checked } = bylinePageOf(path);
+const { by, team, reviewed, sources } = bylineOf({ checked, sources: true });
+---
+
+<p class="lawn-byline">
+  {by} <a href={team.href}>{team.label}</a>
+  {reviewed !== undefined && (
+    <>
+      {' · '}
+      {reviewed.label} <time datetime={reviewed.datetime}>{reviewed.text}</time>
+    </>
+  )}
+  {sources !== undefined && (
+    <>
+      {' · '}
+      <a href={sources.href}>{sources.label}</a>
+    </>
+  )}
+</p>

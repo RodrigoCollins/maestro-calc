@@ -8,7 +8,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "lighthouse": "lhci autorun",
     "test:pay": "playwright test --config playwright.pay.config.ts",
-    "test:pool": "playwright test --config playwright.pool.config.ts"
+    "test:pool": "playwright test --config playwright.pool.config.ts",
+    "test:lawn": "playwright test --config playwright.lawn.config.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",

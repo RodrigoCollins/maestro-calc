@@ -1,0 +1,23 @@
+---
+import Layout from '../components/Layout.astro';
+import { SITE } from '../site.config.ts';
+---
+
+<Layout
+  title={`Page not found | ${SITE.name}`}
+  description="This page does not exist. Pick a calculator or find your frost dates."
+  indexed={false}
+>
+  <Fragment slot="hero">
+    <section class="lawn-hero">
+      <h1>Page not found</h1>
+      <p>This page does not exist.</p>
+    </section>
+  </Fragment>
+  <main class="lawn-main">
+    <p>
+      Go to the <a href="/">home page</a>, pick a calculator in the menu, or{' '}
+      <a href="/frost-dates">find your frost dates</a>.
+    </p>
+  </main>
+</Layout>
