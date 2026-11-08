@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 const source = readFileSync(resolve(import.meta.dirname, '../public/analytics.js'), 'utf8');
 
 /** Runs the loader in a bare context on `hostname`; returns the `window` it leaves behind. */
-const run = (attrs: Readonly<Record<string, string>>, hostname = 'poolfigures.com') => {
+const run = (attrs: Readonly<Record<string, string>>, hostname = 'cuantolecobro.com') => {
   const window: Record<string, unknown> = {};
   runInNewContext(source, {
     window,
@@ -27,11 +27,11 @@ const run = (attrs: Readonly<Record<string, string>>, hostname = 'poolfigures.co
   return window;
 };
 
-const TAG = { 'data-ga': 'G-TEST1', 'data-host': 'poolfigures.com' };
+const TAG = { 'data-ga': 'G-TEST1', 'data-host': 'cuantolecobro.com' };
 
 describe('the analytics loader', () => {
   it('does nothing off the production host or without a measurement id', () => {
-    for (const window of [run(TAG, '127.0.0.1'), run({ 'data-host': 'poolfigures.com' })]) {
+    for (const window of [run(TAG, '127.0.0.1'), run({ 'data-host': 'cuantolecobro.com' })]) {
       expect(window).toEqual({});
     }
   });
@@ -58,8 +58,8 @@ describe('the analytics loader', () => {
     const window = run(TAG);
     const gtag = window['gtag'] as (...args: unknown[]) => void;
     expect(typeof gtag).toBe('function');
-    gtag('event', 'calc_action', { calc_id: 'pool-ph' });
+    gtag('event', 'calc_action', { calc_id: 'cleaning-quote' });
     const last = (window['dataLayer'] as ArrayLike<unknown>[]).at(-1);
-    expect(Array.from(last ?? [])).toEqual(['event', 'calc_action', { calc_id: 'pool-ph' }]);
+    expect(Array.from(last ?? [])).toEqual(['event', 'calc_action', { calc_id: 'cleaning-quote' }]);
   });
 });

@@ -46,7 +46,9 @@ for (let at = 0; at < ids.length; at += BATCH) {
     const value = point === undefined ? Number.NaN : Number(point.value);
     if (Number.isFinite(value)) readings.set(seriesID, value);
   }
-  console.log(`fetched ${String(Math.min(at + BATCH, ids.length))} of ${String(ids.length)} series`);
+  console.log(
+    `fetched ${String(Math.min(at + BATCH, ids.length))} of ${String(ids.length)} series`,
+  );
 }
 writeFileSync(join(import.meta.dirname, '../src/wages/oews-2025.ts'), wagesModule(readings));
 console.log(`wrote ${String(readings.size)} readings`);

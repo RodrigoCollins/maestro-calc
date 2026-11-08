@@ -71,7 +71,11 @@ export const linkProblems = (
         const own = TRADE_PATHS[id][lang];
         const states = wageAreasOf(id).map(({ fips }) => wagePathOf(id, fips, lang));
         return [
-          ...must(own, calculators.filter((path) => path !== own), 'must link the other trade'),
+          ...must(
+            own,
+            calculators.filter((path) => path !== own),
+            'must link the other trade',
+          ),
           ...must(own, [WAGE_STEMS[id][lang], hrefOf('methodology', lang), ...guides], 'must link'),
           ...must(WAGE_STEMS[id][lang], [own, hrefOf('wages', lang), ...states], 'must link'),
           ...states.flatMap((state) =>

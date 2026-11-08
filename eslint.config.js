@@ -230,6 +230,7 @@ export default defineConfig(
     'apps/pool/public/analytics.js',
     'apps/lawn/public/analytics.js',
     'apps/pets/public/analytics.js',
+    'apps/cobro/public/analytics.js',
     // The offline worker, the same: a plain script served as is, run by its unit test.
     'apps/web/public/sw.js',
   ]),

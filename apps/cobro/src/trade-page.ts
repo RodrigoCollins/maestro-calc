@@ -63,7 +63,11 @@ export interface TradeView {
   readonly path: string;
   readonly calculatorId: string;
   readonly fields: readonly FieldView[];
-  readonly groups: readonly { readonly id: Group; readonly title: string; readonly fields: readonly FieldView[] }[];
+  readonly groups: readonly {
+    readonly id: Group;
+    readonly title: string;
+    readonly fields: readonly FieldView[];
+  }[];
   readonly lines: readonly LineView[];
   readonly total: string;
   readonly receiptTitle: string;

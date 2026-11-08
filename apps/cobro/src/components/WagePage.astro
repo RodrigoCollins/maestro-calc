@@ -32,8 +32,12 @@ const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][
 >
   <article class="prose">
     <ul class="crumbs">
-      <li><a href={hrefOf('wages', lang)}>{text.crumb}</a></li>
-      <li><a href={WAGE_STEMS[trade][lang]}>{TRADE_TEXTS[lang][trade].name}</a></li>
+      <li>
+        <a href={hrefOf('wages', lang)}>{text.crumb}</a>
+      </li>
+      <li>
+        <a href={WAGE_STEMS[trade][lang]}>{TRADE_TEXTS[lang][trade].name}</a>
+      </li>
       <li>{state}</li>
     </ul>
     <h1>{view.h1}</h1>
@@ -55,8 +59,12 @@ const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][
       <h2 id="rate-card">{view.rateH2}</h2>
       <p>{text.rateBody}</p>
       <ul>
-        <li><a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a></li>
-        <li><a href={hrefOf('rate-guide', lang)}>{text.guide}</a></li>
+        <li>
+          <a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a>
+        </li>
+        <li>
+          <a href={hrefOf('rate-guide', lang)}>{text.guide}</a>
+        </li>
       </ul>
     </section>
 
@@ -65,14 +73,19 @@ const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][
         <h2>{fill(text.othersH2, { state })}</h2>
         <ul>
           {view.others.map((other) => (
-            <li><a href={other.href}>{other.label}</a></li>
+            <li>
+              <a href={other.href}>{other.label}</a>
+            </li>
           ))}
         </ul>
       </section>
     )}
     <ShareLink {lang} name={view.h1} path={wagePathOf(trade, fips, lang)} />
     <p id="source" class="byline">
-      {view.source} <a href="https://www.bls.gov/oes/" rel="noopener">bls.gov/oes</a>
+      {view.source}{' '}
+      <a href="https://www.bls.gov/oes/" rel="noopener">
+        bls.gov/oes
+      </a>
     </p>
   </article>
 </Layout>

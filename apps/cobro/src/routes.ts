@@ -81,10 +81,19 @@ const pair = (id: string, kind: PageKind, es: string, en: string): Route => ({ i
 /** The pages that are one file each, in the order of the site. */
 const SITE_ROUTES: readonly Route[] = [
   pair('home', 'home', '/', '/en'),
-  ...OCCUPATIONS.map(({ id }) => ({ id: `quote-${id}`, kind: 'calculator' as const, ...TRADE_PATHS[id] })),
+  ...OCCUPATIONS.map(({ id }) => ({
+    id: `quote-${id}`,
+    kind: 'calculator' as const,
+    ...TRADE_PATHS[id],
+  })),
   pair('quote-guide', 'article', '/como-armar-un-presupuesto', '/en/how-to-write-a-quote'),
   pair('markup-guide', 'article', '/recargo-o-margen', '/en/markup-vs-margin'),
-  pair('rate-guide', 'article', '/como-fijar-tu-tarifa-por-hora', '/en/how-to-set-your-hourly-rate'),
+  pair(
+    'rate-guide',
+    'article',
+    '/como-fijar-tu-tarifa-por-hora',
+    '/en/how-to-set-your-hourly-rate',
+  ),
   pair('wages', 'collection', '/salarios-por-oficio', '/en/trade-wages-by-state'),
   pair('methodology', 'article', '/metodologia', '/en/methodology'),
   pair('about', 'article', '/acerca', '/en/about'),

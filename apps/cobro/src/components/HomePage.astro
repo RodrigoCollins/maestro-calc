@@ -42,7 +42,9 @@ const guides = ['quote-guide', 'markup-guide', 'rate-guide'] as const;
   <section class="card card-gold" aria-labelledby="rate">
     <h2 id="rate">{text.rateH2}</h2>
     <p>{text.rateBody}</p>
-    <p><a href={hrefOf('wages', lang)}>{text.rateLink}</a></p>
+    <p>
+      <a href={hrefOf('wages', lang)}>{text.rateLink}</a>
+    </p>
   </section>
 
   <h2>{text.guidesH2}</h2>

@@ -7,7 +7,7 @@ interface Props {
   readonly lang: Lang;
   readonly checked: string;
   /** The id of the sources section on the page, when it has one. */
-  readonly sourcesId?: string;
+  readonly sourcesId?: string | undefined;
 }
 
 const { lang, checked, sourcesId } = Astro.props;

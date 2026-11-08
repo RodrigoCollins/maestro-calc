@@ -20,7 +20,9 @@ import { OCCUPATIONS } from '../wages/occupations.ts';
 export const getStaticPaths = (() => {
   const pages = ROUTES.flatMap((route) =>
     (['es', 'en'] as const).flatMap((lang) =>
-      route[lang] === '/' ? [] : [{ params: { path: route[lang].slice(1) }, props: { id: route.id, lang } }],
+      route[lang] === '/'
+        ? []
+        : [{ params: { path: route[lang].slice(1) }, props: { id: route.id, lang } }],
     ),
   );
   const embeds = EMBEDS.map(({ path, trade, lang }) => ({
@@ -37,8 +39,7 @@ interface Props {
 
 const { id, lang } = Astro.props;
 const articleId = Object.entries(ARTICLE_ROUTE).find(([, route]) => route === id)?.[0] as
-  | ArticleId
-  | undefined;
+  ArticleId | undefined;
 const tradeOf = (prefix: string): TradeId | undefined =>
   OCCUPATIONS.find((occupation) => id === `${prefix}${occupation.id}`)?.id;
 const quote = tradeOf('quote-');

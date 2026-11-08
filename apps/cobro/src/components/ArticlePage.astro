@@ -75,11 +75,16 @@ const rateRows = [
   numberText(Rational.of(hoursPerYear), 0),
   `${moneyText(usd(rateOfExample()))} ${WORDS.per}`,
 ];
-const tables = {
+interface Table {
+  readonly head: readonly string[];
+  readonly rows: readonly (readonly string[])[];
+  readonly numeric: readonly number[];
+}
+const tables: Readonly<Record<'cases' | 'markup-table' | 'margin-table', Table>> = {
   cases: { head: WORDS.cases, rows: caseRows, numeric: [1, 2, 3, 4] },
   'markup-table': { head: WORDS.markup, rows: markupRows(lang), numeric: [0, 1] },
   'margin-table': { head: WORDS.margin, rows: marginRows(lang), numeric: [0, 1] },
-} as const;
+};
 const tradeIds = ['cleaning', 'painting', 'drywall', 'concrete', 'landscaping'] as const;
 const forBlock = (block: Block) => (block.generated === undefined ? undefined : block.generated);
 ---
@@ -98,7 +103,9 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
       return (
         <section>
           <h2 id={block.id}>{block.h2}</h2>
-          {block.paragraphs?.map((text) => <p>{text}</p>)}
+          {block.paragraphs?.map((text) => (
+            <p>{text}</p>
+          ))}
           {generated === 'rate-example' && (
             <ol>
               {rateRows.map((value, index) => (
@@ -109,12 +116,14 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
             </ol>
           )}
           {generated !== undefined && generated !== 'rate-example' && (
-            <div class="table-scroll">
+            <div class="table-scroll" tabindex="0" role="region" aria-label={block.h2}>
               <table>
                 <thead>
                   <tr>
                     {tables[generated].head.map((cell, index) => (
-                      <th class={tables[generated].numeric.includes(index) ? 'num' : undefined}>{cell}</th>
+                      <th class={tables[generated].numeric.includes(index) ? 'num' : undefined}>
+                        {cell}
+                      </th>
                     ))}
                   </tr>
                 </thead>
@@ -122,7 +131,9 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
                   {tables[generated].rows.map((row) => (
                     <tr>
                       {row.map((cell, index) => (
-                        <td class={tables[generated].numeric.includes(index) ? 'num' : undefined}>{cell}</td>
+                        <td class={tables[generated].numeric.includes(index) ? 'num' : undefined}>
+                          {cell}
+                        </td>
                       ))}
                     </tr>
                   ))}
@@ -131,9 +142,15 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
             </div>
           )}
           {block.list !== undefined && (
-            <ul>{block.list.map((item) => <li>{item}</li>)}</ul>
+            <ul>
+              {block.list.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
           )}
-          {block.after?.map((text) => <p>{text}</p>)}
+          {block.after?.map((text) => (
+            <p>{text}</p>
+          ))}
           {block.id === sourcesId && (
             <ul>
               {article.sources.map((source) => (
@@ -141,7 +158,9 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
                   {source.url === undefined ? (
                     source.name
                   ) : (
-                    <a href={source.url} rel="noopener">{source.name}</a>
+                    <a href={source.url} rel="noopener">
+                      {source.name}
+                    </a>
                   )}{' '}
                   ({WORDS.accessed} <time datetime={source.accessed}>{source.accessed}</time>)
                 </li>
@@ -160,7 +179,9 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
               {source.url === undefined ? (
                 source.name
               ) : (
-                <a href={source.url} rel="noopener">{source.name}</a>
+                <a href={source.url} rel="noopener">
+                  {source.name}
+                </a>
               )}{' '}
               ({WORDS.accessed} <time datetime={source.accessed}>{source.accessed}</time>)
             </li>
@@ -174,10 +195,14 @@ const forBlock = (block: Block) => (block.generated === undefined ? undefined : 
         <ul>
           {tradeIds.map((trade) => (
             <li>
-              <a href={TRADE_PATHS[trade][lang]}>{WORDS.open} {TRADE_TEXTS[lang][trade].name}</a>
+              <a href={TRADE_PATHS[trade][lang]}>
+                {WORDS.open} {TRADE_TEXTS[lang][trade].name}
+              </a>
             </li>
           ))}
-          <li><a href={hrefOf('wages', lang)}>{PAGE_LABELS[lang]['wages']}</a></li>
+          <li>
+            <a href={hrefOf('wages', lang)}>{PAGE_LABELS[lang]['wages']}</a>
+          </li>
         </ul>
       </section>
     )}

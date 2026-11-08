@@ -23,17 +23,23 @@ const items = view.rows.map((row) => ({ name: row.state, path: row.href }));
 <Layout
   title={titleOf(view.title)}
   description={view.description}
-  extras={{ parent: { name: text.crumb, path: hrefOf('wages', lang) }, items, modified: WAGES_CHECKED }}
+  extras={{
+    parent: { name: text.crumb, path: hrefOf('wages', lang) },
+    items,
+    modified: WAGES_CHECKED,
+  }}
 >
   <article class="prose">
     <ul class="crumbs">
-      <li><a href={hrefOf('wages', lang)}>{text.crumb}</a></li>
+      <li>
+        <a href={hrefOf('wages', lang)}>{text.crumb}</a>
+      </li>
       <li>{TRADE_TEXTS[lang][trade].name}</li>
     </ul>
     <h1>{view.h1}</h1>
     <Byline {lang} checked={WAGES_CHECKED} sourcesId="source" />
     <p class="lead">{view.lead}</p>
-    <div class="table-scroll">
+    <div class="table-scroll" tabindex="0" role="region" aria-label={view.h1}>
       <table>
         <thead>
           <tr>
@@ -50,7 +56,9 @@ const items = view.rows.map((row) => ({ name: row.state, path: row.href }));
           </tr>
           {view.rows.map((row) => (
             <tr>
-              <th><a href={row.href}>{row.state}</a></th>
+              <th>
+                <a href={row.href}>{row.state}</a>
+              </th>
               <td class="num">{row.mean}</td>
               <td class="num">{row.median}</td>
             </tr>
@@ -58,10 +66,15 @@ const items = view.rows.map((row) => ({ name: row.state, path: row.href }));
         </tbody>
       </table>
     </div>
-    <p><a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a></p>
+    <p>
+      <a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a>
+    </p>
     <ShareLink {lang} name={view.h1} path={WAGE_STEMS[trade][lang]} />
     <p id="source" class="byline">
-      {view.source} <a href="https://www.bls.gov/oes/" rel="noopener">bls.gov/oes</a>
+      {view.source}{' '}
+      <a href="https://www.bls.gov/oes/" rel="noopener">
+        bls.gov/oes
+      </a>
     </p>
   </article>
 </Layout>

@@ -31,13 +31,7 @@ export interface Article {
 }
 
 export type ArticleId =
-  | 'quote-guide'
-  | 'markup-guide'
-  | 'rate-guide'
-  | 'methodology'
-  | 'about'
-  | 'editorial'
-  | 'privacy';
+  'quote-guide' | 'markup-guide' | 'rate-guide' | 'methodology' | 'about' | 'editorial' | 'privacy';
 
 const CHECKED = '2026-11-08';
 export const CONTACT_EMAIL = 'hola@cuantolecobro.com';

@@ -62,7 +62,8 @@ export const runQuote = <const I extends readonly InputDescriptor[]>(
     ).state;
     for (const input of calculator.inputs) {
       const field = fieldOf(input.key);
-      if (field !== null && input.key in values) field.value = fieldTextOf(input, values[input.key]);
+      if (field !== null && input.key in values)
+        field.value = fieldTextOf(input, values[input.key]);
     }
   }
 
@@ -113,7 +114,8 @@ export const runQuote = <const I extends readonly InputDescriptor[]>(
     const state = calculator.validate(raw);
     if (state.ok) {
       const details = detailsOf(texts, valuesOf(state.value, outputs));
-      for (const [key, text] of Object.entries(details)) {
+      const written: Readonly<Record<string, string>> = { ...details };
+      for (const [key, text] of Object.entries(written)) {
         for (const node of receipt.querySelectorAll<HTMLElement>(
           `[data-detail="${key}"], [data-name="${key}"]`,
         )) {

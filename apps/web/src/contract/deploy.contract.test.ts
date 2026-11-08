@@ -102,6 +102,7 @@ describe('deploy workflow (site-seo › Post-deploy check and notification)', ()
       { app: 'pets', worker: 'bowl-figures' },
       { app: 'pool', worker: 'pool-figures' },
       { app: 'lawn', worker: 'lawn-figures' },
+      { app: 'cobro', worker: 'cuanto-le-cobro' },
     ]);
     expect(idsOf('niche-sites')).toEqual(['build', 'changed', 'indexnow']);
     const step = (id: string) => job?.steps.find((candidate) => candidate.id === id);

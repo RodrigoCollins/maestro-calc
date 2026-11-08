@@ -23,16 +23,15 @@ export const asLaunched = (pages: ReadonlyMap<string, string>): ReadonlyMap<stri
   );
 
 /** The launch switch holds: a closed site is `noindex` everywhere; an open one only on the 404 and the embeds. */
-export const switchProblems = (
-  pages: ReadonlyMap<string, string>,
-  indexable: boolean,
-): string[] =>
+export const switchProblems = (pages: ReadonlyMap<string, string>, indexable: boolean): string[] =>
   [...pages].flatMap(([file, html]) => {
     const closed = NOINDEX.test(html);
     const expected = !indexable || alwaysNoindex(file);
     return closed === expected
       ? []
-      : [`${file}: ${expected ? 'must be noindex' : 'must not be noindex'} while indexable is ${String(indexable)}`];
+      : [
+          `${file}: ${expected ? 'must be noindex' : 'must not be noindex'} while indexable is ${String(indexable)}`,
+        ];
   });
 
 const SCHEMA = {

@@ -16,8 +16,16 @@ const text = EMBED_PAGE_TEXTS[lang];
     <h1>{text.h1}</h1>
     <p class="lead">{text.lead}</p>
     <h2>{text.howHeading}</h2>
-    <ol>{text.steps.map((step) => <li>{step}</li>)}</ol>
-    <ul>{text.notes.map((note) => <li>{note}</li>)}</ul>
+    <ol>
+      {text.steps.map((step) => (
+        <li>{step}</li>
+      ))}
+    </ol>
+    <ul>
+      {text.notes.map((note) => (
+        <li>{note}</li>
+      ))}
+    </ul>
     <h2>{text.calculatorsHeading}</h2>
     {snippetsOf(lang).map((snippet) => (
       <section>

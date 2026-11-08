@@ -53,7 +53,9 @@ const url = canonicalUrl(view.path, SITE.origin);
     <ul class="chips" aria-label={common.chips.label}>
       {chips.map((chip) => (
         <li>
-          <a href={chip.href} aria-current={chip.id === trade ? 'page' : undefined}>{chip.label}</a>
+          <a href={chip.href} aria-current={chip.id === trade ? 'page' : undefined}>
+            {chip.label}
+          </a>
         </li>
       ))}
     </ul>
@@ -67,7 +69,10 @@ const url = canonicalUrl(view.path, SITE.origin);
         <legend>{group.title}</legend>
         <div class="row">
           {group.fields.map((field) => (
-            <label data-when={field.when} hidden={field.when !== undefined && field.when !== 'hour'}>
+            <label
+              data-when={field.when}
+              hidden={field.when !== undefined && field.when !== 'hour'}
+            >
               {field.label}
               {field.options === undefined ? (
                 <input
@@ -79,7 +84,9 @@ const url = canonicalUrl(view.path, SITE.origin);
               ) : (
                 <select name={field.key}>
                   {field.options.map(([value, label]) => (
-                    <option {value} selected={value === field.value}>{label}</option>
+                    <option {value} selected={value === field.value}>
+                      {label}
+                    </option>
                   ))}
                 </select>
               )}
@@ -113,7 +120,12 @@ const url = canonicalUrl(view.path, SITE.origin);
             data-hide-zero={line.hideZero ? '' : undefined}
             hidden={line.hideZero && line.amount === '$0.00'}
           >
-            <span class="name" data-name={line.id === 'overhead' || line.id === 'profit' ? line.id : undefined}>{line.name}</span>
+            <span
+              class="name"
+              data-name={line.id === 'overhead' || line.id === 'profit' ? line.id : undefined}
+            >
+              {line.name}
+            </span>
             {line.id === 'labor' && <small data-detail="labor">{line.detail}</small>}
             {line.id === 'materials' && hasQuantity && (
               <small data-detail="materials">{line.detail}</small>
@@ -137,8 +149,13 @@ const url = canonicalUrl(view.path, SITE.origin);
       href={view.shareHref}
       rel="noopener"
       target="_blank"
-      aria-label={`${common.actions.share}: ${text.name}`}>{common.actions.share}</a>
-    <button class="button" type="button" data-print>{common.actions.print}</button>
+      aria-label={`${common.actions.share}: ${text.name}`}
+    >
+      {common.actions.share}
+    </a>
+    <button class="button" type="button" data-print>
+      {common.actions.print}
+    </button>
   </div>
 
   {!embed && (
@@ -146,14 +163,22 @@ const url = canonicalUrl(view.path, SITE.origin);
       <section class="card card-gold" aria-labelledby="rate-card">
         <h2 id="rate-card">{common.rateCard.title}</h2>
         <p>{common.rateCard.body}</p>
-        {national !== undefined && <p><strong>{national}</strong></p>}
-        <p><a href={WAGE_STEMS[trade][lang]}>{common.rateCard.link}</a></p>
+        {national !== undefined && (
+          <p>
+            <strong>{national}</strong>
+          </p>
+        )}
+        <p>
+          <a href={WAGE_STEMS[trade][lang]}>{common.rateCard.link}</a>
+        </p>
       </section>
 
       <section class="prose">
         <h2>{common.method.title}</h2>
         <p>{text.how}</p>
-        <p><a href={hrefOf('methodology', lang)}>{common.method.link}</a></p>
+        <p>
+          <a href={hrefOf('methodology', lang)}>{common.method.link}</a>
+        </p>
       </section>
 
       <section class="prose">
@@ -180,7 +205,9 @@ const url = canonicalUrl(view.path, SITE.origin);
   )}
   {embed && (
     <p class="byline">
-      <a href={url}>{text.name} · {SITE.name}</a>
+      <a href={url}>
+        {text.name} · {SITE.name}
+      </a>
     </p>
   )}
   <Script />

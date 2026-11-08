@@ -8,7 +8,7 @@ import { OEWS_RELEASE } from './wages/oews-2025.ts';
 export const WAGES_CHECKED = OEWS_RELEASE.accessed;
 
 /** The ids of the articles that carry the byline of the editorial team (the legal pages do too). */
-export const ARTICLE_IDS: readonly (ArticleId & string)[] = [
+export const ARTICLE_IDS: readonly ArticleId[] = [
   'quote-guide',
   'markup-guide',
   'rate-guide',

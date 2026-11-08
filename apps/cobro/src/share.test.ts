@@ -3,7 +3,11 @@ import { shareOf } from './share.ts';
 
 describe('shareOf', () => {
   it('shares the name of the page and its canonical address on a line of its own', () => {
-    const share = shareOf('es', 'Cuánto gana un pintor en Texas', '/cuanto-gana-un-pintor-en-texas');
+    const share = shareOf(
+      'es',
+      'Cuánto gana un pintor en Texas',
+      '/cuanto-gana-un-pintor-en-texas',
+    );
     expect(decodeURIComponent(share.href)).toBe(
       'https://wa.me/?text=Cuánto gana un pintor en Texas, en Cuánto Le Cobro:\nhttps://cuantolecobro.com/cuanto-gana-un-pintor-en-texas',
     );

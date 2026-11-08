@@ -34,9 +34,7 @@ export const bylineProblems = (
         ? []
         : [`${path}: the byline must credit the editorial team at ${policy}`]),
       ...(day === checked ? [] : [`${path}: the byline must give the review day ${checked}`]),
-      ...(modified === checked
-        ? []
-        : [`${path}: the JSON-LD must give dateModified ${checked}`]),
+      ...(modified === checked ? [] : [`${path}: the JSON-LD must give dateModified ${checked}`]),
       ...(sources.length === 0 || anchor !== undefined
         ? []
         : [`${path}: the byline must link its sources section`]),

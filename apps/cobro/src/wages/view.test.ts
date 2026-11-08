@@ -80,7 +80,8 @@ describe('stateWageViewOf', () => {
     try {
       expect(stateWageViewOf('painting', '48', 'en').stats[3]?.value).toBe('The same');
     } finally {
-      if (original !== undefined) (saved as Record<string, readonly [number, number]>)['48'] = original;
+      if (original !== undefined)
+        (saved as Record<string, readonly [number, number]>)['48'] = original;
     }
   });
 });

@@ -5,7 +5,10 @@ import { describe, expect, it } from 'vitest';
 import { defaultTextOf, fieldTextOf } from './fields.ts';
 
 const paint = createPaint(PAINT_COVERAGE);
-const textOf = (calculator: { inputs: readonly Parameters<typeof defaultTextOf>[0][] }, key: string) => {
+const textOf = (
+  calculator: { inputs: readonly Parameters<typeof defaultTextOf>[0][] },
+  key: string,
+) => {
   const input = calculator.inputs.find((each) => each.key === key);
   if (input === undefined) throw new Error(key);
   return defaultTextOf(input);
@@ -36,7 +39,7 @@ describe('fieldTextOf', () => {
     const concrete = { kind: 'length', defaultUnit: 'in' } as unknown as Parameters<
       typeof fieldTextOf
     >[0];
-    const quantityOfFour = paint.inputs[2]?.default;
+    const quantityOfFour = paint.inputs[2].default;
     expect(fieldTextOf(concrete, quantityOfFour)).toBe('96');
   });
 });

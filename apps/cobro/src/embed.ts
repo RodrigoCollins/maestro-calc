@@ -44,7 +44,10 @@ export const embedOf = (trade: TradeId, lang: Lang): Embed => {
   return found;
 };
 
-const CREDIT = { es: (name: string) => `${name}, de ${SITE.name}`, en: (name: string) => `${name}, by ${SITE.name}` };
+const CREDIT = {
+  es: (name: string) => `${name}, de ${SITE.name}`,
+  en: (name: string) => `${name}, by ${SITE.name}`,
+};
 
 /** Every calculator's snippet in `lang`: the frame, then the visible link to the full page outside it. */
 export const snippetsOf = (

@@ -40,7 +40,9 @@ const all = [
   ...siteSeoProblems(html, SITE.origin, sitemapText, SITE.indexable),
   ...(sitemap.length === ROUTES.length * 2
     ? []
-    : [`sitemap.xml: lists ${String(sitemap.length)} pages, the route table has ${String(ROUTES.length * 2)}`]),
+    : [
+        `sitemap.xml: lists ${String(sitemap.length)} pages, the route table has ${String(ROUTES.length * 2)}`,
+      ]),
   ...robotsProblems(read('robots.txt'), SITE.origin),
   ...(read('llms.txt') === undefined ? ['llms.txt: not in the build'] : []),
   ...(read(`${SITE.indexNowKey}.txt`) === SITE.indexNowKey

@@ -106,8 +106,7 @@ export const COMMON: Readonly<Record<Lang, CommonText>> = {
     rateCard: {
       title: '¿Tu tarifa está bien?',
       body: 'El Departamento de Trabajo de EE. UU. (BLS) publica cuánto pagan los empleadores por hora en este oficio. Un salario no es una tarifa: tu tarifa también tiene que cubrir tus costos generales y tu ganancia.',
-      national:
-        'Promedio nacional (mayo de 2025): {mean} por hora; mediana: {median} por hora.',
+      national: 'Promedio nacional (mayo de 2025): {mean} por hora; mediana: {median} por hora.',
       link: 'Ver el salario de este oficio en cada estado',
     },
     chips: { label: 'Elige tu oficio' },

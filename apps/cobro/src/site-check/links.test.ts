@@ -8,7 +8,15 @@ const page = (...hrefs: string[]): string =>
 describe('linksOf', () => {
   it('reads internal links as canonical paths, absolute ones on the origin included', () => {
     const links = linksOf(
-      page('/a', `${ORIGIN}/b?x=1#y`, '/c.html', 'https://other.test/d', '#top', '//cdn.test/e', '/'),
+      page(
+        '/a',
+        `${ORIGIN}/b?x=1#y`,
+        '/c.html',
+        'https://other.test/d',
+        '#top',
+        '//cdn.test/e',
+        '/',
+      ),
       ORIGIN,
     );
     expect([...links].sort()).toEqual(['/', '/a', '/b', '/c']);

@@ -128,5 +128,7 @@ export const jsonLdOf = (
     extras.parent === undefined
       ? []
       : [{ name: extras.parent.name, url: new URL(extras.parent.path, origin).href }];
-  return serializeJsonLd(withBreadcrumb(node, [home, ...above, { name: crumbOf(page.title), url }]));
+  return serializeJsonLd(
+    withBreadcrumb(node, [home, ...above, { name: crumbOf(page.title), url }]),
+  );
 };

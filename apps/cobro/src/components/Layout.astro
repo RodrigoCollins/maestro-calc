@@ -38,8 +38,7 @@ const jsonLd =
     : jsonLdOf(route, lang, { title, description }, SITE.origin, hrefOf('editorial', 'en'), extras);
 const alternates = canonical !== undefined && !embed ? alternatesOf(path, SITE.origin) : [];
 const other = route === undefined ? undefined : switchOf(route, lang);
-const otherHref =
-  other === undefined ? undefined : embed ? embedPathOf(other.href) : other.href;
+const otherHref = other === undefined ? undefined : embed ? embedPathOf(other.href) : other.href;
 const home = lang === 'es' ? '/' : '/en';
 ---
 
@@ -52,7 +51,9 @@ const home = lang === 'es' ? '/' : '/en';
     <meta name="theme-color" content="#121212" />
     {robots !== undefined && <meta name="robots" content={robots} />}
     {canonical !== undefined && <link rel="canonical" href={canonical} />}
-    {alternates.map(({ hreflang, href }) => <link rel="alternate" {hreflang} {href} />)}
+    {alternates.map(({ hreflang, href }) => (
+      <link rel="alternate" {hreflang} {href} />
+    ))}
     {embed && <base target="_blank" />}
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -86,16 +87,25 @@ const home = lang === 'es' ? '/' : '/en';
     )}
   </head>
   <body>
-    {!embed && <a class="skip" href="#content">{texts.skip}</a>}
+    {!embed && (
+      <a class="skip" href="#content">
+        {texts.skip}
+      </a>
+    )}
     <header class="site-header">
-      <a class="brand" href={embed ? canonical : home}>{SITE.name}</a>
+      <a class="brand" href={embed ? canonical : home}>
+        {SITE.name}
+      </a>
       {other !== undefined && otherHref !== undefined && (
         <a
           class="lang"
           href={otherHref}
           hreflang={other.lang}
           lang={other.lang}
-          target={embed ? '_self' : undefined}>{other.label}</a>
+          target={embed ? '_self' : undefined}
+        >
+          {other.label}
+        </a>
       )}
     </header>
     <slot name="top" />
