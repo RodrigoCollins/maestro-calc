@@ -124,8 +124,8 @@ export interface JobChart {
 
 export interface JobView extends JobTable {
   readonly heading: string;
-  /** The sentence that opens a job with an intro (see `hasIntro`): `page.<id>.intro`. */
-  readonly intro: string | undefined;
+  /** The sentence that opens the job, its own: `page.<id>.intro`. */
+  readonly intro: string;
   /** What the figures assume, from the `site.job.note.<calculator>` key. */
   readonly note: string;
   /** The calculator page, prefilled with the first case. */
@@ -781,37 +781,6 @@ const TABLES = {
   'feet-inches': feetInchesTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
-/**
- * The jobs whose page opens with a sentence of its own: square footage, slab by area, mulch, and
- * the gravel, paint, drywall, topsoil and roofing jobs.
- */
-type IntroJobId = Extract<
-  JobId,
-  | `square-feet-${string}`
-  | `${string}-sq-ft`
-  | `mulch-${string}`
-  | `gravel-${string}`
-  | `paint-${string}`
-  | `drywall-${string}`
-  | `topsoil-${string}`
-  | `roofing-${string}`
-  | `${string}-chart`
->;
-
-/** The calculators whose every job opens with its own sentence. */
-const INTRO_CALCULATORS: readonly JobCalculator[] = [
-  'rectangle-area',
-  'mulch',
-  'gravel',
-  'paint',
-  'drywall',
-  'topsoil',
-  'roofing',
-];
-
-const hasIntro = (id: JobId): id is IntroJobId =>
-  INTRO_CALCULATORS.includes(JOBS[id].calculator) || id.endsWith('-sq-ft') || isChartJob(id);
-
 /** The bag yields of the concrete chart, labelled as its bag columns are. */
 const concreteYields = (locale: Locale): JobFact[] =>
   BAGS.map((bagLb) => ({
@@ -923,7 +892,7 @@ export const jobView = (id: JobId, locale: Locale): JobView => {
   return {
     ...table,
     heading,
-    intro: hasIntro(id) ? text(`page.${id}.intro`) : undefined,
+    intro: text(`page.${id}.intro`),
     note: noteOf(id, locale),
     cta: table.rows[0].href ?? pathOf(calculator, locale),
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
