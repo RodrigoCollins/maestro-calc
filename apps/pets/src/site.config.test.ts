@@ -10,7 +10,7 @@ describe('Bowl Figures site constants', () => {
       origin: 'https://bowlfigures.com',
       locales: ['en'],
       indexable: false,
-      gaId: '',
+      gaId: 'G-3NTFC4MK3R',
       indexNowKey: 'e479169234dd94a0442e50568c49b81b',
     });
   });

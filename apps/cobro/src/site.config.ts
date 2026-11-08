@@ -6,8 +6,8 @@ export const SITE = {
   locales: ['es', 'en'],
   /** Launch switch: false keeps every page `noindex` until the owner buys the domain and flips it. */
   indexable: false,
-  /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). '' loads nothing. */
-  gaId: '' as string,
+  /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). */
+  gaId: 'G-32Y9JPXP7Q' as string,
   /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */
   indexNowKey: 'c2f2efa5e91639c7b2ff3d985576590b',
 } as const;
