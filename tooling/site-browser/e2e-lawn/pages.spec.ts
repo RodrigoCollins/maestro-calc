@@ -32,8 +32,9 @@ for (const path of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
-    // open since 2026-11-08 (`indexable` in src/site.config.ts); no analytics until `gaId` is set
-    test('is open to search engines, with its canonical URL, its JSON-LD and no analytics', async ({
+    // open since 2026-11-08 (`indexable` in src/site.config.ts); the analytics loader runs on
+    // lawnfigures.com only, so the browser tests send nothing to Google
+    test('is open to search engines, with its canonical URL, its JSON-LD and the analytics loader', async ({
       page,
     }) => {
       await page.goto(path);
@@ -43,7 +44,9 @@ for (const path of PAGES) {
         `https://lawnfigures.com${path}`,
       );
       await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
-      await expect(page.locator('script[src="/analytics.js"]')).toHaveCount(0);
+      const loader = page.locator('script[src="/analytics.js"]');
+      await expect(loader).toHaveAttribute('data-ga', 'G-L7CC69GZMG');
+      await expect(loader).toHaveAttribute('data-host', 'lawnfigures.com');
     });
 
     test('loads one module script on a page with a tool and none on any other', async ({
