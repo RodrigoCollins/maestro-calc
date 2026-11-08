@@ -373,6 +373,21 @@ jobs:
               packages/data/*.json
               packages/data/stryker.config.mjs
               packages/data/vitest.config.ts
+          - shard: lawn-core
+            inputs: |
+              packages/lawn-core/src/**
+              packages/core/*.json
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/url/**
+              packages/lawn-core/*.json
+              packages/lawn-core/stryker.config.mjs
+              packages/lawn-core/vitest.config.ts
           - shard: pay-core
             inputs: |
               packages/pay-core/src/**

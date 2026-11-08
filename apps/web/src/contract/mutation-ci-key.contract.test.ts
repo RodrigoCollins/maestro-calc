@@ -11,12 +11,14 @@ interface PackageConfig {
 
 const core = await importFromRoot<PackageConfig>('packages/core/stryker.config.mjs');
 const data = await importFromRoot<PackageConfig>('packages/data/stryker.config.mjs');
+const lawnCore = await importFromRoot<PackageConfig>('packages/lawn-core/stryker.config.mjs');
 const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.config.mjs');
 const petsCore = await importFromRoot<PackageConfig>('packages/pets-core/stryker.config.mjs');
 const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
 const allShards = [
   ...core.shardNames,
   ...data.shardNames,
+  ...lawnCore.shardNames,
   ...payCore.shardNames,
   ...petsCore.shardNames,
   ...poolCore.shardNames,
@@ -70,6 +72,7 @@ describe('CI cache key per shard (design D10, quality-gates › Mutation job alw
       [
         ['core', core],
         ['data', data],
+        ['lawn-core', lawnCore],
         ['pay-core', payCore],
         ['pets-core', petsCore],
         ['pool-core', poolCore],

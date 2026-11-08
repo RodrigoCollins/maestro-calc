@@ -25,6 +25,8 @@ const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.c
 const coreRoot = fromRoot('packages/core');
 const dataRoot = fromRoot('packages/data');
 const payCoreRoot = fromRoot('packages/pay-core');
+const lawnCore = await importFromRoot<PackageConfig>('packages/lawn-core/stryker.config.mjs');
+const lawnCoreRoot = fromRoot('packages/lawn-core');
 const petsCore = await importFromRoot<PackageConfig>('packages/pets-core/stryker.config.mjs');
 const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
 const petsCoreRoot = fromRoot('packages/pets-core');
@@ -252,6 +254,20 @@ describe('shard identity against the import graph (design D10, fail closed)', ()
     const files = new Set(payCore.identityFilesFor('pay-core'));
     const missing = [...closureOf(own)]
       .map((file) => relative(payCoreRoot, file))
+      .filter((path) => !files.has(path));
+    expect(missing).toEqual([]);
+    expect([...files].some((path) => path.startsWith('../core/src/calculators/'))).toBe(false);
+  });
+
+  // The same for the lawn calculators of Lawn Figures: the real core runs beside them.
+  it('lawn-core: every core file its sources and tests reach is in its identity', () => {
+    const own = globSync('src/**/*.ts', { cwd: lawnCoreRoot }).map((path) =>
+      resolve(lawnCoreRoot, path),
+    );
+    expect(own.length).toBeGreaterThan(2);
+    const files = new Set(lawnCore.identityFilesFor('lawn-core'));
+    const missing = [...closureOf(own)]
+      .map((file) => relative(lawnCoreRoot, file))
       .filter((path) => !files.has(path));
     expect(missing).toEqual([]);
     expect([...files].some((path) => path.startsWith('../core/src/calculators/'))).toBe(false);
