@@ -394,7 +394,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(shards?.strategy?.['fail-fast']).toBe(false);
     const entries = shards?.strategy?.matrix?.include ?? [];
     const suites = [...new Set(entries.map(({ suite }) => suite))];
-    expect(suites).toEqual(['web', 'pay', 'pool']);
+    expect(suites).toEqual(['web', 'pay', 'pool', 'pets']);
     for (const suite of suites) {
       const own = entries.filter((entry) => entry.suite === suite);
       const total = own[0]?.total ?? 0;
@@ -407,6 +407,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
       'playwright.config.ts',
       'playwright.pay.config.ts',
       'playwright.pool.config.ts',
+      'playwright.pets.config.ts',
     ]) {
       const source = readFileSync(fromRoot(`tooling/site-browser/${config}`), 'utf8');
       expect(source).toContain("process.env['SHARD']");
@@ -418,6 +419,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(suiteOf('npm run test:e2e')).toBe("matrix.suite == 'web'");
     expect(suiteOf('npm run test:e2e:pay')).toBe("matrix.suite == 'pay'");
     expect(suiteOf('npm run test:e2e:pool')).toBe("matrix.suite == 'pool'");
+    expect(suiteOf('npm run test:e2e:pets')).toBe("matrix.suite == 'pets'");
     const lighthouse = steps.find(({ run }) => run === 'npm run lighthouse');
     expect(lighthouse?.if).toBe("matrix.suite == 'web' && matrix.shard == 1");
     const names = (job?.steps ?? [])
@@ -525,6 +527,7 @@ describe('CI site-browser job (quality-gates › [QGW7], site-quality › [SQ15]
     expect(runs).toContain('npm run test:e2e');
     expect(runs).toContain('npm run test:e2e:pay');
     expect(runs).toContain('npm run test:e2e:pool');
+    expect(runs).toContain('npm run test:e2e:pets');
     const uploads = steps.filter((candidate) =>
       candidate.uses?.startsWith('actions/upload-artifact@'),
     );
