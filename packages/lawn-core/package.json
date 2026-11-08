@@ -1,0 +1,20 @@
+{
+  "name": "@maestro-calc/lawn-core",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./lawn-fertilizer": "./src/lawn-fertilizer/index.ts",
+    "./grass-seed": "./src/grass-seed/index.ts",
+    "./sod": "./src/sod/index.ts",
+    "./lawn-lime": "./src/lawn-lime/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
+    "mutation": "stryker run"
+  },
+  "dependencies": {
+    "@maestro-calc/core": "*"
+  }
+}
