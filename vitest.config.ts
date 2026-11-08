@@ -23,6 +23,7 @@ export default defineConfig({
         ...ninety,
         'packages/core/src/**': full,
         'packages/pay-core/src/**': full,
+        'packages/pets-core/src/**': full,
         'packages/pool-core/src/**': full,
         'packages/site-kit/src/**': full,
         'packages/data/src/**': ninety,

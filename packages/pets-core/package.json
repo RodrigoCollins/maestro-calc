@@ -1,0 +1,21 @@
+{
+  "name": "@maestro-calc/pets-core",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "sideEffects": false,
+  "exports": {
+    "./dog-food": "./src/dog-food/index.ts",
+    "./cat-food": "./src/cat-food/index.ts",
+    "./dog-chocolate": "./src/dog-chocolate/index.ts",
+    "./dog-due-date": "./src/dog-due-date/index.ts",
+    "./energy": "./src/energy/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
+    "mutation": "stryker run"
+  },
+  "dependencies": {
+    "@maestro-calc/core": "*"
+  }
+}

@@ -25,7 +25,9 @@ const payCore = await importFromRoot<PackageConfig>('packages/pay-core/stryker.c
 const coreRoot = fromRoot('packages/core');
 const dataRoot = fromRoot('packages/data');
 const payCoreRoot = fromRoot('packages/pay-core');
+const petsCore = await importFromRoot<PackageConfig>('packages/pets-core/stryker.config.mjs');
 const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
+const petsCoreRoot = fromRoot('packages/pets-core');
 const poolCoreRoot = fromRoot('packages/pool-core');
 
 /** Every core file a shard mutates or runs: the positive mutate globs and the tests. */
@@ -250,6 +252,20 @@ describe('shard identity against the import graph (design D10, fail closed)', ()
     const files = new Set(payCore.identityFilesFor('pay-core'));
     const missing = [...closureOf(own)]
       .map((file) => relative(payCoreRoot, file))
+      .filter((path) => !files.has(path));
+    expect(missing).toEqual([]);
+    expect([...files].some((path) => path.startsWith('../core/src/calculators/'))).toBe(false);
+  });
+
+  // The same for the pet-feeding calculators of Bowl Figures: the real core runs beside them.
+  it('pets-core: every core file its sources and tests reach is in its identity', () => {
+    const own = globSync('src/**/*.ts', { cwd: petsCoreRoot }).map((path) =>
+      resolve(petsCoreRoot, path),
+    );
+    expect(own.length).toBeGreaterThan(2);
+    const files = new Set(petsCore.identityFilesFor('pets-core'));
+    const missing = [...closureOf(own)]
+      .map((file) => relative(petsCoreRoot, file))
       .filter((path) => !files.has(path));
     expect(missing).toEqual([]);
     expect([...files].some((path) => path.startsWith('../core/src/calculators/'))).toBe(false);

@@ -65,7 +65,7 @@ const extendsBase = (config: string): boolean =>
 
 describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
   // spec: Workspace enumeration [MW2]
-  it('resolves the workspace globs to exactly the nine workspaces', () => {
+  it('resolves the workspace globs to exactly the ten workspaces', () => {
     expect(rootManifest.workspaces).toEqual(['packages/*', 'apps/*']);
     expect([...workspaceNames].sort()).toEqual([
       '@maestro-calc/core',
@@ -73,6 +73,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
       '@maestro-calc/i18n',
       '@maestro-calc/pay',
       '@maestro-calc/pay-core',
+      '@maestro-calc/pets-core',
       '@maestro-calc/pool',
       '@maestro-calc/pool-core',
       '@maestro-calc/site-kit',
@@ -83,7 +84,7 @@ describe('workspace layout (monorepo-workspace › Workspace layout)', () => {
 
 describe('dependency direction (monorepo-workspace › Dependency direction)', () => {
   // spec: Dependency direction — exactly the allowed edges [MW5b, MD5]
-  it('has only the edges data to core, pay to core and pay-core, pay-core to core, pool to core and pool-core, pool-core to core, pay and pool to site-kit, and web to core, data, i18n and site-kit', () => {
+  it('has only the edges data to core, pay to core and pay-core, pay-core to core, pets-core to core, pool to core and pool-core, pool-core to core, pay and pool to site-kit, and web to core, data, i18n and site-kit', () => {
     const edges = workspaceDirs.flatMap((dir) => {
       const manifest = readManifest(dir);
       return dependencyNames(manifest)
@@ -96,6 +97,7 @@ describe('dependency direction (monorepo-workspace › Dependency direction)', (
       '@maestro-calc/pay -> @maestro-calc/pay-core',
       '@maestro-calc/pay -> @maestro-calc/site-kit',
       '@maestro-calc/pay-core -> @maestro-calc/core',
+      '@maestro-calc/pets-core -> @maestro-calc/core',
       '@maestro-calc/pool -> @maestro-calc/core',
       '@maestro-calc/pool -> @maestro-calc/pool-core',
       '@maestro-calc/pool -> @maestro-calc/site-kit',
