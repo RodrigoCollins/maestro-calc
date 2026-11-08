@@ -38,6 +38,13 @@ export {
 /** `$41,600.00` reads `$41,600` in a sentence; cents stay when there are any. */
 const short = (text: string): string => text.replace(/\.00$/, '');
 
+/** An amount as a sentence reads it: `$50,000`, and `$17.50` with its cents. */
+const dollarsOf = (amount: string): string => {
+  const value = Number(amount);
+  const cents = Number.isInteger(value) ? 0 : 2;
+  return `$${value.toLocaleString('en-US', { minimumFractionDigits: cents, maximumFractionDigits: cents })}`;
+};
+
 /** The weekly hours past which the federal rule pays overtime. */
 const WEEK_HOURS = 40;
 
@@ -47,6 +54,10 @@ const WORDS = {
     per: { hour: 'an hour', year: 'a year' },
     ask: { hour: 'a year', year: 'an hour' },
     question: (given: string, ask: string): string => `${given} is how much ${ask}?`,
+    headline: (given: string, figure: string, ask: string): string =>
+      `${given} is ${figure} ${ask}`,
+    searched: (headline: string): string =>
+      `${headline}, at 40 hours a week and 52 paid weeks, before taxes.`,
     answer: (given: string, figure: string, ask: string): string =>
       `At 40 hours a week and 52 paid weeks, ${given} comes to ${figure} ${ask}, before taxes.`,
     edit: 'Change the hours or the weeks in the calculator',
@@ -55,6 +66,10 @@ const WORDS = {
     overtime: {
       kicker: 'Overtime pay · free',
       question: (given: string): string => `What is time and a half for ${given}?`,
+      headline: (given: string, rate: string): string =>
+        `Time and a half for ${given} is ${rate} an hour`,
+      searched: (headline: string, hours: number, pay: string, week: string): string =>
+        `${headline}, so ${String(hours)} overtime hours past 40 in a week pay ${pay} under the federal rule. The ${String(WEEK_HOURS + hours)}-hour week comes to ${week} before taxes.`,
       answer: (given: string, rate: string, hours: number, pay: string, week: string): string =>
         `Time and a half for ${given} is ${rate} an hour. Under the federal rule, ${String(hours)} overtime hours past 40 in a week pay ${pay}, and the ${String(WEEK_HOURS + hours)}-hour week comes to ${week} before taxes.`,
       figure: 'Overtime rate, 1.5 times',
@@ -69,6 +84,10 @@ const WORDS = {
     per: { hour: 'la hora', year: 'al año' },
     ask: { hour: 'al año', year: 'por hora' },
     question: (given: string, ask: string): string => `¿${given} cuánto es ${ask}?`,
+    headline: (given: string, figure: string, ask: string): string =>
+      `${given} son ${figure} ${ask}`,
+    searched: (headline: string): string =>
+      `${headline}, con 40 horas por semana y 52 semanas pagadas, antes de impuestos.`,
     answer: (given: string, figure: string, ask: string): string =>
       `Con 40 horas por semana y 52 semanas pagadas, ${given} son ${figure} ${ask}, antes de impuestos.`,
     edit: 'Cambia las horas o las semanas en la calculadora',
@@ -77,6 +96,10 @@ const WORDS = {
     overtime: {
       kicker: 'Horas extra · gratis',
       question: (given: string): string => `¿Cuánto es tiempo y medio de ${given}?`,
+      headline: (given: string, rate: string): string =>
+        `Tiempo y medio de ${given} es ${rate} la hora`,
+      searched: (headline: string, hours: number, pay: string, week: string): string =>
+        `${headline}, así que ${String(hours)} horas extra después de 40 en la semana pagan ${pay} con la regla federal. La semana de ${String(WEEK_HOURS + hours)} horas suma ${week} antes de impuestos.`,
       answer: (given: string, rate: string, hours: number, pay: string, week: string): string =>
         `Tiempo y medio de ${given} es ${rate} la hora. Con la regla federal, ${String(hours)} horas extra después de 40 en la semana pagan ${pay}, y la semana de ${String(WEEK_HOURS + hours)} horas suma ${week} antes de impuestos.`,
       figure: 'Tarifa de hora extra, 1.5 veces',
@@ -166,7 +189,7 @@ const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : j
 /** The question of a job, as its heading and its links read it. */
 const questionOf = (job: Job, lang: Lang): string => {
   const w = WORDS[lang];
-  const given = `$${Number(job.amount).toLocaleString('en-US')} ${w.per[job.per]}`;
+  const given = `${dollarsOf(job.amount)} ${w.per[job.per]}`;
   return job.kind === 'overtime' ? w.overtime.question(given) : w.question(given, w.ask[job.per]);
 };
 
@@ -224,13 +247,15 @@ const overtimePageOf = (job: Job, lang: Lang): LongTailPage => {
     short(main('overtimePay')),
     short(main('pay')),
   );
+  const headline = w.headline(given, short(figure));
+  const searched = w.searched(headline, MAIN_HOURS, short(main('overtimePay')), short(main('pay')));
   const validated = timeCard.validate(overtimeWeekOf(job.amount, MAIN_HOURS));
   if (!validated.ok) throw new Error(`the overtime week of ${job.amount} must validate`);
   return {
     kicker: w.kicker,
-    title: titleOf(`${question} ${short(figure)}`),
+    title: titleOf(headline),
     description: descriptionOf(
-      answer,
+      searched,
       rows.map(({ label, value }) => `${label}: ${short(value)}`),
     ),
     h1: question,
@@ -280,11 +305,12 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
     .filter(([key]) => key !== figureKey && key !== givenKey)
     .map(([key, label]) => ({ key, label, value: text(key) }));
   const answer = w.answer(given, short(figure), w.ask[job.per]);
+  const headline = w.headline(given, short(figure), w.ask[job.per]);
   return {
     kicker: t.kicker,
-    title: titleOf(`${question} ${short(figure)}`),
+    title: titleOf(headline),
     description: descriptionOf(
-      answer,
+      w.searched(headline),
       rows.map(({ label, value }) => `${label}: ${short(value)}`),
     ),
     h1: question,

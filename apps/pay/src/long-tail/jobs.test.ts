@@ -49,9 +49,9 @@ const timeCardPay = (rate: string, hours: number): { overtime: string; week: str
 };
 
 // prettier-ignore
-const HOURLY = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '30', '32', '35', '40', '45', '50', '60'];
+const HOURLY = ['12', '13', '14', '15', '16', '17', '17.50', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31', '32', '33', '35', '36', '37', '38', '40', '42', '45', '50', '55', '60', '65', '70', '75', '80', '100'];
 // prettier-ignore
-const SALARIES = ['30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000', '75000', '80000', '85000', '90000', '95000', '100000', '120000', '150000'];
+const SALARIES = ['25000', '30000', '35000', '40000', '45000', '50000', '55000', '60000', '65000', '70000', '75000', '80000', '85000', '90000', '95000', '100000', '110000', '120000', '130000', '150000', '200000'];
 // prettier-ignore
 const OVERTIME_RATES = ['15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '28', '30', '35', '40'];
 
@@ -104,14 +104,77 @@ describe('long-tail pages', () => {
     expect(longTailPageOf(jobOf('95000'), 'es').figure).toBe('$45.67');
   });
 
+  it('answer the hand-verified cases of the amounts people search past the first list', () => {
+    // 12 x 2,080 = 24,960; 17.50 x 2,080 = 36,400; 100 x 2,080 = 208,000
+    expect(longTailPageOf(jobOf('12'), 'en').figure).toBe('$24,960.00');
+    const cents = longTailPageOf(jobOf('17.50'), 'en');
+    expect(cents.figure).toBe('$36,400.00');
+    expect(cents.h1).toBe('$17.50 an hour is how much a year?');
+    expect(cents.paths).toEqual({
+      en: '/pay/17-50-an-hour-is-how-much-a-year',
+      es: '/es/pago/17-50-la-hora-cuanto-es-al-ano',
+    });
+    expect(longTailPageOf(jobOf('17.50'), 'es').h1).toBe('¿$17.50 la hora cuánto es al año?');
+    expect(longTailPageOf(jobOf('100'), 'en').figure).toBe('$208,000.00');
+    // 25,000 / 2,080 = 12.019...; 130,000 / 2,080 = 62.5; 200,000 / 2,080 = 96.153...
+    expect(longTailPageOf(jobOf('25000'), 'en').figure).toBe('$12.02');
+    expect(longTailPageOf(jobOf('130000'), 'es').figure).toBe('$62.50');
+    expect(longTailPageOf(jobOf('200000'), 'en').figure).toBe('$96.15');
+  });
+
+  it('answer the question first, in the words people search, in the title and the description', () => {
+    // 25 x 2,080 = 52,000; 50,000 / 2,080 = 24.04; 20 x 1.5 = 30
+    expect(longTailPageOf(jobOf('25'), 'en').title).toBe(
+      '$25 an hour is $52,000 a year | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('25'), 'es').title).toBe(
+      '$25 la hora son $52,000 al año | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('50000'), 'en').title).toBe(
+      '$50,000 a year is $24.04 an hour | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('50000'), 'es').title).toBe(
+      '$50,000 al año son $24.04 por hora | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('17.50'), 'en').title).toBe(
+      '$17.50 an hour is $36,400 a year | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('20', 'overtime'), 'en').title).toBe(
+      'Time and a half for $20 an hour is $30 an hour | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('15', 'overtime'), 'es').title).toBe(
+      'Tiempo y medio de $15 la hora es $22.50 la hora | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('25'), 'en').description).toMatch(
+      /^\$25 an hour is \$52,000 a year, at 40 hours a week and 52 paid weeks, before taxes\./,
+    );
+    expect(longTailPageOf(jobOf('25'), 'es').description).toMatch(
+      /^\$25 la hora son \$52,000 al año, con 40 horas por semana y 52 semanas pagadas, antes de impuestos\./,
+    );
+    expect(longTailPageOf(jobOf('20', 'overtime'), 'en').description).toMatch(
+      /^Time and a half for \$20 an hour is \$30 an hour, so 10 overtime hours past 40 in a week pay \$300 under the federal rule\./,
+    );
+    expect(longTailPageOf(jobOf('20', 'overtime'), 'es').description).toMatch(
+      /^Tiempo y medio de \$20 la hora es \$30 la hora, así que 10 horas extra después de 40 en la semana pagan \$300 con la regla federal\./,
+    );
+    for (const job of JOBS) {
+      for (const lang of LANGS) {
+        const page = longTailPageOf(job, lang);
+        const answer = page.title.replace(/ \| Cuenta Horas$/, '');
+        expect(answer).toContain(page.figure.replace(/\.00$/, ''));
+        expect(page.description.startsWith(`${answer},`)).toBe(true);
+      }
+    }
+  });
+
   it('link the nearest amounts of their family, never every page of it', () => {
     const others = (amount: string, kind: 'convert' | 'overtime' = 'convert'): string[] =>
       longTailPageOf(jobOf(amount, kind), 'en').others.links.map(({ href }) => href);
-    expect(others('15')).toEqual(
-      ['16', '17', '18', '19', '20', '21'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
+    expect(others('12')).toEqual(
+      ['13', '14', '15', '16', '17', '17-50'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
     );
     expect(others('30')).toEqual(
-      ['26', '27', '28', '32', '35', '40'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
+      ['27', '28', '29', '31', '32', '33'].map((a) => `/pay/${a}-an-hour-is-how-much-a-year`),
     );
     expect(others('50000')).toEqual(
       ['35000', '40000', '45000', '55000', '60000', '65000'].map(
