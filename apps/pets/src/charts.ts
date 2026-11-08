@@ -179,7 +179,10 @@ export const CHARTS: readonly Chart[] = [
       'Milk chocolate has 2.3 mg of methylxanthines per gram, dark or semisweet 5.6 (the top of Merck’s range) and unsweetened baking chocolate 15.5.',
     ],
     callNow: true,
-    calculators: [{ href: hrefOf('chocolate'), label: 'Dog chocolate toxicity calculator' }],
+    calculators: [
+      { href: hrefOf('chocolate'), label: 'Dog chocolate toxicity calculator' },
+      { href: hrefOf('chocolate-guide'), label: 'My dog ate chocolate: what to do now' },
+    ],
     sources: [MERCK_CHOCOLATE, ASPCA],
     card: {
       title: 'Chocolate toxicity chart',

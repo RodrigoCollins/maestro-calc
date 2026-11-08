@@ -6,6 +6,7 @@ describe('BYLINE_PAGES', () => {
     expect(BYLINE_PAGES.map(({ path }) => path)).toEqual([
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
+      '/my-dog-ate-chocolate',
       '/dog-feeding-chart',
       '/puppy-feeding-chart',
       '/dog-chocolate-toxicity-chart',
@@ -14,7 +15,7 @@ describe('BYLINE_PAGES', () => {
 
   it('give every page a review day and at least one source with an address', () => {
     for (const { checked, sources } of BYLINE_PAGES) {
-      expect(checked).toBe('2026-11-07');
+      expect(['2026-11-07', '2026-11-08']).toContain(checked);
       expect(sources.length).toBeGreaterThan(0);
       for (const { url } of sources) expect(url).toMatch(/^https:\/\//);
     }

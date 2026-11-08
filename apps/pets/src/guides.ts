@@ -1,3 +1,4 @@
+import { CHOCOLATE_GUIDE } from './chocolate-guide.ts';
 import { hrefOf } from './routes.ts';
 
 /** A source a guide or chart cites: its name and its address. */
@@ -13,6 +14,25 @@ export interface GuideSection {
   readonly paragraphs: readonly string[];
 }
 
+/** A table a guide shows after one of its sections: rows computed from an engine at build time. */
+export interface GuideTable {
+  /** The id of the section it follows. */
+  readonly after: string;
+  readonly id: string;
+  readonly heading: string;
+  readonly paragraphs: readonly string[];
+  readonly columns: readonly string[];
+  readonly rows: readonly (readonly string[])[];
+  readonly linksHeading: string;
+  readonly links: readonly { readonly href: string; readonly label: string }[];
+}
+
+/** One question of a guide's FAQ, with its answer. */
+export interface GuideQuestion {
+  readonly question: string;
+  readonly answer: string;
+}
+
 /** A guide: its head, sections, the calculators it explains and its sources. */
 export interface Guide {
   readonly path: string;
@@ -23,6 +43,10 @@ export interface Guide {
   /** The day the figures were last checked against the sources. */
   readonly checked: string;
   readonly sections: readonly GuideSection[];
+  /** True for the chocolate guide: the page tells the reader to call a veterinarian or a poison line. */
+  readonly callNow?: true;
+  readonly table?: GuideTable;
+  readonly questions?: readonly GuideQuestion[];
   readonly calculators: readonly string[];
   readonly sources: readonly PageSource[];
   /** The card the home lists it by. */
@@ -154,6 +178,7 @@ export const GUIDES: readonly Guide[] = [
       summary: 'Why the formula uses weight and status, not breed.',
     },
   },
+  CHOCOLATE_GUIDE,
 ];
 
 /** The guide at `path`. */

@@ -85,10 +85,14 @@ test('links the privacy page from the footer, and it describes analytics', async
   await expect(page.locator('main')).toContainText('Analytics');
 });
 
-test('tells the reader of the chocolate chart and calculator to call a veterinarian or poison line', async ({
+test('tells the reader of the chocolate chart, calculator and guide to call a veterinarian or poison line', async ({
   page,
 }) => {
-  for (const path of ['/dog-chocolate-toxicity-calculator', '/dog-chocolate-toxicity-chart']) {
+  for (const path of [
+    '/dog-chocolate-toxicity-calculator',
+    '/dog-chocolate-toxicity-chart',
+    '/my-dog-ate-chocolate',
+  ]) {
     await page.goto(path);
     await expect(page.locator('main')).toContainText('(888) 426-4435');
     await expect(page.locator('main')).toContainText('veterinarian');

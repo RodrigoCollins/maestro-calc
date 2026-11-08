@@ -23,6 +23,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'chocolate-chart', kind: 'article', path: '/dog-chocolate-toxicity-chart' },
   { id: 'label-guide', kind: 'article', path: '/how-to-read-pet-food-label' },
   { id: 'breed-guide', kind: 'article', path: '/dog-food-by-breed' },
+  { id: 'chocolate-guide', kind: 'article', path: '/my-dog-ate-chocolate' },
   { id: 'methodology', kind: 'article', path: '/methodology' },
   { id: 'about', kind: 'article', path: '/about' },
   { id: 'editorial', kind: 'article', path: '/editorial-policy' },

@@ -86,6 +86,15 @@ test('places the chocolate dose on the ruler and in its band, and always says to
   await expect(page.locator('.bf-call-result')).toContainText('Call your veterinarian');
 });
 
+test('opens the chocolate calculator from the guide with the case filled in', async ({ page }) => {
+  await page.goto('/my-dog-ate-chocolate');
+  await page.locator('a[href="/dog-chocolate-toxicity-calculator?v=1&t=baking"]').click();
+  // 20 lb dog on 1 oz of baking chocolate: 28.35 g x 15.5 = 439.4 mg, over 9.07 kg = 48.4 mg/kg
+  await expect(page.locator('[data-result]')).toHaveAttribute('data-band', '2');
+  await expect(page.locator('[data-text="figure"]').first()).toHaveText('48.4');
+  await expect(page.locator('.bf-call-result')).toContainText('Call your veterinarian');
+});
+
 test('shades the due date window on the strip and says when a day is past the month', async ({
   page,
 }) => {

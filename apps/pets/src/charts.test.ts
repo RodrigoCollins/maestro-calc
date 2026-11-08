@@ -55,12 +55,13 @@ describe('the chocolate chart', () => {
     expect(chart.rows.find(([w]) => w === '20')).toEqual(['20', '79', '32', '12']);
   });
 
-  it('tells the reader to call, and lists the calculator', () => {
+  it('tells the reader to call, and lists the calculator and the what-to-do guide', () => {
     expect(chart.callNow).toBe(true);
     expect(CALL_NOW).toContain('(888) 426-4435');
     expect(chart.notes.join(' ')).toContain('call');
     expect(chart.calculators.map(({ href }) => href)).toEqual([
       '/dog-chocolate-toxicity-calculator',
+      '/my-dog-ate-chocolate',
     ]);
   });
 });

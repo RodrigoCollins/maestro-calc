@@ -51,9 +51,9 @@ const TREATS =
 /** The dog food calculator, "how much should I feed my dog". */
 export const DOG_PAGE: FeedingPage = {
   path: '/dog-food-calculator',
-  title: 'Dog Food Calculator: Cups and Calories a Day | Bowl Figures',
+  title: 'How Much to Feed a Dog: Dog Food Calculator | Bowl Figures',
   description:
-    'How many cups of your dog’s food, and how many calories, to feed a day. Worked from the Merck and AAHA energy factors and the calorie line on your bag.',
+    'How much food should you feed your dog a day? Cups and calories from its weight and the calorie line on your bag, worked from the Merck and AAHA factors.',
   kicker: 'Dogs · free',
   h1: 'Dog food calculator',
   lead: 'Enter your dog’s weight and the calorie line from the bag. You get the calories a day and the cups, grams or cans that give them.',

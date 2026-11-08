@@ -13,6 +13,7 @@ export const PAGES: readonly string[] = [
   '/dog-chocolate-toxicity-chart',
   '/how-to-read-pet-food-label',
   '/dog-food-by-breed',
+  '/my-dog-ate-chocolate',
   '/methodology',
   '/about',
   '/editorial-policy',
