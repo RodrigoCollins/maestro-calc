@@ -207,3 +207,34 @@ Do not request it right after these merges. Wait until:
 3. The about page's "no advertising" sentence is ready to change in the same merge that adds the ad code.
 
 Earliest sensible date: about **2026-11-24**, after a crawl check. If Cuenta Horas or Pool Figures are approved before then, compare their page mix: an approval there with a similar template points to volume of thin pages here, and the noindex step becomes the first thing to try.
+
+## Pool Figures (in review), 2026-11-08
+
+`npm run build:pool && npm run audit:content -- apps/pool/dist` on `origin/main` (b8f25e51), before and after the pool content PR. Unique words are the audit's: the words of a page whose 6-word shingles no other indexable page of its language has. The 98 thin pages were 80 English job pages and the calculator pages of both languages; every one now has 120 unique words or more.
+
+| Family (pages)                      | Thin before | Median unique before | Thin after | Median unique after | Template % before / after |
+| ----------------------------------- | ----------- | -------------------- | ---------- | ------------------- | ------------------------- |
+| Stabilizer jobs (8)                 | 8           | 29                   | 0          | 141                 | 85 / 74                   |
+| Baking soda jobs (8)                | 8           | 36                   | 0          | 128                 | 84 / 74                   |
+| Chlorine jobs (6)                   | 6           | 35                   | 0          | 142                 | 82 / 74                   |
+| Salt jobs (7)                       | 7           | 37                   | 0          | 125                 | 78 / 71                   |
+| Calcium chloride jobs (5)           | 5           | 38                   | 0          | 123                 | 89 / 79                   |
+| Shock jobs (10)                     | 10          | 40                   | 0          | 132                 | 84 / 76                   |
+| Muriatic acid jobs (5)              | 5           | 46                   | 0          | 137                 | 91 / 82                   |
+| Heater jobs (5)                     | 5           | 44                   | 0          | 137                 | 86 / 74                   |
+| Fill time jobs (5)                  | 5           | 47                   | 0          | 138                 | 78 / 67                   |
+| Round pool volumes (8)              | 8           | 40                   | 0          | 146                 | 79 / 63                   |
+| Oval pool volumes (4)               | 4           | 40                   | 0          | 148                 | 77 / 63                   |
+| Rectangle pool volumes (9)          | 9           | 46                   | 0          | 152                 | 75 / 60                   |
+| Calculator pages, English (11)      | 9           | 75                   | 0          | 186                 | 63 / 44                   |
+| Calculator pages, Spanish (10)      | 9           | 72                   | 0          | 196                 | 22 / 15                   |
+| Guides, charts and trust pages (35) | 0           | 707                  | 0          | 699                 | 8 / 8                     |
+| **All indexable (136)**             | **98**      |                      | **0**      |                     |                           |
+
+Median unique words of the 98 pages that were thin: 40 before, 141 after. Same-language near-duplicate pairs (Jaccard 0.5 or more): 215 before, 40 after; the closest pair went from 0.82 (two muriatic acid pages) to 0.65. What is left are the muriatic acid, calcium chloride, heater and stabilizer families, whose shared text is the calculator's own method and safety note, repeated on each size.
+
+What each page gained:
+
+- **Job pages**: "How the figures are worked out" works the large figure out step by step from the page's own gallons with the exact conversion factors (3.785411784 L a gallon, 453.59237 g a pound, 28.349523125 g an ounce, 29.5735295625 mL a fluid ounce, 8.34 lb a gallon, 231 in³ a gallon), then the other rows. A section of label and safety notes scales what the methodology's sources say to the page's pool: the 99% Primo stabilizer, the 30 to 50 ppm of its directions and the 90 ppm cap of the CDC's code; Hayward's 2,700 to 3,400 ppm; the 52 to 104 fl oz of the 12.5% liquid chlorine label; the 10 to 20 oz of the cal-hypo label and the 2 oz per 1,000 gallons of the dichlor label with their reentry levels; HASA's quart per 20,000 gallons a day; the split calcium additions and the water to dissolve each. "What to test next" gives that pool's dose of the next chemical, linked to its job page or to the calculator opened on the pool. A volume page works out surface, average depth, cubic feet, gallons, liters and the gallons of every 6 inches, then what that pool needs.
+- **Calculator pages, both languages**: the figures they open on, worked out step by step, and what to work out next for the same pool, linked within the page's language. The embeds stay as they were (fixed frame height).
+- Every sum is checked by `apps/pool/src/__testing__/hand-check.ts`: each sum a step writes is worked again from the figures it shows, in order of operations, and must round to the result it gives.

@@ -2,6 +2,7 @@
 import { ft3, gal, inch, isQuantityOf, liter, valueIn, type Quantity } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import JobLinks from './JobLinks.astro';
+import WorkedExample from './WorkedExample.astro';
 import Layout from './Layout.astro';
 import { lengthFieldText, volumeText } from '../format.ts';
 import { SIDE_VIEW, sideViewOf } from '../volume/side-view.ts';
@@ -128,6 +129,7 @@ const rows = [
       </p>
     )}
     {/* the guides in the page's language; the job pages are English only */}
+    {!embed && <WorkedExample path={t.path} />}
     <JobLinks path={t.path} {embed} />
   </main>
   <slot />

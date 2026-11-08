@@ -33,8 +33,24 @@ export interface JobRow {
 }
 
 /** A page for one common job ("how much salt for a 15,000 gallon pool"), worked out at build time. */
+/** The calculator, or for a shock the label level, a job page works out. */
+export type JobKind =
+  | 'volume'
+  | 'salt'
+  | 'chlorine'
+  | 'shock'
+  | 'alkalinity'
+  | 'stabilizer'
+  | 'heater'
+  | 'fill'
+  | 'ph'
+  | 'calcium';
+
 export interface JobPage {
   readonly path: string;
+  readonly kind: JobKind;
+  /** The index of the row of the large figure, the one the page works out step by step. */
+  readonly main: number;
   /** The day its figures and sources were last checked (`YYYY-MM-DD`), its calculator's `CHECKED`. */
   readonly checked: string;
   readonly title: string;
@@ -59,16 +75,16 @@ export interface JobPage {
  * the code and the sizes that work them out in this module. Every page of a calculator shares it.
  */
 const CHECKED = {
-  volume: '2026-11-05',
-  salt: '2026-11-05',
-  chlorine: '2026-11-05',
-  alkalinity: '2026-11-05',
-  stabilizer: '2026-11-05',
-  heater: '2026-11-04',
-  fill: '2026-11-04',
-  ph: '2026-11-05',
-  calcium: '2026-11-05',
-  shock: '2026-11-05',
+  volume: '2026-11-08',
+  salt: '2026-11-08',
+  chlorine: '2026-11-08',
+  alkalinity: '2026-11-08',
+  stabilizer: '2026-11-08',
+  heater: '2026-11-08',
+  fill: '2026-11-08',
+  ph: '2026-11-08',
+  calcium: '2026-11-08',
+  shock: '2026-11-08',
 } as const;
 
 /** The salt jobs: the pool sizes people search for, from a fresh fill and from common readings. */
@@ -488,6 +504,8 @@ const saltPage = (gallons: number): JobPage => {
   const [, pounds = '', bags = ''] = fresh.cells;
   return {
     path: `/how-much-salt-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'salt',
+    main: 0,
     checked: CHECKED.salt,
     title: `How Much Salt for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds and 40 lb bags of salt a ${size} gallon pool needs to reach 3,200 ppm, from fresh water and from the readings you test.`,
@@ -537,6 +555,8 @@ const chlorinePage = (gallons: number): JobPage => {
   const [range = '', ounces = '', liters = ''] = main.cells;
   return {
     path: `/how-much-chlorine-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'chlorine',
+    main: CHLORINE_MAIN,
     checked: CHECKED.chlorine,
     title: `How Much Chlorine for a ${size} Gallon Pool? | Pool Figures`,
     description: `The fluid ounces of 12.5% liquid chlorine a ${size} gallon pool needs to raise free chlorine by 1, 2 or 3 ppm.`,
@@ -577,6 +597,8 @@ const shockPage = (gallons: number): JobPage => {
   const [, ounces = '', pounds = ''] = main.cells;
   return {
     path: `/how-much-shock-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'shock',
+    main: SHOCK_MAIN,
     checked: CHECKED.shock,
     title: `How Much Shock for a ${size} Gallon Pool? | Pool Figures`,
     description: `The ounces of 65% cal-hypo or 56% dichlor that shock a ${size} gallon pool to the level on the label, from 0 ppm free chlorine.`,
@@ -633,6 +655,8 @@ const alkalinityPage = (gallons: number): JobPage => {
   const raise = `from ${from.replace(' ppm', '')} to ${String(ALKALINITY_TARGET)} ppm`;
   return {
     path: `/how-much-baking-soda-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'alkalinity',
+    main: 0,
     checked: CHECKED.alkalinity,
     title: `How Much Baking Soda for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds of baking soda (sodium bicarbonate) that raise total alkalinity in a ${size} gallon pool by 10, 20 or 30 ppm.`,
@@ -664,6 +688,8 @@ const stabilizerPage = (gallons: number): JobPage => {
   const [, pounds = '', ounces = ''] = fresh.cells;
   return {
     path: `/how-much-stabilizer-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'stabilizer',
+    main: 0,
     checked: CHECKED.stabilizer,
     title: `How Much Stabilizer for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds of stabilizer (cyanuric acid) a ${size} gallon pool needs to reach 30 ppm CYA, from fresh water and from 10 or 20 ppm.`,
@@ -706,6 +732,8 @@ const heaterPage = (gallons: number): JobPage => {
   const [warm = '', perHour = '', heat = ''] = main.cells;
   return {
     path: `/what-size-pool-heater-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'heater',
+    main: 0,
     checked: CHECKED.heater,
     title: `What Size Pool Heater for a ${size} Gallon Pool? | Pool Figures`,
     description: `The BTU per hour a heater must put out to warm a ${size} gallon pool by 10, 15 or 20 °F in 24 hours, from the weight of the water.`,
@@ -748,6 +776,8 @@ const fillPage = (gallons: number): JobPage => {
   const [flow = '', time = '', minutes = ''] = main.cells;
   return {
     path: `/how-long-to-fill-a-${String(gallons)}-gallon-pool`,
+    kind: 'fill',
+    main: FILL_MAIN,
     checked: CHECKED.fill,
     title: `How Long to Fill a ${size} Gallon Pool? | Pool Figures`,
     description: `How many hours and minutes a hose takes to fill a ${size} gallon pool at 5, 10 or 20 gallons a minute.`,
@@ -792,6 +822,8 @@ const phPage = (gallons: number): JobPage => {
   if (days === '1') throw new Error('a pH job needs a split dose as its large figure');
   return {
     path: `/how-much-muriatic-acid-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'ph',
+    main: PH_MAIN,
     checked: CHECKED.ph,
     title: `How Much Muriatic Acid for a ${size} Gallon Pool? | Pool Figures`,
     description: `The fluid ounces of 31.45% muriatic acid that lower pH in a ${size} gallon pool, for 1, 2 or 3 drops of the acid demand test of a Taylor kit.`,
@@ -847,6 +879,8 @@ const calciumPage = (gallons: number): JobPage => {
   const raise = `from ${from.replace(' ppm', '')} to ${String(CALCIUM_TARGET)} ppm`;
   return {
     path: `/how-much-calcium-chloride-for-a-${String(gallons)}-gallon-pool`,
+    kind: 'calcium',
+    main: CALCIUM_MAIN,
     checked: CHECKED.calcium,
     title: `How Much Calcium Chloride for ${size} Gallons? | Pool Figures`,
     description: `The pounds of calcium chloride (calcium hardness increaser) that raise calcium hardness in a ${size} gallon pool by 10, 50 or 100 ppm, and how much to add first.`,
@@ -899,6 +933,8 @@ const volumePage = ({
   const at = `${depth} deep`;
   return {
     path: `/${slug}`,
+    kind: 'volume',
+    main: index,
     checked: CHECKED.volume,
     title: `How Many Gallons in a ${title}? | Pool Figures`,
     description: `How many gallons a ${name} holds: ${gallons} at ${at}, and the gallons and liters at the other depths it comes in.`,
