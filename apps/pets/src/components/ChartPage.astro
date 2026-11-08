@@ -1,0 +1,52 @@
+---
+import { CALL_NOW, POISON_LINE } from '../calc/chocolate.ts';
+import { chartOf } from '../charts.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const chart = chartOf(Astro.props.path);
+const { title, description, h1, lead, checked, columns, rows, notes, calculators, sources } = chart;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    {chart.callNow === true && (
+      <p class="bf-call" role="note">
+        {CALL_NOW} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+      </p>
+    )}
+    <div class="bf-scroll">
+      <table class="bf-table">
+        <thead>
+          <tr>{columns.map((column) => <th scope="col">{column}</th>)}</tr>
+        </thead>
+        <tbody>
+          {rows.map(([first, ...cells]) => (
+            <tr>
+              <th scope="row">{first}</th>
+              {cells.map((cell) => <td>{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    {notes.map((note) => <p>{note}</p>)}
+    <section class="bf-card mint" aria-labelledby="bf-tools">
+      <h2 id="bf-tools">Calculators</h2>
+      <ul>
+        {calculators.map(({ href, label }) => <li><a {href}>{label}</a></li>)}
+      </ul>
+    </section>
+    <Sources {sources} />
+    <ShareLink path={chart.path} {title} />
+  </main>
+</Layout>

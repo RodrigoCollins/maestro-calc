@@ -1,0 +1,21 @@
+---
+import { CHARTS, CHARTS_INDEX } from '../charts.ts';
+import Layout from './Layout.astro';
+
+const { title, description, h1, lead } = CHARTS_INDEX;
+---
+
+<Layout {title} {description}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    <div class="bf-cards">
+      {CHARTS.map((chart) => (
+        <section class="bf-card butter" aria-labelledby={`c-${chart.path.slice(1)}`}>
+          <h2 id={`c-${chart.path.slice(1)}`}><a href={chart.path}>{chart.card.title}</a></h2>
+          <p>{chart.card.summary}</p>
+        </section>
+      ))}
+    </div>
+  </main>
+</Layout>
