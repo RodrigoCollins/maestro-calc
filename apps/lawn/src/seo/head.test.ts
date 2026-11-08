@@ -34,7 +34,7 @@ describe('headOf', () => {
     expect(preview['og:title']).toBe(text.title);
   });
 
-  it('reads the site constants by default: closed until launch', () => {
-    expect(headOf('/', text, true).robots).toBe('noindex');
+  it('reads the site constants by default: open since launch', () => {
+    expect(headOf('/', text, true).robots).toBeUndefined();
   });
 });

@@ -4,8 +4,8 @@ export const SITE = {
   origin: 'https://cuantolecobro.com',
   /** Spanish first: the root is Spanish and English lives under `/en`. */
   locales: ['es', 'en'],
-  /** Launch switch: false keeps every page `noindex` until the owner buys the domain and flips it. */
-  indexable: false,
+  /** Launch switch: open to search engines on 2026-11-08; false would keep every page `noindex`. */
+  indexable: true,
   /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). '' loads nothing. */
   gaId: '' as string,
   /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */

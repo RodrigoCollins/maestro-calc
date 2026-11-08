@@ -29,7 +29,7 @@ describe('headOf', () => {
     expect(head.canonical).toBeUndefined();
   });
 
-  it('ships closed by default', () => {
-    expect(headOf('/', text, true).robots).toBe('noindex');
+  it('ships open by default', () => {
+    expect(headOf('/', text, true).robots).toBeUndefined();
   });
 });

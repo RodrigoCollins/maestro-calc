@@ -32,13 +32,16 @@ for (const path of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
-    // the site is closed until the owner buys the domain and flips `indexable` (src/site.config.ts)
-    test('is closed to search engines until launch, with its JSON-LD and no analytics', async ({
+    // open since 2026-11-08 (`indexable` in src/site.config.ts); no analytics until `gaId` is set
+    test('is open to search engines, with its canonical URL, its JSON-LD and no analytics', async ({
       page,
     }) => {
       await page.goto(path);
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
-      await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+        'href',
+        `https://lawnfigures.com${path}`,
+      );
       await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(1);
       await expect(page.locator('script[src="/analytics.js"]')).toHaveCount(0);
     });

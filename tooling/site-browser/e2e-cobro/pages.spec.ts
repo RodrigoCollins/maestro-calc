@@ -37,12 +37,10 @@ for (const { path, lang } of PAGES) {
       expect(violations, formatViolations(path, violations)).toEqual([]);
     });
 
-    // closed until the owner buys the launch: noindex, with the canonical and the pair already there
-    test('is closed to search engines until launch, and names its canonical and its twin', async ({
-      page,
-    }) => {
+    // open since 2026-11-08 (`SITE.indexable`): no robots meta, the canonical and the pair
+    test('is open to search engines, and names its canonical and its twin', async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
+      await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
         'href',
         `${ORIGIN}${path}`,
