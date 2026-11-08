@@ -676,6 +676,10 @@ jobs:
         with:
           name: playwright-test-results-lawn-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-lawn
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
           name: playwright-test-results-cobro-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-cobro
           if-no-files-found: ignore
