@@ -1,0 +1,29 @@
+---
+import { bylineOf } from '../editorial.ts';
+
+/** The byline under the h1 of a guide or a data page: the team, the review day, the sources link. */
+interface Props {
+  readonly checked: string;
+}
+
+const { by, team, reviewed, sources } = bylineOf({
+  checked: Astro.props.checked,
+  sources: true,
+});
+---
+
+<p class="bf-byline">
+  {by} <a href={team.href}>{team.label}</a>
+  {reviewed !== undefined && (
+    <>
+      {' · '}
+      {reviewed.label} <time datetime={reviewed.datetime}>{reviewed.text}</time>
+    </>
+  )}
+  {sources !== undefined && (
+    <>
+      {' · '}
+      <a href={sources.href}>{sources.label}</a>
+    </>
+  )}
+</p>
