@@ -22,7 +22,7 @@
  *   - apps/lawn/public/data/frost/zip-<digit>.json   ZIP to nearest station, shard format of
  *                                                    packages/lawn-data/src/frost/zip.ts
  *
- * The parsing and rendering live in `src/frost/build.ts` (unit-tested); this file only does I/O.
+ * The parsing and rendering live in `scripts/frost-build.ts` (unit-tested); this file only does I/O.
  */
 import { createReadStream, createWriteStream } from 'node:fs';
 import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
@@ -43,7 +43,7 @@ import {
   renderStationsModule,
   type Located,
   type Zcta,
-} from '../src/frost/build.ts';
+} from './frost-build.ts';
 import type { Station } from '../src/frost/types.ts';
 
 const PACKAGE = resolve(dirname(fileURLToPath(import.meta.url)), '..');

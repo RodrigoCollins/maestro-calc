@@ -2,8 +2,8 @@
  * Pure parsing, transform and rendering functions of the frost build
  * (`packages/lawn-data/scripts/build-frost.ts` does the I/O). No network, no files, no clock.
  */
-import type { Shard } from './zip.ts';
-import type { Station, Triple } from './types.ts';
+import type { Shard } from '../src/frost/zip.ts';
+import type { Station, Triple } from '../src/frost/types.ts';
 
 export interface StateInfo {
   readonly code: string;

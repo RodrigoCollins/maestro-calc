@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { STATE_TABLE } from './build.ts';
+import { STATE_TABLE } from '../../scripts/frost-build.ts';
 import { monthDayOfDay } from './calendar.ts';
 import { FROST_SOURCE } from './source.ts';
 import { STATES } from './states.ts';

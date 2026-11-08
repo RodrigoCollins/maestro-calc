@@ -54,4 +54,10 @@ describe('lookupZip', () => {
     expect(lookupZip({ ...shard, zips: { '10001': [9, 4] } }, '10001')).toBeUndefined();
     expect(lookupZip({ ...shard, zips: { '10001': [1, 4, 9] } }, '10001')).toBeUndefined();
   });
+
+  it('is undefined for a row with no distance or a station with no state', () => {
+    expect(lookupZip({ ...shard, zips: { '10001': [0] } }, '10001')).toBeUndefined();
+    expect(lookupZip({ ...shard, stations: [[9, 'X']] }, '10001')).toBeUndefined();
+    expect(lookupZip({ ...shard, zips: { '10001': [] } }, '10001')).toBeUndefined();
+  });
 });

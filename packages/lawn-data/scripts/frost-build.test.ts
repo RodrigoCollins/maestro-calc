@@ -17,8 +17,8 @@ import {
   shardKey,
   stateOfName,
   stationName,
-} from './build.ts';
-import type { Station } from './types.ts';
+} from './frost-build.ts';
+import type { Station } from '../src/frost/types.ts';
 
 const FIELDS = [
   'ANN-TMIN-PRBLST-T32FP10',
@@ -419,5 +419,21 @@ describe('encodeShards', () => {
     );
     expect(shards.get('1')?.zips['10002']).toEqual([0, 0, 1]);
     expect(shards.get('1')?.states).toEqual(['new-jersey', 'new-york']);
+  });
+});
+
+describe('defensive paths of the build', () => {
+  it('refuses a gazetteer without its columns, and skips blank lines in it', () => {
+    expect(() => parseGazetteer('GEOID\tINTPTLAT\n10001\t40.7\n')).toThrow(
+      'gazetteer lacks GEOID, INTPTLAT or INTPTLONG',
+    );
+    const text = 'GEOID\tINTPTLAT\tINTPTLONG\n\n10001\t40.7\t-74\n   \n';
+    expect(parseGazetteer(text)).toEqual(new Map([['10001', { lat: 40.7, lon: -74 }]]));
+  });
+
+  it('refuses to match a ZIP against no stations', () => {
+    expect(() =>
+      encodeShards([{ zip: '10001', lat: 40.7, lon: -74, stateSlug: 'new-york' }], []),
+    ).toThrow('no stations to match against');
   });
 });
