@@ -184,3 +184,35 @@ describe('auditSite edge cases', () => {
     expect(auditSite(files).pages.some(({ inSitemap }) => inSitemap)).toBe(false);
   });
 });
+
+describe('auditSite as the site will read once open', () => {
+  // a closed site: every page carries noindex, and the sitemap lists the pages it will open
+  const closed = '<meta name="robots" content="noindex, nofollow">';
+  const files = [
+    {
+      path: 'index.html',
+      html: page('<h1>Home</h1><p>See <a href="/a">a</a>.</p>', { head: closed }),
+    },
+    { path: 'a.html', html: page(`<h1>A</h1>${SHARED}<p>The a page.</p>`, { head: closed }) },
+    { path: 'embed/a.html', html: page(`<h1>Embed</h1>${SHARED}`, { head: closed }) },
+  ];
+  const sitemap =
+    '<urlset><url><loc>https://e.com/</loc></url><url><loc>https://e.com/a</loc></url></urlset>';
+
+  it('keeps the robots meta by default, so a closed site has no indexable page', () => {
+    expect(auditSite(files, { sitemap }).indexable).toBe(0);
+  });
+
+  it('reads every page of the sitemap as indexable and keeps the flag of the rest', () => {
+    const report = auditSite(files, { sitemap, asOpen: true });
+    expect(report.indexable).toBe(2);
+    const row = (url: string) => report.pages.find((each) => each.url === url);
+    expect(row('/a')?.noindex).toBe(false);
+    expect(row('/a')?.uniqueWords).toBeGreaterThan(0);
+    expect(row('/embed/a')?.noindex).toBe(true);
+  });
+
+  it('opens nothing without a sitemap', () => {
+    expect(auditSite(files, { asOpen: true }).indexable).toBe(0);
+  });
+});
