@@ -8,6 +8,7 @@
     "./budgets": "./src/budgets.ts",
     "./canonical": "./src/canonical.ts",
     "./check-site": "./src/check-site.ts",
+    "./content-audit": "./src/content-audit.ts",
     "./embed": "./src/embed.ts",
     "./indexnow": "./src/indexnow.ts",
     "./json-ld": "./src/json-ld.ts",
