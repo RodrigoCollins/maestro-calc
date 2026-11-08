@@ -4,7 +4,9 @@ import Breadcrumb from '../components/calculator/Breadcrumb.astro';
 import Byline from '../components/Byline.astro';
 import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
 import { jobView } from '../lib/job-view.ts';
+import { jobWorked } from '../lib/job-worked.ts';
 import { bylineOf, calculatorSourcesHref, CHART_SOURCES_ID } from '../lib/byline.ts';
 import { calendarDay } from '../lib/calendar-day.ts';
 import { siteText } from '../lib/site-text.ts';
@@ -75,6 +77,17 @@ const page: JobPage =
         },
       };
 const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
+// The buying advice of a job of one size, named by the h1 of the guide it links, and for a roof
+// pitch the IRC check of every covering at that pitch.
+const guide = jobGuide(id, locale);
+const coverings = jobCoverings(id, locale);
+const worked = jobWorked(id, locale);
+const guideEntry =
+  guide === undefined ? undefined : await getEntry('pages', `${locale}/${guide.read}`);
+if (guide !== undefined && guideEntry === undefined) {
+  throw new Error(`no content entry for ${locale}/${guide.read}`);
+}
+const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '');
 ---
 
 <BaseLayout {locale} {id} head={{ ...headFor(id, locale, text), jsonLd }}>
@@ -82,7 +95,7 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
   <article class="prose">
     <h1>{view.heading}</h1>
     <Byline {byline} />
-    {view.intro !== undefined && <p>{view.intro}</p>}
+    <p>{view.intro}</p>
     {chart === undefined && (
       <>
         <p class="job-size">{view.lead}</p>
@@ -100,6 +113,18 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
     <p>
       {view.note} <a href={view.methodology}>{text('site.job.methodology')}</a>
     </p>
+    {worked !== undefined && (
+      <>
+        <h2>{worked.heading}</h2>
+        <ol>
+          {worked.steps.map((step) => (
+            <li>
+              {step.label}: <span class="job-math">{step.math}</span>
+            </li>
+          ))}
+        </ol>
+      </>
+    )}
     <h2>{chart === undefined ? text('site.job.cases') : chart.table}</h2>
     <div class="job-table">
       <table>
@@ -188,6 +213,45 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
         </p>
       </>
     )}
+    {coverings !== undefined && (
+      <>
+        <h2>{coverings.heading}</h2>
+        <p>{coverings.lead}</p>
+        <div class="job-table">
+          <table>
+            <thead>
+              <tr>
+                {coverings.columns.map((label) => (
+                  <th scope="col">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {coverings.rows.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  <td>{row.minimum}</td>
+                  <td>{row.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+    {guide !== undefined && (
+      <>
+        <h2>{guide.heading}</h2>
+        <ul>
+          {guide.tips.map((tip) => (
+            <li>{tip}</li>
+          ))}
+        </ul>
+        <p>
+          {text('site.job.guide.read')} <a href={pathOf(guide.read, locale)}>{guideName}</a>
+        </p>
+      </>
+    )}
     <GuideCta label={text('site.guide.cta')} href={view.cta} name={view.calculatorName} />
     {view.others.length > 0 && (
       <>
@@ -228,6 +292,10 @@ const jsonLd = serializeJsonLd(jobJsonLd(page, locale));
   .job-facts dd {
     margin: 0;
     font-weight: 700;
+  }
+
+  .job-math {
+    font-variant-numeric: tabular-nums;
   }
 
   .job-cite {

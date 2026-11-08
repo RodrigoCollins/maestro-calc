@@ -1,0 +1,20 @@
+---
+import { bylinePageOf } from '../bylines.ts';
+import { BYLINE_TEXT, SOURCES_ID } from '../editorial.ts';
+
+/** The sources section a byline links to: every source the page cites, once each. */
+interface Props {
+  readonly path: string;
+}
+
+const { sources } = bylinePageOf(Astro.props.path);
+---
+
+<section class="lawn-section" aria-labelledby={SOURCES_ID}>
+  <h2 id={SOURCES_ID}>{BYLINE_TEXT.sources}</h2>
+  <ul>
+    {sources.map(({ name, url }) => (
+      <li>{url === undefined ? name : <a href={url}>{name}</a>}</li>
+    ))}
+  </ul>
+</section>

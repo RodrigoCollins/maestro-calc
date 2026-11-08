@@ -1,0 +1,52 @@
+---
+import { FROST_TEXT } from '../frost-copy.ts';
+
+const { zip } = FROST_TEXT;
+---
+
+<form class="lawn-card lawn-zip" data-zip novalidate>
+  <label>
+    <span>{zip.label}</span>
+    <input name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" />
+    <small>{zip.hint}</small>
+  </label>
+  <button type="submit">{zip.button}</button>
+  <p
+    class="lawn-zip-result"
+    data-zip-result
+    data-invalid={zip.invalid}
+    data-unknown={zip.unknown}
+    data-failed={zip.failed}
+    aria-live="polite"
+  ></p>
+</form>
+
+<style is:global>
+  .lawn-zip {
+    gap: 0.75rem;
+  }
+
+  .lawn-zip button {
+    justify-self: start;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: var(--deep);
+    color: var(--on-deep);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .lawn-main .lawn-zip-result {
+    min-height: 1.5rem;
+  }
+
+  /* the lookup needs the script: with none, the state list below is the way in */
+  @media (scripting: none) {
+    .lawn-zip {
+      display: none;
+    }
+  }
+</style>

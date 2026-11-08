@@ -72,6 +72,167 @@ export const enSite = {
   'site.job.chart.retrieved': 'retrieved',
   'site.job.chart.cite': 'Cite this chart',
   'site.job.chart.citeLead': 'To link to this chart or quote its figures, use its address:',
+  'site.job.guide.read': 'Go further:',
+  'site.job.coverings.heading': 'Roof coverings at this pitch',
+  'site.job.coverings.lead':
+    'Section R905 of the 2021 International Residential Code sets a minimum slope for each roof covering. This is how each covering the calculator checks does at this pitch; your local code or the maker of the product can ask for more.',
+  'site.job.coverings.minimum': 'IRC minimum',
+  'site.job.coverings.status': 'At this pitch',
+  'site.job.coverings.meets': 'Meets the minimum',
+  'site.job.coverings.double': 'Allowed with two layers of underlayment',
+  'site.job.coverings.below': 'Below the minimum',
+  'site.job.guide.concrete-slab.heading': 'Before you pour the slab',
+  'site.job.guide.concrete-slab.tip1':
+    'Measure the slab inside the forms, not over the boards, and check the depth in several places once the base is graded. A slab planned at 4 in that averages 4 1/2 in takes an eighth more concrete than the table shows.',
+  'site.job.guide.concrete-slab.tip2':
+    'Settle the thickness before you count bags. Going from 4 to 5 in adds a quarter more concrete, and from 4 to 6 in adds half again, which is why the table gives all three.',
+  'site.job.guide.concrete-slab.tip3':
+    'Compare the bags with a truck. Mixing dozens of bags by hand is slow, and a pour that stops halfway leaves a cold joint. Ready-mix is sold by the cubic yard, so ask the supplier for the minimum load and any short-load fee before you decide.',
+  'site.job.guide.concrete-slab.tip4':
+    'Plan the weight as well as the count. Every 80 lb bag is 80 lb to lift, carry and mix, so 30 bags are 2,400 lb of dry mix: check the payload of the truck or trailer that brings them home.',
+  'site.job.guide.concrete-tube.heading': 'Before you set the tubes',
+  'site.job.guide.concrete-tube.tip1':
+    'Measure the depth from the top of the tube, not from the ground. A tube that stands a few inches above grade holds that height of concrete too, so add it to the depth you type in the calculator.',
+  'site.job.guide.concrete-tube.tip2':
+    'The diameter is the inside of the tube, printed on the form. A wider tube adds concrete fast: the volume grows with the square of the diameter, so a 12 in tube holds 2.25 times what an 8 in tube holds at the same depth.',
+  'site.job.guide.concrete-tube.tip3':
+    'Bags suit tube forms: each one takes a few bags, so you can mix and fill one tube at a time. Fill in layers and rod the concrete or tap the side of the tube as you go, to work out the air pockets.',
+  'site.job.guide.concrete-tube.tip4':
+    'Your local code sets how deep a pier goes, often below the frost line, and how wide its footing is. Check it before you buy the tubes, because a deeper hole changes every figure on this page.',
+  'site.job.guide.concrete-footing.heading': 'Before you dig the footing',
+  'site.job.guide.concrete-footing.tip1':
+    'Dig the trench to its full width and depth along the whole run, and measure it in several places. A trench dug a little wide or deep is the usual reason a footing takes more than planned, and it is what the 10% extra is for.',
+  'site.job.guide.concrete-footing.tip2':
+    'Measure the length along the center line of the footing. Added up on the outside of a rectangle, each corner is counted twice; on the center line, the corners come out right.',
+  'site.job.guide.concrete-footing.tip3':
+    'A long footing is a lot of bags. Past a cubic yard or two, price ready-mix as well, and ask the supplier whether the truck can reach the trench or you need a pump or wheelbarrows.',
+  'site.job.guide.concrete-footing.tip4':
+    'The size of a footing is a structural choice, not an estimating one. Take its width and depth from your plans or your local building department, then use the calculator to count the concrete.',
+  'site.job.guide.roof-pitch.heading': 'Before you cut the rafters',
+  'site.job.guide.roof-pitch.tip1':
+    'Measure the pitch level and plumb, never along the roof. Hold a level against a rafter or the deck, mark 12 in along the level, and measure straight up to the roof: that measurement is the rise in 12.',
+  'site.job.guide.roof-pitch.tip2':
+    'The rafter lengths here run to the plumb line at the ridge, with no overhang. Add the overhang in the calculator, and take off half the thickness of the ridge board before you mark the cut.',
+  'site.job.guide.roof-pitch.tip3':
+    'Check the covering before you settle on a pitch. The roof coverings table on this page gives the IRC minimum of each covering at this pitch, and a local code or the maker of the product can ask for more than the code does.',
+  'site.job.guide.roof-pitch.tip4':
+    'A steeper pitch means more roof over the same footprint: more sheathing, more underlayment and more shingles. Run the roofing calculator at this pitch before you order the materials.',
+  'site.job.guide.rectangle-area.heading': 'Before you buy for this area',
+  'site.job.guide.rectangle-area.tip1':
+    'Measure each side at two or three points and use the longest. Walls are rarely perfectly square, and the shortest reading leaves you short of flooring or tile.',
+  'site.job.guide.rectangle-area.tip2':
+    'Convert feet and inches with care: 6 in is 0.5 ft, not 0.6 ft. Type the measurement the way you read it on the tape and let the calculator do the conversion.',
+  'site.job.guide.rectangle-area.tip3':
+    'The area is what you measured, with nothing added. Flooring and tile lose material to cuts, and installers commonly add about 10% for a simple layout and more for a diagonal one, so check what the maker of your product recommends.',
+  'site.job.guide.rectangle-area.tip4':
+    'Divide the area by what one box or roll covers and round up to a whole unit. Buy every box from the same lot when you can, because tile and flooring can differ in shade from one batch to the next.',
+  'site.job.guide.mulch.heading': 'Before you buy the mulch',
+  'site.job.guide.mulch.tip1':
+    'Bags are sold by volume, not by weight. Read the cubic feet printed on the bag you plan to buy, because the bag count above changes with its size.',
+  'site.job.guide.mulch.tip2':
+    'Measure the depth you add, not the depth the bed will have. Over 2 in of old mulch, 1 more inch brings the bed to 3 in, or rake the old layer out first.',
+  'site.job.guide.mulch.tip3':
+    'Bulk mulch is sold by the cubic yard, the unit this page counts in. Past a yard or two, compare the bulk price and its delivery with the cost of the bags.',
+  'site.job.guide.mulch.tip4':
+    'Pull the mulch back a few inches from tree trunks and plant stems. A mound against the bark holds moisture where the plant does not want it, and wastes material.',
+  'site.job.guide.gravel.heading': 'Before you order the gravel',
+  'site.job.guide.gravel.tip1':
+    'Order by the ton when the yard sells that way. A ton is a ton, while a cubic yard weighs a different amount loose and compacted, so the tons on this page are the safer order.',
+  'site.job.guide.gravel.tip2':
+    'A driveway is built in layers, a coarse base under a finer top course. Run the calculator once per layer at its own depth, and add the tons.',
+  'site.job.guide.gravel.tip3':
+    'Grade and compact the ground before you measure the depth. A low spot a couple of inches deep along a long driveway adds tons quickly.',
+  'site.job.guide.gravel.tip4':
+    'Ask the supplier how the load will be dumped. Some drivers can spread it along the driveway as they go, which saves hours with a wheelbarrow, so give them the length you need covered.',
+  'site.job.guide.paint.heading': 'Before you buy the paint',
+  'site.job.guide.paint.tip1':
+    'Measure the walls, not the floor: the distance around the room times the height. A 12 by 12 ft room 8 ft high has 384 sq ft of wall and only 144 sq ft of floor.',
+  'site.job.guide.paint.tip2':
+    'New drywall, bare plaster and a big change of color soak up more paint. Prime first, or plan on less coverage than the label gives.',
+  'site.job.guide.paint.tip3':
+    'Buy the gallons for the whole room at once and mix them together in one bucket before you start, so paint from two cans or two batches matches on the wall.',
+  'site.job.guide.paint.tip4':
+    'The ceiling, the trim and the doors take their own paint, often a different product or sheen. Estimate them apart, and keep a closed can of the wall color for touch-ups.',
+  'site.job.guide.drywall.heading': 'Before you order the drywall',
+  'site.job.guide.drywall.tip1':
+    'Count the ceiling apart from the walls. A ceiling is often hung with a different panel, such as sag-resistant board, so it helps to have its own sheet count.',
+  'site.job.guide.drywall.tip2':
+    'Pick the sheet length for the wall. 4 × 12 sheets leave fewer joints to tape on a long wall, but they are heavy, so plan two people and a clear path into the room.',
+  'site.job.guide.drywall.tip3':
+    'Order the joint compound and the tape with the sheets: the calculator counts them from the USG coverage figures. Screws, corner bead and trim you count on site.',
+  'site.job.guide.drywall.tip4':
+    'Keep the extra for cuts. Around doors, windows, outlets and corners you cut pieces you cannot reuse, so a room with many corners or a stairwell needs more than the default.',
+  'site.job.guide.topsoil.heading': 'Before you fill the bed or the area',
+  'site.job.guide.topsoil.tip1':
+    'Soil settles after it is placed. Spread a deep fill in layers, water each one lightly, and top the bed up once it has settled.',
+  'site.job.guide.topsoil.tip2':
+    'Know what you are buying. Screened topsoil, garden soil, raised-bed mix and fill dirt are sold under different names and at different prices, so ask the supplier which one fits a vegetable bed or a lawn.',
+  'site.job.guide.topsoil.tip3':
+    'Bags add up fast: a deep bed can take dozens of them. Past a cubic yard or so, a bulk load is often cheaper and easier, even with a delivery fee.',
+  'site.job.guide.topsoil.tip4':
+    'Plan where the truck drops the pile: close to the work, off the lawn if you can, and covered if rain is coming.',
+  'site.job.guide.roofing.heading': 'Before you order the shingles',
+  'site.job.guide.roofing.tip1':
+    'Measure the footprint with the overhangs, because the eaves and the rakes are roof too. A 1 ft overhang on every side of a 38 by 28 ft house makes a 40 by 30 ft footprint.',
+  'site.job.guide.roofing.tip2':
+    'Shingles are sold by the bundle and counted by the square of 100 sq ft. The bundle the calculator uses covers 33.33 sq ft, three to a square; check the coverage printed on the bundle you buy.',
+  'site.job.guide.roofing.tip3':
+    'From 2 in 12 up to 4 in 12, the IRC asks for two layers of underlayment under asphalt shingles, and below 2 in 12 it does not allow them. The roofing calculator doubles the rolls in that range.',
+  'site.job.guide.roofing.tip4':
+    'The extra covers the starter course, the hip and ridge caps and the cuts at valleys. Nails, drip edge, flashing and an ice barrier are separate items, so ask your supplier for them with the order.',
+  'site.job.guide.feet-inches.heading': 'Before you mark and cut',
+  'site.job.guide.feet-inches.tip1':
+    'Mark from the tape column, not the decimals. It rounds to the nearest 1/16 in, the smallest mark most tapes carry, which is as close as a cut usually gets.',
+  'site.job.guide.feet-inches.tip2':
+    'Allow for the saw blade. Each cut removes about 1/8 in of wood, so cutting a board into equal pieces leaves each one a little short unless you take the cuts off first.',
+  'site.job.guide.feet-inches.tip3':
+    'Measure every mark from the same end of the board. Marking each piece from the last one adds up small errors along the length.',
+  'site.job.guide.feet-inches.tip4':
+    'Read the answer in words before you cut. The calculator repeats both lengths, which is the quickest way to catch a slip such as 3 ft 9 in typed as 39 in.',
+  'site.job.worked.heading': 'How the figures are worked out',
+  'site.job.worked.concrete.net': 'Volume of the first size, before the extra',
+  'site.job.worked.concrete.total':
+    'With the 10% extra, in cubic feet, cubic yards and cubic meters',
+  'site.job.worked.concrete.bags': 'Bags of 80 lb, about 0.60 cubic feet each, rounded up',
+  'site.job.worked.concrete.weight': 'Weight of the dry mix to lift and carry',
+  'site.job.worked.area.feet': 'Area of the first size',
+  'site.job.worked.area.yards': 'In square yards, 9 square feet each',
+  'site.job.worked.area.metric': 'In metric, with 1 ft = 0.3048 m',
+  'site.job.worked.area.cuts':
+    'With about 10% for cuts, as installers commonly add for flooring or tile in a simple layout',
+  'site.job.worked.paint.walls': 'Area of the four walls',
+  'site.job.worked.paint.openings': 'Less one door of 20 sq ft and two windows of 15 sq ft',
+  'site.job.worked.paint.gallons': 'Two coats at 350 sq ft per gallon, in gallons and liters',
+  'site.job.worked.paint.cans': 'Gallon cans to buy, rounded up',
+  'site.job.worked.drywall.walls':
+    'Area of the four walls, less one door of 20 sq ft and two windows of 15 sq ft',
+  'site.job.worked.drywall.ceiling': 'With the ceiling, in square feet and square meters',
+  'site.job.worked.drywall.sheets':
+    'Sheets of 4 × 8 ft (32 sq ft) with the 10% extra for cuts, rounded up',
+  'site.job.worked.roofing.footprint': 'Footprint of the roof, overhangs included',
+  'site.job.worked.roofing.slope':
+    'Slope factor: how much longer the roof is than its footprint at this pitch',
+  'site.job.worked.roofing.area': 'Roof area along the slope, in square feet and square meters',
+  'site.job.worked.roofing.squares': 'Squares of 100 sq ft, the unit roofers price by',
+  'site.job.worked.roofing.bundles': 'Bundles of 33.33 sq ft with the 10% extra, rounded up',
+  'site.job.worked.roof-pitch.multiplier': 'Rafter multiplier at this pitch',
+  'site.job.worked.roof-pitch.rafter': 'Rafter over the first run of the table',
+  'site.job.worked.roof-pitch.metric': 'The same rafter in metric, with 1 ft = 0.3048 m',
+  'site.job.worked.roof-pitch.angle': 'Angle of the roof',
+  'site.job.worked.topsoil.net': 'Volume of the first size, before settling',
+  'site.job.worked.topsoil.total':
+    'With the 10% for settling, in cubic feet, cubic yards and cubic meters',
+  'site.job.worked.topsoil.bags': 'Bags of 0.75 cubic feet, rounded up',
+  'site.job.worked.gravel.placed':
+    'Volume of the first size in place, in cubic feet and cubic yards',
+  'site.job.worked.gravel.total': 'With the 5% extra',
+  'site.job.worked.gravel.weight': 'Weight compacted, at 3,660 lb per cubic yard (WisDOT)',
+  'site.job.worked.gravel.tons': 'In short tons of 2,000 lb',
+  'site.job.worked.gravel.order': 'Loose cubic yards to order, at 2,580 lb per cubic yard',
+  'site.job.worked.feet-inches.inches': 'The length in inches, 12 in to the foot',
+  'site.job.worked.feet-inches.divide': 'Divided into equal parts',
+  'site.job.worked.feet-inches.tape': 'In sixteenths, to the nearest 1/16 in mark of the tape',
+  'site.job.worked.feet-inches.metric': 'In metric, with 1 in = 0.0254 m exactly',
   'site.job.more': 'More jobs',
   'site.job.chart.index': 'Every chart and its sources: data and charts',
   'site.charts.checked': 'Checked',
@@ -272,41 +433,57 @@ export const enSite = {
     'How many bags of concrete a 10 x 10 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-10x10.heading': 'How many bags of concrete for a 10x10 slab?',
   'page.concrete-slab-10x10.label': '10x10 slab',
+  'page.concrete-slab-10x10.intro':
+    'A 10 by 10 ft slab, 100 sq ft, is a common base for a small shed, a hot tub or a patio by the back door.',
   'page.concrete-slab-10x12.title': 'Bags of Concrete for a 10x12 Slab | Maestro Calc',
   'page.concrete-slab-10x12.description':
     'How many bags of concrete a 10 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-10x12.heading': 'How many bags of concrete for a 10x12 slab?',
   'page.concrete-slab-10x12.label': '10x12 slab',
+  'page.concrete-slab-10x12.intro':
+    'A 10 by 12 ft slab, 120 sq ft, is a common floor for a garden shed or a small patio.',
   'page.concrete-slab-12x12.title': 'Bags of Concrete for a 12x12 Slab | Maestro Calc',
   'page.concrete-slab-12x12.description':
     'How many bags of concrete a 12 x 12 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-12x12.heading': 'How many bags of concrete for a 12x12 slab?',
   'page.concrete-slab-12x12.label': '12x12 slab',
+  'page.concrete-slab-12x12.intro':
+    'A 12 by 12 ft slab, 144 sq ft, is a square patio or the floor of a 12 by 12 shed.',
   'page.concrete-slab-10x20.title': 'Bags of Concrete for a 10x20 Slab | Maestro Calc',
   'page.concrete-slab-10x20.description':
     'How many bags of concrete a 10 x 20 ft slab (a one-car pad or a long patio) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards.',
   'page.concrete-slab-10x20.heading': 'How many bags of concrete for a 10x20 slab?',
   'page.concrete-slab-10x20.label': '10x20 slab',
+  'page.concrete-slab-10x20.intro':
+    'A 10 by 20 ft slab, 200 sq ft, is a one-car parking pad or a long patio along the house.',
   'page.concrete-slab-12x20.title': 'Bags of Concrete for a 12x20 Slab | Maestro Calc',
   'page.concrete-slab-12x20.description':
     'How many bags of concrete a 12 x 20 ft slab (a carport or a shed floor) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards.',
   'page.concrete-slab-12x20.heading': 'How many bags of concrete for a 12x20 slab?',
   'page.concrete-slab-12x20.label': '12x20 slab',
+  'page.concrete-slab-12x20.intro':
+    'A 12 by 20 ft slab, 240 sq ft, is a carport or the floor of a large shed or workshop.',
   'page.concrete-slab-12x24.title': 'Bags of Concrete for a 12x24 Slab | Maestro Calc',
   'page.concrete-slab-12x24.description':
     'How many bags of concrete a 12 x 24 ft slab (a one-car garage) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-12x24.heading': 'How many bags of concrete for a 12x24 slab?',
   'page.concrete-slab-12x24.label': '12x24 slab',
+  'page.concrete-slab-12x24.intro':
+    'A 12 by 24 ft slab, 288 sq ft, is the floor of a one-car garage or a long covered patio.',
   'page.concrete-slab-20x20.title': 'Bags of Concrete for a 20x20 Slab | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'How many bags of concrete a 20 x 20 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-20x20.heading': 'How many bags of concrete for a 20x20 slab?',
   'page.concrete-slab-20x20.label': '20x20 slab',
+  'page.concrete-slab-20x20.intro':
+    'A 20 by 20 ft slab, 400 sq ft, is a two-car parking pad or a large patio.',
   'page.concrete-slab-24x24.title': 'Bags of Concrete for a 24x24 Slab | Maestro Calc',
   'page.concrete-slab-24x24.description':
     'How many bags of concrete a 24 x 24 ft slab takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags, and the cubic yards to order a truck.',
   'page.concrete-slab-24x24.heading': 'How many bags of concrete for a 24x24 slab?',
   'page.concrete-slab-24x24.label': '24x24 slab',
+  'page.concrete-slab-24x24.intro':
+    'A 24 by 24 ft slab, 576 sq ft, is a common floor for a two-car garage.',
   'page.concrete-slab-500-sq-ft.title': 'Concrete for a 500 Sq Ft Slab: 6.79 Yards | Maestro Calc',
   'page.concrete-slab-500-sq-ft.description':
     'A 500 sq ft slab 4 in thick is 6.17 cubic yards of concrete, 6.79 with 10% extra: the bags of 40, 60 or 80 lb, and the same slab at 5 or 6 in.',
@@ -344,81 +521,112 @@ export const enSite = {
     'How many bags of concrete a 4 x 4 ft pad (for an AC unit, a generator or a step) takes at 4, 5 or 6 in thick, in 40, 60 or 80 lb bags.',
   'page.concrete-pad-4x4.heading': 'How many bags of concrete for a 4x4 pad?',
   'page.concrete-pad-4x4.label': '4x4 pad',
+  'page.concrete-pad-4x4.intro':
+    'A 4 by 4 ft pad, 16 sq ft, is poured under an air conditioner condenser or a generator, or as a landing at the foot of a step.',
   'page.concrete-tube-8.title': 'Bags of Concrete for a 8 in Sonotube | Maestro Calc',
   'page.concrete-tube-8.description':
     'How many bags of concrete fill a 8 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-8.heading': 'How many bags of concrete for a 8 in Sonotube?',
   'page.concrete-tube-8.label': '8 in Sonotube',
+  'page.concrete-tube-8.intro':
+    'An 8 in tube form is a common size for the piers of a small deck or a porch post. It holds about 0.35 cubic feet of concrete per foot of depth, before the extra.',
   'page.concrete-tube-10.title': 'Bags of Concrete for a 10 in Sonotube | Maestro Calc',
   'page.concrete-tube-10.description':
     'How many bags of concrete fill a 10 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-10.heading': 'How many bags of concrete for a 10 in Sonotube?',
   'page.concrete-tube-10.label': '10 in Sonotube',
+  'page.concrete-tube-10.intro':
+    'A 10 in tube form is a step up from 8 in for a pier that carries more. It holds about 0.55 cubic feet of concrete per foot of depth, before the extra.',
   'page.concrete-tube-12.title': 'Bags of Concrete for a 12 in Sonotube | Maestro Calc',
   'page.concrete-tube-12.description':
     'How many bags of concrete fill a 12 in Sonotube (a cardboard form tube) 2, 3 or 4 ft deep, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-tube-12.heading': 'How many bags of concrete for a 12 in Sonotube?',
   'page.concrete-tube-12.label': '12 in Sonotube',
+  'page.concrete-tube-12.intro':
+    'A 12 in tube form is used for the piers of a heavier deck or a roof post. It holds about 0.79 cubic feet of concrete per foot of depth, before the extra.',
   'page.concrete-footing-16x8.title': 'Bags of Concrete for a 16x8 in Footing | Maestro Calc',
   'page.concrete-footing-16x8.description':
     'How many bags of concrete a footing 16 in wide and 8 in deep takes for 20, 50 or 100 ft of wall, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-footing-16x8.heading': 'How many bags of concrete for a 16x8 in footing?',
   'page.concrete-footing-16x8.label': '16x8 in footing',
+  'page.concrete-footing-16x8.intro':
+    'A footing 16 in wide and 8 in deep is a continuous strip of concrete under a wall. Each foot of it is 16 × 8 ÷ 144 = 0.89 cubic feet before the extra.',
   'page.concrete-footing-20x10.title': 'Bags of Concrete for a 20x10 in Footing | Maestro Calc',
   'page.concrete-footing-20x10.description':
     'How many bags of concrete a footing 20 in wide and 10 in deep takes for 20, 50 or 100 ft of wall, in 40, 60 or 80 lb bags, with the cubic yards.',
   'page.concrete-footing-20x10.heading': 'How many bags of concrete for a 20x10 in footing?',
   'page.concrete-footing-20x10.label': '20x10 in footing',
+  'page.concrete-footing-20x10.intro':
+    'A footing 20 in wide and 10 in deep is a continuous strip of concrete under a wall. Each foot of it is 20 × 10 ÷ 144 = 1.39 cubic feet before the extra, about 56% more than a 16 by 8 in footing.',
   'page.roof-pitch-3-12.title': '3/12 Roof Pitch in Degrees: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'A 3/12 roof pitch is 14.04 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-3-12.heading': '3/12 roof pitch: 14.04° and the rafter length',
   'page.roof-pitch-3-12.label': '3/12 pitch',
+  'page.roof-pitch-3-12.intro':
+    'A 3/12 roof rises 3 in for every 12 in of run, a grade of 25%. It is a low slope: under the IRC, asphalt shingles and tile need two layers of underlayment here, and slate is not allowed.',
   'page.roof-pitch-4-12.title': '4/12 Roof Pitch in Degrees: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'A 4/12 roof pitch is 18.43 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-4-12.heading': '4/12 roof pitch: 18.43° and the rafter length',
   'page.roof-pitch-4-12.label': '4/12 pitch',
+  'page.roof-pitch-4-12.intro':
+    'A 4/12 roof rises 4 in for every 12 in of run, a grade of 33.3%. It is the lowest pitch at which the IRC lets asphalt shingles and tile go on one layer of underlayment, and the minimum for slate.',
   'page.roof-pitch-5-12.title': '5/12 Roof Pitch in Degrees: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'A 5/12 roof pitch is 22.62 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-5-12.heading': '5/12 roof pitch: 22.62° and the rafter length',
   'page.roof-pitch-5-12.label': '5/12 pitch',
+  'page.roof-pitch-5-12.intro':
+    'A 5/12 roof rises 5 in for every 12 in of run, a grade of 41.7%, steep enough for every covering in the IRC check below with one layer of underlayment.',
   'page.roof-pitch-6-12.title': '6/12 Roof Pitch in Degrees: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'A 6/12 roof pitch is 26.57 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-6-12.heading': '6/12 roof pitch: 26.57° and the rafter length',
   'page.roof-pitch-6-12.label': '6/12 pitch',
+  'page.roof-pitch-6-12.intro':
+    'A 6/12 roof rises 6 in for every 12 in of run, a grade of 50%: half a foot of rise for every foot of run.',
   'page.roof-pitch-7-12.title': '7/12 Roof Pitch in Degrees: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'A 7/12 roof pitch is 30.26 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-7-12.heading': '7/12 roof pitch: 30.26° and the rafter length',
   'page.roof-pitch-7-12.label': '7/12 pitch',
+  'page.roof-pitch-7-12.intro': 'A 7/12 roof rises 7 in for every 12 in of run, a grade of 58.3%.',
   'page.roof-pitch-7-5-12.title': '7.5/12 Roof Pitch in Degrees: 32.01° | Maestro Calc',
   'page.roof-pitch-7-5-12.description':
     'A 7.5/12 roof pitch is 32.01 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-7-5-12.heading': '7.5/12 roof pitch: 32.01° and the rafter length',
   'page.roof-pitch-7-5-12.label': '7.5/12 pitch',
+  'page.roof-pitch-7-5-12.intro':
+    'A 7.5/12 roof, also written 7 1/2 in 12, rises 7 1/2 in for every 12 in of run, a grade of 62.5%.',
   'page.roof-pitch-8-12.title': '8/12 Roof Pitch in Degrees: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'An 8/12 roof pitch is 33.69 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-8-12.heading': '8/12 roof pitch: 33.69° and the rafter length',
   'page.roof-pitch-8-12.label': '8/12 pitch',
+  'page.roof-pitch-8-12.intro':
+    'An 8/12 roof rises 8 in for every 12 in of run, a grade of 66.7%: two thirds of a foot of rise for every foot of run.',
   'page.roof-pitch-9-12.title': '9/12 Roof Pitch in Degrees: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'A 9/12 roof pitch is 36.87 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-9-12.heading': '9/12 roof pitch: 36.87° and the rafter length',
   'page.roof-pitch-9-12.label': '9/12 pitch',
+  'page.roof-pitch-9-12.intro':
+    'A 9/12 roof rises 9 in for every 12 in of run, a grade of 75%: three quarters of a foot of rise for every foot of run.',
   'page.roof-pitch-10-12.title': '10/12 Roof Pitch in Degrees: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'A 10/12 roof pitch is 39.81 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-10-12.heading': '10/12 roof pitch: 39.81° and the rafter length',
   'page.roof-pitch-10-12.label': '10/12 pitch',
+  'page.roof-pitch-10-12.intro':
+    'A 10/12 roof rises 10 in for every 12 in of run, a grade of 83.3%.',
   'page.roof-pitch-12-12.title': '12/12 Roof Pitch in Degrees: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'A 12/12 roof pitch is 45.00 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
   'page.roof-pitch-12-12.heading': '12/12 roof pitch: 45.00° and the rafter length',
   'page.roof-pitch-12-12.label': '12/12 pitch',
+  'page.roof-pitch-12-12.intro':
+    'A 12/12 roof rises as much as it runs, a grade of 100% and an angle of exactly 45°.',
   'page.roof-pitch-chart.title': 'Roof Pitch Chart in Degrees and Percent | Maestro Calc',
   'page.roof-pitch-chart.description':
     'Every roof pitch from 1/12 to 24/12 in degrees, percent grade and rafter multiplier, with the IRC minimum slope of each covering and degrees to pitch.',
@@ -740,32 +948,44 @@ export const enSite = {
     '29 1/4 in divided by 2 is 14 5/8 in on a tape measure (14.63 in, 1 ft 2 5/8 in), to the nearest 1/16 in. Also 29 1/4 in divided by 3 and by 4.',
   'page.divide-29-1-4-in-by-2.heading': 'What is 29 1/4 in divided by 2 on a tape measure?',
   'page.divide-29-1-4-in-by-2.label': '29 1/4 in ÷ 2',
+  'page.divide-29-1-4-in-by-2.intro':
+    'Halving 29 1/4 in finds the center of a board or an opening that wide, for a mark, a hinge or a fixture.',
   'page.divide-23-5-8-in-by-2.title':
     'Half of 23 5/8 on a Tape Measure: 11 13/16 in | Maestro Calc',
   'page.divide-23-5-8-in-by-2.description':
     'Half of 23 5/8 in, or 23 5/8 in divided by 2, is 11 13/16 in on a tape measure (11.81 in), to the nearest 1/16 in. Also divided by 3 and by 4.',
   'page.divide-23-5-8-in-by-2.heading': 'Half of 23 5/8 in on a tape measure: 23 5/8 divided by 2',
   'page.divide-23-5-8-in-by-2.label': '23 5/8 in ÷ 2',
+  'page.divide-23-5-8-in-by-2.intro':
+    'Half of 23 5/8 in is the center mark of a shelf, a cabinet door or a frame of that width.',
   'page.divide-35-5-in-by-2.title': '35.5 Inches Divided by 2: 17 3/4 in | Maestro Calc',
   'page.divide-35-5-in-by-2.description':
     '35.5 inches divided by 2 is 17 3/4 in on a tape measure (17.75 in, 1 ft 5 3/4 in). Also 35.5 in divided by 3 and by 4, to the nearest 1/16 in.',
   'page.divide-35-5-in-by-2.heading': 'What is 35.5 inches divided by 2?',
   'page.divide-35-5-in-by-2.label': '35.5 in ÷ 2',
+  'page.divide-35-5-in-by-2.intro':
+    '35.5 in is a length written in decimal inches, as a plan or a digital tape gives it; halving it finds the middle of a piece that long.',
   'page.divide-22-in-by-10.title': '22 Inches Divided by 10: 2 3/16 in | Maestro Calc',
   'page.divide-22-in-by-10.description':
     '22 inches divided by 10 is 2.20 in, or 2 3/16 in on a tape measure to the nearest 1/16 in. Also 22 in divided by 2, 3 and 4.',
   'page.divide-22-in-by-10.heading': 'What is 22 inches divided by 10?',
   'page.divide-22-in-by-10.label': '22 in ÷ 10',
+  'page.divide-22-in-by-10.intro':
+    'Dividing 22 in into 10 equal parts is a layout job: spacing slats, pickets or holes evenly along a run.',
   'page.divide-9-ft-6-in-by-2.title': '9 Feet 6 Inches Divided by 2: 4 ft 9 in | Maestro Calc',
   'page.divide-9-ft-6-in-by-2.description':
     'Half of 9 feet 6 inches: 9 ft 6 in divided by 2 is 4 ft 9 in, or 57 in on a tape measure (57.00 in, 1.448 m). Also divided by 3 and by 4.',
   'page.divide-9-ft-6-in-by-2.heading': 'What is 9 feet 6 inches divided by 2?',
   'page.divide-9-ft-6-in-by-2.label': '9 ft 6 in ÷ 2',
+  'page.divide-9-ft-6-in-by-2.intro':
+    'Half of 9 ft 6 in finds the middle of a wall, a beam or a room that long, where a light, a vent or a center line goes.',
   'page.divide-3-ft-9-in-by-2.title': '3 Feet 9 Inches Divided by 2: 1 ft 10 1/2 in | Maestro Calc',
   'page.divide-3-ft-9-in-by-2.description':
     'Half of 3 feet 9 inches: 3 ft 9 in divided by 2 is 1 ft 10 1/2 in, or 22 1/2 in on a tape measure (22.50 in, 0.572 m). Also divided by 3 and by 4.',
   'page.divide-3-ft-9-in-by-2.heading': 'What is 3 feet 9 inches divided by 2?',
   'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
+  'page.divide-3-ft-9-in-by-2.intro':
+    'Half of 3 ft 9 in is the center of a doorway, a window or a run of cabinets that wide.',
   'page.decimal-feet-chart.title': 'Decimal Feet to Feet and Inches Chart | Maestro Calc',
   'page.decimal-feet-chart.description':
     'Decimal feet to feet and inches chart: every length from 0.10 to 0.99 ft and common ones like 11.65 ft, to the nearest 1/16 in, and inches to decimal feet.',

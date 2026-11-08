@@ -1,0 +1,69 @@
+---
+interface Props {
+  /** The pounds of seed for each way, as the view writes them (`10.0–15.0`). */
+  readonly perPass: string;
+}
+
+const { perPass } = Astro.props;
+---
+
+<figure class="lawn-spreader">
+  <svg
+    viewBox="0 0 320 200"
+    role="img"
+    aria-label="A lawn seen from above with two spreader passes crossing each other: one north to south, one east to west"
+  >
+    <defs>
+      <pattern id="stripes" width="40" height="40" patternUnits="userSpaceOnUse">
+        <rect width="40" height="40" fill="var(--stripe-b)"></rect>
+        <rect width="20" height="40" fill="var(--stripe-a)"></rect>
+      </pattern>
+      <marker id="tip" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+        <path d="M0 0 8 4 0 8z" fill="var(--yellow)"></path>
+      </marker>
+    </defs>
+    <rect x="10" y="10" width="300" height="180" rx="6" fill="url(#stripes)"></rect>
+    <g stroke="var(--yellow)" stroke-width="3" fill="none" marker-end="url(#tip)">
+      <path d="M70 24V176"></path>
+      <path d="M130 24V176"></path>
+      <path d="M190 24V176"></path>
+      <path d="M250 24V176"></path>
+    </g>
+    <g
+      stroke="var(--on-stripe)"
+      stroke-width="3"
+      stroke-dasharray="7 5"
+      fill="none"
+      marker-end="url(#tip)"
+    >
+      <path d="M24 60H296"></path>
+      <path d="M24 100H296"></path>
+      <path d="M24 140H296"></path>
+    </g>
+  </svg>
+  <figcaption>
+    Sow half the seed one way (north to south, solid) and half crosswise (east to west, dashed):
+    <strong>
+      <span data-v="perPass">{perPass}</span> lb
+    </strong>{' '}
+    each way.
+  </figcaption>
+</figure>
+
+<style is:global>
+  .lawn-spreader {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+  }
+
+  .lawn-spreader svg {
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+
+  .lawn-spreader figcaption {
+    color: var(--ink);
+  }
+</style>

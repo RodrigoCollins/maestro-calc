@@ -55,7 +55,8 @@ export type OrganizationRef =
       readonly publishingPrinciples?: string;
     };
 
-const organizationLd = (organization: OrganizationRef) => ({
+/** The `Organization` node of a site's publisher, for its home graph and as an author. */
+export const organizationLd = (organization: OrganizationRef) => ({
   '@type': 'Organization',
   ...(typeof organization === 'string' ? { name: organization } : organization),
 });

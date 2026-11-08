@@ -1,7 +1,8 @@
 # Plan — Lawn and garden calculators (niche 4)
 
-Status: design approved 2026-11-07, build in progress (branch work by the build agent). The brand is provisional (section 7):
-buying a domain is the owner's call.
+Status: design approved 2026-11-07; built 2026-11-08 to the parity of Pool Figures, closed to
+search engines (`SITE.indexable` false) until the owner opens it (section 7). Brand: Lawn Figures,
+lawnfigures.com (bought).
 
 ## 1. Why this niche
 
@@ -254,23 +255,50 @@ calculators; Maestro Calc's `/landscaping` hub links back once the site is live.
 
 ## 7. Open items for the owner
 
-- Brand and domain. Verisign RDAP returned "not found" (looks unregistered) on 2026-11-07 for:
-  lawnfigures.com, sowmath.com, spreadermath.com, sowfigures.com, growfigures.com, turfrate.com,
-  sodfigures.com, turfnumbers.com, lawnrate.com. Taken: yardmath, lawnmath, turfmath, turftally,
-  lawnledger, yardfigures, seedrate, feedrate. A web search found no mark for "Lawn Figures",
-  "Sow Math" or "Spreader Math"; there are unrelated "SOW" marks. USPTO search itself was not run
-  (it needs a browser). Recommendation: Lawn Figures (lawnfigures.com) if the owner wants a
-  "Figures" family with Pool Figures; Spreader Math if the site should stand alone. Buying is
-  Rodrigo's call, then the Workers Builds project.
-- Spanish: not at launch. Spanish calculator searches return 0 ("calculadora de fertilizante",
-  "calculadora de jardin", "cuanto cobrar por cortar grama"; seodata 2026-11-07). Spanish product
-  searches exist ("fertilizante para pasto" 2,900, "fertilizantes para el pasto" 2,400) but are
-  shopping intent. The workforce is Hispanic (BLS CPS 2025, Table 18: landscaping services 41.9%
-  Hispanic of 1.73M; landscaping and groundskeeping workers 47.5%), but those are pros who price
-  jobs, which is the sister "cuánto cobrar" pricing plan (not in the repo as of 2026-11-07). The
-  lawn site links to it from the sod and fertilizer pages once it exists; a Spanish fertilizer
-  page can follow if Search Console shows Spanish queries.
-- One month of Ahrefs or Semrush for keyword difficulty, ideally in December 2026 before building,
-  to measure the frost-date and hardiness SERPs (Almanac, USDA) that the free views do not show.
-- Approve the launch date: build in December 2026, live by early January 2027, frost pages before
-  February.
+Built (2026-11-08): `apps/lawn` and `packages/lawn-core`, `packages/lawn-data`, the four
+calculators, the frost date pages, the methodology, the timing guide, about, editorial policy,
+privacy, `llms.txt`, sitemap, robots, `_headers`, the 404, the link preview, the e2e suites, the
+CI jobs and the IndexNow step. What only the owner can do:
+
+- Cloudflare: create the Workers Builds project `lawn-figures` (deploy command
+  `npx wrangler deploy --config apps/lawn/wrangler.jsonc`, as for Pool Figures) and attach
+  lawnfigures.com. Until the project exists, the `niche-sites` job of `deploy.yml` waits for its
+  check and fails for `lawn`.
+- Mail: forward `hello@lawnfigures.com` (the address the privacy page and the editorial policy give
+  for error reports) to the team's inbox.
+- Analytics: create the GA4 property and set `SITE.gaId` in `apps/lawn/src/site.config.ts`; the
+  loader is already in place and stays inactive while it is empty. The privacy page already
+  describes Google Analytics, so set the id at launch, not before opening the site.
+- Launch: flip `SITE.indexable` to `true` (and update `site.config.test.ts`). `check:site:lawn`
+  already checks every page as it will read at that moment (canonical, `og:url`, JSON-LD), so the
+  flip is one line. Then submit the sitemap in Search Console and Bing.
+- Pinterest tag: none, as the brief says; add one with the others if wanted.
+- Approve the launch date: live by early January 2027 for the March to April fertilizer peak, with
+  the frost pages before February.
+- Optional: one month of Ahrefs or Semrush for keyword difficulty, to measure the frost-date and
+  hardiness SERPs (Almanac, USDA) that the free views do not show.
+
+Decisions taken during the build:
+
+- Spanish: not at launch, as decided above. Spanish calculator searches return 0 (seodata
+  2026-11-07); a Spanish fertilizer page can follow if Search Console shows Spanish queries.
+- WhatsApp share on every calculator and on the frost pages, as Cuenta Horas does: a plain wa.me
+  link whose address carries the calculator's state.
+- Frost pages: one per state with every station of the NOAA 1991-2020 normals that has freeze
+  data, 50 states (the District of Columbia has no station with freeze data; its ZIP codes resolve
+  to a neighbouring station). A state with more than 200 stations is split into parts sorted by
+  name (`/frost-dates/texas`, `/frost-dates/texas/2`, ...) so each page stays inside the 49,152 B
+  HTML budget. The ZIP lookup downloads one static shard of ZIP codes by first digit and one JSON
+  file of the station's state, both built by `packages/lawn-data/scripts/build-frost.ts`.
+- Levels: 32°F only, at the 10, 50 and 90 percent levels. The 36°F and 28°F levels exist in the
+  files and are left out.
+- FAQ markup: the shared `seo-check` of `packages/site-kit` refuses `FAQPage` JSON-LD, so the
+  guide shows its questions as plain text.
+
+Left out, and why:
+
+- Hardiness zones by ZIP, plant spacing, watering and sprinkler run time: "Later" in section 3.
+- Warm-season nitrogen rates, state fertilizer laws, liquid fertilizer, centipedegrass,
+  St. Augustinegrass, bahiagrass, overseeding rates and a lime per-application maximum: no primary
+  page was read (section 4).
+- Embeds: the site has no embed pages; add them as Pool Figures does if the growth plan wants them.
