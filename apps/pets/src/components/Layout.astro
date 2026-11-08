@@ -1,0 +1,318 @@
+---
+import { Font } from 'astro:assets';
+import { footerLinks, LAYOUT_TEXTS, navLinks } from '../layout.ts';
+import { headOf } from '../seo/head.ts';
+import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
+import { SITE } from '../site.config.ts';
+
+interface Props {
+  readonly title: string;
+  readonly description: string;
+  /** False for a page that is never indexed and has no canonical: the 404. */
+  readonly indexed?: boolean;
+  /** The day the page's data says its figures were last checked (`YYYY-MM-DD`), for its JSON-LD. */
+  readonly modified?: string;
+}
+
+const { title, description, indexed = true, modified } = Astro.props;
+const path = canonicalPath(Astro.url.pathname);
+const { canonical, robots, preview } = headOf(path, { title, description }, indexed);
+const jsonLd = jsonLdOf(
+  path,
+  { title, description, ...(modified === undefined ? {} : { modified }) },
+  SITE.origin,
+);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    {robots !== undefined && <meta name="robots" content={robots} />}
+    {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content={ogTypeOf(pageKindOf(path))} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={preview['og:title']} />
+    <meta property="og:description" content={preview['og:description']} />
+    {canonical !== undefined && <meta property="og:url" content={canonical} />}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content={preview['og:image']} />
+    <meta property="og:image:width" content={preview['og:image:width']} />
+    <meta property="og:image:height" content={preview['og:image:height']} />
+    <meta name="twitter:card" content={preview['twitter:card']} />
+    {canonical !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
+    <Font cssVariable="--font-body" preload={[{ weight: '400' }]} />
+    <Font cssVariable="--font-display" preload={[{ weight: '900' }]} />
+    {SITE.gaId !== '' && (
+      <script
+        is:inline
+        src="/analytics.js"
+        data-ga={SITE.gaId}
+        data-host={new URL(SITE.origin).hostname}
+        defer
+      />
+    )}
+  </head>
+  <body>
+    <header class="bf-header">
+      <a class="bf-brand" href="/">
+        {SITE.name}
+      </a>
+      <nav aria-label={LAYOUT_TEXTS.navLabel}>
+        {navLinks().map(({ href, label }) => (
+          <a {href} aria-current={href === path ? 'page' : undefined}>
+            {label}
+          </a>
+        ))}
+      </nav>
+    </header>
+    <slot />
+    <footer class="bf-footer">
+      <p>{LAYOUT_TEXTS.warning}</p>
+      <ul>
+        {footerLinks().map(({ href, label }) => (
+          <li>
+            <a {href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  /* The bowl (plans/pets/PLAN.md, section 5): oat ground, plum ink, coral for shapes only (plum
+     text on coral), pastel cards with no border. Dark mode swaps the ground and ink. */
+  :root {
+    --oat: #fff4e0;
+    --ink: #2a1f3d;
+    --coral: #ff7a59;
+    --mint: #bfe3d0;
+    --butter: #ffe2b8;
+    --lilac: #e3d7f5;
+    --hero: #2a1f3d;
+    --hero-ink: #fff4e0;
+    --field: #fff4e0;
+    --field-ink: #2a1f3d;
+    --link: #5b2f9a;
+    --band-1: #f4b860;
+    --band-2: #e8553a;
+    --band-3: #9e1f14;
+    color: var(--ink);
+    font-family: var(--font-body), Arial, sans-serif;
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --oat: #1b1426;
+      --ink: #fff4e0;
+      --mint: #22402f;
+      --butter: #43321d;
+      --lilac: #35294d;
+      --hero: #35294d;
+      --hero-ink: #fff4e0;
+      --link: #c9aef5;
+    }
+  }
+
+  body {
+    margin: 0;
+    background: var(--oat);
+    line-height: 1.5;
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  .bf-header,
+  .bf-footer {
+    padding: 0.75rem max(1rem, calc((100% - 68rem) / 2));
+  }
+
+  .bf-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .bf-brand {
+    font-family: var(--font-display), Georgia, serif;
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .bf-header nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .bf-header nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border-radius: 999px;
+    background: var(--lilac);
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .bf-header nav a[aria-current='page'] {
+    background: var(--coral);
+    color: #2a1f3d;
+  }
+
+  .bf-page {
+    max-width: 44rem;
+    margin: 0 auto;
+    padding: 2rem 1rem 3rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .bf-page h1,
+  .bf-page h2 {
+    margin: 0;
+    font-family: var(--font-display), Georgia, serif;
+    line-height: 1.1;
+  }
+
+  .bf-page h1 {
+    font-size: clamp(2.25rem, 7vw, 3.5rem);
+    font-weight: 900;
+  }
+
+  .bf-page h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  .bf-page h3 {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .bf-page p,
+  .bf-page li {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+
+  .bf-kicker {
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+  }
+
+  .bf-byline {
+    font-size: 0.9375rem;
+  }
+
+  .bf-card {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 24px;
+    background: var(--lilac);
+  }
+
+  .bf-card.mint {
+    background: var(--mint);
+  }
+
+  .bf-card.butter {
+    background: var(--butter);
+  }
+
+  .bf-cards {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  .bf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+  }
+
+  .bf-table th,
+  .bf-table td {
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bf-scroll {
+    overflow-x: auto;
+  }
+
+  .bf-share {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    background: var(--coral);
+    color: #2a1f3d;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .bf-call {
+    padding: 1rem 1.25rem;
+    border-radius: 24px;
+    background: var(--band-3);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .bf-call a {
+    color: #fff;
+  }
+
+  .bf-footer {
+    display: grid;
+    gap: 0.5rem;
+    background: var(--lilac);
+  }
+
+  .bf-footer p {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .bf-footer ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bf-footer a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--ink);
+    font-size: 0.9375rem;
+  }
+</style>

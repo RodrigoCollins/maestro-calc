@@ -1,4 +1,9 @@
-import { Rational, type Calculator, type InputDescriptor, type OutputDescriptor } from '@maestro-calc/core';
+import {
+  Rational,
+  type Calculator,
+  type InputDescriptor,
+  type OutputDescriptor,
+} from '@maestro-calc/core';
 
 /**
  * What a calculator page changes when its result changes, in the words and markup of the page:
@@ -37,7 +42,9 @@ export const patchOf = (calculator: AnyCalculator, view: View, raw: Raw): Patch 
   const ran = calculator.run(raw);
   if (!ran.ok) return undefined;
   const figures = new Map(
-    ran.value.outputs.flatMap(({ key, value }) => (value instanceof Rational ? [[key, value]] : [])),
+    ran.value.outputs.flatMap(({ key, value }) =>
+      value instanceof Rational ? [[key, value]] : [],
+    ),
   );
   return view(figures, raw, new Set(ran.value.warnings.map(({ code }) => code)));
 };

@@ -1,13 +1,6 @@
 import { Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
-import {
-  amountText,
-  cupsText,
-  dateText,
-  kcalText,
-  quarterCups,
-  weightText,
-} from './format.ts';
+import { amountText, cupsText, dateText, kcalText, quarterCups, weightText } from './format.ts';
 
 describe('amountText', () => {
   it('writes an exact amount to the places asked, grouped by thousands', () => {

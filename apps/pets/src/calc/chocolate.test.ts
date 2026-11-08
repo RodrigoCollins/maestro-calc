@@ -98,7 +98,13 @@ describe('the chocolate result', () => {
   });
 
   it('keeps the marker on the end of the ruler for a dose past it, in the top band', () => {
-    const { flags, vars } = patch({ weight: '5', weightUnit: 'kg', type: 'cocoa-powder', amount: '100', amountUnit: 'g' });
+    const { flags, vars } = patch({
+      weight: '5',
+      weightUnit: 'kg',
+      type: 'cocoa-powder',
+      amount: '100',
+      amountUnit: 'g',
+    });
     expect(flags).toEqual({ band: '3' });
     expect(vars).toEqual({ pos: '100.0%' });
   });
