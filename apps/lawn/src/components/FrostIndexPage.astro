@@ -2,6 +2,7 @@
 import { FROST_CHECKED } from '../editorial.ts';
 import { frostPathOf, FROST_PAGES, FROST_STATES } from '../frost.ts';
 import { FROST_FOOTNOTE, FROST_TEXT } from '../frost-copy.ts';
+import { frostIndexSummary } from '../frost-summary.ts';
 import { pageTrailOf } from '../seo/breadcrumb.ts';
 import Byline from './Byline.astro';
 import Layout from './Layout.astro';
@@ -10,6 +11,7 @@ import Sources from './Sources.astro';
 import ZipLookup from './ZipLookup.astro';
 
 const { index } = FROST_TEXT;
+const summary = frostIndexSummary();
 const path = '/frost-dates';
 const partsOf = (slug: string) => FROST_PAGES.filter(({ state }) => state.slug === slug).length;
 ---
@@ -39,6 +41,12 @@ const partsOf = (slug: string) => FROST_PAGES.filter(({ state }) => state.slug =
           </li>
         ))}
       </ul>
+    </section>
+    <section class="lawn-section" aria-labelledby="side-by-side">
+      <h2 id="side-by-side">{summary.h2}</h2>
+      {summary.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
     </section>
     <section class="lawn-section" aria-labelledby="reading">
       <h2 id="reading">How to read the dates</h2>
