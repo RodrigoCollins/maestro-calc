@@ -54,7 +54,7 @@ price per sq ft), materials, optional overhead % and profit %, the itemized tota
 "PRESUPUESTO", a WhatsApp share of the itemized text, print / save as PDF (print stylesheet), and
 the "¿Tu tarifa está bien?" card.
 
-Data pages (BLS OEWS, May 2025): one page per trade and state ("cuánto gana un pintor en Texas"), a
+Data pages (BLS OEWS, May 2025; 253 trade and state pages per language, 4 combinations had no estimate): one page per trade and state ("cuánto gana un pintor en Texas"), a
 state index per trade, and a hub. Guides (3): how to build a quote, markup versus margin, how to set
 an hourly rate. Plus methodology, about, editorial policy, privacy, embeds, `llms.txt`.
 
@@ -114,9 +114,16 @@ preview and the usage tracker. Root scripts `build:cobro`, `check:site:cobro`, `
 (port 8792). Spanish is the root language: the Spanish path is the primary one and English lives
 under `/en`.
 
+Built decisions: the site is dark only (tokens in `apps/cobro/src/styles/site.css`, contrast measured
+there); FAQ sections are visible but carry no FAQPage JSON-LD, because `@maestro-calc/site-kit`'s
+SEO check refuses it (Google limits that rich result); the contact address `hola@cuantolecobro.com`
+follows the sibling sites and needs the owner's mail routing; `SITE.indexable` is `false` and `gaId`
+empty, so every page is `noindex` and no analytics loads, while `check:site:cobro` and the growth
+contract read the site as launched.
+
 ## 7. Open items for the owner
 
-- Buy cuantolecobro.com; create the Workers Builds project (`apps/cobro/wrangler.jsonc`); flip
+- Domain bought (per the coordinator); route `hola@cuantolecobro.com`; create the Workers Builds project named `cuanto-le-cobro` (until it exists, the `niche-sites (cobro)` job of deploy.yml fails on each push to main) (`apps/cobro/wrangler.jsonc`); flip
   `SITE.indexable`; add the GA4 measurement id to `SITE.gaId`.
 - Affiliate programs: none named. Jobber's page (getjobber.com/partners/affiliate, 2026-11-07)
   states "industry-leading commission" and "no minimum sales requirements" with no figures, so no
