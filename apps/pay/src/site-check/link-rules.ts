@@ -1,5 +1,6 @@
 import { nearestOf } from '../long-tail/nearest.ts';
 import {
+  DAYS,
   DIFFERENTIALS,
   DOUBLES,
   JOBS,
@@ -40,6 +41,7 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
   { calculator: 'decimal-hours', members: MINUTES },
   { calculator: 'shift-differential', members: DIFFERENTIALS },
   { calculator: 'tipped-wage', members: TIPPED },
+  { calculator: 'hours', members: DAYS },
 ];
 
 /**

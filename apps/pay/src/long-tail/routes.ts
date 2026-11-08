@@ -410,8 +410,33 @@ export const TIPPED: readonly Tipped[] = [
   tipsPerHour('800', '40'),
 ];
 
+/**
+ * A number of hours people ask the calendar days of, "how many days is 72 hours": plain
+ * arithmetic, 24 hours a day, set beside the same hours as working time (8-hour workdays, 40-hour
+ * workweeks, 2,080-hour work years). The hours calculator lists them.
+ */
+export interface Days {
+  readonly kind: 'days';
+  readonly hours: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const days = (hours: number): Days => ({
+  kind: 'days',
+  hours,
+  slug: {
+    en: `how-many-days-is-${String(hours)}-hours`,
+    es: `cuantos-dias-son-${String(hours)}-horas`,
+  },
+});
+
+/** In ascending order: the hours calculator lists them, and a page links its nearest, so. */
+export const DAYS: readonly Days[] = [
+  48, 72, 96, 100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
+].map(days);
+
 /** A long-tail page's job, of any family. */
-export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential | Tipped;
+export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential | Tipped | Days;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
 export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
@@ -422,6 +447,7 @@ export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
   ...DOUBLES,
   ...DIFFERENTIALS,
   ...TIPPED,
+  ...DAYS,
 ];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>
