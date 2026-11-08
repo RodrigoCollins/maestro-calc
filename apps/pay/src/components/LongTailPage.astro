@@ -68,9 +68,14 @@ const page = longTailPageOf(job, lang);
           </ol>
         )}
         {section.table !== undefined && (
-          <div class="table-scroll">
+          <div
+            class="table-scroll"
+            role="region"
+            aria-labelledby={`${section.id}-caption`}
+            tabindex="0"
+          >
             <table class="ledger figures">
-              <caption>{section.table.caption}</caption>
+              <caption id={`${section.id}-caption`}>{section.table.caption}</caption>
               <thead>
                 <tr>
                   {section.table.head.map((cell) => (
