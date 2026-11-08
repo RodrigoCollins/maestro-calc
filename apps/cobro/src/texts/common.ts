@@ -42,6 +42,8 @@ export interface CommonText {
     readonly body: string;
     readonly national: string;
     readonly link: string;
+    readonly helpers: string;
+    readonly helpersLink: string;
   };
   readonly chips: { readonly label: string };
   readonly related: { readonly guides: string; readonly wages: string; readonly other: string };
@@ -108,6 +110,8 @@ export const COMMON: Readonly<Record<Lang, CommonText>> = {
       body: 'El Departamento de Trabajo de EE. UU. (BLS) publica cuánto pagan los empleadores por hora en este oficio. Un salario no es una tarifa: tu tarifa también tiene que cubrir tus costos generales y tu ganancia.',
       national: 'Promedio nacional (mayo de 2025): {mean} por hora; mediana: {median} por hora.',
       link: 'Ver el salario de este oficio en cada estado',
+      helpers: 'Si tienes ayudantes, calcula sus horas extra en Cuenta Horas:',
+      helpersLink: 'calculadora de horas extra',
     },
     chips: { label: 'Elige tu oficio' },
     related: {
@@ -180,6 +184,8 @@ export const COMMON: Readonly<Record<Lang, CommonText>> = {
       body: 'The U.S. Bureau of Labor Statistics (BLS) publishes what employers pay per hour in this trade. A wage is not a rate: your rate also has to cover your overhead and your profit.',
       national: 'National average (May 2025): {mean} an hour; median: {median} an hour.',
       link: 'See this trade’s wage in every state',
+      helpers: 'If you have helpers, work out their overtime at Cuenta Horas:',
+      helpersLink: 'overtime calculator',
     },
     chips: { label: 'Choose your trade' },
     related: { guides: 'Guides to quoting', wages: 'Wages by state', other: 'Other trades' },

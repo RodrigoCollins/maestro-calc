@@ -41,6 +41,11 @@ const t = view.detailTexts;
 const national =
   view.national === undefined ? undefined : fill(common.rateCard.national, view.national);
 const url = canonicalUrl(view.path, SITE.origin);
+// Cuenta Horas (apps/pay) serves the same audience: its overtime calculator, in each language
+const SISTER_OVERTIME = {
+  es: 'https://cuentahoras.com/es/calculadora-de-horas-extra',
+  en: 'https://cuentahoras.com/overtime-calculator',
+} as const;
 ---
 
 <Layout
@@ -170,6 +175,12 @@ const url = canonicalUrl(view.path, SITE.origin);
         )}
         <p>
           <a href={WAGE_STEMS[trade][lang]}>{common.rateCard.link}</a>
+        </p>
+        <p>
+          {common.rateCard.helpers}{' '}
+          <a href={SISTER_OVERTIME[lang]} rel="noopener">
+            {common.rateCard.helpersLink}
+          </a>
         </p>
       </section>
 
