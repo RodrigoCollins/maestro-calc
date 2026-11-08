@@ -1,0 +1,63 @@
+---
+import { ACCESSED, FACTOR_TABLE, LEFT_OUT, METHOD_SECTIONS } from '../methodology.ts';
+import Layout from './Layout.astro';
+
+const title = 'How We Work It Out: Formulas and Sources | Bowl Figures';
+const description =
+  'The formulas, Merck and AAHA energy factors, sources with the day they were read, and hand-worked cases behind every Bowl Figures calculator.';
+---
+
+<Layout {title} {description} modified={ACCESSED}>
+  <main class="bf-page">
+    <h1>How we work it out</h1>
+    <p>
+      Every figure comes from the Merck Veterinary Manual, the AAHA guidelines or AAFCO, read on {ACCESSED}.
+      Each result is a starting point to check with your pet’s veterinarian.
+    </p>
+    <section class="bf-card" aria-labelledby="factors">
+      <h2 id="factors">Energy factors</h2>
+      <p>
+        Maintenance energy is the resting energy times a factor. The two sources disagree on some
+        rows; the calculators use Merck’s value and show the whole range.
+      </p>
+      <div class="bf-scroll">
+        <table class="bf-table">
+          <thead><tr><th>Status</th><th>Merck</th><th>AAHA 2021</th></tr></thead>
+          <tbody>
+            {FACTOR_TABLE.map(({ status, merck, aaha }) => (
+              <tr><td>{status}</td><td>{merck}</td><td>{aaha}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {METHOD_SECTIONS.map(({ id, title: name, href, method, note, sources, cases }) => (
+      <section class="bf-card mint" aria-labelledby={id}>
+        <h2 id={id}>{name}</h2>
+        <p>{method}</p>
+        <p>{note}</p>
+        <h3>Hand-worked cases</h3>
+        <ul>
+          {cases.map(({ text, result, unit }) => (
+            <li>{text} <strong>{result} {unit}</strong></li>
+          ))}
+        </ul>
+        <h3>Sources</h3>
+        <ul>
+          {sources.map(({ name: label, url }) => (
+            <li><a href={url}>{label}</a>, read {ACCESSED}</li>
+          ))}
+        </ul>
+        <p><a href={href}>Open the calculator</a></p>
+      </section>
+    ))}
+    <section class="bf-card butter" aria-labelledby="left-out">
+      <h2 id="left-out">Left out, and why</h2>
+      <ul>
+        {LEFT_OUT.map(({ what, why }) => (
+          <li><strong>{what}.</strong> {why}</li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>

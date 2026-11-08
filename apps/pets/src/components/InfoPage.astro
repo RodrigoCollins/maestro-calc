@@ -1,0 +1,33 @@
+---
+import type { TextPage } from '../editorial.ts';
+import Layout from './Layout.astro';
+
+/** An editorial policy, about or privacy page: sections of paragraphs, sources and a link. */
+interface Props {
+  readonly page: TextPage;
+}
+
+const { title, description, h1, lead, sections, reviewed } = Astro.props.page;
+---
+
+<Layout {title} {description}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <p>{lead}</p>
+    {sections.map(({ id, heading, paragraphs, sources, link }) => (
+      <section class="bf-card" aria-labelledby={`h-${id}`}>
+        <h2 id={`h-${id}`}>{heading}</h2>
+        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {sources !== undefined && (
+          <ul>
+            {sources.map(({ name, url }) => (
+              <li><a href={url}>{name}</a></li>
+            ))}
+          </ul>
+        )}
+        {link !== undefined && <p><a href={link.href}>{link.label}</a></p>}
+      </section>
+    ))}
+    <p class="bf-byline">{reviewed}</p>
+  </main>
+</Layout>
