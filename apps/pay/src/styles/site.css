@@ -830,6 +830,13 @@ a.tool:hover .tool-title {
   }
 }
 
+/* A long-tail page's own sections, set as prose apart from the answer box. */
+.explained {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
 /* A long-tail page's own tables: a caption, small column heads, cells that wrap on a phone. */
 .figures caption {
   padding: 0.5rem 0.7rem;
