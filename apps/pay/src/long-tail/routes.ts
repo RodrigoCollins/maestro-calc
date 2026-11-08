@@ -29,11 +29,17 @@ export interface Job {
   readonly slug: Readonly<Record<Lang, string>>;
 }
 
+/** An amount as a slug reads it: `17.50` is `17-50`. */
+const amountSlugOf = (amount: string): string => amount.replace('.', '-');
+
 const hourly = (amount: string): Job => ({
   kind: 'convert',
   amount,
   per: 'hour',
-  slug: { en: `${amount}-an-hour-is-how-much-a-year`, es: `${amount}-la-hora-cuanto-es-al-ano` },
+  slug: {
+    en: `${amountSlugOf(amount)}-an-hour-is-how-much-a-year`,
+    es: `${amountSlugOf(amount)}-la-hora-cuanto-es-al-ano`,
+  },
 });
 
 const salary = (amount: string): Job => ({
@@ -52,9 +58,13 @@ const overtime = (amount: string): Job => ({
 
 /** Each kind in ascending order: the calculators list them in this order. */
 export const JOBS: readonly Job[] = [
+  hourly('12'),
+  hourly('13'),
+  hourly('14'),
   hourly('15'),
   hourly('16'),
   hourly('17'),
+  hourly('17.50'),
   hourly('18'),
   hourly('19'),
   hourly('20'),
@@ -66,13 +76,27 @@ export const JOBS: readonly Job[] = [
   hourly('26'),
   hourly('27'),
   hourly('28'),
+  hourly('29'),
   hourly('30'),
+  hourly('31'),
   hourly('32'),
+  hourly('33'),
   hourly('35'),
+  hourly('36'),
+  hourly('37'),
+  hourly('38'),
   hourly('40'),
+  hourly('42'),
   hourly('45'),
   hourly('50'),
+  hourly('55'),
   hourly('60'),
+  hourly('65'),
+  hourly('70'),
+  hourly('75'),
+  hourly('80'),
+  hourly('100'),
+  salary('25000'),
   salary('30000'),
   salary('35000'),
   salary('40000'),
@@ -88,8 +112,11 @@ export const JOBS: readonly Job[] = [
   salary('90000'),
   salary('95000'),
   salary('100000'),
+  salary('110000'),
   salary('120000'),
+  salary('130000'),
   salary('150000'),
+  salary('200000'),
   overtime('15'),
   overtime('16'),
   overtime('17'),
