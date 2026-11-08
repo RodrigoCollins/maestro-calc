@@ -30,6 +30,7 @@ describe('ROUTES', () => {
       ['chocolate-chart', '/dog-chocolate-toxicity-chart'],
       ['label-guide', '/how-to-read-pet-food-label'],
       ['breed-guide', '/dog-food-by-breed'],
+      ['chocolate-guide', '/my-dog-ate-chocolate'],
       ['methodology', '/methodology'],
       ['about', '/about'],
       ['editorial', '/editorial-policy'],

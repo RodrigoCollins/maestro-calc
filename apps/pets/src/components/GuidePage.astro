@@ -1,4 +1,5 @@
 ---
+import { CALL_NOW, POISON_LINE } from '../calc/chocolate.ts';
 import { guideOf } from '../guides.ts';
 import { ROUTES } from '../routes.ts';
 import Byline from './Byline.astro';
@@ -11,12 +12,14 @@ interface Props {
 }
 
 const guide = guideOf(Astro.props.path);
-const { title, description, h1, lead, checked, sections, calculators, sources } = guide;
+const { title, description, h1, lead, checked, sections, calculators, sources, table, questions } =
+  guide;
 const LABELS: Readonly<Record<string, string>> = {
   dog: 'Dog food calculator',
   cat: 'Cat food calculator',
   puppy: 'Puppy feeding calculator',
   kitten: 'Kitten feeding calculator',
+  chocolate: 'Dog chocolate toxicity calculator',
 };
 const tools = calculators.flatMap((path) => ROUTES.filter((route) => route.path === path));
 ---
@@ -26,14 +29,74 @@ const tools = calculators.flatMap((path) => ROUTES.filter((route) => route.path 
     <h1>{h1}</h1>
     <Byline {checked} />
     <p>{lead}</p>
+    {guide.callNow === true && (
+      <p class="bf-call" role="note">
+        {CALL_NOW} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+      </p>
+    )}
     {sections.map(({ id, heading, paragraphs }) => (
-      <section aria-labelledby={id}>
-        <h2 {id}>{heading}</h2>
-        {paragraphs.map((paragraph) => (
-          <p>{paragraph}</p>
+      <>
+        <section aria-labelledby={id}>
+          <h2 {id}>{heading}</h2>
+          {paragraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </section>
+        {table !== undefined && table.after === id && (
+          <section aria-labelledby={table.id}>
+            <h2 id={table.id}>{table.heading}</h2>
+            {table.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+            <div
+              class="bf-scroll"
+              tabindex="0"
+              role="region"
+              aria-label={`${table.heading}, scrolls sideways on a narrow screen`}
+            >
+              <table class="bf-table">
+                <thead>
+                  <tr>
+                    {table.columns.map((column) => (
+                      <th scope="col">{column}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.rows.map(([first, ...cells]) => (
+                    <tr>
+                      <th scope="row">{first}</th>
+                      {cells.map((cell) => (
+                        <td>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>{table.linksHeading}</p>
+            <ul>
+              {table.links.map(({ href, label }) => (
+                <li>
+                  <a {href}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </>
+    ))}
+    {questions !== undefined && (
+      <section aria-labelledby="faq">
+        <h2 id="faq">Frequently asked questions</h2>
+        {questions.map(({ question, answer }) => (
+          <>
+            <h3>{question}</h3>
+            <p>{answer}</p>
+          </>
         ))}
       </section>
-    ))}
+    )}
     <section class="bf-card mint" aria-labelledby="bf-tools">
       <h2 id="bf-tools">Calculators</h2>
       <ul>

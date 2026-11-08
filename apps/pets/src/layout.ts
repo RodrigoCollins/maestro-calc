@@ -24,6 +24,7 @@ const FOOTER: readonly NavLink[] = [
   { id: 'chocolate-chart', label: 'Chocolate toxicity chart' },
   { id: 'label-guide', label: 'How to read a pet food label' },
   { id: 'breed-guide', label: 'Dog food by breed' },
+  { id: 'chocolate-guide', label: 'My dog ate chocolate' },
   { id: 'methodology', label: 'How we work it out' },
   { id: 'about', label: 'About' },
   { id: 'editorial', label: 'Editorial policy' },

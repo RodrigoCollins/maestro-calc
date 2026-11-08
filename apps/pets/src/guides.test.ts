@@ -25,6 +25,7 @@ describe('the guides', () => {
     expect(GUIDES.map(({ path }) => path)).toEqual([
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
+      '/my-dog-ate-chocolate',
     ]);
     for (const { path } of GUIDES)
       expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');

@@ -17,6 +17,7 @@ describe('the home', () => {
         '/dog-feeding-chart',
         '/dog-food-by-breed',
         '/how-to-read-pet-food-label',
+        '/my-dog-ate-chocolate',
         '/puppy-feeding-chart',
       ].sort(),
     );

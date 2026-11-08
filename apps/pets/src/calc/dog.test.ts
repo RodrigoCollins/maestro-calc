@@ -41,6 +41,11 @@ describe('the dog page', () => {
     }
   });
 
+  it('answers the search "how much food should I feed my dog" in its title and description', () => {
+    expect(DOG_PAGE.title).toBe('How Much to Feed a Dog: Dog Food Calculator | Bowl Figures');
+    expect(DOG_PAGE.description).toMatch(/^How much food should you feed your dog a day\?/);
+  });
+
   it('starts the puppy page from a puppy under 4 months and still runs', () => {
     expect(PUPPY_PAGE.initial['status']).toBe('puppy-young');
     expect(dogFood.validate(PUPPY_PAGE.initial).ok).toBe(true);
