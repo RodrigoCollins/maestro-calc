@@ -63,6 +63,10 @@ jobs:
         with:
           name: lawn-dist
           path: apps/lawn/dist
+          if-no-files-found: error
+          retention-days: 1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
           name: pets-dist
           path: apps/pets/dist
           if-no-files-found: error
@@ -655,6 +659,10 @@ jobs:
         with:
           name: playwright-test-results-lawn-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-lawn
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: failure()
+        with:
           name: playwright-test-results-pets-${{ matrix.suite }}-${{ matrix.shard }}
           path: tooling/site-browser/test-results-pets
           if-no-files-found: ignore
