@@ -27,6 +27,28 @@ const [startInput, endInput, breakInput] = hoursBetween.inputs;
 const warnings = Object.entries(t.warnings);
 const common = commonLinksOf('shift', lang);
 const days = commonLinksOf('days', lang);
+const live = (['time-offset', 'until', 'days-from'] as const).map((family) => ({
+  family,
+  ...commonLinksOf(family, lang),
+}));
+const LIVE_INTRO = {
+  en: {
+    'time-offset':
+      'A time some hours ago or some minutes from now is your clock moved by the offset, with the date changing when the count crosses midnight. Each page shows the time from your clock and, for every hour of the day, the time then and whether it falls on the day before.',
+    until:
+      'How long until a time of day is that time on a 24-hour clock minus the time on yours, plus 24 hours once it has passed. Each page counts it from your clock and from every hour, in hours and minutes and in decimal hours.',
+    'days-from':
+      'A date some days from today moves the weekday by the days left over after whole weeks; a date some months from today keeps the day of the month, or takes the last day of a shorter month. Each page gives the date from your calendar, the workdays in between and the dates from each month.',
+  },
+  es: {
+    'time-offset':
+      'Una hora de hace unas horas o dentro de unos minutos es tu reloj movido por esa cantidad, y la fecha cambia cuando la cuenta cruza la medianoche. Cada página muestra la hora desde tu reloj y, para cada hora del día, la hora de entonces y si cae en el día anterior.',
+    until:
+      'Lo que falta para una hora del día es esa hora en reloj de 24 horas menos la de tu reloj, más 24 horas si ya pasó. Cada página lo cuenta desde tu reloj y desde cada hora, en horas y minutos y en horas decimales.',
+    'days-from':
+      'Una fecha a unos días de hoy mueve el día de la semana según los días que sobran después de las semanas enteras; una fecha a unos meses de hoy mantiene el número del día, o toma el último día de un mes más corto. Cada página da la fecha desde tu calendario, los días hábiles en medio y las fechas desde cada mes.',
+  },
+} as const;
 ---
 
 <SiteLayout
@@ -135,6 +157,20 @@ const days = commonLinksOf('days', lang);
         ))}
       </ul>
     </section>
+
+    {live.map(({ family, heading, links }) => (
+      <section aria-labelledby={`${family}-heading`}>
+        <h2 id={`${family}-heading`}>{heading}</h2>
+        <p>{LIVE_INTRO[lang][family]}</p>
+        <ul class="link-list">
+          {links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
   </main>
   <script src="../client/hours.ts"></script>
 </SiteLayout>

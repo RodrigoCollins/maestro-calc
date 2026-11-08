@@ -1,3 +1,5 @@
+import { LIVE_JOBS, pathOf } from '../long-tail/routes.ts';
+
 /** The built calculator pages of the route table. */
 const ROUTED = [
   'time-card-calculator.html',
@@ -27,5 +29,13 @@ const ROUTED = [
 /** The embed of each (`src/embed/embeds.ts`): `/embed` + its path, the same one calculator script. */
 export const EMBED_PAGES = ROUTED.map((page) => `embed/${page}`);
 
+/**
+ * The live time pages (`LIVE_JOBS`), in both languages: their one script, `src/client/time-now.ts`,
+ * fills the answer from the visitor's clock, so each is held to a calculator page's script budget.
+ */
+export const LIVE_PAGES: readonly string[] = LIVE_JOBS.flatMap((job) =>
+  (['en', 'es'] as const).map((lang) => `${pathOf(job, lang).slice(1)}.html`),
+);
+
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */
-export const CALCULATOR_PAGES = [...ROUTED, ...EMBED_PAGES] as const;
+export const CALCULATOR_PAGES: readonly string[] = [...ROUTED, ...EMBED_PAGES, ...LIVE_PAGES];
