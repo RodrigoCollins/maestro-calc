@@ -21,6 +21,7 @@ import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, SALT, STABILIZER } from './doses.ts';
 import { amountText, outputText, volumeText } from './format.ts';
+import { GALLONS_GUIDE } from './gallons.ts';
 import { CALCIUM_GUIDE, PH_GUIDE, SHOCK_GUIDE } from './guide.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
@@ -948,6 +949,7 @@ const volumePage = ({
       href: linkTo(poolVolume, VOLUME_TEXTS.path, main.raw),
       label: 'Work it out for your pool',
     },
+    guide: { href: GALLONS_GUIDE.path, label: GALLONS_GUIDE.card.title },
     method: `${VOLUME_TEXTS.method} ${VOLUME_TEXTS.note}`,
     card: { title: `Gallons in a ${name}`, summary: `${gallons} gallons, ${at}.` },
     gallons: valueIn(volume, gal).toNumber(),

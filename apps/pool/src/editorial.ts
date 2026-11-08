@@ -1,6 +1,7 @@
 import { checkedText } from './charts.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART } from './dosing.ts';
+import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import {
   CALCIUM_GUIDE,
   CLOSING_GUIDE,
@@ -34,6 +35,8 @@ export const citedSources = (): GuideSource[] => [
     PH_GUIDE,
     CALCIUM_GUIDE,
     SWIM_GUIDE,
+    GALLONS_GUIDE,
+    OLYMPIC_GUIDE,
     CHEMISTRY_CHART,
     DOSING_CHART,
   ].flatMap(({ sources }) => Object.values<GuideSource>(sources)),

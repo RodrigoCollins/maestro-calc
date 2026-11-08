@@ -18,6 +18,7 @@ import {
   SHOCK_GUIDE,
   type GuideSource,
 } from './guide.ts';
+import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { HOME_TOOLS } from './home.ts';
 import { footerLinksOf } from './layout.ts';
 import { SWIM_GUIDE } from './swim.ts';
@@ -47,6 +48,8 @@ describe.each([
   ['pool shock', SHOCK_GUIDE],
   ['pool pH', PH_GUIDE],
   ['calcium hardness', CALCIUM_GUIDE],
+  ['pool gallons', GALLONS_GUIDE],
+  ['Olympic pool gallons', OLYMPIC_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -480,6 +483,8 @@ describe('the guides', () => {
       CHEMISTRY_CHART.path,
       DOSING_CHART.path,
       VOLUME_CHART.path,
+      GALLONS_GUIDE.path,
+      OLYMPIC_GUIDE.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
@@ -526,6 +531,8 @@ describe('the calculators each guide explains', () => {
                 SHOCK_GUIDE,
                 PH_GUIDE,
                 CALCIUM_GUIDE,
+                GALLONS_GUIDE,
+                OLYMPIC_GUIDE,
               ]
                 .filter(({ path }) => path === guide.path)
                 .flatMap(({ steps }) =>

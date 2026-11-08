@@ -15,6 +15,7 @@ import {
   STABILIZER_ES,
 } from './doses-es.ts';
 import { DOSING_CHART_ES } from './dosing-es.ts';
+import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import {
@@ -88,6 +89,8 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'shock-guide': { name: SHOCK_GUIDE_ES.h1, note: SHOCK_GUIDE_ES.description },
   'ph-guide': { name: PH_GUIDE_ES.h1, note: PH_GUIDE_ES.description },
   'calcium-guide': { name: CALCIUM_GUIDE_ES.h1, note: CALCIUM_GUIDE_ES.description },
+  'gallons-guide': { name: GALLONS_GUIDE_ES.h1, note: GALLONS_GUIDE_ES.description },
+  'olympic-guide': { name: OLYMPIC_GUIDE_ES.h1, note: OLYMPIC_GUIDE_ES.description },
   about: { name: ABOUT_TEXTS.es.h1, note: ABOUT_TEXTS.es.description },
   editorial: { name: EDITORIAL_TEXTS.es.h1, note: EDITORIAL_TEXTS.es.description },
   privacy: { name: PRIVACY_TEXTS.es.h1, note: PRIVACY_TEXTS.es.description },

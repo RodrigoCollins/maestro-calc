@@ -59,6 +59,12 @@ describe('ROUTES', () => {
         '/es/tabla-de-dosis-de-quimicos-para-piscina',
       ],
       ['volume-chart', '/pool-volume-chart', '/es/tabla-de-volumen-de-piscina'],
+      ['gallons-guide', '/how-many-gallons-is-my-pool', '/es/cuantos-galones-tiene-mi-piscina'],
+      [
+        'olympic-guide',
+        '/how-many-gallons-in-an-olympic-pool',
+        '/es/cuantos-galones-tiene-una-piscina-olimpica',
+      ],
       ['charts', '/charts', '/es/datos-y-tablas'],
       ['opening-guide', '/opening-your-pool', '/es/como-abrir-tu-piscina'],
       ['closing-guide', '/closing-your-pool', '/es/como-cerrar-tu-piscina'],
