@@ -28,7 +28,7 @@ const calculators = calculatorsOf(guide);
     </section>
   </Fragment>
   <main class="lawn-main">
-    {guide.sections.map(({ id, heading, paragraphs, items }) => (
+    {guide.sections.map(({ id, heading, paragraphs, items, links }) => (
       <section class="lawn-section" aria-labelledby={id}>
         <h2 {id}>{heading}</h2>
         {paragraphs.map((paragraph) => (
@@ -38,6 +38,15 @@ const calculators = calculatorsOf(guide);
           <ul>
             {items.map((item) => (
               <li>{item}</li>
+            ))}
+          </ul>
+        )}
+        {links !== undefined && (
+          <ul>
+            {links.map(({ href, label }) => (
+              <li>
+                <a {href}>{label}</a>
+              </li>
             ))}
           </ul>
         )}

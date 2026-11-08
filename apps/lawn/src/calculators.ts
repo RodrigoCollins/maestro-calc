@@ -129,7 +129,14 @@ export const GRASS_SEED: CalculatorPage = {
   method:
     'Pounds of seed = the extension rate for your grass (pounds per 1,000 sq ft, a low and a high end) × the area ÷ 1,000. Sow half the seed in one direction and half crosswise.',
   note: 'For a new lawn. Rates for overseeding an existing lawn are not included: no extension table for them is cited yet. Bags are counted at each end of the range.',
-  guides: ['timing-guide'],
+  guides: [
+    'planting-guide',
+    'timing-guide',
+    'bermuda-seed',
+    'zoysia-seed',
+    'tall-fescue-seed',
+    'ryegrass-seed',
+  ],
   maestro: ['topsoil'],
 };
 
