@@ -22,6 +22,23 @@ const clockOf = (minutes: number): string => {
   return `${time} ${hour < 12 ? 'am' : 'pm'}`;
 };
 
+/** Minutes from midnight to noon: a morning time is before it. */
+const NOON = 720;
+
+/**
+ * The start and end as people type them in a search: `9 AM` and `5 PM` in English; in Spanish a
+ * day shift from a morning to an afternoon drops the am and pm (`de 9 a 5`), and every other shift
+ * keeps them, so 7 pm to 7 am never reads as 7 am to 7 pm.
+ */
+const searchedOf = (shift: Shift, lang: Lang): { readonly start: string; readonly end: string } => {
+  const start = clockOf(shift.start);
+  const end = clockOf(shift.end);
+  if (lang === 'en') return { start: start.toUpperCase(), end: end.toUpperCase() };
+  const day = shift.start < NOON && shift.end >= NOON && shift.end > shift.start;
+  const bare = (clock: string): string => clock.replace(/ [ap]m$/, '');
+  return day ? { start: bare(start), end: bare(end) } : { start, end };
+};
+
 /** A time as the hours calculator reads it, on a 24-hour clock: `17:00`. */
 const fieldOf = (minutes: number): string =>
   `${String(Math.floor(minutes / 60))}:${String(minutes % 60).padStart(2, '0')}`;
@@ -35,6 +52,8 @@ const partsOf = (hours: Rational): { readonly h: number; readonly min: number } 
 const WORDS = {
   en: {
     question: (start: string, end: string): string => `How many hours is ${start} to ${end}?`,
+    headline: (start: string, end: string, hours: string): string =>
+      `${start} to ${end} is ${hours}`,
     hours: (hours: Rational): string => {
       const { h, min } = partsOf(hours);
       const whole = `${String(h)} hour${h === 1 ? '' : 's'}`;
@@ -62,6 +81,8 @@ const WORDS = {
   },
   es: {
     question: (start: string, end: string): string => `¿Cuántas horas son de ${start} a ${end}?`,
+    headline: (start: string, end: string, hours: string): string =>
+      `De ${start} a ${end} son ${hours}`,
     hours: (hours: Rational): string => {
       const { h, min } = partsOf(hours);
       const whole = `${String(h)} hora${h === 1 ? '' : 's'}`;
@@ -135,11 +156,14 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   const end = clockOf(shift.end);
   const figure = w.hours(hours);
   const question = questionOf(shift, lang);
-  const lead = [
-    w.answer(start, end, figure, decimalHoursText(hours)),
-    ...(overnight ? [w.overnight(end)] : []),
-    w.week(w.hours(short), decimalHoursText(short), hoursText(week(short))),
-  ].join(' ');
+  const searched = searchedOf(shift, lang);
+  const leadFrom = (from: string, to: string): string =>
+    [
+      w.answer(from, to, figure, decimalHoursText(hours)),
+      ...(overnight ? [w.overnight(end)] : []),
+      w.week(w.hours(short), decimalHoursText(short), hoursText(week(short))),
+    ].join(' ');
+  const lead = leadFrom(start, end);
   const rows = [
     { key: 'decimal', label: w.rows.decimal, value: decimalHoursText(hours) },
     { key: 'break30', label: w.rows.break30, value: bothOf(short) },
@@ -154,9 +178,9 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   if (!validated.ok) throw new Error(`the shift ${shift.slug.en} must validate`);
   return {
     kicker: t.kicker,
-    title: titleOf(`${question} ${figure}`),
+    title: titleOf(w.headline(searched.start, searched.end, figure)),
     description: descriptionOf(
-      lead,
+      leadFrom(searched.start, searched.end),
       rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
     ),
     h1: question,

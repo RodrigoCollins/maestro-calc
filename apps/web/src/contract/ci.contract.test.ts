@@ -160,8 +160,12 @@ const petsCoreShards = await importFromRoot<{ shardNames: string[] }>(
 const poolCoreShards = await importFromRoot<{ shardNames: string[] }>(
   'packages/pool-core/stryker.config.mjs',
 );
-// the shards of every package that has a Stryker config, core first
+const cobroCoreShards = await importFromRoot<{ shardNames: string[] }>(
+  'packages/cobro-core/stryker.config.mjs',
+);
+// the shards of every package that has a Stryker config, in the order of the directory scan
 const shardNames = [
+  ...cobroCoreShards.shardNames,
   ...coreShards.shardNames,
   ...dataShards.shardNames,
   ...lawnCoreShards.shardNames,
