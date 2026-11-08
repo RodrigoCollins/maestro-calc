@@ -80,7 +80,7 @@ Left out, on purpose:
 - Wages: U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics (OEWS), May
   2025, state estimates, hourly mean (data type 03) and hourly median (08), read through the BLS
   Public Data API (https://api.bls.gov/publicAPI/v1/timeseries/data/, series
-  `OEUS<state fips>00000<industry 000000><SOC>03|08`), accessed 2026-11-07. Occupations: 37-2012
+  `OEUS<state fips>00000<industry 000000><SOC>03|08`), accessed 2026-11-08. Occupations: 37-2012
   maids and housekeeping cleaners, 47-2141 painters (construction and maintenance), 47-2081 drywall
   and ceiling tile installers, 47-2051 cement masons and concrete finishers, 37-3011 landscaping and
   groundskeeping workers. `apps/cobro/scripts/fetch-wages.ts` rebuilds the numbers-only data; a
@@ -90,7 +90,7 @@ Left out, on purpose:
   billing rate also carries the overhead and profit lines of the quote.
 - Self-employment tax (hourly-rate guide): 12.4% Social Security plus 2.9% Medicare, owed when net
   earnings from self-employment are $400 or more. IRS Topic no. 554,
-  https://www.irs.gov/taxtopics/tc554, accessed 2026-11-07.
+  https://www.irs.gov/taxtopics/tc554, accessed 2026-11-08.
 - Target hourly rate (guide) = (target yearly income + yearly business costs) / billable hours per
   year, the user's own numbers; arithmetic only.
 
