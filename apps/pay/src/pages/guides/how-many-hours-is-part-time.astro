@@ -1,0 +1,15 @@
+---
+import GuidePage from '../../components/GuidePage.astro';
+import {
+  PART_TIME_GUIDE,
+  PART_TIME_GUIDE_LINKS,
+  PART_TIME_GUIDE_PATHS,
+} from '../../guide/full-part-time.ts';
+---
+
+<GuidePage
+  lang="en"
+  texts={PART_TIME_GUIDE.en}
+  paths={PART_TIME_GUIDE_PATHS}
+  links={PART_TIME_GUIDE_LINKS.en}
+/>

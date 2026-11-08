@@ -68,3 +68,15 @@ export const W2_BOX_12_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/w-2-box-12-codes-tp-tt',
   es: '/es/guias/codigos-tp-y-tt-casilla-12-del-w-2',
 };
+
+/** How many hours is full time: the 30, 35 and 40 hour lines and who draws each. */
+export const FULL_TIME_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/how-many-hours-is-full-time',
+  es: '/es/guias/cuantas-horas-son-tiempo-completo',
+};
+
+/** How many hours is part time: under 35 or under 30, and the federal 16 to 32. */
+export const PART_TIME_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/how-many-hours-is-part-time',
+  es: '/es/guias/cuantas-horas-son-medio-tiempo',
+};
