@@ -4,7 +4,9 @@ import { jsonLdOf, nameOf, ogTypeOf, pageKindOf, schemaTypeOf } from './json-ld.
 
 const ORIGIN = 'https://bowlfigures.com';
 const parse = (text: string): { '@graph': Record<string, unknown>[] } =>
-  JSON.parse(text.replaceAll('\\u003c', '<').replaceAll('\\u003e', '>').replaceAll('\\u0026', '&'));
+  JSON.parse(
+    text.replaceAll('\\u003c', '<').replaceAll('\\u003e', '>').replaceAll('\\u0026', '&'),
+  ) as { '@graph': Record<string, unknown>[] };
 
 describe('page kinds', () => {
   it('reads the kind of a route, and any other address is an article', () => {

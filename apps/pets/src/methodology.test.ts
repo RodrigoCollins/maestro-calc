@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  ACCESSED,
-  caseText,
-  FACTOR_TABLE,
-  LEFT_OUT,
-  METHOD_SECTIONS,
-} from './methodology.ts';
+import { ACCESSED, caseText, FACTOR_TABLE, LEFT_OUT, METHOD_SECTIONS } from './methodology.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the methodology cases', () => {

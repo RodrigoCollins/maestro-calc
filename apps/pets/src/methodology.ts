@@ -311,7 +311,10 @@ const texts: Readonly<Record<string, (value: Rational) => string>> = {
   low: kcalText,
   high: kcalText,
   treats: kcalText,
-  portion: (value) => amountText(value, 2).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1'),
+  portion: (value) =>
+    amountText(value, 2)
+      .replace(/\.00$/, '')
+      .replace(/(\.\d)0$/, '$1'),
   cups: (value) => amountText(value, 2),
   cans: (value) => amountText(value, 2),
   dose: (value) => amountText(value, 1),

@@ -72,7 +72,8 @@ describe('every chart', () => {
       '/puppy-feeding-chart',
       '/dog-chocolate-toxicity-chart',
     ]);
-    for (const { path } of CHARTS) expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
+    for (const { path } of CHARTS)
+      expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
     expect(ROUTES.find((r) => r.path === CHARTS_INDEX.path)?.kind).toBe('article');
   });
 

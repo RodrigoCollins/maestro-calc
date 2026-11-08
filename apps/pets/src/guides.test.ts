@@ -26,7 +26,8 @@ describe('the guides', () => {
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
     ]);
-    for (const { path } of GUIDES) expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
+    for (const { path } of GUIDES)
+      expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
   });
 
   it('keep titles and descriptions where a result shows them whole', () => {

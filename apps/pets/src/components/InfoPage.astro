@@ -17,15 +17,23 @@ const { title, description, h1, lead, sections, reviewed } = Astro.props.page;
     {sections.map(({ id, heading, paragraphs, sources, link }) => (
       <section class="bf-card" aria-labelledby={`h-${id}`}>
         <h2 id={`h-${id}`}>{heading}</h2>
-        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
         {sources !== undefined && (
           <ul>
             {sources.map(({ name, url }) => (
-              <li><a href={url}>{name}</a></li>
+              <li>
+                <a href={url}>{name}</a>
+              </li>
             ))}
           </ul>
         )}
-        {link !== undefined && <p><a href={link.href}>{link.label}</a></p>}
+        {link !== undefined && (
+          <p>
+            <a href={link.href}>{link.label}</a>
+          </p>
+        )}
       </section>
     ))}
     <p class="bf-byline">{reviewed}</p>

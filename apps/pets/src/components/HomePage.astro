@@ -1,0 +1,95 @@
+---
+import { DOG_PAGE, dogView } from '../calc/dog.ts';
+import { patchOf } from '../calc/view.ts';
+import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import { HOME_GUIDES, HOME_TEXTS, HOME_TOOLS } from '../home.ts';
+import { hrefOf } from '../routes.ts';
+import Layout from './Layout.astro';
+
+const patch = patchOf(dogFood, dogView, DOG_PAGE.initial);
+if (patch === undefined) throw new Error('the dog page must run at its starting values');
+const { text, html } = patch;
+---
+
+<Layout title={HOME_TEXTS.title} description={HOME_TEXTS.description}>
+  <main class="bf-page bf-home">
+    <section class="bf-hero" aria-labelledby="bf-h1">
+      <div>
+        <h1 id="bf-h1">{HOME_TEXTS.h1}</h1>
+        <p>{HOME_TEXTS.lead}</p>
+        <p>
+          <a class="bf-share" href={hrefOf('dog')}>
+            Open the dog food calculator
+          </a>
+        </p>
+      </div>
+      <div class="bf-bowl-row">
+        <div class="bf-bowl" set:html={html['bowl']} />
+        <p class="bf-figure">
+          <span class="bf-big">{text['figure']}</span>
+          <span class="bf-unit">{text['unit']}</span>
+          <span class="bf-exact">{HOME_TEXTS.heroNote}</span>
+        </p>
+      </div>
+    </section>
+    <section aria-labelledby="bf-tools">
+      <h2 id="bf-tools">Calculators</h2>
+      <div class="bf-cards">
+        {HOME_TOOLS.map(({ href, title, summary }) => (
+          <div class="bf-card">
+            <h3>
+              <a {href}>{title}</a>
+            </h3>
+            <p>{summary}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+    <div class="bf-cards">
+      <section class="bf-card butter" aria-labelledby="bf-choc">
+        <h2 id="bf-choc">Chocolate band ruler</h2>
+        <p>{HOME_TEXTS.teasers.chocolate}</p>
+        <p>
+          <a href={hrefOf('chocolate')}>Chocolate calculator</a>
+        </p>
+      </section>
+      <section class="bf-card mint" aria-labelledby="bf-due">
+        <h2 id="bf-due">Due-date window</h2>
+        <p>{HOME_TEXTS.teasers.dueDate}</p>
+        <p>
+          <a href={hrefOf('due-date')}>Pregnancy calculator</a>
+        </p>
+      </section>
+      <section class="bf-card" aria-labelledby="bf-cat">
+        <h2 id="bf-cat">Cats too</h2>
+        <p>{HOME_TEXTS.teasers.cat}</p>
+        <p>
+          <a href={hrefOf('cat')}>Cat food calculator</a>
+        </p>
+      </section>
+    </div>
+    <section aria-labelledby="bf-guides">
+      <h2 id="bf-guides">Guides and data</h2>
+      <ul class="bf-guides">
+        {HOME_GUIDES.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>: {summary}
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</Layout>
+
+<style is:global>
+  .bf-home .bf-hero h1 {
+    color: var(--hero-ink);
+  }
+
+  .bf-guides {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+</style>

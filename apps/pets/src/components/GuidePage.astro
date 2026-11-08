@@ -29,14 +29,18 @@ const tools = calculators.flatMap((path) => ROUTES.filter((route) => route.path 
     {sections.map(({ id, heading, paragraphs }) => (
       <section aria-labelledby={id}>
         <h2 {id}>{heading}</h2>
-        {paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
       </section>
     ))}
     <section class="bf-card mint" aria-labelledby="bf-tools">
       <h2 id="bf-tools">Calculators</h2>
       <ul>
         {tools.map(({ id, path }) => (
-          <li><a href={path}>{LABELS[id]}</a></li>
+          <li>
+            <a href={path}>{LABELS[id]}</a>
+          </li>
         ))}
       </ul>
     </section>

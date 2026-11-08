@@ -11,8 +11,8 @@ const description =
   <main class="bf-page">
     <h1>How we work it out</h1>
     <p>
-      Every figure comes from the Merck Veterinary Manual, the AAHA guidelines or AAFCO, read on {ACCESSED}.
-      Each result is a starting point to check with your pet’s veterinarian.
+      Every figure comes from the Merck Veterinary Manual, the AAHA guidelines or AAFCO, read on{' '}
+      {ACCESSED}. Each result is a starting point to check with your pet’s veterinarian.
     </p>
     <section class="bf-card" aria-labelledby="factors">
       <h2 id="factors">Energy factors</h2>
@@ -22,10 +22,20 @@ const description =
       </p>
       <div class="bf-scroll">
         <table class="bf-table">
-          <thead><tr><th>Status</th><th>Merck</th><th>AAHA 2021</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Merck</th>
+              <th>AAHA 2021</th>
+            </tr>
+          </thead>
           <tbody>
             {FACTOR_TABLE.map(({ status, merck, aaha }) => (
-              <tr><td>{status}</td><td>{merck}</td><td>{aaha}</td></tr>
+              <tr>
+                <td>{status}</td>
+                <td>{merck}</td>
+                <td>{aaha}</td>
+              </tr>
             ))}
           </tbody>
         </table>
@@ -39,23 +49,34 @@ const description =
         <h3>Hand-worked cases</h3>
         <ul>
           {cases.map(({ text, result, unit }) => (
-            <li>{text} <strong>{result} {unit}</strong></li>
+            <li>
+              {text}{' '}
+              <strong>
+                {result} {unit}
+              </strong>
+            </li>
           ))}
         </ul>
         <h3>Sources</h3>
         <ul>
           {sources.map(({ name: label, url }) => (
-            <li><a href={url}>{label}</a>, read {ACCESSED}</li>
+            <li>
+              <a href={url}>{label}</a>, read {ACCESSED}
+            </li>
           ))}
         </ul>
-        <p><a href={href}>Open the calculator</a></p>
+        <p>
+          <a href={href}>Open the calculator</a>
+        </p>
       </section>
     ))}
     <section class="bf-card butter" aria-labelledby="left-out">
       <h2 id="left-out">Left out, and why</h2>
       <ul>
         {LEFT_OUT.map(({ what, why }) => (
-          <li><strong>{what}.</strong> {why}</li>
+          <li>
+            <strong>{what}.</strong> {why}
+          </li>
         ))}
       </ul>
     </section>

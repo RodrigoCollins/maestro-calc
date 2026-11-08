@@ -1,5 +1,4 @@
 import { Rational } from '@maestro-calc/core';
-import { dogFood } from '@maestro-calc/pets-core/dog-food';
 import { bowlSvg, kibbleCount } from '../bowl.ts';
 import { amountText, cupsText, kcalText, quarterCups } from '../format.ts';
 import { figureOf, type Patch, type Raw, type View } from './view.ts';

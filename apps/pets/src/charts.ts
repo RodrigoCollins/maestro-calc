@@ -162,7 +162,12 @@ export const CHARTS: readonly Chart[] = [
     h1: 'Dog chocolate toxicity chart by weight',
     lead: 'The grams of each chocolate at which a dog reaches 20 mg/kg of theobromine and caffeine, the dose where Merck lists mild signs.',
     checked: CHECKED,
-    columns: ['Dog weight (lb)', 'Milk chocolate (g)', 'Dark chocolate (g)', 'Baking chocolate (g)'],
+    columns: [
+      'Dog weight (lb)',
+      'Milk chocolate (g)',
+      'Dark chocolate (g)',
+      'Baking chocolate (g)',
+    ],
     rows: DOG_WEIGHTS.map((weight) => [
       String(weight),
       reach(weight, 'milk'),

@@ -1,0 +1,17 @@
+---
+import Layout from '../components/Layout.astro';
+import { SITE } from '../site.config.ts';
+---
+
+<Layout
+  title={`Page not found | ${SITE.name}`}
+  description="This page does not exist."
+  indexed={false}
+>
+  <main class="bf-page">
+    <h1>Page not found</h1>
+    <p>
+      This address has no page. <a href="/">Go to the {SITE.name} home</a>.
+    </p>
+  </main>
+</Layout>
