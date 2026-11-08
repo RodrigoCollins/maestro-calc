@@ -1,0 +1,22 @@
+{
+  "name": "@maestro-calc/pets",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "typecheck": "astro check && tsc --noEmit -p tsconfig.test.json",
+    "check:site": "node scripts/check-site.ts"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "5.3.0",
+    "@fontsource/fraunces": "5.3.0",
+    "@maestro-calc/core": "*",
+    "@maestro-calc/pets-core": "*",
+    "@maestro-calc/site-kit": "*",
+    "astro": "^7.4.4"
+  }
+}
