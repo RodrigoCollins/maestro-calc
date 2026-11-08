@@ -1,7 +1,8 @@
 // The content audit of a built site (`@maestro-calc/site-kit/content-audit`), for the dist of any
 // app of the repository: the thinnest indexable pages, the template share, the near-duplicate
 // pairs, the sitemap and the orphans. It reports and never fails: read it against `plans/growth/adsense-quality-checklist.md`.
-// Usage: npm run audit:content -- <dist-directory> [--json <file>] [--limit <n>] [--thin <words>]
+// Usage: npm run audit:content -- <dist-directory> [--json <file>] [--limit <n>] [--thin <words>] [--as-open]
+// --as-open reads a closed site as it will be once open: every page of its sitemap is indexable.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import process from 'node:process';
@@ -29,6 +30,7 @@ const thin = flag('--thin');
 const report = auditSite(files, {
   ...(existsSync(sitemapFile) ? { sitemap: readFileSync(sitemapFile, 'utf8') } : {}),
   ...(thin === undefined ? {} : { thinBelow: Number(thin) }),
+  ...(args.includes('--as-open') ? { asOpen: true } : {}),
 });
 process.stdout.write(`${reportText(report, Number(flag('--limit') ?? 30))}\n`);
 const json = flag('--json');

@@ -25,6 +25,11 @@ export interface AuditOptions {
   readonly duplicateAt?: number;
   /** What inside `<main>` is chrome, not content (default `CHROME`). */
   readonly chrome?: string;
+  /**
+   * Reads the site as it will be once open: a page the sitemap lists is indexable whatever its
+   * robots meta says (a closed site carries `noindex` on every page); the rest keep their flag.
+   */
+  readonly asOpen?: boolean;
 }
 
 /** The chrome inside a main element that the audit leaves out: navigation, forms and bylines. */
@@ -162,7 +167,8 @@ export const auditSite = (files: readonly AuditFile[], options: AuditOptions = {
   const inSitemap = pathsOf(options.sitemap);
   const pages = files.map((file) => {
     const url = urlOfFile(file.path);
-    const text = mainTextOf(file.html, chrome);
+    const read = mainTextOf(file.html, chrome);
+    const text = options.asOpen === true && inSitemap.has(url) ? { ...read, noindex: false } : read;
     return { url, text, shingles: shinglesOf(text.words, shingle) };
   });
   const linksIn = new Map<string, number>();

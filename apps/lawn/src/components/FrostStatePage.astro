@@ -2,6 +2,7 @@
 import { FROST_CHECKED } from '../editorial.ts';
 import { frostPageOf, frostPathOf, FROST_PAGES, type FrostPage } from '../frost.ts';
 import { frostCopyOf, FROST_FOOTNOTE, FROST_TEXT } from '../frost-copy.ts';
+import { frostSummaryOf } from '../frost-summary.ts';
 import { frostTrailOf } from '../seo/breadcrumb.ts';
 import Byline from './Byline.astro';
 import Layout from './Layout.astro';
@@ -15,6 +16,7 @@ interface Props {
 
 const page: FrostPage = frostPageOf(Astro.props.path);
 const copy = frostCopyOf(page);
+const summary = frostSummaryOf(page);
 const { columns, alwaysFreezing } = FROST_TEXT;
 const siblings = FROST_PAGES.filter(({ state }) => state.slug === page.state.slug);
 ---
@@ -91,6 +93,21 @@ const siblings = FROST_PAGES.filter(({ state }) => state.slug === page.state.slu
         </tbody>
       </table>
     </div>
+    <section class="lawn-section" aria-labelledby="glance">
+      <h2 id="glance">{summary.h2}</h2>
+      {summary.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+      {summary.parts.length > 0 && (
+        <ul>
+          {summary.parts.map((part) => (
+            <li>
+              <a href={part.href}>{part.label}</a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
     <section class="lawn-section" aria-labelledby="reading">
       <h2 id="reading">How to read the dates</h2>
       {FROST_TEXT.reading.map((paragraph) => (
