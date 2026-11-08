@@ -2,7 +2,7 @@
 import { DOG_PAGE, dogView } from '../calc/dog.ts';
 import { patchOf } from '../calc/view.ts';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
-import { HOME_GUIDES, HOME_TEXTS, HOME_TOOLS } from '../home.ts';
+import { HOME_GUIDES, HOME_TEXTS, HOME_TOOLS, HOME_TRUST } from '../home.ts';
 import { hrefOf } from '../routes.ts';
 import Layout from './Layout.astro';
 
@@ -77,6 +77,10 @@ const { text, html } = patch;
           </li>
         ))}
       </ul>
+      <p>
+        {HOME_TRUST.text} <a href={HOME_TRUST.links[0].href}>{HOME_TRUST.links[0].label}</a> and{' '}
+        <a href={HOME_TRUST.links[1].href}>{HOME_TRUST.links[1].label}</a>.
+      </p>
     </section>
   </main>
 </Layout>
