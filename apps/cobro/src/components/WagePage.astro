@@ -1,7 +1,5 @@
 ---
 import { WAGES_CHECKED } from '../bylines.ts';
-import { PAGE_LABELS } from '../layout.ts';
-import { fill } from '../receipt/details.ts';
 import { hrefOf, TRADE_PATHS, wagePathOf, WAGE_STEMS, type Lang, type TradeId } from '../routes.ts';
 import { titleOf } from '../seo/meta.ts';
 import { TRADE_TEXTS } from '../texts/trades.ts';
@@ -22,7 +20,7 @@ const { trade, fips, lang } = Astro.props;
 const view = stateWageViewOf(trade, fips, lang);
 const text = WAGE_TEXTS[lang];
 const state = AREAS.find((area) => area.fips === fips)?.name[lang] ?? '';
-const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][lang] };
+const index = { path: WAGE_STEMS[trade][lang] };
 ---
 
 <Layout
@@ -52,13 +50,92 @@ const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][
       ))}
     </div>
 
-    <h2>{view.rankH2}</h2>
-    <p>{view.rank}</p>
+    <h2>{view.year.h2}</h2>
+    {view.year.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+
+    <h2>{view.nation.h2}</h2>
+    {view.nation.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+
+    <h2>{view.region.h2}</h2>
+    <p>{view.region.paragraph}</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label={view.region.caption}>
+      <table>
+        <caption>{view.region.caption}</caption>
+        <thead>
+          <tr>
+            <th>{text.table.state}</th>
+            <th class="num">{text.table.mean}</th>
+            <th class="num">{text.table.median}</th>
+            <th class="num">{view.region.versus}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {view.region.rows.map((row) => (
+            <tr>
+              <th>
+                {row.href === undefined ? (
+                  <strong>{row.state}</strong>
+                ) : (
+                  <a href={row.href}>{row.state}</a>
+                )}
+              </th>
+              <td class="num">{row.mean}</td>
+              <td class="num">{row.median}</td>
+              <td class="num">{row.href === undefined ? '' : row.versus}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>{view.trades.h2}</h2>
+    <p>{view.trades.paragraph}</p>
+    <div class="table-scroll" tabindex="0" role="region" aria-label={view.trades.h2}>
+      <table>
+        <thead>
+          <tr>
+            <th>{text.tradeColumn}</th>
+            <th class="num">{text.table.mean}</th>
+            <th class="num">{text.table.median}</th>
+            <th class="num">{view.trades.versus}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {view.trades.rows.map((row) => (
+            <tr>
+              <th>
+                {row.href === undefined ? (
+                  <strong>{row.state}</strong>
+                ) : (
+                  <a href={row.href}>{row.state}</a>
+                )}
+              </th>
+              <td class="num">{row.mean}</td>
+              <td class="num">{row.median}</td>
+              <td class="num">{row.href === undefined ? '' : row.versus}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>{view.minimum.h2}</h2>
+    {view.minimum.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
 
     <section class="card card-gold" aria-labelledby="rate-card">
       <h2 id="rate-card">{view.rateH2}</h2>
       <p>{text.rateBody}</p>
+      <p>{view.quote.paragraph}</p>
       <ul>
+        <li>
+          <a href={view.quote.href}>{view.quote.label}</a>
+        </li>
         <li>
           <a href={TRADE_PATHS[trade][lang]}>{text.calculator}</a>
         </li>
@@ -68,24 +145,16 @@ const index = { name: PAGE_LABELS[lang]['wages'] ?? '', path: WAGE_STEMS[trade][
       </ul>
     </section>
 
-    {view.others.length > 0 && (
-      <section>
-        <h2>{fill(text.othersH2, { state })}</h2>
-        <ul>
-          {view.others.map((other) => (
-            <li>
-              <a href={other.href}>{other.label}</a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
     <ShareLink {lang} name={view.h1} path={wagePathOf(trade, fips, lang)} />
-    <p id="source" class="byline">
-      {view.source}{' '}
-      <a href="https://www.bls.gov/oes/" rel="noopener">
-        bls.gov/oes
-      </a>
-    </p>
+    <h2 id="source">{text.sourcesH2}</h2>
+    <ul class="byline">
+      {view.sources.map((source) => (
+        <li>
+          <a href={source.href} rel="noopener">
+            {source.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   </article>
 </Layout>

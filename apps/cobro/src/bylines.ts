@@ -1,8 +1,9 @@
 import { dateText } from './format.ts';
-import { hrefOf, ROUTES, type Lang } from './routes.ts';
+import { hrefOf, ROUTES, type Lang, type TradeId } from './routes.ts';
 import { COMMON } from './texts/common.ts';
 import { ARTICLES, type ArticleId, type Source } from './texts/articles.ts';
 import { OEWS_RELEASE } from './wages/oews-2025.ts';
+import { BLS_OEWS_URL, stateWageViewOf } from './wages/view.ts';
 
 /** The day the wage pages' figures were last read (BLS): the review date of every wage page. */
 export const WAGES_CHECKED = OEWS_RELEASE.accessed;
@@ -29,6 +30,23 @@ export const ARTICLE_ROUTE: Readonly<Record<ArticleId, string>> = {
   privacy: 'privacy',
 };
 
+const BLS_SOURCE: Source = {
+  name: 'U.S. Bureau of Labor Statistics, OEWS, May 2025',
+  url: BLS_OEWS_URL,
+  accessed: WAGES_CHECKED,
+};
+
+/** The sources of a wage page: every source a state page reads, the BLS alone for an index or the hub. */
+const wageSourcesOf = (id: string, lang: Lang): readonly Source[] => {
+  const [, trade, fips] = /^wage-([a-z]+)-(\d{2})$/.exec(id) ?? [];
+  if (trade === undefined || fips === undefined) return [BLS_SOURCE];
+  return stateWageViewOf(trade as TradeId, fips, lang).sources.map(({ label, href }) => ({
+    name: label,
+    url: href,
+    accessed: WAGES_CHECKED,
+  }));
+};
+
 /**
  * A page that carries the byline of the editorial team: its address, the day its figures were last
  * checked, and the sources its sources section lists.
@@ -48,17 +66,11 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       sources: ARTICLES[lang][id].sources,
     })),
   ),
-  ...ROUTES.filter(({ id }) => id.startsWith('wage')).flatMap(({ es, en }) =>
-    [es, en].map((path) => ({
-      path,
+  ...ROUTES.filter(({ id }) => id.startsWith('wage')).flatMap(({ id, es, en }) =>
+    (['es', 'en'] as const).map((lang) => ({
+      path: lang === 'es' ? es : en,
       checked: WAGES_CHECKED,
-      sources: [
-        {
-          name: 'U.S. Bureau of Labor Statistics, OEWS, May 2025',
-          url: 'https://www.bls.gov/oes/',
-          accessed: WAGES_CHECKED,
-        },
-      ],
+      sources: wageSourcesOf(id, lang),
     })),
   ),
 ];

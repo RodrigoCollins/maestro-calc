@@ -5,7 +5,7 @@ import { fill } from '../receipt/details.ts';
 import { hrefOf, WAGE_STEMS, type Lang } from '../routes.ts';
 import { titleOf } from '../seo/meta.ts';
 import { OCCUPATION_TEXTS, WAGE_TEXTS } from '../texts/wages.ts';
-import { nationalOf, wageText } from '../wages/view.ts';
+import { hubViewOf, nationalOf, wageText } from '../wages/view.ts';
 import Byline from './Byline.astro';
 import Layout from './Layout.astro';
 import ShareLink from './ShareLink.astro';
@@ -16,6 +16,7 @@ interface Props {
 
 const { lang } = Astro.props;
 const text = WAGE_TEXTS[lang];
+const hub = hubViewOf(lang);
 const trades = chipsOf(lang).map((chip) => {
   const [mean, median] = nationalOf(chip.id);
   return {
@@ -49,12 +50,23 @@ const trades = chipsOf(lang).map((chip) => {
         </li>
       ))}
     </ul>
+    <h2>{hub.spread.h2}</h2>
+    {hub.spread.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+    <h2>{hub.reading.h2}</h2>
+    {hub.reading.paragraphs.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
     <ShareLink {lang} name={text.hubH1} path={hrefOf('wages', lang)} />
-    <p id="source" class="byline">
-      {fill(text.hubSource, { accessed: WAGES_CHECKED })}
-      <a href="https://www.bls.gov/oes/" rel="noopener">
-        bls.gov/oes
-      </a>
-    </p>
+    <ul id="source" class="byline">
+      {hub.sources.map((source) => (
+        <li>
+          <a href={source.href} rel="noopener">
+            {source.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   </article>
 </Layout>

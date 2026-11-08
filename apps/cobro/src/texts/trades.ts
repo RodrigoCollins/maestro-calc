@@ -186,6 +186,10 @@ export const TRADE_TEXTS: Readonly<Record<Lang, Readonly<Record<TradeId, TradeTe
           q: '¿Y si el trabajo es solo cortar el césped?',
           a: 'Pon las bolsas en cero (precio de la bolsa en 0) y cobra solo la mano de obra, por hora o por pie cuadrado. El presupuesto sigue saliendo detallado.',
         },
+        {
+          q: '¿Cuánto cubre una bolsa de mantillo?',
+          a: 'Divide el volumen de la bolsa entre la profundidad en pies. Una bolsa de 2 pies³ cubre 12 pies² a 2 pulgadas de profundidad (2 ÷ 2/12) y 8 pies² a 3 pulgadas; una de 3 pies³ cubre 18 y 12 pies²; una de 1.5 pies³, 9 y 6 pies². Cuanto más profundo, más bolsas por el mismo jardín.',
+        },
         FAQ_MARKUP.es,
       ],
     },
@@ -331,6 +335,10 @@ export const TRADE_TEXTS: Readonly<Record<Lang, Readonly<Record<TradeId, TradeTe
         {
           q: 'What if the job is only mowing?',
           a: 'Set the price per bag to 0 and charge only the labor, by the hour or by the square foot. The quote still comes out itemized.',
+        },
+        {
+          q: 'How much does a bag of mulch cover?',
+          a: 'Divide the volume of the bag by the depth in feet. A 2 cu ft bag covers 12 sq ft at 2 inches deep (2 ÷ 2/12) and 8 sq ft at 3 inches; a 3 cu ft bag covers 18 and 12 sq ft; a 1.5 cu ft bag, 9 and 6 sq ft. The deeper the layer, the more bags for the same bed.',
         },
         FAQ_MARKUP.en,
       ],
