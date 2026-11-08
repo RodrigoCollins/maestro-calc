@@ -584,7 +584,7 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.rows[0].href?.split('?')[0]).toBe('/feet-and-inches-calculator');
     expect(view.calculatorName).toBe('Feet and Inches Calculator');
     expect(view.methodology).toBe('/methodology#feet-and-inches');
-    expect(view.intro).toBeUndefined();
+    expect(view.intro).toContain('29 1/4 in');
   });
 
   // hand-verified: 9 ft 6 in = 114 in; ÷ 2 = 57 in = 4 ft 9 in, × 0.0254 = 1.4478 m; ÷ 3 = 38 in =
@@ -740,7 +740,7 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     const intros = jobsOf('rectangle-area').map((id) => jobView(id, locale).intro);
     for (const intro of intros) expect(intro).toMatch(/\S/);
     expect(new Set(intros).size).toBe(intros.length);
-    expect(jobView('concrete-slab-10x10', locale).intro).toBeUndefined();
+    expect(jobView('concrete-slab-10x10', locale).intro).toContain('10 ');
     expect(jobView('concrete-slab-1000-sq-ft', locale).intro).toMatch(/\S/);
     expect(jobView('mulch-bags-per-yard', locale).intro).toMatch(/\S/);
     expect(jobView('square-feet-12x14', locale).note).toContain('0.09290304');

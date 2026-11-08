@@ -75,6 +75,172 @@ export const esSite = {
   'site.job.chart.retrieved': 'consultado el',
   'site.job.chart.cite': 'Cita esta tabla',
   'site.job.chart.citeLead': 'Para enlazar esta tabla o citar sus cifras, usa su dirección:',
+  'site.job.guide.read': 'Para saber más:',
+  'site.job.coverings.heading': 'Cubiertas de techo con esta pendiente',
+  'site.job.coverings.lead':
+    'La sección R905 del International Residential Code de 2021 fija una pendiente mínima para cada cubierta de techo. Así queda cada cubierta que revisa la calculadora con esta pendiente; tu código local o el fabricante del producto pueden pedir más.',
+  'site.job.coverings.minimum': 'Mínimo del IRC',
+  'site.job.coverings.status': 'Con esta pendiente',
+  'site.job.coverings.meets': 'Cumple el mínimo',
+  'site.job.coverings.double': 'Se permite con dos capas de fieltro',
+  'site.job.coverings.below': 'Por debajo del mínimo',
+  'site.job.guide.concrete-slab.heading': 'Antes de colar la losa',
+  'site.job.guide.concrete-slab.tip1':
+    'Mide la losa por dentro de las cimbras, no por encima de las tablas, y revisa el espesor en varios puntos cuando la base ya esté nivelada. Una losa pensada de 4 in que queda en 4 1/2 in de promedio lleva un octavo más de concreto que la tabla.',
+  'site.job.guide.concrete-slab.tip2':
+    'Decide el espesor antes de contar bolsas. Pasar de 4 a 5 in suma un cuarto más de concreto, y de 4 a 6 in suma la mitad, por eso la tabla da los tres.',
+  'site.job.guide.concrete-slab.tip3':
+    'Compara las bolsas con un camión. Mezclar decenas de bolsas a mano es lento, y un colado que se detiene a la mitad deja una junta fría. El premezclado se vende por yarda cúbica, así que pregunta al proveedor la carga mínima y si cobra extra por carga corta antes de decidir.',
+  'site.job.guide.concrete-slab.tip4':
+    'Planea el peso además de la cantidad. Cada bolsa de 80 lb son 80 lb que levantar, cargar y mezclar, así que 30 bolsas son 2,400 lb de mezcla seca: revisa la capacidad de carga de la camioneta o el remolque que las lleva.',
+  'site.job.guide.concrete-tube.heading': 'Antes de colocar los tubos',
+  'site.job.guide.concrete-tube.tip1':
+    'Mide la profundidad desde el borde del tubo, no desde el suelo. Un tubo que sobresale unas pulgadas del terreno también se llena en esa altura, así que súmala a la profundidad que escribes en la calculadora.',
+  'site.job.guide.concrete-tube.tip2':
+    'El diámetro es el interior del tubo y viene impreso en la cimbra. Un tubo más ancho suma concreto rápido: el volumen crece con el cuadrado del diámetro, así que un tubo de 12 in lleva 2.25 veces lo que lleva uno de 8 in a la misma profundidad.',
+  'site.job.guide.concrete-tube.tip3':
+    'Las bolsas van bien con los tubos: cada uno lleva pocas, así que puedes mezclar y llenar un tubo a la vez. Llena por capas y pica el concreto con una varilla o golpea el costado del tubo para sacar el aire.',
+  'site.job.guide.concrete-tube.tip4':
+    'Tu código local fija qué tan hondo va un pilar, muchas veces por debajo de la línea de congelamiento, y qué tan ancha es su base. Revísalo antes de comprar los tubos, porque un hoyo más hondo cambia todas las cifras de esta página.',
+  'site.job.guide.concrete-footing.heading': 'Antes de excavar la zapata',
+  'site.job.guide.concrete-footing.tip1':
+    'Excava la zanja con todo su ancho y su profundidad a lo largo de todo el tramo, y mídela en varios puntos. Una zanja un poco más ancha o más honda es la razón habitual de que una zapata lleve más de lo pensado, y para eso es el 10% extra.',
+  'site.job.guide.concrete-footing.tip2':
+    'Mide el largo por el eje de la zapata. Si sumas los lados por fuera de un rectángulo, cuentas cada esquina dos veces; por el eje, las esquinas salen bien.',
+  'site.job.guide.concrete-footing.tip3':
+    'Una zapata larga son muchas bolsas. Pasada una o dos yardas cúbicas, cotiza también el premezclado y pregunta al proveedor si el camión llega a la zanja o si necesitas bomba o carretillas.',
+  'site.job.guide.concrete-footing.tip4':
+    'El tamaño de una zapata es una decisión estructural, no de cálculo de materiales. Toma el ancho y la profundidad de tus planos o de tu departamento de construcción local, y luego usa la calculadora para contar el concreto.',
+  'site.job.guide.roof-pitch.heading': 'Antes de cortar los cabios',
+  'site.job.guide.roof-pitch.tip1':
+    'Mide la pendiente a nivel y a plomo, nunca a lo largo del techo. Apoya un nivel en un cabio o en la cubierta, marca 12 in sobre el nivel y mide en vertical hasta el techo: esa medida es la subida en 12.',
+  'site.job.guide.roof-pitch.tip2':
+    'Los largos de cabio de esta página llegan hasta la línea a plomo de la cumbrera, sin alero. Suma el alero en la calculadora y resta la mitad del grueso de la tabla de cumbrera antes de marcar el corte.',
+  'site.job.guide.roof-pitch.tip3':
+    'Revisa la cubierta antes de decidir la pendiente. La tabla de cubiertas de esta página da el mínimo del IRC de cada cubierta con esta pendiente, y tu código local o el fabricante del producto pueden pedir más que el código.',
+  'site.job.guide.roof-pitch.tip4':
+    'Más pendiente es más techo sobre la misma planta: más tablero, más fieltro y más tejas. Usa la calculadora de tejas con esta pendiente antes de pedir los materiales.',
+  'site.job.guide.rectangle-area.heading': 'Antes de comprar para esta área',
+  'site.job.guide.rectangle-area.tip1':
+    'Mide cada lado en dos o tres puntos y usa la medida más larga. Las paredes casi nunca están perfectamente a escuadra, y la lectura más corta te deja sin piso o sin azulejo.',
+  'site.job.guide.rectangle-area.tip2':
+    'Convierte pies y pulgadas con cuidado: 6 in son 0.5 ft, no 0.6 ft. Escribe la medida tal como la lees en la cinta y deja que la calculadora haga la conversión.',
+  'site.job.guide.rectangle-area.tip3':
+    'El área es lo que mediste, sin nada agregado. El piso y el azulejo pierden material en los cortes, y los instaladores suelen sumar cerca de 10% para una colocación simple y más para una en diagonal, así que revisa lo que recomienda el fabricante de tu producto.',
+  'site.job.guide.rectangle-area.tip4':
+    'Divide el área entre lo que cubre una caja o un rollo y redondea hacia arriba a una unidad entera. Compra todas las cajas del mismo lote cuando puedas, porque el tono del azulejo y del piso puede cambiar de un lote a otro.',
+  'site.job.guide.mulch.heading': 'Antes de comprar el mulch',
+  'site.job.guide.mulch.tip1':
+    'Las bolsas se venden por volumen, no por peso. Lee los pies cúbicos impresos en la bolsa que piensas comprar, porque la cantidad de bolsas de arriba cambia con su tamaño.',
+  'site.job.guide.mulch.tip2':
+    'Mide la profundidad que agregas, no la que tendrá el cantero. Sobre 2 in de mulch viejo, 1 pulgada más deja el cantero en 3 in; o retira primero la capa vieja con el rastrillo.',
+  'site.job.guide.mulch.tip3':
+    'El mulch a granel se vende por yarda cúbica, la unidad con la que cuenta esta página. Pasada una o dos yardas, compara el precio a granel y su entrega con el costo de las bolsas.',
+  'site.job.guide.mulch.tip4':
+    'Deja el mulch a unas pulgadas de los troncos y de los tallos. Un montón pegado a la corteza guarda humedad donde la planta no la quiere, y desperdicia material.',
+  'site.job.guide.gravel.heading': 'Antes de pedir la grava',
+  'site.job.guide.gravel.tip1':
+    'Pide por tonelada cuando el proveedor venda así. Una tonelada siempre es una tonelada, mientras que una yarda cúbica pesa distinto suelta y compactada, así que las toneladas de esta página son el pedido más seguro.',
+  'site.job.guide.gravel.tip2':
+    'Una entrada para autos se arma por capas, una base gruesa debajo de una capa final más fina. Usa la calculadora una vez por capa con su propia profundidad y suma las toneladas.',
+  'site.job.guide.gravel.tip3':
+    'Nivela y compacta el terreno antes de medir la profundidad. Un bajo de un par de pulgadas a lo largo de una entrada larga suma toneladas rápido.',
+  'site.job.guide.gravel.tip4':
+    'Pregunta al proveedor cómo descargará el camión. Algunos choferes pueden esparcir la carga a lo largo de la entrada mientras avanzan, lo que ahorra horas de carretilla, así que diles el largo que necesitas cubrir.',
+  'site.job.guide.paint.heading': 'Antes de comprar la pintura',
+  'site.job.guide.paint.tip1':
+    'Mide las paredes, no el piso: el contorno del cuarto por la altura. Un cuarto de 12 por 12 ft con 8 ft de alto tiene 384 sq ft de pared y solo 144 sq ft de piso.',
+  'site.job.guide.paint.tip2':
+    'El drywall nuevo, el yeso sin pintar y un cambio fuerte de color absorben más pintura. Aplica primero un sellador, o cuenta con menos rendimiento del que indica la etiqueta.',
+  'site.job.guide.paint.tip3':
+    'Compra los galones de todo el cuarto de una vez y mézclalos en una sola cubeta antes de empezar, para que la pintura de dos latas o de dos lotes se vea igual en la pared.',
+  'site.job.guide.paint.tip4':
+    'El techo, los marcos y las puertas llevan su propia pintura, muchas veces otro producto u otro acabado. Calcúlalos aparte, y guarda una lata cerrada del color de las paredes para retoques.',
+  'site.job.guide.drywall.heading': 'Antes de pedir el drywall',
+  'site.job.guide.drywall.tip1':
+    'Cuenta el techo aparte de las paredes. El techo muchas veces lleva otra placa, como una resistente al pandeo, así que conviene tener su propia cantidad de placas.',
+  'site.job.guide.drywall.tip2':
+    'Elige el largo de la placa según la pared. Las placas de 4 × 12 dejan menos juntas que encintar en una pared larga, pero pesan, así que planea dos personas y un paso libre hasta el cuarto.',
+  'site.job.guide.drywall.tip3':
+    'Pide el compuesto y la cinta para juntas junto con las placas: la calculadora los cuenta con las cifras de rendimiento de USG. Los tornillos, las esquineras y los remates los cuentas en la obra.',
+  'site.job.guide.drywall.tip4':
+    'Deja el extra para los cortes. Alrededor de puertas, ventanas, enchufes y esquinas cortas piezas que no puedes volver a usar, así que un cuarto con muchas esquinas o con escalera necesita más que el valor inicial.',
+  'site.job.guide.topsoil.heading': 'Antes de llenar el cantero o el área',
+  'site.job.guide.topsoil.tip1':
+    'La tierra se asienta después de colocarla. Reparte un relleno hondo por capas, riega cada una un poco y completa el cantero cuando ya se haya asentado.',
+  'site.job.guide.topsoil.tip2':
+    'Fíjate qué compras. La tierra vegetal cernida, la tierra para jardín, la mezcla para canteros elevados y la tierra de relleno se venden con nombres y precios distintos, así que pregunta al proveedor cuál sirve para un huerto o para el pasto.',
+  'site.job.guide.topsoil.tip3':
+    'Las bolsas suman rápido: un cantero hondo puede llevar decenas. Pasada una yarda cúbica más o menos, una carga a granel suele salir más barata y más cómoda, aun con el costo de entrega.',
+  'site.job.guide.topsoil.tip4':
+    'Planea dónde deja el camión el montón: cerca del trabajo, fuera del pasto si puedes, y tapado si viene lluvia.',
+  'site.job.guide.roofing.heading': 'Antes de pedir las tejas',
+  'site.job.guide.roofing.tip1':
+    'Mide la planta con los aleros, porque los aleros también son techo. Un alero de 1 ft en cada lado de una casa de 38 por 28 ft da una planta de 40 por 30 ft.',
+  'site.job.guide.roofing.tip2':
+    'Las tejas se venden por paquete y se cuentan por cuadrado de 100 sq ft. El paquete que usa la calculadora cubre 33.33 sq ft, tres por cuadrado; revisa la cobertura impresa en el paquete que compras.',
+  'site.job.guide.roofing.tip3':
+    'De 2 en 12 hasta 4 en 12, el IRC pide dos capas de fieltro debajo de las tejas asfálticas, y por debajo de 2 en 12 no las permite. La calculadora de tejas duplica los rollos en ese rango.',
+  'site.job.guide.roofing.tip4':
+    'El extra cubre la hilera de arranque, las tejas de cumbrera y limatesa, y los cortes en las limahoyas. Los clavos, el gotero, los tapajuntas y la barrera contra hielo van aparte, así que pídelos al proveedor junto con el pedido.',
+  'site.job.guide.feet-inches.heading': 'Antes de marcar y cortar',
+  'site.job.guide.feet-inches.tip1':
+    'Marca con la columna de la cinta, no con los decimales. Redondea al 1/16 in más cercano, la marca más chica de casi todas las cintas, que es lo más fino que suele salir un corte.',
+  'site.job.guide.feet-inches.tip2':
+    'Cuenta la hoja de la sierra. Cada corte se come cerca de 1/8 in de madera, así que al cortar una tabla en partes iguales cada pieza queda un poco corta si no restas antes los cortes.',
+  'site.job.guide.feet-inches.tip3':
+    'Mide todas las marcas desde la misma punta de la tabla. Marcar cada pieza desde la anterior va sumando pequeños errores a lo largo de la tabla.',
+  'site.job.guide.feet-inches.tip4':
+    'Lee la respuesta en palabras antes de cortar. La calculadora repite las dos medidas, y es la forma más rápida de detectar un error como escribir 39 in en lugar de 3 ft 9 in.',
+  'site.job.worked.heading': 'Cómo se calculan las cifras',
+  'site.job.worked.concrete.net': 'Volumen de la primera medida, antes del extra',
+  'site.job.worked.concrete.total':
+    'Con el 10% de extra, en pies cúbicos, yardas cúbicas y metros cúbicos',
+  'site.job.worked.concrete.bags':
+    'Bolsas de 80 lb, de cerca de 0.60 pies cúbicos cada una, redondeando hacia arriba',
+  'site.job.worked.concrete.weight': 'Peso de la mezcla seca que hay que levantar y cargar',
+  'site.job.worked.area.feet': 'Área de la primera medida',
+  'site.job.worked.area.yards': 'En yardas cuadradas, de 9 pies cuadrados cada una',
+  'site.job.worked.area.metric': 'En sistema métrico, con 1 ft = 0.3048 m',
+  'site.job.worked.area.cuts':
+    'Con cerca de 10% por los cortes, como suelen sumar los instaladores para piso o azulejo en una colocación simple',
+  'site.job.worked.paint.walls': 'Área de las cuatro paredes',
+  'site.job.worked.paint.openings': 'Menos una puerta de 20 sq ft y dos ventanas de 15 sq ft',
+  'site.job.worked.paint.gallons': 'Dos manos a 350 sq ft por galón, en galones y litros',
+  'site.job.worked.paint.cans': 'Latas de un galón que comprar, redondeando hacia arriba',
+  'site.job.worked.drywall.walls':
+    'Área de las cuatro paredes, menos una puerta de 20 sq ft y dos ventanas de 15 sq ft',
+  'site.job.worked.drywall.ceiling': 'Con el techo, en pies cuadrados y metros cuadrados',
+  'site.job.worked.drywall.sheets':
+    'Placas de 4 × 8 ft (32 sq ft) con el 10% de extra por los cortes, redondeando hacia arriba',
+  'site.job.worked.roofing.footprint': 'Planta del techo, con los aleros',
+  'site.job.worked.roofing.slope':
+    'Factor de pendiente: cuánto más largo es el techo que su planta con esta pendiente',
+  'site.job.worked.roofing.area':
+    'Área del techo sobre la pendiente, en pies cuadrados y metros cuadrados',
+  'site.job.worked.roofing.squares':
+    'Cuadrados de 100 sq ft, la unidad con la que cotizan los techadores',
+  'site.job.worked.roofing.bundles':
+    'Paquetes de 33.33 sq ft con el 10% de extra, redondeando hacia arriba',
+  'site.job.worked.roof-pitch.multiplier': 'Multiplicador del cabio con esta pendiente',
+  'site.job.worked.roof-pitch.rafter': 'Cabio sobre el primer recorrido de la tabla',
+  'site.job.worked.roof-pitch.metric': 'El mismo cabio en sistema métrico, con 1 ft = 0.3048 m',
+  'site.job.worked.roof-pitch.angle': 'Ángulo del techo',
+  'site.job.worked.topsoil.net': 'Volumen de la primera medida, antes del asentamiento',
+  'site.job.worked.topsoil.total':
+    'Con el 10% por asentamiento, en pies cúbicos, yardas cúbicas y metros cúbicos',
+  'site.job.worked.topsoil.bags': 'Bolsas de 0.75 pies cúbicos, redondeando hacia arriba',
+  'site.job.worked.gravel.placed':
+    'Volumen colocado de la primera medida, en pies cúbicos y yardas cúbicas',
+  'site.job.worked.gravel.total': 'Con el 5% de extra',
+  'site.job.worked.gravel.weight': 'Peso compactado, a 3,660 lb por yarda cúbica (WisDOT)',
+  'site.job.worked.gravel.tons': 'En toneladas cortas de 2,000 lb',
+  'site.job.worked.gravel.order': 'Yardas cúbicas sueltas que pedir, a 2,580 lb por yarda cúbica',
+  'site.job.worked.feet-inches.inches': 'La medida en pulgadas, 12 in por pie',
+  'site.job.worked.feet-inches.divide': 'Dividida en partes iguales',
+  'site.job.worked.feet-inches.tape':
+    'En dieciseisavos, a la marca de 1/16 in más cercana de la cinta',
+  'site.job.worked.feet-inches.metric': 'En sistema métrico, con 1 in = 0.0254 m exactos',
   'site.job.more': 'Más trabajos',
   'site.job.chart.index': 'Todas las tablas y sus fuentes: datos y tablas',
   'site.charts.checked': 'Revisada el',
@@ -280,41 +446,57 @@ export const esSite = {
     'Cuántas bolsas de concreto lleva una losa de 10 x 10 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-10x10.heading': '¿Cuántas bolsas de concreto para una losa de 10x10?',
   'page.concrete-slab-10x10.label': 'Losa de 10x10',
+  'page.concrete-slab-10x10.intro':
+    'Una losa de 10 por 10 ft, 100 sq ft, es una base común para un cobertizo chico, un jacuzzi o un patio junto a la puerta de atrás.',
   'page.concrete-slab-10x12.title': 'Bolsas de concreto para una losa de 10x12 | Maestro Calc',
   'page.concrete-slab-10x12.description':
     'Cuántas bolsas de concreto lleva una losa de 10 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-10x12.heading': '¿Cuántas bolsas de concreto para una losa de 10x12?',
   'page.concrete-slab-10x12.label': 'Losa de 10x12',
+  'page.concrete-slab-10x12.intro':
+    'Una losa de 10 por 12 ft, 120 sq ft, es un piso común para un cobertizo de jardín o un patio chico.',
   'page.concrete-slab-12x12.title': 'Bolsas de concreto para una losa de 12x12 | Maestro Calc',
   'page.concrete-slab-12x12.description':
     'Cuántas bolsas de concreto lleva una losa de 12 x 12 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-12x12.heading': '¿Cuántas bolsas de concreto para una losa de 12x12?',
   'page.concrete-slab-12x12.label': 'Losa de 12x12',
+  'page.concrete-slab-12x12.intro':
+    'Una losa de 12 por 12 ft, 144 sq ft, es un patio cuadrado o el piso de un cobertizo de 12 por 12.',
   'page.concrete-slab-10x20.title': 'Bolsas de concreto para una losa de 10x20 | Maestro Calc',
   'page.concrete-slab-10x20.description':
     'Cuántas bolsas de concreto lleva una losa de 10 x 20 ft (un auto o un patio) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas.',
   'page.concrete-slab-10x20.heading': '¿Cuántas bolsas de concreto para una losa de 10x20?',
   'page.concrete-slab-10x20.label': 'Losa de 10x20',
+  'page.concrete-slab-10x20.intro':
+    'Una losa de 10 por 20 ft, 200 sq ft, es un lugar para estacionar un auto o un patio largo junto a la casa.',
   'page.concrete-slab-12x20.title': 'Bolsas de concreto para una losa de 12x20 | Maestro Calc',
   'page.concrete-slab-12x20.description':
     'Cuántas bolsas de concreto lleva una losa de 12 x 20 ft (una cochera o el piso de un cobertizo) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-slab-12x20.heading': '¿Cuántas bolsas de concreto para una losa de 12x20?',
   'page.concrete-slab-12x20.label': 'Losa de 12x20',
+  'page.concrete-slab-12x20.intro':
+    'Una losa de 12 por 20 ft, 240 sq ft, es una cochera abierta o el piso de un cobertizo grande o un taller.',
   'page.concrete-slab-12x24.title': 'Bolsas de concreto para una losa de 12x24 | Maestro Calc',
   'page.concrete-slab-12x24.description':
     'Cuántas bolsas de concreto lleva una losa de 12 x 24 ft (un garaje para un auto) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas.',
   'page.concrete-slab-12x24.heading': '¿Cuántas bolsas de concreto para una losa de 12x24?',
   'page.concrete-slab-12x24.label': 'Losa de 12x24',
+  'page.concrete-slab-12x24.intro':
+    'Una losa de 12 por 24 ft, 288 sq ft, es el piso de un garaje para un auto o de un patio techado largo.',
   'page.concrete-slab-20x20.title': 'Bolsas de concreto para una losa de 20x20 | Maestro Calc',
   'page.concrete-slab-20x20.description':
     'Cuántas bolsas de concreto lleva una losa de 20 x 20 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-20x20.heading': '¿Cuántas bolsas de concreto para una losa de 20x20?',
   'page.concrete-slab-20x20.label': 'Losa de 20x20',
+  'page.concrete-slab-20x20.intro':
+    'Una losa de 20 por 20 ft, 400 sq ft, es un lugar para estacionar dos autos o un patio grande.',
   'page.concrete-slab-24x24.title': 'Bolsas de concreto para una losa de 24x24 | Maestro Calc',
   'page.concrete-slab-24x24.description':
     'Cuántas bolsas de concreto lleva una losa de 24 x 24 ft de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb, y las yardas cúbicas para pedir un camión.',
   'page.concrete-slab-24x24.heading': '¿Cuántas bolsas de concreto para una losa de 24x24?',
   'page.concrete-slab-24x24.label': 'Losa de 24x24',
+  'page.concrete-slab-24x24.intro':
+    'Una losa de 24 por 24 ft, 576 sq ft, es un piso común para un garaje de dos autos.',
   'page.concrete-slab-500-sq-ft.title': 'Concreto para losa de 500 ft²: 6.79 yardas | Maestro Calc',
   'page.concrete-slab-500-sq-ft.description':
     'Una losa de 500 pies cuadrados y 4 in de espesor lleva 6.17 yardas cúbicas de concreto, 6.79 con 10% de extra: las bolsas de 40, 60 u 80 lb, y a 5 o 6 in.',
@@ -354,81 +536,113 @@ export const esSite = {
     'Cuántas bolsas de concreto lleva una base de 4 x 4 ft (para un aire acondicionado o un generador) de 4, 5 o 6 in de espesor, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-pad-4x4.heading': '¿Cuántas bolsas de concreto para una base de 4x4?',
   'page.concrete-pad-4x4.label': 'Base de 4x4',
+  'page.concrete-pad-4x4.intro':
+    'Una base de 4 por 4 ft, 16 sq ft, se cuela debajo de la unidad exterior del aire acondicionado o de un generador, o como descanso al pie de un escalón.',
   'page.concrete-tube-8.title': 'Bolsas de concreto para un Sonotube de 8 in | Maestro Calc',
   'page.concrete-tube-8.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 8 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-8.heading': '¿Cuántas bolsas de concreto para un Sonotube de 8 in?',
   'page.concrete-tube-8.label': 'Sonotube de 8 in',
+  'page.concrete-tube-8.intro':
+    'Un tubo de 8 in es una medida común para los pilares de una terraza chica o un poste de porche. Lleva cerca de 0.35 pies cúbicos de concreto por cada pie de profundidad, antes del extra.',
   'page.concrete-tube-10.title': 'Bolsas de concreto para un Sonotube de 10 in | Maestro Calc',
   'page.concrete-tube-10.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 10 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-10.heading': '¿Cuántas bolsas de concreto para un Sonotube de 10 in?',
   'page.concrete-tube-10.label': 'Sonotube de 10 in',
+  'page.concrete-tube-10.intro':
+    'Un tubo de 10 in es el paso siguiente al de 8 in para un pilar que carga más. Lleva cerca de 0.55 pies cúbicos de concreto por cada pie de profundidad, antes del extra.',
   'page.concrete-tube-12.title': 'Bolsas de concreto para un Sonotube de 12 in | Maestro Calc',
   'page.concrete-tube-12.description':
     'Cuántas bolsas de concreto llenan un Sonotube (tubo de cartón para columnas) de 12 in y 2, 3 o 4 ft de profundidad, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-tube-12.heading': '¿Cuántas bolsas de concreto para un Sonotube de 12 in?',
   'page.concrete-tube-12.label': 'Sonotube de 12 in',
+  'page.concrete-tube-12.intro':
+    'Un tubo de 12 in se usa para los pilares de una terraza más pesada o un poste de techo. Lleva cerca de 0.79 pies cúbicos de concreto por cada pie de profundidad, antes del extra.',
   'page.concrete-footing-16x8.title': 'Bolsas de concreto para zapata de 16x8 in | Maestro Calc',
   'page.concrete-footing-16x8.description':
     'Cuántas bolsas de concreto lleva una zapata corrida de 16 in de ancho y 8 in de profundidad para 20, 50 o 100 ft de muro, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-footing-16x8.heading': '¿Cuántas bolsas de concreto para una zapata de 16x8 in?',
   'page.concrete-footing-16x8.label': 'Zapata de 16x8 in',
+  'page.concrete-footing-16x8.intro':
+    'Una zapata de 16 in de ancho y 8 in de profundidad es una franja continua de concreto debajo de un muro. Cada pie de zapata son 16 × 8 ÷ 144 = 0.89 pies cúbicos antes del extra.',
   'page.concrete-footing-20x10.title': 'Bolsas de concreto para zapata de 20x10 in | Maestro Calc',
   'page.concrete-footing-20x10.description':
     'Cuántas bolsas de concreto lleva una zapata corrida de 20 in de ancho y 10 in de profundidad para 20, 50 o 100 ft de muro, en bolsas de 40, 60 u 80 lb.',
   'page.concrete-footing-20x10.heading': '¿Cuántas bolsas de concreto para una zapata de 20x10 in?',
   'page.concrete-footing-20x10.label': 'Zapata de 20x10 in',
+  'page.concrete-footing-20x10.intro':
+    'Una zapata de 20 in de ancho y 10 in de profundidad es una franja continua de concreto debajo de un muro. Cada pie de zapata son 20 × 10 ÷ 144 = 1.39 pies cúbicos antes del extra, cerca de 56% más que una zapata de 16 por 8 in.',
   'page.roof-pitch-3-12.title': 'Pendiente de techo 3/12 en grados: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'Una pendiente de techo 3/12 mide 14.04 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-3-12.heading': 'Pendiente de techo 3/12: 14.04° y el largo del cabio',
   'page.roof-pitch-3-12.label': 'Pendiente 3/12',
+  'page.roof-pitch-3-12.intro':
+    'Un techo 3/12 sube 3 in por cada 12 in de recorrido, una inclinación de 25%. Es una pendiente baja: según el IRC, las tejas asfálticas y la teja necesitan aquí dos capas de fieltro, y la pizarra no se permite.',
   'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12 en grados: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'Una pendiente de techo 4/12 mide 18.43 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: 18.43° y el largo del cabio',
   'page.roof-pitch-4-12.label': 'Pendiente 4/12',
+  'page.roof-pitch-4-12.intro':
+    'Un techo 4/12 sube 4 in por cada 12 in de recorrido, una inclinación de 33.3%. Es la pendiente más baja con la que el IRC deja poner tejas asfálticas y teja sobre una sola capa de fieltro, y el mínimo para la pizarra.',
   'page.roof-pitch-5-12.title': 'Pendiente de techo 5/12 en grados: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'Una pendiente de techo 5/12 mide 22.62 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-5-12.heading': 'Pendiente de techo 5/12: 22.62° y el largo del cabio',
   'page.roof-pitch-5-12.label': 'Pendiente 5/12',
+  'page.roof-pitch-5-12.intro':
+    'Un techo 5/12 sube 5 in por cada 12 in de recorrido, una inclinación de 41.7%, suficiente para todas las cubiertas de la revisión del IRC de abajo con una sola capa de fieltro.',
   'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12 en grados: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'Una pendiente de techo 6/12 mide 26.57 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: 26.57° y el largo del cabio',
   'page.roof-pitch-6-12.label': 'Pendiente 6/12',
+  'page.roof-pitch-6-12.intro':
+    'Un techo 6/12 sube 6 in por cada 12 in de recorrido, una inclinación de 50%: medio pie de subida por cada pie de recorrido.',
   'page.roof-pitch-7-12.title': 'Pendiente de techo 7/12 en grados: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'Una pendiente de techo 7/12 mide 30.26 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-7-12.heading': 'Pendiente de techo 7/12: 30.26° y el largo del cabio',
   'page.roof-pitch-7-12.label': 'Pendiente 7/12',
+  'page.roof-pitch-7-12.intro':
+    'Un techo 7/12 sube 7 in por cada 12 in de recorrido, una inclinación de 58.3%.',
   'page.roof-pitch-7-5-12.title': 'Pendiente de techo 7.5/12 en grados: 32.01° | Maestro Calc',
   'page.roof-pitch-7-5-12.description':
     'Una pendiente de techo 7.5/12 mide 32.01 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-7-5-12.heading': 'Pendiente de techo 7.5/12: 32.01° y el largo del cabio',
   'page.roof-pitch-7-5-12.label': 'Pendiente 7.5/12',
+  'page.roof-pitch-7-5-12.intro':
+    'Un techo 7.5/12, que también se escribe 7 1/2 en 12, sube 7 1/2 in por cada 12 in de recorrido, una inclinación de 62.5%.',
   'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12 en grados: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'Una pendiente de techo 8/12 mide 33.69 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: 33.69° y el largo del cabio',
   'page.roof-pitch-8-12.label': 'Pendiente 8/12',
+  'page.roof-pitch-8-12.intro':
+    'Un techo 8/12 sube 8 in por cada 12 in de recorrido, una inclinación de 66.7%: dos tercios de pie de subida por cada pie de recorrido.',
   'page.roof-pitch-9-12.title': 'Pendiente de techo 9/12 en grados: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'Una pendiente de techo 9/12 mide 36.87 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-9-12.heading': 'Pendiente de techo 9/12: 36.87° y el largo del cabio',
   'page.roof-pitch-9-12.label': 'Pendiente 9/12',
+  'page.roof-pitch-9-12.intro':
+    'Un techo 9/12 sube 9 in por cada 12 in de recorrido, una inclinación de 75%: tres cuartos de pie de subida por cada pie de recorrido.',
   'page.roof-pitch-10-12.title': 'Pendiente de techo 10/12 en grados: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'Una pendiente de techo 10/12 mide 39.81 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-10-12.heading': 'Pendiente de techo 10/12: 39.81° y el largo del cabio',
   'page.roof-pitch-10-12.label': 'Pendiente 10/12',
+  'page.roof-pitch-10-12.intro':
+    'Un techo 10/12 sube 10 in por cada 12 in de recorrido, una inclinación de 83.3%.',
   'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12 en grados: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'Una pendiente de techo 12/12 mide 45.00 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
   'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: 45.00° y el largo del cabio',
   'page.roof-pitch-12-12.label': 'Pendiente 12/12',
+  'page.roof-pitch-12-12.intro':
+    'Un techo 12/12 sube lo mismo que recorre, una inclinación de 100% y un ángulo de exactamente 45°.',
   'page.roof-pitch-chart.title': 'Tabla de pendientes de techo en grados | Maestro Calc',
   'page.roof-pitch-chart.description':
     'Cada pendiente de techo de 1/12 a 24/12 en grados, en porcentaje y con su multiplicador de cabio, la pendiente mínima del IRC y de grados a pendiente.',
@@ -754,31 +968,43 @@ export const esSite = {
     '29 1/4 in entre 2 da 14 5/8 in en la cinta métrica (14.63 in, 1 ft 2 5/8 in), redondeado al 1/16 in. También 29 1/4 in entre 3 y entre 4.',
   'page.divide-29-1-4-in-by-2.heading': '¿Cuánto es 29 1/4 in entre 2 en la cinta métrica?',
   'page.divide-29-1-4-in-by-2.label': '29 1/4 in ÷ 2',
+  'page.divide-29-1-4-in-by-2.intro':
+    'Dividir 29 1/4 in entre 2 da el centro de una tabla o de un vano de ese ancho, para una marca, una bisagra o un accesorio.',
   'page.divide-23-5-8-in-by-2.title': 'Mitad de 23 5/8 in en la cinta: 11 13/16 in | Maestro Calc',
   'page.divide-23-5-8-in-by-2.description':
     'La mitad de 23 5/8 in, o 23 5/8 in entre 2, da 11 13/16 in en la cinta métrica (11.81 in), redondeado al 1/16 in. También entre 3 y entre 4.',
   'page.divide-23-5-8-in-by-2.heading': '¿Cuál es la mitad de 23 5/8 in (entre 2) en la cinta?',
   'page.divide-23-5-8-in-by-2.label': '23 5/8 in ÷ 2',
+  'page.divide-23-5-8-in-by-2.intro':
+    'La mitad de 23 5/8 in es la marca del centro de un estante, una puerta de gabinete o un marco de ese ancho.',
   'page.divide-35-5-in-by-2.title': '35.5 pulgadas entre 2: 17 3/4 in | Maestro Calc',
   'page.divide-35-5-in-by-2.description':
     '35.5 pulgadas entre 2 da 17 3/4 in en la cinta métrica (17.75 in, 1 ft 5 3/4 in). También 35.5 in entre 3 y entre 4, redondeado al 1/16 in.',
   'page.divide-35-5-in-by-2.heading': '¿Cuánto es 35.5 pulgadas entre 2?',
   'page.divide-35-5-in-by-2.label': '35.5 in ÷ 2',
+  'page.divide-35-5-in-by-2.intro':
+    '35.5 in es una medida en pulgadas con decimales, como la dan un plano o una cinta digital; dividirla entre 2 da el centro de una pieza de ese largo.',
   'page.divide-22-in-by-10.title': '22 pulgadas entre 10: 2 3/16 in | Maestro Calc',
   'page.divide-22-in-by-10.description':
     '22 pulgadas entre 10 da 2.20 in, o 2 3/16 in en la cinta métrica redondeado al 1/16 in. También 22 in entre 2, 3 y 4.',
   'page.divide-22-in-by-10.heading': '¿Cuánto es 22 pulgadas entre 10?',
   'page.divide-22-in-by-10.label': '22 in ÷ 10',
+  'page.divide-22-in-by-10.intro':
+    'Dividir 22 in en 10 partes iguales es un trabajo de trazo: repartir tablillas, barrotes o perforaciones a la misma distancia a lo largo de un tramo.',
   'page.divide-9-ft-6-in-by-2.title': '9 pies 6 pulgadas entre 2: 4 ft 9 in | Maestro Calc',
   'page.divide-9-ft-6-in-by-2.description':
     'La mitad de 9 pies 6 pulgadas: 9 ft 6 in entre 2 da 4 ft 9 in, o 57 in en la cinta métrica (57.00 in, 1.448 m). También entre 3 y entre 4.',
   'page.divide-9-ft-6-in-by-2.heading': '¿Cuánto es 9 pies 6 pulgadas entre 2?',
   'page.divide-9-ft-6-in-by-2.label': '9 ft 6 in ÷ 2',
+  'page.divide-9-ft-6-in-by-2.intro':
+    'La mitad de 9 ft 6 in da el centro de una pared, una viga o un cuarto de ese largo, donde va una lámpara, una rejilla o una línea de centro.',
   'page.divide-3-ft-9-in-by-2.title': '3 pies 9 pulgadas entre 2: 1 ft 10 1/2 in | Maestro Calc',
   'page.divide-3-ft-9-in-by-2.description':
     'La mitad de 3 pies 9 pulgadas: 3 ft 9 in entre 2 da 1 ft 10 1/2 in, o 22 1/2 in en la cinta métrica (22.50 in, 0.572 m). También entre 3 y entre 4.',
   'page.divide-3-ft-9-in-by-2.heading': '¿Cuánto es 3 pies 9 pulgadas entre 2?',
   'page.divide-3-ft-9-in-by-2.label': '3 ft 9 in ÷ 2',
+  'page.divide-3-ft-9-in-by-2.intro':
+    'La mitad de 3 ft 9 in es el centro de una puerta, una ventana o una fila de gabinetes de ese ancho.',
   'page.decimal-feet-chart.title': 'Tabla de pies decimales a pies y pulgadas | Maestro Calc',
   'page.decimal-feet-chart.description':
     'Tabla de pies decimales a pies y pulgadas: cada medida de 0.10 a 0.99 ft y otras comunes como 11.65 ft, al 1/16 de pulgada, y de pulgadas a pies decimales.',
