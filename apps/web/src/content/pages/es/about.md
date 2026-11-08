@@ -1,7 +1,7 @@
 ---
 id: about
 locale: es
-updated: 2026-11-06
+updated: 2026-11-08
 ownerReview: approved
 ---
 
@@ -16,6 +16,13 @@ Todo lo que hay en este sitio viene del Equipo editorial de Maestro Calc. No pub
 Cada página de políticas y de metodología dice cuándo se actualizó por última vez. Presentamos las estimaciones como estimaciones. La [página de metodología](/es/metodologia) explica cómo sale cada número, y nuestra [política editorial](/es/politica-editorial) dice de dónde salen los números, cómo los revisamos y cuándo los revisamos de nuevo. Hoy el sitio no tiene publicidad ni patrocinadores, así que nada de lo que ves está influido por ellos.
 
 <!-- Los elementos h2 en bruto mantienen estable el ancla de cada sección aunque cambie el título. -->
+
+Cada calculadora pasa por los mismos pasos antes de publicarse:
+
+1. Sus fórmulas están escritas en la [página de metodología](/es/metodologia), con la fuente de cada rendimiento, cobertura o valor del código: fichas técnicas de fabricantes (QUIKRETE, USG, Sherwin-Williams y GAF), el International Residential Code de 2021, un informe de investigación del Departamento de Transporte de Wisconsin para el peso de la grava, y la publicación especial 811 del NIST para las conversiones de unidades.
+2. Las cuentas usan fracciones exactas desde el primer dato hasta el último paso, y solo se redondea lo que te muestra.
+3. Cada calculadora se prueba con casos resueltos a mano, y la página de metodología publica esos casos para que los revises tú mismo.
+4. Cada página de un trabajo común, como una losa de 10 × 10 ft o una pendiente de techo 6/12, la calcula la misma calculadora cuando se construye el sitio, y casi todas muestran sus cuentas paso a paso.
 
 <h2 id="uso-de-ia">Cómo usamos la IA</h2>
 
