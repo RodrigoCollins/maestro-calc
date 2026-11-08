@@ -320,6 +320,18 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/measurement/20x20-square-feet',
       es: '/es/medidas/20x20-pies-cuadrados',
     });
+    expect(ROUTES['square-feet-in-an-acre']).toEqual({
+      en: '/measurement/square-feet-in-an-acre',
+      es: '/es/medidas/pies-cuadrados-en-un-acre',
+    });
+    expect(ROUTES['square-feet-in-a-half-acre']).toEqual({
+      en: '/measurement/square-feet-in-a-half-acre',
+      es: '/es/medidas/pies-cuadrados-en-medio-acre',
+    });
+    expect(ROUTES['square-feet-in-a-quarter-acre']).toEqual({
+      en: '/measurement/square-feet-in-a-quarter-acre',
+      es: '/es/medidas/pies-cuadrados-en-un-cuarto-de-acre',
+    });
     expect(ROUTES['mulch-bags-per-yard']).toEqual({
       en: '/landscaping/bags-of-mulch-per-yard',
       es: '/es/jardineria/bolsas-de-mulch-por-yarda',

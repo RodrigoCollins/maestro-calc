@@ -4,7 +4,7 @@ import type { CalculatorPageId } from './templates.ts';
 /*
  * The job pages (growth plan, lever 1): one page per common job, whose table the calculator works
  * out at build time: concrete for a slab (by its sides or by its area), a tube or a footing, roof pitch for a
- * pitch in 12, square footage for a common room or area, the bags of mulch in a cubic yard, the
+ * pitch in 12, square footage for a common room or area or a lot of land in acres, the bags of mulch in a cubic yard, the
  * gravel for a driveway, the paint and the drywall for a room, the topsoil for a raised bed or an
  * area, the shingles for a roof, a tape measurement divided into equal parts, decimal feet in feet and inches, and square feet in square meters. A job id is also its `ROUTES` id, under the hub of its calculator; the page copy is its `page.<id>.*` keys of the
  * `site` catalogs, and every figure comes from the engine. Adding a job is one row here, its route
@@ -256,6 +256,21 @@ const rectangle = (length: number, width: number) => {
   return [side(0), side(1), side(2)] as const;
 };
 
+/** Square feet in one acre: NIST Handbook 44, Appendix C (1 acre = 43,560 ft² = 160 rods²). */
+export const ACRE_FT2 = 43_560;
+
+/**
+ * A lot of land as rectangles of `length` by `width` feet, each exactly its acres: the first one
+ * chain (66 ft) deep, the surveyor's unit the acre is built on (1 acre = 1 chain × 1 furlong).
+ */
+const lots = (first: readonly [66, number], ...others: (readonly [number, number])[]) => {
+  const lot = ([length, width]: readonly [number, number]): JobCase => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+  });
+  return [lot(first), ...others.map(lot)] as const;
+};
+
 /**
  * The slab sizes of the concrete chart, smallest area first: every size of a slab job, the 4 ft pad,
  * and the common sizes between and beyond them (a walk, a shed, a two-car garage).
@@ -446,6 +461,21 @@ export const JOBS = {
     updated: '2026-11-04',
     cases: rectangle(20, 20),
   },
+  'square-feet-in-an-acre': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-08',
+    cases: lots([66, 660], [100, 435.6], [132, 330], [165, 264], [198, 220]),
+  },
+  'square-feet-in-a-half-acre': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-08',
+    cases: lots([66, 330], [99, 220], [110, 198], [121, 180], [132, 165]),
+  },
+  'square-feet-in-a-quarter-acre': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-08',
+    cases: lots([66, 165], [75, 145.2], [90, 121], [99, 110]),
+  },
   'square-feet-to-square-meters-chart': {
     calculator: 'rectangle-area',
     updated: '2026-11-06',
@@ -555,6 +585,21 @@ export const isChartJob = (id: string): boolean => isJobPage(id) && isChartId(id
 
 /** The job ids, in table order. */
 export const JOB_IDS: readonly JobId[] = Object.keys(JOBS).filter(isJobPage);
+
+/**
+ * The lots of land (the acre pages): each a square footage job of so many acres, whose page adds
+ * what an acre is by law, the side of a square that size, what fits on it and what covers it.
+ */
+export const LAND_ACRES = {
+  'square-feet-in-an-acre': 1,
+  'square-feet-in-a-half-acre': 0.5,
+  'square-feet-in-a-quarter-acre': 0.25,
+} as const satisfies Partial<Record<JobId, number>>;
+
+export type LandId = keyof typeof LAND_ACRES;
+
+/** Whether job `id` is a lot of land (an acre page). */
+export const isLandJob = (id: string): id is LandId => Object.hasOwn(LAND_ACRES, id);
 
 /** A reference chart: a job whose id ends in `-chart`. */
 export type ChartId = Extract<JobId, `${string}-chart`>;

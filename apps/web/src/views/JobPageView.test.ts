@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { CHART_SOURCES_ID, calculatorSourcesHref } from '../lib/byline.ts';
 import { jobGuide } from '../lib/job-guide.ts';
+import { jobLand, NIST_HB44_C } from '../lib/job-land.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { JOBS } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -75,5 +76,47 @@ describe('JobPageView buying advice', () => {
     expect(steps?.map((li) => li.textContent.replace(/\s+/g, ' ').trim())).toEqual(
       worked?.steps.map(({ label, math }) => `${label}: ${math}`),
     );
+  });
+});
+
+// Ahrefs US 2026-11-08: "how many square feet in an acre" is answered by law, by shape and by use
+describe('JobPageView acre pages', () => {
+  it.each(['en', 'es'] as const)(
+    'says what an acre is with its source, its shapes, a glance and the cover in %s',
+    async (locale) => {
+      const document = await render('square-feet-in-a-quarter-acre', locale);
+      const land = jobLand('square-feet-in-a-quarter-acre', locale);
+      const headings = document.querySelectorAll('main h2').map((h2) => h2.textContent);
+      for (const heading of [
+        land?.heading,
+        land?.shape.heading,
+        land?.glance.heading,
+        land?.cover.heading,
+      ]) {
+        expect(headings).toContain(heading);
+      }
+      const text = document.querySelector('main')?.textContent ?? '';
+      for (const paragraph of land?.shape.paragraphs ?? []) expect(text).toContain(paragraph);
+      expect(text).toContain(land?.definition);
+      expect(text).toContain(land?.surveyFoot);
+      // nothing but a calculator page leaves the site (check:site): the source is cited, not linked
+      expect(document.querySelector('main code')?.textContent).toBe(NIST_HB44_C.url);
+      expect(
+        document.querySelector(`main a[href="${pathOf('square-feet-12x12', locale)}"]`),
+      ).not.toBeNull();
+      // the lot table, then the cover table
+      expect(document.querySelectorAll('main table')).toHaveLength(2);
+      expect(document.querySelector('main h1')?.textContent).toBe(
+        locale === 'en'
+          ? 'A quarter acre is 10,890 square feet'
+          : 'Un cuarto de acre tiene 10,890 pies cuadrados',
+      );
+    },
+  );
+
+  it('adds no acre section to a room', async () => {
+    const document = await render('square-feet-12x12', 'en');
+    expect(document.querySelectorAll('main table')).toHaveLength(1);
+    expect(document.querySelector('main')?.textContent).not.toContain(NIST_HB44_C.url);
   });
 });
