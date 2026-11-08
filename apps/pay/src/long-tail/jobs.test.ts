@@ -7,7 +7,10 @@ import { PATHS } from '../pay-converter/texts.ts';
 import {
   commonLinksOf,
   DAYS,
+  DAYS_FROM,
   DIFFERENTIALS,
+  TIME_OFFSETS,
+  UNTILS,
   DOUBLES,
   JOBS,
   LONG_TAIL_ROUTES,
@@ -227,7 +230,10 @@ describe('long-tail pages', () => {
         DOUBLES.length +
         DIFFERENTIALS.length +
         TIPPED.length +
-        DAYS.length,
+        DAYS.length +
+        TIME_OFFSETS.length +
+        UNTILS.length +
+        DAYS_FROM.length,
     );
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
@@ -254,6 +260,9 @@ describe('long-tail pages', () => {
           'differential',
           'tipped',
           'days',
+          'time-offset',
+          'until',
+          'days-from',
         ] as const
       ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());

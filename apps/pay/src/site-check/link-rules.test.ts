@@ -60,6 +60,15 @@ describe('LONG_TAIL_RULES', () => {
         calculator: '/es/calculadora-de-propinas-por-hora',
       }),
     );
+    for (const path of [
+      '/pay/15-hours-ago',
+      '/pay/how-long-until-3-00-pm',
+      '/pay/28-days-from-today',
+    ]) {
+      expect(LONG_TAIL_RULES).toContainEqual(
+        expect.objectContaining({ path, calculator: '/hours-calculator' }),
+      );
+    }
   });
 });
 

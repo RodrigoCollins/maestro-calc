@@ -4,6 +4,7 @@ import { longTailPageOf, type LongTailJob } from '../long-tail/jobs.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { SOURCES_HEADING } from '../long-tail/sections.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import TimeNowScript from '../islands/TimeNowScript.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -38,6 +39,18 @@ const page = longTailPageOf(job, lang);
           {page.figureLabel}
         </p>
         <p class="result-figure">{page.figure}</p>
+        {page.live !== undefined && (
+          <p class="result-sub">
+            <span
+              data-time-now={page.live.kind}
+              {...Object.fromEntries(
+                Object.entries(page.live.data).map(([key, value]) => [`data-${key}`, value]),
+              )}
+            >
+              {page.live.fallback}
+            </span>
+          </p>
+        )}
       </div>
       <ul class="breakdown labeled" aria-label={page.breakdown}>
         {page.rows.map((row) => (
@@ -100,6 +113,15 @@ const page = longTailPageOf(job, lang);
           {(section.after ?? []).map((paragraph) => (
             <p>{paragraph}</p>
           ))}
+          {section.links !== undefined && (
+            <ul class="link-list">
+              {section.links.map((link) => (
+                <li>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       ))}
 
@@ -130,4 +152,5 @@ const page = longTailPageOf(job, lang);
       </ul>
     </section>
   </main>
+  {page.live !== undefined && <TimeNowScript />}
 </SiteLayout>

@@ -435,8 +435,126 @@ export const DAYS: readonly Days[] = [
   48, 72, 96, 100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
 ].map(days);
 
+/**
+ * A time some hours ago or some minutes from now, "what time was it 15 hours ago": the visitor's
+ * clock moved by the offset. The page is built once, so it gives the rule and the table from each
+ * hour of the day, and `../client/time-now.ts` fills the answer from the visitor's clock.
+ */
+export interface TimeOffset {
+  readonly kind: 'time-offset';
+  readonly amount: number;
+  readonly unit: 'hour' | 'minute';
+  readonly direction: 'ago' | 'from-now';
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const hoursAgo = (amount: number): TimeOffset => ({
+  kind: 'time-offset',
+  amount,
+  unit: 'hour',
+  direction: 'ago',
+  slug: { en: `${String(amount)}-hours-ago`, es: `hace-${String(amount)}-horas` },
+});
+
+const minutesFromNow = (amount: number): TimeOffset => ({
+  kind: 'time-offset',
+  amount,
+  unit: 'minute',
+  direction: 'from-now',
+  slug: { en: `${String(amount)}-minutes-from-now`, es: `dentro-de-${String(amount)}-minutos` },
+});
+
+/** The hours ago, then the minutes from now, each ascending: a page links the others. */
+export const TIME_OFFSETS: readonly TimeOffset[] = [
+  ...[8, 9, 13, 15].map(hoursAgo),
+  ...[15, 30].map(minutesFromNow),
+];
+
+/**
+ * A time of day people count down to, "how long until 3:00 pm": minutes from midnight, 0 for
+ * 12:00 am. The page gives the subtraction and the count from each hour; the script, the live one.
+ */
+export interface Until {
+  readonly kind: 'until';
+  readonly minutes: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const until = (minutes: number): Until => {
+  const hour = Math.floor(minutes / 60);
+  const clock = `${String(hour % 12 === 0 ? 12 : hour % 12)}-${String(minutes % 60).padStart(2, '0')}-${hour < 12 ? 'am' : 'pm'}`;
+  return {
+    kind: 'until',
+    minutes,
+    slug: { en: `how-long-until-${clock}`, es: `cuanto-falta-para-las-${clock}` },
+  };
+};
+
+/** In the order of the day: a page links its nearest. */
+export const UNTILS: readonly Until[] = [0, 720, 855, 870, 885, 900, 930, 960, 1020].map(until);
+
+/**
+ * A date some days or months from today, or some days ago, "what is the date 28 days from today":
+ * calendar arithmetic. The page gives the weekday it lands on and the tables from the first of
+ * each month; the script, today's.
+ */
+export interface DaysFrom {
+  readonly kind: 'days-from';
+  readonly amount: number;
+  readonly unit: 'day' | 'month';
+  readonly direction: 'ago' | 'from-now';
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const daysFrom = (amount: number): DaysFrom => ({
+  kind: 'days-from',
+  amount,
+  unit: 'day',
+  direction: 'from-now',
+  slug: { en: `${String(amount)}-days-from-today`, es: `${String(amount)}-dias-a-partir-de-hoy` },
+});
+
+/** The days from today ascending, the days ago, then the months. */
+export const DAYS_FROM: readonly DaysFrom[] = [
+  daysFrom(10),
+  daysFrom(28),
+  daysFrom(30),
+  {
+    kind: 'days-from',
+    amount: 30,
+    unit: 'day',
+    direction: 'ago',
+    slug: { en: '30-days-ago-from-today', es: 'hace-30-dias' },
+  },
+  {
+    kind: 'days-from',
+    amount: 6,
+    unit: 'month',
+    direction: 'from-now',
+    slug: { en: '6-months-from-today', es: '6-meses-a-partir-de-hoy' },
+  },
+];
+
+/** The pages of the three families above: their one script fills the answer from the clock. */
+export const LIVE_JOBS: readonly (TimeOffset | Until | DaysFrom)[] = [
+  ...TIME_OFFSETS,
+  ...UNTILS,
+  ...DAYS_FROM,
+];
+
 /** A long-tail page's job, of any family. */
-export type LongTailJob = Job | Shift | Pto | Minutes | DoubleTime | Differential | Tipped | Days;
+export type LongTailJob =
+  | Job
+  | Shift
+  | Pto
+  | Minutes
+  | DoubleTime
+  | Differential
+  | Tipped
+  | Days
+  | TimeOffset
+  | Until
+  | DaysFrom;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
 export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
@@ -448,6 +566,7 @@ export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
   ...DIFFERENTIALS,
   ...TIPPED,
   ...DAYS,
+  ...LIVE_JOBS,
 ];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>

@@ -10,9 +10,13 @@ const astro = (dir: string): string[] =>
   readdirSync(resolve(src, dir))
     .filter((name) => name.endsWith('.astro'))
     .map((name) => read(`${dir}/${name}`));
-const entries = [...astro('components'), ...astro('islands')].flatMap((text) =>
-  Array.from(text.matchAll(/<script src="\.\.\/client\/([\w-]+\.ts)"/g), ([, name = '']) => name),
-);
+// `time-now.ts` is no calculator: it fills the live time of a page from the clock, with no form to
+// calculate and no share link, so it records no usage.
+const entries = [...astro('components'), ...astro('islands')]
+  .flatMap((text) =>
+    Array.from(text.matchAll(/<script src="\.\.\/client\/([\w-]+\.ts)"/g), ([, name = '']) => name),
+  )
+  .filter((name) => name !== 'time-now.ts');
 /** The script and the shared runner it calls, as one text. */
 const reach = (name: string): string => {
   const text = read(`client/${name}`);
