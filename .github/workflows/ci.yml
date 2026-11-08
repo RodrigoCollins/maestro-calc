@@ -106,6 +106,28 @@ jobs:
         # keys of its own `calculators-<n>` shard and of `calculators-1` (the released contract)
         # only. mutation-identity.contract.test.ts pins them.
         include:
+          - shard: cobro-core
+            inputs: |
+              packages/cobro-core/src/**
+              packages/core/*.json
+              packages/core/src/*.ts
+              packages/core/src/calculator/**
+              packages/core/src/format/**
+              packages/core/src/geometry/**
+              packages/core/src/money/**
+              packages/core/src/rational/**
+              packages/core/src/units/**
+              packages/core/src/url/**
+              packages/core/src/calculators/concrete/**
+              packages/core/src/calculators/drywall/**
+              packages/core/src/calculators/mulch/**
+              packages/core/src/calculators/paint/**
+              packages/core/src/__testing__/concrete-yields.ts
+              packages/core/src/__testing__/drywall-yields.ts
+              packages/core/src/__testing__/paint-yields.ts
+              packages/cobro-core/*.json
+              packages/cobro-core/stryker.config.mjs
+              packages/cobro-core/vitest.config.ts
           - shard: rational
             inputs: |
               packages/core/src/*.ts

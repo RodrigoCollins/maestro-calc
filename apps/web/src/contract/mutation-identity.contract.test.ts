@@ -31,6 +31,8 @@ const petsCore = await importFromRoot<PackageConfig>('packages/pets-core/stryker
 const poolCore = await importFromRoot<PackageConfig>('packages/pool-core/stryker.config.mjs');
 const petsCoreRoot = fromRoot('packages/pets-core');
 const poolCoreRoot = fromRoot('packages/pool-core');
+const cobroCore = await importFromRoot<PackageConfig>('packages/cobro-core/stryker.config.mjs');
+const cobroCoreRoot = fromRoot('packages/cobro-core');
 
 /** Every core file a shard mutates or runs: the positive mutate globs and the tests. */
 const ownFilesOf = (shard: Shard): string[] => {
@@ -299,5 +301,19 @@ describe('shard identity against the import graph (design D10, fail closed)', ()
       .filter((path) => !files.has(path));
     expect(missing).toEqual([]);
     expect([...files].some((path) => path.startsWith('../core/src/calculators/'))).toBe(false);
+  });
+
+  // The quotes of Cuánto Le Cobro compose four calculators of core (and build them in their tests
+  // with core's yields fixtures): those directories are part of its identity.
+  it('cobro-core: every core file its sources and tests reach is in its identity', () => {
+    const own = globSync('src/**/*.ts', { cwd: cobroCoreRoot }).map((path) =>
+      resolve(cobroCoreRoot, path),
+    );
+    expect(own.length).toBeGreaterThan(2);
+    const files = new Set(cobroCore.identityFilesFor('cobro-core'));
+    const missing = [...closureOf(own)]
+      .map((file) => relative(cobroCoreRoot, file))
+      .filter((path) => !files.has(path));
+    expect(missing).toEqual([]);
   });
 });
