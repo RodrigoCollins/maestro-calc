@@ -68,6 +68,15 @@ export const NOAA = {
 /** Links the grass pages share. */
 export const SEED_CALCULATOR = { href: '/grass-seed-calculator', label: 'Grass seed calculator' };
 export const BEST_SEED_LINK = { href: '/best-grass-seed', label: 'Best grass seed by region' };
+/** The UK sowing guide and the germination guide (`uk-guides.ts`). */
+export const UK_LINK = {
+  href: '/when-to-sow-grass-seed-uk',
+  label: 'When to sow grass seed in the UK',
+};
+export const GROWING_LINK = {
+  href: '/how-long-does-grass-seed-take-to-grow',
+  label: 'How long grass seed takes to grow',
+};
 export const PLANTING_LINK = {
   href: '/when-to-plant-grass-seed',
   label: 'When to plant grass seed',
