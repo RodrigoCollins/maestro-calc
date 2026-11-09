@@ -1,0 +1,14 @@
+---
+import type { Seg } from '../calculators.ts';
+
+interface Props {
+  /** Plain text, or pieces: text, or a `data-v` hook filled with its value now and by the script. */
+  readonly segs: string | readonly Seg[];
+  readonly values: Readonly<Record<string, string>>;
+}
+
+const { segs, values } = Astro.props;
+const pieces: readonly Seg[] = typeof segs === 'string' ? [segs] : segs;
+---
+
+{pieces.map((seg) => (typeof seg === 'string' ? seg : <span data-v={seg.v}>{values[seg.v]}</span>))}

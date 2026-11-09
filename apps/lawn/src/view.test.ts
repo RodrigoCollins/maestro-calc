@@ -36,9 +36,49 @@ describe('viewOf', () => {
         bags: '2–3',
         bagsUnit: 'bags',
         bagPounds: '5',
+        bagUnit: 'lb',
+        massUnit: 'lb',
+        passUnit: 'lb',
+        areaUnit: 'sq ft',
+        lengthUnit: 'ft',
+        rate: '2–3',
+        rateUnit: 'lb per 1,000 sq ft',
       },
       warnings: [],
     });
+  });
+
+  // 1 lb per 1,000 sq ft = 453.59237 g / 92.90304 m² = 4.8824 g/m²: 2 to 3 lb is 9.765 to 14.647
+  it('writes a metric seed run in kilograms and grams: 100 m² of bluegrass, 5 kg bags', () => {
+    expect(viewOf('grass-seed', { area: '100' }, 'metric')).toEqual({
+      values: {
+        // 9.765 to 14.647 g/m² x 100 m² = 0.976 to 1.465 kg
+        pounds: '0.98–1.46',
+        massUnit: 'kg',
+        // half each way, 488 to 732 g: under 1 kg the view counts grams
+        perPass: '488–732',
+        passUnit: 'g',
+        bags: '1',
+        bagsUnit: 'bag',
+        bagPounds: '5',
+        bagUnit: 'kg',
+        areaUnit: 'm²',
+        lengthUnit: 'm',
+        rate: '9.8–14.6',
+        rateUnit: 'g/m²',
+      },
+      warnings: [],
+    });
+  });
+
+  it('counts a small metric lawn in grams: 20 m² of bluegrass is 195 to 293 g', () => {
+    const view = viewOf('grass-seed', { area: '20' }, 'metric');
+    expect(view?.values['pounds']).toBe('195–293');
+    expect(view?.values['massUnit']).toBe('g');
+  });
+
+  it('gives nothing for a metric field it cannot read', () => {
+    expect(viewOf('grass-seed', { area: 'abc' }, 'metric')).toBeUndefined();
   });
 
   it('writes the sod defaults: 1,000 sq ft, three pallets, 375 slabs', () => {

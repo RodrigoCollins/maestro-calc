@@ -161,6 +161,33 @@ describe('the Spanish charts', () => {
       });
     });
 
+    it('prints the very litres of the English metric tables, each row opening the Spanish calculator', () => {
+      expect(VOLUME_CHART_ES.metricTables).toHaveLength(VOLUME_CHART.metricTables.length);
+      VOLUME_CHART.metricTables.forEach((table, index) => {
+        const es = VOLUME_CHART_ES.metricTables[index];
+        expect(es?.id).toBe(table.id);
+        expect(es?.caption).not.toBe(table.caption);
+        expect(numbersOf(es?.note ?? '')).toEqual(numbersOf(table.note));
+        table.columns.forEach((column, at) => {
+          const twin = es?.columns[at];
+          expect([twin?.shallow, twin?.deep, twin?.average]).toEqual([
+            column.shallow,
+            column.deep,
+            column.average,
+          ]);
+          expect(numbersOf(twin?.head ?? '')).toEqual(numbersOf(column.head));
+        });
+        table.rows.forEach((row, at) => {
+          const twin = es?.rows[at];
+          expect(twin?.cells).toBe(row.cells);
+          expect(twin?.cubicMetres).toBe(row.cubicMetres);
+          expect(numbersOf(twin?.label ?? '')).toEqual(numbersOf(row.label));
+          expect(twin?.href).toBe(twinOf(row.href));
+        });
+      });
+      expect(VOLUME_CHART_ES.page.litres).toContain('Litros');
+    });
+
     it('states the same factors, assumptions and shortcuts', () => {
       expect(VOLUME_CHART_ES.factors).toBe(VOLUME_CHART.factors);
       expect(VOLUME_CHART_ES.assumptions.map(numbersOf)).toEqual(

@@ -1,6 +1,6 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { isQuantityOf, liter, m3 } from '@maestro-calc/core';
+import { decode, isQuantityOf, liter, m3 } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
 import { figure } from '../__testing__/figure.ts';
@@ -9,7 +9,7 @@ import { DOSING_CHART } from '../dosing.ts';
 import { GUIDES, guidesOf } from '../guide.ts';
 import { JOB_PAGES, volumeJobPathOf } from '../jobs.ts';
 import { METHOD_SECTIONS } from '../methodology.ts';
-import { VOLUME_CHART } from './chart.ts';
+import { METRIC_POOL, VOLUME_CHART } from './chart.ts';
 import { VOLUME_TEXTS } from './texts.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('../pages/', import.meta.url)))
@@ -155,6 +155,12 @@ describe('the pool volume chart', () => {
     );
   });
 
+  it('names its litres in the title, the description and the heading', () => {
+    expect(VOLUME_CHART.title).toContain('Litres');
+    expect(VOLUME_CHART.description).toContain('litres');
+    expect(VOLUME_CHART.h1).toContain('litres');
+  });
+
   it('works the shortcut factors out with the calculator: 7.48 gallons a cubic foot', () => {
     expect(VOLUME_CHART.factors.cubicFoot).toBe('7.48');
     expect(VOLUME_CHART.factors.round).toBe('5.9');
@@ -185,5 +191,110 @@ describe('the pool volume chart', () => {
 
   it('is linked from the dosing chart, next to the calculator', () => {
     expect(DOSING_CHART.chart.href).toBe(VOLUME_CHART.path);
+  });
+});
+
+const metricTable = (id: string) => {
+  const found = VOLUME_CHART.metricTables.find((candidate) => candidate.id === id);
+  if (found === undefined) throw new Error(`no metric table ${id}`);
+  return found;
+};
+
+/** The volume of `raw` in metres as the metric calculator gives it: litres, and cubic metres to 0.1. */
+const metricVolumeOf = (raw: Readonly<Record<string, string>>) => {
+  const ran = poolVolume.run(raw, { unitSystem: 'metric' });
+  if (!ran.ok) throw new Error(`run failed on ${JSON.stringify(raw)}`);
+  const volume = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+  if (!isQuantityOf(volume, 'volume')) throw new Error('no volume');
+  return { litres: volumeText(volume, liter), cubicMetres: volumeText(volume, m3, 1) };
+};
+
+// the pools of Australia, the UK, Canada and Spain, measured in metres and filled in litres
+describe('the metric tables of the pool volume chart', () => {
+  it('charts round and rectangle pools in metres, after the tables in feet', () => {
+    expect(VOLUME_CHART.metricTables.map(({ id }) => id)).toEqual([
+      'round-metric',
+      'rectangle-metric',
+    ]);
+  });
+
+  it('has the common metric sizes: 3.0 to 7.3 m round, 6 x 3 to 12 x 6 m rectangles', () => {
+    expect(metricTable('round-metric').rows.map(({ label }) => label)).toEqual([
+      '3.0 m round',
+      '3.6 m round',
+      '4.5 m round',
+      '5.5 m round',
+      '7.3 m round',
+    ]);
+    expect(metricTable('rectangle-metric').rows.map(({ label }) => label)).toEqual([
+      '6 x 3 m',
+      '7 x 3.5 m',
+      '8 x 4 m',
+      '9 x 4.5 m',
+      '10 x 5 m',
+      '12 x 6 m',
+    ]);
+  });
+
+  it('heads each column with its depths in metres and the average the litres use', () => {
+    expect(metricTable('round-metric').columns.map(({ head, average }) => [head, average])).toEqual(
+      [['1.2 m deep', '1.2 m']],
+    );
+    expect(
+      metricTable('rectangle-metric').columns.map(({ head, average }) => [head, average]),
+    ).toEqual([
+      ['1.2 m deep', '1.2 m'],
+      ['1.5 m deep', '1.5 m'],
+      ['1 m to 2 m', '1.5 m'],
+    ]);
+  });
+
+  // every cell is the metric calculator's own figure, to the litre: no number is typed by hand
+  it.each(VOLUME_CHART.metricTables.map((t) => [t.id, t] as const))(
+    'works out every %s cell in litres and cubic metres as the metric calculator does',
+    (_id, { columns, rows }) => {
+      for (const { size, cells, cubicMetres } of rows) {
+        expect(cells).toHaveLength(columns.length);
+        columns.forEach(({ shallow, deep }, index) => {
+          const volume = metricVolumeOf({ ...size, shallow, deep });
+          expect(cells[index], JSON.stringify(size)).toBe(volume.litres);
+          expect(cubicMetres[index], JSON.stringify(size)).toBe(volume.cubicMetres);
+        });
+      }
+    },
+  );
+
+  // by hand: 10 × 5 m × 1.5 m = 75 m³ = 75,000 L; 8 × 4 m × 1.5 m average = 48 m³, the lead's pool;
+  // π × 3² ÷ 4 × 1.2 m = 8.48 m³, 8,482 L
+  it('gives the sizes worked by hand, the lead’s pool among them', () => {
+    const rectangle = metricTable('rectangle-metric').rows;
+    const round = metricTable('round-metric').rows;
+    expect(rectangle[4]?.cells[1]).toBe('75,000');
+    expect(rectangle[4]?.cubicMetres[1]).toBe('75.0');
+    expect(rectangle[2]?.cells[2]).toBe(METRIC_POOL.litres);
+    expect(rectangle[2]?.cells[2]).toBe('48,000');
+    expect(round[0]?.cells[0]).toBe('8,482');
+    expect(round[0]?.cubicMetres[0]).toBe('8.5');
+  });
+
+  it('opens the calculator in metric on every row, at the middle depth', () => {
+    for (const { columns, rows } of VOLUME_CHART.metricTables)
+      for (const { href, size } of rows) {
+        const [path, query = ''] = href.split('?');
+        expect(path).toBe(VOLUME_TEXTS.path);
+        const decoded = decode(poolVolume, query);
+        expect(decoded.unitSystem, href).toBe('metric');
+        const middle = columns[Math.floor(columns.length / 2)];
+        const ran = poolVolume.run(
+          { ...size, shallow: middle?.shallow ?? '', deep: middle?.deep ?? '' },
+          { unitSystem: 'metric' },
+        );
+        expect(ran.ok).toBe(true);
+      }
+  });
+
+  it('says its cells are litres, with the cubic metres beside them', () => {
+    expect(VOLUME_CHART.page.litres).toContain('Litres');
+    expect(VOLUME_CHART.page.litres).toContain('m³');
   });
 });

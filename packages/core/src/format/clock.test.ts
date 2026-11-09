@@ -30,6 +30,10 @@ describe('parseClock', () => {
     ['12 pm', 720],
     ['12:45 pm', 765],
     ['11:59 pm', 1439],
+    ['2:30 p. m.', 870],
+    ['9:00 a. m.', 540],
+    ['12 p. m.', 720],
+    ['5:30 p.m', 1050],
   ])('reads %s on the 12-hour clock as %i', (text, minutes) => {
     expect(parseClock(text)).toEqual(ok(minutes));
   });
@@ -52,6 +56,8 @@ describe('parseClock', () => {
     '-1',
     '7:30 xm',
     '7:30 a.m.m',
+    '7:30 a. .m.',
+    '7:30 a.  m.',
     ' 7:30',
     '7:30 ',
     '١٢:٠٠',
