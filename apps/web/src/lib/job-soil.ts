@@ -1,5 +1,5 @@
 import { Rational, tonYd3, valueIn } from '@maestro-calc/core';
-import { BULK_WEIGHTS, type MaterialSource } from '@maestro-calc/data';
+import { BULK_WEIGHTS } from '@maestro-calc/data';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
 import { isChartJob, isQuestionJob, JOBS, type JobId } from '../routing/jobs.ts';
@@ -39,10 +39,7 @@ const feetOf = (value: string | undefined): number => {
 const TOPSOIL = BULK_WEIGHTS.find((each) => each.id === 'topsoil');
 if (TOPSOIL === undefined) throw new Error('no bulk weight topsoil');
 const TONS_PER_YARD = valueIn(TOPSOIL.low, tonYd3);
-const SOURCES = TOPSOIL.sources.map(({ name, url, retrieved }): Required<MaterialSource> => {
-  if (url === undefined) throw new Error(`the source ${name} has no address`);
-  return { name, url, retrieved };
-});
+const SOURCES = TOPSOIL.sources;
 
 /** What the topsoil page `id` adds to its table, or `undefined` for any other job. */
 export const jobSoil = (id: JobId, locale: Locale): ExtraSection | undefined => {
