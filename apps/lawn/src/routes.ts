@@ -43,6 +43,8 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'editorial', kind: 'article', path: '/editorial-policy' },
   { id: 'privacy', kind: 'article', path: '/privacy' },
   { id: 'zone-index', kind: 'article', path: ZONE_INDEX_PATH },
+  { id: 'uk-sowing-guide', kind: 'article', path: '/when-to-sow-grass-seed-uk' },
+  { id: 'growing-guide', kind: 'article', path: '/how-long-does-grass-seed-take-to-grow' },
 ];
 
 /**

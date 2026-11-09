@@ -19,6 +19,14 @@ for (const { path, out, initial } of CALCULATORS) {
   });
 }
 
+test('the seed calculator reads in US units without JavaScript and leaves the units field out', async ({
+  page,
+}) => {
+  await page.goto('/grass-seed-calculator');
+  await expect(page.locator('[name="units"]')).toBeHidden();
+  await expect(page.locator('label [data-v="areaUnit"]').first()).toHaveText('sq ft');
+});
+
 test('lists the states without JavaScript and leaves the ZIP lookup out', async ({ page }) => {
   await page.goto('/frost-dates');
   await expect(page.locator('form[data-zip]')).toBeHidden();

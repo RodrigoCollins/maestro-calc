@@ -8,6 +8,7 @@ import { pageTrailOf } from '../seo/breadcrumb.ts';
 import { sizeTableOf } from '../sizes.ts';
 import { ENGINES, viewOf } from '../view.ts';
 import Layout from './Layout.astro';
+import Segs from './Segs.astro';
 import ShareLink from './ShareLink.astro';
 import Spreader from './Spreader.astro';
 
@@ -43,6 +44,15 @@ const plain = fields.filter(({ key }) => !NPK.includes(key));
 const [firstPlain, ...restPlain] = plain;
 const hasTiles = tiles.length === NPK.length;
 const guides = page.guides.map((id) => guideAt(hrefOf(id)));
+const units =
+  page.units === undefined
+    ? undefined
+    : { ...page.units, options: Object.entries(page.units.options ?? {}) };
+// a unit the units field changes is a `data-v` hook only on a page whose view writes it
+const unitOf = (hook: string, fallback: string) =>
+  view.values[hook] === undefined ? fallback : { v: hook };
+const lengthUnit = unitOf('lengthUnit', 'ft');
+const areaUnit = unitOf('areaUnit', 'sq ft');
 const maestro = [
   MAESTRO.pages.area,
   ...page.maestro.map((id) => MAESTRO.pages[id]),
@@ -60,9 +70,24 @@ const maestro = [
   </Fragment>
   <main class="lawn-main lifted">
     <form class="lawn-card" data-calculator={page.id} novalidate>
+      {units !== undefined && (
+        <label class="lawn-js-only">
+          <span>{units.label}</span>
+          <select name="units">
+            {units.options.map(([value, label]) => (
+              <option {value} selected={value === 'imperial'}>
+                {label}
+              </option>
+            ))}
+          </select>
+          {units.hint !== undefined && <small>{units.hint}</small>}
+        </label>
+      )}
       {firstPlain !== undefined && (
         <label>
-          <span>{firstPlain.label}</span>
+          <span>
+            <Segs segs={firstPlain.label} values={view.values} />
+          </span>
           <input
             name={firstPlain.key}
             inputmode="decimal"
@@ -76,15 +101,19 @@ const maestro = [
         <summary>Measure the lawn</summary>
         <div class="lawn-measure-body">
           <label>
-            <span>Length (ft)</span>
+            <span>
+              Length (<Segs segs={[lengthUnit]} values={view.values} />)
+            </span>
             <input data-measure="length" inputmode="decimal" autocomplete="off" />
           </label>
           <label>
-            <span>Width (ft)</span>
+            <span>
+              Width (<Segs segs={[lengthUnit]} values={view.values} />)
+            </span>
             <input data-measure="width" inputmode="decimal" autocomplete="off" />
           </label>
           <p>
-            <strong data-measure-out>0</strong> sq ft
+            <strong data-measure-out>0</strong> <Segs segs={[areaUnit]} values={view.values} />
             <button type="button" data-measure-use>
               Use this area
             </button>
@@ -101,7 +130,9 @@ const maestro = [
           <div>
             {tiles.map((field) => (
               <label>
-                <span>{field.label}</span>
+                <span>
+                  <Segs segs={field.label} values={view.values} />
+                </span>
                 <input
                   name={field.key}
                   inputmode="decimal"
@@ -115,7 +146,9 @@ const maestro = [
       )}
       {restPlain.map((field) => (
         <label>
-          <span>{field.label}</span>
+          <span>
+            <Segs segs={field.label} values={view.values} />
+          </span>
           {field.options === undefined ? (
             <input name={field.key} inputmode="decimal" autocomplete="off" value={field.value} />
           ) : (
@@ -135,14 +168,10 @@ const maestro = [
     <section class="lawn-result" aria-live="polite" aria-label="Result">
       <div class="lawn-tag">
         <p class="lawn-tag-head">
-          {page.tag.head.map((seg) =>
-            typeof seg === 'string' ? seg : <span data-v={seg.v}>{view.values[seg.v]}</span>,
-          )}
+          <Segs segs={page.tag.head} values={view.values} />
         </p>
         <p class="lawn-tag-sub">
-          {page.tag.sub.map((seg) =>
-            typeof seg === 'string' ? seg : <span data-v={seg.v}>{view.values[seg.v]}</span>,
-          )}
+          <Segs segs={page.tag.sub} values={view.values} />
         </p>
       </div>
       <dl class="lawn-rows">
@@ -150,7 +179,8 @@ const maestro = [
           <div>
             <dt>{row.label}</dt>
             <dd>
-              <span data-v={row.v}>{view.values[row.v]}</span> {row.unit}
+              <span data-v={row.v}>{view.values[row.v]}</span>{' '}
+              <Segs segs={[row.unit]} values={view.values} />
             </dd>
           </div>
         ))}
@@ -164,7 +194,9 @@ const maestro = [
 
     <ShareLink title={page.title} path={page.path} />
 
-    {page.id === 'grass-seed' && <Spreader perPass={view.values['perPass'] ?? ''} />}
+    {page.id === 'grass-seed' && (
+      <Spreader perPass={view.values['perPass'] ?? ''} unit={view.values['passUnit'] ?? 'lb'} />
+    )}
 
     <section class="lawn-section" aria-labelledby="sizes">
       <h2 id="sizes">By lawn size</h2>
@@ -387,9 +419,11 @@ const maestro = [
     cursor: pointer;
   }
 
-  /* the helper writes the area field from a script: with none, type the area */
+  /* the helper writes the area field and the units field converts it, from a script: with none,
+     type the area in square feet */
   @media (scripting: none) {
-    .lawn-js-only {
+    .lawn-js-only,
+    .lawn-card .lawn-js-only {
       display: none;
     }
   }
