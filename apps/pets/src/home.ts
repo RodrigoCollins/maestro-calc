@@ -1,3 +1,4 @@
+import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
 import { CHARTS, CHARTS_INDEX } from './charts.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES } from './guides.ts';
@@ -102,5 +103,10 @@ export const HOME_GUIDES: readonly HomeGuide[] = [
     href: CHARTS_INDEX.path,
     title: 'Data and charts',
     summary: 'All the tables in one place.',
+  },
+  {
+    href: FOOD_HUB.path,
+    title: 'Can dogs eat it?',
+    summary: `${String(FOOD_PAGES.length)} human foods, from grapes to rice, each with a sourced verdict.`,
   },
 ];

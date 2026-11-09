@@ -12,6 +12,7 @@ describe('the home', () => {
   it('lists every guide and data page, so none is an orphan', () => {
     expect(HOME_GUIDES.map(({ href }) => href).sort()).toEqual(
       [
+        '/can-dogs-eat',
         '/charts',
         '/dog-chocolate-toxicity-chart',
         '/dog-age-chart',
