@@ -49,8 +49,10 @@ export const SALT_ES: DosePage = {
       'Tu sal está por encima del nivel deseado. La sal no se gasta: la única forma de bajarla es vaciar parte del agua y volver a llenar.',
   },
   method:
-    'Libras = galones × (nivel deseado − lectura) × 8.34 ÷ 1,000,000, porque un galón de agua pesa unas 8.34 lb. El manual de AquaRite de Hayward da de 2,700 a 3,400 ppm, y 3,200 como el mejor nivel. En métrico, 1 ppm es 1 mg por litro: kilos = litros × (nivel deseado − lectura) ÷ 1,000,000, los 4 kg por cada 1,000 L a 4,000 ppm del manual VX de AstralPool, cuyos cloradores y el TRi-XO de Zodiac trabajan a 4,000 ppm.',
-  note: 'Usa sal para piscina con más de 99% de cloruro de sodio. Espera de 10 a 14 días antes de agregar sal a un acabado nuevo de yeso (plaster). Donde el saco es de 25 kg, como en España, divide los kilos entre 25.',
+    'Libras = galones × (nivel deseado − lectura) × 8.34 ÷ 1,000,000, porque un galón de agua pesa unas 8.34 lb. El manual de AquaRite de Hayward da de 2,700 a 3,400 ppm, y 3,200 como el mejor nivel.',
+  metricMethod:
+    'En métrico, 1 ppm es 1 mg por litro: kilos = litros × (nivel deseado − lectura) ÷ 1,000,000, los 4 kg por cada 1,000 L a 4,000 ppm del manual VX de AstralPool, cuyos cloradores y el TRi-XO de Zodiac trabajan a 4,000 ppm. Donde la sal viene en sacos de 25 kg, divide los kilos entre 25.',
+  note: 'Usa sal para piscina con más de 99% de cloruro de sodio. Espera de 10 a 14 días antes de agregar sal a un acabado nuevo de yeso (plaster).',
   methodLink: methodLink('salt'),
 };
 
@@ -100,7 +102,9 @@ export const CHLORINE_ES: DosePage = {
     pads: STRIP.pads,
   },
   method:
-    '1 ppm es 1 mg por litro. Los gramos de cloro disponible = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000, divididos entre la concentración de la etiqueta: 10.24 fl oz de cloro líquido al 12.5% por ppm por cada 10,000 galones. En métrico los litros entran tal cual: 8 mL de cloro líquido al 12.5% por ppm por cada 1,000 L.',
+    '1 ppm es 1 mg por litro. Los gramos de cloro disponible = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000, divididos entre la concentración de la etiqueta: 10.24 fl oz de cloro líquido al 12.5% por ppm por cada 10,000 galones.',
+  metricMethod:
+    'En métrico los litros entran tal cual: 8 mL de cloro líquido al 12.5% por ppm por cada 1,000 L.',
   note: 'Concentraciones de las etiquetas: hipoclorito de calcio de al menos 65% y dicloro de 56% de cloro disponible (etiquetas registradas ante la EPA). Sigue la etiqueta de tu producto.',
   methodLink: methodLink('chlorine'),
 };
@@ -174,7 +178,9 @@ export const PH_ES: DosePage = {
       'Es más de lo que la etiqueta agrega de una vez, así que divídelo: agrega como máximo la cantidad de arriba, deja circular el agua de 2 a 3 horas, mide el pH otra vez y agrega el resto de la misma forma.',
   },
   method:
-    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, y cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba. En métrico los litros se leen como galones, de 3.785 L cada uno, porque la tabla y las etiquetas están escritas por galón.',
+    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, y cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba.',
+  metricMethod:
+    'En métrico los litros se leen como galones, de 3.785 L cada uno, porque la tabla y las etiquetas están escritas por galón.',
   note: 'La dosis de ácido es para ácido muriático al 31.45% (20° Baumé); para otra concentración, sigue la etiqueta de tu producto. Agrega el ácido al agua, nunca el agua al ácido: viértelo despacio en la parte honda con la bomba funcionando, con guantes y protección para los ojos, y nunca lo mezcles con cloro. Mide el pH otra vez después del tiempo de espera de la etiqueta.',
   methodLink: methodLink('ph'),
 };
@@ -202,7 +208,8 @@ export const ALKALINITY_ES: DosePage = {
       'Tu alcalinidad está por encima del nivel deseado. El bicarbonato solo la sube: bajar la alcalinidad requiere ácido, y esta calculadora no lo dosifica.',
   },
   method:
-    'La alcalinidad total se mide como carbonato de calcio, así que 1 ppm requiere 84.007 ÷ 50.04 = 1.6788 mg por litro de bicarbonato de sodio. Miligramos = galones × 3.785 × (nivel deseado − lectura) × 1.6788: 1.4 lb por cada 10 ppm por cada 10,000 galones, o 16.8 g por cada 10 ppm por cada 1,000 L en métrico.',
+    'La alcalinidad total se mide como carbonato de calcio, así que 1 ppm requiere 84.007 ÷ 50.04 = 1.6788 mg por litro de bicarbonato de sodio. Miligramos = galones × 3.785 × (nivel deseado − lectura) × 1.6788: 1.4 lb por cada 10 ppm por cada 10,000 galones.',
+  metricMethod: 'En métrico: 16.8 g de bicarbonato de sodio por cada 10 ppm por cada 1,000 L.',
   note: 'Usa bicarbonato de sodio puro (baking soda): revisa que la etiqueta del aumentador de alcalinidad lo diga. Para piscinas públicas, el Model Aquatic Health Code de los CDC mantiene la alcalinidad total entre 60 y 180 ppm.',
   methodLink: methodLink('alkalinity'),
 };
@@ -228,7 +235,8 @@ export const STABILIZER_ES: DosePage = {
       'Tu CYA está por encima del nivel deseado. El ácido cianúrico no se gasta: la única forma de bajarlo es vaciar parte del agua y volver a llenar.',
     overCodeLimit: `Tu nivel deseado pasa de 90 ppm, lo más que permite ${CODE} en una piscina pública.`,
   },
-  method: `1 ppm es 1 mg por litro, así que los gramos de ácido cianúrico = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000: 13.35 oz por cada 10 ppm por cada 10,000 galones, o 10 g por cada 10 ppm por cada 1,000 L en métrico. Para piscinas públicas, ${CODE} mantiene el CYA en 90 ppm o menos.`,
+  method: `1 ppm es 1 mg por litro, así que los gramos de ácido cianúrico = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000: 13.35 oz por cada 10 ppm por cada 10,000 galones. Para piscinas públicas, ${CODE} mantiene el CYA en 90 ppm o menos.`,
+  metricMethod: 'En métrico: 10 g de ácido cianúrico por cada 10 ppm por cada 1,000 L.',
   note: 'La dosis es para un producto de 100% ácido cianúrico. Lee la etiqueta del tuyo: para un estabilizador líquido o mezclado, divide la dosis entre su porcentaje y multiplica por 100. El dicloro y el tricloro también suben el CYA.',
   methodLink: methodLink('stabilizer'),
 };
@@ -264,7 +272,9 @@ export const CALCIUM_ES: DosePage = {
       'Es más de 3 lb por cada 10,000 galones, así que la etiqueta lo divide: agrega la primera cantidad, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma.',
   },
   method:
-    'Según la etiqueta de un aumentador de dureza de calcio (ClearView, Oreq Corporation): 2 oz de cloruro de calcio en escamas por cada 1,000 galones suben la dureza de calcio 10 ppm, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Libras = galones × (nivel deseado − lectura) ÷ 80,000; en métrico los litros se leen como galones, de 3.785 L cada uno, porque la etiqueta está escrita por galón. Comprobado con la química: 10 ppm como carbonato de calcio en 10,000 galones requieren 0.925 lb de cloruro de calcio puro, 1.25 lb de escamas al 74%.',
+    'Según la etiqueta de un aumentador de dureza de calcio (ClearView, Oreq Corporation): 2 oz de cloruro de calcio en escamas por cada 1,000 galones suben la dureza de calcio 10 ppm, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Libras = galones × (nivel deseado − lectura) ÷ 80,000. Comprobado con la química: 10 ppm como carbonato de calcio en 10,000 galones requieren 0.925 lb de cloruro de calcio puro, 1.25 lb de escamas al 74%.',
+  metricMethod:
+    'En métrico los litros se leen como galones, de 3.785 L cada uno, porque la etiqueta está escrita por galón.',
   note: `El manual de AquaRite de Hayward mantiene la dureza de calcio entre 200 y 400 ppm; para piscinas públicas, ${CODE} la limita a 2,500 ppm. La dosis es para cloruro de calcio en escamas, el aumentador de dureza de calcio más común; un producto anhidro (94% o más) es más fuerte, así que sigue la etiqueta del tuyo. Disuélvelo primero, más o menos ½ lb por galón de agua, y viértelo en la parte honda con la bomba funcionando.`,
   methodLink: methodLink('calcium'),
 };

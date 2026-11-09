@@ -211,6 +211,19 @@ const METRIC = [
 ] as const;
 
 describe('the metric choice of the dose pages', () => {
+  // the gallon job pages quote `method` and `note`: the litres are said once, on the dose page only
+  it.each(METRIC)(
+    'keeps the litres of the %s page in its metric method, out of its method and note',
+    (_n, en, es) => {
+      for (const page of [en, es]) {
+        expect(page.metricMethod, page.path).toMatch(/litr|L\b/);
+        expect(`${page.method} ${page.note}`, page.path).not.toMatch(
+          /\b(In metric|en métrico)\b|\blitres\b|\bkg\b|\b1,000 L\b/i,
+        );
+      }
+    },
+  );
+
   it.each(METRIC)(
     'labels the units choice of the %s page and the volume in litres, in both languages',
     (_n, en, es) => {

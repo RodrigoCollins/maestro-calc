@@ -44,6 +44,11 @@ export interface DosePage {
   };
   readonly warnings?: Readonly<Record<string, string>>;
   readonly method: string;
+  /**
+   * The method in litres, for a page with the units choice: the dose page shows it after `method`,
+   * and the gallon job pages, which quote `method` and `note`, leave it out.
+   */
+  readonly metricMethod?: string;
   readonly note: string;
   /** The section of the methodology with its hand-worked cases (the Spanish pages link it). */
   readonly methodLink?: { readonly href: string; readonly label: string };
@@ -89,8 +94,10 @@ export const SALT: DosePage = {
       'Your salt is over the target. Salt does not wear off: the only way to lower it is to drain part of the water and refill.',
   },
   method:
-    'Pounds = gallons × (target − reading) × 8.34 ÷ 1,000,000, since a gallon of water weighs about 8.34 lb. Hayward’s AquaRite manual gives 2,700 to 3,400 ppm, 3,200 the best. In metric, 1 ppm is 1 mg per litre: kilograms = litres × (target − reading) ÷ 1,000,000, the 4 kg per 1,000 L at 4,000 ppm of AstralPool’s VX manual, whose cells and Zodiac’s TRi-XO run at 4,000 ppm.',
-  note: 'Use pool salt over 99% sodium chloride. Wait 10 to 14 days before adding salt to new plaster. Where the bag is 25 kg, as in the UK and Spain, divide the kilograms by 25.',
+    'Pounds = gallons × (target − reading) × 8.34 ÷ 1,000,000, since a gallon of water weighs about 8.34 lb. Hayward’s AquaRite manual gives 2,700 to 3,400 ppm, 3,200 the best.',
+  metricMethod:
+    'In metric, 1 ppm is 1 mg per litre: kilograms = litres × (target − reading) ÷ 1,000,000, the 4 kg per 1,000 L at 4,000 ppm of AstralPool’s VX manual, whose cells and Zodiac’s TRi-XO run at 4,000 ppm. Where pool salt comes in 25 kg bags, divide the kilograms by 25.',
+  note: 'Use pool salt over 99% sodium chloride. Wait 10 to 14 days before adding salt to new plaster.',
 };
 
 export const CHLORINE: DosePage = {
@@ -134,7 +141,8 @@ export const CHLORINE: DosePage = {
   ],
   strip: { field: 'current', ...STRIP },
   method:
-    '1 ppm is 1 mg per liter. The grams of available chlorine = gallons × 3.785 × (target − reading) ÷ 1,000, then divided by the strength on the label: 10.24 fl oz of 12.5% liquid per ppm per 10,000 gallons. In metric the litres go in as they are: 8 mL of 12.5% liquid per ppm per 1,000 L.',
+    '1 ppm is 1 mg per liter. The grams of available chlorine = gallons × 3.785 × (target − reading) ÷ 1,000, then divided by the strength on the label: 10.24 fl oz of 12.5% liquid per ppm per 10,000 gallons.',
+  metricMethod: 'In metric the litres go in as they are: 8 mL of 12.5% liquid per ppm per 1,000 L.',
   note: 'Strengths from the labels: cal-hypo at least 65% and dichlor 56% available chlorine (EPA-registered labels). Follow the label of your product.',
 };
 
@@ -225,7 +233,9 @@ export const PH: DosePage = {
       'That is more than the label adds at a time, so split it: add at most the amount above, let the water circulate 2 to 3 hours, test the pH again, and add the rest the same way.',
   },
   method:
-    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up. In metric the litres are read as gallons, 3.785 L each, since the chart and the labels are written per gallon.',
+    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up.',
+  metricMethod:
+    'In metric the litres are read as gallons, 3.785 L each, since the chart and the labels are written per gallon.',
   note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé); for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
 };
 
@@ -255,7 +265,8 @@ export const ALKALINITY: DosePage = {
       'Your alkalinity is over the target. Baking soda only raises it: lowering alkalinity takes acid, which this calculator does not dose.',
   },
   method:
-    'Total alkalinity is read as calcium carbonate, so 1 ppm of it takes 84.007 ÷ 50.04 = 1.6788 mg per liter of sodium bicarbonate. Milligrams = gallons × 3.785 × (target − reading) × 1.6788: 1.4 lb per 10 ppm per 10,000 gallons, or 16.8 g per 10 ppm per 1,000 L in metric.',
+    'Total alkalinity is read as calcium carbonate, so 1 ppm of it takes 84.007 ÷ 50.04 = 1.6788 mg per liter of sodium bicarbonate. Milligrams = gallons × 3.785 × (target − reading) × 1.6788: 1.4 lb per 10 ppm per 10,000 gallons.',
+  metricMethod: 'In metric: 16.8 g of baking soda per 10 ppm per 1,000 L.',
   note: `Use pure sodium bicarbonate, which is baking soda: check that the label of an alkalinity increaser says so. For public pools, ${CODE} keeps total alkalinity at 60 to 180 ppm.`,
 };
 
@@ -282,7 +293,8 @@ export const STABILIZER: DosePage = {
       'Your CYA is over the target. Cyanuric acid does not wear off: the only way to lower it is to drain part of the water and refill.',
     overCodeLimit: `Your target is over 90 ppm, the most ${CODE} allows in a public pool.`,
   },
-  method: `1 ppm is 1 mg per liter, so the grams of cyanuric acid = gallons × 3.785 × (target − reading) ÷ 1,000: 13.35 oz per 10 ppm per 10,000 gallons, or 10 g per 10 ppm per 1,000 L in metric. For public pools, ${CODE} keeps CYA at or below 90 ppm.`,
+  method: `1 ppm is 1 mg per liter, so the grams of cyanuric acid = gallons × 3.785 × (target − reading) ÷ 1,000: 13.35 oz per 10 ppm per 10,000 gallons. For public pools, ${CODE} keeps CYA at or below 90 ppm.`,
+  metricMethod: 'In metric: 10 g of cyanuric acid per 10 ppm per 1,000 L.',
   note: 'The dose is for a product of 100% cyanuric acid. Read the label of yours: for a liquid or blended stabilizer, divide the dose by its percent and multiply by 100. Dichlor and trichlor add CYA too.',
 };
 
@@ -317,7 +329,9 @@ export const CALCIUM: DosePage = {
       'That is more than 3 lb per 10,000 gallons, so the label splits it: add the first amount, let the pump run at least 12 hours, test again, then add the rest the same way.',
   },
   method:
-    'From the label of a calcium hardness increaser (ClearView, Oreq Corporation): 2 oz of calcium chloride flake per 1,000 gallons raises calcium hardness 10 ppm, which is 1.25 lb per 10 ppm per 10,000 gallons. Pounds = gallons × (target − reading) ÷ 80,000; in metric the litres are read as gallons, 3.785 L each, since the label is written per gallon. Checked against the chemistry: 10 ppm as calcium carbonate in 10,000 gallons takes 0.925 lb of pure calcium chloride, 1.25 lb of a 74% flake.',
+    'From the label of a calcium hardness increaser (ClearView, Oreq Corporation): 2 oz of calcium chloride flake per 1,000 gallons raises calcium hardness 10 ppm, which is 1.25 lb per 10 ppm per 10,000 gallons. Pounds = gallons × (target − reading) ÷ 80,000. Checked against the chemistry: 10 ppm as calcium carbonate in 10,000 gallons takes 0.925 lb of pure calcium chloride, 1.25 lb of a 74% flake.',
+  metricMethod:
+    'In metric the litres are read as gallons, 3.785 L each, since the label is written per gallon.',
   note: `Hayward’s AquaRite manual keeps calcium hardness at 200 to 400 ppm; for public pools, ${CODE} caps it at 2,500 ppm. The dose is for calcium chloride flake, the usual calcium hardness increaser; an anhydrous product (94% or more) is stronger, so follow the label of yours. Dissolve it first, about ½ lb to a gallon of water, and pour it into the deep end with the pump running.`,
 };
 

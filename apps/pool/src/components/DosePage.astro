@@ -142,6 +142,7 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
       ))}
     </section>
     <p class="pool-note">{page.method}</p>
+    {page.metricMethod !== undefined && <p class="pool-note">{page.metricMethod}</p>}
     <p class="pool-note">{page.note}</p>
     {page.methodLink !== undefined && (
       <p class="pool-note">
