@@ -13,11 +13,12 @@ const tilesOf = (id: (typeof FLOORS)[number]) =>
   jobFloor(id, 'en')?.table?.rows.map(({ label, cells }) => [label, ...cells]);
 
 describe('jobFloor (what fits on a floor of a size)', () => {
-  it('is for the floor pages of square footage, not the acres or the chart', () => {
+  it('is for the floor pages of square footage, not the acres, the chart or the garages', () => {
     expect(FLOORS).toHaveLength(11);
     expect(FLOORS).toContain('square-feet-12x12');
     expect(FLOORS).not.toContain('square-feet-in-an-acre');
     expect(FLOORS).not.toContain('square-feet-to-square-meters-chart');
+    expect(FLOORS).not.toContain('square-feet-2-car-garage');
     expect(jobFloor('paint-room-12x12', 'en')).toBeUndefined();
   });
 

@@ -1,7 +1,7 @@
 import { ft2, gal, m3, Rational, valueIn, yd3 } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
-import { isChartJob, isLandJob, JOBS, type JobId } from '../routing/jobs.ts';
+import { isChartJob, isLandJob, isQuestionJob, JOBS, type JobId } from '../routing/jobs.ts';
 import type { ExtraSection } from './job-extra.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
@@ -16,9 +16,12 @@ import { siteText } from './site-text.ts';
  * whole tiles of three sizes along each side with the 10% installers commonly keep for cuts.
  */
 
-/** The floor pages: a square footage job that is neither a lot of land nor a chart. */
+/** The floor pages: a square footage job that is not a lot of land, a chart or a question page (the garages carry their own tables). */
 export const isFloorJob = (id: JobId): boolean =>
-  JOBS[id].calculator === 'rectangle-area' && !isLandJob(id) && !isChartJob(id);
+  JOBS[id].calculator === 'rectangle-area' &&
+  !isLandJob(id) &&
+  !isChartJob(id) &&
+  !isQuestionJob(id);
 
 /** NIST SP 811: 1 ft = 0.3048 m exactly. */
 const METERS_PER_FOOT = Rational.of(3048, 10_000);
