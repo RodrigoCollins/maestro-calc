@@ -1,0 +1,24 @@
+---
+import { catAge } from '@maestro-calc/pets-core/cat-age';
+import { CAT_AGE_PAGE, catAgeView } from '../calc/cat-age.ts';
+import CalcPage from '../components/CalcPage.astro';
+import CatAgeScript from '../islands/CatAgeScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={CAT_AGE_PAGE}
+  calculator={catAge}
+  view={catAgeView}
+  kind="cat-age"
+  method="The human age follows the table of the 2010 AAFP-AAHA Feline Life Stage Guidelines: 15 at 1, 24 at 2, then 4 a year, a straight line between its rows. Cornell’s figures are 16 at 1, 21 at 2, then 4 a year. The life stage and the visits are those of the 2021 AAHA/AAFP guidelines."
+  related={[
+    { href: hrefOf('cat-age-chart'), label: 'Cat age chart: human years from 1 month to 25 years' },
+    { href: hrefOf('cat-years-1'), label: '1 year in cat years' },
+    { href: hrefOf('cat-years-7'), label: '7 years in cat years' },
+    { href: hrefOf('cat-years-11'), label: '11 years in cat years' },
+    { href: hrefOf('cat'), label: 'Cat food calculator' },
+  ]}
+>
+  <CatAgeScript />
+</CalcPage>

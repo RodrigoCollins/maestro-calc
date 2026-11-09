@@ -1,10 +1,12 @@
 import { Rational } from '@maestro-calc/core';
+import { catAge } from '@maestro-calc/pets-core/cat-age';
 import { catFood } from '@maestro-calc/pets-core/cat-food';
 import { dogAge } from '@maestro-calc/pets-core/dog-age';
 import { dogChocolate } from '@maestro-calc/pets-core/dog-chocolate';
 import { civilFromDays, dogDueDate } from '@maestro-calc/pets-core/dog-due-date';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
-import { DOG_AGE_SOURCES } from './dog-years.ts';
+import { CAT_AGE_SOURCES, CAT_YEARS_CHECKED } from './cat-years.ts';
+import { DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, dateText, kcalText } from './format.ts';
 import { hrefOf } from './routes.ts';
 
@@ -57,6 +59,7 @@ const ENGINES = {
   'dog-chocolate': dogChocolate,
   'dog-due-date': dogDueDate,
   'dog-age': dogAge,
+  'cat-age': catAge,
 } as const;
 
 export type EngineId = keyof typeof ENGINES;
@@ -78,6 +81,8 @@ export interface MethodSection {
   readonly method: string;
   readonly note: string;
   readonly sources: readonly MethodSource[];
+  /** The day the sources of this section were read, when it is not `ACCESSED`. */
+  readonly accessed?: string;
   readonly cases: readonly MethodCase[];
 }
 
@@ -262,6 +267,7 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
     method:
       'Every size: 15 human years at 1 and 24 at 2, a straight line between the rows of Merck’s table (10 at 6 months, 20 at 18 months). A medium dog (21 to 50 lb) then follows AVMA’s chart year by year (28, 32, 36, 42, 47, 51, 56, 60, 65, 69, 74, 78, 83, 87 at 3 to 16) and 4.5 a year past it. After 2, a small dog (20 lb or less) adds 4 human years a year, a large dog (51 to 100 lb) 5.5 and a giant dog (over 100 lb) 7.5, the middle of PetMD’s 5 to 6 and 7 to 8. A human age is worked back on the same line. The DNA clock is 16 × ln(dog age) + 31 (Wang et al., 2020), and its inverse e^((human age − 31) ÷ 16). Life stage: AAHA 2019 (puppy under 9 months, young adult under 4 years, then mature adult), senior from VCA’s ages (small 11, medium 10, large 8, giant 7).',
     note: 'The sources disagree. VCA counts each of the first two years as about 10.5 human years (21 at 2, not 24); the DNA clock makes a 1-year-old 31; AAHA does not convert ages at all. The clock was fitted on Labrador retrievers only, up to 16 years, and the charts cover 6 months to 20 years: the calculator says so outside them.',
+    accessed: DOG_YEARS_CHECKED,
     sources: [
       DOG_AGE_SOURCES.avma,
       DOG_AGE_SOURCES.merck,
@@ -301,6 +307,56 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         raw: { age: '12' },
         key: 'wang',
         result: '70.8',
+        unit: 'human years',
+      },
+    ],
+  },
+  {
+    id: 'cat-age',
+    title: 'Cat age in human years',
+    href: hrefOf('cat-age'),
+    method:
+      'The human age follows the table of the 2010 AAFP-AAHA Feline Life Stage Guidelines: 1 at 1 month, 2 at 2 months, 4 at 3 months, 7 at 4 months (the middle of its 6 to 8), 10 at 6 months, 12 at 7 months, 15 at 1 year, 21 at 18 months, 24 at 2 years, then 4 a year (116 at 25), a straight line between the rows and 4 a year past 25. A human age is worked back on the same line. Cornell: 16 at 1, 21 at 2, then 4 a year, a straight line from birth to 1. Life stage: the 2021 AAHA/AAFP guidelines (kitten under 1 year, young adult under 7, mature adult 7 to 10, senior over 10), with an exam at least once a year and at least every 6 months for a senior; International Cat Care’s six stages beside it (kitten to 6 months, junior from 7 months, adult from 3, mature from 7, senior from 11, super senior from 15).',
+    note: 'The sources disagree. Cornell puts a 1-year-old at 16 (the table says 15) and a 2-year-old at 21 (the table says 24), so from 2 on it reads 3 human years younger. The 2021 guidelines print no human ages and dropped the 2010 split of senior and geriatric at 15, which International Cat Care keeps as super senior. The table covers up to 25 years and Cornell gives no figure under 1 year: the calculator says so outside them.',
+    sources: [
+      CAT_AGE_SOURCES.aafp2010,
+      CAT_AGE_SOURCES.aafp2021,
+      CAT_AGE_SOURCES.icatcare,
+      CAT_AGE_SOURCES.cornellSenior,
+      CAT_AGE_SOURCES.cornellOlder,
+    ],
+    accessed: CAT_YEARS_CHECKED,
+    cases: [
+      {
+        engine: 'cat-age',
+        text: 'A cat of 5 years: 24 + 3 × 4.',
+        raw: { age: '5' },
+        key: 'answer',
+        result: '36',
+        unit: 'human years',
+      },
+      {
+        engine: 'cat-age',
+        text: 'A kitten of 9 months, between 12 at 7 months and 15 at 12 months: 12 + (2 ÷ 5) × 3.',
+        raw: { age: '0.75' },
+        key: 'answer',
+        result: '13.2',
+        unit: 'human years',
+      },
+      {
+        engine: 'cat-age',
+        text: '50 human years, worked back: 2 + (50 − 24) ÷ 4.',
+        raw: { from: 'human', age: '50' },
+        key: 'answer',
+        result: '8.5',
+        unit: 'cat years',
+      },
+      {
+        engine: 'cat-age',
+        text: 'Cornell’s figure for a cat of 10: 21 + 8 × 4.',
+        raw: { age: '10' },
+        key: 'cornell',
+        result: '53',
         unit: 'human years',
       },
     ],
@@ -377,6 +433,7 @@ const texts: Readonly<Record<string, (value: Rational) => string>> = {
   latest: (value) => dateText(civilFromDays(value.toNumber())),
   answer: (value) => amountText(value, value.isInteger() ? 0 : 1),
   wang: (value) => amountText(value, 1),
+  cornell: (value) => amountText(value, value.isInteger() ? 0 : 1),
 };
 
 /** The text of one output of a case, as a page would write it. */

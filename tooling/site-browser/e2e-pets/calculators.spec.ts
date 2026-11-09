@@ -137,6 +137,35 @@ test('opens the dog age calculator from an age page with the age filled in', asy
   await expect(page.locator('[data-text="figure"]').first()).toHaveText('60');
 });
 
+test('works a cat age and back, with the life stage, the visits and Cornell', async ({ page }) => {
+  await page.goto('/cat-age-calculator');
+  const figure = page.locator('[data-text="figure"]').first();
+  // a 9-month-old kitten: 12 + (2 / 5) x 3 = 13.2 human years, no Cornell figure under 1 year
+  await edit(page, 'age', '0.75');
+  await expect(figure).toHaveText('13.2');
+  await expect(page.locator('[data-text="exact"]').first()).toHaveText('for a 9-month-old kitten');
+  await expect(page.locator('[data-show="cornellOutside"]')).toBeVisible();
+  // an 11-year-old cat: 60, a senior, seen every 6 months
+  await edit(page, 'age', '11');
+  await expect(figure).toHaveText('60');
+  await expect(page.locator('[data-text="stage"]')).toHaveText('Senior');
+  await expect(page.locator('[data-text="visits"]')).toHaveText('at least every 6 months');
+  await expect(page.locator('[data-show="cornellOutside"]')).toBeHidden();
+  // 50 human years: 2 + 26 / 4 = 8.5 cat years; Cornell 2 + 29 / 4 = 9.25
+  await edit(page, 'from', 'human');
+  await edit(page, 'age', '50');
+  await expect(figure).toHaveText('8.5');
+  await expect(page.locator('[data-text="unit"]').first()).toHaveText('cat years');
+  await expect(page.locator('[data-text="cornell"]')).toHaveText('9.3 cat years');
+});
+
+test('opens the cat age calculator from an age page with the age filled in', async ({ page }) => {
+  await page.goto('/7-years-in-cat-years');
+  await page.locator('a[href="/cat-age-calculator?v=1&a=7"]').first().click();
+  await expect(page.locator('[name="age"]')).toHaveValue('7');
+  await expect(page.locator('[data-text="figure"]').first()).toHaveText('44');
+});
+
 test('shares each calculator on WhatsApp with the state of the form', async ({ page }) => {
   await page.goto('/dog-food-calculator');
   await edit(page, 'weight', '80');

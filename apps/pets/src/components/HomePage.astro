@@ -2,7 +2,14 @@
 import { DOG_PAGE, dogView } from '../calc/dog.ts';
 import { patchOf } from '../calc/view.ts';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
-import { HOME_AGES, HOME_GUIDES, HOME_TEXTS, HOME_TOOLS, HOME_TRUST } from '../home.ts';
+import {
+  HOME_AGES,
+  HOME_CAT_AGES,
+  HOME_GUIDES,
+  HOME_TEXTS,
+  HOME_TOOLS,
+  HOME_TRUST,
+} from '../home.ts';
 import { hrefOf } from '../routes.ts';
 import Layout from './Layout.astro';
 
@@ -83,6 +90,23 @@ const { text, html } = patch;
       <p>
         <a href={hrefOf('dog-age')}>Dog age calculator</a> ·{' '}
         <a href={hrefOf('dog-age-chart')}>Dog age chart</a>
+      </p>
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-cat-ages">
+      <h2 id="bf-cat-ages">Cat years to human years</h2>
+      <p>{HOME_TEXTS.teasers.catAge}</p>
+      <ul class="bf-ages">
+        {HOME_CAT_AGES.map(({ href, age, label }) => (
+          <li>
+            <a {href} aria-label={label}>
+              {age}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href={hrefOf('cat-age')}>Cat age calculator</a> ·{' '}
+        <a href={hrefOf('cat-age-chart')}>Cat age chart</a>
       </p>
     </section>
     <section aria-labelledby="bf-guides">

@@ -14,6 +14,7 @@ describe('the methodology cases', () => {
       'dog-chocolate',
       'dog-due-date',
       'dog-age',
+      'cat-age',
     ]);
     for (const { cases: list, id } of METHOD_SECTIONS) expect(list.length, id).toBeGreaterThan(2);
   });
@@ -51,8 +52,28 @@ describe('the methodology sections', () => {
     }
   });
 
-  it('read every source on the same day', () => {
+  it('read every source on the same day, but the age sections, which say their own day', () => {
     expect(ACCESSED).toBe('2026-11-07');
+    const days = METHOD_SECTIONS.map(({ id, accessed }) => [id, accessed ?? ACCESSED]);
+    expect(Object.fromEntries(days)).toEqual({
+      'dog-food': '2026-11-07',
+      'cat-food': '2026-11-07',
+      'dog-chocolate': '2026-11-07',
+      'dog-due-date': '2026-11-07',
+      'dog-age': '2026-11-08',
+      'cat-age': '2026-11-09',
+    });
+  });
+
+  it('work a cat age through the table, back from a human age, and by Cornell', () => {
+    const cat = METHOD_SECTIONS.find(({ id }) => id === 'cat-age');
+    expect(cat?.cases.map(({ key, result }) => `${key}=${result}`)).toEqual([
+      'answer=36',
+      'answer=13.2',
+      'answer=8.5',
+      'cornell=53',
+    ]);
+    expect(cat?.note).toContain('disagree');
   });
 
   it('tell the chocolate reader to call, and keep the factor table to Merck and AAHA', () => {

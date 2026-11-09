@@ -16,8 +16,9 @@ const entries = readdirSync(resolve(src, 'islands'))
   );
 
 describe('the usage events of the calculator scripts', () => {
-  it('finds the five calculator scripts of the pages', () => {
+  it('finds the six calculator scripts of the pages', () => {
     expect(entries.sort()).toEqual([
+      'cat-age.ts',
       'cat.ts',
       'chocolate.ts',
       'dog-age.ts',

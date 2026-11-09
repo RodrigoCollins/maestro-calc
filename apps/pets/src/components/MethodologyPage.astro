@@ -1,4 +1,5 @@
 ---
+import { CAT_YEARS_CHECKED } from '../cat-years.ts';
 import { DOG_YEARS_CHECKED } from '../dog-years.ts';
 import { ACCESSED, FACTOR_TABLE, LEFT_OUT, METHOD_SECTIONS } from '../methodology.ts';
 import Layout from './Layout.astro';
@@ -13,8 +14,10 @@ const description =
     <h1>How we work it out</h1>
     <p>
       Every figure comes from the Merck Veterinary Manual, the AAHA guidelines or AAFCO, read on{' '}
-      {ACCESSED}, and the dog ages from AVMA, Merck, PetMD, VCA and Wang et al., read on{' '}
-      {DOG_YEARS_CHECKED}. Each result is a starting point to check with your pet’s veterinarian.
+      {ACCESSED}, the dog ages from AVMA, Merck, PetMD, VCA and Wang et al., read on{' '}
+      {DOG_YEARS_CHECKED}, and the cat ages from the AAFP and AAHA guidelines, International Cat
+      Care and Cornell, read on {CAT_YEARS_CHECKED}. Each result is a starting point to check with
+      your pet’s veterinarian.
     </p>
     <section class="bf-card" aria-labelledby="factors">
       <h2 id="factors">Energy factors</h2>
@@ -48,7 +51,7 @@ const description =
         </table>
       </div>
     </section>
-    {METHOD_SECTIONS.map(({ id, title: name, href, method, note, sources, cases }) => (
+    {METHOD_SECTIONS.map(({ id, title: name, href, method, note, sources, accessed, cases }) => (
       <section class="bf-card mint" aria-labelledby={id}>
         <h2 id={id}>{name}</h2>
         <p>{method}</p>
@@ -68,7 +71,7 @@ const description =
         <ul>
           {sources.map(({ name: label, url }) => (
             <li>
-              <a href={url}>{label}</a>, read {ACCESSED}
+              <a href={url}>{label}</a>, read {accessed ?? ACCESSED}
             </li>
           ))}
         </ul>
