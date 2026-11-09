@@ -6,7 +6,7 @@ import { CALCULATOR_PAGES } from './pages.ts';
 const pages = resolve(import.meta.dirname, '../pages');
 
 describe('CALCULATOR_PAGES', () => {
-  it('names the seven calculator pages as the build files them', () => {
+  it('names the eight calculator pages as the build files them', () => {
     expect(CALCULATOR_PAGES).toEqual([
       'dog-food-calculator.html',
       'cat-food-calculator.html',
@@ -15,6 +15,7 @@ describe('CALCULATOR_PAGES', () => {
       'dog-chocolate-toxicity-calculator.html',
       'dog-pregnancy-calculator.html',
       'dog-age-calculator.html',
+      'cat-age-calculator.html',
     ]);
   });
 

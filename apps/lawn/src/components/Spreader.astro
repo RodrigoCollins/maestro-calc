@@ -2,9 +2,11 @@
 interface Props {
   /** The pounds of seed for each way, as the view writes them (`10.0–15.0`). */
   readonly perPass: string;
+  /** Its unit, as the view writes it: `lb`, or `kg` or `g` in metric. */
+  readonly unit: string;
 }
 
-const { perPass } = Astro.props;
+const { perPass, unit } = Astro.props;
 ---
 
 <figure class="lawn-spreader">
@@ -44,7 +46,7 @@ const { perPass } = Astro.props;
   <figcaption>
     Sow half the seed one way (north to south, solid) and half crosswise (east to west, dashed):
     <strong>
-      <span data-v="perPass">{perPass}</span> lb
+      <span data-v="perPass">{perPass}</span> <span data-v="passUnit">{unit}</span>
     </strong>{' '}
     each way.
   </figcaption>

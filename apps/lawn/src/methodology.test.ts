@@ -26,9 +26,9 @@ describe('methodology', () => {
     METHOD_SECTIONS.flatMap(({ calculator, cases }) => cases.map((c) => [calculator, c] as const)),
   )(
     'runs the case "%#" through the engine to its published figure',
-    (calculator, { raw, v, result }) => {
+    (calculator, { raw, units, v, result }) => {
       if (calculator === undefined) throw new Error('a case needs a calculator');
-      expect(viewOf(calculator, raw)?.values[v]).toBe(result);
+      expect(viewOf(calculator, raw, units)?.values[v]).toBe(result);
     },
   );
 

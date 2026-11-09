@@ -1,10 +1,19 @@
 ---
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
-import { clockFieldText, decimalHoursText, hoursMinutesText } from '../format.ts';
+import { differenceOf, sumOf } from '@maestro-calc/pay-core/hours';
+import {
+  clockFieldText,
+  decimalHoursText,
+  durationDecimalText,
+  durationText,
+  hoursMinutesText,
+} from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { HOURS_SUM_TEXTS, hoursSectionsOf } from '../hours/sum.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import Sections from './Sections.astro';
 import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
@@ -16,6 +25,15 @@ interface Props {
 
 const { lang, embed = false } = Astro.props;
 const t = HOURS_TEXTS[lang];
+const sum = HOURS_SUM_TEXTS[lang];
+const sections = hoursSectionsOf(lang);
+// The sum form opens on the pair the first section works by hand: 7 h 45 min and 3 h 30 min.
+const pair = [
+  { name: 'a', label: sum.first, hours: 7, minutes: 45 },
+  { name: 'b', label: sum.second, hours: 3, minutes: 30 },
+] as const;
+const sumMinutes = sumOf(pair);
+const difference = differenceOf(pair[0], pair[1]);
 // The page renders the engine's own figures for the default shift, so it reads without JavaScript.
 const ran = hoursBetween.run({});
 if (!ran.ok) throw new Error('the default shift of the hours calculator must run');
@@ -127,6 +145,7 @@ const LIVE_INTRO = {
       {t.notes.map((note) => (
         <li>{note}</li>
       ))}
+      <li>{sum.decimalNote}</li>
     </ul>
     <ul class="link-list">
       {t.links.map((link) => (
@@ -135,6 +154,54 @@ const LIVE_INTRO = {
         </li>
       ))}
     </ul>
+
+    <section class="sum" aria-labelledby="sum-heading">
+      <h2 id="sum-heading">{sum.heading}</h2>
+      <p>{sum.lead}</p>
+      <form class="deduction" data-hours-sum novalidate>
+        {pair.map((time) => (
+          <fieldset class="settings">
+            <legend>{time.label}</legend>
+            <label class="field">
+              {sum.hours}
+              <input
+                name={`${time.name}Hours`}
+                inputmode="numeric"
+                autocomplete="off"
+                value={String(time.hours)}
+              />
+            </label>
+            <label class="field">
+              {sum.minutes}
+              <input
+                name={`${time.name}Minutes`}
+                inputmode="numeric"
+                autocomplete="off"
+                value={String(time.minutes)}
+              />
+            </label>
+          </fieldset>
+        ))}
+      </form>
+      <ul class="breakdown labeled" aria-label={sum.figures} aria-live="polite">
+        <li>
+          <span>{sum.sumLabel}</span>
+          <span data-sum="sum">{durationText(sumMinutes)}</span>
+        </li>
+        <li>
+          <span>{sum.decimalLabel}</span>
+          <span data-sum="decimal">{durationDecimalText(sumMinutes)}</span>
+        </li>
+        <li>
+          <span>{sum.differenceLabel}</span>
+          <span data-sum="difference">{durationText(difference)}</span>
+        </li>
+      </ul>
+    </section>
+
+    <div class="prose explained">
+      <Sections sections={sections} />
+    </div>
 
     <section aria-labelledby="common-heading">
       <h2 id="common-heading">{common.heading}</h2>
@@ -171,6 +238,17 @@ const LIVE_INTRO = {
         </ul>
       </section>
     ))}
+
+    <section aria-labelledby="us-heading">
+      <h2 id="us-heading">{t.usHeading}</h2>
+      <ul class="link-list">
+        {t.usLinks.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
   </main>
   <script src="../client/hours.ts"></script>
 </SiteLayout>

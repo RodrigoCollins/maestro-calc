@@ -16,11 +16,13 @@ import {
   isJobPage,
   isLandJob,
   isPitchJob,
+  isQuestionJob,
   JOB_IDS,
   JOBS,
   jobsOf,
   LAND_ACRES,
   PITCH_RISES,
+  QUESTION_IDS,
 } from './jobs.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, templateOf } from './templates.ts';
@@ -98,6 +100,8 @@ describe('job pages (growth plan › lever 1)', () => {
       'square-feet-in-an-acre',
       'square-feet-in-a-half-acre',
       'square-feet-in-a-quarter-acre',
+      'square-feet-1-car-garage',
+      'square-feet-2-car-garage',
       'square-feet-to-square-meters-chart',
     ]);
     expect(jobsOf('mulch')).toEqual(['mulch-bags-per-yard']);
@@ -105,6 +109,8 @@ describe('job pages (growth plan › lever 1)', () => {
       'gravel-driveway-10x20',
       'gravel-driveway-12x50',
       'gravel-driveway-12x100',
+      'cubic-yards-to-tons',
+      'cubic-yards-in-a-ton-of-gravel',
       'cubic-yard-weight-chart',
     ]);
     expect(jobsOf('paint')).toEqual([
@@ -126,6 +132,9 @@ describe('job pages (growth plan › lever 1)', () => {
       'topsoil-raised-bed-4x8',
       'topsoil-10x10',
       'topsoil-20x20',
+      'cubic-feet-in-a-cubic-yard',
+      'cubic-feet-to-gallons',
+      'cubic-yards-in-a-ton-of-dirt',
     ]);
     expect(jobsOf('roofing')).toEqual([
       'roofing-12x16',
@@ -164,7 +173,9 @@ describe('job pages (growth plan › lever 1)', () => {
   });
 
   it('names each square footage job after the length and the width of its first case', () => {
-    const rooms = jobsOf('rectangle-area').filter((each) => !isChartJob(each) && !isLandJob(each));
+    const rooms = jobsOf('rectangle-area').filter(
+      (each) => !isChartJob(each) && !isLandJob(each) && !isQuestionJob(each),
+    );
     for (const id of rooms) {
       const [first] = JOBS[id].cases;
       expect(
@@ -356,7 +367,9 @@ describe('job pages (growth plan › lever 1)', () => {
   ] as const)(
     'names each %s job after the length and the width of its cases',
     (calculator, prefix, varying, values) => {
-      for (const id of jobsOf(calculator).filter((each) => !isChartJob(each))) {
+      for (const id of jobsOf(calculator).filter(
+        (each) => !isChartJob(each) && !isQuestionJob(each),
+      )) {
         const size = id.replace(prefix, '');
         const [length, width] = size.split('x');
         for (const each of JOBS[id].cases) {
@@ -375,7 +388,7 @@ describe('job pages (growth plan › lever 1)', () => {
   );
 
   it('routes the gravel, paint and drywall jobs by their size', () => {
-    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each))) {
+    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each) && !isQuestionJob(each))) {
       const size = id.replace('gravel-driveway-', '');
       expect(ROUTES[id].en, id).toBe(`/landscaping/gravel-for-${size}-driveway`);
       expect(ROUTES[id].es, id).toBe(`/es/jardineria/grava-para-entrada-de-${size}`);
@@ -423,7 +436,7 @@ describe('job pages (growth plan › lever 1)', () => {
   );
 
   it('routes the topsoil and roofing jobs by their size', () => {
-    for (const id of jobsOf('topsoil')) {
+    for (const id of jobsOf('topsoil').filter((each) => !isQuestionJob(each))) {
       const size = id.replace('topsoil-raised-bed-', '').replace('topsoil-', '');
       const bed = id.startsWith('topsoil-raised-bed-');
       expect(ROUTES[id].en, id).toBe(
@@ -526,6 +539,37 @@ describe('job pages (growth plan › lever 1)', () => {
     }
     expect(isPitchJob('roof-pitch-chart')).toBe(false);
     expect(isPitchJob('square-feet-12x12')).toBe(false);
+  });
+
+  // queries (Ahrefs US, 2026-11-08): "how many cubic feet in a cubic yard", "cubic yards to tons",
+  // "how many cubic yards in a ton of gravel", "cubic feet to gallons", "how many square feet is a
+  // 2 car garage": every case of a cubic yard page is one cubic yard, every case of the tons page a
+  // whole number of loose yards, and each garage size a single or a double garage
+  it('tables each question page with cases its question needs', () => {
+    expect(JOB_IDS.filter(isQuestionJob)).toEqual(QUESTION_IDS);
+    const volumes = (id: (typeof QUESTION_IDS)[number]) =>
+      JOBS[id].cases.map((raw) => {
+        const feet = (key: string) => Number((raw[key] ?? '').replace(/ft|in/, ''));
+        return (feet('length') * feet('width') * feet('depth')) / 12 / 27;
+      });
+    expect(volumes('cubic-feet-in-a-cubic-yard')).toEqual([1, 1, 1, 1, 1]);
+    expect(volumes('cubic-yards-to-tons')).toEqual([1, 2, 3, 5, 10]);
+    for (const id of [
+      'cubic-feet-in-a-cubic-yard',
+      'cubic-feet-to-gallons',
+      'cubic-yards-to-tons',
+    ] as const) {
+      for (const raw of JOBS[id].cases) expect(raw['waste'], id).toBe('0');
+    }
+    for (const raw of JOBS['cubic-yards-to-tons'].cases) expect(raw['placement']).toBe('loose');
+    const areas = (id: (typeof QUESTION_IDS)[number]) =>
+      JOBS[id].cases.map(
+        (raw) => Number.parseInt(raw['length'] ?? '') * Number.parseInt(raw['width'] ?? ''),
+      );
+    expect(areas('square-feet-1-car-garage')).toEqual([240, 288, 308, 336, 384]);
+    expect(areas('square-feet-2-car-garage')).toEqual([576, 400, 480, 484, 528]);
+    expect(isQuestionJob('cubic-yard-weight-chart')).toBe(false);
+    expect(isQuestionJob('square-feet-12x12')).toBe(false);
   });
 
   // queries: "how many square feet in an acre" (57K), "in a quarter acre", "in half an acre"

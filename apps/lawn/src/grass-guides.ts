@@ -12,12 +12,14 @@ import {
   NC_STATE,
   NC_STATE_CENTIPEDE,
   NEBRASKA_BUFFALO,
+  GROWING_LINK,
   PLANTING_LINK,
   PURDUE_SEED,
   READ,
   SEED_CALCULATOR,
   ST_AUGUSTINE,
   TENNESSEE,
+  UK_LINK,
   VIRGINIA,
 } from './seed-sources.ts';
 import { viewOf } from './view.ts';
@@ -434,6 +436,8 @@ export const BEST_SEED_GUIDE: Guide = {
         { href: '/buffalo-grass-seed', label: 'Buffalo grass seed' },
         { href: '/st-augustine-grass-seed', label: 'St. Augustine grass: sod and plugs' },
         PLANTING_LINK,
+        GROWING_LINK,
+        UK_LINK,
       ],
     },
   ],

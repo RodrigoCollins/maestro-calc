@@ -3,12 +3,15 @@ import { watchUsage } from '@maestro-calc/site-kit/track';
 import { fieldText } from '../format.ts';
 import { areaText } from '../measure.ts';
 import { refreshShare } from './share.ts';
+import { METRIC, switchedText, unitsOf } from '../units.ts';
 import { ENGINES, viewOf, type CalculatorId, type Engine } from '../view.ts';
 
 /**
  * Runs a calculator on every edit of its form: writes each figure into its `[data-v]` hook, shows
  * the `[data-warning]` notes the run raises, marks the fields it cannot read and keeps the numbers
  * in the URL (the defaults are the clean URL). The "measure the lawn" helper writes the area field.
+ * A page with a units field reads its metric fields in square metres and kilograms (`units.ts`),
+ * keeps `u=m` in the URL and converts those fields when the system changes.
  */
 export const run = (id: CalculatorId): void => {
   const engine: Engine = ENGINES[id];
@@ -16,19 +19,20 @@ export const run = (id: CalculatorId): void => {
   if (form === null) return;
   const fieldOf = (name: string): HTMLInputElement | HTMLSelectElement | null =>
     form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+  const unitsField = fieldOf('units');
+  const units = () => unitsOf(unitsField?.value);
   const rawOf = (): Record<string, string | undefined> =>
     Object.fromEntries(engine.inputs.map(({ key }) => [key, fieldOf(key)?.value]));
   const encoded = (raw: Readonly<Record<string, unknown>>): string | null => {
     const validated = engine.validate(raw);
-    return validated.ok ? encode(engine, validated.value) : null;
+    return validated.ok ? encode(engine, validated.value, { unitSystem: units() }) : null;
   };
   const start = encoded({});
 
   if (location.search !== '') {
-    const values: Readonly<Record<string, unknown>> = decode(
-      engine,
-      location.search.slice(1),
-    ).state;
+    const decoded = decode(engine, location.search.slice(1));
+    const values: Readonly<Record<string, unknown>> = decoded.state;
+    if (unitsField !== null) unitsField.value = decoded.unitSystem;
     for (const { key } of engine.inputs) {
       const field = fieldOf(key);
       const value = values[key];
@@ -41,7 +45,7 @@ export const run = (id: CalculatorId): void => {
   const render = (): void => {
     const raw = rawOf();
     for (const { key } of engine.inputs) fieldOf(key)?.removeAttribute('aria-invalid');
-    const view = viewOf(id, raw);
+    const view = viewOf(id, raw, units());
     if (view === undefined) {
       const validated = engine.validate(raw);
       if (!validated.ok)
@@ -74,6 +78,21 @@ export const run = (id: CalculatorId): void => {
     if (area === null) return;
     area.value = measure().replaceAll(',', '');
     area.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+
+  // switching the units converts the metric fields first (this listener runs before the form's);
+  // switching back with no edit in between restores the text that was there
+  const switched = new Map<string, { readonly before: string; readonly after: string }>();
+  unitsField?.addEventListener('input', () => {
+    for (const [key, factor] of Object.entries(METRIC[id] ?? {})) {
+      const field = fieldOf(key);
+      if (field === null) continue;
+      const last = switched.get(key);
+      const next =
+        last?.after === field.value ? last.before : switchedText(field.value, factor, units());
+      switched.set(key, { before: field.value, after: next });
+      field.value = next;
+    }
   });
 
   render();

@@ -7,7 +7,8 @@ import type { CheckContext, Problem } from './types.ts';
  * The job pages (growth plan, lever 1): each one is listed by its calculator page and by the trade
  * hub of that calculator, and links its calculator (prefilled or not) and its nearest siblings, the
  * jobs of the same calculator just before and just after it in table order, each in its own
- * language. A missing page is the file set's problem.
+ * language; a job of a group (`jobGroups`, the question pages) has its siblings in that group. A
+ * missing page is the file set's problem.
  */
 
 const RULE = 'job-link';
@@ -24,6 +25,7 @@ const pathOfHref = (href: string): string => href.replace(/[?#].*$/s, '');
 export const jobLinkProblems = (context: CheckContext): Problem[] => {
   const { site } = context;
   const jobs = Object.entries(site.jobs);
+  const groupOf = (job: string): string | undefined => site.jobGroups?.[job] ?? site.jobs[job];
   return LOCALES.flatMap((locale) =>
     jobs.flatMap(([job, calculator]) => {
       const jobPath = pathOf(job, locale, site.routes);
@@ -33,7 +35,7 @@ export const jobLinkProblems = (context: CheckContext): Problem[] => {
       const [hub] =
         Object.entries(site.hubs).find(([, listed]) => listed.includes(calculator)) ?? [];
       const hubFile = hub === undefined ? undefined : fileOf(pathOf(hub, locale, site.routes));
-      const siblings = jobs.filter(([, other]) => other === calculator).map(([id]) => id);
+      const siblings = jobs.filter(([id]) => groupOf(id) === groupOf(job)).map(([id]) => id);
       const at = siblings.indexOf(job);
       const nearest = [siblings[at - 1], siblings[at + 1]].flatMap((id) =>
         id === undefined ? [] : [pathOf(id, locale, site.routes)],

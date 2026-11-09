@@ -1,0 +1,104 @@
+---
+import { CAT_YEARS_PAGES, catYearsPageOf } from '../cat-years.ts';
+import { AGES as DOG_AGES, agePathOf } from '../dog-years.ts';
+import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const page = catYearsPageOf(Astro.props.path);
+const { age, title, description, h1, lead, checked, columns, rows, sections, questions } = page;
+const years = age === 1 ? 'year' : 'years';
+// the dog page of the same age, when the dog charts reach it
+const dogPath = DOG_AGES.includes(age) ? agePathOf(age) : undefined;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="at-age">
+      <h2 id="at-age">{`A cat of ${String(age)} ${years}, at a glance`}</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={`A cat of ${String(age)} ${years} at a glance, scrolls sideways on a narrow screen`}
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([first, ...cells]) => (
+              <tr>
+                <th scope="row">{first}</th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <a href={page.calculator.href}>{page.calculator.label}</a>
+        {': try a part year, or work a human age back to cat years.'}
+      </p>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {id === 'dog' && dogPath !== undefined && (
+          <p>
+            <a href={dogPath}>{`${String(age)} ${years} in dog years`}</a>
+          </p>
+        )}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-ages">
+      <h2 id="bf-ages">Other ages in cat years</h2>
+      <ul class="bf-ages">
+        {CAT_YEARS_PAGES.map((other) => (
+          <li>
+            <a
+              href={other.path}
+              aria-current={other.age === age ? 'page' : undefined}
+              aria-label={`${String(other.age)} ${other.age === 1 ? 'year' : 'years'} in cat years`}
+            >
+              {other.age}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href={hrefOf('cat-age-chart')}>Cat age chart: every age in one table</a> ·{' '}
+        <a href={hrefOf('cat-age')}>Cat age calculator</a>
+      </p>
+    </section>
+    <Sources sources={page.sources} />
+    <ShareLink path={page.path} {title} />
+  </main>
+</Layout>

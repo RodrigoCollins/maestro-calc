@@ -1,4 +1,5 @@
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
+import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS, CHARTS_INDEX } from './charts.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES } from './guides.ts';
@@ -48,6 +49,11 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     title: 'Dog age in human years',
     summary: 'Dog years to human years by size, and back.',
   },
+  {
+    href: hrefOf('cat-age'),
+    title: 'Cat age in human years',
+    summary: 'Cat years to human years, the life stage and the vet visits.',
+  },
 ];
 
 /** The words of the home. */
@@ -65,6 +71,8 @@ export const HOME_TEXTS = {
     cat: 'Dry by the cup, wet by the can, or a mix, from your labels.',
     dogAge:
       'Not seven to one: a dog is about 15 in human years at 1 and 24 at 2, then ages faster the bigger it is. Pick an age:',
+    catAge:
+      'A cat is about 15 in human years at 1 and 24 at 2, then adds about 4 a year, on the veterinary table. Pick an age:',
   },
 } as const;
 
@@ -77,6 +85,17 @@ export const HOME_AGES: readonly {
   href: path,
   age,
   label: `${String(age)} ${age === 1 ? 'year' : 'years'} in dog years`,
+}));
+
+/** The cat years pages, one link per age: the home leads to every one of them. */
+export const HOME_CAT_AGES: readonly {
+  readonly href: string;
+  readonly age: number;
+  readonly label: string;
+}[] = CAT_YEARS_PAGES.map(({ path, age }) => ({
+  href: path,
+  age,
+  label: `${String(age)} ${age === 1 ? 'year' : 'years'} in cat years`,
 }));
 
 /** The closing line of the home that links who makes the site and what it collects. */

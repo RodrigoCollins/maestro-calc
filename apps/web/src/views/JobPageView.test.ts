@@ -5,6 +5,7 @@ import { jobFloor } from '../lib/job-floor.ts';
 import { jobGuide } from '../lib/job-guide.ts';
 import { jobRoom, QUALI_KOTE_PDS } from '../lib/job-room.ts';
 import { jobLand, NIST_HB44_C } from '../lib/job-land.ts';
+import { jobQuestion } from '../lib/job-question.ts';
 import { jobSlope, OSHA_1926_500, OSHA_1926_501 } from '../lib/job-slope.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { JOBS } from '../routing/jobs.ts';
@@ -191,5 +192,39 @@ describe('JobPageView room and floor sections', () => {
   it('adds no room section to a slab', async () => {
     const document = await render('concrete-slab-10x10', 'en');
     expect(document.querySelector('main')?.textContent).not.toContain(QUALI_KOTE_PDS.url);
+  });
+});
+
+// Ahrefs US 2026-11-08: "how many cubic feet in a cubic yard", "cubic yards to tons" and the other
+// question pages answer in the h1 and add the about section, the tables and the sources of their own
+describe('JobPageView question pages', () => {
+  it.each(['en', 'es'] as const)(
+    'adds the about section, the tables and the cited sources of a question in %s',
+    async (locale) => {
+      const document = await render('cubic-yards-to-tons', locale);
+      const question = jobQuestion('cubic-yards-to-tons', locale);
+      const headings = document.querySelectorAll('main h2').map((h2) => h2.textContent);
+      expect(headings).toContain(question?.heading);
+      for (const table of question?.tables ?? []) expect(headings).toContain(table.heading);
+      const text = document.querySelector('main')?.textContent ?? '';
+      for (const paragraph of question?.paragraphs ?? []) expect(text).toContain(paragraph);
+      // nothing but a calculator page leaves the site (check:site): the sources are cited, not linked
+      const cited = document.querySelectorAll('main code').map((code) => code.textContent);
+      expect(cited).toEqual(question?.sources.map(({ source }) => source.url));
+      expect(document.querySelector(`main a[href="${question?.more.href ?? ''}"]`)).not.toBeNull();
+      // the job table, then the tons of each material
+      expect(document.querySelectorAll('main table')).toHaveLength(2);
+      expect(document.querySelector('main h1')?.textContent).toBe(
+        locale === 'en'
+          ? 'Cubic yards to tons: a yard of loose gravel is about 1.29 tons'
+          : 'De yardas cúbicas a toneladas: una yarda de grava suelta son unas 1.29 toneladas',
+      );
+    },
+  );
+
+  it('adds no question section to any other job', async () => {
+    const document = await render('cubic-yard-weight-chart', 'en');
+    const heading = jobQuestion('cubic-yards-to-tons', 'en')?.heading ?? '';
+    expect(document.querySelector('main')?.textContent).not.toContain(heading);
   });
 });

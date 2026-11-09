@@ -1,4 +1,5 @@
 import { FROST_SOURCE } from '@maestro-calc/lawn-data/frost/source';
+import type { UnitSystem } from '@maestro-calc/core';
 import { CALCULATORS } from './calculators.ts';
 import type { CalculatorId } from './view.ts';
 
@@ -15,6 +16,8 @@ export interface MethodSource {
 export interface MethodCase {
   readonly text: string;
   readonly raw: Readonly<Record<string, string>>;
+  /** The unit system of the form; imperial when it is left out. */
+  readonly units?: UnitSystem;
   /** The `data-v` hook of the figure (`src/view.ts`). */
   readonly v: string;
   readonly result: string;
@@ -169,6 +172,30 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
         v: 'pounds',
         result: '1.0–2.0',
         unit: 'lb',
+      },
+      {
+        text: 'In metric, the Virginia bluegrass rate: 2 × 453.59237 g ÷ 92.90304 m² = 9.765 g/m² to 3 × 4.8824 = 14.647 g/m², so the rate reads',
+        raw: {},
+        units: 'metric',
+        v: 'rate',
+        result: '9.8–14.6',
+        unit: 'g/m²',
+      },
+      {
+        text: 'Kentucky bluegrass, Virginia, on 100 m²: 9.765 × 100 = 976 g to 14.647 × 100 = 1,465 g, so',
+        raw: { area: '100' },
+        units: 'metric',
+        v: 'pounds',
+        result: '0.98–1.46',
+        unit: 'kg',
+      },
+      {
+        text: 'The same on 20 m², under 1 kg at the high end, in whole grams: 9.765 × 20 to 14.647 × 20 =',
+        raw: { area: '20' },
+        units: 'metric',
+        v: 'pounds',
+        result: '195–293',
+        unit: 'g',
       },
     ],
   },

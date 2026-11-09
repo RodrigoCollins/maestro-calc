@@ -1,6 +1,12 @@
 import { Rational } from '@maestro-calc/core';
 import { dogChocolate } from '@maestro-calc/pets-core/dog-chocolate';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import {
+  CAT_AGE_CHART_ROWS,
+  CAT_AGE_SOURCES,
+  CAT_YEARS_CHECKED,
+  CAT_YEARS_PAGES,
+} from './cat-years.ts';
 import { AGE_PAGES, DOG_AGE_CHART_ROWS, DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, cupsText, kcalText, quarterCups } from './format.ts';
 import type { PageSource } from './guides.ts';
@@ -20,7 +26,7 @@ export interface Chart {
   /** True for the chocolate chart: the page tells the reader to call a veterinarian or a poison line. */
   readonly callNow?: true;
   readonly calculators: readonly { readonly href: string; readonly label: string }[];
-  /** More pages the chart leads to, each one row of it worked out (the dog age chart). */
+  /** More pages the chart leads to, each one row of it worked out (the dog and cat age charts). */
   readonly pages?: {
     readonly heading: string;
     readonly links: readonly { readonly href: string; readonly label: string }[];
@@ -232,6 +238,42 @@ export const CHARTS: readonly Chart[] = [
       summary: 'Human years by size for dogs of 1 to 16, with the DNA clock.',
     },
   },
+  {
+    path: '/cat-age-chart',
+    title: 'Cat Age Chart: Cat Years to Human Years | Bowl Figures',
+    description:
+      'Human years for cats from 1 month to 25 years on the AAFP-AAHA table, beside Cornell’s figures and the 7× rule, with the 2021 AAHA/AAFP life stage of each age.',
+    h1: 'Cat age chart: cat years to human years',
+    lead: 'The human age of a cat from 1 month to 25 years, worked out by the same engine as the cat age calculator, with Cornell’s figures, the seven-year rule and the life stage beside each age.',
+    checked: CAT_YEARS_CHECKED,
+    columns: [
+      'Cat age',
+      'Human years (AAFP-AAHA table)',
+      'Cornell',
+      '7× rule',
+      'Life stage (AAHA/AAFP 2021)',
+      'International Cat Care stage',
+    ],
+    rows: CAT_AGE_CHART_ROWS,
+    notes: [
+      'The human years are the table of the 2010 AAFP-AAHA Feline Life Stage Guidelines, which International Cat Care prints too: 10 at 6 months, 15 at 1 year, 24 at 2, then 4 a year. Where the table gives a range for a kitten (2 to 4 human years at 2 to 3 months, 6 to 8 at 4 months), the chart reads 2 at 2 months, 4 at 3 months and 7 at 4 months.',
+      'The Cornell Feline Health Center makes a 1-year-old 16 and a 2-year-old 21, then adds about 4 a year: 1 human year older than the table at 1, 3 younger from 2 on. It gives no figure under 1 year. The seven-year rule is in no veterinary source used here.',
+      'The 2021 AAHA/AAFP guidelines print no human ages. They place a cat in a life stage: kitten to 1 year, young adult 1 to 6, mature adult 7 to 10, senior over 10, and end of life at any age. International Cat Care keeps the six stages of 2010, from kitten to super senior at 15. Every figure is an estimate; your veterinarian can tell you where your own cat is.',
+    ],
+    calculators: [{ href: hrefOf('cat-age'), label: 'Cat age calculator' }],
+    pages: {
+      heading: 'Each age, worked out',
+      links: CAT_YEARS_PAGES.map(({ path, age }) => ({
+        href: path,
+        label: `${String(age)} ${age === 1 ? 'year' : 'years'} in cat years`,
+      })),
+    },
+    sources: Object.values(CAT_AGE_SOURCES),
+    card: {
+      title: 'Cat age chart',
+      summary: 'Human years for cats from 1 month to 25 years, with the life stage.',
+    },
+  },
 ];
 
 /** The chart at `path`. */
@@ -242,7 +284,7 @@ export const chartOf = (path: string): Chart => {
 };
 
 /** The cells of the row of `weight` in a chart: build-time data, so a missing row throws. */
-const cellsAt = (path: string, weight: number): readonly string[] => {
+const cellsAt = (path: string, weight: number | string): readonly string[] => {
   const row = chartOf(path).rows.find(([each]) => each === String(weight));
   if (row === undefined) throw new Error(`no row ${String(weight)} in ${path}`);
   return row;
@@ -256,6 +298,7 @@ const [, youngPuppy = '', , , olderPuppy = ''] = cellsAt('/puppy-feeding-chart',
 const [, milk = '', dark = '', baking = ''] = cellsAt('/dog-chocolate-toxicity-chart', 20);
 const [, smallTen = '', , , giantTen = '', clockTen = ''] = cellsAt('/dog-age-chart', 10);
 const [, , , , , clockAtOne = ''] = cellsAt('/dog-age-chart', 1);
+const [, catTen = '', cornellTen = ''] = cellsAt('/cat-age-chart', '10 years');
 const ratio = Math.round((10 * numberOfCell(bigDog)) / numberOfCell(smallDog)) / 10;
 
 /** What the index says about its charts, each figure read off the charts themselves. */
@@ -266,9 +309,19 @@ export const CHARTS_GUIDE = {
     `A puppy needs the most for its weight while it is young. At 10 lb, the puppy chart gives ${youngPuppy} calories a day under 4 months and ${olderPuppy} from 4 months, as the factor drops from 3.0 to 2.0 times the resting energy (Merck and AAHA 2021).`,
     `The darker the chocolate, the less it takes. For a 20 lb dog, ${milk} g of milk chocolate, ${dark} g of dark or ${baking} g of baking chocolate reach 20 mg/kg, the dose where Merck lists the first signs. Less is not safe: if your dog ate any, call your veterinarian or a poison line now.`,
     `Size changes how fast a dog ages. On the dog age chart a 10-year-old is ${smallTen} human years if it is small and ${giantTen} if it is giant; the DNA clock of a 2020 study, fitted on Labradors, gives ${clockTen} at 10 but ${clockAtOne} at 1, far older than the 15 of the charts.`,
+    `The cat table has one line for every cat, with no sizes. On the cat age chart a 10-year-old cat is ${catTen} human years on the AAFP-AAHA table and ${cornellTen} on Cornell’s figures, and the 2021 AAHA/AAFP guidelines count it a mature adult until it is over 10.`,
     'The feeding charts assume a food of 360 kcal a cup; the calories per cup on your own bag set the real amount, so use the calculator with that figure. Every chart is worked out by the same engine as the calculators and shows the day it was checked.',
   ],
-  sources: [MERCK, MERCK_TABLE, AAHA, MERCK_CHOCOLATE, DOG_AGE_SOURCES.avma, DOG_AGE_SOURCES.wang],
+  sources: [
+    MERCK,
+    MERCK_TABLE,
+    AAHA,
+    MERCK_CHOCOLATE,
+    DOG_AGE_SOURCES.avma,
+    DOG_AGE_SOURCES.wang,
+    CAT_AGE_SOURCES.aafp2010,
+    CAT_AGE_SOURCES.cornellSenior,
+  ],
 } as const;
 
 /** The index of the data pages, `/charts`. */

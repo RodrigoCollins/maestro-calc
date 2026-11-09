@@ -105,6 +105,49 @@ test('the seed page draws the two crosswise passes and names the pounds each way
   await expect(page.locator('[data-warning="zoysiaSource"]')).toBeVisible();
 });
 
+// metric: 1 m² = 1 / 0.09290304 sq ft and 1 lb = 0.45359237 kg, so 1 lb per 1,000 sq ft is
+// 4.8824 g/m², and the Virginia bluegrass rate of 2 to 3 lb is 9.765 to 14.647 g/m²
+test.describe('the seed calculator in metric', () => {
+  test('converts the fields, counts kilograms and grams and keeps u=m in the address', async ({
+    page,
+  }) => {
+    await page.goto('/grass-seed-calculator');
+    await page.locator('[name="units"]').selectOption('metric');
+    // 5,000 sq ft x 0.09290304 = 464.52 m²; 5 lb = 2.27 kg
+    await expect(page.locator('[name="area"]')).toHaveValue('464.52');
+    await expect(page.locator('[name="bag"]')).toHaveValue('2.27');
+    await expect(page.locator('label [data-v="areaUnit"]').first()).toHaveText('m²');
+    // 464.52 m² x 9.765 to 14.647 g/m² = 4.54 to 6.80 kg: 2 to 3 bags of 2.27 kg
+    await expect(page.locator('[data-v="pounds"]')).toHaveText('4.54–6.80');
+    await expect(page.locator('[data-v="massUnit"]')).toHaveText('kg');
+    await expect(page.locator('[data-v="bags"]')).toHaveText('2–3');
+    await expect(page.locator('[data-v="rate"]')).toHaveText('9.8–14.6');
+    await expect(page.locator('[data-v="rateUnit"]')).toHaveText('g/m²');
+    await page.locator('[name="area"]').fill('100');
+    // 100 m²: 0.98 to 1.46 kg, half each way 488 to 732 g
+    await expect(page.locator('[data-v="pounds"]')).toHaveText('0.98–1.46');
+    await expect(page.locator('.lawn-spreader [data-v="perPass"]')).toHaveText('488–732');
+    await expect(page.locator('.lawn-spreader [data-v="passUnit"]')).toHaveText('g');
+    await expect(page).toHaveURL(/[?&]u=m(&|$)/);
+    await page.goto(page.url());
+    await expect(page.locator('[name="units"]')).toHaveValue('metric');
+    await expect(page.locator('[data-v="pounds"]')).toHaveText('0.98–1.46');
+  });
+
+  test('switching back with no edit restores the US figures and the clean address', async ({
+    page,
+  }) => {
+    await page.goto('/grass-seed-calculator');
+    await page.locator('[name="units"]').selectOption('metric');
+    await page.locator('[name="units"]').selectOption('imperial');
+    await expect(page.locator('[name="area"]')).toHaveValue('5000');
+    await expect(page.locator('[name="bag"]')).toHaveValue('5');
+    await expect(page.locator('[data-v="pounds"]')).toHaveText('10.0–15.0');
+    await expect(page.locator('[data-v="massUnit"]')).toHaveText('lb');
+    await expect(page).not.toHaveURL(/\?/);
+  });
+});
+
 // the frost dates ZIP lookup: NOAA 1991-2020 normals, the nearest station of the ZCTA point
 test.describe('frost dates ZIP lookup', () => {
   test('finds the station nearest to West Lafayette, Indiana, with its dates', async ({ page }) => {

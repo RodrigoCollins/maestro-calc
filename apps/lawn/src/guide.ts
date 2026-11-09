@@ -3,6 +3,7 @@ import { CALCULATORS } from './calculators.ts';
 import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
 import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
 import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
+import { GROWING_GUIDE, UK_GUIDE } from './uk-guides.ts';
 import { ZONE_GUIDES, ZONE_INDEX } from './zone-guides.ts';
 
 export {
@@ -168,6 +169,8 @@ export const TIMING_GUIDE: Guide = {
 export const GUIDES: readonly Guide[] = [
   TIMING_GUIDE,
   PLANTING_GUIDE,
+  UK_GUIDE,
+  GROWING_GUIDE,
   BEST_SEED_GUIDE,
   ...SPECIES_GUIDES,
   ...GRASS_GUIDES,

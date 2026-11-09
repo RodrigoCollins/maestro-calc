@@ -96,6 +96,35 @@ describe('the dog age chart', () => {
   });
 });
 
+describe('the cat age chart', () => {
+  const chart = chartOf('/cat-age-chart');
+  const row = (age: string) => chart.rows.find(([a]) => a === age);
+
+  it('lists the kitten months of the table and every year to 25, a cell for every column', () => {
+    expect(chart.rows).toHaveLength(32);
+    expect(chart.rows[0]?.[0]).toBe('1 month');
+    expect(chart.rows.at(-1)?.[0]).toBe('25 years');
+    for (const cells of chart.rows) expect(cells).toHaveLength(chart.columns.length);
+  });
+
+  // the 2010 table: 6 months 10, 1 year 15, then 24 + 4 a year; Cornell 16 at 1, 21 + 4 a year
+  it('gives the table, Cornell and the 7x rule, worked by hand, with both sets of stages', () => {
+    expect(row('6 months')).toEqual(['6 months', '10', '–', '3.5', 'Kitten', 'Kitten']);
+    expect(row('5 years')).toEqual(['5 years', '36', '33', '35', 'Young adult', 'Adult']);
+    expect(row('10 years')).toEqual(['10 years', '56', '53', '70', 'Mature adult', 'Mature']);
+    expect(row('11 years')).toEqual(['11 years', '60', '57', '77', 'Senior', 'Senior']);
+  });
+
+  it('leads to the calculator and to the page of every age', () => {
+    expect(chart.calculators.map(({ href }) => href)).toEqual(['/cat-age-calculator']);
+    expect(chart.pages?.links).toHaveLength(20);
+    expect(chart.pages?.links[0]).toEqual({
+      href: '/1-year-in-cat-years',
+      label: '1 year in cat years',
+    });
+  });
+});
+
 describe('every chart', () => {
   it('is at the address the routes pin, as an article', () => {
     expect(CHARTS.map(({ path }) => path)).toEqual([
@@ -103,6 +132,7 @@ describe('every chart', () => {
       '/puppy-feeding-chart',
       '/dog-chocolate-toxicity-chart',
       '/dog-age-chart',
+      '/cat-age-chart',
     ]);
     for (const { path } of CHARTS)
       expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
@@ -120,7 +150,7 @@ describe('every chart', () => {
 
   it('carries a review day and sources with addresses', () => {
     for (const chart of CHARTS) {
-      expect(['2026-11-07', '2026-11-08']).toContain(chart.checked);
+      expect(['2026-11-07', '2026-11-08', '2026-11-09']).toContain(chart.checked);
       expect(chart.sources.length).toBeGreaterThan(0);
       for (const { url } of chart.sources) expect(url).toMatch(/^https:\/\//);
     }
@@ -152,6 +182,12 @@ describe('the guide of the charts index', () => {
   it('compares a small and a giant dog of 10, and the DNA clock at 1 and 10', () => {
     expect(text).toContain('a 10-year-old is 56 human years if it is small and 84 if it is giant');
     expect(text).toContain('gives 67.8 at 10 but 31.0 at 1');
+  });
+
+  it('compares a cat of 10 on the table and on Cornell’s figures', () => {
+    expect(text).toContain(
+      'a 10-year-old cat is 56 human years on the AAFP-AAHA table and 53 on Cornell’s figures',
+    );
   });
 
   it('cites the sources of the charts it reads, once each', () => {

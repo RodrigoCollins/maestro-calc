@@ -12,7 +12,8 @@ import { llmsTxt } from './llms.ts';
 import { METHOD_PAGE } from './methodology.ts';
 import { CONTACT_EMAIL, PRIVACY } from './privacy.ts';
 import { ROUTES } from './routes.ts';
-import { ENGINES } from './view.ts';
+import { METRIC } from './units.ts';
+import { ENGINES, viewOf } from './view.ts';
 
 /** Every title and description of the site, by address. */
 const HEADS: readonly (readonly [string, string, string])[] = [
@@ -68,6 +69,32 @@ describe('calculator pages', () => {
           Object.keys(page.fields[input.key]?.options ?? {}),
           `${page.id}.${input.key}`,
         ).toEqual([...input.options]);
+      }
+    }
+  });
+
+  it('offers the units field exactly on the calculators that read metric, with both systems', () => {
+    for (const page of CALCULATORS) {
+      expect(page.units !== undefined, page.id).toBe(METRIC[page.id] !== undefined);
+      if (page.units !== undefined)
+        expect(Object.keys(page.units.options ?? {})).toEqual(['imperial', 'metric']);
+    }
+  });
+
+  it('names only hooks the view writes, in either unit system', () => {
+    for (const page of CALCULATORS) {
+      const hooks = [
+        ...Object.values(page.fields).flatMap(({ label }) =>
+          typeof label === 'string' ? [] : label,
+        ),
+        ...page.tag.head,
+        ...page.tag.sub,
+        ...page.rows.flatMap(({ v, unit }) => [{ v }, unit]),
+      ].flatMap((seg) => (typeof seg === 'string' ? [] : [seg.v]));
+      for (const units of ['imperial', 'metric'] as const) {
+        if (units === 'metric' && page.units === undefined) continue;
+        const values = viewOf(page.id, {}, units)?.values ?? {};
+        for (const hook of hooks) expect(values[hook], `${page.id} ${units} ${hook}`).toBeDefined();
       }
     }
   });

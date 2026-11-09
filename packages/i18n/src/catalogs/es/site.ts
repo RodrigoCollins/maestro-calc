@@ -305,11 +305,14 @@ export const esSite = {
   'site.job.worked.topsoil.net': 'Volumen de la primera medida, antes del asentamiento',
   'site.job.worked.topsoil.total':
     'Con el 10% por asentamiento, en pies cúbicos, yardas cúbicas y metros cúbicos',
+  'site.job.worked.topsoil.exact': 'Sin extra, en pies cúbicos, yardas cúbicas y metros cúbicos',
   'site.job.worked.topsoil.bags': 'Bolsas de 0.75 pies cúbicos, redondeando hacia arriba',
   'site.job.worked.gravel.placed':
     'Volumen colocado de la primera medida, en pies cúbicos y yardas cúbicas',
   'site.job.worked.gravel.total': 'Con el 5% de extra',
   'site.job.worked.gravel.weight': 'Peso compactado, a 3,660 lb por yarda cúbica (WisDOT)',
+  'site.job.worked.gravel.exact': 'Sin extra',
+  'site.job.worked.gravel.weightLoose': 'Peso suelto, a 2,580 lb por yarda cúbica (WisDOT)',
   'site.job.worked.gravel.tons': 'En toneladas cortas de 2,000 lb',
   'site.job.worked.gravel.order': 'Yardas cúbicas sueltas que pedir, a 2,580 lb por yarda cúbica',
   'site.job.worked.feet-inches.inches': 'La medida en pulgadas, 12 in por pie',
@@ -1258,6 +1261,190 @@ export const esSite = {
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',
+  'site.job.question.sources': 'Fuentes',
+  'site.job.question.more': 'Consulta también',
+  'site.job.question.unitSource': 'Definiciones de las unidades',
+  'site.job.question.bagSource': 'Rendimiento de las bolsas',
+  'site.job.question.feetToYards.heading': 'De pies cúbicos a yardas cúbicas',
+  'site.job.question.feetToYards.lead':
+    'Divide los pies cúbicos entre 27. Los metros cúbicos multiplican los pies cúbicos por 0.028316846592, el valor métrico exacto de un pie cúbico.',
+  'site.job.question.yardsToFeet.heading': 'De yardas cúbicas a pies cúbicos',
+  'site.job.question.yardsToFeet.lead':
+    'Multiplica las yardas cúbicas por 27. Una yarda cúbica es exactamente 0.764554857984 metros cúbicos.',
+  'site.job.question.boxGallons.heading': 'Galones en cada cama o jardinera',
+  'site.job.question.boxGallons.lead':
+    'El volumen de cada medida de la tabla de arriba, en galones líquidos de EE. UU. y en litros, sin nada extra por asentamiento:',
+  'site.job.question.feetToGallons.heading': 'De pies cúbicos a galones',
+  'site.job.question.feetToGallons.lead':
+    'Multiplica los pies cúbicos por 7.48052 (1,728 ÷ 231). Un pie cúbico es exactamente 28.316846592 litros.',
+  'site.job.question.gallonsToFeet.heading': 'De galones a pies cúbicos',
+  'site.job.question.gallonsToFeet.lead':
+    'Divide los galones entre 7.48052, o multiplícalos por 231 y divide entre 1,728. Un galón de EE. UU. es exactamente 3.785411784 litros.',
+  'site.job.question.materialTons.heading': 'Toneladas en 1 a 10 yardas cúbicas, por material',
+  'site.job.question.materialTons.lead':
+    'Toneladas = yardas cúbicas × toneladas por yarda cúbica. Un rango significa que las fuentes dan un peso bajo y uno alto; cada cifra es una tonelada corta de 2,000 lb.',
+  'site.job.question.yardsPerTon.heading': 'Yardas cúbicas en una tonelada, por material',
+  'site.job.question.yardsPerTon.lead':
+    'Yardas cúbicas por tonelada = 1 ÷ toneladas por yarda cúbica, y una yarda cúbica tiene 27 pies cúbicos. Cuanto más pesado el material, menos yardas llena una tonelada.',
+  'site.job.question.tonsToYards.heading': 'Yardas cúbicas en 1 a 20 toneladas',
+  'site.job.question.tonsToYards.lead':
+    'Yardas cúbicas = toneladas ÷ toneladas por yarda cúbica. Lee la columna del material que vas a comprar:',
+  'site.job.question.soilTons.heading': 'Toneladas de tierra para cada trabajo de la tabla',
+  'site.job.question.soilTons.lead':
+    'Las yardas cúbicas de cada medida con el 10% extra por asentamiento de la calculadora de tierra, por 0.80 toneladas por yarda cúbica; una tonelada métrica son unas 2,204.62 lb:',
+  'site.job.question.slabWeight.heading': 'Peso de cada losa',
+  'site.job.question.slabWeight.lead':
+    'El concreto ya colado, antes del 10% extra que pide la calculadora, a 145 a 150 lb por pie cúbico:',
+  'site.job.question.loadWeight.heading': 'Peso de 1/2 a 10 yardas cúbicas de concreto',
+  'site.job.question.loadWeight.lead':
+    'Libras = yardas cúbicas × 27 × 145 a 150; las toneladas dividen las libras entre 2,000 y las toneladas métricas entre unas 2,204.62:',
+  'site.job.question.garageSlab.heading': 'Concreto para el piso del garaje',
+  'site.job.question.garageSlab.lead':
+    'La calculadora de concreto para una losa de cada medida, de 4 y 6 in de espesor, con su 10% extra y bolsas de 80 lb de unos 0.6 pies cúbicos cada una:',
+  'site.job.question.col.cubicFeet': 'Pies cúbicos',
+  'site.job.question.col.cubicYards': 'Yardas cúbicas',
+  'site.job.question.col.cubicMeters': 'Metros cúbicos',
+  'site.job.question.col.gallons': 'Galones de EE. UU.',
+  'site.job.question.col.liters': 'Litros',
+  'site.job.question.col.size': 'Medida',
+  'site.job.question.col.material': 'Material',
+  'site.job.question.col.tons': 'Toneladas',
+  'site.job.question.col.tonnes': 'Toneladas métricas',
+  'site.job.question.col.pounds': 'Libras',
+  'site.job.question.col.tonsPerYard': 'Toneladas por yarda cúbica',
+  'site.job.question.col.yardsPerTon': 'Yardas cúbicas por tonelada',
+  'site.job.question.col.feetPerTon': 'Pies cúbicos por tonelada',
+  'site.job.question.col.netYards': 'Yardas cúbicas coladas',
+  'site.job.question.col.slab4': 'Yardas cúbicas a 4 in',
+  'site.job.question.col.bags4': 'Bolsas de 80 lb a 4 in',
+  'site.job.question.col.slab6': 'Yardas cúbicas a 6 in',
+  'page.concrete-cubic-yard-weight.title':
+    'Yarda de concreto: pesa 3,915 a 4,050 lb | Maestro Calc',
+  'page.concrete-cubic-yard-weight.description':
+    '¿Cuánto pesa una yarda cúbica de concreto? De 3,915 a 4,050 lb, unas 2 toneladas, a 145 a 150 lb por pie cúbico. El peso de cada losa y de 1/2 a 10 yardas.',
+  'page.concrete-cubic-yard-weight.heading':
+    'Una yarda cúbica de concreto pesa de 3,915 a 4,050 libras',
+  'page.concrete-cubic-yard-weight.label': 'Peso de yarda de concreto',
+  'page.concrete-cubic-yard-weight.intro':
+    'Una yarda cúbica de concreto de peso normal pesa de 3,915 a 4,050 libras, unas 2 toneladas: 27 pies cúbicos a 145 a 150 lb cada uno, los pesos unitarios que publican la FHWA y el WSDOT para el concreto endurecido. El acero de refuerzo suma unas 5 lb más por pie cúbico. La tabla de abajo da el concreto que necesita cada losa común, calculado con la calculadora de concreto, y más abajo sigue el peso de cada losa.',
+  'page.concrete-cubic-yard-weight.note':
+    'Cada cifra suma un 10% extra por desperdicio, el valor predeterminado de la calculadora de concreto, y redondea a bolsas enteras; los pesos de más abajo son de la losa ya colada, sin ese extra. Cada medida abre la calculadora con sus medidas puestas.',
+  'page.concrete-cubic-yard-weight.about': 'Qué hace más pesada o más ligera una yarda de concreto',
+  'page.concrete-cubic-yard-weight.p1':
+    'El concreto es sobre todo piedra y arena unidas por pasta de cemento, así que su peso sigue al de su agregado. El concreto de peso normal, hecho con grava común o piedra triturada, pesa de 145 a 150 lb por pie cúbico ya endurecido, el rango de esta página. El concreto ligero, hecho con esquisto o arcilla expandida, pesa mucho menos, y el concreto pesado para blindaje contra radiación mucho más, así que ninguno de los dos entra en estas cifras. El concreto fresco todavía tiene toda el agua de la mezcla y pesa un poco más que el mismo concreto después de curar y secar.',
+  'page.concrete-cubic-yard-weight.p2':
+    'El peso importa cuando lo transportas, lo levantas o construyes encima. Una losa de 14 por 14 ft y 4 in de espesor tiene 2.42 yardas cúbicas coladas y pesa de 9,473 a 9,800 lb, casi cinco toneladas. Diez yardas cúbicas, una carga grande de concreto premezclado, pesan de 19.58 a 20.25 toneladas. La mezcla en bolsa es el mismo material vendido en seco: una bolsa de 80 lb rinde unos 0.6 pies cúbicos, así que una yarda cúbica lleva 45 bolsas, 3,600 lb de mezcla que cargar antes de añadir el agua.',
+  'page.square-feet-1-car-garage.title':
+    'Garaje de 1 auto: 240 a 384 pies cuadrados | Maestro Calc',
+  'page.square-feet-1-car-garage.description':
+    '¿Cuántos pies cuadrados tiene un garaje de 1 auto? 240 a 12 por 20 ft y hasta 384 a 16 por 24, con el concreto del piso de cada medida a 4 y 6 in.',
+  'page.square-feet-1-car-garage.heading':
+    'Un garaje de 1 auto tiene unos 240 a 384 pies cuadrados',
+  'page.square-feet-1-car-garage.label': 'Garaje de 1 auto',
+  'page.square-feet-1-car-garage.intro':
+    'Un garaje de un auto tiene unos 240 a 384 pies cuadrados: 240 para un garaje justo de 12 por 20 ft, 336 para uno de 14 por 24 ft y 384 para uno de 16 por 24 ft, que deja espacio a un lado para guardar cosas. La tabla de abajo calcula el área de cinco medidas comunes con la calculadora de pies cuadrados, en pies cuadrados, metros cuadrados y yardas cuadradas.',
+  'page.square-feet-1-car-garage.note':
+    'El área de un rectángulo es su largo por su ancho, medidos aquí por fuera de las paredes. Una yarda cuadrada tiene 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus medidas puestas.',
+  'page.square-feet-1-car-garage.about': 'Cómo elegir la medida de un garaje de un auto',
+  'page.square-feet-1-car-garage.p1':
+    'Mide un garaje de dos maneras: por fuera de las paredes para la losa, el techo y el precio, y por dentro para lo que cabe. Las paredes con su estructura y el drywall le quitan varias pulgadas a cada lado, así que un plano de 12 por 20 ft deja un poco menos de 240 pies cuadrados de piso libre. Antes de decidir la medida, mide tu propio vehículo con las puertas abiertas, suma el espacio que quieres para caminar alrededor y suma la profundidad del banco de trabajo, los estantes o las bicicletas que pienses tener junto a las paredes.',
+  'page.square-feet-1-car-garage.p2':
+    'El área decide la mayor parte de los materiales. La losa del piso es el área por su espesor, y la última tabla de esta página da el concreto de cada medida a 4 y 6 in de espesor. Esa misma área, con su precio por pie cuadrado, es la que permite comparar las cotizaciones de los constructores, y un garaje pegado a la casa también tiene que quedar separado de ella como pide el código residencial, así que revisa las reglas de donde vas a construir. Para comparar, un garaje de dos autos de 20 por 20 ft tiene 400 pies cuadrados, dos tercios más que el sencillo más pequeño.',
+  'page.square-feet-2-car-garage.title':
+    'Garaje de 2 autos: 400 a 576 pies cuadrados | Maestro Calc',
+  'page.square-feet-2-car-garage.description':
+    '¿Cuántos pies cuadrados tiene un garaje de 2 autos? 400 a 20 por 20 ft y hasta 576 a 24 por 24, con el concreto del piso de cada medida a 4 y 6 in.',
+  'page.square-feet-2-car-garage.heading':
+    'Un garaje de 2 autos tiene unos 400 a 576 pies cuadrados',
+  'page.square-feet-2-car-garage.label': 'Garaje de 2 autos',
+  'page.square-feet-2-car-garage.intro':
+    'Un garaje de dos autos tiene unos 400 a 576 pies cuadrados: 400 para un garaje de 20 por 20 ft, 484 para uno de 22 por 22 ft y 576 para uno de 24 por 24 ft, la medida que deja espacio para guardar cosas junto a las paredes. La tabla de abajo calcula el área de cinco medidas comunes con la calculadora de pies cuadrados, en pies cuadrados, metros cuadrados y yardas cuadradas.',
+  'page.square-feet-2-car-garage.note':
+    'El área de un rectángulo es su largo por su ancho, medidos aquí por fuera de las paredes. Una yarda cuadrada tiene 9 pies cuadrados, y un pie cuadrado es exactamente 0.09290304 metros cuadrados. Cada medida abre la calculadora con sus medidas puestas.',
+  'page.square-feet-2-car-garage.about': 'Cómo elegir la medida de un garaje de dos autos',
+  'page.square-feet-2-car-garage.p1':
+    'Cada pie de más en el ancho o en el fondo suma toda una franja de piso: pasar de 20 por 20 a 24 por 24 ft suma 176 pies cuadrados, un 44% más, y cada pie que le agregas a una pared de 24 ft suma 24 pies cuadrados. Antes de elegir, estaciona los dos vehículos donde irá el garaje, abre las puertas de los dos lados y mide el ancho y el largo que necesitan con espacio para caminar entre ellos; después suma la profundidad del banco de trabajo, los estantes o el congelador junto a la pared del fondo.',
+  'page.square-feet-2-car-garage.p2':
+    'La losa de un garaje de dos autos es un colado grande: un piso de 24 por 24 ft y 4 in de espesor lleva 7.82 yardas cúbicas de concreto con el 10% extra, un pedido de concreto premezclado más que de bolsas, como muestra la última tabla de esta página para cada medida. El techo cubre el piso más sus aleros, y el hueco de la puerta del garaje, a menudo de 16 ft de ancho para dos autos, decide cómo se arma la pared del frente. Un garaje pegado a la casa tiene que quedar separado de ella como pide el código residencial, así que revisa las reglas de donde vas a construir.',
+  'page.cubic-yards-to-tons.title': 'Yardas cúbicas a toneladas: grava 1.29 | Maestro Calc',
+  'page.cubic-yards-to-tons.description':
+    '¿Cuántas toneladas es una yarda cúbica? Grava suelta 1.29, arena 1.45, tierra 0.80 y concreto 1.96 a 2.03. Toneladas de 1 a 10 yardas de 11 materiales.',
+  'page.cubic-yards-to-tons.heading':
+    'De yardas cúbicas a toneladas: una yarda de grava suelta son unas 1.29 toneladas',
+  'page.cubic-yards-to-tons.label': 'Yardas cúbicas a toneladas',
+  'page.cubic-yards-to-tons.intro':
+    'Para pasar yardas cúbicas a toneladas, multiplícalas por lo que pesa una yarda cúbica del material. La grava suelta, como la mide el patio de materiales, pesa unas 1.29 toneladas por yarda cúbica, así que 5 yardas cúbicas pesan unas 6.45 toneladas y 10 pesan 12.90; la tabla de abajo lo calcula para 1 a 10 yardas con la calculadora de grava, y una segunda tabla hace lo mismo para la arena, la tierra, el concreto y las astillas de madera.',
+  'page.cubic-yards-to-tons.note':
+    'Las medidas son de grava suelta sin extra, medida como la vende el patio de materiales, y cada una tiene un número entero de yardas cúbicas; las toneladas métricas son de 1,000 kg. Cada medida abre la calculadora de grava con sus medidas puestas.',
+  'page.cubic-yards-to-tons.about': 'Por qué la misma yarda cúbica pesa distintas toneladas',
+  'page.cubic-yards-to-tons.p1':
+    'Una yarda cúbica es un volumen y una tonelada es un peso, así que no hay una sola conversión entre ellas: el factor es la densidad del material. La piedra es pesada y la madera ligera, por eso una yarda de arena pesa unas 1.45 toneladas y una yarda de astillas de madera secas unas 0.12. La compactación también lo cambia: la misma base de grava pesa unas 1.29 toneladas por yarda suelta y de 1.80 a 1.86 compactada, porque al aplanarla se saca el aire entre las piedras. El agua suma peso, así que la arena y la tierra mojadas pesan más que las cifras secas o sin condición que publican las fuentes.',
+  'page.cubic-yards-to-tons.p2':
+    'Un proveedor puede cotizar por tonelada o por yarda cúbica. Si mides el trabajo en yardas cúbicas y el precio es por tonelada, multiplica las yardas por el factor del material; al revés, divide las toneladas entre él. Un área de 10 por 20 ft y 4 in de profundidad tiene 2.47 yardas cúbicas: 3.19 toneladas de grava suelta, 3.58 toneladas de arena o 1.98 toneladas de tierra. La tonelada de estas tablas es la tonelada corta de 2,000 lb; una tonelada métrica son 1,000 kg, unas 2,204.62 lb.',
+  'page.cubic-yards-in-a-ton-of-gravel.title':
+    'Tonelada de grava: 0.70 a 0.78 yardas cúbicas | Maestro Calc',
+  'page.cubic-yards-in-a-ton-of-gravel.description':
+    '¿Cuántas yardas cúbicas hay en una tonelada de grava? Unas 0.70 a 0.78 suelta, 19 a 21 pies cúbicos, y 0.54 a 0.56 compactada. Yardas de 1 a 20 toneladas.',
+  'page.cubic-yards-in-a-ton-of-gravel.heading':
+    'Una tonelada de grava son unas 0.70 a 0.78 yardas cúbicas',
+  'page.cubic-yards-in-a-ton-of-gravel.label': 'Yardas en tonelada de grava',
+  'page.cubic-yards-in-a-ton-of-gravel.intro':
+    'Una tonelada de grava llena unas 0.70 a 0.78 yardas cúbicas, o 19 a 21 pies cúbicos, cuando está suelta, como baja del camión: 0.70 para grava de 1/4 a 2 in a 1.42 toneladas por yarda, 0.78 para una base triturada a 1.29. Extendida y compactada, esa misma tonelada llena solo 0.54 a 0.56 yardas cúbicas. La tabla de abajo da las toneladas de grava de bases comunes para cobertizos y patios, calculadas con la calculadora de grava.',
+  'page.cubic-yards-in-a-ton-of-gravel.note':
+    'Cada cifra de los trabajos es grava compactada con un 5% extra, los valores predeterminados de la calculadora de grava. Las yardas cúbicas que pides son sueltas, como mide el patio lo que vende, así que son más que el espacio que llena la grava. Cada medida abre la calculadora con sus medidas puestas.',
+  'page.cubic-yards-in-a-ton-of-gravel.about':
+    'Yardas sueltas, yardas compactadas y la tonelada que pagas',
+  'page.cubic-yards-in-a-ton-of-gravel.p1':
+    'La grava se vende por peso o por volumen suelto, y se reduce al compactarla, así que una tonelada tiene más de una respuesta. Suelta en el camión o en la pila, una tonelada de base triturada llena 0.78 yardas cúbicas; ya extendida y compactada, las piedras se traban entre sí y la misma tonelada llena de 0.54 a 0.56 yardas cúbicas. Por eso la calculadora de grava pide más yardas sueltas de las que ocupa la base colocada: una base de 10 por 10 ft y 4 in de profundidad tiene 1.23 yardas cúbicas compactadas, pero lleva 1.84 yardas sueltas con el 5% extra.',
+  'page.cubic-yards-in-a-ton-of-gravel.p2':
+    'El tamaño y la forma de la piedra también cuentan. La gravilla redonda y la piedra lavada de un solo tamaño dejan más espacio vacío entre las piezas que una base de granulometría densa cuyos finos llenan los huecos, así que una tonelada de ellas llena un poco más de volumen, mientras que la grava de cantera sin cribar, que trae arena y finos, pesa unas 1.62 toneladas por yarda y llena solo 0.62. Pide al proveedor el peso por yarda cúbica del producto exacto y divide entre él las toneladas que te cotiza.',
+  'page.cubic-feet-in-a-cubic-yard.title': 'Una yarda cúbica tiene 27 pies cúbicos | Maestro Calc',
+  'page.cubic-feet-in-a-cubic-yard.description':
+    '¿Cuántos pies cúbicos tiene una yarda cúbica? 27, porque una yarda mide 3 ft y 3 × 3 × 3 = 27. Tablas de ida y vuelta, en m³ y cinco formas de una yarda.',
+  'page.cubic-feet-in-a-cubic-yard.heading': 'Una yarda cúbica tiene 27 pies cúbicos',
+  'page.cubic-feet-in-a-cubic-yard.label': 'Pies cúbicos en una yarda',
+  'page.cubic-feet-in-a-cubic-yard.intro':
+    'Una yarda cúbica tiene 27 pies cúbicos: un cubo de 3 ft de largo, 3 ft de ancho y 3 ft de alto, porque una yarda mide 3 ft y 3 × 3 × 3 = 27. En el sistema métrico son 0.7646 metros cúbicos. Cada medida de la tabla de abajo tiene exactamente una yarda cúbica, desde una cama de 9 por 9 ft llena a 4 in de profundidad hasta una caja de 3 por 4.5 ft llena a 2 ft: 36 bolsas de 0.75 pies cúbicos o 18 bolsas de 1.5.',
+  'page.cubic-feet-in-a-cubic-yard.note':
+    'Cada medida se llena sin extra, así que el volumen es la yarda cúbica misma, y las bolsas se redondean a bolsas enteras; pide un 10% más de una tierra que se asienta. Cada medida abre la calculadora de tierra con sus medidas puestas.',
+  'page.cubic-feet-in-a-cubic-yard.about':
+    'Por qué una yarda cúbica tiene 27 pies cúbicos, no 3 ni 9',
+  'page.cubic-feet-in-a-cubic-yard.p1':
+    'Una yarda mide 3 pies en cada dirección, así que una yarda cúbica es 3 ft × 3 ft × 3 ft = 27 pies cúbicos, mientras que una yarda cuadrada, que no tiene profundidad, es 3 × 3 = 9 pies cuadrados. Las dos se confunden todo el tiempo, y dividir los pies cúbicos entre 9 o entre 3 en vez de 27 pide tres o nueve veces de más. Para sacar las yardas cúbicas de una cama o una losa, multiplica el largo y el ancho en pies por la profundidad en pies (pulgadas ÷ 12) y divide entre 27: 10 por 12 ft a 4 in es 10 × 12 × 0.333 = 40 pies cúbicos, o 1.48 yardas cúbicas.',
+  'page.cubic-feet-in-a-cubic-yard.p2':
+    'La tierra, el mulch, la grava y el concreto premezclado a granel se venden por yarda cúbica, mientras que las bolsas vienen marcadas en pies cúbicos: 0.75, 1, 1.5, 2 o 3. Una yarda cúbica son 36 bolsas de 0.75 pies cúbicos, 27 de 1, 18 de 1.5, 14 de 2 (13.5 redondeado hacia arriba) y 9 de 3. Para un trabajo grande, compara el precio a granel de una yarda cúbica, con la entrega incluida, con el precio de las bolsas que la forman antes de decidir.',
+  'page.cubic-feet-to-gallons.title':
+    'Pies cúbicos a galones: 1 pie³ = 7.48 galones | Maestro Calc',
+  'page.cubic-feet-to-gallons.description':
+    'Un pie cúbico son 7.48 galones de EE. UU. (1,728 ÷ 231 pulgadas cúbicas) o 28.32 litros. Tablas en los dos sentidos y los galones de camas y jardineras comunes.',
+  'page.cubic-feet-to-gallons.heading': 'Un pie cúbico son 7.48 galones',
+  'page.cubic-feet-to-gallons.label': 'Pies cúbicos a galones',
+  'page.cubic-feet-to-gallons.intro':
+    'Un pie cúbico tiene 7.48 galones líquidos de EE. UU.: un pie cúbico son 1,728 pulgadas cúbicas y un galón de EE. UU. son exactamente 231, así que 1,728 ÷ 231 = 7.48052. En litros son 28.32. Una cama elevada de 4 por 8 ft llena a 12 in de profundidad tiene 32 pies cúbicos, 239.38 galones de tierra o de agua, y las tablas de abajo dan los galones de cada medida común y convierten en los dos sentidos.',
+  'page.cubic-feet-to-gallons.note':
+    'Cada medida se llena sin extra por asentamiento, así que el volumen es la caja misma, y las bolsas se redondean a bolsas enteras. Cada medida abre la calculadora de tierra con sus medidas puestas.',
+  'page.cubic-feet-to-gallons.about': 'Galones, pies cúbicos y las bolsas de la tienda',
+  'page.cubic-feet-to-gallons.p1':
+    'El galón líquido de EE. UU. está definido como exactamente 231 pulgadas cúbicas (NIST Handbook 44), así que la conversión es exacta: multiplica los pies cúbicos por 7.48052 para sacar galones, y divide los galones entre 7.48052 para sacar pies cúbicos. El galón imperial del Reino Unido es otra unidad, 4.54609 litros, cerca de un 20% más grande, así que una cifra británica de 6.23 galones por pie cúbico no es un error sino otro galón. Un estanque, un bebedero o un barril de lluvia se calcula igual: largo × ancho × profundidad en pies da los pies cúbicos, y × 7.48 da los galones.',
+  'page.cubic-feet-to-gallons.p2':
+    'Las bolsas de tierra y de mulch vienen marcadas en pies cúbicos: una bolsa de 0.75 pies cúbicos tiene 5.61 galones, una de 1.5 tiene 11.22 y una de 2 tiene 14.96, así que hacen falta 43 bolsas de 0.75 pies cúbicos para llenar la cama de 4 por 8 ft a 12 in de profundidad (32 ÷ 0.75 = 42.7, redondeado hacia arriba). Al revés, un recipiente marcado en galones tiene sus galones ÷ 7.48 en pies cúbicos: un tambo de 55 galones son 7.35 pies cúbicos, y un bebedero de 100 galones 13.37.',
+  'page.cubic-yards-in-a-ton-of-dirt.title':
+    'Tonelada de tierra: unas 1.25 yardas cúbicas | Maestro Calc',
+  'page.cubic-yards-in-a-ton-of-dirt.description':
+    '¿Cuántas yardas cúbicas hay en una tonelada de tierra? Unas 1.25 de tierra para jardín o de relleno a 0.80 toneladas por yarda, 33.75 pies cúbicos.',
+  'page.cubic-yards-in-a-ton-of-dirt.heading':
+    'Una tonelada de tierra son unas 1.25 yardas cúbicas',
+  'page.cubic-yards-in-a-ton-of-dirt.label': 'Yardas en tonelada de tierra',
+  'page.cubic-yards-in-a-ton-of-dirt.intro':
+    'Una tonelada de tierra para jardín o de relleno son unas 1.25 yardas cúbicas, o 33.75 pies cúbicos, a las 0.80 toneladas por yarda cúbica que publica para las dos la división de minería de Nuevo México. La tierra seca que sigue en el suelo es más densa, unas 1.12 toneladas por yarda según la cifra del USDA, así que una tonelada de ella son solo 0.89 yardas cúbicas. La tabla de abajo da las yardas cúbicas de tierra de camas y áreas comunes, con el 10% por asentamiento de la calculadora de tierra.',
+  'page.cubic-yards-in-a-ton-of-dirt.note':
+    'Las cifras suman un 10% por asentamiento, el valor predeterminado de la calculadora de tierra, y redondean a bolsas enteras de 0.75 o 1.5 pies cúbicos. Cada medida abre la calculadora con sus medidas puestas.',
+  'page.cubic-yards-in-a-ton-of-dirt.about':
+    'Por qué una tonelada de tierra llena más de una yarda',
+  'page.cubic-yards-in-a-ton-of-dirt.p1':
+    'La tierra para jardín pesa menos que la grava o la arena: tiene materia orgánica y aire, así que una yarda cúbica pesa unas 0.80 toneladas, 1,600 lb, frente a unas 1.45 toneladas de la arena. Al revés, una tonelada de tierra suelta llena 1.25 yardas cúbicas, lo bastante para cubrir 100 pies cuadrados a poco más de 4 in de profundidad. La tierra en el suelo está más apretada: el USDA pone la densidad aparente seca de un suelo de textura media cerca de 1.33 gramos por centímetro cúbico, unas 1.12 toneladas por yarda cúbica, y se afloja y se esponja al excavarla y cargarla.',
+  'page.cubic-yards-in-a-ton-of-dirt.p2':
+    'La humedad mueve cada una de estas cifras. Los pesos de aquí son secos o sin condición, y la tierra mojada pesa más, así que una tonelada entregada después de la lluvia llena menos yardas cúbicas que una tonelada de tierra seca. Si el patio vende la tierra por tonelada, divide las toneladas entre 0.80 para las yardas cúbicas; si la vende por yarda cúbica, multiplica las yardas por 0.80 para el peso que debe cargar tu camioneta o tu remolque. Una cama elevada de 4 por 8 ft y 12 in de profundidad lleva 1.30 yardas cúbicas con el 10% extra, unas 1.04 toneladas.',
   'page.notFound.title': 'Página no encontrada | Maestro Calc',
   'page.notFound.description':
     'La página que buscas no existe o cambió de lugar. Vuelve a la página de inicio de Maestro Calc.',

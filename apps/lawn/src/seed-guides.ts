@@ -6,6 +6,7 @@ import {
   AGRILIFE,
   ARKANSAS,
   BEST_SEED_LINK,
+  GROWING_LINK,
   NC_STATE,
   NOAA,
   PURDUE_FINE_FESCUE,
@@ -15,6 +16,7 @@ import {
   ST_AUGUSTINE,
   TENNESSEE,
   TURFFILES,
+  UK_LINK,
   VIRGINIA,
 } from './seed-sources.ts';
 import { viewOf } from './view.ts';
@@ -113,6 +115,14 @@ export const PLANTING_GUIDE: Guide = {
         })),
         { href: ZONE_INDEX_PATH, label: 'USDA planting zones' },
       ],
+    },
+    {
+      id: 'uk-and-germination',
+      heading: 'In the UK, and how long the seed takes',
+      paragraphs: [
+        'The windows above are for the United States. For a UK lawn, sown by the gram per square metre, the UK page gives the RHS windows, the soil temperature to wait for, the rates of a UK seed supplier and the Met Office months. How long the seed takes to come up, grass by grass, and when to mow it first have a page of their own.',
+      ],
+      links: [UK_LINK, GROWING_LINK],
     },
     {
       id: 'st-augustine',

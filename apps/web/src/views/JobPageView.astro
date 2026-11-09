@@ -6,6 +6,7 @@ import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
 import { jobLand } from '../lib/job-land.ts';
+import { jobQuestion } from '../lib/job-question.ts';
 import { jobSlope } from '../lib/job-slope.ts';
 import { jobFloor } from '../lib/job-floor.ts';
 import { jobRoom } from '../lib/job-room.ts';
@@ -92,6 +93,8 @@ const land = jobLand(id, locale);
 const slope = jobSlope(id, locale);
 // A room or a floor page also works its own size out: surface by surface, or what fits on it.
 const extra = jobRoom(id, locale) ?? jobFloor(id, locale);
+// A question page also explains its answer and adds the conversion tables of its question.
+const question = jobQuestion(id, locale);
 const guideEntry =
   guide === undefined ? undefined : await getEntry('pages', `${locale}/${guide.read}`);
 if (guide !== undefined && guideEntry === undefined) {
@@ -401,6 +404,57 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
             </>
           ))}
           .
+        </p>
+      </>
+    )}
+    {question !== undefined && (
+      <>
+        <h2>{question.heading}</h2>
+        {question.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {question.tables.map((each) => (
+          <>
+            <h2>{each.heading}</h2>
+            <p>{each.lead}</p>
+            <div class="job-table">
+              <table>
+                <thead>
+                  <tr>
+                    {each.columns.map((label) => (
+                      <th scope="col">{label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {each.rows.map((row) => (
+                    <tr>
+                      <th scope="row">
+                        {row.href === undefined ? row.label : <a href={row.href}>{row.label}</a>}
+                      </th>
+                      {row.cells.map((cell) => (
+                        <td>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ))}
+        <p>
+          {question.sourceLabel}:{' '}
+          {question.sources.map(({ label, source }, index) => (
+            <>
+              {index > 0 && '; '}
+              {label}: {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
+              {calendarDay(source.retrieved, locale)}
+            </>
+          ))}
+          .
+        </p>
+        <p>
+          {question.more.lead}: <a href={question.more.href}>{question.more.name}</a>.
         </p>
       </>
     )}

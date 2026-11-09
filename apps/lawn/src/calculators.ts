@@ -2,7 +2,8 @@ import type { CalculatorId } from './view.ts';
 
 /** One field of a calculator form: its label, and its options when it is a choice. */
 export interface FieldCopy {
-  readonly label: string;
+  /** Plain text, or pieces with the `data-v` hooks of a unit that follows the units field. */
+  readonly label: string | readonly Seg[];
   /** One short line under the field. */
   readonly hint?: string;
   readonly options?: Readonly<Record<string, string>>;
@@ -23,10 +24,15 @@ export interface CalculatorPage {
   readonly h1: string;
   readonly lead: string;
   readonly fields: Readonly<Record<string, FieldCopy>>;
+  /**
+   * The units field, shown first, for a calculator that reads metric (`METRIC` of `units.ts`): its
+   * options are the unit systems, and the URL carries the metric one as the `u=m` of the codec.
+   */
+  readonly units?: FieldCopy;
   /** The seed-bag tag: the headline and the line under it. */
   readonly tag: { readonly head: readonly Seg[]; readonly sub: readonly Seg[] };
   /** The rows under the tag: a label, the `data-v` hook and its unit. */
-  readonly rows: readonly { readonly label: string; readonly v: string; readonly unit: string }[];
+  readonly rows: readonly { readonly label: string; readonly v: string; readonly unit: Seg }[];
   /** The warning text of each engine warning code. */
   readonly warnings: Readonly<Record<string, string>>;
   /** The formula in words, and the note on the limits of the figure. */
@@ -106,31 +112,50 @@ export const GRASS_SEED: CalculatorPage = {
     'Pounds of grass seed and bags for a new lawn, at the low and high rate of two university extension sources, with half sown each way across the lawn.',
   kicker: 'Seed calculator',
   h1: 'Grass seed calculator',
-  lead: 'Pick your grass and the size of your lawn. You get a range in pounds, because the extension sources give one, and the bags that hold it.',
+  lead: 'Pick your grass and the size of your lawn, in square feet or square metres. You get a range in pounds or kilograms, because the extension sources give one, and the bags that hold it.',
   fields: {
-    area: { label: 'Lawn area (sq ft)', hint: 'Not sure? Measure it below.' },
+    area: { label: ['Lawn area (', { v: 'areaUnit' }, ')'], hint: 'Not sure? Measure it below.' },
     species: { label: 'Grass', options: SEED_SPECIES_LABELS },
     source: {
       label: 'Rate from',
       hint: 'The two sources differ by up to 50%.',
       options: SEED_SOURCE_LABELS,
     },
-    bag: { label: 'Seed bag weight (lb)' },
+    bag: { label: ['Seed bag weight (', { v: 'bagUnit' }, ')'] },
+  },
+  units: {
+    label: 'Units',
+    hint: 'Metric for bags sold in kilograms, as in the UK and Canada.',
+    options: { imperial: 'US: square feet and pounds', metric: 'Metric: m² and kilograms' },
   },
   tag: {
-    head: [{ v: 'pounds' }, ' lb'],
-    sub: ['= ', { v: 'bags' }, ' ', { v: 'bagsUnit' }, ' of ', { v: 'bagPounds' }, ' lb'],
+    head: [{ v: 'pounds' }, ' ', { v: 'massUnit' }],
+    sub: [
+      '= ',
+      { v: 'bags' },
+      ' ',
+      { v: 'bagsUnit' },
+      ' of ',
+      { v: 'bagPounds' },
+      ' ',
+      { v: 'bagUnit' },
+    ],
   },
-  rows: [{ label: 'Each way (half north-south, half east-west)', v: 'perPass', unit: 'lb' }],
+  rows: [
+    { label: 'Seeding rate', v: 'rate', unit: { v: 'rateUnit' } },
+    { label: 'Each way (half north-south, half east-west)', v: 'perPass', unit: { v: 'passUnit' } },
+  ],
   warnings: {
     zoysiaSource:
       'Zoysiagrass has one source here, University of Arkansas MP476: 1.0 to 2.0 lb of pure live seed per 1,000 sq ft. The choice of source does not change it.',
   },
   method:
-    'Pounds of seed = the extension rate for your grass (pounds per 1,000 sq ft, a low and a high end) × the area ÷ 1,000. Sow half the seed in one direction and half crosswise.',
+    'Pounds of seed = the extension rate for your grass (pounds per 1,000 sq ft, a low and a high end) × the area ÷ 1,000. Sow half the seed in one direction and half crosswise. In metric the area is turned into square feet (1 m² = 1 ÷ 0.09290304 sq ft) and the pounds into kilograms (1 lb = 0.45359237 kg), both exact, so 1 lb per 1,000 sq ft is 4.88 g/m².',
   note: 'For a new lawn. Rates for overseeding an existing lawn are not included: no extension table for them is cited yet. Bags are counted at each end of the range.',
   guides: [
     'planting-guide',
+    'uk-sowing-guide',
+    'growing-guide',
     'timing-guide',
     'bermuda-seed',
     'zoysia-seed',

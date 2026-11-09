@@ -33,7 +33,9 @@ import { groupedInteger, outputText, volumeText } from '../calculator/present.ts
 import {
   isChartJob,
   isLandJob,
+  isQuestionJob,
   JOBS,
+  QUESTION_IDS,
   type Job,
   type JobCase,
   type JobId,
@@ -888,7 +890,26 @@ const noteOf = (id: JobId, locale: Locale): string => {
     return text(`page.${id}.note`);
   }
   if (isLandJob(id)) return text('site.job.land.note');
+  // a question page fills its sizes its own way (often with no extra), and says how in its note
+  if (isQuestionJob(id)) return text(`page.${id}.note`);
   return text(`site.job.note.${JOBS[id].calculator}`);
+};
+
+/**
+ * The other jobs a job page links to. A job of one size lists the other sizes of its calculator and
+ * a question page the other question pages (content audit 2026-11-08: one list copied on both kinds
+ * made each page share its links with every sibling); the hub and the calculator link them all.
+ */
+const othersOf = (id: JobId, locale: Locale): JobView['others'] => {
+  if (isQuestionJob(id)) {
+    const text = siteText(locale);
+    return QUESTION_IDS.filter((each) => each !== id).map((each) => ({
+      href: pathOf(each, locale),
+      title: text(`page.${each}.heading`),
+    }));
+  }
+  const questions = new Set(QUESTION_IDS.map((each) => pathOf(each, locale)));
+  return jobLinks(JOBS[id].calculator, locale, id).filter(({ href }) => !questions.has(href));
 };
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */
@@ -904,7 +925,7 @@ export const jobView = (id: JobId, locale: Locale): JobView => {
     note: noteOf(id, locale),
     cta: table.rows[0].href ?? pathOf(calculator, locale),
     methodology: `${pathOf('methodology', locale)}#${METHODOLOGY_ANCHOR[calculator][locale]}`,
-    others: jobLinks(calculator, locale, id),
+    others: othersOf(id, locale),
     chart: chartOf(id, heading, locale),
   };
 };

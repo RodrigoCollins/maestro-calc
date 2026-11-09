@@ -34,6 +34,40 @@ for (const { path } of HOURS) {
       await end.fill('25:00');
       await expect(end).toHaveAttribute('aria-invalid', 'true');
     });
+
+    // Hand-verified: 2:30 p. m. is 14:30, to 17:30 is 3 h 0 min with no break.
+    test('reads the Spanish 12-hour style, 2:30 p. m.', async ({ page }) => {
+      await page.goto(path);
+      await page.locator('input[name="start"]').fill('2:30 p. m.');
+      await page.locator('input[name="end"]').fill('17:30');
+      await page.locator('input[name="unpaidBreak"]').fill('0');
+      await expect(page.locator('.result-figure')).toHaveText('3 h 0 min');
+    });
+
+    // Hand-verified: 7 h 45 min + 3 h 30 min = 11 h 15 min = 11.25 h, and the difference is
+    // 4 h 15 min; 1 h 20 min − 2 h 45 min = −1 h 25 min, and their sum 4 h 5 min = 4.08 h.
+    test('adds and subtracts hours and minutes, and marks a field it cannot read', async ({
+      page,
+    }) => {
+      await page.goto(path);
+      const sum = page.locator('[data-sum="sum"]');
+      const decimal = page.locator('[data-sum="decimal"]');
+      const difference = page.locator('[data-sum="difference"]');
+      await expect(sum).toHaveText('11 h 15 min');
+      await expect(decimal).toHaveText('11.25');
+      await expect(difference).toHaveText('4 h 15 min');
+      await page.locator('input[name="aHours"]').fill('1');
+      await page.locator('input[name="aMinutes"]').fill('20');
+      await page.locator('input[name="bHours"]').fill('2');
+      await page.locator('input[name="bMinutes"]').fill('45');
+      await expect(sum).toHaveText('4 h 5 min');
+      await expect(decimal).toHaveText('4.08');
+      await expect(difference).toHaveText('−1 h 25 min');
+      const minutes = page.locator('input[name="bMinutes"]');
+      await minutes.fill('4,5');
+      await expect(minutes).toHaveAttribute('aria-invalid', 'true');
+      expect(new URL(page.url()).search).toBe('');
+    });
   });
 }
 
