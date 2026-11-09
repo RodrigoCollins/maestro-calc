@@ -1,4 +1,5 @@
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
+import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS } from './charts.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES, type PageSource } from './guides.ts';
@@ -18,6 +19,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
   ...GUIDES,
   ...CHARTS,
   ...AGE_PAGES,
+  ...CAT_YEARS_PAGES,
   FOOD_HUB,
   ...FOOD_PAGES,
 ].map(({ path, checked, sources }) => ({ path, checked, sources }));

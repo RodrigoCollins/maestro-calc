@@ -1,10 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { HOME_AGES, HOME_GUIDES, HOME_TEXTS, HOME_TOOLS, HOME_TRUST } from './home.ts';
+import {
+  HOME_AGES,
+  HOME_CAT_AGES,
+  HOME_GUIDES,
+  HOME_TEXTS,
+  HOME_TOOLS,
+  HOME_TRUST,
+} from './home.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the home', () => {
-  it('lists the seven calculators, each at a calculator route', () => {
-    expect(HOME_TOOLS).toHaveLength(7);
+  it('lists the eight calculators, each at a calculator route', () => {
+    expect(HOME_TOOLS).toHaveLength(8);
     const calculators = ROUTES.filter(({ kind }) => kind === 'calculator').map(({ path }) => path);
     expect(HOME_TOOLS.map(({ href }) => href)).toEqual(calculators);
   });
@@ -16,6 +23,7 @@ describe('the home', () => {
         '/charts',
         '/dog-chocolate-toxicity-chart',
         '/dog-age-chart',
+        '/cat-age-chart',
         '/dog-feeding-chart',
         '/dog-food-by-breed',
         '/how-to-read-pet-food-label',
@@ -35,6 +43,20 @@ describe('the home', () => {
     expect(HOME_AGES[2]?.href).toBe('/3-years-in-dog-years');
     const articles = ROUTES.filter(({ id }) => id.startsWith('dog-years-')).map(({ path }) => path);
     expect(HOME_AGES.map(({ href }) => href)).toEqual(articles);
+  });
+
+  it('leads to every cat years page, 1 to 20', () => {
+    expect(HOME_CAT_AGES.map(({ age }) => age)).toEqual(
+      Array.from({ length: 20 }, (_, i) => i + 1),
+    );
+    expect(HOME_CAT_AGES[0]).toEqual({
+      href: '/1-year-in-cat-years',
+      age: 1,
+      label: '1 year in cat years',
+    });
+    const articles = ROUTES.filter(({ id }) => id.startsWith('cat-years-')).map(({ path }) => path);
+    expect(HOME_CAT_AGES.map(({ href }) => href)).toEqual(articles);
+    expect(HOME_TEXTS.teasers.catAge).toContain('15');
   });
 
   it('links the about and privacy pages from the main content, so neither is an orphan', () => {

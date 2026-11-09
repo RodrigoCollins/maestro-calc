@@ -11,11 +11,12 @@ interface Props {
     readonly dayMovedBack?: string;
     readonly outside?: string;
     readonly wangOutside?: string;
+    readonly cornellOutside?: string;
   };
   readonly calculator: AnyCalculator;
   readonly view: View;
-  /** What the result looks like: the bowl, the bowl with a can, the chocolate ruler, the calendar strip or the age figure. */
-  readonly kind: 'dog' | 'cat' | 'chocolate' | 'due-date' | 'dog-age';
+  /** What the result looks like: the bowl, the bowl with a can, the chocolate ruler, the calendar strip or an age figure. */
+  readonly kind: 'dog' | 'cat' | 'chocolate' | 'due-date' | 'dog-age' | 'cat-age';
   /** Other pages worth a click from this one: their address and label. */
   readonly related?: readonly { readonly href: string; readonly label: string }[];
   /** The line of the methodology that works this calculator out. */
@@ -206,6 +207,48 @@ const fields = calculator.inputs.map((input) => {
               hidden={patch.show['wangOutside'] !== true}
             >
               {page.wangOutside ?? ''}
+            </p>
+          </div>
+        )}
+        {kind === 'cat-age' && (
+          <div class="bf-age">
+            <p class="bf-figure">
+              <span class="bf-big" data-text="figure">
+                {text['figure']}
+              </span>
+              <span class="bf-unit" data-text="unit">
+                {text['unit']}
+              </span>
+              <span class="bf-exact" data-text="exact">
+                {text['exact']}
+              </span>
+            </p>
+            <ul class="bf-chips">
+              <li>
+                life stage: <strong data-text="stage">{text['stage']}</strong>
+              </li>
+              <li>
+                vet visits: <strong data-text="visits">{text['visits']}</strong>
+              </li>
+              <li>
+                International Cat Care: <strong data-text="care">{text['care']}</strong>
+              </li>
+              <li>
+                Cornell: <strong data-text="cornell">{text['cornell']}</strong>
+              </li>
+              <li>
+                7× rule: <strong data-text="seven">{text['seven']}</strong>
+              </li>
+            </ul>
+            <p class="bf-note-hero" data-show="outside" hidden={patch.show['outside'] !== true}>
+              {page.outside ?? ''}
+            </p>
+            <p
+              class="bf-note-hero"
+              data-show="cornellOutside"
+              hidden={patch.show['cornellOutside'] !== true}
+            >
+              {page.cornellOutside ?? ''}
             </p>
           </div>
         )}

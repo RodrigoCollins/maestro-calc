@@ -25,11 +25,13 @@ describe('ROUTES', () => {
       ['chocolate', '/dog-chocolate-toxicity-calculator'],
       ['due-date', '/dog-pregnancy-calculator'],
       ['dog-age', '/dog-age-calculator'],
+      ['cat-age', '/cat-age-calculator'],
       ['charts', '/charts'],
       ['dog-chart', '/dog-feeding-chart'],
       ['puppy-chart', '/puppy-feeding-chart'],
       ['chocolate-chart', '/dog-chocolate-toxicity-chart'],
       ['dog-age-chart', '/dog-age-chart'],
+      ['cat-age-chart', '/cat-age-chart'],
       ['label-guide', '/how-to-read-pet-food-label'],
       ['breed-guide', '/dog-food-by-breed'],
       ['chocolate-guide', '/my-dog-ate-chocolate'],
@@ -49,6 +51,26 @@ describe('ROUTES', () => {
       ['dog-years-14', '/14-years-in-dog-years'],
       ['dog-years-15', '/15-years-in-dog-years'],
       ['dog-years-16', '/16-years-in-dog-years'],
+      ['cat-years-1', '/1-year-in-cat-years'],
+      ['cat-years-2', '/2-years-in-cat-years'],
+      ['cat-years-3', '/3-years-in-cat-years'],
+      ['cat-years-4', '/4-years-in-cat-years'],
+      ['cat-years-5', '/5-years-in-cat-years'],
+      ['cat-years-6', '/6-years-in-cat-years'],
+      ['cat-years-7', '/7-years-in-cat-years'],
+      ['cat-years-8', '/8-years-in-cat-years'],
+      ['cat-years-9', '/9-years-in-cat-years'],
+      ['cat-years-10', '/10-years-in-cat-years'],
+      ['cat-years-11', '/11-years-in-cat-years'],
+      ['cat-years-12', '/12-years-in-cat-years'],
+      ['cat-years-13', '/13-years-in-cat-years'],
+      ['cat-years-14', '/14-years-in-cat-years'],
+      ['cat-years-15', '/15-years-in-cat-years'],
+      ['cat-years-16', '/16-years-in-cat-years'],
+      ['cat-years-17', '/17-years-in-cat-years'],
+      ['cat-years-18', '/18-years-in-cat-years'],
+      ['cat-years-19', '/19-years-in-cat-years'],
+      ['cat-years-20', '/20-years-in-cat-years'],
       ['foods', '/can-dogs-eat'],
       ['food-strawberries', '/can-dogs-eat-strawberries'],
       ['food-bananas', '/can-dogs-eat-bananas'],
@@ -107,9 +129,9 @@ describe('ROUTES', () => {
     expect(new Set(ROUTES.map(({ path }) => path)).size).toBe(ROUTES.length);
   });
 
-  it('names the home, seven calculators, and every other page an article', () => {
+  it('names the home, eight calculators, and every other page an article', () => {
     expect(routeOf('/')?.kind).toBe('home');
-    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(7);
+    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(8);
     expect(routeOf('/methodology')?.kind).toBe('article');
     expect(routeOf('/no-such-page')).toBeUndefined();
   });

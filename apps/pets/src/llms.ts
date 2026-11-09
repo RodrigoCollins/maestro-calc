@@ -1,6 +1,8 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT } from './about.ts';
+import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS, CHARTS_INDEX } from './charts.ts';
+import { CAT_AGE_PAGE } from './calc/cat-age.ts';
 import { CAT_PAGE, KITTEN_PAGE } from './calc/cat.ts';
 import { CHOCOLATE_PAGE } from './calc/chocolate.ts';
 import { DOG_AGE_PAGE } from './calc/dog-age.ts';
@@ -20,7 +22,7 @@ interface Entry {
 }
 
 const SUMMARY =
-  'Free dog and cat feeding calculators in US units: calories and cups, grams or cans a day from the pet’s weight and the calorie line on its food label, dog chocolate toxicity in mg/kg, a dog pregnancy due date window, and a dog’s age in human years by size. Every figure shows its formula and its source: the Merck Veterinary Manual, AVMA, the AAHA guidelines or AAFCO.';
+  'Free dog and cat feeding calculators in US units: calories and cups, grams or cans a day from the pet’s weight and the calorie line on its food label, dog chocolate toxicity in mg/kg, a dog pregnancy due date window, and a dog’s age in human years by size or a cat’s with its life stage. Every figure shows its formula and its source: the Merck Veterinary Manual, AVMA, the AAHA and AAFP guidelines or AAFCO.';
 
 const DETAILS =
   'Each figure is a starting point to check with the pet’s veterinarian. The methodology page gives the formulas, the sources with the day they were read, and hand-worked cases for every calculator. Every chocolate result tells the reader to call a veterinarian or a poison line.';
@@ -33,6 +35,7 @@ const CALCULATORS: readonly Entry[] = [
   CHOCOLATE_PAGE,
   DUE_DATE_PAGE,
   DOG_AGE_PAGE,
+  CAT_AGE_PAGE,
 ].map(({ path, h1, description }) => ({ name: h1, path, note: description }));
 
 const READING: readonly Entry[] = [
@@ -40,6 +43,7 @@ const READING: readonly Entry[] = [
   ...CHARTS.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   { name: CHARTS_INDEX.h1, path: CHARTS_INDEX.path, note: CHARTS_INDEX.description },
   ...AGE_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
+  ...CAT_YEARS_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   { name: FOOD_HUB.h1, path: FOOD_HUB.path, note: FOOD_HUB.description },
   ...FOOD_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
 ];
