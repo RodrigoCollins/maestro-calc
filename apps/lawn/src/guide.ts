@@ -1,7 +1,21 @@
 import { CALCULATORS } from './calculators.ts';
+import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
 import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
 
-export { PLANTING_GUIDE, seedRateText, SPECIES_GUIDES, type SpeciesGuide } from './seed-guides.ts';
+export {
+  BEST_SEED_GUIDE,
+  citedRateText,
+  GRASS_GUIDES,
+  lawnPoundsText,
+  plugsText,
+} from './grass-guides.ts';
+export {
+  PLANTING_GUIDE,
+  seedPoundsText,
+  seedRateText,
+  SPECIES_GUIDES,
+  type SpeciesGuide,
+} from './seed-guides.ts';
 
 /** A source a guide cites: its name as cited and its address. */
 export interface GuideSource {
@@ -135,7 +149,13 @@ export const TIMING_GUIDE: Guide = {
 };
 
 /** Every guide of the site, in the order of the footer. */
-export const GUIDES: readonly Guide[] = [TIMING_GUIDE, PLANTING_GUIDE, ...SPECIES_GUIDES];
+export const GUIDES: readonly Guide[] = [
+  TIMING_GUIDE,
+  PLANTING_GUIDE,
+  BEST_SEED_GUIDE,
+  ...SPECIES_GUIDES,
+  ...GRASS_GUIDES,
+];
 
 /** The guide at `path`; any other path throws at build time. */
 export const guideAt = (path: string): Guide => {
