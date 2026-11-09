@@ -55,7 +55,7 @@ const problemsOf = (code: string): string[] => [
  * whose calculator declares no input of the kind must not carry it (the kinds are tree-shakable).
  */
 const KIND_MARKERS: Partial<Record<InputDescriptor['kind'], string>> = {
-  clock: '(?:m|\\.m\\.)',
+  clock: '(?:m|\\. ?m\\.?)',
 };
 
 /** The kinds whose code is in `code` although no input of `id` declares them. */

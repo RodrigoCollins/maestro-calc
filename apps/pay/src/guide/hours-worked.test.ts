@@ -120,8 +120,8 @@ describe('the hours worked guide', () => {
         HOURS_PATHS[lang],
         DECIMAL_HOURS_PATHS[lang],
       ]);
-      for (const texts of [HOURS_TEXTS[lang], DECIMAL_HOURS_TEXTS[lang]]) {
-        expect(texts.links.map(({ href }) => href)).toContain(HOURS_WORKED_GUIDE_PATHS[lang]);
+      for (const links of [HOURS_TEXTS[lang].usLinks, DECIMAL_HOURS_TEXTS[lang].links]) {
+        expect(links.map(({ href }) => href)).toContain(HOURS_WORKED_GUIDE_PATHS[lang]);
       }
     }
   });

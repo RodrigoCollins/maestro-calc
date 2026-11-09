@@ -40,7 +40,11 @@ export interface HoursTexts {
   readonly warnings: Readonly<Record<HoursWarning, string>>;
   /** How the calculator counts, one point each. */
   readonly notes: readonly string[];
+  /** The time tools next to this one. */
   readonly links: readonly Link[];
+  /** The pay and labour-law pages, all under US rules: last on the page, under their heading. */
+  readonly usHeading: string;
+  readonly usLinks: readonly Link[];
   readonly otherLang: string;
 }
 
@@ -93,12 +97,10 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
       'Decimal hours are rounded to two places, to the nearest: 8 hours 20 minutes is 8.33. Your employer’s payroll system may round differently.',
       'The hours are the time from start to end less the unpaid break. A paid break stays in: enter 0.',
     ],
-    links: [
-      {
-        label: 'A whole week, with overtime and pay? Use the time card',
-        href: '/time-card-calculator',
-      },
-      { label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' },
+    links: [{ label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' }],
+    usHeading: 'Hours worked, overtime and full time under US law',
+    usLinks: [
+      { label: 'A whole week with overtime and pay: the time card', href: '/time-card-calculator' },
       { label: 'Which breaks count as hours worked?', href: HOURS_WORKED_GUIDE_PATHS.en },
       { label: 'How many hours is full time?', href: FULL_TIME_GUIDE_PATHS.en },
       { label: 'How many hours is part time?', href: PART_TIME_GUIDE_PATHS.en },
@@ -106,42 +108,48 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
     otherLang: 'Español',
   },
   es: {
-    title: 'Calculadora de Horas: Tiempo entre Dos Horas | Cuenta Horas',
+    title: 'Calculadora de Horas y Minutos, con Suma y Resta | Cuenta Horas',
     description:
-      'Calcula las horas entre la hora de entrada y la de salida, menos tu descanso sin pago, en horas y minutos y en horas decimales. Cruza la medianoche.',
+      'Calcula el tiempo entre dos horas, menos un descanso, y suma o resta horas y minutos. En horas y minutos y en decimales, con reloj de 24 o de 12 horas.',
     kicker: 'Horas · gratis',
-    h1: 'Calculadora de horas',
-    lead: 'Ingresa a qué hora empezaste, a qué hora terminaste y tu descanso sin pago. Te da las horas que trabajaste, en horas y minutos y en horas decimales.',
-    start: 'Hora de entrada',
-    end: 'Hora de salida',
-    unpaidBreak: 'Descanso sin pago (minutos)',
-    timeHint: 'Escribe 9:00, 5:30 pm o 17:30.',
-    figureLabel: 'Horas trabajadas',
+    h1: 'Calculadora de horas y minutos',
+    lead: 'Ingresa la hora de inicio, la de fin y el descanso que no cuenta. Te da el tiempo entre las dos, en horas y minutos y en horas decimales. Más abajo, suma y resta horas y minutos.',
+    start: 'Hora de inicio',
+    end: 'Hora de fin',
+    unpaidBreak: 'Descanso que no cuenta (minutos)',
+    timeHint: 'Escribe 17:30 o 5:30 p. m.; también 9:00 o 9 a. m.',
+    figureLabel: 'Horas entre las dos',
     decimalLabel: 'En horas decimales',
-    shiftLabel: 'De la entrada a la salida, antes del descanso',
+    shiftLabel: 'Del inicio al fin, antes del descanso',
     figures: 'Las horas en detalle',
     warnings: {
       overnight:
-        'La salida es antes que la entrada, así que el turno cruza la medianoche: se cuenta hasta el día siguiente.',
-      missingTime: 'Ingresa la hora de entrada y la de salida.',
-      sameTime: 'La entrada y la salida son a la misma hora, así que no hay horas que contar.',
+        'La hora de fin es antes que la de inicio, así que la cuenta cruza la medianoche: sigue hasta el día siguiente.',
+      missingTime: 'Ingresa la hora de inicio y la de fin.',
+      sameTime: 'El inicio y el fin son a la misma hora, así que no hay horas que contar.',
       breakTooLong:
-        'El descanso dura lo mismo que el turno, o más, así que las horas cuentan cero.',
+        'El descanso dura lo mismo que el tiempo entre las dos horas, o más, así que las horas cuentan cero.',
     },
     notes: [
-      'Si la hora de salida es antes que la de entrada, el turno cruza la medianoche: de 10:00 pm a 6:15 am son 8 horas y 15 minutos, o 8.25 horas.',
-      'Las horas decimales se redondean a dos decimales, al más cercano: 8 horas y 20 minutos son 8.33. El sistema de nómina de tu empleador puede redondear de otra forma.',
-      'Las horas son el tiempo de la entrada a la salida menos el descanso sin pago. Un descanso pagado se queda: pon 0.',
+      'Si la hora de fin es antes que la de inicio, la cuenta cruza la medianoche: de 22:00 (10:00 p. m.) a 6:15 a. m. son 8 horas y 15 minutos, o 8.25 horas.',
+      'Las horas decimales se redondean a dos decimales, al más cercano: 8 horas y 20 minutos son 8.33. Un sistema de nómina puede redondear de otra forma.',
+      'Las horas son el tiempo del inicio al fin menos el descanso que no cuenta. Si el descanso cuenta como trabajo, pon 0.',
     ],
     links: [
+      { label: 'Convierte minutos a horas decimales', href: '/es/minutos-a-horas-decimales' },
+    ],
+    usHeading: 'En EE. UU.: horas trabajadas, horas extra y tiempo completo',
+    usLinks: [
       {
-        label: '¿Una semana entera, con horas extra y pago? Usa la tarjeta de horas',
+        label: 'Una semana con horas extra y pago según la ley de EE. UU.: la tarjeta de horas',
         href: '/es/calculadora-de-horas-trabajadas',
       },
-      { label: 'Convierte minutos a horas decimales', href: '/es/minutos-a-horas-decimales' },
-      { label: '¿Qué descansos cuentan como horas trabajadas?', href: HOURS_WORKED_GUIDE_PATHS.es },
-      { label: '¿Cuántas horas son tiempo completo?', href: FULL_TIME_GUIDE_PATHS.es },
-      { label: '¿Cuántas horas son medio tiempo?', href: PART_TIME_GUIDE_PATHS.es },
+      {
+        label: '¿Qué descansos cuentan como horas trabajadas en EE. UU.?',
+        href: HOURS_WORKED_GUIDE_PATHS.es,
+      },
+      { label: '¿Cuántas horas son tiempo completo en EE. UU.?', href: FULL_TIME_GUIDE_PATHS.es },
+      { label: '¿Cuántas horas son medio tiempo en EE. UU.?', href: PART_TIME_GUIDE_PATHS.es },
     ],
     otherLang: 'English',
   },
@@ -201,6 +209,7 @@ export const DECIMAL_HOURS_TEXTS: Readonly<Record<Lang, DecimalHoursTexts>> = {
       'Las horas decimales son los minutos divididos por 60: 45 minutos son 0.75 horas, y 8 horas y 20 minutos son 8.33 horas.',
       'Los decimales se redondean a dos lugares, al más cercano. El sistema de nómina de tu empleador puede redondear de otra forma, así que una tarjeta de horas puede variar por un minuto o un centavo.',
       'Las horas decimales se leen al minuto entero más cercano: 7.75 horas son 7 horas y 45 minutos.',
+      'Aquí los decimales se escriben con punto, como en México y en la nómina de EE. UU.: 0.75. En España se escriben con coma, 0,75: es el mismo número.',
     ],
     links: [
       { label: 'Calcula las horas entre dos horas', href: '/es/calculadora-de-horas' },

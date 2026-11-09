@@ -44,6 +44,8 @@ for (const { path } of HOURS) {
     await page.goto(path);
     await expect(page.locator('.result-figure')).toHaveText('8 h 0 min');
     await expect(page.locator('[data-out="hours"][data-format="decimal"]')).toHaveText('8.00');
+    await expect(page.locator('[data-sum="sum"]')).toHaveText('11 h 15 min');
+    await expect(page.locator('[data-sum="difference"]')).toHaveText('4 h 15 min');
   });
 }
 

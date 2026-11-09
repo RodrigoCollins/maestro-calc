@@ -17,6 +17,22 @@ describe('hours and decimal hours paths', () => {
   });
 });
 
+describe('the Spanish hours calculator, for Spain and Mexico alike', () => {
+  const t = HOURS_TEXTS.es;
+  const copy = [t.title, t.description, t.lead, t.timeHint, ...t.notes].join(' ');
+
+  it('is about time, not about a job: no clock-in, clock-out or unpaid break', () => {
+    expect(t.h1).toBe('Calculadora de horas y minutos');
+    expect(copy).not.toMatch(/entrada|salida|sin pago|empleador/);
+  });
+
+  it('writes and reads both clocks: 17:30 and 5:30 p. m.', () => {
+    expect(t.timeHint).toContain('17:30');
+    expect(t.timeHint).toContain('5:30 p. m.');
+    expect(t.notes.join(' ')).toContain('22:00 (10:00 p. m.)');
+  });
+});
+
 for (const lang of ['en', 'es'] as const) {
   describe(`hours calculator texts (${lang})`, () => {
     const t = HOURS_TEXTS[lang];
@@ -31,9 +47,18 @@ for (const lang of ['en', 'es'] as const) {
     });
 
     it('links pages of its own language that exist', () => {
-      for (const { href } of t.links) {
+      for (const { href } of [...t.links, ...t.usLinks]) {
         expect(existsSync(pageOf(href)), href).toBe(true);
         expect(href.startsWith('/es/'), href).toBe(lang === 'es');
+      }
+    });
+
+    it('keeps the pay and labour-law pages apart, under a heading that says they are US rules', () => {
+      expect(t.usHeading).toContain(lang === 'en' ? 'US law' : 'EE. UU.');
+      const links = [...t.links, ...t.usLinks].map(({ href }) => href);
+      expect(new Set(links).size).toBe(links.length);
+      if (lang === 'es') {
+        for (const { label } of t.usLinks) expect(label, label).toContain('EE. UU.');
       }
     });
 

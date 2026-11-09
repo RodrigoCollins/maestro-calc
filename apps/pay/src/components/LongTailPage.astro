@@ -5,6 +5,7 @@ import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { SOURCES_HEADING } from '../long-tail/sections.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import TimeNowScript from '../islands/TimeNowScript.astro';
+import Sections from './Sections.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
@@ -68,62 +69,7 @@ const page = longTailPageOf(job, lang);
     <p class="note">{page.note}</p>
 
     <div class="prose explained">
-      {(page.sections ?? []).map((section) => (
-        <section aria-labelledby={section.id}>
-          <h2 id={section.id}>{section.heading}</h2>
-          {section.paragraphs.map((paragraph) => (
-            <p>{paragraph}</p>
-          ))}
-          {section.steps !== undefined && (
-            <ol class="rules">
-              {section.steps.map((step) => (
-                <li>{step}</li>
-              ))}
-            </ol>
-          )}
-          {section.table !== undefined && (
-            <div
-              class="table-scroll"
-              role="region"
-              aria-labelledby={`${section.id}-caption`}
-              tabindex="0"
-            >
-              <table class="ledger figures">
-                <caption id={`${section.id}-caption`}>{section.table.caption}</caption>
-                <thead>
-                  <tr>
-                    {section.table.head.map((cell) => (
-                      <th scope="col">{cell}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {section.table.rows.map(([first, ...rest]) => (
-                    <tr>
-                      <th scope="row">{first}</th>
-                      {rest.map((cell) => (
-                        <td>{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-          {(section.after ?? []).map((paragraph) => (
-            <p>{paragraph}</p>
-          ))}
-          {section.links !== undefined && (
-            <ul class="link-list">
-              {section.links.map((link) => (
-                <li>
-                  <a href={link.href}>{link.label}</a>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      ))}
+      <Sections sections={page.sections ?? []} />
 
       {page.sources !== undefined && page.sources.length > 0 && (
         <section aria-labelledby="sources">
