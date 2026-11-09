@@ -1,3 +1,4 @@
+import { AERATION_GUIDE, PRE_EMERGENT_GUIDE } from './aeration-guides.ts';
 import { CALENDAR_STATES, feedStatePathOf } from './calendar-paths.ts';
 import { CALCULATORS } from './calculators.ts';
 import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
@@ -171,6 +172,8 @@ export const GUIDES: readonly Guide[] = [
   PLANTING_GUIDE,
   UK_GUIDE,
   GROWING_GUIDE,
+  AERATION_GUIDE,
+  PRE_EMERGENT_GUIDE,
   BEST_SEED_GUIDE,
   ...SPECIES_GUIDES,
   ...GRASS_GUIDES,

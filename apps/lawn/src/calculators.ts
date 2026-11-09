@@ -156,6 +156,7 @@ export const GRASS_SEED: CalculatorPage = {
     'planting-guide',
     'uk-sowing-guide',
     'growing-guide',
+    'aeration-guide',
     'timing-guide',
     'bermuda-seed',
     'zoysia-seed',

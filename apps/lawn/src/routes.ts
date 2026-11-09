@@ -45,6 +45,8 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'zone-index', kind: 'article', path: ZONE_INDEX_PATH },
   { id: 'uk-sowing-guide', kind: 'article', path: '/when-to-sow-grass-seed-uk' },
   { id: 'growing-guide', kind: 'article', path: '/how-long-does-grass-seed-take-to-grow' },
+  { id: 'aeration-guide', kind: 'article', path: '/when-to-aerate-lawn' },
+  { id: 'pre-emergent-guide', kind: 'article', path: '/when-to-apply-pre-emergent' },
 ];
 
 /**
