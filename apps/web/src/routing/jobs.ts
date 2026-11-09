@@ -395,6 +395,7 @@ export const JOBS = {
     updated: '2026-11-05',
     cases: footing(20, 10),
   },
+  'roof-pitch-2-12': { calculator: 'roof-pitch', updated: '2026-11-08', cases: pitch(2) },
   'roof-pitch-3-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(3) },
   'roof-pitch-4-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(4) },
   'roof-pitch-5-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(5) },
@@ -404,6 +405,7 @@ export const JOBS = {
   'roof-pitch-8-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(8) },
   'roof-pitch-9-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(9) },
   'roof-pitch-10-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(10) },
+  'roof-pitch-11-12': { calculator: 'roof-pitch', updated: '2026-11-08', cases: pitch(11) },
   'roof-pitch-12-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(12) },
   'roof-pitch-chart': { calculator: 'roof-pitch', updated: '2026-11-05', cases: pitchChart() },
   'square-feet-5x5': {
@@ -600,6 +602,30 @@ export type LandId = keyof typeof LAND_ACRES;
 
 /** Whether job `id` is a lot of land (an acre page). */
 export const isLandJob = (id: string): id is LandId => Object.hasOwn(LAND_ACRES, id);
+
+/**
+ * The exact pitch pages: each a roof pitch job of `rise` in 12, whose page adds the OSHA class of
+ * the pitch, the ridge height of a gable and the roof surface over a footprint.
+ */
+export const PITCH_RISES = {
+  'roof-pitch-2-12': 2,
+  'roof-pitch-3-12': 3,
+  'roof-pitch-4-12': 4,
+  'roof-pitch-5-12': 5,
+  'roof-pitch-6-12': 6,
+  'roof-pitch-7-12': 7,
+  'roof-pitch-7-5-12': 7.5,
+  'roof-pitch-8-12': 8,
+  'roof-pitch-9-12': 9,
+  'roof-pitch-10-12': 10,
+  'roof-pitch-11-12': 11,
+  'roof-pitch-12-12': 12,
+} as const satisfies Partial<Record<JobId, number>>;
+
+export type PitchId = keyof typeof PITCH_RISES;
+
+/** Whether job `id` is an exact pitch page. */
+export const isPitchJob = (id: string): id is PitchId => Object.hasOwn(PITCH_RISES, id);
 
 /** A reference chart: a job whose id ends in `-chart`. */
 export type ChartId = Extract<JobId, `${string}-chart`>;

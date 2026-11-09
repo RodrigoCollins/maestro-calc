@@ -84,6 +84,23 @@ export const esSite = {
   'site.job.coverings.meets': 'Cumple el mínimo',
   'site.job.coverings.double': 'Se permite con dos capas de fieltro',
   'site.job.coverings.below': 'Por debajo del mínimo',
+  'site.job.slope.heading': 'Trabajar en un techo con esta pendiente',
+  'site.job.slope.low':
+    'La OSHA considera esta pendiente un techo de poca pendiente (low-slope roof), de 4 en 12 o menos (29 CFR 1926.500(b)). Quien trabaje a 6 ft o más sobre un nivel inferior necesita barandas, una red de seguridad, un sistema personal de detención de caídas, o una línea de advertencia combinada con uno de ellos o con un monitor de seguridad; en un techo de 50 ft de ancho o menos basta un monitor de seguridad (29 CFR 1926.501(b)(10)).',
+  'site.job.slope.steep':
+    'La OSHA considera esta pendiente un techo empinado (steep roof), de más de 4 en 12 (29 CFR 1926.500(b)). Quien trabaje a 6 ft o más sobre un nivel inferior debe estar protegido con barandas con rodapiés, una red de seguridad o un sistema personal de detención de caídas (29 CFR 1926.501(b)(11)); las líneas de advertencia y los monitores de seguridad que se permiten en un techo de poca pendiente no bastan.',
+  'site.job.slope.sources': 'Fuentes',
+  'site.job.slope.ridge.heading': 'Altura de la cumbrera de un hastial con esta pendiente',
+  'site.job.slope.ridge.span24': 'Hastial de 24 ft de ancho (12 ft de recorrido)',
+  'site.job.slope.ridge.span30': 'Hastial de 30 ft de ancho (15 ft de recorrido)',
+  'site.job.slope.ridge.span36': 'Hastial de 36 ft de ancho (18 ft de recorrido)',
+  'site.job.slope.area.heading': 'Superficie del techo sobre una planta con esta pendiente',
+  'site.job.slope.area.lead':
+    'En un techo a dos aguas, a un agua o a cuatro aguas cuyos planos tienen todos esta pendiente, la superficie del techo es la planta, con los aleros, por el multiplicador del cabio de arriba. Antes del desperdicio, el techo sobre tres plantas comunes es:',
+  'site.job.slope.area.footprint': 'Planta',
+  'site.job.slope.area.roof': 'Superficie del techo',
+  'site.job.slope.area.squares': 'Cuadrados (100 sq ft)',
+  'site.job.slope.area.more': 'El desperdicio, los paquetes y los rollos están en la',
   'site.job.guide.concrete-slab.heading': 'Antes de colar la losa',
   'site.job.guide.concrete-slab.tip1':
     'Mide la losa por dentro de las cimbras, no por encima de las tablas, y revisa el espesor en varios puntos cuando la base ya esté nivelada. Una losa pensada de 4 in que queda en 4 1/2 in de promedio lleva un octavo más de concreto que la tabla.',
@@ -608,76 +625,114 @@ export const esSite = {
   'page.concrete-footing-20x10.label': 'Zapata de 20x10 in',
   'page.concrete-footing-20x10.intro':
     'Una zapata de 20 in de ancho y 10 in de profundidad es una franja continua de concreto debajo de un muro. Cada pie de zapata son 20 × 10 ÷ 144 = 1.39 pies cúbicos antes del extra, cerca de 56% más que una zapata de 16 por 8 in.',
+  'page.roof-pitch-2-12.title': 'Pendiente de techo 2/12 en grados: 9.46° | Maestro Calc',
+  'page.roof-pitch-2-12.description':
+    'Una pendiente de techo 2/12 mide 9.46 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-2-12.heading': 'Una pendiente de techo 2/12 mide 9.46 grados',
+  'page.roof-pitch-2-12.label': 'Pendiente 2/12',
+  'page.roof-pitch-2-12.intro':
+    'Un techo 2/12 sube 2 in por cada 12 in de recorrido, una inclinación de 16.7%. Es la pendiente más baja con la que el IRC permite tejas asfálticas, y solo sobre dos capas de fieltro.',
+  'page.roof-pitch-2-12.slope':
+    'Un techo 2/12 es casi plano: baja apenas 2 in por pie, 2 ft en un recorrido de 12 ft, así que el agua lo deja despacio. Por eso el IRC pide dos capas de fieltro bajo las tejas asfálticas con esta pendiente y, de las seis cubiertas de la revisión de abajo, solo permite esas y el rollo con superficie mineral. Su cabio apenas es más largo que su recorrido, cerca de 1.4% más.',
   'page.roof-pitch-3-12.title': 'Pendiente de techo 3/12 en grados: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'Una pendiente de techo 3/12 mide 14.04 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-3-12.heading': 'Pendiente de techo 3/12: 14.04° y el largo del cabio',
+  'page.roof-pitch-3-12.heading': 'Una pendiente de techo 3/12 mide 14.04 grados',
   'page.roof-pitch-3-12.label': 'Pendiente 3/12',
   'page.roof-pitch-3-12.intro':
     'Un techo 3/12 sube 3 in por cada 12 in de recorrido, una inclinación de 25%. Es una pendiente baja: según el IRC, las tejas asfálticas y la teja necesitan aquí dos capas de fieltro, y la pizarra no se permite.',
+  'page.roof-pitch-3-12.slope':
+    'Con 3/12 el techo baja 3 in por pie de recorrido, 3 ft en un recorrido de 12 ft. Es la pendiente más baja con la que el IRC permite las tejas de metal y las tejas o tablillas de madera, mientras que las tejas asfálticas y la teja aún necesitan dos capas de fieltro y la pizarra aún pide 4/12. Cada pie de recorrido lleva cerca de 1.031 ft de cabio, así que la superficie del techo es cerca de 3.1% mayor que su planta.',
   'page.roof-pitch-4-12.title': 'Pendiente de techo 4/12 en grados: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'Una pendiente de techo 4/12 mide 18.43 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-4-12.heading': 'Pendiente de techo 4/12: 18.43° y el largo del cabio',
+  'page.roof-pitch-4-12.heading': 'Una pendiente de techo 4/12 mide 18.43 grados',
   'page.roof-pitch-4-12.label': 'Pendiente 4/12',
   'page.roof-pitch-4-12.intro':
     'Un techo 4/12 sube 4 in por cada 12 in de recorrido, una inclinación de 33.3%. Es la pendiente más baja con la que el IRC deja poner tejas asfálticas y teja sobre una sola capa de fieltro, y el mínimo para la pizarra.',
+  'page.roof-pitch-4-12.slope':
+    '4/12 es un umbral por partida doble. Es el techo más empinado que la OSHA todavía considera de poca pendiente, así que aún valen las líneas de advertencia y el monitor de seguridad de 1926.501(b)(10), y es la pendiente con la que el IRC deja de pedir una segunda capa de fieltro bajo las tejas asfálticas y la teja y permite por primera vez la pizarra. En un recorrido de 12 ft el techo sube 4 ft, y el cabio es cerca de 5.4% más largo que su recorrido.',
   'page.roof-pitch-5-12.title': 'Pendiente de techo 5/12 en grados: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'Una pendiente de techo 5/12 mide 22.62 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-5-12.heading': 'Pendiente de techo 5/12: 22.62° y el largo del cabio',
+  'page.roof-pitch-5-12.heading': 'Una pendiente de techo 5/12 mide 22.62 grados',
   'page.roof-pitch-5-12.label': 'Pendiente 5/12',
   'page.roof-pitch-5-12.intro':
     'Un techo 5/12 sube 5 in por cada 12 in de recorrido, una inclinación de 41.7%, suficiente para todas las cubiertas de la revisión del IRC de abajo con una sola capa de fieltro.',
+  'page.roof-pitch-5-12.slope':
+    '5/12 es la primera pendiente entera que la OSHA llama techo empinado, así que las líneas de advertencia y los monitores de seguridad de un techo de poca pendiente ya no cuentan como protección contra caídas. Cumple el mínimo del IRC de todas las cubiertas de la revisión de abajo con una sola capa de fieltro, y forma un triángulo 5-12-13: 13 ft de cabio por cada 12 ft de recorrido, exactamente 1/12 más, sin alero.',
   'page.roof-pitch-6-12.title': 'Pendiente de techo 6/12 en grados: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'Una pendiente de techo 6/12 mide 26.57 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-6-12.heading': 'Pendiente de techo 6/12: 26.57° y el largo del cabio',
+  'page.roof-pitch-6-12.heading': 'Una pendiente de techo 6/12 mide 26.57 grados',
   'page.roof-pitch-6-12.label': 'Pendiente 6/12',
   'page.roof-pitch-6-12.intro':
     'Un techo 6/12 sube 6 in por cada 12 in de recorrido, una inclinación de 50%: medio pie de subida por cada pie de recorrido.',
+  'page.roof-pitch-6-12.slope':
+    'Un techo 6/12 sube 6 ft en un recorrido de 12 ft, así que un hastial de 24 ft de ancho mide 6 ft de alto en la cumbrera sobre la solera de los muros. Todas las cubiertas de la revisión del IRC de abajo cumplen su mínimo con una sola capa de fieltro. Su multiplicador de cabio de 1.118 significa que la superficie del techo es cerca de 11.8% mayor que la planta que cubre, la cifra que debes sumar antes del desperdicio al pedir tejas.',
   'page.roof-pitch-7-12.title': 'Pendiente de techo 7/12 en grados: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'Una pendiente de techo 7/12 mide 30.26 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-7-12.heading': 'Pendiente de techo 7/12: 30.26° y el largo del cabio',
+  'page.roof-pitch-7-12.heading': 'Una pendiente de techo 7/12 mide 30.26 grados',
   'page.roof-pitch-7-12.label': 'Pendiente 7/12',
   'page.roof-pitch-7-12.intro':
     'Un techo 7/12 sube 7 in por cada 12 in de recorrido, una inclinación de 58.3%.',
+  'page.roof-pitch-7-12.slope':
+    'Con 7/12 el techo pasa apenas de 30 grados: un hastial de 24 ft de ancho sube 7 ft en la cumbrera, y cada cabio es cerca de 15.8% más largo que su recorrido. La OSHA lo considera un techo empinado, como toda pendiente de más de 4/12. La superficie del techo sobre una planta de 1,000 sq ft es de unos 1,158 sq ft, casi 16% más tejas de lo que sugiere solo el plano del piso.',
   'page.roof-pitch-7-5-12.title': 'Pendiente de techo 7.5/12 en grados: 32.01° | Maestro Calc',
   'page.roof-pitch-7-5-12.description':
     'Una pendiente de techo 7.5/12 mide 32.01 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-7-5-12.heading': 'Pendiente de techo 7.5/12: 32.01° y el largo del cabio',
+  'page.roof-pitch-7-5-12.heading': 'Una pendiente de techo 7.5/12 mide 32.01 grados',
   'page.roof-pitch-7-5-12.label': 'Pendiente 7.5/12',
   'page.roof-pitch-7-5-12.intro':
     'Un techo 7.5/12, que también se escribe 7 1/2 en 12, sube 7 1/2 in por cada 12 in de recorrido, una inclinación de 62.5%.',
+  'page.roof-pitch-7-5-12.slope':
+    'Una pendiente 7.5/12 queda a mitad de camino entre 7/12 y 8/12 en subida, pero no en ángulo: mide 32.01 grados, 1.75 grados más que una 7/12 y 1.68 menos que una 8/12, porque el ángulo crece más despacio que la subida. Su multiplicador de cabio es de cerca de 1.179, así que un recorrido de 12 ft lleva unos 14.15 ft de cabio antes del alero.',
   'page.roof-pitch-8-12.title': 'Pendiente de techo 8/12 en grados: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'Una pendiente de techo 8/12 mide 33.69 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-8-12.heading': 'Pendiente de techo 8/12: 33.69° y el largo del cabio',
+  'page.roof-pitch-8-12.heading': 'Una pendiente de techo 8/12 mide 33.69 grados',
   'page.roof-pitch-8-12.label': 'Pendiente 8/12',
   'page.roof-pitch-8-12.intro':
     'Un techo 8/12 sube 8 in por cada 12 in de recorrido, una inclinación de 66.7%: dos tercios de pie de subida por cada pie de recorrido.',
+  'page.roof-pitch-8-12.slope':
+    'Un techo 8/12 mide cerca de 34 grados. Un hastial de 24 ft de ancho sube 8 ft en la cumbrera, altura suficiente para estar de pie por el centro del ático, y la superficie de su techo es cerca de 20.2% mayor que su planta, un multiplicador de 1.202. En un recorrido de 16 ft el cabio mide unos 19.23 ft antes del alero.',
   'page.roof-pitch-9-12.title': 'Pendiente de techo 9/12 en grados: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'Una pendiente de techo 9/12 mide 36.87 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-9-12.heading': 'Pendiente de techo 9/12: 36.87° y el largo del cabio',
+  'page.roof-pitch-9-12.heading': 'Una pendiente de techo 9/12 mide 36.87 grados',
   'page.roof-pitch-9-12.label': 'Pendiente 9/12',
   'page.roof-pitch-9-12.intro':
     'Un techo 9/12 sube 9 in por cada 12 in de recorrido, una inclinación de 75%: tres cuartos de pie de subida por cada pie de recorrido.',
+  'page.roof-pitch-9-12.slope':
+    'Un techo 9/12 forma un triángulo 3-4-5: 9 in de subida sobre 12 in de recorrido dan 15 in de cabio, así que su multiplicador es exactamente 1.25 y su ángulo es de 36.87 grados. La superficie del techo sobre una planta de 1,000 sq ft es exactamente de 1,250 sq ft, 12.5 cuadrados antes del desperdicio, y un recorrido de 12 ft lleva un cabio de 15 ft.',
   'page.roof-pitch-10-12.title': 'Pendiente de techo 10/12 en grados: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'Una pendiente de techo 10/12 mide 39.81 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-10-12.heading': 'Pendiente de techo 10/12: 39.81° y el largo del cabio',
+  'page.roof-pitch-10-12.heading': 'Una pendiente de techo 10/12 mide 39.81 grados',
   'page.roof-pitch-10-12.label': 'Pendiente 10/12',
   'page.roof-pitch-10-12.intro':
     'Un techo 10/12 sube 10 in por cada 12 in de recorrido, una inclinación de 83.3%.',
+  'page.roof-pitch-10-12.slope':
+    'Un techo 10/12 queda justo por debajo de 40 grados. Cada pie de recorrido lleva cerca de 1.302 ft de cabio, así que la superficie del techo es cerca de 30.2% mayor que su planta, y un hastial de 24 ft de ancho sube 10 ft en la cumbrera. En un recorrido de 16 ft el cabio mide unos 20.83 ft antes del alero, un largo que conviene comparar con la madera que puedes comprar.',
+  'page.roof-pitch-11-12.title': 'Pendiente de techo 11/12 en grados: 42.51° | Maestro Calc',
+  'page.roof-pitch-11-12.description':
+    'Una pendiente de techo 11/12 mide 42.51 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
+  'page.roof-pitch-11-12.heading': 'Una pendiente de techo 11/12 mide 42.51 grados',
+  'page.roof-pitch-11-12.label': 'Pendiente 11/12',
+  'page.roof-pitch-11-12.intro':
+    'Un techo 11/12 sube 11 in por cada 12 in de recorrido, una inclinación de 91.7%, justo por debajo de los 45° de una 12/12.',
+  'page.roof-pitch-11-12.slope':
+    'Un techo 11/12 mide 42.51 grados, 2.49 grados menos que una 12/12. Su multiplicador es de cerca de 1.357, así que la superficie del techo es cerca de 35.7% mayor que su planta, y un hastial de 24 ft de ancho sube 11 ft en la cumbrera. En un recorrido de 16 ft el cabio mide unos 21.71 ft antes del alero.',
   'page.roof-pitch-12-12.title': 'Pendiente de techo 12/12 en grados: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'Una pendiente de techo 12/12 mide 45.00 grados. Su multiplicador de cabio y el largo del cabio para 8 a 16 ft de recorrido, en pies y metros. Gratis.',
-  'page.roof-pitch-12-12.heading': 'Pendiente de techo 12/12: 45.00° y el largo del cabio',
+  'page.roof-pitch-12-12.heading': 'Una pendiente de techo 12/12 mide 45.00 grados',
   'page.roof-pitch-12-12.label': 'Pendiente 12/12',
   'page.roof-pitch-12-12.intro':
     'Un techo 12/12 sube lo mismo que recorre, una inclinación de 100% y un ángulo de exactamente 45°.',
+  'page.roof-pitch-12-12.slope':
+    'Un techo 12/12 sube 1 ft por cada pie de recorrido, así que su ángulo es de exactamente 45 grados y su multiplicador de cabio es la raíz cuadrada de 2, cerca de 1.414: un recorrido de 12 ft lleva un cabio de 16.97 ft, y la superficie del techo es cerca de 41.4% mayor que su planta. Un hastial de 24 ft de ancho sube 12 ft en la cumbrera, tan alto como la mitad de su ancho.',
   'page.roof-pitch-chart.title': 'Tabla de pendientes de techo en grados | Maestro Calc',
   'page.roof-pitch-chart.description':
     'Cada pendiente de techo de 1/12 a 24/12 en grados, en porcentaje y con su multiplicador de cabio, la pendiente mínima del IRC y de grados a pendiente.',

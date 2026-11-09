@@ -81,6 +81,23 @@ export const enSite = {
   'site.job.coverings.meets': 'Meets the minimum',
   'site.job.coverings.double': 'Allowed with two layers of underlayment',
   'site.job.coverings.below': 'Below the minimum',
+  'site.job.slope.heading': 'Working on a roof of this pitch',
+  'site.job.slope.low':
+    'OSHA counts this pitch as a low-slope roof, one of 4 in 12 or less (29 CFR 1926.500(b)). A roofer working 6 ft or more above a lower level needs guardrails, a safety net, a personal fall arrest system, or a warning line combined with one of them or with a safety monitor; on a roof 50 ft wide or less, a safety monitor alone is allowed (29 CFR 1926.501(b)(10)).',
+  'site.job.slope.steep':
+    'OSHA counts this pitch as a steep roof, one steeper than 4 in 12 (29 CFR 1926.500(b)). A worker 6 ft or more above a lower level must be protected by guardrails with toeboards, a safety net or a personal fall arrest system (29 CFR 1926.501(b)(11)); the warning lines and safety monitors allowed on a low-slope roof are not enough.',
+  'site.job.slope.sources': 'Sources',
+  'site.job.slope.ridge.heading': 'Ridge height of a gable at this pitch',
+  'site.job.slope.ridge.span24': 'Gable 24 ft wide (12 ft of run)',
+  'site.job.slope.ridge.span30': 'Gable 30 ft wide (15 ft of run)',
+  'site.job.slope.ridge.span36': 'Gable 36 ft wide (18 ft of run)',
+  'site.job.slope.area.heading': 'Roof surface over a footprint at this pitch',
+  'site.job.slope.area.lead':
+    'On a gable, shed or hip roof whose planes all have this pitch, the roof surface is the footprint, overhangs included, times the rafter multiplier above. Before waste, the roof over three common footprints is:',
+  'site.job.slope.area.footprint': 'Footprint',
+  'site.job.slope.area.roof': 'Roof surface',
+  'site.job.slope.area.squares': 'Squares (100 sq ft)',
+  'site.job.slope.area.more': 'The waste, the bundles and the rolls are in the',
   'site.job.guide.concrete-slab.heading': 'Before you pour the slab',
   'site.job.guide.concrete-slab.tip1':
     'Measure the slab inside the forms, not over the boards, and check the depth in several places once the base is graded. A slab planned at 4 in that averages 4 1/2 in takes an eighth more concrete than the table shows.',
@@ -593,75 +610,113 @@ export const enSite = {
   'page.concrete-footing-20x10.label': '20x10 in footing',
   'page.concrete-footing-20x10.intro':
     'A footing 20 in wide and 10 in deep is a continuous strip of concrete under a wall. Each foot of it is 20 × 10 ÷ 144 = 1.39 cubic feet before the extra, about 56% more than a 16 by 8 in footing.',
+  'page.roof-pitch-2-12.title': '2/12 Roof Pitch in Degrees: 9.46° | Maestro Calc',
+  'page.roof-pitch-2-12.description':
+    'A 2/12 roof pitch is 9.46 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-2-12.heading': 'A 2/12 roof pitch is 9.46 degrees',
+  'page.roof-pitch-2-12.label': '2/12 pitch',
+  'page.roof-pitch-2-12.intro':
+    'A 2/12 roof rises 2 in for every 12 in of run, a grade of 16.7%. It is the lowest pitch at which the IRC allows asphalt shingles, and then only over two layers of underlayment.',
+  'page.roof-pitch-2-12.slope':
+    'A 2/12 roof is close to flat: it falls only 2 in per foot, 2 ft over a 12 ft run, so water leaves it slowly. That is why the IRC wants two layers of underlayment under asphalt shingles at this pitch and allows only them and mineral-surfaced roll roofing among the six coverings checked below. Its rafter is barely longer than its run, about 1.4% more.',
   'page.roof-pitch-3-12.title': '3/12 Roof Pitch in Degrees: 14.04° | Maestro Calc',
   'page.roof-pitch-3-12.description':
     'A 3/12 roof pitch is 14.04 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-3-12.heading': '3/12 roof pitch: 14.04° and the rafter length',
+  'page.roof-pitch-3-12.heading': 'A 3/12 roof pitch is 14.04 degrees',
   'page.roof-pitch-3-12.label': '3/12 pitch',
   'page.roof-pitch-3-12.intro':
     'A 3/12 roof rises 3 in for every 12 in of run, a grade of 25%. It is a low slope: under the IRC, asphalt shingles and tile need two layers of underlayment here, and slate is not allowed.',
+  'page.roof-pitch-3-12.slope':
+    'At 3/12 the roof falls 3 in per foot of run, 3 ft over a 12 ft run. It is the lowest pitch at which the IRC allows metal roof shingles and wood shingles or shakes, while asphalt shingles and tile still need two layers of underlayment and slate still needs 4/12. Each foot of run takes about 1.031 ft of rafter, so the roof surface is about 3.1% larger than its footprint.',
   'page.roof-pitch-4-12.title': '4/12 Roof Pitch in Degrees: 18.43° | Maestro Calc',
   'page.roof-pitch-4-12.description':
     'A 4/12 roof pitch is 18.43 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-4-12.heading': '4/12 roof pitch: 18.43° and the rafter length',
+  'page.roof-pitch-4-12.heading': 'A 4/12 roof pitch is 18.43 degrees',
   'page.roof-pitch-4-12.label': '4/12 pitch',
   'page.roof-pitch-4-12.intro':
     'A 4/12 roof rises 4 in for every 12 in of run, a grade of 33.3%. It is the lowest pitch at which the IRC lets asphalt shingles and tile go on one layer of underlayment, and the minimum for slate.',
+  'page.roof-pitch-4-12.slope':
+    '4/12 is a threshold twice over. It is the steepest roof OSHA still counts as low-slope, so the warning-line and safety-monitor options of 1926.501(b)(10) still apply, and it is the pitch at which the IRC stops asking for a second layer of underlayment under asphalt shingles and tile and first allows slate. Over a 12 ft run the roof rises 4 ft, and the rafter is about 5.4% longer than its run.',
   'page.roof-pitch-5-12.title': '5/12 Roof Pitch in Degrees: 22.62° | Maestro Calc',
   'page.roof-pitch-5-12.description':
     'A 5/12 roof pitch is 22.62 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-5-12.heading': '5/12 roof pitch: 22.62° and the rafter length',
+  'page.roof-pitch-5-12.heading': 'A 5/12 roof pitch is 22.62 degrees',
   'page.roof-pitch-5-12.label': '5/12 pitch',
   'page.roof-pitch-5-12.intro':
     'A 5/12 roof rises 5 in for every 12 in of run, a grade of 41.7%, steep enough for every covering in the IRC check below with one layer of underlayment.',
+  'page.roof-pitch-5-12.slope':
+    '5/12 is the first whole pitch OSHA calls a steep roof, so the warning lines and safety monitors of a low-slope roof no longer count as fall protection. It meets the IRC minimum of every covering in the check below with one layer of underlayment, and it makes a 5-12-13 triangle: 13 ft of rafter for every 12 ft of run, exactly 1/12 longer, with no overhang.',
   'page.roof-pitch-6-12.title': '6/12 Roof Pitch in Degrees: 26.57° | Maestro Calc',
   'page.roof-pitch-6-12.description':
     'A 6/12 roof pitch is 26.57 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-6-12.heading': '6/12 roof pitch: 26.57° and the rafter length',
+  'page.roof-pitch-6-12.heading': 'A 6/12 roof pitch is 26.57 degrees',
   'page.roof-pitch-6-12.label': '6/12 pitch',
   'page.roof-pitch-6-12.intro':
     'A 6/12 roof rises 6 in for every 12 in of run, a grade of 50%: half a foot of rise for every foot of run.',
+  'page.roof-pitch-6-12.slope':
+    'A 6/12 roof rises 6 ft over a 12 ft run, so a 24 ft wide gable stands 6 ft tall at the ridge above the wall plates. Every covering in the IRC check below meets its minimum with one layer of underlayment. Its rafter multiplier of 1.118 means the roof surface is about 11.8% larger than the footprint it covers, the figure to add before waste when you order shingles.',
   'page.roof-pitch-7-12.title': '7/12 Roof Pitch in Degrees: 30.26° | Maestro Calc',
   'page.roof-pitch-7-12.description':
     'A 7/12 roof pitch is 30.26 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-7-12.heading': '7/12 roof pitch: 30.26° and the rafter length',
+  'page.roof-pitch-7-12.heading': 'A 7/12 roof pitch is 30.26 degrees',
   'page.roof-pitch-7-12.label': '7/12 pitch',
   'page.roof-pitch-7-12.intro': 'A 7/12 roof rises 7 in for every 12 in of run, a grade of 58.3%.',
+  'page.roof-pitch-7-12.slope':
+    'At 7/12 the roof is just over 30 degrees: a 24 ft wide gable rises 7 ft at the ridge, and each rafter is about 15.8% longer than its run. OSHA counts it as a steep roof, as it does every pitch above 4/12. The roof surface over a 1,000 sq ft footprint is about 1,158 sq ft, nearly 16% more shingles than the floor plan alone suggests.',
   'page.roof-pitch-7-5-12.title': '7.5/12 Roof Pitch in Degrees: 32.01° | Maestro Calc',
   'page.roof-pitch-7-5-12.description':
     'A 7.5/12 roof pitch is 32.01 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-7-5-12.heading': '7.5/12 roof pitch: 32.01° and the rafter length',
+  'page.roof-pitch-7-5-12.heading': 'A 7.5/12 roof pitch is 32.01 degrees',
   'page.roof-pitch-7-5-12.label': '7.5/12 pitch',
   'page.roof-pitch-7-5-12.intro':
     'A 7.5/12 roof, also written 7 1/2 in 12, rises 7 1/2 in for every 12 in of run, a grade of 62.5%.',
+  'page.roof-pitch-7-5-12.slope':
+    'A 7.5/12 pitch sits halfway between 7/12 and 8/12 in rise but not in angle: it is 32.01 degrees, 1.75 degrees above a 7/12 and 1.68 below an 8/12, because the angle grows more slowly than the rise. Its rafter multiplier is about 1.179, so a 12 ft run takes about 14.15 ft of rafter before the overhang.',
   'page.roof-pitch-8-12.title': '8/12 Roof Pitch in Degrees: 33.69° | Maestro Calc',
   'page.roof-pitch-8-12.description':
     'An 8/12 roof pitch is 33.69 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-8-12.heading': '8/12 roof pitch: 33.69° and the rafter length',
+  'page.roof-pitch-8-12.heading': 'An 8/12 roof pitch is 33.69 degrees',
   'page.roof-pitch-8-12.label': '8/12 pitch',
   'page.roof-pitch-8-12.intro':
     'An 8/12 roof rises 8 in for every 12 in of run, a grade of 66.7%: two thirds of a foot of rise for every foot of run.',
+  'page.roof-pitch-8-12.slope':
+    'An 8/12 roof is about 34 degrees. A 24 ft wide gable rises 8 ft at the ridge, enough headroom to stand along the middle of the attic, and its roof surface is about 20.2% larger than its footprint, a multiplier of 1.202. Over a 16 ft run the rafter is about 19.23 ft before the overhang.',
   'page.roof-pitch-9-12.title': '9/12 Roof Pitch in Degrees: 36.87° | Maestro Calc',
   'page.roof-pitch-9-12.description':
     'A 9/12 roof pitch is 36.87 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-9-12.heading': '9/12 roof pitch: 36.87° and the rafter length',
+  'page.roof-pitch-9-12.heading': 'A 9/12 roof pitch is 36.87 degrees',
   'page.roof-pitch-9-12.label': '9/12 pitch',
   'page.roof-pitch-9-12.intro':
     'A 9/12 roof rises 9 in for every 12 in of run, a grade of 75%: three quarters of a foot of rise for every foot of run.',
+  'page.roof-pitch-9-12.slope':
+    'A 9/12 roof makes a 3-4-5 triangle: 9 in of rise over 12 in of run is 15 in of rafter, so its multiplier is exactly 1.25 and its angle is 36.87 degrees. The roof surface over a 1,000 sq ft footprint is exactly 1,250 sq ft, 12.5 squares before waste, and a 12 ft run takes a 15 ft rafter.',
   'page.roof-pitch-10-12.title': '10/12 Roof Pitch in Degrees: 39.81° | Maestro Calc',
   'page.roof-pitch-10-12.description':
     'A 10/12 roof pitch is 39.81 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-10-12.heading': '10/12 roof pitch: 39.81° and the rafter length',
+  'page.roof-pitch-10-12.heading': 'A 10/12 roof pitch is 39.81 degrees',
   'page.roof-pitch-10-12.label': '10/12 pitch',
   'page.roof-pitch-10-12.intro':
     'A 10/12 roof rises 10 in for every 12 in of run, a grade of 83.3%.',
+  'page.roof-pitch-10-12.slope':
+    'A 10/12 roof is just under 40 degrees. Each foot of run takes about 1.302 ft of rafter, so the roof surface is about 30.2% larger than its footprint, and a 24 ft wide gable rises 10 ft at the ridge. Over a 16 ft run the rafter is about 20.83 ft before the overhang, a length to check against the lumber you can buy.',
+  'page.roof-pitch-11-12.title': '11/12 Roof Pitch in Degrees: 42.51° | Maestro Calc',
+  'page.roof-pitch-11-12.description':
+    'An 11/12 roof pitch is 42.51 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
+  'page.roof-pitch-11-12.heading': 'An 11/12 roof pitch is 42.51 degrees',
+  'page.roof-pitch-11-12.label': '11/12 pitch',
+  'page.roof-pitch-11-12.intro':
+    'An 11/12 roof rises 11 in for every 12 in of run, a grade of 91.7%, just short of the 45° of a 12/12.',
+  'page.roof-pitch-11-12.slope':
+    'An 11/12 roof is 42.51 degrees, 2.49 degrees short of a 12/12. Its multiplier is about 1.357, so the roof surface is about 35.7% larger than its footprint, and a 24 ft wide gable rises 11 ft at the ridge. Over a 16 ft run the rafter is about 21.71 ft before the overhang.',
   'page.roof-pitch-12-12.title': '12/12 Roof Pitch in Degrees: 45.00° | Maestro Calc',
   'page.roof-pitch-12-12.description':
     'A 12/12 roof pitch is 45.00 degrees. Its rafter multiplier and the rafter length for 8 to 16 ft of run, in feet and meters. Free.',
-  'page.roof-pitch-12-12.heading': '12/12 roof pitch: 45.00° and the rafter length',
+  'page.roof-pitch-12-12.heading': 'A 12/12 roof pitch is 45.00 degrees',
   'page.roof-pitch-12-12.label': '12/12 pitch',
   'page.roof-pitch-12-12.intro':
     'A 12/12 roof rises as much as it runs, a grade of 100% and an angle of exactly 45°.',
+  'page.roof-pitch-12-12.slope':
+    'A 12/12 roof rises 1 ft for every foot of run, so its angle is exactly 45 degrees and its rafter multiplier is the square root of 2, about 1.414: a 12 ft run takes a 16.97 ft rafter, and the roof surface is about 41.4% larger than its footprint. A 24 ft wide gable rises 12 ft at the ridge, as tall as it is half wide.',
   'page.roof-pitch-chart.title': 'Roof Pitch Chart in Degrees and Percent | Maestro Calc',
   'page.roof-pitch-chart.description':
     'Every roof pitch from 1/12 to 24/12 in degrees, percent grade and rafter multiplier, with the IRC minimum slope of each covering and degrees to pitch.',

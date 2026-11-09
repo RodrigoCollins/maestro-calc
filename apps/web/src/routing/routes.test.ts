@@ -276,6 +276,14 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/roofing/10-12-roof-pitch',
       es: '/es/techos/pendiente-de-techo-10-12',
     });
+    expect(ROUTES['roof-pitch-2-12']).toEqual({
+      en: '/roofing/2-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-2-12',
+    });
+    expect(ROUTES['roof-pitch-11-12']).toEqual({
+      en: '/roofing/11-12-roof-pitch',
+      es: '/es/techos/pendiente-de-techo-11-12',
+    });
     expect(ROUTES['square-feet-5x5']).toEqual({
       en: '/measurement/5x5-square-feet',
       es: '/es/medidas/5x5-pies-cuadrados',

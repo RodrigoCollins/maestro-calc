@@ -15,10 +15,12 @@ import {
   isChartJob,
   isJobPage,
   isLandJob,
+  isPitchJob,
   JOB_IDS,
   JOBS,
   jobsOf,
   LAND_ACRES,
+  PITCH_RISES,
 } from './jobs.ts';
 import { ROUTES } from './routes.ts';
 import { CALCULATOR_PAGES, templateOf } from './templates.ts';
@@ -67,6 +69,7 @@ describe('job pages (growth plan › lever 1)', () => {
   it('lists the jobs of a calculator in table order, and tells a job id apart', () => {
     expect(jobsOf('concrete')).toEqual(JOB_IDS.filter((id) => id.startsWith('concrete-')));
     expect(jobsOf('roof-pitch')).toEqual([
+      'roof-pitch-2-12',
       'roof-pitch-3-12',
       'roof-pitch-4-12',
       'roof-pitch-5-12',
@@ -76,6 +79,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'roof-pitch-8-12',
       'roof-pitch-9-12',
       'roof-pitch-10-12',
+      'roof-pitch-11-12',
       'roof-pitch-12-12',
       'roof-pitch-chart',
     ]);
@@ -504,6 +508,24 @@ describe('job pages (growth plan › lever 1)', () => {
   it('lists every job under a hub that holds its calculator', () => {
     const hubbed = Object.values(HUBS).flatMap(({ calculators }) => calculators);
     for (const id of JOB_IDS) expect(hubbed, id).toContain(JOBS[id].calculator);
+  });
+
+  // queries: "6/12 roof pitch" (1.8K), "4/12 roof pitch" (900) (Ahrefs US, 2026-11-08): every
+  // exact pitch page is a rise over a 12 in run, and its rise is the one its id names
+  it('tables each exact pitch with the rise its id names, and no other roof pitch job', () => {
+    expect(JOB_IDS.filter(isPitchJob)).toEqual(
+      jobsOf('roof-pitch').filter((id) => !isChartJob(id)),
+    );
+    expect(Object.values(PITCH_RISES)).toEqual([2, 3, 4, 5, 6, 7, 7.5, 8, 9, 10, 11, 12]);
+    for (const id of JOB_IDS.filter(isPitchJob)) {
+      for (const raw of JOBS[id].cases) {
+        expect(raw['rise'], id).toBe(`${String(PITCH_RISES[id])}in`);
+        expect(raw['run'], id).toBe('12in');
+      }
+      expect(id).toBe(`roof-pitch-${String(PITCH_RISES[id]).replace('.', '-')}-12`);
+    }
+    expect(isPitchJob('roof-pitch-chart')).toBe(false);
+    expect(isPitchJob('square-feet-12x12')).toBe(false);
   });
 
   // queries: "how many square feet in an acre" (57K), "in a quarter acre", "in half an acre"

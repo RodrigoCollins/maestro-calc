@@ -341,7 +341,12 @@ describe('titles from real queries (growth plan › lever 4)', () => {
         const text = siteText(locale);
         const { answer } = jobView(id, locale);
         expect(text(`page.${id}.title`), id).toContain(answer);
-        expect(text(`page.${id}.heading`), id).toContain(answer);
+        // the h1 answers first, in words: "A 6/12 roof pitch is 26.57 degrees" (Ahrefs US 2026-11-08)
+        const degrees = answer.replace('°', locale === 'en' ? ' degrees' : ' grados');
+        expect(text(`page.${id}.heading`), id).toMatch(
+          locale === 'en' ? /^An? \d+(\.\d+)?\/12 roof pitch is / : /^Una pendiente de techo /,
+        );
+        expect(text(`page.${id}.heading`), id).toContain(degrees);
         expect(text(`page.${id}.description`), id).toContain(answer.replace('°', ''));
       }
       expect(siteText('en')(`page.${id}.title`)).toContain('in Degrees');

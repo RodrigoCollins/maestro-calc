@@ -6,6 +6,7 @@ import GuideCta from '../components/GuideCta.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
 import { jobLand } from '../lib/job-land.ts';
+import { jobSlope } from '../lib/job-slope.ts';
 import { jobView } from '../lib/job-view.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { bylineOf, calculatorSourcesHref, CHART_SOURCES_ID } from '../lib/byline.ts';
@@ -85,6 +86,8 @@ const coverings = jobCoverings(id, locale);
 const worked = jobWorked(id, locale);
 // An acre page also says what an acre is by law, the shapes of its lot, what it holds and covers.
 const land = jobLand(id, locale);
+// An exact pitch page also says how OSHA classes the pitch, the ridge of a gable and the roof surface.
+const slope = jobSlope(id, locale);
 const guideEntry =
   guide === undefined ? undefined : await getEntry('pages', `${locale}/${guide.read}`);
 if (guide !== undefined && guideEntry === undefined) {
@@ -289,6 +292,59 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
             </tbody>
           </table>
         </div>
+      </>
+    )}
+    {slope !== undefined && (
+      <>
+        <h2>{slope.heading}</h2>
+        <p>{slope.osha}</p>
+        <p>{slope.note}</p>
+        <p>
+          {slope.sourceLabel}:{' '}
+          {slope.sources.map((source, index) => (
+            <>
+              {index > 0 && '; '}
+              {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
+              {calendarDay(source.retrieved, locale)}
+            </>
+          ))}
+          .
+        </p>
+        <h2>{slope.ridge.heading}</h2>
+        <dl class="job-facts">
+          {slope.ridge.facts.map(({ label, value }) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        <h2>{slope.area.heading}</h2>
+        <p>{slope.area.lead}</p>
+        <div class="job-table">
+          <table>
+            <thead>
+              <tr>
+                {slope.area.columns.map((label) => (
+                  <th scope="col">{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {slope.area.rows.map((row) => (
+                <tr>
+                  <th scope="row">{row.label}</th>
+                  {row.cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          {slope.area.more} <a href={slope.area.href}>{slope.area.calculator}</a>.
+        </p>
       </>
     )}
     {guide !== undefined && (
