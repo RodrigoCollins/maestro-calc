@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { CHART_SOURCES_ID, calculatorSourcesHref } from '../lib/byline.ts';
+import { jobFloor } from '../lib/job-floor.ts';
 import { jobGuide } from '../lib/job-guide.ts';
+import { jobRoom, QUALI_KOTE_PDS } from '../lib/job-room.ts';
 import { jobLand, NIST_HB44_C } from '../lib/job-land.ts';
 import { jobQuestion } from '../lib/job-question.ts';
 import { jobSlope, OSHA_1926_500, OSHA_1926_501 } from '../lib/job-slope.ts';
@@ -118,7 +120,8 @@ describe('JobPageView acre pages', () => {
 
   it('adds no acre section to a room', async () => {
     const document = await render('square-feet-12x12', 'en');
-    expect(document.querySelectorAll('main table')).toHaveLength(1);
+    // the sizes table, then the tiles of what fits on the floor
+    expect(document.querySelectorAll('main table')).toHaveLength(2);
     expect(document.querySelector('main')?.textContent).not.toContain(NIST_HB44_C.url);
   });
 });
@@ -156,6 +159,39 @@ describe('JobPageView exact pitch pages', () => {
   it('adds no pitch section to the pitch chart', async () => {
     const document = await render('roof-pitch-chart', 'en');
     expect(document.querySelector('main')?.textContent).not.toContain(OSHA_1926_500.url);
+  });
+});
+
+// AdSense audit 2026-11-08: a room or a floor page works its own size out after its table
+describe('JobPageView room and floor sections', () => {
+  it.each([
+    ['paint-room-12x14', 'en'],
+    ['drywall-room-10x10', 'es'],
+    ['square-feet-11x16', 'en'],
+    ['square-feet-7x12', 'es'],
+  ] as const)('shows the section of %s in %s with its figures and source', async (id, locale) => {
+    const document = await render(id, locale);
+    const extra = jobRoom(id, locale) ?? jobFloor(id, locale);
+    const heading = document
+      .querySelectorAll('main h2')
+      .find((h2) => h2.textContent === extra?.heading);
+    expect(heading).toBeDefined();
+    const text = document.querySelector('main')?.textContent ?? '';
+    for (const paragraph of extra?.paragraphs ?? []) expect(text).toContain(paragraph);
+    for (const { label, value } of extra?.facts ?? []) {
+      expect(text).toContain(label);
+      expect(text).toContain(value);
+    }
+    for (const row of extra?.table?.rows ?? []) {
+      for (const cell of row.cells) expect(text).toContain(cell);
+    }
+    const cited = document.querySelectorAll('main code').map((code) => code.textContent);
+    expect(cited).toEqual(extra?.sources.map(({ url }) => url));
+  });
+
+  it('adds no room section to a slab', async () => {
+    const document = await render('concrete-slab-10x10', 'en');
+    expect(document.querySelector('main')?.textContent).not.toContain(QUALI_KOTE_PDS.url);
   });
 });
 

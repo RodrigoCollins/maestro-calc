@@ -8,6 +8,8 @@ import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
 import { jobLand } from '../lib/job-land.ts';
 import { jobQuestion } from '../lib/job-question.ts';
 import { jobSlope } from '../lib/job-slope.ts';
+import { jobFloor } from '../lib/job-floor.ts';
+import { jobRoom } from '../lib/job-room.ts';
 import { jobView } from '../lib/job-view.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { bylineOf, calculatorSourcesHref, CHART_SOURCES_ID } from '../lib/byline.ts';
@@ -89,6 +91,8 @@ const worked = jobWorked(id, locale);
 const land = jobLand(id, locale);
 // An exact pitch page also says how OSHA classes the pitch, the ridge of a gable and the roof surface.
 const slope = jobSlope(id, locale);
+// A room or a floor page also works its own size out: surface by surface, or what fits on it.
+const extra = jobRoom(id, locale) ?? jobFloor(id, locale);
 // A question page also explains its answer and adds the conversion tables of its question.
 const question = jobQuestion(id, locale);
 const guideEntry =
@@ -347,6 +351,60 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
         </div>
         <p>
           {slope.area.more} <a href={slope.area.href}>{slope.area.calculator}</a>.
+        </p>
+      </>
+    )}
+    {extra !== undefined && (
+      <>
+        <h2>{extra.heading}</h2>
+        {extra.paragraphs.slice(0, 1).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <dl class="job-facts">
+          {extra.facts.map(({ label, value }) => (
+            <div>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+        {extra.table !== undefined && (
+          // a table wider than a phone scrolls: the region takes the keyboard focus to scroll it
+          <div class="job-table" tabindex="0" role="region" aria-label={extra.heading}>
+            <table>
+              <thead>
+                <tr>
+                  {extra.table.columns.map((label) => (
+                    <th scope="col">{label}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {extra.table.rows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.label}</th>
+                    {row.cells.map((cell) => (
+                      <td>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {extra.paragraphs.slice(1).map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <p>
+          {text('site.job.slope.sources')}:{' '}
+          {extra.sources.map((source, index) => (
+            <>
+              {index > 0 && '; '}
+              {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
+              {calendarDay(source.retrieved, locale)}
+            </>
+          ))}
+          .
         </p>
       </>
     )}
