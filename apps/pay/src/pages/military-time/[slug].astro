@@ -1,0 +1,13 @@
+---
+import MilitaryTimePage from '../../components/MilitaryTimePage.astro';
+import { MILITARY_TIMES, type MilitaryTimeJob } from '../../military/routes.ts';
+
+export const getStaticPaths = () =>
+  MILITARY_TIMES.map((job) => ({ params: { slug: job.slug }, props: { job } }));
+
+interface Props {
+  readonly job: MilitaryTimeJob;
+}
+---
+
+<MilitaryTimePage job={Astro.props.job} />
