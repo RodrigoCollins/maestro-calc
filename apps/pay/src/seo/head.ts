@@ -4,18 +4,24 @@ import { linkPreviewOf } from '@maestro-calc/site-kit/link-preview';
 import { SITE } from '../site.config.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
+/** The paths of a page: English, and Spanish but on an English-only page. */
+export interface PagePaths {
+  readonly en: string;
+  readonly es?: string;
+}
+
 /**
  * What the layout writes about a page in `lang`: its canonical when it has `paths` (the 404 has
  * none), `noindex` unless the site is indexable and the page has paths, and its link preview.
  */
 export const headOf = (
-  paths: Readonly<Record<Lang, string>> | undefined,
+  paths: PagePaths | undefined,
   lang: Lang,
   text: { readonly title: string; readonly description: string },
   site: { readonly origin: string; readonly indexable: boolean } = SITE,
 ) => ({
-  ...(paths === undefined ? {} : { canonical: canonicalUrl(paths[lang], site.origin) }),
-  ...(site.indexable && paths !== undefined ? {} : { robots: 'noindex' }),
+  ...(paths?.[lang] === undefined ? {} : { canonical: canonicalUrl(paths[lang], site.origin) }),
+  ...(site.indexable && paths?.[lang] !== undefined ? {} : { robots: 'noindex' }),
   preview: linkPreviewOf(site.origin, text),
 });
 

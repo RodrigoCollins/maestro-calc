@@ -20,10 +20,12 @@ import { UNPAID_WAGES_GUIDE } from '../guide/unpaid-wages.ts';
 import { W2_BOX_12_GUIDE } from '../guide/w2-box-12.ts';
 import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
 import { METHODOLOGY_TEXTS } from '../methodology/texts.ts';
+import { chartOf } from '../military/chart.ts';
+import { converterOf } from '../military/converter.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
-import type { Route } from '../routes.ts';
+import { isPaired, type PairedRoute, type Route } from '../routes.ts';
 import { SHIFT_TEXTS } from '../shift/texts.ts';
 import { STATE_FACTS, statePageOf, statesIndexOf } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -50,6 +52,8 @@ export const LLMS_PAGES: Readonly<Record<string, Readonly<Record<Lang, Head>>>> 
   overtime: both(OVERTIME_TEXTS),
   hours: both(HOURS_TEXTS),
   'decimal-hours': both(DECIMAL_HOURS_TEXTS),
+  'military-time-converter': byLang(converterOf),
+  'military-time-chart': byLang(chartOf),
   'hourly-to-salary': byLang((lang) => PAY_CONVERTER_TEXTS[lang].variants.hourly),
   'salary-to-hourly': byLang((lang) => PAY_CONVERTER_TEXTS[lang].variants.salary),
   'pto-accrual': both(PTO_TEXTS),
@@ -102,8 +106,8 @@ const ABOUT_SITE =
  * the route table the sitemap is built from. The long-tail pages and the privacy notice are left out.
  */
 export const llmsTxt = (routes: readonly Route[], origin: string): string => {
-  const listed = routes.filter(({ id }) => LLMS_PAGES[id] !== undefined);
-  const linksOf = (lang: Lang, keep: (route: Route) => boolean): string[] =>
+  const listed = routes.filter(isPaired).filter(({ id }) => LLMS_PAGES[id] !== undefined);
+  const linksOf = (lang: Lang, keep: (route: PairedRoute) => boolean): string[] =>
     listed.filter(keep).map((route) => {
       const head = LLMS_PAGES[route.id]?.[lang];
       if (head === undefined) throw new Error(`llms.txt has no texts for ${route.id}`);

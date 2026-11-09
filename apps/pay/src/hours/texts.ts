@@ -97,7 +97,11 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
       'Decimal hours are rounded to two places, to the nearest: 8 hours 20 minutes is 8.33. Your employer’s payroll system may round differently.',
       'The hours are the time from start to end less the unpaid break. A paid break stays in: enter 0.',
     ],
-    links: [{ label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' }],
+    links: [
+      { label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' },
+      { label: 'Convert military time to 12-hour time and back', href: '/military-time-converter' },
+      { label: 'Military time chart: every hour of the day', href: '/military-time-chart' },
+    ],
     usHeading: 'Hours worked, overtime and full time under US law',
     usLinks: [
       { label: 'A whole week with overtime and pay: the time card', href: '/time-card-calculator' },
@@ -137,6 +141,11 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
     ],
     links: [
       { label: 'Convierte minutos a horas decimales', href: '/es/minutos-a-horas-decimales' },
+      {
+        label: 'Convierte la hora militar al formato de 12 horas y al revés',
+        href: '/es/convertidor-de-hora-militar',
+      },
+      { label: 'Tabla de hora militar: cada hora del día', href: '/es/tabla-de-hora-militar' },
     ],
     usHeading: 'En EE. UU.: horas trabajadas, horas extra y tiempo completo',
     usLinks: [

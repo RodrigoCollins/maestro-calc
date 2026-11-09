@@ -37,6 +37,17 @@ describe('sitemapXml', () => {
     );
   });
 
+  it('lists an English-only page as one plain URL, with no alternates', () => {
+    const single = sitemapXml(
+      [{ id: 'military-time-1500', kind: 'article', en: '/military-time/1500' }],
+      'https://cuentahoras.com',
+    );
+    expect([...single.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc)).toEqual([
+      'https://cuentahoras.com/military-time/1500',
+    ]);
+    expect(single).not.toContain('hreflang');
+  });
+
   it('is a urlset with the xhtml namespace', () => {
     expect(xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<urlset')).toBe(true);
     expect(xml).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');

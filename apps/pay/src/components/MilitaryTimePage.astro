@@ -1,0 +1,85 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { SOURCES_HEADING } from '../long-tail/sections.ts';
+import { MILITARY_CONVERTER_PATHS, type MilitaryTimeJob } from '../military/routes.ts';
+import { militaryTimePageOf } from '../military/times.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import Sections from './Sections.astro';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly job: MilitaryTimeJob;
+}
+
+// English only: the language switch leads to the Spanish converter
+const page = militaryTimePageOf(Astro.props.job);
+---
+
+<SiteLayout
+  lang="en"
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherHref={MILITARY_CONVERTER_PATHS.es}
+  parent={{ title: page.calculator.title, path: page.calculator.href }}
+  otherLang={PAY_CONVERTER_TEXTS.en.otherLang}
+  footer={HOME_TEXTS.en.sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <section class="result" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure">{page.figure}</p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
+        {page.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <a class="button button-primary" href={page.calculator.href}>
+      {page.calculator.label}
+    </a>
+    <p class="note">{page.note}</p>
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">{SOURCES_HEADING.en}</h2>
+        <ul class="link-list">
+          {page.sources.map((source) => (
+            <li>
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <section aria-labelledby="others-heading">
+      <h2 id="others-heading">{page.others.heading}</h2>
+      <ul class="link-list">
+        {page.others.links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>

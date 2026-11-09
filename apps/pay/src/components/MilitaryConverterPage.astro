@@ -1,0 +1,74 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { CONVERTER_DEFAULT, converterOf } from '../military/converter.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
+import Sections from './Sections.astro';
+import ShareLink from './ShareLink.astro';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly lang: Lang;
+  /** The embed of the page (`src/embed/embeds.ts`): the same converter in the slim shell. */
+  readonly embed?: boolean;
+}
+
+const { lang, embed = false } = Astro.props;
+// The page renders the engine's own figures for 1500, so it reads without JavaScript.
+const page = converterOf(lang);
+---
+
+<SiteLayout
+  embed={embed}
+  lang={lang}
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherLang={PAY_CONVERTER_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <form class="deduction" data-military-time novalidate>
+      <label class="field">
+        {page.input}
+        <input name="time" autocomplete="off" value={CONVERTER_DEFAULT} />
+      </label>
+      <p class="note">{page.hint}</p>
+    </form>
+    <p class="warning" data-military-invalid hidden>
+      {page.invalid}
+    </p>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure" data-mil="figure">
+          {page.result.figure}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
+        {page.result.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-mil={row.key}>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <ShareLink lang={lang} title={page.title} path={page.paths[lang]} />
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+    </div>
+  </main>
+  <script src="../client/military-time.ts"></script>
+</SiteLayout>

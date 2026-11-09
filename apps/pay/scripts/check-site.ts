@@ -13,13 +13,16 @@ import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed
 import { imageProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/editorial/bylines.ts';
 import { LONG_TAIL_ROUTES } from '../src/long-tail/routes.ts';
-import { ROUTES } from '../src/routes.ts';
+import { MILITARY_TIME_ROUTES } from '../src/military/routes.ts';
+import { pathsOfRoute, ROUTES } from '../src/routes.ts';
 import { EMBEDS } from '../src/embed/embeds.ts';
 import {
   DATA_RULES,
   GUIDE_RULES,
   HUBS,
   LONG_TAIL_RULES,
+  MILITARY_CHART_RULES,
+  MILITARY_RULES,
   SITEMAP_PATHS,
   STATE_RULES,
   STATE_RULES_OF_TABLES,
@@ -56,7 +59,10 @@ const all = [
     routes: ROUTES,
     pages: html,
     sitemap: existsSync(sitemapFile) ? readFileSync(sitemapFile, 'utf8') : '',
-    longTail: LONG_TAIL_ROUTES.flatMap(({ en, es }) => [en, es]),
+    longTail: [
+      ...LONG_TAIL_ROUTES.flatMap(({ en, es }) => [en, es]),
+      ...MILITARY_TIME_ROUTES.map(({ en }) => en),
+    ],
   }),
   ...bylineProblems(read, BYLINE_PAGES),
   ...imageProblems('og.png', existsSync(image) ? readFileSync(image) : undefined),
@@ -66,17 +72,21 @@ const all = [
   ...linkProblems({
     origin: SITE.origin,
     pages: sitemapPages,
-    longTail: LONG_TAIL_RULES,
-    guides: [...GUIDE_RULES, ...DATA_RULES, ...STATE_RULES, ...STATE_RULES_OF_TABLES],
+    longTail: [...LONG_TAIL_RULES, ...MILITARY_RULES],
+    guides: [
+      ...GUIDE_RULES,
+      ...DATA_RULES,
+      ...STATE_RULES,
+      ...STATE_RULES_OF_TABLES,
+      ...MILITARY_CHART_RULES,
+    ],
     hubs: HUBS,
   }),
   // every calculator and every state page shares itself on WhatsApp, with no script
   ...shareProblems(
     sitemapPages,
     SITE.origin,
-    [...ROUTES.filter(({ kind }) => kind === 'calculator'), ...STATE_ROUTES].flatMap(
-      ({ en, es }) => [en, es],
-    ),
+    [...ROUTES.filter(({ kind }) => kind === 'calculator'), ...STATE_ROUTES].flatMap(pathsOfRoute),
   ),
   ...EMBEDS.flatMap(({ path, page, other }) => {
     const html = read(path);

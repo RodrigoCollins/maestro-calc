@@ -66,6 +66,8 @@ export const siteSeoProblems = ({
       title: { max: TITLE_MAX },
       description: DESCRIPTION,
       sitemap,
+      // the English-only pages (a route with no `es`) carry no alternates and a plain sitemap line
+      partial: true,
     }),
     ...longTailTextProblems(
       longTail.map((path) => {

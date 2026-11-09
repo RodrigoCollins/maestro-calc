@@ -14,7 +14,8 @@
     "./decimal-hours": "./src/decimal-hours/index.ts",
     "./pto-accrual": "./src/pto-accrual/index.ts",
     "./shift-differential": "./src/shift-differential/index.ts",
-    "./tipped-wage": "./src/tipped-wage/index.ts"
+    "./tipped-wage": "./src/tipped-wage/index.ts",
+    "./military-time": "./src/military-time/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

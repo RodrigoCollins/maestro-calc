@@ -23,20 +23,38 @@ import { EMBED_PATHS } from './embed/texts.ts';
 import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
+import {
+  MILITARY_CHART_PATHS,
+  MILITARY_CONVERTER_PATHS,
+  MILITARY_TIME_ROUTES,
+} from './military/routes.ts';
 import { STATE_ROUTES, STATES_ROUTE } from './states/routes.ts';
 import { OVERTIME_PATHS } from './overtime/texts.ts';
 import { PTO_PATHS } from './pto/texts.ts';
 import { SHIFT_PATHS } from './shift/texts.ts';
 import { TIPPED_PATHS } from './tipped/texts.ts';
 
-/** Every page of Cuenta Horas as an English and Spanish pair; the sitemap is built from it. */
+/**
+ * Every page of Cuenta Horas, an English and Spanish pair but for the few English-only pages (the
+ * military times, a search of the US clock), which have no `es`; the sitemap is built from it.
+ */
 export interface Route {
   readonly id: string;
   /** What the page is, for its structured data. */
   readonly kind: 'home' | 'calculator' | 'article' | 'collection';
   readonly en: string;
-  readonly es: string;
+  readonly es?: string;
 }
+
+/** A route with both languages: every route but the English-only ones. */
+export type PairedRoute = Route & { readonly es: string };
+
+/** Whether `route` has its Spanish twin. */
+export const isPaired = (route: Route): route is PairedRoute => route.es !== undefined;
+
+/** The paths of a route: the English one, then the Spanish one when there is one. */
+export const pathsOfRoute = ({ en, es }: Route): readonly string[] =>
+  es === undefined ? [en] : [en, es];
 
 export const ROUTES: readonly Route[] = [
   { id: 'home', kind: 'home', en: '/', es: '/es' },
@@ -49,6 +67,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'overtime', kind: 'calculator', ...OVERTIME_PATHS },
   { id: 'hours', kind: 'calculator', ...HOURS_PATHS },
   { id: 'decimal-hours', kind: 'calculator', ...DECIMAL_HOURS_PATHS },
+  { id: 'military-time-converter', kind: 'calculator', ...MILITARY_CONVERTER_PATHS },
   { id: 'hourly-to-salary', kind: 'calculator', ...PATHS.hourly },
   { id: 'salary-to-hourly', kind: 'calculator', ...PATHS.salary },
   { id: 'pto-accrual', kind: 'calculator', ...PTO_PATHS },
@@ -72,6 +91,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-2027-states-guide', kind: 'article', ...MINIMUM_WAGE_2027_GUIDE_PATHS },
+  { id: 'military-time-chart', kind: 'article', ...MILITARY_CHART_PATHS },
   { id: 'data', kind: 'collection', ...DATA_PATHS },
   STATES_ROUTE,
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
@@ -80,5 +100,6 @@ export const ROUTES: readonly Route[] = [
   { id: 'editorial-policy', kind: 'article', ...EDITORIAL_PATHS },
   { id: 'embed', kind: 'article', ...EMBED_PATHS },
   ...LONG_TAIL_ROUTES,
+  ...MILITARY_TIME_ROUTES,
   ...STATE_ROUTES,
 ];

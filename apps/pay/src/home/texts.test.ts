@@ -9,6 +9,7 @@ import { TIPPED_PATHS } from '../tipped/texts.ts';
 import { ABOUT_PATHS } from '../about/texts.ts';
 import { EDITORIAL_PATHS } from '../editorial/paths.ts';
 import { EMBED_PATHS } from '../embed/texts.ts';
+import { MILITARY_CONVERTER_PATHS } from '../military/routes.ts';
 import { HOME_TEXTS } from './texts.ts';
 
 const pageFile = (href: string): string =>
@@ -72,6 +73,14 @@ describe('home texts', () => {
       expect(ids.indexOf('tipped-wage')).toBe(ids.indexOf('shift-differential') + 1);
       const card = HOME_TEXTS[lang].tools.find(({ id }) => id === 'tipped-wage');
       expect(card?.href).toBe(TIPPED_PATHS[lang]);
+    }
+  });
+
+  it('links the military time card to the converter of its language, last', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const card = HOME_TEXTS[lang].tools.at(-1);
+      expect(card?.id).toBe('military-time');
+      expect(card?.href).toBe(MILITARY_CONVERTER_PATHS[lang]);
     }
   });
 
