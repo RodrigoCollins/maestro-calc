@@ -16,8 +16,14 @@ const entries = readdirSync(resolve(src, 'islands'))
   );
 
 describe('the usage events of the calculator scripts', () => {
-  it('finds the four calculator scripts of the pages', () => {
-    expect(entries.sort()).toEqual(['cat.ts', 'chocolate.ts', 'dog.ts', 'due-date.ts']);
+  it('finds the five calculator scripts of the pages', () => {
+    expect(entries.sort()).toEqual([
+      'cat.ts',
+      'chocolate.ts',
+      'dog-age.ts',
+      'dog.ts',
+      'due-date.ts',
+    ]);
   });
 
   it.each(entries)('%s runs the shared runner', (name) => {

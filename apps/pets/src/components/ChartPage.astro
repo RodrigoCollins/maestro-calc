@@ -53,6 +53,18 @@ const { title, description, h1, lead, checked, columns, rows, notes, calculators
     {notes.map((note) => (
       <p>{note}</p>
     ))}
+    {chart.pages !== undefined && (
+      <section aria-labelledby="bf-pages">
+        <h2 id="bf-pages">{chart.pages.heading}</h2>
+        <ul class="bf-ages">
+          {chart.pages.links.map(({ href, label }) => (
+            <li>
+              <a {href}>{label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
     <section class="bf-card mint" aria-labelledby="bf-tools">
       <h2 id="bf-tools">Calculators</h2>
       <ul>

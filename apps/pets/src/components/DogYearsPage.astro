@@ -1,0 +1,96 @@
+---
+import { AGE_PAGES, agePageOf, yearOld } from '../dog-years.ts';
+import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const page = agePageOf(Astro.props.path);
+const { age, title, description, h1, lead, checked, columns, rows, sections, questions } = page;
+const years = age === 1 ? 'year' : 'years';
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="by-size">
+      <h2 id="by-size">{`${String(age)} ${years} in human years, by size`}</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={`${yearOld(age)} dog in human years by size, scrolls sideways on a narrow screen`}
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([first, ...cells]) => (
+              <tr>
+                <th scope="row">{first}</th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <a href={page.calculator.href}>{page.calculator.label}</a>
+        {': change the size, or work a human age back to dog years.'}
+      </p>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-ages">
+      <h2 id="bf-ages">Other ages in dog years</h2>
+      <ul class="bf-ages">
+        {AGE_PAGES.map((other) => (
+          <li>
+            <a
+              href={other.path}
+              aria-current={other.age === age ? 'page' : undefined}
+              aria-label={`${String(other.age)} ${other.age === 1 ? 'year' : 'years'} in dog years`}
+            >
+              {other.age}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href={hrefOf('dog-age-chart')}>Dog age chart: every age and size in one table</a> ·{' '}
+        <a href={hrefOf('dog-age')}>Dog age calculator</a>
+      </p>
+    </section>
+    <Sources sources={page.sources} />
+    <ShareLink path={page.path} {title} />
+  </main>
+</Layout>

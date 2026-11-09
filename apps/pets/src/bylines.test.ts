@@ -2,14 +2,19 @@ import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 
 describe('BYLINE_PAGES', () => {
-  it('are the guides, then the data pages', () => {
-    expect(BYLINE_PAGES.map(({ path }) => path)).toEqual([
+  it('are the guides, the data pages, then the dog years pages', () => {
+    expect(BYLINE_PAGES.map(({ path }) => path).slice(0, 7)).toEqual([
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
       '/my-dog-ate-chocolate',
       '/dog-feeding-chart',
       '/puppy-feeding-chart',
       '/dog-chocolate-toxicity-chart',
+      '/dog-age-chart',
+    ]);
+    expect(BYLINE_PAGES.slice(7).map(({ path }) => path)).toEqual([
+      '/1-year-in-dog-years',
+      ...Array.from({ length: 15 }, (_, i) => `/${String(i + 2)}-years-in-dog-years`),
     ]);
   });
 

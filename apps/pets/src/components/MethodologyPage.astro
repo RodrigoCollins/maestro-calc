@@ -1,4 +1,5 @@
 ---
+import { DOG_YEARS_CHECKED } from '../dog-years.ts';
 import { ACCESSED, FACTOR_TABLE, LEFT_OUT, METHOD_SECTIONS } from '../methodology.ts';
 import Layout from './Layout.astro';
 
@@ -12,7 +13,8 @@ const description =
     <h1>How we work it out</h1>
     <p>
       Every figure comes from the Merck Veterinary Manual, the AAHA guidelines or AAFCO, read on{' '}
-      {ACCESSED}. Each result is a starting point to check with your pet’s veterinarian.
+      {ACCESSED}, and the dog ages from AVMA, Merck, PetMD, VCA and Wang et al., read on{' '}
+      {DOG_YEARS_CHECKED}. Each result is a starting point to check with your pet’s veterinarian.
     </p>
     <section class="bf-card" aria-labelledby="factors">
       <h2 id="factors">Energy factors</h2>
