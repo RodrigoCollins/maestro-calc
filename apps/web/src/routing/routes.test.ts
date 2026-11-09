@@ -340,6 +340,38 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/measurement/square-feet-in-a-quarter-acre',
       es: '/es/medidas/pies-cuadrados-en-un-cuarto-de-acre',
     });
+    expect(ROUTES['concrete-cubic-yard-weight']).toEqual({
+      en: '/concrete/how-much-does-a-cubic-yard-of-concrete-weigh',
+      es: '/es/concreto/cuanto-pesa-una-yarda-cubica-de-concreto',
+    });
+    expect(ROUTES['square-feet-1-car-garage']).toEqual({
+      en: '/measurement/1-car-garage-square-feet',
+      es: '/es/medidas/pies-cuadrados-de-un-garaje-de-1-auto',
+    });
+    expect(ROUTES['square-feet-2-car-garage']).toEqual({
+      en: '/measurement/2-car-garage-square-feet',
+      es: '/es/medidas/pies-cuadrados-de-un-garaje-de-2-autos',
+    });
+    expect(ROUTES['cubic-yards-to-tons']).toEqual({
+      en: '/landscaping/cubic-yards-to-tons',
+      es: '/es/jardineria/yardas-cubicas-a-toneladas',
+    });
+    expect(ROUTES['cubic-yards-in-a-ton-of-gravel']).toEqual({
+      en: '/landscaping/cubic-yards-in-a-ton-of-gravel',
+      es: '/es/jardineria/yardas-cubicas-en-una-tonelada-de-grava',
+    });
+    expect(ROUTES['cubic-feet-in-a-cubic-yard']).toEqual({
+      en: '/landscaping/cubic-feet-in-a-cubic-yard',
+      es: '/es/jardineria/pies-cubicos-en-una-yarda-cubica',
+    });
+    expect(ROUTES['cubic-feet-to-gallons']).toEqual({
+      en: '/landscaping/cubic-feet-to-gallons',
+      es: '/es/jardineria/pies-cubicos-a-galones',
+    });
+    expect(ROUTES['cubic-yards-in-a-ton-of-dirt']).toEqual({
+      en: '/landscaping/cubic-yards-in-a-ton-of-dirt',
+      es: '/es/jardineria/yardas-cubicas-en-una-tonelada-de-tierra',
+    });
     expect(ROUTES['mulch-bags-per-yard']).toEqual({
       en: '/landscaping/bags-of-mulch-per-yard',
       es: '/es/jardineria/bolsas-de-mulch-por-yarda',

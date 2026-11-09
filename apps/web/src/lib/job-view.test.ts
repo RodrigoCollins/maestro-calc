@@ -7,7 +7,7 @@ import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
-import { JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
+import { isQuestionJob, JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
 import { LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { calendarDay } from './calendar-day.ts';
 import { IRC_R905, roofPitchChartBasis, roofPitchReverse } from './roof-pitch-chart.ts';
@@ -774,9 +774,15 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.answer).not.toBe('');
   });
 
+  // content audit 2026-11-08: a size job lists its sibling jobs, not the question pages (the hub
+  // and the calculator link those), and a question page lists the other question pages, so neither
+  // copies the list of the other
   it.each(PAIRS)('lists the other jobs of its calculator from %s in %s', (id, locale) => {
     const others = jobView(id, locale).others;
-    expect(others).toHaveLength(jobsOf(JOBS[id].calculator).length - 1);
+    const siblings = isQuestionJob(id)
+      ? JOB_IDS.filter((each) => each !== id && isQuestionJob(each))
+      : jobsOf(JOBS[id].calculator).filter((each) => each !== id && !isQuestionJob(each));
+    expect(others.map(({ href }) => href)).toEqual(siblings.map((each) => pathOf(each, locale)));
     expect(others.map(({ title }) => title)).not.toContain(jobView(id, locale).heading);
   });
 

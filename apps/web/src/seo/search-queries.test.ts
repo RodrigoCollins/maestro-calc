@@ -9,7 +9,7 @@ import { readEntries, sectionOf } from '../contract/content.ts';
 import { fromRoot } from '../contract/root.ts';
 import { siteText } from '../lib/site-text.ts';
 import { jobView } from '../lib/job-view.ts';
-import { isChartJob, JOBS, jobsOf } from '../routing/jobs.ts';
+import { isChartJob, isQuestionJob, JOBS, jobsOf, QUESTION_IDS } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import { PAGES } from '../lib/pages.ts';
@@ -470,7 +470,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   // target queries of the job pages batch 3 (growth plan › lever 1): "how much gravel for a 10x20
   // driveway", "how much paint for a 12x12 room", "how many sheets of drywall for a 12x12 room"
   it('states the tons of gravel of each driveway in its title, heading and description', () => {
-    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each))) {
+    for (const id of jobsOf('gravel').filter((each) => !isChartJob(each) && !isQuestionJob(each))) {
       const size = id.replace('gravel-driveway-', '');
       for (const locale of ['en', 'es'] as const) {
         const text = siteText(locale);
@@ -525,7 +525,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   // raised bed", "how much topsoil for a 10x10 area", "how many bundles of shingles for a 24x24
   // roof"
   it('states the cubic yards of topsoil of each job in its title and description', () => {
-    for (const id of jobsOf('topsoil')) {
+    for (const id of jobsOf('topsoil').filter((each) => !isQuestionJob(each))) {
       const bed = id.startsWith('topsoil-raised-bed-');
       const size = id.replace('topsoil-raised-bed-', '').replace('topsoil-', '');
       for (const locale of ['en', 'es'] as const) {
@@ -610,6 +610,46 @@ describe('titles from real queries (growth plan › lever 4)', () => {
     }
     expect(siteText('en')('page.mulch-bags-per-yard.title')).toContain(
       'Bags of Mulch in a Cubic Yard',
+    );
+  });
+
+  // queries (Ahrefs US, 2026-11-08, KD 0 to 4): "how many cubic feet in a cubic yard", "cubic yards
+  // to tons", "how many cubic yards in a ton of gravel" and "of dirt", "how much does a cubic yard
+  // of concrete weigh", "cubic feet to gallons", "how many square feet is a 2 car garage" and "a 1
+  // car garage": the h1 and the title carry the answer, and the description asks the question
+  it('answers each question page in its h1 and its title, and asks the question in its description', () => {
+    const answers = {
+      'concrete-cubic-yard-weight': [
+        '3,915 to 4,050',
+        'How much does a cubic yard of concrete weigh?',
+      ],
+      'square-feet-1-car-garage': ['240 to 384', 'How many square feet is a 1-car garage?'],
+      'square-feet-2-car-garage': ['400 to 576', 'How many square feet is a 2-car garage?'],
+      'cubic-yards-to-tons': ['1.29', 'How many tons is a cubic yard?'],
+      'cubic-yards-in-a-ton-of-gravel': [
+        '0.70 to 0.78',
+        'How many cubic yards in a ton of gravel?',
+      ],
+      'cubic-feet-in-a-cubic-yard': ['27', 'How many cubic feet in a cubic yard?'],
+      'cubic-feet-to-gallons': ['7.48', 'A cubic foot is 7.48 US gallons'],
+      'cubic-yards-in-a-ton-of-dirt': ['1.25', 'How many cubic yards in a ton of dirt?'],
+    } as const satisfies Record<(typeof QUESTION_IDS)[number], readonly [string, string]>;
+    for (const id of QUESTION_IDS) {
+      const [answer, question] = answers[id];
+      for (const locale of ['en', 'es'] as const) {
+        const text = siteText(locale);
+        // the Spanish h1 writes the same figures: `3,915 a 4,050`
+        const figure = locale === 'en' ? answer : answer.replace(' to ', ' a ');
+        expect(text(`page.${id}.heading`), id).toContain(figure);
+        expect(text(`page.${id}.title`), id).toContain(figure.split(' ')[0]);
+      }
+      expect(siteText('en')(`page.${id}.description`), id).toContain(question);
+    }
+    expect(siteText('en')('page.cubic-feet-in-a-cubic-yard.heading')).toBe(
+      'A cubic yard is 27 cubic feet',
+    );
+    expect(siteText('es')('page.cubic-feet-in-a-cubic-yard.heading')).toBe(
+      'Una yarda cúbica tiene 27 pies cúbicos',
     );
   });
 });

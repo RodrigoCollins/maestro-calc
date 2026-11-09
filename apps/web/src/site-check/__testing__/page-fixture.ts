@@ -242,11 +242,15 @@ const jobLinksOf = (id: string, locale: Locale, site: Site): string => {
     : `<aside class="job-links" aria-label="Common jobs"><p>Common jobs</p><ul>${jobItems(jobs, locale, site)}</ul></aside>`;
 };
 
-/** What a job page links: its calculator, then every other job of that calculator; '' for any other page. */
+/**
+ * What a job page links: its calculator, then every other job of its group (`jobGroups`, else its
+ * calculator); '' for any other page.
+ */
 const jobPageLinksOf = (id: string, locale: Locale, site: Site): string => {
   const calculator = site.jobs[id];
   if (calculator === undefined) return '';
-  const others = jobsOf(calculator, site).filter((job) => job !== id);
+  const groupOf = (job: string): string | undefined => site.jobGroups?.[job] ?? site.jobs[job];
+  const others = Object.keys(site.jobs).filter((job) => job !== id && groupOf(job) === groupOf(id));
   return (
     `<p class="job-calculator"><a href="${pathOf(calculator, locale, site.routes)}">${calculator}</a></p>` +
     (others.length === 0 ? '' : `<ul class="job-more">${jobItems(others, locale, site)}</ul>`)

@@ -165,4 +165,21 @@ describe('jobWorked (the worked example of a job page)', () => {
       expect(mathOf(worked)?.join(' '), id).toContain(String(figure));
     }
   });
+
+  // hand-verified: one cubic yard of loose gravel, 9 × 9 ft × 4 in = 27 ft³ with no extra, weighs
+  // 2,580 lb (WisDOT loose), 1.29 short tons, and is exactly the 1.00 loose yard to order
+  it('weighs loose gravel loose and says when a question page adds no extra', () => {
+    const worked = jobWorked('cubic-yards-to-tons', 'en');
+    expect(mathOf(worked)).toEqual([
+      '9 ft × 9 ft × 4 in = 27.00 ft³ = 1.00 yd³',
+      '1.00 yd³ × 1.00 = 1.00 yd³',
+      '1.00 yd³ × 2,580 lb = 2,580.00 lb',
+      '2,580.00 lb ÷ 2,000 lb = 1.29',
+      '2,580.00 lb ÷ 2,580 lb = 1.00 yd³',
+    ]);
+    expect(worked?.steps.map(({ label }) => label)).toContain('With no extra');
+    expect(worked?.steps.map(({ label }) => label).join(' ')).toContain('Weight loose');
+    const soil = jobWorked('cubic-feet-in-a-cubic-yard', 'es')?.steps.map(({ label }) => label);
+    expect(soil).toContain('Sin extra, en pies cúbicos, yardas cúbicas y metros cúbicos');
+  });
 });

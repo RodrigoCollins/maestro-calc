@@ -256,6 +256,36 @@ const rectangle = (length: number, width: number) => {
   return [side(0), side(1), side(2)] as const;
 };
 
+/**
+ * A box of `length` by `width` feet and `depth` inches with no extra, as the topsoil calculator
+ * takes it: the question pages measure the volume itself, not an order.
+ */
+const box = (length: number, width: number, depth: number): JobCase => ({
+  length: `${String(length)}ft`,
+  width: `${String(width)}ft`,
+  depth: `${String(depth)}in`,
+  waste: '0',
+});
+
+/** The same box of loose gravel, the way the yard measures what it sells, with no extra. */
+const loosePile = (length: number, width: number, depth: number): JobCase => ({
+  ...box(length, width, depth),
+  placement: 'loose',
+});
+
+/** A pad, a bed or a floor of `length` by `width` feet at `depth` inches, at the calculator's defaults. */
+const pad = (length: number, width: number, depth: number): JobCase => ({
+  length: `${String(length)}ft`,
+  width: `${String(width)}ft`,
+  depth: `${String(depth)}in`,
+});
+
+/** A floor of `length` by `width` feet, for the square footage calculator. */
+const floor = (length: number, width: number): JobCase => ({
+  length: `${String(length)}ft`,
+  width: `${String(width)}ft`,
+});
+
 /** Square feet in one acre: NIST Handbook 44, Appendix C (1 acre = 43,560 ft² = 160 rods²). */
 export const ACRE_FT2 = 43_560;
 
@@ -395,6 +425,11 @@ export const JOBS = {
     updated: '2026-11-05',
     cases: footing(20, 10),
   },
+  'concrete-cubic-yard-weight': {
+    calculator: 'concrete',
+    updated: '2026-11-08',
+    cases: [slab(10, 16, 4), slab(8, 8, 4), slab(14, 14, 4), slab(16, 24, 4), slab(24, 36, 6)],
+  },
   'roof-pitch-2-12': { calculator: 'roof-pitch', updated: '2026-11-08', cases: pitch(2) },
   'roof-pitch-3-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(3) },
   'roof-pitch-4-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(4) },
@@ -478,6 +513,16 @@ export const JOBS = {
     updated: '2026-11-08',
     cases: lots([66, 165], [75, 145.2], [90, 121], [99, 110]),
   },
+  'square-feet-1-car-garage': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-08',
+    cases: [floor(12, 20), floor(12, 24), floor(14, 22), floor(14, 24), floor(16, 24)],
+  },
+  'square-feet-2-car-garage': {
+    calculator: 'rectangle-area',
+    updated: '2026-11-08',
+    cases: [floor(24, 24), floor(20, 20), floor(20, 24), floor(22, 22), floor(22, 24)],
+  },
   'square-feet-to-square-meters-chart': {
     calculator: 'rectangle-area',
     updated: '2026-11-06',
@@ -502,6 +547,22 @@ export const JOBS = {
     calculator: 'gravel',
     updated: '2026-11-05',
     cases: driveway(12, 100),
+  },
+  'cubic-yards-to-tons': {
+    calculator: 'gravel',
+    updated: '2026-11-08',
+    cases: [
+      loosePile(9, 9, 4),
+      loosePile(9, 9, 8),
+      loosePile(9, 9, 12),
+      loosePile(15, 9, 12),
+      loosePile(18, 15, 12),
+    ],
+  },
+  'cubic-yards-in-a-ton-of-gravel': {
+    calculator: 'gravel',
+    updated: '2026-11-08',
+    cases: [pad(8, 10, 4), pad(10, 10, 4), pad(12, 12, 4), pad(12, 16, 4), pad(16, 20, 4)],
   },
   'cubic-yard-weight-chart': {
     calculator: 'gravel',
@@ -530,6 +591,21 @@ export const JOBS = {
   },
   'topsoil-10x10': { calculator: 'topsoil', updated: '2026-11-05', cases: area(10, 10) },
   'topsoil-20x20': { calculator: 'topsoil', updated: '2026-11-05', cases: area(20, 20) },
+  'cubic-feet-in-a-cubic-yard': {
+    calculator: 'topsoil',
+    updated: '2026-11-08',
+    cases: [box(9, 9, 4), box(12, 13.5, 2), box(6, 6, 9), box(4.5, 4.5, 16), box(3, 4.5, 24)],
+  },
+  'cubic-feet-to-gallons': {
+    calculator: 'topsoil',
+    updated: '2026-11-08',
+    cases: [box(2, 2, 12), box(2, 6, 12), box(3, 6, 12), box(4, 10, 12), box(4, 12, 18)],
+  },
+  'cubic-yards-in-a-ton-of-dirt': {
+    calculator: 'topsoil',
+    updated: '2026-11-08',
+    cases: [pad(4, 6, 12), pad(10, 12, 4), pad(12, 20, 4), pad(20, 30, 4), pad(25, 40, 2)],
+  },
   'roofing-12x16': { calculator: 'roofing', updated: '2026-11-05', cases: roof(12, 16) },
   'roofing-24x24': { calculator: 'roofing', updated: '2026-11-05', cases: roof(24, 24) },
   'roofing-30x40': { calculator: 'roofing', updated: '2026-11-05', cases: roof(30, 40) },
@@ -626,6 +702,29 @@ export type PitchId = keyof typeof PITCH_RISES;
 
 /** Whether job `id` is an exact pitch page. */
 export const isPitchJob = (id: string): id is PitchId => Object.hasOwn(PITCH_RISES, id);
+
+/**
+ * The question pages (Ahrefs US, 2026-11-08: "how many cubic feet in a cubic yard", "cubic yards to
+ * tons", "cubic feet to gallons", "how many square feet is a 2 car garage"): each answers one exact
+ * question in its h1, works its table out with its calculator's engine, and adds tables of its own
+ * (`lib/job-question.ts`) from cited unit definitions and material densities.
+ */
+export const QUESTION_IDS = [
+  'concrete-cubic-yard-weight',
+  'square-feet-1-car-garage',
+  'square-feet-2-car-garage',
+  'cubic-yards-to-tons',
+  'cubic-yards-in-a-ton-of-gravel',
+  'cubic-feet-in-a-cubic-yard',
+  'cubic-feet-to-gallons',
+  'cubic-yards-in-a-ton-of-dirt',
+] as const satisfies readonly JobId[];
+
+export type QuestionId = (typeof QUESTION_IDS)[number];
+
+/** Whether job `id` is a question page. */
+export const isQuestionJob = (id: string): id is QuestionId =>
+  (QUESTION_IDS as readonly string[]).includes(id);
 
 /** A reference chart: a job whose id ends in `-chart`. */
 export type ChartId = Extract<JobId, `${string}-chart`>;

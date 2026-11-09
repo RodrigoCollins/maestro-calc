@@ -239,11 +239,14 @@ export const enSite = {
   'site.job.worked.topsoil.net': 'Volume of the first size, before settling',
   'site.job.worked.topsoil.total':
     'With the 10% for settling, in cubic feet, cubic yards and cubic meters',
+  'site.job.worked.topsoil.exact': 'With no extra, in cubic feet, cubic yards and cubic meters',
   'site.job.worked.topsoil.bags': 'Bags of 0.75 cubic feet, rounded up',
   'site.job.worked.gravel.placed':
     'Volume of the first size in place, in cubic feet and cubic yards',
   'site.job.worked.gravel.total': 'With the 5% extra',
   'site.job.worked.gravel.weight': 'Weight compacted, at 3,660 lb per cubic yard (WisDOT)',
+  'site.job.worked.gravel.exact': 'With no extra',
+  'site.job.worked.gravel.weightLoose': 'Weight loose, at 2,580 lb per cubic yard (WisDOT)',
   'site.job.worked.gravel.tons': 'In short tons of 2,000 lb',
   'site.job.worked.gravel.order': 'Loose cubic yards to order, at 2,580 lb per cubic yard',
   'site.job.worked.feet-inches.inches': 'The length in inches, 12 in to the foot',
@@ -1179,6 +1182,186 @@ export const enSite = {
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',
+  'site.job.question.sources': 'Sources',
+  'site.job.question.more': 'See also',
+  'site.job.question.unitSource': 'Unit definitions',
+  'site.job.question.bagSource': 'Bag yields',
+  'site.job.question.feetToYards.heading': 'Cubic feet to cubic yards',
+  'site.job.question.feetToYards.lead':
+    'Divide the cubic feet by 27. The cubic meters multiply the cubic feet by 0.028316846592, the exact metric value of a cubic foot.',
+  'site.job.question.yardsToFeet.heading': 'Cubic yards to cubic feet',
+  'site.job.question.yardsToFeet.lead':
+    'Multiply the cubic yards by 27. A cubic yard is exactly 0.764554857984 cubic meters.',
+  'site.job.question.boxGallons.heading': 'Gallons in each bed or planter',
+  'site.job.question.boxGallons.lead':
+    'The volume of each size of the table above, in US liquid gallons and in liters, with nothing added for settling:',
+  'site.job.question.feetToGallons.heading': 'Cubic feet to gallons',
+  'site.job.question.feetToGallons.lead':
+    'Multiply the cubic feet by 7.48052 (1,728 ÷ 231). A cubic foot is exactly 28.316846592 liters.',
+  'site.job.question.gallonsToFeet.heading': 'Gallons to cubic feet',
+  'site.job.question.gallonsToFeet.lead':
+    'Divide the gallons by 7.48052, or multiply them by 231 and divide by 1,728. A US gallon is exactly 3.785411784 liters.',
+  'site.job.question.materialTons.heading': 'Tons in 1 to 10 cubic yards, by material',
+  'site.job.question.materialTons.lead':
+    'Tons = cubic yards × tons per cubic yard. A range means the sources give a low and a high weight; every figure is a short ton of 2,000 lb.',
+  'site.job.question.yardsPerTon.heading': 'Cubic yards in one ton, by material',
+  'site.job.question.yardsPerTon.lead':
+    'Cubic yards per ton = 1 ÷ tons per cubic yard, and a cubic yard is 27 cubic feet. The heavier the material, the fewer yards a ton fills.',
+  'site.job.question.tonsToYards.heading': 'Cubic yards in 1 to 20 tons',
+  'site.job.question.tonsToYards.lead':
+    'Cubic yards = tons ÷ tons per cubic yard. Read the column of the material you are buying:',
+  'site.job.question.soilTons.heading': 'Tons of topsoil for each job of the table',
+  'site.job.question.soilTons.lead':
+    'The cubic yards of each size with the topsoil calculator’s 10% extra for settling, times 0.80 tons per cubic yard; a metric tonne is about 2,204.62 lb:',
+  'site.job.question.slabWeight.heading': 'Weight of each slab',
+  'site.job.question.slabWeight.lead':
+    'The concrete in place, before the 10% extra the calculator orders, at 145 to 150 lb per cubic foot:',
+  'site.job.question.loadWeight.heading': 'Weight of 1/2 to 10 cubic yards of concrete',
+  'site.job.question.loadWeight.lead':
+    'Pounds = cubic yards × 27 × 145 to 150; the tons divide the pounds by 2,000 and the metric tonnes by about 2,204.62:',
+  'site.job.question.garageSlab.heading': 'Concrete for the garage floor',
+  'site.job.question.garageSlab.lead':
+    'The concrete calculator for a slab of each size, 4 and 6 in thick, with its 10% extra and 80 lb bags of about 0.6 cu ft each:',
+  'site.job.question.col.cubicFeet': 'Cubic feet',
+  'site.job.question.col.cubicYards': 'Cubic yards',
+  'site.job.question.col.cubicMeters': 'Cubic meters',
+  'site.job.question.col.gallons': 'US gallons',
+  'site.job.question.col.liters': 'Liters',
+  'site.job.question.col.size': 'Size',
+  'site.job.question.col.material': 'Material',
+  'site.job.question.col.tons': 'Tons',
+  'site.job.question.col.tonnes': 'Metric tonnes',
+  'site.job.question.col.pounds': 'Pounds',
+  'site.job.question.col.tonsPerYard': 'Tons per cubic yard',
+  'site.job.question.col.yardsPerTon': 'Cubic yards per ton',
+  'site.job.question.col.feetPerTon': 'Cubic feet per ton',
+  'site.job.question.col.netYards': 'Cubic yards in place',
+  'site.job.question.col.slab4': 'Cubic yards at 4 in',
+  'site.job.question.col.bags4': '80 lb bags at 4 in',
+  'site.job.question.col.slab6': 'Cubic yards at 6 in',
+  'page.concrete-cubic-yard-weight.title':
+    'A Yard of Concrete Weighs 3,915 to 4,050 lb | Maestro Calc',
+  'page.concrete-cubic-yard-weight.description':
+    'How much does a cubic yard of concrete weigh? 3,915 to 4,050 lb, about 2 tons, at 145 to 150 lb per cubic foot. Slab weights and 1/2 to 10 yards, sourced.',
+  'page.concrete-cubic-yard-weight.heading':
+    'A cubic yard of concrete weighs 3,915 to 4,050 pounds',
+  'page.concrete-cubic-yard-weight.label': 'Yard of concrete weight',
+  'page.concrete-cubic-yard-weight.intro':
+    'A cubic yard of normal-weight concrete weighs 3,915 to 4,050 pounds, about 2 tons: 27 cubic feet at 145 to 150 lb each, the unit weights the FHWA and WSDOT publish for hardened concrete. Steel reinforcing adds about 5 lb per cubic foot more. The table below gives the concrete each common slab needs, worked out by the concrete calculator, and the weight of each slab follows further down.',
+  'page.concrete-cubic-yard-weight.note':
+    'Every figure adds 10% extra for waste, the concrete calculator’s default, and rounds up to whole bags; the weights further down are the slab in place, without that extra. Each size opens the calculator with its measurements filled in.',
+  'page.concrete-cubic-yard-weight.about': 'What makes a yard of concrete heavier or lighter',
+  'page.concrete-cubic-yard-weight.p1':
+    'Concrete is mostly stone and sand held together by cement paste, so its weight follows its aggregate. Normal-weight concrete made with ordinary gravel or crushed stone weighs 145 to 150 lb per cubic foot once hardened, the range on this page. Lightweight concrete made with expanded shale or clay weighs much less, and heavyweight concrete made for radiation shielding much more, so neither is covered by these figures. Fresh concrete still holds all of its mixing water and is a little heavier than the same concrete after it cures and dries.',
+  'page.concrete-cubic-yard-weight.p2':
+    'The weight matters when you haul it, lift it or build on it. A 14 by 14 ft slab 4 in thick is 2.42 cubic yards in place and weighs 9,473 to 9,800 lb, close to five tons. Ten cubic yards, a large ready-mix load, weigh 19.58 to 20.25 tons. Bagged mix is the same material sold dry: an 80 lb bag makes about 0.6 cubic feet, so one cubic yard takes 45 bags, 3,600 lb of mix to carry before any water is added.',
+  'page.square-feet-1-car-garage.title':
+    '1-Car Garage Square Feet: 240 to 384 sq ft | Maestro Calc',
+  'page.square-feet-1-car-garage.description':
+    'How many square feet is a 1-car garage? 240 sq ft at 12 by 20 ft up to 384 at 16 by 24, with the concrete for the floor of each size at 4 and 6 in thick.',
+  'page.square-feet-1-car-garage.heading': 'A 1-car garage is about 240 to 384 square feet',
+  'page.square-feet-1-car-garage.label': '1-car garage',
+  'page.square-feet-1-car-garage.intro':
+    'A one-car garage is about 240 to 384 square feet: 240 for a tight 12 by 20 ft garage, 336 for 14 by 24 ft, and 384 for 16 by 24 ft, which leaves room along one side for storage. The table below works out the area of five common sizes with the square footage calculator, in square feet, square meters and square yards.',
+  'page.square-feet-1-car-garage.note':
+    'The area of a rectangle is its length times its width, measured here outside the walls. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
+  'page.square-feet-1-car-garage.about': 'Choosing the size of a one-car garage',
+  'page.square-feet-1-car-garage.p1':
+    'Measure a garage two ways: outside the walls for the slab, the roof and the price, inside the walls for what it holds. Framed walls and drywall take several inches from each side, so a 12 by 20 ft plan holds a little less than 240 square feet of clear floor. Before settling on a size, measure your own vehicle with its doors open, add the space you want to walk around it, and add the depth of any workbench, shelves or bikes you plan to keep along the walls.',
+  'page.square-feet-1-car-garage.p2':
+    'The area sets most of the materials. The floor slab is the area times its thickness, and the last table of this page gives the concrete for each size at 4 and 6 in thick. The same area, priced per square foot, is how builders’ quotes are compared, and a garage attached to a house must also be separated from it as the residential code requires, so check the rules where you build. For comparison, a two-car garage of 20 by 20 ft is 400 square feet, two thirds more than the smallest single.',
+  'page.square-feet-2-car-garage.title':
+    '2-Car Garage Square Feet: 400 to 576 sq ft | Maestro Calc',
+  'page.square-feet-2-car-garage.description':
+    'How many square feet is a 2-car garage? 400 sq ft at 20 by 20 ft up to 576 at 24 by 24, with the concrete for the floor of each size at 4 and 6 in thick.',
+  'page.square-feet-2-car-garage.heading': 'A 2-car garage is about 400 to 576 square feet',
+  'page.square-feet-2-car-garage.label': '2-car garage',
+  'page.square-feet-2-car-garage.intro':
+    'A two-car garage is about 400 to 576 square feet: 400 for a 20 by 20 ft garage, 484 for 22 by 22 ft and 576 for 24 by 24 ft, the size that leaves room for storage along the walls. The table below works out the area of five common sizes with the square footage calculator, in square feet, square meters and square yards.',
+  'page.square-feet-2-car-garage.note':
+    'The area of a rectangle is its length times its width, measured here outside the walls. A square yard is 9 square feet, and a square foot is exactly 0.09290304 square meters. Each size opens the calculator with its measurements filled in.',
+  'page.square-feet-2-car-garage.about': 'Choosing the size of a two-car garage',
+  'page.square-feet-2-car-garage.p1':
+    'Each extra foot of width or depth adds a whole strip of floor: going from 20 by 20 to 24 by 24 ft adds 176 square feet, 44% more, and every foot added to a 24 ft wall adds 24 square feet. Before choosing, park both vehicles where the garage will go, open the doors on both sides, and measure the width and the length they need with room to walk between them; then add the depth of any workbench, shelves or freezer along the back wall.',
+  'page.square-feet-2-car-garage.p2':
+    'The slab under a two-car garage is a real pour: a 24 by 24 ft floor 4 in thick takes 7.82 cubic yards of concrete with 10% extra, a ready-mix order rather than bags, as the last table of this page shows for each size. The roof covers the floor plus its overhangs, and the garage door opening, often 16 ft wide for two cars, sets how the front wall is framed. A garage attached to a house must be separated from it as the residential code requires, so check the rules where you build.',
+  'page.cubic-yards-to-tons.title': 'Cubic Yards to Tons: Gravel 1.29, Sand 1.45 | Maestro Calc',
+  'page.cubic-yards-to-tons.description':
+    'How many tons is a cubic yard? Loose gravel 1.29, sand 1.45, topsoil 0.80 and concrete 1.96 to 2.03. Tons for 1 to 10 cubic yards of 11 materials, with sources.',
+  'page.cubic-yards-to-tons.heading':
+    'Cubic yards to tons: a yard of loose gravel is about 1.29 tons',
+  'page.cubic-yards-to-tons.label': 'Cubic yards to tons',
+  'page.cubic-yards-to-tons.intro':
+    'To turn cubic yards into tons, multiply them by what one cubic yard of the material weighs. Loose gravel, as the yard measures it, is about 1.29 tons a cubic yard, so 5 cubic yards weigh about 6.45 tons and 10 weigh 12.90; the table below works that out for 1 to 10 yards with the gravel calculator, and a second table does the same for sand, topsoil, concrete and wood chips.',
+  'page.cubic-yards-to-tons.note':
+    'The sizes are loose gravel with no extra, measured the way the yard sells it, and each holds a whole number of cubic yards; the tonnes are metric, 1,000 kg each. Each size opens the gravel calculator with its measurements filled in.',
+  'page.cubic-yards-to-tons.about': 'Why the same cubic yard weighs a different number of tons',
+  'page.cubic-yards-to-tons.p1':
+    'A cubic yard is a volume and a ton is a weight, so there is no single conversion between them: the factor is the density of the material. Stone is heavy and wood is light, so a yard of sand weighs about 1.45 tons and a yard of dry wood chips about 0.12. Packing changes it too: the same gravel base weighs about 1.29 tons a yard loose and 1.80 to 1.86 compacted, because rolling it squeezes out the air between the stones. Water adds weight, so wet sand and wet soil weigh more than the dry or unstated figures the sources publish.',
+  'page.cubic-yards-to-tons.p2':
+    'A supplier may quote by the ton or by the cubic yard. When the job is measured in cubic yards and the price is per ton, multiply the yards by the factor of the material; the other way round, divide the tons by it. A 10 by 20 ft area 4 in deep is 2.47 cubic yards: 3.19 tons of loose gravel, 3.58 tons of sand or 1.98 tons of topsoil. The ton of these tables is the short ton of 2,000 lb; a metric tonne is 1,000 kg, about 2,204.62 lb.',
+  'page.cubic-yards-in-a-ton-of-gravel.title':
+    'A Ton of Gravel Is 0.70 to 0.78 Cubic Yards | Maestro Calc',
+  'page.cubic-yards-in-a-ton-of-gravel.description':
+    'How many cubic yards in a ton of gravel? About 0.70 to 0.78 loose, 19 to 21 cubic feet, and 0.54 to 0.56 compacted. Yards for 1 to 20 tons, with sources.',
+  'page.cubic-yards-in-a-ton-of-gravel.heading':
+    'A ton of gravel is about 0.70 to 0.78 cubic yards',
+  'page.cubic-yards-in-a-ton-of-gravel.label': 'Yards in a ton of gravel',
+  'page.cubic-yards-in-a-ton-of-gravel.intro':
+    'One ton of gravel fills about 0.70 to 0.78 cubic yards, or 19 to 21 cubic feet, when it is loose, as it comes off the truck: 0.70 for gravel of 1/4 to 2 in at 1.42 tons a yard, 0.78 for a crushed base at 1.29. Spread and compacted, the same ton fills only 0.54 to 0.56 cubic yards. The table below gives the tons of gravel for common pads and patio bases, worked out by the gravel calculator.',
+  'page.cubic-yards-in-a-ton-of-gravel.note':
+    'Every job figure is compacted gravel with 5% extra, the gravel calculator’s defaults. The cubic yards to order are loose, the way the yard measures what it sells, so they are more than the space the gravel fills. Each size opens the calculator with its measurements filled in.',
+  'page.cubic-yards-in-a-ton-of-gravel.about':
+    'Loose yards, compacted yards and the ton you pay for',
+  'page.cubic-yards-in-a-ton-of-gravel.p1':
+    'Gravel is sold by weight or by loose volume, and it shrinks when it is compacted, so a ton has more than one answer. Loose in the truck or in the pile, a ton of crushed base fills 0.78 cubic yards; once it is spread and compacted, the stones lock together and the same ton fills 0.54 to 0.56 cubic yards. That is why the gravel calculator orders more loose yards than the pad holds in place: a 10 by 10 ft pad 4 in deep is 1.23 cubic yards compacted, but takes 1.84 loose yards with 5% extra.',
+  'page.cubic-yards-in-a-ton-of-gravel.p2':
+    'The size and the shape of the stone matter too. Rounded pea gravel and washed stone of one size leave more empty space between the pieces than a dense-graded base whose fines fill the gaps, so a ton of them fills a little more volume, while pit run, which carries sand and fines, weighs about 1.62 tons a yard and fills only 0.62. Ask the supplier for the weight per cubic yard of the exact product, then divide the tons you are quoted by it.',
+  'page.cubic-feet-in-a-cubic-yard.title':
+    'A Cubic Yard Is 27 Cubic Feet (3 × 3 × 3 ft) | Maestro Calc',
+  'page.cubic-feet-in-a-cubic-yard.description':
+    'How many cubic feet in a cubic yard? 27, because a yard is 3 ft and 3 × 3 × 3 = 27. Tables both ways, in cubic meters too, and five shapes of one yard.',
+  'page.cubic-feet-in-a-cubic-yard.heading': 'A cubic yard is 27 cubic feet',
+  'page.cubic-feet-in-a-cubic-yard.label': 'Cubic feet in a cubic yard',
+  'page.cubic-feet-in-a-cubic-yard.intro':
+    'A cubic yard is 27 cubic feet: a cube 3 ft long, 3 ft wide and 3 ft high, since a yard is 3 ft and 3 × 3 × 3 = 27. In metric it is 0.7646 cubic meters. Every size in the table below holds exactly one cubic yard, from a bed 9 by 9 ft filled 4 in deep to a box 3 by 4.5 ft filled 2 ft deep: 36 bags of 0.75 cu ft or 18 bags of 1.5 cu ft.',
+  'page.cubic-feet-in-a-cubic-yard.note':
+    'Each size is filled with no extra, so the volume is the cubic yard itself, and the bags round up to whole bags; order about 10% more of a soil that settles. Each size opens the topsoil calculator with its measurements filled in.',
+  'page.cubic-feet-in-a-cubic-yard.about': 'Why a cubic yard is 27 cubic feet, not 3 or 9',
+  'page.cubic-feet-in-a-cubic-yard.p1':
+    'A yard is 3 feet in every direction, so a cubic yard is 3 ft × 3 ft × 3 ft = 27 cubic feet, while a square yard, which has no depth, is 3 × 3 = 9 square feet. The two get mixed up all the time, and dividing cubic feet by 9 or by 3 instead of 27 orders three or nine times too much. To get the cubic yards of a bed or a slab, multiply the length and the width in feet by the depth in feet (inches ÷ 12) and divide by 27: 10 by 12 ft at 4 in is 10 × 12 × 0.333 = 40 cubic feet, or 1.48 cubic yards.',
+  'page.cubic-feet-in-a-cubic-yard.p2':
+    'Bulk soil, mulch, gravel and ready-mix concrete are sold by the cubic yard, while bags are labeled in cubic feet: 0.75, 1, 1.5, 2 or 3 cu ft. One cubic yard is 36 bags of 0.75 cu ft, 27 of 1 cu ft, 18 of 1.5 cu ft, 14 of 2 cu ft (13.5 rounded up) and 9 of 3 cu ft. For a large job, compare the bulk price of one cubic yard, delivery included, with the price of the bags that make it up before you choose.',
+  'page.cubic-feet-to-gallons.title':
+    'Cubic Feet to Gallons: 1 cu ft = 7.48 Gallons | Maestro Calc',
+  'page.cubic-feet-to-gallons.description':
+    'A cubic foot is 7.48 US gallons (1,728 ÷ 231 cubic inches) or 28.32 liters. Tables both ways and the gallons of common raised beds and planters.',
+  'page.cubic-feet-to-gallons.heading': 'A cubic foot is 7.48 gallons',
+  'page.cubic-feet-to-gallons.label': 'Cubic feet to gallons',
+  'page.cubic-feet-to-gallons.intro':
+    'A cubic foot holds 7.48 US liquid gallons: a cubic foot is 1,728 cubic inches and a US gallon is exactly 231, so 1,728 ÷ 231 = 7.48052. In liters it is 28.32. A raised bed 4 by 8 ft filled 12 in deep holds 32 cubic feet, 239.38 gallons of soil or water, and the tables below give the gallons of each common size and convert both ways.',
+  'page.cubic-feet-to-gallons.note':
+    'Each size is filled with no extra for settling, so the volume is the box itself, and the bags round up to whole bags. Each size opens the topsoil calculator with its measurements filled in.',
+  'page.cubic-feet-to-gallons.about': 'Gallons, cubic feet and the bags on the shelf',
+  'page.cubic-feet-to-gallons.p1':
+    'The US liquid gallon is defined as exactly 231 cubic inches (NIST Handbook 44), so the conversion is exact: multiply cubic feet by 7.48052 to get gallons, and divide gallons by 7.48052 to get cubic feet. The UK imperial gallon is a different unit, 4.54609 liters, about 20% larger, so a British figure of 6.23 gallons per cubic foot is not a mistake but another gallon. A pond, a stock tank or a rain barrel works the same way: length × width × depth in feet gives the cubic feet, and × 7.48 gives the gallons.',
+  'page.cubic-feet-to-gallons.p2':
+    'Bags of soil and mulch are labeled in cubic feet: a 0.75 cu ft bag holds 5.61 gallons, a 1.5 cu ft bag 11.22 and a 2 cu ft bag 14.96, so it takes 43 bags of 0.75 cu ft to fill the 4 by 8 ft bed 12 in deep (32 ÷ 0.75 = 42.7, rounded up). To work the other way, a container marked in gallons holds its gallons ÷ 7.48 in cubic feet: a 55 gallon drum is 7.35 cubic feet, and a 100 gallon stock tank 13.37.',
+  'page.cubic-yards-in-a-ton-of-dirt.title':
+    'A Ton of Dirt Is About 1.25 Cubic Yards | Maestro Calc',
+  'page.cubic-yards-in-a-ton-of-dirt.description':
+    'How many cubic yards in a ton of dirt? About 1.25 for topsoil or fill dirt at 0.80 tons a yard, 33.75 cubic feet. Tons of common beds and yards of 1 to 20 tons.',
+  'page.cubic-yards-in-a-ton-of-dirt.heading': 'A ton of topsoil is about 1.25 cubic yards',
+  'page.cubic-yards-in-a-ton-of-dirt.label': 'Yards in a ton of dirt',
+  'page.cubic-yards-in-a-ton-of-dirt.intro':
+    'A ton of topsoil or fill dirt is about 1.25 cubic yards, or 33.75 cubic feet, at the 0.80 tons a cubic yard that the New Mexico mining division publishes for both. Dry soil still in the ground is denser, about 1.12 tons a yard by the USDA figure, so a ton of it is only 0.89 cubic yards. The table below gives the cubic yards of topsoil for common beds and areas, with the topsoil calculator’s 10% for settling.',
+  'page.cubic-yards-in-a-ton-of-dirt.note':
+    'The figures add 10% for settling, the topsoil calculator’s default, and round up to whole bags of 0.75 or 1.5 cu ft. Each size opens the calculator with its measurements filled in.',
+  'page.cubic-yards-in-a-ton-of-dirt.about': 'Why a ton of dirt fills more than a yard',
+  'page.cubic-yards-in-a-ton-of-dirt.p1':
+    'Topsoil is lighter than gravel or sand: it holds organic matter and air, so a cubic yard of it weighs about 0.80 tons, 1,600 lb, against about 1.45 tons for sand. Turned the other way, one ton of loose topsoil fills 1.25 cubic yards, enough to cover 100 square feet a little over 4 in deep. Soil in the ground is packed tighter: the USDA puts the dry bulk density of a medium textured soil near 1.33 grams per cubic centimeter, about 1.12 tons a cubic yard, and it loosens and swells once it is dug and loaded.',
+  'page.cubic-yards-in-a-ton-of-dirt.p2':
+    'Moisture moves every one of these figures. The weights here are dry or unstated, and wet soil weighs more, so a ton delivered after rain fills fewer cubic yards than a ton of dry soil. When a yard sells topsoil by the ton, divide the tons by 0.80 for the cubic yards; when it sells by the cubic yard, multiply the yards by 0.80 for the weight your truck or trailer must carry. A 4 by 8 ft raised bed 12 in deep takes 1.30 cubic yards with 10% extra, about 1.04 tons.',
   'page.notFound.title': 'Page not found | Maestro Calc',
   'page.notFound.description':
     'The page you are looking for does not exist or has moved. Go back to the Maestro Calc home page.',

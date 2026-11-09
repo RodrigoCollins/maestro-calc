@@ -20,7 +20,7 @@ import { SITE } from '../site.config.ts';
 import { pageCount } from './files.ts';
 import { GUIDES } from '../routing/guides.ts';
 import { HUBS } from '../routing/hubs.ts';
-import { JOBS, JOB_UPDATES } from '../routing/jobs.ts';
+import { JOBS, JOB_UPDATES, QUESTION_IDS } from '../routing/jobs.ts';
 import { CALCULATOR_PAGES } from '../routing/templates.ts';
 import {
   GAF_SHINGLES_URL,
@@ -86,6 +86,7 @@ const site = {
   ),
   hubs: Object.fromEntries(Object.entries(HUBS).map(([id, { calculators }]) => [id, calculators])),
   jobs: Object.fromEntries(Object.entries(JOBS).map(([id, { calculator }]) => [id, calculator])),
+  jobGroups: Object.fromEntries(QUESTION_IDS.map((id) => [id, 'question'])),
 };
 const scratch = mkdtempSync(join(tmpdir(), 'check-site-'));
 afterAll(() => {

@@ -36,6 +36,12 @@ export interface Site {
   readonly hubs: Readonly<Record<string, readonly string[]>>;
   /** The calculator page of each job page (`JOBS`), by job id in table order; empty when none. */
   readonly jobs: Readonly<Record<string, string>>;
+  /**
+   * The group a job chains its sibling links in when it is not its calculator, by job id: the
+   * question pages (`QUESTION_IDS`) link one another, not the size jobs. A job left out chains with
+   * the other jobs of its calculator.
+   */
+  readonly jobGroups?: Readonly<Record<string, string>>;
 }
 
 /**

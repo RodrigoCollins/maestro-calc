@@ -325,7 +325,9 @@ const topsoilSteps = (id: JobId, locale: Locale): Steps => {
       math: `${jobView(id, locale).rows[0].label} = ${two(netVolume)} ft³`,
     },
     {
-      label: text('site.job.worked.topsoil.total'),
+      label: text(
+        state.waste.isZero() ? 'site.job.worked.topsoil.exact' : 'site.job.worked.topsoil.total',
+      ),
       math: `${two(netVolume)} ft³ × ${two(extra)} ${sign(asShown(netVolume, 2).mul(extra), total, 2)} ${two(total)} ft³ = ${two(valueIn(outputs.volumeYd3, yd3))} yd³ = ${two(valueIn(outputs.volumeM3, m3))} m³`,
     },
     {
@@ -335,7 +337,7 @@ const topsoilSteps = (id: JobId, locale: Locale): Steps => {
   ];
 };
 
-/** The volume in place, the extra, the weight compacted, the tons and the loose yards to order. */
+/** The volume in place, the extra, the weight as placed, the tons and the loose yards to order. */
 const gravelSteps = (id: JobId, locale: Locale): Steps => {
   const text = siteText(locale);
   const [raw] = JOBS[id].cases;
@@ -344,9 +346,10 @@ const gravelSteps = (id: JobId, locale: Locale): Steps => {
   const placed = valueIn(outputs.placedYd3, yd3);
   const extra = Rational.ONE.add(state.waste.div(Rational.of(100)));
   const total = placed.mul(extra);
-  const compacted = valueIn(GRAVEL_DENSITIES.compacted, lbYd3);
+  // the gravel weighs what its placement does: compacted in place, or loose as the yard measures it
+  const density = valueIn(GRAVEL_DENSITIES[state.placement], lbYd3);
   const loose = valueIn(GRAVEL_DENSITIES.loose, lbYd3);
-  const weight = total.mul(compacted);
+  const weight = total.mul(density);
   const pounds = Rational.of(2000);
   const shownWeight = asShown(weight, 2);
   return [
@@ -355,12 +358,18 @@ const gravelSteps = (id: JobId, locale: Locale): Steps => {
       math: `${jobView(id, locale).rows[0].label} = ${two(valueIn(outputs.placedYd3, ft3))} ft³ = ${two(placed)} yd³`,
     },
     {
-      label: text('site.job.worked.gravel.total'),
+      label: text(
+        state.waste.isZero() ? 'site.job.worked.gravel.exact' : 'site.job.worked.gravel.total',
+      ),
       math: `${two(placed)} yd³ × ${two(extra)} ${sign(asShown(placed, 2).mul(extra), total, 2)} ${two(total)} yd³`,
     },
     {
-      label: text('site.job.worked.gravel.weight'),
-      math: `${two(total)} yd³ × ${groupedInteger(BigInt(compacted.toString()))} lb ${sign(asShown(total, 2).mul(compacted), weight, 2)} ${two(weight)} lb`,
+      label: text(
+        state.placement === 'loose'
+          ? 'site.job.worked.gravel.weightLoose'
+          : 'site.job.worked.gravel.weight',
+      ),
+      math: `${two(total)} yd³ × ${groupedInteger(BigInt(density.toString()))} lb ${sign(asShown(total, 2).mul(density), weight, 2)} ${two(weight)} lb`,
     },
     {
       label: text('site.job.worked.gravel.tons'),
