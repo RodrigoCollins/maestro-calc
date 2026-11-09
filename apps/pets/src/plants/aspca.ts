@@ -1,0 +1,152 @@
+import type { PageSource } from '../guides.ts';
+
+/** The day every ASPCA plant entry below was read, and the other sources of the plant pages. */
+export const PLANTS_CHECKED = '2026-11-09';
+
+/** A species the ASPCA Animal Poison Control Center grades a plant for. */
+export type Species = 'cats' | 'dogs' | 'horses';
+
+/** What the ASPCA entry says for one species: toxic, non-toxic, or nothing either way. */
+export type Listing = 'toxic' | 'non-toxic' | 'not-listed';
+
+/**
+ * One entry of the ASPCA toxic and non-toxic plant list, copied word for word from its page
+ * (spelling included), so no verdict on the site is written by hand.
+ */
+export interface AspcaRecord {
+  /** The last part of the entry's address. */
+  readonly slug: string;
+  readonly name: string;
+  readonly scientific: string;
+  readonly family: string;
+  /** The "Toxicity" line: `Toxic to Dogs, Toxic to Cats, Toxic to Horses`. */
+  readonly toxicity: string;
+  /** The "Non-Toxicity" line: `Non-Toxic to Dogs, Non-Toxic to Cats`. */
+  readonly nonToxicity: string;
+  readonly principles?: string;
+  /** The "Clinical Signs" line. */
+  readonly signs?: string;
+  /** The "Additional Common Names" line. */
+  readonly otherNames?: string;
+}
+
+/** The ASPCA entries the plant pages and hubs cite, read on `PLANTS_CHECKED`. */
+export const ASPCA_RECORDS: readonly AspcaRecord[] = [
+  {slug: "african-violet", name: "African Violet", scientific: "Saintpaulia spp.", family: "Gesneriaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses"},
+  {slug: "aloe", name: "Aloe", scientific: "Aloe vera", family: "Liliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Saponins, anthraquinones", signs: "Vomiting (not horses), lethargy, diarrhea. The gel is considered edible."},
+  {slug: "amaryllis", name: "Amaryllis", scientific: "Amaryllis spp.", family: "Amaryllidaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Lycorine and others", signs: "Vomiting (not horses), depression, diarrhea, abdominal pain, hypersalivation, anorexia, tremors.", otherNames: "Many, including: Belladonna lily, Saint Joseph lily, Cape Belladonna, Naked Lady"},
+  {slug: "american-rubber-plant", name: "American Rubber Plant", scientific: "Peperomia obtusifolia", family: "Pipericeae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Pepper Face, Baby Rubber Plant"},
+  {slug: "areca-palm", name: "Areca Palm", scientific: "Dypsis lutescens", family: "Palmae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Golden Butterfly Palm, Cane Palm, Golden Feather Palm, Yellow Palm"},
+  {slug: "azalea", name: "Azalea", scientific: "Rhododendron spp", family: "Ericaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Grayantoxin", signs: "Vomiting (not in horses), diarrhea, weakness, cardiac failure", otherNames: "Rosebay, Rhododendron"},
+  {slug: "babys-breath", name: "Baby’s Breath", scientific: "Gypsophila elegans", family: "Caryophyllaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "Non-toxic", signs: "Mild GI upset such as vomiting, and diarrhea may be seen if ingested.", otherNames: "Maidens Breath"},
+  {slug: "bamboo", name: "Bamboo", scientific: "Phyllostachys aurea", family: "Gramineae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Golden Bamboo, Fishpole Bamboo"},
+  {slug: "bamboo-palm", name: "Bamboo Palm", scientific: "Chamaedorea elegans", family: "Palmae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Miniature Fish Tail Dwarf Palm, Parlor Palm, Good Luck Palm"},
+  {slug: "basil", name: "Basil", scientific: "Ocimum basilicum", family: "Lamiacea", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats", otherNames: "Saint Joseph's Wort, Thai Basil, Sweet Basil"},
+  {slug: "begonia", name: "Begonia", scientific: "Begonia spp.", family: "Begoniaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Soluble calcium oxalates", signs: "Kidney failure (in grazing animals), vomiting, salivation in dogs/cats. Most toxic part is underground.", otherNames: "Over 1,000 species and 10,000 hybrids"},
+  {slug: "boston-fern", name: "Boston Fern", scientific: "Nephrolepis exalta bostoniensis", family: "Dryopteridaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats"},
+  {slug: "calathea", name: "Calathea", scientific: "Calathea spp.", family: "Marantaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses"},
+  {slug: "calla-lily", name: "Calla Lily", scientific: "Zantedeschia aethiopica", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing", otherNames: "Calla Lily, Pig Lily, White Arum, Trumpet Lily, Florist's Calla, Garden Calla, Arum Lily"},
+  {slug: "carnation", name: "Carnation", scientific: "Dianthus caryophyllus", family: "Caryophyllaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Unknown irritant", signs: "Mild gastrointestinal signs, mild dermatitis", otherNames: "Pinks, Wild Carnation, Sweet William"},
+  {slug: "cast-iron-plant", name: "Cast Iron Plant", scientific: "Aspidistra elatior", family: "Liliaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Bar Room Plant, Iron Plant, Variegated Cast Iron Plant"},
+  {slug: "catnip", name: "Catnip", scientific: "Nepeta cataria", family: "Lamiaceae", toxicity: "Toxic to Cats", nonToxicity: "", principles: "Nepetalactone", signs: "Many cats love catnip, but it can cause vomiting and diarrhea. It makes some cats sedated and others stimulated.", otherNames: "Catswort, Catmint"},
+  {slug: "christmas-cactus", name: "Christmas Cactus", scientific: "Schlumbergera bridgesii", family: "Cactaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Easter Cactus"},
+  {slug: "chrysanthemum", name: "Chrysanthemum", scientific: "Chrysanthemum spp.", family: "Compositae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Sesquiterpene, lactones, pyrethrins and other potential irritants", signs: "Vomiting, diarrhea, hypersalivation, incoordination, dermatitis", otherNames: "Daisy, Mum; many varieties"},
+  {slug: "corn-plant", name: "Corn Plant", scientific: "Dracaena fragrans", family: "Asparagaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Saponins", signs: "Vomiting (occasionally with blood), depression, anorexia, hypersalivation, dilated pupils (cats).", otherNames: "Corn Plant, Cornstalk Plant, Dracaena, Dragon Tree, Ribbon Plant"},
+  {slug: "cyclamen", name: "Cyclamen", scientific: "Cyclamen spp", family: "Primulaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Terpenoid saponins", signs: "Salivation, vomiting, diarrhea. Following large ingestions of tubers: heart rhythm abnormalities, seizures, death", otherNames: "Sowbread"},
+  {slug: "daffodil", name: "Daffodil", scientific: "Narcissus spp", family: "Amaryllidaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Lycorine and other alkaloids", signs: "Vomiting, salvation, diarrhea; large ingestions cause convulsions, low blood pressure, tremors and cardiac arrhythmias. Bulbs are the most poisonous part.", otherNames: "Narcissus, Jonquil, Paper White"},
+  {slug: "daisy", name: "Daisy", scientific: "Chrysanthemum species", family: "Compositae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Sesquiterpene, lactones, pyrethrins and other potential irritants", signs: "Vomiting, diarrhea, hypersalivation, incoordination, dermatitis", otherNames: "Chrysanthemum, Mum"},
+  {slug: "day-lilies-many-varieties", name: "Day Lilies (many varieties)", scientific: "Hemerocallis spp.", family: "Xanthorrhoeaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs", principles: "Unknown", signs: "Cats: Vomiting, inappetence, lethargy, kidney failure, death."},
+  {slug: "devils-ivy", name: "Devils Ivy", scientific: "Epipremnum aureum", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, pain and swelling of mouth, tongue and lips, excessive drooling, vomiting (not horses), difficulty swallowing", otherNames: "Pothos, Golden Pothos, Taro Vine, Ivy Arum"},
+  {slug: "dieffenbachia", name: "Dieffenbachia", scientific: "Dieffenbachia", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates, proteolytic enzyme", signs: "Oral irritation, intense burning and irritation of mouth , tongue and lips, excessive drooling, vomiting, difficulty swallowing", otherNames: "Charming Dieffenbachia, Giant Dumb Cane, Tropic Snow, Dumbcane, Exotica, Spotted Dumb Cane, Exotica Perfection"},
+  {slug: "dracaena", name: "Dracaena", scientific: "Dracaena spp.", family: "Agavaceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Saponins", signs: "Vomiting (occasionally with blood), depression, anorexia, hypersalivation, dilated pupils (cats).", otherNames: "Corn Plant, Cornstalk Plant, Dragon Tree, Ribbon Plant"},
+  {slug: "easter-lily", name: "Easter Lily", scientific: "Lilium longiflorum", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Vomiting, inappetence, lethargy, kidney failure, and death is possible. Cats are only species known to be affected."},
+  {slug: "english-ivy", name: "English Ivy", scientific: "Hedera helix", family: "Araliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Triterpenoid saponins (hederagenin)", signs: "Vomiting, abdominal pain, hypersalivation, diarrhea. Foliage is more toxic than berries", otherNames: "Branching Ivy, Glacier Ivy, Needlepoint Ivy, Sweetheart Ivy, California Ivy"},
+  {slug: "eucalyptus", name: "Eucalyptus", scientific: "Eucalyptus species", family: "Myrtaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Essential oils: eucalyptol", signs: "Salivation, vomiting, diarrhea, depression, weakness", otherNames: "Many cultivars"},
+  {slug: "foxglove", name: "Foxglove", scientific: "Digitalis purpurea", family: "Scrophalariaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cardiac glycosides", signs: "Cardiac arrhythmias, vomiting, diarrhea, weakness, cardiac failure, death."},
+  {slug: "geranium", name: "Geranium", scientific: "Pelargonium species", family: "Geraniaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Geraniol, linalool", signs: "Vomiting, anorexia, depression, dermatitis", otherNames: "Many cultivars"},
+  {slug: "gerber-daisy", name: "Gerber Daisy", scientific: "Gerbera jamesonii", family: "Compositae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Transvaal Daisy, African Daisy, Veldt Daisy, Gerbera Daisy, Barberton Daisy"},
+  {slug: "gloriosa-lily", name: "Gloriosa Lily", scientific: "Gloriosa superba", family: "Liliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Colchicine related alkaloids", signs: "Salivation, vomiting (bloody), diarrhea (bloody), shock, kidney failure, liver damage, bone marrow suppression.", otherNames: "Glory Lily, Climbing Lily, Superb Lily"},
+  {slug: "golden-pothos", name: "Golden Pothos", scientific: "Epipremnum aureum", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing.", otherNames: "Pothos, Devil's Ivy, Taro Vine, Ivy Arum"},
+  {slug: "haworthia", name: "Haworthia", scientific: "Haworthia species", family: "Liliaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats", principles: "Non-toxic", otherNames: "Many cultivars"},
+  {slug: "heartleaf-philodendron", name: "Heartleaf Philodendron", scientific: "Philodendron hederaceum", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, pain and swelling of mouth, tongue and lips, excessive drooling, vomiting (not horses), difficulty swallowing", otherNames: "Cordatum, Sweetheart Plant"},
+  {slug: "heavenly-bamboo", name: "Heavenly Bamboo", scientific: "Nandina domestica", family: "Berberidaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cyanogenic glycosides", signs: "Weakness, incoordination, seizures, coma, respiratory failure, death (rare in pets).", otherNames: "Sacred Bamboo, Nandina"},
+  {slug: "hibiscus", name: "Hibiscus", scientific: "Hibiscus syriacus", family: "Malvaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "Non-toxic", otherNames: "Rose of Sharon, Rose of China"},
+  {slug: "holly", name: "Holly", scientific: "Ilex opaca", family: "Aquifoliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "saponins", signs: "Vomiting, diarrhea and depression. Leaves and berries are low toxicity.", otherNames: "English Holly, European Holly, Oregon Holly, Inkberry, Winterberry, American Holly"},
+  {slug: "hyacinth", name: "Hyacinth", scientific: "Hyacinthus orientalis", family: "Liliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Possibly narcissus-like alkaloids", signs: "Intense vomiting, diarrhea, occassionally with blood, depression and tremors."},
+  {slug: "hydrangea", name: "Hydrangea", scientific: "Hydrangea arborescens", family: "Hydrangeaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cyanogenic glycoside", signs: "Vomiting, depression, diarrhea. Cyanide intoxication is rare - usually produces more of a gastrointestinal disturbance.", otherNames: "Hortensia, Hills of Snow, Seven Bark"},
+  {slug: "indian-rubber-plant", name: "Indian Rubber Plant", scientific: "Ficus benjamina", family: "Moraceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Proteolytic enzyme (ficin), psoralen (ficusin)", otherNames: "Fig, Weeping Fig"},
+  {slug: "jade-plant", name: "Jade Plant", scientific: "Crassula argentea", family: "Crassulaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Unknown", signs: "Vomiting, depression, incoordination", otherNames: "Baby Jade, Dwarf rubber plant, Jade tree, Chinese rubber plant, Japanese rubber plant"},
+  {slug: "japanese-show-lily", name: "Japanese Show Lily", scientific: "Lilium speciosum", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Cats: Vomiting, inappetence, lethargy, kidney failure, death."},
+  {slug: "kalanchoe", name: "Kalanchoe", scientific: "Kalanchoe spp", family: "Crassulaceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Bufodienolides", signs: "Vomiting, diarrhea, abnormal heart rhythm (rare).", otherNames: "Mother-In-Law-Plant, Devils Backbone, Chandelier Plant, Mother of Millions"},
+  {slug: "lavender", name: "Lavender", scientific: "Lavendula angustifolia", family: "Lamiaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Linlool, linalyl acetate", signs: "Nausea, vomiting (not in horses), inappetant", otherNames: "Common Lavender, English Lavender"},
+  {slug: "lily", name: "Lily", scientific: "Lilium species", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Cats: kidney failure."},
+  {slug: "lily-palace", name: "Lily of the Palace", scientific: "Hippeastrum spp.", family: "Amaryllidaceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Lycorine and other alkaloids", signs: "Vomiting, salvation, diarrhea; large ingestions cause convulsions, low blood pressure, tremors and cardiac arrhythmias. Bulbs are the most poisonous part.", otherNames: "Amaryllis, Fire Lily, Barbados Lily, Ridderstjerne"},
+  {slug: "lily-valley", name: "Lily of the Valley", scientific: "Convallaria majalis", family: "Asparagaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cardenolides (convallarin, and others)", signs: "Vomiting, irregular heart beat, low blood pressure, disorientation, coma, seizures"},
+  {slug: "marijuana", name: "Marijuana", scientific: "Cannabis sativa", family: "Cannabaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Delta-9-THC (tetrahydrocannabinol)", signs: "Prolonged depression, vomiting, incoordination, sleepiness or excitation, hypersalivaton, dilated pupils, low blood pressure, low body temperature, seizure, coma, death (rare)", otherNames: "Indian Hemp, Hashish"},
+  {slug: "mint", name: "Mint", scientific: "Mentha sp.", family: "Lamiaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Essential Oils", signs: "Vomiting and diarrhea with large ingestions", otherNames: "Garden Mint"},
+  {slug: "mistletoe-american", name: "Mistletoe \"American\"", scientific: "Phoradendron flavescens", family: "Viscaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Toxalbumin, pharatoxin viscumin (Lectins, Phoratoxins)", signs: "Vomiting, diarrhea, low blood pressure (rare), difficulty breathing, low heart rate", otherNames: "American Mistletoe"},
+  {slug: "money-tree", name: "Money Tree", scientific: "Pachira aquatica", family: "Malvaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "None", signs: "Nausea, vomiting and loose stool", otherNames: "Money Plant"},
+  {slug: "oleander", name: "Oleander", scientific: "Nerium oleander", family: "Apocynaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cardiac glycosides", signs: "Drooling, abdominal pain, diarrhea, colic, depression, death", otherNames: "Rose-Bay"},
+  {slug: "parlor-palm", name: "Parlor Palm", scientific: "Chamaedorea elegans", family: "Palmae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats", otherNames: "Miniature Fish Tail Dwarf Palm, Good Luck Palm, Bamboo Palm"},
+  {slug: "peace-lily", name: "Peace Lily", scientific: "Spathiphyllum", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing.", otherNames: "Mauna Loa Peace Lily"},
+  {slug: "peony", name: "Peony", scientific: "Paeonis officinalis", family: "Paeniaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Paeonol", signs: "Vomiting, diarrhea, depression"},
+  {slug: "peruvian-lily", name: "Peruvian Lily", scientific: "Alstroemeria", family: "Liliaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Lily of the Incas, Princess Lily, Alstromeria"},
+  {slug: "phalaenopsis-orchid", name: "Phalaenopsis Orchid", scientific: "Phalaenopsis sp.", family: "Orchidaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Moth Orchid, Moon Orchid"},
+  {slug: "poinsettia", name: "Poinsettia", scientific: "Euphorbia pulcherrima", family: "Euphorbiaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Irritant sap", signs: "Irritating to the mouth and stomach, sometimes causing vomiting, but generally over-rated in toxicity."},
+  {slug: "pony-tail", name: "Pony Tail", scientific: "Beaucarnea recurvata", family: "Agavaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Elephant-Foot Tree, Pony Tail Plant, Bottle Palm"},
+  {slug: "prayer-plant", name: "Prayer Plant", scientific: "Calathea insignis", family: "Marantaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "Non-toxic", otherNames: "Maranta, Peacock Plant, Rattle Snake Plant, Red Veined Prayer, Zebra Plant"},
+  {slug: "ribbon-plant", name: "Ribbon Plant", scientific: "Dracaena spp.", family: "Agavaceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Saponins", signs: "Vomiting (occasionally with blood), depression, anorexia, hypersalivation, dilated pupils (cats).", otherNames: "Corn Plant, Cornstalk Plant, Dracaena, Dragon Tree"},
+  {slug: "rose", name: "Rose", scientific: "Rosa Species", family: "Rosaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "Non-toxic"},
+  {slug: "rosemary", name: "Rosemary", scientific: "Rosmarinus officinalis", family: "Lamiaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Anthos"},
+  {slug: "rubrum-lily", name: "Rubrum Lily", scientific: "Lilium speciosum", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Vomiting, inappetence, lethargy, kidney failure, and death is possible. Cats are only species known to be affected."},
+  {slug: "sago-palm", name: "Sago Palm", scientific: "Cycas revoluta, zamia species", family: "Cycadaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Cycasin", signs: "Vomiting, melena, icterus, increased thirst, hemorrhagic gastroenteritis, bruising, coagulopathy, liver damage, liver failure, death.", otherNames: "Coontie Palm, Cardboard Palm, cycads and zamias"},
+  {slug: "satin-pothos", name: "Satin Pothos", scientific: "Scindapsus pictus", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, pain and swelling of mouth, tongue and lips, excessive drooling, vomiting (not horses), difficulty swallowing", otherNames: "Silk Pothos"},
+  {slug: "snake-plant", name: "Snake Plant", scientific: "Sansevieria trifasciata", family: "Agavaceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Saponins", signs: "Nausea, vomiting, diarrhea.", otherNames: "Golden Bird's Nest, Mother-in-Law’s Tongue, Good Luck Plant"},
+  {slug: "spider-plant", name: "Spider Plant", scientific: "Chlorophytum comosum", family: "Asparagaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats", otherNames: "Ribbon Plant, Anthericum, Spider Ivy"},
+  {slug: "split-leaf-philodendron", name: "Split Leaf Philodendron", scientific: "Philodendron bipennifolium", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing.", otherNames: "Horsehead Philodendron, Cordatum, Heartleaf Philodendron, Panda Plant, Fiddle-Leaf, Fruit Salad Plant, Red Emerald, Red Princess, Saddle Leaf"},
+  {slug: "stargazer-lily", name: "Stargazer Lily", scientific: "Lilium orientalis", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Vomiting, inappetence, lethargy, kidney failure and death is possible. Cats are only species known to be affected."},
+  {slug: "sunflower", name: "Sunflower", scientific: "helianthus angustifolius", family: "Compositae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "swamp sunflower"},
+  {slug: "swedish-ivy", name: "Swedish Ivy", scientific: "Plectranthus australis", family: "Pilea: Uriticaeae; Plectranthus: Lamiaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", otherNames: "Creeping Charlie"},
+  {slug: "swiss-cheese-plant", name: "Swiss Cheese Plant", scientific: "Monstera deliciosa", family: "Araceae", toxicity: "Toxic to Dogs, Toxic to Cats", nonToxicity: "", principles: "Insoluble calcium oxalates", signs: "Oral irritation, intense burning and irritation of mouth, tongue and lips, excessive drooling, vomiting, difficulty swallowing.", otherNames: "Cutleaf Philodendron, Hurricane Plant, Ceriman, Mexican Breadfruit"},
+  {slug: "thyme", name: "Thyme", scientific: "Thymus vulgaris", family: "Lamiaceae", toxicity: "", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Cats, Non-Toxic to Horses", principles: "Non-toxic", otherNames: "Common Thyme, Garden Thyme, German Thyme"},
+  {slug: "tiger-lily", name: "Tiger Lily", scientific: "Lilium tigrinum", family: "Liliaceae", toxicity: "Toxic to Cats", nonToxicity: "Non-Toxic to Dogs, Non-Toxic to Horses", principles: "Unknown", signs: "Vomiting, inappetence, lethargy, kidney failure, and death is possible. Cats are only species known to be affected."},
+  {slug: "tomato-plant", name: "Tomato Plant", scientific: "Lycopersicon spp", family: "Solanaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Solanine", signs: "Hypersalivation, inappetence, severe gastrointestinal upset, depression, weakness, dilated pupils, slow heart rate; ripe fruit is non-toxic"},
+  {slug: "tulip", name: "Tulip", scientific: "Tulipa spp.", family: "Liliaceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Tulipalin A and B", signs: "Vomiting, depression, diarrhea, hypersalivation. Highest concentration of toxin in bulb."},
+  {slug: "weeping-fig", name: "Weeping Fig", scientific: "Ficus sp.", family: "Moraceae", toxicity: "Toxic to Dogs, Toxic to Cats, Toxic to Horses", nonToxicity: "", principles: "Proteolytic enzyme (ficin), psoralen (ficusin)", otherNames: "fig, indian rubber plant"},
+];
+
+const SPECIES_WORD: Readonly<Record<Species, string>> = {
+  cats: 'Cats',
+  dogs: 'Dogs',
+  horses: 'Horses',
+};
+
+/** What the entry says for `species`, read from its Toxicity and Non-Toxicity lines. */
+export const listingOf = (record: AspcaRecord, species: Species): Listing => {
+  const word = SPECIES_WORD[species];
+  const lines = (line: string, prefix: string): boolean =>
+    line
+      .split(',')
+      .map((part) => part.trim())
+      .includes(`${prefix} ${word}`);
+  if (lines(record.toxicity, 'Toxic to')) return 'toxic';
+  if (lines(record.nonToxicity, 'Non-Toxic to')) return 'non-toxic';
+  return 'not-listed';
+};
+
+/** The ASPCA entry `slug`. */
+export const aspcaOf = (slug: string): AspcaRecord => {
+  const found = ASPCA_RECORDS.find((record) => record.slug === slug);
+  if (found === undefined) throw new Error(`no ASPCA entry ${slug}`);
+  return found;
+};
+
+/** The address of an ASPCA entry. */
+export const aspcaUrlOf = (slug: string): string =>
+  `https://www.aspca.org/pet-care/aspca-poison-control/toxic-and-non-toxic-plants/${slug}`;
+
+/** An ASPCA entry as a page cites it. */
+export const aspcaSourceOf = (record: AspcaRecord): PageSource => ({
+  name: `ASPCA Animal Poison Control Center, Toxic and Non-Toxic Plant List: ${record.name} (${record.scientific})`,
+  url: aspcaUrlOf(record.slug),
+});
