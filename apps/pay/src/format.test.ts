@@ -1,8 +1,13 @@
 import { Rational, usd } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import {
+  clock12Text,
+  clock24Text,
+  clockBothText,
   clockFieldText,
   decimalHoursText,
+  durationDecimalText,
+  durationText,
   hoursMinutesText,
   hoursText,
   moneyText,
@@ -97,5 +102,52 @@ describe('shiftText', () => {
     [420, null, ''],
   ])('writes a shift from %j to %j as %j', (start, end, text) => {
     expect(shiftText(start, end)).toBe(text);
+  });
+});
+
+describe('durationText', () => {
+  it.each([
+    [675, '11 h 15 min'],
+    [-85, '−1 h 25 min'],
+    [59, '0 h 59 min'],
+    [0, '0 h 0 min'],
+    [600_000, '10,000 h 0 min'],
+  ])('writes %i minutes as %j', (minutes, text) => {
+    expect(durationText(minutes)).toBe(text);
+  });
+});
+
+describe('durationDecimalText', () => {
+  it.each([
+    [675, '11.25'],
+    [-85, '−1.42'],
+    [500, '8.33'],
+    [0, '0'],
+  ])('writes %i minutes as %j decimal hours', (minutes, text) => {
+    expect(durationDecimalText(minutes)).toBe(text);
+  });
+});
+
+describe('the 24-hour and the 12-hour clock', () => {
+  it.each([
+    [0, '0:00', '12:00 a. m.', '0:00 (12:00 a. m.)'],
+    [545, '9:05', '9:05 a. m.', '9:05 a. m.'],
+    [720, '12:00', '12:00 p. m.', '12:00 p. m.'],
+    [870, '14:30', '2:30 p. m.', '14:30 (2:30 p. m.)'],
+    [1439, '23:59', '11:59 p. m.', '23:59 (11:59 p. m.)'],
+  ])('writes %i as %j, %j and, in Spanish, %j', (minutes, h24, h12, both) => {
+    expect(clock24Text(minutes)).toBe(h24);
+    expect(clock12Text(minutes, 'es')).toBe(h12);
+    expect(clockBothText(minutes)).toBe(both);
+  });
+
+  it('writes the English 12-hour clock as the field does', () => {
+    expect(clock12Text(870, 'en')).toBe('2:30 pm');
+    expect(clock12Text(0, 'en')).toBe('12:00 am');
+  });
+
+  it('reads a time past midnight on the clock of the next day', () => {
+    expect(clock24Text(1440 + 90)).toBe('1:30');
+    expect(clockBothText(1440 + 870)).toBe('14:30 (2:30 p. m.)');
   });
 });

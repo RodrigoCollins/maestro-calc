@@ -1,5 +1,5 @@
 import { Rational } from '@maestro-calc/core';
-import { clockFieldText, hoursText, rateText } from '../format.ts';
+import { clockBothText, clockFieldText, hoursText, rateText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -57,14 +57,24 @@ const workSpanOf = (hours: number) => {
   return { workdays, last, week, weekday, calendarDays: week * 7 + weekday + 1 };
 };
 
+/**
+ * A time of day in the words of the page: `9:00 am` in English; in Spanish both clocks, for Spain
+ * and Mexico at once, `21:00 (9:00 p. m.)`.
+ */
+const TIME_OF = {
+  en: clockFieldText,
+  es: clockBothText,
+} as const satisfies Readonly<Record<Lang, (minutes: number) => string>>;
+
 /** The end of `hours` on the clock from Monday at 9:00 am: days later, weekday, time of day. */
-const clockEndOf = (hours: number) => {
+const clockEndOf = (hours: number, lang: Lang) => {
   const total = START + hours;
   const daysLater = Math.floor(total / DAY);
   return {
     daysLater,
     weekday: daysLater % 7,
-    time: clockFieldText((total % DAY) * 60),
+    start: TIME_OF[lang](START * 60),
+    time: TIME_OF[lang]((total % DAY) * 60),
   };
 };
 
@@ -82,10 +92,12 @@ const WORDS = {
         ? (parts[0] ?? '')
         : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1] ?? ''}`,
     headline: (h: number, days: string, exact: boolean, whole: string, rest: string): string =>
-      exact ? `${n(h)} hours is ${days} days` : `${n(h)} hours is ${days} days (${whole} ${rest})`,
+      exact
+        ? `${n(h)} hours is ${days} day${days === '1' ? '' : 's'}`
+        : `${n(h)} hours is ${days} days (${whole} ${rest})`,
     answer: (h: number, days: string, exact: boolean, split: string): string =>
       exact
-        ? `${n(h)} hours is exactly ${days} days: the hours divided by 24, the hours of a calendar day.`
+        ? `${n(h)} hours is exactly ${days} day${days === '1' ? '' : 's'}: the hours divided by 24, the hours of a calendar day.`
         : `${n(h)} hours is ${days} days, or ${split}: the hours divided by 24, rounded to two places.`,
     working: (workdays: string, workweeks: string): string =>
       `As working time, it is ${workdays} workdays of 8 hours, or ${workweeks} workweeks of 40 hours.`,
@@ -108,10 +120,12 @@ const WORDS = {
         `Days: ${n(h)} ÷ 24 = ${exact}${cut ? '…' : ''} days.`,
       split: (h: number, whole: number, rest: number): string =>
         rest === 0
-          ? `That is ${n(whole)} whole days: ${n(whole)} × 24 = ${n(h)} hours, with no hours left.`
-          : `${n(whole)} whole days are ${n(whole * DAY)} hours (${n(whole)} × 24), and ${n(h)} − ${n(whole * DAY)} = ${n(rest)} hours are left.`,
+          ? `That is ${n(whole)} whole day${whole === 1 ? '' : 's'}: ${n(whole)} × 24 = ${n(h)} hours, with no hours left.`
+          : `${n(whole)} whole ${whole === 1 ? 'day is' : 'days are'} ${n(whole * DAY)} hours (${n(whole)} × 24), and ${n(h)} − ${n(whole * DAY)} = ${n(rest)} hours are left.`,
       weeks: (h: number, weeks: number, days: string): string =>
-        `Weeks: ${n(h)} ÷ 168 = ${n(weeks)} whole week${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} hours); the ${n(h - weeks * WEEK)} hours left are ${days}.`,
+        h === weeks * WEEK
+          ? `Weeks: ${n(h)} ÷ 168 = ${n(weeks)} whole week${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} hours), with no hours left.`
+          : `Weeks: ${n(h)} ÷ 168 = ${n(weeks)} whole week${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} hours); the ${n(h - weeks * WEEK)} hours left are ${days}.`,
       minutes: (h: number): string =>
         `Minutes: ${n(h)} × 60 = ${n(h * 60)} minutes, or ${n(h * 3600)} seconds.`,
       work: (h: number, workdays: string, workweeks: string): string =>
@@ -123,8 +137,15 @@ const WORDS = {
         : `${n(days)} day${days === 1 ? '' : 's'} (${n(days * DAY)} hours) and ${n(hours)} hour${hours === 1 ? '' : 's'}`,
     weekdays: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     calendarHeading: (h: number): string => `${n(h)} hours on the clock and as working time`,
-    clock: (h: number, split: string, later: number, weekday: string, time: string): string =>
-      `Counted on the clock, day and night, ${n(h)} hours pass in ${split}: from a Monday at 9:00 am, they end ${n(later)} days later, on ${weekday} at ${time}.`,
+    clock: (
+      h: number,
+      split: string,
+      later: number,
+      weekday: string,
+      start: string,
+      time: string,
+    ): string =>
+      `Counted on the clock, day and night, ${n(h)} hours pass in ${split}: from a Monday at ${start}, they end ${n(later)} day${later === 1 ? '' : 's'} later, on ${weekday} at ${time}.`,
     work: (
       h: number,
       workdays: number,
@@ -140,12 +161,14 @@ const WORDS = {
           : week === 1
             ? `the ${weekday} of the next week`
             : `the ${weekday} of week ${n(week + 1)}`;
-      const weekends = week === 1 ? 'the weekend' : 'the weekends';
-      return `Counted as working time, 8 hours a day from Monday to Friday, the same ${n(h)} hours are ${n(workdays)} workdays${shorter} and take ${n(calendarDays)} calendar days with ${weekends}: from a Monday to ${where}.`;
+      const weekends = week === 0 ? '' : week === 1 ? ' with the weekend' : ' with the weekends';
+      return `Counted as working time, 8 hours a day from Monday to Friday, the same ${n(h)} hours are ${n(workdays)} workdays${shorter} and take ${n(calendarDays)} calendar days${weekends}: from a Monday to ${where}.`;
     },
     times: (span: string, ratioText: string): string =>
       `The working count takes ${ratioText} times as long as the clock count (${span}), and more once holidays or days off fall in between.`,
     weeksHeading: (h: number): string => `${n(h)} hours at 40, 45, 50 and 60 hours a week`,
+    underWeek: (h: number): string =>
+      `${n(h)} hours fit in one workweek of 40 hours, so none of them is overtime: federal law, the FLSA, pays time and a half only for the hours past 40 in a workweek (DOL Fact Sheet #23). Spread over weeks of different lengths:`,
     oneWeek: (h: number, over: number): string =>
       `Worked in a single workweek, ${n(h)} hours means ${n(over)} hours of overtime: federal law, the FLSA, pays time and a half for every hour past 40 in a workweek (DOL Fact Sheet #23). Spread over weeks of different lengths:`,
     manyWeeks: (h: number): string =>
@@ -182,11 +205,11 @@ const WORDS = {
         : `${parts.slice(0, -1).join(', ')} y ${parts[parts.length - 1] ?? ''}`,
     headline: (h: number, days: string, exact: boolean, whole: string, rest: string): string =>
       exact
-        ? `${n(h)} horas son ${days} días`
+        ? `${n(h)} horas son ${days} día${days === '1' ? '' : 's'}`
         : `${n(h)} horas son ${days} días (${whole} y ${rest})`,
     answer: (h: number, days: string, exact: boolean, split: string): string =>
       exact
-        ? `${n(h)} horas son exactamente ${days} días: las horas divididas por 24, las horas de un día de calendario.`
+        ? `${n(h)} horas son exactamente ${days} día${days === '1' ? '' : 's'}: las horas divididas por 24, las horas de un día de calendario.`
         : `${n(h)} horas son ${days} días, o ${split}: las horas divididas por 24, redondeadas a dos decimales.`,
     working: (workdays: string, workweeks: string): string =>
       `Como tiempo de trabajo, son ${workdays} jornadas de 8 horas, o ${workweeks} semanas laborales de 40 horas.`,
@@ -202,17 +225,19 @@ const WORDS = {
     edit: 'Cuenta las horas entre dos horas del día',
     others: 'Otras horas en días',
     common: 'Horas en días',
-    note: 'Un día de calendario tiene 24 horas y una semana 168. Aquí una jornada es de 8 horas y una semana laboral de 40, la semana a partir de la cual la ley federal paga horas extra.',
+    note: 'Un día de calendario tiene 24 horas y una semana 168. Aquí una jornada es de 8 horas y una semana laboral de 40, la semana a partir de la cual la ley federal de EE. UU. paga horas extra.',
     heading: 'Cómo se calcula',
     steps: {
       days: (h: number, exact: string, cut: boolean): string =>
         `Días: ${n(h)} ÷ 24 = ${exact}${cut ? '…' : ''} días.`,
       split: (h: number, whole: number, rest: number): string =>
         rest === 0
-          ? `Son ${n(whole)} días enteros: ${n(whole)} × 24 = ${n(h)} horas, sin horas de sobra.`
-          : `${n(whole)} días enteros son ${n(whole * DAY)} horas (${n(whole)} × 24), y quedan ${n(h)} − ${n(whole * DAY)} = ${n(rest)} horas.`,
+          ? `${whole === 1 ? 'Es 1 día entero' : `Son ${n(whole)} días enteros`}: ${n(whole)} × 24 = ${n(h)} horas, sin horas de sobra.`
+          : `${n(whole)} ${whole === 1 ? 'día entero' : 'días enteros'} son ${n(whole * DAY)} horas (${n(whole)} × 24), y quedan ${n(h)} − ${n(whole * DAY)} = ${n(rest)} horas.`,
       weeks: (h: number, weeks: number, days: string): string =>
-        `Semanas: ${n(h)} ÷ 168 = ${n(weeks)} semana${weeks === 1 ? '' : 's'} entera${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} horas); las ${n(h - weeks * WEEK)} horas que quedan son ${days}.`,
+        h === weeks * WEEK
+          ? `Semanas: ${n(h)} ÷ 168 = ${n(weeks)} semana${weeks === 1 ? '' : 's'} entera${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} horas), sin horas de sobra.`
+          : `Semanas: ${n(h)} ÷ 168 = ${n(weeks)} semana${weeks === 1 ? '' : 's'} entera${weeks === 1 ? '' : 's'} (${n(weeks * WEEK)} horas); las ${n(h - weeks * WEEK)} horas que quedan son ${days}.`,
       minutes: (h: number): string =>
         `Minutos: ${n(h)} × 60 = ${n(h * 60)} minutos, o ${n(h * 3600)} segundos.`,
       work: (h: number, workdays: string, workweeks: string): string =>
@@ -224,8 +249,15 @@ const WORDS = {
         : `${n(days)} día${days === 1 ? '' : 's'} (${n(days * DAY)} horas) y ${n(hours)} hora${hours === 1 ? '' : 's'}`,
     weekdays: ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'],
     calendarHeading: (h: number): string => `${n(h)} horas de reloj y de trabajo`,
-    clock: (h: number, split: string, later: number, weekday: string, time: string): string =>
-      `Contadas en el reloj, de día y de noche, ${n(h)} horas pasan en ${split}: desde un lunes a las 9:00 am, terminan ${n(later)} días después, el ${weekday} a las ${time}.`,
+    clock: (
+      h: number,
+      split: string,
+      later: number,
+      weekday: string,
+      start: string,
+      time: string,
+    ): string =>
+      `Contadas en el reloj, de día y de noche, ${n(h)} horas pasan en ${split}: desde un lunes a las ${start}, terminan ${n(later)} día${later === 1 ? '' : 's'} después, el ${weekday} a las ${time}.`,
     work: (
       h: number,
       workdays: number,
@@ -241,16 +273,20 @@ const WORDS = {
           : week === 1
             ? `el ${weekday} de la semana siguiente`
             : `el ${weekday} de la semana ${n(week + 1)}`;
-      const weekends = week === 1 ? 'el fin de semana' : 'los fines de semana';
-      return `Contadas como tiempo de trabajo, 8 horas al día de lunes a viernes, las mismas ${n(h)} horas son ${n(workdays)} jornadas${shorter} y llevan ${n(calendarDays)} días de calendario con ${weekends}: desde un lunes hasta ${where}.`;
+      const weekends =
+        week === 0 ? '' : week === 1 ? ' con el fin de semana' : ' con los fines de semana';
+      return `Contadas como tiempo de trabajo, 8 horas al día de lunes a viernes, las mismas ${n(h)} horas son ${n(workdays)} jornadas${shorter} y llevan ${n(calendarDays)} días de calendario${weekends}: desde un lunes hasta ${where}.`;
     },
     times: (span: string, ratioText: string): string =>
       `La cuenta de trabajo lleva ${ratioText} veces más que la del reloj (${span}), y más si en medio caen feriados o días libres.`,
-    weeksHeading: (h: number): string => `${n(h)} horas a 40, 45, 50 y 60 horas por semana`,
+    weeksHeading: (h: number): string =>
+      `Horas extra en EE. UU.: ${n(h)} horas a 40, 45, 50 y 60 horas por semana`,
+    underWeek: (h: number): string =>
+      `En EE. UU., ${n(h)} horas caben en una semana laboral de 40 horas, así que ninguna es hora extra: la ley federal, la FLSA, paga tiempo y medio solo por las horas después de 40 en la semana laboral (DOL Fact Sheet #23). Repartidas en semanas de distinto largo:`,
     oneWeek: (h: number, over: number): string =>
-      `Trabajadas en una sola semana laboral, ${n(h)} horas son ${n(over)} horas extra: la ley federal, la FLSA, paga tiempo y medio por cada hora después de 40 en la semana laboral (DOL Fact Sheet #23). Repartidas en semanas de distinto largo:`,
+      `En EE. UU., trabajadas en una sola semana laboral, ${n(h)} horas son ${n(over)} horas extra: la ley federal, la FLSA, paga tiempo y medio por cada hora después de 40 en la semana laboral (DOL Fact Sheet #23). Repartidas en semanas de distinto largo:`,
     manyWeeks: (h: number): string =>
-      `${n(h)} horas son más de lo que cabe en una semana (168 horas), así que se reparten en varias semanas laborales. La FLSA paga tiempo y medio por cada hora después de 40 en la semana laboral (DOL Fact Sheet #23), así que el largo de la semana decide cuántas son horas extra:`,
+      `${n(h)} horas son más de lo que cabe en una semana (168 horas), así que se reparten en varias semanas laborales. En EE. UU., la FLSA paga tiempo y medio por cada hora después de 40 en la semana laboral (DOL Fact Sheet #23), así que el largo de la semana decide cuántas son horas extra:`,
     weeksCaption: (h: number): string => `${n(h)} horas de trabajo`,
     weeksHead: ['Horas por semana', 'Semanas', 'Horas extra'],
     weeksAfter:
@@ -267,7 +303,7 @@ const WORDS = {
     yearsHead: ['Horas por semana', 'Horas al año (52 semanas)', 'Años'],
     line: { 30: '30 (tiempo completo del IRS)', 35: '35 (tiempo completo de la BLS)', 40: '40' },
     yearsAfter:
-      'El IRS cuenta 30 horas por semana, o 130 al mes, como tiempo completo para la cobertura médica del empleador, y la Oficina de Estadísticas Laborales (BLS) cuenta 35 o más como tiempo completo en sus estadísticas de empleo. No se descuentan semanas libres: con dos semanas sin pago, un año de semanas de 40 horas son 2,000 horas.',
+      'En EE. UU., el IRS cuenta 30 horas por semana, o 130 al mes, como tiempo completo para la cobertura médica del empleador, y la Oficina de Estadísticas Laborales (BLS) cuenta 35 o más como tiempo completo en sus estadísticas de empleo. No se descuentan semanas libres: con dos semanas sin pago, un año de semanas de 40 horas son 2,000 horas.',
   },
 } as const;
 
@@ -310,7 +346,7 @@ const sectionsOf = (
   const workdays = ratio(h, WORKDAY);
   const workweeks = ratio(h, WORKWEEK);
   const span = workSpanOf(h);
-  const end = clockEndOf(h);
+  const end = clockEndOf(h, lang);
   const weekday = (index: number): string => w.weekdays[index] ?? '';
   const sections: LongTailSection[] = [
     {
@@ -331,21 +367,17 @@ const sectionsOf = (
       id: 'calendar',
       heading: w.calendarHeading(h),
       paragraphs: [
-        w.clock(h, splitOf(h, lang, false), end.daysLater, weekday(end.weekday), end.time),
+        w.clock(
+          h,
+          splitOf(h, lang, false),
+          end.daysLater,
+          weekday(end.weekday),
+          end.start,
+          end.time,
+        ),
         w.work(h, span.workdays, span.last, span.calendarDays, span.week, weekday(span.weekday)),
         w.times(splitOf(h, lang, false), hoursText(Rational.of(span.calendarDays * DAY, h))),
       ],
-    },
-    {
-      id: 'weeks',
-      heading: w.weeksHeading(h),
-      paragraphs: [h <= WEEK ? w.oneWeek(h, h - WORKWEEK) : w.manyWeeks(h)],
-      table: {
-        caption: w.weeksCaption(h),
-        head: w.weeksHead,
-        rows: WEEKLY.map((weekly) => [String(weekly), ratio(h, weekly), n(overtimeOf(h, weekly))]),
-      },
-      after: [w.weeksAfter],
     },
     {
       id: 'shifts',
@@ -356,6 +388,20 @@ const sectionsOf = (
         head: w.shiftsHead,
         rows: SHIFTS.map((shift) => [String(shift), ratio(h, shift), ratio(h, shift * 5)]),
       },
+    },
+    // The overtime rule is US law: after the time arithmetic, and labelled so in Spanish.
+    {
+      id: 'weeks',
+      heading: w.weeksHeading(h),
+      paragraphs: [
+        h <= WORKWEEK ? w.underWeek(h) : h <= WEEK ? w.oneWeek(h, h - WORKWEEK) : w.manyWeeks(h),
+      ],
+      table: {
+        caption: w.weeksCaption(h),
+        head: w.weeksHead,
+        rows: WEEKLY.map((weekly) => [String(weekly), ratio(h, weekly), n(overtimeOf(h, weekly))]),
+      },
+      after: [w.weeksAfter],
     },
   ];
   if (h < YEARS_FROM) return { sections, sources: [SOURCES.factSheet23] };

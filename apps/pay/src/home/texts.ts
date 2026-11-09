@@ -23,6 +23,12 @@ export interface HomeTexts {
   readonly sources: string;
   readonly otherLang: string;
   readonly tools: readonly ToolText[];
+  /** Who runs the site, in the main content: the about, editorial and embed pages. */
+  readonly about: {
+    readonly heading: string;
+    readonly body: string;
+    readonly links: readonly { readonly label: string; readonly href: string }[];
+  };
 }
 
 export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
@@ -41,6 +47,15 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
     soon: 'SOON',
     sources: 'Rules from the US Department of Labor (FLSA) and the California Labor Commissioner.',
     otherLang: 'Español',
+    about: {
+      heading: 'About Cuenta Horas',
+      body: 'Cuenta Horas is a set of free calculators made by its editorial team. The time figures are plain arithmetic; the pay figures follow the US rules each page cites, from the Department of Labor and the state labor offices. Every page shows its steps, so you can check them.',
+      links: [
+        { label: 'Who we are and how we work', href: '/about' },
+        { label: 'How we check the figures: our editorial policy', href: '/editorial-policy' },
+        { label: 'Put a calculator on your own site', href: '/embed-calculators' },
+      ],
+    },
     tools: [
       {
         id: 'time-card',
@@ -57,7 +72,8 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       {
         id: 'hours',
         title: 'Hours between two times',
-        summary: 'From start to end, less the break, in hours and minutes and decimals.',
+        summary:
+          'The time between two times, less a break, and hours and minutes added or subtracted.',
         href: '/hours-calculator',
       },
       {
@@ -126,6 +142,18 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
     sources:
       'Reglas del Departamento de Trabajo de EE. UU. (FLSA) y del Comisionado Laboral de California.',
     otherLang: 'English',
+    about: {
+      heading: 'Sobre Cuenta Horas',
+      body: 'Cuenta Horas es un conjunto de calculadoras gratis que hace su equipo editorial. Las cuentas de tiempo son aritmética pura y sirven en cualquier país; las de pago siguen las reglas de EE. UU. que cita cada página, del Departamento de Trabajo y de las oficinas laborales de cada estado. Cada página muestra sus pasos para que puedas revisarlos.',
+      links: [
+        { label: 'Quiénes somos y cómo trabajamos', href: '/es/acerca' },
+        {
+          label: 'Cómo revisamos las cifras: nuestra política editorial',
+          href: '/es/politica-editorial',
+        },
+        { label: 'Pon una calculadora en tu sitio', href: '/es/calculadoras-para-tu-sitio' },
+      ],
+    },
     tools: [
       {
         id: 'time-card',
@@ -141,8 +169,9 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
       },
       {
         id: 'hours',
-        title: 'Horas entre dos horas',
-        summary: 'De la entrada a la salida, menos el descanso, en horas y minutos y en decimales.',
+        title: 'Calculadora de horas y minutos',
+        summary:
+          'El tiempo entre dos horas, menos un descanso, y la suma y la resta de horas y minutos.',
         href: '/es/calculadora-de-horas',
       },
       {

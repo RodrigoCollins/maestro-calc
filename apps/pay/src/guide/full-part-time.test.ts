@@ -130,7 +130,7 @@ describe('the full-time and part-time guides', () => {
         expect(texts.ctas[0]?.href).toBe(HOURS_PATHS[lang]);
         for (const { href } of texts.ctas)
           expect(href.startsWith('/es/'), href).toBe(lang === 'es');
-        expect(HOURS_TEXTS[lang].links.map(({ href }) => href)).toContain(PATHS[kind][lang]);
+        expect(HOURS_TEXTS[lang].usLinks.map(({ href }) => href)).toContain(PATHS[kind][lang]);
         expect(texts.disclaimer).toMatch(/not legal advice|no asesoría legal/);
       }
     });

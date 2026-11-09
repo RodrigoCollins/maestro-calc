@@ -6,10 +6,11 @@ export interface ClockParseError {
 
 const MINUTES_PER_DAY = 1440;
 
-// `h`, `h:mm`, then an optional meridiem `a`, `am`, `a.m.` (or `p`), one optional space before it;
+// `h`, `h:mm`, then an optional meridiem `a`, `am`, `a.m.`, `a. m.` (the Spanish style, RAE) or `a.m`
+// (or `p`), one optional space before it;
 // or `HHMM`, the canonical URL form, which takes no meridiem. ASCII digits only; the caller trims
 // the surrounding whitespace.
-const CLOCK = /^([0-9]{1,2})(?::([0-9]{2}))?(?: ?([ap])(?:m|\.m\.)?)?$/i;
+const CLOCK = /^([0-9]{1,2})(?::([0-9]{2}))?(?: ?([ap])(?:m|\. ?m\.?)?)?$/i;
 const COMPACT = /^([0-9]{2})([0-9]{2})$/;
 
 /**

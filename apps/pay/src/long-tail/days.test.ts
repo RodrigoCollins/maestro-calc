@@ -36,7 +36,7 @@ const textOf = (section: LongTailSection): string =>
 describe('hours in days long-tail pages', () => {
   it('cover the hours people ask the days of, in ascending order', () => {
     expect(DAYS.map(({ hours }) => hours)).toEqual([
-      48, 72, 96, 100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
+      24, 36, 48, 72, 96, 100, 120, 168, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
     ]);
   });
 
@@ -143,7 +143,10 @@ describe('hours in days long-tail pages', () => {
       'they end 417 days later, on Friday at 1:00 am',
     );
     expect(textOf(sectionOf(72, 'calendar', 'es'))).toContain(
-      'desde un lunes a las 9:00 am, terminan 3 días después, el jueves a las 9:00 am',
+      'desde un lunes a las 9:00 a. m., terminan 3 días después, el jueves a las 9:00 a. m.',
+    );
+    expect(textOf(sectionOf(100, 'calendar', 'es'))).toContain(
+      'el viernes a las 13:00 (1:00 p. m.)',
     );
   });
 
@@ -200,6 +203,72 @@ describe('hours in days long-tail pages', () => {
     }
   });
 
+  it('write one day, one week and the hours under a workweek in good grammar', () => {
+    // 24 / 24 = 1; 9 + 24 = 33 = 24 + 9: Tuesday 9:00 am; 3 workdays from a Monday: Wednesday
+    const one = longTailPageOf(daysOf(24), 'en');
+    expect(one.title).toBe('24 hours is 1 day | Cuenta Horas');
+    expect(one.lead).toMatch(/^24 hours is exactly 1 day: /);
+    expect(longTailPageOf(daysOf(24), 'es').title).toBe('24 horas son 1 día | Cuenta Horas');
+    const clock = textOf(sectionOf(24, 'calendar'));
+    expect(clock).toContain('they end 1 day later, on Tuesday at 9:00 am');
+    expect(clock).toContain(
+      'take 3 calendar days: from a Monday to the Wednesday of the same week',
+    );
+    expect(textOf(sectionOf(24, 'calendar', 'es'))).toContain(
+      'llevan 3 días de calendario: desde un lunes hasta el miércoles de la misma semana',
+    );
+    // 36 / 24 = 1.5, 1 day and 12 hours; 9 + 36 = 45 = 24 + 21: Tuesday 9:00 pm
+    const half = longTailPageOf(daysOf(36), 'en');
+    expect(half.title).toBe('36 hours is 1.5 days (1 day 12 hours) | Cuenta Horas');
+    expect(textOf(sectionOf(36, 'calendar'))).toContain('on Tuesday at 9:00 pm');
+    expect(textOf(sectionOf(36, 'calendar', 'es'))).toContain(
+      'terminan 1 día después, el martes a las 21:00 (9:00 p. m.)',
+    );
+    // 36 is under 40: no overtime in one week
+    const weeks = textOf(sectionOf(36, 'weeks'));
+    expect(weeks).toContain('none of them is overtime');
+    expect(weeks).not.toMatch(/−|-\d/);
+    expect(sectionOf(36, 'weeks').table?.rows).toEqual([
+      ['40', '0.9', '0'],
+      ['45', '0.8', '0'],
+      ['50', '0.72', '0'],
+      ['60', '0.6', '0'],
+    ]);
+    expect(textOf(sectionOf(24, 'worked'))).toContain(
+      'That is 1 whole day: 1 × 24 = 24 hours, with no hours left.',
+    );
+    expect(textOf(sectionOf(24, 'worked', 'es'))).toContain(
+      'Es 1 día entero: 1 × 24 = 24 horas, sin horas de sobra.',
+    );
+    expect(textOf(sectionOf(36, 'worked'))).toContain(
+      '1 whole day is 24 hours (1 × 24), and 36 − 24 = 12 hours are left.',
+    );
+    expect(textOf(sectionOf(36, 'worked', 'es'))).toContain(
+      '1 día entero son 24 horas (1 × 24), y quedan 36 − 24 = 12 horas.',
+    );
+    // 168 = 1 week exactly
+    const week = textOf(sectionOf(168, 'worked'));
+    expect(week).toContain('168 ÷ 168 = 1 whole week (168 hours), with no hours left');
+    expect(rowOf(168, 'split')).toBe('1 week');
+    expect(longTailPageOf(daysOf(168), 'en').title).toBe('168 hours is 7 days | Cuenta Horas');
+    expect(longTailPageOf(daysOf(120), 'es').title).toBe('120 horas son 5 días | Cuenta Horas');
+  });
+
+  it('count the time first and leave the US overtime rule for last, labelled in Spanish', () => {
+    for (const job of DAYS) {
+      const ids = longTailPageOf(job, 'es').sections?.map(({ id }) => id) ?? [];
+      expect(ids.slice(0, 4)).toEqual(['worked', 'calendar', 'shifts', 'weeks']);
+    }
+    const es = longTailPageOf(daysOf(72), 'es');
+    expect(es.note).toContain('ley federal de EE. UU.');
+    expect(sectionOf(72, 'weeks', 'es').heading).toBe(
+      'Horas extra en EE. UU.: 72 horas a 40, 45, 50 y 60 horas por semana',
+    );
+    expect(textOf(sectionOf(72, 'weeks', 'es'))).toMatch(/^En EE\. UU\., /);
+    expect(textOf(sectionOf(1000, 'weeks', 'es'))).toContain('En EE. UU., la FLSA');
+    expect(textOf(sectionOf(1000, 'years', 'es'))).toContain('En EE. UU., el IRS');
+  });
+
   it('give every page its sections with no broken figure, in both languages', () => {
     for (const job of DAYS) {
       for (const lang of LANGS) {
@@ -223,8 +292,8 @@ describe('hours in days long-tail pages', () => {
         expect(page.others.links.map(({ href }) => href)).not.toContain(page.paths[lang]);
       }
     }
-    expect(longTailPageOf(daysOf(48), 'en').others.links.map(({ href }) => href)).toEqual(
-      [72, 96, 100, 200, 300, 400].map((h) => `/pay/how-many-days-is-${String(h)}-hours`),
+    expect(longTailPageOf(daysOf(24), 'en').others.links.map(({ href }) => href)).toEqual(
+      [36, 48, 72, 96, 100, 120].map((h) => `/pay/how-many-days-is-${String(h)}-hours`),
     );
   });
 

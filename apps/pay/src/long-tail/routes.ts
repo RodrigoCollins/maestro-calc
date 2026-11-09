@@ -432,7 +432,7 @@ const days = (hours: number): Days => ({
 
 /** In ascending order: the hours calculator lists them, and a page links its nearest, so. */
 export const DAYS: readonly Days[] = [
-  48, 72, 96, 100, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
+  24, 36, 48, 72, 96, 100, 120, 168, 200, 300, 400, 500, 1000, 1500, 2000, 3000, 10000,
 ].map(days);
 
 /**

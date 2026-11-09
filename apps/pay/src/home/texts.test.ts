@@ -6,6 +6,9 @@ import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { PTO_PATHS } from '../pto/texts.ts';
 import { SHIFT_PATHS } from '../shift/texts.ts';
 import { TIPPED_PATHS } from '../tipped/texts.ts';
+import { ABOUT_PATHS } from '../about/texts.ts';
+import { EDITORIAL_PATHS } from '../editorial/paths.ts';
+import { EMBED_PATHS } from '../embed/texts.ts';
 import { HOME_TEXTS } from './texts.ts';
 
 const pageFile = (href: string): string =>
@@ -81,6 +84,18 @@ describe('home texts', () => {
     for (const texts of Object.values(HOME_TEXTS)) {
       expect(texts.title.length).toBeLessThanOrEqual(70);
       expect(texts.description.length).toBeLessThanOrEqual(160);
+    }
+  });
+
+  it('links the about page and the embed page from its own content, not only the footer', () => {
+    for (const lang of ['en', 'es'] as const) {
+      const { about } = HOME_TEXTS[lang];
+      expect(about.links.map(({ href }) => href)).toEqual([
+        ABOUT_PATHS[lang],
+        EDITORIAL_PATHS[lang],
+        EMBED_PATHS[lang],
+      ]);
+      expect(about.body.length).toBeGreaterThan(120);
     }
   });
 });
