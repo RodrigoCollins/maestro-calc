@@ -1,0 +1,167 @@
+import { deflateRawSync } from 'node:zlib';
+import { describe, expect, it } from 'vitest';
+import {
+  gridValue,
+  parseBilHeader,
+  renderZoneSourceModule,
+  renderZonesModule,
+  stationZoneOf,
+  zipEntry,
+  type Grid,
+} from './zones-build.ts';
+
+/** The header of the PRISM 2023 conterminous US grid, as shipped in `phzm_us_grid_2023.zip`. */
+const PRISM_HEADER = `BYTEORDER      I
+LAYOUT         BIL
+NROWS          3105
+NCOLS          7025
+NBANDS         1
+NBITS          32
+BANDROWBYTES   28100
+TOTALROWBYTES  28100
+PIXELTYPE      FLOAT
+ULXMAP         -125.016666666666
+ULYMAP         49.933333333333
+XDIM           0.008333333333
+YDIM           0.008333333333
+NODATA         -9999
+`;
+
+/** A 3 x 2 little-endian float grid, cell centers at x = 0, 1, 2 and y = 10, 9. */
+const tinyGrid = (): Grid => {
+  const values = [1.25, -9999, 3.5, -4, 5, 6.75];
+  const data = Buffer.alloc(values.length * 4);
+  values.forEach((value, index) => data.writeFloatLE(value, index * 4));
+  return {
+    header: { rows: 2, cols: 3, ulx: 0, uly: 10, dx: 1, dy: 1, nodata: -9999 },
+    data,
+  };
+};
+
+/** A zip of stored and deflated files, the way any zip tool writes its central directory. */
+const zipOf = (files: readonly (readonly [name: string, text: string, deflate: boolean])[]) => {
+  const locals: Buffer[] = [];
+  const centrals: Buffer[] = [];
+  let offset = 0;
+  for (const [name, text, deflate] of files) {
+    const raw = Buffer.from(text);
+    const body = deflate ? deflateRawSync(raw) : raw;
+    const nameBytes = Buffer.from(name);
+    const local = Buffer.alloc(30);
+    local.writeUInt32LE(0x04034b50, 0);
+    local.writeUInt16LE(deflate ? 8 : 0, 8);
+    local.writeUInt32LE(body.length, 18);
+    local.writeUInt32LE(raw.length, 22);
+    local.writeUInt16LE(nameBytes.length, 26);
+    const central = Buffer.alloc(46);
+    central.writeUInt32LE(0x02014b50, 0);
+    central.writeUInt16LE(deflate ? 8 : 0, 10);
+    central.writeUInt32LE(body.length, 20);
+    central.writeUInt32LE(raw.length, 24);
+    central.writeUInt16LE(nameBytes.length, 28);
+    central.writeUInt32LE(offset, 42);
+    locals.push(local, nameBytes, body);
+    centrals.push(central, nameBytes);
+    offset += local.length + nameBytes.length + body.length;
+  }
+  const directory = Buffer.concat(centrals);
+  const end = Buffer.alloc(22);
+  end.writeUInt32LE(0x06054b50, 0);
+  end.writeUInt16LE(files.length, 8);
+  end.writeUInt16LE(files.length, 10);
+  end.writeUInt32LE(directory.length, 12);
+  end.writeUInt32LE(offset, 16);
+  return Buffer.concat([...locals, directory, end]);
+};
+
+describe('parseBilHeader', () => {
+  it('reads the grid geometry of the PRISM header', () => {
+    expect(parseBilHeader(PRISM_HEADER)).toEqual({
+      rows: 3105,
+      cols: 7025,
+      ulx: -125.016666666666,
+      uly: 49.933333333333,
+      dx: 0.008333333333,
+      dy: 0.008333333333,
+      nodata: -9999,
+    });
+  });
+
+  it('refuses a grid it cannot read as little-endian 32-bit floats', () => {
+    expect(() => parseBilHeader(PRISM_HEADER.replace('BYTEORDER      I', 'BYTEORDER M'))).toThrow(
+      'BYTEORDER',
+    );
+    expect(() => parseBilHeader(PRISM_HEADER.replace('PIXELTYPE      FLOAT', ''))).toThrow(
+      'PIXELTYPE',
+    );
+    expect(() => parseBilHeader(PRISM_HEADER.replace('NROWS          3105', ''))).toThrow('NROWS');
+  });
+});
+
+describe('gridValue', () => {
+  it('reads the cell whose center is nearest the point', () => {
+    const grid = tinyGrid();
+    expect(gridValue(grid, 10, 0)).toBe(1.25);
+    expect(gridValue(grid, 10.4, 2.3)).toBe(3.5);
+    expect(gridValue(grid, 9.2, 0.6)).toBe(5);
+    expect(gridValue(grid, 8.6, 1.6)).toBe(6.75);
+  });
+
+  it('gives null for a no-data cell and for a point off the grid', () => {
+    const grid = tinyGrid();
+    expect(gridValue(grid, 10, 1)).toBeNull();
+    expect(gridValue(grid, 12, 0)).toBeNull();
+    expect(gridValue(grid, 9, -0.6)).toBeNull();
+    expect(gridValue(grid, 8.4, 0)).toBeNull();
+  });
+});
+
+describe('stationZoneOf', () => {
+  it('gives the half zone of the raw value and the value to a tenth of a degree', () => {
+    expect(stationZoneOf(4.97)).toEqual(['7a', 5]);
+    expect(stationZoneOf(-7.34)).toEqual(['6a', -7.3]);
+    expect(stationZoneOf(-0.04)).toEqual(['6b', 0]);
+  });
+});
+
+describe('zipEntry', () => {
+  it('extracts one named file, stored or deflated', () => {
+    const zip = zipOf([
+      ['terms.txt', 'Terms of Use', false],
+      ['grid.hdr', PRISM_HEADER, true],
+    ]);
+    expect(zipEntry(zip, 'grid.hdr').toString('utf8')).toBe(PRISM_HEADER);
+    expect(zipEntry(zip, 'terms.txt').toString('utf8')).toBe('Terms of Use');
+    expect(() => zipEntry(zip, 'grid.bil')).toThrow('grid.bil');
+  });
+});
+
+describe('renderZonesModule', () => {
+  it('writes the zone of every station, sorted by id', () => {
+    expect(
+      renderZonesModule([
+        { id: 'USW00094846', zone: '6a', min: -6.9 },
+        { id: 'USC00110055', zone: '7a', min: 0.2 },
+      ]),
+    ).toBe(`// Generated by packages/lawn-data/scripts/build-zones.ts: do not edit.
+
+import type { StationZone } from './zone.ts';
+
+/** The USDA half zone and average annual extreme minimum (°F) of each contiguous-US station. */
+export const STATION_ZONES: Readonly<Record<string, StationZone>> = {
+  USC00110055: ['7a', 0.2],
+  USW00094846: ['6a', -6.9],
+};
+`);
+  });
+});
+
+describe('renderZoneSourceModule', () => {
+  it('records the day the grid was pulled and the sources to cite', () => {
+    const text = renderZoneSourceModule('2026-11-08');
+    expect(text).toContain("pulled: '2026-11-08'");
+    expect(text).toContain('https://planthardiness.ars.usda.gov/');
+    expect(text).toContain('https://prism.oregonstate.edu/phzm/data/2023/phzm_us_grid_2023.zip');
+    expect(() => renderZoneSourceModule('8 Nov')).toThrow(RangeError);
+  });
+});

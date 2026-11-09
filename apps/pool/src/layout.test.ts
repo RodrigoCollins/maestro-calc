@@ -33,6 +33,9 @@ describe('the footer', () => {
       { href: '/how-long-to-run-pool-pump', label: 'How long to run your pump' },
       { href: '/salt-water-pool-vs-chlorine-pool', label: 'Salt water vs chlorine' },
       { href: '/how-to-shock-a-pool', label: 'How to shock a pool' },
+      { href: '/how-often-to-shock-a-pool', label: 'How often to shock a pool' },
+      { href: '/how-to-fix-a-green-pool', label: 'How to fix a green pool' },
+      { href: '/why-is-my-pool-cloudy', label: 'Why is my pool cloudy' },
       { href: '/how-to-lower-ph-in-a-pool', label: 'How to lower pool pH' },
       { href: '/how-to-raise-calcium-hardness-in-a-pool', label: 'How to raise calcium hardness' },
       {

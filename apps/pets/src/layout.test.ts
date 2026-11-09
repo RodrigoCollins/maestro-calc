@@ -16,12 +16,15 @@ describe('the header and footer', () => {
     ]);
   });
 
-  // the sixteen dog years pages are linked from the home, the dog age chart and each other instead
+  // the sixteen dog years pages are linked from the home, the dog age chart and each other
+  // instead, and the food pages from the food hub (in the footer) and each other
   it('link every other article of the site from the footer, so no page is an orphan', () => {
     const footer = footerLinks().map(({ href }) => href);
     const articles = ROUTES.filter(
-      ({ kind, id }) => kind === 'article' && !id.startsWith('dog-years-'),
+      ({ kind, id }) =>
+        kind === 'article' && !id.startsWith('dog-years-') && !id.startsWith('food-'),
     );
+    expect(footer).toContain('/can-dogs-eat');
     expect([...footer].sort()).toEqual(articles.map(({ path }) => path).sort());
     const ages = ROUTES.filter(({ id }) => id.startsWith('dog-years-')).map(({ path }) => path);
     expect(ages).toHaveLength(16);

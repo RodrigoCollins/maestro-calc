@@ -41,19 +41,17 @@ const shiftOf = (start: number, end: number) => {
 
 describe('how long until a time of day long-tail pages', () => {
   it('cover the times people count down to, in the order of the day', () => {
-    expect(UNTILS.map(({ slug }) => slug.en)).toEqual([
-      'how-long-until-12-00-am',
-      'how-long-until-12-00-pm',
-      'how-long-until-2-15-pm',
-      'how-long-until-2-30-pm',
-      'how-long-until-2-45-pm',
-      'how-long-until-3-00-pm',
-      'how-long-until-3-30-pm',
-      'how-long-until-4-00-pm',
-      'how-long-until-5-00-pm',
-    ]);
+    const hours = Array.from({ length: 24 }, (_, hour) => hour * 60);
+    const halves = Array.from({ length: 15 }, (_, i) => (7 + i) * 60 + 30);
+    const quarters = [795, 825, 855, 885, 915, 945, 975, 1005];
+    expect(UNTILS.map(({ minutes }) => minutes)).toEqual(
+      [...hours, ...halves, ...quarters].toSorted((x, y) => x - y),
+    );
+    expect(untilOf(900).slug.en).toBe('how-long-until-3-00-pm');
     expect(untilOf(900).slug.es).toBe('cuanto-falta-para-las-3-00-pm');
     expect(untilOf(0).slug.es).toBe('cuanto-falta-para-las-12-00-am');
+    expect(untilOf(450).slug.en).toBe('how-long-until-7-30-am');
+    expect(untilOf(1005).slug.es).toBe('cuanto-falta-para-las-4-45-pm');
     for (const job of UNTILS) {
       expect(LONG_TAIL_ROUTES.map(({ en }) => en)).toContain(pathOf(job, 'en'));
     }
@@ -120,6 +118,46 @@ describe('how long until a time of day long-tail pages', () => {
     );
     const contexts = UNTILS.map((job) => textOf(sectionOf(job.minutes, 'work')));
     expect(new Set(contexts).size).toBe(UNTILS.length);
+  });
+
+  it('pick examples before and after any time of the day', () => {
+    // until 7:00 am: from 1:40 am it is 5 h 20 min; from 8:00 pm, 11 h, tomorrow
+    const seven = longTailPageOf(untilOf(420), 'en');
+    expect(seven.lead).toContain('From 1:40 am that is 5 h 20 min, or 5.33 hours');
+    expect(seven.lead).toContain('from 8:00 pm it is 11 h 0 min');
+    expect(rowOf(420, '9:00 am')).toEqual(['9:00 am', '22 h 0 min', '22.00', 'tomorrow']);
+    // until 11:00 pm: from 11:30 pm the next one is 23 h 30 min away
+    const eleven = textOf(sectionOf(1380, 'worked'));
+    expect(eleven).toContain('1,380 + 1,440 − 1,410 = 1,410 minutes, 23 h 30 min');
+    expect(textOf(sectionOf(1380, 'since'))).toContain('at 11:30 pm it is 0 h 30 min');
+    expect(textOf(sectionOf(1380, 'since'))).toContain('at 9:00 am, 10 h 0 min');
+    // until 2:00 am from midnight: 2 h; the time since yesterday's at 1:00 am, 23 h
+    expect(textOf(sectionOf(120, 'worked'))).toContain('120 − 0 = 120 minutes, 2 h 0 min');
+    expect(textOf(sectionOf(120, 'since'))).toContain('at 1:00 am, 23 h 0 min');
+    expect(rowOf(1005, '9:00 am', 'es')).toEqual(['9:00 am', '7 h 45 min', '7.75', 'hoy']);
+    for (const job of UNTILS) {
+      for (const lang of LANGS) {
+        const page = longTailPageOf(job, lang);
+        const text = [
+          page.lead,
+          ...(page.sections ?? []).map((section) => section.paragraphs.join(' ')),
+        ].join(' ');
+        // no count of zero or of more than a day in the examples
+        expect(text).not.toMatch(/(?<![\d,])0 h 0 min|\b(2[4-9]|[3-9]\d) h \d+ min/);
+      }
+    }
+  });
+
+  it('set the times with no text of their own in the shifts they start or end', () => {
+    // 7:00 am ends the 11 pm and 7 pm night shifts and starts the 7 am to 3 pm one
+    expect(sectionOf(420, 'work').links?.map(({ href }) => href)).toEqual([
+      pathOf(shiftOf(1380, 420), 'en'),
+      pathOf(shiftOf(1140, 420), 'en'),
+      pathOf(shiftOf(420, 900), 'en'),
+    ]);
+    expect(textOf(sectionOf(420, 'work'))).toContain('12 h 0 min');
+    expect(textOf(sectionOf(450, 'work'))).toContain('7:23 am to 7:37 am');
+    expect(textOf(sectionOf(450, 'work', 'es'))).toContain('29 CFR 785.48');
   });
 
   it('give every page its sections with no broken figure, in both languages', () => {

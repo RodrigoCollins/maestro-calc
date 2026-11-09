@@ -436,7 +436,8 @@ export const DAYS: readonly Days[] = [
 ].map(days);
 
 /**
- * A time some hours ago or some minutes from now, "what time was it 15 hours ago": the visitor's
+ * A time some hours ago, some hours from now or some minutes from now, "what time was it 15 hours
+ * ago": the visitor's
  * clock moved by the offset. The page is built once, so it gives the rule and the table from each
  * hour of the day, and `../client/time-now.ts` fills the answer from the visitor's clock.
  */
@@ -448,12 +449,26 @@ export interface TimeOffset {
   readonly slug: Readonly<Record<Lang, string>>;
 }
 
+/** `1 hour`, `5 hours` in a slug: the singular for one. */
+const hourSlug = (amount: number): Readonly<Record<Lang, string>> =>
+  amount === 1
+    ? { en: '1-hour', es: '1-hora' }
+    : { en: `${String(amount)}-hours`, es: `${String(amount)}-horas` };
+
 const hoursAgo = (amount: number): TimeOffset => ({
   kind: 'time-offset',
   amount,
   unit: 'hour',
   direction: 'ago',
-  slug: { en: `${String(amount)}-hours-ago`, es: `hace-${String(amount)}-horas` },
+  slug: { en: `${hourSlug(amount).en}-ago`, es: `hace-${hourSlug(amount).es}` },
+});
+
+const hoursFromNow = (amount: number): TimeOffset => ({
+  kind: 'time-offset',
+  amount,
+  unit: 'hour',
+  direction: 'from-now',
+  slug: { en: `${hourSlug(amount).en}-from-now`, es: `dentro-de-${hourSlug(amount).es}` },
 });
 
 const minutesFromNow = (amount: number): TimeOffset => ({
@@ -464,10 +479,21 @@ const minutesFromNow = (amount: number): TimeOffset => ({
   slug: { en: `${String(amount)}-minutes-from-now`, es: `dentro-de-${String(amount)}-minutos` },
 });
 
-/** The hours ago, then the minutes from now, each ascending: a page links the others. */
+/** The hours people ask about either way: every hour of a day, then a day and a half to three. */
+const OFFSET_HOURS = [...Array.from({ length: 24 }, (_, i) => i + 1), 36, 48, 72];
+
+/** Each ascending: a page links the nearest of its own kind. */
+export const HOURS_AGO: readonly TimeOffset[] = OFFSET_HOURS.map(hoursAgo);
+export const HOURS_FROM_NOW: readonly TimeOffset[] = OFFSET_HOURS.map(hoursFromNow);
+export const MINUTES_FROM_NOW: readonly TimeOffset[] = [5, 10, 15, 20, 25, 30, 40, 45, 50, 90].map(
+  minutesFromNow,
+);
+
+/** The hours ago, the hours from now, then the minutes from now. */
 export const TIME_OFFSETS: readonly TimeOffset[] = [
-  ...[8, 9, 13, 15].map(hoursAgo),
-  ...[15, 30].map(minutesFromNow),
+  ...HOURS_AGO,
+  ...HOURS_FROM_NOW,
+  ...MINUTES_FROM_NOW,
 ];
 
 /**
@@ -490,8 +516,17 @@ const until = (minutes: number): Until => {
   };
 };
 
-/** In the order of the day: a page links its nearest. */
-export const UNTILS: readonly Until[] = [0, 720, 855, 870, 885, 900, 930, 960, 1020].map(until);
+/**
+ * Every hour on the hour, the half hours from 7:30 am to 9:30 pm and the quarter hours of the
+ * afternoon, from 1:15 to 4:45 pm, in the order of the day: a page links its nearest.
+ */
+export const UNTILS: readonly Until[] = [
+  ...Array.from({ length: 24 }, (_, hour) => hour * 60),
+  ...Array.from({ length: 15 }, (_, i) => (7 + i) * 60 + 30),
+  ...[795, 825, 855, 885, 915, 945, 975, 1005],
+]
+  .toSorted((x, y) => x - y)
+  .map(until);
 
 /**
  * A date some days or months from today, or some days ago, "what is the date 28 days from today":
@@ -514,11 +549,23 @@ const daysFrom = (amount: number): DaysFrom => ({
   slug: { en: `${String(amount)}-days-from-today`, es: `${String(amount)}-dias-a-partir-de-hoy` },
 });
 
-/** The days from today ascending, the days ago, then the months. */
-export const DAYS_FROM: readonly DaysFrom[] = [
-  daysFrom(10),
-  daysFrom(28),
-  daysFrom(30),
+const monthsFrom = (amount: number): DaysFrom => ({
+  kind: 'days-from',
+  amount,
+  unit: 'month',
+  direction: 'from-now',
+  slug:
+    amount === 1
+      ? { en: '1-month-from-today', es: '1-mes-a-partir-de-hoy' }
+      : {
+          en: `${String(amount)}-months-from-today`,
+          es: `${String(amount)}-meses-a-partir-de-hoy`,
+        },
+});
+
+/** The days from today ascending, the 30 days ago beside the 30 days from today. */
+export const DAYS_FROM_TODAY: readonly DaysFrom[] = [
+  ...[5, 7, 10, 14, 15, 20, 21, 25, 28, 30].map(daysFrom),
   {
     kind: 'days-from',
     amount: 30,
@@ -526,14 +573,37 @@ export const DAYS_FROM: readonly DaysFrom[] = [
     direction: 'ago',
     slug: { en: '30-days-ago-from-today', es: 'hace-30-dias' },
   },
-  {
-    kind: 'days-from',
-    amount: 6,
-    unit: 'month',
-    direction: 'from-now',
-    slug: { en: '6-months-from-today', es: '6-meses-a-partir-de-hoy' },
-  },
+  ...[40, 45, 50, 60, 75, 90, 100, 120, 180, 365].map(daysFrom),
 ];
+
+/** Every month of a year, ascending. */
+export const MONTHS_FROM_TODAY: readonly DaysFrom[] = Array.from({ length: 12 }, (_, i) =>
+  monthsFrom(i + 1),
+);
+
+/** The days, then the months. */
+export const DAYS_FROM: readonly DaysFrom[] = [...DAYS_FROM_TODAY, ...MONTHS_FROM_TODAY];
+
+/**
+ * The pages of one kind a live page links its nearest of, and the hours calculator lists
+ * together: the hours ago, the hours from now, the minutes from now, the times of day, the days
+ * from today and the months from today.
+ */
+export const LIVE_GROUPS: readonly (readonly (TimeOffset | Until | DaysFrom)[])[] = [
+  HOURS_AGO,
+  HOURS_FROM_NOW,
+  MINUTES_FROM_NOW,
+  UNTILS,
+  DAYS_FROM_TODAY,
+  MONTHS_FROM_TODAY,
+];
+
+/** The group of a live page (`LIVE_GROUPS`). */
+export const liveGroupOf = <T extends TimeOffset | Until | DaysFrom>(job: T): readonly T[] => {
+  const group = LIVE_GROUPS.find((each) => each.includes(job));
+  if (group === undefined) throw new Error(`no live group holds ${job.slug.en}`);
+  return group as readonly T[];
+};
 
 /** The pages of the three families above: their one script fills the answer from the clock. */
 export const LIVE_JOBS: readonly (TimeOffset | Until | DaysFrom)[] = [

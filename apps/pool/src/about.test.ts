@@ -20,6 +20,7 @@ import { hrefOf } from './routes.ts';
 import { pageKindOf } from './seo/json-ld.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)));
 const text = [ABOUT.lead, ...ABOUT.sections.flatMap(({ paragraphs }) => paragraphs)].join('\n');
@@ -37,6 +38,9 @@ const cited = [
     SWIM_GUIDE,
     GALLONS_GUIDE,
     OLYMPIC_GUIDE,
+    SHOCK_OFTEN_GUIDE,
+    GREEN_GUIDE,
+    CLOUDY_GUIDE,
   ].flatMap(({ sources }) => Object.values<GuideSource>(sources).map(({ name }) => name)),
 ];
 
@@ -76,6 +80,8 @@ describe('the about page', () => {
     expect(text).toContain('how to raise calcium hardness and why only draining lowers it');
     expect(text).toContain('how long to wait to swim after adding each chemical');
     expect(text).toContain('how many gallons a pool holds, Olympic pools included');
+    expect(text).toContain('how often to shock it');
+    expect(text).toContain('how to fix a green pool and why a pool is cloudy');
   });
 
   it('gives the address readers write to', () => {

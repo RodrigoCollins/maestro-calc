@@ -3,7 +3,7 @@ import Byline from './Byline.astro';
 import JobLinks from './JobLinks.astro';
 import Layout from './Layout.astro';
 import Sources from './Sources.astro';
-import type { GuideSource, GuideStep } from '../guide.ts';
+import type { GuideSource, GuideStep, GuideTable } from '../guide.ts';
 import { langOf } from '../routes.ts';
 
 /** A guide of numbered steps, each tile with its calculator link and its sources (`guide.ts`). */
@@ -18,12 +18,13 @@ interface Props {
     readonly h1: string;
     readonly lead: string;
     readonly note?: string;
+    readonly table?: GuideTable;
     readonly sources: Readonly<Record<string, GuideSource>>;
     readonly steps: readonly GuideStep[];
   };
 }
 
-const { path, checked, kicker, title, description, h1, lead, note, steps, sources } =
+const { path, checked, kicker, title, description, h1, lead, note, table, steps, sources } =
   Astro.props.guide;
 const lang = langOf(path);
 /** The copy the guide writes around its steps, in its language. */
@@ -51,6 +52,41 @@ const sourceOf = (key: string): GuideSource => {
     <h1>{h1}</h1>
     <Byline {path} />
     <p>{lead}</p>
+    {table !== undefined && (
+      <>
+        <div class="pool-scroll" role="region" aria-label={table.region} tabindex="0">
+          <table class="pool-table">
+            <caption>{table.caption}</caption>
+            <thead>
+              <tr>
+                {table.head.map((cell) => (
+                  <th scope="col">{cell}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {table.rows.map(([first, ...rest]) => (
+                <tr>
+                  <th scope="row">{first}</th>
+                  {rest.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="pool-step-source">
+          {text.source}{' '}
+          {table.sources.map((key, index) => (
+            <>
+              {index > 0 && ', '}
+              <a href={sourceOf(key).url}>{sourceOf(key).name}</a>
+            </>
+          ))}
+        </p>
+      </>
+    )}
     <ol class="pool-steps">
       {steps.map((step) => (
         <li>
@@ -83,6 +119,41 @@ const sourceOf = (key: string): GuideSource => {
 </Layout>
 
 <style>
+  /* a narrow phone scrolls the table, never the page */
+  .pool-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+  }
+
+  .pool-table caption {
+    padding-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .pool-table th,
+  .pool-table td {
+    padding: 0.625rem 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .pool-table thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    text-transform: uppercase;
+  }
+
   .pool-steps {
     display: grid;
     gap: 1rem;

@@ -20,6 +20,7 @@ import {
 } from './guide.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { HOME_TOOLS } from './home.ts';
+import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { footerLinksOf } from './layout.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -50,6 +51,9 @@ describe.each([
   ['calcium hardness', CALCIUM_GUIDE],
   ['pool gallons', GALLONS_GUIDE],
   ['Olympic pool gallons', OLYMPIC_GUIDE],
+  ['how often to shock', SHOCK_OFTEN_GUIDE],
+  ['green pool', GREEN_GUIDE],
+  ['cloudy pool', CLOUDY_GUIDE],
 ] as const)('the %s guide', (_name, guide) => {
   it('lives at its own page, with a description search engines can show whole', () => {
     expect(pages).toContain(guide.path);
@@ -488,6 +492,9 @@ describe('the guides', () => {
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SHOCK_GUIDE.path,
+      SHOCK_OFTEN_GUIDE.path,
+      GREEN_GUIDE.path,
+      CLOUDY_GUIDE.path,
       PH_GUIDE.path,
       CALCIUM_GUIDE.path,
       SWIM_GUIDE.path,
@@ -533,6 +540,9 @@ describe('the calculators each guide explains', () => {
                 CALCIUM_GUIDE,
                 GALLONS_GUIDE,
                 OLYMPIC_GUIDE,
+                SHOCK_OFTEN_GUIDE,
+                GREEN_GUIDE,
+                CLOUDY_GUIDE,
               ]
                 .filter(({ path }) => path === guide.path)
                 .flatMap(({ steps }) =>
@@ -555,15 +565,18 @@ describe('the calculators each guide explains', () => {
       CHEMISTRY_CHART.path,
       DOSING_CHART.path,
       SHOCK_GUIDE.path,
+      GREEN_GUIDE.path,
+      CLOUDY_GUIDE.path,
       PH_GUIDE.path,
       SWIM_GUIDE.path,
     ]);
   });
 
-  it('send the calcium calculator to the chart, the calcium guide and the swim guide', () => {
+  it('send the calcium calculator to the chart, the cloudy, calcium and swim guides', () => {
     expect(guidesOf(CALCIUM.path).map(({ path }) => path)).toEqual([
       CHEMISTRY_CHART.path,
       DOSING_CHART.path,
+      CLOUDY_GUIDE.path,
       CALCIUM_GUIDE.path,
       SWIM_GUIDE.path,
     ]);

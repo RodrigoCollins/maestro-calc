@@ -216,14 +216,14 @@ const chlorine: Texts = (lang) => {
       {
         text: t(
           lang,
-          `Green water needs a shock: from 0 to 10 ppm, ${n(g)} gal take ${out(poolChlorine, shock, 'dry')} oz of 65% cal-hypo.`,
-          `El agua verde necesita un tratamiento de choque: de 0 a 10 ppm, ${n(g)} gal llevan ${out(poolChlorine, shock, 'dry')} oz de cal-hypo al 65%.`,
+          `Green water needs a shock: from 0 to 10 ppm, ${n(g)} gal take ${out(poolChlorine, shock, 'dry')} oz of 65% cal-hypo, and algae up to 30 ppm.`,
+          `El agua verde necesita un tratamiento de choque: de 0 a 10 ppm, ${n(g)} gal llevan ${out(poolChlorine, shock, 'dry')} oz de cal-hypo al 65%, y las algas hasta 30 ppm.`,
         ),
         link: link(
-          'shock-guide',
+          'green-guide',
           lang,
-          'How to shock a pool',
-          'Cómo hacer un tratamiento de choque',
+          'How to fix a green pool',
+          'Cómo arreglar una piscina verde',
         ),
       },
       {
