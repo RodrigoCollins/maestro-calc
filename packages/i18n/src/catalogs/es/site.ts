@@ -194,7 +194,7 @@ export const esSite = {
   'site.job.roof.rakes': 'Bordes inclinados, cuatro a esta pendiente',
   'site.job.roof.drip': 'Gotero por aleros y bordes inclinados',
   'site.job.roof.pieces': 'tramos de 10 ft',
-  'site.job.roof.ridge': 'Cumbrera, para el caballete',
+  'site.job.roof.ridge': 'Cumbrera, para las tejas de cumbrera',
   'site.job.roof.rise': 'Altura de la cumbrera sobre los aleros',
   'site.job.roof.pitch': 'Pendiente',
   'site.job.roof.area': 'Área del techo (pies cuadrados)',
