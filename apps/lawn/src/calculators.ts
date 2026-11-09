@@ -136,6 +136,9 @@ export const GRASS_SEED: CalculatorPage = {
     'zoysia-seed',
     'tall-fescue-seed',
     'ryegrass-seed',
+    'bluegrass-seed',
+    'fescue-seed',
+    'best-seed',
   ],
   maestro: ['topsoil'],
 };
@@ -183,7 +186,7 @@ export const SOD: CalculatorPage = {
   method:
     'Square feet to order = the lawn area × (1 + waste ÷ 100). Pallets = that ÷ the pallet size, rounded up. Slabs = that ÷ 2.67 sq ft (a 16 × 24 in slab), rounded up.',
   note: 'Pallet and slab sizes are the supplier’s choice. The 400, 450 and 500 sq ft options are sizes suppliers list, not a standard, and no waste figure is assumed: you set it.',
-  guides: [],
+  guides: ['st-augustine-seed'],
   maestro: ['topsoil'],
 };
 

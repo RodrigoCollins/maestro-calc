@@ -1,7 +1,22 @@
 import { seedRateOf, type SeedSource, type SeedSpecies } from '@maestro-calc/lawn-core/grass-seed';
-import { FROST_SOURCE } from '@maestro-calc/lawn-data/frost/source';
 import { fieldText } from './format.ts';
 import type { Guide } from './guide.ts';
+import {
+  AGRILIFE,
+  ARKANSAS,
+  BEST_SEED_LINK,
+  NC_STATE,
+  NOAA,
+  PURDUE_FINE_FESCUE,
+  PURDUE_SEED,
+  READ,
+  SEED_CALCULATOR,
+  ST_AUGUSTINE,
+  TENNESSEE,
+  TURFFILES,
+  VIRGINIA,
+} from './seed-sources.ts';
+import { viewOf } from './view.ts';
 
 /** A seeding rate of the calculator data as a page prints it: `4 to 6 lb per 1,000 sq ft`. */
 export const seedRateText = (species: SeedSpecies, source: SeedSource): string => {
@@ -9,55 +24,20 @@ export const seedRateText = (species: SeedSpecies, source: SeedSource): string =
   return `${fieldText(low)} to ${fieldText(high)} lb per 1,000 sq ft`;
 };
 
+/** The pounds the grass seed calculator gives a lawn of `area` sq ft: `10.0 to 15.0 lb`. */
+export const seedPoundsText = (species: SeedSpecies, source: SeedSource, area: number): string => {
+  const pounds = viewOf('grass-seed', { area: String(area), species, source })?.values['pounds'];
+  if (pounds === undefined) throw new Error(`no seed figure for ${species} on ${String(area)}`);
+  return `${pounds.replace('–', ' to ')} lb`;
+};
+
 /** A guide to the seed of one grass: the calculator species whose rates it prints. */
 export interface SpeciesGuide extends Guide {
   readonly species: readonly SeedSpecies[];
 }
 
-/** The day the extension publications below were read. */
-const READ = '2026-11-08';
-const read = (name: string): string => `${name}, accessed ${READ}`;
-
-const VIRGINIA = {
-  name: read('Virginia Cooperative Extension 426-718, “Establishing Lawns”'),
-  url: 'https://vtechworks.lib.vt.edu/bitstreams/b0fdf313-cafa-4f60-a85b-68637d6bbd3c/download',
-};
-const PURDUE_SEED = {
-  name: read('Purdue Extension AY-3-W, “Establishing Turfgrass Areas From Seed”'),
-  url: 'https://www.extension.purdue.edu/extmedia/ay/ay-3-w.pdf',
-};
-const TENNESSEE = {
-  name: read('University of Tennessee W160-B, “Turfgrass Establishment: Seeding” (2007)'),
-  url: 'https://uthort.tennessee.edu/wp-content/uploads/sites/228/2023/11/W160-B.pdf',
-};
-const AGRILIFE = {
-  name: read('Texas A&M AgriLife Extension B-6239, “Turfgrass Establishment for Texas”'),
-  url: 'https://agrilifeextension.tamu.edu/wp-content/uploads/2026/03/Turfgrass-Establishment-for-Texas.pdf',
-};
-const ST_AUGUSTINE = {
-  name: read('Texas A&M AgriLife Extension EHT-144, “St. Augustinegrass Lawn Management”'),
-  url: 'https://agrilifeextension.tamu.edu/wp-content/uploads/2025/07/St.-Augustinegrass-Lawn-Management.pdf',
-};
-const NC_STATE = {
-  name: read('NC State Extension Gardener Handbook, chapter 9, “Lawns”'),
-  url: 'https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
-};
-const TURFFILES = {
-  name: read('NC State TurfFiles, “Time for Fall Seeding of Tall Fescue” (2025)'),
-  url: 'https://www.turffiles.ncsu.edu/news/time-for-fall-seeding-of-tall-fescue/',
-};
-const ARKANSAS = {
-  name: read(
-    'University of Arkansas MP476, “Establishing Seeded Zoysiagrass on Lawns and Golf Courses”',
-  ),
-  url: 'https://www.uaex.uada.edu/publications/PDF/MP476.pdf',
-};
-const NOAA = {
-  name: `NOAA NCEI U.S. Climate Normals 1991-2020, annual/seasonal product, accessed ${FROST_SOURCE.pulled}`,
-  url: 'https://www.ncei.noaa.gov/data/normals-annualseasonal/1991-2020/access/',
-};
-
-const SEED_CALCULATOR = { href: '/grass-seed-calculator', label: 'Grass seed calculator' };
+/** The lawn the pages work their pounds for. */
+const LAWN = 5000;
 
 /** When to plant grass seed: the windows and temperatures of the extension sources, and your frost dates. */
 export const PLANTING_GUIDE: Guide = {
@@ -125,7 +105,10 @@ export const PLANTING_GUIDE: Guide = {
       paragraphs: [
         'Texas A&M AgriLife Extension says St. Augustinegrass is established vegetatively using sod, sprigs and plugs, and that seed is currently not available. NC State Extension says the same. Plan a St. Augustine lawn by the square foot of sod instead of the pound of seed.',
       ],
-      links: [{ href: '/sod-calculator', label: 'Sod calculator' }],
+      links: [
+        { href: '/st-augustine-grass-seed', label: 'St. Augustine grass: sod and plugs' },
+        { href: '/sod-calculator', label: 'Sod calculator' },
+      ],
     },
     {
       id: 'how-much',
@@ -139,6 +122,11 @@ export const PLANTING_GUIDE: Guide = {
         { href: '/zoysia-grass-seed', label: 'Zoysia grass seed' },
         { href: '/tall-fescue-grass-seed', label: 'Tall fescue grass seed' },
         { href: '/perennial-ryegrass-seed', label: 'Perennial ryegrass seed' },
+        { href: '/kentucky-bluegrass-seed', label: 'Kentucky bluegrass seed' },
+        { href: '/fescue-grass-seed', label: 'Fescue grass seed: fine or tall' },
+        { href: '/centipede-grass-seed', label: 'Centipede grass seed' },
+        { href: '/buffalo-grass-seed', label: 'Buffalo grass seed' },
+        BEST_SEED_LINK,
       ],
     },
   ],
@@ -452,5 +440,196 @@ const RYEGRASS: SpeciesGuide = {
   },
 };
 
+const BLUEGRASS: SpeciesGuide = {
+  id: 'bluegrass-seed',
+  path: '/kentucky-bluegrass-seed',
+  species: ['kentucky-bluegrass'],
+  title: 'Kentucky Bluegrass Seed: Rate, Mixes and Timing | Lawn Figures',
+  description:
+    'Kentucky bluegrass seed per 1,000 sq ft alone or mixed with ryegrass or fine fescue, the late summer window and its 14 to 21 days to germinate.',
+  h1: 'Kentucky bluegrass seed: how much, which mix, and when',
+  lead: `Sow Kentucky bluegrass at ${seedRateText('kentucky-bluegrass', 'virginia-tech')} (Virginia Cooperative Extension) or ${seedRateText('kentucky-bluegrass', 'tennessee')} (University of Tennessee) in late summer to early fall. It is the slowest of the cool-season grasses to come up, 14 to 21 days, which is why it is often mixed with perennial ryegrass or fine fescue.`,
+  checked: READ,
+  sections: [
+    {
+      id: 'rate',
+      heading: 'Seeding rate',
+      paragraphs: [
+        'Bluegrass seed is small, so it takes fewer pounds per square foot than tall fescue or ryegrass. The University of Tennessee warns that too much seed gives a dense stand of weak, disease-prone seedlings, and NC State Extension says the same of bluegrass.',
+      ],
+      items: [
+        `Virginia Cooperative Extension: ${seedRateText('kentucky-bluegrass', 'virginia-tech')}.`,
+        `University of Tennessee: ${seedRateText('kentucky-bluegrass', 'tennessee')}; Texas A&M AgriLife prints the same, sown September to November.`,
+        'NC State Extension: 1 to 2 pounds per 1,000 sq ft.',
+        `On a 5,000 sq ft lawn the grass seed calculator gives ${seedPoundsText('kentucky-bluegrass', 'virginia-tech', LAWN)} at the Virginia rate and ${seedPoundsText('kentucky-bluegrass', 'tennessee', LAWN)} at the Tennessee rate, half sown in each direction.`,
+      ],
+      links: [SEED_CALCULATOR],
+    },
+    {
+      id: 'mixes',
+      heading: 'Bluegrass alone or in a mix',
+      paragraphs: [
+        'A mix is sown at the rate of the mix, not of the bluegrass alone, because the other seed is larger. Purdue Extension prints these rates for lawns in Indiana and Illinois:',
+      ],
+      items: [
+        '100% Kentucky bluegrass: 1.5 to 2.0 lb per 1,000 sq ft.',
+        '85 to 90% Kentucky bluegrass with 10 to 15% perennial ryegrass: 3.0 to 4.0 lb.',
+        '50 to 70% Kentucky bluegrass with 30 to 50% fine fescue: 4.0 to 5.0 lb.',
+        'NC State Extension, for its mountains: a bluegrass and perennial ryegrass mix at 2.5 lb, 60% bluegrass by weight.',
+      ],
+    },
+    {
+      id: 'when',
+      heading: 'When to sow it',
+      paragraphs: [
+        'Purdue Extension gives August 15 to September 15 in the northern half of Indiana and Illinois and September 1 to 30 in the southern half, and says to seed as early as possible in the window. NC State Extension seeds cool-season grasses in early fall and gets only fair results from early spring seedings, mid-February to late March in the North Carolina piedmont.',
+      ],
+    },
+    {
+      id: 'germination',
+      heading: 'Germination and first mowing',
+      paragraphs: [
+        'The University of Tennessee table gives 14 to 21 days to germinate, against 3 to 7 days for perennial ryegrass and 6 to 12 for tall fescue, so keep the seedbed moist for three weeks. Purdue Extension mows a new bluegrass lawn first at 1.5 inches and then at a permanent 2.0 to 3.5 inches.',
+      ],
+    },
+    {
+      id: 'site',
+      heading: 'Where it does well',
+      paragraphs: [
+        'NC State Extension says Kentucky bluegrass is well suited to the North Carolina mountains, can be grown with tall fescue in the piedmont, and is not suitable for the coastal plain. It prefers fertile, limed, well-drained soil in sun or light shade, grows better than tall fescue in moderate shade, and spreads by rhizomes, which lets it fill in damaged spots. In a summer drought it may turn brown for two to four weeks and recover without watering.',
+      ],
+      links: [BEST_SEED_LINK],
+    },
+  ],
+  questions: [
+    {
+      question: 'How much Kentucky bluegrass seed per 1,000 square feet?',
+      answer: `${seedRateText('kentucky-bluegrass', 'virginia-tech')} by Virginia Cooperative Extension, ${seedRateText('kentucky-bluegrass', 'tennessee')} by the University of Tennessee and Purdue. A mix with ryegrass or fine fescue takes more pounds: 3.0 to 5.0 lb by Purdue.`,
+    },
+    {
+      question: 'How long does Kentucky bluegrass take to germinate?',
+      answer: 'About 14 to 21 days, by the University of Tennessee table.',
+    },
+    {
+      question: 'Kentucky bluegrass or tall fescue?',
+      answer:
+        'NC State Extension mixes them in the piedmont: tall fescue adds drought and heat tolerance, bluegrass adds finer texture and the ability to recover. Bluegrass alone suits the cooler mountains.',
+    },
+  ],
+  sources: {
+    virginia: VIRGINIA,
+    tennessee: TENNESSEE,
+    purdue: PURDUE_SEED,
+    ncState: NC_STATE,
+    agrilife: AGRILIFE,
+  },
+  calculators: ['/grass-seed-calculator'],
+  card: {
+    title: 'Kentucky bluegrass seed',
+    summary: 'Rates alone and in a mix, the fall window and its slow 14 to 21 day start.',
+  },
+};
+
+const FESCUE: SpeciesGuide = {
+  id: 'fescue-seed',
+  path: '/fescue-grass-seed',
+  species: ['fine-fescue', 'tall-fescue'],
+  title: 'Fescue Grass Seed: Fine Fescue or Tall Fescue? | Lawn Figures',
+  description:
+    'Fine fescues (creeping red, Chewings, hard, sheep) or tall fescue: the seeding rate of each, when to sow, and which one suits shade.',
+  h1: 'Fescue grass seed: fine fescue or tall fescue',
+  lead: `“Fescue” seed is one of two kinds. Fine fescues (creeping red, Chewings, hard and sheep fescue) have needle-thin leaves, take shade and little care, and are sown at ${seedRateText('fine-fescue', 'virginia-tech')}. Tall fescue is a coarser, tougher grass for sun to medium shade, sown heavier, at ${seedRateText('tall-fescue', 'virginia-tech')} (Virginia Cooperative Extension). Both go down in late summer to early fall.`,
+  checked: READ,
+  sections: [
+    {
+      id: 'kinds',
+      heading: 'Two kinds of fescue',
+      paragraphs: [
+        'Purdue Extension groups five grasses as fine fescues: strong creeping red, slender creeping red, Chewings, hard and sheep fescue. NC State Extension says their leaves are almost as fine as pine needles, and that they are noted for tolerating shade, drought and poor soil better than the other cool-season grasses. Most are bunch-type and do not spread, the creeping reds excepted, which have rhizomes.',
+        'Tall fescue is a different species with wider leaves. NC State Extension calls it the best grass to plant for a green lawn year-round in the North Carolina mountains and piedmont, with good disease, drought and cold tolerance. It is also bunch-type, so bare spots need reseeding.',
+      ],
+    },
+    {
+      id: 'fine-rate',
+      heading: 'Fine fescue seeding rate',
+      paragraphs: [
+        'Virginia Cooperative Extension and the University of Tennessee give fine fescue the same rate; Purdue Extension gives each kind its own, because their seeds differ in size:',
+      ],
+      items: [
+        `Virginia Cooperative Extension and University of Tennessee: ${seedRateText('fine-fescue', 'tennessee')}.`,
+        'Purdue Extension: strong and slender creeping red fescue 4 to 6 lb, Chewings fescue 3.5 to 6 lb, hard and sheep fescue 3 to 6 lb per 1,000 sq ft.',
+        'NC State Extension, mixed with tall fescue or Kentucky bluegrass: 1.5 lb of fine fescue per 1,000 sq ft.',
+        `On a 5,000 sq ft lawn the grass seed calculator gives ${seedPoundsText('fine-fescue', 'tennessee', LAWN)} of fine fescue.`,
+      ],
+      links: [SEED_CALCULATOR],
+    },
+    {
+      id: 'tall-rate',
+      heading: 'Tall fescue seeding rate',
+      paragraphs: [
+        `Tall fescue takes ${seedRateText('tall-fescue', 'virginia-tech')} by Virginia Cooperative Extension and ${seedRateText('tall-fescue', 'tennessee')} by the University of Tennessee: ${seedPoundsText('tall-fescue', 'virginia-tech', LAWN)} for a 5,000 sq ft lawn at the Virginia rate. Its own page has the soil temperature and the fall deadline.`,
+      ],
+      links: [{ href: '/tall-fescue-grass-seed', label: 'Tall fescue grass seed' }],
+    },
+    {
+      id: 'when',
+      heading: 'When to sow fine fescue',
+      paragraphs: [
+        'Purdue Extension found the best time to seed fine fescues in Indiana is late July to late September (to early September for hard and sheep fescue), and the second best mid-March to mid-April. Seeding in late spring or summer exposes the seedlings to heat, drought and summer weeds.',
+      ],
+    },
+    {
+      id: 'germination',
+      heading: 'Germination',
+      paragraphs: [
+        'Purdue Extension gives 5 to 12 days for the creeping reds and Chewings fescue and 7 to 14 days for hard and sheep fescue, at 59 to 77°F. The University of Tennessee gives 6 to 14 days for fine fescues and 6 to 12 for tall fescue. Fine fescues establish faster than Kentucky bluegrass and slower than perennial ryegrass.',
+      ],
+    },
+    {
+      id: 'choose',
+      heading: 'Which fescue for which lawn',
+      paragraphs: [
+        'For shade and low upkeep, fine fescue, usually mixed with tall fescue or Kentucky bluegrass, which is how NC State Extension uses it. NC State says fine fescues are best adapted to the mountains, can be grown in the piedmont, should not be used in the coastal plain, and may not persist in hot sun, wet or humid soil, or under heavy traffic.',
+        'For sun, wear and a year-round green lawn in the transition zone, tall fescue, which NC State says thrives in sun or medium shade in the mountains and piedmont but does poorly in full sun on sandy coastal plain soil.',
+      ],
+      links: [BEST_SEED_LINK],
+    },
+  ],
+  questions: [
+    {
+      question: 'What is the difference between fine fescue and tall fescue?',
+      answer:
+        'Fine fescues are a group of grasses with needle-thin leaves that take shade, drought and poor soil but not heavy traffic. Tall fescue is one coarser, tougher grass for sun to medium shade that NC State Extension calls the best for a year-round green lawn in its mountains and piedmont.',
+    },
+    {
+      question: 'Which fescue grows in shade?',
+      answer:
+        'Fine fescue tolerates shade better than the other cool-season grasses (NC State Extension). Tall fescue takes medium shade; improved cultivars are more shade tolerant than Kentucky 31.',
+    },
+    {
+      question: 'How much fescue seed per 1,000 square feet?',
+      answer: `Fine fescue ${seedRateText('fine-fescue', 'virginia-tech')}; tall fescue ${seedRateText('tall-fescue', 'virginia-tech')} by Virginia Cooperative Extension or ${seedRateText('tall-fescue', 'tennessee')} by the University of Tennessee.`,
+    },
+  ],
+  sources: {
+    virginia: VIRGINIA,
+    tennessee: TENNESSEE,
+    purdueFine: PURDUE_FINE_FESCUE,
+    ncState: NC_STATE,
+  },
+  calculators: ['/grass-seed-calculator'],
+  card: {
+    title: 'Fescue grass seed: fine or tall',
+    summary: 'The two kinds of fescue, the rate of each, and which one takes shade.',
+  },
+};
+
 /** The species pages: one per grass with seeding rates in the calculator data. */
-export const SPECIES_GUIDES: readonly SpeciesGuide[] = [BERMUDA, ZOYSIA, TALL_FESCUE, RYEGRASS];
+export const SPECIES_GUIDES: readonly SpeciesGuide[] = [
+  BERMUDA,
+  ZOYSIA,
+  TALL_FESCUE,
+  RYEGRASS,
+  BLUEGRASS,
+  FESCUE,
+];
