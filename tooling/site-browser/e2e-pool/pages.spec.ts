@@ -335,10 +335,16 @@ test('charts the doses of eight pool sizes in three tables, each one cited', asy
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 
-test('charts the gallons of 23 pool sizes in three tables, each one cited', async ({ page }) => {
+test('charts the gallons of 23 pool sizes and the litres of 11 metric ones, each one cited', async ({
+  page,
+}) => {
   await page.goto('/pool-volume-chart');
-  await expect(page.locator('.pool-chart')).toHaveCount(3);
-  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(23);
+  await expect(page.locator('.pool-chart')).toHaveCount(5);
+  await expect(page.locator('.pool-chart tbody tr')).toHaveCount(34);
+  // 8 x 4 m from 1 m to 2 m: 32 m² x 1.5 m = 48 m³, 48,000 litres
+  await expect(page.locator('.pool-chart').nth(4).locator('tbody tr').nth(2)).toContainText(
+    '48,000 (48.0 m³)',
+  );
   // 24 ft round, 4 ft deep: pi x 24^2 / 4 x 4 ft = 1,809.6 cubic feet, x 1,728 / 231 = 13,536 gallons
   await expect(page.locator('.pool-chart').first().locator('tbody tr').nth(4)).toContainText(
     '13,536',

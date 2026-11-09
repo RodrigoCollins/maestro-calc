@@ -21,6 +21,7 @@ const {
   h1,
   lead,
   tables,
+  metricTables,
   assumptions,
   shortcuts,
   calculator,
@@ -83,6 +84,48 @@ const jobOf = (size: Readonly<Record<string, string>>) =>
         </div>
         <p class="pool-level-source">
           {page.gallons} {note}
+        </p>
+      </section>
+    ))}
+    {/* the same chart for pools measured in metres: litres, cubic metres beside them */}
+    {metricTables.map(({ id, caption, note, columns, rows }) => (
+      <section class="pool-dose" aria-labelledby={id}>
+        <h2 {id}>{caption}</h2>
+        <div class="pool-scroll" role="region" aria-label={page.region(caption)} tabindex="0">
+          <table class="pool-chart">
+            <thead>
+              <tr>
+                <th scope="col">{page.size}</th>
+                {columns.map(({ head, shallow, deep, average }) => (
+                  <th scope="col">
+                    {head}{' '}
+                    {shallow !== deep && <span class="pool-unit">{page.average(average)}</span>}
+                  </th>
+                ))}
+                <th scope="col">{page.calculator}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ label, cells, cubicMetres, href }) => (
+                <tr>
+                  <th scope="row">{label}</th>
+                  {cells.map((value, index) => (
+                    <td>
+                      {value} <span class="pool-unit">({cubicMetres[index]} m³)</span>
+                    </td>
+                  ))}
+                  <td>
+                    <a href={href} aria-label={page.openLabel(label)}>
+                      {page.open}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="pool-level-source">
+          {page.litres} {note}
         </p>
       </section>
     ))}
