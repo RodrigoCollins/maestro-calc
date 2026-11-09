@@ -25,6 +25,8 @@ import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
 import { SWIM_GUIDES } from './swim-es.ts';
+import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
+import { CLOUDY_GUIDE_ES, GREEN_GUIDE_ES, SHOCK_OFTEN_GUIDE_ES } from './trouble-es.ts';
 import { VOLUME_CHARTS } from './volume/chart-es.ts';
 
 /**
@@ -81,6 +83,12 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     OLYMPIC_GUIDE,
     GALLONS_GUIDE_ES,
     OLYMPIC_GUIDE_ES,
+    SHOCK_OFTEN_GUIDE,
+    GREEN_GUIDE,
+    CLOUDY_GUIDE,
+    SHOCK_OFTEN_GUIDE_ES,
+    GREEN_GUIDE_ES,
+    CLOUDY_GUIDE_ES,
   ].map(entryOf),
   ...(['en', 'es'] as const).flatMap((lang) => [
     entryOf(SWIM_GUIDES[lang]),

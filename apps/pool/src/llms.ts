@@ -16,6 +16,7 @@ import {
 } from './doses-es.ts';
 import { DOSING_CHART_ES } from './dosing-es.ts';
 import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
+import { CLOUDY_GUIDE_ES, GREEN_GUIDE_ES, SHOCK_OFTEN_GUIDE_ES } from './trouble-es.ts';
 import { EMBED_PAGE, EMBED_PAGE_TEXTS } from './embed.ts';
 import { GUIDES } from './guide.ts';
 import {
@@ -87,6 +88,9 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'pump-guide': { name: PUMP_RUN_GUIDE_ES.h1, note: PUMP_RUN_GUIDE_ES.description },
   'salt-guide': { name: SALT_VS_CHLORINE_GUIDE_ES.h1, note: SALT_VS_CHLORINE_GUIDE_ES.description },
   'shock-guide': { name: SHOCK_GUIDE_ES.h1, note: SHOCK_GUIDE_ES.description },
+  'shock-often-guide': { name: SHOCK_OFTEN_GUIDE_ES.h1, note: SHOCK_OFTEN_GUIDE_ES.description },
+  'green-guide': { name: GREEN_GUIDE_ES.h1, note: GREEN_GUIDE_ES.description },
+  'cloudy-guide': { name: CLOUDY_GUIDE_ES.h1, note: CLOUDY_GUIDE_ES.description },
   'ph-guide': { name: PH_GUIDE_ES.h1, note: PH_GUIDE_ES.description },
   'calcium-guide': { name: CALCIUM_GUIDE_ES.h1, note: CALCIUM_GUIDE_ES.description },
   'gallons-guide': { name: GALLONS_GUIDE_ES.h1, note: GALLONS_GUIDE_ES.description },

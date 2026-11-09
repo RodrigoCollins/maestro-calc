@@ -147,6 +147,24 @@ const PAGE_ROUTES: readonly Route[] = [
     es: '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
   },
   {
+    id: 'shock-often-guide',
+    kind: 'article',
+    en: '/how-often-to-shock-a-pool',
+    es: '/es/cada-cuanto-hacer-un-tratamiento-de-choque',
+  },
+  {
+    id: 'green-guide',
+    kind: 'article',
+    en: '/how-to-fix-a-green-pool',
+    es: '/es/como-arreglar-una-piscina-verde',
+  },
+  {
+    id: 'cloudy-guide',
+    kind: 'article',
+    en: '/why-is-my-pool-cloudy',
+    es: '/es/por-que-esta-turbia-mi-piscina',
+  },
+  {
     id: 'ph-guide',
     kind: 'article',
     en: '/how-to-lower-ph-in-a-pool',

@@ -4,6 +4,7 @@ import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { SWIM_GUIDE } from './swim.ts';
+import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** A source the guide cites, by the key each step names it with. */
@@ -17,6 +18,19 @@ export interface GuideStep {
   readonly text: string;
   readonly link?: { readonly href: string; readonly label: string };
   readonly sources?: readonly string[];
+}
+
+/**
+ * A table a guide shows under its lead, the answer at a glance (`components/StepGuide.astro`):
+ * its first cell heads each row, and the sources it names are sources its steps cite.
+ */
+export interface GuideTable {
+  readonly caption: string;
+  /** The name of the region a narrow phone scrolls sideways. */
+  readonly region: string;
+  readonly head: readonly string[];
+  readonly rows: readonly (readonly string[])[];
+  readonly sources: readonly string[];
 }
 
 /** A guide of numbered steps (`components/StepGuide.astro`). */
@@ -35,6 +49,8 @@ export interface StepGuide {
   lead: string;
   /** The closing line of the page; the default asks to read each product label. */
   note?: string;
+  /** A table under the lead; most guides have none. */
+  table?: GuideTable;
   sources: Record<string, GuideSource>;
   steps: readonly GuideStep[];
 }
@@ -799,6 +815,9 @@ export const GUIDES: readonly GuideCard[] = [
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
   stepsCard(SHOCK_GUIDE),
+  stepsCard(SHOCK_OFTEN_GUIDE),
+  stepsCard(GREEN_GUIDE),
+  stepsCard(CLOUDY_GUIDE),
   stepsCard(PH_GUIDE),
   stepsCard(CALCIUM_GUIDE),
   cardOf(
