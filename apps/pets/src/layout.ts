@@ -14,6 +14,7 @@ const NAV: readonly NavLink[] = [
   { id: 'kitten', label: 'Kitten' },
   { id: 'chocolate', label: 'Chocolate' },
   { id: 'due-date', label: 'Due date' },
+  { id: 'dog-age', label: 'Dog age' },
 ];
 
 /** The footer: the data, the guides and the pages about the site. */
@@ -22,6 +23,7 @@ const FOOTER: readonly NavLink[] = [
   { id: 'dog-chart', label: 'Dog feeding chart' },
   { id: 'puppy-chart', label: 'Puppy feeding chart' },
   { id: 'chocolate-chart', label: 'Chocolate toxicity chart' },
+  { id: 'dog-age-chart', label: 'Dog age chart' },
   { id: 'label-guide', label: 'How to read a pet food label' },
   { id: 'breed-guide', label: 'Dog food by breed' },
   { id: 'chocolate-guide', label: 'My dog ate chocolate' },

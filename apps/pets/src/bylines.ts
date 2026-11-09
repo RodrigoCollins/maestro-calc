@@ -1,4 +1,5 @@
 import { CHARTS } from './charts.ts';
+import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES, type PageSource } from './guides.ts';
 
 /**
@@ -12,7 +13,7 @@ export interface BylinePage {
 }
 
 /** Every guide and data page, each with its byline data (`site-check` holds the built pages to it). */
-export const BYLINE_PAGES: readonly BylinePage[] = [...GUIDES, ...CHARTS].map(
+export const BYLINE_PAGES: readonly BylinePage[] = [...GUIDES, ...CHARTS, ...AGE_PAGES].map(
   ({ path, checked, sources }) => ({ path, checked, sources }),
 );
 

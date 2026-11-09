@@ -239,6 +239,26 @@ const jsonLd = jsonLdOf(
     background: var(--butter);
   }
 
+  .bf-ages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bf-ages a {
+    display: inline-block;
+    min-width: 1.5rem;
+    min-height: 1.5rem;
+    padding: 0.25rem 0;
+  }
+
+  .bf-ages a[aria-current='page'] {
+    font-weight: 900;
+  }
+
   .bf-cards {
     display: grid;
     gap: 1rem;

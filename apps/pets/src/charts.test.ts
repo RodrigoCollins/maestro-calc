@@ -66,12 +66,43 @@ describe('the chocolate chart', () => {
   });
 });
 
+describe('the dog age chart', () => {
+  const chart = chartOf('/dog-age-chart');
+  const row = (age: string) => chart.rows.find(([a]) => a === age);
+
+  it('lists 1 to 16 years, a cell for every column', () => {
+    expect(chart.rows.map(([age]) => age)).toEqual(
+      Array.from({ length: 16 }, (_, i) => String(i + 1)),
+    );
+    for (const cells of chart.rows) expect(cells).toHaveLength(chart.columns.length);
+  });
+
+  // 1: 15 for every size, 16 ln 1 + 31 = 31; 10: small 24 + 8 x 4, AVMA 60, large 24 + 8 x 5.5,
+  // giant 24 + 8 x 7.5, 16 ln 10 + 31 = 67.84
+  it('gives the charts, the DNA clock and the 7x rule, worked by hand', () => {
+    expect(row('1')).toEqual(['1', '15', '15', '15', '15', '31.0', '7']);
+    expect(row('3')).toEqual(['3', '28', '28', '29.5', '31.5', '48.6', '21']);
+    expect(row('10')).toEqual(['10', '56', '60', '68', '84', '67.8', '70']);
+    expect(row('16')).toEqual(['16', '80', '87', '101', '129', '75.4', '112']);
+  });
+
+  it('leads to the calculator and to the page of every age', () => {
+    expect(chart.calculators.map(({ href }) => href)).toEqual(['/dog-age-calculator']);
+    expect(chart.pages?.links.map(({ href }) => href)).toHaveLength(16);
+    expect(chart.pages?.links[0]).toEqual({
+      href: '/1-year-in-dog-years',
+      label: '1 year in dog years',
+    });
+  });
+});
+
 describe('every chart', () => {
   it('is at the address the routes pin, as an article', () => {
     expect(CHARTS.map(({ path }) => path)).toEqual([
       '/dog-feeding-chart',
       '/puppy-feeding-chart',
       '/dog-chocolate-toxicity-chart',
+      '/dog-age-chart',
     ]);
     for (const { path } of CHARTS)
       expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
@@ -89,7 +120,7 @@ describe('every chart', () => {
 
   it('carries a review day and sources with addresses', () => {
     for (const chart of CHARTS) {
-      expect(chart.checked).toBe('2026-11-07');
+      expect(['2026-11-07', '2026-11-08']).toContain(chart.checked);
       expect(chart.sources.length).toBeGreaterThan(0);
       for (const { url } of chart.sources) expect(url).toMatch(/^https:\/\//);
     }
@@ -116,6 +147,11 @@ describe('the guide of the charts index', () => {
   it('gives the grams of each chocolate for a 20 lb dog and says to call', () => {
     expect(text).toContain('79 g of milk chocolate, 32 g of dark or 12 g of baking chocolate');
     expect(text).toContain('call');
+  });
+
+  it('compares a small and a giant dog of 10, and the DNA clock at 1 and 10', () => {
+    expect(text).toContain('a 10-year-old is 56 human years if it is small and 84 if it is giant');
+    expect(text).toContain('gives 67.8 at 10 but 31.0 at 1');
   });
 
   it('cites the sources of the charts it reads, once each', () => {

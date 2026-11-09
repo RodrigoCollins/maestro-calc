@@ -1,6 +1,7 @@
 import { Rational } from '@maestro-calc/core';
 import { dogChocolate } from '@maestro-calc/pets-core/dog-chocolate';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import { AGE_PAGES, DOG_AGE_CHART_ROWS, DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, cupsText, kcalText, quarterCups } from './format.ts';
 import type { PageSource } from './guides.ts';
 import { hrefOf } from './routes.ts';
@@ -19,6 +20,11 @@ export interface Chart {
   /** True for the chocolate chart: the page tells the reader to call a veterinarian or a poison line. */
   readonly callNow?: true;
   readonly calculators: readonly { readonly href: string; readonly label: string }[];
+  /** More pages the chart leads to, each one row of it worked out (the dog age chart). */
+  readonly pages?: {
+    readonly heading: string;
+    readonly links: readonly { readonly href: string; readonly label: string }[];
+  };
   readonly sources: readonly PageSource[];
   readonly card: { readonly title: string; readonly summary: string };
 }
@@ -189,6 +195,43 @@ export const CHARTS: readonly Chart[] = [
       summary: 'Grams that reach 20 mg/kg, by dog weight and chocolate.',
     },
   },
+  {
+    path: '/dog-age-chart',
+    title: 'Dog Age Chart: Dog Years to Human Years by Size | Bowl Figures',
+    description:
+      'Human years for dogs of 1 to 16 by size, from AVMA’s chart, Merck’s table and PetMD’s rates, beside the 2020 DNA clock of Wang et al. and the 7× rule.',
+    h1: 'Dog age chart: dog years to human years by size',
+    lead: 'The human age of a dog of 1 to 16 years in each of four sizes, worked out by the same engine as the dog age calculator, with the DNA clock and the seven-year rule beside them.',
+    checked: DOG_YEARS_CHECKED,
+    columns: [
+      'Dog age (years)',
+      'Small (20 lb or less)',
+      'Medium (21 to 50 lb)',
+      'Large (51 to 100 lb)',
+      'Giant (over 100 lb)',
+      'DNA clock (Wang et al.)',
+      '7× rule',
+    ],
+    rows: DOG_AGE_CHART_ROWS,
+    notes: [
+      'Every size is 15 at 1 and 24 at 2, the figures AVMA’s chart and Merck’s table share. The medium column is AVMA’s chart itself. After 2, the small column adds 4 human years a year (Merck’s table and PetMD), the large 5.5 and the giant 7.5, the middle of PetMD’s 5 to 6 and 7 to 8.',
+      'The DNA clock is 16 × ln(dog age) + 31, fitted by Wang et al. on 104 Labrador retrievers: it makes a young dog much older than the charts and an old dog younger. The seven-year rule is in no veterinary source used here.',
+      'AAHA’s 2019 guidelines do not convert ages: they place a dog in a life stage. Every figure is an estimate; your veterinarian can tell you where your own dog is.',
+    ],
+    calculators: [{ href: hrefOf('dog-age'), label: 'Dog age calculator' }],
+    pages: {
+      heading: 'Each age, worked out',
+      links: AGE_PAGES.map(({ path, age }) => ({
+        href: path,
+        label: `${String(age)} ${age === 1 ? 'year' : 'years'} in dog years`,
+      })),
+    },
+    sources: Object.values(DOG_AGE_SOURCES),
+    card: {
+      title: 'Dog age chart',
+      summary: 'Human years by size for dogs of 1 to 16, with the DNA clock.',
+    },
+  },
 ];
 
 /** The chart at `path`. */
@@ -211,6 +254,8 @@ const [, bigDog = ''] = cellsAt('/dog-feeding-chart', 100);
 const [, smallDog = ''] = cellsAt('/dog-feeding-chart', 25);
 const [, youngPuppy = '', , , olderPuppy = ''] = cellsAt('/puppy-feeding-chart', 10);
 const [, milk = '', dark = '', baking = ''] = cellsAt('/dog-chocolate-toxicity-chart', 20);
+const [, smallTen = '', , , giantTen = '', clockTen = ''] = cellsAt('/dog-age-chart', 10);
+const [, , , , , clockAtOne = ''] = cellsAt('/dog-age-chart', 1);
 const ratio = Math.round((10 * numberOfCell(bigDog)) / numberOfCell(smallDog)) / 10;
 
 /** What the index says about its charts, each figure read off the charts themselves. */
@@ -220,9 +265,10 @@ export const CHARTS_GUIDE = {
     `A dog four times heavier does not need four times the food. The dog feeding chart gives a 100 lb dog ${bigDog} calories a day against ${smallDog} for a 25 lb dog, ${ratio.toLocaleString('en-US', { minimumFractionDigits: 1 })} times, because the energy a dog needs follows its weight in kilograms to the 0.75 power (Merck).`,
     `A puppy needs the most for its weight while it is young. At 10 lb, the puppy chart gives ${youngPuppy} calories a day under 4 months and ${olderPuppy} from 4 months, as the factor drops from 3.0 to 2.0 times the resting energy (Merck and AAHA 2021).`,
     `The darker the chocolate, the less it takes. For a 20 lb dog, ${milk} g of milk chocolate, ${dark} g of dark or ${baking} g of baking chocolate reach 20 mg/kg, the dose where Merck lists the first signs. Less is not safe: if your dog ate any, call your veterinarian or a poison line now.`,
+    `Size changes how fast a dog ages. On the dog age chart a 10-year-old is ${smallTen} human years if it is small and ${giantTen} if it is giant; the DNA clock of a 2020 study, fitted on Labradors, gives ${clockTen} at 10 but ${clockAtOne} at 1, far older than the 15 of the charts.`,
     'The feeding charts assume a food of 360 kcal a cup; the calories per cup on your own bag set the real amount, so use the calculator with that figure. Every chart is worked out by the same engine as the calculators and shows the day it was checked.',
   ],
-  sources: [MERCK, MERCK_TABLE, AAHA, MERCK_CHOCOLATE],
+  sources: [MERCK, MERCK_TABLE, AAHA, MERCK_CHOCOLATE, DOG_AGE_SOURCES.avma, DOG_AGE_SOURCES.wang],
 } as const;
 
 /** The index of the data pages, `/charts`. */
@@ -230,8 +276,8 @@ export const CHARTS_INDEX = {
   path: '/charts',
   title: 'Pet Feeding Data and Charts | Bowl Figures',
   description:
-    'Tables computed from the calculators of Bowl Figures: dog and puppy feeding by weight and chocolate toxicity by weight, each with its sources and review day.',
+    'Tables from the Bowl Figures calculators: dog and puppy feeding and chocolate toxicity by weight, and dog age by size, each with its sources and review day.',
   h1: 'Data and charts',
-  lead: 'Every table here is computed by the same engine as the calculators, from the Merck Veterinary Manual and AAHA figures, and dated.',
+  lead: 'Every table here is computed by the same engine as the calculators, from the Merck Veterinary Manual, AVMA and AAHA figures, and dated.',
   checked: CHECKED,
 } as const;

@@ -24,13 +24,31 @@ describe('ROUTES', () => {
       ['kitten', '/kitten-feeding-calculator'],
       ['chocolate', '/dog-chocolate-toxicity-calculator'],
       ['due-date', '/dog-pregnancy-calculator'],
+      ['dog-age', '/dog-age-calculator'],
       ['charts', '/charts'],
       ['dog-chart', '/dog-feeding-chart'],
       ['puppy-chart', '/puppy-feeding-chart'],
       ['chocolate-chart', '/dog-chocolate-toxicity-chart'],
+      ['dog-age-chart', '/dog-age-chart'],
       ['label-guide', '/how-to-read-pet-food-label'],
       ['breed-guide', '/dog-food-by-breed'],
       ['chocolate-guide', '/my-dog-ate-chocolate'],
+      ['dog-years-1', '/1-year-in-dog-years'],
+      ['dog-years-2', '/2-years-in-dog-years'],
+      ['dog-years-3', '/3-years-in-dog-years'],
+      ['dog-years-4', '/4-years-in-dog-years'],
+      ['dog-years-5', '/5-years-in-dog-years'],
+      ['dog-years-6', '/6-years-in-dog-years'],
+      ['dog-years-7', '/7-years-in-dog-years'],
+      ['dog-years-8', '/8-years-in-dog-years'],
+      ['dog-years-9', '/9-years-in-dog-years'],
+      ['dog-years-10', '/10-years-in-dog-years'],
+      ['dog-years-11', '/11-years-in-dog-years'],
+      ['dog-years-12', '/12-years-in-dog-years'],
+      ['dog-years-13', '/13-years-in-dog-years'],
+      ['dog-years-14', '/14-years-in-dog-years'],
+      ['dog-years-15', '/15-years-in-dog-years'],
+      ['dog-years-16', '/16-years-in-dog-years'],
       ['methodology', '/methodology'],
       ['about', '/about'],
       ['editorial', '/editorial-policy'],
@@ -47,9 +65,9 @@ describe('ROUTES', () => {
     expect(new Set(ROUTES.map(({ path }) => path)).size).toBe(ROUTES.length);
   });
 
-  it('names the home, six calculators, and every other page an article', () => {
+  it('names the home, seven calculators, and every other page an article', () => {
     expect(routeOf('/')?.kind).toBe('home');
-    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(6);
+    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(7);
     expect(routeOf('/methodology')?.kind).toBe('article');
     expect(routeOf('/no-such-page')).toBeUndefined();
   });

@@ -13,6 +13,7 @@ describe('the methodology cases', () => {
       'cat-food',
       'dog-chocolate',
       'dog-due-date',
+      'dog-age',
     ]);
     for (const { cases: list, id } of METHOD_SECTIONS) expect(list.length, id).toBeGreaterThan(2);
   });

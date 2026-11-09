@@ -109,6 +109,34 @@ test('shades the due date window on the strip and says when a day is past the mo
   await expect(note).toBeVisible();
 });
 
+test('works a dog age by size and back, with the DNA clock beside it', async ({ page }) => {
+  await page.goto('/dog-age-calculator');
+  const figure = page.locator('[data-text="figure"]').first();
+  // a 3-year-old giant dog: 24 + 7.5 = 31.5 human years
+  await edit(page, 'size', 'giant');
+  await expect(figure).toHaveText('31.5');
+  // 50 human years for a large dog: 2 + 26 / 5.5 = 6.7 dog years
+  await edit(page, 'size', 'large');
+  await edit(page, 'from', 'human');
+  await edit(page, 'age', '50');
+  await expect(figure).toHaveText('6.7');
+  await expect(page.locator('[data-text="unit"]').first()).toHaveText('dog years');
+  // e^((50 - 31) / 16) = 3.3
+  await expect(page.locator('[data-text="wang"]')).toHaveText('3.3 dog years');
+  const outside = page.locator('[data-show="outside"]');
+  await expect(outside).toBeHidden();
+  await edit(page, 'from', 'dog');
+  await edit(page, 'age', '22');
+  await expect(outside).toBeVisible();
+});
+
+test('opens the dog age calculator from an age page with the age filled in', async ({ page }) => {
+  await page.goto('/10-years-in-dog-years');
+  await page.locator('a[href="/dog-age-calculator?v=1&a=10"]').first().click();
+  await expect(page.locator('[name="age"]')).toHaveValue('10');
+  await expect(page.locator('[data-text="figure"]').first()).toHaveText('60');
+});
+
 test('shares each calculator on WhatsApp with the state of the form', async ({ page }) => {
   await page.goto('/dog-food-calculator');
   await edit(page, 'weight', '80');

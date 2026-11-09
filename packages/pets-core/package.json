@@ -9,6 +9,7 @@
     "./cat-food": "./src/cat-food/index.ts",
     "./dog-chocolate": "./src/dog-chocolate/index.ts",
     "./dog-due-date": "./src/dog-due-date/index.ts",
+    "./dog-age": "./src/dog-age/index.ts",
     "./energy": "./src/energy/index.ts"
   },
   "scripts": {

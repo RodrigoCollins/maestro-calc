@@ -73,7 +73,7 @@ test('links every calculator from the header, each answering', async ({ page }) 
   const hrefs = await page
     .locator('header nav a')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
-  expect(hrefs).toHaveLength(6);
+  expect(hrefs).toHaveLength(7);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
 });
 

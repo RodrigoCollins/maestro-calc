@@ -4,7 +4,7 @@ import { hrefOf } from './routes.ts';
 export const ABOUT: TextPage = {
   title: 'About Bowl Figures: Pet Feeding Calculators | Bowl Figures',
   description:
-    'Bowl Figures is a free set of pet feeding calculators: calories and cups for dogs and cats, chocolate toxicity and a dog due date, with every formula shown.',
+    'Bowl Figures is a free set of pet calculators: calories and cups for dogs and cats, chocolate toxicity, a dog due date and dog age, every formula shown.',
   h1: 'About Bowl Figures',
   lead: 'Bowl Figures answers the questions pet owners type into a search box: how much to feed, how much chocolate is too much, when the puppies are due.',
   sections: [

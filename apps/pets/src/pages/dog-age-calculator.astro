@@ -1,0 +1,23 @@
+---
+import { dogAge } from '@maestro-calc/pets-core/dog-age';
+import { DOG_AGE_PAGE, dogAgeView } from '../calc/dog-age.ts';
+import CalcPage from '../components/CalcPage.astro';
+import DogAgeScript from '../islands/DogAgeScript.astro';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={DOG_AGE_PAGE}
+  calculator={dogAge}
+  view={dogAgeView}
+  kind="dog-age"
+  method="The human age follows the AVMA chart for a medium dog and, for the other sizes, 15 at 1 and 24 at 2 (Merck) then 4, 5.5 or 7.5 human years a year (the middle of PetMD’s ranges). The DNA clock is 16 × ln(dog age) + 31 (Wang et al., 2020)."
+  related={[
+    { href: hrefOf('dog-age-chart'), label: 'Dog age chart: human years by size, 1 to 16' },
+    { href: hrefOf('dog-years-1'), label: '1 year in dog years' },
+    { href: hrefOf('dog-years-3'), label: '3 years in dog years' },
+    { href: hrefOf('dog-years-10'), label: '10 years in dog years' },
+  ]}
+>
+  <DogAgeScript />
+</CalcPage>
