@@ -21,7 +21,7 @@ interface Props {
   /**
    * This page's path in each language; the English one is also the x-default. A page without
    * paths (the 404) has no canonical or alternates, is never indexed and links the other home. An
-   * English-only page (no `es`) has its canonical and no alternates.
+   * one-language page (no `es`, or no `en`) has its canonical and no alternates.
    */
   readonly paths?: PagePaths;
   /** Where the language switch leads when the page has no twin: the other home otherwise. */
@@ -52,7 +52,8 @@ const {
   footer,
   wide = false,
 } = Astro.props;
-const pair = paths?.es === undefined ? undefined : { en: paths.en, es: paths.es };
+const pair =
+  paths?.en === undefined || paths.es === undefined ? undefined : { en: paths.en, es: paths.es };
 const embedded = Astro.props.embed === true && pair !== undefined;
 const other: Lang = lang === 'en' ? 'es' : 'en';
 const embedHead =
@@ -60,7 +61,8 @@ const embedHead =
 const otherHref =
   embedHead?.other ?? pair?.[other] ?? Astro.props.otherHref ?? (other === 'en' ? '/' : '/es');
 const { canonical, robots, preview } = embedHead ?? headOf(paths, lang, { title, description });
-const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === paths.en);
+const own = paths?.[lang];
+const route = own === undefined ? undefined : ROUTES.find((each) => each[lang] === own);
 const jsonLd =
   route === undefined || embedded
     ? undefined

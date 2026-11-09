@@ -95,7 +95,7 @@ export const jsonLdOf = (
   parent?: Parent,
 ): string => {
   const path = lang === 'en' ? route.en : route.es;
-  if (path === undefined) throw new Error(`${route.id} has no Spanish page`);
+  if (path === undefined) throw new Error(`${route.id} has no ${lang} page`);
   const url = new URL(path, origin).href;
   const inLanguage = lang === 'en' ? 'en-US' : 'es-US';
   const { description } = page;

@@ -19,7 +19,7 @@ import {
   MILITARY_TIMES,
   militaryPathOf,
 } from '../military/routes.ts';
-import { isPaired, ROUTES, type PairedRoute } from '../routes.ts';
+import { isPaired, pathsOfRoute, ROUTES, type PairedRoute } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
@@ -145,6 +145,4 @@ export const STATE_RULES_OF_TABLES: readonly GuideRule[] = [
 export const HUBS: readonly string[] = LANGS.map((lang) => routeOf('home')[lang]);
 
 /** Every page of the sitemap, which is built from the same route table. */
-export const SITEMAP_PATHS: readonly string[] = ROUTES.flatMap(({ en, es }) =>
-  es === undefined ? [en] : [en, es],
-);
+export const SITEMAP_PATHS: readonly string[] = ROUTES.flatMap(pathsOfRoute);

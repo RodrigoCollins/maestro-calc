@@ -35,26 +35,30 @@ import { SHIFT_PATHS } from './shift/texts.ts';
 import { TIPPED_PATHS } from './tipped/texts.ts';
 
 /**
- * Every page of Cuenta Horas, an English and Spanish pair but for the few English-only pages (the
- * military times, a search of the US clock), which have no `es`; the sitemap is built from it.
+ * Every page of Cuenta Horas, an English and Spanish pair but for the few one-language pages: the
+ * English-only military times (a search of the US clock), with no `es`, and the Spanish-only date
+ * pages (a search of Mexico and Spain), with no `en`; the sitemap is built from it.
  */
-export interface Route {
+export type Route = {
   readonly id: string;
   /** What the page is, for its structured data. */
   readonly kind: 'home' | 'calculator' | 'article' | 'collection';
-  readonly en: string;
-  readonly es?: string;
-}
+} & (
+  { readonly en: string; readonly es?: string } | { readonly en?: undefined; readonly es: string }
+);
 
-/** A route with both languages: every route but the English-only ones. */
-export type PairedRoute = Route & { readonly es: string };
+/** A route with both languages: every route but the one-language ones. */
+export type PairedRoute = Route & { readonly en: string; readonly es: string };
 
 /** Whether `route` has its Spanish twin. */
-export const isPaired = (route: Route): route is PairedRoute => route.es !== undefined;
+export const isPaired = (route: Route): route is PairedRoute =>
+  route.en !== undefined && route.es !== undefined;
 
-/** The paths of a route: the English one, then the Spanish one when there is one. */
-export const pathsOfRoute = ({ en, es }: Route): readonly string[] =>
-  es === undefined ? [en] : [en, es];
+/** The paths of a route: the English one, then the Spanish one, each when there is one. */
+export const pathsOfRoute = ({ en, es }: Route): readonly string[] => [
+  ...(en === undefined ? [] : [en]),
+  ...(es === undefined ? [] : [es]),
+];
 
 export const ROUTES: readonly Route[] = [
   { id: 'home', kind: 'home', en: '/', es: '/es' },

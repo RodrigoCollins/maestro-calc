@@ -89,7 +89,7 @@ describe('siteSeoProblems', () => {
     const single: Route = { id: 'military-time-1500', kind: 'article', en: '/military-time/1500' };
     const title = '1500 in military time is 3:00 PM | Cuenta Horas';
     const description = `1500 in military time is 3:00 PM. ${LEAD}`;
-    const html = built({ ...single, es: '/es' }, 'en', title, description).replace(
+    const html = built({ ...single, en: single.en, es: '/es' }, 'en', title, description).replace(
       /<link rel="alternate"[^>]*>/g,
       '',
     );
@@ -101,6 +101,30 @@ describe('siteSeoProblems', () => {
         pages,
         sitemap: sitemapXml([HOME, TAIL, single], ORIGIN),
         longTail: [...rules.longTail, single.en],
+      }),
+    ).toEqual([]);
+  });
+
+  it('reads a Spanish-only page, with no alternates and a plain sitemap line, as whole', () => {
+    const path = '/es/fechas/cuantos-dias-faltan-para-el-14-de-febrero';
+    const single: Route = { id: 'fechas-14-febrero', kind: 'article', es: path };
+    const title = '¿Cuántos días faltan para el 14 de febrero? | Cuenta Horas';
+    const description = `Cuenta los días que faltan para el 14 de febrero. ${LEAD}`;
+    const html = built({ ...single, en: '/', es: path }, 'es', title, description).replace(
+      /<link rel="alternate"[^>]*>/g,
+      '',
+    );
+    const pages = new Map([
+      ...PAGES,
+      ['es/fechas/cuantos-dias-faltan-para-el-14-de-febrero.html', html],
+    ]);
+    expect(
+      siteSeoProblems({
+        ...rules,
+        routes: [HOME, TAIL, single],
+        pages,
+        sitemap: sitemapXml([HOME, TAIL, single], ORIGIN),
+        longTail: [...rules.longTail, path],
       }),
     ).toEqual([]);
   });

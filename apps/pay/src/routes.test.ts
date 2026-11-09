@@ -1,7 +1,7 @@
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { LONG_TAIL_ROUTES } from './long-tail/jobs.ts';
-import { ROUTES } from './routes.ts';
+import { pathsOfRoute, ROUTES } from './routes.ts';
 
 const pagesDir = new URL('./pages/', import.meta.url).pathname;
 const pageFiles = globSync('**/*.astro', { cwd: pagesDir })
@@ -27,9 +27,7 @@ const templateOf = (path: string): string =>
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {
-    const routed = new Set(
-      ROUTES.flatMap(({ en, es }) => [en, ...(es === undefined ? [] : [es])].map(templateOf)),
-    );
+    const routed = new Set(ROUTES.flatMap((route) => pathsOfRoute(route).map(templateOf)));
     expect([...routed].sort()).toEqual([...pageFiles].sort());
   });
 
@@ -39,15 +37,18 @@ describe('ROUTES', () => {
 
   it('keeps English at the root and Spanish under /es', () => {
     for (const { en, es } of ROUTES) {
-      expect(en === '/es' || en.startsWith('/es/')).toBe(false);
+      if (en !== undefined) expect(en === '/es' || en.startsWith('/es/')).toBe(false);
       if (es !== undefined) expect(es === '/es' || es.startsWith('/es/')).toBe(true);
     }
   });
 
-  it('pairs every page but the English-only military times', () => {
-    const single = ROUTES.filter(({ es }) => es === undefined).map(({ en }) => en);
-    expect(single).toHaveLength(48);
-    for (const path of single) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
+  it('pairs every page but the English-only military times and the Spanish-only dates', () => {
+    const english = ROUTES.flatMap(({ en, es }) => (es === undefined ? [en] : []));
+    expect(english).toHaveLength(48);
+    for (const path of english) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
+    const spanish = ROUTES.flatMap(({ en, es }) => (en === undefined ? [es] : []));
+    for (const path of spanish)
+      expect(path).toMatch(/^\/es\/(calculadora-de-dias-entre-fechas|fechas\/[a-z0-9-]+)$/);
   });
 
   it('starts with the home pair', () => {

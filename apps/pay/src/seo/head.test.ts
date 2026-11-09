@@ -18,6 +18,12 @@ describe('headOf', () => {
     expect(single).toMatchObject({ canonical: 'https://x.test/military-time/1500' });
     expect(single).not.toHaveProperty('robots');
   });
+
+  it('gives a Spanish-only page its canonical too', () => {
+    const single = headOf({ es: '/es/fechas/x' }, 'es', text, site);
+    expect(single).toMatchObject({ canonical: 'https://x.test/es/fechas/x' });
+    expect(single).not.toHaveProperty('robots');
+  });
 });
 
 describe('embedHeadOf', () => {
