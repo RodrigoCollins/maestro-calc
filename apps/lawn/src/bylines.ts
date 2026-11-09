@@ -1,6 +1,6 @@
 import { FROST_CHECKED } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
-import { GUIDES } from './guide.ts';
+import { ALL_GUIDES } from './guide.ts';
 import { NORMALS_SOURCES, type MethodSource } from './methodology.ts';
 
 /**
@@ -21,7 +21,7 @@ const FROST_BYLINES: readonly BylinePage[] = [
 
 /** Every page with a byline: the guides, then the frost dates. */
 export const BYLINE_PAGES: readonly BylinePage[] = [
-  ...GUIDES.map(({ path, checked, sources }) => ({
+  ...ALL_GUIDES.map(({ path, checked, sources }) => ({
     path,
     checked,
     sources: Object.values(sources),

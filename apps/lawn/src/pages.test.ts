@@ -5,7 +5,7 @@ import { CALCULATORS, calculatorAt, MAESTRO } from './calculators.ts';
 import { bylineOf, checkedText, citedSources, EDITORIAL } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
 import { frostCopyOf, FROST_TEXT } from './frost-copy.ts';
-import { GUIDES, guideAt, guidesOf } from './guide.ts';
+import { ALL_GUIDES, GUIDES, guideAt, guidesOf } from './guide.ts';
 import { HOME, HOME_TOOLS, navOf } from './home.ts';
 import { footerLinks } from './layout.ts';
 import { llmsTxt } from './llms.ts';
@@ -19,7 +19,7 @@ const HEADS: readonly (readonly [string, string, string])[] = [
   ['/', HOME.title, HOME.description],
   ...CALCULATORS.map(({ path, title, description }) => [path, title, description] as const),
   ['/frost-dates', FROST_TEXT.index.title, FROST_TEXT.index.description],
-  ...GUIDES.map(({ path, title, description }) => [path, title, description] as const),
+  ...ALL_GUIDES.map(({ path, title, description }) => [path, title, description] as const),
   ['/methodology', METHOD_PAGE.title, METHOD_PAGE.description],
   ['/about', ABOUT.title, ABOUT.description],
   ['/editorial-policy', EDITORIAL.title, EDITORIAL.description],
@@ -101,7 +101,8 @@ describe('guides', () => {
   });
 
   it('answers every question in the page text, with a cited source', () => {
-    for (const guide of GUIDES) {
+    for (const guide of ALL_GUIDES) {
+      expect(guideAt(guide.path)).toBe(guide);
       expect(guide.questions.length).toBeGreaterThan(0);
       expect(Object.keys(guide.sources).length).toBeGreaterThan(0);
       for (const { url } of Object.values(guide.sources)) expect(url).toMatch(/^https:\/\//);
@@ -111,7 +112,7 @@ describe('guides', () => {
 
 describe('bylines', () => {
   it('gives the guides and every frost page a byline with the NOAA or the guide sources', () => {
-    expect(BYLINE_PAGES).toHaveLength(GUIDES.length + 1 + FROST_PAGES.length);
+    expect(BYLINE_PAGES).toHaveLength(ALL_GUIDES.length + 1 + FROST_PAGES.length);
     for (const page of BYLINE_PAGES) {
       expect(page.checked).toMatch(/^\d{4}-\d{2}-\d{2}$/);
       expect(page.sources.length).toBeGreaterThan(0);

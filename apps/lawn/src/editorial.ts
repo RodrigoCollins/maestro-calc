@@ -1,5 +1,5 @@
 import { FROST_SOURCE } from '@maestro-calc/lawn-data/frost/source';
-import { GUIDES } from './guide.ts';
+import { ALL_GUIDES } from './guide.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
 import { CONTACT_EMAIL } from './privacy.ts';
 import { hrefOf } from './routes.ts';
@@ -8,7 +8,7 @@ import { hrefOf } from './routes.ts';
 export const citedSources = (): { readonly name: string; readonly url: string }[] => {
   const all: MethodSource[] = [
     ...METHOD_SECTIONS.flatMap(({ sources }) => sources),
-    ...GUIDES.flatMap(({ sources }) => Object.values(sources)),
+    ...ALL_GUIDES.flatMap(({ sources }) => Object.values(sources)),
   ];
   const unique = new Map<string, { name: string; url: string }>();
   for (const { name, url } of all) if (url !== undefined) unique.set(url, { name, url });

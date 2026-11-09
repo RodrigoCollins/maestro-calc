@@ -1,3 +1,11 @@
+import {
+  CALENDAR_STATES,
+  feedStatePathOf,
+  seedStatePathOf,
+  ZONE_INDEX_PATH,
+  ZONE_LABELS,
+  zonePathOf,
+} from './calendar-paths.ts';
 import { FROST_PAGES } from './frost.ts';
 
 /** What a page is to search engines and link previews: the home, a calculator or an article. */
@@ -34,15 +42,36 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'about', kind: 'article', path: '/about' },
   { id: 'editorial', kind: 'article', path: '/editorial-policy' },
   { id: 'privacy', kind: 'article', path: '/privacy' },
+  { id: 'zone-index', kind: 'article', path: ZONE_INDEX_PATH },
 ];
 
-/** Every page: the page files, then the frost pages `frost-dates/[...state].astro` builds. */
+/**
+ * Every page: the page files, then the pages built from data: the frost pages
+ * (`frost-dates/[...state].astro`), the planting zones (`planting-zones/[zone].astro`) and the seed
+ * and fertilizer calendars of the states (`when-to-plant-grass-seed/[state].astro`,
+ * `when-to-fertilize-lawn/[state].astro`).
+ */
 export const ROUTES: readonly Route[] = [
   ...PAGE_ROUTES,
   ...FROST_PAGES.map(({ state, part, path }) => ({
     id: `frost:${state.slug}${part === 1 ? '' : `:${String(part)}`}`,
     kind: 'article' as const,
     path,
+  })),
+  ...ZONE_LABELS.map((label) => ({
+    id: `zone:${label}`,
+    kind: 'article' as const,
+    path: zonePathOf(label),
+  })),
+  ...CALENDAR_STATES.map(({ slug }) => ({
+    id: `seed:${slug}`,
+    kind: 'article' as const,
+    path: seedStatePathOf(slug),
+  })),
+  ...CALENDAR_STATES.map(({ slug }) => ({
+    id: `feed:${slug}`,
+    kind: 'article' as const,
+    path: feedStatePathOf(slug),
   })),
 ];
 

@@ -1,6 +1,9 @@
+import { CALENDAR_STATES, feedStatePathOf } from './calendar-paths.ts';
 import { CALCULATORS } from './calculators.ts';
 import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
 import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
+import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
+import { ZONE_GUIDES, ZONE_INDEX } from './zone-guides.ts';
 
 export {
   BEST_SEED_GUIDE,
@@ -42,6 +45,8 @@ export interface GuideQuestion {
 export interface Guide {
   readonly id: string;
   readonly path: string;
+  /** The page a data page sits under in the breadcrumb, between the home and itself. */
+  readonly parent?: { readonly name: string; readonly path: string };
   readonly title: string;
   readonly description: string;
   readonly h1: string;
@@ -115,6 +120,17 @@ export const TIMING_GUIDE: Guide = {
       ],
     },
     {
+      id: 'states',
+      heading: 'By state',
+      paragraphs: [
+        'For the 20 states below, a page gives the feeding months of the state’s own extension service and the frost dates of its stations, zone by zone; for warm-season lawns, the first and last feeding worked out from those dates.',
+      ],
+      links: CALENDAR_STATES.map(({ slug, name }) => ({
+        href: feedStatePathOf(slug),
+        label: `When to fertilize your lawn in ${name}`,
+      })),
+    },
+    {
       id: 'amounts',
       heading: 'How much to put down',
       paragraphs: [
@@ -155,11 +171,25 @@ export const GUIDES: readonly Guide[] = [
   BEST_SEED_GUIDE,
   ...SPECIES_GUIDES,
   ...GRASS_GUIDES,
+  ZONE_INDEX,
 ];
+
+/**
+ * The guides built from data, one per zone or state: listed by their index pages, not the footer
+ * or the home.
+ */
+export const DATA_GUIDES: readonly Guide[] = [
+  ...ZONE_GUIDES,
+  ...SEED_STATE_GUIDES,
+  ...FEED_STATE_GUIDES,
+];
+
+/** Every guide page of the site. */
+export const ALL_GUIDES: readonly Guide[] = [...GUIDES, ...DATA_GUIDES];
 
 /** The guide at `path`; any other path throws at build time. */
 export const guideAt = (path: string): Guide => {
-  const guide = GUIDES.find((candidate) => candidate.path === path);
+  const guide = ALL_GUIDES.find((candidate) => candidate.path === path);
   if (guide === undefined) throw new Error(`no guide at ${path}`);
   return guide;
 };

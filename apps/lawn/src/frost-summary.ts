@@ -1,5 +1,6 @@
 import type { Station } from '@maestro-calc/lawn-data/frost/types';
 import { frostPathOf, FROST_PAGES, FROST_STATES, type FrostPage } from './frost.ts';
+import { fallOrder, springOrder } from './frost-stats.ts';
 import { STATIONS_OF } from './frost-stations.ts';
 import { dateText, titleCase } from './frost-text.ts';
 
@@ -11,13 +12,7 @@ import { dateText, titleCase } from './frost-text.ts';
  * year before and a fall day under 213 in the year after; the order of the dates follows that.
  */
 
-const SEASON_START = 213;
 const FEET_PER_METER = 3.28084;
-
-/** A spring day on the season's line: a day from August on belongs to the year before. */
-const springOrder = (day: number): number => (day >= SEASON_START ? day - 365 : day);
-/** A fall day on the season's line: a day before August belongs to the year after. */
-const fallOrder = (day: number): number => (day < SEASON_START ? day + 365 : day);
 
 interface Dated {
   readonly name: string;

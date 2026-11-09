@@ -26,3 +26,13 @@ export const pageTrailOf = (page: {
   { name: SITE.name, path: '/' },
   { name: withoutSite(page.title), path: page.path },
 ];
+
+/** The trail of a page below another: the home, the parent page, then the page itself. */
+export const childTrailOf = (
+  page: { readonly path: string; readonly title: string },
+  parent: Crumb,
+): readonly Crumb[] => [
+  { name: SITE.name, path: '/' },
+  parent,
+  { name: withoutSite(page.title), path: page.path },
+];

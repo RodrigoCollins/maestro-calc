@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from 'astro';
+import GuidePage from '../../components/GuidePage.astro';
+import { SEED_STATE_GUIDES } from '../../state-guides.ts';
+
+export const getStaticPaths = (() =>
+  SEED_STATE_GUIDES.map(({ path }) => ({
+    params: { state: path.slice('/when-to-plant-grass-seed/'.length) },
+    props: { path },
+  }))) satisfies GetStaticPaths;
+
+const { path } = Astro.props;
+---
+
+<GuidePage {path} />

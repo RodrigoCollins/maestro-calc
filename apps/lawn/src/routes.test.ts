@@ -15,7 +15,7 @@ const filesIn = (dir: string, prefix = ''): string[] =>
 
 describe('routes', () => {
   it('pins the published addresses: they are a public contract', () => {
-    expect(ROUTES.slice(0, 22).map(({ path }) => path)).toEqual([
+    expect(ROUTES.slice(0, 23).map(({ path }) => path)).toEqual([
       '/',
       '/lawn-fertilizer-calculator',
       '/grass-seed-calculator',
@@ -38,6 +38,7 @@ describe('routes', () => {
       '/about',
       '/editorial-policy',
       '/privacy',
+      '/planting-zones',
     ]);
   });
 
@@ -52,12 +53,21 @@ describe('routes', () => {
     expect(hrefOf('frost:texas:2')).toBe('/frost-dates/texas/2');
   });
 
+  it('routes a page for each planting zone and a seed and a fertilizer page for each state', () => {
+    expect(ROUTES.filter(({ id }) => id.startsWith('zone:'))).toHaveLength(16);
+    expect(ROUTES.filter(({ id }) => id.startsWith('seed:'))).toHaveLength(20);
+    expect(ROUTES.filter(({ id }) => id.startsWith('feed:'))).toHaveLength(20);
+    expect(hrefOf('zone:7b')).toBe('/planting-zones/zone-7b');
+    expect(hrefOf('seed:texas')).toBe('/when-to-plant-grass-seed/texas');
+    expect(hrefOf('feed:north-carolina')).toBe('/when-to-fertilize-lawn/north-carolina');
+  });
+
   it('has a page file for every fixed route, so a new page file cannot be left out', () => {
     const files = filesIn('.')
       .map((file) => file.replace(/\.(astro|ts)$/, '').replace(/\.(xml|txt)$/, ''))
       .filter((file) => !['/404', '/sitemap', '/llms'].includes(file))
       .map((file) => (file === '/index' ? '/' : file));
-    const fixed = ROUTES.filter(({ id }) => !id.startsWith('frost:')).map(({ path }) => path);
+    const fixed = ROUTES.filter(({ id }) => !id.includes(':')).map(({ path }) => path);
     // the frost index is `frost-dates/index.astro`, the one fixed route in a folder
     expect([...files].sort()).toEqual(
       [...fixed.map((path) => (path === '/frost-dates' ? '/frost-dates/index' : path))].sort(),

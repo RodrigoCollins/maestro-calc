@@ -1,4 +1,5 @@
 import { seedRateOf, type SeedSource, type SeedSpecies } from '@maestro-calc/lawn-core/grass-seed';
+import { CALENDAR_STATES, seedStatePathOf, ZONE_INDEX_PATH } from './calendar-paths.ts';
 import { fieldText } from './format.ts';
 import type { Guide } from './guide.ts';
 import {
@@ -97,6 +98,20 @@ export const PLANTING_GUIDE: Guide = {
         { href: '/frost-dates/washington', label: 'Washington frost dates (Seattle)' },
         { href: '/frost-dates/north-carolina', label: 'North Carolina frost dates (Raleigh)' },
         { href: '/frost-dates/texas', label: 'Texas frost dates' },
+      ],
+    },
+    {
+      id: 'states',
+      heading: 'By state and by zone',
+      paragraphs: [
+        'For the 20 states below, a page gives what the state’s own extension service says and the latest seeding dates worked out zone by zone from its NOAA stations. The planting zone pages do the same for each USDA half zone.',
+      ],
+      links: [
+        ...CALENDAR_STATES.map(({ slug, name }) => ({
+          href: seedStatePathOf(slug),
+          label: `When to plant grass seed in ${name}`,
+        })),
+        { href: ZONE_INDEX_PATH, label: 'USDA planting zones' },
       ],
     },
     {
