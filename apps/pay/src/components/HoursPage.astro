@@ -34,7 +34,7 @@ const live = (['time-offset', 'until', 'days-from'] as const).map((family) => ({
 const LIVE_INTRO = {
   en: {
     'time-offset':
-      'A time some hours ago or some minutes from now is your clock moved by the offset, with the date changing when the count crosses midnight. Each page shows the time from your clock and, for every hour of the day, the time then and whether it falls on the day before.',
+      'A time some hours ago, some hours from now or some minutes from now is your clock moved by the offset, with the date changing when the count crosses midnight. Each page shows the time from your clock and, for every hour of the day, the time then and the day it falls on.',
     until:
       'How long until a time of day is that time on a 24-hour clock minus the time on yours, plus 24 hours once it has passed. Each page counts it from your clock and from every hour, in hours and minutes and in decimal hours.',
     'days-from':
@@ -42,7 +42,7 @@ const LIVE_INTRO = {
   },
   es: {
     'time-offset':
-      'Una hora de hace unas horas o dentro de unos minutos es tu reloj movido por esa cantidad, y la fecha cambia cuando la cuenta cruza la medianoche. Cada página muestra la hora desde tu reloj y, para cada hora del día, la hora de entonces y si cae en el día anterior.',
+      'Una hora de hace unas horas, dentro de unas horas o dentro de unos minutos es tu reloj movido por esa cantidad, y la fecha cambia cuando la cuenta cruza la medianoche. Cada página muestra la hora desde tu reloj y, para cada hora del día, la hora de entonces y el día en que cae.',
     until:
       'Lo que falta para una hora del día es esa hora en reloj de 24 horas menos la de tu reloj, más 24 horas si ya pasó. Cada página lo cuenta desde tu reloj y desde cada hora, en horas y minutos y en horas decimales.',
     'days-from':
