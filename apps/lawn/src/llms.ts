@@ -5,6 +5,8 @@ import { EDITORIAL } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
 import { frostCopyOf, FROST_TEXT } from './frost-copy.ts';
 import { GUIDES } from './guide.ts';
+import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
+import { ZONE_GUIDES } from './zone-guides.ts';
 import { METHOD_PAGE } from './methodology.ts';
 import { PRIVACY } from './privacy.ts';
 import { SITE } from './site.config.ts';
@@ -37,6 +39,18 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
         note: FROST_TEXT.index.description,
       },
     ],
+  ],
+  [
+    'Planting zones',
+    ZONE_GUIDES.map(({ h1, path, description }) => ({ name: h1, path, note: description })),
+  ],
+  [
+    'Lawn calendars by state',
+    [...SEED_STATE_GUIDES, ...FEED_STATE_GUIDES].map(({ h1, path, description }) => ({
+      name: h1,
+      path,
+      note: description,
+    })),
   ],
   [
     'About',

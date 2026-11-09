@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from 'astro';
+import GuidePage from '../../components/GuidePage.astro';
+import { ZONE_GUIDES } from '../../zone-guides.ts';
+
+export const getStaticPaths = (() =>
+  ZONE_GUIDES.map(({ path }) => ({
+    params: { zone: path.slice('/planting-zones/'.length) },
+    props: { path },
+  }))) satisfies GetStaticPaths;
+
+const { path } = Astro.props;
+---
+
+<GuidePage {path} />

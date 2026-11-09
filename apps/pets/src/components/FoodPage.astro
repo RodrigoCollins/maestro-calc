@@ -1,0 +1,145 @@
+---
+import { POISON_LINE } from '../calc/chocolate.ts';
+import { FOOD_CALL, foodPageOf } from '../can-dogs-eat.ts';
+import { checkedText } from '../editorial.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const page = foodPageOf(Astro.props.path);
+const { title, description, h1, lead, checked, sections, table, sizeGuide, questions } = page;
+const [first, ...rest] = sections;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    {page.callNow && (
+      <p class="bf-call" role="note">
+        {FOOD_CALL} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+      </p>
+    )}
+    {first !== undefined && (
+      <section aria-labelledby={first.id}>
+        <h2 id={first.id}>{first.heading}</h2>
+        {first.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    )}
+    {table !== undefined && (
+      <section aria-labelledby={table.id}>
+        <h2 id={table.id}>{table.heading}</h2>
+        {table.paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        <div
+          class="bf-scroll"
+          tabindex="0"
+          role="region"
+          aria-label={`${table.heading}, scrolls sideways on a narrow screen`}
+        >
+          <table class="bf-table">
+            <thead>
+              <tr>
+                {table.columns.map((column) => (
+                  <th scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {table.rows.map(([weight, ...cells]) => (
+                <tr>
+                  <th scope="row">{weight}</th>
+                  {cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+    {sizeGuide !== undefined && (
+      <section aria-labelledby="size-guide">
+        <h2 id="size-guide">{sizeGuide.heading}</h2>
+        <p>{sizeGuide.note}</p>
+        <div
+          class="bf-scroll"
+          tabindex="0"
+          role="region"
+          aria-label={`${sizeGuide.heading}, scrolls sideways on a narrow screen`}
+        >
+          <table class="bf-table">
+            <thead>
+              <tr>
+                {sizeGuide.columns.map((column) => (
+                  <th scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sizeGuide.rows.map(([size, amount]) => (
+                <tr>
+                  <th scope="row">{size}</th>
+                  <td>{amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
+    {rest.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.length > 1 ? (
+          <ul>
+            {paragraphs.map((paragraph) => (
+              <li>{paragraph}</li>
+            ))}
+          </ul>
+        ) : (
+          paragraphs.map((paragraph) => <p>{paragraph}</p>)
+        )}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-foods">
+      <h2 id="bf-foods">More foods with the same answer</h2>
+      <ul class="bf-ages">
+        {page.related.map(({ href, label }) => (
+          <li>
+            <a {href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+      <ul>
+        {page.links.map(({ href, label }) => (
+          <li>
+            <a {href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p>{`Every source below was read on ${checkedText(checked)}.`}</p>
+    <Sources sources={page.sources} />
+    <ShareLink path={page.path} {title} />
+  </main>
+</Layout>
