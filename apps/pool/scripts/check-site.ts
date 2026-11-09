@@ -9,6 +9,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { affiliateLinkProblems } from '@maestro-calc/site-kit/affiliate';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
@@ -40,6 +41,8 @@ const site = new Map([...html].map(([file, text]) => [canonicalPath(`/${file}`),
 const robotsFile = join(dist, 'robots.txt');
 const all = [
   ...problems,
+  // every sponsored link sits in the recommendation block, next to its disclosure
+  ...[...html].flatMap(([file, text]) => affiliateLinkProblems(file, text)),
   ...seoProblems(html, {
     origin: SITE.origin,
     image: '/og.png',

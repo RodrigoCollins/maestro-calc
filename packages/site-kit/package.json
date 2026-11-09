@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "sideEffects": false,
   "exports": {
+    "./affiliate": "./src/affiliate.ts",
     "./budgets": "./src/budgets.ts",
     "./canonical": "./src/canonical.ts",
     "./check-site": "./src/check-site.ts",
