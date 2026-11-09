@@ -20,6 +20,8 @@ import {
 } from './guide-es.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
+import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
+import { CLOUDY_GUIDE_ES, GREEN_GUIDE_ES, SHOCK_OFTEN_GUIDE_ES } from './trouble-es.ts';
 import { hrefOf, routeOf } from './routes.ts';
 
 const PAIRS: readonly (readonly [string, StepGuide, StepGuide])[] = [
@@ -32,6 +34,9 @@ const PAIRS: readonly (readonly [string, StepGuide, StepGuide])[] = [
   ['calcium-guide', CALCIUM_GUIDE, CALCIUM_GUIDE_ES],
   ['gallons-guide', GALLONS_GUIDE, GALLONS_GUIDE_ES],
   ['olympic-guide', OLYMPIC_GUIDE, OLYMPIC_GUIDE_ES],
+  ['shock-often-guide', SHOCK_OFTEN_GUIDE, SHOCK_OFTEN_GUIDE_ES],
+  ['green-guide', GREEN_GUIDE, GREEN_GUIDE_ES],
+  ['cloudy-guide', CLOUDY_GUIDE, CLOUDY_GUIDE_ES],
 ];
 
 /** The numbers of a text, a thousands comma read inside its number: "20,000" is 20000. */
@@ -61,6 +66,20 @@ describe('the Spanish step guides', () => {
           en.steps.map(({ sources }) => sources),
         );
         expect(es.note === undefined).toBe(en.note === undefined);
+      });
+
+      // a table says in Spanish what the English one says: the same rows, figures and sources
+      it('has the table of the English guide, with every figure of each cell', () => {
+        expect(es.table === undefined).toBe(en.table === undefined);
+        if (en.table === undefined || es.table === undefined) return;
+        expect(es.table.sources).toEqual(en.table.sources);
+        expect(es.table.head).toHaveLength(en.table.head.length);
+        expect(es.table.rows).toHaveLength(en.table.rows.length);
+        en.table.rows.forEach((row, index) => {
+          expect(numbersOf((es.table?.rows[index] ?? []).join(' ')), String(index)).toEqual(
+            numbersOf(row.join(' ')),
+          );
+        });
       });
 
       // a link leads to the Spanish twin once it is built, and says so while it is English

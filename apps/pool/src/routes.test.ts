@@ -79,6 +79,13 @@ describe('ROUTES', () => {
         '/how-to-shock-a-pool',
         '/es/como-hacer-un-tratamiento-de-choque-a-la-piscina',
       ],
+      [
+        'shock-often-guide',
+        '/how-often-to-shock-a-pool',
+        '/es/cada-cuanto-hacer-un-tratamiento-de-choque',
+      ],
+      ['green-guide', '/how-to-fix-a-green-pool', '/es/como-arreglar-una-piscina-verde'],
+      ['cloudy-guide', '/why-is-my-pool-cloudy', '/es/por-que-esta-turbia-mi-piscina'],
       ['ph-guide', '/how-to-lower-ph-in-a-pool', '/es/como-bajar-el-ph-de-la-piscina'],
       [
         'calcium-guide',
