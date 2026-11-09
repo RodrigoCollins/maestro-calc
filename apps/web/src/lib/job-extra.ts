@@ -22,6 +22,8 @@ export interface ExtraSection {
   readonly paragraphs: readonly string[];
   readonly facts: readonly ExtraFact[];
   readonly table?: ExtraTable | undefined;
+  /** A second table after the first, with the paragraph that leads into it and its short name. */
+  readonly more?: { readonly lead: string; readonly label: string; readonly table: ExtraTable };
   /** The data sheets the section rests on, each with the day it was read. */
   readonly sources: readonly Required<MaterialSource>[];
 }

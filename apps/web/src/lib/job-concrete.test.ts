@@ -39,6 +39,27 @@ describe('jobConcrete (a slab, a tube or a footing works its own size out)', () 
     ]);
   });
 
+  // hand-verified, 12 × 12 ft grid: ⌊144 ÷ 12⌋ + 1 = 13 bars each way, 26 × 12 = 312 ft; 16 in:
+  // 9 + 1 = 10, 240 ft; 18 in: 8 + 1 = 9, 216 ft; 24 in: 6 + 1 = 7, 168 ft. 10 × 20 ft at 18 in:
+  // ⌊120 ÷ 18⌋ + 1 = 7 bars of 20 ft and ⌊240 ÷ 18⌋ + 1 = 14 of 10 ft, 140 + 140 = 280 ft
+  it('counts the bars of a rebar grid at each spacing', () => {
+    const rows = (id: (typeof CONCRETE)[number]) =>
+      jobConcrete(id, 'en')?.more?.table.rows.map(({ label, cells }) => [label, ...cells]);
+    expect(rows('concrete-slab-12x12')).toEqual([
+      ['12 in', '13 × 12 ft', '13 × 12 ft', '312 ft'],
+      ['16 in', '10 × 12 ft', '10 × 12 ft', '240 ft'],
+      ['18 in', '9 × 12 ft', '9 × 12 ft', '216 ft'],
+      ['24 in', '7 × 12 ft', '7 × 12 ft', '168 ft'],
+    ]);
+    expect(rows('concrete-slab-10x20')?.[2]).toEqual([
+      '18 in',
+      '14 × 10 ft',
+      '7 × 20 ft',
+      '280 ft',
+    ]);
+    expect(jobConcrete('concrete-footing-16x8', 'en')?.more).toBeUndefined();
+  });
+
   // hand-verified, 10 in tube: π × 5² = 78.54 sq in = 0.5454 ft² = 0.5454 ft³ per foot = 15.44 L;
   // one bag fills 0.60 ÷ 0.5454 = 1.10 ft, 0.45 → 0.83 ft, 0.30 → 0.55 ft; 4 ft of tube is 2.18 ft³
   // = 316 to 327 lb; four tubes 48 in: 8.727 ft³ × 1.10 = 9.60 ft³ = 0.36 yd³, ÷ 0.60 = 16 bags of
@@ -51,6 +72,19 @@ describe('jobConcrete (a slab, a tube or a footing works its own size out)', () 
       '316–327 lb',
     ]);
     expect(rowsOf('concrete-tube-10')?.[0]).toEqual(['4 × 48 in', '0.36', '16', '22']);
+    // 0.5454 ft³ ÷ 0.3048 m = 50.67 L per meter; twelve 48 in: 26.18 ft³ × 1.10 = 28.80 ft³ =
+    // 1.07 yd³, ÷ 0.60 = 48 bags
+    expect(jobConcrete('concrete-tube-10', 'en')?.paragraphs[1]).toBe(
+      'A 10 in tube holds 0.55 ft³ per foot and 50.67 L per meter, so one 80 lb bag fills 1.10 ft of it and a column 48 in deep weighs 316–327 lb. Twelve such columns take 48 bags of 80 lb with the extra, 1.07 yd³.',
+    );
+  });
+
+  // hand-verified, one 10 in tube 30 in deep: 0.5454 × 2.5 = 1.36 ft³; ÷ 0.60 = 2.3 → 3 bags of
+  // 80 lb, ÷ 0.45 = 3.03 → 4 of 60 lb, ÷ 0.30 = 4.5 → 5 of 40 lb
+  it('fills one tube at the depths the sizes table leaves out', () => {
+    const rows = jobConcrete('concrete-tube-10', 'en')?.more?.table.rows;
+    expect(rows?.map(({ label }) => label)).toEqual(['30 in', '42 in', '54 in', '60 in', '72 in']);
+    expect(rows?.[0]?.cells).toEqual(['1.36 ft³', '3 / 4 / 5']);
   });
 
   // hand-verified, 16 × 8 in footing: 128 sq in = 0.889 ft² = 25.17 L per foot; a bag of 80 lb

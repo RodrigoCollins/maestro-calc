@@ -10,6 +10,9 @@ import { siteText } from './site-text.ts';
  * is why the square is set at 17 for a hip. Pure geometry: no data sheet is involved.
  */
 
+/** The run the jack rafters are listed for, in feet: half of a 24 ft span. */
+const RUN = 12;
+
 /** `value` to two places, with a dot in both languages as the rest of the page prints it. */
 const two = (value: number): string => value.toFixed(2);
 
@@ -58,7 +61,18 @@ export const jobRafter = (id: JobId, locale: Locale): ExtraSection | undefined =
   });
   return {
     heading: text('site.job.rafter.heading'),
-    paragraphs: [text('site.job.rafter.lead'), text('site.job.rafter.after')],
+    paragraphs: [
+      text('site.job.rafter.lead'),
+      // a 12 ft run: each per-foot line in inches is the length in feet
+      text('site.job.rafter.summary', {
+        pitch: `${r}/12`,
+        common: two(lines.common),
+        hip: two(lines.hip),
+        jack16: sixteenths(lines.jack16),
+        jack24: sixteenths(lines.jack24),
+      }),
+      text('site.job.rafter.after'),
+    ],
     facts: [
       {
         label: text('site.job.rafter.commonSet'),
@@ -91,6 +105,28 @@ export const jobRafter = (id: JobId, locale: Locale): ExtraSection | undefined =
         row('site.job.rafter.jackSide', lines.jackSide),
         row('site.job.rafter.hipSide', lines.hipSide),
       ],
+    },
+    more: {
+      lead: text('site.job.rafter.jacksLead'),
+      label: text('site.job.rafter.jacksLabel'),
+      table: {
+        columns: [
+          text('site.job.rafter.jack'),
+          text('site.job.rafter.jacks16'),
+          text('site.job.rafter.jacks24'),
+        ],
+        rows: Array.from({ length: Math.floor((RUN * 12 - 1) / 16) }, (_, index) => {
+          const n = index + 1;
+          const common = RUN * lines.common;
+          return {
+            label: String(n),
+            cells: [
+              sixteenths(common - n * lines.jack16),
+              n * 24 < RUN * 12 ? sixteenths(common - n * lines.jack24) : '–',
+            ],
+          };
+        }),
+      },
     },
     sources: [],
   };

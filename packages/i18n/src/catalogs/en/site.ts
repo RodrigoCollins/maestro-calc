@@ -130,15 +130,44 @@ export const enSite = {
   'site.job.floor.sheets': 'sheets of 4 × 8 ft with 10% extra',
   'site.job.floor.slab': 'Concrete for a 4 in slab this size, 10% extra',
   'site.job.floor.bags': 'bags of 80 lb',
+  'site.job.concrete.slab.rebar':
+    'If your plan calls for a rebar grid, these are the bars at each spacing: one set runs the length and one the width, each bar the full side, before laps and edge cover.',
+  'site.job.concrete.slab.rebarLabel': 'Rebar grid',
+  'site.job.concrete.slab.spacing': 'Spacing',
+  'site.job.concrete.slab.alongLength': 'Bars along the length',
+  'site.job.concrete.slab.alongWidth': 'Bars along the width',
+  'site.job.concrete.slab.total': 'Total length',
+  'site.job.concrete.column.summary':
+    'A {diameter} in tube holds {perFoot} ft³ per foot and {perMeter} L per meter, so one 80 lb bag fills {fill} ft of it and a column 48 in deep weighs {weight} lb. Twelve such columns take {bags} bags of 80 lb with the extra, {yards} yd³.',
+  'site.job.rafter.summary':
+    'At {pitch}, a 12 ft run takes a common rafter of {common} ft and a hip or valley of {hip} ft; jack rafters step {jack16} at 16 in centers and {jack24} at 24 in centers.',
+  'site.job.concrete.slab.summary':
+    'At 4 in, this {size} ft slab holds {v4} ft³ of concrete and weighs {w4} lb, {p4} lb on each square foot; at 6 in it holds {v6} ft³ and weighs {w6} lb. Its 4 in gravel base is {base} yd³, {tons} tons.',
+  'site.job.concrete.footing.summary':
+    'A {size} in footing holds {perFoot} ft³ per foot and {perMeter} L per meter; one 80 lb bag fills {fill} ft of trench and each foot weighs {weight} lb. Under a 24 × 36 ft building, {run} ft of it takes {bags} bags of 80 lb with the extra.',
+  'site.job.roof.summary':
+    'On this {long} × {span} ft footprint at {pitch}/12, the eaves run {eaves} ft, each rake {rake} ft and the ridge {long} ft, {rise} ft above the eaves; at 12/12 each rake would be {rake12} ft.',
+  'site.job.rafter.jacksLead':
+    'Over a 12 ft run, the jack rafters along a hip or a valley step down from the common rafter, one spacing at a time toward the corner. These are their lengths to the centre line of the hip or valley, before you take off half its thickness.',
+  'site.job.rafter.jacksLabel': 'Jack rafters over a 12 ft run',
+  'site.job.rafter.jack': 'Jack',
+  'site.job.rafter.jacks16': 'At 16 in centers',
+  'site.job.rafter.jacks24': 'At 24 in centers',
+  'site.job.floor.summary':
+    'This {size} ft floor is {area} sq ft, {metric} m²: {edge} ft of baseboard, {carpet} sq yd of carpet, {tiles12} tiles of 12 in or {tiles24} of 24 in with the extra, {sheets} drywall sheets for the room around it and {bags} bags of 80 lb for a 4 in slab.',
+  'site.job.concrete.column.depthLead':
+    'One tube at the depths the sizes table leaves out, before any extra; a bag count is rounded up to whole bags.',
+  'site.job.concrete.column.depthLabel': 'One tube at other depths',
+  'site.job.concrete.column.depth': 'Depth',
+  'site.job.concrete.column.net': 'Concrete, no extra',
+  'site.job.concrete.column.bags': 'Bags of 80 / 60 / 40 lb',
   'site.job.concrete.tons': 'tons',
   'site.job.concrete.yards': 'Concrete with 10% extra (yd³)',
   'site.job.concrete.bags80': 'Bags of 80 lb',
   'site.job.concrete.bags60': 'Bags of 60 lb',
   'site.job.concrete.slab.heading': 'This slab, from the base up',
   'site.job.concrete.slab.lead':
-    'Worked out from the two sides: the edge is the run of form boards around the pour, the base is 4 in of compacted gravel under the whole slab, and the weights are those of the concrete once poured, before any extra.',
-  'site.job.concrete.slab.after':
-    'Normal-weight concrete weighs 145 to 150 lb per cubic foot in the FHWA and WSDOT tables, and compacted gravel 1.80 to 1.86 tons per cubic yard in the WisDOT study. The weight per square foot is what the base and the ground carry before anything stands on the slab, and the gravel tons are the load to order for the base.',
+    'Worked out from the two sides, before any extra: the edge is the run of form boards around the pour, the base is 4 in of compacted gravel, and the weights use the cited unit weights of concrete and gravel.',
   'site.job.concrete.slab.area': 'Area of the slab',
   'site.job.concrete.slab.edge': 'Edge to form',
   'site.job.concrete.slab.base': 'Gravel base, 4 in compacted',
@@ -148,9 +177,9 @@ export const enSite = {
   'site.job.concrete.slab.perFoot': 'Weight per sq ft',
   'site.job.concrete.column.heading': 'This tube, foot by foot',
   'site.job.concrete.column.lead':
-    'Worked out by the concrete engine with no extra: the section of the tube, the concrete each foot of it holds, how far one bag of each size fills it and what one column 48 in deep weighs. The table is a row of tubes 48 in deep, as a deck or a porch takes, with the 10% extra.',
+    'Worked out by the concrete engine with no extra; the table is a row of tubes 48 in deep, as a deck or a porch takes, with the 10% extra.',
   'site.job.concrete.column.after':
-    'A bag makes about 0.60 cubic feet at 80 lb, 0.45 at 60 lb and 0.30 at 40 lb, the yields of the QUIKRETE data sheet, and normal-weight concrete weighs 145 to 150 lb per cubic foot (FHWA, WSDOT). Dig each hole to the depth your frost line and local code ask for, which can be more than 48 in.',
+    'Dig each hole to the depth your frost line and local code ask for, which can be more than 48 in.',
   'site.job.concrete.column.section': 'Section of the tube',
   'site.job.concrete.column.perFoot': 'Concrete per foot of tube',
   'site.job.concrete.column.fills': 'Tube one bag fills (80 / 60 / 40 lb)',
@@ -158,9 +187,9 @@ export const enSite = {
   'site.job.concrete.column.tubes': 'Tubes',
   'site.job.concrete.footing.heading': 'This footing, foot by foot',
   'site.job.concrete.footing.lead':
-    'Worked out from its section with no extra: the concrete in each foot of trench, how far one bag of each size goes and what a foot of footing weighs. The table runs this footing under four common buildings, measured along its centre line, with the 10% extra.',
+    'Worked out from its section with no extra; the table runs it under four common buildings along its centre line, with the 10% extra.',
   'site.job.concrete.footing.after':
-    'A bag makes about 0.60 cubic feet at 80 lb, 0.45 at 60 lb and 0.30 at 40 lb, the yields of the QUIKRETE data sheet, and normal-weight concrete weighs 145 to 150 lb per cubic foot (FHWA, WSDOT). The size of a footing under a wall is set by the local code and the soil; these figures are for this section only.',
+    'The size of a footing under a wall is set by the local code and the soil.',
   'site.job.concrete.footing.section': 'Section of the footing',
   'site.job.concrete.footing.perFoot': 'Concrete per foot of footing',
   'site.job.concrete.footing.fills': 'Footing one bag fills (80 / 60 / 40 lb)',
@@ -184,9 +213,9 @@ export const enSite = {
   'site.job.soil.bags': 'Bags of 0.75 / 1 / 1.5 cu ft',
   'site.job.roof.heading': 'This roof, edge by edge',
   'site.job.roof.lead':
-    'Worked out by the roofing engine for a gable roof whose ridge runs along the longer side, with the overhangs in the footprint: the eaves run along both long sides, the four rakes climb the gable ends, and the drip edge runs along both.',
+    'Worked out by the roofing engine for a gable whose ridge runs along the longer side, with the overhangs in the footprint.',
   'site.job.roof.after':
-    'The rakes grow with the pitch while the eaves and the ridge stay the same, so a steeper roof takes more drip edge over the same footprint. A hip roof has no rakes and a hip at each corner instead: count its edges on your plan.',
+    'A hip roof has no rakes and a hip at each corner instead: count its edges on your plan.',
   'site.job.roof.eaves': 'Eaves, both long sides',
   'site.job.roof.rakes': 'Rakes, four at this pitch',
   'site.job.roof.drip': 'Drip edge along eaves and rakes',
@@ -200,9 +229,9 @@ export const enSite = {
   'site.job.roof.rake': 'Each rake (ft)',
   'site.job.rafter.heading': 'The framing square at this pitch',
   'site.job.rafter.lead':
-    'The rafter table stamped on a steel framing square, worked out for this rise: hold 12 in on the body for a common rafter, or 17 in for a hip or a valley, and the rise on the tongue. The plumb cut is marked along the tongue and the seat cut along the body.',
+    'The rafter table of a steel framing square, worked out for this rise: the body is the long arm of the square, the tongue the short one, and each length is per foot of run.',
   'site.job.rafter.after':
-    'The two length lines are per foot of run of the common rafter: multiply by the run in feet for a rafter length. Each jack rafter is shorter than the next by the 16 or 24 in line, and a side cut is the figure set against 12 on the other arm of the square. Lengths run to the centre of the ridge; take off half its thickness before you mark.',
+    'Lengths run to the centre of the ridge, so take off half its thickness before you mark; a side cut is the figure set against 12 on the other arm.',
   'site.job.rafter.commonSet': 'Common rafter, square set at',
   'site.job.rafter.body': 'in on the body',
   'site.job.rafter.tongue': 'in on the tongue',

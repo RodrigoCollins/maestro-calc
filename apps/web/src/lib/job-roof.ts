@@ -61,7 +61,19 @@ export const jobRoof = (id: JobId, locale: Locale): ExtraSection | undefined => 
   const rise = half.mul(Rational.of(pitch, 12));
   return {
     heading: text('site.job.roof.heading'),
-    paragraphs: [text('site.job.roof.lead'), text('site.job.roof.after')],
+    paragraphs: [
+      text('site.job.roof.lead'),
+      text('site.job.roof.summary', {
+        long,
+        span,
+        pitch,
+        eaves,
+        rake: two(rake),
+        rise: two(rise),
+        rake12: two(half.mul(roofOf(long, span, 12).factor)),
+      }),
+      text('site.job.roof.after'),
+    ],
     facts: [
       {
         label: text('site.job.roof.eaves'),

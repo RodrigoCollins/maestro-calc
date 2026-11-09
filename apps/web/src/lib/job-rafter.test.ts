@@ -41,6 +41,21 @@ describe('jobRafter (the framing square at an exact pitch)', () => {
     ]);
   });
 
+  // hand-verified, 8 in 12 over a 12 ft run: common 12 × 14.4222 = 173.07 in; jacks 16 in apart
+  // step 19.2296 in, the first 153.84 in (153 13/16), the eighth 19.23 in (19 1/4); 24 in apart
+  // step 28.8444 in, the first 144.22 in (144 1/4), the fifth 28.84 in (28 7/8), no sixth
+  it('lists the jack rafters of a 12 ft run at 16 and 24 in centers', () => {
+    const rows = jobRafter('roof-pitch-8-12', 'en')?.more?.table.rows.map(({ label, cells }) => [
+      label,
+      ...cells,
+    ]);
+    expect(rows).toHaveLength(8);
+    expect(rows?.[0]).toEqual(['1', '153 13/16 in', '144 1/4 in']);
+    expect(rows?.[4]).toEqual(['5', '76 15/16 in', '28 7/8 in']);
+    expect(rows?.[5]?.[2]).toBe('–');
+    expect(rows?.[7]).toEqual(['8', '19 1/4 in', '–']);
+  });
+
   it.each(PAIRS)('explains %s in %s', (id, locale) => {
     const section = jobRafter(id, locale);
     expect(section?.table?.rows).toHaveLength(6);

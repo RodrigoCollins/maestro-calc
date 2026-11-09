@@ -71,8 +71,8 @@ describe('JobPageView buying advice', () => {
     const rows = pitch.querySelectorAll('main table').at(1)?.querySelectorAll('tbody tr') ?? [];
     expect(rows.map((row) => row.textContent)).toContain('Slate4 in 12Below the minimum');
     const slab = await render('concrete-slab-10x10', 'en');
-    // the sizes table, then the weights of the slab at each thickness: no coverings table
-    expect(slab.querySelectorAll('main table')).toHaveLength(2);
+    // the sizes table, the weights of the slab at each thickness, its rebar grid: no coverings
+    expect(slab.querySelectorAll('main table')).toHaveLength(3);
     expect(slab.querySelector('main')?.textContent).not.toContain('Slate');
   });
 
@@ -152,8 +152,9 @@ describe('JobPageView exact pitch pages', () => {
       const cited = document.querySelectorAll('main code').map((code) => code.textContent);
       expect(cited).toEqual([OSHA_1926_500.url, OSHA_1926_501.url]);
       expect(document.querySelector(`main a[href="${pathOf('roofing', locale)}"]`)).not.toBeNull();
-      // the rafter table, the coverings table, the roof surface table, then the framing square
-      expect(document.querySelectorAll('main table')).toHaveLength(4);
+      // the rafter table, the coverings table, the roof surface table, the framing square and
+      // the jack rafters
+      expect(document.querySelectorAll('main table')).toHaveLength(5);
       expect(document.querySelector('main h1')?.textContent).toBe(
         locale === 'en'
           ? 'A 6/12 roof pitch is 26.57 degrees'
@@ -218,7 +219,8 @@ describe('JobPageView room and floor sections', () => {
       expect(text).toContain(label);
       expect(text).toContain(value);
     }
-    for (const row of extra?.table?.rows ?? []) {
+    if (extra?.more !== undefined) expect(text).toContain(extra.more.lead);
+    for (const row of [...(extra?.table?.rows ?? []), ...(extra?.more?.table.rows ?? [])]) {
       expect(text).toContain(row.label);
       for (const cell of row.cells) expect(text).toContain(cell);
     }

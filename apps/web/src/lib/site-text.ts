@@ -3,8 +3,14 @@ import { createTranslator } from '@maestro-calc/i18n';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 
-/** Looks a `site` catalog message up for one locale; the key is checked against the catalog. */
-export type SiteText = (key: keyof typeof enSite) => string;
+/**
+ * Looks a `site` catalog message up for one locale; the key is checked against the catalog, and
+ * each `{name}` of the message is filled from `params` (a missing one throws).
+ */
+export type SiteText = (
+  key: keyof typeof enSite,
+  params?: Readonly<Record<string, string | number>>,
+) => string;
 
 const translators = { en: createTranslator(enSite), es: createTranslator(esSite) };
 
@@ -14,5 +20,5 @@ const translators = { en: createTranslator(enSite), es: createTranslator(esSite)
  */
 export const siteText = (locale: Locale): SiteText => {
   const translate = translators[locale];
-  return (key) => translate(key);
+  return (key, params) => translate(key, params);
 };

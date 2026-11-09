@@ -133,15 +133,44 @@ export const esSite = {
   'site.job.floor.sheets': 'placas de 4 × 8 ft con 10% extra',
   'site.job.floor.slab': 'Concreto para una losa de 4 in de este tamaño, 10% extra',
   'site.job.floor.bags': 'bolsas de 80 lb',
+  'site.job.concrete.slab.rebar':
+    'Si tu plano pide una malla de varilla, estas son las varillas a cada separación: un juego corre a lo largo y otro a lo ancho, cada varilla del lado completo, sin traslapes ni recubrimiento del borde.',
+  'site.job.concrete.slab.rebarLabel': 'Malla de varilla',
+  'site.job.concrete.slab.spacing': 'Separación',
+  'site.job.concrete.slab.alongLength': 'Varillas a lo largo',
+  'site.job.concrete.slab.alongWidth': 'Varillas a lo ancho',
+  'site.job.concrete.slab.total': 'Largo total',
+  'site.job.concrete.column.summary':
+    'Un tubo de {diameter} in contiene {perFoot} ft³ por pie y {perMeter} L por metro, así que una bolsa de 80 lb llena {fill} ft de tubo y una columna de 48 in pesa {weight} lb. Doce columnas así llevan {bags} bolsas de 80 lb con el extra, {yards} yd³.',
+  'site.job.rafter.summary':
+    'A {pitch}, un recorrido de 12 ft lleva un cabio común de {common} ft y una lima de {hip} ft; los cabios de relleno cambian {jack16} a 16 in entre centros y {jack24} a 24 in.',
+  'site.job.concrete.slab.summary':
+    'A 4 in, esta losa de {size} ft contiene {v4} ft³ de concreto y pesa {w4} lb, {p4} lb en cada pie cuadrado; a 6 in contiene {v6} ft³ y pesa {w6} lb. Su base de grava de 4 in es de {base} yd³, {tons} toneladas.',
+  'site.job.concrete.footing.summary':
+    'Una zapata de {size} in contiene {perFoot} ft³ por pie y {perMeter} L por metro; una bolsa de 80 lb llena {fill} ft de zanja y cada pie pesa {weight} lb. Bajo una construcción de 24 × 36 ft, {run} ft de zapata llevan {bags} bolsas de 80 lb con el extra.',
+  'site.job.roof.summary':
+    'En esta planta de {long} × {span} ft a {pitch}/12, los aleros corren {eaves} ft, cada borde inclinado {rake} ft y la cumbrera {long} ft, {rise} ft sobre los aleros; a 12/12 cada borde inclinado sería de {rake12} ft.',
+  'site.job.rafter.jacksLead':
+    'Sobre un recorrido de 12 ft, los cabios de relleno junto a una lima bajan desde el cabio común, una separación a la vez hacia la esquina. Estos son sus largos hasta el eje de la lima, antes de restar la mitad de su grosor.',
+  'site.job.rafter.jacksLabel': 'Cabios de relleno en un recorrido de 12 ft',
+  'site.job.rafter.jack': 'Cabio',
+  'site.job.rafter.jacks16': 'A 16 in entre centros',
+  'site.job.rafter.jacks24': 'A 24 in entre centros',
+  'site.job.floor.summary':
+    'Este piso de {size} ft mide {area} pies cuadrados, {metric} m²: {edge} ft de zócalo, {carpet} yardas cuadradas de alfombra, {tiles12} azulejos de 12 in o {tiles24} de 24 in con el extra, {sheets} placas de drywall para el cuarto a su alrededor y {bags} bolsas de 80 lb para una losa de 4 in.',
+  'site.job.concrete.column.depthLead':
+    'Un tubo a las profundidades que la tabla de tamaños no incluye, sin extra; las bolsas se redondean hacia arriba.',
+  'site.job.concrete.column.depthLabel': 'Un tubo a otras profundidades',
+  'site.job.concrete.column.depth': 'Profundidad',
+  'site.job.concrete.column.net': 'Concreto sin extra',
+  'site.job.concrete.column.bags': 'Bolsas de 80 / 60 / 40 lb',
   'site.job.concrete.tons': 'toneladas',
   'site.job.concrete.yards': 'Concreto con 10% extra (yd³)',
   'site.job.concrete.bags80': 'Bolsas de 80 lb',
   'site.job.concrete.bags60': 'Bolsas de 60 lb',
   'site.job.concrete.slab.heading': 'Esta losa, desde la base',
   'site.job.concrete.slab.lead':
-    'Calculado a partir de los dos lados: el borde es el largo de tablas de cimbra alrededor del colado, la base son 4 in de grava compactada bajo toda la losa, y los pesos son los del concreto ya colado, sin el extra.',
-  'site.job.concrete.slab.after':
-    'El concreto de peso normal pesa de 145 a 150 lb por pie cúbico en las tablas de la FHWA y del WSDOT, y la grava compactada de 1.80 a 1.86 toneladas por yarda cúbica en el estudio del WisDOT. El peso por pie cuadrado es lo que cargan la base y el suelo antes de que algo se apoye en la losa, y las toneladas de grava son la carga que pides para la base.',
+    'Calculado a partir de los dos lados, sin extra: el borde es el largo de tablas de cimbra alrededor del colado, la base son 4 in de grava compactada, y los pesos usan los pesos unitarios citados del concreto y la grava.',
   'site.job.concrete.slab.area': 'Área de la losa',
   'site.job.concrete.slab.edge': 'Borde a cimbrar',
   'site.job.concrete.slab.base': 'Base de grava, 4 in compactada',
@@ -151,9 +180,9 @@ export const esSite = {
   'site.job.concrete.slab.perFoot': 'Peso por pie cuadrado',
   'site.job.concrete.column.heading': 'Este tubo, pie por pie',
   'site.job.concrete.column.lead':
-    'Calculado con el motor de concreto sin extra: la sección del tubo, el concreto que cabe en cada pie, cuánto tubo llena una bolsa de cada tamaño y cuánto pesa una columna de 48 in de profundidad. La tabla es una fila de tubos de 48 in, como la de una terraza o un porche, con el 10% extra.',
+    'Calculado con el motor de concreto sin extra; la tabla es una fila de tubos de 48 in de profundidad, como la de una terraza o un porche, con el 10% extra.',
   'site.job.concrete.column.after':
-    'Una bolsa rinde unos 0.60 pies cúbicos la de 80 lb, 0.45 la de 60 lb y 0.30 la de 40 lb, según la hoja técnica de QUIKRETE, y el concreto de peso normal pesa de 145 a 150 lb por pie cúbico (FHWA, WSDOT). Cava cada hoyo a la profundidad que piden tu línea de congelamiento y tu código local, que puede ser más de 48 in.',
+    'Cava cada hoyo a la profundidad que piden tu línea de congelamiento y tu código local, que puede ser más de 48 in.',
   'site.job.concrete.column.section': 'Sección del tubo',
   'site.job.concrete.column.perFoot': 'Concreto por pie de tubo',
   'site.job.concrete.column.fills': 'Tubo que llena una bolsa (80 / 60 / 40 lb)',
@@ -161,9 +190,9 @@ export const esSite = {
   'site.job.concrete.column.tubes': 'Tubos',
   'site.job.concrete.footing.heading': 'Esta zapata, pie por pie',
   'site.job.concrete.footing.lead':
-    'Calculado a partir de su sección sin extra: el concreto en cada pie de zanja, cuánto avanza una bolsa de cada tamaño y cuánto pesa un pie de zapata. La tabla lleva esta zapata bajo cuatro construcciones comunes, medida por su eje, con el 10% extra.',
+    'Calculado a partir de su sección sin extra; la tabla la lleva bajo cuatro construcciones comunes, medida por su eje, con el 10% extra.',
   'site.job.concrete.footing.after':
-    'Una bolsa rinde unos 0.60 pies cúbicos la de 80 lb, 0.45 la de 60 lb y 0.30 la de 40 lb, según la hoja técnica de QUIKRETE, y el concreto de peso normal pesa de 145 a 150 lb por pie cúbico (FHWA, WSDOT). El tamaño de una zapata bajo un muro lo fijan el código local y el suelo; estas cifras son solo para esta sección.',
+    'El tamaño de una zapata bajo un muro lo fijan el código local y el suelo.',
   'site.job.concrete.footing.section': 'Sección de la zapata',
   'site.job.concrete.footing.perFoot': 'Concreto por pie de zapata',
   'site.job.concrete.footing.fills': 'Zapata que llena una bolsa (80 / 60 / 40 lb)',
@@ -187,9 +216,9 @@ export const esSite = {
   'site.job.soil.bags': 'Bolsas de 0.75 / 1 / 1.5 pies cúbicos',
   'site.job.roof.heading': 'Este techo, borde por borde',
   'site.job.roof.lead':
-    'Calculado con el motor de techos para un techo a dos aguas con la cumbrera a lo largo del lado más largo, con los aleros incluidos en la planta: los aleros corren por los dos lados largos, los cuatro bordes inclinados suben por los hastiales, y el gotero corre por todos ellos.',
+    'Calculado con el motor de techos para un techo a dos aguas con la cumbrera a lo largo del lado más largo, con los aleros incluidos en la planta.',
   'site.job.roof.after':
-    'Los bordes inclinados crecen con la pendiente mientras los aleros y la cumbrera quedan iguales, así que un techo más empinado lleva más gotero sobre la misma planta. Un techo a cuatro aguas no tiene bordes inclinados sino una lima en cada esquina: cuenta sus bordes en tu plano.',
+    'Un techo a cuatro aguas no tiene bordes inclinados sino una lima en cada esquina: cuenta sus bordes en tu plano.',
   'site.job.roof.eaves': 'Aleros, los dos lados largos',
   'site.job.roof.rakes': 'Bordes inclinados, cuatro a esta pendiente',
   'site.job.roof.drip': 'Gotero por aleros y bordes inclinados',
@@ -203,9 +232,9 @@ export const esSite = {
   'site.job.roof.rake': 'Cada borde inclinado (ft)',
   'site.job.rafter.heading': 'La escuadra de carpintero a esta pendiente',
   'site.job.rafter.lead':
-    'La tabla de cabios grabada en una escuadra de carpintero de acero, calculada para esta subida: pon 12 in en el brazo largo para un cabio común, o 17 in para una lima, y la subida en el brazo corto. El corte a plomo se marca por el brazo corto y el corte de asiento por el brazo largo.',
+    'La tabla de cabios de una escuadra de carpintero de acero, calculada para esta subida: el brazo largo y el brazo corto son los de la escuadra, y cada largo es por pie de recorrido.',
   'site.job.rafter.after':
-    'Las dos líneas de largo son por pie de recorrido del cabio común: multiplícalas por el recorrido en pies para el largo del cabio. Cada cabio de relleno es más corto que el siguiente por la línea de 16 o 24 in, y un corte lateral es la cifra que pones contra 12 en el otro brazo de la escuadra. Los largos llegan al centro de la cumbrera; resta la mitad de su grosor antes de marcar.',
+    'Los largos llegan al centro de la cumbrera, así que resta la mitad de su grosor antes de marcar; un corte lateral es la cifra que pones contra 12 en el otro brazo.',
   'site.job.rafter.commonSet': 'Cabio común, escuadra en',
   'site.job.rafter.body': 'in en el brazo largo',
   'site.job.rafter.tongue': 'in en el brazo corto',

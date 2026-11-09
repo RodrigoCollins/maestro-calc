@@ -95,11 +95,36 @@ export const jobFloor = (id: JobId, locale: Locale): ExtraSection | undefined =>
   const { gallons, sheets, panels, slab, bags } = enginesOf(length, width);
   const ceiling = Rational.of(length * width);
   const ceilingGallons = ceiling.mul(Rational.of(2)).div(Rational.of(350));
+  // whole tiles along each side, a cut tile counted whole, then the 10% extra
+  const tiled = TILES.map(({ side, label }) => {
+    const along = Rational.of(length * 12)
+      .div(side)
+      .ceil();
+    const across = Rational.of(width * 12)
+      .div(side)
+      .ceil();
+    const count = along * across;
+    return { label, along, across, count, extra: Rational.of(count).mul(EXTRA).ceil() };
+  });
   const strips =
     carpet.strips > 1 ? `, ${String(carpet.strips)} ${text('site.job.floor.strips')}` : '';
   return {
     heading: text('site.job.floor.heading'),
-    paragraphs: [text('site.job.floor.lead'), text('site.job.floor.tiles')],
+    paragraphs: [
+      text('site.job.floor.lead'),
+      text('site.job.floor.summary', {
+        size: `${String(length)} × ${String(width)}`,
+        area: whole(ceiling),
+        metric: two(ceiling.mul(METERS_PER_FOOT).mul(METERS_PER_FOOT)),
+        edge: around,
+        carpet: two(carpetArea.div(Rational.of(9))),
+        tiles12: String(tiled[0]?.extra),
+        tiles24: String(tiled[2]?.extra),
+        sheets: panels.qty,
+        bags: bags.qty,
+      }),
+      text('site.job.floor.tiles'),
+    ],
     facts: [
       {
         label: text('site.job.floor.perimeter'),
@@ -137,23 +162,10 @@ export const jobFloor = (id: JobId, locale: Locale): ExtraSection | undefined =>
         text('site.job.floor.count'),
         text('site.job.floor.extra'),
       ],
-      rows: TILES.map(({ side, label }) => {
-        const along = Rational.of(length * 12)
-          .div(side)
-          .ceil();
-        const across = Rational.of(width * 12)
-          .div(side)
-          .ceil();
-        const count = along * across;
-        return {
-          label,
-          cells: [
-            `${String(along)} × ${String(across)}`,
-            String(count),
-            String(Rational.of(count).mul(EXTRA).ceil()),
-          ],
-        };
-      }),
+      rows: tiled.map(({ label, along, across, count, extra }) => ({
+        label,
+        cells: [`${String(along)} × ${String(across)}`, String(count), String(extra)],
+      })),
     },
     sources: [QUALI_KOTE_PDS],
   };

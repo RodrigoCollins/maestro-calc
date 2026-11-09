@@ -39,6 +39,10 @@ const BASE_INCHES = 4;
 /** The row of tubes of a deck or a porch, each 48 in deep, the deepest case of the tube pages. */
 const TUBE_COUNTS = [4, 6, 8, 10, 12] as const;
 const TUBE_DEPTH = 48;
+/** The depths of one tube the sizes table (24, 36 and 48 in) leaves out, in inches. */
+const DEPTHS = [30, 42, 54, 60, 72] as const;
+/** The rebar grid spacings, on center, in inches. */
+const SPACINGS = [12, 16, 18, 24] as const;
 /** Four common buildings, the footing measured along its centre line (2 × (length + width)). */
 const BUILDINGS = [
   [12, 16],
@@ -72,10 +76,13 @@ const concretePounds = (volume: Rational): readonly [Rational, Rational] => {
 
 const range = (low: string, high: string): string => (low === high ? low : `${low}–${high}`);
 
-const pounds = (volume: Rational): string => {
+/** The pounds `volume` of concrete weighs, as `low–high`. */
+const poundsOf = (volume: Rational): string => {
   const [low, high] = concretePounds(volume);
-  return `${range(whole(low), whole(high))} lb`;
+  return range(whole(low), whole(high));
 };
+
+const pounds = (volume: Rational): string => `${poundsOf(volume)} lb`;
 
 /** The concrete engine's result for one case, its yd³ and its bags of each size. */
 const poured = (raw: Record<string, string>) => {
@@ -112,6 +119,31 @@ const BAG_SOURCE = sourceOf(concreteMix.source);
 
 type Text = ReturnType<typeof siteText>;
 
+/**
+ * A rebar grid over a `length` × `width` ft slab at each spacing: ⌊side ÷ spacing⌋ + 1 bars run
+ * across each side, each bar the full other side, before laps and edge cover.
+ */
+const rebarOf = (length: number, width: number, text: Text): ExtraTable => ({
+  columns: [
+    text('site.job.concrete.slab.spacing'),
+    text('site.job.concrete.slab.alongLength'),
+    text('site.job.concrete.slab.alongWidth'),
+    text('site.job.concrete.slab.total'),
+  ],
+  rows: SPACINGS.map((spacing) => {
+    const alongLength = Math.floor((width * 12) / spacing) + 1;
+    const alongWidth = Math.floor((length * 12) / spacing) + 1;
+    return {
+      label: `${String(spacing)} in`,
+      cells: [
+        `${String(alongLength)} × ${ft(length)}`,
+        `${String(alongWidth)} × ${ft(width)}`,
+        `${decimalText(Rational.of(alongLength * length + alongWidth * width), 0, true)} ft`,
+      ],
+    };
+  }),
+});
+
 const slabOf = (raw: JobCase, text: Text): ExtraSection => {
   const length = inchesOf(raw['length'], 'ft');
   const width = inchesOf(raw['width'], 'ft');
@@ -122,6 +154,10 @@ const slabOf = (raw: JobCase, text: Text): ExtraSection => {
   const baseYards = valueIn(quantity(base, ft3), yd3);
   const tons = [baseYards.mul(valueIn(low, tonYd3)), baseYards.mul(valueIn(high, tonYd3))] as const;
   const metric = area.mul(METERS_PER_FOOT).mul(METERS_PER_FOOT);
+  const perFootOf = (inches: number): readonly [string, string] => {
+    const [low, high] = concretePounds(Rational.of(inches, 12));
+    return [whole(low), whole(high)];
+  };
   const table: ExtraTable = {
     columns: [
       text('site.job.concrete.slab.thickness'),
@@ -144,7 +180,19 @@ const slabOf = (raw: JobCase, text: Text): ExtraSection => {
   };
   return {
     heading: text('site.job.concrete.slab.heading'),
-    paragraphs: [text('site.job.concrete.slab.lead'), text('site.job.concrete.slab.after')],
+    paragraphs: [
+      text('site.job.concrete.slab.lead'),
+      text('site.job.concrete.slab.summary', {
+        size: `${String(length)} × ${String(width)}`,
+        v4: two(area.div(Rational.of(3))),
+        w4: poundsOf(area.div(Rational.of(3))),
+        p4: range(...perFootOf(4)),
+        v6: two(area.div(Rational.of(2))),
+        w6: poundsOf(area.div(Rational.of(2))),
+        base: two(baseYards),
+        tons: range(two(tons[0]), two(tons[1])),
+      }),
+    ],
     facts: [
       {
         label: text('site.job.concrete.slab.area'),
@@ -160,6 +208,11 @@ const slabOf = (raw: JobCase, text: Text): ExtraSection => {
       },
     ],
     table,
+    more: {
+      lead: text('site.job.concrete.slab.rebar'),
+      label: text('site.job.concrete.slab.rebarLabel'),
+      table: rebarOf(length, width, text),
+    },
     sources: [...CONCRETE_WEIGHT_SOURCES, ...GRAVEL_SOURCES],
   };
 };
@@ -175,9 +228,27 @@ const columnOf = (raw: JobCase, text: Text): ExtraSection => {
   }).feet;
   const squareInches = perFoot.mul(Rational.of(144));
   const depth = `${String(TUBE_DEPTH)}in`;
+  const twelve = poured({
+    shape: 'column',
+    diameter: `${String(diameter)}in`,
+    height: depth,
+    count: '12',
+  });
   return {
     heading: text('site.job.concrete.column.heading'),
-    paragraphs: [text('site.job.concrete.column.lead'), text('site.job.concrete.column.after')],
+    paragraphs: [
+      text('site.job.concrete.column.lead'),
+      text('site.job.concrete.column.summary', {
+        diameter,
+        perFoot: two(perFoot),
+        perMeter: two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
+        fill: two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
+        weight: poundsOf(perFoot.mul(Rational.of(TUBE_DEPTH, 12))),
+        bags: twelve.bags,
+        yards: two(twelve.yards),
+      }),
+      text('site.job.concrete.column.after'),
+    ],
     facts: [
       {
         label: text('site.job.concrete.column.section'),
@@ -216,6 +287,29 @@ const columnOf = (raw: JobCase, text: Text): ExtraSection => {
         };
       }),
     },
+    more: {
+      lead: text('site.job.concrete.column.depthLead'),
+      label: text('site.job.concrete.column.depthLabel'),
+      table: {
+        columns: [
+          text('site.job.concrete.column.depth'),
+          text('site.job.concrete.column.net'),
+          text('site.job.concrete.column.bags'),
+        ],
+        rows: DEPTHS.map((inches) => {
+          const volume = perFoot.mul(Rational.of(inches, 12));
+          return {
+            label: `${String(inches)} in`,
+            cells: [
+              `${two(volume)} ft³`,
+              (['bag-80', 'bag-60', 'bag-40'] as const)
+                .map((bag) => String(volume.div(valueIn(CONCRETE_MIX_YIELDS[bag], ft3)).ceil()))
+                .join(' / '),
+            ],
+          };
+        }),
+      },
+    },
     sources: [BAG_SOURCE, ...CONCRETE_WEIGHT_SOURCES],
   };
 };
@@ -226,9 +320,27 @@ const footingOf = (raw: JobCase, text: Text): ExtraSection => {
   const squareInches = Rational.of(width * depth);
   const perFoot = squareInches.div(Rational.of(144));
   const sizes = { footingWidth: `${String(width)}in`, footingDepth: `${String(depth)}in` };
+  const [a, b] = BUILDINGS[3];
+  const run = 2 * (a + b);
+  const largest = {
+    run,
+    bags: poured({ shape: 'footing', length: `${String(run)}ft`, ...sizes }).bags,
+  };
   return {
     heading: text('site.job.concrete.footing.heading'),
-    paragraphs: [text('site.job.concrete.footing.lead'), text('site.job.concrete.footing.after')],
+    paragraphs: [
+      text('site.job.concrete.footing.lead'),
+      text('site.job.concrete.footing.summary', {
+        size: `${String(width)} × ${String(depth)}`,
+        perFoot: two(perFoot),
+        perMeter: two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
+        fill: two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
+        weight: poundsOf(perFoot),
+        run: largest.run,
+        bags: largest.bags,
+      }),
+      text('site.job.concrete.footing.after'),
+    ],
     facts: [
       {
         label: text('site.job.concrete.footing.section'),
