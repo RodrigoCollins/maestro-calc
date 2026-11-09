@@ -94,7 +94,7 @@ export const GREEN_GUIDE_ES = {
   },
   title: 'Cómo arreglar una piscina verde: dosis de choque | Pool Figures',
   description:
-    'Por qué una piscina se pone verde y cómo arreglarla: descarta el cobre y el hierro, equilibra el pH, haz un choque a 30 ppm y cepilla, con la dosis por galones.',
+    'Por qué la piscina se pone verde y cómo arreglarla: descarta cobre y hierro, equilibra el pH, haz un choque a 30 ppm y cepilla, con la dosis en galones o litros.',
   h1: 'Cómo arreglar una piscina verde',
   lead: `Una piscina verde tiene algas, dice la tabla de problemas de Taylor: ajusta el pH a 7.2 a 7.8, sobreclora a 30 ppm, cepilla las paredes y el fondo, y repite si hace falta. Desde 0 ppm, 20,000 galones llevan ${algae20.liquid} fl oz (${algae20.liquidGallons} galones) de cloro líquido al 12.5% o ${algae20.calHypo} oz de cal-hypo al 65% para llegar a 30 ppm. El agua azul verdosa sin paredes resbalosas puede ser cobre, y para eso la tabla dice que busques el consejo de un experto.`,
   note: 'Sigue la etiqueta de tu propio producto donde sea distinta de esta guía: su concentración, su dosis de choque y su nivel de reingreso cambian según el producto. Nunca mezcles dos químicos.',
@@ -126,6 +126,16 @@ export const GREEN_GUIDE_ES = {
     ],
     sources: GREEN_GUIDE.table.sources,
   },
+  moreTables: [
+    {
+      caption:
+        'El choque a 30 ppm en litros, desde 0 ppm: el cloro líquido en litros, el cal-hypo en gramos',
+      region: 'Choque de una piscina verde por litros',
+      head: ['Piscina', 'Cloro líquido al 12.5%', 'Cal-hypo al 65%'],
+      rows: FIGURES.algaeMetric,
+      sources: GREEN_GUIDE.moreTables[0].sources,
+    },
+  ],
   sources: GREEN_GUIDE.sources,
   steps: GREEN_STEPS,
 } as const satisfies StepGuide;

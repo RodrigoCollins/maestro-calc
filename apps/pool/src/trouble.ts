@@ -47,10 +47,23 @@ const shockOf = (gallons: number, target: number) => {
   };
 };
 
+const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000] as const;
+
+/** The 30 ppm shock of `litres` from 0 ppm, as the metric chlorine calculator writes it. */
+const metricShockOf = (litres: number): readonly string[] => {
+  const raw = { gallons: String(litres), current: '0', target: '30' };
+  return [
+    `${grouped(litres)} L`,
+    `${doseOf(CHLORINE.path, { ...raw, product: 'liquid-12-5' }, 'liquid', 'metric')} L`,
+    `${doseOf(CHLORINE.path, { ...raw, product: 'cal-hypo-65' }, 'dry', 'metric')} g`,
+  ];
+};
+
 /** The figures both languages write, worked out once (`trouble-es.ts` writes the same). */
 export const FIGURES = {
   algae: SIZES.map((gallons) => shockOf(gallons, 30)),
   algae20: shockOf(20_000, 30),
+  algaeMetric: LITRES.map(metricShockOf),
   shock10: shockOf(10_000, 10),
   weekly: SIZES.map((gallons) => shockOf(gallons, 10)),
   cloudy: [10_000, 20_000].map((gallons) => ({
@@ -209,7 +222,7 @@ export const GREEN_GUIDE = {
   },
   title: 'How to Fix a Green Pool: Shock Dose by Gallons | Pool Figures',
   description:
-    'Why a pool turns green and how to fix it: rule out copper and iron, balance the pH, shock to 30 ppm, brush and filter, with the dose for your gallons.',
+    'Why a pool turns green and how to fix it: rule out copper and iron, balance the pH, shock to 30 ppm, brush and filter, with the dose in gallons or litres.',
   h1: 'How to fix a green pool',
   lead: `A green pool is algae, Taylor’s trouble chart says: adjust the pH to 7.2 to 7.8, superchlorinate to 30 ppm, brush the walls and the floor, and repeat if necessary. From 0 ppm, 20,000 gallons take ${algae20.liquid} fl oz (${algae20.liquidGallons} gallons) of 12.5% liquid chlorine or ${algae20.calHypo} oz of 65% cal-hypo to reach 30 ppm. Blue-green water without slimy walls can be copper instead, for which the chart says to seek expert advice.`,
   note: 'Follow the label of your own product where it differs from this guide: its strength, its shock dose and its reentry level all vary by product. Never mix two chemicals.',
@@ -236,6 +249,16 @@ export const GREEN_GUIDE = {
     ],
     sources: ['taylor'],
   },
+  moreTables: [
+    {
+      caption:
+        'The 30 ppm shock in litres, from 0 ppm: liquid chlorine in litres, cal-hypo in grams',
+      region: 'Green pool shock by litres',
+      head: ['Pool', '12.5% liquid chlorine', '65% cal-hypo'],
+      rows: FIGURES.algaeMetric,
+      sources: ['taylor'],
+    },
+  ],
   sources: GREEN_SOURCES,
   steps: GREEN_STEPS,
 } as const satisfies StepGuide;
