@@ -1,6 +1,6 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { isPitchJob, PITCH_RISES, type JobId } from '../routing/jobs.ts';
-import type { ExtraSection } from './job-extra.ts';
+import { sentence, type ExtraSection } from './job-extra.ts';
 import { siteText } from './site-text.ts';
 
 /*
@@ -64,13 +64,13 @@ export const jobRafter = (id: JobId, locale: Locale): ExtraSection | undefined =
     paragraphs: [
       text('site.job.rafter.lead'),
       // a 12 ft run: each per-foot line in inches is the length in feet
-      text('site.job.rafter.summary', {
-        pitch: `${r}/12`,
-        common: two(lines.common),
-        hip: two(lines.hip),
-        jack16: sixteenths(lines.jack16),
-        jack24: sixteenths(lines.jack24),
-      }),
+      sentence(text, 'site.job.rafter.summary', [
+        `${r}/12`,
+        two(lines.common),
+        two(lines.hip),
+        sixteenths(lines.jack16),
+        sixteenths(lines.jack24),
+      ]),
       text('site.job.rafter.after'),
     ],
     facts: [

@@ -6,7 +6,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
 import { isChartJob, isQuestionJob, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
 import { concrete } from './concrete.ts';
-import type { ExtraSection, ExtraTable } from './job-extra.ts';
+import { sentence, type ExtraSection, type ExtraTable } from './job-extra.ts';
 import { siteText } from './site-text.ts';
 
 /*
@@ -182,16 +182,16 @@ const slabOf = (raw: JobCase, text: Text): ExtraSection => {
     heading: text('site.job.concrete.slab.heading'),
     paragraphs: [
       text('site.job.concrete.slab.lead'),
-      text('site.job.concrete.slab.summary', {
-        size: `${String(length)} × ${String(width)}`,
-        v4: two(area.div(Rational.of(3))),
-        w4: poundsOf(area.div(Rational.of(3))),
-        p4: range(...perFootOf(4)),
-        v6: two(area.div(Rational.of(2))),
-        w6: poundsOf(area.div(Rational.of(2))),
-        base: two(baseYards),
-        tons: range(two(tons[0]), two(tons[1])),
-      }),
+      sentence(text, 'site.job.concrete.slab.summary', [
+        `${String(length)} × ${String(width)}`,
+        two(area.div(Rational.of(3))),
+        poundsOf(area.div(Rational.of(3))),
+        range(...perFootOf(4)),
+        two(area.div(Rational.of(2))),
+        poundsOf(area.div(Rational.of(2))),
+        two(baseYards),
+        range(two(tons[0]), two(tons[1])),
+      ]),
     ],
     facts: [
       {
@@ -238,15 +238,15 @@ const columnOf = (raw: JobCase, text: Text): ExtraSection => {
     heading: text('site.job.concrete.column.heading'),
     paragraphs: [
       text('site.job.concrete.column.lead'),
-      text('site.job.concrete.column.summary', {
+      sentence(text, 'site.job.concrete.column.summary', [
         diameter,
-        perFoot: two(perFoot),
-        perMeter: two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
-        fill: two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
-        weight: poundsOf(perFoot.mul(Rational.of(TUBE_DEPTH, 12))),
-        bags: twelve.bags,
-        yards: two(twelve.yards),
-      }),
+        two(perFoot),
+        two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
+        two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
+        poundsOf(perFoot.mul(Rational.of(TUBE_DEPTH, 12))),
+        twelve.bags,
+        two(twelve.yards),
+      ]),
       text('site.job.concrete.column.after'),
     ],
     facts: [
@@ -330,15 +330,15 @@ const footingOf = (raw: JobCase, text: Text): ExtraSection => {
     heading: text('site.job.concrete.footing.heading'),
     paragraphs: [
       text('site.job.concrete.footing.lead'),
-      text('site.job.concrete.footing.summary', {
-        size: `${String(width)} × ${String(depth)}`,
-        perFoot: two(perFoot),
-        perMeter: two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
-        fill: two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
-        weight: poundsOf(perFoot),
-        run: largest.run,
-        bags: largest.bags,
-      }),
+      sentence(text, 'site.job.concrete.footing.summary', [
+        `${String(width)} × ${String(depth)}`,
+        two(perFoot),
+        two(perFoot.mul(LITERS_PER_FT3).div(METERS_PER_FOOT)),
+        two(valueIn(CONCRETE_MIX_YIELDS['bag-80'], ft3).div(perFoot)),
+        poundsOf(perFoot),
+        largest.run,
+        largest.bags,
+      ]),
       text('site.job.concrete.footing.after'),
     ],
     facts: [

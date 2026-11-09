@@ -2,7 +2,7 @@ import { ft2, gal, m3, Rational, valueIn, yd3 } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
 import { isChartJob, isLandJob, isQuestionJob, JOBS, type JobId } from '../routing/jobs.ts';
-import type { ExtraSection } from './job-extra.ts';
+import { sentence, type ExtraSection } from './job-extra.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { QUALI_KOTE_PDS } from './job-room.ts';
@@ -112,17 +112,17 @@ export const jobFloor = (id: JobId, locale: Locale): ExtraSection | undefined =>
     heading: text('site.job.floor.heading'),
     paragraphs: [
       text('site.job.floor.lead'),
-      text('site.job.floor.summary', {
-        size: `${String(length)} × ${String(width)}`,
-        area: whole(ceiling),
-        metric: two(ceiling.mul(METERS_PER_FOOT).mul(METERS_PER_FOOT)),
-        edge: around,
-        carpet: two(carpetArea.div(Rational.of(9))),
-        tiles12: String(tiled[0]?.extra),
-        tiles24: String(tiled[2]?.extra),
-        sheets: panels.qty,
-        bags: bags.qty,
-      }),
+      sentence(text, 'site.job.floor.summary', [
+        `${String(length)} × ${String(width)}`,
+        whole(ceiling),
+        two(ceiling.mul(METERS_PER_FOOT).mul(METERS_PER_FOOT)),
+        around,
+        two(carpetArea.div(Rational.of(9))),
+        String(tiled[0]?.extra),
+        String(tiled[2]?.extra),
+        panels.qty,
+        bags.qty,
+      ]),
       text('site.job.floor.tiles'),
     ],
     facts: [

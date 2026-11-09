@@ -2,7 +2,7 @@ import { ft2, Rational, valueIn } from '@maestro-calc/core';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
 import { JOBS, type JobId } from '../routing/jobs.ts';
-import type { ExtraSection } from './job-extra.ts';
+import { sentence, type ExtraSection } from './job-extra.ts';
 import { roofing } from './roofing.ts';
 import { siteText } from './site-text.ts';
 
@@ -63,15 +63,16 @@ export const jobRoof = (id: JobId, locale: Locale): ExtraSection | undefined => 
     heading: text('site.job.roof.heading'),
     paragraphs: [
       text('site.job.roof.lead'),
-      text('site.job.roof.summary', {
+      sentence(text, 'site.job.roof.summary', [
         long,
         span,
         pitch,
         eaves,
-        rake: two(rake),
-        rise: two(rise),
-        rake12: two(half.mul(roofOf(long, span, 12).factor)),
-      }),
+        two(rake),
+        long,
+        two(rise),
+        two(half.mul(roofOf(long, span, 12).factor)),
+      ]),
       text('site.job.roof.after'),
     ],
     facts: [
