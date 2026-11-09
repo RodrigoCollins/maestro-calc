@@ -6,6 +6,7 @@ import type { Lang } from '../time-card/receipt.ts';
 import type { JobSections } from './convert-sections.ts';
 import type { Differential, Tipped } from './routes.ts';
 import { SOURCES } from './sections.ts';
+import { tippedStatesSectionOf } from './tipped-states-section.ts';
 
 /*
  * The sections of the shift differential and tipped pages under their answer: the week worked out
@@ -275,6 +276,7 @@ export const tippedSectionsOf = (job: Tipped, lang: Lang): JobSections => {
     const ran = tippedRun(moneyText(other).replace(/[$,]/g, ''), job.hours);
     return [moneyText(other), m(ran, 'topUp'), m(ran, 'perHour')];
   });
+  const states = tippedStatesSectionOf(job, lang, money(out, 'totalPay'));
   return {
     sections: [
       { id: 'worked', heading: WORDS[lang].heading, paragraphs: [], steps },
@@ -284,7 +286,8 @@ export const tippedSectionsOf = (job: Tipped, lang: Lang): JobSections => {
         paragraphs: [w.tableIntro(job.hours)],
         table: { caption: w.caption(job.hours), head: w.head, rows },
       },
+      states.section,
     ],
-    sources: [SOURCES.factSheet15, SOURCES.factSheet23],
+    sources: [SOURCES.factSheet15, SOURCES.factSheet23, ...states.sources],
   };
 };
