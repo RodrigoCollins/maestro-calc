@@ -7,7 +7,8 @@
   "exports": {
     "./frost/states": "./src/frost/states.ts",
     "./frost/source": "./src/frost/source.ts",
-    "./frost/*": "./src/frost/*.ts"
+    "./frost/*": "./src/frost/*.ts",
+    "./zones/*": "./src/zones/*.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json"

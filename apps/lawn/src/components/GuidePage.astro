@@ -1,7 +1,7 @@
 ---
 import { calculatorsOf, guideAt } from '../guide.ts';
 import { hrefOf } from '../routes.ts';
-import { pageTrailOf } from '../seo/breadcrumb.ts';
+import { childTrailOf, pageTrailOf } from '../seo/breadcrumb.ts';
 import Byline from './Byline.astro';
 import Layout from './Layout.astro';
 import Sources from './Sources.astro';
@@ -12,14 +12,10 @@ interface Props {
 
 const guide = guideAt(Astro.props.path);
 const calculators = calculatorsOf(guide);
+const trail = guide.parent === undefined ? pageTrailOf(guide) : childTrailOf(guide, guide.parent);
 ---
 
-<Layout
-  title={guide.title}
-  description={guide.description}
-  trail={pageTrailOf(guide)}
-  modified={guide.checked}
->
+<Layout title={guide.title} description={guide.description} {trail} modified={guide.checked}>
   <Fragment slot="hero">
     <section class="lawn-hero">
       <h1>{guide.h1}</h1>
