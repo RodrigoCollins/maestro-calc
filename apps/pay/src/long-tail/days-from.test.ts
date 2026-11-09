@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import { commonLinksOf, LONG_TAIL_ROUTES, longTailPageOf } from './jobs.ts';
-import { DAYS_FROM, pathOf, type DaysFrom } from './routes.ts';
+import { DAYS_FROM, DAYS_FROM_TODAY, MONTHS_FROM_TODAY, pathOf, type DaysFrom } from './routes.ts';
 import type { LongTailSection } from './sections.ts';
 
 const LANGS = ['en', 'es'] as const;
@@ -40,13 +40,21 @@ const rowOf = (
 
 describe('days and months from today long-tail pages', () => {
   it('cover the spans people ask the date of', () => {
-    expect(DAYS_FROM.map(({ slug }) => slug)).toEqual([
-      { en: '10-days-from-today', es: '10-dias-a-partir-de-hoy' },
-      { en: '28-days-from-today', es: '28-dias-a-partir-de-hoy' },
-      { en: '30-days-from-today', es: '30-dias-a-partir-de-hoy' },
-      { en: '30-days-ago-from-today', es: 'hace-30-dias' },
-      { en: '6-months-from-today', es: '6-meses-a-partir-de-hoy' },
+    expect(DAYS_FROM_TODAY.map(({ slug }) => slug.en)).toEqual([
+      ...[5, 7, 10, 14, 15, 20, 21, 25, 28, 30].map((days) => `${String(days)}-days-from-today`),
+      '30-days-ago-from-today',
+      ...[40, 45, 50, 60, 75, 90, 100, 120, 180, 365].map(
+        (days) => `${String(days)}-days-from-today`,
+      ),
     ]);
+    expect(MONTHS_FROM_TODAY.map(({ amount }) => amount)).toEqual(
+      Array.from({ length: 12 }, (_, i) => i + 1),
+    );
+    expect(DAYS_FROM).toEqual([...DAYS_FROM_TODAY, ...MONTHS_FROM_TODAY]);
+    expect(jobOf('30-days-ago-from-today').slug.es).toBe('hace-30-dias');
+    expect(jobOf('90-days-from-today').slug.es).toBe('90-dias-a-partir-de-hoy');
+    expect(jobOf('1-month-from-today').slug.es).toBe('1-mes-a-partir-de-hoy');
+    expect(jobOf('6-months-from-today').slug.es).toBe('6-meses-a-partir-de-hoy');
     for (const job of DAYS_FROM) {
       expect(LONG_TAIL_ROUTES.map(({ es }) => es)).toContain(pathOf(job, 'es'));
     }
@@ -166,6 +174,96 @@ describe('days and months from today long-tail pages', () => {
     expect(textOf(sectionOf('28-days-from-today', 'worked'))).toContain('28 = 4 × 7');
   });
 
+  it('read a week, less than a week and one month in their own words', () => {
+    expect(longTailPageOf(jobOf('7-days-from-today'), 'en').title).toMatch(
+      /^7 days from today: 1 week, the same weekday/,
+    );
+    expect(longTailPageOf(jobOf('7-days-from-today'), 'es').title).toMatch(
+      /^7 días a partir de hoy: 1 semana, el mismo día de la semana/,
+    );
+    expect(longTailPageOf(jobOf('5-days-from-today'), 'en').lead).toContain(
+      'less than a week, so the weekday moves 5 on (from a Monday, a Saturday)',
+    );
+    const one = longTailPageOf(jobOf('1-month-from-today'), 'en');
+    expect(one.h1).toBe('What is the date 1 month from today?');
+    expect(one.figure).toBe('+1 month');
+    expect(longTailPageOf(jobOf('1-month-from-today'), 'es').h1).toBe(
+      '¿Qué fecha es 1 mes a partir de hoy?',
+    );
+    for (const job of DAYS_FROM) {
+      for (const lang of LANGS) {
+        const page = longTailPageOf(job, lang);
+        const text = [page.title, page.lead, ...(page.sections ?? []).map(textOf)].join(' ');
+        expect(text).not.toMatch(/\b1 (weeks|months|semanas|meses)\b|\b0 weeks|\b0 semanas/);
+      }
+    }
+  });
+
+  it('give the hand-verified dates of the longer spans', () => {
+    // 90 days from January 1 is April 1, March 31 in a leap year
+    expect(rowOf('90-days-from-today', 'months', 'January 1')).toEqual([
+      'January 1',
+      'April 1',
+      'March 31',
+    ]);
+    // 365 days from January 1 is January 1 of the next year, December 31 when it is a leap year
+    expect(rowOf('365-days-from-today', 'months', 'January 1')).toEqual([
+      'January 1',
+      'January 1',
+      'December 31',
+    ]);
+    expect(longTailPageOf(jobOf('365-days-from-today'), 'en').lead).toContain(
+      'it is January 15 of the next year',
+    );
+    // January 15 is day 15: 15 + 45 = 60, March 1
+    const fortyFive = textOf(sectionOf('45-days-from-today', 'worked'));
+    expect(fortyFive).toContain('15 + 45 = 60');
+    expect(fortyFive).toContain('March 1');
+    // 5 days from January 29: 2 days left in January, 5 - 2 = 3, February 3
+    expect(textOf(sectionOf('5-days-from-today', 'worked'))).toContain(
+      '5 − 2 = 3, so the date is February 3',
+    );
+    // a month from January 31 is February 28, 29 in a leap year, 28 days on
+    expect(rowOf('1-month-from-today', 'months', 'January 31')).toEqual([
+      'January 31',
+      'February 28',
+      'February 29',
+      '28',
+    ]);
+    expect(rowOf('3-months-from-today', 'months', 'November 30')).toEqual([
+      'November 30',
+      'February 28',
+      'February 29',
+      '90',
+    ]);
+    expect(rowOf('12-months-from-today', 'months', 'January 31')).toEqual([
+      'January 31',
+      'January 31',
+      'January 31',
+      '365',
+    ]);
+    const three = longTailPageOf(jobOf('3-months-from-today'), 'en');
+    expect(three.rows.find(({ key }) => key === 'days')?.value).toBe('89 to 92');
+    expect(three.rows.find(({ key }) => key === 'clamp')?.label).toBe('From November 30');
+    expect(three.rows.find(({ key }) => key === 'work')?.value).toBe('520');
+    expect(longTailPageOf(jobOf('12-months-from-today'), 'en').rows).toContainEqual({
+      key: 'clamp',
+      label: 'From February 29',
+      value: 'February 28',
+    });
+    expect(textOf(sectionOf('3-months-from-today', 'worked'))).toContain(
+      'March 15 + 3 months = June 15',
+    );
+    expect(textOf(sectionOf('3-months-from-today', 'work'))).toContain('about 13 weeks');
+    // 14 days from a Monday hold 10 weekdays, always
+    expect(rowOf('14-days-from-today', 'weekdays', 'Thursday')).toEqual([
+      'Thursday',
+      'Thursday',
+      '10',
+      '80',
+    ]);
+  });
+
   it('give every page its sections with no broken figure, and its own context', () => {
     const contexts = new Set<string>();
     for (const job of DAYS_FROM) {
@@ -189,7 +287,10 @@ describe('days and months from today long-tail pages', () => {
       for (const lang of LANGS) {
         const page = longTailPageOf(job, lang);
         expect(page.calculator.href).toBe(HOURS_PATHS[lang]);
-        expect(page.others.links).toHaveLength(DAYS_FROM.length - 1);
+        expect(page.others.links).toHaveLength(6);
+        const group = job.unit === 'month' ? MONTHS_FROM_TODAY : DAYS_FROM_TODAY;
+        const hrefs = new Set(group.map((each) => pathOf(each, lang)));
+        for (const { href } of page.others.links) expect(hrefs.has(href)).toBe(true);
       }
     }
     for (const lang of LANGS) {

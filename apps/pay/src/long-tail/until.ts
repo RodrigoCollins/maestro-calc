@@ -2,11 +2,11 @@ import { clockFieldText as t } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
-import { fieldOf } from './clock.ts';
+import { clockOf, fieldOf } from './clock.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { shiftLink, WORKED } from './live-links.ts';
 import { nearestOf } from './nearest.ts';
-import { pathOf, UNTILS, type Until } from './routes.ts';
+import { liveGroupOf, pathOf, SHIFTS, UNTILS, type Shift, type Until } from './routes.ts';
 import { SOURCES, type LongTailSection, type LongTailSource } from './sections.ts';
 import { durationOf, untilOf } from './time-math.ts';
 
@@ -19,12 +19,27 @@ import { durationOf, untilOf } from './time-math.ts';
 const DAY = 1440;
 const n = (value: number): string => value.toLocaleString('en-US');
 const dec = (minutes: number): string => (minutes / 60).toFixed(2);
-/** The example of the worked steps: 5 h 20 min before the time, and 8:00 pm, once it has passed. */
+/** The example of the worked steps: 5 h 20 min before the time, or midnight for an earlier one. */
 const LEAD = 320;
 const NINE = 540;
 const EVENING = 1200;
+const NIGHT = 1260;
+
+/**
+ * The moments of the examples of a page, each on the side of the time it is named for: `now`
+ * before it for the steps, `from` before it for the lead, `evening` after it, and `after` and
+ * `before` for the time since.
+ */
+const momentsOf = (target: number) => ({
+  now: target >= LEAD ? target - LEAD : 0,
+  from: target > NINE ? NINE : target >= LEAD ? target - LEAD : 0,
+  evening: target < EVENING ? EVENING : target + 30,
+  after: target < NIGHT ? NIGHT : target + 30,
+  before: target > NINE ? NINE : target - 60,
+});
 /** `la 1:00 pm`, `las 3:00 pm`: the article of a time in Spanish. */
 const las = (time: string): string => (time.startsWith('1:') ? `la ${time}` : `las ${time}`);
+const capital = (text: string): string => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 /** 24:00 for midnight, the end of the day it counts to. */
 const target24 = (minutes: number): string => (minutes === 0 ? '24:00' : fieldOf(minutes));
 
@@ -104,8 +119,15 @@ const WORDS = {
       `How long until ${label}: ${f} minus the time on your clock`,
     figure: (f: string): string => `${f} − now`,
     figureLabel: 'Count down from your clock',
-    lead: (label: string, f: string, nine: number, evening: number): string =>
-      `To count down to ${label}, subtract the time on your clock from ${f}, the 24-hour form of ${label}. From 9:00 am that is ${durationOf(nine)}, or ${dec(nine)} hours; once ${label} has passed, the next one is tomorrow, so add 24 hours first: from 8:00 pm it is ${durationOf(evening)}.`,
+    lead: (
+      label: string,
+      f: string,
+      from: string,
+      nine: number,
+      at: string,
+      evening: number,
+    ): string =>
+      `To count down to ${label}, subtract the time on your clock from ${f}, the 24-hour form of ${label}. From ${from} that is ${durationOf(nine)}, or ${dec(nine)} hours; once ${label} has passed, the next one is tomorrow, so add 24 hours first: from ${at} it is ${durationOf(evening)}.`,
     midnightLead: (nine: number, evening: number): string =>
       `To count down to 12:00 am, midnight, subtract the time on your clock from 24:00, the end of the day. From 9:00 am that is ${durationOf(nine)}, or ${dec(nine)} hours, and from 8:00 pm it is ${durationOf(evening)}.`,
     today: (label: string): string => `It is {now}: ${label} is {duration} away, today.`,
@@ -120,12 +142,12 @@ const WORDS = {
     after: (label: string): string => `After ${label}, to tomorrow's`,
     mark: { today: 'today', tomorrow: 'tomorrow', now: 'now', tonight: 'tonight' },
     breakdown: 'The count from common times',
-    steps: (label: string, target: number, now: number, evening: number): string[] => [
+    steps: (label: string, target: number, now: number, at: number, evening: number): string[] => [
       `Write ${label} on a 24-hour clock: ${fieldOf(target)}, which is ${n(target)} minutes after midnight.`,
       `Write the time now the same way: ${t(now)} is ${fieldOf(now)}, ${n(now)} minutes.`,
-      `Subtract: ${n(target)} − ${n(now)} = ${String(LEAD)} minutes, ${durationOf(LEAD)}.`,
-      `In decimal hours, ${String(LEAD)} ÷ 60 = ${dec(LEAD)} hours.`,
-      `If the subtraction comes out negative, ${label} has passed today: add 1,440 minutes, 24 hours. From 8:00 pm (1,200), ${n(target)} + 1,440 − 1,200 = ${n(evening)} minutes, ${durationOf(evening)} until tomorrow's ${label}.`,
+      `Subtract: ${n(target)} − ${n(now)} = ${n(target - now)} minutes, ${durationOf(target - now)}.`,
+      `In decimal hours, ${n(target - now)} ÷ 60 = ${dec(target - now)} hours.`,
+      `If the subtraction comes out negative, ${label} has passed today: add 1,440 minutes, 24 hours. From ${t(at)} (${n(at)}), ${n(target)} + 1,440 − ${n(at)} = ${n(evening)} minutes, ${durationOf(evening)} until tomorrow's ${label}.`,
     ],
     midnightSteps: [
       'Midnight, 12:00 am, is the end of the day: 24:00 on a 24-hour clock, 1,440 minutes after the midnight before.',
@@ -141,11 +163,27 @@ const WORDS = {
     caption: (label: string): string => `Time left until ${label}`,
     head: (label: string): string[] => ['Time now', `Until ${label}`, 'Decimal hours', 'Day'],
     sinceHeading: (label: string): string => `Time since ${label}`,
-    since: (label: string, f: string, night: number, morning: number): string =>
-      `The other way, the time since ${label} is the clock minus ${f}: at 9:00 pm it is ${durationOf(night)}. Before ${label} it is the time since yesterday's: at 9:00 am, ${durationOf(morning)}.`,
+    since: (
+      label: string,
+      f: string,
+      at: string,
+      night: number,
+      early: string,
+      morning: number,
+    ): string =>
+      `The other way, the time since ${label} is the clock minus ${f}: at ${at} it is ${durationOf(night)}. Before ${label} it is the time since yesterday's: at ${early}, ${durationOf(morning)}.`,
     midnightSince:
       'The time since midnight is the clock itself on a 24-hour clock: at 9:00 am, 9 h 0 min have passed today, and at 8:00 pm, 20 h 0 min.',
     workHeading: (label: string): string => `${label} in a working day`,
+    ends: (span: string, label: string, start: string, length: number): string =>
+      `The ${span} shift ends at ${label}: from its start, ${start}, it is ${durationOf(length)} to ${label}.`,
+    starts: (span: string, label: string, end: string, length: number): string =>
+      `The ${span} shift starts at ${label} and ends ${durationOf(length)} later, at ${end}.`,
+    eight: (label: string, start: string, end: string, next: boolean): string =>
+      `An 8-hour shift that ends at ${label} starts at ${start}, and one that starts at ${label} ends at ${end}${next ? ' the next day' : ''}.`,
+    quarter: (label: string, decimal: string, from: string, to: string): string =>
+      `${label} is ${decimal} in decimal hours on a 24-hour clock. As a quarter-hour mark, it is what a time clock that rounds to the nearest quarter hour records for any punch from ${from} to ${to}, which is allowed only if, over time, you are paid for all the time you worked (29 CFR 785.48).`,
+    span: (start: number, end: number): string => `${clockOf(start)} to ${clockOf(end)}`,
     edit: 'Count the hours between two times',
     others: 'Other times to count down to',
     common: 'How long until a time',
@@ -157,8 +195,15 @@ const WORDS = {
       `Cuánto falta para ${las(label)}: ${f} menos la hora de tu reloj`,
     figure: (f: string): string => `${f} − ahora`,
     figureLabel: 'Cuenta desde tu reloj',
-    lead: (label: string, f: string, nine: number, evening: number): string =>
-      `Para saber cuánto falta para ${las(label)}, resta la hora de tu reloj a ${f}, la forma de 24 horas de ${las(label)}. Desde las 9:00 am son ${durationOf(nine)}, o ${dec(nine)} horas; cuando ${las(label)} ya pasaron, las siguientes son mañana, así que suma 24 horas primero: desde las 8:00 pm son ${durationOf(evening)}.`,
+    lead: (
+      label: string,
+      f: string,
+      from: string,
+      nine: number,
+      at: string,
+      evening: number,
+    ): string =>
+      `Para saber cuánto falta para ${las(label)}, resta la hora de tu reloj a ${f}, la forma de 24 horas de ${las(label)}. Desde ${las(from)} son ${durationOf(nine)}, o ${dec(nine)} horas; cuando ${las(label)} ya pasaron, las siguientes son mañana, así que suma 24 horas primero: desde ${las(at)} son ${durationOf(evening)}.`,
     midnightLead: (nine: number, evening: number): string =>
       `Para saber cuánto falta para las 12:00 am, la medianoche, resta la hora de tu reloj a 24:00, el final del día. Desde las 9:00 am son ${durationOf(nine)}, o ${dec(nine)} horas, y desde las 8:00 pm son ${durationOf(evening)}.`,
     today: (label: string): string => `Ahora: {now}. Para ${las(label)} faltan {duration}, hoy.`,
@@ -173,12 +218,12 @@ const WORDS = {
     after: (label: string): string => `Después de ${las(label)}, hasta mañana`,
     mark: { today: 'hoy', tomorrow: 'mañana', now: 'ahora', tonight: 'esta noche' },
     breakdown: 'La cuenta desde horas comunes',
-    steps: (label: string, target: number, now: number, evening: number): string[] => [
+    steps: (label: string, target: number, now: number, at: number, evening: number): string[] => [
       `Escribe ${las(label)} en reloj de 24 horas: ${fieldOf(target)}, que son ${n(target)} minutos después de la medianoche.`,
-      `Escribe la hora actual igual: ${las(t(now))} son las ${fieldOf(now)}, ${n(now)} minutos.`,
-      `Resta: ${n(target)} − ${n(now)} = ${String(LEAD)} minutos, ${durationOf(LEAD)}.`,
-      `En horas decimales, ${String(LEAD)} ÷ 60 = ${dec(LEAD)} horas.`,
-      `Si la resta da negativa, ${las(label)} ya pasaron hoy: suma 1,440 minutos, 24 horas. Desde las 8:00 pm (1,200), ${n(target)} + 1,440 − 1,200 = ${n(evening)} minutos, ${durationOf(evening)} hasta ${las(label)} de mañana.`,
+      `Escribe la hora actual igual: ${t(now)} se escribe ${fieldOf(now)}, ${n(now)} minutos.`,
+      `Resta: ${n(target)} − ${n(now)} = ${n(target - now)} minutos, ${durationOf(target - now)}.`,
+      `En horas decimales, ${n(target - now)} ÷ 60 = ${dec(target - now)} horas.`,
+      `Si la resta da negativa, ${las(label)} ya pasaron hoy: suma 1,440 minutos, 24 horas. Desde ${las(t(at))} (${n(at)}), ${n(target)} + 1,440 − ${n(at)} = ${n(evening)} minutos, ${durationOf(evening)} hasta ${las(label)} de mañana.`,
     ],
     midnightSteps: [
       'La medianoche, las 12:00 am, es el final del día: 24:00 en reloj de 24 horas, 1,440 minutos después de la medianoche anterior.',
@@ -199,12 +244,28 @@ const WORDS = {
       'Día',
     ],
     sinceHeading: (label: string): string => `Tiempo desde ${las(label)}`,
-    since: (label: string, f: string, night: number, morning: number): string =>
-      `Al revés, el tiempo desde ${las(label)} es tu hora menos ${f}: a las 9:00 pm son ${durationOf(night)}. Antes de ${las(label)} es el tiempo desde las de ayer: a las 9:00 am, ${durationOf(morning)}.`,
+    since: (
+      label: string,
+      f: string,
+      at: string,
+      night: number,
+      early: string,
+      morning: number,
+    ): string =>
+      `Al revés, el tiempo desde ${las(label)} es tu hora menos ${f}: a ${las(at)} son ${durationOf(night)}. Antes de ${las(label)} es el tiempo desde las de ayer: a ${las(early)}, ${durationOf(morning)}.`,
     midnightSince:
       'El tiempo desde la medianoche es la hora misma en reloj de 24 horas: a las 9:00 am han pasado 9 h 0 min de hoy, y a las 8:00 pm, 20 h 0 min.',
     workHeading: (label: string): string =>
       `${las(label).replace(/^l/, 'L')} en una jornada de trabajo`,
+    ends: (span: string, label: string, start: string, length: number): string =>
+      `El turno ${span} termina a ${las(label)}: desde su inicio, a ${las(start)}, faltan ${durationOf(length)} para ${las(label)}.`,
+    starts: (span: string, label: string, end: string, length: number): string =>
+      `El turno ${span} empieza a ${las(label)} y termina ${durationOf(length)} después, a ${las(end)}.`,
+    eight: (label: string, start: string, end: string, next: boolean): string =>
+      `Un turno de 8 horas que termina a ${las(label)} empieza a ${las(start)}, y uno que empieza a ${las(label)} termina a ${las(end)}${next ? ' del día siguiente' : ''}.`,
+    quarter: (label: string, decimal: string, from: string, to: string): string =>
+      `${capital(las(label))} ${label.startsWith('1:') ? 'es' : 'son'} ${decimal} en horas decimales en reloj de 24 horas. Como marca de cuarto de hora, es lo que anota un reloj checador que redondea al cuarto de hora más cercano para cualquier marca de ${from} a ${to}, algo permitido solo si, con el tiempo, te pagan todo el tiempo que trabajaste (29 CFR 785.48).`,
+    span: (start: number, end: number): string => `de ${clockOf(start)} a ${clockOf(end)}`,
     edit: 'Cuenta las horas entre dos horas del día',
     others: 'Otras horas para contar',
     common: 'Cuánto falta para una hora',
@@ -214,9 +275,37 @@ const WORDS = {
 
 const questionOf = (job: Until, lang: Lang): string => WORDS[lang].h1(t(job.minutes));
 
+/** The working day of a time with no text of its own (`WORK`): the shifts it ends or starts. */
+const workOf = (
+  target: number,
+  lang: Lang,
+): { paragraphs: string[]; links: ReturnType<typeof shiftLink>[]; sources: LongTailSource[] } => {
+  const w = WORDS[lang];
+  const label = t(target);
+  const lengthOf = ({ start, end }: Shift): number => (end - start + DAY) % DAY;
+  const ends = SHIFTS.filter(({ end }) => end % DAY === target);
+  const starts = SHIFTS.filter(({ start }) => start === target);
+  const shifts = [...ends, ...starts].slice(0, 3);
+  const paragraphs = shifts.map((shift) =>
+    ends.includes(shift)
+      ? w.ends(w.span(shift.start, shift.end), label, t(shift.start), lengthOf(shift))
+      : w.starts(w.span(shift.start, shift.end), label, t(shift.end % DAY), lengthOf(shift)),
+  );
+  if (shifts.length === 0)
+    paragraphs.push(
+      w.eight(label, t((target - 480 + DAY) % DAY), t((target + 480) % DAY), target + 480 >= DAY),
+    );
+  paragraphs.push(w.quarter(label, String(target / 60), t(target - 7), t(target + 7)));
+  return {
+    paragraphs: [paragraphs.join(' ')],
+    links: shifts.map(({ start, end }) => shiftLink(fieldOf(start), fieldOf(end % DAY), lang)),
+    sources: [SOURCES.ecfr48],
+  };
+};
+
 export const untilLinksOf = (lang: Lang, except?: Until): CommonLinks => {
   const w = WORDS[lang];
-  const listed = except === undefined ? UNTILS : nearestOf(UNTILS, except);
+  const listed = except === undefined ? UNTILS : nearestOf(liveGroupOf(except), except);
   return {
     heading: except === undefined ? w.common : w.others,
     links: listed.map((job) => ({ href: pathOf(job, lang), label: questionOf(job, lang) })),
@@ -237,17 +326,27 @@ export const untilPageOf = (job: Until, lang: Lang): LongTailPage => {
     if (midnight) return w.mark.tonight;
     return tomorrow ? w.mark.tomorrow : w.mark.today;
   };
-  const nine = count(NINE).minutes;
-  const evening = count(EVENING).minutes;
-  const lead = midnight ? w.midnightLead(nine, evening) : w.lead(label, f, nine, evening);
-  const work = WORK[target];
-  if (work === undefined) throw new Error(`no working day for ${label}`);
+  const at = momentsOf(target);
+  const nine = count(midnight ? NINE : at.from).minutes;
+  const evening = count(midnight ? EVENING : at.evening).minutes;
+  const lead = midnight
+    ? w.midnightLead(nine, evening)
+    : w.lead(label, f, t(at.from), nine, t(at.evening), evening);
+  const hand = WORK[target];
+  const work =
+    hand === undefined
+      ? workOf(target, lang)
+      : {
+          paragraphs: [hand[lang]],
+          links: hand.shifts.map(([from, to]) => shiftLink(from, to, lang)),
+          sources: hand.sources,
+        };
   const sections: LongTailSection[] = [
     {
       id: 'worked',
       heading: WORKED[lang],
       paragraphs: [],
-      steps: midnight ? w.midnightSteps : w.steps(label, target, target - LEAD, evening),
+      steps: midnight ? w.midnightSteps : w.steps(label, target, at.now, at.evening, evening),
     },
     {
       id: 'hours',
@@ -266,14 +365,23 @@ export const untilPageOf = (job: Until, lang: Lang): LongTailPage => {
       id: 'since',
       heading: w.sinceHeading(label),
       paragraphs: [
-        midnight ? w.midnightSince : w.since(label, f, 1260 - target, NINE - target + DAY),
+        midnight
+          ? w.midnightSince
+          : w.since(
+              label,
+              f,
+              t(at.after),
+              at.after - target,
+              t(at.before),
+              at.before - target + DAY,
+            ),
       ],
     },
     {
       id: 'work',
       heading: w.workHeading(label),
-      paragraphs: [work[lang]],
-      links: work.shifts.map(([from, to]) => shiftLink(from, to, lang)),
+      paragraphs: work.paragraphs,
+      links: work.links,
     },
   ];
   const rows = [360, NINE, 720, 1080].map((from) => {

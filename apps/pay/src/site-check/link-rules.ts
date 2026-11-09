@@ -1,17 +1,15 @@
 import { nearestOf } from '../long-tail/nearest.ts';
 import {
   DAYS,
-  DAYS_FROM,
   DIFFERENTIALS,
   DOUBLES,
   JOBS,
+  LIVE_GROUPS,
   MINUTES,
   pathOf,
   PTOS,
   SHIFTS,
-  TIME_OFFSETS,
   TIPPED,
-  UNTILS,
   type LongTailJob,
 } from '../long-tail/routes.ts';
 import { DATA_PAGES } from '../data/pages.ts';
@@ -45,9 +43,7 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
   { calculator: 'shift-differential', members: DIFFERENTIALS },
   { calculator: 'tipped-wage', members: TIPPED },
   { calculator: 'hours', members: DAYS },
-  { calculator: 'hours', members: TIME_OFFSETS },
-  { calculator: 'hours', members: UNTILS },
-  { calculator: 'hours', members: DAYS_FROM },
+  ...LIVE_GROUPS.map((members) => ({ calculator: 'hours', members })),
 ];
 
 /**
