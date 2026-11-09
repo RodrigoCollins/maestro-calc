@@ -3,6 +3,7 @@ import {
   DECIMAL_HOURS,
   DEFAULT_PAY,
   HOURS,
+  MILITARY,
   OVERTIME,
   PAGES,
   PTO,
@@ -56,6 +57,16 @@ for (const { path } of DECIMAL_HOURS) {
     await expect(page.locator('[data-out="fromDecimal"]')).toHaveText('7 h 45 min');
     // 45 minutes is the first row's third column: 0, 20 and 40 minutes, then 5 rows down
     await expect(page.locator('.chart tbody tr').nth(5).locator('td').nth(2)).toHaveText('0.75');
+  });
+}
+
+for (const { path, lang } of MILITARY) {
+  test(`${path} shows 1500 on both clocks without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('[data-mil="figure"]')).toHaveText(
+      lang === 'en' ? '1500 = 3:00 PM' : '1500 = 3:00 p. m.',
+    );
+    await expect(page.locator('[data-mil="colon"]')).toHaveText('15:00');
   });
 }
 

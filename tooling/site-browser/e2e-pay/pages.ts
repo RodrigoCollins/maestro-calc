@@ -1,5 +1,9 @@
 import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
 import { STATE_ROUTES, STATES_INDEX_PATHS } from '../../../apps/pay/src/states/routes.ts';
+import { MILITARY_TIME_ROUTES } from '../../../apps/pay/src/military/routes.ts';
+
+/** The military time of every hour and half hour, English only, from its table. */
+const MILITARY_TIMES = MILITARY_TIME_ROUTES.map(({ en }) => ({ path: en, lang: 'en' as const }));
 
 /** The long-tail pages, read from their table (a module with no run-time import), in both languages. */
 const LONG_TAIL = LONG_TAIL_ROUTES.flatMap(({ en, es }) => [
@@ -71,7 +75,12 @@ export const PAGES = [
   { path: '/es/guias/si-no-te-pagan-las-horas-extra', lang: 'es' },
   { path: '/es/guias/como-calcular-horas-extra', lang: 'es' },
   { path: '/es/guias/horas-extra-en-california', lang: 'es' },
+  { path: '/military-time-converter', lang: 'en' },
+  { path: '/es/convertidor-de-hora-militar', lang: 'es' },
+  { path: '/military-time-chart', lang: 'en' },
+  { path: '/es/tabla-de-hora-militar', lang: 'es' },
   ...LONG_TAIL,
+  ...MILITARY_TIMES,
   ...STATES,
 ] as const;
 
@@ -92,6 +101,10 @@ export const HOURS = PAGES.filter(({ path }) =>
 
 export const DECIMAL_HOURS = PAGES.filter(({ path }) =>
   ['/minutes-to-decimal-hours', '/es/minutos-a-horas-decimales'].includes(path),
+);
+
+export const MILITARY = PAGES.filter(({ path }) =>
+  ['/military-time-converter', '/es/convertidor-de-hora-militar'].includes(path),
 );
 
 export const PTO = PAGES.filter(({ path }) =>
@@ -116,6 +129,8 @@ export const CALCULATOR_PATHS: readonly string[] = [
   '/es/calculadora-de-horas',
   '/minutes-to-decimal-hours',
   '/es/minutos-a-horas-decimales',
+  '/military-time-converter',
+  '/es/convertidor-de-hora-militar',
   '/hourly-to-salary-calculator',
   '/salary-to-hourly-calculator',
   '/es/de-pago-por-hora-a-sueldo-anual',

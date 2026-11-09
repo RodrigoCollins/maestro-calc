@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { describe, expect, it } from 'vitest';
+import { MILITARY_CHART_PATHS, MILITARY_CONVERTER_PATHS } from '../military/routes.ts';
 import { DECIMAL_HOURS_PATHS, DECIMAL_HOURS_TEXTS, HOURS_PATHS, HOURS_TEXTS } from './texts.ts';
 
 const pageOf = (href: string): string =>
@@ -44,6 +45,12 @@ for (const lang of ['en', 'es'] as const) {
     it('says that an end before the start crosses midnight, and how decimals are rounded', () => {
       expect(t.notes.join(' ')).toContain(lang === 'en' ? 'midnight' : 'medianoche');
       expect(t.notes.join(' ')).toContain('8.33');
+    });
+
+    it('links the military time converter and chart of its language', () => {
+      const hrefs = t.links.map(({ href }) => href);
+      expect(hrefs).toContain(MILITARY_CONVERTER_PATHS[lang]);
+      expect(hrefs).toContain(MILITARY_CHART_PATHS[lang]);
     });
 
     it('links pages of its own language that exist', () => {

@@ -11,11 +11,18 @@ import {
   GUIDE_RULES,
   HUBS,
   LONG_TAIL_RULES,
+  MILITARY_CHART_RULES,
+  MILITARY_RULES,
   SITEMAP_PATHS,
 } from './link-rules.ts';
+import {
+  MILITARY_CHART_PATHS,
+  MILITARY_CONVERTER_PATHS,
+  MILITARY_TIME_ROUTES,
+} from '../military/routes.ts';
 
-const both = (routes: readonly { en: string; es: string }[]): string[] =>
-  routes.flatMap(({ en, es }) => [en, es]);
+const both = (routes: readonly { en: string; es?: string }[]): string[] =>
+  routes.flatMap(({ en, es }) => (es === undefined ? [en] : [en, es]));
 const calculators = both(ROUTES.filter(({ kind }) => kind === 'calculator'));
 
 describe('LONG_TAIL_RULES', () => {
@@ -69,6 +76,34 @@ describe('LONG_TAIL_RULES', () => {
         expect.objectContaining({ path, calculator: '/hours-calculator' }),
       );
     }
+  });
+});
+
+describe('MILITARY_RULES', () => {
+  it('holds every military time page, English only, under the converter, with its nearest times', () => {
+    expect(MILITARY_RULES.map(({ path }) => path)).toEqual(
+      MILITARY_TIME_ROUTES.map(({ en }) => en),
+    );
+    for (const { path, calculator, siblings } of MILITARY_RULES) {
+      expect(calculator, path).toBe(MILITARY_CONVERTER_PATHS.en);
+      expect(siblings, path).toHaveLength(NEIGHBORS);
+      expect(siblings, path).not.toContain(path);
+    }
+    expect(MILITARY_RULES.find(({ path }) => path === '/military-time/1500')?.siblings).toEqual([
+      '/military-time/1330',
+      '/military-time/1400',
+      '/military-time/1430',
+      '/military-time/1530',
+      '/military-time/1600',
+      '/military-time/1630',
+    ]);
+  });
+
+  it('ties the chart of each language to its converter, and puts it on a hub', () => {
+    expect(MILITARY_CHART_RULES).toEqual([
+      { path: MILITARY_CHART_PATHS.en, calculators: [MILITARY_CONVERTER_PATHS.en] },
+      { path: MILITARY_CHART_PATHS.es, calculators: [MILITARY_CONVERTER_PATHS.es] },
+    ]);
   });
 });
 

@@ -124,6 +124,12 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         summary: 'The extra half of your overtime that you take off your income.',
         href: '/no-tax-on-overtime-calculator',
       },
+      {
+        id: 'military-time',
+        title: 'Military time',
+        summary: '1500 is 3:00 PM: convert either way, with a chart of every hour.',
+        href: '/military-time-converter',
+      },
     ],
   },
   es: {
@@ -222,6 +228,13 @@ export const HOME_TEXTS: Readonly<Record<Lang, HomeTexts>> = {
         title: 'Horas extra sin impuesto',
         summary: 'La parte extra de tus horas extra que restas de tus ingresos.',
         href: '/es/calculadora-horas-extra-sin-impuestos',
+      },
+      {
+        id: 'military-time',
+        title: 'Hora militar',
+        summary:
+          '1500 son las 3:00 p. m.: convierte en los dos sentidos, con una tabla de cada hora.',
+        href: '/es/convertidor-de-hora-militar',
       },
     ],
   },

@@ -13,15 +13,21 @@ import {
   type LongTailJob,
 } from '../long-tail/routes.ts';
 import { DATA_PAGES } from '../data/pages.ts';
-import { ROUTES, type Route } from '../routes.ts';
+import {
+  MILITARY_CHART_PATHS,
+  MILITARY_CONVERTER_PATHS,
+  MILITARY_TIMES,
+  militaryPathOf,
+} from '../military/routes.ts';
+import { isPaired, ROUTES, type PairedRoute } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
 const LANGS = ['en', 'es'] as const;
 
-const routeOf = (id: string): Route => {
+const routeOf = (id: string): PairedRoute => {
   const route = ROUTES.find((candidate) => candidate.id === id);
-  if (route === undefined) throw new Error(`no route ${id}`);
+  if (route === undefined || !isPaired(route)) throw new Error(`no route pair ${id}`);
   return route;
 };
 
@@ -60,6 +66,22 @@ export const LONG_TAIL_RULES: readonly LongTailRule[] = FAMILIES.flatMap(
       })),
     ),
 );
+
+/**
+ * Every military time page (English only): the converter links it, and it links the converter and
+ * the `NEIGHBORS` times nearest to it.
+ */
+export const MILITARY_RULES: readonly LongTailRule[] = MILITARY_TIMES.map((job) => ({
+  path: militaryPathOf(job),
+  calculator: MILITARY_CONVERTER_PATHS.en,
+  siblings: nearestOf(MILITARY_TIMES, job).map(militaryPathOf),
+}));
+
+/** The chart of each language and its converter link each other, and a hub links the chart. */
+export const MILITARY_CHART_RULES: readonly GuideRule[] = LANGS.map((lang) => ({
+  path: MILITARY_CHART_PATHS[lang],
+  calculators: [MILITARY_CONVERTER_PATHS[lang]],
+}));
 
 /** The calculators (route ids) each guide (a route id) explains: they link it, and it links them. */
 export const GUIDE_CALCULATORS: Readonly<Record<string, readonly string[]>> = {
@@ -123,4 +145,6 @@ export const STATE_RULES_OF_TABLES: readonly GuideRule[] = [
 export const HUBS: readonly string[] = LANGS.map((lang) => routeOf('home')[lang]);
 
 /** Every page of the sitemap, which is built from the same route table. */
-export const SITEMAP_PATHS: readonly string[] = ROUTES.flatMap(({ en, es }) => [en, es]);
+export const SITEMAP_PATHS: readonly string[] = ROUTES.flatMap(({ en, es }) =>
+  es === undefined ? [en] : [en, es],
+);
