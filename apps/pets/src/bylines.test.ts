@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 
 describe('BYLINE_PAGES', () => {
-  it('are the guides, the data pages, the dog and cat years pages, then the food hub and its foods', () => {
+  it('are the guides, the data pages, the dog and cat years pages, the food hub and its foods, then the plant hubs and plants', () => {
     expect(BYLINE_PAGES.map(({ path }) => path).slice(0, 8)).toEqual([
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
@@ -21,10 +21,17 @@ describe('BYLINE_PAGES', () => {
       '/1-year-in-cat-years',
       ...Array.from({ length: 19 }, (_, i) => `/${String(i + 2)}-years-in-cat-years`),
     ]);
-    const foods = BYLINE_PAGES.slice(44).map(({ path }) => path);
+    const foods = BYLINE_PAGES.slice(44, 86).map(({ path }) => path);
     expect(foods[0]).toBe('/can-dogs-eat');
     expect(foods).toHaveLength(42);
     expect(foods).toContain('/can-dogs-eat-grapes');
+    const plants = BYLINE_PAGES.slice(86).map(({ path }) => path);
+    expect(plants.slice(0, 3)).toEqual([
+      '/plants-toxic-to-cats',
+      '/plants-toxic-to-dogs',
+      '/pet-safe-houseplants',
+    ]);
+    expect(plants).toContain('/are-tulips-toxic-to-cats-and-dogs');
   });
 
   it('give every page a review day and at least one source with an address', () => {

@@ -29,6 +29,9 @@ describe('the home', () => {
         '/how-to-read-pet-food-label',
         '/my-dog-ate-chocolate',
         '/puppy-feeding-chart',
+        '/plants-toxic-to-cats',
+        '/plants-toxic-to-dogs',
+        '/pet-safe-houseplants',
       ].sort(),
     );
   });

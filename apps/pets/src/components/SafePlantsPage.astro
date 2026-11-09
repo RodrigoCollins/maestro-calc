@@ -1,0 +1,76 @@
+---
+import { checkedText } from '../editorial.ts';
+import { SAFE_HUB } from '../toxic-plants.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+const { title, description, h1, lead, checked, rows, avoid, sections, links, sources } = SAFE_HUB;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="safe">
+      <h2 id="safe">Non-toxic to cats and dogs on the ASPCA list</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Pet-safe houseplants, scrolls sideways on a narrow screen"
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              <th scope="col">Plant</th>
+              <th scope="col">Scientific name</th>
+              <th scope="col">Also sold as</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ href, name, scientific, otherNames }) => (
+              <tr>
+                <th scope="row">
+                  <a {href}>{name}</a>
+                </th>
+                <td>{scientific}</td>
+                <td>{otherNames === '' ? '—' : otherNames}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <section aria-labelledby="not-safe">
+      <h2 id="not-safe">Popular houseplants that are not pet-safe</h2>
+      <ul>
+        {avoid.map(({ href, name, note }) => (
+          <li>
+            <a {href}>{name}</a>: {note}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <ul>
+      {links.map(({ href, label }) => (
+        <li>
+          <a {href}>{label}</a>
+        </li>
+      ))}
+    </ul>
+    <p>{`Every source below was read on ${checkedText(checked)}.`}</p>
+    <Sources {sources} />
+    <ShareLink path={SAFE_HUB.path} {title} />
+  </main>
+</Layout>

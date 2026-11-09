@@ -26,9 +26,11 @@ describe('the header and footer', () => {
         kind === 'article' &&
         !id.startsWith('dog-years-') &&
         !id.startsWith('cat-years-') &&
-        !id.startsWith('food-'),
+        !id.startsWith('food-') &&
+        !id.startsWith('plant-'),
     );
     expect(footer).toContain('/can-dogs-eat');
+    expect(footer).toContain('/plants-toxic-to-cats');
     expect([...footer].sort()).toEqual(articles.map(({ path }) => path).sort());
     const ages = ROUTES.filter(({ id }) => id.startsWith('dog-years-')).map(({ path }) => path);
     expect(ages).toHaveLength(16);

@@ -293,6 +293,7 @@ describe('a food page', () => {
 describe('the hub', () => {
   it('lives at /can-dogs-eat and lists every food once, grouped by verdict, worst first', () => {
     expect(FOOD_HUB.path).toBe('/can-dogs-eat');
+    expect(FOOD_HUB.plants.href).toBe('/plants-toxic-to-dogs');
     expect(FOOD_HUB.groups.map(({ verdict }) => verdict)).toEqual([
       'toxic',
       'avoid',

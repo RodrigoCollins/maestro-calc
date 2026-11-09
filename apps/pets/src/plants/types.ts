@@ -21,6 +21,8 @@ export interface Plant {
   readonly entries: readonly string[];
   /** The answer after the verdict word: `the bulbs are the most toxic part`. Short: it is the title. */
   readonly answer: string;
+  /** A shorter answer for the title, where the whole one does not fit in 65 characters. */
+  readonly short?: string;
   /** One or two sentences for the hubs and the description. */
   readonly summary: string;
   /** Which parts the sources name, most toxic first. */

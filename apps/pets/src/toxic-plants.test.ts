@@ -44,14 +44,29 @@ const prose = (id: string): string => {
 describe('the plants', () => {
   it('are each listed once, the most-searched among them', () => {
     expect(new Set(PLANTS.map(({ id }) => id)).size).toBe(PLANTS.length);
-    expect(PLANTS.length).toBeGreaterThanOrEqual(25);
-    for (const id of ['lilies', 'tulips', 'pothos', 'snake-plants', 'monstera', 'spider-plants'])
+    expect(PLANTS.length).toBeGreaterThanOrEqual(45);
+    for (const id of [
+      'lilies',
+      'tulips',
+      'pothos',
+      'snake-plants',
+      'monstera',
+      'aloe-vera',
+      'peace-lilies',
+      'poinsettias',
+      'christmas-cactus',
+      'spider-plants',
+      'sago-palms',
+      'roses',
+      'orchids',
+    ])
       expect(PLANTS.map((each) => each.id)).toContain(id);
   });
 
   it('take every verdict from an ASPCA entry, never from the page’s own words', () => {
     for (const each of PLANTS) {
-      for (const slug of [...each.entries, ...each.alternatives]) expect(() => aspcaOf(slug)).not.toThrow();
+      for (const slug of [...each.entries, ...each.alternatives])
+        expect(() => aspcaOf(slug)).not.toThrow();
       const main = aspcaOf(each.entries[0] ?? '');
       const verdict = verdictOf(each);
       expect(verdict === 'both' || verdict === 'cats', each.id).toBe(
@@ -153,7 +168,9 @@ describe('a plant page', () => {
     expect(PLANT_CALL).toContain('(855) 764-7661');
     for (const each of PLANT_PAGES) {
       const toxic = plant(each.id).entries.some((slug) =>
-        (['cats', 'dogs'] as const).some((species) => listingOf(aspcaOf(slug), species) === 'toxic'),
+        (['cats', 'dogs'] as const).some(
+          (species) => listingOf(aspcaOf(slug), species) === 'toxic',
+        ),
       );
       expect(each.callNow, each.path).toBe(toxic);
     }
@@ -171,7 +188,9 @@ describe('a plant page', () => {
 
   it('cites its ASPCA entries, each source once, and links the hubs', () => {
     for (const each of PAGES_WITH_URLS()) {
-      expect(each.urls[0], each.path).toMatch(/^https:\/\/www\.aspca\.org\/pet-care\/aspca-poison-control\/toxic-and-non-toxic-plants\//);
+      expect(each.urls[0], each.path).toMatch(
+        /^https:\/\/www\.aspca\.org\/pet-care\/aspca-poison-control\/toxic-and-non-toxic-plants\//,
+      );
       expect(new Set(each.urls).size, each.path).toBe(each.urls.length);
     }
     for (const each of PLANT_PAGES) {
@@ -179,6 +198,8 @@ describe('a plant page', () => {
       expect(hrefs, each.path).toContain('/plants-toxic-to-cats');
       expect(hrefs, each.path).toContain('/plants-toxic-to-dogs');
       expect(hrefs, each.path).toContain('/pet-safe-houseplants');
+      expect(each.related.length, each.path).toBeGreaterThan(0);
+      expect(each.related.length, each.path).toBeLessThanOrEqual(8);
       for (const { href } of each.related) expect(href).not.toBe(each.path);
     }
   });
@@ -186,7 +207,9 @@ describe('a plant page', () => {
   it('links an alternative to its own page where it has one, else to the ASPCA entry', () => {
     for (const each of PLANT_PAGES)
       for (const { href } of each.alternatives)
-        expect(href, each.path).toMatch(/^(\/(is|are)-[a-z-]+-toxic-to-cats-and-dogs|https:\/\/www\.aspca\.org\/)/);
+        expect(href, each.path).toMatch(
+          /^(\/(is|are)-[a-z-]+-toxic-to-cats-and-dogs|https:\/\/www\.aspca\.org\/)/,
+        );
   });
 
   // the content audit flags two pages whose six-word shingles overlap by half or more

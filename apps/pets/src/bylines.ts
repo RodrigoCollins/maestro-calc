@@ -3,6 +3,7 @@ import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS } from './charts.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES, type PageSource } from './guides.ts';
+import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 
 /**
  * A page that carries the byline of the editorial team: its address, the day its data says its
@@ -22,6 +23,10 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
   ...CAT_YEARS_PAGES,
   FOOD_HUB,
   ...FOOD_PAGES,
+  CATS_HUB,
+  DOGS_HUB,
+  SAFE_HUB,
+  ...PLANT_PAGES,
 ].map(({ path, checked, sources }) => ({ path, checked, sources }));
 
 /** The byline data of the page at `path`. */

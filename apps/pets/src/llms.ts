@@ -9,6 +9,7 @@ import { DOG_AGE_PAGE } from './calc/dog-age.ts';
 import { DOG_PAGE, PUPPY_PAGE } from './calc/dog.ts';
 import { DUE_DATE_PAGE } from './calc/due-date.ts';
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
+import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { EDITORIAL } from './editorial.ts';
 import { GUIDES } from './guides.ts';
@@ -46,6 +47,12 @@ const READING: readonly Entry[] = [
   ...CAT_YEARS_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   { name: FOOD_HUB.h1, path: FOOD_HUB.path, note: FOOD_HUB.description },
   ...FOOD_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
+  ...[CATS_HUB, DOGS_HUB, SAFE_HUB].map(({ path, h1, description }) => ({
+    name: h1,
+    path,
+    note: description,
+  })),
+  ...PLANT_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
 ];
 
 const ABOUT_PAGES: readonly Entry[] = [
