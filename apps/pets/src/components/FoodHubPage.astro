@@ -1,0 +1,91 @@
+---
+import { POISON_LINE } from '../calc/chocolate.ts';
+import { FOOD_CALL, FOOD_HUB } from '../can-dogs-eat.ts';
+import { checkedText } from '../editorial.ts';
+import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+const { title, description, h1, lead, checked, sections, budgetColumns, budget, groups, sources } =
+  FOOD_HUB;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <p class="bf-call" role="note">
+      {FOOD_CALL} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+    </p>
+    {groups.map(({ verdict, heading, intro, rows }) => (
+      <section aria-labelledby={`v-${verdict}`}>
+        <h2 id={`v-${verdict}`}>{heading}</h2>
+        <p>{intro}</p>
+        <ul class="bf-foods">
+          {rows.map(({ href, name, also, summary }) => (
+            <li>
+              <a {href}>{name}</a>
+              {also.length > 0 && ` (${also.join(', ')})`}: {summary}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {id === 'budget' && (
+          <>
+            <div
+              class="bf-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="The treat budget by dog weight, scrolls sideways on a narrow screen"
+            >
+              <table class="bf-table">
+                <thead>
+                  <tr>
+                    {budgetColumns.map((column) => (
+                      <th scope="col">{column}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {budget.map(([weight, ...cells]) => (
+                    <tr>
+                      <th scope="row">{weight}</th>
+                      {cells.map((cell) => (
+                        <td>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>
+              <a href={hrefOf('dog')}>Dog food calculator</a>
+              {': the calories a day for your own dog’s weight and life stage.'}
+            </p>
+          </>
+        )}
+      </section>
+    ))}
+    <p>{`Every source below was read on ${checkedText(checked)}.`}</p>
+    <Sources {sources} />
+    <ShareLink path={FOOD_HUB.path} {title} />
+  </main>
+</Layout>
+
+<style>
+  .bf-foods {
+    display: grid;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+  }
+</style>
