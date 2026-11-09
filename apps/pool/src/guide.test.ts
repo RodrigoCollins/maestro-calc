@@ -1,8 +1,11 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
+import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { poolPh } from '@maestro-calc/pool-core/pool-ph';
+import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { figure } from './__testing__/figure.ts';
 import { outputText } from './format.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
@@ -20,6 +23,7 @@ import {
   SALT_VS_CHLORINE_GUIDE,
   SHOCK_GUIDE,
   type GuideSource,
+  type StepGuide,
 } from './guide.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { HOME_TOOLS } from './home.ts';
@@ -31,7 +35,12 @@ import { VOLUME_TEXTS } from './volume/texts.ts';
 
 /** One output of `engine` run in metric on `litres`, as the metric page writes it. */
 const metricDose = (
-  engine: typeof poolChlorine | typeof poolPh,
+  engine:
+    | typeof poolChlorine
+    | typeof poolPh
+    | typeof poolAlkalinity
+    | typeof poolSalt
+    | typeof poolCalcium,
   litres: number,
   raw: Readonly<Record<string, string>>,
   key: string,
@@ -758,5 +767,137 @@ describe('the opening of each top guide', () => {
     const home = (id: string) => CHEMISTRY_CHART.rows.find((row) => row.id === id)?.home ?? '?';
     for (const id of ['chlorine', 'ph', 'alkalinity'])
       expect(opening(CHEMISTRY_CHART.lead)).toContain(home(id));
+  });
+});
+
+// The guides a reader in Australia, the UK, Canada or Spain follows in litres: each metric figure
+// stands next to the gallon one, the metric calculator's own, and a table sizes 20,000 to 80,000 L.
+describe('the opening, closing and calcium guides in litres', () => {
+  const step = (guide: StepGuide, title: string): string => {
+    const found = guide.steps.find((candidate) => candidate.title === title);
+    if (found === undefined) throw new Error(`no step ${title}`);
+    return found.text;
+  };
+  const soda = (size: number) =>
+    metricDose(poolAlkalinity, size, { current: '80', target: '90' }, 'ounces');
+  const acid = (size: number) =>
+    metricDose(poolPh, size, { product: 'muriatic-31-45', drops: '1' }, 'liquid');
+  const salt = (size: number) =>
+    metricDose(poolSalt, size, { current: '3000', target: '3200' }, 'pounds');
+  const shock = (size: number) =>
+    metricDose(poolChlorine, size, { current: '0', target: '10', product: 'cal-hypo-65' }, 'dry');
+  const calcium = (size: number, current: string, target: string, key: string) =>
+    metricDose(poolCalcium, size, { current, target }, key);
+
+  it('tables the opening doses of 20,000 to 80,000 litres, each cell the metric calculator’s', () => {
+    const { table } = OPENING_GUIDE;
+    expect(table.head).toEqual([
+      'Pool',
+      'Baking soda, each 10 ppm',
+      '31.45% muriatic acid, each drop',
+      'Salt, 3,000 to 3,200 ppm',
+      '65% cal-hypo, 0 to 10 ppm',
+    ]);
+    expect(table.sources).toEqual(['taylor', 'manual', 'calHypo']);
+    expect(table.rows).toEqual(
+      LITRES.map((size) => [
+        litres(size),
+        `${soda(size)} g`,
+        `${acid(size)} L`,
+        `${salt(size)} kg`,
+        `${shock(size)} g`,
+      ]),
+    );
+    // by hand at 40,000 L: 16.8 g × 40 of baking soda; 200 mg × 40,000 L = 8 kg of salt;
+    // 10 mg × 40,000 L = 400 g of chlorine, ÷ 0.65 = 615 g of cal-hypo
+    expect(table.rows[2]).toEqual(['40,000 L', '672 g', `${acid(40_000)} L`, '8.0 kg', '615 g']);
+  });
+
+  it('gives the opening doses for 40,000 L next to the ones for 10,000 gallons', () => {
+    expect(OPENING_GUIDE.lead).toContain(
+      `For 40,000 L, the same doses are ${soda(40_000)} g of baking soda, ${acid(40_000)} L of muriatic acid and ${shock(40_000)} g of cal-hypo.`,
+    );
+    const guide: StepGuide = OPENING_GUIDE;
+    expect(step(guide, 'Bring the alkalinity into range first')).toContain(
+      `per 10,000 gallons, or ${soda(40_000)} g per 40,000 L`,
+    );
+    expect(step(guide, 'Then correct the pH')).toContain(
+      `per 10,000 gallons, or ${acid(40_000)} L per 40,000 L`,
+    );
+    expect(step(guide, 'Bring the salt up, if you have a salt cell')).toContain(
+      `and 40,000 L take ${salt(40_000)} kg`,
+    );
+    expect(step(guide, 'Shock, then raise the chlorine')).toContain(
+      `and 40,000 L take ${shock(40_000)} g`,
+    );
+  });
+
+  it('sizes the closing acid and shock in gallons and litres, from the cited chart and label', () => {
+    const guide: StepGuide = CLOSING_GUIDE;
+    const gallons = (path: string, raw: Readonly<Record<string, string>>, key: string) =>
+      figure(path, { gallons: '10000', ...raw }, key);
+    expect(step(guide, 'Balance the water')).toContain(
+      `${gallons(PH.path, { product: 'muriatic-31-45', drops: '1' }, 'liquid')} fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart, or ${acid(40_000)} L per 40,000 L`,
+    );
+    expect(step(guide, 'Shock the pool')).toContain(
+      `10,000 gallons take ${gallons(CHLORINE.path, { current: '0', target: '10', product: 'cal-hypo-65' }, 'dry')} oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm, and 40,000 L take ${shock(40_000)} g`,
+    );
+    expect(guide.steps.find(({ title }) => title === 'Balance the water')?.sources).toEqual([
+      'hayward',
+      'taylor',
+    ]);
+    expect(guide.steps.find(({ title }) => title === 'Shock the pool')?.sources).toEqual([
+      'hayward',
+      'calHypo',
+    ]);
+    expect(CLOSING_GUIDE.sources.taylor).toEqual(PH_GUIDE.sources.taylor);
+    expect(CLOSING_GUIDE.sources.calHypo).toEqual(SHOCK_GUIDE.sources.calHypo);
+    expect(CLOSING_GUIDE.lead).toContain(`and ${shock(40_000)} g for 40,000 L`);
+  });
+
+  it('tables the closing acid and shock of 20,000 to 80,000 litres', () => {
+    const { table } = CLOSING_GUIDE;
+    expect(table.head).toEqual([
+      'Pool',
+      '31.45% muriatic acid, each drop',
+      '65% cal-hypo, 0 to 10 ppm',
+    ]);
+    expect(table.sources).toEqual(['taylor', 'calHypo']);
+    expect(table.rows).toEqual(
+      LITRES.map((size) => [litres(size), `${acid(size)} L`, `${shock(size)} g`]),
+    );
+  });
+
+  // by hand at 40,000 L, 10,567 gallons: × 10 ÷ 80,000 = 1.32 lb, 599 g; the most at a time,
+  // 3 lb per 10,000 gallons, 3.17 lb, 1.4 kg; 200 to 220 ppm, 2.64 lb, 1.2 kg
+  it('doses the calcium chloride in litres next to the gallons, as the metric calculator does', () => {
+    const guide: StepGuide = CALCIUM_GUIDE;
+    expect(calcium(40_000, '200', '210', 'ounces')).toBe('599');
+    expect(CALCIUM_GUIDE.lead).toContain(
+      `per 10,000 gallons (${calcium(40_000, '200', '210', 'ounces')} g per 40,000 L)`,
+    );
+    expect(CALCIUM_GUIDE.lead).toContain(
+      `3 lb per 10,000 gallons (${calcium(40_000, '150', '250', 'firstAddition')} kg per 40,000 L)`,
+    );
+    expect(step(guide, 'Work out the calcium chloride')).toContain(
+      `In litres, 40,000 L from 200 to 220 ppm take ${calcium(40_000, '200', '220', 'pounds')} kg.`,
+    );
+    expect(step(guide, 'Split a large dose, 12 hours apart')).toContain(
+      `In litres, 80,000 L from 150 to 250 ppm take ${calcium(80_000, '150', '250', 'pounds')} kg, so add ${calcium(80_000, '150', '250', 'firstAddition')} kg first.`,
+    );
+  });
+
+  it('tables the calcium chloride of 20,000 to 80,000 litres, with the label’s first addition', () => {
+    const { table } = CALCIUM_GUIDE;
+    expect(table.head).toEqual(['Pool', 'Each 10 ppm', '150 to 250 ppm', 'First addition']);
+    expect(table.sources).toEqual(['label']);
+    expect(table.rows).toEqual(
+      LITRES.map((size) => [
+        litres(size),
+        `${calcium(size, '200', '210', 'ounces')} g`,
+        `${calcium(size, '150', '250', 'pounds')} kg`,
+        `${calcium(size, '150', '250', 'firstAddition')} kg`,
+      ]),
+    );
   });
 });

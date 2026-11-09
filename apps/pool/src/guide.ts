@@ -74,6 +74,51 @@ const SOURCES = {
   calHypo: DOSING_CHART.sources.calHypo,
 } as const satisfies Record<string, GuideSource>;
 
+/** The pool sizes of the metric tables, in litres (Australia, the UK, Canada, Spain). */
+const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000] as const;
+const litresText = (litres: number): string => `${litres.toLocaleString('en-US')} L`;
+
+/** The pool in litres a guide quotes next to its 10,000 gallons: 37,854 L, rounded to 40,000. */
+const METRIC_POOL = '40000';
+
+/** The doses of `litres` the opening tables, as each metric calculator writes them. */
+const openingMetricOf = (litres: string) => ({
+  soda: doseOf(
+    ALKALINITY.path,
+    { gallons: litres, current: '80', target: '90' },
+    'ounces',
+    'metric',
+  ),
+  acid: doseOf(
+    PH.path,
+    { gallons: litres, product: 'muriatic-31-45', drops: '1' },
+    'liquid',
+    'metric',
+  ),
+  salt: doseOf(SALT.path, { gallons: litres, current: '3000', target: '3200' }, 'pounds', 'metric'),
+  shock: doseOf(
+    CHLORINE.path,
+    { gallons: litres, current: '0', target: '10', product: 'cal-hypo-65' },
+    'dry',
+    'metric',
+  ),
+});
+
+/** The opening doses in litres, by the sizes of the metric tables: the table both languages print. */
+export const OPENING_METRIC = {
+  rows: LITRES.map((litres) => {
+    const dose = openingMetricOf(String(litres));
+    return [
+      litresText(litres),
+      `${dose.soda} g`,
+      `${dose.acid} L`,
+      `${dose.salt} kg`,
+      `${dose.shock} g`,
+    ];
+  }),
+  pool: openingMetricOf(METRIC_POOL),
+} as const;
+
 /** The doses of a 10,000 gallon pool the opening quotes, each its calculator's own. */
 export const OPENING = {
   soda: doseOf(ALKALINITY.path, { gallons: '10000', current: '80', target: '90' }, 'pounds'),
@@ -121,25 +166,25 @@ const STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Bring the alkalinity into range first',
-    text: `Taylor’s instructions say to bring total alkalinity into its range, 80 to 120 ppm, before you adjust the pH: it is the buffer that keeps the pH from bouncing. Each 10 ppm takes ${OPENING.soda} lb of baking soda (sodium bicarbonate) per 10,000 gallons.`,
+    text: `Taylor’s instructions say to bring total alkalinity into its range, 80 to 120 ppm, before you adjust the pH: it is the buffer that keeps the pH from bouncing. Each 10 ppm takes ${OPENING.soda} lb of baking soda (sodium bicarbonate) per 10,000 gallons, or ${OPENING_METRIC.pool.soda} g per 40,000 L.`,
     link: { href: ALKALINITY.path, label: 'Work out the baking soda' },
     sources: ['taylor'],
   },
   {
     title: 'Then correct the pH',
-    text: `To lower it, run the acid demand test of your kit: each drop it takes is ${OPENING.acid} fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart. HASA’s label adds at most one quart per 20,000 gallons in 24 hours, poured into the deep end with the pump running, so a larger dose goes in over several days.`,
+    text: `To lower it, run the acid demand test of your kit: each drop it takes is ${OPENING.acid} fl oz of 31.45% muriatic acid per 10,000 gallons, or ${OPENING_METRIC.pool.acid} L per 40,000 L, by Taylor’s chart. HASA’s label adds at most one quart per 20,000 gallons in 24 hours, poured into the deep end with the pump running, so a larger dose goes in over several days.`,
     link: { href: PH.path, label: 'Work out the pH dose' },
     sources: ['taylor', 'hasa'],
   },
   {
     title: 'Bring the salt up, if you have a salt cell',
-    text: `Salt does not evaporate, but rain and the fresh water you add to top the pool up dilute it. Test it, then add the pounds to reach the level your cell asks for, three quarters first and the rest after a day of circulation. From 3,000 to the 3,200 ppm Hayward’s AquaRite manual calls the best, 10,000 gallons take ${OPENING.salt} lb.`,
+    text: `Salt does not evaporate, but rain and the fresh water you add to top the pool up dilute it. Test it, then add the pounds to reach the level your cell asks for, three quarters first and the rest after a day of circulation. From 3,000 to the 3,200 ppm Hayward’s AquaRite manual calls the best, 10,000 gallons take ${OPENING.salt} lb, and 40,000 L take ${OPENING_METRIC.pool.salt} kg.`,
     link: { href: SALT.path, label: 'Work out the salt' },
     sources: ['manual'],
   },
   {
     title: 'Shock, then raise the chlorine',
-    text: `Shock the pool once the water is balanced, as the sun goes down so the sunlight does not burn the chlorine off. From 0 ppm, 10,000 gallons take ${OPENING.shock} oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm; swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Then keep free chlorine at your target with the product you have.`,
+    text: `Shock the pool once the water is balanced, as the sun goes down so the sunlight does not burn the chlorine off. From 0 ppm, 10,000 gallons take ${OPENING.shock} oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm, and 40,000 L take ${OPENING_METRIC.pool.shock} g; swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Then keep free chlorine at your target with the product you have.`,
     link: { href: CHLORINE.path, label: 'Work out the chlorine' },
     sources: ['hayward', 'calHypo'],
   },
@@ -162,7 +207,7 @@ const STEPS: readonly GuideStep[] = [
  */
 export const OPENING_GUIDE = {
   path: '/opening-your-pool',
-  checked: '2026-11-05',
+  checked: '2026-11-09',
   kicker: 'Guide · spring',
   card: {
     title: 'Opening your pool',
@@ -172,7 +217,21 @@ export const OPENING_GUIDE = {
   description:
     'Open your pool in the order that saves a second trip to the store: cover, equipment, water level, salt, pH, then chlorine, each dose sized to your pool.',
   h1: 'Opening your pool this spring',
-  lead: `Open a pool in this order: the cover and the equipment, the water level, a test, then alkalinity before pH, the salt, and the shock last. For 10,000 gallons, each 10 ppm of alkalinity takes ${OPENING.soda} lb of baking soda, each drop of the acid demand test ${OPENING.acid} fl oz of 31.45% muriatic acid, and a shock from 0 to 10 ppm ${OPENING.shock} oz of 65% cal-hypo. Each dose below is sized to your own pool by its calculator.`,
+  lead: `Open a pool in this order: the cover and the equipment, the water level, a test, then alkalinity before pH, the salt, and the shock last. For 10,000 gallons, each 10 ppm of alkalinity takes ${OPENING.soda} lb of baking soda, each drop of the acid demand test ${OPENING.acid} fl oz of 31.45% muriatic acid, and a shock from 0 to 10 ppm ${OPENING.shock} oz of 65% cal-hypo. For 40,000 L, the same doses are ${OPENING_METRIC.pool.soda} g of baking soda, ${OPENING_METRIC.pool.acid} L of muriatic acid and ${OPENING_METRIC.pool.shock} g of cal-hypo. Each dose below is sized to your own pool by its calculator.`,
+  table: {
+    caption:
+      'The opening doses in litres: baking soda for each 10 ppm of alkalinity, muriatic acid for each drop of the acid demand test, salt from 3,000 to 3,200 ppm, and the shock from 0 to 10 ppm',
+    region: 'Pool opening doses by litres',
+    head: [
+      'Pool',
+      'Baking soda, each 10 ppm',
+      '31.45% muriatic acid, each drop',
+      'Salt, 3,000 to 3,200 ppm',
+      '65% cal-hypo, 0 to 10 ppm',
+    ],
+    rows: OPENING_METRIC.rows,
+    sources: ['taylor', 'manual', 'calHypo'],
+  },
   sources: SOURCES,
   steps: STEPS,
 } as const satisfies StepGuide;
@@ -182,7 +241,18 @@ const CLOSING_SOURCES = {
     name: 'Hayward: Closing Your Pool',
     url: 'https://www.hayward.com/maintenance/closing-your-pool',
   },
+  // as the opening, the pH and the shock guides cite them (`guide.test.ts`)
+  taylor: DOSING_CHART.sources.taylor,
+  calHypo: DOSING_CHART.sources.calHypo,
 } as const satisfies Record<string, GuideSource>;
+
+/** The closing acid and shock in litres, by the sizes of the metric tables: both languages print it. */
+export const CLOSING_METRIC = {
+  rows: LITRES.map((litres) => {
+    const dose = openingMetricOf(String(litres));
+    return [litresText(litres), `${dose.acid} L`, `${dose.shock} g`];
+  }),
+} as const;
 
 /** The cold-climate steps of Hayward's closing guide, in its order, then its mild-climate ones. */
 const CLOSING_STEPS: readonly GuideStep[] = [
@@ -193,15 +263,15 @@ const CLOSING_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Balance the water',
-    text: 'Bring the pH to 7.2 to 7.8, so the water does not stain, scale or grow algae while the pool is closed. The chart gives the range of every other level.',
+    text: `Bring the pH to 7.2 to 7.8, so the water does not stain, scale or grow algae while the pool is closed. To lower it, each drop the acid demand test of your kit takes is ${OPENING.acid} fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart, or ${OPENING_METRIC.pool.acid} L per 40,000 L. The chart gives the range of every other level.`,
     link: { href: CHEMISTRY_CHART.path, label: 'See the water chemistry chart' },
-    sources: ['hayward'],
+    sources: ['hayward', 'taylor'],
   },
   {
     title: 'Shock the pool',
-    text: 'Shock the pool, then run the filter for 24 to 48 hours to clear the debris.',
+    text: `Shock the pool, then run the filter for 24 to 48 hours to clear the debris. From 0 ppm, 10,000 gallons take ${OPENING.shock} oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm, and 40,000 L take ${OPENING_METRIC.pool.shock} g.`,
     link: { href: CHLORINE.path, label: 'Work out the chlorine' },
-    sources: ['hayward'],
+    sources: ['hayward', 'calHypo'],
   },
   {
     title: 'Clean and vacuum',
@@ -241,7 +311,7 @@ const CLOSING_STEPS: readonly GuideStep[] = [
  */
 export const CLOSING_GUIDE = {
   path: '/closing-your-pool',
-  checked: '2026-11-04',
+  checked: '2026-11-09',
   kicker: 'Guide · winter',
   card: {
     title: 'Closing your pool',
@@ -251,7 +321,15 @@ export const CLOSING_GUIDE = {
   description:
     'Close your pool for winter in order: balance the pH, shock, clean, lower the water below the skimmer, drain the equipment, then the power.',
   h1: 'Closing your pool for winter',
-  lead: 'Where the water freezes, close the pool in this order: the water first, then the level, the equipment and the power. Where it does not, keep it running at half the filter time.',
+  lead: `Where the water freezes, close the pool in this order: the water first, then the level, the equipment and the power. Where it does not, keep it running at half the filter time. The shock from 0 to 10 ppm is ${OPENING.shock} oz of 65% cal-hypo for 10,000 gallons and ${OPENING_METRIC.pool.shock} g for 40,000 L.`,
+  table: {
+    caption:
+      'The closing doses in litres: muriatic acid for each drop of the acid demand test, and the shock from 0 to 10 ppm',
+    region: 'Pool closing doses by litres',
+    head: ['Pool', '31.45% muriatic acid, each drop', '65% cal-hypo, 0 to 10 ppm'],
+    rows: CLOSING_METRIC.rows,
+    sources: ['taylor', 'calHypo'],
+  },
   sources: CLOSING_SOURCES,
   steps: CLOSING_STEPS,
 } as const satisfies StepGuide;
@@ -485,10 +563,6 @@ const SHOCK_SOURCES = {
     url: 'https://www.hayward.com/maintenance/opening-your-pool',
   },
 } as const satisfies Record<string, GuideSource>;
-
-/** The pool sizes of the metric tables, in litres (Australia, the UK, Spain). */
-const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000] as const;
-const litresText = (litres: number): string => `${litres.toLocaleString('en-US')} L`;
 
 /** The 10 ppm shock of `litres` from 0 ppm, as the metric chlorine calculator writes it. */
 const metricShockOf = (litres: number): readonly string[] => {
@@ -757,6 +831,25 @@ const CALCIUM_SOURCES = {
 } as const satisfies Record<string, GuideSource>;
 
 /** From the gallons to the retest: the label sizes and splits the dose; only dilution lowers it. */
+/** The calcium chloride of `litres` from `current` to `target`, by its output `key`, as the metric calculator writes it. */
+const metricCalciumOf = (litres: string, current: string, target: string, key: string): string =>
+  doseOf(CALCIUM.path, { gallons: litres, current, target }, key, 'metric');
+
+/** The calcium chloride the guide quotes in litres, and the table both languages print. */
+export const CALCIUM_METRIC = {
+  perTen: metricCalciumOf(METRIC_POOL, '200', '210', 'ounces'),
+  most: metricCalciumOf(METRIC_POOL, '150', '250', 'firstAddition'),
+  small: metricCalciumOf(METRIC_POOL, '200', '220', 'pounds'),
+  large: metricCalciumOf('80000', '150', '250', 'pounds'),
+  largeFirst: metricCalciumOf('80000', '150', '250', 'firstAddition'),
+  rows: LITRES.map((litres) => [
+    litresText(litres),
+    `${metricCalciumOf(String(litres), '200', '210', 'ounces')} g`,
+    `${metricCalciumOf(String(litres), '150', '250', 'pounds')} kg`,
+    `${metricCalciumOf(String(litres), '150', '250', 'firstAddition')} kg`,
+  ]),
+} as const;
+
 const CALCIUM_STEPS: readonly GuideStep[] = [
   {
     title: 'Know your gallons',
@@ -776,13 +869,13 @@ const CALCIUM_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Work out the calcium chloride',
-    text: 'The ClearView label: to raise calcium hardness 10 ppm, use 2 ounces per 1,000 gallons, which is 1.25 lb per 10 ppm per 10,000 gallons. Its safety data sheet gives calcium chloride flake of 74 to 100% by weight. So 10,000 gallons from 200 to 220 ppm take 2.5 lb, and 20,000 gallons from 180 to 200 ppm take 5.0 lb. Avoid overtreating, the label says.',
+    text: `The ClearView label: to raise calcium hardness 10 ppm, use 2 ounces per 1,000 gallons, which is 1.25 lb per 10 ppm per 10,000 gallons. Its safety data sheet gives calcium chloride flake of 74 to 100% by weight. So 10,000 gallons from 200 to 220 ppm take 2.5 lb, and 20,000 gallons from 180 to 200 ppm take 5.0 lb. In litres, 40,000 L from 200 to 220 ppm take ${CALCIUM_METRIC.small} kg. Avoid overtreating, the label says.`,
     link: { href: CALCIUM.path, label: 'Work out the calcium chloride' },
     sources: ['label', 'sds'],
   },
   {
     title: 'Split a large dose, 12 hours apart',
-    text: 'The label: “If more than 3 pounds of this product is needed per 10,000 gallons of pool water, separate doses and apply this product at least 12 hours apart”, so the water can adjust without clouding. Raising 20,000 gallons from 150 to 250 ppm takes 25.0 lb, more than 3 lb per 10,000 gallons, so add 6.0 lb first, let the pump run at least 12 hours, test again, then add the rest the same way. In 10,000 gallons, 12.5 lb starts with 3.0 lb.',
+    text: `The label: “If more than 3 pounds of this product is needed per 10,000 gallons of pool water, separate doses and apply this product at least 12 hours apart”, so the water can adjust without clouding. Raising 20,000 gallons from 150 to 250 ppm takes 25.0 lb, more than 3 lb per 10,000 gallons, so add 6.0 lb first, let the pump run at least 12 hours, test again, then add the rest the same way. In 10,000 gallons, 12.5 lb starts with 3.0 lb. In litres, 80,000 L from 150 to 250 ppm take ${CALCIUM_METRIC.large} kg, so add ${CALCIUM_METRIC.largeFirst} kg first.`,
     link: { href: CALCIUM.path, label: 'Work out the first addition' },
     sources: ['label'],
   },
@@ -816,7 +909,7 @@ const CALCIUM_STEPS: readonly GuideStep[] = [
  */
 export const CALCIUM_GUIDE = {
   path: '/how-to-raise-calcium-hardness-in-a-pool',
-  checked: '2026-11-05',
+  checked: '2026-11-09',
   kicker: 'Guide · Calcium hardness',
   card: {
     title: 'How to raise calcium hardness',
@@ -826,8 +919,16 @@ export const CALCIUM_GUIDE = {
   description:
     'How to raise calcium hardness in a pool with calcium chloride, how much to add and when to split it, and why only a partial drain and refill lowers it.',
   h1: 'How to raise calcium hardness in a pool (and why you can’t lower it with chemicals)',
-  lead: 'To raise calcium hardness 10 ppm, add 20.0 oz of calcium chloride flake per 10,000 gallons, the label’s dose, dissolved first and at most 3 lb per 10,000 gallons at a time, 12 hours apart. No chemical lowers it: only draining part of the water and refilling with softer water does, and plain dilution says how much to drain.',
+  lead: `To raise calcium hardness 10 ppm, add 20.0 oz of calcium chloride flake per 10,000 gallons (${CALCIUM_METRIC.perTen} g per 40,000 L), the label’s dose, dissolved first and at most 3 lb per 10,000 gallons (${CALCIUM_METRIC.most} kg per 40,000 L) at a time, 12 hours apart. No chemical lowers it: only draining part of the water and refilling with softer water does, and plain dilution says how much to drain.`,
   note: 'Follow the label of your own calcium product where it differs from this guide, since strengths vary. Ask whoever built your pool before you drain a large share of it.',
+  table: {
+    caption:
+      'Calcium chloride flake in litres: each 10 ppm, and a raise from 150 to 250 ppm with the first addition the label allows before its 12 hours',
+    region: 'Calcium chloride by litres',
+    head: ['Pool', 'Each 10 ppm', '150 to 250 ppm', 'First addition'],
+    rows: CALCIUM_METRIC.rows,
+    sources: ['label'],
+  },
   sources: CALCIUM_SOURCES,
   steps: CALCIUM_STEPS,
 } as const satisfies StepGuide;

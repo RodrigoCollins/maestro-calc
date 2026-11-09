@@ -1,8 +1,11 @@
 import {
   CALCIUM_GUIDE,
+  CALCIUM_METRIC,
   CLOSING_GUIDE,
+  CLOSING_METRIC,
   OPENING,
   OPENING_GUIDE,
+  OPENING_METRIC,
   PH_GUIDE,
   PH_METRIC,
   PUMP_RUN_GUIDE,
@@ -67,25 +70,25 @@ const OPENING_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Primero pon la alcalinidad en su rango',
-    text: `Las instrucciones de Taylor dicen que pongas la alcalinidad total en su rango, de 80 a 120 ppm, antes de ajustar el pH: es el amortiguador que evita que el pH suba y baje. Cada 10 ppm requieren ${OPENING.soda} lb de bicarbonato de sodio por cada 10,000 galones.`,
+    text: `Las instrucciones de Taylor dicen que pongas la alcalinidad total en su rango, de 80 a 120 ppm, antes de ajustar el pH: es el amortiguador que evita que el pH suba y baje. Cada 10 ppm requieren ${OPENING.soda} lb de bicarbonato de sodio por cada 10,000 galones, o ${OPENING_METRIC.pool.soda} g por cada 40,000 L.`,
     link: linkTo('alkalinity', 'Calcula el bicarbonato de sodio'),
     sources: ['taylor'],
   },
   {
     title: 'Luego corrige el pH',
-    text: `Para bajarlo, haz la prueba de demanda de ácido de tu kit: cada gota que necesita equivale a ${OPENING.acid} fl oz de ácido muriático al 31.45% por cada 10,000 galones, según la tabla de Taylor. La etiqueta de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, vertido en la parte honda con la bomba funcionando, así que una dosis más grande se agrega en varios días.`,
+    text: `Para bajarlo, haz la prueba de demanda de ácido de tu kit: cada gota que necesita equivale a ${OPENING.acid} fl oz de ácido muriático al 31.45% por cada 10,000 galones, o ${OPENING_METRIC.pool.acid} L por cada 40,000 L, según la tabla de Taylor. La etiqueta de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, vertido en la parte honda con la bomba funcionando, así que una dosis más grande se agrega en varios días.`,
     link: linkTo('ph', 'Calcula la dosis para el pH'),
     sources: ['taylor', 'hasa'],
   },
   {
     title: 'Sube la sal, si tienes una celda de sal',
-    text: `La sal no se evapora, pero la lluvia y el agua nueva que agregas para completar el nivel la diluyen. Mídela y agrega las libras para llegar al nivel que pide tu celda: tres cuartas partes primero y el resto después de un día de circulación. De 3,000 a los 3,200 ppm que el manual de AquaRite de Hayward considera el mejor nivel, 10,000 galones requieren ${OPENING.salt} lb.`,
+    text: `La sal no se evapora, pero la lluvia y el agua nueva que agregas para completar el nivel la diluyen. Mídela y agrega las libras para llegar al nivel que pide tu celda: tres cuartas partes primero y el resto después de un día de circulación. De 3,000 a los 3,200 ppm que el manual de AquaRite de Hayward considera el mejor nivel, 10,000 galones requieren ${OPENING.salt} lb, y 40,000 L requieren ${OPENING_METRIC.pool.salt} kg.`,
     link: linkTo('salt', 'Calcula la sal'),
     sources: ['manual'],
   },
   {
     title: 'Haz el tratamiento de choque y luego sube el cloro',
-    text: `Haz el tratamiento de choque cuando el agua esté balanceada, al caer el sol, para que la luz del sol no queme el cloro. Desde 0 ppm, 10,000 galones requieren ${OPENING.shock} oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta; vuelve a nadar cuando el cloro libre baje a 4 ppm o menos, el nivel de reingreso de esa etiqueta. Después mantén el cloro libre en tu nivel deseado con el producto que tengas.`,
+    text: `Haz el tratamiento de choque cuando el agua esté balanceada, al caer el sol, para que la luz del sol no queme el cloro. Desde 0 ppm, 10,000 galones requieren ${OPENING.shock} oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta, y 40,000 L requieren ${OPENING_METRIC.pool.shock} g; vuelve a nadar cuando el cloro libre baje a 4 ppm o menos, el nivel de reingreso de esa etiqueta. Después mantén el cloro libre en tu nivel deseado con el producto que tengas.`,
     link: linkTo('chlorine', 'Calcula el cloro'),
     sources: ['hayward', 'calHypo'],
   },
@@ -113,7 +116,21 @@ export const OPENING_GUIDE_ES = {
   description:
     'Abre tu piscina en el orden que te ahorra otra vuelta a la tienda: cubierta, equipo, nivel del agua, sal, pH y cloro, cada dosis a la medida de tu piscina.',
   h1: 'Cómo abrir tu piscina esta primavera',
-  lead: `Abre una piscina en este orden: la cubierta y el equipo, el nivel del agua, una prueba, luego la alcalinidad antes del pH, la sal y al final el tratamiento de choque. Para 10,000 galones, cada 10 ppm de alcalinidad requieren ${OPENING.soda} lb de bicarbonato de sodio, cada gota de la prueba de demanda de ácido ${OPENING.acid} fl oz de ácido muriático al 31.45%, y un choque de 0 a 10 ppm ${OPENING.shock} oz de hipoclorito de calcio (cal-hypo) al 65%. Cada dosis de abajo se calcula para tu piscina con su calculadora.`,
+  lead: `Abre una piscina en este orden: la cubierta y el equipo, el nivel del agua, una prueba, luego la alcalinidad antes del pH, la sal y al final el tratamiento de choque. Para 10,000 galones, cada 10 ppm de alcalinidad requieren ${OPENING.soda} lb de bicarbonato de sodio, cada gota de la prueba de demanda de ácido ${OPENING.acid} fl oz de ácido muriático al 31.45%, y un choque de 0 a 10 ppm ${OPENING.shock} oz de hipoclorito de calcio (cal-hypo) al 65%. Para 40,000 L, las mismas dosis son ${OPENING_METRIC.pool.soda} g de bicarbonato de sodio, ${OPENING_METRIC.pool.acid} L de ácido muriático y ${OPENING_METRIC.pool.shock} g de cal-hypo. Cada dosis de abajo se calcula para tu piscina con su calculadora.`,
+  table: {
+    caption:
+      'Las dosis de apertura en litros: bicarbonato de sodio por cada 10 ppm de alcalinidad, ácido muriático por cada gota de la prueba de demanda de ácido, sal de 3,000 a 3,200 ppm y el choque de 0 a 10 ppm',
+    region: 'Dosis de apertura de la piscina por litros',
+    head: [
+      'Piscina',
+      'Bicarbonato de sodio, cada 10 ppm',
+      'Ácido muriático al 31.45%, cada gota',
+      'Sal, de 3,000 a 3,200 ppm',
+      'Cal-hypo al 65%, de 0 a 10 ppm',
+    ],
+    rows: OPENING_METRIC.rows,
+    sources: OPENING_GUIDE.table.sources,
+  },
   sources: OPENING_GUIDE.sources,
   steps: OPENING_STEPS,
 } as const satisfies StepGuide;
@@ -126,15 +143,15 @@ const CLOSING_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Balancea el agua',
-    text: 'Pon el pH entre 7.2 y 7.8, para que el agua no manche, no deje sarro ni críe algas mientras la piscina está cerrada. La tabla da el rango de cada uno de los otros niveles.',
+    text: `Pon el pH entre 7.2 y 7.8, para que el agua no manche, no deje sarro ni críe algas mientras la piscina está cerrada. Para bajarlo, cada gota que necesita la prueba de demanda de ácido de tu kit equivale a ${OPENING.acid} fl oz de ácido muriático al 31.45% por cada 10,000 galones, según la tabla de Taylor, o ${OPENING_METRIC.pool.acid} L por cada 40,000 L. La tabla da el rango de cada uno de los otros niveles.`,
     link: linkTo('chemistry-chart', 'Mira la tabla de química del agua'),
-    sources: ['hayward'],
+    sources: ['hayward', 'taylor'],
   },
   {
     title: 'Haz el tratamiento de choque',
-    text: 'Haz el tratamiento de choque a la piscina y luego deja funcionar el filtro de 24 a 48 horas para limpiar la suciedad.',
+    text: `Haz el tratamiento de choque a la piscina y luego deja funcionar el filtro de 24 a 48 horas para limpiar la suciedad. Desde 0 ppm, 10,000 galones requieren ${OPENING.shock} oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta, y 40,000 L requieren ${OPENING_METRIC.pool.shock} g.`,
     link: linkTo('chlorine', 'Calcula el cloro'),
-    sources: ['hayward'],
+    sources: ['hayward', 'calHypo'],
   },
   {
     title: 'Limpia y aspira',
@@ -180,7 +197,15 @@ export const CLOSING_GUIDE_ES = {
   description:
     'Cierra tu piscina para el invierno en orden: balancea el pH, haz el choque, limpia, baja el agua del skimmer, vacía el equipo y corta la corriente.',
   h1: 'Cómo cerrar tu piscina para el invierno',
-  lead: 'Donde el agua se congela, cierra la piscina en este orden: primero el agua, luego el nivel, el equipo y la corriente. Donde no se congela, déjala funcionando con la mitad del tiempo de filtro.',
+  lead: `Donde el agua se congela, cierra la piscina en este orden: primero el agua, luego el nivel, el equipo y la corriente. Donde no se congela, déjala funcionando con la mitad del tiempo de filtro. El choque de 0 a 10 ppm es de ${OPENING.shock} oz de cal-hypo al 65% para 10,000 galones y de ${OPENING_METRIC.pool.shock} g para 40,000 L.`,
+  table: {
+    caption:
+      'Las dosis de cierre en litros: ácido muriático por cada gota de la prueba de demanda de ácido, y el choque de 0 a 10 ppm',
+    region: 'Dosis de cierre de la piscina por litros',
+    head: ['Piscina', 'Ácido muriático al 31.45%, cada gota', 'Cal-hypo al 65%, de 0 a 10 ppm'],
+    rows: CLOSING_METRIC.rows,
+    sources: CLOSING_GUIDE.table.sources,
+  },
   sources: CLOSING_GUIDE.sources,
   steps: CLOSING_STEPS,
 } as const satisfies StepGuide;
@@ -520,13 +545,13 @@ const CALCIUM_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Calcula el cloruro de calcio',
-    text: 'La etiqueta de ClearView: para subir la dureza de calcio 10 ppm, usa 2 onzas por cada 1,000 galones, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Su hoja de datos de seguridad da cloruro de calcio en escamas de 74 a 100% en peso. Así, 10,000 galones de 200 a 220 ppm requieren 2.5 lb, y 20,000 galones de 180 a 200 ppm requieren 5.0 lb. Evita agregar de más, dice la etiqueta.',
+    text: `La etiqueta de ClearView: para subir la dureza de calcio 10 ppm, usa 2 onzas por cada 1,000 galones, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Su hoja de datos de seguridad da cloruro de calcio en escamas de 74 a 100% en peso. Así, 10,000 galones de 200 a 220 ppm requieren 2.5 lb, y 20,000 galones de 180 a 200 ppm requieren 5.0 lb. En litros, 40,000 L de 200 a 220 ppm requieren ${CALCIUM_METRIC.small} kg. Evita agregar de más, dice la etiqueta.`,
     link: linkTo('calcium', 'Calcula el cloruro de calcio'),
     sources: ['label', 'sds'],
   },
   {
     title: 'Divide una dosis grande, con 12 horas entre partes',
-    text: 'La etiqueta: “Si se necesitan más de 3 libras de este producto por cada 10,000 galones de agua de piscina, separa las dosis y aplica este producto con al menos 12 horas de diferencia”, para que el agua se ajuste sin ponerse turbia. Subir 20,000 galones de 150 a 250 ppm requiere 25.0 lb, más de 3 lb por cada 10,000 galones, así que agrega 6.0 lb primero, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma. En 10,000 galones, 12.5 lb empiezan con 3.0 lb.',
+    text: `La etiqueta: “Si se necesitan más de 3 libras de este producto por cada 10,000 galones de agua de piscina, separa las dosis y aplica este producto con al menos 12 horas de diferencia”, para que el agua se ajuste sin ponerse turbia. Subir 20,000 galones de 150 a 250 ppm requiere 25.0 lb, más de 3 lb por cada 10,000 galones, así que agrega 6.0 lb primero, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma. En 10,000 galones, 12.5 lb empiezan con 3.0 lb. En litros, 80,000 L de 150 a 250 ppm requieren ${CALCIUM_METRIC.large} kg, así que agrega ${CALCIUM_METRIC.largeFirst} kg primero.`,
     link: linkTo('calcium', 'Calcula la primera parte'),
     sources: ['label'],
   },
@@ -563,8 +588,16 @@ export const CALCIUM_GUIDE_ES = {
   description:
     'Cómo subir la dureza de calcio de la piscina con cloruro de calcio, cuánto agregar y cuándo dividirlo, y por qué solo vaciar parte del agua la baja.',
   h1: 'Cómo subir la dureza de calcio de la piscina (y por qué no puedes bajarla con químicos)',
-  lead: 'Para subir la dureza de calcio 10 ppm, agrega 20.0 oz de cloruro de calcio en escamas por cada 10,000 galones, la dosis de la etiqueta, disuelto primero y como máximo 3 lb por cada 10,000 galones de una vez, con 12 horas entre partes. Ningún químico la baja: solo vaciar parte del agua y volver a llenar con agua más blanda, y una simple dilución dice cuánto vaciar.',
+  lead: `Para subir la dureza de calcio 10 ppm, agrega 20.0 oz de cloruro de calcio en escamas por cada 10,000 galones (${CALCIUM_METRIC.perTen} g por cada 40,000 L), la dosis de la etiqueta, disuelto primero y como máximo 3 lb por cada 10,000 galones (${CALCIUM_METRIC.most} kg por cada 40,000 L) de una vez, con 12 horas entre partes. Ningún químico la baja: solo vaciar parte del agua y volver a llenar con agua más blanda, y una simple dilución dice cuánto vaciar.`,
   note: 'Sigue la etiqueta de tu propio producto de calcio donde sea distinta de esta guía, porque las concentraciones cambian. Consulta a quien construyó tu piscina antes de vaciar una parte grande.',
+  table: {
+    caption:
+      'Cloruro de calcio en escamas en litros: cada 10 ppm, y una subida de 150 a 250 ppm con la primera parte que la etiqueta permite antes de sus 12 horas',
+    region: 'Cloruro de calcio por litros',
+    head: ['Piscina', 'Cada 10 ppm', 'De 150 a 250 ppm', 'Primera parte'],
+    rows: CALCIUM_METRIC.rows,
+    sources: CALCIUM_GUIDE.table.sources,
+  },
   sources: CALCIUM_GUIDE.sources,
   steps: CALCIUM_STEPS,
 } as const satisfies StepGuide;
