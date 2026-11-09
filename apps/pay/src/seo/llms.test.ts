@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { describe, expect, it } from 'vitest';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
-import { ROUTES } from '../routes.ts';
+import { isPaired, pathsOfRoute, ROUTES } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import { SITE } from '../site.config.ts';
 import { LLMS_PAGES, llmsTxt } from './llms.ts';
@@ -18,7 +18,10 @@ const links = lines.flatMap((line) => {
 });
 const longTail = new Set(LONG_TAIL_ROUTES.map(({ id }) => id));
 // every page but the home, the long-tail pages and the privacy notice is worth an answer engine
-const LISTED = ROUTES.filter(({ id }) => id !== 'home' && id !== 'privacy' && !longTail.has(id));
+// the English-only military times are long-tail pages too: every route left is a pair
+const LISTED = ROUTES.filter(isPaired).filter(
+  ({ id }) => id !== 'home' && id !== 'privacy' && !longTail.has(id),
+);
 const urlsOf = (lang: 'en' | 'es'): string[] =>
   LISTED.map((route) => canonicalUrl(route[lang], SITE.origin));
 
@@ -67,7 +70,7 @@ describe('llms.txt', () => {
 
   it('links only canonical URLs of real routes', () => {
     const routed = new Set(
-      ROUTES.flatMap(({ en, es }) => [en, es]).map((path) => canonicalUrl(path, SITE.origin)),
+      ROUTES.flatMap(pathsOfRoute).map((path) => canonicalUrl(path, SITE.origin)),
     );
     for (const { url } of links) expect(routed.has(url), url).toBe(true);
   });

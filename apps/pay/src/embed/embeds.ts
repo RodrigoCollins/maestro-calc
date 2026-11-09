@@ -1,10 +1,11 @@
 import { embedPathOf, embedSnippetOf } from '@maestro-calc/site-kit/embed';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
+import { converterOf } from '../military/converter.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
-import { ROUTES } from '../routes.ts';
+import { isPaired, ROUTES } from '../routes.ts';
 import { SHIFT_TEXTS } from '../shift/texts.ts';
 import { TIPPED_TEXTS } from '../tipped/texts.ts';
 import { SITE } from '../site.config.ts';
@@ -39,6 +40,7 @@ const CALCULATORS: Readonly<
   'tipped-wage': { name: (lang) => TIPPED_TEXTS[lang].h1, height: 1300 },
   'no-tax-on-overtime': { name: (lang) => DEDUCTION_TEXTS[lang].overtime.h1, height: 1200 },
   'no-tax-on-tips': { name: (lang) => DEDUCTION_TEXTS[lang].tips.h1, height: 1200 },
+  'military-time-converter': { name: (lang) => converterOf(lang).h1, height: 900 },
 };
 
 export interface Embed {
@@ -56,8 +58,9 @@ export interface Embed {
 
 const OTHER: Readonly<Record<Lang, Lang>> = { en: 'es', es: 'en' };
 
-export const EMBEDS: readonly Embed[] = ROUTES.filter(({ kind }) => kind === 'calculator').flatMap(
-  (route) => {
+export const EMBEDS: readonly Embed[] = ROUTES.filter(isPaired)
+  .filter(({ kind }) => kind === 'calculator')
+  .flatMap((route) => {
     const calculator = CALCULATORS[route.id];
     if (calculator === undefined) throw new Error(`no embed for the calculator ${route.id}`);
     return (['en', 'es'] as const).map((lang) => ({
@@ -69,8 +72,7 @@ export const EMBEDS: readonly Embed[] = ROUTES.filter(({ kind }) => kind === 'ca
       name: calculator.name(lang),
       height: calculator.height,
     }));
-  },
-);
+  });
 
 export interface Snippet {
   readonly id: string;

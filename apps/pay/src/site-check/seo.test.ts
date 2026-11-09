@@ -1,6 +1,6 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { describe, expect, it } from 'vitest';
-import type { Route } from '../routes.ts';
+import type { PairedRoute, Route } from '../routes.ts';
 import { jsonLdOf } from '../seo/json-ld.ts';
 import { sitemapXml } from '../seo/sitemap.ts';
 import { longTailTextProblems, numbersOf, siteSeoProblems } from './seo.ts';
@@ -23,7 +23,12 @@ const TAIL = {
 } as const;
 
 /** A built page the way the layout writes its head. */
-const built = (route: Route, lang: 'en' | 'es', title: string, description: string): string => {
+const built = (
+  route: PairedRoute,
+  lang: 'en' | 'es',
+  title: string,
+  description: string,
+): string => {
   const url = (path: string): string => canonicalUrl(path, ORIGIN);
   const text = { title, description };
   const parent = route.kind === 'home' ? undefined : { title: 'Calc | Cuenta Horas', path: '/c' };
@@ -78,6 +83,26 @@ describe('siteSeoProblems', () => {
     expect(problems).toContain(
       '/pay/15-an-hour-is-how-much-a-year: the description does not say 15',
     );
+  });
+
+  it('reads an English-only page, with no alternates and a plain sitemap line, as whole', () => {
+    const single: Route = { id: 'military-time-1500', kind: 'article', en: '/military-time/1500' };
+    const title = '1500 in military time is 3:00 PM | Cuenta Horas';
+    const description = `1500 in military time is 3:00 PM. ${LEAD}`;
+    const html = built({ ...single, es: '/es' }, 'en', title, description).replace(
+      /<link rel="alternate"[^>]*>/g,
+      '',
+    );
+    const pages = new Map([...PAGES, ['military-time/1500.html', html]]);
+    expect(
+      siteSeoProblems({
+        ...rules,
+        routes: [HOME, TAIL, single],
+        pages,
+        sitemap: sitemapXml([HOME, TAIL, single], ORIGIN),
+        longTail: [...rules.longTail, single.en],
+      }),
+    ).toEqual([]);
   });
 
   it('needs the breadcrumb on every page but a home', () => {

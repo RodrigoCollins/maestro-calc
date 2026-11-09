@@ -10,6 +10,8 @@ const ROUTED = [
   'es/calculadora-de-horas.html',
   'minutes-to-decimal-hours.html',
   'es/minutos-a-horas-decimales.html',
+  'military-time-converter.html',
+  'es/convertidor-de-hora-militar.html',
   'hourly-to-salary-calculator.html',
   'salary-to-hourly-calculator.html',
   'es/de-pago-por-hora-a-sueldo-anual.html',

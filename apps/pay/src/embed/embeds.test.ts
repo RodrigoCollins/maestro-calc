@@ -1,5 +1,6 @@
 import { existsSync, globSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { converterOf } from '../military/converter.ts';
 import { describe, expect, it } from 'vitest';
 import { DEDUCTION_TEXTS } from '../deductions/texts.ts';
 import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
@@ -65,6 +66,7 @@ describe('EMBEDS', () => {
         PAY_CONVERTER_TEXTS[lang].variants.salary.h1,
         DEDUCTION_TEXTS[lang].overtime.h1,
         DEDUCTION_TEXTS[lang].tips.h1,
+        converterOf(lang).h1,
       ]),
     );
     for (const { name } of EMBEDS) expect(headings.has(name), name).toBe(true);

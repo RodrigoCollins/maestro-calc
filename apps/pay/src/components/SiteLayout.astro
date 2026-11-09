@@ -6,7 +6,8 @@ import { ROUTES } from '../routes.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { EDITORIAL_PATHS } from '../editorial/paths.ts';
-import { embedHeadOf, headOf } from '../seo/head.ts';
+import { MILITARY_CONVERTER_PATHS } from '../military/routes.ts';
+import { embedHeadOf, headOf, type PagePaths } from '../seo/head.ts';
 import { jsonLdOf, type Parent } from '../seo/json-ld.ts';
 import { SITE } from '../site.config.ts';
 import { STATES_INDEX_PATHS } from '../states/routes.ts';
@@ -19,9 +20,12 @@ interface Props {
   readonly description: string;
   /**
    * This page's path in each language; the English one is also the x-default. A page without
-   * paths (the 404) has no canonical or alternates, is never indexed and links the other home.
+   * paths (the 404) has no canonical or alternates, is never indexed and links the other home. An
+   * English-only page (no `es`) has its canonical and no alternates.
    */
-  readonly paths?: Readonly<Record<Lang, string>>;
+  readonly paths?: PagePaths;
+  /** Where the language switch leads when the page has no twin: the other home otherwise. */
+  readonly otherHref?: string;
   /** The calculator a long-tail page answers for: the middle step of its breadcrumb. */
   readonly parent?: Parent;
   /** The day the page's data says it was last checked, `YYYY-MM-DD`: its JSON-LD `dateModified`. */
@@ -48,10 +52,13 @@ const {
   footer,
   wide = false,
 } = Astro.props;
-const embedded = Astro.props.embed === true && paths !== undefined;
+const pair = paths?.es === undefined ? undefined : { en: paths.en, es: paths.es };
+const embedded = Astro.props.embed === true && pair !== undefined;
 const other: Lang = lang === 'en' ? 'es' : 'en';
-const embedHead = embedded ? embedHeadOf(paths, lang, { title, description }) : undefined;
-const otherHref = embedHead?.other ?? paths?.[other] ?? (other === 'en' ? '/' : '/es');
+const embedHead =
+  embedded && pair !== undefined ? embedHeadOf(pair, lang, { title, description }) : undefined;
+const otherHref =
+  embedHead?.other ?? pair?.[other] ?? Astro.props.otherHref ?? (other === 'en' ? '/' : '/es');
 const { canonical, robots, preview } = embedHead ?? headOf(paths, lang, { title, description });
 const route = paths === undefined ? undefined : ROUTES.find(({ en }) => en === paths.en);
 const jsonLd =
@@ -77,6 +84,7 @@ const privacy =
 const about =
   lang === 'en' ? { href: '/about', label: 'About' } : { href: '/es/acerca', label: 'Acerca de' };
 const editorial = lang === 'en' ? 'Editorial policy' : 'Política editorial';
+const militaryLabel = lang === 'en' ? 'Military time' : 'Hora militar';
 const embedLink =
   lang === 'en'
     ? { href: '/embed-calculators', label: EMBED_TEXTS.en.footerLabel }
@@ -98,7 +106,9 @@ const embedLink =
     <meta property="og:description" content={preview['og:description']} />
     {canonical !== undefined && <meta property="og:url" content={canonical} />}
     <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'es_US'} />
-    <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
+    {pair !== undefined && (
+      <meta property="og:locale:alternate" content={lang === 'en' ? 'es_US' : 'en_US'} />
+    )}
     <meta property="og:image" content={preview['og:image']} />
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />
@@ -107,12 +117,12 @@ const embedLink =
     {jsonLd !== undefined && <script type="application/ld+json" is:inline set:html={jsonLd} />}
     {embedded && <base target="_blank" />}
     {embedded && <link rel="canonical" href={canonical} />}
-    {paths !== undefined && !embedded && (
+    {paths !== undefined && !embedded && <link rel="canonical" href={canonical} />}
+    {pair !== undefined && !embedded && (
       <>
-        <link rel="canonical" href={canonical} />
-        <link rel="alternate" hreflang="en-US" href={href(paths.en)} />
-        <link rel="alternate" hreflang="es-US" href={href(paths.es)} />
-        <link rel="alternate" hreflang="x-default" href={href(paths.en)} />
+        <link rel="alternate" hreflang="en-US" href={href(pair.en)} />
+        <link rel="alternate" hreflang="es-US" href={href(pair.es)} />
+        <link rel="alternate" hreflang="x-default" href={href(pair.en)} />
       </>
     )}
     <Font cssVariable="--font-body" preload={[{ weight: '800' }]} />
@@ -170,6 +180,7 @@ const embedLink =
           <a href={embedLink.href}>{embedLink.label}</a>
           <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].linkLabel}</a>
           <a href={STATES_INDEX_PATHS[lang]}>{statesIndexOf(lang).linkLabel}</a>
+          <a href={MILITARY_CONVERTER_PATHS[lang]}>{militaryLabel}</a>
         </div>
       </footer>
     )}

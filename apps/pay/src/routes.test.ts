@@ -17,15 +17,19 @@ const templateOf = (path: string): string =>
     ? 'pay/[slug].astro'
     : path.startsWith('/es/pago/')
       ? 'es/pago/[slug].astro'
-      : path.startsWith('/states/')
-        ? 'states/[slug].astro'
-        : path.startsWith('/es/estados/')
-          ? 'es/estados/[slug].astro'
-          : fileOf(path);
+      : path.startsWith('/military-time/')
+        ? 'military-time/[slug].astro'
+        : path.startsWith('/states/')
+          ? 'states/[slug].astro'
+          : path.startsWith('/es/estados/')
+            ? 'es/estados/[slug].astro'
+            : fileOf(path);
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {
-    const routed = new Set(ROUTES.flatMap(({ en, es }) => [templateOf(en), templateOf(es)]));
+    const routed = new Set(
+      ROUTES.flatMap(({ en, es }) => [en, ...(es === undefined ? [] : [es])].map(templateOf)),
+    );
     expect([...routed].sort()).toEqual([...pageFiles].sort());
   });
 
@@ -36,8 +40,14 @@ describe('ROUTES', () => {
   it('keeps English at the root and Spanish under /es', () => {
     for (const { en, es } of ROUTES) {
       expect(en === '/es' || en.startsWith('/es/')).toBe(false);
-      expect(es === '/es' || es.startsWith('/es/')).toBe(true);
+      if (es !== undefined) expect(es === '/es' || es.startsWith('/es/')).toBe(true);
     }
+  });
+
+  it('pairs every page but the English-only military times', () => {
+    const single = ROUTES.filter(({ es }) => es === undefined).map(({ en }) => en);
+    expect(single).toHaveLength(48);
+    for (const path of single) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
   });
 
   it('starts with the home pair', () => {

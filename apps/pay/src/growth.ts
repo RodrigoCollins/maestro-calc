@@ -6,11 +6,10 @@ import { sitemapXml } from './seo/sitemap.ts';
 import { SITE } from './site.config.ts';
 
 const PAGES = ROUTES.flatMap((route) =>
-  (['en', 'es'] as const).map((lang) => ({
-    url: canonicalUrl(route[lang], SITE.origin),
-    route,
-    lang,
-  })),
+  (['en', 'es'] as const).flatMap((lang) => {
+    const path = route[lang];
+    return path === undefined ? [] : [{ url: canonicalUrl(path, SITE.origin), route, lang }];
+  }),
 );
 const pageOf = (url: string) => {
   const page = PAGES.find((each) => each.url === url);
