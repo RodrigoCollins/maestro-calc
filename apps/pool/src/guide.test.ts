@@ -20,6 +20,7 @@ import {
 } from './guide.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { HOME_TOOLS } from './home.ts';
+import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { footerLinksOf } from './layout.ts';
 import { SWIM_GUIDE } from './swim.ts';
@@ -491,6 +492,7 @@ describe('the guides', () => {
       OLYMPIC_GUIDE.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
+      SALT_AMOUNT_GUIDE.path,
       SHOCK_GUIDE.path,
       SHOCK_OFTEN_GUIDE.path,
       GREEN_GUIDE.path,
@@ -535,6 +537,7 @@ describe('the calculators each guide explains', () => {
                 CLOSING_GUIDE,
                 PUMP_RUN_GUIDE,
                 SALT_VS_CHLORINE_GUIDE,
+                SALT_AMOUNT_GUIDE,
                 SHOCK_GUIDE,
                 PH_GUIDE,
                 CALCIUM_GUIDE,

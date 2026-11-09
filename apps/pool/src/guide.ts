@@ -3,6 +3,7 @@ import { DOSING_CHART, doseOf } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
@@ -51,6 +52,8 @@ export interface StepGuide {
   note?: string;
   /** A table under the lead; most guides have none. */
   table?: GuideTable;
+  /** Further tables under the first, such as the same doses in litres. */
+  moreTables?: readonly GuideTable[];
   sources: Record<string, GuideSource>;
   steps: readonly GuideStep[];
 }
@@ -814,6 +817,7 @@ export const GUIDES: readonly GuideCard[] = [
   stepsCard(OLYMPIC_GUIDE),
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
+  stepsCard(SALT_AMOUNT_GUIDE),
   stepsCard(SHOCK_GUIDE),
   stepsCard(SHOCK_OFTEN_GUIDE),
   stepsCard(GREEN_GUIDE),

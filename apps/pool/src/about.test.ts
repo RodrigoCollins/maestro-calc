@@ -20,6 +20,7 @@ import { hrefOf } from './routes.ts';
 import { pageKindOf } from './seo/json-ld.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)));
@@ -32,6 +33,7 @@ const cited = [
     CHEMISTRY_CHART,
     PUMP_RUN_GUIDE,
     SALT_VS_CHLORINE_GUIDE,
+    SALT_AMOUNT_GUIDE,
     SHOCK_GUIDE,
     PH_GUIDE,
     CALCIUM_GUIDE,

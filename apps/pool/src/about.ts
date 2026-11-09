@@ -16,6 +16,8 @@ export const NAMED_SOURCES = [
   'Hayward',
   'Pentair',
   'Jandy',
+  'AstralPool',
+  'Zodiac',
   'Taylor Technologies',
   'HASA',
   'Alliance Trading',
@@ -53,7 +55,7 @@ export const ABOUT: About = {
       id: 'what',
       heading: 'What the site does',
       paragraphs: [
-        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, another says how to shock the pool and how much shock to add, another how often to shock it, two more how to fix a green pool and why a pool is cloudy, another how to lower or raise the pH, and another how to raise calcium hardness and why only draining lowers it, another how long to wait to swim after adding each chemical, and two work out how many gallons a pool holds, Olympic pools included. Each calculator shows the figure and the formula behind it.',
+        'Pool Figures works out the volume of your pool, the salt, the chlorine, the pH dose and the calcium chloride to add, and the pump flow your pool needs. Step-by-step guides cover opening the pool in spring and closing it for winter, a water chemistry chart gives the target range of each level, a guide works out how long to run the pump, another compares a salt water pool with a chlorine one, another tables how much salt a pool needs in kilograms by litres, another says how to shock the pool and how much shock to add, another how often to shock it, two more how to fix a green pool and why a pool is cloudy, another how to lower or raise the pH, and another how to raise calcium hardness and why only draining lowers it, another how long to wait to swim after adding each chemical, and two work out how many gallons a pool holds, Olympic pools included. Each calculator shows the figure and the formula behind it.',
       ],
     },
     {
@@ -68,7 +70,7 @@ export const ABOUT: About = {
       id: 'sources',
       heading: 'Sources',
       paragraphs: [
-        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing and pump run time, ENERGY STAR (EPA) for pump energy, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, the pH dosage chart of Taylor Technologies’ test kits for acid and soda ash, HASA’s directions for muriatic acid and a pH Up label made for Alliance Trading for how to add them, and the manufacturer: the label of a calcium hardness increaser (ClearView, by Oreq Corporation) for calcium chloride, the Hayward manuals and guides for salt, water levels, pump turnover, opening and closing, the Pentair IntelliChlor and Jandy AquaPure manuals for how other salt cells differ, the EPA-registered label of a product for its strength, and the facilities rules of World Aquatics, and of FINA before it, for the size of an Olympic pool. Each page names the source of its figures.',
+        'We cite primary sources only: NIST Handbook 44 for the size of a gallon, the USGS for the weight of water, the U.S. Department of Energy for heater sizing and pump run time, ENERGY STAR (EPA) for pump energy, the ANSI/APSP/ICC-15 standard for the pump flow, the CDC for water targets and public-pool limits, the pH dosage chart of Taylor Technologies’ test kits for acid and soda ash, HASA’s directions for muriatic acid and a pH Up label made for Alliance Trading for how to add them, and the manufacturer: the label of a calcium hardness increaser (ClearView, by Oreq Corporation) for calcium chloride, the Hayward manuals and guides for salt, water levels, pump turnover, opening and closing, the Pentair IntelliChlor and Jandy AquaPure manuals for how other salt cells differ, the AstralPool VX and Zodiac TRi-XO manuals for the salt level of Australian chlorinators, the EPA-registered label of a product for its strength, and the facilities rules of World Aquatics, and of FINA before it, for the size of an Olympic pool. Each page names the source of its figures.',
       ],
     },
     {
@@ -110,7 +112,7 @@ const ABOUT_ES: About = {
       id: 'what',
       heading: 'Qué hace el sitio',
       paragraphs: [
-        'Pool Figures calcula el volumen de tu piscina, la sal, el cloro, la dosis para el pH y el cloruro de calcio que debes agregar, y el caudal que necesita tu bomba. Las guías paso a paso explican cómo abrir la piscina en primavera y cómo cerrarla para el invierno, una tabla de química del agua da el rango de cada nivel, una guía calcula cuántas horas prender la bomba, otra compara una piscina de agua salada con una de cloro, otra explica el tratamiento de choque y cuánto producto agregar, otra cada cuánto hacerlo, dos más cómo arreglar una piscina verde y por qué se pone turbia, otra cómo bajar o subir el pH, otra cómo subir la dureza de calcio y por qué solo vaciar agua la baja, otra cuánto esperar para nadar después de cada químico, y dos calculan cuántos galones tiene una piscina, también una olímpica. Cada calculadora muestra la cifra y la fórmula que hay detrás.',
+        'Pool Figures calcula el volumen de tu piscina, la sal, el cloro, la dosis para el pH y el cloruro de calcio que debes agregar, y el caudal que necesita tu bomba. Las guías paso a paso explican cómo abrir la piscina en primavera y cómo cerrarla para el invierno, una tabla de química del agua da el rango de cada nivel, una guía calcula cuántas horas prender la bomba, otra compara una piscina de agua salada con una de cloro, otra da en kilos y litros cuánta sal necesita una piscina, otra explica el tratamiento de choque y cuánto producto agregar, otra cada cuánto hacerlo, dos más cómo arreglar una piscina verde y por qué se pone turbia, otra cómo bajar o subir el pH, otra cómo subir la dureza de calcio y por qué solo vaciar agua la baja, otra cuánto esperar para nadar después de cada químico, y dos calculan cuántos galones tiene una piscina, también una olímpica. Cada calculadora muestra la cifra y la fórmula que hay detrás.',
       ],
     },
     {
@@ -125,7 +127,7 @@ const ABOUT_ES: About = {
       id: 'sources',
       heading: 'Fuentes',
       paragraphs: [
-        'Solo citamos fuentes primarias: el NIST Handbook 44 para el tamaño de un galón, el USGS para el peso del agua, el Department of Energy de Estados Unidos para el tamaño del calentador y las horas de bomba, ENERGY STAR (EPA) para el consumo de la bomba, la norma ANSI/APSP/ICC-15 para el caudal de la bomba, los CDC para los niveles del agua y los límites de piscinas públicas, la tabla de dosis de pH de los kits de Taylor Technologies para el ácido y el carbonato de sodio, las instrucciones de HASA para el ácido muriático y una etiqueta de pH Up hecha para Alliance Trading para cómo agregarlos, y el fabricante: la etiqueta de un aumentador de dureza de calcio (ClearView, de Oreq Corporation) para el cloruro de calcio, los manuales y guías de Hayward para la sal, el nivel del agua, la recirculación de la bomba, la apertura y el cierre, los manuales de Pentair IntelliChlor y Jandy AquaPure para cómo cambian otras celdas de sal, la etiqueta registrada ante la EPA de cada producto para su concentración, y las reglas de instalaciones de World Aquatics, y antes de la FINA, para el tamaño de una piscina olímpica. Cada página nombra la fuente de sus cifras.',
+        'Solo citamos fuentes primarias: el NIST Handbook 44 para el tamaño de un galón, el USGS para el peso del agua, el Department of Energy de Estados Unidos para el tamaño del calentador y las horas de bomba, ENERGY STAR (EPA) para el consumo de la bomba, la norma ANSI/APSP/ICC-15 para el caudal de la bomba, los CDC para los niveles del agua y los límites de piscinas públicas, la tabla de dosis de pH de los kits de Taylor Technologies para el ácido y el carbonato de sodio, las instrucciones de HASA para el ácido muriático y una etiqueta de pH Up hecha para Alliance Trading para cómo agregarlos, y el fabricante: la etiqueta de un aumentador de dureza de calcio (ClearView, de Oreq Corporation) para el cloruro de calcio, los manuales y guías de Hayward para la sal, el nivel del agua, la recirculación de la bomba, la apertura y el cierre, los manuales de Pentair IntelliChlor y Jandy AquaPure para cómo cambian otras celdas de sal, los manuales de AstralPool VX y Zodiac TRi-XO para el nivel de sal de los cloradores australianos, la etiqueta registrada ante la EPA de cada producto para su concentración, y las reglas de instalaciones de World Aquatics, y antes de la FINA, para el tamaño de una piscina olímpica. Cada página nombra la fuente de sus cifras.',
       ],
     },
     {

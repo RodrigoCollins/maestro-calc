@@ -189,7 +189,12 @@ export const ALKALINITY_ES: DosePage = {
   lead: 'Ingresa el volumen de tu piscina, en galones o litros, la alcalinidad total de hoy y el nivel que quieres. Obtienes las libras o los kilos de bicarbonato de sodio que debes agregar.',
   fields: { gallons: volume, current: { label: 'Alcalinidad actual (ppm)' }, target, units },
   results: [
-    { key: 'pounds', label: 'Bicarbonato de sodio que debes agregar', unit: 'LB', metricUnit: 'KG' },
+    {
+      key: 'pounds',
+      label: 'Bicarbonato de sodio que debes agregar',
+      unit: 'LB',
+      metricUnit: 'KG',
+    },
     { key: 'ounces', label: 'Onzas', unit: 'oz', metricUnit: 'g', metricLabel: 'Gramos' },
   ],
   warnings: {

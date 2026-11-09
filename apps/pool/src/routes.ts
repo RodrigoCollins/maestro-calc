@@ -140,6 +140,13 @@ const PAGE_ROUTES: readonly Route[] = [
     en: '/salt-water-pool-vs-chlorine-pool',
     es: '/es/piscina-de-agua-salada-o-de-cloro',
   },
+  // the kilograms by litres, for the pools abroad (Ahrefs 2026-11-08)
+  {
+    id: 'salt-amount-guide',
+    kind: 'article',
+    en: '/how-much-salt-for-a-pool',
+    es: '/es/cuanta-sal-necesita-una-piscina',
+  },
   {
     id: 'shock-guide',
     kind: 'article',

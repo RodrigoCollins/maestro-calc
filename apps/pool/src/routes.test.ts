@@ -74,6 +74,7 @@ describe('ROUTES', () => {
         '/es/cuantas-horas-prender-la-bomba-de-la-piscina',
       ],
       ['salt-guide', '/salt-water-pool-vs-chlorine-pool', '/es/piscina-de-agua-salada-o-de-cloro'],
+      ['salt-amount-guide', '/how-much-salt-for-a-pool', '/es/cuanta-sal-necesita-una-piscina'],
       [
         'shock-guide',
         '/how-to-shock-a-pool',
