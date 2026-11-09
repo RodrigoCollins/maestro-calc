@@ -1,6 +1,7 @@
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
 import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS, CHARTS_INDEX } from './charts.ts';
+import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES } from './guides.ts';
 import { hrefOf } from './routes.ts';
@@ -127,5 +128,20 @@ export const HOME_GUIDES: readonly HomeGuide[] = [
     href: FOOD_HUB.path,
     title: 'Can dogs eat it?',
     summary: `${String(FOOD_PAGES.length)} human foods, from grapes to rice, each with a sourced verdict.`,
+  },
+  {
+    href: CATS_HUB.path,
+    title: 'Plants toxic to cats',
+    summary: `Lilies first, then ${String(PLANT_PAGES.length - 1)} more plants checked against the ASPCA list.`,
+  },
+  {
+    href: DOGS_HUB.path,
+    title: 'Plants toxic to dogs',
+    summary: 'Sago palms, bulbs and oleander, and the plants only cats react to.',
+  },
+  {
+    href: SAFE_HUB.path,
+    title: 'Pet-safe houseplants',
+    summary: `${String(SAFE_HUB.rows.length)} plants the ASPCA lists as non-toxic to cats and dogs.`,
   },
 ];

@@ -483,5 +483,11 @@ export const FOOD_HUB = {
       }))
       .sort((a, b) => a.name.localeCompare(b.name)),
   })),
+  /** The plant hub: the other half of what a dog finds in a house and a yard. */
+  plants: {
+    href: '/plants-toxic-to-dogs',
+    label:
+      'Plants toxic to dogs: sago palms, bulbs, oleander and the houseplants on the ASPCA list',
+  },
   sources: [S.aspcaFoods, S.aspcaLine, S.vcaTreats, S.akcTreats, S.merckEnergy],
 };

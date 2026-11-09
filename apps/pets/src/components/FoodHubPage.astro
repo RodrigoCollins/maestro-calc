@@ -76,6 +76,10 @@ const { title, description, h1, lead, checked, sections, budgetColumns, budget, 
         )}
       </section>
     ))}
+    <p>
+      {'Not food, but in the same house and yard: '}
+      <a href={FOOD_HUB.plants.href}>{FOOD_HUB.plants.label}</a>
+    </p>
     <p>{`Every source below was read on ${checkedText(checked)}.`}</p>
     <Sources {sources} />
     <ShareLink path={FOOD_HUB.path} {title} />

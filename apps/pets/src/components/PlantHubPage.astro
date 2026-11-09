@@ -1,0 +1,101 @@
+---
+import { POISON_LINE } from '../calc/chocolate.ts';
+import { checkedText } from '../editorial.ts';
+import { HELPLINE } from '../plants/sources.ts';
+import { CATS_HUB, DOGS_HUB, PLANT_CALL } from '../toxic-plants.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly species: 'cats' | 'dogs';
+}
+
+const hub = Astro.props.species === 'cats' ? CATS_HUB : DOGS_HUB;
+const { title, description, h1, lead, checked, groups, table, sections, links, sources } = hub;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <p class="bf-call" role="note">
+      {PLANT_CALL} <a href={POISON_LINE.href}>{POISON_LINE.phone}</a>
+      {' · '}
+      <a href={HELPLINE.href}>{HELPLINE.phone}</a>
+    </p>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    {groups.map(({ id, heading, intro, rows }) => (
+      <section aria-labelledby={`g-${id}`}>
+        <h2 id={`g-${id}`}>{heading}</h2>
+        <p>{intro}</p>
+        <ul class="bf-plants">
+          {rows.map(({ href, name, note }) => (
+            <li>
+              <a {href}>{name}</a>: {note}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    <section aria-labelledby="table">
+      <h2 id="table">{table.heading}</h2>
+      {table.paragraphs.map((paragraph) => (
+        <p>{paragraph}</p>
+      ))}
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={`${table.heading}, scrolls sideways on a narrow screen`}
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              {table.columns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {table.rows.map(([name, ...cells]) => (
+              <tr>
+                <th scope="row">{name}</th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    <ul>
+      {links.map(({ href, label }) => (
+        <li>
+          <a {href}>{label}</a>
+        </li>
+      ))}
+    </ul>
+    <p>{`Every source below was read on ${checkedText(checked)}.`}</p>
+    <Sources {sources} />
+    <ShareLink path={hub.path} {title} />
+  </main>
+</Layout>
+
+<style>
+  .bf-plants {
+    display: grid;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+  }
+</style>
