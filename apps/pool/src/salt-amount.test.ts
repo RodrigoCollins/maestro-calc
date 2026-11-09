@@ -60,8 +60,8 @@ describe('how much salt for a pool (kilograms by litres)', () => {
 
   it('tops each pool up to 4,000 ppm from the readings a low salt light shows', () => {
     const [topUp] = guide.moreTables;
-    expect(topUp?.head).toEqual(['Pool', 'From 3,000 ppm', 'From 3,500 ppm']);
-    expect(topUp?.rows).toEqual(
+    expect(topUp.head).toEqual(['Pool', 'From 3,000 ppm', 'From 3,500 ppm']);
+    expect(topUp.rows).toEqual(
       [40_000, 50_000, 60_000, 80_000].map((litres) => [
         `${litres.toLocaleString('en-US')} L`,
         metric(litres, 3000, 4000),
@@ -69,7 +69,7 @@ describe('how much salt for a pool (kilograms by litres)', () => {
       ]),
     );
     // the AstralPool manual's low-salt rule: about 50 kg per 50,000 litres
-    expect(topUp?.rows[1]?.[1]).toBe('50.0 kg (3 bags)');
+    expect(topUp.rows[1]?.[1]).toBe('50.0 kg (3 bags)');
   });
 
   it('cites the levels of each manual it names, read on the day it was checked', () => {

@@ -43,22 +43,26 @@ const TOP_UP_ES = tableOf(
 
 const [find, litres, test, work, add, drain, mineral, gallons] = SALT_AMOUNT_GUIDE.steps;
 
+/** The sources of the English step, kept on its twin (none when the step cites none). */
+const sourcesOf = (step: GuideStep | undefined): Pick<GuideStep, 'sources'> =>
+  step?.sources === undefined ? {} : { sources: step.sources };
+
 const STEPS_ES: readonly GuideStep[] = [
   {
     title: 'Busca el nivel que pide tu clorador',
     text: 'El nivel de sal es del clorador, no de la piscina. El manual VX de AstralPool dice que el clorador requiere un mínimo de 3000 ppm de sal, pero que el nivel recomendado es de 4000 ppm, y que nunca debe bajar de 3,000. El manual del TRi-XO de Zodiac da de 4,000 a 7,000 ppm como el rango de la norma australiana y 4,000 ppm a 27 °C como el ideal. El AquaRite de Hayward funciona mejor con unas 3,200 ppm y trabaja con cualquier nivel de 2,700 a 3,400 ppm, según Hayward Australia. Lee la etiqueta de tu celda o su manual antes de comprar sal.',
-    sources: find?.sources,
+    ...sourcesOf(find),
   },
   {
     title: 'Conoce tus litros',
     text: 'Cada kilo depende de cuánta agua tiene la piscina. Calcúlala una vez con el largo, el ancho y la profundidad de cada extremo en metros, y guarda el número: una piscina de 10 m por 4 m, de 1 m de profundidad en un extremo y 2 m en el otro, tiene 60,000 L.',
     link: { href: VOLUME_TEXTS_ES.path, label: 'Calcula tus litros' },
-    sources: litres?.sources,
+    ...sourcesOf(litres),
   },
   {
     title: 'Mide la sal antes de agregar',
     text: 'Una piscina que ya tuvo clorador guarda casi toda su sal, y una lectura vieja hace gastar sacos. El manual de Zodiac manda a la tienda de piscinas a medir el agua cuando ve el aviso de revisar la sal, y dice que si el agua está por debajo de 21 °C es indispensable revisar la salinidad antes de agregar más sal, porque el agua fría puede cambiar la lectura. AstralPool dice que revises otra vez el aviso de sal baja después de 24 horas antes de agregar.',
-    sources: test?.sources,
+    ...sourcesOf(test),
   },
   {
     title: 'Calcula los kilos: 4 kg por cada 1,000 L a 4,000 ppm',
@@ -67,29 +71,29 @@ const STEPS_ES: readonly GuideStep[] = [
       href: `${SALT_ES.path}?${metricLink.split('?')[1] ?? ''}`,
       label: 'Calcula tu sal en kilos',
     },
-    sources: work?.sources,
+    ...sourcesOf(work),
   },
   {
     title: 'Agrégala en la parte baja con la bomba funcionando',
     text: 'AstralPool dice que la sal siempre se agrega en la parte baja de la piscina y se deja disolver, y que la bomba funcionando mezcla el agua y la disuelve más rápido. El manual de AquaRite de Hayward agrega más o menos tres cuartas partes de la sal, deja la bomba funcionando 24 horas, mide y luego agrega el resto, así que la calculadora también da esa primera cantidad.',
     link: { href: SALT_ES.path, label: 'Calculadora de sal para piscina' },
-    sources: add?.sources,
+    ...sourcesOf(add),
   },
   {
     title: 'La sal de más solo sale con el agua',
     text: 'La sal no se gasta ni se evapora. La tabla de Zodiac la baja de la única forma que hay: vaciar parte del agua y volver a llenar la piscina, y la calculadora te lo dice cuando una lectura ya pasa del nivel deseado. La lluvia y el agua nueva con que rellenas la diluyen de la misma forma.',
-    sources: drain?.sources,
+    ...sourcesOf(drain),
   },
   {
     title: 'Sal mineral y de magnesio',
     text: 'El TRi-XO de Zodiac te deja elegir entre sal normal para piscina y mezclas de sal mineral al encenderlo, así que pon el clorador en la sal que compraste: una mezcla con cloruro de magnesio se dosifica con su propio saco y el ajuste del clorador, no con la tabla de cloruro de sodio de arriba.',
-    sources: mineral?.sources,
+    ...sourcesOf(mineral),
   },
   {
     title: 'En galones de EE. UU.',
     text: `La calculadora también trabaja en galones de EE. UU. y bolsas de 40 lb: desde agua nueva, 20,000 galones llevan ${us} lb de sal para llegar a las 3,200 ppm que el manual de AquaRite de Hayward llama el mejor nivel, a unas 8.34 lb por galón de agua. Elige unidades de EE. UU. o métricas arriba de la calculadora; recuerda lo que elegiste.`,
     link: { href: SALT_ES.path, label: 'Calculadora de sal para piscina' },
-    sources: gallons?.sources,
+    ...sourcesOf(gallons),
   },
 ];
 

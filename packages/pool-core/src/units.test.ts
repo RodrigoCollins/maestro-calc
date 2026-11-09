@@ -12,7 +12,7 @@ describe('pool units', () => {
     const input = unitsInput();
     expect(input.kind).toBe('select');
     expect([input.key, input.urlKey, input.default]).toEqual(['units', 'm', 'us']);
-    expect(input.kind === 'select' && input.options).toEqual(['us', 'metric']);
+    expect(input.options).toEqual(['us', 'metric']);
   });
 
   it('holds the exact litres of a gallon', () => {

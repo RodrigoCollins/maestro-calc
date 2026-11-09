@@ -100,7 +100,7 @@ const litresOf = (raw: { readonly gallons: string }): Rational =>
   shown(G(raw).mul(LITERS_PER_GALLON), 0);
 
 /** One output of the metric run on those litres, as the page writes it in metric. */
-const metricOut = (engine: Engine, raw: Raw, key: string): string =>
+const metricOut = (engine: Engine, raw: Raw & { readonly gallons: string }, key: string): string =>
   outputText(
     key,
     run(engine, { ...raw, gallons: n(litresOf(raw)).replaceAll(',', ''), units: 'metric' }).get(

@@ -18,8 +18,6 @@ describe('pool alkalinity in metric', () => {
   });
 
   it('reads 10,000 L at 10 ppm as 0.168 kg', () => {
-    expect(kilograms({ gallons: '10000', current: '90' })).toEqual(
-      Rational.of(84_007, 500_400),
-    );
+    expect(kilograms({ gallons: '10000', current: '90' })).toEqual(Rational.of(84_007, 500_400));
   });
 });

@@ -131,10 +131,15 @@ describe('the Spanish step guides', () => {
         expect(es.title).not.toBe(en.title);
       });
 
-      // neutral Spanish, the tú register, and the US label names (plans/pool/SPANISH.md)
+      // neutral Spanish, the tú register, and the US label names (plans/pool/SPANISH.md); a word
+      // of Spain is named only beside the US one, in a sentence that says it is Spain's
       it('speaks in the tú register, in US units and US product names', () => {
         const text = proseOf(es);
-        expect(text).not.toMatch(/\busted\b|\bingrese\b|\bsalfumán\b|\bdepuradora\b/i);
+        expect(text).not.toMatch(/\busted\b|\bingrese\b/i);
+        for (const sentence of text.split(/(?<=\.)\s+/)) {
+          if (/\bsalfumán\b|\bdepuradora\b/i.test(sentence))
+            expect(sentence, sentence).toMatch(/en España/);
+        }
         expect(text).not.toMatch(/\b(litros?|kilos?) de agua\b/);
       });
     });
@@ -148,6 +153,15 @@ describe('the Spanish step guides', () => {
     expect(text).toContain('nunca lo mezcles con blanqueadores de cloro');
     expect(text).toContain('ácido muriático');
     expect(text).toContain('carbonato de sodio');
+  });
+
+  // Spain's words for the muriatic acid and the pump and filter, once, so a reader there finds them
+  it('names Spain’s salfumán and depuradora beside the US words', () => {
+    // its strength varies by brand, so the sentence sends the reader to its own label
+    expect(proseOf(PH_GUIDE_ES)).toMatch(
+      /ácido muriático al 31\.45% \([^)]*en España[^)]*salfumán[^)]*concentración[^)]*etiqueta\)/,
+    );
+    expect(proseOf(PUMP_RUN_GUIDE_ES)).toMatch(/bomba funcionando \(en España, la depuradora/);
   });
 
   it('keeps the never-mix rules of the English shock guide', () => {

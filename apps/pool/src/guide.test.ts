@@ -1,7 +1,10 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
+import { poolPh } from '@maestro-calc/pool-core/pool-ph';
 import { figure } from './__testing__/figure.ts';
+import { outputText } from './format.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
@@ -25,6 +28,22 @@ import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { footerLinksOf } from './layout.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { VOLUME_TEXTS } from './volume/texts.ts';
+
+/** One output of `engine` run in metric on `litres`, as the metric page writes it. */
+const metricDose = (
+  engine: typeof poolChlorine | typeof poolPh,
+  litres: number,
+  raw: Readonly<Record<string, string>>,
+  key: string,
+): string => {
+  const ran = engine.run({ ...raw, gallons: String(litres), units: 'metric' });
+  if (!ran.ok) throw new Error('run failed');
+  return outputText(key, ran.value.outputs.find((output) => output.key === key)?.value, 'metric');
+};
+
+/** The pool sizes of the metric tables, in litres (Australia, the UK, Spain). */
+const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000];
+const litres = (size: number): string => `${size.toLocaleString('en-US')} L`;
 
 const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
   .filter((name) => name.endsWith('.astro'))
@@ -288,6 +307,25 @@ describe('the pool shock guide', () => {
     expect(text).toContain(`${dose('20000', '2', '20', 'liquid-12-5')} fl oz`);
   });
 
+  // the same label shock for the pools measured in litres: 10 ppm, the top of the cal-hypo label's
+  it('tables the 10 ppm shock of 20,000 to 80,000 litres, each cell the metric calculator’s', () => {
+    const { table } = SHOCK_GUIDE;
+    expect(table.head).toEqual(['Pool', '12.5% liquid chlorine', '65% cal-hypo', '56% dichlor']);
+    expect(table.sources).toEqual(['calHypo', 'dichlor']);
+    const raw = { current: '0', target: '10' };
+    expect(table.rows).toEqual(
+      LITRES.map((size) => [
+        litres(size),
+        `${metricDose(poolChlorine, size, { ...raw, product: 'liquid-12-5' }, 'liquid')} L`,
+        `${metricDose(poolChlorine, size, { ...raw, product: 'cal-hypo-65' }, 'dry')} g`,
+        `${metricDose(poolChlorine, size, { ...raw, product: 'dichlor-56' }, 'dry')} g`,
+      ]),
+    );
+    // 50,000 L × 10 mg = 500 g of chlorine: 4 L of 12.5% liquid, 769 g of 65% cal-hypo
+    expect(table.rows[3]).toEqual(['50,000 L', '4.00 L', '769 g', '893 g']);
+    expect(SHOCK_GUIDE.lead).toContain('50,000 L take 769 g of 65% cal-hypo');
+  });
+
   it('links the volume, the pH and the chlorine calculators and the chart', () => {
     const links = SHOCK_GUIDE.steps.flatMap(({ link }) => (link === undefined ? [] : [link.href]));
     expect(links).toEqual([VOLUME_TEXTS.path, PH.path, CHEMISTRY_CHART.path, CHLORINE.path]);
@@ -369,6 +407,25 @@ describe('the pool pH guide', () => {
     expect(text).toContain(
       `in 20,000 gallons, ${figure(PH.path, soda20k, 'dryPerAddition')} oz, so the 2-drop dose goes in at once`,
     );
+  });
+
+  // the same chart for the pools measured in litres, with HASA's most a day beside it
+  it('tables the acid of 1 to 3 drops for 20,000 to 80,000 litres, as the metric calculator does', () => {
+    const { table } = PH_GUIDE;
+    expect(table.head).toEqual(['Pool', '1 drop', '2 drops', '3 drops', 'Most in 24 hours']);
+    expect(table.sources).toEqual(['taylor', 'hasa']);
+    const acidOf = (size: number, drops: string, key: string): string =>
+      `${metricDose(poolPh, size, { product: 'muriatic-31-45', drops }, key)} L`;
+    expect(table.rows).toEqual(
+      LITRES.map((size) => [
+        litres(size),
+        acidOf(size, '1', 'liquid'),
+        acidOf(size, '2', 'liquid'),
+        acidOf(size, '3', 'liquid'),
+        acidOf(size, '1', 'liquidPerDay'),
+      ]),
+    );
+    expect(table.rows[0]).toEqual(['20,000 L', '0.14 L', '0.29 L', '0.43 L', '0.25 L']);
   });
 
   it('links the volume, the alkalinity and the pH calculators and the chart', () => {

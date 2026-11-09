@@ -486,6 +486,34 @@ const SHOCK_SOURCES = {
   },
 } as const satisfies Record<string, GuideSource>;
 
+/** The pool sizes of the metric tables, in litres (Australia, the UK, Spain). */
+const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000] as const;
+const litresText = (litres: number): string => `${litres.toLocaleString('en-US')} L`;
+
+/** The 10 ppm shock of `litres` from 0 ppm, as the metric chlorine calculator writes it. */
+const metricShockOf = (litres: number): readonly string[] => {
+  const raw = { gallons: String(litres), current: '0', target: '10' };
+  const dose = (product: string, key: string): string =>
+    doseOf(CHLORINE.path, { ...raw, product }, key, 'metric');
+  return [
+    litresText(litres),
+    `${dose('liquid-12-5', 'liquid')} L`,
+    `${dose('cal-hypo-65', 'dry')} g`,
+    `${dose('dichlor-56', 'dry')} g`,
+  ];
+};
+
+/** The shock table both languages print: the label's 10 ppm in litres, grams and litres. */
+export const SHOCK_METRIC = {
+  rows: LITRES.map(metricShockOf),
+  calHypo50: doseOf(
+    CHLORINE.path,
+    { gallons: '50000', current: '0', target: '10', product: 'cal-hypo-65' },
+    'dry',
+    'metric',
+  ),
+} as const;
+
 /** From the gallons to the swim: the label's shock level, sized by the chlorine calculator. */
 const SHOCK_STEPS: readonly GuideStep[] = [
   {
@@ -551,7 +579,7 @@ const SHOCK_STEPS: readonly GuideStep[] = [
  */
 export const SHOCK_GUIDE = {
   path: '/how-to-shock-a-pool',
-  checked: '2026-11-05',
+  checked: '2026-11-09',
   kicker: 'Guide · shock',
   card: {
     title: 'How to shock a pool',
@@ -561,8 +589,16 @@ export const SHOCK_GUIDE = {
   description:
     'How to shock a pool and how much shock to add: the label’s shock level for cal-hypo or dichlor, the dose for your gallons, and when you can swim again.',
   h1: 'How to shock a pool',
-  lead: 'To shock a pool, raise free chlorine to the shock level on your product’s label: from 0 ppm, 10,000 gallons take 20.5 oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm. Swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Balance the pH first, work out the dose from your own reading, and add it in the evening with the pump running.',
+  lead: `To shock a pool, raise free chlorine to the shock level on your product’s label: from 0 ppm, 10,000 gallons take 20.5 oz of 65% cal-hypo to reach 10 ppm, the top of its label’s 5 to 10 ppm, and 50,000 L take ${SHOCK_METRIC.calHypo50} g of 65% cal-hypo. Swim again once free chlorine is back to 4 ppm or less, that label’s reentry level. Balance the pH first, work out the dose from your own reading, and add it in the evening with the pump running.`,
   note: 'Follow the label of your own product where it differs from this guide: its strength, its shock dose and its reentry level all vary by product.',
+  table: {
+    caption:
+      'The 10 ppm shock in litres, from 0 ppm: liquid chlorine in litres, cal-hypo and dichlor in grams',
+    region: 'Pool shock by litres',
+    head: ['Pool', '12.5% liquid chlorine', '65% cal-hypo', '56% dichlor'],
+    rows: SHOCK_METRIC.rows,
+    sources: ['calHypo', 'dichlor'],
+  },
   sources: SHOCK_SOURCES,
   steps: SHOCK_STEPS,
 } as const satisfies StepGuide;
@@ -593,6 +629,23 @@ const PH_SOURCES = {
     url: 'https://www.cdc.gov/healthy-swimming/about/home-pool-and-hot-tub-water-treatment-and-testing.html',
   },
 } as const satisfies Record<string, GuideSource>;
+
+/** The acid of 1 to 3 drops of `litres`, and HASA's most a day, as the metric pH calculator writes them. */
+const metricAcidOf = (litres: number): readonly string[] => {
+  const raw = { gallons: String(litres), product: 'muriatic-31-45' };
+  const acid = (drops: string, key: string): string =>
+    `${doseOf(PH.path, { ...raw, drops }, key, 'metric')} L`;
+  return [
+    litresText(litres),
+    acid('1', 'liquid'),
+    acid('2', 'liquid'),
+    acid('3', 'liquid'),
+    acid('1', 'liquidPerDay'),
+  ];
+};
+
+/** The acid table both languages print: Taylor's chart in litres of acid. */
+export const PH_METRIC = { rows: LITRES.map(metricAcidOf) } as const;
 
 /** From the gallons to the retest: Taylor's demand test sizes the dose, the product's own directions add it. */
 const PH_STEPS: readonly GuideStep[] = [
@@ -660,7 +713,7 @@ const PH_STEPS: readonly GuideStep[] = [
  */
 export const PH_GUIDE = {
   path: '/how-to-lower-ph-in-a-pool',
-  checked: '2026-11-05',
+  checked: '2026-11-09',
   kicker: 'Guide · pH',
   card: {
     title: 'How to lower pool pH',
@@ -672,6 +725,14 @@ export const PH_GUIDE = {
   h1: 'How to lower pH in a pool (and when to raise it)',
   lead: 'To lower pH, add muriatic acid: each drop the acid demand test of your kit takes is 9.2 fl oz of 31.45% muriatic acid per 10,000 gallons, by Taylor’s chart. HASA’s label adds at most one quart per 20,000 gallons a day, poured into the deep end with the pump running, with a test before each part. Bring the alkalinity into range first; to raise the pH, the base demand test sizes the soda ash.',
   note: 'Follow the label of your own product where it differs from this guide: the strength of the acid, how much goes in at a time and the wait before you retest all vary by product.',
+  table: {
+    caption:
+      'Litres of 31.45% muriatic acid by the drops of the acid demand test, and the most HASA adds in 24 hours',
+    region: 'Muriatic acid by litres',
+    head: ['Pool', '1 drop', '2 drops', '3 drops', 'Most in 24 hours'],
+    rows: PH_METRIC.rows,
+    sources: ['taylor', 'hasa'],
+  },
   sources: PH_SOURCES,
   steps: PH_STEPS,
 } as const satisfies StepGuide;

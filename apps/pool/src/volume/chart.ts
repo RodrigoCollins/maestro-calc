@@ -1,7 +1,17 @@
-import { add, encode, gal, isQuantityOf, Rational, scale, valueIn } from '@maestro-calc/core';
+import {
+  add,
+  encode,
+  gal,
+  isQuantityOf,
+  liter,
+  m3,
+  Rational,
+  scale,
+  valueIn,
+} from '@maestro-calc/core';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { amountText, lengthFieldText } from '../format.ts';
+import { amountText, lengthFieldText, volumeText } from '../format.ts';
 import type { GuideSource } from '../guide.ts';
 import { SITE } from '../site.config.ts';
 import { VOLUME_TEXTS } from './texts.ts';
@@ -157,6 +167,19 @@ const at = (id: string, label: string): string => {
   return found;
 };
 
+/**
+ * A pool measured in metres, as Australia and Spain build them: 8 by 4 m, 1 to 2 m deep, in the
+ * litres and cubic metres the calculator gives (the lead of both languages quotes it).
+ */
+const metricPoolOf = () => {
+  const ran = poolVolume.run({ length: '8 m', width: '4 m', shallow: '1 m', deep: '2 m' });
+  if (!ran.ok) throw new Error('pool-volume did not run on the metric pool');
+  const volume = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+  if (!isQuantityOf(volume, 'volume')) throw new Error('gallons must be a volume');
+  return { litres: volumeText(volume, liter), cubicMetres: volumeText(volume, m3) };
+};
+export const METRIC_POOL = metricPoolOf();
+
 /** The gallons in a 1 ft by 1 ft by 1 ft pool of a shape: the factor of the rule of thumb. */
 const ONE = { length: '1 ft', width: '1 ft', shallow: '1 ft', deep: '1 ft' } as const;
 const FACTORS = {
@@ -234,7 +257,7 @@ export const VOLUME_CHART = {
   description:
     'How many gallons a round pool of 12 to 33 ft, an oval or a rectangle of 12 x 24 to 20 x 40 ft holds at its common depths, worked out by the volume calculator.',
   h1: H1,
-  lead: `A 24 ft round pool 4 ft deep holds ${at('round', '24 ft round')} gallons, a 15 x 30 ft oval 4 ft deep holds ${at('oval', '15 x 30 ft oval')}, and a 16 x 32 ft rectangle from 3 ft to 6 ft deep holds ${at('rectangle', '16 x 32 ft')}. Each figure is the surface of the pool times its average depth, at ${FACTORS.cubicFoot} gallons a cubic foot.`,
+  lead: `A 24 ft round pool 4 ft deep holds ${at('round', '24 ft round')} gallons, a 15 x 30 ft oval 4 ft deep holds ${at('oval', '15 x 30 ft oval')}, and a 16 x 32 ft rectangle from 3 ft to 6 ft deep holds ${at('rectangle', '16 x 32 ft')}. In metres, an 8 x 4 m pool from 1 m to 2 m deep holds ${METRIC_POOL.litres} litres (${METRIC_POOL.cubicMetres} m³). Each figure is the surface of the pool times its average depth, at ${FACTORS.cubicFoot} gallons a cubic foot.`,
   tables: TABLES,
   factors: FACTORS,
   assumptions: [

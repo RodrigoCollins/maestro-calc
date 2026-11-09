@@ -113,7 +113,7 @@ if (form !== null) {
     }
     for (const { key, value } of ran.value.outputs) {
       if (!isQuantityOf(value, 'volume') || !(key in UNITS.us)) continue;
-      const [unit, places] = UNITS[units][key as keyof typeof UNITS.us];
+      const [unit, places] = UNITS[units][key];
       for (const node of document.querySelectorAll(`[data-out="${key}"]`)) {
         node.textContent = volumeText(value, unit, places);
       }

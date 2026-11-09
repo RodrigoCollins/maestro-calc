@@ -17,8 +17,6 @@ describe('pool stabilizer in metric', () => {
   });
 
   it('tops 40,000 L up from 20 to 50 ppm with 1.2 kg', () => {
-    expect(kilograms({ gallons: '40000', current: '20', target: '50' })).toEqual(
-      Rational.of(6, 5),
-    );
+    expect(kilograms({ gallons: '40000', current: '20', target: '50' })).toEqual(Rational.of(6, 5));
   });
 });
