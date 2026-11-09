@@ -293,9 +293,7 @@ const yearsSectionOf = (slug: CountdownSlug, day: Countdown): LongTailSection =>
         head: ['Año', ...HOLY_WEEK.map(({ label }) => label)],
         rows: EASTER_YEARS.map((y) => [
           String(y),
-          ...HOLY_WEEK.map(({ offset }) =>
-            shortDateOf(dateOfRule({ kind: 'easter', offset }, y)),
-          ),
+          ...HOLY_WEEK.map(({ offset }) => shortDateOf(dateOfRule({ kind: 'easter', offset }, y))),
         ]),
       },
     };

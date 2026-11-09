@@ -90,7 +90,12 @@ describe('the countdown pages', () => {
   it('count from the 1st of each month of 2027', () => {
     const rows = section('cuantos-dias-faltan-para-navidad', 'months').table?.rows ?? [];
     // 1 Dec to 25 Dec is 24 days; 1 Jan 2027 to 25 Dec 2027 is 358 (a 365-day year less 7)
-    expect(rows[11]).toEqual(['1 de diciembre', 'sábado 25 de diciembre de 2027', '24', '3 semanas y 3 días']);
+    expect(rows[11]).toEqual([
+      '1 de diciembre',
+      'sábado 25 de diciembre de 2027',
+      '24',
+      '3 semanas y 3 días',
+    ]);
     expect(rows[0]?.[2]).toBe('358');
     const newYear = section('cuantos-dias-faltan-para-ano-nuevo', 'months').table?.rows ?? [];
     // from 1 Jan it is today; from 1 Feb it is the next year's

@@ -13,6 +13,7 @@ import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed
 import { imageProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/editorial/bylines.ts';
 import { LONG_TAIL_ROUTES } from '../src/long-tail/routes.ts';
+import { COUNTDOWNS, countdownPathOf } from '../src/dates/routes.ts';
 import { MILITARY_TIME_ROUTES } from '../src/military/routes.ts';
 import { pathsOfRoute, ROUTES } from '../src/routes.ts';
 import { EMBEDS } from '../src/embed/embeds.ts';
@@ -21,6 +22,7 @@ import {
   GUIDE_RULES,
   HUBS,
   LONG_TAIL_RULES,
+  COUNTDOWN_RULES,
   MILITARY_CHART_RULES,
   MILITARY_RULES,
   SITEMAP_PATHS,
@@ -62,6 +64,7 @@ const all = [
     longTail: [
       ...LONG_TAIL_ROUTES.flatMap(({ en, es }) => [en, es]),
       ...MILITARY_TIME_ROUTES.map(({ en }) => en),
+      ...COUNTDOWNS.map(countdownPathOf),
     ],
   }),
   ...bylineProblems(read, BYLINE_PAGES),
@@ -72,7 +75,7 @@ const all = [
   ...linkProblems({
     origin: SITE.origin,
     pages: sitemapPages,
-    longTail: [...LONG_TAIL_RULES, ...MILITARY_RULES],
+    longTail: [...LONG_TAIL_RULES, ...MILITARY_RULES, ...COUNTDOWN_RULES],
     guides: [
       ...GUIDE_RULES,
       ...DATA_RULES,

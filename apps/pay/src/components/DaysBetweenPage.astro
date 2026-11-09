@@ -1,0 +1,79 @@
+---
+import { DEFAULT_END, DEFAULT_START, daysBetweenPageOf } from '../dates/calculator.ts';
+import { HOME_TEXTS } from '../home/texts.ts';
+import { HOURS_PATHS } from '../hours/texts.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import Sections from './Sections.astro';
+import ShareLink from './ShareLink.astro';
+import SiteLayout from './SiteLayout.astro';
+
+// Spanish only: the language switch leads to the English hours calculator. The page renders the
+// engine's own figures for the whole of 2026, so it reads without JavaScript.
+const page = daysBetweenPageOf();
+---
+
+<SiteLayout
+  lang="es"
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherHref={HOURS_PATHS.en}
+  otherLang={PAY_CONVERTER_TEXTS.es.otherLang}
+  footer={HOME_TEXTS.es.sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <form class="deduction" data-days-between novalidate>
+      <label class="field">
+        {page.start}
+        <input type="date" name="start" value={DEFAULT_START} required />
+      </label>
+      <label class="field">
+        {page.end}
+        <input type="date" name="end" value={DEFAULT_END} required />
+      </label>
+      <label class="check">
+        <input type="checkbox" name="inclusive" />
+        {page.inclusive}
+      </label>
+    </form>
+    <p class="warning" data-days-invalid hidden>
+      {page.invalid}
+    </p>
+    <p class="note" data-days-reversed hidden>
+      {page.reversed}
+    </p>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure" data-days="figure">
+          {page.result.figure}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
+        {page.result.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-days={row.key}>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p class="note">{page.note}</p>
+
+    <ShareLink lang="es" title={page.title} path={page.paths.es} />
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+    </div>
+  </main>
+  <script src="../client/days-between.ts"></script>
+</SiteLayout>

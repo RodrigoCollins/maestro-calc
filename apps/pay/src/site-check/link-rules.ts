@@ -21,6 +21,7 @@ import {
 } from '../military/routes.ts';
 import { isPaired, pathsOfRoute, ROUTES, type PairedRoute } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
+import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
 const LANGS = ['en', 'es'] as const;
@@ -66,6 +67,16 @@ export const LONG_TAIL_RULES: readonly LongTailRule[] = FAMILIES.flatMap(
       })),
     ),
 );
+
+/**
+ * Every countdown page (Spanish only): the days-between calculator links it, and it links the
+ * calculator and the `NEIGHBORS` countdowns nearest to it in the year.
+ */
+export const COUNTDOWN_RULES: readonly LongTailRule[] = COUNTDOWNS.map((job) => ({
+  path: countdownPathOf(job),
+  calculator: DAYS_BETWEEN_PATH,
+  siblings: nearestOf(COUNTDOWNS, job).map(countdownPathOf),
+}));
 
 /**
  * Every military time page (English only): the converter links it, and it links the converter and

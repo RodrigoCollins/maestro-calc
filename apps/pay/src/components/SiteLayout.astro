@@ -6,6 +6,7 @@ import { ROUTES } from '../routes.ts';
 import { EMBED_TEXTS } from '../embed/texts.ts';
 import { DATA_PATHS, DATA_TEXTS } from '../data/texts.ts';
 import { EDITORIAL_PATHS } from '../editorial/paths.ts';
+import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { MILITARY_CONVERTER_PATHS } from '../military/routes.ts';
 import { embedHeadOf, headOf, type PagePaths } from '../seo/head.ts';
 import { jsonLdOf, type Parent } from '../seo/json-ld.ts';
@@ -183,6 +184,7 @@ const embedLink =
           <a href={DATA_PATHS[lang]}>{DATA_TEXTS[lang].linkLabel}</a>
           <a href={STATES_INDEX_PATHS[lang]}>{statesIndexOf(lang).linkLabel}</a>
           <a href={MILITARY_CONVERTER_PATHS[lang]}>{militaryLabel}</a>
+          {lang === 'es' && <a href={DAYS_BETWEEN_PATH}>Días entre fechas</a>}
         </div>
       </footer>
     )}

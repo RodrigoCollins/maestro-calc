@@ -1,0 +1,13 @@
+---
+import CountdownPage from '../../../components/CountdownPage.astro';
+import { COUNTDOWNS, type CountdownJob } from '../../../dates/routes.ts';
+
+export const getStaticPaths = () =>
+  COUNTDOWNS.map((job) => ({ params: { slug: job.slug }, props: { job } }));
+
+interface Props {
+  readonly job: CountdownJob;
+}
+---
+
+<CountdownPage job={Astro.props.job} />
