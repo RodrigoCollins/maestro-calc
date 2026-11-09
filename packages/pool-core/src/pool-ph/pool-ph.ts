@@ -8,6 +8,7 @@ import {
   Rational,
   selectInput,
 } from '@maestro-calc/core';
+import { gallonsOf, unitsInput } from '../units.ts';
 
 /** Muriatic acid (20° Baumé, 31.45% HCl) lowers pH; soda ash (sodium carbonate, 100%) raises it. */
 const PRODUCTS = ['muriatic-31-45', 'soda-ash'] as const;
@@ -60,6 +61,7 @@ export const poolPh = defineCalculator({
     }),
     selectInput({ key: 'product', urlKey: 'p', options: PRODUCTS, default: 'muriatic-31-45' }),
     countInput({ key: 'drops', urlKey: 'd', default: 2, max: 10 }),
+    unitsInput(),
   ],
   outputs: [
     {
@@ -90,7 +92,8 @@ export const poolPh = defineCalculator({
     { key: 'additions', measure: 'number', role: 'secondary' },
   ],
   warnings: ['pastChart', 'splitDays', 'splitAdditions'],
-  compute: ({ gallons, product, drops }) => {
+  compute: ({ gallons: volume, product, drops, units }) => {
+    const gallons = gallonsOf(volume, units);
     const dose = gallons.mul(Rational.of(drops));
     const acid = product === 'muriatic-31-45';
     const liquid = acid ? dose.mul(ACID_GALLONS_PER_DROP) : Rational.ZERO;

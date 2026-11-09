@@ -2,6 +2,7 @@ import { checkedText } from './charts.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART } from './dosing.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import {
   CALCIUM_GUIDE,
@@ -32,6 +33,7 @@ export const citedSources = (): GuideSource[] => [
     CLOSING_GUIDE,
     PUMP_RUN_GUIDE,
     SALT_VS_CHLORINE_GUIDE,
+    SALT_AMOUNT_GUIDE,
     SHOCK_GUIDE,
     PH_GUIDE,
     CALCIUM_GUIDE,

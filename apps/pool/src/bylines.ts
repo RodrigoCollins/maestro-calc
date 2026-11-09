@@ -25,6 +25,8 @@ import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
 import { SWIM_GUIDES } from './swim-es.ts';
+import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
+import { SALT_AMOUNT_GUIDE_ES } from './salt-amount-es.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { CLOUDY_GUIDE_ES, GREEN_GUIDE_ES, SHOCK_OFTEN_GUIDE_ES } from './trouble-es.ts';
 import { VOLUME_CHARTS } from './volume/chart-es.ts';
@@ -69,6 +71,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     CLOSING_GUIDE,
     PUMP_RUN_GUIDE,
     SALT_VS_CHLORINE_GUIDE,
+    SALT_AMOUNT_GUIDE,
     SHOCK_GUIDE,
     PH_GUIDE,
     CALCIUM_GUIDE,
@@ -76,6 +79,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     CLOSING_GUIDE_ES,
     PUMP_RUN_GUIDE_ES,
     SALT_VS_CHLORINE_GUIDE_ES,
+    SALT_AMOUNT_GUIDE_ES,
     SHOCK_GUIDE_ES,
     PH_GUIDE_ES,
     CALCIUM_GUIDE_ES,

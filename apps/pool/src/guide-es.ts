@@ -4,9 +4,11 @@ import {
   OPENING,
   OPENING_GUIDE,
   PH_GUIDE,
+  PH_METRIC,
   PUMP_RUN_GUIDE,
   SALT_VS_CHLORINE_GUIDE,
   SHOCK_GUIDE,
+  SHOCK_METRIC,
   type GuideStep,
   type StepGuide,
 } from './guide.ts';
@@ -245,7 +247,7 @@ export const PUMP_RUN_GUIDE_ES = {
   description:
     'Cuántas horas al día prender la bomba de tu piscina: filtrar toda el agua una vez, el caudal de la norma, las 6 horas del DOE para empezar y la bomba variable.',
   h1: 'Cuántas horas prender la bomba de la piscina',
-  lead: 'Deja la bomba funcionando el tiempo suficiente para pasar toda el agua por el filtro una vez al día: 6 horas al caudal que fija la norma de piscinas, que es 55.6 gpm para 20,000 galones. Calcula las horas con tus galones y el caudal de tu propia bomba, empieza con 6 y quita o agrega media hora a la vez.',
+  lead: 'Deja la bomba funcionando (en España, la depuradora: la bomba y el filtro) el tiempo suficiente para pasar toda el agua por el filtro una vez al día: 6 horas al caudal que fija la norma de piscinas, que es 55.6 gpm para 20,000 galones. Calcula las horas con tus galones y el caudal de tu propia bomba, empieza con 6 y quita o agrega media hora a la vez.',
   note: 'Sigue el manual de tu bomba y de cada equipo donde sea distinto de esta guía, y cualquier regla local sobre la filtración.',
   sources: PUMP_RUN_GUIDE.sources,
   steps: PUMP_RUN_STEPS,
@@ -402,8 +404,16 @@ export const SHOCK_GUIDE_ES = {
   description:
     'Cómo hacer un choque a la piscina y cuánto producto agregar: el nivel de la etiqueta del cal-hypo o el dicloro, la dosis para tus galones y cuándo nadar.',
   h1: 'Cómo hacer un tratamiento de choque a la piscina',
-  lead: 'Para hacer un tratamiento de choque, sube el cloro libre al nivel de choque de la etiqueta de tu producto: desde 0 ppm, 10,000 galones requieren 20.5 oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta. Vuelve a nadar cuando el cloro libre baje a 4 ppm o menos, el nivel de reingreso de esa etiqueta. Primero balancea el pH, calcula la dosis con tu propia lectura y agrégala de noche con la bomba funcionando.',
+  lead: `Para hacer un tratamiento de choque, sube el cloro libre al nivel de choque de la etiqueta de tu producto: desde 0 ppm, 10,000 galones requieren 20.5 oz de hipoclorito de calcio (cal-hypo) al 65% para llegar a 10 ppm, el máximo de los 5 a 10 ppm de su etiqueta, y 50,000 L requieren ${SHOCK_METRIC.calHypo50} g de cal-hypo al 65%. Vuelve a nadar cuando el cloro libre baje a 4 ppm o menos, el nivel de reingreso de esa etiqueta. Primero balancea el pH, calcula la dosis con tu propia lectura y agrégala de noche con la bomba funcionando.`,
   note: 'Sigue la etiqueta de tu propio producto donde sea distinta de esta guía: su concentración, su dosis de choque y su nivel de reingreso cambian según el producto.',
+  table: {
+    caption:
+      'El choque a 10 ppm en litros, desde 0 ppm: el cloro líquido en litros, el cal-hypo y el dicloro en gramos',
+    region: 'Choque de la piscina por litros',
+    head: ['Piscina', 'Cloro líquido al 12.5%', 'Cal-hypo al 65%', 'Dicloro al 56%'],
+    rows: SHOCK_METRIC.rows,
+    sources: SHOCK_GUIDE.table.sources,
+  },
   sources: SHOCK_GUIDE.sources,
   steps: SHOCK_STEPS,
 } as const satisfies StepGuide;
@@ -444,7 +454,7 @@ const PH_STEPS: readonly GuideStep[] = [
   },
   {
     title: 'Agrégalo en la parte honda, con la bomba funcionando',
-    text: 'Las instrucciones de HASA para su ácido al 31.45%: agrega el ácido al agua, nunca el agua al ácido. Viértelo con cuidado en la parte honda, al menos a un pie de la pared, despacio y sobre la zona más amplia que puedas. El filtro y la bomba funcionan mientras lo agregas y al menos 1 hora después. Usa gafas protectoras, ropa vieja y guantes de hule, y nunca lo mezcles con blanqueadores de cloro ni con otros químicos de la casa, dice su hoja de datos de seguridad.',
+    text: 'Las instrucciones de HASA para su ácido muriático al 31.45% (el ácido clorhídrico que en España se vende también como salfumán, con una concentración que cambia según la marca, así que sigue su etiqueta): agrega el ácido al agua, nunca el agua al ácido. Viértelo con cuidado en la parte honda, al menos a un pie de la pared, despacio y sobre la zona más amplia que puedas. El filtro y la bomba funcionan mientras lo agregas y al menos 1 hora después. Usa gafas protectoras, ropa vieja y guantes de hule, y nunca lo mezcles con blanqueadores de cloro ni con otros químicos de la casa, dice su hoja de datos de seguridad.',
     sources: ['hasaDosing', 'hasa', 'hasaSds'],
   },
   {
@@ -479,6 +489,14 @@ export const PH_GUIDE_ES = {
   h1: 'Cómo bajar el pH de la piscina (y cuándo subirlo)',
   lead: 'Para bajar el pH, agrega ácido muriático: cada gota que necesita la prueba de demanda de ácido de tu kit equivale a 9.2 fl oz de ácido muriático al 31.45% por cada 10,000 galones, según la tabla de Taylor. La etiqueta de HASA agrega como máximo un cuarto de galón por cada 20,000 galones al día, vertido en la parte honda con la bomba funcionando, con una prueba antes de cada parte. Primero pon la alcalinidad en su rango; para subir el pH, la prueba de demanda de base da la dosis de carbonato de sodio.',
   note: 'Sigue la etiqueta de tu propio producto donde sea distinta de esta guía: la concentración del ácido, cuánto se agrega de una vez y la espera antes de volver a medir cambian según el producto.',
+  table: {
+    caption:
+      'Litros de ácido muriático al 31.45% según las gotas de la prueba de demanda de ácido, y lo más que HASA agrega en 24 horas',
+    region: 'Ácido muriático por litros',
+    head: ['Piscina', '1 gota', '2 gotas', '3 gotas', 'Lo más en 24 horas'],
+    rows: PH_METRIC.rows,
+    sources: PH_GUIDE.table.sources,
+  },
   sources: PH_GUIDE.sources,
   steps: PH_STEPS,
 } as const satisfies StepGuide;

@@ -2,6 +2,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { localHrefOf, type Lang } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 import {
+  METRIC_POOL,
   VOLUME_CHART,
   type VolumeChart,
   type VolumeColumn,
@@ -90,7 +91,7 @@ export const VOLUME_CHART_ES: VolumeChart = {
   description:
     'Cuántos galones tiene una piscina redonda de 12 a 33 ft, una ovalada o una rectangular de 12 x 24 a 20 x 40 ft a sus profundidades comunes.',
   h1: H1,
-  lead: `Una piscina redonda de 24 ft con 4 ft de profundidad tiene ${at('round', '24 ft round')} galones, una ovalada de 15 x 30 ft con 4 ft de profundidad tiene ${at('oval', '15 x 30 ft oval')}, y una rectangular de 16 x 32 ft de 3 ft a 6 ft de profundidad tiene ${at('rectangle', '16 x 32 ft')}. Cada cifra es la superficie de la piscina por su profundidad promedio, a ${factors.cubicFoot} galones por pie cúbico.`,
+  lead: `Una piscina redonda de 24 ft con 4 ft de profundidad tiene ${at('round', '24 ft round')} galones, una ovalada de 15 x 30 ft con 4 ft de profundidad tiene ${at('oval', '15 x 30 ft oval')}, y una rectangular de 16 x 32 ft de 3 ft a 6 ft de profundidad tiene ${at('rectangle', '16 x 32 ft')}. En metros, una piscina de 8 x 4 m de 1 m a 2 m de profundidad tiene ${METRIC_POOL.litres} litros (${METRIC_POOL.cubicMetres} m³). Cada cifra es la superficie de la piscina por su profundidad promedio, a ${factors.cubicFoot} galones por pie cúbico.`,
   tables: VOLUME_CHART.tables.map(tableOf),
   factors,
   assumptions: [

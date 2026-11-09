@@ -1,7 +1,10 @@
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { isQuantityOf, liter, m3 } from '@maestro-calc/core';
+import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { describe, expect, it } from 'vitest';
 import { figure } from '../__testing__/figure.ts';
+import { volumeText } from '../format.ts';
 import { DOSING_CHART } from '../dosing.ts';
 import { GUIDES, guidesOf } from '../guide.ts';
 import { JOB_PAGES, volumeJobPathOf } from '../jobs.ts';
@@ -138,6 +141,18 @@ describe('the pool volume chart', () => {
     expect(VOLUME_CHART.lead).toContain(cell('round', '24 ft round', 1));
     expect(VOLUME_CHART.lead).toContain(cell('oval', '15 x 30 ft oval', 1));
     expect(VOLUME_CHART.lead).toContain(cell('rectangle', '16 x 32 ft', 1));
+  });
+
+  // a pool measured in metres, as Australia and Spain build them, in the calculator's litres
+  it('opens with a pool in metres too, its litres and cubic metres the metric calculator’s', () => {
+    const ran = poolVolume.run({ length: '8 m', width: '4 m', shallow: '1 m', deep: '2 m' });
+    if (!ran.ok) throw new Error('run failed');
+    const volume = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+    if (!isQuantityOf(volume, 'volume')) throw new Error('no volume');
+    expect(volumeText(volume, liter)).toBe('48,000');
+    expect(VOLUME_CHART.lead).toContain(
+      `an 8 x 4 m pool from 1 m to 2 m deep holds ${volumeText(volume, liter)} litres (${volumeText(volume, m3)} m³)`,
+    );
   });
 
   it('works the shortcut factors out with the calculator: 7.48 gallons a cubic foot', () => {

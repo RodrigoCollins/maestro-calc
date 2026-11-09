@@ -19,6 +19,14 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
+import {
+  ALKALINITY_ES,
+  CALCIUM_ES,
+  CHLORINE_ES,
+  PH_ES,
+  SALT_ES,
+  STABILIZER_ES,
+} from './doses-es.ts';
 import { outputText } from './format.ts';
 
 const CASES = [
@@ -190,5 +198,87 @@ describe('dose pages', () => {
     expect(text(poolFillTime, 'time')).toBe('33 h 20 min');
     expect(text(poolFillTime, 'minutes')).toBe('2,000');
     expect(() => outputText('x', 1)).toThrow('no text for output x');
+  });
+});
+
+const METRIC = [
+  ['salt', SALT, SALT_ES, poolSalt],
+  ['chlorine', CHLORINE, CHLORINE_ES, poolChlorine],
+  ['pH', PH, PH_ES, poolPh],
+  ['alkalinity', ALKALINITY, ALKALINITY_ES, poolAlkalinity],
+  ['stabilizer', STABILIZER, STABILIZER_ES, poolStabilizer],
+  ['calcium', CALCIUM, CALCIUM_ES, poolCalcium],
+] as const;
+
+describe('the metric choice of the dose pages', () => {
+  // the gallon job pages quote `method` and `note`: the litres are said once, on the dose page only
+  it.each(METRIC)(
+    'keeps the litres of the %s page in its metric method, out of its method and note',
+    (_n, en, es) => {
+      for (const page of [en, es]) {
+        expect(page.metricMethod, page.path).toMatch(/litr|L\b/);
+        expect(`${page.method} ${page.note}`, page.path).not.toMatch(
+          /\b(In metric|en métrico)\b|\blitres\b|\bkg\b|\b1,000 L\b/i,
+        );
+      }
+    },
+  );
+
+  it.each(METRIC)(
+    'labels the units choice of the %s page and the volume in litres, in both languages',
+    (_n, en, es) => {
+      expect(en.fields['units']).toEqual({
+        label: 'Units',
+        options: { us: 'US: gallons, pounds', metric: 'Metric: litres, kilograms' },
+      });
+      expect(en.fields['gallons']?.metric).toBe('Pool volume (litres)');
+      expect(es.fields['units']).toEqual({
+        label: 'Unidades',
+        options: { us: 'EE. UU.: galones, libras', metric: 'Métrico: litros, kilos' },
+      });
+      expect(es.fields['gallons']?.metric).toBe('Volumen de la piscina (litros)');
+    },
+  );
+
+  it.each(METRIC)(
+    'names a metric unit for every mass and liquid result of the %s page',
+    (_n, en, es, engine) => {
+      const measured = engine.outputs
+        .filter(({ measure }) => measure === 'mass' || measure === 'volume')
+        .map(({ key }) => key);
+      for (const page of [en, es]) {
+        const named = page.results.filter(({ metricUnit }) => metricUnit !== undefined);
+        expect(named.map(({ key }) => key)).toEqual(measured);
+      }
+    },
+  );
+
+  it('names kilograms and 20 kg bags on the salt page, and pounds under the large figure', () => {
+    expect(SALT.metricBags).toBe('bags of 20 kg');
+    expect(SALT_ES.metricBags).toBe('sacos de 20 kg');
+    expect(SALT.results.map(({ metricUnit }) => metricUnit)).toEqual(['KG', 'lb', 'kg']);
+    expect(SALT.results[1]?.metricLabel).toBe('Pounds');
+    expect(SALT_ES.results[1]?.metricLabel).toBe('Libras');
+  });
+
+  it('writes the metric results of 50,000 L the way the units name them', () => {
+    const text = (engine: (typeof METRIC)[number][3], key: string, raw = {}) => {
+      const ran = engine.run({ gallons: '50000', units: 'metric', ...raw });
+      if (!ran.ok) throw new Error('run failed');
+      const value = ran.value.outputs.find((output) => output.key === key)?.value;
+      return outputText(key, value, 'metric');
+    };
+    // 50,000 L x 800 ppm / 1e6 = 40 kg, 88.2 lb; three quarters first, 30 kg
+    expect(text(poolSalt, 'pounds')).toBe('40.0');
+    expect(text(poolSalt, 'kilograms')).toBe('88.2');
+    expect(text(poolSalt, 'firstAddition')).toBe('30.0');
+    // 50,000 L x 2 ppm = 100 g of chlorine: 0.8 L of 12.5% liquid, 154 g of cal-hypo
+    expect(text(poolChlorine, 'liquid')).toBe('0.80');
+    expect(text(poolChlorine, 'dry', { product: 'cal-hypo-65' })).toBe('154');
+    // 50,000 L x 30 ppm x 84.007 / 50.04 = 2,518 g of baking soda
+    expect(text(poolAlkalinity, 'pounds')).toBe('2.5');
+    expect(text(poolAlkalinity, 'ounces')).toBe('2,518');
+    expect(text(poolStabilizer, 'pounds')).toBe('1.5');
+    expect(text(poolStabilizer, 'ounces')).toBe('1,500');
   });
 });

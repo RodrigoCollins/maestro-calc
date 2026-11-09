@@ -8,6 +8,7 @@ describe('pool-stabilizer contract', () => {
       ['gallons', 'g'],
       ['current', 'c'],
       ['target', 't'],
+      ['units', 'm'],
     ]);
   });
 

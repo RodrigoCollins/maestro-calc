@@ -1,4 +1,4 @@
-import { ft3, gal, isQuantityOf, PI, Rational, valueIn } from '@maestro-calc/core';
+import { ft3, gal, isQuantityOf, liter, m3, PI, Rational, valueIn } from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
@@ -9,7 +9,7 @@ import { poolPump } from '@maestro-calc/pool-core/pool-pump';
 import { poolSalt } from '@maestro-calc/pool-core/pool-salt';
 import { poolStabilizer } from '@maestro-calc/pool-core/pool-stabilizer';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
-import { volumeText } from './format.ts';
+import { lengthFieldText, outputText, volumeText } from './format.ts';
 import { hrefOf, langOf, routeOf, type Lang } from './routes.ts';
 import {
   BICARBONATE_PER_PPM,
@@ -95,6 +95,20 @@ const q = (value: string): Rational => {
 
 const G = (raw: { readonly gallons: string }): Rational => q(raw.gallons);
 
+/** The same pool in whole litres, as the units choice turns its gallons: 20,000 gal are 75,708 L. */
+const litresOf = (raw: { readonly gallons: string }): Rational =>
+  shown(G(raw).mul(LITERS_PER_GALLON), 0);
+
+/** One output of the metric run on those litres, as the page writes it in metric. */
+const metricOut = (engine: Engine, raw: Raw & { readonly gallons: string }, key: string): string =>
+  outputText(
+    key,
+    run(engine, { ...raw, gallons: n(litresOf(raw)).replaceAll(',', ''), units: 'metric' }).get(
+      key,
+    ),
+    'metric',
+  );
+
 const link = (id: string, lang: Lang, en: string, es: string) => ({
   href: hrefOf(id, lang),
   label: lang === 'en' ? en : es,
@@ -117,6 +131,10 @@ const salt: Texts = (lang) => {
   const kg = out(poolSalt, raw, 'kilograms');
   const first = pounds.mul(Rational.of(3, 4));
   const stabilizer = out(poolStabilizer, DEFAULTS.stabilizer, 'pounds');
+  const L = litresOf(raw);
+  const metricBags = String(
+    run(poolSalt, { ...raw, gallons: n(L).replaceAll(',', ''), units: 'metric' }).get('bags'),
+  );
   return {
     steps: [
       t(
@@ -143,6 +161,11 @@ const salt: Texts = (lang) => {
         lang,
         `First addition, three quarters: ${n(pounds, 2)} × 3 ÷ 4 ${is(first, 1)} lb, then a salt test after 24 hours before the rest.`,
         `Primera adición, tres cuartas partes: ${n(pounds, 2)} × 3 ÷ 4 ${is(first, 1)} lb; mide la sal después de 24 horas antes de agregar el resto.`,
+      ),
+      t(
+        lang,
+        `In metric, the same pool is ${n(L)} L (${n(g)} × 3.785411784 ${is(g.mul(LITERS_PER_GALLON))}): ${n(L)} × ${n(missing)} ÷ 1,000,000 ${is(L.mul(missing).div(Rational.of(1_000_000)), 1)} kg, since 1 ppm is 1 mg in each liter: ${metricBags} bags of 20 kg.`,
+        `En métrico, la misma piscina tiene ${n(L)} L (${n(g)} × 3.785411784 ${is(g.mul(LITERS_PER_GALLON))}): ${n(L)} × ${n(missing)} ÷ 1,000,000 ${is(L.mul(missing).div(Rational.of(1_000_000)), 1)} kg, porque 1 ppm es 1 mg en cada litro: ${metricBags} sacos de 20 kg.`,
       ),
     ],
     next: [
@@ -184,6 +207,7 @@ const chlorine: Texts = (lang) => {
   const grams = shown(liters, 1).mul(raise).div(Rational.of(1000));
   const ml = shown(grams, 3).mul(Rational.of(8));
   const shock = { gallons: raw.gallons, current: '0', target: '10', product: 'cal-hypo-65' };
+  const L = litresOf(raw);
   return {
     steps: [
       t(
@@ -210,6 +234,11 @@ const chlorine: Texts = (lang) => {
         lang,
         `Change the product and the same ${n(raise)} ppm becomes ${out(poolChlorine, { ...raw, product: 'liquid-10' }, 'liquid')} fl oz of 10% liquid, ${out(poolChlorine, { ...raw, product: 'cal-hypo-65' }, 'dry')} oz of 65% cal-hypo or ${out(poolChlorine, { ...raw, product: 'dichlor-56' }, 'dry')} oz of 56% dichlor.`,
         `Cambia el producto y los mismos ${n(raise)} ppm son ${out(poolChlorine, { ...raw, product: 'liquid-10' }, 'liquid')} fl oz de líquido al 10%, ${out(poolChlorine, { ...raw, product: 'cal-hypo-65' }, 'dry')} oz de cal-hypo al 65% o ${out(poolChlorine, { ...raw, product: 'dichlor-56' }, 'dry')} oz de dicloro al 56%.`,
+      ),
+      t(
+        lang,
+        `In metric, type ${n(L)} L: ${n(L)} × ${n(raise)} ÷ 1,000 ${is(L.mul(raise).div(Rational.of(1000)), 1)} g of available chlorine, ${metricOut(poolChlorine, raw, 'liquid')} L of 12.5% liquid.`,
+        `En métrico, ingresa ${n(L)} L: ${n(L)} × ${n(raise)} ÷ 1,000 ${is(L.mul(raise).div(Rational.of(1000)), 1)} g de cloro disponible, ${metricOut(poolChlorine, raw, 'liquid')} L de cloro líquido al 12.5%.`,
       ),
     ],
     next: [
@@ -316,6 +345,7 @@ const ph: Texts = (lang) => {
   const days = out(poolPh, raw, 'days');
   const soda = { ...raw, product: 'soda-ash' };
   const alkalinity = { gallons: raw.gallons, current: '90', target: '100' };
+  const L = litresOf(raw);
   return {
     steps: [
       t(
@@ -337,6 +367,11 @@ const ph: Texts = (lang) => {
         lang,
         `With the base demand test instead, ${n(drops)} drops are ${n(ratio, 1)} × ${n(drops)} × 5.13 ${is(ratio.mul(drops).mul(Rational.of(513, 100)), 2)} oz of soda ash, at most ${out(poolPh, soda, 'dryPerAddition')} oz at a time.`,
         `Con la prueba de demanda de base, ${n(drops)} gotas son ${n(ratio, 1)} × ${n(drops)} × 5.13 ${is(ratio.mul(drops).mul(Rational.of(513, 100)), 2)} oz de carbonato de sodio, como máximo ${out(poolPh, soda, 'dryPerAddition')} oz por vez.`,
+      ),
+      t(
+        lang,
+        `In metric, ${n(L)} L are read as ${n(L)} ÷ 3.785411784 ${is(L.div(LITERS_PER_GALLON))} gal for the chart, so the dose is ${metricOut(poolPh, raw, 'liquid')} L of acid.`,
+        `En métrico, ${n(L)} L se leen como ${n(L)} ÷ 3.785411784 ${is(L.div(LITERS_PER_GALLON))} gal para la tabla, así que la dosis es ${metricOut(poolPh, raw, 'liquid')} L de ácido.`,
       ),
     ],
     next: [
@@ -368,6 +403,7 @@ const alkalinity: Texts = (lang) => {
   const grams = shown(liters, 1).mul(raise).mul(PER_PPM_SHOWN).div(Rational.of(1000));
   const places = 1;
   const calcium = { gallons: raw.gallons, current: '200', target: '250' };
+  const L = litresOf(raw);
   return {
     steps: [
       t(
@@ -389,6 +425,11 @@ const alkalinity: Texts = (lang) => {
         lang,
         `Pounds: ${n(grams, places)} ÷ 453.59237 ${is(shown(grams, places).div(GRAMS_PER_POUND), 1)} lb, the figure above; ounces: ÷ 28.349523125 ${is(shown(grams, places).div(GRAMS_PER_OUNCE), 1)} oz.`,
         `Libras: ${n(grams, places)} ÷ 453.59237 ${is(shown(grams, places).div(GRAMS_PER_POUND), 1)} lb, la cifra de arriba; onzas: ÷ 28.349523125 ${is(shown(grams, places).div(GRAMS_PER_OUNCE), 1)} oz.`,
+      ),
+      t(
+        lang,
+        `In metric: ${n(L)} L × ${n(raise)} × 1.6788 ÷ 1,000 ${is(L.mul(raise).mul(PER_PPM_SHOWN).div(Rational.of(1000)))} g, ${metricOut(poolAlkalinity, raw, 'pounds')} kg of baking soda.`,
+        `En métrico: ${n(L)} L × ${n(raise)} × 1.6788 ÷ 1,000 ${is(L.mul(raise).mul(PER_PPM_SHOWN).div(Rational.of(1000)))} g, ${metricOut(poolAlkalinity, raw, 'pounds')} kg de bicarbonato de sodio.`,
       ),
     ],
     next: [
@@ -430,6 +471,7 @@ const stabilizer: Texts = (lang) => {
   const grams = shown(liters, 1).mul(raise).div(Rational.of(1000));
   const places = 2;
   const chlorine = DEFAULTS.chlorine;
+  const L = litresOf(raw);
   return {
     steps: [
       t(
@@ -451,6 +493,11 @@ const stabilizer: Texts = (lang) => {
         lang,
         `Already at 10 ppm? Then the raise is 20 ppm and the dose ${out(poolStabilizer, { ...raw, current: '10' }, 'pounds')} lb; at 20 ppm, ${out(poolStabilizer, { ...raw, current: '20' }, 'pounds')} lb.`,
         `¿Ya tienes 10 ppm? Entonces el aumento es de 20 ppm y la dosis ${out(poolStabilizer, { ...raw, current: '10' }, 'pounds')} lb; con 20 ppm, ${out(poolStabilizer, { ...raw, current: '20' }, 'pounds')} lb.`,
+      ),
+      t(
+        lang,
+        `In metric: ${n(L)} L × ${n(raise)} ÷ 1,000 ${is(L.mul(raise).div(Rational.of(1000)))} g, ${metricOut(poolStabilizer, raw, 'pounds')} kg of cyanuric acid.`,
+        `En métrico: ${n(L)} L × ${n(raise)} ÷ 1,000 ${is(L.mul(raise).div(Rational.of(1000)))} g, ${metricOut(poolStabilizer, raw, 'pounds')} kg de ácido cianúrico.`,
       ),
     ],
     next: [
@@ -489,6 +536,7 @@ const calcium: Texts = (lang) => {
   const most = g.div(Rational.of(10_000)).mul(Rational.of(3));
   const split = pounds.compare(most) === 1;
   const acid = { gallons: raw.gallons, product: 'muriatic-31-45', drops: '1' };
+  const L = litresOf(raw);
   return {
     steps: [
       t(
@@ -515,6 +563,11 @@ const calcium: Texts = (lang) => {
         lang,
         `Dissolve it first, about ½ lb to a gallon of water: ${n(pounds, 1)} lb take about ${n(pounds.mul(Rational.of(2)), 1)} gallons.`,
         `Disuélvelo primero, más o menos ½ lb por galón de agua: ${n(pounds, 1)} lb necesitan unos ${n(pounds.mul(Rational.of(2)), 1)} galones.`,
+      ),
+      t(
+        lang,
+        `In metric, ${n(L)} L ÷ 3.785411784 ${is(L.div(LITERS_PER_GALLON))} gal, so the label dose stands: ${metricOut(poolCalcium, raw, 'pounds')} kg of calcium chloride.`,
+        `En métrico, ${n(L)} L ÷ 3.785411784 ${is(L.div(LITERS_PER_GALLON))} gal, así que la dosis de la etiqueta se queda: ${metricOut(poolCalcium, raw, 'pounds')} kg de cloruro de calcio.`,
       ),
     ],
     next: [
@@ -662,6 +715,14 @@ const volume: Texts = (lang) => {
   const round = Rational.of(24 * 24)
     .mul(PI)
     .div(Rational.of(4));
+  const metric = poolVolume.validate(raw);
+  if (!metric.ok) throw new Error('the volume defaults must validate');
+  const metres = [metric.value.length, metric.value.width].map((each) =>
+    lengthFieldText(each, 'metric'),
+  );
+  const depths = [metric.value.shallow, metric.value.deep].map((each) =>
+    lengthFieldText(each, 'metric'),
+  );
   return {
     steps: [
       t(lang, `Surface: 32 × 16 = ${n(area)} ft².`, `Superficie: 32 × 16 = ${n(area)} ft².`),
@@ -684,6 +745,11 @@ const volume: Texts = (lang) => {
         lang,
         `A round pool 24 ft across starts from π × 24² ÷ 4 ${is(round, 1)} ft² instead; an oval from π × length × width ÷ 4.`,
         `Una piscina redonda de 24 ft de diámetro parte de π × 24² ÷ 4 ${is(round, 1)} ft²; una ovalada, de π × largo × ancho ÷ 4.`,
+      ),
+      t(
+        lang,
+        `With the units set to metric, the same pool reads ${metres.join(' by ')}, ${depths.join(' to ')} deep, and the large figure turns to ${volumeText(gallons, liter)} liters, ${volumeText(gallons, m3, 1)} m³.`,
+        `Con las unidades en métrico, la misma piscina mide ${metres.join(' por ')} y de ${depths.join(' a ')} de profundidad, y la cifra grande pasa a ${volumeText(gallons, liter)} litros, ${volumeText(gallons, m3, 1)} m³.`,
       ),
     ],
     next: [

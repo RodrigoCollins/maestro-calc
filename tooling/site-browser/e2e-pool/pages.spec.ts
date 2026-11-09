@@ -241,6 +241,7 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/how-many-gallons-in-an-olympic-pool',
     '/how-long-to-run-pool-pump',
     '/salt-water-pool-vs-chlorine-pool',
+    '/how-much-salt-for-a-pool',
     '/how-to-shock-a-pool',
     '/how-often-to-shock-a-pool',
     '/how-to-fix-a-green-pool',

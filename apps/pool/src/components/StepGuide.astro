@@ -19,6 +19,7 @@ interface Props {
     readonly lead: string;
     readonly note?: string;
     readonly table?: GuideTable;
+    readonly moreTables?: readonly GuideTable[];
     readonly sources: Readonly<Record<string, GuideSource>>;
     readonly steps: readonly GuideStep[];
   };
@@ -26,6 +27,8 @@ interface Props {
 
 const { path, checked, kicker, title, description, h1, lead, note, table, steps, sources } =
   Astro.props.guide;
+// the first table answers at a glance; any others follow it, such as the same doses in litres
+const tables = [...(table === undefined ? [] : [table]), ...(Astro.props.guide.moreTables ?? [])];
 const lang = langOf(path);
 /** The copy the guide writes around its steps, in its language. */
 const TEXTS = {
@@ -52,7 +55,7 @@ const sourceOf = (key: string): GuideSource => {
     <h1>{h1}</h1>
     <Byline {path} />
     <p>{lead}</p>
-    {table !== undefined && (
+    {tables.map((table) => (
       <>
         <div class="pool-scroll" role="region" aria-label={table.region} tabindex="0">
           <table class="pool-table">
@@ -86,7 +89,7 @@ const sourceOf = (key: string): GuideSource => {
           ))}
         </p>
       </>
-    )}
+    ))}
     <ol class="pool-steps">
       {steps.map((step) => (
         <li>

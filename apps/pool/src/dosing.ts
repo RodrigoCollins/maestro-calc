@@ -5,6 +5,7 @@ import {
   type InputDescriptor,
   type OutputDescriptor,
 } from '@maestro-calc/core';
+import type { Units } from '@maestro-calc/pool-core/units';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
@@ -85,7 +86,7 @@ const MAIN = 10_000;
 
 /** What the chart asks of a calculator: a dose as its page prints it, and the page opened on it. */
 interface Runner {
-  readonly dose: (raw: Raw, key: string) => string;
+  readonly dose: (raw: Raw, key: string, system?: Units) => string;
   readonly href: (raw: Raw) => string;
 }
 
@@ -94,10 +95,10 @@ const runnerOf = <const I extends readonly InputDescriptor[]>(
   engine: Calculator<string, I, readonly OutputDescriptor[], readonly string[]>,
   path: string,
 ): Runner => ({
-  dose: (raw, key) => {
-    const ran = engine.run(raw);
+  dose: (raw, key, system = 'us') => {
+    const ran = engine.run(system === 'metric' ? { ...raw, units: 'metric' } : raw);
     if (!ran.ok) throw new Error(`${engine.id} did not run on ${JSON.stringify(raw)}`);
-    return outputText(key, ran.value.outputs.find((output) => output.key === key)?.value);
+    return outputText(key, ran.value.outputs.find((output) => output.key === key)?.value, system);
   },
   href: (raw) => {
     const validated = engine.validate(raw);
@@ -123,8 +124,12 @@ const runner = (path: string): Runner => {
   return found;
 };
 
-/** The dose the calculator page at `path` prints for `raw`, by its output `key`: a figure a guide quotes. */
-export const doseOf = (path: string, raw: Raw, key: string): string => runner(path).dose(raw, key);
+/**
+ * The dose the calculator page at `path` prints for `raw`, by its output `key`: a figure a guide
+ * quotes. In `metric` the volume of `raw` is litres and the dose is written as the metric page does.
+ */
+export const doseOf = (path: string, raw: Raw, key: string, system: Units = 'us'): string =>
+  runner(path).dose(raw, key, system);
 
 type ColumnSpec = Omit<DoseColumn, 'link'> & { readonly label: string };
 

@@ -1,4 +1,4 @@
-import { cm3, ft, ft3, gal, inch, liter, quantity, Rational } from '@maestro-calc/core';
+import { cm3, ft, ft3, gal, inch, kg, lb, liter, quantity, Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { durationText, lengthFieldText, outputText, volumeText } from './format.ts';
 
@@ -38,5 +38,30 @@ describe('outputText of a plain number', () => {
     expect(outputText('time', Rational.of(100, 3))).toBe('33 h 20 min');
     expect(outputText('btuPerHour', Rational.of(69_500))).toBe('69,500');
     expect(outputText('minutes', Rational.of(4_001, 2))).toBe('2,001');
+  });
+});
+
+describe('outputText in metric', () => {
+  it('writes salt and chemical masses in kilograms, the small rows in grams', () => {
+    expect(outputText('pounds', quantity(200, kg), 'metric')).toBe('200.0');
+    expect(outputText('firstAddition', quantity(150, kg), 'metric')).toBe('150.0');
+    expect(outputText('ounces', quantity(Rational.of(3, 2), kg), 'metric')).toBe('1,500');
+    expect(outputText('dry', quantity(Rational.of(1200, 650), kg), 'metric')).toBe('1,846');
+    expect(outputText('dryPerAddition', quantity(1, lb), 'metric')).toBe('454');
+  });
+
+  it('turns the kilograms row of the salt page into pounds, the figure above being kilograms', () => {
+    expect(outputText('kilograms', quantity(200, kg), 'metric')).toBe('440.9');
+    expect(outputText('kilograms', quantity(200, kg))).toBe('200.0');
+  });
+
+  it('writes liquid doses in litres to two places', () => {
+    expect(outputText('liquid', quantity(800, cm3), 'metric')).toBe('0.80');
+    expect(outputText('liquidPerDay', quantity(Rational.of(1, 4), gal), 'metric')).toBe('0.95');
+  });
+
+  it('keeps the US units when the system is us or not given', () => {
+    expect(outputText('pounds', quantity(Rational.of(13_344, 100), lb), 'us')).toBe('133.4');
+    expect(outputText('liquid', quantity(Rational.of(1, 2), gal))).toBe('64.0');
   });
 });

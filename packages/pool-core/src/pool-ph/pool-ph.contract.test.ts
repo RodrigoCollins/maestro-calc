@@ -8,6 +8,7 @@ describe('pool-ph contract', () => {
       ['gallons', 'g'],
       ['product', 'p'],
       ['drops', 'd'],
+      ['units', 'm'],
     ]);
   });
 

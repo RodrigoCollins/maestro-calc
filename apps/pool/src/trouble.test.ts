@@ -1,5 +1,7 @@
+import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
 import { describe, expect, it } from 'vitest';
 import { figure } from './__testing__/figure.ts';
+import { outputText } from './format.ts';
 import { CHEMISTRY_CHART } from './chemistry.ts';
 import { CALCIUM, CHLORINE, PH, PUMP } from './doses.ts';
 import { GUIDES, SHOCK_GUIDE, type GuideSource, type GuideTable, type StepGuide } from './guide.ts';
@@ -115,6 +117,29 @@ describe('the green pool guide', () => {
     // 10,000 gal: 307.2 fl oz = 2.4 gallons; 61.6 oz = 3.9 lb
     expect(text).toContain('307.2 fl oz');
     expect(text).toContain('61.6 oz');
+  });
+
+  // the same 30 ppm shock for the pools that are measured in litres (Australia, the UK, Spain)
+  it('tables the 30 ppm shock of 20,000 to 80,000 litres, each cell the metric calculator’s', () => {
+    const [metric] = GREEN_GUIDE.moreTables;
+    expect(metric.head).toEqual(['Pool', '12.5% liquid chlorine', '65% cal-hypo']);
+    expect(metric.sources).toEqual(['taylor']);
+    const sizes = ['20000', '30000', '40000', '50000', '60000', '80000'];
+    expect(metric.rows).toEqual(
+      sizes.map((litres) => {
+        const raw = { gallons: litres, current: '0', target: '30', units: 'metric' };
+        const ran = poolChlorine.run({ ...raw, product: 'liquid-12-5' });
+        const dry = poolChlorine.run({ ...raw, product: 'cal-hypo-65' });
+        if (!ran.ok || !dry.ok) throw new Error('run failed');
+        return [
+          `${Number(litres).toLocaleString('en-US')} L`,
+          `${outputText('liquid', ran.value.outputs[0]?.value, 'metric')} L`,
+          `${outputText('dry', dry.value.outputs[1]?.value, 'metric')} g`,
+        ];
+      }),
+    );
+    // 50,000 L x 30 mg = 1,500 g of chlorine: 12 L of 12.5% liquid, 2,308 g of 65% cal-hypo
+    expect(metric.rows[3]).toEqual(['50,000 L', '12.00 L', '2,308 g']);
   });
 
   it('links the pH calculator, the chart, the swim guide and the shock schedule', () => {

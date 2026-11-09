@@ -46,6 +46,7 @@ const proseOf = (page: DosePage): string =>
   [
     page.lead,
     page.method,
+    page.metricMethod ?? '',
     page.note,
     ...Object.values(page.warnings ?? {}),
     page.strip?.legend ?? '',
@@ -78,6 +79,7 @@ describe('the Spanish dose pages', () => {
       // the safety and dose copy says what the English says: the same figures, none left out
       it('states every figure of the English method, note and warnings', () => {
         expect(numbersOf(es.method)).toEqual(numbersOf(en.method));
+        expect(numbersOf(es.metricMethod ?? '')).toEqual(numbersOf(en.metricMethod ?? ''));
         expect(numbersOf(es.note)).toEqual(numbersOf(en.note));
         for (const [code, text] of Object.entries(en.warnings ?? {}))
           expect(numbersOf(es.warnings?.[code] ?? ''), code).toEqual(numbersOf(text));

@@ -31,6 +31,7 @@ describe('pool stabilizer', () => {
       gallons: Rational.of(20_000),
       current: Rational.of(0),
       target: Rational.of(30),
+      units: 'us',
     });
   });
 

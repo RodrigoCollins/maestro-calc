@@ -33,6 +33,7 @@ import { JOB_PAGES } from './jobs.ts';
 import { METHOD_PAGE } from './methodology.ts';
 import { PRIVACY, PRIVACY_TEXTS } from './privacy.ts';
 import { ROUTES } from './routes.ts';
+import { SALT_AMOUNT_GUIDE_ES } from './salt-amount-es.ts';
 import { SITE } from './site.config.ts';
 import { SWIM_GUIDE_ES } from './swim-es.ts';
 import { VOLUME_CHART_ES } from './volume/chart-es.ts';
@@ -87,6 +88,7 @@ const SPANISH: Readonly<Record<string, Omit<Entry, 'path'>>> = {
   'closing-guide': { name: CLOSING_GUIDE_ES.h1, note: CLOSING_GUIDE_ES.description },
   'pump-guide': { name: PUMP_RUN_GUIDE_ES.h1, note: PUMP_RUN_GUIDE_ES.description },
   'salt-guide': { name: SALT_VS_CHLORINE_GUIDE_ES.h1, note: SALT_VS_CHLORINE_GUIDE_ES.description },
+  'salt-amount-guide': { name: SALT_AMOUNT_GUIDE_ES.h1, note: SALT_AMOUNT_GUIDE_ES.description },
   'shock-guide': { name: SHOCK_GUIDE_ES.h1, note: SHOCK_GUIDE_ES.description },
   'shock-often-guide': { name: SHOCK_OFTEN_GUIDE_ES.h1, note: SHOCK_OFTEN_GUIDE_ES.description },
   'green-guide': { name: GREEN_GUIDE_ES.h1, note: GREEN_GUIDE_ES.description },

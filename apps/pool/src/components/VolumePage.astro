@@ -45,8 +45,18 @@ const view = sideViewOf(
   lang,
 );
 const rows = [
-  { key: 'liters', label: t.rows.liters, value: volumeText(volume('liters'), liter) },
-  { key: 'cubicFeet', label: t.rows.cubicFeet, value: volumeText(volume('cubicFeet'), ft3, 1) },
+  {
+    key: 'liters',
+    label: t.rows.liters,
+    metric: t.metric.rows.liters,
+    value: volumeText(volume('liters'), liter),
+  },
+  {
+    key: 'cubicFeet',
+    label: t.rows.cubicFeet,
+    metric: t.metric.rows.cubicFeet,
+    value: volumeText(volume('cubicFeet'), ft3, 1),
+  },
 ];
 ---
 
@@ -56,6 +66,17 @@ const rows = [
     <h1>{t.h1}</h1>
     <p>{t.lead}</p>
     <form class="pool-form" data-calculator="pool-volume" novalidate>
+      {/* the units of the page (core's u=m), not a field of the engine: the script reads it */}
+      <label>
+        {t.units.label}
+        <select name="units">
+          {Object.entries(t.units.options).map(([value, label]) => (
+            <option value={value} selected={value === 'us'}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
       {fields.map((field) => (
         <label>
           {field.label}
@@ -110,12 +131,12 @@ const rows = [
       <p id="figure-label">{t.figureLabel}</p>
       <p class="pool-marker">
         <span data-out="gallons">{volumeText(volume('gallons'), gal)}</span>
-        <small>{t.unit}</small>
+        <small data-metric={t.metric.unit}>{t.unit}</small>
       </p>
       <dl>
         {rows.map((row) => (
           <div>
-            <dt>{row.label}</dt>
+            <dt data-metric={row.metric}>{row.label}</dt>
             <dd data-out={row.key}>{row.value}</dd>
           </div>
         ))}

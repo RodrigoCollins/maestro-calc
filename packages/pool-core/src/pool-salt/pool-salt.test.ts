@@ -24,6 +24,7 @@ describe('pool salt', () => {
       gallons: Rational.of(20_000),
       current: Rational.of(2400),
       target: Rational.of(3200),
+      units: 'us',
     });
   });
 

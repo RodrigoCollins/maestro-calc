@@ -32,6 +32,7 @@ describe('the footer', () => {
       { href: '/charts', label: 'Data and charts' },
       { href: '/how-long-to-run-pool-pump', label: 'How long to run your pump' },
       { href: '/salt-water-pool-vs-chlorine-pool', label: 'Salt water vs chlorine' },
+      { href: '/how-much-salt-for-a-pool', label: 'How much salt for a pool' },
       { href: '/how-to-shock-a-pool', label: 'How to shock a pool' },
       { href: '/how-often-to-shock-a-pool', label: 'How often to shock a pool' },
       { href: '/how-to-fix-a-green-pool', label: 'How to fix a green pool' },
