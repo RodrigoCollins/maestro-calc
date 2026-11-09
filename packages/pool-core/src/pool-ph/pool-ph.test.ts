@@ -53,6 +53,7 @@ describe('pool pH', () => {
       gallons: Rational.of(20_000),
       product: 'muriatic-31-45',
       drops: 2,
+      units: 'us',
     });
   });
 

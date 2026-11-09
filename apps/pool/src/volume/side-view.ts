@@ -10,6 +10,8 @@
  * rectangle's, so only the depths change the picture.
  */
 
+import type { Units } from '@maestro-calc/pool-core/units';
+
 /** The viewBox of the drawing, the same in every state, so the box never moves. */
 export const SIDE_VIEW = { width: 330, height: 170 } as const;
 
@@ -46,8 +48,17 @@ export interface SideView {
   readonly name: string;
 }
 
-/** A length in inches as a depth marker reads it, to the nearest inch: `8 FT`, `3½ FT`, `3 FT 7 IN`. */
-export const depthText = (inches: number): string => {
+/** Inches in a metre: 5000 / 127, the exact international inch. */
+const INCHES_PER_METRE = 5000 / 127;
+
+/**
+ * A length in inches as a depth marker reads it, to the nearest inch: `8 FT`, `3½ FT`,
+ * `3 FT 7 IN`; in metric to the centimetre, as an Australian marker reads it: `1.07 M`, `2 M`.
+ */
+export const depthText = (inches: number, units: Units = 'us'): string => {
+  if (units === 'metric') {
+    return `${String(Math.round((inches / INCHES_PER_METRE) * 100) / 100)} M`;
+  }
   const total = Math.round(inches);
   const feet = Math.floor(total / 12);
   const rest = total % 12;
@@ -80,19 +91,19 @@ export const sideViewOf = (
     readonly deep: number;
   },
   lang: 'en' | 'es' = 'en',
+  units: Units = 'us',
 ): SideView => {
   const deepest = Math.max(shallow, deep);
   const left = String(floorOf(shallow, deepest));
   const right = String(floorOf(deep, deepest));
   const floor = `V${left}H${String(BREAK)}L${String(TOE)} ${right}H${String(RIGHT)}`;
-  const texts = [depthText(length), depthText(shallow), depthText(deep)].map((text) =>
-    text.toLowerCase(),
-  );
+  const [long, low, high] = [length, shallow, deep].map((inches) => depthText(inches, units));
+  const texts = [long, low, high].map((text) => text?.toLowerCase());
   return {
     water: `M${String(LEFT)} ${String(WATERLINE)}${floor}V${String(WATERLINE)}Z`,
     wall: `M${String(LEFT)} ${String(COPING)}${floor}V${String(COPING)}`,
-    length: depthText(length),
-    markers: [markerAt(depthText(shallow), 'left'), markerAt(depthText(deep), 'right')],
+    length: long ?? '',
+    markers: [markerAt(low ?? '', 'left'), markerAt(high ?? '', 'right')],
     name:
       lang === 'en'
         ? `Side view of the pool, not to scale: ${texts[0] ?? ''} long, ${texts[1] ?? ''} deep at the shallow end and ${texts[2] ?? ''} at the deep end`

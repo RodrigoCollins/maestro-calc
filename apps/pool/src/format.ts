@@ -4,6 +4,8 @@ import {
   isQuantityOf,
   kg,
   lb,
+  liter,
+  m,
   oz,
   Rational,
   toDecimalParts,
@@ -11,6 +13,7 @@ import {
   type Quantity,
   type Unit,
 } from '@maestro-calc/core';
+import type { Units } from '@maestro-calc/pool-core/units';
 
 /** Thousands grouped with commas: `22023` is `22,023`. */
 const grouped = (integer: bigint): string =>
@@ -32,8 +35,15 @@ export const volumeText = (
   return `${negative ? '-' : ''}${grouped(integer)}${places > 0 ? `.${fraction}` : ''}`;
 };
 
-/** A length as a field shows it, to the nearest 1/16 in: `32 ft`, `3 ft 6 in`, `9 1/2 in`. */
-export const lengthFieldText = (length: Quantity<'length'>): string => {
+/**
+ * A length as a field shows it, to the nearest 1/16 in: `32 ft`, `3 ft 6 in`, `9 1/2 in`; in
+ * metric to the centimetre, trailing zeros dropped: `10 m`, `2.5 m`, `1.07 m`.
+ */
+export const lengthFieldText = (length: Quantity<'length'>, system: Units = 'us'): string => {
+  if (system === 'metric') {
+    const metres = amountText(valueIn(length, m), 2).replaceAll(',', '');
+    return `${metres.replace(/\.?0+$/, '')} m`;
+  }
   const { parts } = formatFeetInches(length, { denominator: 16 });
   const { numerator, denominator } = parts.fraction;
   const inches =
@@ -63,7 +73,29 @@ const PER_GALLON = Rational.of(128);
  * gallons a minute of pump flow; a plain number is the fill time in hours and minutes, or a whole
  * figure (BTU, minutes).
  */
-export const outputText = (key: string, value: unknown): string => {
+export const outputText = (key: string, value: unknown, system: Units = 'us'): string =>
+  system === 'metric' ? metricText(key, value) : usText(key, value);
+
+const THOUSAND = Rational.of(1000);
+
+/**
+ * The same outputs in metric: kilograms (grams for the small `dry…` and `ounces` rows) and liquids
+ * in litres to two places. The `kilograms` row of the salt page shows pounds instead, since the
+ * large figure above it is already kilograms. Anything else is written as in the US.
+ */
+const metricText = (key: string, value: unknown): string => {
+  if (isQuantityOf(value, 'mass')) {
+    if (key === 'kilograms') return amountText(valueIn(value, lb), 1);
+    return key.startsWith('dry') || key === 'ounces'
+      ? amountText(valueIn(value, kg).mul(THOUSAND))
+      : amountText(valueIn(value, kg), 1);
+  }
+  if (isQuantityOf(value, 'volume') && key.startsWith('liquid'))
+    return amountText(valueIn(value, liter), 2);
+  return usText(key, value);
+};
+
+const usText = (key: string, value: unknown): string => {
   if (isQuantityOf(value, 'mass'))
     return amountText(
       valueIn(

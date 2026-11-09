@@ -14,7 +14,8 @@
     "./pool-heater": "./src/pool-heater/index.ts",
     "./pool-fill-time": "./src/pool-fill-time/index.ts",
     "./pool-ph": "./src/pool-ph/index.ts",
-    "./pool-calcium": "./src/pool-calcium/index.ts"
+    "./pool-calcium": "./src/pool-calcium/index.ts",
+    "./units": "./src/units.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

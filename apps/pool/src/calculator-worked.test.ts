@@ -82,6 +82,22 @@ describe('the worked example of a calculator page', () => {
     }
   });
 
+  it('works every page with a units choice out in metric too, in both languages', () => {
+    const metric = ['salt', 'chlorine', 'ph', 'alkalinity', 'stabilizer', 'calcium', 'volume'];
+    for (const path of PATHS.filter((each) => metric.includes(routeOf(each)?.id ?? ''))) {
+      const step = calculatorWorkedOf(path).steps.at(-1) ?? '';
+      expect(step, path).toMatch(langOf(path) === 'en' ? /metric/ : /métrico/);
+    }
+    const salt = calculatorWorkedOf('/pool-salt-calculator').steps.join(' ');
+    expect(salt).toContain('75,708 × 800 ÷ 1,000,000 ≈ 60.6 kg');
+    expect(salt).toContain('4 bags of 20 kg');
+    const chlorine = calculatorWorkedOf('/es/calculadora-de-cloro-para-piscina').steps.join(' ');
+    expect(chlorine).toContain('75,708 × 2 ÷ 1,000 ≈ 151.4 g de cloro disponible, 1.21 L');
+    const volume = calculatorWorkedOf('/pool-volume-calculator').steps.join(' ');
+    expect(volume).toContain('9.75 m by 4.88 m, 1.07 m to 2.44 m deep');
+    expect(volume).toContain('83,365 liters, 83.4 m³');
+  });
+
   it('works the salt and the pump at their defaults as by hand', () => {
     const salt = calculatorWorkedOf('/pool-salt-calculator').steps.join(' ');
     expect(salt).toContain('Water: 20,000 gal × 8.34 lb = 166,800 lb.');

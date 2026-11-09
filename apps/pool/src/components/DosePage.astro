@@ -23,12 +23,19 @@ const { page, calculator, embed = false } = Astro.props;
 const ran = calculator.run({});
 if (!ran.ok) throw new Error(`${calculator.id} must run at its defaults`);
 const out = new Map<string, unknown>(ran.value.outputs.map(({ key, value }) => [key, value]));
-const fields = calculator.inputs.map((input) => {
+// the units choice is the engine's last input (a released link keeps its meaning) but the first
+// field the visitor meets, since it names the unit of the volume under it
+const inputs = [
+  ...calculator.inputs.filter(({ key }) => key === 'units'),
+  ...calculator.inputs.filter(({ key }) => key !== 'units'),
+];
+const fields = inputs.map((input) => {
   const copy = page.fields[input.key];
   if (copy === undefined) throw new Error(`no label for ${input.key}`);
   return {
     key: input.key,
     label: copy.label,
+    metric: copy.metric,
     value:
       input.kind === 'select'
         ? input.default
@@ -61,7 +68,11 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
     <form class="pool-form" data-calculator={calculator.id} novalidate>
       {fields.map((field) => (
         <label>
-          {field.label}
+          {field.metric === undefined ? (
+            field.label
+          ) : (
+            <span data-metric={field.metric}>{field.label}</span>
+          )}
           {field.options === undefined ? (
             <input
               name={field.key}
@@ -98,25 +109,27 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
     <section class="pool-result" aria-live="polite">
       {primaries.map((result) => (
         <div data-forms={result.forms?.join(' ')} hidden={!shown(result.forms)}>
-          <p>{result.label}</p>
+          <p data-metric={result.metricLabel}>{result.label}</p>
           <p class="pool-marker">
             <span data-out={result.key}>{outputText(result.key, out.get(result.key))}</span>
-            <small>{result.unit}</small>
+            <small data-metric={result.metricUnit}>{result.unit}</small>
           </p>
         </div>
       ))}
       {page.bags !== undefined && (
         <p class="pool-bags">
-          <strong data-shop>{String(ran.value.shopping[0]?.qty ?? 0n)}</strong> {page.bags}
+          <strong data-shop>{String(ran.value.shopping[0]?.qty ?? 0n)}</strong>{' '}
+          <span data-metric={page.metricBags}>{page.bags}</span>
         </p>
       )}
       {rows.length > 0 && (
         <dl>
           {rows.map((row) => (
             <div data-forms={row.forms?.join(' ')} hidden={!shown(row.forms)}>
-              <dt>{row.label}</dt>
+              <dt data-metric={row.metricLabel}>{row.label}</dt>
               <dd>
-                <span data-out={row.key}>{outputText(row.key, out.get(row.key))}</span> {row.unit}
+                <span data-out={row.key}>{outputText(row.key, out.get(row.key))}</span>{' '}
+                <span data-metric={row.metricUnit}>{row.unit}</span>
               </dd>
             </div>
           ))}

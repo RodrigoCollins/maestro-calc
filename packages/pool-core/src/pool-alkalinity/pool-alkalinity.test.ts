@@ -41,6 +41,7 @@ describe('pool alkalinity', () => {
       gallons: Rational.of(20_000),
       current: Rational.of(70),
       target: Rational.of(100),
+      units: 'us',
     });
   });
 

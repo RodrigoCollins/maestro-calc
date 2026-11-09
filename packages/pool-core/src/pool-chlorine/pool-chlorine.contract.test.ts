@@ -9,6 +9,7 @@ describe('pool-chlorine contract', () => {
       ['current', 'c'],
       ['target', 't'],
       ['product', 'p'],
+      ['units', 'm'],
     ]);
   });
 

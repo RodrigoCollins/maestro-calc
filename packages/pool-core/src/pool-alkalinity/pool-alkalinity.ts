@@ -1,7 +1,5 @@
 import { decimalInput, defineCalculator, kg, quantity, Rational } from '@maestro-calc/core';
-
-/** A US gallon is exactly 3.785411784 L (NIST SP 811), and 1 ppm is 1 mg/L. */
-const LITERS_PER_GALLON = Rational.of(3_785_411_784, 1_000_000_000);
+import { litersOf, unitsInput } from '../units.ts';
 /**
  * Total alkalinity is read as calcium carbonate: CaCO3 (100.087 g/mol, two equivalents) weighs
  * 50.04 g an equivalent, and sodium bicarbonate (NaHCO3, 84.007 g/mol) gives one, so 1 ppm of TA is
@@ -31,6 +29,7 @@ export const poolAlkalinity = defineCalculator({
     }),
     ppm('current', 'c', 70),
     ppm('target', 't', 100),
+    unitsInput(),
   ],
   outputs: [
     {
@@ -47,11 +46,11 @@ export const poolAlkalinity = defineCalculator({
     },
   ],
   warnings: ['acidToLower'],
-  compute: ({ gallons, current, target }) => {
+  compute: ({ gallons, current, target, units }) => {
     // a reading at or over the target adds nothing
     const difference = target.sub(current);
     const raise = difference.sign() === -1 ? Rational.ZERO : difference;
-    const milligrams = gallons.mul(LITERS_PER_GALLON).mul(raise).mul(BICARBONATE_PER_PPM);
+    const milligrams = litersOf(gallons, units).mul(raise).mul(BICARBONATE_PER_PPM);
     const mass = quantity(milligrams.div(MILLION), kg);
     return {
       outputs: { pounds: mass, ounces: mass },

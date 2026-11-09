@@ -34,6 +34,7 @@ describe('pool chlorine', () => {
       current: Rational.of(1),
       target: Rational.of(3),
       product: 'liquid-12-5',
+      units: 'us',
     });
   });
 

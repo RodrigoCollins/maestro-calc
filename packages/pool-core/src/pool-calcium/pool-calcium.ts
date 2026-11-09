@@ -1,4 +1,5 @@
 import { decimalInput, defineCalculator, lb, quantity, Rational } from '@maestro-calc/core';
+import { gallonsOf, unitsInput } from '../units.ts';
 
 /**
  * ClearView Calcium Increaser label (Oreq Corporation), calcium chloride flake (74-100% by its
@@ -32,6 +33,7 @@ export const poolCalcium = defineCalculator({
     }),
     ppm('current', 'c', 180),
     ppm('target', 't', 200),
+    unitsInput(),
   ],
   outputs: [
     {
@@ -54,7 +56,8 @@ export const poolCalcium = defineCalculator({
     },
   ],
   warnings: ['dilutionToLower', 'splitDose'],
-  compute: ({ gallons, current, target }) => {
+  compute: ({ gallons: volume, current, target, units }) => {
+    const gallons = gallonsOf(volume, units);
     // a reading at or over the target adds nothing
     const difference = target.sub(current);
     const raise = difference.sign() === -1 ? Rational.ZERO : difference;

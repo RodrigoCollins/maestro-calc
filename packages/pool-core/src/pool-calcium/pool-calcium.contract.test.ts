@@ -8,6 +8,7 @@ describe('pool-calcium contract', () => {
       ['gallons', 'g'],
       ['current', 'c'],
       ['target', 't'],
+      ['units', 'm'],
     ]);
   });
 

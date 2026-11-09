@@ -46,6 +46,7 @@ describe('pool calcium', () => {
       gallons: Rational.of(20_000),
       current: Rational.of(180),
       target: Rational.of(200),
+      units: 'us',
     });
   });
 

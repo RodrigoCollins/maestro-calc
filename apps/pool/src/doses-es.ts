@@ -3,12 +3,18 @@ import { STRIP } from './strip.ts';
 
 /*
  * The Spanish dose pages (plans/pool/SPANISH.md, slice 3): the same engines, fields and figures
- * as the English pages of `doses.ts`, in neutral Spanish (tú: Ingresa, Usa, Elige), US units and
- * the product names of the US labels. `doses-es.test.ts` holds each one to its English twin: the
+ * as the English pages of `doses.ts`, in neutral Spanish (tú: Ingresa, Usa, Elige), US units or
+ * litres and kilos (the units choice, for Spain and Mexico) and the product names of the US labels. `doses-es.test.ts` holds each one to its English twin: the
  * same keys, and every figure of its method, note and warnings.
  */
 
 const gallons = { label: 'Volumen de la piscina (galones)' };
+/** The volume of a calculator with the units choice: litres in metric. */
+const volume = { ...gallons, metric: 'Volumen de la piscina (litros)' };
+const units = {
+  label: 'Unidades',
+  options: { us: 'EE. UU.: galones, libras', metric: 'Métrico: litros, kilos' },
+};
 const target = { label: 'Nivel deseado (ppm)' };
 
 /** The hand-worked cases of each calculator, in its section of the Spanish methodology. */
@@ -21,24 +27,30 @@ export const SALT_ES: DosePage = {
   path: '/es/calculadora-de-sal-para-piscina',
   title: 'Calculadora de sal para piscina: ¿cuántas bolsas? | Pool Figures',
   description:
-    'Cuántas libras y bolsas de sal de 40 lb suben tu piscina de su lectura actual al nivel que buscas, 3,200 ppm si no cambias nada.',
+    'Cuántas libras y bolsas de 40 lb, o kilos y sacos de 20 kg, de sal suben tu piscina de su lectura al nivel que buscas, en galones o litros.',
   kicker: 'Piscinas de agua salada · gratis',
   h1: 'Calculadora de sal para piscina',
-  lead: 'Ingresa los galones de tu piscina o alberca, la lectura de sal de hoy y el nivel que pide tu celda. Obtienes las libras y las bolsas.',
-  fields: { gallons, current: { label: 'Sal actual (ppm)' }, target },
+  lead: 'Elige unidades de EE. UU. o métricas e ingresa el volumen de tu piscina o alberca, la lectura de sal de hoy y el nivel que pide tu clorador. Obtienes las libras o los kilos, y las bolsas.',
+  fields: { gallons: volume, current: { label: 'Sal actual (ppm)' }, target, units },
   results: [
-    { key: 'pounds', label: 'Sal que debes agregar', unit: 'LB' },
-    { key: 'kilograms', label: 'Kilogramos', unit: 'kg' },
-    { key: 'firstAddition', label: 'Agrega esto primero y mide después de 24 horas', unit: 'lb' },
+    { key: 'pounds', label: 'Sal que debes agregar', unit: 'LB', metricUnit: 'KG' },
+    { key: 'kilograms', label: 'Kilogramos', unit: 'kg', metricUnit: 'lb', metricLabel: 'Libras' },
+    {
+      key: 'firstAddition',
+      label: 'Agrega esto primero y mide después de 24 horas',
+      unit: 'lb',
+      metricUnit: 'kg',
+    },
   ],
   bags: 'bolsas de 40 lb',
+  metricBags: 'sacos de 20 kg',
   warnings: {
     drainToLower:
       'Tu sal está por encima del nivel deseado. La sal no se gasta: la única forma de bajarla es vaciar parte del agua y volver a llenar.',
   },
   method:
-    'Libras = galones × (nivel deseado − lectura) × 8.34 ÷ 1,000,000, porque un galón de agua pesa unas 8.34 lb. El manual de AquaRite de Hayward da de 2,700 a 3,400 ppm, y 3,200 como el mejor nivel.',
-  note: 'Usa sal para piscina con más de 99% de cloruro de sodio. Espera de 10 a 14 días antes de agregar sal a un acabado nuevo de yeso (plaster).',
+    'Libras = galones × (nivel deseado − lectura) × 8.34 ÷ 1,000,000, porque un galón de agua pesa unas 8.34 lb. El manual de AquaRite de Hayward da de 2,700 a 3,400 ppm, y 3,200 como el mejor nivel. En métrico, 1 ppm es 1 mg por litro: kilos = litros × (nivel deseado − lectura) ÷ 1,000,000, los 4 kg por cada 1,000 L a 4,000 ppm del manual VX de AstralPool, cuyos cloradores y el TRi-XO de Zodiac trabajan a 4,000 ppm.',
+  note: 'Usa sal para piscina con más de 99% de cloruro de sodio. Espera de 10 a 14 días antes de agregar sal a un acabado nuevo de yeso (plaster). Donde el saco es de 25 kg, como en España, divide los kilos entre 25.',
   methodLink: methodLink('salt'),
 };
 
@@ -49,9 +61,9 @@ export const CHLORINE_ES: DosePage = {
     'Cuánto cloro líquido, hipoclorito de calcio (cal-hypo) o dicloro sube el cloro libre de tu piscina de su lectura al nivel que buscas.',
   kicker: 'Cloro · gratis',
   h1: 'Calculadora de cloro para piscina',
-  lead: 'Ingresa los galones de tu piscina, el cloro libre de hoy y el nivel que quieres. Obtienes la dosis del producto que tienes.',
+  lead: 'Ingresa el volumen de tu piscina, en galones o litros, el cloro libre de hoy y el nivel que quieres. Obtienes la dosis del producto que tienes.',
   fields: {
-    gallons,
+    gallons: volume,
     current: { label: 'Cloro libre actual (ppm)' },
     target,
     product: {
@@ -63,18 +75,21 @@ export const CHLORINE_ES: DosePage = {
         'dichlor-56': 'Dicloro, 56%',
       },
     },
+    units,
   },
   results: [
     {
       key: 'liquid',
       label: 'Cloro líquido que debes agregar',
       unit: 'FL OZ',
+      metricUnit: 'LITROS',
       forms: ['liquid-12-5', 'liquid-10'],
     },
     {
       key: 'dry',
       label: 'Producto granulado que debes agregar',
       unit: 'OZ DE PESO',
+      metricUnit: 'GRAMOS',
       forms: ['cal-hypo-65', 'dichlor-56'],
     },
   ],
@@ -85,7 +100,7 @@ export const CHLORINE_ES: DosePage = {
     pads: STRIP.pads,
   },
   method:
-    '1 ppm es 1 mg por litro. Los gramos de cloro disponible = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000, divididos entre la concentración de la etiqueta: 10.24 fl oz de cloro líquido al 12.5% por ppm por cada 10,000 galones.',
+    '1 ppm es 1 mg por litro. Los gramos de cloro disponible = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000, divididos entre la concentración de la etiqueta: 10.24 fl oz de cloro líquido al 12.5% por ppm por cada 10,000 galones. En métrico los litros entran tal cual: 8 mL de cloro líquido al 12.5% por ppm por cada 1,000 L.',
   note: 'Concentraciones de las etiquetas: hipoclorito de calcio de al menos 65% y dicloro de 56% de cloro disponible (etiquetas registradas ante la EPA). Sigue la etiqueta de tu producto.',
   methodLink: methodLink('chlorine'),
 };
@@ -97,9 +112,9 @@ export const PH_ES: DosePage = {
     'Cuánto ácido muriático baja el pH de tu piscina, o cuánto carbonato de sodio lo sube, según las gotas de la prueba de demanda de un kit Taylor.',
   kicker: 'pH · gratis',
   h1: 'Calculadora de pH para piscina',
-  lead: 'Para bajar el pH, haz la prueba de demanda de ácido de tu kit; para subirlo, la prueba de demanda de base, y cuenta las gotas que necesita. Ingresa los galones de tu piscina y esas gotas. Obtienes el ácido muriático o el carbonato de sodio que debes agregar.',
+  lead: 'Para bajar el pH, haz la prueba de demanda de ácido de tu kit; para subirlo, la prueba de demanda de base, y cuenta las gotas que necesita. Ingresa el volumen de tu piscina, en galones o litros, y esas gotas. Obtienes el ácido muriático o el carbonato de sodio que debes agregar.',
   fields: {
-    gallons,
+    gallons: volume,
     product: {
       label: 'Lo que necesitas',
       options: {
@@ -108,24 +123,28 @@ export const PH_ES: DosePage = {
       },
     },
     drops: { label: 'Gotas de reactivo de demanda' },
+    units,
   },
   results: [
     {
       key: 'liquid',
       label: 'Ácido muriático que debes agregar',
       unit: 'FL OZ',
+      metricUnit: 'LITROS',
       forms: ['muriatic-31-45'],
     },
     {
       key: 'dry',
       label: 'Carbonato de sodio que debes agregar',
       unit: 'OZ DE PESO',
+      metricUnit: 'GRAMOS',
       forms: ['soda-ash'],
     },
     {
       key: 'liquidPerDay',
       label: 'Lo más que puedes agregar en 24 horas',
       unit: 'fl oz',
+      metricUnit: 'L',
       forms: ['muriatic-31-45'],
       detail: true,
     },
@@ -134,6 +153,7 @@ export const PH_ES: DosePage = {
       key: 'dryPerAddition',
       label: 'Lo más que puedes agregar de una vez',
       unit: 'oz',
+      metricUnit: 'g',
       forms: ['soda-ash'],
       detail: true,
     },
@@ -154,7 +174,7 @@ export const PH_ES: DosePage = {
       'Es más de lo que la etiqueta agrega de una vez, así que divídelo: agrega como máximo la cantidad de arriba, deja circular el agua de 2 a 3 horas, mide el pH otra vez y agrega el resto de la misma forma.',
   },
   method:
-    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, y cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba.',
+    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, y cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba. En métrico los litros se leen como galones, de 3.785 L cada uno, porque la tabla y las etiquetas están escritas por galón.',
   note: 'La dosis de ácido es para ácido muriático al 31.45% (20° Baumé); para otra concentración, sigue la etiqueta de tu producto. Agrega el ácido al agua, nunca el agua al ácido: viértelo despacio en la parte honda con la bomba funcionando, con guantes y protección para los ojos, y nunca lo mezcles con cloro. Mide el pH otra vez después del tiempo de espera de la etiqueta.',
   methodLink: methodLink('ph'),
 };
@@ -166,18 +186,18 @@ export const ALKALINITY_ES: DosePage = {
     'Cuántas libras de bicarbonato de sodio suben la alcalinidad total de tu piscina de su lectura al nivel que buscas, 100 ppm si no cambias nada.',
   kicker: 'Alcalinidad · gratis',
   h1: 'Calculadora de alcalinidad para piscina',
-  lead: 'Ingresa los galones de tu piscina, la alcalinidad total de hoy y el nivel que quieres. Obtienes las libras de bicarbonato de sodio que debes agregar.',
-  fields: { gallons, current: { label: 'Alcalinidad actual (ppm)' }, target },
+  lead: 'Ingresa el volumen de tu piscina, en galones o litros, la alcalinidad total de hoy y el nivel que quieres. Obtienes las libras o los kilos de bicarbonato de sodio que debes agregar.',
+  fields: { gallons: volume, current: { label: 'Alcalinidad actual (ppm)' }, target, units },
   results: [
-    { key: 'pounds', label: 'Bicarbonato de sodio que debes agregar', unit: 'LB' },
-    { key: 'ounces', label: 'Onzas', unit: 'oz' },
+    { key: 'pounds', label: 'Bicarbonato de sodio que debes agregar', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Onzas', unit: 'oz', metricUnit: 'g', metricLabel: 'Gramos' },
   ],
   warnings: {
     acidToLower:
       'Tu alcalinidad está por encima del nivel deseado. El bicarbonato solo la sube: bajar la alcalinidad requiere ácido, y esta calculadora no lo dosifica.',
   },
   method:
-    'La alcalinidad total se mide como carbonato de calcio, así que 1 ppm requiere 84.007 ÷ 50.04 = 1.6788 mg por litro de bicarbonato de sodio. Miligramos = galones × 3.785 × (nivel deseado − lectura) × 1.6788: 1.4 lb por cada 10 ppm por cada 10,000 galones.',
+    'La alcalinidad total se mide como carbonato de calcio, así que 1 ppm requiere 84.007 ÷ 50.04 = 1.6788 mg por litro de bicarbonato de sodio. Miligramos = galones × 3.785 × (nivel deseado − lectura) × 1.6788: 1.4 lb por cada 10 ppm por cada 10,000 galones, o 16.8 g por cada 10 ppm por cada 1,000 L en métrico.',
   note: 'Usa bicarbonato de sodio puro (baking soda): revisa que la etiqueta del aumentador de alcalinidad lo diga. Para piscinas públicas, el Model Aquatic Health Code de los CDC mantiene la alcalinidad total entre 60 y 180 ppm.',
   methodLink: methodLink('alkalinity'),
 };
@@ -192,18 +212,18 @@ export const STABILIZER_ES: DosePage = {
     'Cuántas libras y onzas de ácido cianúrico (estabilizador o acondicionador) suben el CYA de tu piscina de su lectura al nivel que buscas.',
   kicker: 'Estabilizador · gratis',
   h1: 'Calculadora de estabilizador para piscina',
-  lead: 'Ingresa los galones de tu piscina, la lectura de ácido cianúrico (CYA) de hoy y el nivel que quieres. Obtienes las libras de ácido cianúrico (estabilizador) que debes agregar.',
-  fields: { gallons, current: { label: 'CYA actual (ppm)' }, target },
+  lead: 'Ingresa el volumen de tu piscina, en galones o litros, la lectura de ácido cianúrico (CYA) de hoy y el nivel que quieres. Obtienes las libras de ácido cianúrico (estabilizador) que debes agregar.',
+  fields: { gallons: volume, current: { label: 'CYA actual (ppm)' }, target, units },
   results: [
-    { key: 'pounds', label: 'Estabilizador que debes agregar', unit: 'LB' },
-    { key: 'ounces', label: 'Onzas', unit: 'oz' },
+    { key: 'pounds', label: 'Estabilizador que debes agregar', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Onzas', unit: 'oz', metricUnit: 'g', metricLabel: 'Gramos' },
   ],
   warnings: {
     drainToLower:
       'Tu CYA está por encima del nivel deseado. El ácido cianúrico no se gasta: la única forma de bajarlo es vaciar parte del agua y volver a llenar.',
     overCodeLimit: `Tu nivel deseado pasa de 90 ppm, lo más que permite ${CODE} en una piscina pública.`,
   },
-  method: `1 ppm es 1 mg por litro, así que los gramos de ácido cianúrico = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000: 13.35 oz por cada 10 ppm por cada 10,000 galones. Para piscinas públicas, ${CODE} mantiene el CYA en 90 ppm o menos.`,
+  method: `1 ppm es 1 mg por litro, así que los gramos de ácido cianúrico = galones × 3.785 × (nivel deseado − lectura) ÷ 1,000: 13.35 oz por cada 10 ppm por cada 10,000 galones, o 10 g por cada 10 ppm por cada 1,000 L en métrico. Para piscinas públicas, ${CODE} mantiene el CYA en 90 ppm o menos.`,
   note: 'La dosis es para un producto de 100% ácido cianúrico. Lee la etiqueta del tuyo: para un estabilizador líquido o mezclado, divide la dosis entre su porcentaje y multiplica por 100. El dicloro y el tricloro también suben el CYA.',
   methodLink: methodLink('stabilizer'),
 };
@@ -215,12 +235,22 @@ export const CALCIUM_ES: DosePage = {
     'Cuántas libras de cloruro de calcio suben la dureza de calcio de tu piscina de su lectura al nivel que buscas, con la dosis de la etiqueta.',
   kicker: 'Dureza de calcio · gratis',
   h1: 'Calculadora de dureza de calcio para piscina',
-  lead: 'Ingresa los galones de tu piscina, la dureza de calcio de hoy y el nivel que quieres. Obtienes las libras de cloruro de calcio que debes agregar, y cuánto agregar primero.',
-  fields: { gallons, current: { label: 'Dureza de calcio actual (ppm)' }, target },
+  lead: 'Ingresa el volumen de tu piscina, en galones o litros, la dureza de calcio de hoy y el nivel que quieres. Obtienes las libras de cloruro de calcio que debes agregar, y cuánto agregar primero.',
+  fields: {
+    gallons: volume,
+    current: { label: 'Dureza de calcio actual (ppm)' },
+    target,
+    units,
+  },
   results: [
-    { key: 'pounds', label: 'Cloruro de calcio que debes agregar', unit: 'LB' },
-    { key: 'ounces', label: 'Onzas', unit: 'oz' },
-    { key: 'firstAddition', label: 'Agrega esto primero y espera 12 horas', unit: 'lb' },
+    { key: 'pounds', label: 'Cloruro de calcio que debes agregar', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Onzas', unit: 'oz', metricUnit: 'g', metricLabel: 'Gramos' },
+    {
+      key: 'firstAddition',
+      label: 'Agrega esto primero y espera 12 horas',
+      unit: 'lb',
+      metricUnit: 'kg',
+    },
   ],
   warnings: {
     dilutionToLower:
@@ -229,7 +259,7 @@ export const CALCIUM_ES: DosePage = {
       'Es más de 3 lb por cada 10,000 galones, así que la etiqueta lo divide: agrega la primera cantidad, deja la bomba funcionando al menos 12 horas, mide otra vez y agrega el resto de la misma forma.',
   },
   method:
-    'Según la etiqueta de un aumentador de dureza de calcio (ClearView, Oreq Corporation): 2 oz de cloruro de calcio en escamas por cada 1,000 galones suben la dureza de calcio 10 ppm, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Libras = galones × (nivel deseado − lectura) ÷ 80,000. Comprobado con la química: 10 ppm como carbonato de calcio en 10,000 galones requieren 0.925 lb de cloruro de calcio puro, 1.25 lb de escamas al 74%.',
+    'Según la etiqueta de un aumentador de dureza de calcio (ClearView, Oreq Corporation): 2 oz de cloruro de calcio en escamas por cada 1,000 galones suben la dureza de calcio 10 ppm, es decir, 1.25 lb por cada 10 ppm por cada 10,000 galones. Libras = galones × (nivel deseado − lectura) ÷ 80,000; en métrico los litros se leen como galones, de 3.785 L cada uno, porque la etiqueta está escrita por galón. Comprobado con la química: 10 ppm como carbonato de calcio en 10,000 galones requieren 0.925 lb de cloruro de calcio puro, 1.25 lb de escamas al 74%.',
   note: `El manual de AquaRite de Hayward mantiene la dureza de calcio entre 200 y 400 ppm; para piscinas públicas, ${CODE} la limita a 2,500 ppm. La dosis es para cloruro de calcio en escamas, el aumentador de dureza de calcio más común; un producto anhidro (94% o más) es más fuerte, así que sigue la etiqueta del tuyo. Disuélvelo primero, más o menos ½ lb por galón de agua, y viértelo en la parte honda con la bomba funcionando.`,
   methodLink: methodLink('calcium'),
 };

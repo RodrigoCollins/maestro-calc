@@ -6,6 +6,9 @@ export interface ResultRow {
   readonly label: string;
   readonly unit: string;
   readonly forms?: readonly string[];
+  /** The unit, and the label when it changes, of the row when the units choice is metric. */
+  readonly metricUnit?: string;
+  readonly metricLabel?: string;
   /** A row under the large figure of its forms (a label's most per addition), not a figure of its own. */
   readonly detail?: true;
 }
@@ -18,10 +21,20 @@ export interface DosePage {
   readonly h1: string;
   readonly lead: string;
   readonly fields: Readonly<
-    Record<string, { readonly label: string; readonly options?: Readonly<Record<string, string>> }>
+    Record<
+      string,
+      {
+        readonly label: string;
+        /** The label of the field when the units choice is metric. */
+        readonly metric?: string;
+        readonly options?: Readonly<Record<string, string>>;
+      }
+    >
   >;
   readonly results: readonly ResultRow[];
   readonly bags?: string;
+  /** The bags line in metric: the engine counts 20 kg bags there. */
+  readonly metricBags?: string;
   /** The test strip picker that sets the reading of `field` (strip.ts). */
   readonly strip?: {
     readonly field: string;
@@ -37,29 +50,47 @@ export interface DosePage {
 }
 
 const gallons = { label: 'Pool volume (gallons)' };
+/** The volume of a calculator with the units choice: litres in metric. */
+const volume = { ...gallons, metric: 'Pool volume (litres)' };
+/** The units choice, the last input of those calculators (`@maestro-calc/pool-core/units`). */
+const units = {
+  label: 'Units',
+  options: { us: 'US: gallons, pounds', metric: 'Metric: litres, kilograms' },
+};
 
 export const SALT: DosePage = {
   path: '/pool-salt-calculator',
   title: 'Pool Salt Calculator: How Many Bags? | Pool Figures',
   description:
-    'How many pounds and 40 lb bags of salt to raise your pool from its reading to the target, 3,200 ppm by default.',
+    'How many pounds and 40 lb bags, or kilograms and 20 kg bags, of salt raise your pool from its reading to the target, in gallons or litres.',
   kicker: 'Saltwater pools · free',
   h1: 'Pool salt calculator',
-  lead: 'Type your pool gallons, today’s salt reading and the level your cell asks for. You get the pounds and the bags.',
-  fields: { gallons, current: { label: 'Salt now (ppm)' }, target: { label: 'Target (ppm)' } },
+  lead: 'Choose US or metric units, then type your pool volume, today’s salt reading and the level your cell asks for. You get the pounds or kilograms, and the bags.',
+  fields: {
+    gallons: volume,
+    current: { label: 'Salt now (ppm)' },
+    target: { label: 'Target (ppm)' },
+    units,
+  },
   results: [
-    { key: 'pounds', label: 'Salt to add', unit: 'LB' },
-    { key: 'kilograms', label: 'Kilograms', unit: 'kg' },
-    { key: 'firstAddition', label: 'Add this first, then test after 24 hours', unit: 'lb' },
+    { key: 'pounds', label: 'Salt to add', unit: 'LB', metricUnit: 'KG' },
+    { key: 'kilograms', label: 'Kilograms', unit: 'kg', metricUnit: 'lb', metricLabel: 'Pounds' },
+    {
+      key: 'firstAddition',
+      label: 'Add this first, then test after 24 hours',
+      unit: 'lb',
+      metricUnit: 'kg',
+    },
   ],
   bags: 'bags of 40 lb',
+  metricBags: 'bags of 20 kg',
   warnings: {
     drainToLower:
       'Your salt is over the target. Salt does not wear off: the only way to lower it is to drain part of the water and refill.',
   },
   method:
-    'Pounds = gallons × (target − reading) × 8.34 ÷ 1,000,000, since a gallon of water weighs about 8.34 lb. Hayward’s AquaRite manual gives 2,700 to 3,400 ppm, 3,200 the best.',
-  note: 'Use pool salt over 99% sodium chloride. Wait 10 to 14 days before adding salt to new plaster.',
+    'Pounds = gallons × (target − reading) × 8.34 ÷ 1,000,000, since a gallon of water weighs about 8.34 lb. Hayward’s AquaRite manual gives 2,700 to 3,400 ppm, 3,200 the best. In metric, 1 ppm is 1 mg per litre: kilograms = litres × (target − reading) ÷ 1,000,000, the 4 kg per 1,000 L at 4,000 ppm of AstralPool’s VX manual, whose cells and Zodiac’s TRi-XO run at 4,000 ppm.',
+  note: 'Use pool salt over 99% sodium chloride. Wait 10 to 14 days before adding salt to new plaster. Where the bag is 25 kg, as in the UK and Spain, divide the kilograms by 25.',
 };
 
 export const CHLORINE: DosePage = {
@@ -69,9 +100,9 @@ export const CHLORINE: DosePage = {
     'How much liquid chlorine, cal-hypo or dichlor raises your pool’s free chlorine from its reading to the target.',
   kicker: 'Chlorine · free',
   h1: 'Pool chlorine calculator',
-  lead: 'Type your pool gallons, today’s free chlorine and the level you want. You get the dose of the product you have.',
+  lead: 'Type your pool volume, in gallons or litres, today’s free chlorine and the level you want. You get the dose of the product you have.',
   fields: {
-    gallons,
+    gallons: volume,
     current: { label: 'Free chlorine now (ppm)' },
     target: { label: 'Target (ppm)' },
     product: {
@@ -83,24 +114,27 @@ export const CHLORINE: DosePage = {
         'dichlor-56': 'Dichlor, 56%',
       },
     },
+    units,
   },
   results: [
     {
       key: 'liquid',
       label: 'Liquid chlorine to add',
       unit: 'FL OZ',
+      metricUnit: 'LITRES',
       forms: ['liquid-12-5', 'liquid-10'],
     },
     {
       key: 'dry',
       label: 'Granular product to add',
       unit: 'OZ BY WEIGHT',
+      metricUnit: 'GRAMS',
       forms: ['cal-hypo-65', 'dichlor-56'],
     },
   ],
   strip: { field: 'current', ...STRIP },
   method:
-    '1 ppm is 1 mg per liter. The grams of available chlorine = gallons × 3.785 × (target − reading) ÷ 1,000, then divided by the strength on the label: 10.24 fl oz of 12.5% liquid per ppm per 10,000 gallons.',
+    '1 ppm is 1 mg per liter. The grams of available chlorine = gallons × 3.785 × (target − reading) ÷ 1,000, then divided by the strength on the label: 10.24 fl oz of 12.5% liquid per ppm per 10,000 gallons. In metric the litres go in as they are: 8 mL of 12.5% liquid per ppm per 1,000 L.',
   note: 'Strengths from the labels: cal-hypo at least 65% and dichlor 56% available chlorine (EPA-registered labels). Follow the label of your product.',
 };
 
@@ -129,9 +163,9 @@ export const PH: DosePage = {
     'How much muriatic acid lowers your pool’s pH, or soda ash raises it, from the drops of the acid or base demand test of a Taylor kit.',
   kicker: 'pH · free',
   h1: 'Pool pH calculator',
-  lead: 'Run the acid demand test of your kit to lower pH, or the base demand test to raise it, and count the drops it takes. Type your pool gallons and those drops. You get the muriatic acid or soda ash to add.',
+  lead: 'Run the acid demand test of your kit to lower pH, or the base demand test to raise it, and count the drops it takes. Type your pool volume, in gallons or litres, and those drops. You get the muriatic acid or soda ash to add.',
   fields: {
-    gallons,
+    gallons: volume,
     product: {
       label: 'What you need',
       options: {
@@ -140,19 +174,28 @@ export const PH: DosePage = {
       },
     },
     drops: { label: 'Drops of demand reagent' },
+    units,
   },
   results: [
     {
       key: 'liquid',
       label: 'Muriatic acid to add',
       unit: 'FL OZ',
+      metricUnit: 'LITRES',
       forms: ['muriatic-31-45'],
     },
-    { key: 'dry', label: 'Soda ash to add', unit: 'OZ BY WEIGHT', forms: ['soda-ash'] },
+    {
+      key: 'dry',
+      label: 'Soda ash to add',
+      unit: 'OZ BY WEIGHT',
+      metricUnit: 'GRAMS',
+      forms: ['soda-ash'],
+    },
     {
       key: 'liquidPerDay',
       label: 'Most to add in 24 hours',
       unit: 'fl oz',
+      metricUnit: 'L',
       forms: ['muriatic-31-45'],
       detail: true,
     },
@@ -161,6 +204,7 @@ export const PH: DosePage = {
       key: 'dryPerAddition',
       label: 'Most to add at a time',
       unit: 'oz',
+      metricUnit: 'g',
       forms: ['soda-ash'],
       detail: true,
     },
@@ -181,7 +225,7 @@ export const PH: DosePage = {
       'That is more than the label adds at a time, so split it: add at most the amount above, let the water circulate 2 to 3 hours, test the pH again, and add the rest the same way.',
   },
   method:
-    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up.',
+    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up. In metric the litres are read as gallons, 3.785 L each, since the chart and the labels are written per gallon.',
   note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé); for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
 };
 
@@ -195,22 +239,23 @@ export const ALKALINITY: DosePage = {
     'How many pounds of sodium bicarbonate (baking soda) raise your pool’s total alkalinity from its reading to the target, 100 ppm by default.',
   kicker: 'Alkalinity · free',
   h1: 'Pool alkalinity calculator',
-  lead: 'Type your pool gallons, today’s total alkalinity and the level you want. You get the pounds of baking soda to add.',
+  lead: 'Type your pool volume, in gallons or litres, today’s total alkalinity and the level you want. You get the pounds of baking soda to add.',
   fields: {
-    gallons,
+    gallons: volume,
     current: { label: 'Alkalinity now (ppm)' },
     target: { label: 'Target (ppm)' },
+    units,
   },
   results: [
-    { key: 'pounds', label: 'Baking soda to add', unit: 'LB' },
-    { key: 'ounces', label: 'Ounces', unit: 'oz' },
+    { key: 'pounds', label: 'Baking soda to add', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Ounces', unit: 'oz', metricUnit: 'g', metricLabel: 'Grams' },
   ],
   warnings: {
     acidToLower:
       'Your alkalinity is over the target. Baking soda only raises it: lowering alkalinity takes acid, which this calculator does not dose.',
   },
   method:
-    'Total alkalinity is read as calcium carbonate, so 1 ppm of it takes 84.007 ÷ 50.04 = 1.6788 mg per liter of sodium bicarbonate. Milligrams = gallons × 3.785 × (target − reading) × 1.6788: 1.4 lb per 10 ppm per 10,000 gallons.',
+    'Total alkalinity is read as calcium carbonate, so 1 ppm of it takes 84.007 ÷ 50.04 = 1.6788 mg per liter of sodium bicarbonate. Milligrams = gallons × 3.785 × (target − reading) × 1.6788: 1.4 lb per 10 ppm per 10,000 gallons, or 16.8 g per 10 ppm per 1,000 L in metric.',
   note: `Use pure sodium bicarbonate, which is baking soda: check that the label of an alkalinity increaser says so. For public pools, ${CODE} keeps total alkalinity at 60 to 180 ppm.`,
 };
 
@@ -221,18 +266,23 @@ export const STABILIZER: DosePage = {
     'How many pounds and ounces of cyanuric acid (stabilizer or conditioner) raise your pool’s CYA from its reading to the target.',
   kicker: 'Stabilizer · free',
   h1: 'Pool stabilizer calculator',
-  lead: 'Type your pool gallons, today’s cyanuric acid (CYA) reading and the level you want. You get the pounds of stabilizer to add.',
-  fields: { gallons, current: { label: 'CYA now (ppm)' }, target: { label: 'Target (ppm)' } },
+  lead: 'Type your pool volume, in gallons or litres, today’s cyanuric acid (CYA) reading and the level you want. You get the pounds of stabilizer to add.',
+  fields: {
+    gallons: volume,
+    current: { label: 'CYA now (ppm)' },
+    target: { label: 'Target (ppm)' },
+    units,
+  },
   results: [
-    { key: 'pounds', label: 'Stabilizer to add', unit: 'LB' },
-    { key: 'ounces', label: 'Ounces', unit: 'oz' },
+    { key: 'pounds', label: 'Stabilizer to add', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Ounces', unit: 'oz', metricUnit: 'g', metricLabel: 'Grams' },
   ],
   warnings: {
     drainToLower:
       'Your CYA is over the target. Cyanuric acid does not wear off: the only way to lower it is to drain part of the water and refill.',
     overCodeLimit: `Your target is over 90 ppm, the most ${CODE} allows in a public pool.`,
   },
-  method: `1 ppm is 1 mg per liter, so the grams of cyanuric acid = gallons × 3.785 × (target − reading) ÷ 1,000: 13.35 oz per 10 ppm per 10,000 gallons. For public pools, ${CODE} keeps CYA at or below 90 ppm.`,
+  method: `1 ppm is 1 mg per liter, so the grams of cyanuric acid = gallons × 3.785 × (target − reading) ÷ 1,000: 13.35 oz per 10 ppm per 10,000 gallons, or 10 g per 10 ppm per 1,000 L in metric. For public pools, ${CODE} keeps CYA at or below 90 ppm.`,
   note: 'The dose is for a product of 100% cyanuric acid. Read the label of yours: for a liquid or blended stabilizer, divide the dose by its percent and multiply by 100. Dichlor and trichlor add CYA too.',
 };
 
@@ -243,16 +293,22 @@ export const CALCIUM: DosePage = {
     'How many pounds of calcium chloride raise your pool’s calcium hardness from its reading to the target, at the dose of an increaser label.',
   kicker: 'Calcium hardness · free',
   h1: 'Pool calcium hardness calculator',
-  lead: 'Type your pool gallons, today’s calcium hardness and the level you want. You get the pounds of calcium chloride to add, and how much of it to add first.',
+  lead: 'Type your pool volume, in gallons or litres, today’s calcium hardness and the level you want. You get the pounds of calcium chloride to add, and how much of it to add first.',
   fields: {
-    gallons,
+    gallons: volume,
     current: { label: 'Calcium hardness now (ppm)' },
     target: { label: 'Target (ppm)' },
+    units,
   },
   results: [
-    { key: 'pounds', label: 'Calcium chloride to add', unit: 'LB' },
-    { key: 'ounces', label: 'Ounces', unit: 'oz' },
-    { key: 'firstAddition', label: 'Add this first, then wait 12 hours', unit: 'lb' },
+    { key: 'pounds', label: 'Calcium chloride to add', unit: 'LB', metricUnit: 'KG' },
+    { key: 'ounces', label: 'Ounces', unit: 'oz', metricUnit: 'g', metricLabel: 'Grams' },
+    {
+      key: 'firstAddition',
+      label: 'Add this first, then wait 12 hours',
+      unit: 'lb',
+      metricUnit: 'kg',
+    },
   ],
   warnings: {
     dilutionToLower:
@@ -261,7 +317,7 @@ export const CALCIUM: DosePage = {
       'That is more than 3 lb per 10,000 gallons, so the label splits it: add the first amount, let the pump run at least 12 hours, test again, then add the rest the same way.',
   },
   method:
-    'From the label of a calcium hardness increaser (ClearView, Oreq Corporation): 2 oz of calcium chloride flake per 1,000 gallons raises calcium hardness 10 ppm, which is 1.25 lb per 10 ppm per 10,000 gallons. Pounds = gallons × (target − reading) ÷ 80,000. Checked against the chemistry: 10 ppm as calcium carbonate in 10,000 gallons takes 0.925 lb of pure calcium chloride, 1.25 lb of a 74% flake.',
+    'From the label of a calcium hardness increaser (ClearView, Oreq Corporation): 2 oz of calcium chloride flake per 1,000 gallons raises calcium hardness 10 ppm, which is 1.25 lb per 10 ppm per 10,000 gallons. Pounds = gallons × (target − reading) ÷ 80,000; in metric the litres are read as gallons, 3.785 L each, since the label is written per gallon. Checked against the chemistry: 10 ppm as calcium carbonate in 10,000 gallons takes 0.925 lb of pure calcium chloride, 1.25 lb of a 74% flake.',
   note: `Hayward’s AquaRite manual keeps calcium hardness at 200 to 400 ppm; for public pools, ${CODE} caps it at 2,500 ppm. The dose is for calcium chloride flake, the usual calcium hardness increaser; an anhydrous product (94% or more) is stronger, so follow the label of yours. Dissolve it first, about ½ lb to a gallon of water, and pour it into the deep end with the pump running.`,
 };
 

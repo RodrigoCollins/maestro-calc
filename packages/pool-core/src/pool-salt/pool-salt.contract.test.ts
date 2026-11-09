@@ -8,6 +8,7 @@ describe('pool-salt contract', () => {
       ['gallons', 'g'],
       ['current', 'c'],
       ['target', 't'],
+      ['units', 'm'],
     ]);
   });
 

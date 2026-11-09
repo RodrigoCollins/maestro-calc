@@ -7,6 +7,7 @@ import {
   Rational,
   selectInput,
 } from '@maestro-calc/core';
+import { litersOf, unitsInput } from '../units.ts';
 
 /** The products, each with the available chlorine its label states. */
 const PRODUCTS = ['liquid-12-5', 'liquid-10', 'cal-hypo-65', 'dichlor-56'] as const;
@@ -25,8 +26,6 @@ const STRENGTH = {
   'dichlor-56': { form: 'dry', percent: Rational.of(56) },
 } as const satisfies Record<Product, unknown>;
 
-/** A US gallon is exactly 3.785411784 L (NIST SP 811), and 1 ppm is 1 mg/L. */
-const LITERS_PER_GALLON = Rational.of(3_785_411_784, 1_000_000_000);
 const THOUSAND = Rational.of(1000);
 const HUNDRED = Rational.of(100);
 
@@ -51,6 +50,7 @@ export const poolChlorine = defineCalculator({
     reading('current', 'c', 1),
     reading('target', 't', 3),
     selectInput({ key: 'product', urlKey: 'p', options: PRODUCTS, default: 'liquid-12-5' }),
+    unitsInput(),
   ],
   outputs: [
     {
@@ -67,11 +67,11 @@ export const poolChlorine = defineCalculator({
     },
   ],
   warnings: [],
-  compute: ({ gallons, current, target, product }) => {
+  compute: ({ gallons, current, target, product, units }) => {
     // a reading at or over the target adds nothing
     const difference = target.sub(current);
     const raise = difference.sign() === -1 ? Rational.ZERO : difference;
-    const grams = gallons.mul(LITERS_PER_GALLON).mul(raise).div(THOUSAND);
+    const grams = litersOf(gallons, units).mul(raise).div(THOUSAND);
     const { form, percent } = STRENGTH[product];
     const amount = grams.mul(HUNDRED).div(percent);
     return {
