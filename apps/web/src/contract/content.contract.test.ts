@@ -252,8 +252,24 @@ describe('about and editorial policy (trust-pages › [TP10], [TP11])', () => {
 
 describe('editorial policy (trust-pages, E-E-A-T)', () => {
   const anchors = {
-    en: ['who-we-are', 'sources', 'checks', 'reviews', 'corrections', 'no-advice'],
-    es: ['quienes-somos', 'fuentes', 'verificacion', 'revisiones', 'correcciones', 'sin-asesoria'],
+    en: [
+      'who-we-are',
+      'sources',
+      'checks',
+      'reviews',
+      'corrections',
+      'no-advice',
+      'affiliate-links',
+    ],
+    es: [
+      'quienes-somos',
+      'fuentes',
+      'verificacion',
+      'revisiones',
+      'correcciones',
+      'sin-asesoria',
+      'enlaces-de-afiliado',
+    ],
   } as const;
   const team = {
     en: 'Maestro Calc editorial team',
@@ -262,7 +278,7 @@ describe('editorial policy (trust-pages, E-E-A-T)', () => {
   const policy = (locale: (typeof LOCALES)[number]): string =>
     bodyOf(`${locale}/editorial-policy.md`);
 
-  it.each(LOCALES)('anchors its six sections once each, in order, in %s', (locale) => {
+  it.each(LOCALES)('anchors its seven sections once each, in order, in %s', (locale) => {
     expect(h2Ids(policy(locale))).toEqual(anchors[locale]);
   });
 
@@ -307,6 +323,23 @@ describe('editorial policy (trust-pages, E-E-A-T)', () => {
   ] as const)('says the figures are not advice in %s', (locale, advice) => {
     expect(sectionOf(policy(locale), anchors[locale][5])).toMatch(advice);
   });
+
+  it.each([
+    ['en', ['Paid link', 'commission', 'As an Amazon Associate we earn from qualifying purchases']],
+    [
+      'es',
+      [
+        'Enlace pagado',
+        'comisión',
+        'Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos',
+      ],
+    ],
+  ] as const)(
+    'discloses paid links, the label and the Amazon statement in %s',
+    (locale, phrases) => {
+      expect(present(sectionOf(policy(locale), anchors[locale][6]), phrases)).toHaveLength(3);
+    },
+  );
 
   it.each(LOCALES)('is linked from the about page in %s', (locale) => {
     expect(bodyOf(`${locale}/about.md`)).toContain(`](${pathOf('editorial-policy', locale)})`);

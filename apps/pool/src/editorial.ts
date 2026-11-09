@@ -180,6 +180,15 @@ const EDITORIAL: Editorial = {
         'The figures are estimates for the product strength each page names. What we publish is not professional advice. Read the label of your product and follow it where it differs from our figures. For a problem with your pool, ask a pool professional.',
       ],
     },
+    {
+      id: 'affiliate',
+      heading: 'Affiliate disclosure',
+      paragraphs: [
+        'Some links on Pool Figures may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.',
+        'We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.',
+        'When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.',
+      ],
+    },
   ],
   reviewed: 'Last updated November 6, 2026.',
 };
@@ -234,6 +243,15 @@ const EDITORIAL_ES: Editorial = {
       heading: 'No es asesoría profesional',
       paragraphs: [
         'Las cifras son estimaciones para la concentración de producto que nombra cada página. Lo que publicamos no es asesoría profesional. Lee la etiqueta de tu producto y síguela donde sea distinta de nuestras cifras. Si tienes un problema con tu piscina, consulta a un profesional de piscinas.',
+      ],
+    },
+    {
+      id: 'affiliate',
+      heading: 'Enlaces de afiliado',
+      paragraphs: [
+        'Algunos enlaces de Pool Figures pueden ser enlaces pagados (de afiliado). Si te registras o compras a través de uno, podemos recibir una comisión sin costo extra para ti. Cada enlace pagado lleva la etiqueta "Enlace pagado" justo al lado.',
+        'Solo recomendamos una herramienta cuando la recomendaríamos para la tarea de esa página, pague o no. Un pago nunca cambia el resultado de una calculadora, una cifra ni una clasificación, y no mostramos precios que puedan quedar desactualizados.',
+        'Cuando una página enlaza a Amazon: Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos.',
       ],
     },
   ],

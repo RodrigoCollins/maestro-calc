@@ -344,9 +344,12 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
           ],
         },
         {
-          h2: 'Anuncios y enlaces comerciales',
+          h2: 'Enlaces de afiliado',
+          id: 'affiliate',
           paragraphs: [
-            'Hoy el sitio no muestra anuncios ni enlaces de afiliados. Si algún día los agregamos, estarán marcados como tales y no cambiarán ningún cálculo.',
+            'Algunos enlaces de Cuánto Le Cobro pueden ser enlaces pagados (de afiliado). Si te registras o compras a través de uno, podemos recibir una comisión sin costo extra para ti. Cada enlace pagado lleva la etiqueta "Enlace pagado" justo al lado.',
+            'Solo recomendamos una herramienta cuando la recomendaríamos para la tarea de esa página, pague o no. Un pago nunca cambia el resultado de una calculadora, una cifra ni una clasificación, y no mostramos precios que puedan quedar desactualizados.',
+            'Cuando una página enlaza a Amazon: Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos.',
           ],
         },
       ],
@@ -659,9 +662,12 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
           ],
         },
         {
-          h2: 'Ads and commercial links',
+          h2: 'Affiliate disclosure',
+          id: 'affiliate',
           paragraphs: [
-            'Today the site shows no ads and no affiliate links. If we add them one day, they will be labeled as such and will not change any calculation.',
+            'Some links on Cuánto Le Cobro may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.',
+            'We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.',
+            'When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.',
           ],
         },
       ],
