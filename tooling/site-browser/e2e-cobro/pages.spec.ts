@@ -49,10 +49,13 @@ for (const { path, lang } of PAGES) {
       await expect(page.locator('header a[hreflang]')).toHaveCount(1);
     });
 
-    // the measurement id is empty until the owner creates the property: no loader at all
-    test('loads no analytics while the measurement id is empty', async ({ page }) => {
+    // The loader runs on cuantolecobro.com only, so the browser tests send nothing to Google.
+    // One load per page and its own test: a loop over every page in one test outgrows the timeout.
+    test('carries the analytics loader, with the measurement id and the host', async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('script[src="/analytics.js"]')).toHaveCount(0);
+      const loader = page.locator('script[src="/analytics.js"]');
+      await expect(loader).toHaveAttribute('data-ga', 'G-32Y9JPXP7Q');
+      await expect(loader).toHaveAttribute('data-host', 'cuantolecobro.com');
     });
   });
 }
@@ -142,7 +145,9 @@ test('lists every state of a trade in its index, each page answering', async ({
 test('sends the security headers with every page', async ({ request }) => {
   for (const { path } of PAGES) {
     const response = await request.get(path);
-    expect(response.headers()['content-security-policy'], path).toContain("script-src 'self'");
+    expect(response.headers()['content-security-policy'], path).toContain(
+      "script-src 'self' https://www.googletagmanager.com",
+    );
     expect(response.headers()['content-security-policy'], path).toContain("frame-ancestors 'none'");
     expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
   }

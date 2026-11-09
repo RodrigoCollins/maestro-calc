@@ -37,6 +37,7 @@ describe('the sections of a shift page', () => {
           'worked',
           'clock-out',
           'week',
+          'time-card',
           'pay',
           'breaks',
         ]);
@@ -120,6 +121,77 @@ describe('the sections of a shift page', () => {
       ({ name }) => name.en,
     );
     expect(daily).toEqual(['Alaska', 'California', 'Nevada']);
+  });
+
+  it('fill a five-day time card with the shift, day by day, from the time card calculator', () => {
+    // 9 to 5 less 30 min is 7.5 h a day at $20: 7.5 h and $150 on Monday, 37.5 h and $750 by Friday
+    const nine = sectionOf('9:00-17:00', 'time-card');
+    expect(nine.heading).toBe('A week of 9 am to 5 pm on a time card');
+    // lunch at the middle of the shift, as the split step has it: 9 to 1 is 4 h, 1:30 to 5 is 3.5 h
+    expect(nine.table?.rows[0]).toEqual([
+      'Monday',
+      '9 am',
+      '1 pm',
+      '1:30 pm',
+      '5 pm',
+      '7.5',
+      '7.5',
+      '$150.00',
+    ]);
+    expect(nine.table?.rows[4]?.slice(5)).toEqual(['7.5', '37.5', '$750.00']);
+    expect(nine.table?.caption).toBe(
+      'Time card: 9 am to 5 pm with lunch from 1 pm to 1:30 pm, Monday to Friday, at $20.00 an hour',
+    );
+    expect(textOf(nine)).toContain(
+      'clock in at 9 am, out for lunch at 1 pm, back in at 1:30 pm and out at 5 pm: 4 + 3.5 = 7.5 paid hours',
+    );
+    expect(nine.table?.rows).toHaveLength(5);
+    expect(textOf(nine)).toContain('37.5 × $20.00 = $750.00');
+    expect(textOf(nine)).toContain('2.5 hours short of the 40');
+    // 2 x 37.5 = 75 h and 2 x $750 = $1,500; 52 x 37.5 = 1,950 h and 52 x $750 = $39,000
+    expect(textOf(nine)).toContain(
+      'Two weeks of 9 am to 5 pm cards come to 75 hours, $1,500.00 a biweekly pay period; 52 weeks of 9 am to 5 pm cards, 1,950 hours and $39,000.00 a year',
+    );
+    // 37.5 x $7.25 = $271.875, shown $271.88; a biweekly check of 75 x $7.25 = $543.75
+    expect(textOf(nine)).toContain(
+      'the same 9 am to 5 pm card pays $271.88 a week and $543.75 every two weeks',
+    );
+    // 8 to 4:30 less 30 min is 8 h: exactly 40 by Friday
+    expect(textOf(sectionOf('8:00-16:30', 'time-card'))).toContain('exactly the 40-hour line');
+    // 8 to 6 less 30 min is 9.5 h: 38 h and $760 by Thursday, then 47.5 h, 7.5 of them overtime:
+    // 40 x $20 = $800 and 7.5 x $30 = $225, $1,025 in all
+    const ten = sectionOf('8:00-18:00', 'time-card');
+    expect(ten.table?.rows[3]?.slice(6)).toEqual(['38', '$760.00']);
+    expect(ten.table?.rows[4]?.slice(6)).toEqual(['47.5', '$1,025.00']);
+    expect(textOf(ten)).toContain(
+      'the first 40 are regular time, $800.00, and the 7.5 hours past 40 are overtime at $30.00 an hour, $225.00, for $1,025.00 before taxes',
+    );
+    expect(textOf(ten)).toContain('crosses the 40-hour line on Friday');
+    // 7 to 7 less 30 min is 11.5 h: 46 h by Thursday, 6 of them overtime: $800 + $180 = $980
+    const twelve = sectionOf('7:00-19:00', 'time-card');
+    expect(twelve.table?.rows[3]?.slice(6)).toEqual(['46', '$980.00']);
+    expect(textOf(twelve)).toContain('crosses the 40-hour line on Thursday');
+    // an overnight shift clocks in one evening and out the next morning
+    // 10 pm to 2 am, then 2:30 am to 6 am
+    expect(sectionOf('22:00-6:00', 'time-card').table?.rows[0]).toEqual([
+      'Monday',
+      '10 pm',
+      '2 am',
+      '2:30 am',
+      '6 am',
+      '7.5',
+      '7.5',
+      '$150.00',
+    ]);
+    const es = sectionOf('9:00-17:00', 'time-card', 'es');
+    expect(es.heading).toBe('Una semana de 9 am a 5 pm en la tarjeta de horas');
+    expect(es.table?.rows[0]?.[0]).toBe('Lunes');
+    expect(es.table?.head).toHaveLength(8);
+    expect(textOf(es)).toContain(
+      'marcas la entrada a las 9 am, sales a comer a la 1 pm, regresas a la 1:30 pm y marcas la salida a las 5 pm',
+    );
+    expect(textOf(es)).toContain('Al viernes la tarjeta de 9 am a 5 pm suma 37.5 horas');
+    expect(textOf(nine)).toContain('By Friday the 9 am to 5 pm card shows 37.5 hours');
   });
 
   it('price the shift with the time card at common rates', () => {

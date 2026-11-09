@@ -8,7 +8,7 @@ describe('Lawn Figures site constants', () => {
       origin: 'https://lawnfigures.com',
       locales: ['en'],
       indexable: true,
-      gaId: '',
+      gaId: 'G-L7CC69GZMG',
       indexNowKey: '5d1c7e0b9a3f4c28b6e1a7d4f09c3b52',
     });
   });

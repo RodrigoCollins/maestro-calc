@@ -63,6 +63,10 @@ describe('apps/lawn/wrangler.jsonc', () => {
       'User-agent: *\nAllow: /\n\nSitemap: https://lawnfigures.com/sitemap.xml\n',
     );
   });
+  it('authorizes the same AdSense publisher as Maestro Calc in ads.txt', () => {
+    const ads = readFileSync(resolve(import.meta.dirname, '../public/ads.txt'), 'utf8');
+    expect(ads).toBe('google.com, pub-3954387285316164, DIRECT, f08c47fec0942fa0\n');
+  });
   it('serves the IndexNow key at /<key>.txt, as the deploy job checks before it notifies', () => {
     expect(SITE.indexNowKey).toMatch(/^[0-9a-f]{32}$/);
     const body = readFileSync(

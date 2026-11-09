@@ -354,7 +354,7 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
     privacy: {
       title: 'Privacidad en Cuánto Le Cobro',
       description:
-        'Qué datos usamos: las cifras que escribes se quedan en tu navegador, y solo medimos qué botones se usan, nunca los valores.',
+        'Qué datos usamos: las cifras que escribes se quedan en tu navegador, y Google Analytics cuenta visitas y botones, nunca los valores.',
       h1: 'Privacidad',
       lead: 'Las cifras que escribes en las calculadoras no salen de tu teléfono. Esto es lo único que medimos y por qué.',
       checked: CHECKED,
@@ -363,7 +363,8 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
         {
           h2: 'Lo que escribes',
           paragraphs: [
-            'Las horas, las tarifas, los precios y los porcentajes se calculan en tu navegador. No tenemos cuentas ni los guardamos en un servidor. Para que puedas guardar o compartir un presupuesto, los números van en la dirección de la página (después del signo ?); si mandas esa dirección, quien la reciba verá los mismos números.',
+            'Las horas, las tarifas, los precios y los porcentajes se calculan en tu navegador. Nada de lo que escribes se nos envía ni se envía a Google Analytics. No tenemos cuentas ni los guardamos en un servidor. Para que puedas guardar o compartir un presupuesto, los números van en la dirección de la página (después del signo ?); si mandas esa dirección, quien la reciba verá los mismos números.',
+            'El sitio está alojado en Cloudflare, que procesa los registros normales de cada solicitud: tu dirección IP, la página que pediste (con su dirección completa) y tu tipo de navegador.',
           ],
         },
         {
@@ -375,7 +376,9 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
         {
           h2: 'Medición',
           paragraphs: [
-            'Cuando el sitio esté en línea con Google Analytics, medirá qué acciones se hacen (calcular, compartir, imprimir) y en qué calculadora, nunca los valores que escribes. Se carga con el modo de consentimiento de Google: las señales de publicidad están negadas y la analítica está negada por omisión en el Espacio Económico Europeo, el Reino Unido y Suiza, y para quien envía la señal Global Privacy Control.',
+            'Cuánto Le Cobro usa Google Analytics para contar visitas y medir qué acciones se hacen (calcular, compartir, imprimir) y en qué calculadora. Empieza después de que la página terminó de cargar. El sitio no tiene publicidad ni cuentas de usuario.',
+            'Google Analytics recibe la página que visitas sin los valores que escribiste, tu tipo de navegador y de dispositivo, el tamaño de tu pantalla y una ubicación aproximada que Google deduce de tu dirección IP. Fuera del Espacio Económico Europeo, el Reino Unido y Suiza, puede guardar cookies propias, como _ga, para distinguir una visita de otra.',
+            'En el Espacio Económico Europeo, el Reino Unido y Suiza, Google Analytics no guarda ninguna cookie: solo recibe una señal de que se vio una página. Lo mismo pasa en cualquier lugar cuando tu navegador envía una señal Global Privacy Control. El almacenamiento publicitario y la personalización de anuncios están desactivados en todas partes.',
           ],
         },
         {
@@ -666,7 +669,7 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
     privacy: {
       title: 'Privacy at Cuánto Le Cobro',
       description:
-        'What data we use: the figures you type stay in your browser, and we only measure which buttons are used, never the values.',
+        'What data we use: the figures you type stay in your browser, and Google Analytics counts visits and buttons, never the values.',
       h1: 'Privacy',
       lead: 'The figures you type in the calculators do not leave your phone. This is the only thing we measure and why.',
       checked: CHECKED,
@@ -675,7 +678,8 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
         {
           h2: 'What you type',
           paragraphs: [
-            'Hours, rates, prices and percentages are worked out in your browser. We have no accounts and we do not store them on a server. So that you can save or share a quote, the numbers go in the page address (after the ? sign); if you send that address, whoever receives it sees the same numbers.',
+            'Hours, rates, prices and percentages are worked out in your browser. Nothing you type is sent to us or to Google Analytics. We have no accounts and we do not store them on a server. So that you can save or share a quote, the numbers go in the page address (after the ? sign); if you send that address, whoever receives it sees the same numbers.',
+            'The site is hosted on Cloudflare, which processes standard request logs: your IP address, the page you asked for (with its full address) and your browser type.',
           ],
         },
         {
@@ -687,7 +691,9 @@ export const ARTICLES: Readonly<Record<Lang, Readonly<Record<ArticleId, Article>
         {
           h2: 'Measurement',
           paragraphs: [
-            'Once the site is online with Google Analytics, it will measure which actions are taken (calculate, share, print) and on which calculator, never the values you type. It loads with Google’s Consent Mode: advertising signals are denied, and analytics is denied by default in the European Economic Area, the United Kingdom and Switzerland, and for anyone who sends the Global Privacy Control signal.',
+            'Cuánto Le Cobro uses Google Analytics to count visits and measure which actions are taken (calculate, share, print) and on which calculator. It starts after the page has loaded. The site has no advertising and no accounts.',
+            'Google Analytics receives the page you visit without the values you typed, your browser and device type, your screen size and an approximate location that Google derives from your IP address. Outside the European Economic Area, the United Kingdom and Switzerland, it can set first-party cookies, such as _ga, to tell one visit from another.',
+            'In the European Economic Area, the United Kingdom and Switzerland, Google Analytics sets no cookie: it only receives a signal that a page was viewed. The same applies anywhere when your browser sends a Global Privacy Control signal. Advertising storage and ad personalization are off everywhere.',
           ],
         },
         {

@@ -49,10 +49,13 @@ for (const path of PAGES) {
       );
     });
 
-    // no measurement id yet: the loader is not on the page, so nothing can reach Google
-    test('carries no analytics loader until the owner sets a measurement id', async ({ page }) => {
+    // The loader runs on bowlfigures.com only, so the browser tests send nothing to Google.
+    // One load per page and its own test: a loop over every page in one test outgrows the timeout.
+    test('carries the analytics loader, with the measurement id and the host', async ({ page }) => {
       await page.goto(path);
-      await expect(page.locator('script[src="/analytics.js"]')).toHaveCount(0);
+      const loader = page.locator('script[src="/analytics.js"]');
+      await expect(loader).toHaveAttribute('data-ga', 'G-3NTFC4MK3R');
+      await expect(loader).toHaveAttribute('data-host', 'bowlfigures.com');
     });
   });
 }
@@ -105,7 +108,9 @@ test('tells the reader of the chocolate chart, calculator and guide to call a ve
 test('sends the security headers with every page', async ({ request }) => {
   for (const path of PAGES) {
     const response = await request.get(path);
-    expect(response.headers()['content-security-policy'], path).toContain("script-src 'self'");
+    expect(response.headers()['content-security-policy'], path).toContain(
+      "script-src 'self' https://www.googletagmanager.com",
+    );
     expect(response.headers()['content-security-policy'], path).toContain("frame-ancestors 'none'");
     expect(response.headers()['x-content-type-options'], path).toBe('nosniff');
   }

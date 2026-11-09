@@ -78,6 +78,15 @@ export const HOME_AGES: readonly {
   label: `${String(age)} ${age === 1 ? 'year' : 'years'} in dog years`,
 }));
 
+/** The closing line of the home that links who makes the site and what it collects. */
+export const HOME_TRUST = {
+  text: 'Who writes and checks these pages, and what the site collects when you use it:',
+  links: [
+    { href: hrefOf('about'), label: 'about Bowl Figures' },
+    { href: hrefOf('privacy'), label: 'privacy' },
+  ],
+} as const;
+
 /** One link of the Guides and data list. */
 export interface HomeGuide {
   readonly href: string;

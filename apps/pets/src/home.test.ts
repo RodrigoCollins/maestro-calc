@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HOME_AGES, HOME_GUIDES, HOME_TEXTS, HOME_TOOLS } from './home.ts';
+import { HOME_AGES, HOME_GUIDES, HOME_TEXTS, HOME_TOOLS, HOME_TRUST } from './home.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the home', () => {
@@ -34,6 +34,11 @@ describe('the home', () => {
     expect(HOME_AGES[2]?.href).toBe('/3-years-in-dog-years');
     const articles = ROUTES.filter(({ id }) => id.startsWith('dog-years-')).map(({ path }) => path);
     expect(HOME_AGES.map(({ href }) => href)).toEqual(articles);
+  });
+
+  it('links the about and privacy pages from the main content, so neither is an orphan', () => {
+    expect(HOME_TRUST.links.map(({ href }) => href)).toEqual(['/about', '/privacy']);
+    expect(HOME_TRUST.text).not.toBe('');
   });
 
   it('keeps title and description where a result shows them whole', () => {

@@ -63,6 +63,12 @@ describe('apps/pets/wrangler.jsonc', () => {
     );
   });
 
+  it('authorizes the same AdSense publisher as Maestro Calc in ads.txt', () => {
+    expect(file('../public/ads.txt')).toBe(
+      'google.com, pub-3954387285316164, DIRECT, f08c47fec0942fa0\n',
+    );
+  });
+
   it('serves the IndexNow key at /<key>.txt, as the deploy job checks before it notifies', () => {
     expect(SITE.indexNowKey).toMatch(/^[0-9a-f]{32}$/);
     expect(file(`../public/${SITE.indexNowKey}.txt`)).toBe(SITE.indexNowKey);

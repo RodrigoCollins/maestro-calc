@@ -1,4 +1,5 @@
 ---
+import { workedOf } from '../calculator-worked.ts';
 import { MAESTRO, type CalculatorPage } from '../calculators.ts';
 import { fieldText } from '../format.ts';
 import { guideAt } from '../guide.ts';
@@ -16,6 +17,7 @@ interface Props {
 
 const { page } = Astro.props;
 const engine = ENGINES[page.id];
+const worked = workedOf(page.id);
 // The page renders the engine's default result, so it reads complete with no script.
 const view = viewOf(page.id);
 const sizes = sizeTableOf(page.id);
@@ -192,6 +194,34 @@ const maestro = [
         </table>
       </div>
     </section>
+
+    {worked !== undefined && (
+      <section class="lawn-section" aria-labelledby="worked">
+        <h2 id="worked">{worked.heading}</h2>
+        <p>{worked.intro}</p>
+        <ul>
+          {worked.cases.map(({ text, result, unit }) => (
+            <li>
+              {text} <strong>{result}</strong> {unit}.
+            </li>
+          ))}
+        </ul>
+        <h3>{worked.knowHeading}</h3>
+        <ul>
+          {worked.know.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        {worked.sources.length > 0 && (
+          <p>
+            Source:{' '}
+            {worked.sources.map(({ name, url }) => (
+              <a href={url}>{name}</a>
+            ))}
+          </p>
+        )}
+      </section>
+    )}
 
     <section class="lawn-math" aria-labelledby="math">
       <h2 id="math">The math</h2>

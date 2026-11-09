@@ -41,6 +41,10 @@ const FULL_TIME = { irs: 30, bls: 35 } as const;
 /** The weekdays of the time card, Monday first. */
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
 
+/** The days and the rate of the time card table: a Monday-to-Friday week at $20.00 an hour. */
+const CARD_DAYS = 5;
+const CARD_RATE = usd(20);
+
 /** The worked hours of `shift` less `unpaidBreak` minutes, from the hours calculator. */
 const hoursOf = (start: number, end: number, unpaidBreak: number): Rational => {
   const ran = hoursBetween.run({
@@ -55,10 +59,13 @@ const hoursOf = (start: number, end: number, unpaidBreak: number): Rational => {
 
 interface Week {
   readonly pay: Money;
+  readonly regularPay: Money;
   readonly overtimePay: Money;
   readonly totalHours: Rational;
   readonly overtimeHours: Rational;
   readonly doubleHours: Rational;
+  /** The hours of each day of the card, Monday first. */
+  readonly dayHours: readonly Rational[];
 }
 
 /** The time card on `days` shifts of `shift` with `unpaidBreak` minutes each, at `rate`, under `rule`. */
@@ -96,10 +103,12 @@ const weekOf = (
   const hours = (key: string): Rational => out.get(key) as Rational;
   return {
     pay: money('pay'),
+    regularPay: money('regularPay'),
     overtimePay: money('overtimePay'),
     totalHours: hours('totalHours'),
     overtimeHours: hours('overtimeHours'),
     doubleHours: hours('doubleHours'),
+    dayHours: WEEKDAYS.map((day) => hours(`${day}Hours`)),
   };
 };
 
@@ -117,6 +126,10 @@ const overtimeOf = (week: Week): string | undefined =>
 
 /** `a 9 am`, `an 8 am`, `an 11 am`: the article before a clock time in English. */
 const articleOf = (clock: string): string => (/^(8|11)[: ]/.test(clock) ? 'an' : 'a');
+
+/** `a la 1 pm`, `a las 9 am`: a clock time after `a` in Spanish. */
+const atClock = (clock: string): string =>
+  /^1[: ]/.test(clock) ? `a la ${clock}` : `a las ${clock}`;
 
 const capital = (word: string): string => `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
 
@@ -258,6 +271,61 @@ const WORDS = {
         double: string,
       ): string =>
         `In ${states} (in Nevada only for pay under ${below} an hour), the hours past 8 in a workday are overtime too, whatever the week. ${capital(articleOf(start))} ${start} to ${end} shift with a 30-minute lunch is ${day} hours, so ${extra} of each day is daily overtime: under California's rule this five-day week has ${ca} overtime hours${double === '0' ? '' : ` and ${double} double-time hours`}, against ${fed} under the federal rule. Colorado's daily line is 12 hours.`,
+    },
+    card: {
+      heading: (start: string, end: string): string =>
+        `A week of ${start} to ${end} on a time card`,
+      intro: (start: string, end: string, rate: string): string =>
+        `Here is a Monday-to-Friday week of ${start} to ${end} shifts as the time card calculator fills it in, with a 30-minute unpaid lunch each day, at ${rate} an hour under the federal overtime rule: the hours of each day, the hours of the week so far and the gross pay so far.`,
+      caption: (start: string, end: string, from: string, to: string, rate: string): string =>
+        `Time card: ${start} to ${end} with lunch from ${from} to ${to}, Monday to Friday, at ${rate} an hour`,
+      head: [
+        'Day',
+        'In',
+        'Out to lunch',
+        'Back in',
+        'Out',
+        'Hours',
+        'Week so far',
+        'Gross pay so far',
+      ],
+      punches: (
+        start: string,
+        lunchOut: string,
+        lunchIn: string,
+        end: string,
+        first: string,
+        second: string,
+        day: string,
+      ): string =>
+        `Each day you clock in at ${start}, out for lunch at ${lunchOut}, back in at ${lunchIn} and out at ${end}: ${first} + ${second} = ${day} paid hours.`,
+      periods: (
+        start: string,
+        end: string,
+        twoHours: string,
+        twoPay: string,
+        yearHours: string,
+        yearPay: string,
+      ): string =>
+        `Two weeks of ${start} to ${end} cards come to ${twoHours} hours, ${twoPay} a biweekly pay period; 52 weeks of ${start} to ${end} cards, ${yearHours} hours and ${yearPay} a year before taxes.`,
+      minimum: (start: string, end: string, week: string, two: string): string =>
+        `At the federal minimum wage of $7.25, the same ${start} to ${end} card pays ${week} a week and ${two} every two weeks.`,
+      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      regular: (card: string, total: string, rate: string, pay: string, left: string): string =>
+        left === '0'
+          ? `By Friday the ${card} card shows ${total} hours, all regular time: ${total} × ${rate} = ${pay} before taxes. That is exactly the 40-hour line, so one more minute on the clock this week would be federal overtime.`
+          : `By Friday the ${card} card shows ${total} hours, all regular time: ${total} × ${rate} = ${pay} before taxes, ${left} hours short of the 40 that start federal overtime.`,
+      overtime: (
+        card: string,
+        total: string,
+        regularPay: string,
+        overtime: string,
+        overtimeRate: string,
+        overtimePay: string,
+        pay: string,
+        day: string,
+      ): string =>
+        `By Friday the ${card} card shows ${total} hours: the first 40 are regular time, ${regularPay}, and the ${overtime} hours past 40 are overtime at ${overtimeRate} an hour, ${overtimePay}, for ${pay} before taxes. The week crosses the 40-hour line on ${day}, so that day's gross pay so far already includes overtime.`,
     },
     pay: {
       heading: (start: string, end: string): string => `Pay for ${start} to ${end} at common rates`,
@@ -410,6 +478,61 @@ const WORDS = {
       ): string =>
         `En ${states} (en Nevada solo si ganas menos de ${below} la hora), las horas que pasan de 8 en un día de trabajo también son extra, sin importar la semana. Un turno de ${start} a ${end} con 30 minutos de comida es de ${day} horas, así que ${extra} de cada día son horas extra diarias: con la regla de California esta semana de cinco días tiene ${ca} horas extra${double === '0' ? '' : ` y ${double} horas de tiempo doble`}, frente a ${fed} con la regla federal. En Colorado el límite diario es de 12 horas.`,
     },
+    card: {
+      heading: (start: string, end: string): string =>
+        `Una semana de ${start} a ${end} en la tarjeta de horas`,
+      intro: (start: string, end: string, rate: string): string =>
+        `Esta es una semana de lunes a viernes con turnos de ${start} a ${end} tal como la llena la calculadora de tarjeta de horas, con 30 minutos de comida sin pago cada día, a ${rate} la hora con la regla federal de horas extra: las horas de cada día, las horas acumuladas de la semana y el pago bruto acumulado.`,
+      caption: (start: string, end: string, from: string, to: string, rate: string): string =>
+        `Tarjeta de horas: de ${start} a ${end} con comida de ${from} a ${to}, de lunes a viernes, a ${rate} la hora`,
+      head: [
+        'Día',
+        'Entrada',
+        'Salida a comer',
+        'Regreso',
+        'Salida',
+        'Horas',
+        'Horas en la semana',
+        'Pago bruto acumulado',
+      ],
+      punches: (
+        start: string,
+        lunchOut: string,
+        lunchIn: string,
+        end: string,
+        first: string,
+        second: string,
+        day: string,
+      ): string =>
+        `Cada día marcas la entrada ${atClock(start)}, sales a comer ${atClock(lunchOut)}, regresas ${atClock(lunchIn)} y marcas la salida ${atClock(end)}: ${first} + ${second} = ${day} horas pagadas.`,
+      periods: (
+        start: string,
+        end: string,
+        twoHours: string,
+        twoPay: string,
+        yearHours: string,
+        yearPay: string,
+      ): string =>
+        `Dos semanas de tarjetas de ${start} a ${end} suman ${twoHours} horas, ${twoPay} por un periodo de pago quincenal; 52 semanas de tarjetas de ${start} a ${end}, ${yearHours} horas y ${yearPay} al año antes de impuestos.`,
+      minimum: (start: string, end: string, week: string, two: string): string =>
+        `Con el salario mínimo federal de $7.25, la misma tarjeta de ${start} a ${end} paga ${week} a la semana y ${two} cada dos semanas.`,
+      days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
+      regular: (card: string, total: string, rate: string, pay: string, left: string): string =>
+        left === '0'
+          ? `Al viernes la tarjeta ${card} suma ${total} horas, todas a tarifa normal: ${total} × ${rate} = ${pay} antes de impuestos. Es justo el límite de 40 horas, así que un minuto más en el reloj esta semana ya serían horas extra federales.`
+          : `Al viernes la tarjeta ${card} suma ${total} horas, todas a tarifa normal: ${total} × ${rate} = ${pay} antes de impuestos, a ${left} horas de las 40 en las que empiezan las horas extra federales.`,
+      overtime: (
+        card: string,
+        total: string,
+        regularPay: string,
+        overtime: string,
+        overtimeRate: string,
+        overtimePay: string,
+        pay: string,
+        day: string,
+      ): string =>
+        `Al viernes la tarjeta ${card} suma ${total} horas: las primeras 40 son a tarifa normal, ${regularPay}, y las ${overtime} horas después de 40 son horas extra a ${overtimeRate} la hora, ${overtimePay}, en total ${pay} antes de impuestos. La semana pasa de 40 horas el ${day}, así que el pago acumulado de ese día ya incluye horas extra.`,
+    },
     pay: {
       heading: (start: string, end: string): string =>
         `Pago de ${start} a ${end} con tarifas comunes`,
@@ -467,12 +590,12 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
   const spanHours = minutes / 60;
 
   // a lunch at the middle of the shift: the two parts add up to the shift less the lunch
-  const splitOf = (): string => {
-    const middle = shift.start + Math.floor(minutes / 2 / 15) * 15;
-    const first = hoursOf(shift.start, middle, 0);
-    const second = hoursOf(middle + 30, end, 0);
-    if (!first.add(second).equals(short)) throw new Error('the two parts must add up');
-    return w.split(
+  const middle = shift.start + Math.floor(minutes / 2 / 15) * 15;
+  const first = hoursOf(shift.start, middle, 0);
+  const second = hoursOf(middle + 30, end, 0);
+  if (!first.add(second).equals(short)) throw new Error('the two parts must add up');
+  const splitOf = (): string =>
+    w.split(
       clockOf(middle),
       clockOf(middle + 30),
       start,
@@ -481,7 +604,6 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
       hoursText(second),
       hoursText(short),
     );
-  };
 
   // worked out by hand
   const steps = [
@@ -595,6 +717,53 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
     );
   }
 
+  // the time card of a Monday-to-Friday week: each day's hours, and the week and pay so far
+  const card = weekOf(shift, CARD_DAYS, 30, CARD_RATE);
+  const minimumCard = weekOf(shift, CARD_DAYS, 30, RATES[0]);
+  const soFar = Array.from({ length: CARD_DAYS }, (_, index) =>
+    weekOf(shift, index + 1, 30, CARD_RATE),
+  );
+  if (!soFar.at(-1)?.pay.amount.equals(card.pay.amount)) throw new Error('the card must add up');
+  const cardRows = w.card.days.map((day, index) => [
+    day,
+    start,
+    clockOf(middle),
+    clockOf(middle + 30),
+    finish,
+    hoursText(card.dayHours[index] ?? Rational.of(0)),
+    hoursText(soFar[index]?.totalHours ?? Rational.of(0)),
+    moneyText(soFar[index]?.pay ?? usd(0)),
+  ]);
+  const cardName = lang === 'en' ? `${start} to ${finish}` : `de ${start} a ${finish}`;
+  const crossing = soFar.findIndex(({ overtimeHours }) => !isZero(overtimeHours));
+  const punches = w.card.punches(
+    start,
+    clockOf(middle),
+    clockOf(middle + 30),
+    finish,
+    hoursText(first),
+    hoursText(second),
+    hoursText(short),
+  );
+  const cardAfter = isZero(card.overtimeHours)
+    ? w.card.regular(
+        cardName,
+        hoursText(card.totalHours),
+        moneyText(CARD_RATE),
+        moneyText(card.pay),
+        hoursText(Rational.of(40).sub(card.totalHours)),
+      )
+    : w.card.overtime(
+        cardName,
+        hoursText(card.totalHours),
+        moneyText(card.regularPay),
+        hoursText(card.overtimeHours),
+        moneyText(scaleMoney(card.overtimePay, Rational.of(1).div(card.overtimeHours))),
+        moneyText(card.overtimePay),
+        moneyText(card.pay),
+        (lang === 'en' ? w.card.days[crossing] : w.card.days[crossing]?.toLowerCase()) ?? '',
+      );
+
   // the pay at common rates, from the time card
   const payRows = RATES.map((rate) => {
     const day = weekOf(shift, 1, 30, rate);
@@ -659,6 +828,40 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
       ],
     },
     { id: 'week', heading: w.week.heading, paragraphs: weekParagraphs },
+    {
+      id: 'time-card',
+      heading: w.card.heading(start, finish),
+      paragraphs: [w.card.intro(start, finish, moneyText(CARD_RATE))],
+      table: {
+        caption: w.card.caption(
+          start,
+          finish,
+          clockOf(middle),
+          clockOf(middle + 30),
+          moneyText(CARD_RATE),
+        ),
+        head: w.card.head,
+        rows: cardRows,
+      },
+      after: [
+        `${punches} ${cardAfter}`,
+        // each workweek stands alone under the FLSA, so a pay period and a year are whole weeks
+        w.card.periods(
+          start,
+          finish,
+          hoursText(card.totalHours.mul(Rational.of(2))),
+          moneyText(scaleMoney(card.pay, Rational.of(2))),
+          hoursText(card.totalHours.mul(Rational.of(52))),
+          moneyText(scaleMoney(card.pay, Rational.of(52))),
+        ),
+        w.card.minimum(
+          start,
+          finish,
+          moneyText(minimumCard.pay),
+          moneyText(scaleMoney(minimumCard.pay, Rational.of(2))),
+        ),
+      ],
+    },
     {
       id: 'pay',
       heading: w.pay.heading(start, finish),
