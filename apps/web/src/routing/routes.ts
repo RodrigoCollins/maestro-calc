@@ -140,6 +140,10 @@ export const ROUTES = {
   },
   'concrete-footing-16x8': { en: '/concrete/16x8-footing', es: '/es/concreto/zapata-de-16x8' },
   'concrete-footing-20x10': { en: '/concrete/20x10-footing', es: '/es/concreto/zapata-de-20x10' },
+  'roof-pitch-2-12': {
+    en: '/roofing/2-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-2-12',
+  },
   'roof-pitch-3-12': {
     en: '/roofing/3-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-3-12',
@@ -175,6 +179,10 @@ export const ROUTES = {
   'roof-pitch-10-12': {
     en: '/roofing/10-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-10-12',
+  },
+  'roof-pitch-11-12': {
+    en: '/roofing/11-12-roof-pitch',
+    es: '/es/techos/pendiente-de-techo-11-12',
   },
   'roof-pitch-12-12': {
     en: '/roofing/12-12-roof-pitch',

@@ -9,11 +9,11 @@ import { readEntries } from './content.ts';
 import { fromRoot } from './root.ts';
 
 // The only place where the end-of-change counts are pinned (every other test derives them from
-// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and eighteen ids, so the
-// site has two hundred and thirty-six routable pages and two not-found pages.
-describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
+// `ROUTES`, `CALCULATOR_PAGES` and `PAGELESS`): the table holds a hundred and twenty ids, so the
+// site has two hundred and forty routable pages and two not-found pages.
+describe('end state of the exact pitch pages (site-routing-i18n › [SR1], [SR19], site-seo › [SE10], [SE14])', () => {
   // spec: site-routing-i18n › [SR1], [SR19]
-  it('has a hundred and eighteen page ids, two hundred and thirty-six routable paths and two hundred and thirty-eight pages with the 404s', () => {
+  it('has a hundred and twenty page ids, two hundred and forty routable paths and two hundred and forty-two pages with the 404s', () => {
     expect(Object.keys(ROUTES)).toEqual([
       'home',
       'methodology',
@@ -67,6 +67,7 @@ describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site
       'concrete-tube-12',
       'concrete-footing-16x8',
       'concrete-footing-20x10',
+      'roof-pitch-2-12',
       'roof-pitch-3-12',
       'roof-pitch-4-12',
       'roof-pitch-5-12',
@@ -76,6 +77,7 @@ describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site
       'roof-pitch-8-12',
       'roof-pitch-9-12',
       'roof-pitch-10-12',
+      'roof-pitch-11-12',
       'roof-pitch-12-12',
       'roof-pitch-chart',
       'square-feet-5x5',
@@ -134,10 +136,10 @@ describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site
       'roofing',
       'feet-inches',
     ]);
-    expect(staticPaths()).toHaveLength(236);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(236);
+    expect(staticPaths()).toHaveLength(240);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(240);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(238);
+    expect(pageCount(ROUTES)).toBe(242);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -164,11 +166,11 @@ describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site
     ['en', enSite],
     ['es', esSite],
   ] as const)(
-    'has exactly two hundred and thirty-eight page title and description keys in %s',
+    'has exactly two hundred and forty-two page title and description keys in %s',
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(238);
+      ).toHaveLength(242);
     },
   );
 
@@ -180,7 +182,7 @@ describe('end state of the acre pages (site-routing-i18n › [SR1], [SR19], site
   });
 
   // spec: site-seo › [SE10]
-  it('lists two hundred and thirty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(236);
+  it('lists two hundred and forty URLs in the sitemap', () => {
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(240);
   });
 });

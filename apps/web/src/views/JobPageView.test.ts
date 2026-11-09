@@ -3,6 +3,7 @@ import { renderComponent } from '../__testing__/render-component.ts';
 import { CHART_SOURCES_ID, calculatorSourcesHref } from '../lib/byline.ts';
 import { jobGuide } from '../lib/job-guide.ts';
 import { jobLand, NIST_HB44_C } from '../lib/job-land.ts';
+import { jobSlope, OSHA_1926_500, OSHA_1926_501 } from '../lib/job-slope.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { JOBS } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -118,5 +119,41 @@ describe('JobPageView acre pages', () => {
     const document = await render('square-feet-12x12', 'en');
     expect(document.querySelectorAll('main table')).toHaveLength(1);
     expect(document.querySelector('main')?.textContent).not.toContain(NIST_HB44_C.url);
+  });
+});
+
+// Ahrefs US 2026-11-08: "6/12 roof pitch" and "roof pitch multiplier" are answered by the OSHA
+// class of the pitch, the ridge of a gable and the roof over a footprint
+describe('JobPageView exact pitch pages', () => {
+  it.each(['en', 'es'] as const)(
+    'says how OSHA classes the pitch with its sources, the ridge and the roof surface in %s',
+    async (locale) => {
+      const document = await render('roof-pitch-6-12', locale);
+      const slope = jobSlope('roof-pitch-6-12', locale);
+      const headings = document.querySelectorAll('main h2').map((h2) => h2.textContent);
+      for (const heading of [slope?.heading, slope?.ridge.heading, slope?.area.heading]) {
+        expect(headings).toContain(heading);
+      }
+      const text = document.querySelector('main')?.textContent ?? '';
+      expect(text).toContain(slope?.osha);
+      expect(text).toContain(slope?.note);
+      for (const { value } of slope?.ridge.facts ?? []) expect(text).toContain(value);
+      // nothing but a calculator page leaves the site (check:site): the sources are cited, not linked
+      const cited = document.querySelectorAll('main code').map((code) => code.textContent);
+      expect(cited).toEqual([OSHA_1926_500.url, OSHA_1926_501.url]);
+      expect(document.querySelector(`main a[href="${pathOf('roofing', locale)}"]`)).not.toBeNull();
+      // the rafter table, the coverings table, then the roof surface table
+      expect(document.querySelectorAll('main table')).toHaveLength(3);
+      expect(document.querySelector('main h1')?.textContent).toBe(
+        locale === 'en'
+          ? 'A 6/12 roof pitch is 26.57 degrees'
+          : 'Una pendiente de techo 6/12 mide 26.57 grados',
+      );
+    },
+  );
+
+  it('adds no pitch section to the pitch chart', async () => {
+    const document = await render('roof-pitch-chart', 'en');
+    expect(document.querySelector('main')?.textContent).not.toContain(OSHA_1926_500.url);
   });
 });
