@@ -109,6 +109,17 @@ describe('job page links (growth › job pages › check:site)', () => {
     expect(messagesOf(dist, site)).toEqual([]);
   });
 
+  // content audit 2026-11-08: the question pages chain among themselves, not with the size jobs
+  it('chains a job of its own group among that group only', () => {
+    const drop = (site: Site) =>
+      edited(site, 'concrete-slab-12x12.html', /<li><a href="\/concrete-tube-12">.*?<\/li>/, '');
+    const grouped = { ...jobSite(), jobGroups: { 'concrete-tube-12': 'question' } };
+    expect(messagesOf(drop(grouped), grouped)).toEqual([]);
+    expect(messagesOf(drop(jobSite()), jobSite())).toEqual([
+      'concrete-slab-12x12.html job-link: the job page must link its sibling /concrete-tube-12',
+    ]);
+  });
+
   it('rejects a link to the other language', () => {
     const dist = edited(
       jobSite(),

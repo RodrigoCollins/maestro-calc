@@ -140,6 +140,10 @@ export const ROUTES = {
   },
   'concrete-footing-16x8': { en: '/concrete/16x8-footing', es: '/es/concreto/zapata-de-16x8' },
   'concrete-footing-20x10': { en: '/concrete/20x10-footing', es: '/es/concreto/zapata-de-20x10' },
+  'concrete-cubic-yard-weight': {
+    en: '/concrete/how-much-does-a-cubic-yard-of-concrete-weigh',
+    es: '/es/concreto/cuanto-pesa-una-yarda-cubica-de-concreto',
+  },
   'roof-pitch-2-12': {
     en: '/roofing/2-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-2-12',
@@ -248,6 +252,14 @@ export const ROUTES = {
     en: '/measurement/square-feet-in-a-quarter-acre',
     es: '/es/medidas/pies-cuadrados-en-un-cuarto-de-acre',
   },
+  'square-feet-1-car-garage': {
+    en: '/measurement/1-car-garage-square-feet',
+    es: '/es/medidas/pies-cuadrados-de-un-garaje-de-1-auto',
+  },
+  'square-feet-2-car-garage': {
+    en: '/measurement/2-car-garage-square-feet',
+    es: '/es/medidas/pies-cuadrados-de-un-garaje-de-2-autos',
+  },
   'square-feet-to-square-meters-chart': {
     en: '/measurement/square-feet-to-square-meters-chart',
     es: '/es/medidas/tabla-de-pies-cuadrados-a-metros-cuadrados',
@@ -267,6 +279,14 @@ export const ROUTES = {
   'gravel-driveway-12x100': {
     en: '/landscaping/gravel-for-12x100-driveway',
     es: '/es/jardineria/grava-para-entrada-de-12x100',
+  },
+  'cubic-yards-to-tons': {
+    en: '/landscaping/cubic-yards-to-tons',
+    es: '/es/jardineria/yardas-cubicas-a-toneladas',
+  },
+  'cubic-yards-in-a-ton-of-gravel': {
+    en: '/landscaping/cubic-yards-in-a-ton-of-gravel',
+    es: '/es/jardineria/yardas-cubicas-en-una-tonelada-de-grava',
   },
   'cubic-yard-weight-chart': {
     en: '/landscaping/cubic-yard-weight-chart',
@@ -327,6 +347,18 @@ export const ROUTES = {
   'topsoil-20x20': {
     en: '/landscaping/topsoil-for-20x20-area',
     es: '/es/jardineria/tierra-para-area-de-20x20',
+  },
+  'cubic-feet-in-a-cubic-yard': {
+    en: '/landscaping/cubic-feet-in-a-cubic-yard',
+    es: '/es/jardineria/pies-cubicos-en-una-yarda-cubica',
+  },
+  'cubic-feet-to-gallons': {
+    en: '/landscaping/cubic-feet-to-gallons',
+    es: '/es/jardineria/pies-cubicos-a-galones',
+  },
+  'cubic-yards-in-a-ton-of-dirt': {
+    en: '/landscaping/cubic-yards-in-a-ton-of-dirt',
+    es: '/es/jardineria/yardas-cubicas-en-una-tonelada-de-tierra',
   },
   'roofing-12x16': {
     en: '/roofing/shingles-for-12x16-roof',
