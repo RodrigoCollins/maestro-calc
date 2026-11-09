@@ -13,6 +13,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import { amountText, lengthFieldText, volumeText } from '../format.ts';
 import type { GuideSource } from '../guide.ts';
+import type { Units } from '@maestro-calc/pool-core/units';
 import { SITE } from '../site.config.ts';
 import { VOLUME_TEXTS } from './texts.ts';
 
@@ -44,6 +45,15 @@ export interface VolumeTable {
   readonly rows: readonly VolumeRow[];
 }
 
+/** A row in metres: its `cells` are litres, and the cubic metres of each stand beside them. */
+export interface MetricVolumeRow extends VolumeRow {
+  readonly cubicMetres: readonly string[];
+}
+
+export interface MetricVolumeTable extends Omit<VolumeTable, 'rows'> {
+  readonly rows: readonly MetricVolumeRow[];
+}
+
 /** The validated inputs of the volume calculator; a raw it rejects is a build error. */
 const validated = (raw: Raw) => {
   const result = poolVolume.validate(raw);
@@ -62,13 +72,13 @@ const gallonsOf = (raw: Raw): Rational => {
 
 const HALF = Rational.of(1, 2);
 
-const columnOf = (shallow: string, deep: string): VolumeColumn => {
+const columnOf = (shallow: string, deep: string, system: Units = 'us'): VolumeColumn => {
   const ends = validated({ shallow, deep });
   return {
     head: shallow === deep ? `${shallow} deep` : `${shallow} to ${deep}`,
     shallow,
     deep,
-    average: lengthFieldText(scale(add(ends.shallow, ends.deep), HALF)),
+    average: lengthFieldText(scale(add(ends.shallow, ends.deep), HALF), system),
   };
 };
 
@@ -180,6 +190,82 @@ const metricPoolOf = () => {
 };
 export const METRIC_POOL = metricPoolOf();
 
+/** The volume of `raw` in metres, as the metric calculator gives it; a run that fails is a build error. */
+const metricVolumeOf = (raw: Raw) => {
+  const ran = poolVolume.run(raw, { unitSystem: 'metric' });
+  if (!ran.ok) throw new Error(`pool-volume did not run on ${JSON.stringify(raw)} in metric`);
+  const volume = ran.value.outputs.find(({ key }) => key === 'gallons')?.value;
+  if (!isQuantityOf(volume, 'volume')) throw new Error('gallons must be a volume');
+  return volume;
+};
+
+/** An above-ground pool sold in metres, filled to 1.2 m. */
+const METRIC_LEVEL = [columnOf('1.2 m', '1.2 m', 'metric')];
+
+/** An in-ground pool in metres: flat at 1.2 and 1.5 m, and sloping from 1 m to 2 m. */
+const METRIC_SLOPED = [
+  columnOf('1.2 m', '1.2 m', 'metric'),
+  columnOf('1.5 m', '1.5 m', 'metric'),
+  columnOf('1 m', '2 m', 'metric'),
+];
+
+/** A row in metres: the litres and cubic metres of each depth, and the metric calculator on its middle one. */
+const metricRowOf = (
+  label: string,
+  size: Raw,
+  columns: readonly VolumeColumn[],
+): MetricVolumeRow => {
+  const at = (column: VolumeColumn | undefined): Raw => {
+    if (column === undefined) throw new Error('a table needs a depth');
+    return { ...size, shallow: column.shallow, deep: column.deep };
+  };
+  const volumes = columns.map((column) => metricVolumeOf(at(column)));
+  const middle = validated(at(columns[Math.floor(columns.length / 2)]));
+  return {
+    label,
+    size,
+    cells: volumes.map((volume) => volumeText(volume, liter)),
+    cubicMetres: volumes.map((volume) => volumeText(volume, m3, 1)),
+    href: `${VOLUME_TEXTS.path}?${encode(poolVolume, middle, { unitSystem: 'metric' })}`,
+  };
+};
+
+const METRIC_ROUND = ['3.0', '3.6', '4.5', '5.5', '7.3'] as const;
+const METRIC_RECTANGLE = [
+  ['6', '3'],
+  ['7', '3.5'],
+  ['8', '4'],
+  ['9', '4.5'],
+  ['10', '5'],
+  ['12', '6'],
+] as const;
+
+/** The pools of Australia, the UK, Canada and Spain, measured in metres: each cell the metric calculator's. */
+const METRIC_TABLES: readonly MetricVolumeTable[] = [
+  {
+    id: 'round-metric',
+    caption: 'Round pools in metres',
+    note: 'Measured across the inside of the wall, filled to 1.2 m of water.',
+    columns: METRIC_LEVEL,
+    rows: METRIC_ROUND.map((across) =>
+      metricRowOf(`${across} m round`, { shape: 'round', length: `${across} m` }, METRIC_LEVEL),
+    ),
+  },
+  {
+    id: 'rectangle-metric',
+    caption: 'Rectangle pools in metres',
+    note: 'Length by width. The sloped column is worked out with a straight slope from 1 m at the shallow end to 2 m at the deep end.',
+    columns: METRIC_SLOPED,
+    rows: METRIC_RECTANGLE.map(([length, width]) =>
+      metricRowOf(
+        `${length} x ${width} m`,
+        { length: `${length} m`, width: `${width} m` },
+        METRIC_SLOPED,
+      ),
+    ),
+  },
+];
+
 /** The gallons in a 1 ft by 1 ft by 1 ft pool of a shape: the factor of the rule of thumb. */
 const ONE = { length: '1 ft', width: '1 ft', shallow: '1 ft', deep: '1 ft' } as const;
 const FACTORS = {
@@ -197,6 +283,8 @@ export interface VolumeChart {
   readonly h1: string;
   readonly lead: string;
   readonly tables: readonly VolumeTable[];
+  /** The same chart for pools measured in metres, in litres and cubic metres. */
+  readonly metricTables: readonly MetricVolumeTable[];
   readonly factors: { readonly cubicFoot: string; readonly round: string };
   readonly assumptions: readonly string[];
   readonly shortcuts: readonly string[];
@@ -221,6 +309,8 @@ export interface VolumeChart {
     /** The accessible name of a row's calculator link, by its label. */
     readonly openLabel: (label: string) => string;
     readonly gallons: string;
+    /** The unit line under a metric table. */
+    readonly litres: string;
     readonly assumptionsHeading: string;
     readonly shortcuts: string;
     readonly method: string;
@@ -232,7 +322,7 @@ export interface VolumeChart {
   };
 }
 
-const H1 = 'Pool volume chart: gallons by size and shape';
+const H1 = 'Pool volume chart: gallons and litres by size and shape';
 const PATH = '/pool-volume-chart';
 
 /** NIST's gallon, as the methodology cites it (`chart.test.ts`). */
@@ -251,14 +341,16 @@ export const VOLUME_CHART = {
   checked: '2026-11-05',
   card: {
     title: 'Pool volume chart',
-    summary: 'Gallons of round, oval and rectangle pools, 12 to 33 ft, at common depths.',
+    summary:
+      'Gallons of round, oval and rectangle pools, 12 to 33 ft, and litres of pools in metres.',
   },
-  title: 'Pool Volume Chart: Gallons by Size and Shape | Pool Figures',
+  title: 'Pool Volume Chart: Gallons and Litres by Size | Pool Figures',
   description:
-    'How many gallons a round pool of 12 to 33 ft, an oval or a rectangle of 12 x 24 to 20 x 40 ft holds at its common depths, worked out by the volume calculator.',
+    'How many gallons a round pool of 12 to 33 ft, an oval or a rectangle of 12 x 24 to 20 x 40 ft holds, and the litres of pools in metres, 3 m to 12 x 6 m.',
   h1: H1,
   lead: `A 24 ft round pool 4 ft deep holds ${at('round', '24 ft round')} gallons, a 15 x 30 ft oval 4 ft deep holds ${at('oval', '15 x 30 ft oval')}, and a 16 x 32 ft rectangle from 3 ft to 6 ft deep holds ${at('rectangle', '16 x 32 ft')}. In metres, an 8 x 4 m pool from 1 m to 2 m deep holds ${METRIC_POOL.litres} litres (${METRIC_POOL.cubicMetres} m³). Each figure is the surface of the pool times its average depth, at ${FACTORS.cubicFoot} gallons a cubic foot.`,
   tables: TABLES,
+  metricTables: METRIC_TABLES,
   factors: FACTORS,
   assumptions: [
     'The average depth is half of the shallow end plus the deep end: a pool from 3 ft to 6 ft is worked out at 4 ft 6 in all over.',
@@ -290,6 +382,7 @@ export const VOLUME_CHART = {
     open: 'Open',
     openLabel: (label: string) => `Open the ${label} pool in the calculator`,
     gallons: 'US gallons.',
+    litres: 'Litres, with the cubic metres (m³) in brackets.',
     assumptionsHeading: 'How the gallons are worked out',
     shortcuts: 'The same figures in your head, close enough for a dose:',
     method: 'How it is worked out',

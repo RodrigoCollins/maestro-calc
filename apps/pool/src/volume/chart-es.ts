@@ -4,6 +4,7 @@ import { SITE } from '../site.config.ts';
 import {
   METRIC_POOL,
   VOLUME_CHART,
+  type MetricVolumeTable,
   type VolumeChart,
   type VolumeColumn,
   type VolumeRow,
@@ -33,13 +34,28 @@ const TABLES: Readonly<Record<string, { readonly caption: string; readonly note:
   },
 };
 
+/** The caption and the note of each metric table, by id. */
+const METRIC_TABLES: Readonly<Record<string, { readonly caption: string; readonly note: string }>> =
+  {
+    'round-metric': {
+      caption: 'Piscinas redondas en metros',
+      note: 'Medida de lado a lado por dentro de la pared, llena con 1.2 m de agua.',
+    },
+    'rectangle-metric': {
+      caption: 'Piscinas rectangulares en metros',
+      note: 'Largo por ancho. La columna con pendiente se calcula con una pendiente recta de 1 m en la parte baja a 2 m en la parte honda.',
+    },
+  };
+
 /** The name of a size as the Spanish table prints it: `24 ft round` is `Redonda de 24 ft`. */
 const labelOf = (id: string, label: string): string =>
   id === 'round'
     ? label.replace(/^(.+) ft round$/, 'Redonda de $1 ft')
     : id === 'oval'
       ? label.replace(/^(.+) ft oval$/, 'Ovalada de $1 ft')
-      : label;
+      : id === 'round-metric'
+        ? label.replace(/^(.+) m round$/, 'Redonda de $1 m')
+        : label;
 
 const columnOf = (column: VolumeColumn): VolumeColumn => ({
   ...column,
@@ -66,6 +82,17 @@ const tableOf = (table: VolumeTable): VolumeTable => {
   };
 };
 
+const metricTableOf = (table: MetricVolumeTable): MetricVolumeTable => {
+  const copy = METRIC_TABLES[table.id];
+  if (copy === undefined) throw new Error(`no Spanish metric volume table ${table.id}`);
+  return {
+    ...table,
+    ...copy,
+    columns: table.columns.map(columnOf),
+    rows: table.rows.map((row) => ({ ...rowOf(table.id, row), cubicMetres: row.cubicMetres })),
+  };
+};
+
 /** The gallons of the English row `label` of the table `id` at the middle depth, as the lead quotes them. */
 const at = (id: string, label: string): string => {
   const found = VOLUME_CHART.tables
@@ -76,7 +103,7 @@ const at = (id: string, label: string): string => {
 };
 
 const { factors } = VOLUME_CHART;
-const H1 = 'Tabla de volumen de piscina: galones por tamaño y forma';
+const H1 = 'Tabla de volumen de piscina: galones y litros por tamaño y forma';
 const PATH = '/es/tabla-de-volumen-de-piscina';
 
 export const VOLUME_CHART_ES: VolumeChart = {
@@ -85,14 +112,15 @@ export const VOLUME_CHART_ES: VolumeChart = {
   card: {
     title: 'Tabla de volumen de piscina',
     summary:
-      'Galones de piscinas redondas, ovaladas y rectangulares, de 12 a 33 ft, a profundidades comunes.',
+      'Galones de piscinas redondas, ovaladas y rectangulares, de 12 a 33 ft, y litros de piscinas en metros.',
   },
-  title: 'Tabla de volumen de piscina: galones por tamaño | Pool Figures',
+  title: 'Tabla de volumen de piscina: galones y litros | Pool Figures',
   description:
-    'Cuántos galones tiene una piscina redonda de 12 a 33 ft, una ovalada o una rectangular de 12 x 24 a 20 x 40 ft a sus profundidades comunes.',
+    'Cuántos galones tiene una piscina redonda de 12 a 33 ft, una ovalada o una rectangular de 12 x 24 a 20 x 40 ft, y los litros de piscinas de 3 m a 12 x 6 m.',
   h1: H1,
   lead: `Una piscina redonda de 24 ft con 4 ft de profundidad tiene ${at('round', '24 ft round')} galones, una ovalada de 15 x 30 ft con 4 ft de profundidad tiene ${at('oval', '15 x 30 ft oval')}, y una rectangular de 16 x 32 ft de 3 ft a 6 ft de profundidad tiene ${at('rectangle', '16 x 32 ft')}. En metros, una piscina de 8 x 4 m de 1 m a 2 m de profundidad tiene ${METRIC_POOL.litres} litros (${METRIC_POOL.cubicMetres} m³). Cada cifra es la superficie de la piscina por su profundidad promedio, a ${factors.cubicFoot} galones por pie cúbico.`,
   tables: VOLUME_CHART.tables.map(tableOf),
+  metricTables: VOLUME_CHART.metricTables.map(metricTableOf),
   factors,
   assumptions: [
     'La profundidad promedio es la mitad de la parte baja más la parte honda: una piscina de 3 ft a 6 ft se calcula con 4 ft 6 in en toda su superficie.',
@@ -130,6 +158,7 @@ export const VOLUME_CHART_ES: VolumeChart = {
     open: 'Abrir',
     openLabel: (label: string) => `Abrir en la calculadora: ${label}`,
     gallons: 'Galones de EE. UU.',
+    litres: 'Litros, con los metros cúbicos (m³) entre paréntesis.',
     assumptionsHeading: 'Cómo se calculan los galones',
     shortcuts: 'Las mismas cifras de memoria, con precisión suficiente para una dosis:',
     method: 'Cómo se calcula',
