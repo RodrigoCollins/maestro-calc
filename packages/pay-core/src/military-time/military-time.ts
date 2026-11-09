@@ -63,9 +63,9 @@ const whole = (value: number, most: number): boolean =>
 /** A number from 0 to 59 in English words: `forty-five`. */
 export const numberWords = (value: number): string => {
   if (!whole(value, 59)) throw new RangeError(`no words for ${String(value)}`);
-  if (value < 20) return ONES[value] ?? '';
-  const tens = TENS[Math.floor(value / 10)] ?? '';
-  return value % 10 === 0 ? tens : `${tens}-${ONES[value % 10] ?? ''}`;
+  if (value < 20) return String(ONES[value]);
+  const tens = String(TENS[Math.floor(value / 10)]);
+  return value % 10 === 0 ? tens : `${tens}-${String(ONES[value % 10])}`;
 };
 
 /** Two digits as they are said: `08` is "zero eight", `00` "zero zero", `45` "forty-five". */
@@ -131,8 +131,10 @@ export interface UsZone {
 }
 
 /** The six zones of the 50 states, east to west (49 CFR part 71); Hawaii keeps no daylight time. */
+const EASTERN: UsZone = { id: 'ET', standard: -5, daylight: true };
+
 export const US_ZONES: readonly UsZone[] = [
-  { id: 'ET', standard: -5, daylight: true },
+  EASTERN,
   { id: 'CT', standard: -6, daylight: true },
   { id: 'MT', standard: -7, daylight: true },
   { id: 'PT', standard: -8, daylight: true },
@@ -155,8 +157,7 @@ export interface ZoneTime {
 export const zoneTimesOf = (minutes: number, season: 'standard' | 'daylight'): ZoneTime[] => {
   const shift = (zone: UsZone): number =>
     zone.standard + (season === 'daylight' && zone.daylight ? 1 : 0);
-  const [eastern] = US_ZONES;
-  const base = eastern === undefined ? 0 : shift(eastern);
+  const base = shift(EASTERN);
   return US_ZONES.map((zone) => {
     const at = minutes + (shift(zone) - base) * HOUR;
     const day = Math.floor(at / DAY);
