@@ -369,7 +369,8 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
           ))}
         </dl>
         {extra.table !== undefined && (
-          <div class="job-table">
+          // a table wider than a phone scrolls: the region takes the keyboard focus to scroll it
+          <div class="job-table" tabindex="0" role="region" aria-label={extra.heading}>
             <table>
               <thead>
                 <tr>
