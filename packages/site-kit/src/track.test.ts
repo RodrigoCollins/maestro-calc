@@ -116,6 +116,22 @@ describe('watchUsage', () => {
     ]);
   });
 
+  it('returns its tracker, for an action no click names (a saved week restored)', () => {
+    const calls: unknown[][] = [];
+    const track = watchUsage(
+      { gtag: (...args: unknown[]) => calls.push(args) },
+      'time-card',
+      listenable(),
+      listenable(),
+    );
+    track('restore');
+    track('copy');
+    expect(calls).toEqual([
+      ['event', 'calc_action', { calc_action: 'restore', calc_id: 'time-card' }],
+      ['event', 'calc_action', { calc_action: 'copy', calc_id: 'time-card' }],
+    ]);
+  });
+
   it('adds no click listener when no click is watched', () => {
     const page = { addEventListener: () => expect.unreachable('a click listener') };
     watchUsage({}, 'pool-ph', listenable(), page);

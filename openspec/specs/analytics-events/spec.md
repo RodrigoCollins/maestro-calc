@@ -4,7 +4,7 @@
 
 ### Requirement: Calculator usage events
 
-A calculator page MUST push to `dataLayer`, when it exists as an array, one `{ event: 'calc_action', calc_action, calc_id }` object per action: `calculate` on the first edit of the page load only, `copy` when the copy button is pressed, `print` when the print button is pressed and `share` when the share link is followed. The object MUST NOT hold any other field, any typed value, URL or query. Where `dataLayer` is absent or not an array, nothing is pushed and nothing fails.
+A calculator page MUST push to `dataLayer`, when it exists as an array, one `{ event: 'calc_action', calc_action, calc_id }` object per action: `calculate` on the first edit of the page load only, `copy` when the copy button is pressed, `print` when the print button is pressed and `share` when the share link is followed or a share sheet sends the result. A page that keeps a week in the browser (the Cuenta Horas time card) also sends `restore` when it opens on that saved week. The object MUST NOT hold any other field, any typed value, URL or query. Where `dataLayer` is absent or not an array, nothing is pushed and nothing fails.
 
 #### Scenario: [AE1] One event per action, never a value
 - GIVEN a calculator page on the production host

@@ -6,8 +6,11 @@
  * defaults (ad signals denied; analytics denied in the EEA, the UK and Switzerland) apply.
  */
 
-/** What a person did: changed an input, copied the link, opened the share link, printed. */
-export type CalcAction = 'calculate' | 'copy' | 'share' | 'print';
+/**
+ * What a person did: changed an input, copied the link or the result, opened the share link or
+ * sheet, printed, or came back to a week the page had kept in their browser (`restore`).
+ */
+export type CalcAction = 'calculate' | 'copy' | 'share' | 'print' | 'restore';
 
 /** The one event name, with its two parameters. */
 export const CALC_EVENT = 'calc_action';
@@ -77,7 +80,8 @@ const CLICKS = ['copy', 'share', 'print'] as const;
 /**
  * Records the usage of the calculator `id` through `scope.gtag`: `calculate` on the first edit of
  * `form`, and each action of `clicks` when a click on `page` lands inside the element its
- * selector names (`{ share: 'a[data-share]' }`).
+ * selector names (`{ share: 'a[data-share]' }`). Returns the tracker, for the actions a script
+ * records itself (a share sheet that opened, a saved week restored).
  */
 export const watchUsage = (
   scope: object,
@@ -85,7 +89,7 @@ export const watchUsage = (
   form: Listenable,
   page: Listenable,
   clicks: Readonly<Partial<Record<(typeof CLICKS)[number], string>>> = {},
-): void => {
+): ((action: CalcAction) => void) => {
   const track = trackerOf(viaGtag(scope), id);
   form.addEventListener('input', () => {
     track('calculate');
@@ -94,8 +98,10 @@ export const watchUsage = (
     const selector = clicks[action];
     return selector === undefined ? [] : [[action, selector] as const];
   });
-  if (watched.length === 0) return;
-  page.addEventListener('click', ({ target }) => {
-    for (const [action, selector] of watched) if (within(target, selector)) track(action);
-  });
+  if (watched.length > 0) {
+    page.addEventListener('click', ({ target }) => {
+      for (const [action, selector] of watched) if (within(target, selector)) track(action);
+    });
+  }
+  return track;
 };
