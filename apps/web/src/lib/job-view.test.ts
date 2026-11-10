@@ -145,6 +145,78 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.columns).toHaveLength(5);
   });
 
+  // hand-verified in paint-cost.test.ts: a painter $1 to $4 per sq ft of floor (This Old House) and
+  // $1.50 to $3.50 (Fixr); a gallon $15 (value) to $60 (premium); 10 × 10 × 8 ft: 2 cans, $30 to
+  // $120 of paint, $100 to $400 and $150 to $350 by a pro; 12 × 16: 3 cans, $45 to $180, $192 to
+  // $768 and $288 to $672
+  it.each(LOCALES)(
+    'answers what painting a room costs with the published prices in %s',
+    (locale) => {
+      const view = jobView('cost-to-paint-a-room', locale);
+      expect(view.answer).toContain('$1.00–$4.00');
+      expect(view.facts.map(({ value }) => value)).toEqual([
+        '$15.00–$60.00',
+        '$100–$400',
+        '$30–$120',
+      ]);
+      expect(view.columns).toHaveLength(5);
+      expect(view.rows.map(({ label }) => label)).toEqual([
+        '10 ft × 10 ft × 8 ft',
+        '12 ft × 12 ft × 8 ft',
+        '12 ft × 14 ft × 8 ft',
+        '12 ft × 16 ft × 8 ft',
+      ]);
+      expect(view.rows[0].cells).toEqual(['2', '$30–$120', '$100–$400', '$150–$350']);
+      expect(view.rows[3]?.cells).toEqual(['3', '$45–$180', '$192–$768', '$288–$672']);
+      expect(view.rows[0].href).toMatch(new RegExp(`^${pathOf('paint', locale)}\\?`));
+    },
+  );
+
+  // hand-verified in paint-cost.test.ts: outside $2.20 to $4.40 per sq ft of wall, inside $1 to $4
+  // per sq ft of floor (This Old House); 30 × 50 × 9 ft: 2 × 80 × 9 = 1,440 sq ft × $2.20 = $3,168
+  // to × $4.40 = $6,336; outside paint $30 (contractor-grade) to $85 (premium acrylic) a gallon
+  it.each(LOCALES)(
+    'answers what painting a house costs with the published prices in %s',
+    (locale) => {
+      const view = jobView('cost-to-paint-a-house', locale);
+      expect(view.answer).toContain('$2.20–$4.40');
+      // a house, not a room: its own heading over the sizes
+      expect(view.columns[0]).toBe(siteText(locale)('site.job.cost.house.col.size'));
+      expect(view.facts.map(({ value }) => value)).toEqual([
+        '$1.00–$4.00',
+        '$3,168–$6,336',
+        '$30.00–$85.00',
+      ]);
+      expect(view.columns).toHaveLength(5);
+      expect(view.rows[0]).toMatchObject({
+        label: '25 ft × 40 ft × 9 ft',
+        cells: ['1,000', '1,170', '$2,574–$5,148', '$1,000–$4,000'],
+      });
+      expect(view.rows[3]?.cells).toEqual(['2,500', '1,800', '$3,960–$7,920', '$2,500–$10,000']);
+      expect(view.rows[0].href).toMatch(new RegExp(`^${pathOf('paint', locale)}\\?`));
+    },
+  );
+
+  // hand-verified in drywall-cost.test.ts: installed $1.50 to $3.50 per sq ft, $48 to $80 a sheet
+  // (Fixr); a panel $10 (Fixr) to $20 (Bob Vila); 10 × 10 × 8 ft: 370 sq ft, 13 sheets, $130 to
+  // $260 of panels, $555 to $1,295 installed; 12 × 12: 478 sq ft, $717 to $1,673
+  it.each(LOCALES)(
+    'answers what drywall installation costs with the published prices in %s',
+    (locale) => {
+      const view = jobView('drywall-installation-cost', locale);
+      expect(view.answer).toContain('$1.50–$3.50');
+      expect(view.facts.map(({ value }) => value)).toEqual([
+        '$48.00–$80.00',
+        '$10.00–$20.00',
+        '$717–$1,673',
+      ]);
+      expect(view.columns).toHaveLength(5);
+      expect(view.rows[0].cells).toEqual(['370', '13', '$130–$260', '$555–$1,295']);
+      expect(view.rows[3]?.cells).toEqual(['590', '21', '$210–$420', '$885–$2,065']);
+      expect(view.rows[0].href).toMatch(new RegExp(`^${pathOf('drywall', locale)}\\?`));
+    },
+  );
+
   // hand-verified in slab-cost.test.ts: installed $4.00 (This Old House) to $10.50 (Concrete
   // Network) a square foot; ready-mix $160.18 to $201.90 a cubic yard (Eagle Materials and Knife
   // River, third quarter 2026); 1 sq ft at 4 in with 10% extra is 0.01358 yd³, $2.18 to $2.74;

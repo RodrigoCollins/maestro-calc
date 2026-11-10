@@ -3,6 +3,8 @@ import { isChartJob, JOB_IDS, type JobId } from '../routing/jobs.ts';
 import { LOCALES, ROUTES } from '../routing/routes.ts';
 import { JOB_GUIDE_KINDS, jobCoverings, jobGuide, jobGuideKindOf } from './job-guide.ts';
 import { jobView } from './job-view.ts';
+import { drywallCostOf } from './drywall-cost.ts';
+import { houseCostOf, roomCostOf } from './paint-cost.ts';
 
 const JOBS_OF_ONE_SIZE = JOB_IDS.filter((id) => !isChartJob(id));
 const CHARTS = JOB_IDS.filter((id) => isChartJob(id));
@@ -185,6 +187,43 @@ describe('jobGuide tips with the figures of the page', () => {
         expect(new Set(tips).size).toBe(family.length);
       }
     }
+  });
+});
+
+// the cost pages work their own prices into their tips: `$144–$576` reads `$144 to $576` in English
+// and `$144 a $576` in Spanish, so each tip is held to the price module, not typed twice
+describe('jobGuide (the cost pages)', () => {
+  const room = (length: number, width: number) => ({
+    length: `${String(length)}ft`,
+    width: `${String(width)}ft`,
+    height: '8ft',
+  });
+  const house = (length: number, width: number, height: number) => ({
+    ...room(length, width),
+    height: `${String(height)}ft`,
+    doors: '0',
+    windows: '0',
+  });
+  it.each(LOCALES)('writes the prices of each cost page into its tips in %s', (locale) => {
+    const words = (span: string) => span.replace('–', locale === 'en' ? ' to ' : ' a ');
+    const tips = (id: JobId) => jobGuide(id, locale)?.tips ?? [];
+    const [roomTip1, roomTip2, roomTip3] = tips('cost-to-paint-a-room');
+    expect(roomTip1).toContain(words(roomCostOf(room(12, 12)).pro[0]));
+    expect(roomTip1).toContain(words(roomCostOf(room(12, 12)).pro[1]));
+    expect(roomTip2).toContain(roomCostOf(room(10, 10)).gallons);
+    expect(roomTip2).toContain(roomCostOf(room(12, 16)).gallons);
+    expect(roomTip3).toContain('$105');
+    const [houseTip1, houseTip2, houseTip3, houseTip4] = tips('cost-to-paint-a-house');
+    expect(houseTip1).toContain(words(houseCostOf(house(30, 50, 9)).outside));
+    expect(houseTip2).toContain(houseCostOf(house(30, 50, 8)).walls);
+    expect(houseTip2).toContain(houseCostOf(house(30, 50, 10)).walls);
+    expect(houseTip3).toContain(words(houseCostOf(house(50, 50, 9)).paint[1]));
+    expect(houseTip4).toContain(words(houseCostOf(house(40, 50, 9)).inside));
+    const [wallTip1, wallTip2, wallTip3, wallTip4] = tips('drywall-installation-cost');
+    expect(wallTip1).toContain(words(drywallCostOf(room(12, 12)).installed));
+    expect(wallTip2).toContain(words(drywallCostOf(room(12, 16)).walls.installed));
+    expect(wallTip3).toContain(words(drywallCostOf(room(10, 10)).labor));
+    expect(wallTip4).toContain(words(drywallCostOf(room(12, 14)).bySheet));
   });
 });
 
