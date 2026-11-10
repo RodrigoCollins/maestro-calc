@@ -544,7 +544,10 @@ export const CHILD_LABOR: readonly ChildLabor[] = [
       '8-40 non-school day/week; 4-20 school day/week',
       '8-40 en días y semanas sin clases; 4-20 en días y semanas de clases',
     ),
-    night: cell('After 10 p.m. before school day', 'Después de las 10 p.m. antes de un día de clases'),
+    night: cell(
+      'After 10 p.m. before school day',
+      'Después de las 10 p.m. antes de un día de clases',
+    ),
   }),
   row(
     'Tennessee',

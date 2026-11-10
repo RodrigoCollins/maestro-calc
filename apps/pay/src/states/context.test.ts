@@ -32,27 +32,20 @@ const textOf = (section: ContextSection | undefined): string =>
 const queryOf = (href: string): string => new URL(href, 'https://cuentahoras.com').search.slice(1);
 
 describe('contextOf: what one state’s figures come to', () => {
-  it('works tipped pay out at the California minimum, leaving checks and overtime to others', () => {
-    const text = textOf(sectionOf('California', 'en', 'paycheck'));
-    // the checks are the payday section's, the long week the 45-hour example's
-    expect(text).not.toContain('$1,352');
-    expect(text).not.toContain('$2,929.33');
-    expect(text).not.toContain('$25.35');
-    // $16.90 x 40 = $676 a week from the employer, tips on top: no tip credit in California
-    expect(text).toContain('$676');
-    expect(text).toContain('no tip credit');
-  });
-
-  it('works the tipped cash wage out where it differs from the minimum, in Texas', () => {
-    const text = textOf(sectionOf('Texas', 'en', 'paycheck'));
-    // $2.13 x 40 = $85.20; x 2,080 = $4,430.40; $15,080 - $4,430.40 = $10,649.60 of tips
-    expect(text).toContain('$85.20');
-    expect(text).toContain('$4,430.40');
-    expect(text).toContain('$10,649.60');
-    expect(text).toContain('$15,080');
-    const es = textOf(sectionOf('Texas', 'es', 'paycheck'));
-    expect(es).toContain('$4,430.40');
-    expect(es).toContain('Texas');
+  it('holds the tipped cash wage against the federal pair in the comparison', () => {
+    // California allows no tip credit: $16.90 x 40 = $676 a week from the employer
+    const california = textOf(sectionOf('California', 'en', 'compare'));
+    expect(california).toContain('no tip credit');
+    expect(california).toContain('$676');
+    expect(textOf(sectionOf('Texas', 'en', 'compare'))).toContain('uses the federal pair');
+    // Arizona: $12.15 is $10.02 above the federal $2.13; its $3.00 credit is $2.12 under $5.12
+    const arizona = textOf(sectionOf('Arizona', 'en', 'compare'));
+    expect(arizona).toContain('$10.02');
+    expect(arizona).toContain('$2.12 less than the federal $5.12');
+    expect(textOf(sectionOf('Texas', 'es', 'compare'))).toContain('usa la pareja federal');
+    // the 45-hour and the tipped examples work the week out; no section repeats them
+    for (const facts of STATE_FACTS)
+      expect(contextOf(facts, 'en').map(({ id }) => id)).not.toContain('paycheck');
   });
 
   it('compares California with the federal $7.25, the nation and its Pacific neighbours', () => {
@@ -248,11 +241,14 @@ describe('contextOf: what one state’s figures come to', () => {
     expect(alabama).toContain('$4.15 above');
     expect(textOf(sectionOf('Alabama', 'es', 'wages'))).toContain('cajeros $13.58');
     // Wisconsin and Wyoming share $24.17, so they share a rank
-    const rank = (name: string) => /(\d+)(st|nd|rd|th)-highest/.exec(textOf(sectionOf(name, 'en', 'wages')))?.[1];
+    const rank = (name: string) =>
+      /(\d+)(st|nd|rd|th)-highest/.exec(textOf(sectionOf(name, 'en', 'wages')))?.[1];
     expect(rank('Wisconsin')).toBe(rank('Wyoming'));
     for (const facts of STATE_FACTS)
       for (const lang of LANGS)
-        expect(sectionOf(facts.tipped.name.en, lang, 'wages')?.sources).toContainEqual(SOURCES.oews);
+        expect(sectionOf(facts.tipped.name.en, lang, 'wages')?.sources).toContainEqual(
+          SOURCES.oews,
+        );
   });
 
   it('gives the limits of the DOL child labor table for under 16 and for 16 and 17', () => {
@@ -311,7 +307,6 @@ describe('contextOf: what one state’s figures come to', () => {
           expect(textOf(section)).not.toMatch(/not applicable\.|no aplica\.|N\/A|undefined|NaN/);
         }
     expect(contextOf(factsOf('Texas'), 'en').map(({ id }) => id)).toEqual([
-      'paycheck',
       'payday',
       'compare',
       'wages',

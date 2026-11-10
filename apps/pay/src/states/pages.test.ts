@@ -396,18 +396,15 @@ describe('the overtime engine and the state tables', () => {
 });
 
 describe('the sources of a state page', () => {
-  it.each(LANGS)(
-    'lists them once and points each section to that list, in %s',
-    (lang) => {
-      for (const { page } of PAGES.filter((each) => each.lang === lang)) {
-        expect(page.cite).toEqual({
-          label: lang === 'en' ? 'Sources' : 'Fuentes',
-          href: '#sources',
-        });
-        expect(page.labels.sources).toBe(page.cite.label);
-      }
-    },
-  );
+  it.each(LANGS)('lists them once and points each section to that list, in %s', (lang) => {
+    for (const { page } of PAGES.filter((each) => each.lang === lang)) {
+      expect(page.cite).toEqual({
+        label: lang === 'en' ? 'Sources' : 'Fuentes',
+        href: '#sources',
+      });
+      expect(page.labels.sources).toBe(page.cite.label);
+    }
+  });
 });
 
 describe('statesIndexOf', () => {

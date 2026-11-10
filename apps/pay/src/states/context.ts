@@ -41,12 +41,13 @@ import { paydayOf, type Frequency } from './paydays.ts';
 import { statePathOf } from './routes.ts';
 
 /*
- * What one state's figures come to, beside its rows of the state tables (`./pages.ts`): its
- * minimum by the paycheck, its daily overtime on a short week, how it stands against the federal
- * $7.25, the 50 states and DC and its Census division, its meal period in the DOL table and its
- * change of January 1, 2027. Every figure is a table's or an engine's; a section that does not
- * apply to the state is left out rather than printed empty, so two pages differ where their
- * states do.
+ * What one state's figures come to, beside its rows of the state tables (`./pages.ts`): its daily
+ * overtime on a short week, its paydays and the check each makes at the minimum, how it stands
+ * against the federal $7.25 and tipped pair, the 50 states and DC and its Census division, the
+ * wages the BLS counted there, its meal period in the DOL table, its child labor limits, its
+ * change of January 1, 2027 and its labor office. Every figure is a table's or an engine's; a
+ * section that does not apply to the state is left out rather than printed empty, so two pages
+ * differ where their states do.
  */
 
 /** A neighbour of the division: its page, then how it stands against the state. */
@@ -57,16 +58,7 @@ export interface ContextItem {
 }
 
 export interface ContextSection {
-  readonly id:
-    | 'paycheck'
-    | 'daily'
-    | 'payday'
-    | 'compare'
-    | 'wages'
-    | 'meal'
-    | 'teens'
-    | 'next-year'
-    | 'office';
+  readonly id: 'daily' | 'payday' | 'compare' | 'wages' | 'meal' | 'teens' | 'next-year' | 'office';
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly items?: readonly ContextItem[];
@@ -158,40 +150,13 @@ const federalTippedOf = (facts: StateFacts, lang: Lang): string => {
     : `Ese salario en efectivo supera en ${cashDiff} la hora los $2.13 federales, y el crédito por propinas de ${nameIn(facts, lang)}, ${centsText(credit)}, es ${creditPart}.`;
 };
 
-const paycheckOf = (facts: StateFacts, lang: Lang): ContextSection => {
-  const the = nameIn(facts, lang);
-  const { minimum, tipped } = facts;
-  const year = yearOf(minimum.wage);
-  const weekly = money(year('weekly'));
-  const annual = money(year('annual'));
-  const tips = (() => {
-    if (tipped.credit === 0)
-      return lang === 'en'
-        ? `${startOf(facts, 'en')} allows no tip credit, so a server or bartender gets the same ${weekly} a week from the employer as any other worker at the minimum, and every tip is on top of it.`
-        : `${startOf(facts, 'es')} no permite crédito por propinas, así que un mesero o un bartender recibe del empleador los mismos ${weekly} a la semana que cualquier otro trabajador al mínimo, y cada propina va aparte.`;
-    const cashYear = yearOf(tipped.cash);
-    const fromTips = money(subMoney(year('annual'), cashYear('annual')));
-    const cash = centsText(tipped.cash);
-    const worked =
-      lang === 'en'
-        ? `A tipped worker in ${the} can be paid ${cash} an hour in cash: ${money(cashYear('weekly'))} for 40 hours and ${money(cashYear('annual'))} over a full-time year. Tips have to cover the rest, up to ${fromTips} a year; if they fall short, the employer owes the difference up to ${annual}.`
-        : `A quien recibe propinas en ${the} se le pueden pagar ${cash} la hora en efectivo: ${money(cashYear('weekly'))} por 40 horas y ${money(cashYear('annual'))} en un año de tiempo completo. Las propinas deben cubrir el resto, hasta ${fromTips} al año; si no alcanzan, el empleador debe la diferencia hasta llegar a ${annual}.`;
-    return `${worked} ${federalTippedOf(facts, lang)}`;
-  })();
-
-  return {
-    id: 'paycheck',
-    heading:
-      lang === 'en'
-        ? `Tipped pay at ${possessiveIn(facts)} minimum`
-        : `Pago con propinas al mínimo de ${the}`,
-    paragraphs: [tips],
-    sources: unique([
-      MINIMUM_WAGE_STATES_SOURCES[minimum.source],
-      TIPPED_STATES_SOURCES[tipped.source],
-      ...(tipped.credit === 0 ? [] : [SOURCES.factSheet15]),
-    ]),
-  };
+/** The state's tipped pay against the federal pair: no tip credit at all, or its cash wage and credit. */
+const tippedAgainstFederal = (facts: StateFacts, lang: Lang): string => {
+  if (facts.tipped.credit !== 0) return federalTippedOf(facts, lang);
+  const weekly = money(yearOf(facts.minimum.wage)('weekly'));
+  return lang === 'en'
+    ? `${startOf(facts, 'en')} allows no tip credit, where the FLSA allows $5.12, so a server or bartender gets the same ${weekly} a week from the employer as any other worker at the minimum, and every tip is on top of it.`
+    : `${startOf(facts, 'es')} no permite crédito por propinas, donde la FLSA permite $5.12, así que un mesero o un bartender recibe del empleador los mismos ${weekly} a la semana que cualquier otro trabajador al mínimo, y cada propina va aparte.`;
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -420,10 +385,12 @@ const compareOf = (facts: StateFacts, lang: Lang): ContextSection => {
   return {
     id: 'compare',
     heading: lang === 'en' ? `How ${the} compares` : `Cómo se compara ${the}`,
-    paragraphs: [first, second],
+    paragraphs: [first, tippedAgainstFederal(facts, lang), second],
     items,
     sources: unique([
       MINIMUM_WAGE_STATES_SOURCES.dol,
+      TIPPED_STATES_SOURCES[facts.tipped.source],
+      SOURCES.factSheet15,
       CENSUS_DIVISIONS,
       ...others.flatMap((other) => [
         ...(other.tipped.cash === facts.tipped.cash
@@ -613,8 +580,8 @@ const paydayOfState = (facts: StateFacts, lang: Lang): ContextSection => {
   if (row.marked.length === 0) {
     const none =
       lang === 'en'
-        ? `The U.S. Department of Labor’s table of state payday requirements marks no payday frequency for ${the}${note === '' ? ', and gives it no note' : `; its note reads: “${note}”`}.`
-        : `La tabla de requisitos estatales de día de pago del Departamento de Trabajo de EE. UU. no marca ninguna frecuencia de pago para ${the}${note === '' ? ' ni le da una nota' : `; su nota dice: “${note}”`}.`;
+        ? `The Labor Department’s payday table marks no payday frequency for ${the}${note === '' ? ', and gives it no note' : `; its note reads: “${note}”`}.`
+        : `La tabla de días de pago del Departamento de Trabajo no marca ninguna frecuencia para ${the}${note === '' ? ' ni le da una nota' : `; su nota dice: “${note}”`}.`;
     return { id: 'payday', heading, paragraphs: [none], sources };
   }
   const periods = orList(
@@ -623,8 +590,8 @@ const paydayOfState = (facts: StateFacts, lang: Lang): ContextSection => {
   );
   const marked =
     lang === 'en'
-      ? `The U.S. Department of Labor’s table of state payday requirements marks paydays ${periods} for ${the}.${note === '' ? '' : ` Its note for ${the}: “${note}”`}`
-      : `La tabla de requisitos estatales de día de pago del Departamento de Trabajo de EE. UU. marca para ${the} el pago ${periods}.${note === '' ? '' : ` Su nota para ${the}: “${note}”`}`;
+      ? `The Labor Department’s payday table marks paydays ${periods} for ${the}.${note === '' ? '' : ` Its note for ${the}: “${note}”`}`
+      : `La tabla de días de pago del Departamento de Trabajo marca para ${the} el pago ${periods}.${note === '' ? '' : ` Su nota para ${the}: “${note}”`}`;
   const year = yearOf(facts.minimum.wage);
   const wage = centsText(facts.minimum.wage);
   const annual = money(year('annual'));
@@ -648,15 +615,15 @@ const paydayOfState = (facts: StateFacts, lang: Lang): ContextSection => {
   const checks = row.marked.map(check).join('; ');
   const worked =
     lang === 'en'
-      ? `At the ${wage} minimum, full time of 40 hours a week comes to ${checks}, before taxes.`
-      : `Al mínimo de ${wage}, el tiempo completo de 40 horas a la semana da ${checks}, antes de impuestos.`;
+      ? `At the ${wage} minimum, 40 hours a week come to ${checks}, before taxes.`
+      : `Al mínimo de ${wage}, 40 horas a la semana dan ${checks}, antes de impuestos.`;
   const both = row.marked.includes('biweekly') && row.marked.includes('semimonthly');
   const diff = money(subMoney(year('semimonthly'), year('biweekly')));
   const compared = both
     ? [
         lang === 'en'
-          ? `Every two weeks makes 26 checks a year and twice a month makes 24, so the twice-monthly check is ${diff} larger for the same ${annual} a year.`
-          : `Cada dos semanas son 26 cheques al año y dos veces al mes son 24, así que el cheque de medio mes es ${diff} más grande por los mismos ${annual} al año.`,
+          ? `Every two weeks means 26 checks a year and twice a month 24, so each twice-monthly check is ${diff} larger.`
+          : `Cada dos semanas son 26 cheques al año y dos veces al mes son 24: cada cheque de medio mes trae ${diff} más.`,
       ]
     : [];
   return { id: 'payday', heading, paragraphs: [marked, worked, ...compared], sources };
@@ -795,8 +762,8 @@ const teensOf = (facts: StateFacts, lang: Lang): ContextSection => {
         : `16 y 17 años en ${the}: ${old}`;
   const federal =
     lang === 'en'
-      ? 'Where a state child labor law is less restrictive than the federal law, the federal law applies (the table writes 8-40-6 for 8 hours a day, 40 a week and 6 days a week).'
-      : 'Donde la ley estatal de trabajo infantil es menos estricta que la federal, se aplica la federal (la tabla escribe 8-40-6 por 8 horas al día, 40 a la semana y 6 días a la semana).';
+      ? 'Where a state child labor law is less restrictive than the federal law, the federal law applies (8-40-6 means 8 hours a day, 40 a week, 6 days).'
+      : 'Si la ley estatal es menos estricta que la federal, se aplica la federal (8-40-6 son 8 horas al día, 40 a la semana, 6 días).';
   return {
     id: 'teens',
     heading: lang === 'en' ? `Teen workers in ${the}` : `Menores que trabajan en ${the}`,
@@ -821,12 +788,12 @@ const officeOf = (facts: StateFacts, lang: Lang): ContextSection => {
   );
   const listed =
     lang === 'en'
-      ? `The U.S. Department of Labor’s list of state labor offices gives, for ${the}, ${listOf(each, lang)}.`
-      : `La lista de oficinas estatales de trabajo del Departamento de Trabajo de EE. UU. da, para ${the}, ${listOf(each, lang)}.`;
+      ? `The Labor Department’s list of state labor offices gives ${listOf(each, lang)} for ${the}.`
+      : `La lista de oficinas estatales del Departamento de Trabajo da para ${the} ${listOf(each, lang)}.`;
   const federal =
     lang === 'en'
-      ? `The federal minimum wage and overtime of the FLSA are enforced by the department’s Wage and Hour Division, at ${WAGE_AND_HOUR_PHONE}.`
-      : `El salario mínimo y las horas extra federales de la FLSA los hace cumplir la División de Horas y Salarios del mismo departamento, en el ${WAGE_AND_HOUR_PHONE}.`;
+      ? `For the FLSA’s federal minimum and overtime: the department’s Wage and Hour Division, ${WAGE_AND_HOUR_PHONE}.`
+      : `Para el mínimo y las horas extra federales de la FLSA: la División de Horas y Salarios del departamento, ${WAGE_AND_HOUR_PHONE}.`;
   return {
     id: 'office',
     heading: lang === 'en' ? `Who to ask in ${the}` : `A quién consultar en ${the}`,
@@ -839,7 +806,6 @@ const officeOf = (facts: StateFacts, lang: Lang): ContextSection => {
 /** The sections of one state's page beside its table rows, each only where it applies. */
 export const contextOf = (facts: StateFacts, lang: Lang): readonly ContextSection[] =>
   [
-    paycheckOf(facts, lang),
     dailyOf(facts, lang),
     paydayOfState(facts, lang),
     compareOf(facts, lang),
