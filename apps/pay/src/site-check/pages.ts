@@ -1,5 +1,5 @@
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
-import { LIVE_JOBS, pathOf } from '../long-tail/routes.ts';
+import { LIVE_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
 
 /** The built calculator pages of the route table. */
 const ROUTED = [
@@ -41,6 +41,14 @@ export const LIVE_PAGES: readonly string[] = LIVE_JOBS.flatMap((job) =>
 );
 
 /**
+ * The shift pages (`SHIFTS`), in both languages: their tool, the shift pay calculator under the
+ * answer, runs on the hours calculator's script, `src/client/hours.ts`.
+ */
+export const SHIFT_PAGES: readonly string[] = SHIFTS.flatMap((shift) =>
+  (['en', 'es'] as const).map((lang) => `${pathOf(shift, lang).slice(1)}.html`),
+);
+
+/**
  * The Spanish-only date pages: the days-between calculator, and each countdown, whose one script,
  * `src/client/countdown.ts`, counts from the visitor's own date. They have no embed.
  */
@@ -54,5 +62,6 @@ export const CALCULATOR_PAGES: readonly string[] = [
   ...ROUTED,
   ...EMBED_PAGES,
   ...LIVE_PAGES,
+  ...SHIFT_PAGES,
   ...DATE_PAGES,
 ];

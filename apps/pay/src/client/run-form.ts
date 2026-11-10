@@ -34,8 +34,8 @@ const moneyOf = (value: unknown): Money | null =>
  * Runs a calculator whose outputs are money or hours on every edit of `form`: writes each output
  * into its `[data-out]` (an hours output in the `data-format` of the node), marks the fields it
  * cannot read, shows the `[data-when]` fields of the chosen `source`, shows each `[data-warning]`
- * only while the run returns its code, and keeps the state in the URL (the defaults are the clean
- * URL).
+ * only while the run returns its code, and keeps the state in the URL (the fields as rendered are
+ * the clean URL).
  */
 export const runForm = <const I extends readonly InputDescriptor[]>(
   form: HTMLFormElement | null,
@@ -50,7 +50,9 @@ export const runForm = <const I extends readonly InputDescriptor[]>(
     const validated = calculator.validate(raw);
     return validated.ok ? encode(calculator, validated.value) : null;
   };
-  const start = encoded({});
+  // the fields as the page rendered them are the clean URL: the calculator's defaults on its own
+  // page, the shift of a shift page (whose tool opens on that shift, not on the defaults)
+  const start = encoded(rawOf()) ?? encoded({});
 
   if (location.search !== '') {
     const { state } = decode(calculator, location.search.slice(1));

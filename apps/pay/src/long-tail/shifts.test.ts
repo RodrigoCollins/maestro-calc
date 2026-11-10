@@ -1,12 +1,19 @@
-import { decode, Rational } from '@maestro-calc/core';
+import { decode, Rational, type Money } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
+import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
 import { describe, expect, it } from 'vitest';
-import { decimalHoursText, hoursMinutesText } from '../format.ts';
+import { decimalHoursText, hoursMinutesText, moneyText } from '../format.ts';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import { commonLinksOf, LONG_TAIL_ROUTES, longTailPageOf } from './jobs.ts';
 import { SHIFTS, type Shift } from './routes.ts';
 
 const LANGS = ['en', 'es'] as const;
+
+const isMoney = (value: unknown): value is Money =>
+  typeof value === 'object' && value !== null && 'currency' in value;
+
+/** The tool cue a title ends with when it fits. */
+const CUE = { en: ' — with lunch & pay calculator', es: ' — calcula descanso y pago' } as const;
 
 /** The common shifts people ask the hours of, as `start-end` on a 24-hour clock. */
 // prettier-ignore
@@ -111,7 +118,7 @@ describe('shift long-tail pages', () => {
     expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').lead).toContain(
       'para cobrar las 8 horas completas, sal a las 5:30 pm.',
     );
-    expect(page.title).toBe('9 AM to 5 PM is 8 hours | Cuenta Horas');
+    expect(page.title).toBe('9 AM to 5 PM is 8 hours — with lunch & pay calculator | Cuenta Horas');
     // 8:00 to 16:30 is 8 h 30 min = 8.5 h
     expect(longTailPageOf(shiftOf('8:00-16:30'), 'en').figure).toBe('8 hours 30 minutes');
     expect(rowOf(shiftOf('8:00-16:30'), 'decimal')).toBe('8.50');
@@ -132,14 +139,16 @@ describe('shift long-tail pages', () => {
     const nueve = longTailPageOf(nine, 'es');
     expect(nueve.h1).toBe('¿Cuántas horas son de 9 am a 5 pm?');
     expect(nueve.figure).toBe('8 horas');
-    expect(nueve.title).toBe('De 9 a 5 son 8 horas | Cuenta Horas');
+    expect(nueve.title).toBe('De 9 a 5 son 8 horas — calcula descanso y pago | Cuenta Horas');
     // 22:00 to 6:00 crosses midnight: 2 h to midnight + 6 h = 8 h
     const late = longTailPageOf(shiftOf('22:00-6:00'), 'en');
     expect(late.figure).toBe('8 hours');
     expect(late.lead).toContain('crosses midnight');
-    expect(late.title).toBe('10 PM to 6 AM is 8 hours | Cuenta Horas');
+    expect(late.title).toBe(
+      '10 PM to 6 AM is 8 hours — with lunch & pay calculator | Cuenta Horas',
+    );
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'es').title).toBe(
-      'De 10 pm a 6 am son 8 horas | Cuenta Horas',
+      'De 10 pm a 6 am son 8 horas — calcula descanso y pago | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'es').paths.es).toBe(
       '/es/pago/cuantas-horas-son-de-10-pm-a-6-am',
@@ -148,13 +157,15 @@ describe('shift long-tail pages', () => {
     const closing = longTailPageOf(shiftOf('16:00-0:00'), 'en');
     expect(closing.paths.en).toBe('/pay/how-many-hours-is-4pm-to-12am');
     expect(closing.figure).toBe('8 hours');
-    expect(closing.title).toBe('4 PM to 12 AM is 8 hours | Cuenta Horas');
+    expect(closing.title).toBe(
+      '4 PM to 12 AM is 8 hours — with lunch & pay calculator | Cuenta Horas',
+    );
     // 8:00 to 18:00 is 10 h; 9:00 to 15:00 is 6 h; 6:00 to 14:30 is 8 h 30 min
     expect(longTailPageOf(shiftOf('8:00-18:00'), 'en').title).toBe(
-      '8 AM to 6 PM is 10 hours | Cuenta Horas',
+      '8 AM to 6 PM is 10 hours — with lunch & pay calculator | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('8:00-18:00'), 'es').title).toBe(
-      'De 8 a 6 son 10 horas | Cuenta Horas',
+      'De 8 a 6 son 10 horas — calcula descanso y pago | Cuenta Horas',
     );
     expect(rowOf(shiftOf('9:00-15:00'), 'week')).toBe('30 h 0 min (30.00)');
     expect(rowOf(shiftOf('6:00-14:30'), 'decimal')).toBe('8.50');
@@ -163,18 +174,18 @@ describe('shift long-tail pages', () => {
     );
     // 8:30 to 16:30 is 8 h; 20:00 to 8:00 crosses midnight: 4 h + 8 h = 12 h
     expect(longTailPageOf(shiftOf('8:30-16:30'), 'es').title).toBe(
-      'De 8:30 a 4:30 son 8 horas | Cuenta Horas',
+      'De 8:30 a 4:30 son 8 horas — calcula descanso y pago | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('20:00-8:00'), 'en').figure).toBe('12 hours');
     expect(longTailPageOf(shiftOf('8:00-20:00'), 'es').title).toBe(
-      'De 8 a 8 son 12 horas | Cuenta Horas',
+      'De 8 a 8 son 12 horas — calcula descanso y pago | Cuenta Horas',
     );
     // an afternoon start keeps its pm, so 7 pm to 7 am is not 7 am to 7 pm
     expect(longTailPageOf(shiftOf('19:00-7:00'), 'es').title).toBe(
-      'De 7 pm a 7 am son 12 horas | Cuenta Horas',
+      'De 7 pm a 7 am son 12 horas — calcula descanso y pago | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('7:00-19:00'), 'es').title).toBe(
-      'De 7 a 7 son 12 horas | Cuenta Horas',
+      'De 7 a 7 son 12 horas — calcula descanso y pago | Cuenta Horas',
     );
   });
 
@@ -182,11 +193,22 @@ describe('shift long-tail pages', () => {
     for (const shift of SHIFTS) {
       for (const lang of LANGS) {
         const page = longTailPageOf(shift, lang);
-        const answer = page.title.replace(/ \| Cuenta Horas$/, '');
+        const name = page.title.replace(/ \| Cuenta Horas$/, '');
+        const answer = name.replace(CUE[lang], '');
         expect(answer.endsWith(page.figure)).toBe(true);
         expect(page.description.startsWith(`${answer},`)).toBe(true);
+        // the tool cue only where the whole name still fits a result, about 60 characters
+        expect(name.endsWith(CUE[lang])).toBe(`${answer}${CUE[lang]}`.length <= 60);
       }
     }
+    // 6 am to 2:30 pm is too long a headline for the cue
+    expect(longTailPageOf(shiftOf('6:00-14:30'), 'en').title).toBe(
+      '6 AM to 2:30 PM is 8 hours 30 minutes | Cuenta Horas',
+    );
+    // a name with the cue past 55 characters drops the site name, under the 70 of a title
+    expect(longTailPageOf(shiftOf('8:30-16:30'), 'en').title).toBe(
+      '8:30 AM to 4:30 PM is 8 hours — with lunch & pay calculator',
+    );
     expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').description).toMatch(
       /^De 9 a 5 son 8 horas, o 8\.00 horas decimales\./,
     );
@@ -214,6 +236,121 @@ describe('shift long-tail pages', () => {
         expect(state).toEqual({ start: shift.start, end: shift.end, unpaidBreak: 0 });
       }
     }
+  });
+
+  describe('the tool under the answer', () => {
+    const toolOf = (name: string, lang: 'en' | 'es' = 'en') => {
+      const { tool } = longTailPageOf(shiftOf(name), lang);
+      if (tool === undefined) throw new Error(`no tool on ${name}`);
+      return tool;
+    };
+    const linesOf = (name: string, lang: 'en' | 'es' = 'en') =>
+      toolOf(name, lang).lines.map(({ key, format, value }) => [key, format, value]);
+
+    it('opens on the shift with a 30-minute unpaid lunch at $20.00 an hour', () => {
+      expect(toolOf('9:00-17:00').fields.map(({ key, value }) => [key, value])).toEqual([
+        ['start', '9:00 am'],
+        ['end', '5:00 pm'],
+        ['unpaidBreak', '30'],
+        ['rate', '20.00'],
+      ]);
+      expect(toolOf('19:00-7:00', 'es').fields.map(({ value }) => value)).toEqual([
+        '7:00 pm',
+        '7:00 am',
+        '30',
+        '20.00',
+      ]);
+    });
+
+    // Hand-verified: 9 to 5 is 8 h, less 30 min 7 h 30 min = 7.50; 7.5 × $20 = $150; five shifts
+    // 37 h 30 min, none past 40, $750. 7 pm to 7 am is 12 h, 11 h 30 min paid, $230 a day; five
+    // shifts 57 h 30 min, 17 h 30 min past 40: 40 × 20 + 17.5 × 30 = $1,325. 6 am to 2:30 pm less
+    // 30 min is 8 h, $160; five shifts exactly 40 h, no overtime, $800.
+    it('answers the lunch, the day and the week with the figures of pay-core', () => {
+      expect(linesOf('9:00-17:00')).toEqual([
+        ['shiftHours', 'hours-minutes', '8 h 0 min'],
+        ['hours', 'hours-minutes', '7 h 30 min'],
+        ['hours', 'decimal', '7.50'],
+        ['dayPay', undefined, '$150.00'],
+        ['weekHours', 'hours-minutes', '37 h 30 min'],
+        ['overtimeHours', 'hours-minutes', '0 h 0 min'],
+        ['weekPay', undefined, '$750.00'],
+      ]);
+      expect(linesOf('19:00-7:00', 'es').map(([, , value]) => value)).toEqual([
+        '12 h 0 min',
+        '11 h 30 min',
+        '11.50',
+        '$230.00',
+        '57 h 30 min',
+        '17 h 30 min',
+        '$1,325.00',
+      ]);
+      expect(linesOf('6:00-14:30').map(([, , value]) => value)).toEqual([
+        '8 h 30 min',
+        '8 h 0 min',
+        '8.00',
+        '$160.00',
+        '40 h 0 min',
+        '0 h 0 min',
+        '$800.00',
+      ]);
+    });
+
+    it('names each figure in both languages', () => {
+      expect(toolOf('9:00-17:00').lines.map(({ label }) => label)).toEqual([
+        'Shift, start to end',
+        'Paid hours after the break',
+        'Paid hours in decimal',
+        'Pay for the day',
+        'The week, 5 shifts',
+        'Overtime past 40 hours',
+        'Pay for the week, overtime at 1.5×',
+      ]);
+      expect(toolOf('9:00-17:00', 'es').lines.map(({ label }) => label)).toEqual([
+        'Turno, de la entrada a la salida',
+        'Horas pagadas después del descanso',
+        'Horas pagadas en decimales',
+        'Pago del día',
+        'La semana, 5 turnos',
+        'Horas extra después de 40',
+        'Pago de la semana, horas extra a 1.5 veces',
+      ]);
+      expect(toolOf('9:00-17:00', 'es').fields.map(({ label }) => label)).toEqual([
+        'Hora de inicio',
+        'Hora de fin',
+        'Descanso que no cuenta (minutos)',
+        'Pago por hora ($)',
+      ]);
+    });
+
+    it('shows on every shift the run of its own fields, and the overnight notice only overnight', () => {
+      for (const shift of SHIFTS) {
+        for (const lang of LANGS) {
+          const tool = toolOf(nameOf(shift), lang);
+          const ran = shiftPay.run(
+            Object.fromEntries(tool.fields.map(({ key, value }) => [key, value])),
+          );
+          if (!ran.ok) throw new Error(nameOf(shift));
+          const outputs = new Map<string, unknown>(
+            ran.value.outputs.map(({ key, value }) => [key, value]),
+          );
+          for (const line of tool.lines) {
+            const value = outputs.get(line.key);
+            const text =
+              value instanceof Rational
+                ? line.format === 'decimal'
+                  ? decimalHoursText(value)
+                  : hoursMinutesText(value)
+                : isMoney(value)
+                  ? moneyText(value)
+                  : 'missing';
+            expect(line.value, `${nameOf(shift)} ${line.key}`).toBe(text);
+          }
+          const shown = tool.warnings.filter(({ hidden }) => !hidden).map(({ code }) => code);
+          expect(shown).toEqual(shift.end < shift.start ? ['overnight'] : []);
+        }
+      }
+    });
   });
 
   it('link the six nearest shifts by length, then start', () => {
