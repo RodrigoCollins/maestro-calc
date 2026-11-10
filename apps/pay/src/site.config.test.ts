@@ -12,7 +12,7 @@ describe('Cuenta Horas site constants', () => {
       indexable: true,
       gaId: 'G-NNB8KG2TXZ',
       pinterestVerify: '8ed159206fe46e99ba11ac3ac0b8bff3',
-      impactVerify: '3b9912e5-fe40-49d8-84ba-b6d47b3a9465',
+      impactVerify: 'a59dfd0f-5922-4266-8836-f85371ea4a62',
       indexNowKey: 'dd860e1e00fb82df0feac833e84e8677',
     });
   });
