@@ -85,20 +85,20 @@ const detail = jobDetailOf(page);
         ))}
       </ol>
     </section>
-    {detail.compare !== undefined && (
-      <section class="pool-job-detail" aria-labelledby="compare-heading">
-        <h2 id="compare-heading">{detail.compare.heading}</h2>
+    {detail.tables.map((table, index) => (
+      <section class="pool-job-detail" aria-labelledby={`table-heading-${String(index + 1)}`}>
+        <h2 id={`table-heading-${String(index + 1)}`}>{table.heading}</h2>
         <table class="pool-job-table">
-          <caption>{detail.compare.caption}</caption>
+          <caption>{table.caption}</caption>
           <thead>
             <tr>
-              {detail.compare.head.map((cell) => (
+              {table.head.map((cell) => (
                 <th scope="col">{cell}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {detail.compare.rows.map(([label, ...cells]) => (
+            {table.rows.map(([label, ...cells]) => (
               <tr>
                 <th scope="row">{label}</th>
                 {cells.map((cell) => (
@@ -109,7 +109,7 @@ const detail = jobDetailOf(page);
           </tbody>
         </table>
       </section>
-    )}
+    ))}
     {detail.label !== undefined && (
       <section class="pool-job-detail" aria-labelledby="label-heading">
         <h2 id="label-heading">{detail.label.heading}</h2>
