@@ -180,7 +180,7 @@ export const shards = {
   ...calculatorGroups({
     'calculators-1': ['rectangle-area', 'feet-inches', 'roof-pitch', 'board-feet'],
     'calculators-2': ['concrete', 'paint'],
-    'calculators-3': ['drywall', 'roofing'],
+    'calculators-3': ['drywall', 'roofing', 'fence'],
     'calculators-4': ['gravel', 'mulch', 'topsoil'],
   }),
 };

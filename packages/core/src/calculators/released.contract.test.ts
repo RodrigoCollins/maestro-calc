@@ -9,6 +9,7 @@ import { compareReleased, type ReleasedCalculator } from '../url/released-harnes
 import { boardFeet } from './board-feet/index.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createDrywall } from './drywall/index.ts';
+import { createFence } from './fence/index.ts';
 import { feetInches } from './feet-inches/index.ts';
 import { createGravel } from './gravel/index.ts';
 import { mulch } from './mulch/index.ts';
@@ -31,6 +32,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   createRoofing(ROOFING_COVERAGE),
   feetInches,
   boardFeet,
+  createFence(CONCRETE_YIELDS),
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -197,6 +199,30 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['l', 'length', 'length', '96'],
         ['n', 'pieces', 'count', '1'],
         ['pp', 'price', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-fence › [FN17] the fifteen inputs of fence, appended in the order of the spec
+  it('records the 15 inputs of fence in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'fence');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['l', 'length', 'length', '1200'],
+        ['h', 'height', 'length', '72'],
+        ['sp', 'spacing', 'length', '96'],
+        ['s', 'style', 'select', 'privacy'],
+        ['bw', 'boardWidth', 'length', '11/2'],
+        ['gp', 'gap', 'length', '5/2'],
+        ['bs', 'boardSpace', 'length', '4'],
+        ['r', 'rails', 'count', '3'],
+        ['g', 'gates', 'count', '0'],
+        ['pw', 'postWidth', 'length', '7/2'],
+        ['bg', 'bag', 'select', '80'],
+        ['pp', 'postPrice', 'money', '0'],
+        ['rp', 'railPrice', 'money', '0'],
+        ['bp', 'boardPrice', 'money', '0'],
+        ['cp', 'bagPrice', 'money', '0'],
       ],
     );
   });
