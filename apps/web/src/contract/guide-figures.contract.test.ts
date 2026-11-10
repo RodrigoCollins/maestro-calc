@@ -33,6 +33,7 @@ const GUIDE_CASES: Readonly<
       | 'guide-concrete-bag-coverage'
       | 'guide-paint-coverage'
       | 'guide-gravel-coverage'
+      | 'guide-board-feet'
     >,
     readonly GuideCase[]
   >
@@ -135,6 +136,16 @@ const GUIDE_CASES: Readonly<
       figures: { paintArea: '398.00', gallons: '2.27' },
       bags: '3',
     },
+  ],
+  'guide-board-feet': [
+    // thickness (in) × width (in) × length (ft) ÷ 12 (PS 20-20, 2.2): a 2x6x10 is 120 ÷ 12, a 4x4x8
+    // 128 ÷ 12, ten 2x4x8 640 ÷ 12, a 1x6x8 48 ÷ 12
+    { calculator: 'board-feet', query: '?v=1&w=6&l=120', figures: { boardFeet: '10.00' } },
+    { calculator: 'board-feet', query: '?v=1&t=4', figures: { boardFeet: '10.67' } },
+    { calculator: 'board-feet', query: '?v=1&n=10', figures: { boardFeet: '53.33' } },
+    { calculator: 'board-feet', query: '?v=1&t=1&w=6', figures: { boardFeet: '4.00' } },
+    // the 2x4x8 at its dry dressed size, 1 1/2 by 3 1/2 in (PS 20-20, Table 3): 42 ÷ 12
+    { calculator: 'board-feet', query: '?v=1&t=3/2&w=7/2', figures: { boardFeet: '3.50' } },
   ],
   'guide-gravel-coverage': [
     // 10 ft × 10 ft, compacted, no extra, at 2, 3 and 4 in: 100 ft² × depth ÷ 27 × 1.83 t/yd³

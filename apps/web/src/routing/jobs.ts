@@ -28,6 +28,7 @@ export interface Job {
     | 'topsoil'
     | 'roofing'
     | 'feet-inches'
+    | 'board-feet'
   >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
@@ -285,6 +286,23 @@ const floor = (length: number, width: number): JobCase => ({
   length: `${String(length)}ft`,
   width: `${String(width)}ft`,
 });
+
+/** The stock lengths of lumber the board feet pages tabulate, in feet. */
+const LUMBER_LENGTHS = [8, 10, 12, 14, 16] as const;
+
+/**
+ * A piece of lumber of nominal `thickness` by `width` inches, `first` feet long (the length of the
+ * query), then the other stock lengths: the board feet engine takes the nominal size, as the
+ * American Softwood Lumber Standard counts board measure.
+ */
+const lumber = (thickness: number, width: number, first: (typeof LUMBER_LENGTHS)[number]) => {
+  const piece = (length: number): JobCase => ({
+    thickness: `${String(thickness)}in`,
+    width: `${String(width)}in`,
+    length: `${String(length)}ft`,
+  });
+  return [piece(first), ...LUMBER_LENGTHS.filter((each) => each !== first).map(piece)] as const;
+};
 
 /** Square feet in one acre: NIST Handbook 44, Appendix C (1 acre = 43,560 ft² = 160 rods²). */
 export const ACRE_FT2 = 43_560;
@@ -658,6 +676,16 @@ export const JOBS = {
     calculator: 'feet-inches',
     updated: '2026-11-06',
     cases: decimalFeetChart(),
+  },
+  // Ahrefs US, 2026-11-08: "how many board feet in a 2x4x8" and the other common sizes
+  'board-feet-2x4x8': { calculator: 'board-feet', updated: '2026-11-10', cases: lumber(2, 4, 8) },
+  'board-feet-2x6x10': { calculator: 'board-feet', updated: '2026-11-10', cases: lumber(2, 6, 10) },
+  'board-feet-4x4x8': { calculator: 'board-feet', updated: '2026-11-10', cases: lumber(4, 4, 8) },
+  'board-feet-1x6x8': { calculator: 'board-feet', updated: '2026-11-10', cases: lumber(1, 6, 8) },
+  'board-feet-2x12x12': {
+    calculator: 'board-feet',
+    updated: '2026-11-10',
+    cases: lumber(2, 12, 12),
   },
 } as const satisfies Record<string, Job>;
 

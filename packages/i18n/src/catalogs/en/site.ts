@@ -56,6 +56,33 @@ export const enSite = {
     'The figures add 10% for settling, the topsoil calculator’s default, and round up to whole bags of 0.75 or 1.5 cu ft. A cubic yard is 27 cubic feet. Each depth opens the calculator with its measurements filled in.',
   'site.job.note.roofing':
     'The sizes are the footprint of the roof with its overhangs. The figures add 10% extra, the roofing calculator’s default, and round up to whole bundles, three to a square of 100 sq ft, and whole rolls of synthetic underlayment. Each pitch opens the calculator with its measurements filled in.',
+  'site.job.note.board-feet':
+    'The sizes are nominal, the size in the name of the lumber, as the American Softwood Lumber Standard counts board measure: thickness and width in inches, length in feet. The dressed column takes the minimum dry dressed size of PS 20-20, Table 3. Each length opens the calculator with its sizes filled in.',
+  'site.job.board-feet.nominal': 'Board feet, nominal size',
+  'site.job.board-feet.dressed': 'Board feet, dry dressed size',
+  'site.job.board-feet.dressedSize': 'Dry dressed size (PS 20-20, Table 3)',
+  'site.job.lumber.heading': 'This size by the piece, by the foot and by the thousand',
+  'site.job.lumber.lead':
+    'Yards price lumber by the piece, by the linear foot or by the board foot, and mills and wholesalers by the thousand board feet. These figures turn this size into each of them, by its nominal size.',
+  'site.job.lumber.summary.0': 'A',
+  'site.job.lumber.summary.1': 'piece',
+  'site.job.lumber.summary.2': 'ft long is',
+  'site.job.lumber.summary.3': 'board feet: each linear foot of it holds',
+  'site.job.lumber.summary.4': 'board feet, and one board foot is',
+  'site.job.lumber.summary.5': 'linear feet of it. A tally of 100 board feet is',
+  'site.job.lumber.summary.6':
+    'pieces of this length, and 1,000 board feet (MBM, thousand board measure, in PS 20-20) is',
+  'site.job.lumber.summary.7': 'pieces.',
+  'site.job.lumber.dressed.0': 'At its dry dressed size of',
+  'site.job.lumber.dressed.1': ', the same piece holds',
+  'site.job.lumber.dressed.2': 'board feet of wood, or',
+  'site.job.lumber.dressed.3':
+    'percent of its nominal tally. The tally and the price per board foot still count the nominal size.',
+  'site.job.lumber.perFoot': 'Board feet per linear foot',
+  'site.job.lumber.linear': 'Linear feet per board foot',
+  'site.job.lumber.hundred': 'Pieces in 100 board feet',
+  'site.job.lumber.thousand': 'Pieces in 1,000 board feet',
+  'site.job.lumber.pieces': 'Pieces of this length',
   'site.job.note.feet-inches':
     'Each length is divided exactly, and only what the page shows is rounded: the tape and the feet and inches to the nearest 1/16 in, the inches to two places, the meters to three. Each number opens the calculator with the length filled in.',
   'site.job.tape': 'On the tape (inches, to 1/16)',
@@ -411,6 +438,15 @@ export const enSite = {
     'From 2 in 12 up to 4 in 12, the IRC asks for two layers of underlayment under asphalt shingles, and below 2 in 12 it does not allow them. The roofing calculator doubles the rolls in that range.',
   'site.job.guide.roofing.tip4':
     'The extra covers the starter course, the hip and ridge caps and the cuts at valleys. Nails, drip edge, flashing and an ice barrier are separate items, so ask your supplier for them with the order.',
+  'site.job.guide.board-feet.heading': 'Before you order the lumber',
+  'site.job.guide.board-feet.tip1':
+    'Check a tally or an invoice with the nominal size, 2 by 4 for a 2x4: PS 20-20 counts board measure on it. Use the measured size only for the wood actually in the piece, such as for its weight.',
+  'site.job.guide.board-feet.tip2':
+    'Lumber comes in even lengths of feet, so a cut list of 7 ft pieces is bought, and tallied, as 8 ft pieces. Count the pieces you buy, not the pieces you cut.',
+  'site.job.guide.board-feet.tip3':
+    'Compare prices per board foot only for the same species and grade. A price per piece divided by the board feet of the piece gives its price per board foot.',
+  'site.job.guide.board-feet.tip4':
+    'Hardwood is often sold rough, with the thickness in quarters of an inch: 4/4 is 1 in and 8/4 is 2 in. Ask whether the tally takes the rough or the surfaced size.',
   'site.job.guide.feet-inches.heading': 'Before you mark and cut',
   'site.job.guide.feet-inches.tip1':
     'Mark from the tape column, not the decimals. It rounds to the nearest 1/16 in, the smallest mark most tapes carry, which is as close as a cut usually gets.',
@@ -465,6 +501,10 @@ export const enSite = {
   'site.job.worked.gravel.weightLoose': 'Weight loose, at 2,580 lb per cubic yard (WisDOT)',
   'site.job.worked.gravel.tons': 'In short tons of 2,000 lb',
   'site.job.worked.gravel.order': 'Loose cubic yards to order, at 2,580 lb per cubic yard',
+  'site.job.worked.board-feet.nominal': 'Board feet by the nominal size, as lumber is tallied',
+  'site.job.worked.board-feet.dressed': 'Board feet of wood at the dry dressed size',
+  'site.job.worked.board-feet.volume':
+    'In cubic feet, 12 board feet to the cubic foot, and in cubic meters',
   'site.job.worked.feet-inches.inches': 'The length in inches, 12 in to the foot',
   'site.job.worked.feet-inches.divide': 'Divided into equal parts',
   'site.job.worked.feet-inches.tape': 'In sixteenths, to the nearest 1/16 in mark of the tape',
@@ -680,6 +720,9 @@ export const enSite = {
   'page.guide-paint-coverage.title': 'How Much Does a Gallon of Paint Cover? | Maestro Calc',
   'page.guide-paint-coverage.description':
     'One gallon of interior latex covers about 350 to 400 sq ft in one coat: square feet per gallon by coats, and the gallons and cans for a 12x12 room.',
+  'page.guide-board-feet.title': 'How to Calculate Board Feet, With Examples | Maestro Calc',
+  'page.guide-board-feet.description':
+    'How to calculate board feet: thickness × width in inches × length in feet ÷ 12. Worked examples for a 2x4, a 2x6, a 4x4 and hardwood, nominal and dressed sizes.',
   'page.guide-gravel-coverage.title': 'How Much Does a Ton of Gravel Cover? | Maestro Calc',
   'page.guide-gravel-coverage.description':
     'One ton of gravel covers about 88 sq ft at 2 in, 59 at 3 in and 44 at 4 in, compacted: square feet per ton by depth, loose too, and the tons for an area.',
@@ -1397,6 +1440,41 @@ export const enSite = {
   'page.feet-inches.title': 'Decimal Feet to Feet and Inches Calculator | Maestro Calc',
   'page.feet-inches.description':
     'Convert decimal feet to feet and inches to the nearest 1/16, such as 11.65 ft = 11 ft 7 13/16 in. Also add, subtract, multiply or divide tape lengths. Free.',
+  'page.board-feet-2x4x8.title': 'How Many Board Feet in a 2x4x8? 5.33 | Maestro Calc',
+  'page.board-feet-2x4x8.description':
+    'A 2x4x8 is 5.33 board feet: 2 × 4 × 8 ÷ 12. At its dry dressed size, 1 1/2 by 3 1/2 in, it holds 3.50. Every 2x4 length from 8 to 16 ft.',
+  'page.board-feet-2x4x8.heading': 'How many board feet are in a 2x4x8?',
+  'page.board-feet-2x4x8.label': '2x4x8',
+  'page.board-feet-2x4x8.intro':
+    'A 2x4 that is 8 ft long is the piece most wall framing starts from, and the one most lumber tallies are checked against. Its board feet come from the size in its name, not from the 1 1/2 by 3 1/2 in the piece measures.',
+  'page.board-feet-2x6x10.title': 'How Many Board Feet in a 2x6x10? 10 | Maestro Calc',
+  'page.board-feet-2x6x10.description':
+    'A 2x6 10 ft long is exactly 10 board feet: 2 × 6 × 10 ÷ 12. At 1 1/2 by 5 1/2 in dressed it holds 6.88. Every 2x6 length from 8 to 16 ft.',
+  'page.board-feet-2x6x10.heading': 'How many board feet are in a 2x6x10?',
+  'page.board-feet-2x6x10.label': '2x6x10',
+  'page.board-feet-2x6x10.intro':
+    'A 2x6 holds one board foot for every linear foot of it, because 2 × 6 is 12. That makes a 10 ft 2x6 an easy check: its board feet equal its length in feet, 10 of them.',
+  'page.board-feet-4x4x8.title': 'How Many Board Feet in a 4x4x8? 10.67 | Maestro Calc',
+  'page.board-feet-4x4x8.description':
+    'A 4x4x8 post is 10.67 board feet: 4 × 4 × 8 ÷ 12. At 3 1/2 by 3 1/2 in dressed it holds 8.17. Every 4x4 length from 8 to 16 ft.',
+  'page.board-feet-4x4x8.heading': 'How many board feet are in a 4x4x8?',
+  'page.board-feet-4x4x8.label': '4x4x8',
+  'page.board-feet-4x4x8.intro':
+    'A 4x4 is a post: a deck, a fence or a mailbox stands on one. It is twice as thick as a 2x4 of the same width, so an 8 ft 4x4 holds twice the board feet of a 2x4x8.',
+  'page.board-feet-1x6x8.title': 'How Many Board Feet in a 1x6x8? 4 | Maestro Calc',
+  'page.board-feet-1x6x8.description':
+    'A 1x6 board 8 ft long is exactly 4 board feet: 1 × 6 × 8 ÷ 12. At 3/4 by 5 1/2 in dressed it holds 2.75. Every 1x6 length from 8 to 16 ft.',
+  'page.board-feet-1x6x8.heading': 'How many board feet are in a 1x6x8?',
+  'page.board-feet-1x6x8.label': '1x6x8',
+  'page.board-feet-1x6x8.intro':
+    'A 1x6 is a board, not dimension lumber: fence pickets, trim and shelving are cut from it. Boards are counted 1 in thick by their nominal size, so a 1x6 holds half a board foot per linear foot.',
+  'page.board-feet-2x12x12.title': 'Board Feet in a 12 ft 2x12: 24 | Maestro Calc',
+  'page.board-feet-2x12x12.description':
+    'A 2x12 12 ft long is exactly 24 board feet: 2 × 12 × 12 ÷ 12. At 1 1/2 by 11 1/4 in dressed it holds 16.88. Every 2x12 length, 8 to 16 ft.',
+  'page.board-feet-2x12x12.heading': 'How many board feet are in a 12 ft 2x12?',
+  'page.board-feet-2x12x12.label': '2x12x12',
+  'page.board-feet-2x12x12.intro':
+    'A 2x12 is the widest common dimension lumber, the size of stair stringers and of deep joists and headers. A 2 in by 12 in piece holds two board feet per linear foot, so a 12 ft 2x12 is 24.',
   'page.board-feet.title': 'Board Feet Calculator: Lumber Board Foot | Maestro Calc',
   'page.board-feet.description':
     'Find the board feet of lumber: thickness × width (in) × length (ft) ÷ 12, as the American Softwood Lumber Standard defines it. A 2x4x8 is 5.33 bd ft. Free.',

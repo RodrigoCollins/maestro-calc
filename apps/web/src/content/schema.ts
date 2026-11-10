@@ -30,6 +30,7 @@ export const TRUST_IDS = [
   'guide-concrete-bag-coverage',
   'guide-paint-coverage',
   'guide-gravel-coverage',
+  'guide-board-feet',
   'hub-concrete',
   'hub-roofing',
   'hub-drywall',

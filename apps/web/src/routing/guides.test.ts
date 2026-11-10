@@ -42,6 +42,8 @@ describe('guides (guides › Guide pages)', () => {
     expect(guideOf('guide-paint-coverage')).toEqual({ calculator: 'paint' });
     // spec: guides › [GU20] the gravel coverage guide ends in the gravel calculator
     expect(guideOf('guide-gravel-coverage')).toEqual({ calculator: 'gravel' });
+    // the board feet guide ("how to calculate board feet") ends in the board feet calculator
+    expect(guideOf('guide-board-feet')).toEqual({ calculator: 'board-feet' });
     expect(guideOf('about')).toBeUndefined();
     expect(guideOf('concrete')).toBeUndefined();
   });
@@ -64,6 +66,7 @@ describe('guides (guides › Guide pages)', () => {
     ]);
     expect(guidesOf('topsoil')).toEqual(['guide-raised-bed-soil']);
     expect(guidesOf('mulch')).toEqual(['guide-mulch']);
+    expect(guidesOf('board-feet')).toEqual(['guide-board-feet']);
     for (const calculator of CALCULATOR_PAGES) {
       for (const id of guidesOf(calculator)) expect(GUIDES[id].calculator).toBe(calculator);
     }

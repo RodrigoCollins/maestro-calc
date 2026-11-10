@@ -54,6 +54,10 @@ describe('trade hubs (hubs › Hub pages)', () => {
       'guide-gravel-coverage',
     ]);
     expect(hubOf('hub-roofing')?.guides).toEqual(['guide-roof-pitch', 'guide-roofing-quote']);
+    expect(hubOf('hub-measurement')).toEqual({
+      calculators: ['rectangle-area', 'feet-inches', 'board-feet'],
+      guides: ['guide-square-footage', 'guide-tape-measure-fractions', 'guide-board-feet'],
+    });
     expect(hubOf('concrete')).toBeUndefined();
     expect(hubOf('about')).toBeUndefined();
   });

@@ -1,5 +1,6 @@
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
+import { boardFeet } from '@maestro-calc/core/calculators/board-feet';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
@@ -39,6 +40,7 @@ const ENGINES = {
   topsoil,
   roofing,
   'feet-inches': feetInches,
+  'board-feet': boardFeet,
 } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
@@ -153,6 +155,7 @@ describe('job pages (growth plan › lever 1)', () => {
       ...jobsOf('topsoil'),
       ...jobsOf('roofing'),
       ...jobsOf('feet-inches'),
+      ...jobsOf('board-feet'),
     ]).toEqual(JOB_IDS);
     expect(jobsOf('feet-inches')).toEqual([
       'divide-29-1-4-in-by-2',
@@ -162,6 +165,13 @@ describe('job pages (growth plan › lever 1)', () => {
       'divide-9-ft-6-in-by-2',
       'divide-3-ft-9-in-by-2',
       'decimal-feet-chart',
+    ]);
+    expect(jobsOf('board-feet')).toEqual([
+      'board-feet-2x4x8',
+      'board-feet-2x6x10',
+      'board-feet-4x4x8',
+      'board-feet-1x6x8',
+      'board-feet-2x12x12',
     ]);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
@@ -497,6 +507,44 @@ describe('job pages (growth plan › lever 1)', () => {
 
   // queries: "decimal to feet and inches calculator" (4.9), "convert 11.65 feet to feet and inches
   // round to the nearest 1 16" (3.0): a chart that opens the feet and inches calculator on each
+  // queries: "how many board feet in a 2x4x8", "2x6x10", "4x4x8", "1x6x8", "a 12 ft 2x12": the
+  // board feet engine at the queried length first, then the other stock lengths of 8 to 16 ft
+  it('routes the board feet pages under measurement, each length first, at their published URLs', () => {
+    expect(ROUTES['board-feet-2x4x8']).toEqual({
+      en: '/measurement/how-many-board-feet-in-a-2x4x8',
+      es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x4x8',
+    });
+    expect(ROUTES['board-feet-2x12x12']).toEqual({
+      en: '/measurement/how-many-board-feet-in-a-2x12x12',
+      es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x12x12',
+    });
+    const ids = JOB_IDS.filter((id) => id.startsWith('board-feet-'));
+    expect(ids).toEqual([
+      'board-feet-2x4x8',
+      'board-feet-2x6x10',
+      'board-feet-4x4x8',
+      'board-feet-1x6x8',
+      'board-feet-2x12x12',
+    ]);
+    for (const id of ids) {
+      const [thickness, width, length] = id.replace('board-feet-', '').split('x');
+      const { calculator, cases } = JOBS[id];
+      expect(calculator, id).toBe('board-feet');
+      expect(cases[0], id).toEqual({
+        thickness: `${String(thickness)}in`,
+        width: `${String(width)}in`,
+        length: `${String(length)}ft`,
+      });
+      expect(cases.map(({ length: each }) => each).toSorted(), id).toEqual([
+        '10ft',
+        '12ft',
+        '14ft',
+        '16ft',
+        '8ft',
+      ]);
+    }
+  });
+
   // decimal length times 1, which it writes back in feet and inches
   it('routes the decimal feet chart under measurement', () => {
     expect(JOBS['decimal-feet-chart'].calculator).toBe('feet-inches');

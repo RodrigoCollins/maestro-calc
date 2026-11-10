@@ -1,5 +1,19 @@
-import { ft2, ft3, inch, lbYd3, m, m2, m3, Rational, valueIn, yd2, yd3 } from '@maestro-calc/core';
+import {
+  bdft,
+  ft2,
+  ft3,
+  inch,
+  lbYd3,
+  m,
+  m2,
+  m3,
+  Rational,
+  valueIn,
+  yd2,
+  yd3,
+} from '@maestro-calc/core';
 import type { OutputDescriptor } from '@maestro-calc/core';
+import { boardFeet } from '@maestro-calc/core/calculators/board-feet';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
@@ -21,7 +35,8 @@ import { concrete } from './concrete.ts';
 import { INSTALLED_PRICES, READY_MIX_PRICES, slabCostOf } from './slab-cost.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
-import { jobView } from './job-view.ts';
+import { dressedCase, inchText, jobView, nominalOf } from './job-view.ts';
+import { dressedOf } from './lumber-sizes.ts';
 import { paint } from './paint.ts';
 import { roofing } from './roofing.ts';
 import { siteText } from './site-text.ts';
@@ -44,6 +59,7 @@ export const WORKED_CALCULATORS: readonly Job['calculator'][] = [
   'topsoil',
   'gravel',
   'feet-inches',
+  'board-feet',
 ];
 
 export interface JobStep {
@@ -446,6 +462,39 @@ const feetInchesSteps = (id: JobId, locale: Locale): Steps => {
   ];
 };
 
+/** A product of sizes with no trailing zeros: `64`, `202.5`, `33`. */
+const plain = (value: Rational): string => decimalText(value, 4, true).replace(/\.?0+$/, '');
+
+/** The board measure of the nominal size, of the dry dressed size, and the volume of the piece. */
+const boardFeetSteps = (id: JobId, locale: Locale): Steps => {
+  const text = siteText(locale);
+  const [raw] = JOBS[id].cases;
+  const nominal = boardFeet.compute(valid(boardFeet.validate(raw), raw)).outputs;
+  const dressedRaw = dressedCase(raw);
+  const dressed = boardFeet.compute(valid(boardFeet.validate(dressedRaw), dressedRaw)).outputs;
+  const thickness = nominalOf(raw['thickness']);
+  const width = nominalOf(raw['width']);
+  const length = feetOf(raw['length']);
+  const size = dressedOf(thickness, width);
+  const nominalProduct = Rational.of(thickness * width).mul(length);
+  const dressedProduct = size.thickness.mul(size.width).mul(length);
+  const feet = `${length.toString()} ft`;
+  return [
+    {
+      label: text('site.job.worked.board-feet.nominal'),
+      math: `${String(thickness)} in × ${String(width)} in × ${feet} ÷ 12 = ${plain(nominalProduct)} ÷ 12 = ${two(valueIn(nominal.boardFeet, bdft))}`,
+    },
+    {
+      label: text('site.job.worked.board-feet.dressed'),
+      math: `${inchText(size.thickness)} × ${inchText(size.width)} × ${feet} ÷ 12 = ${plain(dressedProduct)} ÷ 12 = ${two(valueIn(dressed.boardFeet, bdft))}`,
+    },
+    {
+      label: text('site.job.worked.board-feet.volume'),
+      math: `${two(valueIn(nominal.boardFeet, bdft))} ÷ 12 = ${two(valueIn(nominal.volumeFt3, ft3))} ft³ = ${decimalText(valueIn(nominal.volumeM3, m3), 3, true)} m³`,
+    },
+  ];
+};
+
 const STEPS: Partial<Record<Job['calculator'], (id: JobId, locale: Locale) => Steps>> = {
   concrete: concreteSteps,
   'rectangle-area': areaSteps,
@@ -456,6 +505,7 @@ const STEPS: Partial<Record<Job['calculator'], (id: JobId, locale: Locale) => St
   topsoil: topsoilSteps,
   gravel: gravelSteps,
   'feet-inches': feetInchesSteps,
+  'board-feet': boardFeetSteps,
 };
 
 /** The worked example of job `id` in `locale`, or `undefined` for a chart or another calculator. */

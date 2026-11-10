@@ -41,7 +41,7 @@ export const HUBS = {
   },
   'hub-measurement': {
     calculators: ['rectangle-area', 'feet-inches', 'board-feet'],
-    guides: ['guide-square-footage', 'guide-tape-measure-fractions'],
+    guides: ['guide-square-footage', 'guide-tape-measure-fractions', 'guide-board-feet'],
   },
   'hub-paint': { calculators: ['paint'], guides: ['guide-paint-quote', 'guide-paint-coverage'] },
 } as const satisfies Record<string, Hub>;

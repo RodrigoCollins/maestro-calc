@@ -11,6 +11,7 @@ import { jobSlope } from '../lib/job-slope.ts';
 import { jobConcrete } from '../lib/job-concrete.ts';
 import { jobFloor } from '../lib/job-floor.ts';
 import { jobRafter } from '../lib/job-rafter.ts';
+import { jobLumber } from '../lib/job-lumber.ts';
 import { jobRoof } from '../lib/job-roof.ts';
 import { jobSoil } from '../lib/job-soil.ts';
 import { jobRoom } from '../lib/job-room.ts';
@@ -103,7 +104,8 @@ const extra =
   jobConcrete(id, locale) ??
   jobSoil(id, locale) ??
   jobRoof(id, locale) ??
-  jobRafter(id, locale);
+  jobRafter(id, locale) ??
+  jobLumber(id, locale);
 // Its tables: the size's own, then a second one with a lead of its own (the rebar of a slab).
 const extraTables =
   extra === undefined

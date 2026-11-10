@@ -1,5 +1,6 @@
 import { decode } from '@maestro-calc/core';
 import { concreteMix } from '@maestro-calc/data';
+import { boardFeet } from '@maestro-calc/core/calculators/board-feet';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
@@ -75,6 +76,11 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
     expect(state.ok && decode(roofing, query).state).toEqual(state.ok && state.value);
     return;
   }
+  if (calculator === 'board-feet') {
+    const state = boardFeet.validate(raw);
+    expect(state.ok && decode(boardFeet, query).state).toEqual(state.ok && state.value);
+    return;
+  }
   if (calculator === 'feet-inches') {
     const state = feetInches.validate(raw);
     expect(state.ok && decode(feetInches, query).state).toEqual(state.ok && state.value);
@@ -85,6 +91,36 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
 };
 
 describe('job page view (growth plan › lever 1: figures from the engine)', () => {
+  // hand-verified (PS 20-20, 2.2 and Table 3): a 2x4x8 is 64 ÷ 12 = 5.33 board feet, 42 ÷ 12 =
+  // 3.50 at 1 1/2 by 3 1/2 in, 0.44 ft³ and 0.013 m³; 16 ft long, 128 ÷ 12 = 10.67 and 84 ÷ 12 = 7.00
+  it('works the 2x4x8 out by its nominal and its dressed size, at every stock length', () => {
+    const view = jobView('board-feet-2x4x8', 'en');
+    expect(view.rows.map(({ label, cells }) => [label, ...cells])).toEqual([
+      ['8 ft', '5.33', '3.50', '0.44'],
+      ['10 ft', '6.67', '4.38', '0.56'],
+      ['12 ft', '8.00', '5.25', '0.67'],
+      ['14 ft', '9.33', '6.13', '0.78'],
+      ['16 ft', '10.67', '7.00', '0.89'],
+    ]);
+    expect(view.rows[0].href).toBe('/board-feet-calculator?v=1');
+    expect(view.lead).toBe('Thickness: 2 in, Width: 4 in, Length: 8 ft');
+    expect(view.answer).toBe('5.33 board feet');
+    expect(view.facts.map(({ value }) => value)).toEqual([
+      '1 1/2 in × 3 1/2 in',
+      '3.50',
+      '0.44',
+      '0.013',
+    ]);
+  });
+
+  // hand-verified: a 2x12 12 ft long is 288 ÷ 12 = 24 board feet, 1 1/2 × 11 1/4 × 12 = 202.5,
+  // ÷ 12 = 16.875, shown 16.88; a 1x6x8 is 48 ÷ 12 = 4, 3/4 × 5 1/2 × 8 = 33, ÷ 12 = 2.75
+  it('works the 2x12x12 and the 1x6x8 out the same way', () => {
+    expect(jobView('board-feet-2x12x12', 'es').rows[0].cells).toEqual(['24.00', '16.88', '2.00']);
+    expect(jobView('board-feet-1x6x8', 'en').rows[0].cells).toEqual(['4.00', '2.75', '0.33']);
+    expect(jobView('board-feet-1x6x8', 'en').facts[0]?.value).toBe('3/4 in × 5 1/2 in');
+  });
+
   // hand-verified: 10 × 10 × 1/3 ft = 33.33 ft³, + 10% = 36.67 ft³ = 1.36 yd³;
   // bags of 0.60, 0.45 and 0.30 ft³: 61.1, 81.5 and 122.2, rounded up
   it('works the 10 × 10 slab out as the calculator does', () => {
