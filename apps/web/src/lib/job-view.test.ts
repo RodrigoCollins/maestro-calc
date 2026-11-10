@@ -34,6 +34,7 @@ import {
 } from './square-meters-chart.ts';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
+import { fence } from './fence.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
 import { roofing } from './roofing.ts';
@@ -87,6 +88,11 @@ const expectRoundTrip = (calculator: Job['calculator'], raw: JobCase, query: str
   if (calculator === 'board-feet') {
     const state = boardFeet.validate(raw);
     expect(state.ok && decode(boardFeet, query).state).toEqual(state.ok && state.value);
+    return;
+  }
+  if (calculator === 'fence') {
+    const state = fence.validate(raw);
+    expect(state.ok && decode(fence, query).state).toEqual(state.ok && state.value);
     return;
   }
   if (calculator === 'feet-inches') {
@@ -143,6 +149,28 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.answer).toBe('1.36 cubic yards');
     expect(view.facts.map(({ value }) => value)).toEqual(['62', '82', '123']);
     expect(view.columns).toHaveLength(5);
+  });
+
+  // hand-verified in fence-cost.test.ts: wood $15–$45, vinyl $10–$40, chain link $13–$30 and
+  // aluminum $17–$90 a linear foot installed (This Old House and Bob Vila); 50 ft of wood is $750 to
+  // $2,250. The materials of each length come from the fence engine (calc-fence › [FN8])
+  it.each(LOCALES)('answers what a fence costs per linear foot in %s', (locale) => {
+    const view = jobView('fence-cost', locale);
+    expect(view.answer).toContain('$10–$90');
+    expect(view.facts.map(({ value }) => value)).toEqual([
+      '$15–$45',
+      '$10–$40',
+      '$13–$30',
+      '$17–$90',
+    ]);
+    expect(view.columns).toHaveLength(5);
+    expect(view.rows[0]).toEqual({
+      label: '50 ft',
+      href: `${pathOf('fence', locale)}?v=1&l=600`,
+      cells: ['$750–$2,250', '$500–$2,000', '$650–$1,500', '$850–$4,500'],
+    });
+    expect(view.rows.map(({ label }) => label)).toEqual(['50 ft', '100 ft', '150 ft', '200 ft']);
+    expect(view.cta).toBe(`${pathOf('fence', locale)}?v=1&l=600`);
   });
 
   // hand-verified in slab-cost.test.ts: installed $4.00 (This Old House) to $10.50 (Concrete

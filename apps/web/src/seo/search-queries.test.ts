@@ -634,6 +634,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
       'cubic-feet-in-a-cubic-yard': ['27', 'How many cubic feet in a cubic yard?'],
       'cubic-feet-to-gallons': ['7.48', 'A cubic foot is 7.48 US gallons'],
       'cubic-yards-in-a-ton-of-dirt': ['1.25', 'How many cubic yards in a ton of dirt?'],
+      'fence-cost': ['$10 to $90', 'How much does a fence cost?'],
     } as const satisfies Record<(typeof QUESTION_IDS)[number], readonly [string, string]>;
     for (const id of QUESTION_IDS) {
       const [answer, question] = answers[id];

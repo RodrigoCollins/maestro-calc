@@ -283,6 +283,29 @@ Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calc
 | Un 2x4x8 con su medida cepillada seca, 1 1/2 por 3 1/2 in (`?v=1&t=3/2&w=7/2`) | 3.50          | 3.50      | 0.29         | 0.008          |
 | Diez 2x4x8 (`?v=1&n=10`)                                                       | 53.33         | 5.33      | 4.44         | 0.126          |
 
+<h2 id="cercas">Calculadora de cercas</h2>
+
+La [calculadora de cercas](/es/calculadora-de-cercas) cuenta los postes, los travesaños y las tablas o estacas de un tramo recto de cerca, da la medida de los hoyos y cuenta las bolsas de concreto de 80 lb que fijan los postes.
+
+Las fórmulas:
+
+- Tramos = largo ÷ distancia entre postes, redondeado hacia arriba; postes = tramos + 1 + portones.
+- Travesaños = tramos × travesaños por tramo.
+- Tablas, tabla sobre tabla = 2 × largo ÷ (ancho de la tabla + espacio entre tablas de una fila); estacas = largo ÷ (ancho de la estaca + espacio); ambas redondeadas hacia arriba.
+- Ancho del hoyo = 3 × ancho del poste; profundidad del hoyo = altura ÷ 2 + 6 in de grava.
+- Concreto = (π × (ancho del hoyo ÷ 2)² − ancho del poste²) × altura ÷ 2 × postes; bolsas = concreto ÷ rendimiento de la bolsa, redondeado hacia arriba.
+
+Las reglas del hoyo vienen de la hoja Setting Posts de Quikrete: 3 veces el ancho del poste, un tercio del poste bajo tierra (la mitad de la altura sobre el suelo) y 6 in de grava. El concreto llena el hoyo sobre la grava hasta el suelo, como indica la guía de cercas de Viance, y una bolsa de 80 lb rinde aproximadamente 0.60 pies cúbicos (Quikrete Concrete Mix No. 1101). La calculadora no cuenta clavos, tornillos, bisagras ni pasadores; su página cita la fuente de cada valor inicial.
+
+Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                 | Postes | Travesaños | Tablas | Bolsas de 80 lb | Concreto (pies cúbicos) |
+| -------------------------------------------------------------------- | ------ | ---------- | ------ | --------------- | ----------------------- |
+| Cerca de privacidad de 100 ft y 6 ft de alto (valores iniciales)     | 14     | 39         | 253    | 37              | 21.68                   |
+| 200 ft (`?v=1&l=2400`)                                               | 26     | 75         | 506    | 68              | 40.27                   |
+| Cerca de estacas de 4 ft (`?v=1&h=48&s=picket`)                      | 14     | 39         | 150    | 25              | 14.46                   |
+| Cerca de travesaños de 4 ft, dos travesaños (`?v=1&h=48&s=rail&r=2`) | 14     | 26         | 0      | 25              | 14.46                   |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

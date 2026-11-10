@@ -283,6 +283,29 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | A 2x4x8 at its dry dressed size, 1 1/2 by 3 1/2 in (`?v=1&t=3/2&w=7/2`) | 3.50       | 3.50  | 0.29       | 0.008        |
 | Ten 2x4x8 (`?v=1&n=10`)                                                 | 53.33      | 5.33  | 4.44       | 0.126        |
 
+<h2 id="fence">Fence calculator</h2>
+
+The [fence calculator](/fence-calculator) counts the posts, rails and boards or pickets of a straight run of fence, sizes the post holes and counts the 80 lb bags of concrete that set the posts.
+
+The formulas:
+
+- Sections = length ÷ post spacing, rounded up; posts = sections + 1 + gates.
+- Rails = sections × rails per section.
+- Board-on-board boards = 2 × length ÷ (board width + space between boards in a row); pickets = length ÷ (picket width + gap); both rounded up.
+- Hole width = 3 × post width; hole depth = height ÷ 2 + 6 in of gravel.
+- Concrete = (π × (hole width ÷ 2)² − post width²) × height ÷ 2 × posts; bags = concrete ÷ bag yield, rounded up.
+
+The hole rules come from the Quikrete Setting Posts project sheet: 3 times the post's width, a third of the post in the ground (half the height above it) and 6 in of gravel. The concrete fills the hole above the gravel up to the ground, as the Viance fence guide sets it, and an 80 lb bag yields approximately 0.60 cubic feet (Quikrete Concrete Mix No. 1101). The calculator does not count nails, screws, hinges or latches; the calculator page cites the source of every starting value.
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                | Posts | Rails | Boards | 80 lb bags | Concrete (cubic feet) |
+| --------------------------------------------------- | ----- | ----- | ------ | ---------- | --------------------- |
+| 100 ft privacy fence, 6 ft high (starting values)   | 14    | 39    | 253    | 37         | 21.68                 |
+| 200 ft (`?v=1&l=2400`)                              | 26    | 75    | 506    | 68         | 40.27                 |
+| 4 ft picket fence (`?v=1&h=48&s=picket`)            | 14    | 39    | 150    | 25         | 14.46                 |
+| 4 ft rail fence, two rails (`?v=1&h=48&s=rail&r=2`) | 14    | 26    | 0      | 25         | 14.46                 |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

@@ -667,33 +667,28 @@ export const esSite = {
   'page.home.cards.concrete.summary':
     'Yardas cúbicas y bolsas para una losa, zapata, columna o escalones.',
   'page.home.cards.rectangle-area.title': 'Calculadora de pies cuadrados',
-  'page.home.cards.rectangle-area.summary':
-    'Pies, yardas y metros cuadrados para un cuarto, piso o losa.',
+  'page.home.cards.rectangle-area.summary': 'Pies, yardas y metros cuadrados de un área.',
   'page.home.cards.gravel.title': 'Calculadora de grava',
-  'page.home.cards.gravel.summary':
-    'Toneladas y yardas cúbicas de grava para una entrada, camino o base.',
+  'page.home.cards.gravel.summary': 'Toneladas y yardas cúbicas de grava para una entrada.',
   'page.home.cards.mulch.title': 'Calculadora de mulch',
-  'page.home.cards.mulch.summary': 'Yardas cúbicas y bolsas de mulch para un área de jardín.',
+  'page.home.cards.mulch.summary': 'Yardas cúbicas y bolsas de mulch.',
   'page.home.cards.topsoil.title': 'Calculadora de tierra para jardín',
-  'page.home.cards.topsoil.summary':
-    'Yardas cúbicas y bolsas de tierra para un césped, una jardinera o un relleno.',
+  'page.home.cards.topsoil.summary': 'Yardas cúbicas y bolsas de tierra para jardín.',
   'page.home.cards.paint.title': 'Calculadora de pintura',
-  'page.home.cards.paint.summary':
-    'Galones de pintura y latas a comprar para las paredes de un cuarto.',
+  'page.home.cards.paint.summary': 'Galones y latas de pintura para un cuarto.',
   'page.home.cards.drywall.title': 'Calculadora de drywall',
-  'page.home.cards.drywall.summary':
-    'Placas, compuesto y cinta para las paredes y el techo de un cuarto.',
+  'page.home.cards.drywall.summary': 'Placas, compuesto y cinta para un cuarto.',
   'page.home.cards.roof-pitch.title': 'Calculadora de pendiente de techo',
   'page.home.cards.roof-pitch.summary':
     'Pendiente, ángulo y largo del cabio, con el mínimo del IRC.',
   'page.home.cards.roofing.title': 'Calculadora de tejas para techo',
-  'page.home.cards.roofing.summary':
-    'Cuadrados de techo según la planta y la pendiente, con los paquetes de tejas y rollos de fieltro.',
+  'page.home.cards.roofing.summary': 'Cuadrados de techo, paquetes de tejas y rollos de fieltro.',
   'page.home.cards.feet-inches.title': 'Calculadora de pies y pulgadas',
-  'page.home.cards.feet-inches.summary':
-    'Suma, resta, multiplica o divide medidas de cinta, al 1/16 de pulgada.',
+  'page.home.cards.feet-inches.summary': 'Suma, resta, multiplica o divide medidas de cinta.',
   'page.home.cards.board-feet.title': 'Calculadora de pies tablares',
   'page.home.cards.board-feet.summary': 'Pies tablares y costo del lote.',
+  'page.home.cards.fence.title': 'Calculadora de cercas',
+  'page.home.cards.fence.summary': 'Postes, tablas y concreto.',
   'page.home.hubs': 'Por oficio',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
@@ -701,21 +696,20 @@ export const esSite = {
   'page.home.cta': 'Calcula tu concreto',
   'page.home.ctaAll': 'Ver todas las calculadoras',
   'page.home.share.title': 'Manda la lista a tu equipo',
-  'page.home.share.text':
-    'Cada resultado tiene un enlace con tus números, WhatsApp y vista para imprimir.',
+  'page.home.share.text': 'Cada resultado tiene un enlace con tus números, WhatsApp e impresión.',
   'page.home.sample': 'Losa de concreto',
   'page.home.calculators': 'Calculadoras',
   'page.home.guides': 'Guías para la obra',
   'page.home.trust': 'Cómo sacamos los números',
   'page.home.trust.sources.title': 'Fuentes en cada página',
   'page.home.trust.sources.text':
-    'Los rendimientos salen de las fichas de los fabricantes; las pendientes, del IRC.',
+    'Rendimientos de las fichas de los fabricantes; pendientes, del IRC.',
   'page.home.trust.math.title': 'Cuentas exactas',
   'page.home.trust.math.text':
-    'Las fracciones quedan exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
+    'Las fracciones quedan exactas; solo se redondea hacia arriba lo que compras.',
   'page.home.trust.languages.title': 'Inglés y español',
   'page.home.trust.languages.text':
-    'Los mismos números en los dos idiomas, con los términos de obra de EE. UU.',
+    'Los mismos números en los dos idiomas, con términos de obra de EE. UU.',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
     'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe qué comprar.',
@@ -1787,6 +1781,55 @@ export const esSite = {
     'La tierra para jardín pesa menos que la grava o la arena: tiene materia orgánica y aire, así que una yarda cúbica pesa unas 0.80 toneladas, 1,600 lb, frente a unas 1.45 toneladas de la arena. Al revés, una tonelada de tierra suelta llena 1.25 yardas cúbicas, lo bastante para cubrir 100 pies cuadrados a poco más de 4 in de profundidad. La tierra en el suelo está más apretada: el USDA pone la densidad aparente seca de un suelo de textura media cerca de 1.33 gramos por centímetro cúbico, unas 1.12 toneladas por yarda cúbica, y se afloja y se esponja al excavarla y cargarla.',
   'page.cubic-yards-in-a-ton-of-dirt.p2':
     'La humedad mueve cada una de estas cifras. Los pesos de aquí son secos o sin condición, y la tierra mojada pesa más, así que una tonelada entregada después de la lluvia llena menos yardas cúbicas que una tonelada de tierra seca. Si el patio vende la tierra por tonelada, divide las toneladas entre 0.80 para las yardas cúbicas; si la vende por yarda cúbica, multiplica las yardas por 0.80 para el peso que debe cargar tu camioneta o tu remolque. Una cama elevada de 4 por 8 ft y 12 in de profundidad lleva 1.30 yardas cúbicas con el 10% extra, unas 1.04 toneladas.',
+  'site.job.guide.fence.heading': 'Antes de construir la cerca',
+  'site.job.guide.fence.tip1':
+    'Revisa el límite del terreno, el código local y las reglas de la asociación de propietarios antes de excavar, y llama al 811 para que marquen las líneas de servicios enterradas.',
+  'site.job.guide.fence.tip2':
+    'Coloca primero los postes de los extremos, de las esquinas y de los portones, tiende un hilo entre ellos y alinea con él los postes intermedios.',
+  'site.job.guide.fence.tip3':
+    'Quikrete indica esperar 24 horas antes de cargar un poste fijado con su Concrete Mix normal, y 4 horas con su Fast-Setting Concrete Mix, así que coloca los travesaños y los portones después.',
+  'site.job.guide.fence.tip4':
+    'La guía de cercas de Home Depot usa tres travesaños en cercas de 6 ft de alto o más y dos en las más bajas, con los travesaños de arriba y de abajo a 4 in de los extremos de las tablas.',
+  'site.job.fenceCost.lead': 'Precio instalado de una cerca, por material',
+  'site.job.fenceCost.perFoot': 'por pie lineal, instalada',
+  'site.job.fenceCost.wood': 'Madera',
+  'site.job.fenceCost.vinyl': 'Vinilo',
+  'site.job.fenceCost.chain-link': 'Malla ciclónica',
+  'site.job.fenceCost.aluminum': 'Aluminio',
+  'site.job.question.fencePrices.heading': 'Precio instalado por pie lineal, por guía',
+  'site.job.question.fencePrices.lead':
+    'El rango que publica cada guía de costos para cada material, con una raya donde la guía no lo incluye:',
+  'site.job.question.fenceMaterials.heading': 'Lo que lleva una cerca de privacidad de 6 ft',
+  'site.job.question.fenceMaterials.lead':
+    'Tabla sobre tabla, con postes de 4x4 cada 8 ft y tres travesaños por tramo, según la calculadora de cercas:',
+  'site.job.question.col.thisOldHouse': 'This Old House',
+  'site.job.question.col.bobVila': 'Bob Vila',
+  'site.job.question.col.length': 'Largo',
+  'site.job.question.col.posts': 'Postes',
+  'site.job.question.col.rails': 'Travesaños',
+  'site.job.question.col.boards': 'Tablas',
+  'site.job.question.col.bags80': 'Bolsas de concreto de 80 lb',
+  'site.job.question.fencePriceSource': 'Precio instalado por pie lineal',
+  'site.job.question.postHoleSource': 'Tamaño del hoyo y grava',
+  'site.job.question.postConcreteSource': 'Postes en mezcla de concreto y rendimiento de la bolsa',
+  'site.job.question.railSource': 'Travesaños por tramo según la altura',
+  'page.fence.title': 'Calculadora de cercas: postes y concreto | Maestro Calc',
+  'page.fence.description':
+    'Calcula los postes, travesaños, tablas y bolsas de concreto de una cerca de madera según su largo, altura y distancia entre postes. Gratis.',
+  'page.fence-cost.title': 'Cerca: $10 a $90 por pie lineal instalada | Maestro Calc',
+  'page.fence-cost.description':
+    '¿Cuánto cuesta una cerca? $10 a $90 por pie lineal instalada: madera $15 a $45, vinilo $10 a $40, malla ciclónica $13 a $30, aluminio $17 a $90, con fuentes.',
+  'page.fence-cost.heading': 'Una cerca cuesta de $10 a $90 por pie lineal instalada',
+  'page.fence-cost.label': 'Costo de una cerca',
+  'page.fence-cost.intro':
+    'Instalada, una cerca cuesta de $10 a $90 por pie lineal según el material, de acuerdo con las dos guías de costos que cita esta página. La madera va de $15 a $45 por pie lineal (This Old House da de $15 a $35 y Bob Vila de $17 a $45), el vinilo de $10 a $40, la malla ciclónica de $13 a $30 y el aluminio de $17 a $90. Una cerca de madera de 100 ft cuesta de $1,500 a $4,500 instalada. La tabla da el precio de cuatro largos comunes en cada material, y cada largo abre la calculadora de cercas con sus postes, travesaños, tablas y concreto.',
+  'page.fence-cost.note':
+    'Cada costo es el largo por el precio más bajo y el más alto por pie lineal que dan las dos guías para ese material, en dólares enteros; un precio instalado ya incluye los materiales y la mano de obra. La tabla de materiales cuenta una cerca de privacidad de 6 ft, tabla sobre tabla, con postes de 4x4 cada 8 ft, los valores predeterminados de la calculadora. Cada largo abre la calculadora, donde puedes cambiar la altura, el estilo y la distancia y escribir tus propios precios.',
+  'page.fence-cost.about': 'Qué mueve el precio de una cerca',
+  'page.fence-cost.p1':
+    'El material fija casi todo el rango, y las dos guías no lo valúan igual. La madera cuesta de $15 a $35 por pie lineal en la tabla de This Old House y de $17 a $45 en la de Bob Vila; el vinilo de $15 a $40 y de $10 a $40; la malla ciclónica de $13 a $27 y de $15 a $30. El aluminio tiene el rango más amplio, de $17 a $90 por pie lineal en la tabla de Bob Vila; This Old House no tiene una fila de aluminio y da a toda cerca de metal de $15 a $75. La altura, el estilo, los portones, el terreno y la mano de obra local mueven una cotización dentro de estos rangos, así que toma la tabla como una primera estimación y compárala con dos o tres cotizaciones locales.',
+  'page.fence-cost.p2':
+    'Si la construyes tú, pagas los materiales. Una cerca de privacidad de 100 ft y 6 ft de alto, con postes de 4x4 cada 8 ft, lleva 14 postes, 39 travesaños, 253 tablas y 37 bolsas de mezcla de concreto de 80 lb, según la calculadora de cercas. Cada hoyo mide 10 1/2 in de ancho y 42 in de profundidad: 3 veces el ancho del poste, y un tercio del poste enterrado más 6 in de grava, como indican las instrucciones de Quikrete para fijar postes. Escribe en la calculadora los precios de tu proveedor para ver cuánto cuestan los postes, los travesaños, las tablas y el concreto.',
   'page.notFound.title': 'Página no encontrada | Maestro Calc',
   'page.notFound.description':
     'La página que buscas no existe o cambió de lugar. Vuelve a la página de inicio de Maestro Calc.',

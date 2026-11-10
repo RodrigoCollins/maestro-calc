@@ -6,6 +6,7 @@ import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
+import { fence } from './fence.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
 import { roofing } from './roofing.ts';
@@ -28,4 +29,5 @@ export const calculators = [
   roofing,
   feetInches,
   boardFeet,
+  fence,
 ] as const;

@@ -34,6 +34,13 @@ import {
   READY_MIX_PRICES,
   slabCostOf,
 } from './slab-cost.ts';
+import {
+  FENCE_MATERIALS,
+  FENCE_PRICES,
+  fenceHref,
+  fenceMaterialsOf,
+  guideRangeOf,
+} from './fence-cost.ts';
 import { siteText } from './site-text.ts';
 
 /*
@@ -167,7 +174,9 @@ type TableKind =
   | 'loadWeight'
   | 'garageSlab'
   | 'slabCost'
-  | 'thicknessCost';
+  | 'thicknessCost'
+  | 'fencePrices'
+  | 'fenceMaterials';
 
 /** The column headings of those tables. */
 type Column =
@@ -192,7 +201,14 @@ type Column =
   | 'yardsWithExtra'
   | 'yardsPer100'
   | 'readyMix'
-  | 'readyMixPerFoot';
+  | 'readyMixPerFoot'
+  | 'thisOldHouse'
+  | 'bobVila'
+  | 'length'
+  | 'posts'
+  | 'rails'
+  | 'boards'
+  | 'bags80';
 
 const table = (
   text: Text,
@@ -538,6 +554,66 @@ const priceSources = (text: Text): [QuestionSource, ...QuestionSource[]] => {
   ];
 };
 
+/* Fence cost: each guide's price per material, and the materials of each length. */
+
+const fenceCost = (_id: QuestionId, text: Text, locale: Locale): QuestionTable[] => [
+  table(
+    text,
+    'fencePrices',
+    [col(text, 'material'), col(text, 'thisOldHouse'), col(text, 'bobVila')],
+    mapRows(FENCE_MATERIALS, (material) => ({
+      label: text(`site.job.fenceCost.${material}`),
+      cells: FENCE_PRICES.map((prices) => guideRangeOf(prices, material)),
+    })),
+  ),
+  table(
+    text,
+    'fenceMaterials',
+    [
+      col(text, 'length'),
+      col(text, 'posts'),
+      col(text, 'rails'),
+      col(text, 'boards'),
+      col(text, 'bags80'),
+    ],
+    mapRows(JOBS['fence-cost'].cases, (raw) => {
+      const { posts, rails, boards, bags } = fenceMaterialsOf(raw);
+      return {
+        label: sizeText(raw['length']),
+        href: fenceHref(raw, locale),
+        cells: [posts, rails, boards, bags],
+      };
+    }),
+  ),
+];
+
+/** The Quikrete project sheet that sizes the holes of the materials table. */
+const QUIKRETE_POSTS = {
+  name: 'Quikrete, "Setting Posts" project sheet (hole 3 times the post width, 1/3 of the post in the ground plus 6 in of gravel)',
+  url: 'https://www.quikrete.com/PDFs/Projects/SettingPosts.pdf',
+  retrieved: '2026-11-10',
+};
+
+/** The Home Depot fencing guide that sets the rails of each section by the height. */
+const HOME_DEPOT_FENCING = {
+  name: 'The Home Depot, "Wood Fencing: Planning and Installing Your Fence" (three rails for fences 6 ft tall and higher, two for shorter ones)',
+  url: 'https://images.homedepot-static.com/catalog/pdfImages/66/665f47cf-0ce3-4613-b7ca-88426b6f6e03.pdf',
+  retrieved: '2026-11-10',
+};
+
+/** The two cost guides of the fence cost page and the hole rules, each labelled by what it gives. */
+const fenceSources = (text: Text): [QuestionSource, ...QuestionSource[]] => {
+  const price = text('site.job.question.fencePriceSource');
+  const [thisOldHouse, bobVila] = FENCE_PRICES;
+  return [
+    { label: price, source: thisOldHouse.source },
+    { label: price, source: bobVila.source },
+    { label: text('site.job.question.postHoleSource'), source: QUIKRETE_POSTS },
+    { ...bagSource(text), label: text('site.job.question.postConcreteSource') },
+    { label: text('site.job.question.railSource'), source: HOME_DEPOT_FENCING },
+  ];
+};
+
 /** What each question page builds: its tables, its sources and the page it leads to. */
 const QUESTIONS = {
   'concrete-cubic-yard-weight': {
@@ -588,6 +664,11 @@ const QUESTIONS = {
     tables: yardsInATonOfDirt,
     sources: (text) => sourcesOf(['topsoil', 'soil-in-place'], text),
     more: 'cubic-yard-weight-chart',
+  },
+  'fence-cost': {
+    tables: fenceCost,
+    sources: fenceSources,
+    more: 'concrete-slab-cost',
   },
 } as const satisfies Record<
   QuestionId,

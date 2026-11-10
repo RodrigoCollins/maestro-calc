@@ -129,6 +129,33 @@ describe('jobQuestion (the tables a question page adds to its job table)', () =>
     );
   });
 
+  // hand-verified in fence-cost.test.ts: each guide's own range per material, the dash where a
+  // guide has no row; the materials of a 6 ft privacy fence by the fence engine (calc-fence › [FN8])
+  it('lists each guide price per material and the materials of each length, with dated sources', () => {
+    expect(rowsOf('fence-cost', 0)).toEqual([
+      [expect.any(String), '$15–$35', '$17–$45'],
+      [expect.any(String), '$15–$40', '$10–$40'],
+      [expect.any(String), '$13–$27', '$15–$30'],
+      [expect.any(String), '—', '$17–$90'],
+    ]);
+    expect(rowsOf('fence-cost', 1)).toEqual([
+      ['50 ft', '8', '21', '127', '21'],
+      ['100 ft', '14', '39', '253', '37'],
+      ['150 ft', '20', '57', '379', '52'],
+      ['200 ft', '26', '75', '506', '68'],
+    ]);
+    expect(jobQuestion('fence-cost', 'es')?.tables[1]?.rows[0]?.href).toBe(
+      `${pathOf('fence', 'es')}?v=1&l=600`,
+    );
+    expect(jobQuestion('fence-cost', 'en')?.sources.map(({ source }) => source.url)).toEqual([
+      'https://www.thisoldhouse.com/lawns/fencing-options',
+      'https://www.bobvila.com/articles/fence-installation-cost/',
+      'https://www.quikrete.com/PDFs/Projects/SettingPosts.pdf',
+      'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+      'https://images.homedepot-static.com/catalog/pdfImages/66/665f47cf-0ce3-4613-b7ca-88426b6f6e03.pdf',
+    ]);
+  });
+
   // hand-verified in slab-cost.test.ts: 4 in with 10% extra, the ready-mix at the producer prices
   // $160.18 and $201.90 a cubic yard, installed at $4 to $8 and $6.50 to $10.50 a square foot;
   // 100 sq ft takes 1.1 × t/12 × 100 ÷ 27 yd³: 1.36 at 4 in, 1.70 at 5, 2.04 at 6 and 2.72 at 8

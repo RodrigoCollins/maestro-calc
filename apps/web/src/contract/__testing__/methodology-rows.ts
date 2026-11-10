@@ -555,4 +555,51 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&n=10', figures: ['53.33', '5.33', '4.44', '0.126'] },
     ],
   },
+  fence: {
+    anchor: { en: 'fence', es: 'cercas' },
+    pageLink: {
+      en: '[fence calculator](/fence-calculator)',
+      es: '[calculadora de cercas](/es/calculadora-de-cercas)',
+    },
+    formulas: {
+      en: [
+        'length ÷ post spacing, rounded up; posts = sections + 1 + gates',
+        'sections × rails per section',
+        '2 × length ÷ (board width + space between boards in a row)',
+        'length ÷ (picket width + gap); both rounded up',
+        'height ÷ 2 + 6 in of gravel',
+        'concrete ÷ bag yield, rounded up',
+      ],
+      es: [
+        'largo ÷ distancia entre postes, redondeado hacia arriba; postes = tramos + 1 + portones',
+        'tramos × travesaños por tramo',
+        '2 × largo ÷ (ancho de la tabla + espacio entre tablas de una fila)',
+        'largo ÷ (ancho de la estaca + espacio); ambas redondeadas hacia arriba',
+        'altura ÷ 2 + 6 in de grava',
+        'concreto ÷ rendimiento de la bolsa, redondeado hacia arriba',
+      ],
+    },
+    honesty: {
+      en: [
+        /Quikrete Setting Posts project sheet/,
+        /approximately 0\.60 cubic feet/,
+        /does not count nails/,
+      ],
+      es: [/Setting Posts de Quikrete/, /aproximadamente 0\.60 pies cúbicos/, /no cuenta clavos/],
+    },
+    columns: ['posts', 'rails', 'boards', 'bags', 'concreteFt3'],
+    figuresOf: (shown) => [
+      shown.shopping[0] ?? '',
+      shown.shopping[1] ?? '',
+      shown.shopping[2] ?? '',
+      shown.shopping[3] ?? '',
+      figure(shown, 'concreteFt3'),
+    ],
+    published: [
+      { query: '', figures: ['14', '39', '253', '37', '21.68'] },
+      { query: '?v=1&l=2400', figures: ['26', '75', '506', '68', '40.27'] },
+      { query: '?v=1&h=48&s=picket', figures: ['14', '39', '150', '25', '14.46'] },
+      { query: '?v=1&h=48&s=rail&r=2', figures: ['14', '26', '0', '25', '14.46'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

@@ -680,6 +680,8 @@ export const enSite = {
     'Add, subtract, multiply or divide tape measurements, to the nearest 1/16 in.',
   'page.home.cards.board-feet.title': 'Board feet calculator',
   'page.home.cards.board-feet.summary': 'Board feet of any lumber, with the cost of the lot.',
+  'page.home.cards.fence.title': 'Fence calculator',
+  'page.home.cards.fence.summary': 'Posts, rails, boards and concrete of a fence.',
   'page.home.hubs': 'By trade',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
@@ -1758,6 +1760,55 @@ export const enSite = {
     'Topsoil is lighter than gravel or sand: it holds organic matter and air, so a cubic yard of it weighs about 0.80 tons, 1,600 lb, against about 1.45 tons for sand. Turned the other way, one ton of loose topsoil fills 1.25 cubic yards, enough to cover 100 square feet a little over 4 in deep. Soil in the ground is packed tighter: the USDA puts the dry bulk density of a medium textured soil near 1.33 grams per cubic centimeter, about 1.12 tons a cubic yard, and it loosens and swells once it is dug and loaded.',
   'page.cubic-yards-in-a-ton-of-dirt.p2':
     'Moisture moves every one of these figures. The weights here are dry or unstated, and wet soil weighs more, so a ton delivered after rain fills fewer cubic yards than a ton of dry soil. When a yard sells topsoil by the ton, divide the tons by 0.80 for the cubic yards; when it sells by the cubic yard, multiply the yards by 0.80 for the weight your truck or trailer must carry. A 4 by 8 ft raised bed 12 in deep takes 1.30 cubic yards with 10% extra, about 1.04 tons.',
+  'site.job.guide.fence.heading': 'Before you build the fence',
+  'site.job.guide.fence.tip1':
+    'Check the property line, the local code and any homeowners association rules before you dig, and call 811 so the buried utility lines are marked.',
+  'site.job.guide.fence.tip2':
+    'Set the end, corner and gate posts first, then stretch a string between them and set the line posts to it.',
+  'site.job.guide.fence.tip3':
+    'Quikrete says to wait 24 hours before a post set in its regular Concrete Mix takes any strain, and 4 hours with its Fast-Setting Concrete Mix, so hang the rails and the gates after that.',
+  'site.job.guide.fence.tip4':
+    "Home Depot's fencing guide uses three rails for fences 6 ft tall and higher and two rails for shorter ones, with the top and bottom rails 4 in from the ends of the boards.",
+  'site.job.fenceCost.lead': 'Installed price of a fence, by material',
+  'site.job.fenceCost.perFoot': 'per linear foot installed',
+  'site.job.fenceCost.wood': 'Wood',
+  'site.job.fenceCost.vinyl': 'Vinyl',
+  'site.job.fenceCost.chain-link': 'Chain link',
+  'site.job.fenceCost.aluminum': 'Aluminum',
+  'site.job.question.fencePrices.heading': 'Installed price per linear foot, by guide',
+  'site.job.question.fencePrices.lead':
+    'The range each cost guide publishes for each material, with a dash where the guide has no row for it:',
+  'site.job.question.fenceMaterials.heading': 'What a 6 ft privacy fence takes',
+  'site.job.question.fenceMaterials.lead':
+    'Board-on-board, with 4x4 posts every 8 ft and three rails a section, by the fence calculator:',
+  'site.job.question.col.thisOldHouse': 'This Old House',
+  'site.job.question.col.bobVila': 'Bob Vila',
+  'site.job.question.col.length': 'Length',
+  'site.job.question.col.posts': 'Posts',
+  'site.job.question.col.rails': 'Rails',
+  'site.job.question.col.boards': 'Boards',
+  'site.job.question.col.bags80': '80 lb bags of concrete',
+  'site.job.question.fencePriceSource': 'Installed price per linear foot',
+  'site.job.question.postHoleSource': 'Post hole size and gravel',
+  'site.job.question.postConcreteSource': 'Setting posts in concrete mix, and the bag yield',
+  'site.job.question.railSource': 'Rails per section by fence height',
+  'page.fence.title': 'Fence Calculator: Posts, Rails and Concrete | Maestro Calc',
+  'page.fence.description':
+    'Count the posts, rails, boards or pickets and the bags of concrete of a wood fence from its length, height and post spacing. 100 ft takes 14 posts. Free.',
+  'page.fence-cost.title': 'Fence Cost: $10 to $90 per Linear Foot | Maestro Calc',
+  'page.fence-cost.description':
+    'How much does a fence cost? $10 to $90 per linear foot installed: wood $15 to $45, vinyl $10 to $40, chain link $13 to $30, aluminum $17 to $90, with sources.',
+  'page.fence-cost.heading': 'A fence costs $10 to $90 per linear foot installed',
+  'page.fence-cost.label': 'Fence cost',
+  'page.fence-cost.intro':
+    'Installed, a fence costs $10 to $90 per linear foot, depending on the material, according to the two cost guides this page cites. Wood runs $15 to $45 a linear foot (This Old House gives $15 to $35, Bob Vila $17 to $45), vinyl $10 to $40, chain link $13 to $30 and aluminum $17 to $90. A 100 ft wood fence comes to $1,500 to $4,500 installed. The table prices four common lengths in each material, and each length opens the fence calculator with its posts, rails, boards and concrete.',
+  'page.fence-cost.note':
+    "Each cost is the length times the lowest and the highest price per linear foot the two guides give for that material, in whole dollars; an installed price already holds the materials and the labor. The materials table counts a 6 ft board-on-board privacy fence with 4x4 posts every 8 ft, the calculator's defaults. Each length opens the calculator, where you can change the height, the style and the spacing and type your own prices.",
+  'page.fence-cost.about': 'What moves the price of a fence',
+  'page.fence-cost.p1':
+    "The material sets most of the range, and the two guides do not price it the same way. Wood is $15 to $35 a linear foot in This Old House's table and $17 to $45 in Bob Vila's; vinyl is $15 to $40 and $10 to $40; chain link is $13 to $27 and $15 to $30. Aluminum has the widest range, $17 to $90 a linear foot in Bob Vila's table; This Old House has no aluminum row and prices every metal fence at $15 to $75. Height, style, gates, the ground and local labor rates move a quote inside these ranges, so take the table as a first budget and compare it with two or three local quotes.",
+  'page.fence-cost.p2':
+    "If you build it yourself, the materials are what you pay for. A 100 ft privacy fence 6 ft high with 4x4 posts every 8 ft takes 14 posts, 39 rails, 253 boards and 37 bags of 80 lb concrete mix, by the fence calculator. Each hole is 10 1/2 in wide and 42 in deep: 3 times the width of the post, and a third of the post in the ground plus 6 in of gravel, as Quikrete's instructions for setting posts give. Type your supplier's prices in the calculator to see what the posts, rails, boards and concrete cost.",
   'page.notFound.title': 'Page not found | Maestro Calc',
   'page.notFound.description':
     'The page you are looking for does not exist or has moved. Go back to the Maestro Calc home page.',

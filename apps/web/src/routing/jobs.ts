@@ -29,12 +29,16 @@ export interface Job {
     | 'roofing'
     | 'feet-inches'
     | 'board-feet'
+    | 'fence'
   >;
   /** The day the row was last checked: the page shows it. */
   readonly updated: string;
   /** The cases of the table, the one the page answers first; every case has the same keys. */
   readonly cases: readonly [JobCase, ...JobCase[]];
 }
+
+/** A run of fence `length` feet long, at the fence calculator's other defaults. */
+const run = (length: number): JobCase => ({ length: `${String(length)}ft` });
 
 const slab = (length: number, width: number, thickness: number): JobCase => ({
   length: `${String(length)}ft`,
@@ -687,6 +691,13 @@ export const JOBS = {
     updated: '2026-11-10',
     cases: lumber(2, 12, 12),
   },
+  // the lengths a fence is priced at (backlog #46: "fence" is a calculator gap; a cost question
+  // answers itself per linear foot): a 6 ft privacy fence, the fence calculator's defaults
+  'fence-cost': {
+    calculator: 'fence',
+    updated: '2026-11-10',
+    cases: [run(50), run(100), run(150), run(200)],
+  },
 } as const satisfies Record<string, Job>;
 
 export type JobId = keyof typeof JOBS;
@@ -761,6 +772,7 @@ export const QUESTION_IDS = [
   'cubic-feet-in-a-cubic-yard',
   'cubic-feet-to-gallons',
   'cubic-yards-in-a-ton-of-dirt',
+  'fence-cost',
 ] as const satisfies readonly JobId[];
 
 export type QuestionId = (typeof QUESTION_IDS)[number];

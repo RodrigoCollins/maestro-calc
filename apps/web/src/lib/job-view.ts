@@ -20,6 +20,7 @@ import { createTranslator } from '@maestro-calc/i18n';
 import { enBoardFeet } from '@maestro-calc/i18n/catalogs/en/board-feet';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
+import { enFence } from '@maestro-calc/i18n/catalogs/en/fence';
 import { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
 import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
@@ -31,6 +32,7 @@ import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
 import { esBoardFeet } from '@maestro-calc/i18n/catalogs/es/board-feet';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
+import { esFence } from '@maestro-calc/i18n/catalogs/es/fence';
 import { esFeetInches } from '@maestro-calc/i18n/catalogs/es/feet-inches';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
@@ -98,6 +100,15 @@ import {
   readyMixRange,
   slabCostOf,
 } from './slab-cost.ts';
+import {
+  FENCE_MATERIALS,
+  fenceCostOf,
+  fenceHref,
+  fenceMaterialsOf,
+  feetOf,
+  perFootRange,
+  perFootRangeOf,
+} from './fence-cost.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
 export interface JobRow {
@@ -184,6 +195,7 @@ export const METHODOLOGY_ANCHOR = {
   roofing: { en: 'roofing', es: 'tejas' },
   'feet-inches': { en: 'feet-and-inches', es: 'pies-y-pulgadas' },
   'board-feet': { en: 'board-feet', es: 'pies-tablares' },
+  fence: { en: 'fence', es: 'cercas' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`, `7.5in` as `7.5 in`: the sizes read the same in both languages. */
@@ -286,6 +298,70 @@ const slabCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
       text('site.job.cost.col.installedLow'),
       text('site.job.cost.col.installedHigh'),
     ],
+    rows: [first, ...rest],
+    calculatorName: base.calculatorName,
+  };
+};
+
+/* Fence: the posts, rails, boards and 80 lb bags of a run, by the fence engine. */
+
+const fenceCatalogs = { en: createTranslator(enFence), es: createTranslator(esFence) };
+
+/** The rows of fence cases: the length, the calculator link and what the engine counts. */
+const fenceRows = (cases: Job['cases'], locale: Locale) =>
+  mapCases(cases, (raw): JobRow => {
+    const { posts, rails, boards, bags } = fenceMaterialsOf(raw);
+    return {
+      label: `${String(feetOf(raw))} ft`,
+      href: fenceHref(raw, locale),
+      cells: [posts, rails, boards, bags],
+    };
+  });
+
+/** The materials of each run of a fence job; the answer is the posts of the first. */
+export const fenceTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = fenceCatalogs[locale];
+  const rows = fenceRows(cases, locale);
+  const [first] = rows;
+  const [posts = '', ...rest] = first.cells;
+  const labels = [
+    calc('calc.fence.page.shoppingRails', { length: '8 ft' }),
+    calc('calc.fence.page.shoppingBoards', { length: '6 ft' }),
+    calc('calc.fence.page.shoppingBags'),
+  ];
+  return {
+    lead: `${calc('calc.fence.inputs.length')}: ${first.label}`,
+    answer: calc('calc.fence.page.posts', { value: posts }),
+    facts: labels.map((label, index) => ({ label, value: rest[index] ?? '' })),
+    columns: [calc('calc.fence.inputs.length'), calc('calc.fence.outputs.posts'), ...labels],
+    rows,
+    calculatorName: calc('calc.fence.title'),
+  };
+};
+
+/*
+ * What a fence costs: each run of the fence table priced by the foot at the lowest and the highest
+ * installed price of each material (`fence-cost.ts`); the answer is the range per linear foot of
+ * every material, the question the page answers.
+ */
+const fenceCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const text = siteText(locale);
+  const base = fenceTable(cases, locale);
+  const [first, ...rest] = base.rows.map((row, index): JobRow => ({
+    ...row,
+    cells: fenceCostOf(feetOf(cases[index] ?? {})),
+  }));
+  if (first === undefined) throw new Error('the fence cost page has no run');
+  const [low, high] = perFootRange();
+  const names = FENCE_MATERIALS.map((material) => text(`site.job.fenceCost.${material}`));
+  return {
+    lead: text('site.job.fenceCost.lead'),
+    answer: `${low}–${high} ${text('site.job.fenceCost.perFoot')}`,
+    facts: FENCE_MATERIALS.map((material, index) => ({
+      label: names[index] ?? '',
+      value: perFootRangeOf(material),
+    })),
+    columns: [base.columns[0], ...names],
     rows: [first, ...rest],
     calculatorName: base.calculatorName,
   };
@@ -935,6 +1011,7 @@ const TABLES = {
   roofing: roofingTable,
   'feet-inches': feetInchesTable,
   'board-feet': boardFeetTable,
+  fence: fenceTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
 /** The bag yields of the concrete chart, labelled as its bag columns are. */
@@ -1022,6 +1099,7 @@ const chartOf = (id: JobId, heading: string, locale: Locale): JobChart | undefin
 const tableOf = (id: JobId, locale: Locale): JobTable => {
   const { calculator, cases } = JOBS[id];
   if (id === 'concrete-slab-cost') return slabCostTable(cases, locale);
+  if (id === 'fence-cost') return fenceCostTable(cases, locale);
   const own = isChart(id) ? CHART_TABLES[id] : undefined;
   return (own ?? TABLES[calculator])(cases, locale);
 };
