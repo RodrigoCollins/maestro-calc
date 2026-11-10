@@ -1,4 +1,5 @@
 import type { Locale } from '@maestro-calc/i18n';
+import { enBoardFeet } from '@maestro-calc/i18n/catalogs/en/board-feet';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
@@ -11,6 +12,7 @@ import { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
 import { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
 import { enSite } from '@maestro-calc/i18n/catalogs/en/site';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
+import { esBoardFeet } from '@maestro-calc/i18n/catalogs/es/board-feet';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
@@ -23,6 +25,8 @@ import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esFeetInches } from '@maestro-calc/i18n/catalogs/es/feet-inches';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
+import { boardFeetPage } from '../calculator/board-feet/page.ts';
+import { boardFeetReserve } from '../calculator/board-feet/reserve.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
 import { drywallPage } from '../calculator/drywall/page.ts';
 import { drywallReserve } from '../calculator/drywall/reserve.ts';
@@ -152,6 +156,14 @@ export const PAGES = {
       es: { ...esCommon, ...esFeetInches, ...esSite },
     },
     reserve: feetInchesReserve,
+  },
+  'board-feet': {
+    module: boardFeetPage,
+    catalogs: {
+      en: { ...enCommon, ...enBoardFeet, ...enSite },
+      es: { ...esCommon, ...esBoardFeet, ...esSite },
+    },
+    reserve: boardFeetReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 

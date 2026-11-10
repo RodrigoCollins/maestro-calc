@@ -1,5 +1,6 @@
 export type { DimensionName, Dimensions, Exponents } from './dimension.ts';
 export {
+  bdft,
   cm,
   cm2,
   cm3,

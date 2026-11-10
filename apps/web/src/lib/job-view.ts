@@ -1,6 +1,15 @@
-import { encode, ft3, yd3, type OutputDescriptor } from '@maestro-calc/core';
+import {
+  encode,
+  ft3,
+  inch,
+  quantity,
+  yd3,
+  type OutputDescriptor,
+  type Rational,
+} from '@maestro-calc/core';
 import { concreteMix, type MaterialSource } from '@maestro-calc/data';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
+import { boardFeet } from '@maestro-calc/core/calculators/board-feet';
 import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { mulch } from '@maestro-calc/core/calculators/mulch';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
@@ -8,6 +17,7 @@ import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
+import { enBoardFeet } from '@maestro-calc/i18n/catalogs/en/board-feet';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
@@ -18,6 +28,7 @@ import { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
 import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { enRoofing } from '@maestro-calc/i18n/catalogs/en/roofing';
 import { enTopsoil } from '@maestro-calc/i18n/catalogs/en/topsoil';
+import { esBoardFeet } from '@maestro-calc/i18n/catalogs/es/board-feet';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
 import { esFeetInches } from '@maestro-calc/i18n/catalogs/es/feet-inches';
@@ -29,7 +40,13 @@ import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
 import { esRoofing } from '@maestro-calc/i18n/catalogs/es/roofing';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { sizeOf as mulchSize } from '../calculator/mulch/present.ts';
-import { groupedInteger, outputText, volumeText } from '../calculator/present.ts';
+import {
+  decimalText,
+  fieldText,
+  groupedInteger,
+  outputText,
+  volumeText,
+} from '../calculator/present.ts';
 import {
   isChartJob,
   isLandJob,
@@ -48,6 +65,7 @@ import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
 import { jobLinks } from './job-links.ts';
+import { dressedOf } from './lumber-sizes.ts';
 import { roofing } from './roofing.ts';
 import {
   IRC_R905,
@@ -165,6 +183,7 @@ export const METHODOLOGY_ANCHOR = {
   topsoil: { en: 'topsoil', es: 'tierra-para-jardin' },
   roofing: { en: 'roofing', es: 'tejas' },
   'feet-inches': { en: 'feet-and-inches', es: 'pies-y-pulgadas' },
+  'board-feet': { en: 'board-feet', es: 'pies-tablares' },
 } as const satisfies Record<JobCalculator, Record<Locale, string>>;
 
 /** `10ft` as `10 ft`, `7.5in` as `7.5 in`: the sizes read the same in both languages. */
@@ -819,6 +838,91 @@ const feetInchesTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/*
+ * Board feet: one cross-section at each stock length, by its nominal size (the board measure of
+ * PS 20-20) and by its dry dressed size (PS 20-20, Table 3), and its volume in cubic feet.
+ */
+
+const boardFeetCatalogs = { en: createTranslator(enBoardFeet), es: createTranslator(esBoardFeet) };
+
+const boardFeetState = (raw: JobCase) => {
+  const result = boardFeet.validate(raw);
+  if (!result.ok) throw new Error(`invalid job case: ${JSON.stringify(raw)}`);
+  return result.value;
+};
+
+/** The whole inches of a nominal size, `2in` as 2: a board feet case names whole nominal inches. */
+export const nominalOf = (value: string | undefined): number => {
+  const match = /^(\d+)in$/.exec(value ?? '');
+  if (match?.[1] === undefined)
+    throw new Error(`a board feet case gives whole inches: ${String(value)}`);
+  return Number(match[1]);
+};
+
+/** Inches as a tape and the standard write them: `1 1/2 in`, `3/4 in`, `11 1/4 in`. */
+export const inchText = (inches: Rational): string =>
+  fieldText(quantity(inches, inch), { defaultUnit: 'in', metricDefaultUnit: 'cm' }, 'imperial');
+
+/** The case at the dry dressed size of its nominal thickness and width (PS 20-20, Table 3). */
+export const dressedCase = (raw: JobCase): JobCase => {
+  const dressed = dressedOf(nominalOf(raw['thickness']), nominalOf(raw['width']));
+  return {
+    ...raw,
+    thickness: `${decimalText(dressed.thickness, 2, false)}in`,
+    width: `${decimalText(dressed.width, 2, false)}in`,
+  };
+};
+
+const boardFeetTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const calc = boardFeetCatalogs[locale];
+  const text = siteText(locale);
+  const total = outputOf(boardFeet.outputs, 'boardFeet', 'board feet');
+  const cubicFeet = outputOf(boardFeet.outputs, 'volumeFt3', 'board feet');
+  const cubicMeters = outputOf(boardFeet.outputs, 'volumeM3', 'board feet');
+  const rows = mapCases(cases, (raw): JobRow => {
+    const state = boardFeetState(raw);
+    const { outputs } = boardFeet.compute(state);
+    const dressed = boardFeet.compute(boardFeetState(dressedCase(raw))).outputs;
+    return {
+      label: sizeText(raw['length'] ?? ''),
+      href: `${pathOf('board-feet', locale)}?${encode(boardFeet, state, { unitSystem: 'imperial' })}`,
+      cells: [
+        outputText(total, outputs.boardFeet),
+        outputText(total, dressed.boardFeet),
+        outputText(cubicFeet, outputs.volumeFt3),
+      ],
+    };
+  });
+  const [raw] = cases;
+  const [nominal = '', atDressed = '', feet = ''] = rows[0].cells;
+  const { outputs } = boardFeet.compute(boardFeetState(raw));
+  const dressed = dressedOf(nominalOf(raw['thickness']), nominalOf(raw['width']));
+  const dressedSize = `${inchText(dressed.thickness)} × ${inchText(dressed.width)}`;
+  return {
+    lead: (['thickness', 'width', 'length'] as const)
+      .map((key) => `${calc(`calc.board-feet.inputs.${key}`)}: ${sizeText(raw[key] ?? '')}`)
+      .join(', '),
+    answer: calc('calc.board-feet.page.boardFeet', { value: nominal }),
+    facts: [
+      { label: text('site.job.board-feet.dressedSize'), value: dressedSize },
+      { label: text('site.job.board-feet.dressed'), value: atDressed },
+      { label: calc('calc.board-feet.outputs.volumeFt3'), value: feet },
+      {
+        label: calc('calc.board-feet.outputs.volumeM3'),
+        value: outputText(cubicMeters, outputs.volumeM3),
+      },
+    ],
+    columns: [
+      calc('calc.board-feet.inputs.length'),
+      text('site.job.board-feet.nominal'),
+      text('site.job.board-feet.dressed'),
+      calc('calc.board-feet.outputs.volumeFt3'),
+    ],
+    rows,
+    calculatorName: calc('calc.board-feet.title'),
+  };
+};
+
 const TABLES = {
   concrete: concreteTable,
   'roof-pitch': roofPitchTable,
@@ -830,6 +934,7 @@ const TABLES = {
   topsoil: topsoilTable,
   roofing: roofingTable,
   'feet-inches': feetInchesTable,
+  'board-feet': boardFeetTable,
 } as const satisfies Record<JobCalculator, (cases: Job['cases'], locale: Locale) => JobTable>;
 
 /** The bag yields of the concrete chart, labelled as its bag columns are. */

@@ -59,6 +59,33 @@ export const esSite = {
     'Las cifras suman un 10% por asentamiento, el valor inicial de la calculadora de tierra para jardín, y se redondean a bolsas enteras de 0.75 o 1.5 cu ft. Una yarda cúbica son 27 pies cúbicos. Cada profundidad abre la calculadora con sus valores ya cargados.',
   'site.job.note.roofing':
     'Las medidas son la planta del techo con sus aleros. Las cifras suman un 10% extra, el valor inicial de la calculadora de tejas, y se redondean a paquetes enteros, tres por cuadrado de 100 pies cuadrados, y a rollos enteros de fieltro sintético. Cada pendiente abre la calculadora con sus valores ya cargados.',
+  'site.job.note.board-feet':
+    'Las medidas son nominales, la medida del nombre de la madera, como cuenta los pies tablares la norma estadounidense de madera blanda: grosor y ancho en pulgadas, largo en pies. La columna cepillada toma la medida mínima seca de la tabla 3 de PS 20-20. Cada largo abre la calculadora con sus medidas puestas.',
+  'site.job.board-feet.nominal': 'Pies tablares, medida nominal',
+  'site.job.board-feet.dressed': 'Pies tablares, medida cepillada seca',
+  'site.job.board-feet.dressedSize': 'Medida cepillada seca (PS 20-20, tabla 3)',
+  'site.job.lumber.heading': 'Esta medida por pieza, por pie lineal y por millar',
+  'site.job.lumber.lead':
+    'Las madererías cobran la madera por pieza, por pie lineal o por pie tablar, y los aserraderos y mayoristas por millar de pies tablares. Estas cifras pasan esta medida a cada uno, con su medida nominal.',
+  'site.job.lumber.summary.0': 'Una pieza',
+  'site.job.lumber.summary.1': 'de',
+  'site.job.lumber.summary.2': 'ft de largo tiene',
+  'site.job.lumber.summary.3': 'pies tablares: cada pie lineal tiene',
+  'site.job.lumber.summary.4': 'pies tablares, y un pie tablar son',
+  'site.job.lumber.summary.5': 'pies lineales de ella. Una cuenta de 100 pies tablares son',
+  'site.job.lumber.summary.6':
+    'piezas de este largo, y 1,000 pies tablares (MBM, mil pies tablares, en PS 20-20) son',
+  'site.job.lumber.summary.7': 'piezas.',
+  'site.job.lumber.dressed.0': 'Con su medida cepillada seca de',
+  'site.job.lumber.dressed.1': ', la misma pieza tiene',
+  'site.job.lumber.dressed.2': 'pies tablares de madera, el',
+  'site.job.lumber.dressed.3':
+    'por ciento de su cuenta nominal. La cuenta y el precio por pie tablar siguen tomando la medida nominal.',
+  'site.job.lumber.perFoot': 'Pies tablares por pie lineal',
+  'site.job.lumber.linear': 'Pies lineales por pie tablar',
+  'site.job.lumber.hundred': 'Piezas en 100 pies tablares',
+  'site.job.lumber.thousand': 'Piezas en 1,000 pies tablares',
+  'site.job.lumber.pieces': 'Piezas de este largo',
   'site.job.note.feet-inches':
     'Cada medida se divide de forma exacta y solo se redondea lo que la página muestra: la cinta y los pies y pulgadas al 1/16 in más cercano, las pulgadas a dos decimales y los metros a tres. Cada número abre la calculadora con la medida ya cargada.',
   'site.job.tape': 'En la cinta (pulgadas, a 1/16)',
@@ -414,6 +441,15 @@ export const esSite = {
     'De 2 en 12 hasta 4 en 12, el IRC pide dos capas de fieltro debajo de las tejas asfálticas, y por debajo de 2 en 12 no las permite. La calculadora de tejas duplica los rollos en ese rango.',
   'site.job.guide.roofing.tip4':
     'El extra cubre la hilera de arranque, las tejas de cumbrera y limatesa, y los cortes en las limahoyas. Los clavos, el gotero, los tapajuntas y la barrera contra hielo van aparte, así que pídelos al proveedor junto con el pedido.',
+  'site.job.guide.board-feet.heading': 'Antes de pedir la madera',
+  'site.job.guide.board-feet.tip1':
+    'Revisa una cuenta o una factura con la medida nominal, 2 por 4 para un 2x4: PS 20-20 cuenta los pies tablares con ella. Usa la medida real solo para la madera que de verdad tiene la pieza, por ejemplo para su peso.',
+  'site.job.guide.board-feet.tip2':
+    'La madera viene en largos de pies pares, así que una lista de cortes de 7 ft se compra, y se cuenta, en piezas de 8 ft. Cuenta las piezas que compras, no las que cortas.',
+  'site.job.guide.board-feet.tip3':
+    'Compara precios por pie tablar solo entre la misma especie y el mismo grado. El precio de una pieza entre sus pies tablares da su precio por pie tablar.',
+  'site.job.guide.board-feet.tip4':
+    'La madera dura se vende muchas veces en bruto, con el grosor en cuartos de pulgada: 4/4 es 1 in y 8/4 es 2 in. Pregunta si la cuenta toma la medida en bruto o la cepillada.',
   'site.job.guide.feet-inches.heading': 'Antes de marcar y cortar',
   'site.job.guide.feet-inches.tip1':
     'Marca con la columna de la cinta, no con los decimales. Redondea al 1/16 in más cercano, la marca más chica de casi todas las cintas, que es lo más fino que suele salir un corte.',
@@ -472,6 +508,11 @@ export const esSite = {
   'site.job.worked.gravel.weightLoose': 'Peso suelto, a 2,580 lb por yarda cúbica (WisDOT)',
   'site.job.worked.gravel.tons': 'En toneladas cortas de 2,000 lb',
   'site.job.worked.gravel.order': 'Yardas cúbicas sueltas que pedir, a 2,580 lb por yarda cúbica',
+  'site.job.worked.board-feet.nominal':
+    'Pies tablares con la medida nominal, como se cuenta la madera',
+  'site.job.worked.board-feet.dressed': 'Pies tablares de madera con la medida cepillada seca',
+  'site.job.worked.board-feet.volume':
+    'En pies cúbicos, 12 pies tablares por pie cúbico, y en metros cúbicos',
   'site.job.worked.feet-inches.inches': 'La medida en pulgadas, 12 in por pie',
   'site.job.worked.feet-inches.divide': 'Dividida en partes iguales',
   'site.job.worked.feet-inches.tape':
@@ -588,6 +629,8 @@ export const esSite = {
   'page.home.cards.feet-inches.title': 'Calculadora de pies y pulgadas',
   'page.home.cards.feet-inches.summary':
     'Suma, resta, multiplica o divide medidas de cinta, al 1/16 de pulgada.',
+  'page.home.cards.board-feet.title': 'Calculadora de pies tablares',
+  'page.home.cards.board-feet.summary': 'Pies tablares y costo del lote.',
   'page.home.hubs': 'Por oficio',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
@@ -596,23 +639,23 @@ export const esSite = {
   'page.home.ctaAll': 'Ver todas las calculadoras',
   'page.home.share.title': 'Manda la lista a tu equipo',
   'page.home.share.text':
-    'Cada resultado tiene un enlace con tus números, un botón de WhatsApp y una vista para imprimir.',
+    'Cada resultado tiene un enlace con tus números, WhatsApp y vista para imprimir.',
   'page.home.sample': 'Losa de concreto',
   'page.home.calculators': 'Calculadoras',
   'page.home.guides': 'Guías para la obra',
   'page.home.trust': 'Cómo sacamos los números',
   'page.home.trust.sources.title': 'Fuentes en cada página',
   'page.home.trust.sources.text':
-    'Los rendimientos de las bolsas salen de las hojas técnicas de los fabricantes, y las pendientes de techo, del IRC.',
+    'Los rendimientos salen de las fichas de los fabricantes; las pendientes, del IRC.',
   'page.home.trust.math.title': 'Cuentas exactas',
   'page.home.trust.math.text':
-    'Las fracciones se mantienen exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
+    'Las fracciones quedan exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
   'page.home.trust.languages.title': 'Inglés y español',
   'page.home.trust.languages.text':
-    'Los mismos números en los dos idiomas, con los términos que se usan en las obras de EE. UU.',
+    'Los mismos números en los dos idiomas, con los términos de obra de EE. UU.',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
-    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y calcula qué comprar.',
+    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe qué comprar.',
   'page.methodology.title': 'Metodología | Maestro Calc',
   'page.methodology.description':
     'Cómo Maestro Calc calcula cada número: aritmética exacta, fórmulas probadas, fuentes citadas y un proceso de correcciones abierto.',
@@ -691,6 +734,9 @@ export const esSite = {
   'page.guide-paint-coverage.title': '¿Cuánto cubre un galón de pintura? | Maestro Calc',
   'page.guide-paint-coverage.description':
     'Un galón de pintura látex de interior cubre de 350 a 400 pies cuadrados por mano: el rendimiento según las manos y las latas para un cuarto de 12x12.',
+  'page.guide-board-feet.title': 'Cómo calcular pies tablares, con ejemplos | Maestro Calc',
+  'page.guide-board-feet.description':
+    'Cómo calcular pies tablares: grosor × ancho en pulgadas × largo en pies ÷ 12. Ejemplos de un 2x4, un 2x6, un 4x4 y madera dura, nominal y cepillada.',
   'page.guide-gravel-coverage.title': '¿Cuánto cubre una tonelada de grava? | Maestro Calc',
   'page.guide-gravel-coverage.description':
     'Una tonelada de grava compactada cubre unos 88 pies cuadrados con 2 in, 59 con 3 in y 44 con 4 in: el rendimiento por profundidad, suelta también.',
@@ -1415,6 +1461,44 @@ export const esSite = {
   'page.feet-inches.title': 'Calculadora de pies y pulgadas con decimales | Maestro Calc',
   'page.feet-inches.description':
     'Convierte pies decimales a pies y pulgadas al 1/16, como 11.65 ft = 11 ft 7 13/16 in. También suma, resta, multiplica o divide medidas de la cinta. Gratis.',
+  'page.board-feet-2x4x8.title': '¿Cuántos pies tablares tiene un 2x4x8? 5.33 | Maestro Calc',
+  'page.board-feet-2x4x8.description':
+    'Un 2x4x8 tiene 5.33 pies tablares: 2 × 4 × 8 ÷ 12. Cepillado seco, 1 1/2 por 3 1/2 in, tiene 3.50. Cada largo de 2x4 de 8 a 16 ft.',
+  'page.board-feet-2x4x8.heading': '¿Cuántos pies tablares tiene un 2x4x8?',
+  'page.board-feet-2x4x8.label': '2x4x8',
+  'page.board-feet-2x4x8.intro':
+    'Un 2x4 de 8 ft de largo es la pieza con que empieza casi todo el armado de una pared, y la que se usa para revisar casi cualquier cuenta de madera. Sus pies tablares salen de la medida de su nombre, no de las 1 1/2 por 3 1/2 in que mide la pieza.',
+  'page.board-feet-2x6x10.title': '¿Cuántos pies tablares tiene un 2x6x10? 10 | Maestro Calc',
+  'page.board-feet-2x6x10.description':
+    'Un 2x6 de 10 ft tiene exactamente 10 pies tablares: 2 × 6 × 10 ÷ 12. Cepillado, 1 1/2 por 5 1/2 in, tiene 6.88. Cada largo de 2x6 de 8 a 16 ft.',
+  'page.board-feet-2x6x10.heading': '¿Cuántos pies tablares tiene un 2x6x10?',
+  'page.board-feet-2x6x10.label': '2x6x10',
+  'page.board-feet-2x6x10.intro':
+    'Un 2x6 tiene un pie tablar por cada pie lineal, porque 2 × 6 son 12. Eso hace de un 2x6 de 10 ft una revisión fácil: sus pies tablares son iguales a su largo en pies, 10.',
+  'page.board-feet-4x4x8.title': '¿Cuántos pies tablares tiene un 4x4x8? 10.67 | Maestro Calc',
+  'page.board-feet-4x4x8.description':
+    'Un poste 4x4x8 tiene 10.67 pies tablares: 4 × 4 × 8 ÷ 12. Cepillado, 3 1/2 por 3 1/2 in, tiene 8.17. Cada largo de 4x4 de 8 a 16 ft.',
+  'page.board-feet-4x4x8.heading': '¿Cuántos pies tablares tiene un 4x4x8?',
+  'page.board-feet-4x4x8.label': '4x4x8',
+  'page.board-feet-4x4x8.intro':
+    'Un 4x4 es un poste: sobre uno se apoya una terraza, una cerca o un buzón. Es el doble de grueso que un 2x4 del mismo ancho, así que un 4x4 de 8 ft tiene el doble de pies tablares que un 2x4x8.',
+  'page.board-feet-1x6x8.title': '¿Cuántos pies tablares tiene un 1x6x8? 4 | Maestro Calc',
+  'page.board-feet-1x6x8.description':
+    'Una tabla 1x6 de 8 ft tiene exactamente 4 pies tablares: 1 × 6 × 8 ÷ 12. Cepillada, 3/4 por 5 1/2 in, tiene 2.75. Cada largo de 1x6 de 8 a 16 ft.',
+  'page.board-feet-1x6x8.heading': '¿Cuántos pies tablares tiene un 1x6x8?',
+  'page.board-feet-1x6x8.label': '1x6x8',
+  'page.board-feet-1x6x8.intro':
+    'Un 1x6 es una tabla, no madera de construcción: de ella salen tablas de cerca, molduras y repisas. Las tablas se cuentan de 1 in de grosor por su medida nominal, así que un 1x6 tiene medio pie tablar por pie lineal.',
+  'page.board-feet-2x12x12.title': 'Pies tablares de un 2x12 de 12 ft: 24 | Maestro Calc',
+  'page.board-feet-2x12x12.description':
+    'Un 2x12 de 12 ft tiene exactamente 24 pies tablares: 2 × 12 × 12 ÷ 12. Cepillado, 1 1/2 por 11 1/4 in, tiene 16.88. Cada largo de 8 a 16 ft.',
+  'page.board-feet-2x12x12.heading': '¿Cuántos pies tablares tiene un 2x12 de 12 ft?',
+  'page.board-feet-2x12x12.label': '2x12x12',
+  'page.board-feet-2x12x12.intro':
+    'Un 2x12 es la madera de construcción común más ancha, la medida de las zancas de escalera y de las vigas y dinteles altos. Una pieza de 2 in por 12 in tiene dos pies tablares por pie lineal, así que un 2x12 de 12 ft tiene 24.',
+  'page.board-feet.title': 'Calculadora de pies tablares para madera | Maestro Calc',
+  'page.board-feet.description':
+    'Calcula los pies tablares de la madera: grosor × ancho (in) × largo (ft) ÷ 12, como lo define la norma de madera de EE. UU. Un 2x4x8 tiene 5.33. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

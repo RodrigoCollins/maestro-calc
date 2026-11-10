@@ -514,4 +514,45 @@ export const METHODOLOGY_ROWS = {
       { query: '?v=1&o=fit', figures: ['1 ft 5 1/4 in', '17.25', '0.438'] },
     ],
   },
+  'board-feet': {
+    anchor: { en: 'board-feet', es: 'pies-tablares' },
+    pageLink: {
+      en: '[board feet calculator](/board-feet-calculator)',
+      es: '[calculadora de pies tablares](/es/calculadora-de-pies-tablares)',
+    },
+    formulas: {
+      en: [
+        'thickness × width × length ÷ 12',
+        'board feet of one piece × pieces',
+        'board feet ÷ 12',
+        'board feet × price per board foot',
+      ],
+      es: [
+        'grosor × ancho × largo ÷ 12',
+        'pies tablares de una pieza × piezas',
+        'pies tablares ÷ 12',
+        'pies tablares × precio por pie tablar',
+      ],
+    },
+    honesty: {
+      en: [/nominal size/i, /PS 20-20/, /exactly 144 cubic inches/],
+      es: [/medida nominal/i, /PS 20-20/, /exactamente 144 pulgadas cúbicas/],
+    },
+    columns: ['boardFeet', 'boardFeetEach', 'volumeFt3', 'volumeM3'],
+    figuresOf: (shown) => [
+      figure(shown, 'boardFeet'),
+      figure(shown, 'boardFeetEach'),
+      figure(shown, 'volumeFt3'),
+      figure(shown, 'volumeM3'),
+    ],
+    published: [
+      { query: '', figures: ['5.33', '5.33', '0.44', '0.013'] },
+      { query: '?v=1&w=6&l=120', figures: ['10.00', '10.00', '0.83', '0.024'] },
+      { query: '?v=1&t=4', figures: ['10.67', '10.67', '0.89', '0.025'] },
+      { query: '?v=1&t=1&w=6', figures: ['4.00', '4.00', '0.33', '0.009'] },
+      { query: '?v=1&w=12&l=144', figures: ['24.00', '24.00', '2.00', '0.057'] },
+      { query: '?v=1&t=3/2&w=7/2', figures: ['3.50', '3.50', '0.29', '0.008'] },
+      { query: '?v=1&n=10', figures: ['53.33', '5.33', '4.44', '0.126'] },
+    ],
+  },
 } as const satisfies Readonly<Record<CalculatorPageId, MethodologyRow>>;

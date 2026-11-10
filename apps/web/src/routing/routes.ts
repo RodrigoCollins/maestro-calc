@@ -94,6 +94,10 @@ export const ROUTES = {
     en: '/guides/how-much-does-a-gallon-of-paint-cover',
     es: '/es/guias/cuanto-cubre-un-galon-de-pintura',
   },
+  'guide-board-feet': {
+    en: '/guides/how-to-calculate-board-feet',
+    es: '/es/guias/como-calcular-pies-tablares',
+  },
   'guide-gravel-coverage': {
     en: '/guides/how-much-does-a-ton-of-gravel-cover',
     es: '/es/guias/cuanto-cubre-una-tonelada-de-grava',
@@ -408,6 +412,26 @@ export const ROUTES = {
     en: '/measurement/decimal-feet-to-feet-and-inches-chart',
     es: '/es/medidas/tabla-de-pies-decimales-a-pies-y-pulgadas',
   },
+  'board-feet-2x4x8': {
+    en: '/measurement/how-many-board-feet-in-a-2x4x8',
+    es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x4x8',
+  },
+  'board-feet-2x6x10': {
+    en: '/measurement/how-many-board-feet-in-a-2x6x10',
+    es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x6x10',
+  },
+  'board-feet-4x4x8': {
+    en: '/measurement/how-many-board-feet-in-a-4x4x8',
+    es: '/es/medidas/cuantos-pies-tablares-tiene-un-4x4x8',
+  },
+  'board-feet-1x6x8': {
+    en: '/measurement/how-many-board-feet-in-a-1x6x8',
+    es: '/es/medidas/cuantos-pies-tablares-tiene-un-1x6x8',
+  },
+  'board-feet-2x12x12': {
+    en: '/measurement/how-many-board-feet-in-a-2x12x12',
+    es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x12x12',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
@@ -424,6 +448,7 @@ export const ROUTES = {
     en: '/feet-and-inches-calculator',
     es: '/es/calculadora-de-pies-y-pulgadas',
   },
+  'board-feet': { en: '/board-feet-calculator', es: '/es/calculadora-de-pies-tablares' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

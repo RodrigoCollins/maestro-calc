@@ -30,6 +30,7 @@ export const TRUST_IDS = [
   'guide-concrete-bag-coverage',
   'guide-paint-coverage',
   'guide-gravel-coverage',
+  'guide-board-feet',
   'hub-concrete',
   'hub-roofing',
   'hub-drywall',
@@ -151,6 +152,14 @@ export const WORKED_EXAMPLES = {
     result: z.string().regex(/^(\d+ ft)?( ?\d+( \d+\/\d+)? in)?$/, 'feet and inches'),
     resultIn: decimalText,
     resultM: z.string().regex(/^\d+\.\d{3}$/, 'a decimal with three places'),
+  }),
+  'board-feet': z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    boardFeet: decimalText,
+    each: decimalText,
+    ft3: decimalText,
+    m3: z.string().regex(/^\d+\.\d{3}$/, 'a decimal with three places'),
+    cost: z.string().regex(/^\$\d{1,3}(,\d{3})*\.\d{2}$/, 'a dollar amount'),
   }),
 };
 

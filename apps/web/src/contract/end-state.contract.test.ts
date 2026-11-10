@@ -42,6 +42,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'guide-cubic-yards',
       'guide-concrete-bag-coverage',
       'guide-paint-coverage',
+      'guide-board-feet',
       'guide-gravel-coverage',
       'hub-concrete',
       'hub-roofing',
@@ -134,6 +135,11 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'divide-9-ft-6-in-by-2',
       'divide-3-ft-9-in-by-2',
       'decimal-feet-chart',
+      'board-feet-2x4x8',
+      'board-feet-2x6x10',
+      'board-feet-4x4x8',
+      'board-feet-1x6x8',
+      'board-feet-2x12x12',
       'concrete',
       'rectangle-area',
       'gravel',
@@ -144,11 +150,12 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roof-pitch',
       'roofing',
       'feet-inches',
+      'board-feet',
     ]);
-    expect(staticPaths()).toHaveLength(258);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(258);
+    expect(staticPaths()).toHaveLength(272);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(272);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(260);
+    expect(pageCount(ROUTES)).toBe(274);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -166,6 +173,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roof-pitch',
       'roofing',
       'feet-inches',
+      'board-feet',
     ]);
     expect(PAGELESS).toEqual([]);
   });
@@ -179,19 +187,19 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(260);
+      ).toHaveLength(274);
     },
   );
 
   // spec: trust-pages › [TP1], site-routing-i18n › [SR19]
   // two entries per calculator page: eighty-six content entries in all
   it('has sixty-six trust entries and twenty calculator entries', () => {
-    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(66);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
+    expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(68);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(22);
   });
 
   // spec: site-seo › [SE10]
   it('lists two hundred and fifty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(258);
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(272);
   });
 });

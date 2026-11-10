@@ -40,6 +40,7 @@ describe('pageSchema', () => {
       'guide-concrete-bag-coverage',
       'guide-paint-coverage',
       'guide-gravel-coverage',
+      'guide-board-feet',
       'hub-concrete',
       'hub-roofing',
       'hub-drywall',
@@ -117,6 +118,7 @@ describe('calculatorSchema', () => {
     'roof-pitch',
     'roofing',
     'feet-inches',
+    'board-feet',
   ]);
 
   it('parses a valid entry and keeps every field', () => {
@@ -257,6 +259,7 @@ describe('calculatorSchema', () => {
       'roof-pitch',
       'roofing',
       'feet-inches',
+      'board-feet',
       'asphalt',
     ]);
     const result = open.safeParse({ ...calculator, id: 'asphalt' });

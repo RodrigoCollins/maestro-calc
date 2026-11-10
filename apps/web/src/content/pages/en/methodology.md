@@ -258,6 +258,31 @@ Hand-verified cases. The automated tests run these cases through the calculator 
 | 20 ft ÷ 7 in: 34 pieces (34.28), what is left (`?v=1&o=fit&a=240&b=7`)   | 2 in            | 2.00   | 0.051  |
 | 12 ft 6 in ÷ 3 ft 8 1/4 in: 3 pieces (3.38), what is left (`?v=1&o=fit`) | 1 ft 5 1/4 in   | 17.25  | 0.438  |
 
+<h2 id="board-feet">Board feet calculator</h2>
+
+The [board feet calculator](/board-feet-calculator) gives the board measure of a piece of lumber from its thickness and width in inches and its length in feet, multiplies it by the number of pieces, and prices the total when you type a price per board foot. Every size is kept as an exact number, and the figures are rounded only when they are shown.
+
+The formulas:
+
+- Board feet of one piece = thickness × width × length ÷ 12, with the thickness and the width in inches and the length in feet.
+- Board feet of the lot = board feet of one piece × pieces.
+- Cubic feet = board feet ÷ 12, because one board foot is 1 in × 12 in × 12 in, exactly 144 cubic inches, or 1/12 of a cubic foot.
+- Cost = board feet × price per board foot.
+
+The rule is the board measure of DOC PS 20-20, the American Softwood Lumber Standard (section 2.2): the nominal thickness in inches times the nominal width in feet times the length in feet. Dividing the width in inches by 12 gives the width in feet, which is where the ÷ 12 comes from. The calculator multiplies the sizes you type: type the nominal size (2 in by 4 in for a 2x4) to match how a lumberyard tallies softwood, or the measured size for the wood actually in the piece; PS 20-20, Table 3, lists the dressed sizes (a dry 2x4 is 1 1/2 in by 3 1/2 in). Board feet and cubic feet show two decimal places and cubic meters three, with 1 in = 0.0254 m exactly (NIST SP 811, Appendix B).
+
+Hand-verified cases. The automated tests run these cases through the calculator and compare every figure below with the result.
+
+| Case                                                                    | Board feet | Each  | Cubic feet | Cubic meters |
+| ----------------------------------------------------------------------- | ---------- | ----- | ---------- | ------------ |
+| One 2x4x8 (starting values)                                             | 5.33       | 5.33  | 0.44       | 0.013        |
+| One 2x6, 10 ft long (`?v=1&w=6&l=120`)                                  | 10.00      | 10.00 | 0.83       | 0.024        |
+| One 4x4x8 (`?v=1&t=4`)                                                  | 10.67      | 10.67 | 0.89       | 0.025        |
+| One 1x6x8 (`?v=1&t=1&w=6`)                                              | 4.00       | 4.00  | 0.33       | 0.009        |
+| One 2x12, 12 ft long (`?v=1&w=12&l=144`)                                | 24.00      | 24.00 | 2.00       | 0.057        |
+| A 2x4x8 at its dry dressed size, 1 1/2 by 3 1/2 in (`?v=1&t=3/2&w=7/2`) | 3.50       | 3.50  | 0.29       | 0.008        |
+| Ten 2x4x8 (`?v=1&n=10`)                                                 | 53.33      | 5.33  | 4.44       | 0.126        |
+
 ## Corrections
 
 If you find a mistake, tell us. The [corrections section of the about page](/about#corrections) explains how to report it and how we log the fix.

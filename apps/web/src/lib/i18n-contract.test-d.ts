@@ -1,5 +1,6 @@
 import type { AllErrorCode, messageKeysOf, MessageKeysOf } from '@maestro-calc/core';
 import type { concreteMix } from '@maestro-calc/data';
+import type { enBoardFeet } from '@maestro-calc/i18n/catalogs/en/board-feet';
 import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
@@ -28,7 +29,8 @@ type EnglishKeys =
   | keyof typeof enDrywall
   | keyof typeof enRoofPitch
   | keyof typeof enRoofing
-  | keyof typeof enFeetInches;
+  | keyof typeof enFeetInches
+  | keyof typeof enBoardFeet;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -99,6 +101,15 @@ type FeetInchesPageKeys =
   | 'calc.feet-inches.page.answer.fit'
   | 'calc.feet-inches.page.answer.fitOne'
   | 'calc.feet-inches.page.answer.zeroPiece';
+
+/** The page copy of the board feet calculator (`calc.board-feet.page.*`), exactly: a new key is added here. */
+type BoardFeetPageKeys =
+  | 'calc.board-feet.page.example'
+  | 'calc.board-feet.page.boardFeet'
+  | 'calc.board-feet.page.priceHint'
+  | 'calc.board-feet.page.answer.one'
+  | 'calc.board-feet.page.answer.many'
+  | 'calc.board-feet.page.drawing.note';
 
 /** The page copy of the roofing calculator (`calc.roofing.page.*`), exactly: a new key is added here. */
 type RoofingPageKeys =
@@ -184,6 +195,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | RoofPitchPageKeys
       | RoofingPageKeys
       | FeetInchesPageKeys
+      | BoardFeetPageKeys
       | TopsoilPageKeys
     >();
   });
@@ -220,5 +232,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enFeetInches, `calc.feet-inches.page.${string}`>
     >().toEqualTypeOf<FeetInchesPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enBoardFeet, `calc.board-feet.page.${string}`>
+    >().toEqualTypeOf<BoardFeetPageKeys>();
   });
 });

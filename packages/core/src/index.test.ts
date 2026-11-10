@@ -26,6 +26,7 @@ describe('core public API (design: Public API)', () => {
       'add',
       'addMoney',
       'arctangentDegrees',
+      'bdft',
       'booleanInput',
       'ceilToPurchaseUnits',
       'circleArea',

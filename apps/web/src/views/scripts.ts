@@ -1,4 +1,5 @@
 import type { AstroComponentFactory } from 'astro/runtime/server/index.js';
+import BoardFeetScript from '../islands/BoardFeetScript.astro';
 import ConcreteScript from '../islands/ConcreteScript.astro';
 import DrywallScript from '../islands/DrywallScript.astro';
 import GravelScript from '../islands/GravelScript.astro';
@@ -26,4 +27,5 @@ export const SCRIPTS = {
   'roof-pitch': RoofPitchScript,
   roofing: RoofingScript,
   'feet-inches': FeetInchesScript,
+  'board-feet': BoardFeetScript,
 } as const satisfies Record<CalculatorPageId, AstroComponentFactory>;

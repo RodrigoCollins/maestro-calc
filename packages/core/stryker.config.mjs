@@ -178,7 +178,7 @@ export const shards = {
   // calculator directory is in its identity): it gets the three smallest calculators, so its cold
   // run stays short. A new calculator joins the group with the least source.
   ...calculatorGroups({
-    'calculators-1': ['rectangle-area', 'feet-inches', 'roof-pitch'],
+    'calculators-1': ['rectangle-area', 'feet-inches', 'roof-pitch', 'board-feet'],
     'calculators-2': ['concrete', 'paint'],
     'calculators-3': ['drywall', 'roofing'],
     'calculators-4': ['gravel', 'mulch', 'topsoil'],
