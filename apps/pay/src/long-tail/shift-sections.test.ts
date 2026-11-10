@@ -144,7 +144,7 @@ describe('the sections of a shift page', () => {
     expect(nine).toContain('and 5 reach the 35 hours');
     expect(eight).toContain('4 a week reach the 30 hours');
     expect(textOf(sectionOf('9:00-17:00', 'week', 'es'))).toContain(
-      '4 turnos de 9 am a 5 pm a la semana llegan a las 30 horas del IRS',
+      '4 turnos de 9 am a 5 pm llegan a las 30 horas semanales del IRS',
     );
   });
 
@@ -390,6 +390,17 @@ describe('the sections of a shift page', () => {
     expect(textOf(sectionOf('22:00-6:00', 'breaks', 'es'))).toContain(
       'En Nueva York, de 10 pm a 6 am dura más de 6 horas y empieza entre la 1 pm y las 6 am, así que da derecho a 45 minutos como mínimo (60 en una fábrica) a la mitad del turno, hacia las 2 am.',
     );
+    // rounding and clocking out in Spanish: the rule in a clause, the shift's own times kept
+    const rounding = textOf(sectionOf('7:00-17:00', 'rounding', 'es'));
+    expect(rounding).toContain('Es legal si con el tiempo te pagan todo (29 CFR 785.48).');
+    const out = textOf(sectionOf('7:00-17:00', 'clock-out', 'es'));
+    expect(out).toContain('Si sales a las 5 pm, el descanso sin pago te deja con menos de 10 horas');
+    // the Spanish says the federal rule and the state count in few words, shared by every page
+    const es = textOf(sectionOf('7:00-17:00', 'breaks', 'es'));
+    expect(es).toContain(
+      'La ley federal no exige una pausa para comer: las pausas de 5 a 20 minutos se pagan (29 CFR 785.18) y solo una comida libre de 30 minutos o más se resta de las 10 horas de 7 am a 5 pm (29 CFR 785.19).',
+    );
+    expect(es).toContain('la tabla del Departamento de Trabajo (1 de enero de 2023) la pide en 15 estados');
     const hrefs = longTailPageOf(shiftOf('9:00-17:00'), 'en').sources?.map(({ href }) => href);
     expect(hrefs).toContain(SOURCES.nyMeal.href);
   });

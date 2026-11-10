@@ -4,6 +4,7 @@ import { noTaxOnOvertime } from '@maestro-calc/pay-core/no-tax-on-overtime';
 import { noTaxOnTips } from '@maestro-calc/pay-core/no-tax-on-tips';
 import { moneyText } from '../format.ts';
 import { DEDUCTION_PATHS, DEDUCTION_TEXTS, type Deduction } from '../deductions/texts.ts';
+import { workedOf } from '../deductions/worked.ts';
 import { GUIDE_PATHS, GUIDE_TEXTS } from '../guide/texts.ts';
 import { W2_BOX_12_GUIDE, W2_BOX_12_GUIDE_PATHS } from '../guide/w2-box-12.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
@@ -52,6 +53,7 @@ const fields = t.fields.map((field) => {
   };
 });
 const script = deduction === 'overtime' ? 'overtime' : 'tips';
+const worked = workedOf(deduction, lang);
 ---
 
 <SiteLayout
@@ -127,6 +129,16 @@ const script = deduction === 'overtime' ? 'overtime' : 'tips';
         {t.source.label}
       </a>
     </p>
+    {!embed && (
+      <div class="prose explained">
+        <section aria-labelledby="worked-heading">
+          <h2 id="worked-heading">{worked.heading}</h2>
+          {worked.paragraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </section>
+      </div>
+    )}
     <p class="note">
       <a href={GUIDE_PATHS[lang]}>{GUIDE_TEXTS[lang].linkLabel}</a>
     </p>
