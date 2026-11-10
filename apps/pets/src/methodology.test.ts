@@ -15,6 +15,7 @@ describe('the methodology cases', () => {
       'dog-due-date',
       'dog-age',
       'cat-age',
+      'puppy-weight',
     ]);
     for (const { cases: list, id } of METHOD_SECTIONS) expect(list.length, id).toBeGreaterThan(2);
   });
@@ -62,7 +63,22 @@ describe('the methodology sections', () => {
       'dog-due-date': '2026-11-07',
       'dog-age': '2026-11-08',
       'cat-age': '2026-11-09',
+      'puppy-weight': '2026-11-10',
     });
+  });
+
+  it('work a puppy’s adult weight on the WALTHAM table, and say what it cannot know', () => {
+    const puppy = METHOD_SECTIONS.find(({ id }) => id === 'puppy-weight');
+    expect(puppy?.href).toBe('/puppy-weight-calculator');
+    expect(puppy?.cases.map(({ key, result }) => `${key}=${result}`)).toEqual([
+      'adult=60',
+      'low=57',
+      'adult=20',
+      'adult=21.1',
+      'adult=100',
+    ]);
+    expect(puppy?.note).toContain('mixed');
+    expect(LEFT_OUT.map(({ what }) => what)).not.toContain('Puppy adult-weight estimates');
   });
 
   it('work a cat age through the table, back from a human age, and by Cornell', () => {

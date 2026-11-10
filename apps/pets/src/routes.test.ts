@@ -26,6 +26,7 @@ describe('ROUTES', () => {
       ['due-date', '/dog-pregnancy-calculator'],
       ['dog-age', '/dog-age-calculator'],
       ['cat-age', '/cat-age-calculator'],
+      ['puppy-weight', '/puppy-weight-calculator'],
       ['charts', '/charts'],
       ['dog-chart', '/dog-feeding-chart'],
       ['puppy-chart', '/puppy-feeding-chart'],
@@ -199,9 +200,9 @@ describe('ROUTES', () => {
     expect(new Set(ROUTES.map(({ path }) => path)).size).toBe(ROUTES.length);
   });
 
-  it('names the home, eight calculators, and every other page an article', () => {
+  it('names the home, nine calculators, and every other page an article', () => {
     expect(routeOf('/')?.kind).toBe('home');
-    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(8);
+    expect(ROUTES.filter(({ kind }) => kind === 'calculator')).toHaveLength(9);
     expect(routeOf('/methodology')?.kind).toBe('article');
     expect(routeOf('/no-such-page')).toBeUndefined();
   });

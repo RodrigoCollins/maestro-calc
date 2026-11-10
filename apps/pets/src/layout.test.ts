@@ -4,7 +4,7 @@ import { footerLinks, LAYOUT_TEXTS, navLinks } from './layout.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the header and footer', () => {
-  it('link the eight calculators people come for, as the header', () => {
+  it('link the nine calculators people come for, as the header', () => {
     expect(navLinks().map(({ href }) => href)).toEqual([
       '/dog-food-calculator',
       '/cat-food-calculator',
@@ -14,6 +14,7 @@ describe('the header and footer', () => {
       '/dog-pregnancy-calculator',
       '/dog-age-calculator',
       '/cat-age-calculator',
+      '/puppy-weight-calculator',
     ]);
   });
 

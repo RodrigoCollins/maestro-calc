@@ -64,13 +64,16 @@ export const jsonLdOf = (
   const name = nameOf(page.title);
   const node =
     kind === 'calculator'
-      ? webApplicationLd({
-          name,
-          description,
-          url,
-          inLanguage,
-          applicationCategory: 'LifestyleApplication',
-        })
+      ? {
+          ...webApplicationLd({
+            name,
+            description,
+            url,
+            inLanguage,
+            applicationCategory: 'LifestyleApplication',
+          }),
+          ...(page.modified === undefined ? {} : { dateModified: page.modified }),
+        }
       : articleLd({
           headline: name,
           description,

@@ -16,6 +16,7 @@ const NAV: readonly NavLink[] = [
   { id: 'due-date', label: 'Due date' },
   { id: 'dog-age', label: 'Dog age' },
   { id: 'cat-age', label: 'Cat age' },
+  { id: 'puppy-weight', label: 'Puppy weight' },
 ];
 
 /** The footer: the data, the guides and the pages about the site. */

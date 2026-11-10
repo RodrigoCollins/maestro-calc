@@ -19,6 +19,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'due-date', kind: 'calculator', path: '/dog-pregnancy-calculator' },
   { id: 'dog-age', kind: 'calculator', path: '/dog-age-calculator' },
   { id: 'cat-age', kind: 'calculator', path: '/cat-age-calculator' },
+  { id: 'puppy-weight', kind: 'calculator', path: '/puppy-weight-calculator' },
   { id: 'charts', kind: 'article', path: '/charts' },
   { id: 'dog-chart', kind: 'article', path: '/dog-feeding-chart' },
   { id: 'puppy-chart', kind: 'article', path: '/puppy-feeding-chart' },

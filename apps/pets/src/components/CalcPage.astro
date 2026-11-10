@@ -2,9 +2,12 @@
 import type { FeedingPage } from '../calc/dog.ts';
 import { CALL_NOW, POISON_LINE } from '../calc/chocolate.ts';
 import { patchOf, type AnyCalculator, type View } from '../calc/view.ts';
+import type { CalcArticle } from '../guides.ts';
 import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
 import Layout from './Layout.astro';
 import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
 
 interface Props {
   readonly page: FeedingPage & {
@@ -12,18 +15,23 @@ interface Props {
     readonly outside?: string;
     readonly wangOutside?: string;
     readonly cornellOutside?: string;
+    readonly early?: string;
+    readonly grown?: string;
+    readonly outsideClass?: string;
   };
   readonly calculator: AnyCalculator;
   readonly view: View;
   /** What the result looks like: the bowl, the bowl with a can, the chocolate ruler, the calendar strip or an age figure. */
-  readonly kind: 'dog' | 'cat' | 'chocolate' | 'due-date' | 'dog-age' | 'cat-age';
+  readonly kind: 'dog' | 'cat' | 'chocolate' | 'due-date' | 'dog-age' | 'cat-age' | 'puppy-weight';
   /** Other pages worth a click from this one: their address and label. */
   readonly related?: readonly { readonly href: string; readonly label: string }[];
   /** The line of the methodology that works this calculator out. */
   readonly method: string;
+  /** The sourced article under the result, with the byline under the h1 that dates it. */
+  readonly article?: CalcArticle;
 }
 
-const { page, calculator, view, kind, related = [], method } = Astro.props;
+const { page, calculator, view, kind, related = [], method, article } = Astro.props;
 // The page renders the result of its starting values, so it reads complete with no script.
 const patch = patchOf(calculator, view, page.initial);
 if (patch === undefined) throw new Error(`${calculator.id} must run at its starting values`);
@@ -40,10 +48,15 @@ const fields = calculator.inputs.map((input) => {
 });
 ---
 
-<Layout title={page.title} description={page.description}>
+<Layout
+  title={page.title}
+  description={page.description}
+  {...(article === undefined ? {} : { modified: article.checked })}
+>
   <main class="bf-page bf-calc">
     <p class="bf-kicker">{page.kicker}</p>
     <h1>{page.h1}</h1>
+    {article !== undefined && <Byline checked={article.checked} />}
     <p>{page.lead}</p>
     {kind === 'chocolate' && (
       <p class="bf-call" role="note">
@@ -252,6 +265,40 @@ const fields = calculator.inputs.map((input) => {
             </p>
           </div>
         )}
+        {kind === 'puppy-weight' && (
+          <div class="bf-age">
+            <p class="bf-figure">
+              <span class="bf-big" data-text="figure">
+                {text['figure']}
+              </span>
+              <span class="bf-unit" data-text="unit">
+                {text['unit']}
+              </span>
+              <span class="bf-exact" data-text="exact">
+                {text['exact']}
+              </span>
+            </p>
+            <ul class="bf-chips">
+              <li>
+                range: <strong data-text="range">{text['range']}</strong>
+              </li>
+              <li>
+                <strong data-text="share">{text['share']}</strong> of adult weight now
+              </li>
+              <li>
+                age: <strong data-text="months">{text['months']}</strong>
+              </li>
+              <li>
+                grown by about <strong data-text="grownBy">{text['grownBy']}</strong>
+              </li>
+            </ul>
+            {(['early', 'grown', 'outsideClass'] as const).map((key) => (
+              <p class="bf-note-hero" data-show={key} hidden={patch.show[key] !== true}>
+                {page[key] ?? ''}
+              </p>
+            ))}
+          </div>
+        )}
         {kind === 'due-date' && (
           <div class="bf-due">
             <p class="bf-figure">
@@ -292,6 +339,72 @@ const fields = calculator.inputs.map((input) => {
         {method} <a href={hrefOf('methodology')}>How we work it out</a>.
       </p>
     </section>
+    {article !== undefined &&
+      article.sections.map(({ id, heading, paragraphs }) => (
+        <>
+          <section aria-labelledby={id}>
+            <h2 {id}>{heading}</h2>
+            {paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </section>
+          {article.tables
+            .filter((table) => table.after === id)
+            .map((table) => (
+              <section aria-labelledby={table.id}>
+                <h2 id={table.id}>{table.heading}</h2>
+                {table.paragraphs.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+                <div
+                  class="bf-scroll"
+                  tabindex="0"
+                  role="region"
+                  aria-label={`${table.heading}, scrolls sideways on a narrow screen`}
+                >
+                  <table class="bf-table">
+                    <thead>
+                      <tr>
+                        {table.columns.map((column) => (
+                          <th scope="col">{column}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {table.rows.map(([first, ...cells]) => (
+                        <tr>
+                          <th scope="row">{first}</th>
+                          {cells.map((cell) => (
+                            <td>{cell}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p>{table.linksHeading}</p>
+                <ul>
+                  {table.links.map(({ href, label }) => (
+                    <li>
+                      <a {href}>{label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+        </>
+      ))}
+    {article !== undefined && (
+      <section aria-labelledby="faq">
+        <h2 id="faq">Frequently asked questions</h2>
+        {article.questions.map(({ question, answer }) => (
+          <>
+            <h3>{question}</h3>
+            <p>{answer}</p>
+          </>
+        ))}
+      </section>
+    )}
     <ShareLink path={page.path} title={page.title} />
     {related.length > 0 && (
       <section class="bf-card" aria-labelledby="bf-related">
@@ -305,6 +418,7 @@ const fields = calculator.inputs.map((input) => {
         </ul>
       </section>
     )}
+    {article !== undefined && <Sources sources={article.sources} />}
   </main>
   <slot />
 </Layout>

@@ -1,0 +1,25 @@
+---
+import { puppyWeight } from '@maestro-calc/pets-core/puppy-weight';
+import { PUPPY_WEIGHT_PAGE, puppyWeightView } from '../calc/puppy-weight.ts';
+import CalcPage from '../components/CalcPage.astro';
+import PuppyWeightScript from '../islands/PuppyWeightScript.astro';
+import { PUPPY_WEIGHT_ARTICLE } from '../puppy-weight-article.ts';
+import { hrefOf } from '../routes.ts';
+---
+
+<CalcPage
+  page={PUPPY_WEIGHT_PAGE}
+  calculator={puppyWeight}
+  view={puppyWeightView}
+  kind="puppy-weight"
+  method="Adult weight = weight now ÷ the share of adult weight the size class has reached at that age, from Table 1 of the WALTHAM pocket book of puppy nutrition and care (adapted from NRC 2006), a straight line between its monthly rows; weeks are months at 12 ÷ 52."
+  article={PUPPY_WEIGHT_ARTICLE}
+  related={[
+    { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
+    { href: hrefOf('puppy-chart'), label: 'Puppy feeding chart by weight' },
+    { href: hrefOf('feed'), label: 'How much should I feed my dog?' },
+    { href: hrefOf('dog-age'), label: 'Dog age calculator' },
+  ]}
+>
+  <PuppyWeightScript />
+</CalcPage>

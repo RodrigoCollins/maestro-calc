@@ -56,6 +56,11 @@ export const HOME_TOOLS: readonly HomeTool[] = [
     title: 'Cat age in human years',
     summary: 'Cat years to human years, the life stage and the vet visits.',
   },
+  {
+    href: hrefOf('puppy-weight'),
+    title: 'How big will my puppy get?',
+    summary: 'An adult weight range from the weight, the age and the size class.',
+  },
 ];
 
 /** The words of the home. */
