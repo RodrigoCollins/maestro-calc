@@ -11,6 +11,7 @@ import { roofPitchPage } from '../../calculator/roof-pitch/page.ts';
 import { roofingPage } from '../../calculator/roofing/page.ts';
 import { feetInchesPage } from '../../calculator/feet-inches/page.ts';
 import { boardFeetPage } from '../../calculator/board-feet/page.ts';
+import { fencePage } from '../../calculator/fence/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -256,6 +257,55 @@ const boardFeetShown = ({ query }: WorkedExample<'board-feet'>) => {
   };
 };
 
+/** The posts, rails, boards, bags, concrete and gravel the fence page shows for the example's link. */
+const fenceShown = ({ query }: WorkedExample<'fence'>) => {
+  const { figures, shopping } = shownFigures(fencePage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the fence page shows no ${key}`);
+    return value;
+  };
+  const [posts, rails, boards, bags] = shopping.map(Number);
+  if (bags === undefined) throw new Error('the fence page shows fewer than four lines');
+  return {
+    query,
+    posts: posts ?? 0,
+    rails: rails ?? 0,
+    boards: boards ?? 0,
+    bags,
+    concreteFt3: shown('concreteFt3'),
+    gravelFt3: shown('gravelFt3'),
+  };
+};
+
+const FENCE_SOURCES = [
+  {
+    name: /^Quikrete, Setting Posts project sheet\b/,
+    url: 'https://www.quikrete.com/PDFs/Projects/SettingPosts.pdf',
+  },
+  {
+    name: /^QUIKRETE Concrete Mix No\. 1101 data sheet\b/,
+    url: 'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+  },
+  { name: /^Viance, Treated Wood\b/, url: 'https://treatedwood.com/projects/building-a-fence' },
+  {
+    name: /^The Home Depot, Wood Fencing\b/,
+    url: 'https://images.homedepot-static.com/catalog/pdfImages/66/665f47cf-0ce3-4613-b7ca-88426b6f6e03.pdf',
+  },
+  {
+    name: /^America's Fence Store\b/,
+    url: 'https://pros.americasfencestore.com/pages/how-to-building-a-picket-wood-fence',
+  },
+  {
+    name: /^Alta Forest Products\b/,
+    url: 'https://pdf.lowes.com/productdocuments/1bf53922-7486-4be3-bb5e-0ff3f42a5799/40459176.pdf',
+  },
+  {
+    name: /^This Old House, How to Choose and Put Up a Fence\b/,
+    url: 'https://www.thisoldhouse.com/fences/21014933/fencing-lessons',
+  },
+] as const;
+
 const PS20 = {
   name: /^DOC PS 20-20, American Softwood Lumber Standard\b/,
   url: 'https://www.nist.gov/document/doc-ps-20-20-american-softwood-lumber-standard',
@@ -456,6 +506,25 @@ export const CONTENT_ROWS = {
       '8 ft',
     ],
     methodologyLink: { en: '/methodology#board-feet', es: '/es/metodologia#pies-tablares' },
+  },
+  fence: {
+    module: fencePage,
+    updated: '2026-11-10',
+    sources: () => [...FENCE_SOURCES, PS20, NIST],
+    engine: fenceShown,
+    // the example is the page's starting values: Formulas names the run as written
+    figures: ({ posts, rails, boards, bags, concreteFt3, gravelFt3 }) => [
+      String(posts),
+      String(rails),
+      String(boards),
+      String(bags),
+      concreteFt3,
+      gravelFt3,
+      '100 ft',
+      '6 ft',
+      '8 ft',
+    ],
+    methodologyLink: { en: '/methodology#fence', es: '/es/metodologia#cercas' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

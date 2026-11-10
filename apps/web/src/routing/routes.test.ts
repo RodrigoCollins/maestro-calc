@@ -560,6 +560,20 @@ describe('route table (site-routing-i18n › Route table)', () => {
     expect(ids.indexOf('drywall')).toBe(ids.indexOf('paint') + 1);
   });
 
+  // spec: site-routing-i18n › the fence row and its cost page, published 2026-11-10: their URLs are a public contract
+  it('lists fence after board feet, and the fence cost page, at their published URLs', () => {
+    expect(ROUTES.fence).toEqual({
+      en: '/fence-calculator',
+      es: '/es/calculadora-de-cercas',
+    });
+    expect(ROUTES['fence-cost']).toEqual({
+      en: '/landscaping/how-much-does-a-fence-cost',
+      es: '/es/jardineria/cuanto-cuesta-una-cerca',
+    });
+    const ids = Object.keys(ROUTES);
+    expect(ids.indexOf('fence')).toBe(ids.indexOf('board-feet') + 1);
+  });
+
   // spec: site-routing-i18n › the board feet row, published 2026-11-10: its two URLs are a public contract
   it('lists board feet after feet and inches, at its published URLs', () => {
     expect(ROUTES['board-feet']).toEqual({

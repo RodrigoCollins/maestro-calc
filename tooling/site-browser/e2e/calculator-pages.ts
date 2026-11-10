@@ -10,6 +10,7 @@ import { RECTANGLE_AREA } from './rectangle-area-pages.ts';
 import { ROOF_PITCH } from './roof-pitch-pages.ts';
 import { ROOFING } from './roofing-pages.ts';
 import { FEET_INCHES } from './feet-inches-pages.ts';
+import { FENCE } from './fence-pages.ts';
 import { BOARD_FEET } from './board-feet-pages.ts';
 import { TOPSOIL } from './topsoil-pages.ts';
 
@@ -300,6 +301,7 @@ export const E2E = {
   roofing: ROOFING,
   'feet-inches': FEET_INCHES,
   'board-feet': BOARD_FEET,
+  fence: FENCE,
 } as const satisfies Record<CalculatorPageId, E2eSpec>;
 
 /** One page of the record: a calculator in one language. */

@@ -39,6 +39,7 @@ export const JOB_GUIDE_KINDS = [
   'roofing',
   'feet-inches',
   'board-feet',
+  'fence',
 ] as const;
 
 export type JobGuideKind = (typeof JOB_GUIDE_KINDS)[number];
@@ -59,6 +60,7 @@ const GUIDE_OF = {
   roofing: 'guide-roofing-quote',
   'feet-inches': 'guide-tape-measure-fractions',
   'board-feet': 'guide-board-feet',
+  fence: 'guide-fence-post-concrete',
 } as const satisfies Record<JobGuideKind, PageId>;
 
 export interface JobGuide {

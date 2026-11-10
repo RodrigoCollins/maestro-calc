@@ -19,6 +19,7 @@ export const CALCULATOR_PAGES = [
   'roofing',
   'feet-inches',
   'board-feet',
+  'fence',
 ] as const satisfies readonly PageId[];
 
 /** The id of a page that uses the calculator template. */
