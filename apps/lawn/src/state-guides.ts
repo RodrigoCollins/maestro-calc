@@ -19,7 +19,7 @@ import { STATIONS_OF } from './frost-stations.ts';
 import { frostStatsOf, type FrostStats } from './frost-stats.ts';
 import { dateText } from './frost-text.ts';
 import type { Guide, GuideSource } from './guide.ts';
-import { NOAA, READ } from './seed-sources.ts';
+import { AERATION_LINK, NOAA, PRE_EMERGENT_LINK, READ } from './seed-sources.ts';
 import { STATE_CALENDARS, type Claim, type StateCalendar } from './state-calendars.ts';
 import { USDA_SOURCES } from './zone-guides.ts';
 import { ZONED, zonesOfState } from './zoned.ts';
@@ -164,6 +164,8 @@ const seedGuideOf = (state: StateEntry): Guide => {
           { href: feedStatePathOf(state.slug), label: `When to fertilize a lawn in ${state.name}` },
           { href: '/grass-seed-calculator', label: 'Grass seed calculator' },
           { href: '/best-grass-seed', label: 'Best grass seed by region' },
+          AERATION_LINK,
+          PRE_EMERGENT_LINK,
         ],
       },
     ],
@@ -285,6 +287,8 @@ const feedGuideOf = (state: StateEntry): Guide => {
           { href: frostPathOf(state.slug), label: `${state.name} frost dates` },
           { href: seedStatePathOf(state.slug), label: `When to plant grass seed in ${state.name}` },
           { href: '/lawn-fertilizer-calculator', label: 'Lawn fertilizer calculator' },
+          PRE_EMERGENT_LINK,
+          AERATION_LINK,
         ],
       },
     ],
