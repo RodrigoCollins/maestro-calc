@@ -424,6 +424,18 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/painting/paint-for-12x16-room',
       es: '/es/pintura/pintura-para-cuarto-de-12x16',
     });
+    expect(ROUTES['cost-to-paint-a-house']).toEqual({
+      en: '/painting/how-much-does-it-cost-to-paint-a-house',
+      es: '/es/pintura/cuanto-cuesta-pintar-una-casa',
+    });
+    expect(ROUTES['cost-to-paint-a-room']).toEqual({
+      en: '/painting/how-much-does-it-cost-to-paint-a-room',
+      es: '/es/pintura/cuanto-cuesta-pintar-un-cuarto',
+    });
+    expect(ROUTES['drywall-installation-cost']).toEqual({
+      en: '/drywall/how-much-does-drywall-installation-cost',
+      es: '/es/drywall/cuanto-cuesta-instalar-drywall',
+    });
     expect(ROUTES['drywall-room-12x14']).toEqual({
       en: '/drywall/drywall-for-12x14-room',
       es: '/es/drywall/drywall-para-cuarto-de-12x14',

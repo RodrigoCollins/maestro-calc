@@ -3,7 +3,7 @@ import type { MaterialSource } from '@maestro-calc/data';
 import { PAINT_COVERAGE } from '@maestro-calc/data/yields/paint';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
-import { JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
+import { isQuestionJob, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
 import { drywall } from './drywall.ts';
 import { sentence, type ExtraFact, type ExtraSection } from './job-extra.ts';
 import { paint } from './paint.ts';
@@ -300,6 +300,16 @@ const drywallSheets = (raw: JobCase): readonly [bigint, bigint] => {
 
 type Tips = readonly [string, string, string, string];
 
+/** The cost pages of paint and drywall: question pages that price their rooms or their house. */
+const COST_PAGES = [
+  'cost-to-paint-a-house',
+  'cost-to-paint-a-room',
+  'drywall-installation-cost',
+] as const;
+
+const isCostPage = (id: JobId): id is (typeof COST_PAGES)[number] =>
+  (COST_PAGES as readonly string[]).includes(id);
+
 const drywallTips = (id: JobId, text: SiteText): Tips => {
   const [raw] = JOBS[id].cases;
   const { length, width } = roomOf(raw);
@@ -351,6 +361,15 @@ const paintTips = (id: JobId, text: SiteText): Tips => {
  * every room page), with the room's own figures; `undefined` for any other job.
  */
 export const roomTips = (id: JobId, text: SiteText): Tips | undefined => {
+  // a cost page writes its own prices into four tips of its own
+  if (isCostPage(id)) {
+    return [
+      text(`page.${id}.tip1`),
+      text(`page.${id}.tip2`),
+      text(`page.${id}.tip3`),
+      text(`page.${id}.tip4`),
+    ];
+  }
   const { calculator } = JOBS[id];
   if (calculator === 'paint') return paintTips(id, text);
   if (calculator === 'drywall') return drywallTips(id, text);
@@ -359,6 +378,8 @@ export const roomTips = (id: JobId, text: SiteText): Tips | undefined => {
 
 /** What the paint or drywall page of a room adds to its table, or `undefined` for any other job. */
 export const jobRoom = (id: JobId, locale: Locale): ExtraSection | undefined => {
+  // a cost page prices its rooms or its house in tables of its own
+  if (isQuestionJob(id)) return undefined;
   const { calculator } = JOBS[id];
   if (calculator === 'paint') return paintSection(id, siteText(locale));
   if (calculator === 'drywall') return drywallSection(id, siteText(locale));
