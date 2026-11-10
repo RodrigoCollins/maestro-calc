@@ -30,6 +30,17 @@ export interface TimeCardTexts {
   readonly whatsapp: string;
   readonly print: string;
   readonly shareNote: string;
+  /** The button that copies the week as text; `share` is its label where there is a share sheet. */
+  readonly copy: string;
+  readonly share: string;
+  readonly copied: string;
+  readonly shared: string;
+  readonly notCopied: string;
+  /** The saved week (`saved.ts`): its clear button, its one line, and what the status says. */
+  readonly clear: string;
+  readonly savedNote: string;
+  readonly restored: string;
+  readonly cleared: string;
   readonly breakTooLong: string;
   readonly note: string;
   readonly workweek: string;
@@ -68,6 +79,16 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
     whatsapp: 'Send the receipt on WhatsApp',
     print: 'Print the time card',
     shareNote: 'The link carries your hours and rate; nothing is saved on a server.',
+    copy: 'Copy result',
+    share: 'Share result',
+    copied: 'Copied: paste your week in a message or a note.',
+    shared: 'Shared.',
+    notCopied: 'This browser did not copy it; copy the page address instead.',
+    clear: 'Clear my week',
+    savedNote:
+      'Your week stays in this browser, on this device only, for when you come back; it is never sent anywhere.',
+    restored: 'Here is the week you saved on this device.',
+    cleared: 'Cleared: the card is back to the example week.',
     breakTooLong: 'The break is as long as the shift on a day; that day counts 0 hours.',
     note: 'This is pay before taxes and deductions. Federal law (FLSA) pays 1.5 times your rate after 40 hours in a workweek. California also counts by the day: 1.5 times after 8 hours, double after 12, and its own rule for the seventh day in a row.',
     workweek: 'The card treats Monday to Sunday as the workweek.',
@@ -102,6 +123,16 @@ export const TIME_CARD_TEXTS: Readonly<Record<Lang, TimeCardTexts>> = {
     whatsapp: 'Mandar el recibo por WhatsApp',
     print: 'Imprimir la tarjeta',
     shareNote: 'El link lleva tus horas y tu tarifa; no se guarda nada en un servidor.',
+    copy: 'Copiar resultado',
+    share: 'Compartir resultado',
+    copied: 'Copiado: pega tu semana en un mensaje o una nota.',
+    shared: 'Compartido.',
+    notCopied: 'Este navegador no lo copió; copia la dirección de la página.',
+    clear: 'Borrar mi semana',
+    savedNote:
+      'Tu semana se queda en este navegador, solo en este dispositivo, para cuando vuelvas; nunca se envía a ningún lado.',
+    restored: 'Aquí está la semana que guardaste en este dispositivo.',
+    cleared: 'Listo: la tarjeta volvió a la semana de ejemplo.',
     breakTooLong: 'Un día tiene un descanso tan largo como el turno; ese día cuenta 0 horas.',
     note: 'Es el pago antes de impuestos y descuentos. La ley federal (FLSA) paga 1.5 veces tu tarifa después de 40 horas en la semana. California también cuenta por día: 1.5 veces después de 8 horas, doble después de 12, y tiene su propia regla para el séptimo día seguido.',
     workweek: 'La tarjeta toma la semana de lunes a domingo.',

@@ -28,6 +28,10 @@ for (const { path } of TIME_CARD) {
     await page.goto(path);
     await expect(page.locator('[data-out="totalHours"]')).toHaveText('49.5');
     await expect(page.locator('[data-out="pay"]')).toHaveText(DEFAULT_PAY);
+    // the saved week and the copy and share button need the script: no dead control without it
+    await expect(page.locator('[data-saved]')).toBeHidden();
+    await expect(page.locator('[data-send]')).toBeHidden();
+    await expect(page.locator('[data-whatsapp]')).toBeVisible();
   });
 }
 
