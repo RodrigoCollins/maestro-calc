@@ -203,8 +203,8 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
     );
   });
 
-  // spec: calc-fence › [FN17] the fifteen inputs of fence, appended in the order of the spec
-  it('records the 15 inputs of fence in the order of the spec', () => {
+  // spec: calc-fence › [FN17] the fourteen inputs of fence, appended in the order of the spec
+  it('records the 14 inputs of fence in the order of the spec', () => {
     const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'fence');
     expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
       [
@@ -218,7 +218,6 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['r', 'rails', 'count', '3'],
         ['g', 'gates', 'count', '0'],
         ['pw', 'postWidth', 'length', '7/2'],
-        ['bg', 'bag', 'select', '80'],
         ['pp', 'postPrice', 'money', '0'],
         ['rp', 'railPrice', 'money', '0'],
         ['bp', 'boardPrice', 'money', '0'],

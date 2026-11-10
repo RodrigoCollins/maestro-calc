@@ -14,7 +14,7 @@ const between = (min: number, max: number): fc.Arbitrary<Quantity<'length'>> =>
         .map((num) => quantity(Rational.of(num, BigInt(den)), inch)),
     );
 
-/** A validated state of the fence calculator: the 15 inputs, each inside its range. */
+/** A validated state of the fence calculator: the 14 inputs, each inside its range. */
 export const fenceStateArb = fc.record({
   length: between(12, 60000),
   height: between(12, 144),
@@ -26,7 +26,6 @@ export const fenceStateArb = fc.record({
   rails: fc.integer({ min: 1, max: 6 }),
   gates: fc.integer({ min: 0, max: 50 }),
   postWidth: between(1, 12),
-  bag: fc.constantFrom('40', '60', '80'),
   postPrice: cents,
   railPrice: cents,
   boardPrice: cents,

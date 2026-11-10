@@ -12,15 +12,23 @@ import { Rational } from '../../rational/rational.ts';
 import { inch } from '../../units/catalog.ts';
 import { add, multiply, ratio, scale, sign, sub } from '../../units/ops.ts';
 import { isQuantityOf, quantity, type Quantity } from '../../units/quantity.ts';
-import type { BagYields } from '../concrete/concrete.ts';
 
 /** The fence styles, in the order the select offers them. */
 const STYLES = ['privacy', 'picket', 'rail'] as const;
 
-/** The bag sizes in pounds, as the concrete calculator offers them. */
+/** The bag sizes in pounds whose yields the concrete calculator supplies. */
 const BAG_SIZES = ['40', '60', '80'] as const;
 
 type BagSize = (typeof BAG_SIZES)[number];
+
+/**
+ * The yield of one bag, by purchase unit id (`bag-<pounds>`): the same shape as the concrete
+ * calculator's, declared here so this directory imports no other calculator.
+ */
+export type BagYields = Readonly<Record<`bag-${BagSize}`, Quantity<'volume'>>>;
+
+/** The bag the posts are set with: the 80 lb bag, the concrete calculator's default. */
+const BAG = 'bag-80';
 
 /** The hole is 3 times as wide as the post (Quikrete, Setting Posts project sheet). */
 const HOLE_PER_POST = Rational.of(3);
@@ -119,7 +127,6 @@ export const createFence = (suppliedYields: BagYields) => {
       countInput({ key: 'rails', urlKey: 'r', default: 3, min: 1, max: 6 }),
       countInput({ key: 'gates', urlKey: 'g', default: 0, min: 0, max: 50 }),
       lengthField('postWidth', 'pw', [Rational.of(7, 2), 1, 12], SMALL),
-      selectInput({ key: 'bag', urlKey: 'bg', default: '80', options: BAG_SIZES }),
       moneyInput({ key: 'postPrice', urlKey: 'pp', default: usd(0), max: usd(10000) }),
       moneyInput({ key: 'railPrice', urlKey: 'rp', default: usd(0), max: usd(10000) }),
       moneyInput({ key: 'boardPrice', urlKey: 'bp', default: usd(0), max: usd(10000) }),
@@ -127,12 +134,8 @@ export const createFence = (suppliedYields: BagYields) => {
     ],
     outputs: [
       { key: 'posts', measure: 'number', role: 'primary' },
-      {
-        key: 'postLength',
-        measure: 'length',
-        role: 'secondary',
-        display: { unit: 'ft', format: 'fraction', denominator: 8 },
-      },
+      // no display hint: the post line names it, so the page shows it once
+      { key: 'postLength', measure: 'length', role: 'intermediate' },
       {
         key: 'holeDiameter',
         measure: 'length',
@@ -163,7 +166,7 @@ export const createFence = (suppliedYields: BagYields) => {
       { key: 'bagCost', measure: 'money', role: 'secondary' },
     ],
     compute: (inputs) => {
-      const { length, height, spacing, style, rails, gates, postWidth, bag } = inputs;
+      const { length, height, spacing, style, rails, gates, postWidth } = inputs;
       const sections = ceilToPurchaseUnits(ratio(length, spacing));
       const posts = sections + 1n + BigInt(gates);
       const railCount = sections * BigInt(rails);
@@ -175,8 +178,7 @@ export const createFence = (suppliedYields: BagYields) => {
       // the concrete fills the hole above the gravel, less the post that stands in it
       const concrete = scale(multiply(sub(hole, multiply(postWidth, postWidth)), buried), perPost);
       const gravel = scale(multiply(hole, GRAVEL), perPost);
-      const unit = `bag-${bag}` as const;
-      const bags = ceilToPurchaseUnits(ratio(concrete, yields[unit]));
+      const bags = ceilToPurchaseUnits(ratio(concrete, yields[BAG]));
       return {
         outputs: {
           posts: perPost,
@@ -194,7 +196,7 @@ export const createFence = (suppliedYields: BagYields) => {
           { materialId: 'fence-post', purchaseUnit: 'post', qty: posts },
           { materialId: 'fence-rail', purchaseUnit: 'rail', qty: railCount },
           { materialId: 'fence-board', purchaseUnit: 'board', qty: boards },
-          { materialId: 'concrete-mix', purchaseUnit: unit, qty: bags },
+          { materialId: 'concrete-mix', purchaseUnit: BAG, qty: bags },
         ],
         warnings: [],
       };

@@ -54,7 +54,6 @@ describe('fence defaults (calc-fence › Inputs)', () => {
       rails: 3,
       gates: 0,
       postWidth: quantity(Rational.of(7, 2), inch),
-      bag: '80',
       postPrice: usd(0),
       railPrice: usd(0),
       boardPrice: usd(0),
@@ -69,16 +68,13 @@ describe('fence defaults (calc-fence › Inputs)', () => {
  * 9.5 in: 2 × 1,200 ÷ 9.5 = 252.6, so 253 boards. The hole is 3 × 3.5 = 10.5 in wide; the post is buried half the height
  * above ground (a third of its length), 36 in, on 6 in of gravel: 42 in deep, and the post is
  * 72 + 36 = 108 in (9 ft) long. The concrete of a hole is (π × 5.25² − 3.5²) × 36 = 992.25π − 441
- * in³; 14 holes take 13,891.5π − 6,174 in³ = 21.68 ft³, ÷ 0.6 = 36.1, so 37 bags of 80 lb (49 of
- * 60 lb, 73 of 40 lb). The gravel is π × 5.25² × 6 = 165.375π in³ a hole, 2,315.25π in³ = 4.21 ft³.
+ * in³; 14 holes take 13,891.5π − 6,174 in³ = 21.68 ft³, ÷ 0.6 = 36.1, so 37 bags of 80 lb. The gravel is π × 5.25² × 6 = 165.375π in³ a hole, 2,315.25π in³ = 4.21 ft³.
  */
 describe('the default fence (calc-fence › Materials, Holes)', () => {
   // spec: calc-fence › [FN5] posts, rails, boards and bags of the default fence
   it('gives 14 posts, 39 rails, 253 boards and 37 bags of 80 lb', () => {
     expect(output({}, 'posts')).toEqual(Rational.of(14));
     expect(lines({})).toEqual([14n, 39n, 253n, 37n]);
-    expect(lines({ bag: '60' })[3]).toBe(49n);
-    expect(lines({ bag: '40' })[3]).toBe(73n);
   });
 
   // spec: calc-fence › [FN6] the hole and the post of the default fence

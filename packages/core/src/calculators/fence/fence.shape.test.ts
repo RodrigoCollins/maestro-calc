@@ -27,8 +27,8 @@ const ran = () => {
 };
 
 describe('fence descriptors and result shape (calc-fence › Inputs, Materials, Holes and cost)', () => {
-  // spec: calc-fence › [FN1] the 15 inputs, in order, the style's fields right after it
-  it('declares the 15 inputs in order', () => {
+  // spec: calc-fence › [FN1] the 14 inputs, in order, the style's fields right after it
+  it('declares the 14 inputs in order', () => {
     expect(fence.id).toBe('fence');
     expect(fence.inputs.map(({ key, urlKey, kind }) => [key, urlKey, kind])).toEqual([
       ['length', 'l', 'length'],
@@ -41,7 +41,6 @@ describe('fence descriptors and result shape (calc-fence › Inputs, Materials, 
       ['rails', 'r', 'count'],
       ['gates', 'g', 'count'],
       ['postWidth', 'pw', 'length'],
-      ['bag', 'bg', 'select'],
       ['postPrice', 'pp', 'money'],
       ['railPrice', 'rp', 'money'],
       ['boardPrice', 'bp', 'money'],
@@ -69,7 +68,6 @@ describe('fence descriptors and result shape (calc-fence › Inputs, Materials, 
       default: 'privacy',
       options: ['privacy', 'picket', 'rail'],
     });
-    expect(byKey['bag']).toMatchObject({ default: '80', options: ['40', '60', '80'] });
     expect(byKey['rails']).toMatchObject({ default: 3, min: 1, max: 6 });
     expect(byKey['gates']).toMatchObject({ default: 0, min: 0, max: 50 });
   });
@@ -79,7 +77,7 @@ describe('fence descriptors and result shape (calc-fence › Inputs, Materials, 
     const { outputs, shopping, warnings } = ran();
     expect(outputs.map(({ key, role }) => [key, role])).toEqual([
       ['posts', 'primary'],
-      ['postLength', 'secondary'],
+      ['postLength', 'intermediate'],
       ['holeDiameter', 'secondary'],
       ['holeDepth', 'secondary'],
       ['concreteFt3', 'secondary'],

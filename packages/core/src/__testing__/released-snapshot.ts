@@ -616,14 +616,6 @@ export const RELEASED: readonly ReleasedField[] = [
   },
   {
     calculatorId: 'fence',
-    key: 'bag',
-    urlKey: 'bg',
-    kind: 'select',
-    default: '80',
-    options: ['40', '60', '80'],
-  },
-  {
-    calculatorId: 'fence',
     key: 'postPrice',
     urlKey: 'pp',
     kind: 'money',

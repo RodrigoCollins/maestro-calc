@@ -55,7 +55,7 @@ describe('fence properties (calc-fence › Materials, Holes and cost)', () => {
         expect(valueIn(outputs.gravelFt3, in3)).toEqual(
           hole.mul(Rational.of(6)).mul(Rational.of(posts)),
         );
-        const bags = concrete.div(valueIn(CONCRETE_YIELDS[`bag-${state.bag}`], in3)).ceil();
+        const bags = concrete.div(valueIn(CONCRETE_YIELDS['bag-80'], in3)).ceil();
         expect(shopping.map(({ qty }) => qty)).toEqual([posts, rails, boards, bags]);
         expect(outputs.posts).toEqual(Rational.of(posts));
         expect(valueIn(outputs.holeDiameter, inch)).toEqual(post.mul(Rational.of(3)));
