@@ -476,9 +476,9 @@ const WORDS = {
         outTo: string,
         end: string,
       ): string =>
-        `Si tu reloj marcador redondea al cuarto de hora, marcar la entrada de ${inFrom} a ${inTo} y la salida de ${outFrom} a ${outTo} sigue quedando de ${start} a ${end}. El redondeo es legal solo si con el tiempo te pagan todo lo trabajado (29 CFR 785.48).`,
+        `Si tu reloj marcador redondea al cuarto de hora, marcar la entrada de ${inFrom} a ${inTo} y la salida de ${outFrom} a ${outTo} sigue quedando de ${start} a ${end}. Es legal si con el tiempo te pagan todo (29 CFR 785.48).`,
       intro: (start: string, end: string, figure: string): string =>
-        `El descanso sin pago se resta, así que si sales a las ${end} te pagan menos de ${figure}. Para cobrar las ${figure} completas entrando a las ${start}, sal más tarde lo que dure el descanso:`,
+        `Si sales a las ${end}, el descanso sin pago te deja con menos de ${figure}. Para cobrar las ${figure} entrando a las ${start}, sal más tarde lo que dure el descanso:`,
       caption: (start: string): string => `Entrando a las ${start}`,
       head: (end: string, figure: string): readonly string[] => [
         'Descanso sin pago',
@@ -502,7 +502,7 @@ const WORDS = {
           ? `Cuatro de estos turnos a la semana, con 30 minutos de comida cada uno, suman ${w4} horas, dentro del límite de 40.`
           : `Cuatro de estos turnos a la semana, con 30 minutos de comida cada uno, suman ${w4} horas, ${ot4} de ellas extra.`,
       fullTime: (start: string, end: string, irs: string, bls: string): string =>
-        `La FLSA no fija un número para el tiempo completo: con 30 minutos de comida, ${irs} turnos de ${start} a ${end} a la semana llegan a las 30 horas del IRS (cobertura médica del empleador, 130 al mes) y ${bls} a las 35 de la Oficina de Estadísticas Laborales (BLS).`,
+        `La FLSA no define el tiempo completo: con 30 minutos de comida, ${irs} turnos de ${start} a ${end} llegan a las 30 horas semanales del IRS (cobertura médica, 130 al mes) y ${bls} a las 35 de la BLS.`,
       daily: (
         states: string,
         below: string,
@@ -613,7 +613,7 @@ const WORDS = {
     breaks: {
       heading: '¿Se paga el descanso para comer?',
       federal: (figure: string, start: string, end: string): string =>
-        `La ley federal no exige un descanso para comer: los descansos de unos 5 a 20 minutos se pagan (29 CFR 785.18), y solo una comida de 30 minutos o más, libre de tareas, se resta de las ${figure} de ${start} a ${end} (29 CFR 785.19).`,
+        `La ley federal no exige una pausa para comer: las pausas de 5 a 20 minutos se pagan (29 CFR 785.18) y solo una comida libre de 30 minutos o más se resta de las ${figure} de ${start} a ${end} (29 CFR 785.19).`,
       noon: (start: string, end: string): string =>
         `En Nueva York, de ${start} a ${end} pasa de 6 horas y cubre el mediodía, así que da derecho a 30 minutos libres entre las 11 am y las 2 pm (60 en una fábrica).`,
       evening: (start: string, end: string): string =>
@@ -621,7 +621,7 @@ const WORDS = {
       late: (start: string, end: string, midway: string): string =>
         `En Nueva York, de ${start} a ${end} dura más de 6 horas y empieza entre la 1 pm y las 6 am, así que da derecho a 45 minutos como mínimo (60 en una fábrica) a la mitad del turno, hacia ${theClock(midway)}.`,
       states: (figure: string, count: number, list: string): string =>
-        `Algunos estados sí lo exigen. Para ${figure} de entrada a salida, la tabla del Departamento de Trabajo de EE. UU. (1 de enero de 2023) lo pide en ${String(count)} estados, cada uno con excepciones: ${list}.`,
+        `Algunos estados sí la exigen: para ${figure} de entrada a salida, la tabla del Departamento de Trabajo (1 de enero de 2023) la pide en ${String(count)} estados, con excepciones: ${list}.`,
       group: (minutes: number | undefined, states: string): string =>
         minutes === undefined
           ? `tiempo suficiente sin pago en ${states}`

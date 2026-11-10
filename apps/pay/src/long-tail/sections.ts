@@ -107,4 +107,24 @@ export const SOURCES = {
       'U.S. Department of Labor, Minimum Length of Meal Period Required under State Law for Adult Employees in Private Sector (January 1, 2023)',
     href: 'https://www.dol.gov/agencies/whd/state/meal-breaks',
   },
+  paydayTable: {
+    label:
+      'U.S. Department of Labor, Table of State Payday Requirements (January 1, 2023, read November 10, 2026)',
+    href: 'https://www.dol.gov/agencies/whd/state/payday',
+  },
+  oews: {
+    label:
+      'U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics, May 2025, all occupations by state (BLS Public Data API, read November 10, 2026)',
+    href: 'https://www.bls.gov/oes/',
+  },
+  childLaborTable: {
+    label:
+      'U.S. Department of Labor, Table of Selected State Child Labor Standards for Children Under 18 in Non-farm Employment (revised July 15, 2025, read November 10, 2026)',
+    href: 'https://www.dol.gov/agencies/whd/state/child-labor',
+  },
+  laborOffices: {
+    label:
+      'U.S. Department of Labor, Contact information for state labor offices (last updated January 1, 2026, read November 10, 2026)',
+    href: 'https://www.dol.gov/agencies/whd/state/contacts',
+  },
 } as const satisfies Readonly<Record<string, LongTailSource>>;

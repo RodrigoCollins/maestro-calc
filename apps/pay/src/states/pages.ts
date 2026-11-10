@@ -108,6 +108,11 @@ export interface StatePage {
   };
   readonly labels: { readonly sources: string; readonly checked: string; readonly table: string };
   /**
+   * The link each section gives to the sources list, which names every source once: a section
+   * does not repeat the labels its sources share with the others.
+   */
+  readonly cite: { readonly label: string; readonly href: '#sources' };
+  /**
    * The day the page was last reviewed, `YYYY-MM-DD`: the oldest checked day of its three tables,
    * so every figure on the page was checked on that day or later (its byline).
    */
@@ -507,6 +512,7 @@ export const statePageOf = (facts: StateFacts, lang: Lang): StatePage => {
     context,
     examples,
     labels: w.labels,
+    cite: { label: w.labels.sources, href: '#sources' },
     reviewed: [
       checkedOf('minimum-wage-states-guide'),
       checkedOf('tipped-states-guide'),

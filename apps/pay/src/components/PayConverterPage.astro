@@ -4,6 +4,7 @@ import { moneyText } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import { PATHS, PAY_CONVERTER_TEXTS, type Variant } from '../pay-converter/texts.ts';
+import { workedOf } from '../pay-converter/worked.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
@@ -31,6 +32,7 @@ const weeks = String(payConverter.inputs[3].default);
 const periods = Object.entries(t.periods);
 const rows = Object.entries(t.outputs).filter(([key]) => key !== v.figure);
 const common = commonLinksOf(v.per, lang);
+const worked = workedOf(variant, lang);
 ---
 
 <SiteLayout
@@ -112,6 +114,17 @@ const common = commonLinksOf(v.per, lang);
       <a href={t.minimumWage.href}>{t.minimumWage.label}</a> ·{' '}
       <a href={t.minimumWage2027.href}>{t.minimumWage2027.label}</a>
     </p>
+
+    {!embed && (
+      <div class="prose explained">
+        <section aria-labelledby="worked-heading">
+          <h2 id="worked-heading">{worked.heading}</h2>
+          {worked.paragraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </section>
+      </div>
+    )}
 
     <section aria-labelledby="common-heading">
       <h2 id="common-heading">{common.heading}</h2>

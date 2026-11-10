@@ -32,31 +32,20 @@ const textOf = (section: ContextSection | undefined): string =>
 const queryOf = (href: string): string => new URL(href, 'https://cuentahoras.com').search.slice(1);
 
 describe('contextOf: what one state’s figures come to', () => {
-  it('works a paycheck, a month and a 50-hour week out at the California minimum', () => {
-    const text = textOf(sectionOf('California', 'en', 'paycheck'));
-    // $16.90 x 40 = $676; x 2,080 = $35,152; / 12 = $2,929.33; every two weeks $1,352
-    expect(text).toContain('$676');
-    expect(text).toContain('$1,352');
-    expect(text).toContain('$2,929.33');
-    expect(text).toContain('$35,152');
-    // five 10-hour days: 40 x $16.90 + 10 x $25.35 = $929.50, $253.50 of it overtime
-    expect(text).toContain('$25.35');
-    expect(text).toContain('$929.50');
-    expect(text).toContain('$253.50');
-    // no tip credit in California
-    expect(text).toContain('no tip credit');
-  });
-
-  it('works the tipped cash wage out where it differs from the minimum, in Texas', () => {
-    const text = textOf(sectionOf('Texas', 'en', 'paycheck'));
-    // $2.13 x 40 = $85.20; x 2,080 = $4,430.40; $15,080 - $4,430.40 = $10,649.60 of tips
-    expect(text).toContain('$85.20');
-    expect(text).toContain('$4,430.40');
-    expect(text).toContain('$10,649.60');
-    expect(text).toContain('$15,080');
-    const es = textOf(sectionOf('Texas', 'es', 'paycheck'));
-    expect(es).toContain('$4,430.40');
-    expect(es).toContain('Texas');
+  it('holds the tipped cash wage against the federal pair in the comparison', () => {
+    // California allows no tip credit: $16.90 x 40 = $676 a week from the employer
+    const california = textOf(sectionOf('California', 'en', 'compare'));
+    expect(california).toContain('no tip credit');
+    expect(california).toContain('$676');
+    expect(textOf(sectionOf('Texas', 'en', 'compare'))).toContain('uses the federal pair');
+    // Arizona: $12.15 is $10.02 above the federal $2.13; its $3.00 credit is $2.12 under $5.12
+    const arizona = textOf(sectionOf('Arizona', 'en', 'compare'));
+    expect(arizona).toContain('$10.02');
+    expect(arizona).toContain('$2.12 less than the federal $5.12');
+    expect(textOf(sectionOf('Texas', 'es', 'compare'))).toContain('usa la pareja federal');
+    // the 45-hour and the tipped examples work the week out; no section repeats them
+    for (const facts of STATE_FACTS)
+      expect(contextOf(facts, 'en').map(({ id }) => id)).not.toContain('paycheck');
   });
 
   it('compares California with the federal $7.25, the nation and its Pacific neighbours', () => {
@@ -184,14 +173,146 @@ describe('contextOf: what one state’s figures come to', () => {
     }
   });
 
+  it('gives the paydays of the DOL table and the paycheck each one makes at the minimum', () => {
+    // Mississippi: bi-weekly and semi-monthly, both under footnote 12 (manufacturers of 50 or more)
+    const mississippi = textOf(sectionOf('Mississippi', 'en', 'payday'));
+    expect(mississippi).toContain('every two weeks or twice a month');
+    expect(mississippi).toContain('manufacturing of any kind in the State employing 50 or more');
+    // $7.25 x 80 = $580; $15,080 / 24 = $628.33; 26 checks against 24: $628.33 - $580 = $48.33
+    expect(mississippi).toContain('$580');
+    expect(mississippi).toContain('$628.33');
+    expect(mississippi).toContain('$48.33');
+    // Texas: bi-weekly, semi-monthly and monthly, footnote 21; $15,080 / 12 = $1,256.67
+    const texas = textOf(sectionOf('Texas', 'en', 'payday'));
+    expect(texas).toContain('exempt from the overtime provisions');
+    expect(texas).toContain('$1,256.67');
+    expect(textOf(sectionOf('Texas', 'es', 'payday'))).toContain('al menos una vez al mes');
+    // California at $16.90: $676 a week, $1,352 every two weeks, $35,152 / 24 = $1,464.67
+    const california = textOf(sectionOf('California', 'en', 'payday'));
+    expect(california).toContain('$676');
+    expect(california).toContain('$1,352');
+    expect(california).toContain('$1,464.67');
+    expect(california).toContain('$2,929.33');
+    // Alabama: footnote 1, no frequency and so no paycheck to work out
+    const alabama = textOf(sectionOf('Alabama', 'en', 'payday'));
+    expect(alabama).toContain('No regulations or not specified');
+    expect(alabama).not.toContain('$');
+    expect(textOf(sectionOf('Pennsylvania', 'en', 'payday'))).toContain('marks no payday');
+    expect(textOf(sectionOf('North Carolina', 'es', 'payday'))).toContain('diarios');
+  });
+
+  it.each(LANGS)('gives every state its paydays and its labor office, in %s', (lang) => {
+    for (const facts of STATE_FACTS) {
+      const ids = contextOf(facts, lang).map(({ id }) => id);
+      expect(ids, facts.tipped.name.en).toContain('payday');
+      expect(ids, facts.tipped.name.en).toContain('office');
+      expect(sectionOf(facts.tipped.name.en, lang, 'payday')?.sources).toContainEqual(
+        SOURCES.paydayTable,
+      );
+      expect(sectionOf(facts.tipped.name.en, lang, 'office')?.sources).toContainEqual(
+        SOURCES.laborOffices,
+      );
+    }
+  });
+
+  it('holds the minimum against the wages the BLS counted in the state', () => {
+    const alabama = textOf(sectionOf('Alabama', 'en', 'wages'));
+    expect(alabama).toContain('2,113,660');
+    // $21.96 / $7.25 = 3.03; $21.96 x 2,080 = $45,676.80 against $15,080
+    expect(alabama).toContain('$21.96');
+    expect(alabama).toContain('3.03 times');
+    expect(alabama).toContain('$45,676.80');
+    expect(alabama).toContain('$15,080');
+    // the 10th percentile, $12.54, is $5.29 above the $7.25
+    expect(alabama).toContain('$12.54');
+    expect(alabama).toContain('$5.29 above');
+    // Missouri's $14.32 of May 2025 is $0.68 under its $15.00 of 2026
+    const missouri = textOf(sectionOf('Missouri', 'en', 'wages'));
+    expect(missouri).toContain('$0.68 under');
+    expect(missouri).toContain('May 2025');
+    // the medians ranked: DC $44.01 the highest, Mississippi $19.29 the lowest
+    expect(textOf(sectionOf('District of Columbia', 'en', 'wages'))).toContain('the highest');
+    expect(textOf(sectionOf('Mississippi', 'en', 'wages'))).toContain('the lowest');
+    expect(textOf(sectionOf('Mississippi', 'es', 'wages'))).toContain('la más baja');
+    // five jobs, lowest median first: fast food $11.40 is $4.15 above the $7.25
+    expect(alabama).toContain(
+      'fast food and counter workers $11.40, cashiers $13.58, retail salespersons $14.44, janitors and cleaners $14.72 and restaurant cooks $15.47',
+    );
+    expect(alabama).toContain('$4.15 above');
+    expect(textOf(sectionOf('Alabama', 'es', 'wages'))).toContain('cajeros $13.58');
+    // Wisconsin and Wyoming share $24.17, so they share a rank
+    const rank = (name: string) =>
+      /(\d+)(st|nd|rd|th)-highest/.exec(textOf(sectionOf(name, 'en', 'wages')))?.[1];
+    expect(rank('Wisconsin')).toBe(rank('Wyoming'));
+    for (const facts of STATE_FACTS)
+      for (const lang of LANGS)
+        expect(sectionOf(facts.tipped.name.en, lang, 'wages')?.sources).toContainEqual(
+          SOURCES.oews,
+        );
+  });
+
+  it('gives the limits of the DOL child labor table for under 16 and for 16 and 17', () => {
+    const alabama = textOf(sectionOf('Alabama', 'en', 'teens'));
+    expect(alabama).toContain('8-40-6 non-school day/week; 3-18-6 school day/week');
+    expect(alabama).toContain('10 p.m. before school day to 5 a.m., if enrolled in school');
+    const mississippi = textOf(sectionOf('Mississippi', 'en', 'teens'));
+    expect(mississippi).toContain('8-44 in factory, mill, cannery, workshop');
+    expect(mississippi).toContain('sets no limit for 16- and 17-year-olds');
+    const texas = textOf(sectionOf('Texas', 'en', 'teens'));
+    expect(texas).toContain('8-48');
+    expect(texas).toContain('midnight before non-school day');
+    expect(textOf(sectionOf('Texas', 'es', 'teens'))).toContain('medianoche');
+    // the federal rule that holds where a state's is less strict (Fact Sheet #43)
+    expect(texas).toContain('less restrictive than the federal law, the federal law applies');
+    expect(textOf(sectionOf('Delaware', 'en', 'teens'))).toContain(
+      'combined hours of work and school',
+    );
+    // the state's two rows and one sentence on the federal rule: the shared text stays short
+    for (const facts of STATE_FACTS)
+      expect(contextOf(facts, 'es').find(({ id }) => id === 'teens')?.paragraphs).toHaveLength(3);
+  });
+
+  it.each(LANGS)('gives every state its teen limits with their two sources, in %s', (lang) => {
+    for (const facts of STATE_FACTS) {
+      const section = sectionOf(facts.tipped.name.en, lang, 'teens');
+      expect(section?.sources).toContainEqual(SOURCES.childLaborTable);
+      expect(section?.sources).toContainEqual(SOURCES.factSheet43);
+    }
+  });
+
+  it('names the labor office of the DOL list, its phone and its website', () => {
+    const alabama = sectionOf('Alabama', 'en', 'office');
+    expect(textOf(alabama)).toContain('Alabama Department of Labor');
+    expect(textOf(alabama)).toContain('334-309-9000');
+    expect(textOf(alabama)).toContain('Montgomery');
+    expect(alabama?.links).toContainEqual({
+      label: 'www.labor.alabama.gov',
+      href: 'https://www.labor.alabama.gov',
+    });
+    const texas = sectionOf('Texas', 'es', 'office');
+    expect(textOf(texas)).toContain('Texas Workforce Commission');
+    expect(textOf(texas)).toContain('800-628-5115');
+    // the federal Wage and Hour Division takes the FLSA's minimum wage and overtime
+    expect(textOf(texas)).toContain('1-866-487-9243');
+    const dc = textOf(sectionOf('District of Columbia', 'en', 'office'));
+    expect(dc).toContain('Department of Employment Services');
+    expect(dc).toContain('Office of Human Rights');
+  });
+
   it('prints no section that does not apply and cites a source in every one', () => {
     for (const facts of STATE_FACTS)
       for (const lang of LANGS)
         for (const section of contextOf(facts, lang)) {
           expect(section.sources.length).toBeGreaterThan(0);
-          expect(textOf(section)).not.toMatch(/not applicable|no aplica|N\/A|undefined|NaN/);
+          expect(textOf(section)).not.toMatch(/not applicable\.|no aplica\.|N\/A|undefined|NaN/);
         }
-    expect(contextOf(factsOf('Texas'), 'en').map(({ id }) => id)).toEqual(['paycheck', 'compare']);
+    expect(contextOf(factsOf('Texas'), 'en').map(({ id }) => id)).toEqual([
+      'payday',
+      'compare',
+      'wages',
+      'teens',
+      'office',
+    ]);
   });
 });
 
