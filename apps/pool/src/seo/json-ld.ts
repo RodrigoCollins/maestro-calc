@@ -67,6 +67,7 @@ export const jsonLdOf = (
             url,
             inLanguage,
             applicationCategory: 'UtilitiesApplication',
+            ...(page.modified === undefined ? {} : { dateModified: page.modified }),
           })
         : articleLd({
             headline: nameOf(page.title),

@@ -98,6 +98,17 @@ describe('jsonLdOf', () => {
     );
   });
 
+  it('gives a calculator the day its cited answers were checked, when the page carries one', () => {
+    const calculator = { title: 'Salt | Pool Figures', description: 'S.', modified: '2026-11-10' };
+    expect(JSON.parse(jsonLdOf('/pool-salt-calculator', calculator, ORIGIN))).toMatchObject({
+      '@type': 'WebApplication',
+      dateModified: '2026-11-10',
+    });
+    expect(JSON.parse(jsonLdOf('/pool-salt-calculator', page, ORIGIN))).not.toHaveProperty(
+      'dateModified',
+    );
+  });
+
   it('gives a page with a trail its node and the BreadcrumbList of the trail, in one @graph', () => {
     const job = {
       title: 'How Much Salt for a 5,000 Gallon Pool? | Pool Figures',

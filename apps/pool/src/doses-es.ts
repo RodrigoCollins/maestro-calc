@@ -25,9 +25,9 @@ const methodLink = (id: string) => ({
 
 export const SALT_ES: DosePage = {
   path: '/es/calculadora-de-sal-para-piscina',
-  title: 'Calculadora de sal para piscina: ¿cuántas bolsas? | Pool Figures',
+  title: 'Calculadora de sal para piscina: kilos y sacos | Pool Figures',
   description:
-    'Cuántas libras y bolsas de 40 lb, o kilos y sacos de 20 kg, de sal suben tu piscina de su lectura al nivel que buscas, en galones o litros.',
+    'Cuántos kilos y sacos de 20 kg, o libras y bolsas de 40 lb, de sal suben tu piscina al nivel que buscas, con una tabla por litros y cuándo nadar.',
   kicker: 'Piscinas de agua salada · gratis',
   h1: 'Calculadora de sal para piscina',
   lead: 'Elige unidades de EE. UU. o métricas e ingresa el volumen de tu piscina o alberca, la lectura de sal de hoy y el nivel que pide tu clorador. Obtienes las libras o los kilos, y las bolsas.',
@@ -94,6 +94,40 @@ export const CHLORINE_ES: DosePage = {
       metricUnit: 'GRAMOS',
       forms: ['cal-hypo-65', 'dichlor-56'],
     },
+    {
+      key: 'liquid',
+      as: 'large',
+      label: 'En galones',
+      unit: 'gal',
+      metricLabel: 'En mililitros',
+      metricUnit: 'mL',
+      forms: ['liquid-12-5', 'liquid-10'],
+      detail: true,
+    },
+    {
+      key: 'dry',
+      as: 'large',
+      label: 'En libras',
+      unit: 'lb',
+      metricLabel: 'En kilos',
+      metricUnit: 'kg',
+      forms: ['cal-hypo-65', 'dichlor-56'],
+      detail: true,
+    },
+    {
+      key: 'cya',
+      label: 'Estabilizador (CYA) que agrega',
+      unit: 'ppm',
+      forms: ['dichlor-56'],
+      detail: true,
+    },
+    {
+      key: 'hardness',
+      label: 'Dureza de calcio que agrega',
+      unit: 'ppm',
+      forms: ['cal-hypo-65'],
+      detail: true,
+    },
   ],
   strip: {
     field: 'current',
@@ -116,7 +150,7 @@ export const PH_ES: DosePage = {
     'Cuánto ácido muriático baja el pH de tu piscina, o cuánto carbonato de sodio lo sube, según las gotas de la prueba de demanda de un kit Taylor.',
   kicker: 'pH · gratis',
   h1: 'Calculadora de pH para piscina',
-  lead: 'Para bajar el pH, haz la prueba de demanda de ácido de tu kit; para subirlo, la prueba de demanda de base, y cuenta las gotas que necesita. Ingresa el volumen de tu piscina, en galones o litros, y esas gotas. Obtienes el ácido muriático o el carbonato de sodio que debes agregar.',
+  lead: 'Para bajar el pH, haz la prueba de demanda de ácido de tu kit; para subirlo, la prueba de demanda de base, y cuenta las gotas que necesita. Ingresa el volumen de tu piscina, en galones o litros, y esas gotas. Obtienes el ácido muriático, el ácido seco o el carbonato de sodio que debes agregar, en onzas y libras.',
   fields: {
     gallons: volume,
     product: {
@@ -124,6 +158,7 @@ export const PH_ES: DosePage = {
       options: {
         'muriatic-31-45': 'Bajar el pH: ácido muriático, 31.45%',
         'soda-ash': 'Subir el pH: carbonato de sodio (soda ash)',
+        'dry-acid': 'Bajar el pH: ácido seco (bisulfato de sodio)',
       },
     },
     drops: { label: 'Gotas de reactivo de demanda' },
@@ -145,6 +180,33 @@ export const PH_ES: DosePage = {
       forms: ['soda-ash'],
     },
     {
+      key: 'dry',
+      label: 'Ácido seco que debes agregar',
+      unit: 'OZ DE PESO',
+      metricUnit: 'GRAMOS',
+      forms: ['dry-acid'],
+    },
+    {
+      key: 'liquid',
+      as: 'large',
+      label: 'En galones',
+      unit: 'gal',
+      metricLabel: 'En mililitros',
+      metricUnit: 'mL',
+      forms: ['muriatic-31-45'],
+      detail: true,
+    },
+    {
+      key: 'dry',
+      as: 'large',
+      label: 'En libras',
+      unit: 'lb',
+      metricLabel: 'En kilos',
+      metricUnit: 'kg',
+      forms: ['soda-ash', 'dry-acid'],
+      detail: true,
+    },
+    {
       key: 'liquidPerDay',
       label: 'Lo más que puedes agregar en 24 horas',
       unit: 'fl oz',
@@ -158,7 +220,7 @@ export const PH_ES: DosePage = {
       label: 'Lo más que puedes agregar de una vez',
       unit: 'oz',
       metricUnit: 'g',
-      forms: ['soda-ash'],
+      forms: ['soda-ash', 'dry-acid'],
       detail: true,
     },
     {
@@ -168,6 +230,13 @@ export const PH_ES: DosePage = {
       forms: ['soda-ash'],
       detail: true,
     },
+    {
+      key: 'additions',
+      label: 'Veces que lo agregas, con 2 horas entre una y otra',
+      unit: '',
+      forms: ['dry-acid'],
+      detail: true,
+    },
   ],
   warnings: {
     pastChart:
@@ -175,13 +244,13 @@ export const PH_ES: DosePage = {
     splitDays:
       'Es más de lo que la etiqueta agrega en un día, así que divídelo: agrega como máximo la cantidad de arriba, deja la bomba funcionando, mide el pH otra vez después de 24 horas y agrega el resto de la misma forma.',
     splitAdditions:
-      'Es más de lo que la etiqueta agrega de una vez, así que divídelo: agrega como máximo la cantidad de arriba, deja circular el agua de 2 a 3 horas, mide el pH otra vez y agrega el resto de la misma forma.',
+      'Es más de lo que la etiqueta agrega de una vez, así que divídelo: agrega como máximo la cantidad de arriba, deja circular el agua (2 horas con ácido seco, de 2 a 3 horas con carbonato de sodio), mide el pH otra vez y agrega el resto de la misma forma.',
   },
   method:
-    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, y cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba.',
+    'Según la tabla de dosis de pH de Taylor Technologies: cada gota de reactivo de demanda de ácido equivale a 9.16 fl oz de ácido muriático por cada 10,000 galones, cada gota de reactivo de demanda de base, a 5.13 oz de carbonato de sodio, y cada gota de reactivo de demanda de ácido, a 12.32 oz de ácido seco. Dosis = galones ÷ 10,000 × gotas × esa cantidad. La prueba se hace con tu propia agua, así que su alcalinidad ya está en la cuenta. El resultado es aproximado. La etiqueta de ácido muriático de HASA agrega como máximo un cuarto de galón por cada 20,000 galones en 24 horas, galones × 32 ÷ 20,000 fl oz al día, y lo repite cada 24 horas; la etiqueta de pH Up de carbonato de sodio agrega como máximo 1 lb por cada 10,000 galones de una vez y luego deja circular el agua de 2 a 3 horas; la etiqueta de pH Down de ácido seco, como máximo 1.5 lb por cada 10,000 galones de una vez, y luego 2 horas. Días o veces = la dosis ÷ ese máximo, redondeado hacia arriba.',
   metricMethod:
     'En métrico los litros se leen como galones, de 3.785 L cada uno, porque la tabla y las etiquetas están escritas por galón.',
-  note: 'La dosis de ácido es para ácido muriático al 31.45% (20° Baumé); para otra concentración, sigue la etiqueta de tu producto. Agrega el ácido al agua, nunca el agua al ácido: viértelo despacio en la parte honda con la bomba funcionando, con guantes y protección para los ojos, y nunca lo mezcles con cloro. Mide el pH otra vez después del tiempo de espera de la etiqueta.',
+  note: 'La dosis de ácido es para ácido muriático al 31.45% (20° Baumé) y ácido seco de bisulfato de sodio al 93.2%; para otra concentración, sigue la etiqueta de tu producto. Agrega el ácido al agua, nunca el agua al ácido: viértelo despacio en la parte honda con la bomba funcionando, con guantes y protección para los ojos, y nunca lo mezcles con cloro. Mide el pH otra vez después del tiempo de espera de la etiqueta.',
   methodLink: methodLink('ph'),
 };
 

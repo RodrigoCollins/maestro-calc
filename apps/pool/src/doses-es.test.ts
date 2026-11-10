@@ -68,7 +68,12 @@ describe('the Spanish dose pages', () => {
           expect(Object.keys(es.fields[key]?.options ?? {}), key).toEqual(
             Object.keys(field.options ?? {}),
           );
-        const shape = ({ key, forms, detail }: DosePage['results'][number]) => [key, forms, detail];
+        const shape = ({ key, forms, detail, as }: DosePage['results'][number]) => [
+          key,
+          forms,
+          detail,
+          as,
+        ];
         expect(es.results.map(shape)).toEqual(en.results.map(shape));
         expect(Object.keys(es.warnings ?? {})).toEqual(Object.keys(en.warnings ?? {}));
         expect(es.bags === undefined).toBe(en.bags === undefined);

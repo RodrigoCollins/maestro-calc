@@ -2,7 +2,11 @@
 import type { Calculator, InputDescriptor, OutputDescriptor } from '@maestro-calc/core';
 import type { DosePage } from '../doses.ts';
 import { amountText, outputText } from '../format.ts';
+import { extrasOf } from '../calculator-extras.ts';
+import Byline from './Byline.astro';
+import CalculatorExtras from './CalculatorExtras.astro';
 import JobLinks from './JobLinks.astro';
+import Sources from './Sources.astro';
 import Layout from './Layout.astro';
 import WorkedExample from './WorkedExample.astro';
 
@@ -58,12 +62,22 @@ const shown = (forms: readonly string[] | undefined): boolean =>
   forms === undefined || forms.includes(product ?? '');
 const reading = fields.find(({ key }) => key === page.strip?.field)?.value;
 const warned = new Set(ran.value.warnings.map(({ code }) => code));
+// a page that answers questions from labels carries the byline and the sources they come from
+const extras = extrasOf(page.path);
+const cited = !embed && (extras?.faq.length ?? 0) > 0;
+const modified = cited ? extras?.checked : undefined;
 ---
 
-<Layout title={page.title} description={page.description} {embed}>
+<Layout
+  title={page.title}
+  description={page.description}
+  {embed}
+  {...(modified === undefined ? {} : { modified })}
+>
   <main class="pool-page">
     <p class="pool-kicker">{page.kicker}</p>
     <h1>{page.h1}</h1>
+    {cited && <Byline path={page.path} />}
     <p>{page.lead}</p>
     <form class="pool-form" data-calculator={calculator.id} novalidate>
       {fields.map((field) => (
@@ -128,7 +142,9 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
             <div data-forms={row.forms?.join(' ')} hidden={!shown(row.forms)}>
               <dt data-metric={row.metricLabel}>{row.label}</dt>
               <dd>
-                <span data-out={row.key}>{outputText(row.key, out.get(row.key))}</span>{' '}
+                <span data-out={row.key} data-as={row.as}>
+                  {outputText(row.key, out.get(row.key), 'us', row.as)}
+                </span>{' '}
                 <span data-metric={row.metricUnit}>{row.unit}</span>
               </dd>
             </div>
@@ -149,10 +165,13 @@ const warned = new Set(ran.value.warnings.map(({ code }) => code));
         <a href={page.methodLink.href}>{page.methodLink.label}</a>
       </p>
     )}
-    {/* an embed's frame height is fixed, so the worked example stays on the page itself */}
+    {/* an embed's frame height is fixed, so the tables, the worked example and the questions stay on the page itself */}
+    {!embed && <CalculatorExtras path={page.path} part="tables" />}
     {!embed && <WorkedExample path={page.path} />}
+    {!embed && <CalculatorExtras path={page.path} part="faq" />}
     {/* the guides in the page's language; the job pages are English only */}
     <JobLinks path={page.path} {embed} />
+    {cited && <Sources path={page.path} />}
   </main>
   <slot />
 </Layout>

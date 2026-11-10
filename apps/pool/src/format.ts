@@ -73,8 +73,35 @@ const PER_GALLON = Rational.of(128);
  * gallons a minute of pump flow; a plain number is the fill time in hours and minutes, or a whole
  * figure (BTU, minutes).
  */
-export const outputText = (key: string, value: unknown, system: Units = 'us'): string =>
-  system === 'metric' ? metricText(key, value) : usText(key, value);
+export const outputText = (
+  key: string,
+  value: unknown,
+  system: Units = 'us',
+  as?: string,
+): string =>
+  as === 'large'
+    ? largeText(value, system)
+    : system === 'metric'
+      ? metricText(key, value)
+      : usText(key, value);
+
+/** The ppm a chlorine product brings with it (`cya`, `hardness`), to a tenth. */
+const TENTHS = new Set(['cya', 'hardness']);
+
+/**
+ * A dose in the larger unit, the row under its large figure: pounds or kilograms of a granular
+ * product to two places, gallons of a liquid to two places, or millilitres in metric, where the large
+ * figure is already litres.
+ */
+const largeText = (value: unknown, system: Units): string => {
+  if (isQuantityOf(value, 'mass'))
+    return amountText(valueIn(value, system === 'metric' ? kg : lb), 2);
+  if (isQuantityOf(value, 'volume'))
+    return system === 'metric'
+      ? amountText(valueIn(value, liter).mul(THOUSAND))
+      : amountText(valueIn(value, gal), 2);
+  throw new Error('no larger unit for a plain number');
+};
 
 const THOUSAND = Rational.of(1000);
 
@@ -109,6 +136,7 @@ const usText = (key: string, value: unknown): string => {
       key.startsWith('liquid') ? valueIn(value, gal).mul(PER_GALLON) : valueIn(value, gal),
       1,
     );
-  if (value instanceof Rational) return key === 'time' ? durationText(value) : amountText(value);
+  if (value instanceof Rational)
+    return key === 'time' ? durationText(value) : amountText(value, TENTHS.has(key) ? 1 : 0);
   throw new Error(`no text for output ${key}`);
 };

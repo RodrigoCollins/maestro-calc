@@ -23,6 +23,11 @@ describe('pool pH in metric', () => {
     expect(isQuantityOf(dry, 'mass') && valueIn(dry, oz)).toEqual(Rational.of(513, 100));
   });
 
+  it('doses dry acid on the litres as gallons', () => {
+    const dry = outputs({ gallons: '37854.11784', product: 'dry-acid', drops: '1' }).get('dry');
+    expect(isQuantityOf(dry, 'mass') && valueIn(dry, oz)).toEqual(Rational.of(1232, 100));
+  });
+
   it('caps a day of acid on the same gallons: a quart per 20,000', () => {
     const perDay = outputs({ gallons: '75708.23568' }).get('liquidPerDay');
     expect(isQuantityOf(perDay, 'volume') && valueIn(perDay, gal)).toEqual(Rational.of(1, 4));

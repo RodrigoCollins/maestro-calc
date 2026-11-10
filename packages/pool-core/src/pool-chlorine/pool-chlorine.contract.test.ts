@@ -17,6 +17,8 @@ describe('pool-chlorine contract', () => {
     expect(poolChlorine.outputs.map(({ key, role }) => [key, role])).toEqual([
       ['liquid', 'primary'],
       ['dry', 'secondary'],
+      ['cya', 'secondary'],
+      ['hardness', 'secondary'],
     ]);
   });
 });
