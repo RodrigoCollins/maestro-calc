@@ -63,8 +63,8 @@ describe('routes', () => {
 
   it('routes a page for each planting zone and a seed and a fertilizer page for each state', () => {
     expect(ROUTES.filter(({ id }) => id.startsWith('zone:'))).toHaveLength(16);
-    expect(ROUTES.filter(({ id }) => id.startsWith('seed:'))).toHaveLength(20);
-    expect(ROUTES.filter(({ id }) => id.startsWith('feed:'))).toHaveLength(20);
+    expect(ROUTES.filter(({ id }) => id.startsWith('seed:'))).toHaveLength(26);
+    expect(ROUTES.filter(({ id }) => id.startsWith('feed:'))).toHaveLength(26);
     expect(hrefOf('zone:7b')).toBe('/planting-zones/zone-7b');
     expect(hrefOf('seed:texas')).toBe('/when-to-plant-grass-seed/texas');
     expect(hrefOf('feed:north-carolina')).toBe('/when-to-fertilize-lawn/north-carolina');

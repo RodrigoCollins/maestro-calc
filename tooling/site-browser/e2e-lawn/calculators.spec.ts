@@ -94,6 +94,16 @@ test('the fertilizer page warns above the limit of one application, and not at i
   await expect(page.locator('[data-warning="overLimit"]')).toBeHidden();
 });
 
+// The Arizona fertilizer page links the calculator at ½ lb of N per 1,000 sq ft:
+// 0.5 / 0.24 x 5 = 10.42 lb, one 15 lb bag
+test('a state fertilizer page opens the calculator at its own rate', async ({ page }) => {
+  await page.goto('/when-to-fertilize-lawn/arizona');
+  await page.locator('a[href="/lawn-fertilizer-calculator?v=1&t=1/2"]').click();
+  await expect(page).toHaveURL(/\/lawn-fertilizer-calculator\?v=1&t=1\/2$/);
+  await expect(page.locator('[name="target"]')).toHaveValue('0.5');
+  await expect(page.locator('[data-v="pounds"]').first()).toHaveText('10.4');
+});
+
 test('the seed page draws the two crosswise passes and names the pounds each way', async ({
   page,
 }) => {

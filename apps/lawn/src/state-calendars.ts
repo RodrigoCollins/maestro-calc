@@ -42,7 +42,7 @@ const UC_FEED_WARM = read(
   'UC IPM, UC Guide to Healthy Lawns, “Zone 4 – Warm-season grasses” fertilization',
   'https://ipm.ucanr.edu/TOOLS/TURF/MAINTAIN/fertwarm4.html',
 );
-const TX_FEED = read(
+export const TX_FEED = read(
   'Texas A&M AgriLife Extension E-436, “Fertilizing Texas Lawns: 10-Point Checklist for Warm-Season Grasses”',
   'https://agrilifeextension.tamu.edu/wp-content/uploads/2025/06/Fertilizing-Texas-Lawns.pdf',
 );
@@ -58,7 +58,7 @@ const FL_ESTABLISH = read(
   'UF/IFAS EDIS ENH-03, “Establishing Your Florida Lawn” (2025)',
   'https://edis.ifas.ufl.edu/publication/LH013/pdf',
 );
-const FL_FEED = read(
+export const FL_FEED = read(
   'UF/IFAS EDIS SL21, “General Recommendations for Fertilization of Turfgrasses on Florida Soils” (2023)',
   'https://edis.ifas.ufl.edu/publication/LH014/pdf',
 );
@@ -70,7 +70,7 @@ const CORNELL_PLAN = read(
   'Cornell Turfgrass Program, “Plan Ahead”',
   'https://turf.cals.cornell.edu/lawn/lawn-care-the-easiest-steps-to-an-attractive-environmental-asset/starting-fresh/plan-ahead/',
 );
-const CORNELL_FEED = read(
+export const CORNELL_FEED = read(
   'Cornell Turfgrass Program, “Feeding”',
   'https://turf.cals.cornell.edu/lawn/lawn-care-the-easiest-steps-to-an-attractive-environmental-asset/advanced-care/feeding/',
 );
@@ -86,7 +86,7 @@ const PSU_SEASONS = read(
   'Penn State Extension, “Lawn Management through the Seasons”',
   'https://extension.psu.edu/lawn-management-through-the-seasons',
 );
-const IL_FALL = read(
+export const IL_FALL = read(
   'Illinois Extension, “Five fall tips for cool-season lawn care” (2024)',
   'https://extension.illinois.edu/news-releases/five-fall-tips-cool-season-lawn-care',
 );
@@ -98,15 +98,15 @@ const OHIO = read(
   'Ohio State University Extension HYG-5812, “Efficient Lawn Care Practices to Help Protect Ohio’s Waterways” (2022)',
   'https://ohioline.osu.edu/factsheet/hyg-5812',
 );
-const UGA_CALENDAR = read(
+export const UGA_CALENDAR = read(
   'UGA Cooperative Extension Circular 802, “Professional Grounds Management Calendar”',
   'https://fieldreport.caes.uga.edu/wp-content/uploads/2022/08/C802-Reviewed-2026.pdf',
 );
-const UGA_SPRING = read(
+export const UGA_SPRING = read(
   'UGA CAES Field Report, “Spring fertilization of lawns should be guided by soil testing, temperatures” (2012)',
   'https://fieldreport.caes.uga.edu/news/spring-fertilization-of-lawns-should-be-guided-by-soil-testing-temperatures/',
 );
-const NC_HANDBOOK = read(
+export const NC_HANDBOOK = read(
   'NC State Extension Gardener Handbook, chapter 9, “Lawns”',
   'https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
 );
@@ -122,7 +122,7 @@ const RUTGERS_SEED = read(
   'Rutgers Cooperative Extension FS584, “Seeding Your Lawn” (2004)',
   'https://extension.rutgers.edu/fs584',
 );
-const RUTGERS_FEED = read(
+export const RUTGERS_FEED = read(
   'Rutgers Cooperative Extension FS102, “Your Lawn and Its Care” (2023)',
   'https://extension.rutgers.edu/fs102',
 );
@@ -130,15 +130,15 @@ const RUTGERS_LAW = read(
   'Rutgers NJAES News, “NJ fertilizer law restrictions on home lawn applications now in effect” (2013)',
   'https://sebsnjaesnews.rutgers.edu/2013/11/nj-fertilizer-law-restrictions-on-home-lawn-applications-now-in-effect/',
 );
-const VA_FEED = read(
+export const VA_FEED = read(
   'Virginia Cooperative Extension 430-011, “Lawn Fertilization in Virginia” (2021)',
   'https://ext.vt.edu/content/dam/pubs_ext_vt_edu/430/430-011/SPES-334%20(1).pdf',
 );
-const WSU = read(
+export const WSU = read(
   'Washington State University Extension EB0482E, “Home Lawns” (2015)',
   'https://wpcdn.web.wsu.edu/wp-ecommerce/uploads/sites/2/product-3730-sku-EB0482E.pdf',
 );
-const ARIZONA = read(
+export const ARIZONA = read(
   'University of Arizona Cooperative Extension AZ1817, “A Turfgrass Maintenance Guide for Residential and Commercial Lawns in the Low Elevation Arizona Desert” (2020)',
   'https://extension.arizona.edu/publication/turfgrass-maintenance-guide-residential-and-commercial-lawns-low-elevation-arizona',
 );
@@ -146,11 +146,11 @@ const UT_CHAPTER = read(
   'UT Extension Master Gardener, “Chapter 10 – Turfgrass Management in Tennessee”',
   'https://mastergardener.tennessee.edu/chapter-10-turfgrass-management-in-tennessee/',
 );
-const UT_FEED = read(
+export const UT_FEED = read(
   'University of Tennessee W161-C, “Developing a Turf Fertilization Plan” (2008)',
   'https://uthort.tennessee.edu/wp-content/uploads/sites/228/2023/11/W161-C.pdf',
 );
-const PURDUE_FEED = read(
+export const PURDUE_FEED = read(
   'Purdue Extension AY-22-W, “Fertilizing Established Cool-season Lawns” (2013)',
   'https://www.extension.purdue.edu/extmedia/ay/ay-22-w.pdf',
 );
@@ -162,7 +162,7 @@ const UMD = read(
   'University of Maryland Extension, “Lawn Maintenance Calendar” (2026)',
   'https://extension.umd.edu/resource/lawn-maintenance-calendar',
 );
-const MIZZOU = read(
+export const MIZZOU = read(
   'University of Missouri IPM, “Seeding & Fertilizing Missouri Lawns: One Size Does Not Fit All” (2014)',
   'https://ipm.missouri.edu/meg/2014/5/Seeding-and-Fertilizing-Missouri-Lawns',
 );
@@ -178,7 +178,7 @@ const CSU_SEED = read(
   'Colorado State University Extension, PlantTalk 1516, “Seeding a Lawn”',
   'https://planttalk.colostate.edu/topics/lawns/1516-seeding-lawn/',
 );
-const CSU_FEED = read(
+export const CSU_FEED = read(
   'Colorado State University Extension, “Lawn Care Basics” (fact sheet 7.202)',
   'https://extension.colostate.edu/resource/lawn-care-basics/',
 );
@@ -186,9 +186,77 @@ const CSU_FALL = read(
   'Colorado State University Extension, PlantTalk 1535, “Fall Lawn Fertilization: During Drought”',
   'https://planttalk.colostate.edu/topics/lawns/1535-fall-lawn-fertilization-drought/',
 );
-const UW_FEED = read(
+export const UW_FEED = read(
   'Wisconsin Horticulture, Division of Extension, “Optimum Time for Fertilizing Lawns”',
   'https://hort.extension.wisc.edu/optimum-time-for-fertilizing-lawns/',
+);
+
+/** The day the sources of the states added after the first 20 were read. */
+export const ADDED_READ = '2026-11-10';
+const readAdded = (name: string, url: string): GuideSource => ({
+  name: `${name}, accessed ${ADDED_READ}`,
+  url,
+});
+
+export const SC_GRASSES = readAdded(
+  'Clemson Cooperative Extension HGIC 1223, “Turfgrasses for the Carolinas” (2016)',
+  'https://hgic.clemson.edu/factsheet/turfgrasses-for-the-carolinas/',
+);
+export const SC_BERMUDA = readAdded(
+  'Clemson Cooperative Extension HGIC 1216, “Bermudagrass Maintenance Calendar” (2018)',
+  'https://hgic.clemson.edu/factsheet/bermudagrass-maintenance-calendar/',
+);
+export const SC_FESCUE = readAdded(
+  'Clemson Cooperative Extension HGIC 1219, “Tall Fescue Maintenance Calendar” (2024)',
+  'https://hgic.clemson.edu/factsheet/tall-fescue-maintenance-calendar/',
+);
+export const AL_SCHEDULE = readAdded(
+  'Alabama Cooperative Extension System ANR-2872-C, “Fertilize with Care” (2023)',
+  'https://www.aces.edu/wp-content/uploads/2022/08/ANR-2872-C_FertilizeWithCare_052523a-G.pdf',
+);
+export const AL_FESCUE = readAdded(
+  'Alabama Cooperative Extension System ANR-0231, “Tall Fescue Lawns” (2022)',
+  'https://www.aces.edu/wp-content/uploads/2022/05/ANR-0231_TallFescueLawns_051122aL-G.pdf',
+);
+export const KY_FEED = readAdded(
+  'University of Kentucky Cooperative Extension AGR-212, “Fertilizing Your Lawn” (2014)',
+  'https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/AGR212.pdf',
+);
+const KY_RENOVATE = readAdded(
+  'University of Kentucky Cooperative Extension AGR-51, “Renovating Your Lawn” (2014)',
+  'https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/agr51.pdf',
+);
+export const AR_BERMUDA = readAdded(
+  'University of Arkansas Cooperative Extension FSA6121, “Lawn Care Calendar: Bermudagrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6121.pdf',
+);
+export const AR_FESCUE = readAdded(
+  'University of Arkansas Cooperative Extension FSA6118, “Lawn Care Calendar: Tall Fescue” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6118.pdf',
+);
+export const AR_ZOYSIA = readAdded(
+  'University of Arkansas Cooperative Extension FSA6122, “Lawn Care Calendar: Zoysiagrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6122.pdf',
+);
+export const AR_CENTIPEDE = readAdded(
+  'University of Arkansas Cooperative Extension FSA6120, “Lawn Care Calendar: Centipedegrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6120.pdf',
+);
+export const MS_LAWN = readAdded(
+  'Mississippi State University Extension Publication 1322, “Establish and Manage Your Home Lawn” (2026)',
+  'https://extension.msstate.edu/sites/default/files/document/2026-01/P1322_web.pdf',
+);
+export const KS_GUIDE = readAdded(
+  'Kansas State University Research and Extension MF2916, “Lawn Fertilizing Guide” (2023)',
+  'https://bookstore.ksre.ksu.edu/download/lawn-fertilizing-guide_MF2916',
+);
+export const KS_RATES = readAdded(
+  'Kansas State University Research and Extension MF-2311, “A Guide to Turfgrass Nutrient Recommendations” (1998)',
+  'https://bookstore.ksre.ksu.edu/pubs/MF2311.pdf',
+);
+const KS_PLANT = readAdded(
+  'Kansas State University Research and Extension MF-1126, “Planting a Home Lawn” (2002)',
+  'https://bookstore.ksre.ksu.edu/pubs/mf1126.pdf',
 );
 
 /** The calendar of every state with a seed and a fertilizer page, by its postal code. */
@@ -715,6 +783,176 @@ export const STATE_CALENDARS: Readonly<Record<CalendarStateCode, StateCalendar>>
           'Colorado State: buffalograss, blue grama, zoysiagrass and bermudagrass should get no nitrogen after September 1.',
         ],
         source: CSU_FALL,
+      },
+    ],
+  },
+  SC: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Clemson names bermudagrass, centipedegrass, St. Augustinegrass and zoysiagrass as the warm-season lawn grasses of the Carolinas, and recommends tall fescue for the Mountains and Piedmont only.',
+      ],
+      source: SC_GRASSES,
+    },
+    seed: [
+      {
+        text: [
+          'Clemson: replant large bare areas of a bermudagrass lawn in May, with sod, plugs or sprigs; seed gives common improved bermudagrass, not the quality of a sodded hybrid.',
+        ],
+        source: SC_BERMUDA,
+      },
+      {
+        text: [
+          'Clemson: overseed thin tall fescue as the grass begins to respond to cooler temperatures, in September and early October.',
+        ],
+        source: SC_FESCUE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Clemson: feed bermudagrass in early May once the lawn fully greens up, again in June or July, and a last time before August 15; no nitrogen in fall and winter.',
+        ],
+        source: SC_BERMUDA,
+      },
+      {
+        text: [
+          'Clemson: feed tall fescue in September, optionally again in November, and in February; do not fertilize it after March 15, nor from June through August.',
+        ],
+        source: SC_FESCUE,
+      },
+    ],
+  },
+  AL: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Alabama Extension’s fertilization schedule covers the warm-season lawn grasses of Alabama, bermudagrass, centipedegrass, St. Augustinegrass and zoysiagrass, and tall fescue, the cool-season one.',
+      ],
+      source: AL_SCHEDULE,
+    },
+    seed: [
+      {
+        text: [
+          'Alabama Extension calls tall fescue a cool-season grass for north Alabama lawns, and September to October the best time to plant it there.',
+        ],
+        source: AL_FESCUE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Alabama Extension’s standard schedule feeds bermudagrass in May, July and August, St. Augustinegrass and zoysiagrass in May and July, centipedegrass a half feeding in May and another in August, and tall fescue in February, April and September.',
+          'It does not fertilize dormant grass: wait until the lawn is fully green.',
+        ],
+        source: AL_SCHEDULE,
+      },
+    ],
+  },
+  KY: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'The University of Kentucky names Kentucky bluegrass, tall fescue, perennial ryegrass and fine fescue as the cool-season lawn grasses of Kentucky, and bermudagrass and zoysiagrass as warm-season ones.',
+      ],
+      source: KY_FEED,
+    },
+    seed: [
+      {
+        text: [
+          'University of Kentucky: the best time to renovate a lawn is mid-August through late September, the second best mid-February through March; spring plantings may struggle in a hot, dry summer.',
+        ],
+        source: KY_RENOVATE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'University of Kentucky: the best time to fertilize cool-season lawns in Kentucky is the autumn; a low-maintenance lawn gets one feeding in October, a medium one October and November, a high one October through December, with up to a half feeding in late May or early June.',
+          'Late spring into summer is the best time to feed bermudagrass and zoysiagrass.',
+        ],
+        source: KY_FEED,
+      },
+    ],
+  },
+  AR: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'The University of Arkansas calls bermudagrass the most commonly used lawn grass in Arkansas; its lawn care calendars also cover tall fescue, centipedegrass, St. Augustinegrass and zoysiagrass.',
+      ],
+      source: AR_BERMUDA,
+    },
+    seed: [
+      {
+        text: [
+          'University of Arkansas: seeding bermudagrass in spring or early summer makes the seedlings more winter-hardy.',
+        ],
+        source: AR_BERMUDA,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'University of Arkansas: feed bermudagrass about three weeks after it turns green in late May, and give it no more than a half pound in September, four to six weeks before the first expected frost.',
+        ],
+        source: AR_BERMUDA,
+      },
+      {
+        text: [
+          'University of Arkansas: feed tall fescue in March or early April and not after May 1 in spring, then in mid-September and again in November.',
+        ],
+        source: AR_FESCUE,
+      },
+    ],
+  },
+  MS: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Mississippi State grows bermudagrass, St. Augustinegrass, centipedegrass, zoysiagrass, carpetgrass and bahiagrass for turf, and says only the northern counties can grow cool-season grasses as a permanent lawn: tall fescue, Kentucky bluegrass and creeping red fescue in its zone 7a.',
+      ],
+      source: MS_LAWN,
+    },
+    seed: [
+      {
+        text: [
+          'Mississippi State plants bermudagrass from May 15 to July 15 in its zone 7a and from April 15 to September 30 in zone 8b on the Gulf Coast, and seeds tall fescue from September 1 to November 1 in zone 7a.',
+        ],
+        source: MS_LAWN,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Mississippi State dates each feeding by grass and zone: hybrid bermudagrass from May 15 in zone 7a and from April 1 in zone 8b; St. Augustinegrass April 1, June 1 and August 15 in zone 8b; centipedegrass once, May 1 in zone 7b or April 15 in zone 8a; tall fescue September 15, March 1 and April 1 in zone 7a.',
+        ],
+        source: MS_LAWN,
+      },
+    ],
+  },
+  KS: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'K-State names bluegrass, fescue and ryegrass as the cool-season lawn grasses of Kansas, and buffalograss, bermudagrass and zoysiagrass as the warm-season ones.',
+      ],
+      source: KS_PLANT,
+    },
+    seed: [
+      {
+        text: [
+          'K-State: cool-season grasses are best seeded in early September, and October 15 is generally the last day to plant in the fall; mid-May through July is the ideal time to plant buffalograss, bermudagrass and zoysiagrass.',
+        ],
+        source: KS_PLANT,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'K-State: fescue and bluegrass lawns are best fertilized in September and November, with an optional feeding in May; bermudagrass and zoysiagrass between May and August, and buffalograss in June.',
+        ],
+        source: KS_GUIDE,
       },
     ],
   },
