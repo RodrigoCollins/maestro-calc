@@ -222,6 +222,43 @@ describe('linkProblems', () => {
     });
   });
 
+  // the cost guides: the home lists every one, the hub links each, and each links the hub
+  describe('the cost guides', () => {
+    const rules: LinkRules = {
+      ...RULES,
+      sitemap: [...RULES.sitemap, '/cost', '/cost-a'],
+      costs: { hub: '/cost', pages: ['/cost-a'] },
+    };
+    const home = (body: string): string =>
+      page(
+        `<section aria-labelledby="pool-guides">${a('/guide')}</section>${a('/calc')}<section aria-labelledby="pool-costs">${body}</section>`,
+        FOOTER,
+      );
+    const linked = new Map([
+      ...SITE,
+      ['/', home(`${a('/cost')}${a('/cost-a')}`)],
+      ['/cost', page(a('/cost-a'), FOOTER)],
+      ['/cost-a', page(a('/cost'), FOOTER)],
+    ]);
+
+    it('passes when the home lists them all and the hub and each page link each other', () => {
+      expect(linkProblems(linked, rules)).toEqual([]);
+    });
+
+    it('names a cost guide the home list leaves out', () => {
+      const site = new Map([...linked, ['/', home(a('/cost'))]]);
+      expect(linkProblems(site, rules)).toEqual(['/: the Pool costs list must link /cost-a']);
+    });
+
+    it('names a page the hub does not link, and a page that does not link the hub', () => {
+      const site = new Map([...linked, ['/cost', page('', FOOTER)], ['/cost-a', page('', FOOTER)]]);
+      expect(linkProblems(site, rules)).toEqual([
+        '/cost: must link the cost guide /cost-a',
+        '/cost-a: must link the cost hub /cost',
+      ]);
+    });
+  });
+
   // a footer links each guide in the language of its page: the Spanish twin once it is built
   describe('the guides of a Spanish footer', () => {
     const rules: LinkRules = {

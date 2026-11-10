@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 import { DATA_PAGES_OF } from './charts.ts';
+import { COST_GUIDES } from './costs.ts';
 import { GUIDES } from './guide.ts';
 import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
@@ -10,13 +11,20 @@ import { routeOf } from './routes.ts';
 const paths = BYLINE_PAGES.map(({ path }) => path);
 
 describe('the pages with a byline', () => {
-  it('are every guide and data page in both languages, and every job page', () => {
+  it('are every guide and data page in both languages, every cost guide and every job page', () => {
     const guides = GUIDES.flatMap(({ path }) => [path, routeOf(path)?.es ?? path]);
     const data = (['en', 'es'] as const).flatMap((lang) =>
       DATA_PAGES_OF[lang].map(({ path }) => path),
     );
     expect([...paths].sort()).toEqual(
-      [...new Set([...guides, ...data, ...JOB_PAGES.map(({ path }) => path)])].sort(),
+      [
+        ...new Set([
+          ...guides,
+          ...data,
+          ...COST_GUIDES.map(({ path }) => path),
+          ...JOB_PAGES.map(({ path }) => path),
+        ]),
+      ].sort(),
     );
     expect(new Set(paths).size).toBe(paths.length);
     for (const path of paths) expect(routeOf(path), path).toBeDefined();

@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { CHARTS_INDEX } from './charts.ts';
+import { COST_GUIDES } from './costs.ts';
 import { GUIDES } from './guide.ts';
 import { HOME_TOOLS } from './home.ts';
 import { llmsTxt } from './llms.ts';
@@ -43,6 +44,7 @@ describe('llms.txt', () => {
     expect(sections).toEqual([
       '## Calculators',
       '## Guides and charts',
+      '## Pool costs',
       '## About',
       '## En español',
       '## Optional',
@@ -79,6 +81,12 @@ describe('llms.txt', () => {
       expect(text).toContain(`- [${title} calculator](${SITE.origin}${href}): ${summary}`);
     for (const { path, card } of GUIDES)
       expect(text).toContain(`- [${card.title}](${SITE.origin}${path}): ${card.summary}`);
+  });
+
+  it('lists the cost guides in their own section, by their question', () => {
+    const section = text.split('## Pool costs')[1]?.split('\n## ')[0] ?? '';
+    for (const { path, h1, description } of COST_GUIDES)
+      expect(section).toContain(`- [${h1}](${SITE.origin}${path}): ${description}`);
   });
 });
 

@@ -30,6 +30,16 @@ export interface LinkRules {
    */
   readonly localize?: (target: string, path: string) => string;
   /**
+   * The cost guides: the home Pool costs list links the hub and each page, the hub links each
+   * page and each page links the hub (in its `<main>`).
+   */
+  readonly costs?: {
+    /** The cost hub (`COST_HUB` of `src/costs.ts`). */
+    readonly hub: string;
+    /** The priced questions the hub gathers. */
+    readonly pages: readonly string[];
+  };
+  /**
    * The data index of each language and the citable pages it lists (`DATA_PAGES_OF` of
    * `src/charts.ts`), with the sitemap pages whose footer links it (every one when unnamed).
    */
@@ -44,6 +54,7 @@ const ANCHOR = /<a\b[^>]*?\shref="([^"]*)"/g;
 const MAIN = /<main\b[^>]*>([\s\S]*?)<\/main>/;
 const FOOTER = /<footer\b[^>]*>([\s\S]*?)<\/footer>/;
 const HOME_GUIDES = /<section\b[^>]*\saria-labelledby="pool-guides"[^>]*>([\s\S]*?)<\/section>/;
+const HOME_COSTS = /<section\b[^>]*\saria-labelledby="pool-costs"[^>]*>([\s\S]*?)<\/section>/;
 
 /** The canonical path of a link, or `undefined` for a link off the site, a fragment or a scheme. */
 const pathOf = (href: string, origin: string): string | undefined => {
@@ -107,7 +118,7 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
   };
   const guides = rules.guides.map(({ path }) => path);
   const inbound = inboundOf(site, rules);
-  const { data, localize = (target: string) => target } = rules;
+  const { costs, data, localize = (target: string) => target } = rules;
   return [
     ...rules.jobs.flatMap(({ path, calculator, neighbors, guide }) => [
       ...must(calculator, [path], 'must link its job page'),
@@ -133,6 +144,13 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
       ...calculators.flatMap((calculator) => must(calculator, [path], 'must link its guide')),
       ...must(path, calculators, 'must link the calculator it explains,'),
     ]),
+    ...(costs === undefined
+      ? []
+      : [
+          ...must('/', [costs.hub, ...costs.pages], 'the Pool costs list must link', HOME_COSTS),
+          ...must(costs.hub, costs.pages, 'must link the cost guide'),
+          ...costs.pages.flatMap((path) => must(path, [costs.hub], 'must link the cost hub')),
+        ]),
     ...(data ?? []).flatMap(({ index, pages, footers = rules.sitemap }) => [
       ...pages.flatMap((path) => must(path, [index], 'must link the data index')),
       ...must(index, pages, 'must list the data page'),

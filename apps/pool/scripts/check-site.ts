@@ -15,6 +15,7 @@ import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/s
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/bylines.ts';
 import { CHARTS_INDEXES, DATA_PAGES_OF } from '../src/charts.ts';
+import { COST_GUIDES, COST_HUB } from '../src/costs.ts';
 import { ALL_EMBEDS } from '../src/embed.ts';
 import { langOf, localHrefOf, routeOf } from '../src/routes.ts';
 import { GUIDES } from '../src/guide.ts';
@@ -82,6 +83,11 @@ const all = [
       if (spanish === undefined) return [];
       return [{ path: spanish, calculators: calculators.flatMap((c) => routeOf(c)?.es ?? []) }];
     }),
+    // the home lists every cost guide, and the hub and each priced question link each other
+    costs: {
+      hub: COST_HUB.path,
+      pages: COST_GUIDES.filter(({ path }) => path !== COST_HUB.path).map(({ path }) => path),
+    },
     // a Spanish footer links the Spanish twin of a guide once it is built
     localize: (target, path) => localHrefOf(target, langOf(path)),
     // each language's footer links the data index of that language
