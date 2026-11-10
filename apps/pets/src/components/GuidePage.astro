@@ -20,6 +20,8 @@ const LABELS: Readonly<Record<string, string>> = {
   puppy: 'Puppy feeding calculator',
   kitten: 'Kitten feeding calculator',
   chocolate: 'Dog chocolate toxicity calculator',
+  'due-date': 'Dog pregnancy due date calculator',
+  'cat-age': 'Cat age calculator',
 };
 const tools = calculators.flatMap((path) => ROUTES.filter((route) => route.path === path));
 ---

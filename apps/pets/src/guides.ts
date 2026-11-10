@@ -1,4 +1,6 @@
+import { CAT_GROWTH_GUIDE } from './cat-growth-guide.ts';
 import { CHOCOLATE_GUIDE } from './chocolate-guide.ts';
+import { DOG_HEAT_GUIDE } from './dog-heat-guide.ts';
 import { hrefOf } from './routes.ts';
 
 /** A source a guide or chart cites: its name and its address. */
@@ -179,6 +181,8 @@ export const GUIDES: readonly Guide[] = [
     },
   },
   CHOCOLATE_GUIDE,
+  CAT_GROWTH_GUIDE,
+  DOG_HEAT_GUIDE,
 ];
 
 /** The guide at `path`. */
