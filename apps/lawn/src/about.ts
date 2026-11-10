@@ -13,6 +13,7 @@ export const ABOUT = {
       heading: 'What it is',
       paragraphs: [
         'Extension services publish the rates for fertilizer, seed and lime per 1,000 square feet and leave the conversion to the reader. Lawn Figures does that conversion: the pounds of the bag in your garage, not pounds of nitrogen, and the bags to buy.',
+        'Cost guides say what mowing, sod, artificial grass and the other lawn services cost, each price a published figure of a named source with the day we read it, worked out by lawn size with the calculators.',
         'Frost dates come from the NOAA 1991-2020 climate normals: one page for each state, with every station’s last spring and first fall freeze at three probability levels, and a ZIP lookup that finds the nearest station.',
       ],
     },
