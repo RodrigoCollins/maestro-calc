@@ -1,6 +1,6 @@
 import { encode, Rational, toDecimalParts } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
-import { decimalHoursText, hoursMinutesText, hoursText } from '../format.ts';
+import { decimalHoursText, hoursMinutesText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
