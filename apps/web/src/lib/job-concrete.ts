@@ -379,6 +379,32 @@ const footingOf = (raw: JobCase, text: Text): ExtraSection => {
   };
 };
 
+/**
+ * The four tips of the footing page `id` (content audit 2026-11-10: the same four on both
+ * footings), with its own section in two of them: the trench the 10% extra covers, and the run of
+ * trench that is a cubic yard with the extra, as the concrete engine works it out. `undefined` for
+ * any other job.
+ */
+export const footingTips = (
+  id: JobId,
+  text: Text,
+): readonly [string, string, string, string] | undefined => {
+  if (shapeOf(id) !== 'footing') return undefined;
+  const [raw] = JOBS[id].cases;
+  const width = inchesOf(raw['footingWidth'], 'in');
+  const depth = inchesOf(raw['footingDepth'], 'in');
+  const section = `${String(width)} × ${String(depth)} in`;
+  const tenth = (inches: number): string => decimalText(Rational.of(inches, 10), 1, false);
+  const sizes = { footingWidth: `${String(width)}in`, footingDepth: `${String(depth)}in` };
+  const perFoot = poured({ shape: 'footing', length: '1ft', ...sizes }).yards;
+  return [
+    sentence(text, 'site.job.guide.concrete-footing.tip1', [section, tenth(width), tenth(depth)]),
+    text('site.job.guide.concrete-footing.tip2'),
+    sentence(text, 'site.job.guide.concrete-footing.tip3', [section, two(perFoot.inv())]),
+    text('site.job.guide.concrete-footing.tip4'),
+  ];
+};
+
 /** What the concrete job page `id` adds to its table, or `undefined` for any other job. */
 export const jobConcrete = (id: JobId, locale: Locale): ExtraSection | undefined => {
   const shape = shapeOf(id);

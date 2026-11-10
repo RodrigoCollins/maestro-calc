@@ -68,6 +68,126 @@ describe('jobGuide (the buying advice of a job page)', () => {
   });
 });
 
+// content audit 2026-11-10: the four tips of a kind were the same words on every page of the
+// family, the largest block a pitch or a room page shared with its siblings; where a tip names a
+// figure of the job, it now gives that page's own figure
+describe('jobGuide tips with the figures of the page', () => {
+  // hand-verified: √(1 + (6/12)²) = 1.11803; 12 in × 1.11803 = 13.416 in → 13 7/16 in, 24 in →
+  // 26.833 in → 26 13/16 in; atan(6/12) = 26.57°, atan(5/12) = 22.62°, atan(7/12) = 30.26°;
+  // √(1 + (7/12)²) = 1.15770, so 100 sq ft is 111.80 sq ft of roof at 6/12, 115.77 at 7/12
+  it('works the tips of a 6/12 pitch out', () => {
+    const [tip1, tip2, tip3, tip4] = jobGuide('roof-pitch-6-12', 'en')?.tips ?? [];
+    expect(tip1).toContain('At 6/12 it reads 6 in, and 12 in over a 24 in level');
+    expect(tip2).toContain(
+      'a 12 in overhang adds 13 7/16 in of rafter and a 24 in one 26 13/16 in',
+    );
+    expect(tip3).toContain('at 6/12 it should show 26.57°');
+    expect(tip3).toContain('22.62° at 5/12 and 30.26° at 7/12');
+    expect(tip4).toContain('every 100 sq ft of footprint is 111.80 sq ft of roof at 6/12');
+    expect(tip4).toContain('115.77 sq ft at 7/12');
+  });
+
+  // hand-verified: atan(6.5/12) = 28.44°, atan(8.5/12) = 35.31°; √(1 + (8.5/12)²) = 1.22545
+  it('works a half-inch pitch and the low end of the table out, in Spanish too', () => {
+    const [, , tip3, tip4] = jobGuide('roof-pitch-7-5-12', 'es')?.tips ?? [];
+    expect(tip3).toContain('28.44° con 6.5/12 y 35.31° con 8.5/12');
+    expect(tip4).toContain('122.55 sq ft con 8.5/12');
+    // atan(1/12) = 4.76°, atan(3/12) = 14.04°
+    expect(jobGuide('roof-pitch-2-12', 'en')?.tips[2]).toContain(
+      '4.76° at 1/12 and 14.04° at 3/12',
+    );
+  });
+
+  // hand-verified, 10 × 10 ft room 8 ft high, one 20 sq ft door and two 15 sq ft windows, 10%
+  // extra: walls 2 × (10 + 10) × 8 = 320 − 50 = 270 sq ft, × 1.1 ÷ 32 = 9.28 → 10 sheets; ceiling
+  // 100 × 1.1 ÷ 32 = 3.44 → 4; together 370 × 1.1 ÷ 32 = 12.72 → 13, ÷ 48 = 8.48 → 9; the 10% of
+  // 370 sq ft is 37 sq ft; compound and tape as the drywall engine gives them
+  it('works the tips of a 10x10 room of drywall out', () => {
+    const [tip1, tip2, tip3, tip4] = jobGuide('drywall-room-10x10', 'en')?.tips ?? [];
+    expect(tip1).toContain('in this room it takes 4 sheets of 4 × 8 ft, the walls 10');
+    expect(tip2).toContain('9 sheets of 4 × 12 ft cover this room where 13 of 4 × 8 ft do');
+    expect(tip3).toContain('3.33 gal of compound and 136.90 ft of tape for this room');
+    expect(tip4).toContain('the 10% on the 370 sq ft of this room is 37 sq ft of board');
+  });
+
+  // hand-verified, 12 × 16 × 8 ft: walls 448 − 50 = 398 sq ft, ceiling 192 sq ft; 398 × 2 ÷ 350 =
+  // 2.27 → 3 gallon cans; the ceiling in two coats 384 ÷ 350 = 1.10 gal
+  it('works the tips of a 12x16 room of paint out, in Spanish too', () => {
+    const [tip1, , tip3, tip4] = jobGuide('paint-room-12x16', 'en')?.tips ?? [];
+    expect(tip1).toContain('This 12 by 16 ft room 8 ft high has 448 sq ft of wall and only 192');
+    expect(tip3).toContain('Buy the 3 gallons for the walls at once');
+    expect(tip4).toContain('this ceiling is 192 sq ft, 1.10 gal in two coats');
+    expect(jobGuide('paint-room-10x10', 'es')?.tips[0]).toContain('320 sq ft de pared');
+  });
+
+  // hand-verified, 30 × 40 ft footprint with 1 ft overhangs, 6/12: the house is 28 × 38 ft; the
+  // roof is 1,200 × 1.11803 = 1,341.64 sq ft = 13.42 squares, × 1.1 ÷ 33.33 = 44.3 → 45 bundles; at
+  // 3/12 it is 1,200 × √(1 + 1/16) = 1,236.93 sq ft, two layers 2,473.86 → 2,474 sq ft
+  it('works the tips of a 30x40 roof out', () => {
+    const [tip1, tip2, tip3] = jobGuide('roofing-30x40', 'en')?.tips ?? [];
+    expect(tip1).toContain('a 28 by 38 ft house makes this 30 by 40 ft footprint');
+    expect(tip2).toContain('so the 13.42 squares of this roof at 6/12 take 45 bundles');
+    expect(tip3).toContain('at 3/12 this roof takes 2,474 sq ft of underlayment');
+    expect(tip3).toContain('against 1,342 sq ft at 6/12');
+    expect(jobGuide('roofing-30x50', 'es')?.tips[0]).toContain('una casa de 28 por 48 ft');
+    // the 10% of 1,341.64 sq ft is 134.16 sq ft; the ridge runs along the 40 ft side; at 30 × 50,
+    // 1,500 × 1.11803 = 1,677.05 sq ft, 167.71 sq ft of extra and 50 ft of ridge
+    expect(jobGuide('roofing-30x40', 'en')?.tips[3]).toContain(
+      'The extra on this roof, 134.16 sq ft, covers the starter course, the hip and ridge caps, with 40 ft of ridge here,',
+    );
+    expect(jobGuide('roofing-30x50', 'es')?.tips[3]).toContain('167.71 sq ft');
+    expect(jobGuide('roofing-30x50', 'es')?.tips[3]).toContain('con 50 ft de cumbrera aquí,');
+  });
+
+  // hand-verified: 10% of 16 in is 1.6 in, of 8 in 0.8 in; a foot of 16 × 8 in footing is 128 ÷
+  // 144 = 0.8889 ft³, × 1.1 = 0.97778 ft³, so 27 ÷ 0.97778 = 27.61 ft of it is a cubic yard; at
+  // 20 × 10 in, 200 ÷ 144 × 1.1 = 1.52778 ft³ a foot, 17.67 ft a cubic yard
+  it('works the tips of a 16x8 footing out', () => {
+    const [tip1, , tip3] = jobGuide('concrete-footing-16x8', 'en')?.tips ?? [];
+    expect(tip1).toContain('at 16 × 8 in, it covers a trench 1.6 in too wide or 0.8 in too deep');
+    expect(tip3).toContain('at 16 × 8 in, every 27.61 ft of trench takes a cubic yard');
+    expect(jobGuide('concrete-footing-20x10', 'es')?.tips[2]).toContain('cada 17.67 ft de zanja');
+  });
+
+  // hand-verified: 3 ft 9 in = 45 in, one cut of 1/8 in, (45 − 0.125) ÷ 2 = 22.4375 = 22 7/16 in;
+  // 22 in in 10 parts: 9 cuts, 9/8 = 1 1/8 in, (22 − 1.125) ÷ 10 = 2.0875 → 2 1/16 in
+  // hand-verified: 22 ÷ 10 = 2.2 in, × 16 = 35.2 → 35/16 = 2 3/16 in; 45 ÷ 2 = 22.5 = 22 1/2 in
+  it('reads the decimal of a division on the tape', () => {
+    expect(jobGuide('divide-22-in-by-10', 'en')?.tips[0]).toContain(
+      'Mark from the tape column, not the decimals: 2.20 in is 2 3/16 in on the tape.',
+    );
+    expect(jobGuide('divide-3-ft-9-in-by-2', 'es')?.tips[0]).toContain(
+      '22.50 in son 22 1/2 in en la cinta.',
+    );
+  });
+
+  it('takes the saw cuts off a division', () => {
+    expect(jobGuide('divide-3-ft-9-in-by-2', 'en')?.tips[1]).toContain(
+      'here 1 × 1/8 in = 1/8 in goes to the saw, and each of the 2 pieces is 22 7/16 in',
+    );
+    expect(jobGuide('divide-22-in-by-10', 'es')?.tips[1]).toContain(
+      'aquí 9 × 1/8 in = 1 1/8 in se van en la sierra, y cada una de las 10 piezas mide 2 1/16 in',
+    );
+  });
+
+  it('gives each page of a figured family tips of its own', () => {
+    const families = [
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('concrete-footing-')),
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('divide-')),
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('roofing-')),
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('roof-pitch-')),
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('drywall-room-')),
+      JOBS_OF_ONE_SIZE.filter((id) => id.startsWith('paint-room-')),
+    ];
+    for (const locale of LOCALES) {
+      for (const family of families) {
+        const tips = family.map((id) => jobGuide(id, locale)?.tips.join(' '));
+        expect(new Set(tips).size).toBe(family.length);
+      }
+    }
+  });
+});
+
 describe('job intros', () => {
   it.each(LOCALES)('opens every job of one size with a sentence of its own in %s', (locale) => {
     const intros = JOBS_OF_ONE_SIZE.map((id) => jobView(id, locale).intro);

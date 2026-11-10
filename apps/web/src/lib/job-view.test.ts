@@ -8,7 +8,15 @@ import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { METHODOLOGY_ROWS } from '../contract/__testing__/methodology-rows.ts';
-import { isQuestionJob, JOB_IDS, JOBS, jobsOf, type Job, type JobCase } from '../routing/jobs.ts';
+import {
+  isQuestionJob,
+  JOB_IDS,
+  JOBS,
+  jobsOf,
+  type Job,
+  type JobCase,
+  type JobId,
+} from '../routing/jobs.ts';
 import { LOCALES, pathOf, urlOf } from '../routing/routes.ts';
 import { calendarDay } from './calendar-day.ts';
 import { IRC_R905, roofPitchChartBasis, roofPitchReverse } from './roof-pitch-chart.ts';
@@ -522,6 +530,28 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(jobView('drywall-room-10x12', 'en').rows[0].cells).toEqual(['422.00', '15', '10']);
   });
 
+  // content audit 2026-11-10: four drywall intros closed on the same sentence about long sheets,
+  // which the tips now say with the room's own count; the intro gives that count instead
+  it.each(LOCALES)('opens the drywall rooms with the sheets of the engine in %s', (locale) => {
+    const rooms = [
+      'drywall-room-10x10',
+      'drywall-room-10x12',
+      'drywall-room-12x12',
+      'drywall-room-12x16',
+    ] as const;
+    for (const id of rooms) {
+      const view = jobView(id, locale);
+      const [, small, large] = view.rows[0].cells;
+      expect(view.intro, id).toMatch(
+        new RegExp(` ${String(small)} (sheets of|placas de) 4 × 8 ft`),
+      );
+      expect(view.intro, id).toContain(` ${String(large)} `);
+      expect(view.intro, id).toContain('8 ft');
+    }
+    // hand-verified: 12 × 16: 448 − 50 + 192 = 590 ft², + 10% = 649 ft²: 20.3 so 21 and 13.5 so 14
+    expect(jobView('drywall-room-12x16', 'en').intro).toContain('21 sheets of 4 × 8 ft, or 14');
+  });
+
   // the notes restate the defaults of the engines: they must be the engine's
   it.each(LOCALES)(
     'states the defaults of the gravel, paint and drywall engines in %s',
@@ -534,12 +564,12 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
       expect(defaultOf(paint.inputs, 'doors')).toBe('1');
       expect(defaultOf(paint.inputs, 'windows')).toBe('2');
       expect(defaultOf(paint.inputs, 'coats')).toBe('2');
-      expect(jobView('paint-room-12x12', locale).note).toContain('350');
       expect(defaultOf(drywall.inputs, 'waste')).toBe('10');
       expect(defaultOf(drywall.inputs, 'surfaces')).toBe('walls-ceiling');
       expect(defaultOf(drywall.inputs, 'doors')).toBe('1');
       expect(defaultOf(drywall.inputs, 'windows')).toBe('2');
-      expect(jobView('drywall-room-12x12', locale).note).toContain('10%');
+      // a room page states the 350 sq ft per gallon and the 10% in its worked steps instead
+      // (content audit 2026-11-10, `job-room.test.ts`)
       for (const id of [...jobsOf('gravel'), ...jobsOf('paint'), ...jobsOf('drywall')]) {
         expect(jobView(id, locale).intro, id).toMatch(/\S/);
       }
@@ -717,6 +747,10 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(jobView('topsoil-10x10', locale).note).toContain('10%');
     expect(defaultOf(roofing.inputs, 'waste')).toBe('10');
     expect(jobView('roofing-24x24', locale).note).toContain('10%');
+    // content audit 2026-11-10: the bundles to a square and the rounding are in the worked steps
+    expect(jobView('roofing-24x24', locale).note).not.toMatch(
+      /(three to a square|tres por cuadrado)/,
+    );
     for (const id of [...jobsOf('topsoil'), ...jobsOf('roofing')]) {
       expect(jobView(id, locale).intro, id).toMatch(/\S/);
     }
@@ -858,13 +892,36 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
   // content audit 2026-11-08: a size job lists its sibling jobs, not the question pages (the hub
   // and the calculator link those), and a question page lists the other question pages, so neither
   // copies the list of the other
-  it.each(PAIRS)('lists the other jobs of its calculator from %s in %s', (id, locale) => {
+  // content audit 2026-11-10: the full list of siblings was the largest block a slab page shared
+  // with every other concrete page, so a job page lists its four nearest siblings in table order
+  // (two before and two after, filled from the other side at an end); the hub and the calculator
+  // page still list them all
+  it.each(PAIRS)('lists the nearest other jobs of its calculator from %s in %s', (id, locale) => {
     const others = jobView(id, locale).others;
-    const siblings = isQuestionJob(id)
-      ? JOB_IDS.filter((each) => each !== id && isQuestionJob(each))
-      : jobsOf(JOBS[id].calculator).filter((each) => each !== id && !isQuestionJob(each));
-    expect(others.map(({ href }) => href)).toEqual(siblings.map((each) => pathOf(each, locale)));
+    const group: readonly JobId[] = isQuestionJob(id)
+      ? JOB_IDS.filter((each) => isQuestionJob(each))
+      : jobsOf(JOBS[id].calculator).filter((each) => !isQuestionJob(each));
+    const at = group.indexOf(id);
+    const nearest = group
+      .map((each, index) => ({ each, index, away: Math.abs(index - at) }))
+      .filter(({ away }) => away > 0)
+      .toSorted((x, y) => x.away - y.away || x.index - y.index)
+      .slice(0, 4)
+      .toSorted((x, y) => x.index - y.index)
+      .map(({ each }) => pathOf(each, locale));
+    expect(others.map(({ href }) => href)).toEqual(nearest);
+    expect(others.length).toBe(Math.min(4, group.length - 1));
     expect(others.map(({ title }) => title)).not.toContain(jobView(id, locale).heading);
+  });
+
+  it('lists the two siblings on each side of a slab in the middle of its table', () => {
+    const others = jobView('concrete-slab-12x20', 'en').others.map(({ href }) => href);
+    expect(others).toEqual([
+      '/concrete/10x20-slab',
+      '/concrete/12x12-slab',
+      '/concrete/12x24-slab',
+      '/concrete/20x20-slab',
+    ]);
   });
 
   // the note states the extra the figures carry: the engine's default
