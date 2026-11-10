@@ -6,6 +6,7 @@ import { PAINT_COVERAGE } from '../__testing__/paint-yields.ts';
 import { RELEASED } from '../__testing__/released-snapshot.ts';
 import { ROOFING_COVERAGE } from '../__testing__/roofing-yields.ts';
 import { compareReleased, type ReleasedCalculator } from '../url/released-harness.ts';
+import { boardFeet } from './board-feet/index.ts';
 import { createConcrete } from './concrete/index.ts';
 import { createDrywall } from './drywall/index.ts';
 import { feetInches } from './feet-inches/index.ts';
@@ -29,6 +30,7 @@ const REGISTRY: readonly ReleasedCalculator[] = [
   roofPitch,
   createRoofing(ROOFING_COVERAGE),
   feetInches,
+  boardFeet,
 ];
 
 // The released snapshot is checked here, in the `calculators` mutation shard, and the harness that
@@ -181,6 +183,20 @@ describe('released url keys of the calculators (url-state-codec › Key stabilit
         ['ws', 'waste', 'percent', '10'],
         ['bp', 'bundlePrice', 'money', '0'],
         ['rp', 'rollPrice', 'money', '0'],
+      ],
+    );
+  });
+
+  // spec: calc-board-feet › [BF6] the five inputs of board feet, appended in the order of the spec
+  it('records the 5 inputs of board feet in the order of the spec', () => {
+    const tuples = RELEASED.filter(({ calculatorId }) => calculatorId === 'board-feet');
+    expect(tuples.map(({ urlKey, key, kind, default: text }) => [urlKey, key, kind, text])).toEqual(
+      [
+        ['t', 'thickness', 'length', '2'],
+        ['w', 'width', 'length', '4'],
+        ['l', 'length', 'length', '96'],
+        ['n', 'pieces', 'count', '1'],
+        ['pp', 'price', 'money', '0'],
       ],
     );
   });

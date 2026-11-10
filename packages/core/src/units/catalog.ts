@@ -69,6 +69,11 @@ export const liter = /* @__PURE__ */ defineUnit(
   'L',
   /* @__PURE__ */ cm3.factor.mul(/* @__PURE__ */ Rational.of(1000)),
 );
+/**
+ * The board foot, 1 in by 12 in by 12 in, exactly 144 in3 (1/12 ft3): the unit lumber is sold by
+ * (DOC PS 20-20, American Softwood Lumber Standard, 2.2 Board measure).
+ */
+export const bdft = /* @__PURE__ */ defineUnit('volume', 'bdft', /* @__PURE__ */ Rational.of(144));
 
 // Canonical mass unit: the avoirdupois pound, exactly 45359237/10^8 kg (1959 agreement; NIST SP 811).
 // An ounce is 1/16 lb and a US short ton is 2000 lb; a tonne is 1000 kg. Written as fractions of
@@ -120,7 +125,7 @@ export const UNITS: { readonly [D in DimensionName]: readonly Unit<D>[] } =
   /* @__PURE__ */ Object.freeze({
     length: /* @__PURE__ */ Object.freeze([inch, ft, yd, mm, cm, m]),
     area: /* @__PURE__ */ Object.freeze([in2, ft2, yd2, mm2, cm2, m2, sq]),
-    volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3, gal, liter]),
+    volume: /* @__PURE__ */ Object.freeze([in3, ft3, yd3, mm3, cm3, m3, gal, liter, bdft]),
     mass: /* @__PURE__ */ Object.freeze([lb, oz, ton, kg, tonne]),
     density: /* @__PURE__ */ Object.freeze([lbIn3, lbFt3, lbYd3, tonYd3, kgM3]),
     angle: /* @__PURE__ */ Object.freeze([deg]),

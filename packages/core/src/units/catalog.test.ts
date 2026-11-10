@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { Rational } from '../rational/rational.ts';
 import {
+  bdft,
   cm,
   cm2,
   cm3,
@@ -63,6 +64,7 @@ const TABLE = [
   ['volume', m3, 'm3', 125000000000n, 2048383n],
   ['volume', gal, 'gal', 231n, 1n],
   ['volume', liter, 'L', 125000000n, 2048383n],
+  ['volume', bdft, 'bdft', 144n, 1n],
   ['angle', deg, 'deg', 1n, 1n],
   ['mass', lb, 'lb', 1n, 1n],
   ['mass', oz, 'oz', 1n, 16n],
@@ -76,7 +78,7 @@ const TABLE = [
   ['density', kgM3, 'kg/m3', 2048383n, 56699046250n],
 ] as const;
 
-describe('the 32 units (units-quantities › Exact unit factors)', () => {
+describe('the 33 units (units-quantities › Exact unit factors)', () => {
   it.each(TABLE.map(([dimension, unit, id, num, den]) => ({ id, dimension, unit, num, den })))(
     '$id ($dimension): id, dimension and exact factor',
     ({ dimension, unit, id, num, den }) => {
@@ -135,13 +137,19 @@ describe('the 32 units (units-quantities › Exact unit factors)', () => {
     expect(sq.factor).toEqual(ft2.factor.mul(Rational.of(100)));
   });
 
+  // spec: units-quantities › Exact unit factors — the board foot is 1 in by 12 in by 12 in, 144 in³
+  // (DOC PS 20-20, American Softwood Lumber Standard, 2.2 Board measure; board-feet calculator)
+  it('defines the board foot as one twelfth of a cubic foot', () => {
+    expect(bdft.factor).toEqual(ft3.factor.div(Rational.of(12)));
+  });
+
   // spec: units-quantities › Exact unit factors — 45,359,237 is coprime with 10^8 (reduced)
   it('keeps the kilogram exact through the 1959 pound (1 lb = 45359237/10^8 kg)', () => {
     expect(kg.factor.num * 45359237n).toBe(100000000n * kg.factor.den);
     expect(tonne.factor).toEqual(kg.factor.mul(Rational.of(1000)));
   });
 
-  // spec: units-quantities › Dimension model — units are immutable; Table: 32 units
+  // spec: units-quantities › Dimension model — units are immutable; Table: 33 units
   it('freezes every unit', () => {
     const all: readonly Unit<DimensionName>[] = [
       ...UNITS.length,
@@ -151,7 +159,7 @@ describe('the 32 units (units-quantities › Exact unit factors)', () => {
       ...UNITS.density,
       ...UNITS.angle,
     ];
-    expect(all).toHaveLength(32);
+    expect(all).toHaveLength(33);
     for (const unit of all) {
       expect(Object.isFrozen(unit), unit.id).toBe(true);
     }

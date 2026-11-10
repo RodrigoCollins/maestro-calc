@@ -588,6 +588,8 @@ export const esSite = {
   'page.home.cards.feet-inches.title': 'Calculadora de pies y pulgadas',
   'page.home.cards.feet-inches.summary':
     'Suma, resta, multiplica o divide medidas de cinta, al 1/16 de pulgada.',
+  'page.home.cards.board-feet.title': 'Calculadora de pies tablares',
+  'page.home.cards.board-feet.summary': 'Pies tablares y costo del lote.',
   'page.home.hubs': 'Por oficio',
   'page.home.links.methodology': 'Cómo calculamos',
   'page.home.links.about': 'Sobre Maestro Calc',
@@ -596,23 +598,23 @@ export const esSite = {
   'page.home.ctaAll': 'Ver todas las calculadoras',
   'page.home.share.title': 'Manda la lista a tu equipo',
   'page.home.share.text':
-    'Cada resultado tiene un enlace con tus números, un botón de WhatsApp y una vista para imprimir.',
+    'Cada resultado tiene un enlace con tus números, WhatsApp y vista para imprimir.',
   'page.home.sample': 'Losa de concreto',
   'page.home.calculators': 'Calculadoras',
   'page.home.guides': 'Guías para la obra',
   'page.home.trust': 'Cómo sacamos los números',
   'page.home.trust.sources.title': 'Fuentes en cada página',
   'page.home.trust.sources.text':
-    'Los rendimientos de las bolsas salen de las hojas técnicas de los fabricantes, y las pendientes de techo, del IRC.',
+    'Los rendimientos salen de las fichas de los fabricantes; las pendientes, del IRC.',
   'page.home.trust.math.title': 'Cuentas exactas',
   'page.home.trust.math.text':
-    'Las fracciones se mantienen exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
+    'Las fracciones quedan exactas hasta el último paso; solo se redondea hacia arriba lo que compras.',
   'page.home.trust.languages.title': 'Inglés y español',
   'page.home.trust.languages.text':
-    'Los mismos números en los dos idiomas, con los términos que se usan en las obras de EE. UU.',
+    'Los mismos números en los dos idiomas, con los términos de obra de EE. UU.',
   'page.home.title': 'Maestro Calc: calculadoras para tu obra',
   'page.home.description':
-    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y calcula qué comprar.',
+    'Calculadoras de obra para constructores y dueños de casa en EE. UU. Ingresa tus medidas y sabe qué comprar.',
   'page.methodology.title': 'Metodología | Maestro Calc',
   'page.methodology.description':
     'Cómo Maestro Calc calcula cada número: aritmética exacta, fórmulas probadas, fuentes citadas y un proceso de correcciones abierto.',
@@ -1415,6 +1417,9 @@ export const esSite = {
   'page.feet-inches.title': 'Calculadora de pies y pulgadas con decimales | Maestro Calc',
   'page.feet-inches.description':
     'Convierte pies decimales a pies y pulgadas al 1/16, como 11.65 ft = 11 ft 7 13/16 in. También suma, resta, multiplica o divide medidas de la cinta. Gratis.',
+  'page.board-feet.title': 'Calculadora de pies tablares para madera | Maestro Calc',
+  'page.board-feet.description':
+    'Calcula los pies tablares de la madera: grosor × ancho (in) × largo (ft) ÷ 12, como lo define la norma de madera de EE. UU. Un 2x4x8 tiene 5.33. Gratis.',
   'page.notFound.heading': 'Página no encontrada',
   'page.notFound.body': 'La página que buscas no existe o cambió de lugar.',
   'page.notFound.homeLink': 'Ir a la página de inicio',

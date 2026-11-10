@@ -577,6 +577,8 @@ export const enSite = {
   'page.home.cards.feet-inches.title': 'Feet and inches calculator',
   'page.home.cards.feet-inches.summary':
     'Add, subtract, multiply or divide tape measurements, to the nearest 1/16 in.',
+  'page.home.cards.board-feet.title': 'Board feet calculator',
+  'page.home.cards.board-feet.summary': 'Board feet of any lumber, with the cost of the lot.',
   'page.home.hubs': 'By trade',
   'page.home.links.methodology': 'How we calculate',
   'page.home.links.about': 'About Maestro Calc',
@@ -1395,6 +1397,9 @@ export const enSite = {
   'page.feet-inches.title': 'Decimal Feet to Feet and Inches Calculator | Maestro Calc',
   'page.feet-inches.description':
     'Convert decimal feet to feet and inches to the nearest 1/16, such as 11.65 ft = 11 ft 7 13/16 in. Also add, subtract, multiply or divide tape lengths. Free.',
+  'page.board-feet.title': 'Board Feet Calculator: Lumber Board Foot | Maestro Calc',
+  'page.board-feet.description':
+    'Find the board feet of lumber: thickness × width (in) × length (ft) ÷ 12, as the American Softwood Lumber Standard defines it. A 2x4x8 is 5.33 bd ft. Free.',
   'page.notFound.heading': 'Page not found',
   'page.notFound.body': 'The page you are looking for does not exist or has moved.',
   'page.notFound.homeLink': 'Go to the home page',

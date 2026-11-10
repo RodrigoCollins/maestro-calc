@@ -80,6 +80,10 @@ const site = {
     'roof-pitch': [IRC_URL, NIST_URL],
     roofing: [GAF_SHINGLES_URL, GAF_UNDERLAYMENT_URL, IRC_URL, NIST_URL],
     'feet-inches': [NIST_URL],
+    'board-feet': [
+      'https://www.nist.gov/document/doc-ps-20-20-american-softwood-lumber-standard',
+      NIST_URL,
+    ],
   },
   guides: Object.fromEntries(
     Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator ?? 'home']),

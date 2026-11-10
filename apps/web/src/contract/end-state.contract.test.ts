@@ -144,11 +144,12 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roof-pitch',
       'roofing',
       'feet-inches',
+      'board-feet',
     ]);
-    expect(staticPaths()).toHaveLength(258);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(258);
+    expect(staticPaths()).toHaveLength(260);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(260);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(260);
+    expect(pageCount(ROUTES)).toBe(262);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -166,6 +167,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roof-pitch',
       'roofing',
       'feet-inches',
+      'board-feet',
     ]);
     expect(PAGELESS).toEqual([]);
   });
@@ -179,7 +181,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(260);
+      ).toHaveLength(262);
     },
   );
 
@@ -187,11 +189,11 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
   // two entries per calculator page: eighty-six content entries in all
   it('has sixty-six trust entries and twenty calculator entries', () => {
     expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(66);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(20);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(22);
   });
 
   // spec: site-seo › [SE10]
   it('lists two hundred and fifty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(258);
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(260);
   });
 });

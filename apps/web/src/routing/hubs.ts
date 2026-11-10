@@ -40,7 +40,7 @@ export const HUBS = {
     ],
   },
   'hub-measurement': {
-    calculators: ['rectangle-area', 'feet-inches'],
+    calculators: ['rectangle-area', 'feet-inches', 'board-feet'],
     guides: ['guide-square-footage', 'guide-tape-measure-fractions'],
   },
   'hub-paint': { calculators: ['paint'], guides: ['guide-paint-quote', 'guide-paint-coverage'] },

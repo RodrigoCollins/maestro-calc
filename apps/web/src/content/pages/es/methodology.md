@@ -258,6 +258,31 @@ Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calc
 | 20 ft ÷ 7 in: 34 piezas (34.28), el sobrante (`?v=1&o=fit&a=240&b=7`)    | 2 in            | 2.00     | 0.051  |
 | 12 ft 6 in ÷ 3 ft 8 1/4 in: 3 piezas (3.38), el sobrante (`?v=1&o=fit`)  | 1 ft 5 1/4 in   | 17.25    | 0.438  |
 
+<h2 id="pies-tablares">Calculadora de pies tablares</h2>
+
+La [calculadora de pies tablares](/es/calculadora-de-pies-tablares) da los pies tablares de una pieza de madera con su grosor y su ancho en pulgadas y su largo en pies, los multiplica por el número de piezas y calcula el costo del total cuando escribes un precio por pie tablar. Cada medida se guarda como un número exacto, y las cifras se redondean solo al mostrarlas.
+
+Las fórmulas:
+
+- Pies tablares de una pieza = grosor × ancho × largo ÷ 12, con el grosor y el ancho en pulgadas y el largo en pies.
+- Pies tablares del lote = pies tablares de una pieza × piezas.
+- Pies cúbicos = pies tablares ÷ 12, porque un pie tablar es 1 in × 12 in × 12 in, exactamente 144 pulgadas cúbicas, o 1/12 de pie cúbico.
+- Costo = pies tablares × precio por pie tablar.
+
+La regla es la medida en pies tablares (board measure) de DOC PS 20-20, la norma estadounidense de madera blanda (American Softwood Lumber Standard, sección 2.2): el grosor nominal en pulgadas por el ancho nominal en pies por el largo en pies. Dividir el ancho en pulgadas entre 12 da el ancho en pies, y de ahí sale el ÷ 12. La calculadora multiplica las medidas que escribes: escribe la medida nominal (2 in por 4 in para un 2x4) para contar como cuenta la maderería la madera blanda, o la medida real para la madera que de verdad tiene la pieza; la tabla 3 de PS 20-20 da las medidas cepilladas (un 2x4 seco mide 1 1/2 in por 3 1/2 in). Los pies tablares y los pies cúbicos muestran dos decimales y los metros cúbicos tres, con 1 in = 0.0254 m exactos (NIST SP 811, Apéndice B).
+
+Casos verificados a mano. Las pruebas automáticas pasan estos casos por la calculadora y comparan cada cifra de abajo con el resultado.
+
+| Caso                                                                           | Pies tablares | Por pieza | Pies cúbicos | Metros cúbicos |
+| ------------------------------------------------------------------------------ | ------------- | --------- | ------------ | -------------- |
+| Un 2x4x8 (valores iniciales)                                                   | 5.33          | 5.33      | 0.44         | 0.013          |
+| Un 2x6 de 10 ft (`?v=1&w=6&l=120`)                                             | 10.00         | 10.00     | 0.83         | 0.024          |
+| Un 4x4x8 (`?v=1&t=4`)                                                          | 10.67         | 10.67     | 0.89         | 0.025          |
+| Un 1x6x8 (`?v=1&t=1&w=6`)                                                      | 4.00          | 4.00      | 0.33         | 0.009          |
+| Un 2x12 de 12 ft (`?v=1&w=12&l=144`)                                           | 24.00         | 24.00     | 2.00         | 0.057          |
+| Un 2x4x8 con su medida cepillada seca, 1 1/2 por 3 1/2 in (`?v=1&t=3/2&w=7/2`) | 3.50          | 3.50      | 0.29         | 0.008          |
+| Diez 2x4x8 (`?v=1&n=10`)                                                       | 53.33         | 5.33      | 4.44         | 0.126          |
+
 ## Correcciones
 
 Si encuentras un error, avísanos. La [sección de correcciones de la página sobre nosotros](/es/sobre-nosotros#correcciones) explica cómo reportarlo y cómo registramos la corrección.

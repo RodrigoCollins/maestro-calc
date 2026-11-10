@@ -424,6 +424,7 @@ export const ROUTES = {
     en: '/feet-and-inches-calculator',
     es: '/es/calculadora-de-pies-y-pulgadas',
   },
+  'board-feet': { en: '/board-feet-calculator', es: '/es/calculadora-de-pies-tablares' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

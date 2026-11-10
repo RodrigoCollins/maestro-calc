@@ -1,4 +1,5 @@
 import {
+  bdft,
   deg,
   ft,
   ft2,
@@ -37,6 +38,7 @@ export const DISPLAY_UNITS: readonly Unit<DimensionName>[] = [
   m3,
   gal,
   liter,
+  bdft,
   ton,
   tonne,
   deg,

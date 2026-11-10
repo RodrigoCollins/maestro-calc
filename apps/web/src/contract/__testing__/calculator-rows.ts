@@ -10,6 +10,7 @@ import { rectangleAreaPage } from '../../calculator/rectangle-area/page.ts';
 import { roofPitchPage } from '../../calculator/roof-pitch/page.ts';
 import { roofingPage } from '../../calculator/roofing/page.ts';
 import { feetInchesPage } from '../../calculator/feet-inches/page.ts';
+import { boardFeetPage } from '../../calculator/board-feet/page.ts';
 import type { AnyPageModule } from '../../calculator/page-module.ts';
 import type { ExampleId, WorkedExample } from '../../content/schema.ts';
 import { pageView } from '../../lib/pages.ts';
@@ -237,6 +238,29 @@ const feetInchesShown = ({ query }: WorkedExample<'feet-inches'>) => {
   return { query, result: shown('result'), resultIn: shown('resultIn'), resultM: shown('resultM') };
 };
 
+/** The board feet, volume and cost the board feet page shows for the example's link. */
+const boardFeetShown = ({ query }: WorkedExample<'board-feet'>) => {
+  const { figures } = shownFigures(boardFeetPage, query);
+  const shown = (key: string): string => {
+    const value = figures[key];
+    if (value === undefined) throw new Error(`the board feet page shows no ${key}`);
+    return value;
+  };
+  return {
+    query,
+    boardFeet: shown('boardFeet'),
+    each: shown('boardFeetEach'),
+    ft3: shown('volumeFt3'),
+    m3: shown('volumeM3'),
+    cost: shown('cost'),
+  };
+};
+
+const PS20 = {
+  name: /^DOC PS 20-20, American Softwood Lumber Standard\b/,
+  url: 'https://www.nist.gov/document/doc-ps-20-20-american-softwood-lumber-standard',
+} as const;
+
 const GAF_SHINGLES = {
   name: /^GAF Timberline HDZ\b/,
   url: 'https://www.homedepot.com/p/GAF-Timberline-HDZ-Weathered-Wood-Algae-Resistant-Laminated-High-Definition-Shingles-33-33-sq-ft-per-Bundle-0487900/309755323',
@@ -414,6 +438,24 @@ export const CONTENT_ROWS = {
       '3 ft 8 1/4 in',
     ],
     methodologyLink: { en: '/methodology#feet-and-inches', es: '/es/metodologia#pies-y-pulgadas' },
+  },
+  'board-feet': {
+    module: boardFeetPage,
+    updated: '2026-11-10',
+    sources: () => [PS20, NIST],
+    engine: boardFeetShown,
+    // the example is ten 2x4x8 at $1.50: Formulas names the sizes as written and the cost as 80.00
+    figures: ({ boardFeet, each, ft3, m3, cost }) => [
+      boardFeet,
+      each,
+      ft3,
+      m3,
+      cost.replace('$', ''),
+      '2 in',
+      '4 in',
+      '8 ft',
+    ],
+    methodologyLink: { en: '/methodology#board-feet', es: '/es/metodologia#pies-tablares' },
   },
 } as const satisfies { readonly [Id in ExampleId]?: ContentRow<Id> };
 

@@ -152,6 +152,14 @@ export const WORKED_EXAMPLES = {
     resultIn: decimalText,
     resultM: z.string().regex(/^\d+\.\d{3}$/, 'a decimal with three places'),
   }),
+  'board-feet': z.strictObject({
+    query: z.string().regex(/^v=1(&[a-z]+=[\w/.]+)*$/, 'a v=1 link query'),
+    boardFeet: decimalText,
+    each: decimalText,
+    ft3: decimalText,
+    m3: z.string().regex(/^\d+\.\d{3}$/, 'a decimal with three places'),
+    cost: z.string().regex(/^\$\d{1,3}(,\d{3})*\.\d{2}$/, 'a dollar amount'),
+  }),
 };
 
 /** The calculator ids that have a worked example row. */
