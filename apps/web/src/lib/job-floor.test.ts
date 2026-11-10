@@ -38,6 +38,14 @@ describe('jobFloor (what fits on a floor of a size)', () => {
     ]);
   });
 
+  // hand-verified, 12 × 12 ft: 144 sq ft × 0.3048² = 13.38 m², 48 ft of edge, 16.00 sq yd of
+  // carpet, 159 tiles of 12 in and 40 of 24 in with the extra, 19 sheets, 88 bags (above)
+  it('sums the floor up in one sentence of its own figures', () => {
+    expect(jobFloor('square-feet-12x12', 'en')?.paragraphs[1]).toBe(
+      'This 12 × 12 ft floor is 144 sq ft, 13.38 m²: 48 ft of baseboard, 16.00 sq yd of carpet, 159 tiles of 12 in or 40 of 24 in with the extra, 19 drywall sheets for the room around it and 88 bags of 80 lb for a 4 in slab.',
+    );
+  });
+
   // hand-verified, 5 × 10 ft: the roll runs across the 10 ft side, a 5 ft length, 60 sq ft = 6.67
   // sq yd; 20 × 20 ft takes two 20 ft strips, 480 sq ft = 53.33 sq yd; 12 × 30 ft one 30 ft length,
   // 360 sq ft = 40.00 sq yd

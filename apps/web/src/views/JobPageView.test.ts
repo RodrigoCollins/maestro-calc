@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { renderComponent } from '../__testing__/render-component.ts';
 import { CHART_SOURCES_ID, calculatorSourcesHref } from '../lib/byline.ts';
+import { jobConcrete } from '../lib/job-concrete.ts';
 import { jobFloor } from '../lib/job-floor.ts';
 import { jobGuide } from '../lib/job-guide.ts';
 import { jobRoom, QUALI_KOTE_PDS } from '../lib/job-room.ts';
 import { jobLand, NIST_HB44_C } from '../lib/job-land.ts';
 import { jobQuestion } from '../lib/job-question.ts';
+import { jobRafter } from '../lib/job-rafter.ts';
+import { jobRoof } from '../lib/job-roof.ts';
 import { jobSlope, OSHA_1926_500, OSHA_1926_501 } from '../lib/job-slope.ts';
+import { jobSoil } from '../lib/job-soil.ts';
 import { jobWorked } from '../lib/job-worked.ts';
 import { JOBS } from '../routing/jobs.ts';
 import { pathOf } from '../routing/routes.ts';
@@ -67,7 +71,9 @@ describe('JobPageView buying advice', () => {
     const rows = pitch.querySelectorAll('main table').at(1)?.querySelectorAll('tbody tr') ?? [];
     expect(rows.map((row) => row.textContent)).toContain('Slate4 in 12Below the minimum');
     const slab = await render('concrete-slab-10x10', 'en');
-    expect(slab.querySelectorAll('main table')).toHaveLength(1);
+    // the sizes table, the weights of the slab at each thickness, its rebar grid: no coverings
+    expect(slab.querySelectorAll('main table')).toHaveLength(3);
+    expect(slab.querySelector('main')?.textContent).not.toContain('Slate');
   });
 
   it('works the first size out step by step under its own heading', async () => {
@@ -146,8 +152,9 @@ describe('JobPageView exact pitch pages', () => {
       const cited = document.querySelectorAll('main code').map((code) => code.textContent);
       expect(cited).toEqual([OSHA_1926_500.url, OSHA_1926_501.url]);
       expect(document.querySelector(`main a[href="${pathOf('roofing', locale)}"]`)).not.toBeNull();
-      // the rafter table, the coverings table, then the roof surface table
-      expect(document.querySelectorAll('main table')).toHaveLength(3);
+      // the rafter table, the coverings table, the roof surface table, the framing square and
+      // the jack rafters
+      expect(document.querySelectorAll('main table')).toHaveLength(5);
       expect(document.querySelector('main h1')?.textContent).toBe(
         locale === 'en'
           ? 'A 6/12 roof pitch is 26.57 degrees'
@@ -187,6 +194,38 @@ describe('JobPageView room and floor sections', () => {
     }
     const cited = document.querySelectorAll('main code').map((code) => code.textContent);
     expect(cited).toEqual(extra?.sources.map(({ url }) => url));
+  });
+
+  it.each([
+    ['concrete-slab-20x20', 'en'],
+    ['concrete-tube-8', 'es'],
+    ['concrete-footing-20x10', 'en'],
+    ['topsoil-20x20', 'es'],
+    ['roofing-30x50', 'en'],
+    ['roof-pitch-11-12', 'es'],
+  ] as const)('shows the section of %s in %s with its figures and sources', async (id, locale) => {
+    const document = await render(id, locale);
+    const extra =
+      jobConcrete(id, locale) ??
+      jobSoil(id, locale) ??
+      jobRoof(id, locale) ??
+      jobRafter(id, locale);
+    expect(extra).toBeDefined();
+    const headings = document.querySelectorAll('main h2').map((h2) => h2.textContent);
+    expect(headings).toContain(extra?.heading);
+    const text = document.querySelector('main')?.textContent ?? '';
+    for (const paragraph of extra?.paragraphs ?? []) expect(text).toContain(paragraph);
+    for (const { label, value } of extra?.facts ?? []) {
+      expect(text).toContain(label);
+      expect(text).toContain(value);
+    }
+    if (extra?.more !== undefined) expect(text).toContain(extra.more.lead);
+    for (const row of [...(extra?.table?.rows ?? []), ...(extra?.more?.table.rows ?? [])]) {
+      expect(text).toContain(row.label);
+      for (const cell of row.cells) expect(text).toContain(cell);
+    }
+    const cited = document.querySelectorAll('main code').map((code) => code.textContent);
+    for (const { url } of extra?.sources ?? []) expect(cited).toContain(url);
   });
 
   it('adds no room section to a slab', async () => {
