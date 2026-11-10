@@ -30,6 +30,8 @@ export interface LongTailSection {
   readonly after?: readonly string[];
   /** Pages of the site the section points to, listed after its paragraphs. */
   readonly links?: readonly { readonly href: string; readonly label: string }[];
+  /** Questions people search and their answers, each question a heading of its own. */
+  readonly questions?: readonly { readonly question: string; readonly answer: string }[];
 }
 
 /** The heading of the sources list of a long-tail page, in the words the content audit reads. */
