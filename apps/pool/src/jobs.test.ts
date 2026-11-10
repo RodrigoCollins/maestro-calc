@@ -425,6 +425,41 @@ describe('the long-tail job pages', () => {
     expect(byPath('/how-much-salt-for-a-5000-gallon-pool').lead).toContain('150.1 lb');
   });
 
+  // worked by hand (20,000 gal): 36.64 fl oz of acid, 32.0 the first day and 4.64 the second; 25.0
+  // lb of calcium chloride in additions of 6.0 lb, 25 ÷ 6 = 4.17 so 5; 1,668,000 BTU ÷ 12 h =
+  // 139,000; ClearView's 12 ppm a pound per 5,000 gal: 4 × 10 ÷ 12 = 3.33 lb; 0.16691 lb a ppm of
+  // CYA, ÷ 0.99 = 5.06 lb of Primo for 30 ppm and 8.35 lb of cyanuric acid for 50
+  it('answers the acid, calcium, heater, baking soda and stabilizer questions first', () => {
+    const acid = byPath('/how-much-muriatic-acid-for-a-20000-gallon-pool').lead;
+    expect(acid).toMatch(/^A 20,000 gallon pool needs 36\.6 fl oz of 31\.45% muriatic acid/);
+    expect(acid).toContain('32.0 fl oz, a test, then 4.6 fl oz');
+    const calcium = byPath('/how-much-calcium-chloride-for-a-20000-gallon-pool').lead;
+    expect(calcium).toMatch(/^A 20,000 gallon pool needs 25\.0 lb of calcium chloride/);
+    expect(calcium).toContain('5 additions of at most 6.0 lb');
+    const heater = byPath('/what-size-pool-heater-for-a-20000-gallon-pool').lead;
+    expect(heater).toMatch(/^A 20,000 gallon pool needs a heater that puts 69,500 BTU an hour/);
+    expect(heater).toContain('139,000 in 12 hours');
+    const soda = byPath('/how-much-baking-soda-for-a-20000-gallon-pool').lead;
+    expect(soda).toMatch(/^A 20,000 gallon pool needs 2\.8 lb of baking soda/);
+    expect(soda).toContain('3.3 lb');
+    const stabilizer = byPath('/how-much-stabilizer-for-a-20000-gallon-pool').lead;
+    expect(stabilizer).toContain('5.1 lb of 99% Primo Powder');
+    expect(stabilizer).toContain('8.3 lb for 50 ppm');
+  });
+
+  it('carries only the note under the table of a page whose worked steps restate the method', () => {
+    for (const page of JOB_PAGES.filter(({ kind }) =>
+      ['ph', 'calcium', 'heater', 'stabilizer', 'alkalinity'].includes(kind),
+    ))
+      expect(page.method, page.path).not.toMatch(/ = |Dose = |BTU = |Pounds = /);
+    // the calcium page states the range, the cap and the dissolving in its own notes, so its
+    // note keeps only the sentence they do not say
+    const calcium = byPath('/how-much-calcium-chloride-for-a-20000-gallon-pool').method;
+    expect(CALCIUM.note).toContain(calcium);
+    expect(calcium).toContain('anhydrous');
+    expect(calcium).not.toContain('½ lb');
+  });
+
   // worked by hand: 200 ft² × 4 ft × 1,728 ÷ 231 = 5,984; 576 ft² × 5.75 ft = 3,312 ft³ = 24,775;
   // 640 ft² × 5.75 ft = 3,680 ft³ = 27,528
   it('works out the 10 x 20, 16 x 36 and 16 x 40 pools as by hand', () => {

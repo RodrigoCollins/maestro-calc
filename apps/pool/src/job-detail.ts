@@ -1,4 +1,14 @@
-import { PI, Rational, gal, isQuantityOf, liter, valueIn } from '@maestro-calc/core';
+import {
+  PI,
+  Rational,
+  gal,
+  isQuantityOf,
+  lb,
+  liter,
+  quantity,
+  valueIn,
+  type Quantity,
+} from '@maestro-calc/core';
 import { poolAlkalinity } from '@maestro-calc/pool-core/pool-alkalinity';
 import { poolCalcium } from '@maestro-calc/pool-core/pool-calcium';
 import { poolChlorine } from '@maestro-calc/pool-core/pool-chlorine';
@@ -23,7 +33,7 @@ import {
 } from './doses.ts';
 import { outputText, volumeText } from './format.ts';
 import { SHOCK_GUIDE } from './guide.ts';
-import { JOB_PAGES, type JobKind, type JobPage } from './jobs.ts';
+import { clearViewPounds, JOB_PAGES, PRIMO, type JobKind, type JobPage } from './jobs.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import {
@@ -57,19 +67,24 @@ export interface JobLink {
   readonly label: string;
 }
 
+export interface JobTable {
+  readonly heading: string;
+  readonly caption: string;
+  readonly head: readonly string[];
+  readonly rows: readonly (readonly string[])[];
+}
+
 export interface JobDetail {
   /** The large figure worked out, one step a sentence, under "How the figures are worked out". */
   readonly worked: readonly string[];
   /**
-   * A second table under the worked figures: the same dose in each product of the calculator
-   * (chlorine), or the level of each salt cell maker (salt), every cell an engine run.
+   * The tables under the worked figures: the same dose in each product of the calculator
+   * (chlorine), the level of each salt cell maker (salt), the label's days or additions (pH,
+   * calcium), every level of a range (stabilizer, calcium), the hours a heater takes, or the
+   * label's own figure next to the page's (baking soda); every cell an engine run or a sourced
+   * constant times the page's own numbers.
    */
-  readonly compare?: {
-    readonly heading: string;
-    readonly caption: string;
-    readonly head: readonly string[];
-    readonly rows: readonly (readonly string[])[];
-  };
+  readonly tables: readonly JobTable[];
   /** The label and safety notes, scaled to this pool; a volume page has none. */
   readonly label?: { readonly heading: string; readonly items: readonly string[] };
   readonly next: {
@@ -199,7 +214,49 @@ const SOURCES = {
     name: 'Jandy AquaPure installation and operation manual, H0567500G LI4011 Rev 7: how much salt, how to add it and Table 1, read 10 November 2026',
     url: 'https://www.zodiacpoolsystems.com/-/media/9DD79DFAE8A441AE8E80289ABB0216B4.ashx',
   },
+  /* The labels the pH, calcium, stabilizer and baking soda notes quote, read again 10 November 2026. */
+  hasa: {
+    name: 'HASA Muriatic Acid (31.45% hydrochloric acid), product page, directions for use: pH 7.2 to 7.6, one quart per 20,000 gallons per 24 hours, at the deep end at least one foot from the wall, the filter and pump running during and for at least one hour after, read 10 November 2026',
+    url: 'https://hasa.com/hubfs/Product%20Assets/Muriatic%20Acid/Muriatic%20Acid%20-%20Product%20Page.pdf',
+  },
+  calcium: {
+    name: 'ClearView Calcium Increaser, Critical Usage Information (Oreq Corporation): pre-dissolved ½ lb to a gallon of water, over 3 lb per 10,000 gallons in doses at least 12 hours apart to avoid clouding, 150 to 350 ppm, 2 oz per 1,000 gallons for 10 ppm, read 10 November 2026',
+    url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/Calcium_Increaser.pdf',
+  },
+  primo: {
+    name: 'ClearView Primo Powder (isocyanuric acid 99%), Critical Usage Information (Oreq Corporation): 1 lb for each 4,000 gallons for 30 ppm, 30 to 50 ppm, through the skimmer with 24 hours of recirculation, read 10 November 2026',
+    url: 'https://www.poolsupplyunlimited.com/Products/Manuals/141843_2023131114222.pdf',
+  },
+  totalAlkalinity: {
+    name: 'ClearView Total Alkalinity, Critical Usage Information (Oreq Corporation): 1 lb raises 5,000 gallons 12 ppm, at least 50 ppm, in the evening with the filter running, read 10 November 2026',
+    url: 'https://cdn.shopify.com/s/files/1/0100/9998/2432/files/Total_Alkalinity.pdf',
+  },
+  nist: {
+    name: 'NIST Guide to the SI (SP 811), Appendix B.8: 1 BTU (IT) an hour is 0.2930711 W, read 10 November 2026',
+    url: 'https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8',
+  },
 } as const satisfies Record<string, MethodSource>;
+
+/** The CYA levels a stabilizer page lists from fresh water: Primo's 30 to 50 ppm, up to CDC's 90. */
+const CYA_LEVELS = [30, 40, 50, 60, 70, 80, 90] as const;
+
+/** The calcium hardness levels a calcium page lists: ClearView's 150 to 350, Hayward's 200 to 400. */
+const CALCIUM_LEVELS = [200, 250, 300, 350, 400] as const;
+
+/** NIST: a pound is 0.45359237 kg exactly. */
+const KILOGRAMS_PER_POUND = Rational.of(45_359_237, 100_000_000);
+
+/** The label's 2 oz per 1,000 gallons for 10 ppm: a pound raises 80,000 gallons 1 ppm. */
+const PPM_PER_POUND_GALLON = Rational.of(80_000);
+
+/** The hours a heater page spreads its rises over: a third of a day to three days. */
+const HEATER_HOURS = [8, 12, 24, 48, 72] as const;
+
+/** Round heater outputs, in BTU an hour into the water, for the hours each takes. */
+const HEATER_OUTPUTS = [100_000, 150_000, 200_000, 250_000, 300_000, 400_000] as const;
+
+/** NIST SP 811, Appendix B.8: 1 BTU (IT) an hour is 0.2930711 W, so 1 BTU is 0.2930711 Wh. */
+const WATTS_PER_BTU_HOUR = r('0.2930711');
 
 /**
  * The salt level each cell maker's manual gives (read 10 November 2026): Hayward's AquaRite 2,700
@@ -294,13 +351,32 @@ const stabilizerDetail = (page: JobPage): JobDetail => {
       `${n(grams, 2)} g ÷ 453.59237 g a pound ${is(pounds, 1)} lb, the large figure; ÷ 28.349523125 g an ounce it is ${n(ounces, 1)} oz.`,
       `From 10 ppm the raise is 20 ppm, ${cellOf(page, 1, 1)} lb; from 20 ppm it is 10 ppm, ${cellOf(page, 2, 1)} lb: in ${size} gallons the dose falls in step with the raise.`,
     ],
+    tables: [
+      {
+        heading: 'Every level from fresh water',
+        caption: `Cyanuric acid for ${size} gallons from 0 ppm: Primo’s directions keep 30 to 50 ppm, and the CDC’s code caps a public pool at 90`,
+        head: ['CYA target', 'Cyanuric acid (lb)', 'Ounces', 'Primo Powder, 99% (lb)'],
+        rows: CYA_LEVELS.map((target) => {
+          const each = { gallons: String(g), current: '0', target: String(target) };
+          const mass = run(poolStabilizer, each).get('pounds');
+          if (!isQuantityOf(mass, 'mass')) throw new Error('stabilizer must be a mass');
+          return [
+            `${String(target)} ppm`,
+            outputText('pounds', mass),
+            outputText('ounces', mass),
+            n(valueIn(mass, lb).mul(PRIMO), 1),
+          ];
+        }),
+      },
+    ],
     label: {
       heading: 'On the stabilizer label',
       items: [
         `The ${n(pounds, 1)} lb are for 100% cyanuric acid. ClearView Primo Powder is 99% isocyanuric acid, so its dose is ${n(ounces, 2)} oz ÷ 99 × 100 ${is(shown(ounces, 2).mul(primo), 1)} oz.`,
+        `Primo’s own rate is 1 lb for each 4,000 gallons to give 30 ppm: ${size} ÷ 4,000 ${is(gallons.div(Rational.of(4000)), 1)} lb, against the ${n(pounds, 1)} lb worked out here from the chemistry.`,
         `The Primo directions keep 30 to 50 ppm. Topping ${size} gallons up from 30 to 50 ppm takes ${out(poolStabilizer, { gallons: String(g), current: '30', target: '50' }, 'pounds')} lb more.`,
         `The CDC’s Model Aquatic Health Code caps a public pool at 90 ppm, ${out(poolStabilizer, { gallons: String(g), current: '30', target: '90' }, 'pounds')} lb of cyanuric acid above 30 ppm in ${size} gallons. Stabilizer does not wear off, so too much stays until you drain part of the water.`,
-        `Primo goes in through the skimmer with a clean filter, and the ${size} gallons recirculate for 24 hours to dissolve it, at a pH of 7.2 to 7.6.`,
+        `Primo’s directions superchlorinate first and bring the pH to 7.2 to 7.6; then it goes in through the skimmer with a clean filter, and the ${size} gallons recirculate for 24 hours to dissolve it.`,
       ],
     },
     next: {
@@ -320,7 +396,7 @@ const stabilizerDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [SOURCES.stabilizer, SOURCES.cdc],
+    sources: [SOURCES.primo, SOURCES.cdc],
   };
 };
 
@@ -346,20 +422,22 @@ const saltDetail = (page: JobPage): JobDetail => {
       `In kilograms: ${n(pounds, 2)} lb × 0.45359237 ${is(pounds.mul(Rational.of(45_359_237, 100_000_000)), 1)} kg.`,
       `At a reading of 2,400 ppm, only 800 ppm is missing: ${cellOf(page, 3, 1)} lb, ${cellOf(page, 3, 2)} bags.`,
     ],
-    compare: {
-      heading: 'Salt for each cell maker’s level',
-      caption: `Salt to add to ${size} gallons of fresh water (0 ppm), by the level each cell’s manual gives`,
-      head: ['Salt cell', 'Level its manual gives (ppm)', 'Salt to add (lb)', 'Bags of 40 lb'],
-      rows: CELLS.map(({ name, level, targets }) => {
-        const runs = targets.map((each) => ({ ...raw, current: '0', target: String(each) }));
-        return [
-          name,
-          level,
-          runs.map((each) => out(poolSalt, each, 'pounds')).join(' to '),
-          runs.map((each) => String(run(poolSalt, each).get('bags'))).join(' to '),
-        ];
-      }),
-    },
+    tables: [
+      {
+        heading: 'Salt for each cell maker’s level',
+        caption: `Salt to add to ${size} gallons of fresh water (0 ppm), by the level each cell’s manual gives`,
+        head: ['Salt cell', 'Level its manual gives (ppm)', 'Salt to add (lb)', 'Bags of 40 lb'],
+        rows: CELLS.map(({ name, level, targets }) => {
+          const runs = targets.map((each) => ({ ...raw, current: '0', target: String(each) }));
+          return [
+            name,
+            level,
+            runs.map((each) => out(poolSalt, each, 'pounds')).join(' to '),
+            runs.map((each) => String(run(poolSalt, each).get('bags'))).join(' to '),
+          ];
+        }),
+      },
+    ],
     label: {
       heading: 'On the salt and the cell',
       items: [
@@ -424,12 +502,14 @@ const chlorineDetail = (page: JobPage): JobDetail => {
       `The other rows: 1 to 2 ppm takes ${cellOf(page, 0, 1)} fl oz and 1 to 4 ppm ${cellOf(page, 2, 1)} fl oz, in step with the raise.`,
       `Checked with the shortcut of the method, 10.24 fl oz per ppm per 10,000 gallons: ${size} ÷ 10,000 × ${n(raise)} × 10.24 ${is(gallons.div(Rational.of(10_000)).mul(raise).mul(r('10.24')), 1)} fl oz.`,
     ],
-    compare: {
-      heading: 'Every product, the same raise',
-      caption: `${n(raise)} ppm more free chlorine, from ${raw['current'] ?? ''} to ${raw['target'] ?? ''} ppm, in ${size} gallons`,
-      head: ['Product', 'Strength on the label', 'To add', 'Metric'],
-      rows: productRows(raw, PRODUCTS),
-    },
+    tables: [
+      {
+        heading: 'Every product, the same raise',
+        caption: `${n(raise)} ppm more free chlorine, from ${raw['current'] ?? ''} to ${raw['target'] ?? ''} ppm, in ${size} gallons`,
+        head: ['Product', 'Strength on the label', 'To add', 'Metric'],
+        rows: productRows(raw, PRODUCTS),
+      },
+    ],
     label: {
       heading: 'On the label of each product',
       items: [
@@ -479,12 +559,14 @@ const shockDetail = (page: JobPage): JobDetail => {
       `${n(product, 2)} g ÷ 28.349523125 g an ounce ${is(ounces, 1)} oz, the large figure, and ÷ 16 ${is(ounces.div(Rational.of(16)), 2)} lb.`,
       `For 5 ppm it is half, ${low} oz. Dichlor is 56%, so its 8.7 ppm takes ${cellOf(page, 2, 1)} oz in ${size} gallons.`,
     ],
-    compare: {
-      heading: 'Every product, the same shock',
-      caption: `${n(target)} ppm of free chlorine in ${size} gallons, from 0 to ${n(target)} ppm`,
-      head: ['Product', 'Strength on the label', 'To add', 'Metric'],
-      rows: productRows(raw, SHOCK_PRODUCTS),
-    },
+    tables: [
+      {
+        heading: 'Every product, the same shock',
+        caption: `${n(target)} ppm of free chlorine in ${size} gallons, from 0 to ${n(target)} ppm`,
+        head: ['Product', 'Strength on the label', 'To add', 'Metric'],
+        rows: productRows(raw, SHOCK_PRODUCTS),
+      },
+    ],
     label: {
       heading: 'On the shock labels',
       items: [
@@ -529,11 +611,39 @@ const alkalinityDetail = (page: JobPage): JobDetail => {
       `From 80 ppm, 20 ppm short, it is ${cellOf(page, 1, 1)} lb; from 70 ppm, ${cellOf(page, 2, 1)} lb, in ${size} gallons.`,
       `In kilograms: ${n(grams, 1)} g ÷ 1,000 ${is(grams.div(Rational.of(1000)), 2)} kg of baking soda.`,
     ],
+    tables: [
+      {
+        heading: 'By the chemistry and by the label',
+        caption: `Baking soda for ${size} gallons: this page’s 1.6788 mg per liter for each ppm, and the ClearView label’s 12 ppm a pound in 5,000 gallons`,
+        head: [
+          'Alkalinity',
+          'Chemistry (lb)',
+          'Chemistry (kg)',
+          'ClearView label (lb)',
+          'ClearView label (kg)',
+        ],
+        rows: page.rows.map(({ raw: each }) => {
+          const from = r(each['current'] ?? '0');
+          const to = r(each['target'] ?? '0');
+          const soda = run(poolAlkalinity, each).get('pounds');
+          const label = clearViewPounds(page.gallons, to.sub(from).toNumber());
+          return [
+            `${n(from)} to ${n(to)} ppm`,
+            outputText('pounds', soda),
+            outputText('pounds', soda, 'metric'),
+            n(label, 1),
+            n(label.mul(KILOGRAMS_PER_POUND), 1),
+          ];
+        }),
+      },
+    ],
     label: {
       heading: 'On the baking soda label',
       items: [
         `ClearView Total Alkalinity is 100% sodium bicarbonate by its safety data sheet. Its directions add it in the evening with the filter running, broadcast over the deepest part of the pool: ${cellOf(page, 0, 2)} oz for this 10 ppm.`,
-        `For a public pool, the CDC’s code keeps total alkalinity at 60 to 180 ppm. From 60 ppm, the bottom of that range, ${size} gallons take ${out(poolAlkalinity, { gallons: g, current: '60', target: '100' }, 'pounds')} lb to reach 100.`,
+        `The label’s 12 ppm a pound is rounded down: by the chemistry a pound raises 5,000 gallons 453.59237 ÷ (5,000 × 3.785411784 × 1.6788 ÷ 1,000) ≈ 14.3 ppm, so the label’s ${n(clearViewPounds(page.gallons, 10), 1)} lb for 10 ppm in ${size} gallons is about a fifth more than the ${cellOf(page, 0, 1)} lb here. Test once it has circulated before adding more.`,
+        `ClearView asks for at least 50 ppm of total alkalinity; from 50 ppm, ${size} gallons take ${out(poolAlkalinity, { gallons: g, current: '50', target: '100' }, 'pounds')} lb to reach 100.`,
+        `From 60 ppm, the bottom of the CDC’s range for a public pool, ${size} gallons take ${out(poolAlkalinity, { gallons: g, current: '60', target: '100' }, 'pounds')} lb to reach 100.`,
       ],
     },
     next: {
@@ -553,7 +663,7 @@ const alkalinityDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [SOURCES.alkalinity, SOURCES.alkalinitySds],
+    sources: [SOURCES.totalAlkalinity, SOURCES.alkalinitySds],
   };
 };
 
@@ -575,11 +685,60 @@ const calciumDetail = (page: JobPage): JobDetail => {
       `Over 3 lb per 10,000 gallons the label splits the dose: ${size} ÷ 10,000 × 3 lb ${is(first, 1)} lb at a time.`,
       `So the ${n(pounds, 1)} lb go in as ${String(additions)} additions of at most ${n(first, 1)} lb, each at least 12 hours after the last: ${String(12n * (additions - 1n))} hours from the first to the last.`,
       `The last of the ${String(additions)} additions is what is left: ${n(pounds, 1)} − ${String(additions - 1n)} × ${n(first, 1)} ${is(pounds.sub(first.mul(Rational.of(additions - 1n))), 1)} lb.`,
+      `In metric: ${n(pounds, 2)} lb × 0.45359237 ${is(pounds.mul(KILOGRAMS_PER_POUND), 2)} kg in all, ${n(first, 1)} × 0.45359237 ${is(first.mul(KILOGRAMS_PER_POUND), 2)} kg an addition, each in ${n(first.mul(Rational.of(2)), 1)} × 3.785411784 ${is(first.mul(Rational.of(2)).mul(LITERS_PER_GALLON), 1)} liters of water.`,
+    ],
+    tables: [
+      {
+        heading: 'The additions, one by one',
+        caption: `${n(pounds, 1)} lb of calcium chloride in ${size} gallons, from ${n(current)} to ${raw['target'] ?? ''} ppm, at most ${n(first, 1)} lb at a time; the reading to expect follows the label’s 2 oz per 1,000 gallons for 10 ppm`,
+        head: [
+          'Addition',
+          'Hours after the first',
+          'Calcium chloride (lb)',
+          'Water to dissolve it (gal)',
+          'Reading to expect (ppm)',
+        ],
+        rows: Array.from({ length: Number(additions) }, (_, index) => {
+          const last = BigInt(index) === additions - 1n;
+          const added = last ? pounds.sub(first.mul(Rational.of(BigInt(index)))) : first;
+          const sofar = first.mul(Rational.of(BigInt(index))).add(added);
+          return [
+            String(index + 1),
+            String(12 * index),
+            n(added, 1),
+            n(added.mul(Rational.of(2)), 1),
+            n(current.add(sofar.mul(PPM_PER_POUND_GALLON).div(gallons))),
+          ];
+        }),
+      },
+      {
+        heading: `Every level from ${n(current)} ppm`,
+        caption: `From ${n(current)} ppm in ${size} gallons: ClearView’s label keeps 150 to 350 ppm, Hayward’s AquaRite manual 200 to 400`,
+        head: ['Target', 'Calcium chloride (lb)', 'Additions', 'Hours, first to last'],
+        rows: CALCIUM_LEVELS.map((target) => {
+          const each = run(poolCalcium, {
+            gallons: g,
+            current: n(current),
+            target: String(target),
+          });
+          const [all, most] = [each.get('pounds'), each.get('firstAddition')];
+          if (!isQuantityOf(all, 'mass') || !isQuantityOf(most, 'mass'))
+            throw new Error('calcium must be a mass');
+          const count = valueIn(all, lb).div(valueIn(most, lb)).ceil();
+          return [
+            `${String(target)} ppm`,
+            outputText('pounds', all),
+            String(count),
+            String(12n * (count - 1n)),
+          ];
+        }),
+      },
     ],
     label: {
       heading: 'On the calcium label',
       items: [
         `Dissolve each addition first, about ½ lb to a gallon of water: the ${n(first, 1)} lb of one addition take about ${n(first.mul(Rational.of(2)), 1)} gallons, poured into the deep end with the pump running.`,
+        `ClearView’s label separates the doses at least 12 hours apart to give the water time to adjust and avoid clouding, and keeps calcium hardness at 150 to 350 ppm: from ${n(current)} ppm, 350 takes ${out(poolCalcium, { gallons: g, current: n(current), target: '350' }, 'pounds')} lb in ${size} gallons.`,
         `The label’s dose is for flake, 74 to 100% calcium chloride by its safety data sheet; pure calcium chloride takes 0.925 lb per 10 ppm per 10,000 gallons, ${n(
           gallons
             .div(Rational.of(10_000))
@@ -607,7 +766,7 @@ const calciumDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [],
+    sources: [SOURCES.calcium],
   };
 };
 
@@ -620,6 +779,7 @@ const phDetail = (page: JobPage): JobDetail => {
   const days = out(poolPh, raw, 'days');
   const g = String(page.gallons);
   const soda = { gallons: g, product: 'soda-ash', drops: raw['drops'] ?? '' };
+  const three = ratio.mul(Rational.of(3)).mul(Rational.of(916, 100));
   const next = nextRuns(page.gallons);
   return {
     worked: [
@@ -629,19 +789,52 @@ const phDetail = (page: JobPage): JobDetail => {
       `${n(ounces, 2)} ÷ ${n(perDay, 1)} ${is(ounces.div(perDay), 2)} days of that most, rounded up to ${days}.`,
       `1 drop is ${cellOf(page, 0, 1)} fl oz over ${cellOf(page, 0, 3)} ${cellOf(page, 0, 3) === '1' ? 'day' : 'days'}; 3 drops, where the chart stops, ${cellOf(page, 2, 1)} fl oz over ${cellOf(page, 2, 3)} days.`,
     ],
+    tables: [
+      {
+        heading: 'The acid day by day',
+        caption: `Muriatic acid (31.45%) for ${size} gallons, at most ${n(perDay, 1)} fl oz in 24 hours on HASA’s label`,
+        head: ['Acid demand test', 'Day 1', 'Test, then day 2'],
+        rows: page.rows.map(({ raw: each, cells }) => {
+          const dose = valueIn(liquidOf(each), gal);
+          const most = perDay.div(Rational.of(128));
+          if (dose.compare(most.mul(Rational.of(2))) === 1)
+            throw new Error('a pH job page splits its dose over 2 days at most');
+          const rest = dose.sub(most);
+          return [
+            cells[0] ?? '',
+            fluidText(rest.sign() === 1 ? most : dose),
+            rest.sign() === 1 ? fluidText(rest) : 'Nothing more',
+          ];
+        }),
+      },
+      {
+        heading: 'Raising pH instead: soda ash',
+        caption: `Soda ash (sodium carbonate, 100%) for ${size} gallons, by the drops of the base demand test, at most ${out(poolPh, soda, 'dryPerAddition')} oz at a time on the pH Up label, 2 to 3 hours apart`,
+        head: ['Base demand test', 'Soda ash', 'Metric'],
+        rows: page.rows.map(({ raw: each, cells }) => {
+          const dry = run(poolPh, { ...each, product: 'soda-ash' }).get('dry');
+          return [
+            cells[0] ?? '',
+            `${outputText('dry', dry)} oz`,
+            `${outputText('dry', dry, 'metric')} g`,
+          ];
+        }),
+      },
+    ],
     label: {
       heading: 'Safety and the acid label',
       items: [
-        `Add acid to water, never water to acid: pour each day’s ${n(perDay, 1)} fl oz slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine.`,
-        `HASA’s directions run the filter and the pump while you add it and for at least 1 hour after, then retest the pH of the ${size} gallons.`,
-        `To raise pH instead, the base demand test counts drops for soda ash: ${n(drops)} drops in ${size} gallons is ${out(poolPh, soda, 'dry')} oz, at most ${out(poolPh, soda, 'dryPerAddition')} oz at a time on the pH Up label, 2 to 3 hours apart.`,
+        `HASA’s label keeps pH at 7.2 to 7.6 and adds the acid at the deep end, at least one foot from the wall, poured slowly over as large an area as possible: each day’s ${n(perDay, 1)} fl oz with the filter and the pump running, and for at least 1 hour after.`,
+        `The hour on the label is the least; a test after one full turnover reads the whole pool: ${next.pump.says(size)}.`,
+        `Measured in an 8 fl oz cup, the first day of ${n(drops)} drops is ${n(perDay, 1)} ÷ 8 ${is(perDay.div(Rational.of(8)), 2)} cups and the second ${n(ounces.sub(perDay), 2)} ÷ 8 ${is(ounces.sub(perDay).div(Rational.of(8)), 2)} cup; for 3 drops the second day is ${n(three.sub(perDay), 2)} ÷ 8 ${is(three.sub(perDay).div(Rational.of(8)), 2)} cups.`,
+        `A 1 gallon jug holds 128 fl oz: the ${n(ounces, 2)} fl oz of ${n(drops)} drops are ${n(ounces, 2)} ÷ 128 ${is(ounces.div(Rational.of(128)), 2)} of a jug, and the dose of 3 drops ${n(three, 2)} ÷ 128 ${is(three.div(Rational.of(128)), 2)}.`,
       ],
     },
     next: {
       heading: NEXT,
       items: [
         {
-          text: `Retest the pH once the pump has run an hour after each day’s ${n(perDay, 1)} fl oz; HASA keeps it at 7.2 to 7.6.`,
+          text: `Retest the pH once the pump has run an hour after each day’s ${n(perDay, 1)} fl oz; each drop the new test takes is ${cellOf(page, 0, 1)} fl oz more for these ${size} gallons.`,
           link: { href: page.calculator.href, label: page.calculator.label },
         },
         {
@@ -654,8 +847,14 @@ const phDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [],
+    sources: [SOURCES.hasa],
   };
+};
+
+/** A volume of acid, in gallons, as the day-by-day table writes it: fluid ounces and liters. */
+const fluidText = (gallons: Rational): string => {
+  const volume: Quantity<'volume'> = quantity(gallons, gal);
+  return `${outputText('liquid', volume)} fl oz (${volumeText(volume, liter, 2)} L)`;
 };
 
 const liquidOf = (raw: Raw) => {
@@ -671,6 +870,7 @@ const heaterDetail = (page: JobPage): JobDetail => {
   const water = gallons.mul(POUNDS_PER_GALLON);
   const btu = water.mul(rise);
   const g = String(page.gallons);
+  const rises = page.rows.map(({ raw: each }) => each['rise'] ?? '');
   const next = nextRuns(page.gallons);
   return {
     worked: [
@@ -680,11 +880,39 @@ const heaterDetail = (page: JobPage): JobDetail => {
       `15 °F takes ${cellOf(page, 1, 1)} BTU an hour and 20 °F ${cellOf(page, 2, 1)}, in step with the rise.`,
       `In 12 hours instead of 24, the same ${n(rise)} °F takes ${out(poolHeater, { gallons: g, rise: String(rise.toNumber()), hours: '12' }, 'btuPerHour')} BTU an hour.`,
     ],
+    tables: [
+      {
+        heading: 'The same rise in more or fewer hours',
+        caption: `BTU an hour into ${size} gallons, before any heat is lost`,
+        head: ['Hours', ...rises.map((each) => `${each} °F`)],
+        rows: HEATER_HOURS.map((time) => [
+          `${String(time)} hours`,
+          ...rises.map((each) =>
+            out(poolHeater, { gallons: g, rise: each, hours: String(time) }, 'btuPerHour'),
+          ),
+        ]),
+      },
+      {
+        heading: 'How long a heater takes',
+        caption: `Hours to warm ${size} gallons by each rise with nothing lost; a real pool loses heat while it warms and takes longer`,
+        head: ['Heat into the water (BTU/h)', ...rises.map((each) => `${each} °F`)],
+        rows: HEATER_OUTPUTS.map((output) => [
+          n(Rational.of(output)),
+          ...rises.map((each) => {
+            const heat = run(poolHeater, { gallons: g, rise: each, hours: '24' }).get('btu');
+            if (!(heat instanceof Rational)) throw new Error('btu must be a number');
+            return `${n(heat.div(Rational.of(output)), 1)} h`;
+          }),
+        ]),
+      },
+    ],
     label: {
       heading: 'What the figure leaves out',
       items: [
         `Each 1 °F of ${size} gallons is ${n(water)} BTU, so over 24 hours each degree asks ${n(water.div(Rational.of(24)))} BTU an hour of the heater, before any heat is lost.`,
-        `The ${n(btu)} BTU are the heat the water keeps; a pool also loses heat to the air while it warms, and the Department of Energy sizes a gas heater by the surface area of the pool instead.`,
+        `The Department of Energy sizes a heater for a rise of 1 to 1¼ °F an hour: into ${size} gallons that is ${n(water)} to ${n(water.mul(Rational.of(5, 4)))} BTU an hour before losses, against the ${n(btu.div(hours))} of the large figure.`,
+        `In watts: ${n(btu.div(hours))} × 0.2930711 ${is(btu.div(hours).mul(WATTS_PER_BTU_HOUR))} W, about ${n(btu.div(hours).mul(WATTS_PER_BTU_HOUR).div(Rational.of(1000)), 1)} kW of heat into the water.`,
+        `In metric: the ${n(btu)} BTU are ${n(btu)} × 0.2930711 ÷ 1,000 ${is(btu.mul(WATTS_PER_BTU_HOUR).div(Rational.of(1000)), 1)} kWh, warming ${n(gallons.mul(LITERS_PER_GALLON))} liters by ${n(rise)} × 5 ÷ 9 ${is(rise.mul(Rational.of(5, 9)), 1)} °C.`,
       ],
     },
     next: {
@@ -704,7 +932,7 @@ const heaterDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: pumpSources(),
+    sources: [...pumpSources(), SOURCES.nist],
   };
 };
 
@@ -720,6 +948,7 @@ const fillDetail = (page: JobPage): JobDetail => {
       `In days: ${n(minutes)} ÷ 1,440 minutes a day ${is(minutes.div(Rational.of(1440)), 2)} days of running water.`,
       `At 5 gallons a minute it takes ${cellOf(page, 0, 1)}; at 20, ${cellOf(page, 2, 1)}.`,
     ],
+    tables: [],
     label: {
       heading: 'Measure your hose',
       items: [
@@ -804,6 +1033,7 @@ const volumeDetail = (page: JobPage): JobDetail => {
       `In liters: ${n(gallons, 3)} gallons × 3.785411784 ${is(shown(gallons, 3).mul(LITERS_PER_GALLON))} liters.`,
       `Every 6 inches of average depth in this ${pool} pool holds ${n(area, area.isInteger() ? 0 : 4)} × 0.5 × 1,728 ÷ 231 ${is(area.mul(Rational.of(864, 231)))} gallons.`,
     ],
+    tables: [],
     next: {
       heading: 'What this pool needs next',
       items: [

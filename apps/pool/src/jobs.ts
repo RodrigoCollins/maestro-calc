@@ -4,6 +4,7 @@ import {
   isQuantityOf,
   lb,
   liter,
+  quantity,
   Rational,
   type Calculator,
   type InputDescriptor,
@@ -79,12 +80,12 @@ const CHECKED = {
   volume: '2026-11-08',
   salt: '2026-11-10',
   chlorine: '2026-11-10',
-  alkalinity: '2026-11-08',
-  stabilizer: '2026-11-08',
-  heater: '2026-11-08',
+  alkalinity: '2026-11-10',
+  stabilizer: '2026-11-10',
+  heater: '2026-11-10',
   fill: '2026-11-08',
-  ph: '2026-11-08',
-  calcium: '2026-11-08',
+  ph: '2026-11-10',
+  calcium: '2026-11-10',
   shock: '2026-11-10',
 } as const;
 
@@ -130,7 +131,15 @@ const CALCIUM_GALLONS = [10_000, 15_000, 20_000, 25_000, 30_000] as const;
 const CALCIUM_READINGS = [240, 200, 150] as const;
 const CALCIUM_TARGET = 250;
 const CALCIUM_MAIN = 2;
+/**
+ * The sentence of `CALCIUM.note` a calcium job page says nowhere else: its own notes give Hayward's
+ * range, the CDC's cap and the dissolving, each with the page's pounds.
+ */
+const CALCIUM_JOB_NOTE =
+  'The dose is for calcium chloride flake, the usual calcium hardness increaser; an anhydrous product (94% or more) is stronger, so follow the label of yours.';
 const STABILIZER_READINGS = [0, 10, 20] as const;
+/** ClearView Primo Powder is 99% isocyanuric acid (its directions, read 10 November 2026). */
+export const PRIMO = Rational.of(100, 99);
 const STABILIZER_TARGET = 30;
 
 /**
@@ -662,6 +671,13 @@ const massRows = (
     };
   });
 
+/**
+ * The baking soda the ClearView Total Alkalinity label gives for a raise (read 10 November 2026):
+ * "One pound ... will increase the total alkalinity of 5,000 gallons of pool water by 12 ppm".
+ */
+export const clearViewPounds = (gallons: number, raise: number): Rational =>
+  Rational.of(gallons * raise, 5000 * 12);
+
 const alkalinityPage = (gallons: number): JobPage => {
   const size = amountText(Rational.of(gallons));
   const rows = massRows(poolAlkalinity, gallons, ALKALINITY_READINGS, ALKALINITY_TARGET);
@@ -677,7 +693,7 @@ const alkalinityPage = (gallons: number): JobPage => {
     title: `How Much Baking Soda for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds of baking soda (sodium bicarbonate) that raise total alkalinity in a ${size} gallon pool by 10, 20 or 30 ppm.`,
     h1: `How much baking soda for a ${size} gallon pool`,
-    lead: `Raising total alkalinity by 10 ppm, ${raise}, takes ${pounds} lb of baking soda in a ${size} gallon pool. Bigger raises are in the table; the calculator takes your own reading and target.`,
+    lead: `A ${size} gallon pool needs ${pounds} lb of baking soda to raise total alkalinity by 10 ppm, ${raise}; the ClearView label, at 12 ppm a pound in 5,000 gallons, would add ${amountText(clearViewPounds(gallons, 10), 1)} lb. Bigger raises are in the table; the calculator takes your own reading and target.`,
     figure: {
       value: pounds,
       unit: 'LB',
@@ -690,7 +706,7 @@ const alkalinityPage = (gallons: number): JobPage => {
       href: linkTo(poolAlkalinity, ALKALINITY.path, main.raw),
       label: 'Work it out for your reading',
     },
-    method: `${ALKALINITY.method} ${ALKALINITY.note}`,
+    method: ALKALINITY.note,
     card: { title: `Baking soda for ${size} gallons`, summary: `${pounds} lb for 10 ppm more.` },
     gallons,
   };
@@ -702,6 +718,13 @@ const stabilizerPage = (gallons: number): JobPage => {
   const [fresh] = rows;
   if (fresh === undefined) throw new Error('a stabilizer job needs a fresh-fill row');
   const [, pounds = '', ounces = ''] = fresh.cells;
+  const acid = outputsOf(poolStabilizer, fresh.raw).values.get('pounds');
+  if (!isQuantityOf(acid, 'mass')) throw new Error('stabilizer must be a mass');
+  const primo = amountText(valueIn(acid, lb).mul(PRIMO), 1);
+  const fifty = outputText(
+    'pounds',
+    outputsOf(poolStabilizer, { ...fresh.raw, target: '50' }).values.get('pounds'),
+  );
   return {
     path: `/how-much-stabilizer-for-a-${String(gallons)}-gallon-pool`,
     kind: 'stabilizer',
@@ -710,7 +733,7 @@ const stabilizerPage = (gallons: number): JobPage => {
     title: `How Much Stabilizer for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds of stabilizer (cyanuric acid) a ${size} gallon pool needs to reach 30 ppm CYA, from fresh water and from 10 or 20 ppm.`,
     h1: `How much stabilizer for a ${size} gallon pool`,
-    lead: `A ${size} gallon pool filled with fresh water needs ${pounds} lb of cyanuric acid to reach 30 ppm CYA. Already stabilized? Find your reading below; the dose is for a 100% product.`,
+    lead: `A ${size} gallon pool filled with fresh water needs ${pounds} lb of cyanuric acid to reach 30 ppm CYA, ${primo} lb of 99% Primo Powder, or ${fifty} lb for 50 ppm, the top of Primo’s range. Already stabilized? Find your reading below; the dose is for a 100% product.`,
     figure: {
       value: pounds,
       unit: 'LB',
@@ -723,7 +746,7 @@ const stabilizerPage = (gallons: number): JobPage => {
       href: linkTo(poolStabilizer, STABILIZER.path, fresh.raw),
       label: 'Work it out for your reading',
     },
-    method: `${STABILIZER.method} ${STABILIZER.note}`,
+    method: STABILIZER.note,
     card: { title: `Stabilizer for ${size} gallons`, summary: `${pounds} lb from 0 to 30 ppm.` },
     gallons,
   };
@@ -746,6 +769,10 @@ const heaterPage = (gallons: number): JobPage => {
   const [main] = rows;
   if (main === undefined) throw new Error('a heater job needs its 10 °F row');
   const [warm = '', perHour = '', heat = ''] = main.cells;
+  const halfDay = outputText(
+    'btuPerHour',
+    outputsOf(poolHeater, { ...main.raw, hours: '12' }).values.get('btuPerHour'),
+  );
   return {
     path: `/what-size-pool-heater-for-a-${String(gallons)}-gallon-pool`,
     kind: 'heater',
@@ -754,7 +781,7 @@ const heaterPage = (gallons: number): JobPage => {
     title: `What Size Pool Heater for a ${size} Gallon Pool? | Pool Figures`,
     description: `The BTU per hour a heater must put out to warm a ${size} gallon pool by 10, 15 or 20 °F in 24 hours, from the weight of the water.`,
     h1: `What size pool heater for a ${size} gallon pool`,
-    lead: `Warming a ${size} gallon pool by ${warm} takes a heater that puts ${perHour} BTU an hour into the water. A pool loses heat while it warms, so a real heater is sized larger; the calculator takes your own rise and hours.`,
+    lead: `A ${size} gallon pool needs a heater that puts ${perHour} BTU an hour into the water to warm by ${warm}, or ${halfDay} in 12 hours. A pool loses heat while it warms, so a real heater is sized larger; the calculator takes your own rise and hours.`,
     figure: {
       value: perHour,
       unit: 'BTU/H',
@@ -767,7 +794,7 @@ const heaterPage = (gallons: number): JobPage => {
       href: linkTo(poolHeater, HEATER.path, main.raw),
       label: 'Work it out for your rise and hours',
     },
-    method: `${HEATER.method} ${HEATER.note}`,
+    method: HEATER.note,
     card: { title: `Heater for ${size} gallons`, summary: `${perHour} BTU/h, 10 °F in 24 hours.` },
     gallons,
   };
@@ -833,9 +860,14 @@ const phPage = (gallons: number): JobPage => {
   const main = rows[PH_MAIN];
   if (main === undefined) throw new Error('a pH job needs its 2 drops row');
   const [drops = '', ounces = '', liters = '', days = ''] = main.cells;
-  const perDay = outputText('liquidPerDay', outputsOf(poolPh, main.raw).values.get('liquidPerDay'));
-  // the lead says HASA's label splits the large figure's dose: a build error if it does not
-  if (days === '1') throw new Error('a pH job needs a split dose as its large figure');
+  const mainValues = outputsOf(poolPh, main.raw).values;
+  const perDay = outputText('liquidPerDay', mainValues.get('liquidPerDay'));
+  // the lead says HASA's label splits the large figure's dose over 2 days: a build error if not
+  if (days !== '2') throw new Error('a pH job needs a dose split over 2 days as its large figure');
+  const [dose, most] = [mainValues.get('liquid'), mainValues.get('liquidPerDay')];
+  if (!isQuantityOf(dose, 'volume') || !isQuantityOf(most, 'volume'))
+    throw new Error('liquid must be a volume');
+  const rest = outputText('liquid', quantity(valueIn(dose, gal).sub(valueIn(most, gal)), gal));
   return {
     path: `/how-much-muriatic-acid-for-a-${String(gallons)}-gallon-pool`,
     kind: 'ph',
@@ -844,7 +876,7 @@ const phPage = (gallons: number): JobPage => {
     title: `How Much Muriatic Acid for a ${size} Gallon Pool? | Pool Figures`,
     description: `The fluid ounces of 31.45% muriatic acid that lower pH in a ${size} gallon pool, for 1, 2 or 3 drops of the acid demand test of a Taylor kit.`,
     h1: `How much muriatic acid for a ${size} gallon pool`,
-    lead: `When the acid demand test of a Taylor kit takes ${drops}, a ${size} gallon pool needs ${ounces} fl oz of 31.45% muriatic acid to lower its pH. HASA’s label adds at most ${perDay} fl oz a day to that pool, so it goes in over ${days} days, with a test before each part. The table stops at 3 drops, where Taylor’s chart does; the calculator also raises pH with soda ash.`,
+    lead: `A ${size} gallon pool needs ${ounces} fl oz of 31.45% muriatic acid to lower its pH when the acid demand test of a Taylor kit takes ${drops}. HASA’s label adds at most ${perDay} fl oz a day to that pool, so it goes in over ${days} days: ${perDay} fl oz, a test, then ${rest} fl oz. The table stops at 3 drops, where Taylor’s chart does; the calculator also raises pH with soda ash.`,
     figure: {
       value: ounces,
       unit: 'FL OZ',
@@ -863,7 +895,7 @@ const phPage = (gallons: number): JobPage => {
       label: 'Work it out for your test',
     },
     guide: { href: PH_GUIDE.path, label: PH_GUIDE.card.title },
-    method: `${PH.method} ${PH.note}`,
+    method: PH.note,
     card: { title: `Muriatic acid for ${size} gallons`, summary: `${ounces} fl oz for ${drops}.` },
     gallons,
   };
@@ -892,6 +924,11 @@ const calciumPage = (gallons: number): JobPage => {
   const [from = '', pounds = '', first = ''] = main.cells;
   // the lead says the label splits the large figure's dose: a build error if it does not
   if (first === pounds) throw new Error('a calcium job needs a split dose as its large figure');
+  const mainValues = outputsOf(poolCalcium, main.raw).values;
+  const [whole, most] = [mainValues.get('pounds'), mainValues.get('firstAddition')];
+  if (!isQuantityOf(whole, 'mass') || !isQuantityOf(most, 'mass'))
+    throw new Error('calcium must be a mass');
+  const additions = String(valueIn(whole, lb).div(valueIn(most, lb)).ceil());
   const raise = `from ${from.replace(' ppm', '')} to ${String(CALCIUM_TARGET)} ppm`;
   return {
     path: `/how-much-calcium-chloride-for-a-${String(gallons)}-gallon-pool`,
@@ -901,7 +938,7 @@ const calciumPage = (gallons: number): JobPage => {
     title: `How Much Calcium Chloride for ${size} Gallons? | Pool Figures`,
     description: `The pounds of calcium chloride (calcium hardness increaser) that raise calcium hardness in a ${size} gallon pool by 10, 50 or 100 ppm, and how much to add first.`,
     h1: `How much calcium chloride for a ${size} gallon pool`,
-    lead: `Raising calcium hardness ${raise} in a ${size} gallon pool takes ${pounds} lb of calcium chloride flake. That is over 3 lb per 10,000 gallons, so the label splits it: add ${first} lb, run the pump 12 hours, test, then add the rest.`,
+    lead: `A ${size} gallon pool needs ${pounds} lb of calcium chloride flake to raise calcium hardness ${raise}. That is over 3 lb per 10,000 gallons, so the label splits it into ${additions} additions of at most ${first} lb, 12 hours apart: add ${first} lb, run the pump 12 hours, test, then add the next.`,
     figure: {
       value: pounds,
       unit: 'LB',
@@ -915,7 +952,7 @@ const calciumPage = (gallons: number): JobPage => {
       label: 'Work it out for your reading',
     },
     guide: { href: CALCIUM_GUIDE.path, label: CALCIUM_GUIDE.card.title },
-    method: `${CALCIUM.method} ${CALCIUM.note}`,
+    method: CALCIUM_JOB_NOTE,
     card: {
       title: `Calcium chloride for ${size} gallons`,
       summary: `${pounds} lb for 100 ppm more.`,
