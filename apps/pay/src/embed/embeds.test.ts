@@ -7,7 +7,7 @@ import { DECIMAL_HOURS_TEXTS, HOURS_TEXTS } from '../hours/texts.ts';
 import { OVERTIME_TEXTS } from '../overtime/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { PTO_TEXTS } from '../pto/texts.ts';
-import { ROUTES } from '../routes.ts';
+import { isPaired, ROUTES } from '../routes.ts';
 import { SHIFT_TEXTS } from '../shift/texts.ts';
 import { TIPPED_TEXTS } from '../tipped/texts.ts';
 import { CALCULATOR_PAGES, EMBED_PAGES } from '../site-check/pages.ts';
@@ -17,7 +17,8 @@ import { EMBED_PATHS, EMBED_TEXTS } from './texts.ts';
 
 const pagesDir = resolve(import.meta.dirname, '../pages');
 const sourceOf = (path: string): string => resolve(pagesDir, `${path.slice(1)}.astro`);
-const calculators = ROUTES.filter(({ kind }) => kind === 'calculator');
+// a one-language calculator (the Spanish days between dates) has no embed
+const calculators = ROUTES.filter(isPaired).filter(({ kind }) => kind === 'calculator');
 const layout = readFileSync(resolve(import.meta.dirname, '../components/SiteLayout.astro'), 'utf8');
 
 describe('EMBEDS', () => {

@@ -29,6 +29,9 @@ import { W2_BOX_12_GUIDE, W2_BOX_12_GUIDE_PATHS } from '../guide/w2-box-12.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { chartOf } from '../military/chart.ts';
 import { MILITARY_CHART_PATHS } from '../military/routes.ts';
+import { countdownLinks } from '../dates/countdowns.ts';
+import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
+import { DAYS_BETWEEN_NAME } from '../dates/words.ts';
 import { outputOf, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -62,6 +65,10 @@ const guides = [
   { href: GUIDE_PATHS[lang], label: GUIDE_TEXTS[lang].h1 },
   { href: W2_BOX_12_GUIDE_PATHS[lang], label: W2_BOX_12_GUIDE[lang].linkLabel },
   { href: MILITARY_CHART_PATHS[lang], label: chartOf(lang).h1 },
+  // the date pages are Spanish only: the calculator and the countdowns of the year
+  ...(lang === 'es'
+    ? [{ href: DAYS_BETWEEN_PATH, label: DAYS_BETWEEN_NAME }, ...countdownLinks()]
+    : []),
 ];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.
 const ran = timeCard.run({});

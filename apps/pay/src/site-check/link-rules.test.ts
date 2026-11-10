@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
-import { ROUTES } from '../routes.ts';
+import { pathsOfRoute, ROUTES, type Route } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import {
   DATA_RULES,
@@ -21,8 +21,7 @@ import {
   MILITARY_TIME_ROUTES,
 } from '../military/routes.ts';
 
-const both = (routes: readonly { en: string; es?: string }[]): string[] =>
-  routes.flatMap(({ en, es }) => (es === undefined ? [en] : [en, es]));
+const both = (routes: readonly Route[]): string[] => routes.flatMap(pathsOfRoute);
 const calculators = both(ROUTES.filter(({ kind }) => kind === 'calculator'));
 
 describe('LONG_TAIL_RULES', () => {

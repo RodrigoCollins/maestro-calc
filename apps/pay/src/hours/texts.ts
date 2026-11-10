@@ -146,6 +146,10 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
         href: '/es/convertidor-de-hora-militar',
       },
       { label: 'Tabla de hora militar: cada hora del día', href: '/es/tabla-de-hora-militar' },
+      {
+        label: 'Calculadora de días entre fechas y cuántos días faltan',
+        href: '/es/calculadora-de-dias-entre-fechas',
+      },
     ],
     usHeading: 'En EE. UU.: horas trabajadas, horas extra y tiempo completo',
     usLinks: [

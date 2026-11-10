@@ -1,6 +1,10 @@
 import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
 import { STATE_ROUTES, STATES_INDEX_PATHS } from '../../../apps/pay/src/states/routes.ts';
 import { MILITARY_TIME_ROUTES } from '../../../apps/pay/src/military/routes.ts';
+import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/routes.ts';
+
+/** The Spanish-only date pages: the days-between calculator and the countdowns. */
+const DATES = DATE_ROUTES.map(({ es }) => ({ path: es, lang: 'es' as const }));
 
 /** The military time of every hour and half hour, English only, from its table. */
 const MILITARY_TIMES = MILITARY_TIME_ROUTES.map(({ en }) => ({ path: en, lang: 'en' as const }));
@@ -81,8 +85,17 @@ export const PAGES = [
   { path: '/es/tabla-de-hora-militar', lang: 'es' },
   ...LONG_TAIL,
   ...MILITARY_TIMES,
+  ...DATES,
   ...STATES,
 ] as const;
+
+/** The days-between calculator, Spanish only. */
+export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;
+
+/** The countdown pages, Spanish only, in the order of the year. */
+export const COUNTDOWN_PATHS: readonly string[] = DATE_ROUTES.map(({ es }) => es).filter(
+  (path) => path !== DAYS_BETWEEN_PATH,
+);
 
 export const TIME_CARD = PAGES.filter(({ path }) =>
   ['/time-card-calculator', '/es/calculadora-de-horas-trabajadas'].includes(path),

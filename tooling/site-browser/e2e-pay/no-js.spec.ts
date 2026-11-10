@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
+  COUNTDOWN_PATHS,
+  DAYS_BETWEEN,
   DECIMAL_HOURS,
   DEFAULT_PAY,
   HOURS,
@@ -57,6 +59,20 @@ for (const { path } of DECIMAL_HOURS) {
     await expect(page.locator('[data-out="fromDecimal"]')).toHaveText('7 h 45 min');
     // 45 minutes is the first row's third column: 0, 20 and 40 minutes, then 5 rows down
     await expect(page.locator('.chart tbody tr').nth(5).locator('td').nth(2)).toHaveText('0.75');
+  });
+}
+
+test(`${DAYS_BETWEEN} shows the days of 2026 without JavaScript`, async ({ page }) => {
+  await page.goto(DAYS_BETWEEN);
+  await expect(page.locator('[data-days="figure"]')).toHaveText('364 días');
+  await expect(page.locator('[data-days="business"]')).toHaveText('260 días');
+});
+
+for (const path of COUNTDOWN_PATHS) {
+  test(`${path} shows its date, not a count, without JavaScript`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('[data-countdown="days"]')).toHaveText(/^El /);
+    await expect(page.locator('[data-countdown="date"]')).toHaveText(/de cada año$/);
   });
 }
 

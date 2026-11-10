@@ -1,3 +1,4 @@
+import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { LIVE_JOBS, pathOf } from '../long-tail/routes.ts';
 
 /** The built calculator pages of the route table. */
@@ -39,5 +40,19 @@ export const LIVE_PAGES: readonly string[] = LIVE_JOBS.flatMap((job) =>
   (['en', 'es'] as const).map((lang) => `${pathOf(job, lang).slice(1)}.html`),
 );
 
+/**
+ * The Spanish-only date pages: the days-between calculator, and each countdown, whose one script,
+ * `src/client/countdown.ts`, counts from the visitor's own date. They have no embed.
+ */
+export const DATE_PAGES: readonly string[] = [
+  `${DAYS_BETWEEN_PATH.slice(1)}.html`,
+  ...COUNTDOWNS.map((job) => `${countdownPathOf(job).slice(1)}.html`),
+];
+
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */
-export const CALCULATOR_PAGES: readonly string[] = [...ROUTED, ...EMBED_PAGES, ...LIVE_PAGES];
+export const CALCULATOR_PAGES: readonly string[] = [
+  ...ROUTED,
+  ...EMBED_PAGES,
+  ...LIVE_PAGES,
+  ...DATE_PAGES,
+];

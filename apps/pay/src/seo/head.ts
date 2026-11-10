@@ -4,11 +4,9 @@ import { linkPreviewOf } from '@maestro-calc/site-kit/link-preview';
 import { SITE } from '../site.config.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
-/** The paths of a page: English, and Spanish but on an English-only page. */
-export interface PagePaths {
-  readonly en: string;
-  readonly es?: string;
-}
+/** The paths of a page: English and Spanish, or only one of them on a one-language page. */
+export type PagePaths =
+  { readonly en: string; readonly es?: string } | { readonly en?: undefined; readonly es: string };
 
 /**
  * What the layout writes about a page in `lang`: its canonical when it has `paths` (the 404 has
