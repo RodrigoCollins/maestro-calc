@@ -125,6 +125,45 @@ describe('the cat age chart', () => {
   });
 });
 
+describe('the cat feeding chart', () => {
+  const chart = chartOf('/cat-feeding-chart');
+  const row = (weight: string) => chart.rows.find(([w]) => w === weight);
+
+  it('lists 4 to 20 lb in steps of 1, a cell for every column', () => {
+    expect(chart.rows.map(([w]) => w)).toEqual(Array.from({ length: 17 }, (_, i) => String(i + 4)));
+    for (const cells of chart.rows) expect(cells).toHaveLength(chart.columns.length);
+  });
+
+  // 10 lb = 4.5359 kg, RER 70 x 4.5359^0.75 = 217.57, x 1.2 = 261.08 kcal; / 350 = 0.746 cups;
+  // / 80 = 3.264 cans; half and half: 0.373 cups and 1.632 cans
+  it('gives a neutered 10 lb cat 261 kcal: 0.75 cups dry, 3.26 cans wet, or half of each', () => {
+    expect(row('10')).toEqual(['10', '261', '0.75', '3.26', '0.37', '1.63']);
+  });
+
+  // 4 lb = 1.8144 kg, RER 109.43, x 1.2 = 131.32; 20 lb = 9.0718 kg, RER 365.91, x 1.2 = 439.09
+  it('runs from 131 kcal at 4 lb to 439 kcal at 20 lb', () => {
+    expect(row('4')).toEqual(['4', '131', '0.38', '1.64', '0.19', '0.82']);
+    expect(row('20')).toEqual(['20', '439', '1.25', '5.49', '0.63', '2.74']);
+  });
+
+  it('states the calorie lines it assumes, compares WSAVA and leads to the cat pages', () => {
+    expect(chart.lead).toContain('350 kcal a cup');
+    expect(chart.lead).toContain('80 kcal a can');
+    expect(chart.notes.join(' ')).toContain('240 to 270 kcal a day at 4.5 kg');
+    expect(chart.calculators.map(({ href }) => href)).toEqual([
+      '/cat-food-calculator',
+      '/kitten-feeding-calculator',
+    ]);
+    expect(chart.pages?.links.map(({ href }) => href)).toEqual([
+      '/when-do-cats-stop-growing',
+      '/how-to-read-pet-food-label',
+    ]);
+    expect(chart.sources.map(({ url }) => url)).toContain(
+      'https://wsava.org/wp-content/uploads/2020/07/Calorie-Needs-for-Healthy-Adult-Cats-updated-July-2020.pdf',
+    );
+  });
+});
+
 describe('every chart', () => {
   it('is at the address the routes pin, as an article', () => {
     expect(CHARTS.map(({ path }) => path)).toEqual([
@@ -133,6 +172,7 @@ describe('every chart', () => {
       '/dog-chocolate-toxicity-chart',
       '/dog-age-chart',
       '/cat-age-chart',
+      '/cat-feeding-chart',
     ]);
     for (const { path } of CHARTS)
       expect(ROUTES.find((r) => r.path === path)?.kind).toBe('article');
@@ -150,7 +190,7 @@ describe('every chart', () => {
 
   it('carries a review day and sources with addresses', () => {
     for (const chart of CHARTS) {
-      expect(['2026-11-07', '2026-11-08', '2026-11-09']).toContain(chart.checked);
+      expect(['2026-11-07', '2026-11-08', '2026-11-09', '2026-11-10']).toContain(chart.checked);
       expect(chart.sources.length).toBeGreaterThan(0);
       for (const { url } of chart.sources) expect(url).toMatch(/^https:\/\//);
     }

@@ -7,6 +7,14 @@ import {
   CAT_YEARS_CHECKED,
   CAT_YEARS_PAGES,
 } from './cat-years.ts';
+import {
+  CAT_DRY_KCAL,
+  CAT_FEEDING_CHECKED,
+  CAT_FEEDING_SOURCES,
+  CAT_WEIGHTS,
+  CAT_WET_KCAL,
+  catChartRow,
+} from './cat-feeding.ts';
 import { dogOf, FEED_PAGES } from './feed-by-weight.ts';
 import { AGE_PAGES, DOG_AGE_CHART_ROWS, DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, cupsText, kcalText, quarterCups } from './format.ts';
@@ -280,6 +288,46 @@ export const CHARTS: readonly Chart[] = [
     card: {
       title: 'Cat age chart',
       summary: 'Human years for cats from 1 month to 25 years, with the life stage.',
+    },
+  },
+  {
+    path: '/cat-feeding-chart',
+    title: 'Cat Feeding Chart: Calories and Cans by Weight | Bowl Figures',
+    description:
+      'Calories a day for a neutered adult cat from 4 to 20 lb, from the Merck factor, as cups of dry food, cans of wet food or half of each. Check with your vet.',
+    h1: 'Cat feeding chart by weight',
+    lead: `A neutered adult cat at each weight, on dry food of ${CAT_DRY_KCAL} kcal a cup, wet food of ${CAT_WET_KCAL} kcal a can, or half the calories from each. Your own labels set the real amount: use the calculator with them.`,
+    checked: CAT_FEEDING_CHECKED,
+    columns: [
+      'Weight (lb)',
+      'Calories a day',
+      'Dry only: cups',
+      'Wet only: cans',
+      'Half and half: cups',
+      'Half and half: cans',
+    ],
+    rows: CAT_WEIGHTS.map(catChartRow),
+    notes: [
+      'Calories a day are 70 × (weight in kg)^0.75 × 1.2, the resting energy of the Merck Veterinary Manual and the 2021 AAHA guidelines times the Merck factor for a neutered adult cat. An intact cat takes 1.4, an inactive or obesity-prone cat 1.0, and a kitten 2.5. Merck adds that one cat may need 30% more or less than another of the same weight.',
+      'WSAVA’s table for an average healthy adult cat, worked from the 2006 NRC formulas, gives 240 to 270 kcal a day at 4.5 kg (9.9 lb) and 280 to 370 at 7 kg (15.4 lb): the 10 lb and 15 lb rows here fall inside those ranges.',
+      'Most adult cats in ideal condition weigh well under 20 lb. A heavy cat on a weight-loss plan is fed for its ideal weight, not its present one, at 0.8 times the resting energy (AAHA 2021): read the row of the weight your veterinarian sets as the goal, then take a third off the calories, or use the calculator.',
+      'The half and half columns split the calories, not the volume: half the day’s calories as dry food and half as wet. Treats belong inside the day: AAHA keeps them to 10% of the calories, and the calculator shows the amounts with them taken out.',
+    ],
+    calculators: [
+      { href: hrefOf('cat'), label: 'Cat food calculator' },
+      { href: hrefOf('kitten'), label: 'Kitten feeding calculator' },
+    ],
+    pages: {
+      heading: 'More on feeding a cat',
+      links: [
+        { href: hrefOf('cat-growth-guide'), label: 'When do cats stop growing?' },
+        { href: hrefOf('label-guide'), label: 'How to read the calorie line on a pet food label' },
+      ],
+    },
+    sources: Object.values(CAT_FEEDING_SOURCES),
+    card: {
+      title: 'Cat feeding chart',
+      summary: 'Calories, cups of dry and cans of wet food a day for 4 to 20 lb.',
     },
   },
 ];
