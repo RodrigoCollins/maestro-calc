@@ -430,6 +430,20 @@ export const JOBS = {
     updated: '2026-11-08',
     cases: [slab(10, 16, 4), slab(8, 8, 4), slab(14, 14, 4), slab(16, 24, 4), slab(24, 36, 6)],
   },
+  // the sizes people price (Ahrefs US, 2026-11-08: 30x30, 20x20, 30x40, 40x60 slab cost), 4 in
+  'concrete-slab-cost': {
+    calculator: 'concrete',
+    updated: '2026-11-09',
+    cases: [
+      slab(10, 10, 4),
+      slab(12, 12, 4),
+      slab(20, 20, 4),
+      slab(24, 24, 4),
+      slab(30, 30, 4),
+      slab(30, 40, 4),
+      slab(40, 60, 4),
+    ],
+  },
   'roof-pitch-2-12': { calculator: 'roof-pitch', updated: '2026-11-08', cases: pitch(2) },
   'roof-pitch-3-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(3) },
   'roof-pitch-4-12': { calculator: 'roof-pitch', updated: '2026-11-04', cases: pitch(4) },
@@ -711,6 +725,7 @@ export const isPitchJob = (id: string): id is PitchId => Object.hasOwn(PITCH_RIS
  */
 export const QUESTION_IDS = [
   'concrete-cubic-yard-weight',
+  'concrete-slab-cost',
   'square-feet-1-car-garage',
   'square-feet-2-car-garage',
   'cubic-yards-to-tons',

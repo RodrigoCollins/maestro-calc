@@ -426,6 +426,8 @@ export const enSite = {
     'With the 10% extra, in cubic feet, cubic yards and cubic meters',
   'site.job.worked.concrete.bags': 'Bags of 80 lb, about 0.60 cubic feet each, rounded up',
   'site.job.worked.concrete.weight': 'Weight of the dry mix to lift and carry',
+  'site.job.worked.cost.readyMix': 'Ready-mix at the two producer prices',
+  'site.job.worked.cost.installed': 'Installed at the lowest and the highest published price',
   'site.job.worked.area.feet': 'Area of the first size',
   'site.job.worked.area.yards': 'In square yards, 9 square feet each',
   'site.job.worked.area.metric': 'In metric, with 1 ft = 0.3048 m',
@@ -1400,6 +1402,14 @@ export const enSite = {
   'site.job.question.more': 'See also',
   'site.job.question.unitSource': 'Unit definitions',
   'site.job.question.bagSource': 'Bag yields',
+  'site.job.question.readyMixSource': 'Ready-mix price per cubic yard',
+  'site.job.question.installedSource': 'Installed price per square foot',
+  'site.job.question.thicknessCost.heading': 'Concrete per square foot at each thickness',
+  'site.job.question.thicknessCost.lead':
+    'The ready-mix alone, with the 10% extra, at $160.18 and $201.90 per cubic yard. The installed price adds the base, the steel, the forms, the labor and the finish to it:',
+  'site.job.question.slabCost.heading': 'Ready-mix for a 30 × 30 ft slab',
+  'site.job.question.slabCost.lead':
+    'A 30 by 30 ft slab is 900 square feet, the size people price most often; each inch of thickness adds about 3 cubic yards and $489 to $617 of concrete:',
   'site.job.question.feetToYards.heading': 'Cubic feet to cubic yards',
   'site.job.question.feetToYards.lead':
     'Divide the cubic feet by 27. The cubic meters multiply the cubic feet by 0.028316846592, the exact metric value of a cubic foot.',
@@ -1453,6 +1463,20 @@ export const enSite = {
   'site.job.question.col.slab4': 'Cubic yards at 4 in',
   'site.job.question.col.bags4': '80 lb bags at 4 in',
   'site.job.question.col.slab6': 'Cubic yards at 6 in',
+  'site.job.question.col.thickness': 'Thickness',
+  'site.job.question.col.yardsWithExtra': 'Cubic yards with 10% extra',
+  'site.job.question.col.yardsPer100': 'Cubic yards per 100 sq ft',
+  'site.job.question.col.readyMix': 'Ready-mix concrete',
+  'site.job.question.col.readyMixPerFoot': 'Ready-mix per sq ft',
+  'site.job.cost.lead': 'Installed price of a plain concrete slab',
+  'site.job.cost.perFoot': 'per square foot installed',
+  'site.job.cost.readyMix': 'Ready-mix per cubic yard (producer averages, Q3 2026)',
+  'site.job.cost.concrete': 'Concrete alone, 4 in slab, per square foot',
+  'site.job.cost.twenty': '20 × 20 ft slab, 4 in, installed',
+  'site.job.cost.col.yards': 'Cubic yards with 10% extra',
+  'site.job.cost.col.readyMix': 'Ready-mix concrete',
+  'site.job.cost.col.installedLow': 'Installed, This Old House range',
+  'site.job.cost.col.installedHigh': 'Installed, Concrete Network range',
   'page.concrete-cubic-yard-weight.title':
     'A Yard of Concrete Weighs 3,915 to 4,050 lb | Maestro Calc',
   'page.concrete-cubic-yard-weight.description':
@@ -1469,6 +1493,20 @@ export const enSite = {
     'Concrete is mostly stone and sand held together by cement paste, so its weight follows its aggregate. Normal-weight concrete made with ordinary gravel or crushed stone weighs 145 to 150 lb per cubic foot once hardened, the range on this page. Lightweight concrete made with expanded shale or clay weighs much less, and heavyweight concrete made for radiation shielding much more, so neither is covered by these figures. Fresh concrete still holds all of its mixing water and is a little heavier than the same concrete after it cures and dries.',
   'page.concrete-cubic-yard-weight.p2':
     'The weight matters when you haul it, lift it or build on it. A 14 by 14 ft slab 4 in thick is 2.42 cubic yards in place and weighs 9,473 to 9,800 lb, close to five tons. Ten cubic yards, a large ready-mix load, weigh 19.58 to 20.25 tons. Bagged mix is the same material sold dry: an 80 lb bag makes about 0.6 cubic feet, so one cubic yard takes 45 bags, 3,600 lb of mix to carry before any water is added.',
+  'page.concrete-slab-cost.title': 'Concrete Slab Cost: $4 to $10.50 per Sq Ft | Maestro Calc',
+  'page.concrete-slab-cost.description':
+    'How much does a concrete slab cost? $4.00 to $10.50 per sq ft installed, $160 to $202 per yard of ready-mix in 2026, sourced, for slabs 10x10 to 40x60.',
+  'page.concrete-slab-cost.heading': 'A concrete slab costs $4 to $10.50 per square foot installed',
+  'page.concrete-slab-cost.label': 'Concrete slab cost',
+  'page.concrete-slab-cost.intro':
+    'A plain concrete slab costs about $4.00 to $10.50 per square foot installed in 2026, by the two cost guides this page cites: $4 to $8 from This Old House and $6.50 to $10.50 from Concrete Network. The concrete itself is the smaller part. Ready-mix sold for an average of $160.18 per cubic yard at Eagle Materials and $201.90 at Knife River in the third quarter of 2026, the prices both producers reported to the SEC, so the concrete of a 4 in slab costs $2.18 to $2.74 per square foot with 10% extra. The table prices seven common sizes, from a 10 by 10 ft pad to a 40 by 60 ft shop floor.',
+  'page.concrete-slab-cost.note':
+    'The cubic yards add 10% extra for waste, the concrete calculator’s default. The ready-mix column multiplies them by $160.18 and $201.90 and rounds to whole dollars; the installed columns multiply the area by each guide’s range per square foot, which already includes the concrete. Each size opens the calculator, where you can type the price per cubic yard your supplier quotes.',
+  'page.concrete-slab-cost.about': 'What moves the price of a slab',
+  'page.concrete-slab-cost.p1':
+    'The installed price pays for much more than concrete. Concrete Network names the grading, the subbase, the forms and the finishing, the reinforcement and the local price of concrete as what sets the cost of a slab. A 4 in slab takes 1.36 cubic yards per 100 square feet with the extra, so at the producer prices the concrete is about $2.18 to $2.74 of every square foot, and the rest pays for the base, the steel, the labor and the finish. Thickness moves the concrete in proportion: 6 in takes half again as much as 4 in, and 8 in twice as much. A decorative finish, a sloped or wet site, or a long pump line add to the installed figure, so a quote for a stamped patio can sit well above these ranges.',
+  'page.concrete-slab-cost.p2':
+    'The ready-mix prices are averages over all the concrete each producer sold in the quarter, in the regions it serves: Eagle Materials reported $160.18 per cubic yard for the quarter ended September 30, 2026, and Knife River $201.90 for its third quarter, so your local price can sit near either one or outside both. Concrete Network notes that some supplier quotes include delivery or short-load fees, and those weigh most on a small pour: a 10 by 10 ft patio needs only 1.36 cubic yards, and a minimum charge for a part load can cost more than the concrete. For a pour that small, the calculator also counts the 80 lb bags. Ask two or three local suppliers for the delivered price per yard, type it into the calculator and compare.',
   'page.square-feet-1-car-garage.title':
     '1-Car Garage Square Feet: 240 to 384 sq ft | Maestro Calc',
   'page.square-feet-1-car-garage.description':

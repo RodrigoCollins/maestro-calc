@@ -20,6 +20,20 @@ describe('jobWorked (the worked example of a job page)', () => {
     ]);
   });
 
+  // hand-verified: the 10 × 10 ft slab, then 1.358 yd³ × $160.18 = $217.53 and × $201.90 =
+  // $274.19 (the producer prices of the third quarter 2026); 100 sq ft × $4.00 = $400 and ×
+  // $10.50 = $1,050 (This Old House and Concrete Network)
+  it('prices the first slab of the cost page with the published prices', () => {
+    expect(mathOf(jobWorked('concrete-slab-cost', 'en'))).toEqual([
+      '10 ft × 10 ft × 4 in = 33.33 ft³',
+      '33.33 ft³ × 1.10 ≈ 36.67 ft³ = 1.36 yd³ = 1.04 m³',
+      '36.67 ft³ ÷ 0.60 ft³ = 61.1 → 62',
+      '62 × 80 lb = 4,960 lb',
+      '1.36 yd³ × $160.18 ≈ $217.53; 1.36 yd³ × $201.90 ≈ $274.19',
+      '100 sq ft × $4.00 = $400; 100 sq ft × $10.50 = $1,050',
+    ]);
+  });
+
   // hand-verified: π × (4/12)² × 2 = 0.70 ft³; × 1.10 = 0.77 ft³ = 0.03 yd³ = 0.02 m³; 0.768 ÷
   // 0.60 = 1.3, so 2 bags, 160 lb
   it('works an 8 in tube 24 in deep out, with the same arithmetic in Spanish', () => {

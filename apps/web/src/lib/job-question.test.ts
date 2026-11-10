@@ -129,6 +129,37 @@ describe('jobQuestion (the tables a question page adds to its job table)', () =>
     );
   });
 
+  // hand-verified in slab-cost.test.ts: 4 in with 10% extra, the ready-mix at the producer prices
+  // $160.18 and $201.90 a cubic yard, installed at $4 to $8 and $6.50 to $10.50 a square foot;
+  // 100 sq ft takes 1.1 × t/12 × 100 ÷ 27 yd³: 1.36 at 4 in, 1.70 at 5, 2.04 at 6 and 2.72 at 8
+  // 30 × 30 ft with 10% extra: 4 in 12.22 yd³ ($1,958–$2,468), 5 in 900 × 5/12 × 1.1 ÷ 27 =
+  // 15.28 yd³ × 160.18 = 2,447.19 and × 201.90 = 3,084.58, 6 in 55/3 = 18.33 yd³ × 160.18 =
+  // 2,936.63 and × 201.90 = 3,701.50 (ties away from zero: $3,702)
+  it('prices the concrete of each thickness and of a 30 × 30 ft slab, with dated sources', () => {
+    expect(rowsOf('concrete-slab-cost', 0)).toEqual([
+      ['4 in', '1.36', '$2.18–$2.74'],
+      ['5 in', '1.70', '$2.72–$3.43'],
+      ['6 in', '2.04', '$3.26–$4.11'],
+      ['8 in', '2.72', '$4.35–$5.48'],
+    ]);
+    expect(rowsOf('concrete-slab-cost', 1)).toEqual([
+      ['30 ft × 30 ft × 4 in', '12.22', '$1,958–$2,468'],
+      ['30 ft × 30 ft × 5 in', '15.28', '$2,447–$3,085'],
+      ['30 ft × 30 ft × 6 in', '18.33', '$2,937–$3,702'],
+    ]);
+    expect(jobQuestion('concrete-slab-cost', 'es')?.tables[1]?.rows[0]?.href).toMatch(
+      new RegExp(`^${pathOf('concrete', 'es')}\\?`),
+    );
+    expect(
+      jobQuestion('concrete-slab-cost', 'en')?.sources.map(({ source }) => source.url),
+    ).toEqual([
+      'https://www.sec.gov/Archives/edgar/data/0000918646/000119312526446156/d135289dex991.htm',
+      'https://www.sec.gov/Archives/edgar/data/1955520/000162828026069132/a2026q3ex99.htm',
+      'https://www.thisoldhouse.com/foundations/concrete-slab-cost',
+      'https://www.concretenetwork.com/concrete-prices.html',
+    ]);
+  });
+
   it.each(PAIRS)('writes %s an about section of its own in %s, with sources', (id, locale) => {
     const question = jobQuestion(id, locale);
     expect(question).toBeDefined();

@@ -74,6 +74,12 @@ import {
   squareMetersReverse,
 } from './square-meters-chart.ts';
 import { siteText } from './site-text.ts';
+import {
+  concreteCostPerSquareFoot,
+  installedRange,
+  readyMixRange,
+  slabCostOf,
+} from './slab-cost.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
 export interface JobRow {
@@ -227,6 +233,42 @@ const concreteTable = (cases: Job['cases'], locale: Locale): JobTable => {
     columns: [sizeLabel, calc('calc.concrete.outputs.volumeYd3'), ...bagLabels],
     rows,
     calculatorName: calc('calc.concrete.title'),
+  };
+};
+
+/*
+ * What a slab costs: each slab of the concrete table, its concrete priced at the two producer
+ * prices and its area at the two installed ranges (`slab-cost.ts`); the answer is the installed
+ * range per square foot, the question the page answers.
+ */
+const slabCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const text = siteText(locale);
+  const base = concreteTable(cases, locale);
+  const [first, ...rest] = base.rows.map((row, index): JobRow => {
+    const cost = slabCostOf(cases[index] ?? {});
+    return { ...row, cells: [cost.yards, cost.readyMix, ...cost.installed] };
+  });
+  if (first === undefined) throw new Error('the slab cost page has no slab');
+  return {
+    lead: text('site.job.cost.lead'),
+    answer: `${installedRange()} ${text('site.job.cost.perFoot')}`,
+    facts: [
+      { label: text('site.job.cost.readyMix'), value: readyMixRange() },
+      { label: text('site.job.cost.concrete'), value: concreteCostPerSquareFoot(4) },
+      {
+        label: text('site.job.cost.twenty'),
+        value: slabCostOf({ length: '20ft', width: '20ft', thickness: '4in' }).installedAll,
+      },
+    ],
+    columns: [
+      base.columns[0],
+      text('site.job.cost.col.yards'),
+      text('site.job.cost.col.readyMix'),
+      text('site.job.cost.col.installedLow'),
+      text('site.job.cost.col.installedHigh'),
+    ],
+    rows: [first, ...rest],
+    calculatorName: base.calculatorName,
   };
 };
 
@@ -874,6 +916,7 @@ const chartOf = (id: JobId, heading: string, locale: Locale): JobChart | undefin
 /** The table of job `id`: its chart's own, or the job table of its calculator. */
 const tableOf = (id: JobId, locale: Locale): JobTable => {
   const { calculator, cases } = JOBS[id];
+  if (id === 'concrete-slab-cost') return slabCostTable(cases, locale);
   const own = isChart(id) ? CHART_TABLES[id] : undefined;
   return (own ?? TABLES[calculator])(cases, locale);
 };
