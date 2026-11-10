@@ -101,6 +101,51 @@ describe('job page view (growth plan › lever 1: figures from the engine)', () 
     expect(view.columns).toHaveLength(5);
   });
 
+  // hand-verified in slab-cost.test.ts: installed $4.00 (This Old House) to $10.50 (Concrete
+  // Network) a square foot; ready-mix $160.18 to $201.90 a cubic yard (Eagle Materials and Knife
+  // River, third quarter 2026); 1 sq ft at 4 in with 10% extra is 0.01358 yd³, $2.18 to $2.74;
+  // 20 × 20 ft = 400 sq ft × $4.00 to $10.50 = $1,600 to $4,200
+  it.each(LOCALES)(
+    'answers what a concrete slab costs with the published prices in %s',
+    (locale) => {
+      const view = jobView('concrete-slab-cost', locale);
+      expect(view.answer).toContain('$4.00–$10.50');
+      expect(view.facts.map(({ value }) => value)).toEqual([
+        '$160.18–$201.90',
+        '$2.18–$2.74',
+        '$1,600–$4,200',
+      ]);
+      expect(view.columns).toHaveLength(5);
+      expect(view.rows[0]).toEqual({
+        label: '10 ft × 10 ft × 4 in',
+        href: `${pathOf('concrete', locale)}?v=1&l=120`,
+        cells: ['1.36', '$218–$274', '$400–$800', '$650–$1,050'],
+      });
+      expect(view.rows.map(({ label }) => label)).toEqual([
+        '10 ft × 10 ft × 4 in',
+        '12 ft × 12 ft × 4 in',
+        '20 ft × 20 ft × 4 in',
+        '24 ft × 24 ft × 4 in',
+        '30 ft × 30 ft × 4 in',
+        '30 ft × 40 ft × 4 in',
+        '40 ft × 60 ft × 4 in',
+      ]);
+      expect(view.rows[4]?.cells).toEqual([
+        '12.22',
+        '$1,958–$2,468',
+        '$3,600–$7,200',
+        '$5,850–$9,450',
+      ]);
+      expect(view.rows[6]?.cells).toEqual([
+        '32.59',
+        '$5,221–$6,580',
+        '$9,600–$19,200',
+        '$15,600–$25,200',
+      ]);
+      expect(view.calculatorName).not.toBe('');
+    },
+  );
+
   // hand-verified: 4 × 4 × 1/3 ft = 5.33 ft³, + 10% = 5.87 ft³ = 0.22 yd³ (9.8, 13.0 and 19.6
   // bags); 30 × 30 × 1/2 ft = 450 ft³, + 10% = 495 ft³ = 18.33 yd³: 825, 1,100 and 1,650 bags
   it.each(LOCALES)('charts every slab with its source and its citation in %s', (locale) => {

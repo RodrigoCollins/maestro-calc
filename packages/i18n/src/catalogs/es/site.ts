@@ -430,6 +430,8 @@ export const esSite = {
   'site.job.worked.concrete.bags':
     'Bolsas de 80 lb, de cerca de 0.60 pies cúbicos cada una, redondeando hacia arriba',
   'site.job.worked.concrete.weight': 'Peso de la mezcla seca que hay que levantar y cargar',
+  'site.job.worked.cost.readyMix': 'Concreto premezclado a los dos precios de productor',
+  'site.job.worked.cost.installed': 'Instalada al precio publicado más bajo y al más alto',
   'site.job.worked.area.feet': 'Área de la primera medida',
   'site.job.worked.area.yards': 'En yardas cuadradas, de 9 pies cuadrados cada una',
   'site.job.worked.area.metric': 'En sistema métrico, con 1 ft = 0.3048 m',
@@ -1420,6 +1422,14 @@ export const esSite = {
   'site.job.question.more': 'Consulta también',
   'site.job.question.unitSource': 'Definiciones de las unidades',
   'site.job.question.bagSource': 'Rendimiento de las bolsas',
+  'site.job.question.readyMixSource': 'Precio del concreto premezclado por yarda cúbica',
+  'site.job.question.installedSource': 'Precio instalado por pie cuadrado',
+  'site.job.question.thicknessCost.heading': 'Concreto por pie cuadrado en cada espesor',
+  'site.job.question.thicknessCost.lead':
+    'Solo el concreto premezclado, con el 10% extra, a $160.18 y $201.90 por yarda cúbica. El precio instalado le suma la base, el acero, las cimbras, la mano de obra y el acabado:',
+  'site.job.question.slabCost.heading': 'Concreto premezclado para una losa de 30 × 30 ft',
+  'site.job.question.slabCost.lead':
+    'Una losa de 30 por 30 ft tiene 900 pies cuadrados, la medida que más se cotiza; cada pulgada de espesor suma unas 3 yardas cúbicas y de $489 a $617 de concreto:',
   'site.job.question.feetToYards.heading': 'De pies cúbicos a yardas cúbicas',
   'site.job.question.feetToYards.lead':
     'Divide los pies cúbicos entre 27. Los metros cúbicos multiplican los pies cúbicos por 0.028316846592, el valor métrico exacto de un pie cúbico.',
@@ -1473,6 +1483,21 @@ export const esSite = {
   'site.job.question.col.slab4': 'Yardas cúbicas a 4 in',
   'site.job.question.col.bags4': 'Bolsas de 80 lb a 4 in',
   'site.job.question.col.slab6': 'Yardas cúbicas a 6 in',
+  'site.job.question.col.thickness': 'Espesor',
+  'site.job.question.col.yardsWithExtra': 'Yardas cúbicas con 10% extra',
+  'site.job.question.col.yardsPer100': 'Yardas cúbicas por 100 pies²',
+  'site.job.question.col.readyMix': 'Concreto premezclado',
+  'site.job.question.col.readyMixPerFoot': 'Premezclado por pie²',
+  'site.job.cost.lead': 'Precio instalado de una losa de concreto simple',
+  'site.job.cost.perFoot': 'por pie cuadrado, instalada',
+  'site.job.cost.readyMix':
+    'Premezclado por yarda cúbica (promedios de productores, 3.er trimestre de 2026)',
+  'site.job.cost.concrete': 'Solo el concreto, losa de 4 in, por pie cuadrado',
+  'site.job.cost.twenty': 'Losa de 20 × 20 ft, 4 in, instalada',
+  'site.job.cost.col.yards': 'Yardas cúbicas con 10% extra',
+  'site.job.cost.col.readyMix': 'Concreto premezclado',
+  'site.job.cost.col.installedLow': 'Instalada, rango de This Old House',
+  'site.job.cost.col.installedHigh': 'Instalada, rango de Concrete Network',
   'page.concrete-cubic-yard-weight.title':
     'Yarda de concreto: pesa 3,915 a 4,050 lb | Maestro Calc',
   'page.concrete-cubic-yard-weight.description':
@@ -1489,6 +1514,21 @@ export const esSite = {
     'El concreto es sobre todo piedra y arena unidas por pasta de cemento, así que su peso sigue al de su agregado. El concreto de peso normal, hecho con grava común o piedra triturada, pesa de 145 a 150 lb por pie cúbico ya endurecido, el rango de esta página. El concreto ligero, hecho con esquisto o arcilla expandida, pesa mucho menos, y el concreto pesado para blindaje contra radiación mucho más, así que ninguno de los dos entra en estas cifras. El concreto fresco todavía tiene toda el agua de la mezcla y pesa un poco más que el mismo concreto después de curar y secar.',
   'page.concrete-cubic-yard-weight.p2':
     'El peso importa cuando lo transportas, lo levantas o construyes encima. Una losa de 14 por 14 ft y 4 in de espesor tiene 2.42 yardas cúbicas coladas y pesa de 9,473 a 9,800 lb, casi cinco toneladas. Diez yardas cúbicas, una carga grande de concreto premezclado, pesan de 19.58 a 20.25 toneladas. La mezcla en bolsa es el mismo material vendido en seco: una bolsa de 80 lb rinde unos 0.6 pies cúbicos, así que una yarda cúbica lleva 45 bolsas, 3,600 lb de mezcla que cargar antes de añadir el agua.',
+  'page.concrete-slab-cost.title': 'Losa de concreto: $4 a $10.50 por pie² | Maestro Calc',
+  'page.concrete-slab-cost.description':
+    '¿Cuánto cuesta una losa de concreto? $4.00 a $10.50 por pie² instalada y $160 a $202 por yarda de premezclado en 2026, con fuentes, de 10x10 a 40x60.',
+  'page.concrete-slab-cost.heading':
+    'Una losa de concreto cuesta de $4 a $10.50 por pie cuadrado instalada',
+  'page.concrete-slab-cost.label': 'Costo de losa de concreto',
+  'page.concrete-slab-cost.intro':
+    'Una losa de concreto simple cuesta de $4.00 a $10.50 por pie cuadrado instalada en 2026, según las dos guías de costos que cita esta página: de $4 a $8 según This Old House y de $6.50 a $10.50 según Concrete Network. El concreto en sí es la parte menor. El concreto premezclado se vendió en promedio a $160.18 por yarda cúbica en Eagle Materials y a $201.90 en Knife River en el tercer trimestre de 2026, los precios que ambos productores reportaron a la SEC, así que el concreto de una losa de 4 in cuesta de $2.18 a $2.74 por pie cuadrado con 10% extra. La tabla da el precio de siete medidas comunes, desde una base de 10 por 10 ft hasta el piso de un taller de 40 por 60 ft.',
+  'page.concrete-slab-cost.note':
+    'Las yardas cúbicas suman un 10% extra por desperdicio, el valor predeterminado de la calculadora de concreto. La columna del premezclado las multiplica por $160.18 y $201.90 y redondea a dólares enteros; las columnas de la losa instalada multiplican el área por el rango por pie cuadrado de cada guía, que ya incluye el concreto. Cada medida abre la calculadora, donde puedes escribir el precio por yarda cúbica que te dé tu proveedor.',
+  'page.concrete-slab-cost.about': 'Qué mueve el precio de una losa',
+  'page.concrete-slab-cost.p1':
+    'El precio instalado paga mucho más que el concreto. Concrete Network nombra la nivelación, la sub-base, las cimbras y el acabado, el refuerzo y el precio local del concreto como lo que fija el costo de una losa. Una losa de 4 in lleva 1.36 yardas cúbicas por cada 100 pies cuadrados con el extra, así que a los precios de los productores el concreto es de $2.18 a $2.74 de cada pie cuadrado, y el resto paga la base, el acero, la mano de obra y el acabado. El espesor mueve el concreto en proporción: 6 in lleva la mitad más que 4 in, y 8 in el doble. Un acabado decorativo, un terreno en pendiente o húmedo, o una línea de bombeo larga suben la cifra instalada, así que la cotización de un patio estampado puede quedar muy por encima de estos rangos.',
+  'page.concrete-slab-cost.p2':
+    'Los precios del premezclado son promedios de todo el concreto que cada productor vendió en el trimestre, en las regiones donde opera: Eagle Materials reportó $160.18 por yarda cúbica para el trimestre que terminó el 30 de septiembre de 2026, y Knife River $201.90 para su tercer trimestre, así que tu precio local puede quedar cerca de cualquiera de los dos o fuera de ambos. Concrete Network señala que algunas cotizaciones de proveedores incluyen cargos por entrega o por carga corta, y esos pesan más en un colado pequeño: un patio de 10 por 10 ft necesita solo 1.36 yardas cúbicas, y un cargo mínimo por una carga parcial puede costar más que el concreto. Para un colado tan pequeño, la calculadora también cuenta las bolsas de 80 lb. Pide el precio por yarda puesto en obra a dos o tres proveedores locales, escríbelo en la calculadora y compara.',
   'page.square-feet-1-car-garage.title':
     'Garaje de 1 auto: 240 a 384 pies cuadrados | Maestro Calc',
   'page.square-feet-1-car-garage.description':

@@ -28,6 +28,12 @@ import { isQuestionJob, JOBS, type JobCase, type JobId, type QuestionId } from '
 import { pathOf, type PageId } from '../routing/routes.ts';
 import { concrete } from './concrete.ts';
 import { NIST_HB44_C } from './job-land.ts';
+import {
+  concreteCostPerSquareFoot,
+  INSTALLED_PRICES,
+  READY_MIX_PRICES,
+  slabCostOf,
+} from './slab-cost.ts';
 import { siteText } from './site-text.ts';
 
 /*
@@ -159,7 +165,9 @@ type TableKind =
   | 'soilTons'
   | 'slabWeight'
   | 'loadWeight'
-  | 'garageSlab';
+  | 'garageSlab'
+  | 'slabCost'
+  | 'thicknessCost';
 
 /** The column headings of those tables. */
 type Column =
@@ -179,7 +187,12 @@ type Column =
   | 'netYards'
   | 'slab4'
   | 'bags4'
-  | 'slab6';
+  | 'slab6'
+  | 'thickness'
+  | 'yardsWithExtra'
+  | 'yardsPer100'
+  | 'readyMix'
+  | 'readyMixPerFoot';
 
 const table = (
   text: Text,
@@ -477,11 +490,64 @@ const garageFloor = (id: QuestionId, text: Text, locale: Locale): QuestionTable[
   ),
 ];
 
+/* Slab cost: each common slab priced, and the concrete of each thickness per square foot. */
+
+const THICKNESSES = [4, 5, 6, 8] as const;
+
+/** The 30 × 30 ft slab (Ahrefs US, 2026-11-08: "30x30 slab cost 4 in", the largest size row). */
+const THIRTY = [4, 5, 6] as const;
+
+const slabCost = (_id: QuestionId, text: Text, locale: Locale): QuestionTable[] => [
+  table(
+    text,
+    'thicknessCost',
+    [col(text, 'thickness'), col(text, 'yardsPer100'), col(text, 'readyMixPerFoot')],
+    mapRows(THICKNESSES, (inches) => ({
+      label: `${String(inches)} in`,
+      cells: [
+        slabCostOf({ length: '10ft', width: '10ft', thickness: `${String(inches)}in` }).yards,
+        concreteCostPerSquareFoot(inches),
+      ],
+    })),
+  ),
+  table(
+    text,
+    'slabCost',
+    [col(text, 'size'), col(text, 'yardsWithExtra'), col(text, 'readyMix')],
+    mapRows(THIRTY, (inches) => {
+      const raw = { length: '30ft', width: '30ft', thickness: `${String(inches)}in` };
+      const cost = slabCostOf(raw);
+      return {
+        label: cost.label,
+        href: concreteHref(raw, locale),
+        cells: [cost.yards, cost.readyMix],
+      };
+    }),
+  ),
+];
+
+/** The four published prices of the slab cost page, each labelled by what it gives. */
+const priceSources = (text: Text): [QuestionSource, ...QuestionSource[]] => {
+  const readyMix = text('site.job.question.readyMixSource');
+  const installed = text('site.job.question.installedSource');
+  const [low, high] = READY_MIX_PRICES;
+  return [
+    { label: readyMix, source: low.source },
+    { label: readyMix, source: high.source },
+    ...INSTALLED_PRICES.map(({ source }) => ({ label: installed, source })),
+  ];
+};
+
 /** What each question page builds: its tables, its sources and the page it leads to. */
 const QUESTIONS = {
   'concrete-cubic-yard-weight': {
     tables: concreteYardWeight,
     sources: (text) => sourcesOf(['concrete'], text),
+    more: 'concrete-slab-chart',
+  },
+  'concrete-slab-cost': {
+    tables: slabCost,
+    sources: priceSources,
     more: 'concrete-slab-chart',
   },
   'square-feet-1-car-garage': {

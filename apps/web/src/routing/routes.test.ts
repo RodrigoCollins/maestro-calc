@@ -344,6 +344,10 @@ describe('route table (site-routing-i18n › Route table)', () => {
       en: '/concrete/how-much-does-a-cubic-yard-of-concrete-weigh',
       es: '/es/concreto/cuanto-pesa-una-yarda-cubica-de-concreto',
     });
+    expect(ROUTES['concrete-slab-cost']).toEqual({
+      en: '/concrete/how-much-does-a-concrete-slab-cost',
+      es: '/es/concreto/cuanto-cuesta-una-losa-de-concreto',
+    });
     expect(ROUTES['square-feet-1-car-garage']).toEqual({
       en: '/measurement/1-car-garage-square-feet',
       es: '/es/medidas/pies-cuadrados-de-un-garaje-de-1-auto',
