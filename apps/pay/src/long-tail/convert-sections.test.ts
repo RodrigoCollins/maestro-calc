@@ -38,8 +38,8 @@ describe('the sections of the pay converter and overtime pages', () => {
           job.kind === 'overtime'
             ? ['worked', 'california']
             : job.per === 'hour'
-              ? ['worked', 'hours', 'minimum']
-              : ['worked', 'hours', 'exempt'],
+              ? ['worked', 'hours', 'minimum', 'faq']
+              : ['worked', 'hours', 'exempt', 'faq'],
         );
         expect(page.sections?.[0]?.heading).toMatch(
           lang === 'en' ? /^How the figures are worked out$/ : /^Cómo se calcula$/,
@@ -112,6 +112,56 @@ describe('the sections of the pay converter and overtime pages', () => {
       '$480.77 a week, under the $684',
     );
     expect(textOf(sectionOf(salary('25000'), 'exempt', 'es'))).toContain('$480.77 a la semana');
+  });
+
+  it('answer the day and the paycheck in the other spellings people search, once each', () => {
+    // $25 x 8 = $200, x 10 = $250; $52,000 / 26 = $2,000, / 24 = $2,166.67, / 12 = $4,333.33
+    expect(sectionOf(hourly('25'), 'faq').questions).toEqual([
+      {
+        question: 'How much is 25 dollars an hour a day?',
+        answer: '$200 for an 8-hour day ($25 × 8 hours) and $250 for a 10-hour day, before taxes.',
+      },
+      {
+        question: 'How much is 25 an hour per paycheck?',
+        answer:
+          '$2,000 paid every two weeks (26 paychecks a year), $2,166.67 paid twice a month (24) and $4,333.33 paid once a month (12), before taxes.',
+      },
+    ]);
+    // $17.50 x 8 = $140, x 10 = $175
+    expect(sectionOf(hourly('17.50'), 'faq', 'es').questions?.[0]).toEqual({
+      question: '¿Cuánto son 17.50 dólares la hora al día?',
+      answer:
+        '$140 por una jornada de 8 horas ($17.50 × 8 horas) y $175 por una de 10 horas, antes de impuestos.',
+    });
+    // $60,000 / 260 = $230.769...; / 26 = $2,307.69; / 24 = $2,500; / 12 = $5,000
+    expect(sectionOf(salary('60000'), 'faq').questions).toEqual([
+      {
+        question: 'How much is 60k a year a day?',
+        answer:
+          '$230.77 for an 8-hour workday: $60,000 ÷ 260 workdays, 52 weeks of 5 days, before taxes.',
+      },
+      {
+        question: 'How much is 60000 a year per paycheck?',
+        answer:
+          '$2,307.69 paid every two weeks (26 paychecks a year), $2,500 paid twice a month (24) and $5,000 paid once a month (12), before taxes.',
+      },
+    ]);
+    expect(sectionOf(salary('60000'), 'faq', 'es').questions).toEqual([
+      {
+        question: '¿Cuánto es 60 mil al año por día?',
+        answer:
+          '$230.77 por una jornada de 8 horas: $60,000 ÷ 260 días laborables, 52 semanas de 5 días, antes de impuestos.',
+      },
+      {
+        question: '¿Cuánto es 60000 al año en cada pago?',
+        answer:
+          '$2,307.69 si te pagan cada dos semanas (26 pagos al año), $2,500 si te pagan dos veces al mes (24) y $5,000 si te pagan una vez al mes (12), antes de impuestos.',
+      },
+    ]);
+    for (const job of JOBS.filter(({ kind }) => kind === 'convert')) {
+      expect(sectionOf(job, 'faq').heading).toBe('Frequently asked questions');
+      expect(sectionOf(job, 'faq', 'es').heading).toBe('Preguntas frecuentes');
+    }
   });
 
   it('work time and a half out, and price California daily overtime with the time card', () => {

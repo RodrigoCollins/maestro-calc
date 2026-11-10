@@ -54,6 +54,12 @@ const { sections } = Astro.props;
     {(section.after ?? []).map((paragraph) => (
       <p>{paragraph}</p>
     ))}
+    {(section.questions ?? []).map(({ question, answer }) => (
+      <>
+        <h3>{question}</h3>
+        <p>{answer}</p>
+      </>
+    ))}
     {section.links !== undefined && (
       <ul class="link-list">
         {section.links.map((link) => (
