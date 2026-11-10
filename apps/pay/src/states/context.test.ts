@@ -32,18 +32,14 @@ const textOf = (section: ContextSection | undefined): string =>
 const queryOf = (href: string): string => new URL(href, 'https://cuentahoras.com').search.slice(1);
 
 describe('contextOf: what one state’s figures come to', () => {
-  it('works a 50-hour week out at the California minimum, leaving the checks to the paydays', () => {
+  it('works tipped pay out at the California minimum, leaving checks and overtime to others', () => {
     const text = textOf(sectionOf('California', 'en', 'paycheck'));
-    // the week, the two weeks and the month are the payday section's and the examples' figures
+    // the checks are the payday section's, the long week the 45-hour example's
     expect(text).not.toContain('$1,352');
     expect(text).not.toContain('$2,929.33');
-    // $16.90 x 40 = $676 a week from the employer, tips on top
+    expect(text).not.toContain('$25.35');
+    // $16.90 x 40 = $676 a week from the employer, tips on top: no tip credit in California
     expect(text).toContain('$676');
-    // five 10-hour days: 40 x $16.90 + 10 x $25.35 = $929.50, $253.50 of it overtime
-    expect(text).toContain('$25.35');
-    expect(text).toContain('$929.50');
-    expect(text).toContain('$253.50');
-    // no tip credit in California
     expect(text).toContain('no tip credit');
   });
 
@@ -226,6 +222,39 @@ describe('contextOf: what one state’s figures come to', () => {
     }
   });
 
+  it('holds the minimum against the wages the BLS counted in the state', () => {
+    const alabama = textOf(sectionOf('Alabama', 'en', 'wages'));
+    expect(alabama).toContain('2,113,660');
+    // $21.96 / $7.25 = 3.03; $21.96 x 2,080 = $45,676.80 against $15,080
+    expect(alabama).toContain('$21.96');
+    expect(alabama).toContain('3.03 times');
+    expect(alabama).toContain('$45,676.80');
+    expect(alabama).toContain('$15,080');
+    // the 10th percentile, $12.54, is $5.29 above the $7.25
+    expect(alabama).toContain('$12.54');
+    expect(alabama).toContain('$5.29 above');
+    // Missouri's $14.32 of May 2025 is $0.68 under its $15.00 of 2026
+    const missouri = textOf(sectionOf('Missouri', 'en', 'wages'));
+    expect(missouri).toContain('$0.68 under');
+    expect(missouri).toContain('May 2025');
+    // the medians ranked: DC $44.01 the highest, Mississippi $19.29 the lowest
+    expect(textOf(sectionOf('District of Columbia', 'en', 'wages'))).toContain('the highest');
+    expect(textOf(sectionOf('Mississippi', 'en', 'wages'))).toContain('the lowest');
+    expect(textOf(sectionOf('Mississippi', 'es', 'wages'))).toContain('la más baja');
+    // five jobs, lowest median first: fast food $11.40 is $4.15 above the $7.25
+    expect(alabama).toContain(
+      'fast food and counter workers $11.40, cashiers $13.58, retail salespersons $14.44, janitors and cleaners $14.72 and restaurant cooks $15.47',
+    );
+    expect(alabama).toContain('$4.15 above');
+    expect(textOf(sectionOf('Alabama', 'es', 'wages'))).toContain('cajeros $13.58');
+    // Wisconsin and Wyoming share $24.17, so they share a rank
+    const rank = (name: string) => /(\d+)(st|nd|rd|th)-highest/.exec(textOf(sectionOf(name, 'en', 'wages')))?.[1];
+    expect(rank('Wisconsin')).toBe(rank('Wyoming'));
+    for (const facts of STATE_FACTS)
+      for (const lang of LANGS)
+        expect(sectionOf(facts.tipped.name.en, lang, 'wages')?.sources).toContainEqual(SOURCES.oews);
+  });
+
   it('gives the limits of the DOL child labor table for under 16 and for 16 and 17', () => {
     const alabama = textOf(sectionOf('Alabama', 'en', 'teens'));
     expect(alabama).toContain('8-40-6 non-school day/week; 3-18-6 school day/week');
@@ -285,6 +314,7 @@ describe('contextOf: what one state’s figures come to', () => {
       'paycheck',
       'payday',
       'compare',
+      'wages',
       'teens',
       'office',
     ]);

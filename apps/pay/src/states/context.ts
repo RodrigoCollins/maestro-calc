@@ -25,7 +25,6 @@ import {
   engineRuleOf,
   factsOf,
   nameIn,
-  outsideFlsa,
   overtimeHoursOf,
   runWeek,
   short,
@@ -37,6 +36,7 @@ import {
 } from './facts.ts';
 import { childLaborOf, type Limits } from './child-labor.ts';
 import { officesOf } from './labor-offices.ts';
+import { JOBS, wagesOf, type Job } from './state-wages.ts';
 import { paydayOf, type Frequency } from './paydays.ts';
 import { statePathOf } from './routes.ts';
 
@@ -62,6 +62,7 @@ export interface ContextSection {
     | 'daily'
     | 'payday'
     | 'compare'
+    | 'wages'
     | 'meal'
     | 'teens'
     | 'next-year'
@@ -163,33 +164,18 @@ const paycheckOf = (facts: StateFacts, lang: Lang): ContextSection => {
   const year = yearOf(minimum.wage);
   const weekly = money(year('weekly'));
   const annual = money(year('annual'));
-  const long = runWeek(weekOf(minimum.wage, engineRuleOf(facts), 10));
-  const rate = moneyText(long('overtimeRate'));
-  const pay = moneyText(long('pay'));
-  const overtimePay = moneyText(long('overtimePay'));
-
-  const covered = outsideFlsa(facts.overtime)
-    ? lang === 'en'
-      ? ', under the federal 40-hour rule that covers most workers there'
-      : ', con la regla federal de 40 horas que cubre a la mayoría allí'
-    : '';
-  const second =
-    lang === 'en'
-      ? `Overtime at that minimum is ${rate} an hour. Five 10-hour days, a 50-hour week, pay ${pay} in ${the}${covered}, ${overtimePay} of it for the 10 overtime hours.`
-      : `Las horas extra a ese mínimo se pagan a ${rate} la hora. Cinco días de 10 horas, una semana de 50 horas, pagan ${pay} en ${the}${covered}, de los que ${overtimePay} son por las 10 horas extra.`;
-
-  const third = (() => {
+  const tips = (() => {
     if (tipped.credit === 0)
       return lang === 'en'
         ? `${startOf(facts, 'en')} allows no tip credit, so a server or bartender gets the same ${weekly} a week from the employer as any other worker at the minimum, and every tip is on top of it.`
         : `${startOf(facts, 'es')} no permite crédito por propinas, así que un mesero o un bartender recibe del empleador los mismos ${weekly} a la semana que cualquier otro trabajador al mínimo, y cada propina va aparte.`;
     const cashYear = yearOf(tipped.cash);
-    const tips = money(subMoney(year('annual'), cashYear('annual')));
+    const fromTips = money(subMoney(year('annual'), cashYear('annual')));
     const cash = centsText(tipped.cash);
     const worked =
       lang === 'en'
-        ? `A tipped worker in ${the} can be paid ${cash} an hour in cash: ${money(cashYear('weekly'))} for 40 hours and ${money(cashYear('annual'))} over a full-time year. Tips have to cover the rest, up to ${tips} a year; if they fall short, the employer owes the difference up to ${annual}.`
-        : `A quien recibe propinas en ${the} se le pueden pagar ${cash} la hora en efectivo: ${money(cashYear('weekly'))} por 40 horas y ${money(cashYear('annual'))} en un año de tiempo completo. Las propinas deben cubrir el resto, hasta ${tips} al año; si no alcanzan, el empleador debe la diferencia hasta llegar a ${annual}.`;
+        ? `A tipped worker in ${the} can be paid ${cash} an hour in cash: ${money(cashYear('weekly'))} for 40 hours and ${money(cashYear('annual'))} over a full-time year. Tips have to cover the rest, up to ${fromTips} a year; if they fall short, the employer owes the difference up to ${annual}.`
+        : `A quien recibe propinas en ${the} se le pueden pagar ${cash} la hora en efectivo: ${money(cashYear('weekly'))} por 40 horas y ${money(cashYear('annual'))} en un año de tiempo completo. Las propinas deben cubrir el resto, hasta ${fromTips} al año; si no alcanzan, el empleador debe la diferencia hasta llegar a ${annual}.`;
     return `${worked} ${federalTippedOf(facts, lang)}`;
   })();
 
@@ -197,12 +183,11 @@ const paycheckOf = (facts: StateFacts, lang: Lang): ContextSection => {
     id: 'paycheck',
     heading:
       lang === 'en'
-        ? `Overtime and tips at ${possessiveIn(facts)} minimum`
-        : `Horas extra y propinas al mínimo de ${the}`,
-    paragraphs: [second, third],
+        ? `Tipped pay at ${possessiveIn(facts)} minimum`
+        : `Pago con propinas al mínimo de ${the}`,
+    paragraphs: [tips],
     sources: unique([
       MINIMUM_WAGE_STATES_SOURCES[minimum.source],
-      OVERTIME_STATES_SOURCES[facts.overtime.source],
       TIPPED_STATES_SOURCES[tipped.source],
       ...(tipped.credit === 0 ? [] : [SOURCES.factSheet15]),
     ]),
@@ -678,6 +663,98 @@ const paydayOfState = (facts: StateFacts, lang: Lang): ContextSection => {
 };
 
 // ---------------------------------------------------------------------------------------------
+// The wages the BLS counted in the state, beside its minimum
+
+/** The five jobs of the OEWS rows, by their occupation titles. */
+const JOB_WORDS: Readonly<Record<Lang, Readonly<Record<Job, string>>>> = {
+  en: {
+    fastFood: 'fast food and counter workers',
+    cashiers: 'cashiers',
+    retail: 'retail salespersons',
+    janitors: 'janitors and cleaners',
+    cooks: 'restaurant cooks',
+  },
+  es: {
+    fastFood: 'personal de comida rápida y mostrador',
+    cashiers: 'cajeros',
+    retail: 'vendedores de tiendas',
+    janitors: 'conserjes y personal de limpieza',
+    cooks: 'cocineros de restaurante',
+  },
+};
+
+/** The 51 medians of the OEWS table, by the state's name. */
+const MEDIANS = STATE_FACTS.map(({ tipped }) => wagesOf(tipped.name.en).median);
+
+const wagesSection = (facts: StateFacts, lang: Lang): ContextSection => {
+  const the = nameIn(facts, lang);
+  const { jobs, p10, median, jobsAt } = wagesOf(facts.tipped.name.en);
+  const wage = facts.minimum.wage;
+  const minimum = centsText(wage);
+  const medianText = centsText(median);
+  const times = (Math.round((median * 100) / wage) / 100).toFixed(2);
+  const medianYear = moneyText(yearOf(median)('annual'));
+  const minimumYear = money(yearOf(wage)('annual'));
+  const count = jobs.toLocaleString('en-US');
+  const first =
+    lang === 'en'
+      ? `The Bureau of Labor Statistics counted ${count} wage and salary jobs in ${the} in May 2025. Their median pay was ${medianText} an hour, ${times} times the ${minimum} minimum: full time at the median comes to ${medianYear} a year, against ${minimumYear} at the minimum.`
+      : `La Oficina de Estadísticas Laborales contó ${count} empleos asalariados en ${the} en mayo de 2025. Su pago mediano fue de ${medianText} la hora, ${times} veces el mínimo de ${minimum}: el tiempo completo a la mediana da ${medianYear} al año, frente a ${minimumYear} al mínimo.`;
+  const gap = centsText(Math.abs(p10 - wage));
+  const tenth =
+    p10 > wage
+      ? lang === 'en'
+        ? `One job in ten paid less than ${centsText(p10)} an hour, ${gap} above the minimum of 2026.`
+        : `Uno de cada diez empleos pagaba menos de ${centsText(p10)} la hora, ${gap} por encima del mínimo de 2026.`
+      : p10 < wage
+        ? lang === 'en'
+          ? `One job in ten paid less than ${centsText(p10)} an hour, ${gap} under the ${minimum} minimum of 2026; the survey’s wages are those of May 2025.`
+          : `Uno de cada diez empleos pagaba menos de ${centsText(p10)} la hora, ${gap} por debajo del mínimo de ${minimum} de 2026; los salarios de la encuesta son los de mayo de 2025.`
+        : lang === 'en'
+          ? `One job in ten paid less than ${centsText(p10)} an hour, the minimum of 2026.`
+          : `Uno de cada diez empleos pagaba menos de ${centsText(p10)} la hora, el mínimo de 2026.`;
+  const rank = 1 + MEDIANS.filter((each) => each > median).length;
+  const lowest = MEDIANS.every((each) => each >= median);
+  const standing =
+    rank === 1
+      ? lang === 'en'
+        ? 'That median is the highest of the 50 states and DC.'
+        : 'Esa mediana es la más alta de los 50 estados y DC.'
+      : lowest
+        ? lang === 'en'
+          ? 'That median is the lowest of the 50 states and DC.'
+          : 'Esa mediana es la más baja de los 50 estados y DC.'
+        : lang === 'en'
+          ? `That median is the ${ordinal(rank)}-highest of the 50 states and DC.`
+          : `Esa mediana ocupa el puesto ${String(rank)} de los 50 estados y DC.`;
+  const ranked = (Object.keys(JOBS) as Job[])
+    .map((job) => ({ job, cents: jobsAt[job] }))
+    .toSorted((a, b) => a.cents - b.cents);
+  const low = ranked[0];
+  if (low === undefined) throw new Error('no job wages');
+  const lowGap = centsText(Math.abs(low.cents - wage));
+  const five =
+    lang === 'en'
+      ? `The medians of five jobs near the bottom of the scale, lowest first: ${listOf(
+          ranked.map(({ job, cents }) => `${JOB_WORDS.en[job]} ${centsText(cents)}`),
+          'en',
+        )}. The lowest is ${lowGap} ${low.cents >= wage ? 'above' : 'under'} the minimum.`
+      : `Las medianas de cinco empleos de la parte baja de la escala, de menor a mayor: ${listOf(
+          ranked.map(({ job, cents }) => `${JOB_WORDS.es[job]} ${centsText(cents)}`),
+          'es',
+        )}. La más baja queda ${lowGap} ${low.cents >= wage ? 'por encima del' : 'por debajo del'} mínimo.`;
+  return {
+    id: 'wages',
+    heading:
+      lang === 'en'
+        ? `Wages in ${the} beside the minimum`
+        : `Los salarios de ${the} frente al mínimo`,
+    paragraphs: [first, `${tenth} ${standing}`, five],
+    sources: [SOURCES.oews],
+  };
+};
+
+// ---------------------------------------------------------------------------------------------
 // The child labor limits of the DOL table
 
 const limitsText = (limits: Limits, lang: Lang): string | undefined => {
@@ -766,6 +843,7 @@ export const contextOf = (facts: StateFacts, lang: Lang): readonly ContextSectio
     dailyOf(facts, lang),
     paydayOfState(facts, lang),
     compareOf(facts, lang),
+    wagesSection(facts, lang),
     mealOf(facts, lang),
     teensOf(facts, lang),
     nextYearOf(facts, lang),

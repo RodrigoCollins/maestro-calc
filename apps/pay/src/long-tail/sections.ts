@@ -112,6 +112,11 @@ export const SOURCES = {
       'U.S. Department of Labor, Table of State Payday Requirements (January 1, 2023, read November 10, 2026)',
     href: 'https://www.dol.gov/agencies/whd/state/payday',
   },
+  oews: {
+    label:
+      'U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics, May 2025, all occupations by state (BLS Public Data API, read November 10, 2026)',
+    href: 'https://www.bls.gov/oes/',
+  },
   childLaborTable: {
     label:
       'U.S. Department of Labor, Table of Selected State Child Labor Standards for Children Under 18 in Non-farm Employment (revised July 15, 2025, read November 10, 2026)',
