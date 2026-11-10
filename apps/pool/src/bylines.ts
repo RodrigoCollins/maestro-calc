@@ -1,3 +1,4 @@
+import { CALCULATOR_EXTRAS } from './calculator-extras.ts';
 import { CHEMISTRY_CHARTS } from './chemistry-es.ts';
 import { COST_GUIDES } from './costs.ts';
 import { DOSING_CHARTS } from './dosing-es.ts';
@@ -109,6 +110,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     },
   ]),
   ...COST_GUIDES.map(entryOf),
+  ...CALCULATOR_EXTRAS.filter(({ faq }) => faq.length > 0).map(entryOf),
   ...JOB_PAGES.map((page) => ({
     path: page.path,
     checked: page.checked,

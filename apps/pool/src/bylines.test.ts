@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
+import { CALCULATOR_EXTRAS } from './calculator-extras.ts';
 import { DATA_PAGES_OF } from './charts.ts';
 import { COST_GUIDES } from './costs.ts';
 import { GUIDES } from './guide.ts';
@@ -11,7 +12,7 @@ import { routeOf } from './routes.ts';
 const paths = BYLINE_PAGES.map(({ path }) => path);
 
 describe('the pages with a byline', () => {
-  it('are every guide and data page in both languages, every cost guide and every job page', () => {
+  it('are every guide and data page in both languages, every cost guide, every job page and every calculator page with questions', () => {
     const guides = GUIDES.flatMap(({ path }) => [path, routeOf(path)?.es ?? path]);
     const data = (['en', 'es'] as const).flatMap((lang) =>
       DATA_PAGES_OF[lang].map(({ path }) => path),
@@ -23,6 +24,8 @@ describe('the pages with a byline', () => {
           ...data,
           ...COST_GUIDES.map(({ path }) => path),
           ...JOB_PAGES.map(({ path }) => path),
+          // the calculator pages that answer questions from cited labels and manuals
+          ...CALCULATOR_EXTRAS.filter(({ faq }) => faq.length > 0).map(({ path }) => path),
         ]),
       ].sort(),
     );

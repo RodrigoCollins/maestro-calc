@@ -1,0 +1,162 @@
+---
+import { extrasOf } from '../calculator-extras.ts';
+
+/**
+ * The extras of a main calculator page (`src/calculator-extras.ts`): the tables by pool size under
+ * the tool, or the questions after the worked example. A page with no extras renders nothing.
+ */
+interface Props {
+  readonly path: string;
+  readonly part: 'tables' | 'faq';
+}
+
+const { path, part } = Astro.props;
+const extras = extrasOf(path);
+const region = extras?.lang === 'es' ? 'tabla' : 'table';
+---
+
+{extras !== undefined && part === 'tables' && (
+  <section class="pool-extras" aria-labelledby="sizes-heading">
+    <h2 id="sizes-heading">{extras.tablesHeading}</h2>
+    {extras.tables.map(({ id, caption, head, rows, note }) => (
+      <figure class="pool-extras-table">
+        <div
+          class="pool-extras-scroll"
+          role="region"
+          aria-label={`${caption}, ${region}`}
+          tabindex="0"
+        >
+          <table id={`sizes-${id}`}>
+            <caption>{caption}</caption>
+            <thead>
+              <tr>
+                {head.map((cell) => (
+                  <th scope="col">{cell}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ label, cells, href }) => (
+                <tr>
+                  <th scope="row">{href === undefined ? label : <a {href}>{label}</a>}</th>
+                  {cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <figcaption>{note}</figcaption>
+      </figure>
+    ))}
+  </section>
+)}
+{extras !== undefined && part === 'faq' && extras.faq.length > 0 && (
+  <section class="pool-extras" aria-labelledby="faq-heading">
+    <h2 id="faq-heading">{extras.faqHeading}</h2>
+    {extras.faq.map(({ question, answer, link }) => (
+      <>
+        <h3>{question}</h3>
+        <p>
+          {answer}
+          {link !== undefined && (
+            <>
+              {' '}
+              <a href={link.href}>{link.label}</a>
+            </>
+          )}
+        </p>
+      </>
+    ))}
+  </section>
+)}
+
+<style>
+  .pool-extras {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  .pool-extras h2 {
+    margin: 0;
+    font-family: var(--font-display), 'Arial Narrow', sans-serif;
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .pool-extras h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1.0625rem;
+  }
+
+  .pool-extras p {
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .pool-extras-table {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .pool-extras-table figcaption {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  /* a narrow phone scrolls the table, never the page */
+  .pool-extras-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .pool-extras-scroll:focus-visible {
+    outline: 3px solid var(--teal);
+    outline-offset: 2px;
+  }
+
+  .pool-extras table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--ink);
+    background: #ffffff;
+    line-height: 1.35;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pool-extras caption {
+    padding-bottom: 0.375rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .pool-extras th,
+  .pool-extras td {
+    padding: 0.5rem;
+    border-top: 1px solid var(--joint);
+    text-align: right;
+    vertical-align: top;
+  }
+
+  .pool-extras th[scope='row'],
+  .pool-extras thead th:first-child {
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .pool-extras thead th {
+    border-top: 0;
+    border-bottom: 3px solid var(--ink);
+    font-weight: 600;
+  }
+
+  /* each link stands at least 24 px tall with its padding (WCAG 2.5.8, target size) */
+  .pool-extras th a {
+    display: inline-block;
+    padding-block: 0.25rem;
+  }
+</style>
