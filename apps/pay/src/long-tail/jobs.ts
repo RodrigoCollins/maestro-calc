@@ -196,6 +196,13 @@ export interface LongTailPage {
   /** The primary sources the sections cite, listed under a sources heading. */
   readonly sources?: readonly LongTailSource[];
   /**
+   * The calculator on the page itself, under the answer: `../client/hours.ts` reruns it on every
+   * edit (`form[data-shift-pay]`, the pay-core shift pay calculator), and the page as built shows
+   * the engine's figures for its own fields, so it reads without JavaScript. Only the shift pages
+   * have it, and only it loads a script there.
+   */
+  readonly tool?: ShiftTool;
+  /**
    * The answer that depends on the visitor's clock: `../client/time-now.ts` fills it from the
    * `data` (`data-*` attributes) and the sentences in it; the page as built shows `fallback`, an
    * instruction that holds at any time. Only the live families have it, and only they load a script.
@@ -205,6 +212,32 @@ export interface LongTailPage {
     readonly data: Readonly<Record<string, string>>;
     readonly fallback: string;
   };
+}
+
+/** The form of a shift page and its figures, each line one `data-out` of the calculator. */
+export interface ShiftTool {
+  readonly heading: string;
+  readonly hint: string;
+  /** The label of the list of figures. */
+  readonly figures: string;
+  readonly fields: readonly {
+    readonly key: 'start' | 'end' | 'unpaidBreak' | 'rate';
+    readonly label: string;
+    readonly value: string;
+  }[];
+  /** An hours figure is written in `format`; a money figure has none. */
+  readonly lines: readonly {
+    readonly key: string;
+    readonly format?: 'hours-minutes' | 'decimal';
+    readonly label: string;
+    readonly value: string;
+  }[];
+  /** Every notice of the calculator, shown only while the run returns its code. */
+  readonly warnings: readonly {
+    readonly code: string;
+    readonly text: string;
+    readonly hidden: boolean;
+  }[];
 }
 
 export interface CommonLinks {

@@ -1,10 +1,11 @@
-import { encode, Rational, toDecimalParts } from '@maestro-calc/core';
+import { encode, Rational, toDecimalParts, usd, type Money } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
-import { decimalHoursText, hoursMinutesText } from '../format.ts';
+import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
+import { clockFieldText, decimalHoursText, hoursMinutesText, moneyText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
-import type { CommonLinks, LongTailPage } from './jobs.ts';
+import type { CommonLinks, LongTailPage, ShiftTool } from './jobs.ts';
 import { clockOf, fieldOf } from './clock.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, SHIFTS, type Shift } from './routes.ts';
@@ -18,6 +19,13 @@ const BREAKS = [30, 60] as const;
 
 /** Minutes from midnight to noon: a morning time is before it. */
 const NOON = 720;
+
+/** The tool opens on the lunch the lead works with, at the hourly rate of the pay table. */
+const TOOL_BREAK = BREAKS[0];
+const TOOL_RATE = usd(20);
+
+/** A title gets the tool cue only while the whole name fits a search result, about 60 characters. */
+const CUED_MAX = 60;
 
 /**
  * The start and end as people type them in a search: `9 AM` and `5 PM` in English; in Spanish a
@@ -68,6 +76,21 @@ const WORDS = {
     edit: 'Change the times or add your break in the hours calculator',
     others: 'Other common shifts',
     common: 'Hours of common shifts',
+    cue: ' — with lunch & pay calculator',
+    tool: {
+      heading: 'Your shift, your lunch and your pay',
+      rate: 'Hourly rate ($)',
+      figures: 'Your shift, the day and the week',
+      lines: {
+        shiftHours: 'Shift, start to end',
+        hours: 'Paid hours after the break',
+        decimal: 'Paid hours in decimal',
+        dayPay: 'Pay for the day',
+        weekHours: 'The week, 5 shifts',
+        overtimeHours: 'Overtime past 40 hours',
+        weekPay: 'Pay for the week, overtime at 1.5×',
+      },
+    },
   },
   es: {
     question: (start: string, end: string): string => `¿Cuántas horas son de ${start} a ${end}?`,
@@ -97,6 +120,21 @@ const WORDS = {
     edit: 'Cambia las horas o agrega tu descanso en la calculadora de horas',
     others: 'Otros turnos comunes',
     common: 'Horas de turnos comunes',
+    cue: ' — calcula descanso y pago',
+    tool: {
+      heading: 'Tu turno, tu descanso y tu pago',
+      rate: 'Pago por hora ($)',
+      figures: 'Tu turno, el día y la semana',
+      lines: {
+        shiftHours: 'Turno, de la entrada a la salida',
+        hours: 'Horas pagadas después del descanso',
+        decimal: 'Horas pagadas en decimales',
+        dayPay: 'Pago del día',
+        weekHours: 'La semana, 5 turnos',
+        overtimeHours: 'Horas extra después de 40',
+        weekPay: 'Pago de la semana, horas extra a 1.5 veces',
+      },
+    },
   },
 } as const;
 
@@ -130,9 +168,70 @@ export const shiftLinksOf = (lang: Lang, except?: Shift): CommonLinks => {
   };
 };
 
+/** The lines of the tool: each output of the shift pay calculator, the paid hours both ways. */
+const LINES: readonly {
+  readonly key: string;
+  readonly label: keyof (typeof WORDS)['en']['tool']['lines'];
+  readonly format?: 'hours-minutes' | 'decimal';
+}[] = [
+  { key: 'shiftHours', label: 'shiftHours', format: 'hours-minutes' },
+  { key: 'hours', label: 'hours', format: 'hours-minutes' },
+  { key: 'hours', label: 'decimal', format: 'decimal' },
+  { key: 'dayPay', label: 'dayPay' },
+  { key: 'weekHours', label: 'weekHours', format: 'hours-minutes' },
+  { key: 'overtimeHours', label: 'overtimeHours', format: 'hours-minutes' },
+  { key: 'weekPay', label: 'weekPay' },
+];
+
+const isMoney = (value: unknown): value is Money =>
+  typeof value === 'object' && value !== null && 'currency' in value;
+
+/** The tool of `shift`: its fields prefilled, and the shift pay calculator's figures for them. */
+const toolOf = (shift: Shift, lang: Lang): ShiftTool => {
+  const w = WORDS[lang].tool;
+  const t = HOURS_TEXTS[lang];
+  const { integer, fraction } = toDecimalParts(TOOL_RATE.amount, 2);
+  const fields = [
+    { key: 'start', label: t.start, value: clockFieldText(shift.start) },
+    { key: 'end', label: t.end, value: clockFieldText(shift.end) },
+    { key: 'unpaidBreak', label: t.unpaidBreak, value: String(TOOL_BREAK) },
+    { key: 'rate', label: w.rate, value: `${String(integer)}.${fraction}` },
+  ] as const;
+  const ran = shiftPay.run(Object.fromEntries(fields.map(({ key, value }) => [key, value])));
+  if (!ran.ok) throw new Error(`the tool of ${shift.slug.en} must run`);
+  const outputs = new Map<string, unknown>(ran.value.outputs.map(({ key, value }) => [key, value]));
+  const lines = LINES.map((line) => {
+    const value = outputs.get(line.key);
+    const label = w.lines[line.label];
+    if (value instanceof Rational) {
+      const text = line.format === 'decimal' ? decimalHoursText(value) : hoursMinutesText(value);
+      return { key: line.key, format: line.format ?? 'hours-minutes', label, value: text };
+    }
+    if (!isMoney(value)) throw new Error(`the shift pay calculator has no ${line.key}`);
+    return { key: line.key, label, value: moneyText(value) };
+  });
+  const codes = new Set<string>(ran.value.warnings.map(({ code }) => code));
+  return {
+    heading: w.heading,
+    hint: t.timeHint,
+    figures: w.figures,
+    fields,
+    lines,
+    warnings: Object.entries(t.warnings).map(([code, text]) => ({
+      code,
+      text,
+      hidden: !codes.has(code),
+    })),
+  };
+};
+
 /** `7 h 30 min (7.50)`: a row reads both ways. */
 const bothOf = (hours: Rational): string =>
   `${hoursMinutesText(hours)} (${decimalHoursText(hours)})`;
+
+/** The headline with the tool cue when both fit a search result; the headline alone otherwise. */
+const cuedOf = (headline: string, cue: string): string =>
+  `${headline}${cue}`.length <= CUED_MAX ? `${headline}${cue}` : headline;
 
 /** The page of one shift in one language, every figure from the hours calculator at build time. */
 export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
@@ -168,7 +267,7 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   if (!validated.ok) throw new Error(`the shift ${shift.slug.en} must validate`);
   return {
     kicker: t.kicker,
-    title: titleOf(w.headline(searched.start, searched.end, figure)),
+    title: titleOf(cuedOf(w.headline(searched.start, searched.end, figure), w.cue)),
     description: descriptionOf(
       leadFrom(searched.start, searched.end),
       rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
@@ -187,6 +286,7 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     note,
     paths: { en: pathOf(shift, 'en'), es: pathOf(shift, 'es') },
     others: shiftLinksOf(lang, shift),
+    tool: toolOf(shift, lang),
     ...shiftSectionsOf(shift, lang, figure),
   };
 };

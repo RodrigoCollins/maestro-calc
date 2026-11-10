@@ -13,6 +13,7 @@ import { HOURS_SUM_TEXTS, hoursSectionsOf } from '../hours/sum.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import HoursScript from '../islands/HoursScript.astro';
 import Sections from './Sections.astro';
 import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
@@ -250,5 +251,5 @@ const LIVE_INTRO = {
       </ul>
     </section>
   </main>
-  <script src="../client/hours.ts"></script>
+  <HoursScript />
 </SiteLayout>

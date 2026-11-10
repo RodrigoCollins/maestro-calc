@@ -2,8 +2,8 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COUNTDOWNS, countdownPathOf } from '../dates/routes.ts';
-import { LIVE_JOBS, LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
-import { CALCULATOR_PAGES, LIVE_PAGES } from './pages.ts';
+import { LIVE_JOBS, LONG_TAIL_ROUTES, SHIFTS } from '../long-tail/routes.ts';
+import { CALCULATOR_PAGES, LIVE_PAGES, SHIFT_PAGES } from './pages.ts';
 
 const builtOf = (path: string): string => `${path.slice(1)}.html`;
 
@@ -29,5 +29,13 @@ describe('CALCULATOR_PAGES', () => {
     for (const page of LIVE_PAGES) expect(CALCULATOR_PAGES).toContain(page);
     // the other long-tail pages load no script
     expect(CALCULATOR_PAGES).not.toContain('pay/how-many-days-is-72-hours.html');
+  });
+
+  it('lets each shift page, in both languages, load the hours calculator script of its tool', () => {
+    expect(SHIFT_PAGES).toHaveLength(SHIFTS.length * 2);
+    expect(SHIFT_PAGES).toContain('pay/how-many-hours-is-9am-to-5pm.html');
+    expect(SHIFT_PAGES).toContain('es/pago/cuantas-horas-son-de-7-pm-a-7-am.html');
+    for (const page of SHIFT_PAGES) expect(CALCULATOR_PAGES).toContain(page);
+    expect(new Set(CALCULATOR_PAGES).size).toBe(CALCULATOR_PAGES.length);
   });
 });
