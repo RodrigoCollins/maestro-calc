@@ -98,6 +98,13 @@ describe('ROUTES', () => {
         '/how-long-after-adding-chemicals-can-you-swim',
         '/es/cuanto-esperar-para-nadar-despues-de-agregar-quimicos',
       ],
+      // the cost guides are English only: their prices are United States prices
+      ['cost-guide', '/how-much-does-a-pool-cost', undefined],
+      ['inground-cost', '/inground-pool-cost', undefined],
+      ['plunge-cost', '/plunge-pool-cost', undefined],
+      ['fiberglass-cost', '/fiberglass-pool-cost', undefined],
+      ['resurfacing-cost', '/pool-resurfacing-cost', undefined],
+      ['liner-cost', '/pool-liner-replacement-cost', undefined],
       ['methodology', '/methodology', '/es/metodologia'],
       ['about', '/about', '/es/acerca'],
       ['editorial', '/editorial-policy', '/es/politica-editorial'],

@@ -2,6 +2,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT, ABOUT_TEXTS } from './about.ts';
 import { EDITORIAL_TEXTS } from './editorial.ts';
 import { CHARTS_INDEX, CHARTS_INDEX_ES } from './charts.ts';
+import { COST_GUIDES } from './costs.ts';
 import { CHEMISTRY_CHART_ES } from './chemistry-es.ts';
 import {
   ALKALINITY_ES,
@@ -126,6 +127,10 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
       ...GUIDES.map(({ path, card }) => ({ name: card.title, path, note: card.summary })),
       { name: CHARTS_INDEX.name, path: CHARTS_INDEX.path, note: CHARTS_INDEX.description },
     ],
+  ],
+  [
+    'Pool costs',
+    COST_GUIDES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   ],
   ['About', ABOUT_PAGES],
   ['En español', SPANISH_PAGES],

@@ -189,6 +189,13 @@ const PAGE_ROUTES: readonly Route[] = [
     en: '/how-long-after-adding-chemicals-can-you-swim',
     es: '/es/cuanto-esperar-para-nadar-despues-de-agregar-quimicos',
   },
+  // the cost guides, English only: their prices are United States prices (`src/costs.ts`)
+  { id: 'cost-guide', kind: 'article', en: '/how-much-does-a-pool-cost' },
+  { id: 'inground-cost', kind: 'article', en: '/inground-pool-cost' },
+  { id: 'plunge-cost', kind: 'article', en: '/plunge-pool-cost' },
+  { id: 'fiberglass-cost', kind: 'article', en: '/fiberglass-pool-cost' },
+  { id: 'resurfacing-cost', kind: 'article', en: '/pool-resurfacing-cost' },
+  { id: 'liner-cost', kind: 'article', en: '/pool-liner-replacement-cost' },
   { id: 'methodology', kind: 'article', en: '/methodology', es: '/es/metodologia' },
   { id: 'about', kind: 'article', en: '/about', es: '/es/acerca' },
   { id: 'editorial', kind: 'article', en: '/editorial-policy', es: '/es/politica-editorial' },
