@@ -92,6 +92,16 @@ export const SOURCES = {
     label: 'U.S. Bureau of Labor Statistics, Current Population Survey: concepts and definitions',
     href: 'https://www.bls.gov/cps/definitions.htm',
   },
+  nyMeal: {
+    label:
+      'New York Labor Law § 162, Meal periods (New York State Senate, text of September 22, 2014, read November 10, 2026)',
+    href: 'https://www.nysenate.gov/legislation/laws/LAB/162',
+  },
+  factSheet43: {
+    label:
+      'U.S. Department of Labor, Fact Sheet #43: Child Labor Provisions of the FLSA for Nonagricultural Occupations (revised December 2016, read November 10, 2026)',
+    href: 'https://www.dol.gov/agencies/whd/fact-sheets/43-child-labor-non-agriculture',
+  },
   mealTable: {
     label:
       'U.S. Department of Labor, Minimum Length of Meal Period Required under State Law for Adult Employees in Private Sector (January 1, 2023)',

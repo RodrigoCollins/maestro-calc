@@ -104,7 +104,12 @@ describe('shift long-tail pages', () => {
     expect(rowOf(nine, 'break30')).toBe('7 h 30 min (7.50)');
     expect(rowOf(nine, 'week')).toBe('40 h 0 min (40.00)');
     expect(page.lead).toBe(
-      '9 am to 5 pm is 8 hours, or 8.00 decimal hours. With a 30-minute unpaid break you work 7 hours 30 minutes, or 7.50 hours, and five of these shifts come to 37.5 hours a week.',
+      '9 am to 5 pm is 8 hours, or 8.00 decimal hours. With a 30-minute unpaid lunch you work 7 hours 30 minutes, or 7.50 hours; to be paid the full 8 hours, clock out at 5:30 pm.',
+    );
+    // 10 pm to 6 am plus a 30-minute lunch: out at 6:30 am
+    expect(longTailPageOf(shiftOf('22:00-6:00'), 'en').lead).toContain('clock out at 6:30 am.');
+    expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').lead).toContain(
+      'para cobrar las 8 horas completas, sal a las 5:30 pm.',
     );
     expect(page.title).toBe('9 AM to 5 PM is 8 hours | Cuenta Horas');
     // 8:00 to 16:30 is 8 h 30 min = 8.5 h

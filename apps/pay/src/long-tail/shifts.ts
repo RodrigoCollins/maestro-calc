@@ -1,6 +1,6 @@
 import { encode, Rational, toDecimalParts } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
-import { decimalHoursText, hoursMinutesText, hoursText } from '../format.ts';
+import { decimalHoursText, hoursMinutesText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -53,8 +53,8 @@ const WORDS = {
       `${start} to ${end} is ${hours}, or ${decimal} decimal hours.`,
     overnight: (end: string): string =>
       `The shift crosses midnight and ends at ${end} the next day.`,
-    week: (hours: string, decimal: string, week: string): string =>
-      `With a 30-minute unpaid break you work ${hours}, or ${decimal} hours, and five of these shifts come to ${week} hours a week.`,
+    week: (hours: string, decimal: string, figure: string, out: string): string =>
+      `With a 30-minute unpaid lunch you work ${hours}, or ${decimal} hours; to be paid the full ${figure}, clock out at ${out}.`,
     figure: 'From start to end, with no break',
     breakdown: 'The hours with a break, by day and by week',
     rows: {
@@ -82,8 +82,8 @@ const WORDS = {
       `De ${start} a ${end} son ${hours}, o ${decimal} horas decimales.`,
     overnight: (end: string): string =>
       `El turno cruza la medianoche y termina a las ${end} del día siguiente.`,
-    week: (hours: string, decimal: string, week: string): string =>
-      `Con un descanso sin pago de 30 minutos trabajas ${hours}, o ${decimal} horas, y cinco de estos turnos suman ${week} horas a la semana.`,
+    week: (hours: string, decimal: string, figure: string, out: string): string =>
+      `Con un descanso sin pago de 30 minutos trabajas ${hours}, o ${decimal} horas; para cobrar las ${figure} completas, sal ${/^1[: ]/.test(out) ? 'a la' : 'a las'} ${out}.`,
     figure: 'De la entrada a la salida, sin descanso',
     breakdown: 'Las horas con descanso, por día y por semana',
     rows: {
@@ -151,7 +151,7 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     [
       w.answer(from, to, figure, decimalHoursText(hours)),
       ...(overnight ? [w.overnight(end)] : []),
-      w.week(w.hours(short), decimalHoursText(short), hoursText(week(short))),
+      w.week(w.hours(short), decimalHoursText(short), figure, clockOf(shift.end + BREAKS[0])),
     ].join(' ');
   const lead = leadFrom(start, end);
   const rows = [
