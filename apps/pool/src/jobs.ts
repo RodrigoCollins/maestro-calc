@@ -77,21 +77,23 @@ export interface JobPage {
  */
 const CHECKED = {
   volume: '2026-11-08',
-  salt: '2026-11-08',
-  chlorine: '2026-11-08',
+  salt: '2026-11-10',
+  chlorine: '2026-11-10',
   alkalinity: '2026-11-08',
   stabilizer: '2026-11-08',
   heater: '2026-11-08',
   fill: '2026-11-08',
   ph: '2026-11-08',
   calcium: '2026-11-08',
-  shock: '2026-11-08',
+  shock: '2026-11-10',
 } as const;
 
 /** The salt jobs: the pool sizes people search for, from a fresh fill and from common readings. */
 const SALT_GALLONS = [5000, 10_000, 15_000, 20_000, 25_000, 30_000, 35_000] as const;
 const READINGS = [0, 1000, 2000, 2400, 2800] as const;
 const TARGET = 3200;
+/** The salt Pentair's IntelliChlor guide recommends (P/N 520589 Rev. R): the lead's second answer. */
+const PENTAIR_TARGET = 3600;
 
 /**
  * The chlorine jobs: the same pool sizes, with 12.5% liquid chlorine (the jug pool stores sell)
@@ -503,6 +505,11 @@ const saltPage = (gallons: number): JobPage => {
   const [fresh] = rows;
   if (fresh === undefined) throw new Error('a salt job needs a fresh-fill row');
   const [, pounds = '', bags = ''] = fresh.cells;
+  // the level Pentair's IntelliChlor guide recommends, for the lead's second answer
+  const pentair = outputText(
+    'pounds',
+    outputsOf(poolSalt, { ...fresh.raw, target: String(PENTAIR_TARGET) }).values.get('pounds'),
+  );
   return {
     path: `/how-much-salt-for-a-${String(gallons)}-gallon-pool`,
     kind: 'salt',
@@ -511,7 +518,7 @@ const saltPage = (gallons: number): JobPage => {
     title: `How Much Salt for a ${size} Gallon Pool? | Pool Figures`,
     description: `The pounds and 40 lb bags of salt a ${size} gallon pool needs to reach 3,200 ppm, from fresh water and from the readings you test.`,
     h1: `How much salt for a ${size} gallon pool`,
-    lead: `A ${size} gallon pool filled with fresh water needs ${pounds} lb of salt to reach 3,200 ppm, the level Hayward’s AquaRite manual calls the best. Already salted? Find your reading below.`,
+    lead: `A ${size} gallon pool filled with fresh water needs ${pounds} lb of salt, ${bags} bags of 40 lb, to reach 3,200 ppm, the level Hayward’s AquaRite manual calls the best, or ${pentair} lb for a Pentair IntelliChlor at 3,600 ppm. Already salted? Find your reading below.`,
     figure: {
       value: pounds,
       unit: 'LB',
@@ -554,6 +561,14 @@ const chlorinePage = (gallons: number): JobPage => {
   const main = rows[CHLORINE_MAIN];
   if (main === undefined) throw new Error('a chlorine job needs its main row');
   const [range = '', ounces = '', liters = ''] = main.cells;
+  // the main dose as a share of a 1 gallon jug, and the same raise in 65% cal-hypo
+  const liquid = outputsOf(poolChlorine, main.raw).values.get('liquid');
+  if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
+  const jug = volumeText(liquid, gal, 2);
+  const calHypo = outputText(
+    'dry',
+    outputsOf(poolChlorine, { ...main.raw, product: 'cal-hypo-65' }).values.get('dry'),
+  );
   return {
     path: `/how-much-chlorine-for-a-${String(gallons)}-gallon-pool`,
     kind: 'chlorine',
@@ -562,7 +577,7 @@ const chlorinePage = (gallons: number): JobPage => {
     title: `How Much Chlorine for a ${size} Gallon Pool? | Pool Figures`,
     description: `The fluid ounces of 12.5% liquid chlorine a ${size} gallon pool needs to raise free chlorine by 1, 2 or 3 ppm.`,
     h1: `How much chlorine for a ${size} gallon pool`,
-    lead: `A ${size} gallon pool needs ${ounces} fl oz of 12.5% liquid chlorine to raise free chlorine from ${range}. Other raises are in the table; the calculator also doses cal-hypo and dichlor.`,
+    lead: `A ${size} gallon pool needs ${ounces} fl oz of 12.5% liquid chlorine, ${jug} of a 1 gallon jug, to raise free chlorine from ${range}. The same raise takes ${calHypo} oz of 65% cal-hypo, by weight.`,
     figure: {
       value: ounces,
       unit: 'FL OZ',

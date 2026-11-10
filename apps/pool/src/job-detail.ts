@@ -21,7 +21,7 @@ import {
   SALT,
   STABILIZER,
 } from './doses.ts';
-import { volumeText } from './format.ts';
+import { outputText, volumeText } from './format.ts';
 import { SHOCK_GUIDE } from './guide.ts';
 import { JOB_PAGES, type JobKind, type JobPage } from './jobs.ts';
 import { METHOD_SECTIONS, type MethodSource } from './methodology.ts';
@@ -60,6 +60,16 @@ export interface JobLink {
 export interface JobDetail {
   /** The large figure worked out, one step a sentence, under "How the figures are worked out". */
   readonly worked: readonly string[];
+  /**
+   * A second table under the worked figures: the same dose in each product of the calculator
+   * (chlorine), or the level of each salt cell maker (salt), every cell an engine run.
+   */
+  readonly compare?: {
+    readonly heading: string;
+    readonly caption: string;
+    readonly head: readonly string[];
+    readonly rows: readonly (readonly string[])[];
+  };
   /** The label and safety notes, scaled to this pool; a volume page has none. */
   readonly label?: { readonly heading: string; readonly items: readonly string[] };
   readonly next: {
@@ -181,7 +191,71 @@ const SOURCES = {
   cdc: CHEMISTRY_CHART.sources.cdc,
   calHypo: SHOCK_GUIDE.sources.calHypo,
   dichlor: SHOCK_GUIDE.sources.dichlor,
+  pentair: {
+    name: 'Pentair IntelliChlor installation and user’s guide, P/N 520589 Rev. R (8/7/23): salt level, adding salt and Table 2, read 10 November 2026',
+    url: 'https://flowandfiltrationsolutions.pentair.com/content/dam/extranet/nam/pentair-pool/residential/sanitizers/intellichlor/intellichlor-installation-users-guide-ic15-ic20-ic40-ic60.pdf',
+  },
+  jandy: {
+    name: 'Jandy AquaPure installation and operation manual, H0567500G LI4011 Rev 7: how much salt, how to add it and Table 1, read 10 November 2026',
+    url: 'https://www.zodiacpoolsystems.com/-/media/9DD79DFAE8A441AE8E80289ABB0216B4.ashx',
+  },
 } as const satisfies Record<string, MethodSource>;
+
+/**
+ * The salt level each cell maker's manual gives (read 10 November 2026): Hayward's AquaRite 2,700
+ * to 3,400 ppm, 3,200 the best; Pentair's IntelliChlor 3,600 to 4,500, 3,600 the ideal; Jandy's
+ * AquaPure 3.0 to 3.5 g per liter, 3,000 to 3,500 ppm.
+ */
+const CELLS = [
+  { name: 'Hayward AquaRite', level: '3,200 (2,700 to 3,400)', targets: [3200] },
+  { name: 'Pentair IntelliChlor', level: '3,600 (3,600 to 4,500)', targets: [3600] },
+  { name: 'Jandy AquaPure', level: '3,000 to 3,500', targets: [3000, 3500] },
+] as const;
+
+/** Pentair's Table 2: the pounds of salt from 0 to 3,600 ppm, by the pool sizes it lists. */
+const PENTAIR_TABLE: Readonly<Record<number, string>> = {
+  10_000: '300.43',
+  15_000: '450.65',
+  20_000: '600.87',
+  25_000: '751.08',
+  30_000: '901.30',
+  35_000: '1,051.52',
+};
+
+/** Jandy's Table 1: the pounds of salt from 0 to 3,000 ppm, by the pool sizes it lists. */
+const JANDY_TABLE: Readonly<Record<number, string>> = {
+  10_000: '250',
+  20_000: '500',
+  30_000: '750',
+};
+
+/** The products of the chlorine calculator, as the comparison names them. */
+const PRODUCTS = [
+  { product: 'liquid-12-5', name: 'Liquid chlorine', strength: '12.5%' },
+  { product: 'liquid-10', name: 'Liquid chlorine', strength: '10%' },
+  { product: 'cal-hypo-65', name: 'Cal-hypo', strength: '65%' },
+  { product: 'dichlor-56', name: 'Dichlor', strength: '56%' },
+] as const;
+
+/** The same raise in each of `products`, as the comparison writes it: US and metric amounts. */
+const productRows = (
+  raw: Raw,
+  products: readonly (typeof PRODUCTS)[number][],
+): readonly (readonly string[])[] =>
+  products.map(({ product, name, strength }) => {
+    const key = product.startsWith('liquid') ? 'liquid' : 'dry';
+    const value = run(poolChlorine, { ...raw, product }).get(key);
+    const [unit, metric] = key === 'liquid' ? ['fl oz', 'L'] : ['oz', 'g'];
+    return [
+      name,
+      strength,
+      `${outputText(key, value)} ${unit}`,
+      `${outputText(key, value, 'metric')} ${metric}`,
+    ];
+  });
+
+/** A shock compares the granules first, the products its label levels are about. */
+const SHOCK_PRODUCTS = [PRODUCTS[2], PRODUCTS[3], PRODUCTS[0], PRODUCTS[1]] as const;
 
 const pumpSources = (): readonly MethodSource[] =>
   METHOD_SECTIONS.find(({ href }) => href === PUMP.path)?.sources ?? [];
@@ -258,6 +332,11 @@ const saltDetail = (page: JobPage): JobDetail => {
   const bags = String(run(poolSalt, raw).get('bags'));
   const first = out(poolSalt, raw, 'firstAddition');
   const g = String(page.gallons);
+  const pentairPounds = gallons
+    .mul(POUNDS_PER_GALLON)
+    .mul(Rational.of(3600))
+    .div(Rational.of(1_000_000));
+  const pentair = out(poolSalt, { gallons: g, current: '0', target: '3600' }, 'pounds');
   const next = nextRuns(page.gallons);
   return {
     worked: [
@@ -267,12 +346,37 @@ const saltDetail = (page: JobPage): JobDetail => {
       `In kilograms: ${n(pounds, 2)} lb × 0.45359237 ${is(pounds.mul(Rational.of(45_359_237, 100_000_000)), 1)} kg.`,
       `At a reading of 2,400 ppm, only 800 ppm is missing: ${cellOf(page, 3, 1)} lb, ${cellOf(page, 3, 2)} bags.`,
     ],
+    compare: {
+      heading: 'Salt for each cell maker’s level',
+      caption: `Salt to add to ${size} gallons of fresh water (0 ppm), by the level each cell’s manual gives`,
+      head: ['Salt cell', 'Level its manual gives (ppm)', 'Salt to add (lb)', 'Bags of 40 lb'],
+      rows: CELLS.map(({ name, level, targets }) => {
+        const runs = targets.map((each) => ({ ...raw, current: '0', target: String(each) }));
+        return [
+          name,
+          level,
+          runs.map((each) => out(poolSalt, each, 'pounds')).join(' to '),
+          runs.map((each) => String(run(poolSalt, each).get('bags'))).join(' to '),
+        ];
+      }),
+    },
     label: {
       heading: 'On the salt and the cell',
       items: [
         `Hayward’s AquaRite manual runs the cell at 2,700 to 3,400 ppm. From fresh water, ${size} gallons need ${out(poolSalt, { gallons: g, current: '0', target: '2700' }, 'pounds')} lb for 2,700 ppm and ${out(poolSalt, { gallons: g, current: '0', target: '3400' }, 'pounds')} lb for 3,400.`,
+        ...(PENTAIR_TABLE[page.gallons] === undefined
+          ? []
+          : [
+              `Pentair’s own Table 2 lists ${PENTAIR_TABLE[page.gallons] ?? ''} lb for ${size} gallons from 0 to 3,600 ppm; at 8.34 lb a gallon this page gives ${pentair} lb, ${n(r((PENTAIR_TABLE[page.gallons] ?? '0').replaceAll(',', '')).sub(pentairPounds), 1)} lb apart.`,
+            ]),
+        ...(JANDY_TABLE[page.gallons] === undefined
+          ? []
+          : [
+              `Jandy’s Table 1 lists ${JANDY_TABLE[page.gallons] ?? ''} lb for ${size} gallons from 0 to 3,000 ppm, the ${out(poolSalt, { gallons: g, current: '0', target: '3000' }, 'pounds')} lb of this page in the table’s 5 lb steps.`,
+            ]),
         `The calculator adds ${first} lb first, three quarters of the ${n(pounds, 1)} lb, and tests after 24 hours before the rest.`,
-        `The manual adds the salt with the pump on and brushes it around so it does not pile up on the bottom; the ${bags} bags dissolve while the filter pump runs 24 hours with the suction from the main drain, and the salt display may take 24 hours to respond.`,
+        `Hayward adds the salt with the pump on and brushes it so it does not pile up on the bottom, the filter running 24 hours with the suction from the main drain. Pentair and Jandy pour it around the edge of the pool, never through the skimmer or a surge tank, where it can clog the filter: the ${bags} bags go into the water itself, and the salt display may take 24 hours to respond.`,
+        `Pentair and Jandy ask for salt at least 99.8% sodium chloride, and Jandy rules out calcium chloride and rock salt: all ${n(pounds, 1)} lb should be plain pool salt.`,
       ],
     },
     next: {
@@ -292,7 +396,7 @@ const saltDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [SOURCES.hayward, SOURCES.cdc],
+    sources: [SOURCES.hayward, SOURCES.pentair, SOURCES.jandy, SOURCES.cdc],
   };
 };
 
@@ -304,6 +408,12 @@ const chlorineDetail = (page: JobPage): JobDetail => {
   const ml = shown(grams, 3).mul(Rational.of(8));
   const same = (product: string, key: string): string =>
     out(poolChlorine, { ...raw, product }, key);
+  /** The fluid ounces of a liquid product for the main raise, exact, so a difference of two is too. */
+  const fluidOunces = (product: string): Rational => {
+    const liquid = run(poolChlorine, { ...raw, product }).get('liquid');
+    if (!isQuantityOf(liquid, 'volume')) throw new Error('liquid must be a volume');
+    return valueIn(liquid, gal).mul(Rational.of(128));
+  };
   const next = nextRuns(page.gallons);
   return {
     worked: [
@@ -314,12 +424,21 @@ const chlorineDetail = (page: JobPage): JobDetail => {
       `The other rows: 1 to 2 ppm takes ${cellOf(page, 0, 1)} fl oz and 1 to 4 ppm ${cellOf(page, 2, 1)} fl oz, in step with the raise.`,
       `Checked with the shortcut of the method, 10.24 fl oz per ppm per 10,000 gallons: ${size} ÷ 10,000 × ${n(raise)} × 10.24 ${is(gallons.div(Rational.of(10_000)).mul(raise).mul(r('10.24')), 1)} fl oz.`,
     ],
+    compare: {
+      heading: 'Every product, the same raise',
+      caption: `${n(raise)} ppm more free chlorine, from ${raw['current'] ?? ''} to ${raw['target'] ?? ''} ppm, in ${size} gallons`,
+      head: ['Product', 'Strength on the label', 'To add', 'Metric'],
+      rows: productRows(raw, PRODUCTS),
+    },
     label: {
       heading: 'On the label of each product',
       items: [
-        `The same ${n(raise)} ppm in ${size} gallons takes ${same('liquid-10', 'liquid')} fl oz of 10% liquid, ${same('cal-hypo-65', 'dry')} oz of 65% cal-hypo or ${same('dichlor-56', 'dry')} oz of 56% dichlor: the weaker the product, the more of it.`,
+        `Liquid chlorine weakens with age, its label warns: a jug that has fallen to 10% takes ${same('liquid-10', 'liquid')} fl oz for ${n(raise)} ppm in ${size} gallons, ${n(fluidOunces('liquid-10').sub(fluidOunces('liquid-12-5')), 1)} fl oz more.`,
         `The 12.5% liquid label (EPA Reg. No. 55487-20001) super-chlorinates with 52 to 104 fl oz per 10,000 gallons for 5 to 10 ppm: ${n(gallons.mul(Rational.of(52, 10_000)))} to ${n(gallons.mul(Rational.of(104, 10_000)))} fl oz for ${size} gallons.`,
         `The same label says not to enter the pool above 4 ppm, so after the ${cellOf(page, 2, 1)} fl oz of the 1 to 4 ppm row, test before anyone swims.`,
+        `The label’s upkeep dose, 11 fl oz per 10,000 gallons, gives only 0.6 to 1.0 ppm: ${size} ÷ 10,000 × 11 ${is(gallons.div(Rational.of(10_000)).mul(Rational.of(11)), 1)} fl oz, under CDC’s 1 ppm floor, so dose to your test.`,
+        `Pour the ${cellOf(page, page.main, 1)} fl oz into the water on its own, in safety glasses or goggles and rubber gloves: mixed with ammonia, acids or detergents, the label warns, it releases chlorine gas.`,
+        `With granules, broadcast the ${same('cal-hypo-65', 'dry')} oz of cal-hypo over the deep end, never pre-mixed; never put the ${same('dichlor-56', 'dry')} oz of dichlor in a pail of water or add water to it.`,
       ],
     },
     next: {
@@ -339,7 +458,7 @@ const chlorineDetail = (page: JobPage): JobDetail => {
         },
       ],
     },
-    sources: [SOURCES.liquid, SOURCES.cdc],
+    sources: [SOURCES.liquid, SOURCES.calHypo, SOURCES.dichlor, SOURCES.cdc],
   };
 };
 
@@ -360,6 +479,12 @@ const shockDetail = (page: JobPage): JobDetail => {
       `${n(product, 2)} g ÷ 28.349523125 g an ounce ${is(ounces, 1)} oz, the large figure, and ÷ 16 ${is(ounces.div(Rational.of(16)), 2)} lb.`,
       `For 5 ppm it is half, ${low} oz. Dichlor is 56%, so its 8.7 ppm takes ${cellOf(page, 2, 1)} oz in ${size} gallons.`,
     ],
+    compare: {
+      heading: 'Every product, the same shock',
+      caption: `${n(target)} ppm of free chlorine in ${size} gallons, from 0 to ${n(target)} ppm`,
+      head: ['Product', 'Strength on the label', 'To add', 'Metric'],
+      rows: productRows(raw, SHOCK_PRODUCTS),
+    },
     label: {
       heading: 'On the shock labels',
       items: [

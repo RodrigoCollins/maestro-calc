@@ -85,6 +85,31 @@ const detail = jobDetailOf(page);
         ))}
       </ol>
     </section>
+    {detail.compare !== undefined && (
+      <section class="pool-job-detail" aria-labelledby="compare-heading">
+        <h2 id="compare-heading">{detail.compare.heading}</h2>
+        <table class="pool-job-table">
+          <caption>{detail.compare.caption}</caption>
+          <thead>
+            <tr>
+              {detail.compare.head.map((cell) => (
+                <th scope="col">{cell}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {detail.compare.rows.map(([label, ...cells]) => (
+              <tr>
+                <th scope="row">{label}</th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    )}
     {detail.label !== undefined && (
       <section class="pool-job-detail" aria-labelledby="label-heading">
         <h2 id="label-heading">{detail.label.heading}</h2>
@@ -153,6 +178,12 @@ const detail = jobDetailOf(page);
 
   .pool-job-table th[scope='row'] {
     text-align: left;
+  }
+
+  .pool-job-table caption {
+    padding-bottom: 0.5rem;
+    text-align: left;
+    line-height: 1.5;
   }
 
   .pool-job-method {
