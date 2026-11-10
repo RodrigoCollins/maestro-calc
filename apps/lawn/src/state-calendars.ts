@@ -42,7 +42,7 @@ const UC_FEED_WARM = read(
   'UC IPM, UC Guide to Healthy Lawns, “Zone 4 – Warm-season grasses” fertilization',
   'https://ipm.ucanr.edu/TOOLS/TURF/MAINTAIN/fertwarm4.html',
 );
-const TX_FEED = read(
+export const TX_FEED = read(
   'Texas A&M AgriLife Extension E-436, “Fertilizing Texas Lawns: 10-Point Checklist for Warm-Season Grasses”',
   'https://agrilifeextension.tamu.edu/wp-content/uploads/2025/06/Fertilizing-Texas-Lawns.pdf',
 );
@@ -58,7 +58,7 @@ const FL_ESTABLISH = read(
   'UF/IFAS EDIS ENH-03, “Establishing Your Florida Lawn” (2025)',
   'https://edis.ifas.ufl.edu/publication/LH013/pdf',
 );
-const FL_FEED = read(
+export const FL_FEED = read(
   'UF/IFAS EDIS SL21, “General Recommendations for Fertilization of Turfgrasses on Florida Soils” (2023)',
   'https://edis.ifas.ufl.edu/publication/LH014/pdf',
 );
@@ -70,7 +70,7 @@ const CORNELL_PLAN = read(
   'Cornell Turfgrass Program, “Plan Ahead”',
   'https://turf.cals.cornell.edu/lawn/lawn-care-the-easiest-steps-to-an-attractive-environmental-asset/starting-fresh/plan-ahead/',
 );
-const CORNELL_FEED = read(
+export const CORNELL_FEED = read(
   'Cornell Turfgrass Program, “Feeding”',
   'https://turf.cals.cornell.edu/lawn/lawn-care-the-easiest-steps-to-an-attractive-environmental-asset/advanced-care/feeding/',
 );
@@ -86,7 +86,7 @@ const PSU_SEASONS = read(
   'Penn State Extension, “Lawn Management through the Seasons”',
   'https://extension.psu.edu/lawn-management-through-the-seasons',
 );
-const IL_FALL = read(
+export const IL_FALL = read(
   'Illinois Extension, “Five fall tips for cool-season lawn care” (2024)',
   'https://extension.illinois.edu/news-releases/five-fall-tips-cool-season-lawn-care',
 );
@@ -98,15 +98,15 @@ const OHIO = read(
   'Ohio State University Extension HYG-5812, “Efficient Lawn Care Practices to Help Protect Ohio’s Waterways” (2022)',
   'https://ohioline.osu.edu/factsheet/hyg-5812',
 );
-const UGA_CALENDAR = read(
+export const UGA_CALENDAR = read(
   'UGA Cooperative Extension Circular 802, “Professional Grounds Management Calendar”',
   'https://fieldreport.caes.uga.edu/wp-content/uploads/2022/08/C802-Reviewed-2026.pdf',
 );
-const UGA_SPRING = read(
+export const UGA_SPRING = read(
   'UGA CAES Field Report, “Spring fertilization of lawns should be guided by soil testing, temperatures” (2012)',
   'https://fieldreport.caes.uga.edu/news/spring-fertilization-of-lawns-should-be-guided-by-soil-testing-temperatures/',
 );
-const NC_HANDBOOK = read(
+export const NC_HANDBOOK = read(
   'NC State Extension Gardener Handbook, chapter 9, “Lawns”',
   'https://content.ces.ncsu.edu/extension-gardener-handbook/9-lawns',
 );
@@ -122,7 +122,7 @@ const RUTGERS_SEED = read(
   'Rutgers Cooperative Extension FS584, “Seeding Your Lawn” (2004)',
   'https://extension.rutgers.edu/fs584',
 );
-const RUTGERS_FEED = read(
+export const RUTGERS_FEED = read(
   'Rutgers Cooperative Extension FS102, “Your Lawn and Its Care” (2023)',
   'https://extension.rutgers.edu/fs102',
 );
@@ -130,15 +130,15 @@ const RUTGERS_LAW = read(
   'Rutgers NJAES News, “NJ fertilizer law restrictions on home lawn applications now in effect” (2013)',
   'https://sebsnjaesnews.rutgers.edu/2013/11/nj-fertilizer-law-restrictions-on-home-lawn-applications-now-in-effect/',
 );
-const VA_FEED = read(
+export const VA_FEED = read(
   'Virginia Cooperative Extension 430-011, “Lawn Fertilization in Virginia” (2021)',
   'https://ext.vt.edu/content/dam/pubs_ext_vt_edu/430/430-011/SPES-334%20(1).pdf',
 );
-const WSU = read(
+export const WSU = read(
   'Washington State University Extension EB0482E, “Home Lawns” (2015)',
   'https://wpcdn.web.wsu.edu/wp-ecommerce/uploads/sites/2/product-3730-sku-EB0482E.pdf',
 );
-const ARIZONA = read(
+export const ARIZONA = read(
   'University of Arizona Cooperative Extension AZ1817, “A Turfgrass Maintenance Guide for Residential and Commercial Lawns in the Low Elevation Arizona Desert” (2020)',
   'https://extension.arizona.edu/publication/turfgrass-maintenance-guide-residential-and-commercial-lawns-low-elevation-arizona',
 );
@@ -146,11 +146,11 @@ const UT_CHAPTER = read(
   'UT Extension Master Gardener, “Chapter 10 – Turfgrass Management in Tennessee”',
   'https://mastergardener.tennessee.edu/chapter-10-turfgrass-management-in-tennessee/',
 );
-const UT_FEED = read(
+export const UT_FEED = read(
   'University of Tennessee W161-C, “Developing a Turf Fertilization Plan” (2008)',
   'https://uthort.tennessee.edu/wp-content/uploads/sites/228/2023/11/W161-C.pdf',
 );
-const PURDUE_FEED = read(
+export const PURDUE_FEED = read(
   'Purdue Extension AY-22-W, “Fertilizing Established Cool-season Lawns” (2013)',
   'https://www.extension.purdue.edu/extmedia/ay/ay-22-w.pdf',
 );
@@ -162,7 +162,7 @@ const UMD = read(
   'University of Maryland Extension, “Lawn Maintenance Calendar” (2026)',
   'https://extension.umd.edu/resource/lawn-maintenance-calendar',
 );
-const MIZZOU = read(
+export const MIZZOU = read(
   'University of Missouri IPM, “Seeding & Fertilizing Missouri Lawns: One Size Does Not Fit All” (2014)',
   'https://ipm.missouri.edu/meg/2014/5/Seeding-and-Fertilizing-Missouri-Lawns',
 );
@@ -178,7 +178,7 @@ const CSU_SEED = read(
   'Colorado State University Extension, PlantTalk 1516, “Seeding a Lawn”',
   'https://planttalk.colostate.edu/topics/lawns/1516-seeding-lawn/',
 );
-const CSU_FEED = read(
+export const CSU_FEED = read(
   'Colorado State University Extension, “Lawn Care Basics” (fact sheet 7.202)',
   'https://extension.colostate.edu/resource/lawn-care-basics/',
 );
@@ -186,7 +186,7 @@ const CSU_FALL = read(
   'Colorado State University Extension, PlantTalk 1535, “Fall Lawn Fertilization: During Drought”',
   'https://planttalk.colostate.edu/topics/lawns/1535-fall-lawn-fertilization-drought/',
 );
-const UW_FEED = read(
+export const UW_FEED = read(
   'Wisconsin Horticulture, Division of Extension, “Optimum Time for Fertilizing Lawns”',
   'https://hort.extension.wisc.edu/optimum-time-for-fertilizing-lawns/',
 );

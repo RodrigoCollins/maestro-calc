@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { CALENDAR_STATES } from './calendar-paths.ts';
 import { DATA_GUIDES, GUIDES, guideAt } from './guide.ts';
+import { fertilizerHrefOf } from './feed-rates.ts';
 import { STATE_CALENDARS } from './state-calendars.ts';
+import { STATE_RATES } from './state-rates.ts';
 import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
 import { ZONE_GUIDES, ZONE_INDEX } from './zone-guides.ts';
 
@@ -109,6 +111,49 @@ describe('state pages', () => {
     expect(textOf('/when-to-fertilize-lawn/texas')).toContain(
       'Zone 8a (111 stations): first warm-season feeding May 10, last Sep 26 to Oct 10.',
     );
+  });
+
+  it('gives every fertilizer page the nitrogen rates of its own extension service', () => {
+    for (const state of CALENDAR_STATES) {
+      const rates = STATE_RATES[state.code as keyof typeof STATE_RATES];
+      expect(rates.items.length, state.code).toBeGreaterThan(0);
+      expect(rates.feeding, state.code).toBeGreaterThan(0);
+      expect(rates.feeding, state.code).toBeLessThanOrEqual(1);
+      const page = guideAt(`/when-to-fertilize-lawn/${state.slug}`);
+      for (const source of rates.sources)
+        expect(Object.values(page.sources)).toContainEqual(source);
+      const section = page.sections.find(({ id }) => id === 'rates');
+      expect(section?.items, state.code).toEqual(rates.items);
+    }
+    // Ohio State HYG-4031, Table 3; Virginia 430-011, Table 2 and its seasonal totals
+    expect(textOf('/when-to-fertilize-lawn/ohio')).toContain(
+      'Kentucky bluegrass and perennial ryegrass: 2 to 3 lb of N per 1,000 sq ft a year at low maintenance, 3.5 to 5 lb at high.',
+    );
+    expect(textOf('/when-to-fertilize-lawn/virginia')).toContain(
+      'Bermudagrass and St. Augustinegrass: 0.5 lb in April, 0.7 lb a month from May through July and 0.5 lb in August; 2 to 4 lb a year.',
+    );
+  });
+
+  it('works one feeding out at the state’s own rate, with the calculator filled in', () => {
+    // Arizona: ½ lb of N a month on bermudagrass. On the calculator defaults (5,000 sq ft,
+    // 24-0-6, 15 lb bags): 0.5 / 0.24 = 2.08 lb per 1,000 sq ft, 10.42 lb in all, one bag
+    const arizona = guideAt('/when-to-fertilize-lawn/arizona');
+    const worked = arizona.sections.find(({ id }) => id === 'worked');
+    expect(worked?.heading).toBe('Worked example: one feeding in Arizona');
+    expect(worked?.paragraphs.join(' ')).toContain(
+      '2.1 lb of product per 1,000 sq ft (0.5 ÷ 0.24), 10.4 lb for the lawn: 1 bag of 15 lb.',
+    );
+    expect(worked?.links?.[0]?.href).toBe(fertilizerHrefOf(0.5));
+    // Ohio: 1 lb, the calculator's own default: 4.2 lb per 1,000 sq ft, 20.8 lb, 2 bags
+    const ohio = guideAt('/when-to-fertilize-lawn/ohio');
+    expect(ohio.sections.find(({ id }) => id === 'worked')?.paragraphs.join(' ')).toContain(
+      '4.2 lb of product per 1,000 sq ft (1 ÷ 0.24), 20.8 lb for the lawn: 2 bags of 15 lb.',
+    );
+    for (const guide of FEED_STATE_GUIDES) {
+      expect(guide.questions.map(({ question }) => question)).toContain(
+        `How much nitrogen does a lawn need in ${guide.h1.slice('When to fertilize your lawn in '.length)}?`,
+      );
+    }
   });
 
   it('keeps every page its own: no two leads alike, every source on https', () => {
