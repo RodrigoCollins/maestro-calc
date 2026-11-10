@@ -1,0 +1,113 @@
+---
+import { dogOf, FEED_HUB, FEED_PAGES, feedPageOf } from '../feed-by-weight.ts';
+import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+interface Props {
+  readonly path: string;
+}
+
+const page = feedPageOf(Astro.props.path);
+const { weight, title, description, h1, lead, checked, stages, labels, sections, questions } = page;
+const tables = [
+  {
+    id: 'by-stage',
+    heading: `Calories and cups for ${dogOf(weight)} dog, by life stage`,
+    label: `${dogOf(weight)} dog by life stage, scrolls sideways on a narrow screen`,
+    table: stages,
+  },
+  {
+    id: 'by-label',
+    heading: 'Cups by the calorie line on your bag (neutered adult)',
+    label: `Cups a day for ${dogOf(weight)} dog by calories per cup, scrolls sideways on a narrow screen`,
+    table: labels,
+  },
+];
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    {tables.map(({ id, heading, label, table }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        <div class="bf-scroll" tabindex="0" role="region" aria-label={label}>
+          <table class="bf-table">
+            <thead>
+              <tr>
+                {table.columns.map((column) => (
+                  <th scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {table.rows.map(([first, ...cells]) => (
+                <tr>
+                  <th scope="row">{first}</th>
+                  {cells.map((cell) => (
+                    <td>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {id === 'by-stage' && (
+          <p>
+            <a href={page.calculator.href}>{page.calculator.label}</a>
+            {': enter the calorie line of your own food, per cup, can or kilogram.'}
+          </p>
+        )}
+      </section>
+    ))}
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {id === 'life' && (
+          <p>
+            <a href={hrefOf('puppy')}>Puppy feeding calculator</a>
+          </p>
+        )}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-weights">
+      <h2 id="bf-weights">Other weights</h2>
+      <ul class="bf-ages">
+        {FEED_PAGES.map((other) => (
+          <li>
+            <a
+              href={other.path}
+              aria-current={other.weight === weight ? 'page' : undefined}
+              aria-label={`How much to feed ${dogOf(other.weight)} dog`}
+            >
+              {`${String(other.weight)} lb`}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p>
+        <a href={FEED_HUB.path}>How much should I feed my dog? The guide</a> ·{' '}
+        <a href={hrefOf('dog-chart')}>Dog feeding chart, 5 to 100 lb</a>
+      </p>
+    </section>
+    <Sources sources={page.sources} />
+    <ShareLink path={page.path} {title} />
+  </main>
+</Layout>

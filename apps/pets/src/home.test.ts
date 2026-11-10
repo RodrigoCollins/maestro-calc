@@ -27,6 +27,7 @@ describe('the home', () => {
         '/dog-feeding-chart',
         '/dog-food-by-breed',
         '/how-to-read-pet-food-label',
+        '/how-much-should-i-feed-my-dog',
         '/my-dog-ate-chocolate',
         '/puppy-feeding-chart',
         '/plants-toxic-to-cats',
