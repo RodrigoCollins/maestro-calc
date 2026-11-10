@@ -60,7 +60,7 @@ const rowsOf = (size: PuppySize): readonly [Row, ...Row[]] => {
     { month: Rational.of(month), share: Rational.of(share).div(HUNDRED) },
     ...months.map((each, row) => ({
       month: Rational.of(each),
-      share: Rational.of(shares[row] ?? 100).div(HUNDRED),
+      share: Rational.of(Number(shares[row])).div(HUNDRED),
     })),
   ];
 };
