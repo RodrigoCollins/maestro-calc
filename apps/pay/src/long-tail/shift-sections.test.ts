@@ -394,13 +394,17 @@ describe('the sections of a shift page', () => {
     const rounding = textOf(sectionOf('7:00-17:00', 'rounding', 'es'));
     expect(rounding).toContain('Es legal si con el tiempo te pagan todo (29 CFR 785.48).');
     const out = textOf(sectionOf('7:00-17:00', 'clock-out', 'es'));
-    expect(out).toContain('Si sales a las 5 pm, el descanso sin pago te deja con menos de 10 horas');
+    expect(out).toContain(
+      'Si sales a las 5 pm, el descanso sin pago te deja con menos de 10 horas',
+    );
     // the Spanish says the federal rule and the state count in few words, shared by every page
     const es = textOf(sectionOf('7:00-17:00', 'breaks', 'es'));
     expect(es).toContain(
       'La ley federal no exige una pausa para comer: las pausas de 5 a 20 minutos se pagan (29 CFR 785.18) y solo una comida libre de 30 minutos o más se resta de las 10 horas de 7 am a 5 pm (29 CFR 785.19).',
     );
-    expect(es).toContain('la tabla del Departamento de Trabajo (1 de enero de 2023) la pide en 15 estados');
+    expect(es).toContain(
+      'la tabla del Departamento de Trabajo (1 de enero de 2023) la pide en 15 estados',
+    );
     const hrefs = longTailPageOf(shiftOf('9:00-17:00'), 'en').sources?.map(({ href }) => href);
     expect(hrefs).toContain(SOURCES.nyMeal.href);
   });

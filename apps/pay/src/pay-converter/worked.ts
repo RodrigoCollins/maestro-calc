@@ -25,7 +25,7 @@ const run = (
 ): Outputs => {
   const ran = payConverter.run({ amount, per, hoursPerWeek, weeksPerYear });
   if (!ran.ok) throw new Error(`the converter must run ${amount} per ${per}`);
-  const outputs = new Map(ran.value.outputs.map(({ key, value }) => [key, value as Money]));
+  const outputs = new Map<string, Money>(ran.value.outputs.map(({ key, value }) => [key, value]));
   return (key) => {
     const value = outputs.get(key);
     if (value === undefined) throw new Error(`no output ${key}`);
