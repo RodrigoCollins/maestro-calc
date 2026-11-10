@@ -1,6 +1,7 @@
 import { decode, encode, Rational } from '@maestro-calc/core';
 import { watchUsage } from '@maestro-calc/site-kit/track';
 import { patchOf, type AnyCalculator, type View } from '../calc/view.ts';
+import { rawDecimal } from '../de/format.ts';
 import { amountText } from '../format.ts';
 import { shareMessage, sharedUrlOf, whatsappHref } from '../share/href.ts';
 import { applyPatch } from './apply.ts';
@@ -17,15 +18,25 @@ const refreshShare = (): void => {
  * Runs a calculator page on every edit of its form: patches the result with the page's view,
  * marks the fields it cannot read, keeps the state in the URL (the page's starting values are the
  * clean URL) and keeps the share links current. The state read from the URL on load is applied
- * before the first run.
+ * before the first run. With `decimalComma` (the German pages) a visitor types `3,5` and the
+ * engine reads `3.5`, and a value restored from the URL is written back with a comma.
  */
-export const runForm = (calculator: AnyCalculator, view: View): void => {
+export const runForm = (
+  calculator: AnyCalculator,
+  view: View,
+  { decimalComma = false }: { readonly decimalComma?: boolean } = {},
+): void => {
   const form = document.querySelector<HTMLFormElement>(`form[data-calculator="${calculator.id}"]`);
   if (form === null) return;
   const fieldOf = (name: string): HTMLInputElement | HTMLSelectElement | null =>
     form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
   const rawOf = (): Record<string, string | undefined> =>
-    Object.fromEntries(calculator.inputs.map(({ key }) => [key, fieldOf(key)?.value]));
+    Object.fromEntries(
+      calculator.inputs.map(({ key }) => {
+        const value = fieldOf(key)?.value;
+        return [key, decimalComma && value !== undefined ? rawDecimal(value) : value];
+      }),
+    );
   const encoded = (raw: Readonly<Record<string, unknown>>): string | null => {
     const validated = calculator.validate(raw);
     return validated.ok ? encode(calculator, validated.value) : null;
@@ -42,11 +53,12 @@ export const runForm = (calculator: AnyCalculator, view: View): void => {
       const field = fieldOf(key);
       const value = values[key];
       if (field === null) continue;
-      if (value instanceof Rational)
-        field.value = amountText(value, 2)
+      if (value instanceof Rational) {
+        const typed = amountText(value, 2)
           .replace(/\.?0+$/, '')
           .replaceAll(',', '');
-      else if (typeof value === 'string') field.value = value;
+        field.value = decimalComma ? typed.replace('.', ',') : typed;
+      } else if (typeof value === 'string') field.value = value;
       else if (typeof value === 'number') field.value = String(value);
     }
   }

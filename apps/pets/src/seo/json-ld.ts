@@ -6,7 +6,7 @@ import {
   webApplicationLd,
   webSiteLd,
 } from '@maestro-calc/site-kit/json-ld';
-import { hrefOf, routeOf, type PageKind } from '../routes.ts';
+import { hrefOf, langOf, routeOf, type Lang, type PageKind } from '../routes.ts';
 import { SITE } from '../site.config.ts';
 
 /** The kind of the route at `path` (`src/routes.ts`); any other path is an article. */
@@ -28,11 +28,14 @@ export const nameOf = (title: string): string => title.replace(/\s*\|\s*Bowl Fig
  * Bowl Figures as the organization that writes and publishes every article (its editorial team,
  * never a person): its home and its editorial policy as its publishing principles.
  */
-const organizationOf = (origin: string) => ({
+const organizationOf = (origin: string, lang: Lang) => ({
   name: SITE.name,
-  url: new URL('/', origin).href,
-  publishingPrinciples: new URL(hrefOf('editorial'), origin).href,
+  url: new URL(hrefOf('home', lang), origin).href,
+  publishingPrinciples: new URL(hrefOf('editorial', lang), origin).href,
 });
+
+/** The language of the JSON-LD: American English, or German for every German-speaking country. */
+const IN_LANGUAGE: Readonly<Record<Lang, string>> = { en: 'en-US', de: 'de' };
 
 /**
  * The JSON-LD of the page at `path`, ready for its script element. The home is the WebSite and the
@@ -50,10 +53,11 @@ export const jsonLdOf = (
   origin: string,
 ): string => {
   const url = new URL(path, origin).href;
-  const inLanguage = 'en-US';
+  const lang = langOf(path);
+  const inLanguage = IN_LANGUAGE[lang];
   const { description } = page;
   const kind = pageKindOf(path);
-  const organization = organizationOf(origin);
+  const organization = organizationOf(origin, lang);
   if (kind === 'home')
     return serializeJsonLd(
       graphLd(webSiteLd({ name: SITE.name, url, inLanguage }), {
@@ -87,7 +91,7 @@ export const jsonLdOf = (
     graphLd(
       node,
       breadcrumbListLd([
-        { name: SITE.name, url: new URL('/', origin).href },
+        { name: SITE.name, url: organization.url },
         { name, url },
       ]),
     ),

@@ -1,0 +1,30 @@
+---
+import { dogAge } from '@maestro-calc/pets-core/dog-age';
+import CalcPage from '../../components/CalcPage.astro';
+import { HUNDEJAHRE_ARTICLE, HUNDEJAHRE_METHOD, HUNDEJAHRE_PAGE } from '../../de/hundejahre.ts';
+import { dogAgeViewDe } from '../../de/hundejahre-view.ts';
+import HundejahreScript from '../../islands/HundejahreScript.astro';
+import { hrefOf } from '../../routes.ts';
+---
+
+<CalcPage
+  page={HUNDEJAHRE_PAGE}
+  calculator={dogAge}
+  view={dogAgeViewDe}
+  kind="dog-age"
+  method={HUNDEJAHRE_METHOD}
+  article={HUNDEJAHRE_ARTICLE}
+  related={[
+    {
+      href: hrefOf('foods', 'de'),
+      label: 'Was dürfen Hunde essen? Lebensmittel von giftig bis sicher',
+    },
+    {
+      href: hrefOf('chocolate-guide', 'de'),
+      label: 'Hund hat Schokolade gefressen: was jetzt zu tun ist',
+    },
+    { href: hrefOf('dog-age-chart'), label: 'Dog age chart (Englisch)' },
+  ]}
+>
+  <HundejahreScript />
+</CalcPage>

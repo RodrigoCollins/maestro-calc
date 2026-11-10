@@ -1,5 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
+import { BYLINE_PAGES, BYLINE_PAGES_DE, bylinePageOf } from './bylines.ts';
+import { ROUTES } from './routes.ts';
+
+describe('BYLINE_PAGES_DE', () => {
+  it('are the German guide, the dog age page, the food hub and every German food page', () => {
+    const german = ROUTES.flatMap(({ id, de }) =>
+      de === undefined || ['home', 'about', 'editorial', 'privacy'].includes(id) ? [] : [de],
+    );
+    expect(BYLINE_PAGES_DE.map(({ path }) => path).sort()).toEqual(german.sort());
+    for (const { checked, sources } of BYLINE_PAGES_DE) {
+      expect(checked).toBe('2026-11-10');
+      expect(sources.length).toBeGreaterThan(0);
+    }
+  });
+});
 
 describe('BYLINE_PAGES', () => {
   it('are the guides, the data pages, the dog and cat years pages, the food hub and its foods, the plant hubs and plants, then the feeding hub and its weights, and the puppy weight calculator', () => {

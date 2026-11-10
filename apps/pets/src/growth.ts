@@ -8,7 +8,7 @@ import { SITE } from './site.config.ts';
 const pathOf = (url: string): string => new URL(url).pathname;
 
 /** The site as it is once the owner flips `SITE.indexable`: the growth contract holds that state. */
-const OPEN = { origin: SITE.origin, indexable: true } as const;
+const OPEN = { origin: SITE.origin, indexable: true, deIndexable: SITE.deIndexable } as const;
 
 /** What the growth contract (apps/web/src/contract/growth.contract.test.ts) reads of Bowl Figures. */
 export const GROWTH = {

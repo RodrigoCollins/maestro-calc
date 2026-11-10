@@ -18,8 +18,19 @@ describe('llmsTxt', () => {
     }
   });
 
-  it('names three sections', () => {
+  it('names three sections, and no German page while German is closed', () => {
     expect(text.match(/^## /gm)).toHaveLength(3);
+    expect(text).not.toContain('/de');
+  });
+
+  it('adds the German pages as a fourth section once German is open', () => {
+    const open = llmsTxt(true);
+    expect(open.match(/^## /gm)).toHaveLength(4);
+    expect(open).toContain('## Auf Deutsch (German)');
+    for (const { id, de } of ROUTES) {
+      if (de === undefined || id === 'home' || id === 'privacy') continue;
+      expect(open, de).toContain(`(https://bowlfigures.com${de})`);
+    }
   });
 
   it('says every chocolate result tells the reader to call', () => {

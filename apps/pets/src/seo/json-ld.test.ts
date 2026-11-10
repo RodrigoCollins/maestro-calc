@@ -112,3 +112,41 @@ describe('jsonLdOf', () => {
     }
   });
 });
+
+describe('jsonLdOf, German pages', () => {
+  it('says German and starts the breadcrumb at the German home', () => {
+    const text = { title: 'Hundejahre | Bowl Figures', description: 'd' };
+    const graph = parse(jsonLdOf('/de/hundejahre-rechner', text, ORIGIN))['@graph'];
+    expect(graph[0]).toMatchObject({ '@type': 'WebApplication', inLanguage: 'de' });
+    expect(graph[1]?.['itemListElement']).toEqual([
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Bowl Figures',
+        item: 'https://bowlfigures.com/de',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Hundejahre',
+        item: 'https://bowlfigures.com/de/hundejahre-rechner',
+      },
+    ]);
+  });
+
+  it('makes the German home a German WebSite', () => {
+    const text = { title: 'Bowl Figures', description: 'd' };
+    const graph = parse(jsonLdOf('/de', text, ORIGIN))['@graph'];
+    expect(graph[0]).toMatchObject({
+      '@type': 'WebSite',
+      inLanguage: 'de',
+      url: 'https://bowlfigures.com/de',
+    });
+  });
+
+  it('keeps English pages in en-US', () => {
+    const text = { title: 'T', description: 'd' };
+    const graph = parse(jsonLdOf('/dog-age-calculator', text, ORIGIN))['@graph'];
+    expect(graph[0]).toMatchObject({ inLanguage: 'en-US' });
+  });
+});

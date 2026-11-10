@@ -3,7 +3,7 @@ import type { FeedingPage } from '../calc/dog.ts';
 import { CALL_NOW, POISON_LINE } from '../calc/chocolate.ts';
 import { patchOf, type AnyCalculator, type View } from '../calc/view.ts';
 import type { CalcArticle } from '../guides.ts';
-import { hrefOf } from '../routes.ts';
+import { hrefOf, langOf } from '../routes.ts';
 import Byline from './Byline.astro';
 import Layout from './Layout.astro';
 import ShareLink from './ShareLink.astro';
@@ -32,6 +32,30 @@ interface Props {
 }
 
 const { page, calculator, view, kind, related = [], method, article } = Astro.props;
+// the words of the page around the figures: English, or German for the dog age page under /de
+const lang = langOf(page.path);
+const words = {
+  en: {
+    stage: 'life stage:',
+    senior: 'senior from',
+    wang: 'DNA clock:',
+    seven: '7× rule:',
+    method: 'How we work it out',
+    scrolls: 'scrolls sideways on a narrow screen',
+    faq: 'Frequently asked questions',
+    related: 'Related',
+  },
+  de: {
+    stage: 'Lebensphase:',
+    senior: 'Senior ab',
+    wang: 'DNA-Uhr:',
+    seven: '7er-Regel:',
+    method: 'So rechnen wir (Methodik, auf Englisch)',
+    scrolls: 'lässt sich auf schmalen Bildschirmen seitlich scrollen',
+    faq: 'Häufige Fragen',
+    related: 'Weiterlesen',
+  },
+}[lang];
 // The page renders the result of its starting values, so it reads complete with no script.
 const patch = patchOf(calculator, view, page.initial);
 if (patch === undefined) throw new Error(`${calculator.id} must run at its starting values`);
@@ -199,16 +223,16 @@ const fields = calculator.inputs.map((input) => {
             </p>
             <ul class="bf-chips">
               <li>
-                life stage: <strong data-text="stage">{text['stage']}</strong>
+                {words.stage} <strong data-text="stage">{text['stage']}</strong>
               </li>
               <li>
-                senior from <strong data-text="seniorAt">{text['seniorAt']}</strong>
+                {words.senior} <strong data-text="seniorAt">{text['seniorAt']}</strong>
               </li>
               <li>
-                DNA clock: <strong data-text="wang">{text['wang']}</strong>
+                {words.wang} <strong data-text="wang">{text['wang']}</strong>
               </li>
               <li>
-                7× rule: <strong data-text="seven">{text['seven']}</strong>
+                {words.seven} <strong data-text="seven">{text['seven']}</strong>
               </li>
             </ul>
             <p class="bf-note-hero" data-show="outside" hidden={patch.show['outside'] !== true}>
@@ -336,7 +360,7 @@ const fields = calculator.inputs.map((input) => {
         <p>{note}</p>
       ))}
       <p>
-        {method} <a href={hrefOf('methodology')}>How we work it out</a>.
+        {method} <a href={hrefOf('methodology')}>{words.method}</a>.
       </p>
     </section>
     {article !== undefined &&
@@ -360,7 +384,7 @@ const fields = calculator.inputs.map((input) => {
                   class="bf-scroll"
                   tabindex="0"
                   role="region"
-                  aria-label={`${table.heading}, scrolls sideways on a narrow screen`}
+                  aria-label={`${table.heading}, ${words.scrolls}`}
                 >
                   <table class="bf-table">
                     <thead>
@@ -396,7 +420,7 @@ const fields = calculator.inputs.map((input) => {
       ))}
     {article !== undefined && (
       <section aria-labelledby="faq">
-        <h2 id="faq">Frequently asked questions</h2>
+        <h2 id="faq">{words.faq}</h2>
         {article.questions.map(({ question, answer }) => (
           <>
             <h3>{question}</h3>
@@ -408,7 +432,7 @@ const fields = calculator.inputs.map((input) => {
     <ShareLink path={page.path} title={page.title} />
     {related.length > 0 && (
       <section class="bf-card" aria-labelledby="bf-related">
-        <h2 id="bf-related">Related</h2>
+        <h2 id="bf-related">{words.related}</h2>
         <ul>
           {related.map(({ href, label }) => (
             <li>
