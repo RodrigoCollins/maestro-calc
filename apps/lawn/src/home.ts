@@ -1,4 +1,5 @@
 import { CALCULATORS } from './calculators.ts';
+import { COST_GUIDES } from './costs.ts';
 import { GUIDES } from './guide.ts';
 import { hrefOf } from './routes.ts';
 
@@ -37,6 +38,7 @@ export const HOME = {
     'Last spring and first fall 32°F freeze at the 10, 50 and 90 percent levels, from the NOAA 1991-2020 normals, for every state. Type your ZIP and find the nearest weather station.',
   frostLink: 'Find your frost dates',
   guidesHeading: 'Guides',
+  costsHeading: 'What lawn care costs',
   mathHeading: 'The math is on the page',
   mathText:
     'Every page shows its formula and names its source with an address, and the limit a source sets is shown, never exceeded.',
@@ -56,6 +58,13 @@ export const HOME_TRUST = {
 
 /** The guides as the home lists them: a title and its summary. */
 export const HOME_GUIDES = GUIDES.map(({ path, card }) => ({
+  href: path,
+  title: card.title,
+  summary: card.summary,
+}));
+
+/** The cost guides as the home lists them, the hub first: a title and its summary. */
+export const HOME_COSTS = COST_GUIDES.map(({ path, card }) => ({
   href: path,
   title: card.title,
   summary: card.summary,

@@ -2,11 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { ABOUT } from './about.ts';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 import { CALCULATORS, calculatorAt, MAESTRO } from './calculators.ts';
+import { COST_GUIDES } from './costs.ts';
 import { bylineOf, checkedText, citedSources, EDITORIAL } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
 import { frostCopyOf, FROST_TEXT } from './frost-copy.ts';
 import { ALL_GUIDES, GUIDES, guideAt, guidesOf } from './guide.ts';
-import { HOME, HOME_TOOLS, navOf } from './home.ts';
+import { HOME, HOME_COSTS, HOME_TOOLS, navOf } from './home.ts';
 import { footerLinks } from './layout.ts';
 import { llmsTxt } from './llms.ts';
 import { METHOD_PAGE } from './methodology.ts';
@@ -193,6 +194,7 @@ describe('policy pages', () => {
       '/methodology',
       '/frost-dates',
       ...GUIDES.map(({ path }) => path),
+      '/how-much-does-lawn-care-cost',
       '/privacy',
       '/about',
       '/editorial-policy',
@@ -209,5 +211,24 @@ describe('llms.txt', () => {
     expect(urls).toHaveLength(ROUTES.length - 1);
     expect(urls).not.toContain('https://lawnfigures.com/');
     expect(urls).toContain('https://lawnfigures.com/frost-dates/texas/3');
+  });
+
+  it('lists the cost guides in their own section, by their question', () => {
+    const section = text.split('## Lawn costs')[1]?.split('\n## ')[0] ?? '';
+    for (const { path, h1, description } of COST_GUIDES)
+      expect(section).toContain(`- [${h1}](https://lawnfigures.com${path}): ${description}`);
+  });
+});
+
+describe('the home cost list', () => {
+  it('lists every cost guide, the hub first, by its card', () => {
+    expect(HOME.costsHeading).not.toBe('');
+    expect(HOME_COSTS).toEqual(
+      COST_GUIDES.map(({ path, card }) => ({
+        href: path,
+        title: card.title,
+        summary: card.summary,
+      })),
+    );
   });
 });

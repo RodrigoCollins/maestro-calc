@@ -99,7 +99,7 @@ export const FERTILIZER: CalculatorPage = {
   method:
     'Pounds of product per 1,000 sq ft = the pounds of N you want ÷ the N share of the bag (24% is 0.24). Multiply by the area ÷ 1,000 for the total. P and K are the same weight times the P₂O₅ and K₂O shares on the label.',
   note: 'Granular fertilizer only. The label of your bag and your state and local rules come first.',
-  guides: ['timing-guide'],
+  guides: ['timing-guide', 'lawn-care-cost'],
   maestro: [],
 };
 
@@ -165,6 +165,7 @@ export const GRASS_SEED: CalculatorPage = {
     'bluegrass-seed',
     'fescue-seed',
     'best-seed',
+    'lawn-care-cost',
   ],
   maestro: ['topsoil'],
 };
@@ -212,7 +213,7 @@ export const SOD: CalculatorPage = {
   method:
     'Square feet to order = the lawn area × (1 + waste ÷ 100). Pallets = that ÷ the pallet size, rounded up. Slabs = that ÷ 2.67 sq ft (a 16 × 24 in slab), rounded up.',
   note: 'Pallet and slab sizes are the supplier’s choice. The 400, 450 and 500 sq ft options are sizes suppliers list, not a standard, and no waste figure is assumed: you set it.',
-  guides: ['st-augustine-seed'],
+  guides: ['st-augustine-seed', 'sod-cost', 'lawn-care-cost'],
   maestro: ['topsoil'],
 };
 

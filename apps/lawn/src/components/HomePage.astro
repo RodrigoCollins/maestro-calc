@@ -1,6 +1,6 @@
 ---
 import { MAESTRO } from '../calculators.ts';
-import { HOME, HOME_GUIDES, HOME_TOOLS, HOME_TRUST } from '../home.ts';
+import { HOME, HOME_COSTS, HOME_GUIDES, HOME_TOOLS, HOME_TRUST } from '../home.ts';
 import { hrefOf } from '../routes.ts';
 import Layout from './Layout.astro';
 ---
@@ -38,6 +38,17 @@ import Layout from './Layout.astro';
       <h2 id="guides">{HOME.guidesHeading}</h2>
       <ul>
         {HOME_GUIDES.map(({ href, title, summary }) => (
+          <li>
+            <a {href}>{title}</a>: {summary}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="lawn-section" aria-labelledby="costs">
+      <h2 id="costs">{HOME.costsHeading}</h2>
+      <ul>
+        {HOME_COSTS.map(({ href, title, summary }) => (
           <li>
             <a {href}>{title}</a>: {summary}
           </li>

@@ -24,7 +24,7 @@ const trail = guide.parent === undefined ? pageTrailOf(guide) : childTrailOf(gui
     </section>
   </Fragment>
   <main class="lawn-main">
-    {guide.sections.map(({ id, heading, paragraphs, items, links }) => (
+    {guide.sections.map(({ id, heading, paragraphs, items, table, links }) => (
       <section class="lawn-section" aria-labelledby={id}>
         <h2 {id}>{heading}</h2>
         {paragraphs.map((paragraph) => (
@@ -36,6 +36,30 @@ const trail = guide.parent === undefined ? pageTrailOf(guide) : childTrailOf(gui
               <li>{item}</li>
             ))}
           </ul>
+        )}
+        {table !== undefined && (
+          <div class="lawn-guide-table" role="region" aria-labelledby={`${id}-table`} tabindex="0">
+            <table>
+              <caption id={`${id}-table`}>{table.caption}</caption>
+              <thead>
+                <tr>
+                  {table.head.map((cell) => (
+                    <th scope="col">{cell}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {table.rows.map(([first, ...cells]) => (
+                  <tr>
+                    <th scope="row">{first}</th>
+                    {cells.map((cell) => (
+                      <td>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
         {links !== undefined && (
           <ul>
@@ -79,6 +103,42 @@ const trail = guide.parent === undefined ? pageTrailOf(guide) : childTrailOf(gui
   .lawn-qa {
     display: grid;
     gap: 0.25rem;
+  }
+
+  .lawn-guide-table {
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    background: var(--card);
+  }
+
+  .lawn-guide-table table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lawn-guide-table caption {
+    padding: 0.5rem;
+    text-align: left;
+  }
+
+  .lawn-guide-table th,
+  .lawn-guide-table td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .lawn-guide-table thead th {
+    background: var(--deep);
+    color: var(--on-stripe);
+  }
+
+  .lawn-guide-table tbody th {
+    font-weight: 600;
+    min-width: 7rem;
   }
 
   .lawn-qa h3 {

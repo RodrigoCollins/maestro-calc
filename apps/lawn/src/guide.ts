@@ -2,6 +2,7 @@ import { AERATION_GUIDE, PRE_EMERGENT_GUIDE } from './aeration-guides.ts';
 import { CALENDAR_STATES, feedStatePathOf } from './calendar-paths.ts';
 import { CALCULATORS } from './calculators.ts';
 import { CITY_GUIDES } from './city-guides.ts';
+import { COST_GUIDES } from './costs.ts';
 import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
 import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
 import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
@@ -29,12 +30,21 @@ export interface GuideSource {
   readonly url: string;
 }
 
+/** A table a section shows under its paragraphs: a caption, the column heads and the rows. */
+export interface GuideTable {
+  readonly caption: string;
+  readonly head: readonly string[];
+  /** One cell per head; the first cell of a row heads it. */
+  readonly rows: readonly (readonly string[])[];
+}
+
 /** One block of a guide: a heading, paragraphs, and optionally a list of short items. */
 export interface GuideSection {
   readonly id: string;
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly items?: readonly string[];
+  readonly table?: GuideTable;
   /** Pages of the site the section points to, listed under it. */
   readonly links?: readonly { readonly href: string; readonly label: string }[];
 }
@@ -192,8 +202,8 @@ export const DATA_GUIDES: readonly Guide[] = [
   ...CITY_GUIDES,
 ];
 
-/** Every guide page of the site. */
-export const ALL_GUIDES: readonly Guide[] = [...GUIDES, ...DATA_GUIDES];
+/** Every guide page of the site: the guides, the data pages, then the cost guides (`costs.ts`). */
+export const ALL_GUIDES: readonly Guide[] = [...GUIDES, ...DATA_GUIDES, ...COST_GUIDES];
 
 /** The guide at `path`; any other path throws at build time. */
 export const guideAt = (path: string): Guide => {
