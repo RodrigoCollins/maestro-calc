@@ -2,14 +2,20 @@ import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
+  ABOVE_GROUND_COST,
+  BUILD_COST,
+  CONTAINER_COST,
   COST_GUIDES,
   COST_HUB,
   FIBERGLASS_COST,
+  HEATER_COST,
   INGROUND_COST,
   interiorArea,
   LINER_COST,
+  MAINTENANCE_COST,
   PLUNGE_COST,
   RESURFACING_COST,
+  TWELVE_BY_24_COST,
   usd,
 } from './costs.ts';
 import type { GuideSource } from './guide.ts';
@@ -73,7 +79,7 @@ describe.each(COST_GUIDES.map((guide) => [guide.path, guide] as const))(
 
     it('opens with a price in its lead, and says the day the prices were read', () => {
       expect(guide.lead).toMatch(/\$\d/);
-      expect(guide.checked).toBe('2026-11-09');
+      expect(['2026-11-09', '2026-11-10']).toContain(guide.checked);
     });
 
     it('cites every source it names on https, each with its date and the day it was read', () => {
@@ -90,7 +96,10 @@ describe.each(COST_GUIDES.map((guide) => [guide.path, guide] as const))(
       const priced = Object.values<GuideSource>(guide.sources).filter(
         ({ name }) => !name.includes('Consumer Product Safety Commission'),
       );
-      for (const { name } of priced) expect(name, name).toContain('read November 9, 2026');
+      for (const { name } of priced) expect(name, name).toMatch(/read November (?:9|10), 2026/);
+      // a guide checked on a day cites a source read that day
+      const day = guide.checked === '2026-11-10' ? 'read November 10, 2026' : 'read November 9';
+      expect(priced.some(({ name }) => name.includes(day))).toBe(true);
     });
 
     it('numbers more than four steps, and links pages that exist', () => {
@@ -107,7 +116,7 @@ describe.each(COST_GUIDES.map((guide) => [guide.path, guide] as const))(
 );
 
 describe('the cost guides', () => {
-  it('are the hub, then the five priced questions', () => {
+  it('are the hub, then the eleven priced questions', () => {
     expect(COST_GUIDES.map(({ path }) => path)).toEqual([
       '/how-much-does-a-pool-cost',
       '/inground-pool-cost',
@@ -115,10 +124,16 @@ describe('the cost guides', () => {
       '/fiberglass-pool-cost',
       '/pool-resurfacing-cost',
       '/pool-liner-replacement-cost',
+      '/cost-to-build-a-pool',
+      '/12x24-pool-cost',
+      '/above-ground-pool-cost',
+      '/shipping-container-pool-cost',
+      '/pool-heater-cost',
+      '/pool-maintenance-cost',
     ]);
   });
 
-  it('send the hub to each of the five', () => {
+  it('send the hub to each of the eleven', () => {
     const links = linksOf(COST_HUB);
     for (const { path } of COST_GUIDES.slice(1)) expect(links, path).toContain(path);
   });
@@ -211,5 +226,107 @@ describe('the published prices', () => {
     expect(text).toContain('$1,500 to $7,500');
     expect(text).toContain('$95,000 to $225,000');
     expect(text).toContain('$36,730');
+  });
+
+  it('gives the build prices of Bob Vila line by line, and This Old House and River Pools', () => {
+    const text = textOf(BUILD_COST);
+    expect(text).toContain('$36,730');
+    expect(text).toContain('$1,800 to $58,540');
+    expect(text).toContain('$3,400');
+    expect(text).toContain('$5,000 to $30,000');
+    expect(text).toContain('$200 to $2,000');
+    expect(text).toContain('$125 to $250');
+    expect(text).toContain('$1,500 to $10,000');
+    expect(text).toContain('$450 to $1,800');
+    expect(text).toContain('$95,000 to $225,000');
+  });
+
+  it('works a 12 x 24 ft pool out: its price, its gallons, its surface and its running costs', () => {
+    const text = textOf(TWELVE_BY_24_COST);
+    expect(text).toContain('$38,000 to $100,000');
+    expect(text).toContain('$26,000 to $37,500');
+    expect(text).toContain('$2,000 to $5,000');
+    // 12 x 24 x (3.5 + 6) / 2 = 1,368 cu ft x 7.4805 = 10,233 gallons, from the volume calculator
+    expect(text).toContain('10,233 gallons');
+    expect(text).toContain('630 square feet');
+    // 630 x $5 of plaster; 288 sq ft x $130 and x $240
+    expect(text).toContain('$3,150');
+    expect(text).toContain('$37,440 to $69,120');
+    // 10,233 x 8.34 x 10 Btu: COP 5.7 heat pump $7.97, natural gas $26.53
+    expect(text).toContain('853,432 Btu');
+    expect(text).toContain('$7.97');
+    expect(text).toContain('$26.53');
+    // 1 ppm of 12.5% liquid chlorine: 0.0819 gal, $0.74; salt 273 lb, 7 bags, $76.93
+    expect(text).toContain('$0.74');
+    expect(text).toContain('7 bags');
+    expect(text).toContain('$76.93');
+  });
+
+  it('gives the above-ground prices of River Pools, Fixr and This Old House, with the gallons', () => {
+    const text = textOf(ABOVE_GROUND_COST);
+    expect(text).toContain('$1,500 to $7,500');
+    expect(text).toContain('$1,000 to $3,000');
+    expect(text).toContain('$3,000 to $7,500');
+    expect(text).toContain('$800 to $1,500');
+    expect(text).toContain('$1,049.99');
+    expect(text).toContain('$15 to $35');
+    // the volume calculator's round pools at 4 ft of water
+    expect(text).toContain('5,288 gallons');
+    expect(text).toContain('13,536 gallons');
+  });
+
+  it('gives the shipping container pool prices of This Old House and two makers', () => {
+    const text = textOf(CONTAINER_COST);
+    expect(text).toContain('$42,000');
+    expect(text).toContain('$56,000');
+    expect(text).toContain('$44,900');
+    expect(text).toContain('$45,000');
+    expect(text).toContain('3,800 gallons');
+    expect(text).toContain('37,000 lb');
+    expect(text).toContain('$35,000 to $65,000');
+    expect(text).toContain('$28,000 to $50,000');
+    // 3,800 x 8.34 x 10 = 316,920 Btu; 92.9 kWh on an 11 kW heater, 8.4 hours, $16.87
+    expect(text).toContain('316,920 Btu');
+    expect(text).toContain('8.4 hours');
+    expect(text).toContain('$16.87');
+  });
+
+  it('prices the heaters and works one warm-up out in each energy, at EIA prices', () => {
+    const text = textOf(HEATER_COST);
+    expect(text).toContain('$2,500 to $5,000');
+    expect(text).toContain('$3,000 to $7,000');
+    expect(text).toContain('$120 to $200');
+    expect(text).toContain('18.16 cents');
+    expect(text).toContain('$27.05');
+    expect(text).toContain('$2.82');
+    // 22,023 x 8.34 x 10 = 1,836,718 Btu
+    expect(text).toContain('1,836,718 Btu');
+    expect(text).toContain('94.4 kWh');
+    expect(text).toContain('$17.15');
+    expect(text).toContain('$24.44');
+    expect(text).toContain('$97.76');
+    expect(text).toContain('$57.09');
+    expect(text).toContain('$67.42');
+    // 1,836,718 / 110,000 Btu per hour
+    expect(text).toContain('16.7 hours');
+  });
+
+  it('prices the upkeep and works the chemicals out for a 22,023 gallon pool', () => {
+    const text = textOf(MAINTENANCE_COST);
+    expect(text).toContain('$90 to $270 per month');
+    expect(text).toContain('$30 to $260');
+    expect(text).toContain('$375 to $500');
+    expect(text).toContain('$350 to $650');
+    expect(text).toContain('$310');
+    expect(text).toContain('75%');
+    // 1 ppm of 12.5% liquid: 0.176 gal at $35.99 / 4 = $1.59; 30 days at 1 ppm a day $47.56
+    expect(text).toContain('$1.59');
+    expect(text).toContain('$47.56');
+    // a 1 lb bag of shock per 10,000 gallons a week: 2.2 lb, $9.18 a week, $39.76 a month
+    expect(text).toContain('$9.18');
+    expect(text).toContain('$39.76');
+    // 587.7 lb of salt, 15 bags at $10.99
+    expect(text).toContain('15 bags');
+    expect(text).toContain('$164.85');
   });
 });
