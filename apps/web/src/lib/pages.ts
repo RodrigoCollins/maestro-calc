@@ -26,6 +26,7 @@ import { esFeetInches } from '@maestro-calc/i18n/catalogs/es/feet-inches';
 import { esSite } from '@maestro-calc/i18n/catalogs/es/site';
 import { esTopsoil } from '@maestro-calc/i18n/catalogs/es/topsoil';
 import { boardFeetPage } from '../calculator/board-feet/page.ts';
+import { boardFeetReserve } from '../calculator/board-feet/reserve.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
 import { drywallPage } from '../calculator/drywall/page.ts';
 import { drywallReserve } from '../calculator/drywall/reserve.ts';
@@ -162,6 +163,7 @@ export const PAGES = {
       en: { ...enCommon, ...enBoardFeet, ...enSite },
       es: { ...esCommon, ...esBoardFeet, ...esSite },
     },
+    reserve: boardFeetReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 
