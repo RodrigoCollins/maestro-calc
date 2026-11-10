@@ -153,6 +153,23 @@ describe('the sections of the double-time, minutes, PTO, differential and tipped
     ]);
   });
 
+  it('work the same PTO days out on other schedules', () => {
+    const section = sectionOf('pto-per-paycheck-with-10-days-a-year', 'schedules');
+    // 4 x 10: 10 x 10 = 100 h; / 26 = 3.85; / 2,080 = 0.0481
+    // part time, 6-hour days, 30 a week: 10 x 6 = 60 h; / 26 = 2.31; / 1,560 = 0.0385
+    // 9-hour days, 45 a week: 90 h; / 26 = 3.46; / 2,340 = 0.0385
+    expect(section.table?.rows).toEqual([
+      ['8 hours, 40 a week', '80', '3.08', '0.0385'],
+      ['10 hours, 40 a week (4 × 10)', '100', '3.85', '0.0481'],
+      ['9 hours, 45 a week', '90', '3.46', '0.0385'],
+      ['6 hours, 30 a week', '60', '2.31', '0.0385'],
+    ]);
+    expect(textOf(section)).toContain('10 days');
+    expect(
+      sectionOf('pto-per-paycheck-with-10-days-a-year', 'schedules', 'es').table?.rows[1],
+    ).toEqual(['10 horas, 40 a la semana (4 × 10)', '100', '3.85', '0.0481']);
+  });
+
   it('work a shift differential week out, overtime included', () => {
     // 10% of $20 = $2; 24 x 20 + 24 x 22 = $1,008; / 48 = $21; 8 x 10.50 = $84; $1,092
     const worked = textOf(sectionOf('10-percent-shift-differential-on-20-an-hour', 'worked'));
@@ -174,8 +191,11 @@ describe('the sections of the double-time, minutes, PTO, differential and tipped
       ['$22.00', '$2.20', '$24.20', '10%'],
       ['$23.00', '$2.30', '$25.30', '10%'],
       ['$25.00', '$2.50', '$27.50', '10%'],
+      ['$27.00', '$2.70', '$29.70', '10%'],
+      ['$30.00', '$3.00', '$33.00', '10%'],
     ]);
-    // a flat $2 stays $2: 2 / 21 = 9.52%, 2 / 22 = 9.09%, 2 / 23 = 8.70%, 2 / 25 = 8%
+    // a flat $2 stays $2: 2 / 21 = 9.52%, 2 / 22 = 9.09%, 2 / 23 = 8.70%, 2 / 25 = 8%,
+    // 2 / 27 = 7.41%, 2 / 30 = 6.67%
     const flat = sectionOf('20-an-hour-with-a-2-dollar-shift-differential', 'raises');
     expect(flat.heading).toBe('A $2.00 differential after a raise');
     expect(flat.table?.rows).toEqual([
@@ -184,14 +204,16 @@ describe('the sections of the double-time, minutes, PTO, differential and tipped
       ['$22.00', '$2.00', '$24.00', '9.09%'],
       ['$23.00', '$2.00', '$25.00', '8.7%'],
       ['$25.00', '$2.00', '$27.00', '8%'],
+      ['$27.00', '$2.00', '$29.00', '7.41%'],
+      ['$30.00', '$2.00', '$32.00', '6.67%'],
     ]);
     // the two pages meet at $20 and say so, each linking the other
     expect(textOf(flat)).toContain(
-      'At $20 a flat $2.00 is the same $2.00 an hour as a 10% differential; after a $5 raise to $25 it is $0.50 an hour less than 10% would pay.',
+      'At $20 a flat $2.00 is the same $2.00 an hour as a 10% differential; after a $10 raise to $30 it is $1.00 an hour less than 10% would pay.',
     );
     expect(flat.links?.[0]?.href).toBe('/pay/10-percent-shift-differential-on-20-an-hour');
     expect(textOf(percent)).toContain(
-      'At $20 a 10% differential is the same $2.00 an hour as a flat $2.00; after a $5 raise to $25 it pays $0.50 an hour more.',
+      'At $20 a 10% differential is the same $2.00 an hour as a flat $2.00; after a $10 raise to $30 it pays $1.00 an hour more.',
     );
     expect(percent.links?.[0]?.href).toBe('/pay/20-an-hour-with-a-2-dollar-shift-differential');
     // a flat page prices a 40-hour week with part of it on the shift: 40 x 20 + 8 x 2 = $816

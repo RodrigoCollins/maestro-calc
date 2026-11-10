@@ -72,15 +72,15 @@ const WORDS = {
           ? `A ${job.differential}% differential after a raise`
           : `A ${diff} differential after a raise`,
       raisesPercent: (base: string): string =>
-        `A percent differential grows with the base rate. The calculator on raises of $1 to $5 over ${base}:`,
+        `A percent differential grows with the base rate. The calculator on raises of $1 to $10 over ${base}:`,
       raisesFlat: (diff: string, base: string): string =>
-        `A flat differential stays ${diff} an hour when the base rate rises, so it is a smaller share of it. The calculator on raises of $1 to $5 over ${base}:`,
+        `A flat differential stays ${diff} an hour when the base rate rises, so it is a smaller share of it. The calculator on raises of $1 to $10 over ${base}:`,
       raisesCaption: (base: string): string => `The same differential on raises over ${base}`,
       raisesHead: ['Base rate', 'Differential an hour', 'Shift rate', 'Share of the base'],
       twinOfPercent: (base: string, p: string, diff: string, raised: string, gap: string): string =>
-        `At ${base} a ${p}% differential is the same ${diff} an hour as a flat ${diff}; after a $5 raise to ${raised} it pays ${gap} an hour more.`,
+        `At ${base} a ${p}% differential is the same ${diff} an hour as a flat ${diff}; after a $10 raise to ${raised} it pays ${gap} an hour more.`,
       twinOfFlat: (base: string, diff: string, p: string, raised: string, gap: string): string =>
-        `At ${base} a flat ${diff} is the same ${diff} an hour as a ${p}% differential; after a $5 raise to ${raised} it is ${gap} an hour less than ${p}% would pay.`,
+        `At ${base} a flat ${diff} is the same ${diff} an hour as a ${p}% differential; after a $10 raise to ${raised} it is ${gap} an hour less than ${p}% would pay.`,
       twinLabel: (job: Differential, base: string): string =>
         job.source === 'percent'
           ? `A ${job.differential}% shift differential on ${base} an hour`
@@ -152,15 +152,15 @@ const WORDS = {
           ? `Un diferencial del ${job.differential}% después de un aumento`
           : `Un diferencial de ${diff} después de un aumento`,
       raisesPercent: (base: string): string =>
-        `Un diferencial en porcentaje crece con la tarifa base. La calculadora con aumentos de $1 a $5 sobre ${base}:`,
+        `Un diferencial en porcentaje crece con la tarifa base. La calculadora con aumentos de $1 a $10 sobre ${base}:`,
       raisesFlat: (diff: string, base: string): string =>
-        `Un diferencial fijo sigue en ${diff} la hora cuando sube la tarifa base, así que es una parte menor de ella. La calculadora con aumentos de $1 a $5 sobre ${base}:`,
+        `Un diferencial fijo sigue en ${diff} la hora cuando sube la tarifa base, así que es una parte menor de ella. La calculadora con aumentos de $1 a $10 sobre ${base}:`,
       raisesCaption: (base: string): string => `El mismo diferencial con aumentos sobre ${base}`,
       raisesHead: ['Tarifa base', 'Diferencial por hora', 'Tarifa del turno', 'Parte de la base'],
       twinOfPercent: (base: string, p: string, diff: string, raised: string, gap: string): string =>
-        `Con ${base} un diferencial del ${p}% da los mismos ${diff} la hora que uno fijo de ${diff}; tras un aumento de $5, a ${raised}, paga ${gap} la hora más.`,
+        `Con ${base} un diferencial del ${p}% da los mismos ${diff} la hora que uno fijo de ${diff}; tras un aumento de $10, a ${raised}, paga ${gap} la hora más.`,
       twinOfFlat: (base: string, diff: string, p: string, raised: string, gap: string): string =>
-        `Con ${base} un diferencial fijo de ${diff} da los mismos ${diff} la hora que uno del ${p}%; tras un aumento de $5, a ${raised}, paga ${gap} la hora menos de lo que daría el ${p}%.`,
+        `Con ${base} un diferencial fijo de ${diff} da los mismos ${diff} la hora que uno del ${p}%; tras un aumento de $10, a ${raised}, paga ${gap} la hora menos de lo que daría el ${p}%.`,
       twinLabel: (job: Differential, base: string): string =>
         job.source === 'percent'
           ? `Un diferencial de turno del ${job.differential}% sobre ${base} la hora`
@@ -239,7 +239,7 @@ export const differentialSectionsOf = (job: Differential, lang: Lang): JobSectio
     return [String(hours), m(out, 'pay'), m(out, 'differentialPay')];
   });
   // the same differential on raises of the base rate: a percent follows it, a flat one does not
-  const RAISES = [0, 1, 2, 3, 5] as const;
+  const RAISES = [0, 1, 2, 3, 5, 7, 10] as const;
   const raisedOf = (raise: number): Differential => ({
     ...job,
     amount: String(Number(job.amount) + raise),

@@ -77,6 +77,16 @@ const WORDS = {
       caption: (days: number): string => `${String(days)} paid days off a year`,
       head: ['Hourly rate', 'Accrued per paycheck', 'A year'],
       law: 'Federal law does not require PTO: the U.S. Department of Labor says the FLSA does not require payment for time not worked, such as vacations, sick leave or holidays. These benefits are a matter of agreement between you and your employer.',
+      schedulesHeading: (days: number): string =>
+        `The same ${String(days)} days on other schedules`,
+      schedulesIntro: (days: number): string =>
+        `Counting a day off as the hours of your usual workday, ${String(days)} days are more hours on longer days. The calculator on four schedules:`,
+      schedulesCaption: (days: number): string => `${String(days)} days off a year, by schedule`,
+      schedulesHead: ['Workday and week', 'PTO hours a year', 'Every two weeks', 'Per hour worked'],
+      schedule: (day: number, week: number): string =>
+        `${String(day)} hours, ${String(week)} a week${day * 4 === week ? ' (4 × 10)' : ''}`,
+      schedulesAfter: (rate: string): string =>
+        `The rate per hour worked stays at ${rate} when the day and the week grow or shrink together; four 10-hour days raise it, since the same 40 hours carry longer days off.`,
     },
   },
   es: {
@@ -122,6 +132,21 @@ const WORDS = {
       caption: (days: number): string => `${String(days)} días libres pagados al año`,
       head: ['Tarifa por hora', 'Acumulado por cheque', 'Al año'],
       law: 'La ley federal no exige PTO: el Departamento de Trabajo de EE. UU. dice que la FLSA no exige pagar el tiempo no trabajado, como vacaciones, licencias por enfermedad o feriados. Estos beneficios son un acuerdo entre tú y tu empleador.',
+      schedulesHeading: (days: number): string =>
+        `Los mismos ${String(days)} días con otros horarios`,
+      schedulesIntro: (days: number): string =>
+        `Si un día libre cuenta como las horas de tu día habitual, ${String(days)} días son más horas en días más largos. La calculadora con cuatro horarios:`,
+      schedulesCaption: (days: number): string => `${String(days)} días libres al año, por horario`,
+      schedulesHead: [
+        'Día y semana de trabajo',
+        'Horas de PTO al año',
+        'Cada dos semanas',
+        'Por hora trabajada',
+      ],
+      schedule: (day: number, week: number): string =>
+        `${String(day)} horas, ${String(week)} a la semana${day * 4 === week ? ' (4 × 10)' : ''}`,
+      schedulesAfter: (rate: string): string =>
+        `La tasa por hora trabajada se queda en ${rate} si el día y la semana crecen o bajan juntos; cuatro días de 10 horas la suben, porque las mismas 40 horas traen días libres más largos.`,
     },
   },
 } as const;
@@ -168,6 +193,30 @@ export const minutesSectionsOf = (job: Minutes, lang: Lang): JobSections => {
   };
 };
 
+/** Workdays and weeks, in hours, the PTO pages run the same days on: the default first. */
+const SCHEDULES = [
+  [8, 40],
+  [10, 40],
+  [9, 45],
+  [6, 30],
+] as const;
+
+/** The PTO calculator on `days` days of `day` hours and a week of `week` hours. */
+const accrualOf = (days: number, day: number, week: number): ((key: string) => Rational) => {
+  const ran = ptoAccrual.run({
+    ptoDays: String(days),
+    hoursPerDay: String(day),
+    hoursPerWeek: String(week),
+  });
+  if (!ran.ok) throw new Error(`the PTO job of ${String(days)} days must run`);
+  const out = new Map<string, Rational>(ran.value.outputs.map(({ key, value }) => [key, value]));
+  return (key) => {
+    const found = out.get(key);
+    if (found === undefined) throw new Error(`no PTO output ${key}`);
+    return found;
+  };
+};
+
 /** The sections and sources of the PTO page of `job` in `lang`. */
 export const ptoSectionsOf = (job: Pto, lang: Lang): JobSections => {
   const w = WORDS[lang].pto;
@@ -207,6 +256,25 @@ export const ptoSectionsOf = (job: Pto, lang: Lang): JobSections => {
         paragraphs: [w.valueIntro(job.days, hoursText(year))],
         table: { caption: w.caption(job.days), head: w.head, rows },
         after: [w.law],
+      },
+      {
+        id: 'schedules',
+        heading: w.schedulesHeading(job.days),
+        paragraphs: [w.schedulesIntro(job.days)],
+        table: {
+          caption: w.schedulesCaption(job.days),
+          head: w.schedulesHead,
+          rows: SCHEDULES.map(([day, week]) => {
+            const other = accrualOf(job.days, day, week);
+            return [
+              w.schedule(day, week),
+              hoursText(other('annualHours')),
+              decimalHoursText(other('biweekly')),
+              rateText(other('perHourWorked')),
+            ];
+          }),
+        },
+        after: [w.schedulesAfter(rateText(value('perHourWorked')))],
       },
     ],
     sources: [SOURCES.vacation],
