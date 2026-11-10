@@ -7,6 +7,7 @@ import {
   CAT_YEARS_CHECKED,
   CAT_YEARS_PAGES,
 } from './cat-years.ts';
+import { dogOf, FEED_PAGES } from './feed-by-weight.ts';
 import { AGE_PAGES, DOG_AGE_CHART_ROWS, DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, cupsText, kcalText, quarterCups } from './format.ts';
 import type { PageSource } from './guides.ts';
@@ -116,6 +117,13 @@ export const CHARTS: readonly Chart[] = [
       { href: hrefOf('dog'), label: 'Dog food calculator' },
       { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
     ],
+    pages: {
+      heading: 'How much to feed a dog of each weight, worked out',
+      links: FEED_PAGES.map(({ path, weight }) => ({
+        href: path,
+        label: `How much to feed ${dogOf(weight)} dog`,
+      })),
+    },
     sources: [MERCK, MERCK_TABLE, AAHA],
     card: {
       title: 'Dog feeding chart',

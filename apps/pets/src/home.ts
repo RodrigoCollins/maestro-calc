@@ -1,6 +1,7 @@
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
 import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS, CHARTS_INDEX } from './charts.ts';
+import { FEED_HUB, FEED_PAGES } from './feed-by-weight.ts';
 import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { GUIDES } from './guides.ts';
@@ -117,6 +118,11 @@ export interface HomeGuide {
 
 /** The guides and data pages the home lists, every one of them. */
 export const HOME_GUIDES: readonly HomeGuide[] = [
+  {
+    href: FEED_HUB.path,
+    title: 'How much should I feed my dog?',
+    summary: `The steps, the factors and ${String(FEED_PAGES.length)} weights from 10 to 100 lb, worked out.`,
+  },
   ...GUIDES.map(({ path, card }) => ({ href: path, ...card })),
   ...CHARTS.map(({ path, card }) => ({ href: path, ...card })),
   {

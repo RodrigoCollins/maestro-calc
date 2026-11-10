@@ -12,6 +12,7 @@ import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
 import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 import { AGE_PAGES } from './dog-years.ts';
 import { EDITORIAL } from './editorial.ts';
+import { FEED_HUB, FEED_PAGES } from './feed-by-weight.ts';
 import { GUIDES } from './guides.ts';
 import { SITE } from './site.config.ts';
 
@@ -41,6 +42,8 @@ const CALCULATORS: readonly Entry[] = [
 
 const READING: readonly Entry[] = [
   ...GUIDES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
+  { name: FEED_HUB.h1, path: FEED_HUB.path, note: FEED_HUB.description },
+  ...FEED_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   ...CHARTS.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
   { name: CHARTS_INDEX.h1, path: CHARTS_INDEX.path, note: CHARTS_INDEX.description },
   ...AGE_PAGES.map(({ path, h1, description }) => ({ name: h1, path, note: description })),
