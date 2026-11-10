@@ -32,13 +32,13 @@ const textOf = (section: ContextSection | undefined): string =>
 const queryOf = (href: string): string => new URL(href, 'https://cuentahoras.com').search.slice(1);
 
 describe('contextOf: what one state’s figures come to', () => {
-  it('works a paycheck, a month and a 50-hour week out at the California minimum', () => {
+  it('works a 50-hour week out at the California minimum, leaving the checks to the paydays', () => {
     const text = textOf(sectionOf('California', 'en', 'paycheck'));
-    // $16.90 x 40 = $676; x 2,080 = $35,152; / 12 = $2,929.33; every two weeks $1,352
+    // the week, the two weeks and the month are the payday section's and the examples' figures
+    expect(text).not.toContain('$1,352');
+    expect(text).not.toContain('$2,929.33');
+    // $16.90 x 40 = $676 a week from the employer, tips on top
     expect(text).toContain('$676');
-    expect(text).toContain('$1,352');
-    expect(text).toContain('$2,929.33');
-    expect(text).toContain('$35,152');
     // five 10-hour days: 40 x $16.90 + 10 x $25.35 = $929.50, $253.50 of it overtime
     expect(text).toContain('$25.35');
     expect(text).toContain('$929.50');
@@ -184,14 +184,110 @@ describe('contextOf: what one state’s figures come to', () => {
     }
   });
 
+  it('gives the paydays of the DOL table and the paycheck each one makes at the minimum', () => {
+    // Mississippi: bi-weekly and semi-monthly, both under footnote 12 (manufacturers of 50 or more)
+    const mississippi = textOf(sectionOf('Mississippi', 'en', 'payday'));
+    expect(mississippi).toContain('every two weeks or twice a month');
+    expect(mississippi).toContain('manufacturing of any kind in the State employing 50 or more');
+    // $7.25 x 80 = $580; $15,080 / 24 = $628.33; 26 checks against 24: $628.33 - $580 = $48.33
+    expect(mississippi).toContain('$580');
+    expect(mississippi).toContain('$628.33');
+    expect(mississippi).toContain('$48.33');
+    // Texas: bi-weekly, semi-monthly and monthly, footnote 21; $15,080 / 12 = $1,256.67
+    const texas = textOf(sectionOf('Texas', 'en', 'payday'));
+    expect(texas).toContain('exempt from the overtime provisions');
+    expect(texas).toContain('$1,256.67');
+    expect(textOf(sectionOf('Texas', 'es', 'payday'))).toContain('al menos una vez al mes');
+    // California at $16.90: $676 a week, $1,352 every two weeks, $35,152 / 24 = $1,464.67
+    const california = textOf(sectionOf('California', 'en', 'payday'));
+    expect(california).toContain('$676');
+    expect(california).toContain('$1,352');
+    expect(california).toContain('$1,464.67');
+    expect(california).toContain('$2,929.33');
+    // Alabama: footnote 1, no frequency and so no paycheck to work out
+    const alabama = textOf(sectionOf('Alabama', 'en', 'payday'));
+    expect(alabama).toContain('No regulations or not specified');
+    expect(alabama).not.toContain('$');
+    expect(textOf(sectionOf('Pennsylvania', 'en', 'payday'))).toContain('marks no payday');
+    expect(textOf(sectionOf('North Carolina', 'es', 'payday'))).toContain('diarios');
+  });
+
+  it.each(LANGS)('gives every state its paydays and its labor office, in %s', (lang) => {
+    for (const facts of STATE_FACTS) {
+      const ids = contextOf(facts, lang).map(({ id }) => id);
+      expect(ids, facts.tipped.name.en).toContain('payday');
+      expect(ids, facts.tipped.name.en).toContain('office');
+      expect(sectionOf(facts.tipped.name.en, lang, 'payday')?.sources).toContainEqual(
+        SOURCES.paydayTable,
+      );
+      expect(sectionOf(facts.tipped.name.en, lang, 'office')?.sources).toContainEqual(
+        SOURCES.laborOffices,
+      );
+    }
+  });
+
+  it('gives the limits of the DOL child labor table for under 16 and for 16 and 17', () => {
+    const alabama = textOf(sectionOf('Alabama', 'en', 'teens'));
+    expect(alabama).toContain('8-40-6 non-school day/week; 3-18-6 school day/week');
+    expect(alabama).toContain('10 p.m. before school day to 5 a.m., if enrolled in school');
+    const mississippi = textOf(sectionOf('Mississippi', 'en', 'teens'));
+    expect(mississippi).toContain('8-44 in factory, mill, cannery, workshop');
+    expect(mississippi).toContain('sets no limit for 16- and 17-year-olds');
+    const texas = textOf(sectionOf('Texas', 'en', 'teens'));
+    expect(texas).toContain('8-48');
+    expect(texas).toContain('midnight before non-school day');
+    expect(textOf(sectionOf('Texas', 'es', 'teens'))).toContain('medianoche');
+    // the federal rule that holds where a state's is less strict (Fact Sheet #43)
+    expect(texas).toContain('less restrictive than the federal law, the federal law applies');
+    expect(textOf(sectionOf('Delaware', 'en', 'teens'))).toContain(
+      'combined hours of work and school',
+    );
+    // the state's two rows and one sentence on the federal rule: the shared text stays short
+    for (const facts of STATE_FACTS)
+      expect(contextOf(facts, 'es').find(({ id }) => id === 'teens')?.paragraphs).toHaveLength(3);
+  });
+
+  it.each(LANGS)('gives every state its teen limits with their two sources, in %s', (lang) => {
+    for (const facts of STATE_FACTS) {
+      const section = sectionOf(facts.tipped.name.en, lang, 'teens');
+      expect(section?.sources).toContainEqual(SOURCES.childLaborTable);
+      expect(section?.sources).toContainEqual(SOURCES.factSheet43);
+    }
+  });
+
+  it('names the labor office of the DOL list, its phone and its website', () => {
+    const alabama = sectionOf('Alabama', 'en', 'office');
+    expect(textOf(alabama)).toContain('Alabama Department of Labor');
+    expect(textOf(alabama)).toContain('334-309-9000');
+    expect(textOf(alabama)).toContain('Montgomery');
+    expect(alabama?.links).toContainEqual({
+      label: 'www.labor.alabama.gov',
+      href: 'https://www.labor.alabama.gov',
+    });
+    const texas = sectionOf('Texas', 'es', 'office');
+    expect(textOf(texas)).toContain('Texas Workforce Commission');
+    expect(textOf(texas)).toContain('800-628-5115');
+    // the federal Wage and Hour Division takes the FLSA's minimum wage and overtime
+    expect(textOf(texas)).toContain('1-866-487-9243');
+    const dc = textOf(sectionOf('District of Columbia', 'en', 'office'));
+    expect(dc).toContain('Department of Employment Services');
+    expect(dc).toContain('Office of Human Rights');
+  });
+
   it('prints no section that does not apply and cites a source in every one', () => {
     for (const facts of STATE_FACTS)
       for (const lang of LANGS)
         for (const section of contextOf(facts, lang)) {
           expect(section.sources.length).toBeGreaterThan(0);
-          expect(textOf(section)).not.toMatch(/not applicable|no aplica|N\/A|undefined|NaN/);
+          expect(textOf(section)).not.toMatch(/not applicable\.|no aplica\.|N\/A|undefined|NaN/);
         }
-    expect(contextOf(factsOf('Texas'), 'en').map(({ id }) => id)).toEqual(['paycheck', 'compare']);
+    expect(contextOf(factsOf('Texas'), 'en').map(({ id }) => id)).toEqual([
+      'paycheck',
+      'payday',
+      'compare',
+      'teens',
+      'office',
+    ]);
   });
 });
 

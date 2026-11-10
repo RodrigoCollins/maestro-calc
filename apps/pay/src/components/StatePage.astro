@@ -8,8 +8,9 @@ import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
 /*
- * One state's page: the answer first, then its row of each state table with the sources and the
- * day it was checked, then the worked examples the engines computed, each opening its calculator.
+ * One state's page: the answer first, then its row of each state table with the day it was checked,
+ * then the worked examples the engines computed, each opening its calculator. Every source is
+ * listed once, at the end; a section links to that list instead of repeating it.
  */
 interface Props {
   readonly lang: Lang;
@@ -64,15 +65,7 @@ const index = statesIndexOf(lang);
           </p>
         )}
         <p class="sources">
-          {page.labels.sources}:{' '}
-          {section.sources.map((source, at) => (
-            <>
-              {at > 0 && '; '}
-              <a href={source.href} rel="noopener">
-                {source.label}
-              </a>
-            </>
-          ))}
+          <a href={page.cite.href}>{page.cite.label}</a>
           {`. ${page.labels.checked} ${section.checked}. ${page.labels.table}: `}
           <a href={section.table.href}>{section.table.label}</a>
         </p>
@@ -100,18 +93,6 @@ const index = statesIndexOf(lang);
             <a href={link.href}>{link.label}</a>
           </p>
         ))}
-        <p class="sources">
-          {page.labels.sources}:{' '}
-          {section.sources.map((source, at) => (
-            <>
-              {at > 0 && '; '}
-              <a href={source.href} rel="noopener">
-                {source.label}
-              </a>
-            </>
-          ))}
-          {'.'}
-        </p>
       </section>
     ))}
 

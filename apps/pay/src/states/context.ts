@@ -35,6 +35,9 @@ import {
   yearOf,
   type StateFacts,
 } from './facts.ts';
+import { childLaborOf, type Limits } from './child-labor.ts';
+import { officesOf } from './labor-offices.ts';
+import { paydayOf, type Frequency } from './paydays.ts';
 import { statePathOf } from './routes.ts';
 
 /*
@@ -54,7 +57,15 @@ export interface ContextItem {
 }
 
 export interface ContextSection {
-  readonly id: 'paycheck' | 'daily' | 'compare' | 'meal' | 'next-year';
+  readonly id:
+    | 'paycheck'
+    | 'daily'
+    | 'payday'
+    | 'compare'
+    | 'meal'
+    | 'teens'
+    | 'next-year'
+    | 'office';
   readonly heading: string;
   readonly paragraphs: readonly string[];
   readonly items?: readonly ContextItem[];
@@ -149,34 +160,13 @@ const federalTippedOf = (facts: StateFacts, lang: Lang): string => {
 const paycheckOf = (facts: StateFacts, lang: Lang): ContextSection => {
   const the = nameIn(facts, lang);
   const { minimum, tipped } = facts;
-  const wage = centsText(minimum.wage);
   const year = yearOf(minimum.wage);
   const weekly = money(year('weekly'));
-  const biweekly = money(year('biweekly'));
-  const monthly = moneyText(year('monthly'));
   const annual = money(year('annual'));
   const long = runWeek(weekOf(minimum.wage, engineRuleOf(facts), 10));
   const rate = moneyText(long('overtimeRate'));
   const pay = moneyText(long('pay'));
   const overtimePay = moneyText(long('overtimePay'));
-
-  const first = (() => {
-    if (minimum.wage > FEDERAL_MINIMUM_WAGE)
-      return lang === 'en'
-        ? `Full time at ${possessiveIn(facts)} ${wage} an hour, 40 hours a week for 52 weeks, comes to ${weekly} a week, ${biweekly} on a check every two weeks, ${monthly} a month and ${annual} a year, before taxes.`
-        : `En ${the}, tiempo completo al mínimo de ${wage} la hora, 40 horas a la semana durante 52 semanas, da ${weekly} a la semana, ${biweekly} en un cheque cada dos semanas, ${monthly} al mes y ${annual} al año, antes de impuestos.`;
-    if (minimum.federal && minimum.stateRate === undefined)
-      return lang === 'en'
-        ? `With no minimum wage law of its own, ${the} leaves workers on the federal ${wage}: ${weekly} for a 40-hour week, ${biweekly} every two weeks, ${monthly} a month and ${annual} over 52 weeks of full time, before taxes.`
-        : `Sin una ley de salario mínimo propia, ${the} deja a sus trabajadores con los ${wage} federales: ${weekly} por una semana de 40 horas, ${biweekly} cada dos semanas, ${monthly} al mes y ${annual} en 52 semanas de tiempo completo, antes de impuestos.`;
-    if (minimum.stateRate !== undefined)
-      return lang === 'en'
-        ? `${possessive(facts)} own rate of ${centsText(minimum.stateRate)} sits under the federal one, so a worker covered by the FLSA gets ${wage}: ${annual} for a full-time year, ${monthly} a month, ${biweekly} every two weeks and ${weekly} a week, before taxes.`
-        : `La tarifa propia de ${the}, ${centsText(minimum.stateRate)}, queda por debajo de la federal, así que quien está cubierto por la FLSA cobra ${wage}: ${annual} en un año de tiempo completo, ${monthly} al mes, ${biweekly} cada dos semanas y ${weekly} a la semana, antes de impuestos.`;
-    return lang === 'en'
-      ? `${possessive(facts)} own law sets the same ${wage} as federal law, which works out to ${monthly} a month for full time: ${weekly} a week, ${biweekly} on a two-week check and ${annual} a year, before taxes.`
-      : `La ley de ${the} fija los mismos ${wage} que la ley federal, que dan ${monthly} al mes por tiempo completo: ${weekly} a la semana, ${biweekly} en un cheque de dos semanas y ${annual} al año, antes de impuestos.`;
-  })();
 
   const covered = outsideFlsa(facts.overtime)
     ? lang === 'en'
@@ -207,9 +197,9 @@ const paycheckOf = (facts: StateFacts, lang: Lang): ContextSection => {
     id: 'paycheck',
     heading:
       lang === 'en'
-        ? `${possessive(facts)} minimum wage by the paycheck`
-        : `El salario mínimo de ${the}, cheque por cheque`,
-    paragraphs: [first, second, third],
+        ? `Overtime and tips at ${possessiveIn(facts)} minimum`
+        : `Horas extra y propinas al mínimo de ${the}`,
+    paragraphs: [second, third],
     sources: unique([
       MINIMUM_WAGE_STATES_SOURCES[minimum.source],
       OVERTIME_STATES_SOURCES[facts.overtime.source],
@@ -604,12 +594,180 @@ const nextYearOf = (facts: StateFacts, lang: Lang): ContextSection | undefined =
   return undefined;
 };
 
+// ---------------------------------------------------------------------------------------------
+// The paydays of the DOL table, and the check each one makes at the minimum
+
+const PERIOD_WORDS: Readonly<Record<Lang, Readonly<Record<Frequency, string>>>> = {
+  en: {
+    weekly: 'weekly',
+    biweekly: 'every two weeks',
+    semimonthly: 'twice a month',
+    monthly: 'monthly',
+  },
+  es: {
+    weekly: 'cada semana',
+    biweekly: 'cada dos semanas',
+    semimonthly: 'dos veces al mes',
+    monthly: 'cada mes',
+  },
+};
+
+const orList = (items: readonly string[], lang: Lang): string => {
+  const or = lang === 'en' ? 'or' : 'o';
+  return items.length < 2
+    ? (items[0] ?? '')
+    : `${items.slice(0, -1).join(', ')} ${or} ${String(items.at(-1))}`;
+};
+
+const paydayOfState = (facts: StateFacts, lang: Lang): ContextSection => {
+  const the = nameIn(facts, lang);
+  const row = paydayOf(facts.tipped.name.en);
+  const note = row.notes.map((each) => each[lang]).join(' ');
+  const heading = lang === 'en' ? `Paydays in ${the}` : `Días de pago en ${the}`;
+  const sources = [SOURCES.paydayTable];
+  if (row.marked.length === 0) {
+    const none =
+      lang === 'en'
+        ? `The U.S. Department of Labor’s table of state payday requirements marks no payday frequency for ${the}${note === '' ? ', and gives it no note' : `; its note reads: “${note}”`}.`
+        : `La tabla de requisitos estatales de día de pago del Departamento de Trabajo de EE. UU. no marca ninguna frecuencia de pago para ${the}${note === '' ? ' ni le da una nota' : `; su nota dice: “${note}”`}.`;
+    return { id: 'payday', heading, paragraphs: [none], sources };
+  }
+  const periods = orList(
+    row.marked.map((each) => PERIOD_WORDS[lang][each]),
+    lang,
+  );
+  const marked =
+    lang === 'en'
+      ? `The U.S. Department of Labor’s table of state payday requirements marks paydays ${periods} for ${the}.${note === '' ? '' : ` Its note for ${the}: “${note}”`}`
+      : `La tabla de requisitos estatales de día de pago del Departamento de Trabajo de EE. UU. marca para ${the} el pago ${periods}.${note === '' ? '' : ` Su nota para ${the}: “${note}”`}`;
+  const year = yearOf(facts.minimum.wage);
+  const wage = centsText(facts.minimum.wage);
+  const annual = money(year('annual'));
+  const check = (frequency: Frequency): string => {
+    if (frequency === 'weekly')
+      return lang === 'en'
+        ? `${money(year('weekly'))} on a weekly check (40 hours)`
+        : `${money(year('weekly'))} en un cheque semanal (40 horas)`;
+    if (frequency === 'biweekly')
+      return lang === 'en'
+        ? `${money(year('biweekly'))} every two weeks (80 hours)`
+        : `${money(year('biweekly'))} cada dos semanas (80 horas)`;
+    if (frequency === 'semimonthly')
+      return lang === 'en'
+        ? `${moneyText(year('semimonthly'))} twice a month (the ${annual} of 52 weeks divided by 24)`
+        : `${moneyText(year('semimonthly'))} dos veces al mes (los ${annual} de 52 semanas entre 24)`;
+    return lang === 'en'
+      ? `${moneyText(year('monthly'))} on a monthly check (${annual} divided by 12)`
+      : `${moneyText(year('monthly'))} en un cheque mensual (${annual} entre 12)`;
+  };
+  const checks = row.marked.map(check).join('; ');
+  const worked =
+    lang === 'en'
+      ? `At the ${wage} minimum, full time of 40 hours a week comes to ${checks}, before taxes.`
+      : `Al mínimo de ${wage}, el tiempo completo de 40 horas a la semana da ${checks}, antes de impuestos.`;
+  const both = row.marked.includes('biweekly') && row.marked.includes('semimonthly');
+  const diff = money(subMoney(year('semimonthly'), year('biweekly')));
+  const compared = both
+    ? [
+        lang === 'en'
+          ? `Every two weeks makes 26 checks a year and twice a month makes 24, so the twice-monthly check is ${diff} larger for the same ${annual} a year.`
+          : `Cada dos semanas son 26 cheques al año y dos veces al mes son 24, así que el cheque de medio mes es ${diff} más grande por los mismos ${annual} al año.`,
+      ]
+    : [];
+  return { id: 'payday', heading, paragraphs: [marked, worked, ...compared], sources };
+};
+
+// ---------------------------------------------------------------------------------------------
+// The child labor limits of the DOL table
+
+const limitsText = (limits: Limits, lang: Lang): string | undefined => {
+  const { hours, night } = limits;
+  if (hours === undefined && night === undefined) return undefined;
+  const parts = [
+    ...(hours === undefined ? [] : [lang === 'en' ? `hours ${hours.en}` : `horas ${hours.es}`]),
+    ...(night === undefined
+      ? []
+      : [lang === 'en' ? `night work ${night.en}` : `trabajo de noche ${night.es}`]),
+  ];
+  return parts.join('; ');
+};
+
+/** A sentence that ends in a full stop, once. */
+const stopped = (text: string): string => (text.endsWith('.') ? text : `${text}.`);
+
+const teensOf = (facts: StateFacts, lang: Lang): ContextSection => {
+  const the = nameIn(facts, lang);
+  const row = childLaborOf(facts.tipped.name.en);
+  const young = limitsText(row.under16, lang);
+  const under16 =
+    young === undefined
+      ? lang === 'en'
+        ? `For minors under 16, the table sets no limit in ${the}.`
+        : `Para menores de 16 años, la tabla no fija ningún límite en ${the}.`
+      : lang === 'en'
+        ? `Under 16 in ${the}: ${young}`
+        : `Menores de 16 años en ${the}: ${young}`;
+  const old = limitsText(row.teens, lang);
+  const teens =
+    old === undefined
+      ? lang === 'en'
+        ? `The table sets no limit for 16- and 17-year-olds in ${the}.`
+        : `La tabla no fija ningún límite para quienes tienen 16 y 17 años en ${the}.`
+      : lang === 'en'
+        ? `16 and 17 in ${the}: ${old}`
+        : `16 y 17 años en ${the}: ${old}`;
+  const federal =
+    lang === 'en'
+      ? 'Where a state child labor law is less restrictive than the federal law, the federal law applies (the table writes 8-40-6 for 8 hours a day, 40 a week and 6 days a week).'
+      : 'Donde la ley estatal de trabajo infantil es menos estricta que la federal, se aplica la federal (la tabla escribe 8-40-6 por 8 horas al día, 40 a la semana y 6 días a la semana).';
+  return {
+    id: 'teens',
+    heading: lang === 'en' ? `Teen workers in ${the}` : `Menores que trabajan en ${the}`,
+    paragraphs: [stopped(under16), stopped(teens), federal],
+    sources: [SOURCES.childLaborTable, SOURCES.factSheet43],
+  };
+};
+
+// ---------------------------------------------------------------------------------------------
+// The state labor office of the DOL list
+
+/** The Wage and Hour Division's phone, as the DOL pages give it. */
+const WAGE_AND_HOUR_PHONE = '1-866-487-9243';
+
+const officeOf = (facts: StateFacts, lang: Lang): ContextSection => {
+  const the = nameIn(facts, lang);
+  const { offices } = officesOf(facts.tipped.name.en);
+  const each = offices.map(({ name, address, phone }) =>
+    lang === 'en'
+      ? `the ${name} at ${address}, phone ${phone}`
+      : `la oficina ${name}, en ${address}, teléfono ${phone}`,
+  );
+  const listed =
+    lang === 'en'
+      ? `The U.S. Department of Labor’s list of state labor offices gives, for ${the}, ${listOf(each, lang)}.`
+      : `La lista de oficinas estatales de trabajo del Departamento de Trabajo de EE. UU. da, para ${the}, ${listOf(each, lang)}.`;
+  const federal =
+    lang === 'en'
+      ? `The federal minimum wage and overtime of the FLSA are enforced by the department’s Wage and Hour Division, at ${WAGE_AND_HOUR_PHONE}.`
+      : `El salario mínimo y las horas extra federales de la FLSA los hace cumplir la División de Horas y Salarios del mismo departamento, en el ${WAGE_AND_HOUR_PHONE}.`;
+  return {
+    id: 'office',
+    heading: lang === 'en' ? `Who to ask in ${the}` : `A quién consultar en ${the}`,
+    paragraphs: [listed, federal],
+    links: offices.map(({ site, href }) => ({ label: site, href })),
+    sources: [SOURCES.laborOffices],
+  };
+};
+
 /** The sections of one state's page beside its table rows, each only where it applies. */
 export const contextOf = (facts: StateFacts, lang: Lang): readonly ContextSection[] =>
   [
     paycheckOf(facts, lang),
     dailyOf(facts, lang),
+    paydayOfState(facts, lang),
     compareOf(facts, lang),
     mealOf(facts, lang),
+    teensOf(facts, lang),
     nextYearOf(facts, lang),
+    officeOf(facts, lang),
   ].filter((section): section is ContextSection => section !== undefined);
