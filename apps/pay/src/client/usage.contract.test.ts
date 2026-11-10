@@ -38,4 +38,12 @@ describe('the usage events of the calculator scripts', () => {
   it('records the print button of the time card', () => {
     expect(read('client/time-card.ts')).toMatch(/\bprint: '\[data-print\]'/);
   });
+
+  // returning use: the copy and share button and the week the browser kept
+  it('records the copy, the share sheet and the restored week of the time card', () => {
+    const text = read('client/time-card.ts');
+    for (const action of ['copy', 'share', 'restore']) {
+      expect(text).toMatch(new RegExp(`\\btrack\\('${action}'\\)`));
+    }
+  });
 });

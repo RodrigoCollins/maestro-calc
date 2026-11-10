@@ -30,6 +30,33 @@ describe('time card texts', () => {
     }
   });
 
+  // the saved week and the copy and share button (`saved.ts`, `share/send.ts`)
+  it('names the saved week, its clear button and the copy and share button in both languages', () => {
+    expect(TIME_CARD_TEXTS.en.clear).toBe('Clear my week');
+    expect(TIME_CARD_TEXTS.es.clear).toBe('Borrar mi semana');
+    expect(TIME_CARD_TEXTS.en.copy).toBe('Copy result');
+    expect(TIME_CARD_TEXTS.en.share).toBe('Share result');
+    expect(TIME_CARD_TEXTS.es.copy).toBe('Copiar resultado');
+    expect(TIME_CARD_TEXTS.es.share).toBe('Compartir resultado');
+    for (const texts of Object.values(TIME_CARD_TEXTS)) {
+      for (const key of [
+        'savedNote',
+        'restored',
+        'cleared',
+        'copied',
+        'shared',
+        'notCopied',
+      ] as const) {
+        expect(texts[key].length).toBeGreaterThan(0);
+      }
+    }
+    // the one line under the tool: it stays on this device and is never sent
+    expect(TIME_CARD_TEXTS.en.savedNote).toMatch(/this device/);
+    expect(TIME_CARD_TEXTS.en.savedNote).toMatch(/never sent/);
+    expect(TIME_CARD_TEXTS.es.savedNote).toMatch(/este dispositivo/);
+    expect(TIME_CARD_TEXTS.es.savedNote).toMatch(/nunca se envía/);
+  });
+
   // the searches the page answers: "time card calculator with overtime", "time clock calculator"
   it('names the overtime it computes from punched times in its heading and its snippet', () => {
     expect(TIME_CARD_TEXTS.en.h1).toBe('Time card calculator with overtime');
