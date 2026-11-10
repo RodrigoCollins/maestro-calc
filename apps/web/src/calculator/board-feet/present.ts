@@ -1,11 +1,4 @@
-import {
-  bdft,
-  inch,
-  isQuantityOf,
-  valueIn,
-  type Quantity,
-  type UnitSystem,
-} from '@maestro-calc/core';
+import { bdft, inch, multiply, valueIn, type Quantity, type UnitSystem } from '@maestro-calc/core';
 import type { boardFeet } from '@maestro-calc/core/calculators/board-feet';
 import type { Ready } from '../page-module.ts';
 import { decimalText, dimensionText, fieldText, groupedInteger } from '../present.ts';
@@ -32,11 +25,11 @@ export const answerCase = ({ valid }: Moment): string => (valid.pieces === 1 ? '
  * pieces, the total as the primary sentence the slot hands over, and the board feet of one piece.
  */
 export const answerValues = (
-  { valid, result, system }: Moment,
+  { valid, system }: Moment,
   primary: string,
 ): Record<string, string> => {
-  const each = result.outputs.find(({ key }) => key === 'boardFeetEach')?.value;
-  if (!isQuantityOf(each, 'volume')) throw new Error('the board feet engine returns boardFeetEach');
+  // one piece is its own volume, as the engine's boardFeetEach: thickness × width × length
+  const each = multiply(multiply(valid.thickness, valid.width), valid.length);
   return {
     thickness: crossText(valid.thickness, system),
     width: crossText(valid.width, system),
