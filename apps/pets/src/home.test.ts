@@ -10,8 +10,8 @@ import {
 import { ROUTES } from './routes.ts';
 
 describe('the home', () => {
-  it('lists the eight calculators, each at a calculator route', () => {
-    expect(HOME_TOOLS).toHaveLength(8);
+  it('lists the nine calculators, each at a calculator route', () => {
+    expect(HOME_TOOLS).toHaveLength(9);
     const calculators = ROUTES.filter(({ kind }) => kind === 'calculator').map(({ path }) => path);
     expect(HOME_TOOLS.map(({ href }) => href)).toEqual(calculators);
   });

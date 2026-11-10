@@ -25,6 +25,16 @@ describe('the dog feeding chart', () => {
   });
 });
 
+describe('the puppy weight calculator from the charts', () => {
+  it('is linked from the dog and the puppy feeding charts', () => {
+    for (const path of ['/dog-feeding-chart', '/puppy-feeding-chart'])
+      expect(
+        chartOf(path).calculators.map(({ href }) => href),
+        path,
+      ).toContain('/puppy-weight-calculator');
+  });
+});
+
 describe('the puppy feeding chart', () => {
   const chart = chartOf('/puppy-feeding-chart');
 

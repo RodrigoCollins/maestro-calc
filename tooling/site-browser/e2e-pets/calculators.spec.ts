@@ -166,6 +166,32 @@ test('opens the cat age calculator from an age page with the age filled in', asy
   await expect(page.locator('[data-text="figure"]').first()).toHaveText('44');
 });
 
+test('works a puppy’s adult weight, its range and the notes of the sizes', async ({ page }) => {
+  await page.goto('/puppy-weight-calculator');
+  const figure = page.locator('[data-text="figure"]').first();
+  // a small-breed puppy of 14 lb at 26 weeks: 6 months at 70%, 14 / 0.70 = 20 lb;
+  // the large curve at 65% gives 21.5
+  await edit(page, 'size', 'small');
+  await edit(page, 'weight', '14');
+  await edit(page, 'age', '26');
+  await expect(figure).toHaveText('20');
+  await expect(page.locator('[data-text="range"]')).toHaveText('20 to 22 lb');
+  await expect(page.locator('[data-text="share"]')).toHaveText('70%');
+  // 10 kg at 26 weeks, small: 10 / 0.70 = 14.3 kg
+  await edit(page, 'unit', 'kg');
+  await edit(page, 'weight', '10');
+  await expect(figure).toHaveText('14.3');
+  await expect(page.locator('[data-text="unit"]').first()).toHaveText('kg as an adult');
+  // 20 kg at 26 weeks, small: 28.6 kg, over the 25 kg of the class
+  const outside = page.locator('[data-show="outsideClass"]');
+  await expect(outside).toBeHidden();
+  await edit(page, 'weight', '20');
+  await expect(outside).toBeVisible();
+  // 8 weeks: under 12 weeks
+  await edit(page, 'age', '8');
+  await expect(page.locator('[data-show="early"]')).toBeVisible();
+});
+
 test('shares each calculator on WhatsApp with the state of the form', async ({ page }) => {
   await page.goto('/dog-food-calculator');
   await edit(page, 'weight', '80');

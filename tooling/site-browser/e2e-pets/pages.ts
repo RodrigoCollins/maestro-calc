@@ -9,6 +9,7 @@ export const PAGES: readonly string[] = [
   '/dog-pregnancy-calculator',
   '/dog-age-calculator',
   '/cat-age-calculator',
+  '/puppy-weight-calculator',
   '/charts',
   '/dog-feeding-chart',
   '/puppy-feeding-chart',
@@ -240,5 +241,14 @@ export const CALCULATORS = [
     // an 11-year-old cat: 24 + 9 x 4 = 60 on the AAFP-AAHA table
     edit: { field: 'age', value: '11' },
     edited: '60',
+  },
+  {
+    path: '/puppy-weight-calculator',
+    out: 'figure',
+    initial: '60',
+    // a large-breed puppy of 21 lb: 13 weeks is 3 months at 35%, 21 / 0.35 = 60;
+    // 26 weeks is 6 months at 65%, 21 / 0.65 = 32.3
+    edit: { field: 'age', value: '26' },
+    edited: '32',
   },
 ] as const;

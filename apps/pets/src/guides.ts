@@ -55,6 +55,18 @@ export interface Guide {
   readonly card: { readonly title: string; readonly summary: string };
 }
 
+/**
+ * The article a calculator page carries under its result: the sections, the tables after them, a
+ * FAQ and the sources, with the day its figures were checked (the byline under the h1 gives it).
+ */
+export interface CalcArticle {
+  readonly checked: string;
+  readonly sections: readonly GuideSection[];
+  readonly tables: readonly GuideTable[];
+  readonly questions: readonly GuideQuestion[];
+  readonly sources: readonly PageSource[];
+}
+
 const AAFCO_CALORIES: PageSource = {
   name: 'AAFCO, Understanding Pet Food: Calories',
   url: 'https://www.aafco.org/consumers/understanding-pet-food/calories/',

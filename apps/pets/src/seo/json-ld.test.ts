@@ -65,6 +65,21 @@ describe('jsonLdOf', () => {
     });
     const items = graph['@graph'][1]?.['itemListElement'] as { item: string; position: number }[];
     expect(items.map(({ item }) => item)).toEqual([`${ORIGIN}/`, `${ORIGIN}/dog-food-calculator`]);
+    expect(graph['@graph'][0]).not.toHaveProperty('dateModified');
+  });
+
+  it('gives a calculator that carries a sourced article its review day', () => {
+    const graph = parse(
+      jsonLdOf(
+        '/puppy-weight-calculator',
+        { title: 'Puppy Weight | Bowl Figures', description: 'd', modified: '2026-11-10' },
+        ORIGIN,
+      ),
+    );
+    expect(graph['@graph'][0]).toMatchObject({
+      '@type': 'WebApplication',
+      dateModified: '2026-11-10',
+    });
   });
 
   it('gives an article the editorial team as author and publisher, and the review day', () => {

@@ -5,7 +5,9 @@ import { dogAge } from '@maestro-calc/pets-core/dog-age';
 import { dogChocolate } from '@maestro-calc/pets-core/dog-chocolate';
 import { civilFromDays, dogDueDate } from '@maestro-calc/pets-core/dog-due-date';
 import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import { puppyWeight } from '@maestro-calc/pets-core/puppy-weight';
 import { CAT_AGE_SOURCES, CAT_YEARS_CHECKED } from './cat-years.ts';
+import { PUPPY_WEIGHT_ARTICLE, PUPPY_WEIGHT_SOURCES } from './puppy-weight-article.ts';
 import { DOG_AGE_SOURCES, DOG_YEARS_CHECKED } from './dog-years.ts';
 import { amountText, dateText, kcalText } from './format.ts';
 import { hrefOf } from './routes.ts';
@@ -60,6 +62,7 @@ const ENGINES = {
   'dog-due-date': dogDueDate,
   'dog-age': dogAge,
   'cat-age': catAge,
+  'puppy-weight': puppyWeight,
 } as const;
 
 export type EngineId = keyof typeof ENGINES;
@@ -361,6 +364,62 @@ export const METHOD_SECTIONS: readonly MethodSection[] = [
       },
     ],
   },
+  {
+    id: 'puppy-weight',
+    title: 'Puppy adult weight',
+    href: hrefOf('puppy-weight'),
+    method:
+      'Adult weight = weight now ÷ the share of adult weight reached at that age, from Table 1 of the WALTHAM pocket book of puppy nutrition and care (adapted from NRC 2006): small and medium breeds (adult up to 25 kg) 9, 22, 37, 52, 61, 70, 83 and 95% at 1, 2, 3, 4, 5, 6, 9 and 12 months and adult by 15; large breeds (25 to 45 kg) 7, 20, 35, 48, 57, 65, 77, 88, 94 and 100% at 1 to 18 months; giant breeds (over 45 kg) 6, 14, 26, 38, 49, 60, 70, 80, 90 and 100%. A straight line between the rows, and weeks are months at 12 ÷ 52. The range is the same weight read on the size class below and above the one chosen.',
+    note: 'An average curve for males and females together: Salt and colleagues (2017) found the dog-to-dog variability large, males are heavier than females in every one of 72 breeds studied (Andersson and colleagues, 2023), and a mixed breed may grow like either parent’s size. The table is cited through WALTHAM’s adaptation, not read in the NRC book itself. The calculator warns under 12 weeks, once the size class is grown, and when the estimate falls outside the adult weights of the class.',
+    accessed: PUPPY_WEIGHT_ARTICLE.checked,
+    sources: [
+      PUPPY_WEIGHT_SOURCES.waltham,
+      PUPPY_WEIGHT_SOURCES.salt,
+      PUPPY_WEIGHT_SOURCES.andersson,
+    ],
+    cases: [
+      {
+        engine: 'puppy-weight',
+        text: 'A large-breed puppy of 21 lb at 13 weeks: 13 × 12 ÷ 52 = 3 months, 35%, 21 ÷ 0.35.',
+        raw: { weight: '21', unit: 'lb', age: '13', size: 'large' },
+        key: 'adult',
+        result: '60',
+        unit: 'lb',
+      },
+      {
+        engine: 'puppy-weight',
+        text: 'The low end of its range, on the small and medium curve at 37%: 21 ÷ 0.37.',
+        raw: { weight: '21', unit: 'lb', age: '13', size: 'large' },
+        key: 'low',
+        result: '57',
+        unit: 'lb',
+      },
+      {
+        engine: 'puppy-weight',
+        text: 'A small-breed puppy of 14 lb at 26 weeks (6 months, 70%): 14 ÷ 0.70.',
+        raw: { weight: '14', unit: 'lb', age: '26', size: 'small' },
+        key: 'adult',
+        result: '20',
+        unit: 'lb',
+      },
+      {
+        engine: 'puppy-weight',
+        text: 'A small-breed puppy of 10 lb at 16 weeks, between the rows: 37 + (9 ÷ 13) × 15 = 47.4%, 10 ÷ 0.474.',
+        raw: { weight: '10', unit: 'lb', age: '16', size: 'small' },
+        key: 'adult',
+        result: '21.1',
+        unit: 'lb',
+      },
+      {
+        engine: 'puppy-weight',
+        text: 'A giant-breed puppy of 70 lb at 39 weeks (9 months, 70%): 70 ÷ 0.70.',
+        raw: { weight: '70', unit: 'lb', age: '39', size: 'giant' },
+        key: 'adult',
+        result: '100',
+        unit: 'lb',
+      },
+    ],
+  },
 ];
 
 /** The Merck point value and the AAHA range of each status, from Merck’s table and AAHA Box 1. */
@@ -382,7 +441,7 @@ export const FACTOR_TABLE: readonly {
 export const LEFT_OUT: readonly { readonly what: string; readonly why: string }[] = [
   {
     what: 'NRC 2006 (Nutrient Requirements of Dogs and Cats)',
-    why: 'A paid book that the team has not read, so it is not cited until someone reads the actual table.',
+    why: 'A paid book that the team has not read, so it is not cited until someone reads the actual table. The puppy growth shares come from WALTHAM’s published adaptation of it, and are cited to WALTHAM.',
   },
   {
     what: 'Dog age in human years',
@@ -395,10 +454,6 @@ export const LEFT_OUT: readonly { readonly what: string; readonly why: string }[
   {
     what: 'Raw and homemade portions as a percentage of body weight',
     why: 'No veterinary primary source. The AVMA discourages raw or undercooked animal-source protein, and WSAVA says a homemade diet should be formulated by a board-certified veterinary nutritionist.',
-  },
-  {
-    what: 'Puppy adult-weight estimates',
-    why: 'Every rule found online is unsourced; no published growth curve was found.',
   },
   {
     what: 'Breed factors',
@@ -434,6 +489,7 @@ const texts: Readonly<Record<string, (value: Rational) => string>> = {
   answer: (value) => amountText(value, value.isInteger() ? 0 : 1),
   wang: (value) => amountText(value, 1),
   cornell: (value) => amountText(value, value.isInteger() ? 0 : 1),
+  adult: (value) => amountText(value, 1).replace(/\.0$/, ''),
 };
 
 /** The text of one output of a case, as a page would write it. */

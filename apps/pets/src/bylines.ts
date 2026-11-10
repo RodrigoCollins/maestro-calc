@@ -1,4 +1,6 @@
+import { PUPPY_WEIGHT_PAGE } from './calc/puppy-weight.ts';
 import { FOOD_HUB, FOOD_PAGES } from './can-dogs-eat.ts';
+import { PUPPY_WEIGHT_ARTICLE } from './puppy-weight-article.ts';
 import { CAT_YEARS_PAGES } from './cat-years.ts';
 import { CHARTS } from './charts.ts';
 import { FEED_HUB, FEED_PAGES } from './feed-by-weight.ts';
@@ -30,6 +32,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
   ...PLANT_PAGES,
   FEED_HUB,
   ...FEED_PAGES,
+  { path: PUPPY_WEIGHT_PAGE.path, ...PUPPY_WEIGHT_ARTICLE },
 ].map(({ path, checked, sources }) => ({ path, checked, sources }));
 
 /** The byline data of the page at `path`. */

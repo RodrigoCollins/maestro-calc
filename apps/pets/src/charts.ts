@@ -124,6 +124,7 @@ export const CHARTS: readonly Chart[] = [
     calculators: [
       { href: hrefOf('dog'), label: 'Dog food calculator' },
       { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
+      { href: hrefOf('puppy-weight'), label: 'How big will my puppy get? Puppy weight calculator' },
     ],
     pages: {
       heading: 'How much to feed a dog of each weight, worked out',
@@ -175,6 +176,7 @@ export const CHARTS: readonly Chart[] = [
     calculators: [
       { href: hrefOf('puppy'), label: 'Puppy feeding calculator' },
       { href: hrefOf('dog'), label: 'Dog food calculator' },
+      { href: hrefOf('puppy-weight'), label: 'Puppy weight calculator: how big will it get?' },
     ],
     sources: [MERCK, MERCK_TABLE, AAHA],
     card: {
