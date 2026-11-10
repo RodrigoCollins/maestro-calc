@@ -72,8 +72,8 @@ describe('zone pages', () => {
 
 describe('state pages', () => {
   it('gives each calendar state a seed page and a fertilizer page', () => {
-    expect(SEED_STATE_GUIDES).toHaveLength(20);
-    expect(FEED_STATE_GUIDES).toHaveLength(20);
+    expect(SEED_STATE_GUIDES).toHaveLength(26);
+    expect(FEED_STATE_GUIDES).toHaveLength(26);
     expect(guideAt('/when-to-plant-grass-seed/texas').title).toBe(
       'When to Plant Grass Seed in Texas | Lawn Figures',
     );
@@ -131,6 +131,28 @@ describe('state pages', () => {
     );
     expect(textOf('/when-to-fertilize-lawn/virginia')).toContain(
       'Bermudagrass and St. Augustinegrass: 0.5 lb in April, 0.7 lb a month from May through July and 0.5 lb in August; 2 to 4 lb a year.',
+    );
+  });
+
+  it('adds the states whose extension service publishes rates by grass: SC, AL, KY, AR, MS, KS', () => {
+    expect(CALENDAR_STATES.slice(20).map(({ code }) => code)).toEqual([
+      'SC',
+      'AL',
+      'KY',
+      'AR',
+      'MS',
+      'KS',
+    ]);
+    // UK AGR-212, Table 4
+    expect(textOf('/when-to-fertilize-lawn/kentucky')).toContain(
+      'Kentucky bluegrass, perennial ryegrass and tall fescue: 2 to 4 lb of N per 1,000 sq ft a year, fed in autumn; fine fescues 1 to 2 lb.',
+    );
+    // Mississippi Publication 1322, Table 9: hybrid bermudagrass by zone
+    expect(textOf('/when-to-fertilize-lawn/mississippi')).toContain(
+      'Hybrid bermudagrass: 3 lb of N per 1,000 sq ft a season in zone 7a (May 15, June 15, August 15), 6 lb in zone 8b (the first of each month, April through September).',
+    );
+    expect(guideAt('/when-to-fertilize-lawn/kansas').title).toBe(
+      'When to Fertilize Your Lawn in Kansas | Lawn Figures',
     );
   });
 

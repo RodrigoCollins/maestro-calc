@@ -126,7 +126,7 @@ export const TIMING_GUIDE: Guide = {
       id: 'states',
       heading: 'By state',
       paragraphs: [
-        'For the 20 states below, a page gives the feeding months of the state’s own extension service and the frost dates of its stations, zone by zone; for warm-season lawns, the first and last feeding worked out from those dates.',
+        'For the 26 states below, a page gives the feeding months of the state’s own extension service and the frost dates of its stations, zone by zone; for warm-season lawns, the first and last feeding worked out from those dates.',
       ],
       links: CALENDAR_STATES.map(({ slug, name }) => ({
         href: feedStatePathOf(slug),

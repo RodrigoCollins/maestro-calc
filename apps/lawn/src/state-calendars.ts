@@ -191,6 +191,74 @@ export const UW_FEED = read(
   'https://hort.extension.wisc.edu/optimum-time-for-fertilizing-lawns/',
 );
 
+/** The day the sources of the states added after the first 20 were read. */
+export const ADDED_READ = '2026-11-10';
+const readAdded = (name: string, url: string): GuideSource => ({
+  name: `${name}, accessed ${ADDED_READ}`,
+  url,
+});
+
+export const SC_GRASSES = readAdded(
+  'Clemson Cooperative Extension HGIC 1223, “Turfgrasses for the Carolinas” (2016)',
+  'https://hgic.clemson.edu/factsheet/turfgrasses-for-the-carolinas/',
+);
+export const SC_BERMUDA = readAdded(
+  'Clemson Cooperative Extension HGIC 1216, “Bermudagrass Maintenance Calendar” (2018)',
+  'https://hgic.clemson.edu/factsheet/bermudagrass-maintenance-calendar/',
+);
+export const SC_FESCUE = readAdded(
+  'Clemson Cooperative Extension HGIC 1219, “Tall Fescue Maintenance Calendar” (2024)',
+  'https://hgic.clemson.edu/factsheet/tall-fescue-maintenance-calendar/',
+);
+export const AL_SCHEDULE = readAdded(
+  'Alabama Cooperative Extension System ANR-2872-C, “Fertilize with Care” (2023)',
+  'https://www.aces.edu/wp-content/uploads/2022/08/ANR-2872-C_FertilizeWithCare_052523a-G.pdf',
+);
+export const AL_FESCUE = readAdded(
+  'Alabama Cooperative Extension System ANR-0231, “Tall Fescue Lawns” (2022)',
+  'https://www.aces.edu/wp-content/uploads/2022/05/ANR-0231_TallFescueLawns_051122aL-G.pdf',
+);
+export const KY_FEED = readAdded(
+  'University of Kentucky Cooperative Extension AGR-212, “Fertilizing Your Lawn” (2014)',
+  'https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/AGR212.pdf',
+);
+const KY_RENOVATE = readAdded(
+  'University of Kentucky Cooperative Extension AGR-51, “Renovating Your Lawn” (2014)',
+  'https://publications.ca.uky.edu/sites/publications.ca.uky.edu/files/agr51.pdf',
+);
+export const AR_BERMUDA = readAdded(
+  'University of Arkansas Cooperative Extension FSA6121, “Lawn Care Calendar: Bermudagrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6121.pdf',
+);
+export const AR_FESCUE = readAdded(
+  'University of Arkansas Cooperative Extension FSA6118, “Lawn Care Calendar: Tall Fescue” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6118.pdf',
+);
+export const AR_ZOYSIA = readAdded(
+  'University of Arkansas Cooperative Extension FSA6122, “Lawn Care Calendar: Zoysiagrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6122.pdf',
+);
+export const AR_CENTIPEDE = readAdded(
+  'University of Arkansas Cooperative Extension FSA6120, “Lawn Care Calendar: Centipedegrass” (2016)',
+  'https://www.uaex.uada.edu/publications/PDF/FSA-6120.pdf',
+);
+export const MS_LAWN = readAdded(
+  'Mississippi State University Extension Publication 1322, “Establish and Manage Your Home Lawn” (2026)',
+  'https://extension.msstate.edu/sites/default/files/document/2026-01/P1322_web.pdf',
+);
+export const KS_GUIDE = readAdded(
+  'Kansas State University Research and Extension MF2916, “Lawn Fertilizing Guide” (2023)',
+  'https://bookstore.ksre.ksu.edu/download/lawn-fertilizing-guide_MF2916',
+);
+export const KS_RATES = readAdded(
+  'Kansas State University Research and Extension MF-2311, “A Guide to Turfgrass Nutrient Recommendations” (1998)',
+  'https://bookstore.ksre.ksu.edu/pubs/MF2311.pdf',
+);
+const KS_PLANT = readAdded(
+  'Kansas State University Research and Extension MF-1126, “Planting a Home Lawn” (2002)',
+  'https://bookstore.ksre.ksu.edu/pubs/mf1126.pdf',
+);
+
 /** The calendar of every state with a seed and a fertilizer page, by its postal code. */
 export const STATE_CALENDARS: Readonly<Record<CalendarStateCode, StateCalendar>> = {
   CA: {
@@ -715,6 +783,176 @@ export const STATE_CALENDARS: Readonly<Record<CalendarStateCode, StateCalendar>>
           'Colorado State: buffalograss, blue grama, zoysiagrass and bermudagrass should get no nitrogen after September 1.',
         ],
         source: CSU_FALL,
+      },
+    ],
+  },
+  SC: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Clemson names bermudagrass, centipedegrass, St. Augustinegrass and zoysiagrass as the warm-season lawn grasses of the Carolinas, and recommends tall fescue for the Mountains and Piedmont only.',
+      ],
+      source: SC_GRASSES,
+    },
+    seed: [
+      {
+        text: [
+          'Clemson: replant large bare areas of a bermudagrass lawn in May, with sod, plugs or sprigs; seed gives common improved bermudagrass, not the quality of a sodded hybrid.',
+        ],
+        source: SC_BERMUDA,
+      },
+      {
+        text: [
+          'Clemson: overseed thin tall fescue as the grass begins to respond to cooler temperatures, in September and early October.',
+        ],
+        source: SC_FESCUE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Clemson: feed bermudagrass in early May once the lawn fully greens up, again in June or July, and a last time before August 15; no nitrogen in fall and winter.',
+        ],
+        source: SC_BERMUDA,
+      },
+      {
+        text: [
+          'Clemson: feed tall fescue in September, optionally again in November, and in February; do not fertilize it after March 15, nor from June through August.',
+        ],
+        source: SC_FESCUE,
+      },
+    ],
+  },
+  AL: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Alabama Extension’s fertilization schedule covers the warm-season lawn grasses of Alabama, bermudagrass, centipedegrass, St. Augustinegrass and zoysiagrass, and tall fescue, the cool-season one.',
+      ],
+      source: AL_SCHEDULE,
+    },
+    seed: [
+      {
+        text: [
+          'Alabama Extension calls tall fescue a cool-season grass for north Alabama lawns, and September to October the best time to plant it there.',
+        ],
+        source: AL_FESCUE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Alabama Extension’s standard schedule feeds bermudagrass in May, July and August, St. Augustinegrass and zoysiagrass in May and July, centipedegrass a half feeding in May and another in August, and tall fescue in February, April and September.',
+          'It does not fertilize dormant grass: wait until the lawn is fully green.',
+        ],
+        source: AL_SCHEDULE,
+      },
+    ],
+  },
+  KY: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'The University of Kentucky names Kentucky bluegrass, tall fescue, perennial ryegrass and fine fescue as the cool-season lawn grasses of Kentucky, and bermudagrass and zoysiagrass as warm-season ones.',
+      ],
+      source: KY_FEED,
+    },
+    seed: [
+      {
+        text: [
+          'University of Kentucky: the best time to renovate a lawn is mid-August through late September, the second best mid-February through March; spring plantings may struggle in a hot, dry summer.',
+        ],
+        source: KY_RENOVATE,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'University of Kentucky: the best time to fertilize cool-season lawns in Kentucky is the autumn; a low-maintenance lawn gets one feeding in October, a medium one October and November, a high one October through December, with up to a half feeding in late May or early June.',
+          'Late spring into summer is the best time to feed bermudagrass and zoysiagrass.',
+        ],
+        source: KY_FEED,
+      },
+    ],
+  },
+  AR: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'The University of Arkansas calls bermudagrass the most commonly used lawn grass in Arkansas; its lawn care calendars also cover tall fescue, centipedegrass, St. Augustinegrass and zoysiagrass.',
+      ],
+      source: AR_BERMUDA,
+    },
+    seed: [
+      {
+        text: [
+          'University of Arkansas: seeding bermudagrass in spring or early summer makes the seedlings more winter-hardy.',
+        ],
+        source: AR_BERMUDA,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'University of Arkansas: feed bermudagrass about three weeks after it turns green in late May, and give it no more than a half pound in September, four to six weeks before the first expected frost.',
+        ],
+        source: AR_BERMUDA,
+      },
+      {
+        text: [
+          'University of Arkansas: feed tall fescue in March or early April and not after May 1 in spring, then in mid-September and again in November.',
+        ],
+        source: AR_FESCUE,
+      },
+    ],
+  },
+  MS: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'Mississippi State grows bermudagrass, St. Augustinegrass, centipedegrass, zoysiagrass, carpetgrass and bahiagrass for turf, and says only the northern counties can grow cool-season grasses as a permanent lawn: tall fescue, Kentucky bluegrass and creeping red fescue in its zone 7a.',
+      ],
+      source: MS_LAWN,
+    },
+    seed: [
+      {
+        text: [
+          'Mississippi State plants bermudagrass from May 15 to July 15 in its zone 7a and from April 15 to September 30 in zone 8b on the Gulf Coast, and seeds tall fescue from September 1 to November 1 in zone 7a.',
+        ],
+        source: MS_LAWN,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'Mississippi State dates each feeding by grass and zone: hybrid bermudagrass from May 15 in zone 7a and from April 1 in zone 8b; St. Augustinegrass April 1, June 1 and August 15 in zone 8b; centipedegrass once, May 1 in zone 7b or April 15 in zone 8a; tall fescue September 15, March 1 and April 1 in zone 7a.',
+        ],
+        source: MS_LAWN,
+      },
+    ],
+  },
+  KS: {
+    kinds: ['cool', 'warm'],
+    grasses: {
+      text: [
+        'K-State names bluegrass, fescue and ryegrass as the cool-season lawn grasses of Kansas, and buffalograss, bermudagrass and zoysiagrass as the warm-season ones.',
+      ],
+      source: KS_PLANT,
+    },
+    seed: [
+      {
+        text: [
+          'K-State: cool-season grasses are best seeded in early September, and October 15 is generally the last day to plant in the fall; mid-May through July is the ideal time to plant buffalograss, bermudagrass and zoysiagrass.',
+        ],
+        source: KS_PLANT,
+      },
+    ],
+    feed: [
+      {
+        text: [
+          'K-State: fescue and bluegrass lawns are best fertilized in September and November, with an optional feeding in May; bermudagrass and zoysiagrass between May and August, and buffalograss in June.',
+        ],
+        source: KS_GUIDE,
       },
     ],
   },

@@ -108,7 +108,7 @@ export const PLANTING_GUIDE: Guide = {
       id: 'states',
       heading: 'By state and by zone',
       paragraphs: [
-        'For the 20 states below, a page gives what the state’s own extension service says and the latest seeding dates worked out zone by zone from its NOAA stations. The planting zone pages do the same for each USDA half zone.',
+        'For the 26 states below, a page gives what the state’s own extension service says and the latest seeding dates worked out zone by zone from its NOAA stations. The planting zone pages do the same for each USDA half zone.',
       ],
       links: [
         ...CALENDAR_STATES.map(({ slug, name }) => ({
