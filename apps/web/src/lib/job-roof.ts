@@ -4,7 +4,7 @@ import { decimalText } from '../calculator/present.ts';
 import { JOBS, type JobId } from '../routing/jobs.ts';
 import { sentence, type ExtraSection } from './job-extra.ts';
 import { roofing } from './roofing.ts';
-import { siteText } from './site-text.ts';
+import { siteText, type SiteText } from './site-text.ts';
 
 /*
  * The roofing job pages (AdSense audit 2026-11-08): a footprint of one size also says what its
@@ -40,6 +40,45 @@ const roofOf = (long: number, span: number, pitch: number) => {
   if (bundles === undefined) throw new Error(`no bundles for ${JSON.stringify(input)}`);
   const area = valueIn(result.outputs.areaFt2, ft2);
   return { area, bundles: bundles.qty, factor: area.div(Rational.of(long * span)) };
+};
+
+/** The pitch below 4 in 12 at which the IRC asks for two layers of underlayment under shingles. */
+const DOUBLE_AT = 3;
+
+/**
+ * The four tips of the roofing page `id` (content audit 2026-11-10: the same four on every
+ * footprint), with the footprint's own figures: the house its overhangs come from, its squares and
+ * bundles, and its underlayment at 3/12, where the layers double. `undefined` for any other job.
+ */
+export const roofTips = (
+  id: JobId,
+  text: SiteText,
+): readonly [string, string, string, string] | undefined => {
+  if (!isRoofJob(id)) return undefined;
+  const [raw] = JOBS[id].cases;
+  const a = feetOf(raw['length']);
+  const b = feetOf(raw['width']);
+  const pitch = Number(raw['pitch']);
+  const here = roofOf(a, b, pitch);
+  const low = roofOf(a, b, DOUBLE_AT);
+  return [
+    sentence(text, 'site.job.guide.roofing.tip1', [a - 2, b - 2, a, b]),
+    sentence(text, 'site.job.guide.roofing.tip2', [
+      two(here.area.div(Rational.of(100))),
+      `${String(pitch)}/12`,
+      String(here.bundles),
+    ]),
+    sentence(text, 'site.job.guide.roofing.tip3', [
+      `${String(DOUBLE_AT)}/12`,
+      whole(low.area.mul(Rational.of(2))),
+      whole(here.area),
+      `${String(pitch)}/12`,
+    ]),
+    sentence(text, 'site.job.guide.roofing.tip4', [
+      two(here.area.div(Rational.of(10))),
+      Math.max(a, b),
+    ]),
+  ];
 };
 
 /** What the roofing page `id` adds to its table, or `undefined` for any other job. */

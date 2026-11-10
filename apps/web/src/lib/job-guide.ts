@@ -1,3 +1,5 @@
+import { inch, Rational, valueIn } from '@maestro-calc/core';
+import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { roofPitch } from '@maestro-calc/core/calculators/roof-pitch';
 import type { Locale } from '@maestro-calc/i18n';
 import { createTranslator } from '@maestro-calc/i18n';
@@ -5,7 +7,13 @@ import { enRoofPitch } from '@maestro-calc/i18n/catalogs/en/roof-pitch';
 import { esRoofPitch } from '@maestro-calc/i18n/catalogs/es/roof-pitch';
 import { isChartJob, isLandJob, JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
 import type { PageId } from '../routing/routes.ts';
-import { siteText } from './site-text.ts';
+import { decimalText } from '../calculator/present.ts';
+import { footingTips } from './job-concrete.ts';
+import { sentence } from './job-extra.ts';
+import { pitchTips, sixteenths } from './job-rafter.ts';
+import { roofTips } from './job-roof.ts';
+import { roomTips } from './job-room.ts';
+import { siteText, type SiteText } from './site-text.ts';
 
 /*
  * The buying advice of a job page (AdSense audit 2026-11-08): a page that answered a job with a
@@ -79,14 +87,87 @@ export const jobGuide = (id: JobId, locale: Locale): JobGuide | undefined => {
   const text = siteText(locale);
   return {
     heading: text(`site.job.guide.${kind}.heading`),
-    tips: [
-      text(`site.job.guide.${kind}.tip1`),
-      text(`site.job.guide.${kind}.tip2`),
-      text(`site.job.guide.${kind}.tip3`),
-      text(`site.job.guide.${kind}.tip4`),
-    ],
+    tips: tipsOf(kind, id, text),
     read: GUIDE_OF[kind],
   };
+};
+
+/** `k` eighths of an inch as a tape reads them: `1/8 in`, `1 1/8 in`, `2 in`. */
+const eighthsText = (k: number): string => {
+  const whole = Math.floor(k / 8);
+  let part = k % 8;
+  let over = 8;
+  while (part !== 0 && part % 2 === 0) {
+    part /= 2;
+    over /= 2;
+  }
+  if (part === 0) return `${String(whole)} in`;
+  return `${whole === 0 ? '' : `${String(whole)} `}${String(part)}/${String(over)} in`;
+};
+
+/**
+ * The tips of the division `id` (content audit 2026-11-10: the same four on every division): the
+ * tape tip with its own result, and the saw tip with its own cuts: n pieces take n − 1 cuts of
+ * about 1/8 in, and each piece is what is left over n, to the nearest 1/16 in as the tape reads it.
+ */
+const divisionTips = (id: JobId, text: SiteText): JobGuide['tips'] => {
+  const [raw] = JOBS[id].cases;
+  const valid = feetInches.validate(raw);
+  if (!valid.ok) throw new Error(`invalid division: ${JSON.stringify(raw)}`);
+  const pieces = Number(raw['factor']);
+  const cuts = pieces - 1;
+  const length = valueIn(valid.value.first, inch);
+  const left = length.sub(Rational.of(cuts, 8));
+  const each = length.div(Rational.of(pieces));
+  return [
+    sentence(text, 'site.job.guide.feet-inches.tip1', [
+      decimalText(each, 2, false),
+      sixteenths(each.toNumber()),
+    ]),
+    sentence(text, 'site.job.guide.feet-inches.tip2', [
+      cuts,
+      eighthsText(cuts),
+      pieces,
+      sixteenths(left.div(Rational.of(pieces)).toNumber()),
+    ]),
+    text('site.job.guide.feet-inches.tip3'),
+    text('site.job.guide.feet-inches.tip4'),
+  ];
+};
+
+type FiguredKind = 'roof-pitch' | 'roofing' | 'paint' | 'drywall' | 'concrete-footing';
+
+/** The kinds whose tips carry the figures of their page (content audit 2026-11-10). */
+const FIGURED: Record<FiguredKind, (id: JobId, text: SiteText) => JobGuide['tips'] | undefined> = {
+  'roof-pitch': pitchTips,
+  roofing: roofTips,
+  paint: roomTips,
+  drywall: roomTips,
+  'concrete-footing': footingTips,
+};
+
+/** The four tips of job `id`: a pitch, a room or a footing works its figures into them. */
+const tipsOf = (kind: JobGuideKind, id: JobId, text: SiteText): JobGuide['tips'] => {
+  switch (kind) {
+    case 'roof-pitch':
+    case 'roofing':
+    case 'paint':
+    case 'drywall':
+    case 'concrete-footing': {
+      const tips = FIGURED[kind](id, text);
+      if (tips === undefined) throw new Error(`no figured tips for ${id}`);
+      return tips;
+    }
+    case 'feet-inches':
+      return divisionTips(id, text);
+    default:
+      return [
+        text(`site.job.guide.${kind}.tip1`),
+        text(`site.job.guide.${kind}.tip2`),
+        text(`site.job.guide.${kind}.tip3`),
+        text(`site.job.guide.${kind}.tip4`),
+      ];
+  }
 };
 
 /* The IRC check of every covering at the pitch of a roof pitch job. */

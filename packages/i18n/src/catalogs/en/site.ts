@@ -48,14 +48,14 @@ export const enSite = {
   'site.job.note.gravel':
     'Every figure is compacted gravel, the way a driveway base is laid, with 5% extra, the gravel calculator’s defaults. The yard sells gravel by its loose volume, so the cubic yards to order are more than the space the gravel fills. Each depth opens the calculator with its measurements filled in.',
   'site.job.note.paint':
-    'The figures paint the four walls, less one door of 20 sq ft and two windows of 15 sq ft each, in two coats at 350 sq ft per gallon, the paint calculator’s defaults, and round up to whole gallon cans. Each height opens the calculator with its measurements filled in.',
+    'The figures paint the four walls with the paint calculator’s defaults, worked out step by step below, and round up to whole gallon cans. Each height opens the calculator with its measurements filled in.',
   'site.job.note.drywall':
-    'The figures cover the four walls and the ceiling, less one door of 20 sq ft and two windows of 15 sq ft each, with 10% extra for cuts, the drywall calculator’s defaults, and round up to whole sheets. Each height opens the calculator with its measurements filled in.',
+    'The figures cover the four walls and the ceiling with the drywall calculator’s defaults, worked out step by step below, and round up to whole sheets. Each height opens the calculator with its measurements filled in.',
   'site.job.sheetsOf': 'sheets of',
   'site.job.note.topsoil':
     'The figures add 10% for settling, the topsoil calculator’s default, and round up to whole bags of 0.75 or 1.5 cu ft. A cubic yard is 27 cubic feet. Each depth opens the calculator with its measurements filled in.',
   'site.job.note.roofing':
-    'The sizes are the footprint of the roof with its overhangs. The figures add 10% extra, the roofing calculator’s default, and round up to whole bundles, three to a square of 100 sq ft, and whole rolls of synthetic underlayment. Each pitch opens the calculator with its measurements filled in.',
+    'The sizes are the footprint of the roof with its overhangs. The figures add 10% extra, the roofing calculator’s default, worked out step by step below. Each pitch opens the calculator with its measurements filled in.',
   'site.job.note.board-feet':
     'The sizes are nominal, the size in the name of the lumber, as the American Softwood Lumber Standard counts board measure: thickness and width in inches, length in feet. The dressed column takes the minimum dry dressed size of PS 20-20, Table 3. Each length opens the calculator with its sizes filled in.',
   'site.job.board-feet.nominal': 'Board feet, nominal size',
@@ -136,14 +136,14 @@ export const enSite = {
   'site.job.floor.count': 'Tiles',
   'site.job.floor.extra': 'With 10% extra',
   'site.job.room.paint.lead':
-    'The walls leave out one door of 20 sq ft and two windows of 15 sq ft, the ceiling is the length times the width, and the cut-in is the edge you brush before you roll: along the ceiling, along the floor and down each corner.',
+    'The cut-in is the edge you brush before you roll: along the ceiling, along the floor and down each corner of the room.',
   'site.job.room.paint.sheet':
     'The Quali-Kote data sheet behind these figures gives 350 to 400 sq ft per gallon, dry to the touch in 1 hour and a recoat after 4 hours at 77 °F and 50% humidity, so both coats fit in one day. Bare drywall takes two coats, or a coat of primer first.',
   'site.job.room.paint.quarts': 'Walls and ceiling, in gallon and quart cans',
   'site.job.room.metricColumn': 'Area (m²)',
   'site.job.room.paint.litresColumn': 'Liters, two coats',
   'site.job.room.drywall.lead':
-    'The walls leave out one door and two windows, and the ceiling is counted apart, each with 10% for cuts. The CGC (USG) handbook hangs the ceiling first; panels across the studs cut the joints to finish by up to 25%.',
+    'The CGC (USG) handbook hangs the ceiling first, and panels across the studs cut the joints to finish by up to 25%.',
   'site.job.room.drywall.screws':
     'Screws at the handbook’s maximum spacing over wood framing 16 in apart, 16 in on a wall and 12 in on a ceiling: a 4 × 8 ft panel across 7 studs takes about 28 on a wall and 35 on a ceiling. A fire-rated wall follows its own listing.',
   'site.job.room.drywall.areaColumn': 'Walls and ceiling (sq ft)',
@@ -358,23 +358,46 @@ export const enSite = {
   'site.job.guide.concrete-tube.tip4':
     'Your local code sets how deep a pier goes, often below the frost line, and how wide its footing is. Check it before you buy the tubes, because a deeper hole changes every figure on this page.',
   'site.job.guide.concrete-footing.heading': 'Before you dig the footing',
-  'site.job.guide.concrete-footing.tip1':
-    'Dig the trench to its full width and depth along the whole run, and measure it in several places. A trench dug a little wide or deep is the usual reason a footing takes more than planned, and it is what the 10% extra is for.',
+  'site.job.guide.concrete-footing.tip1.0':
+    'Dig the trench to its full width and depth along the whole run, and measure it in several places. A trench dug a little wide or deep is the usual reason a footing takes more than planned, and it is what the 10% extra is for: at',
+  'site.job.guide.concrete-footing.tip1.1': ', it covers a trench',
+  'site.job.guide.concrete-footing.tip1.2': 'in too wide or',
+  'site.job.guide.concrete-footing.tip1.3': 'in too deep, and no more.',
   'site.job.guide.concrete-footing.tip2':
     'Measure the length along the center line of the footing. Added up on the outside of a rectangle, each corner is counted twice; on the center line, the corners come out right.',
-  'site.job.guide.concrete-footing.tip3':
-    'A long footing is a lot of bags. Past a cubic yard or two, price ready-mix as well, and ask the supplier whether the truck can reach the trench or you need a pump or wheelbarrows.',
+  'site.job.guide.concrete-footing.tip3.0': 'A long footing is a lot of bags: at',
+  'site.job.guide.concrete-footing.tip3.1': ', every',
+  'site.job.guide.concrete-footing.tip3.2':
+    'ft of trench takes a cubic yard with the extra. Past a cubic yard or two, price ready-mix as well, and ask the supplier whether the truck can reach the trench or you need a pump or wheelbarrows.',
   'site.job.guide.concrete-footing.tip4':
     'The size of a footing is a structural choice, not an estimating one. Take its width and depth from your plans or your local building department, then use the calculator to count the concrete.',
   'site.job.guide.roof-pitch.heading': 'Before you cut the rafters',
-  'site.job.guide.roof-pitch.tip1':
-    'Measure the pitch level and plumb, never along the roof. Hold a level against a rafter or the deck, mark 12 in along the level, and measure straight up to the roof: that measurement is the rise in 12.',
-  'site.job.guide.roof-pitch.tip2':
-    'The rafter lengths here run to the plumb line at the ridge, with no overhang. Add the overhang in the calculator, and take off half the thickness of the ridge board before you mark the cut.',
-  'site.job.guide.roof-pitch.tip3':
-    'Check the covering before you settle on a pitch. The roof coverings table on this page gives the IRC minimum of each covering at this pitch, and a local code or the maker of the product can ask for more than the code does.',
-  'site.job.guide.roof-pitch.tip4':
-    'A steeper pitch means more roof over the same footprint: more sheathing, more underlayment and more shingles. Run the roofing calculator at this pitch before you order the materials.',
+  'site.job.guide.roof-pitch.tip1.0':
+    'Measure the pitch level and plumb, never along the roof. Hold a level against a rafter or the deck, mark 12 in along the level, and measure straight up to the roof: that measurement is the rise in 12. At',
+  'site.job.guide.roof-pitch.tip1.1': 'it reads',
+  'site.job.guide.roof-pitch.tip1.2': ', and',
+  'site.job.guide.roof-pitch.tip1.3': 'over a 24 in level.',
+  'site.job.guide.roof-pitch.tip2.0':
+    'The rafter lengths here run to the plumb line at the ridge, with no overhang. At',
+  'site.job.guide.roof-pitch.tip2.1': ', a 12 in overhang adds',
+  'site.job.guide.roof-pitch.tip2.2': 'of rafter and a 24 in one',
+  'site.job.guide.roof-pitch.tip2.3':
+    ', both measured level. Add the overhang in the calculator, and take off half the thickness of the ridge board before you mark the cut.',
+  'site.job.guide.roof-pitch.tip3.0':
+    'An inclinometer, or the level app of a phone, laid on the deck reads the angle of the roof: at',
+  'site.job.guide.roof-pitch.tip3.1': 'it should show',
+  'site.job.guide.roof-pitch.tip3.2': ', against',
+  'site.job.guide.roof-pitch.tip3.3': 'at',
+  'site.job.guide.roof-pitch.tip3.4': 'and',
+  'site.job.guide.roof-pitch.tip3.5': 'at',
+  'site.job.guide.roof-pitch.tip3.6': ', so a reading nearer either of those is a different pitch.',
+  'site.job.guide.roof-pitch.tip4.0':
+    'A steeper pitch means more roof over the same footprint: every 100 sq ft of footprint is',
+  'site.job.guide.roof-pitch.tip4.1': 'sq ft of roof at',
+  'site.job.guide.roof-pitch.tip4.2': 'and',
+  'site.job.guide.roof-pitch.tip4.3': 'sq ft at',
+  'site.job.guide.roof-pitch.tip4.4':
+    ', with more sheathing, more underlayment and more shingles to match. Run the roofing calculator at this pitch before you order the materials.',
   'site.job.guide.rectangle-area.heading': 'Before you buy for this area',
   'site.job.guide.rectangle-area.tip1':
     'Measure each side at two or three points and use the longest. Walls are rarely perfectly square, and the shortest reading leaves you short of flooring or tile.',
@@ -403,23 +426,41 @@ export const enSite = {
   'site.job.guide.gravel.tip4':
     'Ask the supplier how the load will be dumped. Some drivers can spread it along the driveway as they go, which saves hours with a wheelbarrow, so give them the length you need covered.',
   'site.job.guide.paint.heading': 'Before you buy the paint',
-  'site.job.guide.paint.tip1':
-    'Measure the walls, not the floor: the distance around the room times the height. A 12 by 12 ft room 8 ft high has 384 sq ft of wall and only 144 sq ft of floor.',
+  'site.job.guide.paint.tip1.0':
+    'Measure the walls, not the floor: the distance around the room times the height. This',
+  'site.job.guide.paint.tip1.1': 'by',
+  'site.job.guide.paint.tip1.2': 'ft room',
+  'site.job.guide.paint.tip1.3': 'ft high has',
+  'site.job.guide.paint.tip1.4': 'sq ft of wall and only',
+  'site.job.guide.paint.tip1.5': 'sq ft of floor.',
   'site.job.guide.paint.tip2':
     'New drywall, bare plaster and a big change of color soak up more paint. Prime first, or plan on less coverage than the label gives.',
-  'site.job.guide.paint.tip3':
-    'Buy the gallons for the whole room at once and mix them together in one bucket before you start, so paint from two cans or two batches matches on the wall.',
-  'site.job.guide.paint.tip4':
-    'The ceiling, the trim and the doors take their own paint, often a different product or sheen. Estimate them apart, and keep a closed can of the wall color for touch-ups.',
+  'site.job.guide.paint.tip3.0': 'Buy the',
+  'site.job.guide.paint.tip3.1':
+    'gallons for the walls at once and mix them together in one bucket before you start, so paint from two cans or two batches matches on the wall.',
+  'site.job.guide.paint.tip4.0':
+    'The ceiling, the trim and the doors take their own paint, often a different product or sheen. Estimate them apart: this ceiling is',
+  'site.job.guide.paint.tip4.1': 'sq ft,',
+  'site.job.guide.paint.tip4.2': 'gal in two coats at',
+  'site.job.guide.paint.tip4.3':
+    'sq ft per gallon. Keep a closed can of the wall color for touch-ups.',
   'site.job.guide.drywall.heading': 'Before you order the drywall',
-  'site.job.guide.drywall.tip1':
-    'Count the ceiling apart from the walls. A ceiling is often hung with a different panel, such as sag-resistant board, so it helps to have its own sheet count.',
-  'site.job.guide.drywall.tip2':
-    'Pick the sheet length for the wall. 4 × 12 sheets leave fewer joints to tape on a long wall, but they are heavy, so plan two people and a clear path into the room.',
-  'site.job.guide.drywall.tip3':
-    'Order the joint compound and the tape with the sheets: the calculator counts them from the USG coverage figures. The screws are estimated above; corner bead and trim you count on site.',
-  'site.job.guide.drywall.tip4':
-    'Keep the extra for cuts. Around doors, windows, outlets and corners you cut pieces you cannot reuse, so a room with many corners or a stairwell needs more than the default.',
+  'site.job.guide.drywall.tip1.0': 'Count the ceiling apart from the walls: in this room it takes',
+  'site.job.guide.drywall.tip1.1': 'sheets of 4 × 8 ft, the walls',
+  'site.job.guide.drywall.tip1.2':
+    '. A ceiling is often hung with a different panel, such as sag-resistant board, so it helps to have its own sheet count.',
+  'site.job.guide.drywall.tip2.0': 'Pick the sheet length for the wall:',
+  'site.job.guide.drywall.tip2.1': 'sheets of 4 × 12 ft cover this room where',
+  'site.job.guide.drywall.tip2.2':
+    'of 4 × 8 ft do, with fewer joints to tape, but they are heavy, so plan two people and a clear path into the room.',
+  'site.job.guide.drywall.tip3.0': 'Order the joint compound and the tape with the sheets:',
+  'site.job.guide.drywall.tip3.1': 'gal of compound and',
+  'site.job.guide.drywall.tip3.2':
+    'ft of tape for this room, from the USG coverage figures. The screws are estimated above; corner bead and trim you count on site.',
+  'site.job.guide.drywall.tip4.0': 'Keep the extra for cuts: the 10% on the',
+  'site.job.guide.drywall.tip4.1': 'sq ft of this room is',
+  'site.job.guide.drywall.tip4.2':
+    'sq ft of board. Around doors, windows, outlets and corners you cut pieces you cannot reuse, so a room with many corners or a stairwell needs more than the default.',
   'site.job.guide.topsoil.heading': 'Before you fill the bed or the area',
   'site.job.guide.topsoil.tip1':
     'Soil settles after it is placed. Spread a deep fill in layers, water each one lightly, and top the bed up once it has settled.',
@@ -430,14 +471,28 @@ export const enSite = {
   'site.job.guide.topsoil.tip4':
     'Plan where the truck drops the pile: close to the work, off the lawn if you can, and covered if rain is coming.',
   'site.job.guide.roofing.heading': 'Before you order the shingles',
-  'site.job.guide.roofing.tip1':
-    'Measure the footprint with the overhangs, because the eaves and the rakes are roof too. A 1 ft overhang on every side of a 38 by 28 ft house makes a 40 by 30 ft footprint.',
-  'site.job.guide.roofing.tip2':
-    'Shingles are sold by the bundle and counted by the square of 100 sq ft. The bundle the calculator uses covers 33.33 sq ft, three to a square; check the coverage printed on the bundle you buy.',
-  'site.job.guide.roofing.tip3':
-    'From 2 in 12 up to 4 in 12, the IRC asks for two layers of underlayment under asphalt shingles, and below 2 in 12 it does not allow them. The roofing calculator doubles the rolls in that range.',
-  'site.job.guide.roofing.tip4':
-    'The extra covers the starter course, the hip and ridge caps and the cuts at valleys. Nails, drip edge, flashing and an ice barrier are separate items, so ask your supplier for them with the order.',
+  'site.job.guide.roofing.tip1.0':
+    'Measure the footprint with the overhangs, because the eaves and the rakes are roof too. A 1 ft overhang on every side of a',
+  'site.job.guide.roofing.tip1.1': 'by',
+  'site.job.guide.roofing.tip1.2': 'ft house makes this',
+  'site.job.guide.roofing.tip1.3': 'by',
+  'site.job.guide.roofing.tip1.4': 'ft footprint.',
+  'site.job.guide.roofing.tip2.0':
+    'Shingles are sold by the bundle and counted by the square of 100 sq ft. The bundle the calculator uses covers 33.33 sq ft, three to a square, so the',
+  'site.job.guide.roofing.tip2.1': 'squares of this roof at',
+  'site.job.guide.roofing.tip2.2': 'take',
+  'site.job.guide.roofing.tip2.3':
+    'bundles with the extra; check the coverage printed on the bundle you buy.',
+  'site.job.guide.roofing.tip3.0':
+    'From 2 in 12 up to 4 in 12, the IRC asks for two layers of underlayment under asphalt shingles, and below 2 in 12 it does not allow them. The roofing calculator doubles the rolls in that range: at',
+  'site.job.guide.roofing.tip3.1': 'this roof takes',
+  'site.job.guide.roofing.tip3.2': 'sq ft of underlayment before the extra, against',
+  'site.job.guide.roofing.tip3.3': 'sq ft at',
+  'site.job.guide.roofing.tip3.4': '.',
+  'site.job.guide.roofing.tip4.0': 'The extra on this roof,',
+  'site.job.guide.roofing.tip4.1': 'sq ft, covers the starter course, the hip and ridge caps, with',
+  'site.job.guide.roofing.tip4.2':
+    'ft of ridge here, and the cuts at valleys. Nails, drip edge, flashing and an ice barrier are separate items, so ask your supplier for them with the order.',
   'site.job.guide.board-feet.heading': 'Before you order the lumber',
   'site.job.guide.board-feet.tip1':
     'Check a tally or an invoice with the nominal size, 2 by 4 for a 2x4: PS 20-20 counts board measure on it. Use the measured size only for the wood actually in the piece, such as for its weight.',
@@ -448,10 +503,16 @@ export const enSite = {
   'site.job.guide.board-feet.tip4':
     'Hardwood is often sold rough, with the thickness in quarters of an inch: 4/4 is 1 in and 8/4 is 2 in. Ask whether the tally takes the rough or the surfaced size.',
   'site.job.guide.feet-inches.heading': 'Before you mark and cut',
-  'site.job.guide.feet-inches.tip1':
-    'Mark from the tape column, not the decimals. It rounds to the nearest 1/16 in, the smallest mark most tapes carry, which is as close as a cut usually gets.',
-  'site.job.guide.feet-inches.tip2':
-    'Allow for the saw blade. Each cut removes about 1/8 in of wood, so cutting a board into equal pieces leaves each one a little short unless you take the cuts off first.',
+  'site.job.guide.feet-inches.tip1.0': 'Mark from the tape column, not the decimals:',
+  'site.job.guide.feet-inches.tip1.1': 'in is',
+  'site.job.guide.feet-inches.tip1.2':
+    'on the tape. It rounds to the nearest 1/16 in, the smallest mark most tapes carry, which is as close as a cut usually gets.',
+  'site.job.guide.feet-inches.tip2.0':
+    'Allow for the saw blade. Each cut removes about 1/8 in of wood, so cutting a board into equal pieces leaves each one a little short unless you take the cuts off first: here',
+  'site.job.guide.feet-inches.tip2.1': '× 1/8 in =',
+  'site.job.guide.feet-inches.tip2.2': 'goes to the saw, and each of the',
+  'site.job.guide.feet-inches.tip2.3': 'pieces is',
+  'site.job.guide.feet-inches.tip2.4': '.',
   'site.job.guide.feet-inches.tip3':
     'Measure every mark from the same end of the board. Marking each piece from the last one adds up small errors along the length.',
   'site.job.guide.feet-inches.tip4':
@@ -1245,21 +1306,21 @@ export const enSite = {
   'page.drywall-room-10x10.heading': 'How many sheets of drywall for a 10x10 room?',
   'page.drywall-room-10x10.label': '10x10 room',
   'page.drywall-room-10x10.intro':
-    'A 10 by 10 ft room is a small bedroom or a home office. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+    'A 10 by 10 ft room is a small bedroom or a home office. With 8 ft walls it takes 13 sheets of 4 × 8 ft, or 9 of the longer 4 × 12 ft sheets.',
   'page.drywall-room-10x12.title': 'Drywall for a 10x12 Room: 15 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-10x12.description':
     'A 10 by 12 ft room with 8 ft walls takes 15 sheets of 4x8 drywall or 10 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
   'page.drywall-room-10x12.heading': 'How many sheets of drywall for a 10x12 room?',
   'page.drywall-room-10x12.label': '10x12 room',
   'page.drywall-room-10x12.intro':
-    'A 10 by 12 ft room is a common size for a bedroom or a nursery. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+    'A 10 by 12 ft room is a common size for a bedroom or a nursery. With 8 ft walls it takes 15 sheets of 4 × 8 ft, or 10 of the longer 4 × 12 ft sheets.',
   'page.drywall-room-12x12.title': 'Drywall for a 12x12 Room: 17 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-12x12.description':
     'A 12 by 12 ft room with 8 ft walls takes 17 sheets of 4x8 drywall or 11 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
   'page.drywall-room-12x12.heading': 'How many sheets of drywall for a 12x12 room?',
   'page.drywall-room-12x12.label': '12x12 room',
   'page.drywall-room-12x12.intro':
-    'A 12 by 12 ft room is a typical main bedroom or a small living room. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+    'A 12 by 12 ft room is a typical main bedroom or a small living room. With 8 ft walls it takes 17 sheets of 4 × 8 ft, or 11 of the longer 4 × 12 ft sheets.',
   'page.drywall-room-12x14.title': 'Drywall for a 12x14 Room: 19 Sheets of 4x8 | Maestro Calc',
   'page.drywall-room-12x14.description':
     'A 12 by 14 ft room with 8 ft walls takes 19 sheets of 4x8 drywall or 13 of 4x12 for the walls and the ceiling, with 10% extra, and the room at 9 or 10 ft.',
@@ -1273,7 +1334,7 @@ export const enSite = {
   'page.drywall-room-12x16.heading': 'How many sheets of drywall for a 12x16 room?',
   'page.drywall-room-12x16.label': '12x16 room',
   'page.drywall-room-12x16.intro':
-    'A 12 by 16 ft room is a large bedroom, a living room or a bonus room over a garage. Longer 4 by 12 ft sheets leave fewer joints to tape, but they take two people to lift.',
+    'A 12 by 16 ft room is a large bedroom, a living room or a bonus room over a garage. With 8 ft walls it takes 21 sheets of 4 × 8 ft, or 14 of the longer 4 × 12 ft sheets.',
   'page.topsoil-raised-bed-4x4.title': 'Soil for a 4x4 Raised Bed: 0.65 Cubic Yards | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'A 4 by 4 ft raised bed 12 in deep takes 0.65 cubic yards of soil with 10% for settling: 24 bags of 0.75 cu ft or 12 of 1.5 cu ft, and the bed at 18 or 24 in.',

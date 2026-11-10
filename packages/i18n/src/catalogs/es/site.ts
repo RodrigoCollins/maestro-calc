@@ -51,14 +51,14 @@ export const esSite = {
   'site.job.note.gravel':
     'Cada cifra es grava compactada, como se coloca la base de una entrada, con un 5% extra, los valores iniciales de la calculadora de grava. El proveedor vende la grava por su volumen suelto, así que las yardas cúbicas a pedir son más que el espacio que llena. Cada profundidad abre la calculadora con sus valores ya cargados.',
   'site.job.note.paint':
-    'Las cifras pintan las cuatro paredes, sin una puerta de 20 pies cuadrados ni dos ventanas de 15 cada una, en dos manos a 350 pies cuadrados por galón, los valores iniciales de la calculadora de pintura, y se redondean a latas de un galón enteras. Cada altura abre la calculadora con sus valores ya cargados.',
+    'Las cifras pintan las cuatro paredes con los valores iniciales de la calculadora de pintura, calculados paso a paso abajo, y se redondean a latas de un galón enteras. Cada altura abre la calculadora con sus valores ya cargados.',
   'site.job.note.drywall':
-    'Las cifras cubren las cuatro paredes y el techo, sin una puerta de 20 pies cuadrados ni dos ventanas de 15 cada una, con un 10% extra por cortes, los valores iniciales de la calculadora de drywall, y se redondean a placas enteras. Cada altura abre la calculadora con sus valores ya cargados.',
+    'Las cifras cubren las cuatro paredes y el techo con los valores iniciales de la calculadora de drywall, calculados paso a paso abajo, y se redondean a placas enteras. Cada altura abre la calculadora con sus valores ya cargados.',
   'site.job.sheetsOf': 'placas de',
   'site.job.note.topsoil':
     'Las cifras suman un 10% por asentamiento, el valor inicial de la calculadora de tierra para jardín, y se redondean a bolsas enteras de 0.75 o 1.5 cu ft. Una yarda cúbica son 27 pies cúbicos. Cada profundidad abre la calculadora con sus valores ya cargados.',
   'site.job.note.roofing':
-    'Las medidas son la planta del techo con sus aleros. Las cifras suman un 10% extra, el valor inicial de la calculadora de tejas, y se redondean a paquetes enteros, tres por cuadrado de 100 pies cuadrados, y a rollos enteros de fieltro sintético. Cada pendiente abre la calculadora con sus valores ya cargados.',
+    'Las medidas son la planta del techo con sus aleros. Las cifras suman un 10% extra, el valor inicial de la calculadora de tejas, calculado paso a paso abajo. Cada pendiente abre la calculadora con sus valores ya cargados.',
   'site.job.note.board-feet':
     'Las medidas son nominales, la medida del nombre de la madera, como cuenta los pies tablares la norma estadounidense de madera blanda: grosor y ancho en pulgadas, largo en pies. La columna cepillada toma la medida mínima seca de la tabla 3 de PS 20-20. Cada largo abre la calculadora con sus medidas puestas.',
   'site.job.board-feet.nominal': 'Pies tablares, medida nominal',
@@ -139,14 +139,14 @@ export const esSite = {
   'site.job.floor.count': 'Piezas',
   'site.job.floor.extra': 'Con 10% extra',
   'site.job.room.paint.lead':
-    'Las paredes no cuentan una puerta de 20 sq ft ni dos ventanas de 15 sq ft, el techo es el largo por el ancho, y el recorte es el borde que pintas con brocha antes del rodillo: junto al techo, junto al piso y en cada esquina.',
+    'El recorte es el borde que pintas con brocha antes del rodillo: junto al techo, junto al piso y en cada esquina del cuarto.',
   'site.job.room.paint.sheet':
     'La ficha técnica de Quali-Kote detrás de estas cifras da de 350 a 400 sq ft por galón, seca al tacto en 1 hora y acepta otra mano a las 4 horas a 77 °F y 50% de humedad, así que las dos manos caben en un día. El drywall sin pintar lleva dos manos, o primero una de primer.',
   'site.job.room.paint.quarts': 'Paredes y techo, en latas de galón y de cuarto',
   'site.job.room.metricColumn': 'Área (m²)',
   'site.job.room.paint.litresColumn': 'Litros, dos manos',
   'site.job.room.drywall.lead':
-    'Las paredes no cuentan una puerta ni dos ventanas, y el techo se cuenta aparte, cada uno con 10% por cortes. El manual de CGC (USG) coloca primero el techo; las placas atravesadas sobre los montantes reducen hasta un 25% las juntas que terminar.',
+    'El manual de CGC (USG) coloca primero el techo, y las placas atravesadas sobre los montantes reducen hasta un 25% las juntas que terminar.',
   'site.job.room.drywall.screws':
     'Tornillos a la separación máxima del manual sobre estructura de madera cada 16 in, 16 in en pared y 12 in en techo: una placa de 4 × 8 ft sobre 7 montantes lleva unos 28 en pared y 35 en techo. Una pared resistente al fuego sigue su propio listado.',
   'site.job.room.drywall.areaColumn': 'Paredes y techo (sq ft)',
@@ -361,23 +361,47 @@ export const esSite = {
   'site.job.guide.concrete-tube.tip4':
     'Tu código local fija qué tan hondo va un pilar, muchas veces por debajo de la línea de congelamiento, y qué tan ancha es su base. Revísalo antes de comprar los tubos, porque un hoyo más hondo cambia todas las cifras de esta página.',
   'site.job.guide.concrete-footing.heading': 'Antes de excavar la zapata',
-  'site.job.guide.concrete-footing.tip1':
-    'Excava la zanja con todo su ancho y su profundidad a lo largo de todo el tramo, y mídela en varios puntos. Una zanja un poco más ancha o más honda es la razón habitual de que una zapata lleve más de lo pensado, y para eso es el 10% extra.',
+  'site.job.guide.concrete-footing.tip1.0':
+    'Excava la zanja con todo su ancho y su profundidad a lo largo de todo el tramo, y mídela en varios puntos. Una zanja un poco más ancha o más honda es la razón habitual de que una zapata lleve más de lo pensado, y para eso es el 10% extra: con',
+  'site.job.guide.concrete-footing.tip1.1': ', cubre una zanja',
+  'site.job.guide.concrete-footing.tip1.2': 'in más ancha o',
+  'site.job.guide.concrete-footing.tip1.3': 'in más honda, y nada más.',
   'site.job.guide.concrete-footing.tip2':
     'Mide el largo por el eje de la zapata. Si sumas los lados por fuera de un rectángulo, cuentas cada esquina dos veces; por el eje, las esquinas salen bien.',
-  'site.job.guide.concrete-footing.tip3':
-    'Una zapata larga son muchas bolsas. Pasada una o dos yardas cúbicas, cotiza también el premezclado y pregunta al proveedor si el camión llega a la zanja o si necesitas bomba o carretillas.',
+  'site.job.guide.concrete-footing.tip3.0': 'Una zapata larga son muchas bolsas: con',
+  'site.job.guide.concrete-footing.tip3.1': ', cada',
+  'site.job.guide.concrete-footing.tip3.2':
+    'ft de zanja llevan una yarda cúbica con el extra. Pasada una o dos yardas cúbicas, cotiza también el premezclado y pregunta al proveedor si el camión llega a la zanja o si necesitas bomba o carretillas.',
   'site.job.guide.concrete-footing.tip4':
     'El tamaño de una zapata es una decisión estructural, no de cálculo de materiales. Toma el ancho y la profundidad de tus planos o de tu departamento de construcción local, y luego usa la calculadora para contar el concreto.',
   'site.job.guide.roof-pitch.heading': 'Antes de cortar los cabios',
-  'site.job.guide.roof-pitch.tip1':
-    'Mide la pendiente a nivel y a plomo, nunca a lo largo del techo. Apoya un nivel en un cabio o en la cubierta, marca 12 in sobre el nivel y mide en vertical hasta el techo: esa medida es la subida en 12.',
-  'site.job.guide.roof-pitch.tip2':
-    'Los largos de cabio de esta página llegan hasta la línea a plomo de la cumbrera, sin alero. Suma el alero en la calculadora y resta la mitad del grueso de la tabla de cumbrera antes de marcar el corte.',
-  'site.job.guide.roof-pitch.tip3':
-    'Revisa la cubierta antes de decidir la pendiente. La tabla de cubiertas de esta página da el mínimo del IRC de cada cubierta con esta pendiente, y tu código local o el fabricante del producto pueden pedir más que el código.',
-  'site.job.guide.roof-pitch.tip4':
-    'Más pendiente es más techo sobre la misma planta: más tablero, más fieltro y más tejas. Usa la calculadora de tejas con esta pendiente antes de pedir los materiales.',
+  'site.job.guide.roof-pitch.tip1.0':
+    'Mide la pendiente a nivel y a plomo, nunca a lo largo del techo. Apoya un nivel en un cabio o en la cubierta, marca 12 in sobre el nivel y mide en vertical hasta el techo: esa medida es la subida en 12. Con',
+  'site.job.guide.roof-pitch.tip1.1': 'marca',
+  'site.job.guide.roof-pitch.tip1.2': ', y',
+  'site.job.guide.roof-pitch.tip1.3': 'sobre un nivel de 24 in.',
+  'site.job.guide.roof-pitch.tip2.0':
+    'Los largos de cabio de esta página llegan hasta la línea a plomo de la cumbrera, sin alero. Con',
+  'site.job.guide.roof-pitch.tip2.1': ', un alero de 12 in suma',
+  'site.job.guide.roof-pitch.tip2.2': 'de cabio y uno de 24 in',
+  'site.job.guide.roof-pitch.tip2.3':
+    ', ambos medidos a nivel. Suma el alero en la calculadora y resta la mitad del grueso de la tabla de cumbrera antes de marcar el corte.',
+  'site.job.guide.roof-pitch.tip3.0':
+    'Un inclinómetro, o la app de nivel del teléfono, apoyado en la cubierta lee el ángulo del techo: con',
+  'site.job.guide.roof-pitch.tip3.1': 'debe marcar',
+  'site.job.guide.roof-pitch.tip3.2': ', frente a',
+  'site.job.guide.roof-pitch.tip3.3': 'con',
+  'site.job.guide.roof-pitch.tip3.4': 'y',
+  'site.job.guide.roof-pitch.tip3.5': 'con',
+  'site.job.guide.roof-pitch.tip3.6':
+    ', así que una lectura más cerca de cualquiera de esos es otra pendiente.',
+  'site.job.guide.roof-pitch.tip4.0':
+    'Más pendiente es más techo sobre la misma planta: cada 100 sq ft de planta son',
+  'site.job.guide.roof-pitch.tip4.1': 'sq ft de techo con',
+  'site.job.guide.roof-pitch.tip4.2': 'y',
+  'site.job.guide.roof-pitch.tip4.3': 'sq ft con',
+  'site.job.guide.roof-pitch.tip4.4':
+    ', con más tablero, más fieltro y más tejas. Usa la calculadora de tejas con esta pendiente antes de pedir los materiales.',
   'site.job.guide.rectangle-area.heading': 'Antes de comprar para esta área',
   'site.job.guide.rectangle-area.tip1':
     'Mide cada lado en dos o tres puntos y usa la medida más larga. Las paredes casi nunca están perfectamente a escuadra, y la lectura más corta te deja sin piso o sin azulejo.',
@@ -406,23 +430,41 @@ export const esSite = {
   'site.job.guide.gravel.tip4':
     'Pregunta al proveedor cómo descargará el camión. Algunos choferes pueden esparcir la carga a lo largo de la entrada mientras avanzan, lo que ahorra horas de carretilla, así que diles el largo que necesitas cubrir.',
   'site.job.guide.paint.heading': 'Antes de comprar la pintura',
-  'site.job.guide.paint.tip1':
-    'Mide las paredes, no el piso: el contorno del cuarto por la altura. Un cuarto de 12 por 12 ft con 8 ft de alto tiene 384 sq ft de pared y solo 144 sq ft de piso.',
+  'site.job.guide.paint.tip1.0':
+    'Mide las paredes, no el piso: el contorno del cuarto por la altura. Este cuarto de',
+  'site.job.guide.paint.tip1.1': 'por',
+  'site.job.guide.paint.tip1.2': 'ft con',
+  'site.job.guide.paint.tip1.3': 'ft de alto tiene',
+  'site.job.guide.paint.tip1.4': 'sq ft de pared y solo',
+  'site.job.guide.paint.tip1.5': 'sq ft de piso.',
   'site.job.guide.paint.tip2':
     'El drywall nuevo, el yeso sin pintar y un cambio fuerte de color absorben más pintura. Aplica primero un sellador, o cuenta con menos rendimiento del que indica la etiqueta.',
-  'site.job.guide.paint.tip3':
-    'Compra los galones de todo el cuarto de una vez y mézclalos en una sola cubeta antes de empezar, para que la pintura de dos latas o de dos lotes se vea igual en la pared.',
-  'site.job.guide.paint.tip4':
-    'El techo, los marcos y las puertas llevan su propia pintura, muchas veces otro producto u otro acabado. Calcúlalos aparte, y guarda una lata cerrada del color de las paredes para retoques.',
+  'site.job.guide.paint.tip3.0': 'Compra los',
+  'site.job.guide.paint.tip3.1':
+    'galones de las paredes de una vez y mézclalos en una sola cubeta antes de empezar, para que la pintura de dos latas o de dos lotes se vea igual en la pared.',
+  'site.job.guide.paint.tip4.0':
+    'El techo, los marcos y las puertas llevan su propia pintura, muchas veces otro producto u otro acabado. Calcúlalos aparte: este techo mide',
+  'site.job.guide.paint.tip4.1': 'sq ft,',
+  'site.job.guide.paint.tip4.2': 'gal en dos manos a',
+  'site.job.guide.paint.tip4.3':
+    'sq ft por galón. Guarda una lata cerrada del color de las paredes para retoques.',
   'site.job.guide.drywall.heading': 'Antes de pedir el drywall',
-  'site.job.guide.drywall.tip1':
-    'Cuenta el techo aparte de las paredes. El techo muchas veces lleva otra placa, como una resistente al pandeo, así que conviene tener su propia cantidad de placas.',
-  'site.job.guide.drywall.tip2':
-    'Elige el largo de la placa según la pared. Las placas de 4 × 12 dejan menos juntas que encintar en una pared larga, pero pesan, así que planea dos personas y un paso libre hasta el cuarto.',
-  'site.job.guide.drywall.tip3':
-    'Pide el compuesto y la cinta para juntas junto con las placas: la calculadora los cuenta con las cifras de rendimiento de USG. Los tornillos se estiman arriba; las esquineras y los remates los cuentas en la obra.',
-  'site.job.guide.drywall.tip4':
-    'Deja el extra para los cortes. Alrededor de puertas, ventanas, enchufes y esquinas cortas piezas que no puedes volver a usar, así que un cuarto con muchas esquinas o con escalera necesita más que el valor inicial.',
+  'site.job.guide.drywall.tip1.0': 'Cuenta el techo aparte de las paredes: en este cuarto lleva',
+  'site.job.guide.drywall.tip1.1': 'placas de 4 × 8 ft, y las paredes',
+  'site.job.guide.drywall.tip1.2':
+    '. El techo muchas veces lleva otra placa, como una resistente al pandeo, así que conviene tener su propia cantidad de placas.',
+  'site.job.guide.drywall.tip2.0': 'Elige el largo de la placa según la pared:',
+  'site.job.guide.drywall.tip2.1': 'placas de 4 × 12 ft cubren este cuarto donde hacen falta',
+  'site.job.guide.drywall.tip2.2':
+    'de 4 × 8 ft, con menos juntas que encintar, pero pesan, así que planea dos personas y un paso libre hasta el cuarto.',
+  'site.job.guide.drywall.tip3.0': 'Pide el compuesto y la cinta para juntas junto con las placas:',
+  'site.job.guide.drywall.tip3.1': 'gal de compuesto y',
+  'site.job.guide.drywall.tip3.2':
+    'ft de cinta para este cuarto, con las cifras de rendimiento de USG. Los tornillos se estiman arriba; las esquineras y los remates los cuentas en la obra.',
+  'site.job.guide.drywall.tip4.0': 'Deja el extra para los cortes: el 10% de los',
+  'site.job.guide.drywall.tip4.1': 'sq ft de este cuarto son',
+  'site.job.guide.drywall.tip4.2':
+    'sq ft de placa. Alrededor de puertas, ventanas, enchufes y esquinas cortas piezas que no puedes volver a usar, así que un cuarto con muchas esquinas o con escalera necesita más que el valor inicial.',
   'site.job.guide.topsoil.heading': 'Antes de llenar el cantero o el área',
   'site.job.guide.topsoil.tip1':
     'La tierra se asienta después de colocarla. Reparte un relleno hondo por capas, riega cada una un poco y completa el cantero cuando ya se haya asentado.',
@@ -433,14 +475,29 @@ export const esSite = {
   'site.job.guide.topsoil.tip4':
     'Planea dónde deja el camión el montón: cerca del trabajo, fuera del pasto si puedes, y tapado si viene lluvia.',
   'site.job.guide.roofing.heading': 'Antes de pedir las tejas',
-  'site.job.guide.roofing.tip1':
-    'Mide la planta con los aleros, porque los aleros también son techo. Un alero de 1 ft en cada lado de una casa de 38 por 28 ft da una planta de 40 por 30 ft.',
-  'site.job.guide.roofing.tip2':
-    'Las tejas se venden por paquete y se cuentan por cuadrado de 100 sq ft. El paquete que usa la calculadora cubre 33.33 sq ft, tres por cuadrado; revisa la cobertura impresa en el paquete que compras.',
-  'site.job.guide.roofing.tip3':
-    'De 2 en 12 hasta 4 en 12, el IRC pide dos capas de fieltro debajo de las tejas asfálticas, y por debajo de 2 en 12 no las permite. La calculadora de tejas duplica los rollos en ese rango.',
-  'site.job.guide.roofing.tip4':
-    'El extra cubre la hilera de arranque, las tejas de cumbrera y limatesa, y los cortes en las limahoyas. Los clavos, el gotero, los tapajuntas y la barrera contra hielo van aparte, así que pídelos al proveedor junto con el pedido.',
+  'site.job.guide.roofing.tip1.0':
+    'Mide la planta con los aleros, porque los aleros también son techo. Un alero de 1 ft en cada lado de una casa de',
+  'site.job.guide.roofing.tip1.1': 'por',
+  'site.job.guide.roofing.tip1.2': 'ft da esta planta de',
+  'site.job.guide.roofing.tip1.3': 'por',
+  'site.job.guide.roofing.tip1.4': 'ft.',
+  'site.job.guide.roofing.tip2.0':
+    'Las tejas se venden por paquete y se cuentan por cuadrado de 100 sq ft. El paquete que usa la calculadora cubre 33.33 sq ft, tres por cuadrado, así que los',
+  'site.job.guide.roofing.tip2.1': 'cuadrados de este techo con',
+  'site.job.guide.roofing.tip2.2': 'llevan',
+  'site.job.guide.roofing.tip2.3':
+    'paquetes con el extra; revisa la cobertura impresa en el paquete que compras.',
+  'site.job.guide.roofing.tip3.0':
+    'De 2 en 12 hasta 4 en 12, el IRC pide dos capas de fieltro debajo de las tejas asfálticas, y por debajo de 2 en 12 no las permite. La calculadora de tejas duplica los rollos en ese rango: con',
+  'site.job.guide.roofing.tip3.1': 'este techo lleva',
+  'site.job.guide.roofing.tip3.2': 'sq ft de fieltro antes del extra, frente a',
+  'site.job.guide.roofing.tip3.3': 'sq ft con',
+  'site.job.guide.roofing.tip3.4': '.',
+  'site.job.guide.roofing.tip4.0': 'El extra de este techo,',
+  'site.job.guide.roofing.tip4.1':
+    'sq ft, cubre la hilera de arranque, las tejas de cumbrera y limatesa, con',
+  'site.job.guide.roofing.tip4.2':
+    'ft de cumbrera aquí, y los cortes en las limahoyas. Los clavos, el gotero, los tapajuntas y la barrera contra hielo van aparte, así que pídelos al proveedor junto con el pedido.',
   'site.job.guide.board-feet.heading': 'Antes de pedir la madera',
   'site.job.guide.board-feet.tip1':
     'Revisa una cuenta o una factura con la medida nominal, 2 por 4 para un 2x4: PS 20-20 cuenta los pies tablares con ella. Usa la medida real solo para la madera que de verdad tiene la pieza, por ejemplo para su peso.',
@@ -451,10 +508,16 @@ export const esSite = {
   'site.job.guide.board-feet.tip4':
     'La madera dura se vende muchas veces en bruto, con el grosor en cuartos de pulgada: 4/4 es 1 in y 8/4 es 2 in. Pregunta si la cuenta toma la medida en bruto o la cepillada.',
   'site.job.guide.feet-inches.heading': 'Antes de marcar y cortar',
-  'site.job.guide.feet-inches.tip1':
-    'Marca con la columna de la cinta, no con los decimales. Redondea al 1/16 in más cercano, la marca más chica de casi todas las cintas, que es lo más fino que suele salir un corte.',
-  'site.job.guide.feet-inches.tip2':
-    'Cuenta la hoja de la sierra. Cada corte se come cerca de 1/8 in de madera, así que al cortar una tabla en partes iguales cada pieza queda un poco corta si no restas antes los cortes.',
+  'site.job.guide.feet-inches.tip1.0': 'Marca con la columna de la cinta, no con los decimales:',
+  'site.job.guide.feet-inches.tip1.1': 'in son',
+  'site.job.guide.feet-inches.tip1.2':
+    'en la cinta. Redondea al 1/16 in más cercano, la marca más chica de casi todas las cintas, que es lo más fino que suele salir un corte.',
+  'site.job.guide.feet-inches.tip2.0':
+    'Cuenta la hoja de la sierra. Cada corte se come cerca de 1/8 in de madera, así que al cortar una tabla en partes iguales cada pieza queda un poco corta si no restas antes los cortes: aquí',
+  'site.job.guide.feet-inches.tip2.1': '× 1/8 in =',
+  'site.job.guide.feet-inches.tip2.2': 'se van en la sierra, y cada una de las',
+  'site.job.guide.feet-inches.tip2.3': 'piezas mide',
+  'site.job.guide.feet-inches.tip2.4': '.',
   'site.job.guide.feet-inches.tip3':
     'Mide todas las marcas desde la misma punta de la tabla. Marcar cada pieza desde la anterior va sumando pequeños errores a lo largo de la tabla.',
   'site.job.guide.feet-inches.tip4':
@@ -1266,21 +1329,21 @@ export const esSite = {
   'page.drywall-room-10x10.heading': '¿Cuántas placas de drywall para un cuarto de 10x10?',
   'page.drywall-room-10x10.label': 'Cuarto de 10x10',
   'page.drywall-room-10x10.intro':
-    'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+    'Un cuarto de 10 por 10 ft es un dormitorio pequeño o una oficina en casa. Con paredes de 8 ft lleva 13 placas de 4 × 8 ft, o 9 de las placas largas de 4 × 12 ft.',
   'page.drywall-room-10x12.title': 'Drywall para cuarto de 10x12: 15 placas | Maestro Calc',
   'page.drywall-room-10x12.description':
     'Un cuarto de 10 por 12 ft con paredes de 8 ft lleva 15 placas de drywall de 4x8 o 10 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
   'page.drywall-room-10x12.heading': '¿Cuántas placas de drywall para un cuarto de 10x12?',
   'page.drywall-room-10x12.label': 'Cuarto de 10x12',
   'page.drywall-room-10x12.intro':
-    'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+    'Un cuarto de 10 por 12 ft es una medida común para un dormitorio o el cuarto de un bebé. Con paredes de 8 ft lleva 15 placas de 4 × 8 ft, o 10 de las placas largas de 4 × 12 ft.',
   'page.drywall-room-12x12.title': 'Drywall para cuarto de 12x12: 17 placas | Maestro Calc',
   'page.drywall-room-12x12.description':
     'Un cuarto de 12 por 12 ft con paredes de 8 ft lleva 17 placas de drywall de 4x8 u 11 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
   'page.drywall-room-12x12.heading': '¿Cuántas placas de drywall para un cuarto de 12x12?',
   'page.drywall-room-12x12.label': 'Cuarto de 12x12',
   'page.drywall-room-12x12.intro':
-    'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+    'Un cuarto de 12 por 12 ft es un dormitorio principal típico o una sala pequeña. Con paredes de 8 ft lleva 17 placas de 4 × 8 ft, o 11 de las placas largas de 4 × 12 ft.',
   'page.drywall-room-12x14.title': 'Drywall para cuarto de 12x14: 19 placas | Maestro Calc',
   'page.drywall-room-12x14.description':
     'Un cuarto de 12 por 14 ft con paredes de 8 ft lleva 19 placas de drywall de 4x8 o 13 de 4x12 para paredes y techo, con 10% de extra, y a 9 o 10 ft.',
@@ -1294,7 +1357,7 @@ export const esSite = {
   'page.drywall-room-12x16.heading': '¿Cuántas placas de drywall para un cuarto de 12x16?',
   'page.drywall-room-12x16.label': 'Cuarto de 12x16',
   'page.drywall-room-12x16.intro':
-    'Un cuarto de 12 por 16 ft es un dormitorio grande, una sala o un cuarto sobre el garaje. Las placas largas de 4 por 12 ft dejan menos juntas que encintar, pero se levantan entre dos personas.',
+    'Un cuarto de 12 por 16 ft es un dormitorio grande, una sala o un cuarto sobre el garaje. Con paredes de 8 ft lleva 21 placas de 4 × 8 ft, o 14 de las placas largas de 4 × 12 ft.',
   'page.topsoil-raised-bed-4x4.title': 'Tierra para cama elevada de 4x4: 0.65 yd³ | Maestro Calc',
   'page.topsoil-raised-bed-4x4.description':
     'Una cama elevada de 4 por 4 ft con 12 in de tierra lleva 0.65 yardas cúbicas con 10% por asentamiento: 24 bolsas de 0.75 cu ft o 12 de 1.5, y a 18 o 24 in.',

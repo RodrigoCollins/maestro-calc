@@ -52,6 +52,7 @@ import {
   isLandJob,
   isQuestionJob,
   JOBS,
+  jobsOf,
   QUESTION_IDS,
   type Job,
   type JobCase,
@@ -64,7 +65,6 @@ import { concrete } from './concrete.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { paint } from './paint.ts';
-import { jobLinks } from './job-links.ts';
 import { dressedOf } from './lumber-sizes.ts';
 import { roofing } from './roofing.ts';
 import {
@@ -1049,15 +1049,30 @@ const noteOf = (id: JobId, locale: Locale): string => {
  * made each page share its links with every sibling); the hub and the calculator link them all.
  */
 const othersOf = (id: JobId, locale: Locale): JobView['others'] => {
-  if (isQuestionJob(id)) {
-    const text = siteText(locale);
-    return QUESTION_IDS.filter((each) => each !== id).map((each) => ({
-      href: pathOf(each, locale),
-      title: text(`page.${each}.heading`),
-    }));
-  }
-  const questions = new Set(QUESTION_IDS.map((each) => pathOf(each, locale)));
-  return jobLinks(JOBS[id].calculator, locale, id).filter(({ href }) => !questions.has(href));
+  const text = siteText(locale);
+  const group: readonly JobId[] = isQuestionJob(id)
+    ? QUESTION_IDS
+    : jobsOf(JOBS[id].calculator).filter((each) => !isQuestionJob(each));
+  return nearestOf(group, id).map((each) => ({
+    href: pathOf(each, locale),
+    title: text(`page.${each}.heading`),
+  }));
+};
+
+/**
+ * The `count` members of `group` nearest to `id` in table order, in table order (content audit
+ * 2026-11-10: the full list was the largest block every page of a family shared): the ones just
+ * before and just after it, taken from the other side at an end of the table.
+ */
+const nearestOf = (group: readonly JobId[], id: JobId, count = 4): JobId[] => {
+  const at = group.indexOf(id);
+  return group
+    .map((each, index) => ({ each, index, away: Math.abs(index - at) }))
+    .filter(({ away }) => away > 0)
+    .toSorted((x, y) => x.away - y.away || x.index - y.index)
+    .slice(0, count)
+    .toSorted((x, y) => x.index - y.index)
+    .map(({ each }) => each);
 };
 
 /** The page of job `id` in `locale`: every figure worked out by the engine of its calculator. */

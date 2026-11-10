@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { JOB_IDS, JOBS } from '../routing/jobs.ts';
 import { LOCALES } from '../routing/routes.ts';
 import { CGC_CLADDING, jobRoom, QUALI_KOTE_PDS } from './job-room.ts';
+import { jobView } from './job-view.ts';
+import { jobWorked } from './job-worked.ts';
 
 const ROOMS = JOB_IDS.filter((id) => ['paint', 'drywall'].includes(JOBS[id].calculator));
 const PAIRS = ROOMS.flatMap((id) => LOCALES.map((locale) => [id, locale] as const));
@@ -112,5 +114,25 @@ describe('jobRoom (every room page)', () => {
     expect(jobRoom('concrete-slab-10x10', 'es')).toBeUndefined();
     for (const source of [QUALI_KOTE_PDS, CGC_CLADDING])
       expect(source.retrieved).toBe('2026-11-09');
+  });
+});
+
+// content audit 2026-11-10: the note under the table and the lead of the room section both
+// restated the door, the windows and the extra that the worked steps already show with the room's
+// own figures, words every room page shared with its siblings
+describe('room pages say the openings and the extra once, in the worked steps', () => {
+  it.each(PAIRS)('keeps them out of the note and the lead of %s in %s', (id, locale) => {
+    const note = jobView(id, locale).note;
+    const [lead] = jobRoom(id, locale)?.paragraphs ?? [];
+    for (const said of [note, lead]) {
+      expect(said).not.toMatch(/\b20 (sq ft|pies cuadrados)\b/);
+      expect(said).not.toMatch(/(one door|una puerta)/);
+    }
+    expect(note).toMatch(/\S/);
+    expect(lead?.length).toBeGreaterThan(60);
+    // the worked steps still say them, with the figures
+    const steps = jobWorked(id, locale)?.steps.map(({ label, math }) => `${label} ${math}`);
+    expect(steps?.join(' ')).toMatch(/20 sq ft/);
+    expect(steps?.join(' ')).toMatch(JOBS[id].calculator === 'drywall' ? /10%/ : /350/);
   });
 });

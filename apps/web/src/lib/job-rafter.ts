@@ -1,7 +1,7 @@
 import type { Locale } from '@maestro-calc/i18n';
 import { isPitchJob, PITCH_RISES, type JobId } from '../routing/jobs.ts';
 import { sentence, type ExtraSection } from './job-extra.ts';
-import { siteText } from './site-text.ts';
+import { siteText, type SiteText } from './site-text.ts';
 
 /*
  * The exact pitch pages (AdSense audit 2026-11-08): a pitch also gives the lines of the rafter
@@ -46,6 +46,54 @@ export const rafterTable = (rise: number) => {
     jackSide: 144 / common,
     hipSide: (12 * Math.sqrt(288)) / hip,
   };
+};
+
+/** A rise in inches with no trailing zeros: `6`, `7.5`. */
+const riseText = (rise: number): string => String(Number(rise.toFixed(2)));
+
+/** The roof over 100 sq ft of footprint at a rise of `rise` in 12, √(1 + (rise/12)²) × 100. */
+const per100 = (rise: number): string => two((100 * Math.sqrt(144 + rise * rise)) / 12);
+
+/**
+ * The four tips of the exact pitch page `id` (content audit 2026-11-10: the same four on every
+ * pitch page), each with the page's own figures: the reading of the rise, the rafter an overhang
+ * adds, the angle an inclinometer shows next to the pitches one inch either side, and the roof over
+ * 100 sq ft of footprint here and one inch steeper. `undefined` for any other job.
+ */
+export const pitchTips = (
+  id: JobId,
+  text: SiteText,
+): readonly [string, string, string, string] | undefined => {
+  if (!isPitchJob(id)) return undefined;
+  const rise = PITCH_RISES[id];
+  const label = (each: number) => `${riseText(each)}/12`;
+  const { common } = rafterTable(rise);
+  return [
+    sentence(text, 'site.job.guide.roof-pitch.tip1', [
+      label(rise),
+      `${riseText(rise)} in`,
+      `${riseText(2 * rise)} in`,
+    ]),
+    sentence(text, 'site.job.guide.roof-pitch.tip2', [
+      label(rise),
+      sixteenths(common),
+      sixteenths(2 * common),
+    ]),
+    sentence(text, 'site.job.guide.roof-pitch.tip3', [
+      label(rise),
+      degrees(rise, 12),
+      degrees(rise - 1, 12),
+      label(rise - 1),
+      degrees(rise + 1, 12),
+      label(rise + 1),
+    ]),
+    sentence(text, 'site.job.guide.roof-pitch.tip4', [
+      per100(rise),
+      label(rise),
+      per100(rise + 1),
+      label(rise + 1),
+    ]),
+  ];
 };
 
 /** What the exact pitch page `id` adds after its OSHA section, or `undefined` for any other job. */

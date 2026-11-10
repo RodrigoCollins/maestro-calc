@@ -5,7 +5,7 @@ import type { Locale } from '@maestro-calc/i18n';
 import { decimalText } from '../calculator/present.ts';
 import { JOBS, type JobCase, type JobId } from '../routing/jobs.ts';
 import { drywall } from './drywall.ts';
-import type { ExtraFact, ExtraSection } from './job-extra.ts';
+import { sentence, type ExtraFact, type ExtraSection } from './job-extra.ts';
 import { paint } from './paint.ts';
 import { siteText, type SiteText } from './site-text.ts';
 
@@ -284,6 +284,77 @@ const drywallSection = (id: JobId, text: SiteText): ExtraSection => {
     },
     sources: [CGC_CLADDING],
   };
+};
+
+/** The sheets of each size the drywall calculator buys for walls and ceiling of `raw`. */
+const drywallSheets = (raw: JobCase): readonly [bigint, bigint] => {
+  const of = (sheet: '4x8' | '4x12') => {
+    const input = { ...raw, sheet };
+    const result = drywall.compute(valid(drywall.validate(input), input));
+    const sheets = result.shopping.find(({ materialId }) => materialId === 'drywall')?.qty;
+    if (sheets === undefined) throw new Error('the drywall engine buys no sheets');
+    return sheets;
+  };
+  return [of('4x8'), of('4x12')];
+};
+
+type Tips = readonly [string, string, string, string];
+
+const drywallTips = (id: JobId, text: SiteText): Tips => {
+  const [raw] = JOBS[id].cases;
+  const { length, width } = roomOf(raw);
+  const ceiling = length.mul(width);
+  const walls = drywallWalls(raw);
+  const [ceilingSheets] = PANELS.map((panel) => ceiling.mul(EXTRA).div(panel).ceil());
+  const [small, large] = drywallSheets(raw);
+  const area = walls.area.add(ceiling);
+  const finishing = drywallFinishing(raw);
+  return [
+    sentence(text, 'site.job.guide.drywall.tip1', [String(ceilingSheets), String(walls.sheets[0])]),
+    sentence(text, 'site.job.guide.drywall.tip2', [String(large), String(small)]),
+    sentence(text, 'site.job.guide.drywall.tip3', [two(finishing.compound), two(finishing.tape)]),
+    sentence(text, 'site.job.guide.drywall.tip4', [
+      whole(area),
+      exact(area.mul(EXTRA.sub(Rational.of(1)))),
+    ]),
+  ];
+};
+
+const paintTips = (id: JobId, text: SiteText): Tips => {
+  const [raw] = JOBS[id].cases;
+  const { length, width, height } = roomOf(raw);
+  const ceiling = length.mul(width);
+  const gross = length.add(width).mul(Rational.of(2)).mul(height);
+  const coverage = valueIn(PAINT_COVERAGE.perGallon, ft2);
+  const { outputs } = paint.compute(valid(paint.validate(raw), raw));
+  const cans = valueIn(outputs.gallons, gal).ceil();
+  return [
+    sentence(text, 'site.job.guide.paint.tip1', [
+      whole(length),
+      whole(width),
+      whole(height),
+      whole(gross),
+      whole(ceiling),
+    ]),
+    text('site.job.guide.paint.tip2'),
+    sentence(text, 'site.job.guide.paint.tip3', [String(cans)]),
+    sentence(text, 'site.job.guide.paint.tip4', [
+      whole(ceiling),
+      two(ceiling.mul(Rational.of(2)).div(coverage)),
+      whole(coverage),
+    ]),
+  ];
+};
+
+/**
+ * The four tips of the paint or drywall page of a room (content audit 2026-11-10: the same four on
+ * every room page), with the room's own figures; `undefined` for any other job.
+ */
+export const roomTips = (id: JobId, text: SiteText): Tips | undefined => {
+  const { calculator } = JOBS[id];
+  if (calculator === 'paint') return paintTips(id, text);
+  if (calculator === 'drywall') return drywallTips(id, text);
+  return undefined;
 };
 
 /** What the paint or drywall page of a room adds to its table, or `undefined` for any other job. */
