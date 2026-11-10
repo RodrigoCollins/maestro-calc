@@ -525,6 +525,19 @@ export const enSite = {
   'site.job.worked.concrete.weight': 'Weight of the dry mix to lift and carry',
   'site.job.worked.cost.readyMix': 'Ready-mix at the two producer prices',
   'site.job.worked.cost.installed': 'Installed at the lowest and the highest published price',
+  'site.job.worked.cost.walls': 'Wall to paint, less the door and the windows',
+  'site.job.worked.cost.cans': 'Gallons for two coats, rounded up to whole cans',
+  'site.job.worked.cost.paint': 'Paint at the lowest and the highest price per gallon',
+  'site.job.worked.cost.painter': 'A painter by the floor, at $1 and $4 per square foot',
+  'site.job.worked.cost.outsideWalls': 'Outside walls of the first house, counted whole',
+  'site.job.worked.cost.outsidePaint':
+    'Outside paint at the lowest and the highest price per gallon',
+  'site.job.worked.cost.outside': 'A painter outside, at $2.20 and $4.40 per square foot',
+  'site.job.worked.cost.inside': 'A painter inside, by the floor, at $1 and $4 per square foot',
+  'site.job.worked.cost.drywallArea': 'Walls less the door and the windows, plus the ceiling',
+  'site.job.worked.cost.panels': 'Panels at the lowest and the highest price per sheet',
+  'site.job.worked.cost.drywallInstalled': 'Hung and finished, at $1.50 and $3.50 per square foot',
+  'site.job.worked.cost.labor': 'The labor alone, at $1.15 and $3 per square foot',
   'site.job.worked.area.feet': 'Area of the first size',
   'site.job.worked.area.yards': 'In square yards, 9 square feet each',
   'site.job.worked.area.metric': 'In metric, with 1 ft = 0.3048 m',
@@ -1554,6 +1567,51 @@ export const enSite = {
   'site.job.question.slabCost.heading': 'Ready-mix for a 30 × 30 ft slab',
   'site.job.question.slabCost.lead':
     'A 30 by 30 ft slab is 900 square feet, the size people price most often; each inch of thickness adds about 3 cubic yards and $489 to $617 of concrete:',
+  'site.job.question.exteriorSource': 'Exterior painting price per square foot and per gallon',
+  'site.job.question.interiorSource': 'Interior painting price per square foot and per gallon',
+  'site.job.question.roomSource': 'Room painting price per square foot',
+  'site.job.question.drywallSource': 'Installed drywall price per square foot and per sheet',
+  'site.job.question.panelSource': 'Drywall panel price',
+  'site.job.question.gallonGrade.heading': 'What a gallon of interior paint costs',
+  'site.job.question.gallonGrade.lead':
+    'This Old House prices a gallon by its grade. The 10 by 10 ft room takes 2 cans for two coats and the 12 by 16 ft room 3:',
+  'site.job.question.paintCoats.heading': 'One coat or two, room by room',
+  'site.job.question.paintCoats.lead':
+    'A repaint in the same color may need only one coat. The last column prices two coats of mid-tier paint at $35 to $50 a gallon:',
+  'site.job.question.outsidePaint.heading': 'Outside paint for each house',
+  'site.job.question.outsidePaint.lead':
+    'Two coats at 350 square feet per gallon, in whole cans, at This Old House’s exterior prices of $30 to $50 and $45 to $85 a gallon:',
+  'site.job.question.wallHeight.heading': 'The 1,500 sq ft house at three wall heights',
+  'site.job.question.wallHeight.lead':
+    'The same 30 by 50 ft footprint with 8, 9 and 10 ft walls, painted outside at $2.20 to $4.40 per square foot:',
+  'site.job.question.drywallWays.heading': 'Two more ways to check a drywall quote',
+  'site.job.question.drywallWays.lead':
+    'Fixr also prices one installed 4 by 8 ft sheet at $48 to $80, and the labor alone at $1.15 to $3 per square foot of drywall:',
+  'site.job.question.wallsOnly.heading': 'The walls alone, no ceiling',
+  'site.job.question.wallsOnly.lead':
+    'With the ceiling left out, the area, the sheets and the installed price at $1.50 to $3.50 per square foot all drop:',
+  'site.job.question.grade.value': 'Value',
+  'site.job.question.grade.mid': 'Mid-tier',
+  'site.job.question.grade.premium': 'Premium',
+  'site.job.question.col.grade': 'Grade',
+  'site.job.question.col.perGallon': 'Per gallon',
+  'site.job.question.col.smallRoom': '10 × 10 ft room, 2 cans',
+  'site.job.question.col.largeRoom': '12 × 16 ft room, 3 cans',
+  'site.job.question.col.paintedWalls': 'Wall to paint, sq ft',
+  'site.job.question.col.oneCoat': 'Cans, one coat',
+  'site.job.question.col.twoCoats': 'Cans, two coats',
+  'site.job.question.col.midTier': 'Two coats, mid-tier',
+  'site.job.question.col.gallonsTwoCoats': 'Gallons, two coats',
+  'site.job.question.col.cans': 'Cans',
+  'site.job.question.col.contractor': 'Contractor-grade',
+  'site.job.question.col.premiumAcrylic': 'Premium acrylic',
+  'site.job.question.col.outsideWalls': 'Outside wall, sq ft',
+  'site.job.question.col.outsidePro': 'Painter, outside',
+  'site.job.question.col.bySheet': 'Installed by the sheet',
+  'site.job.question.col.labor': 'Labor alone',
+  'site.job.question.col.wallsArea': 'Walls, sq ft',
+  'site.job.question.col.sheets': '4 × 8 sheets',
+  'site.job.question.col.wallsInstalled': 'Walls installed',
   'site.job.question.feetToYards.heading': 'Cubic feet to cubic yards',
   'site.job.question.feetToYards.lead':
     'Divide the cubic feet by 27. The cubic meters multiply the cubic feet by 0.028316846592, the exact metric value of a cubic foot.',
@@ -1621,6 +1679,34 @@ export const enSite = {
   'site.job.cost.col.readyMix': 'Ready-mix concrete',
   'site.job.cost.col.installedLow': 'Installed, This Old House range',
   'site.job.cost.col.installedHigh': 'Installed, Concrete Network range',
+  'site.job.cost.room.lead': 'What a painter charges for a room',
+  'site.job.cost.room.perFoot': 'per square foot of floor with a painter',
+  'site.job.cost.room.gallon': 'A gallon of interior paint, value to premium',
+  'site.job.cost.room.pro': '10 × 10 ft room, painter (This Old House)',
+  'site.job.cost.room.paint': '10 × 10 ft room, paint for two coats',
+  'site.job.cost.room.col.cans': 'Cans, two coats',
+  'site.job.cost.room.col.paint': 'Paint, $15 to $60 a gallon',
+  'site.job.cost.room.col.proLow': 'Painter, This Old House range',
+  'site.job.cost.room.col.proHigh': 'Painter, Fixr range',
+  'site.job.cost.house.lead': 'What a painter charges for a house',
+  'site.job.cost.house.perFoot': 'per square foot of wall outside',
+  'site.job.cost.house.inside': 'Inside, per square foot of floor',
+  'site.job.cost.house.fifteen': '1,500 sq ft house (30 × 50 ft), outside',
+  'site.job.cost.house.gallon': 'A gallon of exterior paint',
+  'site.job.cost.house.col.size': 'House length × width × wall height',
+  'site.job.cost.house.col.floor': 'Floor, sq ft',
+  'site.job.cost.house.col.walls': 'Outside wall, sq ft',
+  'site.job.cost.house.col.outside': 'Painter, outside',
+  'site.job.cost.house.col.inside': 'Painter, inside',
+  'site.job.cost.drywall.lead': 'Installed price of drywall, hung and finished',
+  'site.job.cost.drywall.perFoot': 'per square foot installed',
+  'site.job.cost.drywall.sheet': 'One 4 × 8 ft sheet, installed',
+  'site.job.cost.drywall.panel': 'One panel bought alone',
+  'site.job.cost.drywall.twelve': '12 × 12 ft room, walls and ceiling, installed',
+  'site.job.cost.drywall.col.area': 'Drywall, sq ft',
+  'site.job.cost.drywall.col.sheets': '4 × 8 sheets',
+  'site.job.cost.drywall.col.panels': 'Panels, $10 to $20 each',
+  'site.job.cost.drywall.col.installed': 'Installed',
   'page.concrete-cubic-yard-weight.title':
     'A Yard of Concrete Weighs 3,915 to 4,050 lb | Maestro Calc',
   'page.concrete-cubic-yard-weight.description':
@@ -1651,6 +1737,76 @@ export const enSite = {
     'The installed price pays for much more than concrete. Concrete Network names the grading, the subbase, the forms and the finishing, the reinforcement and the local price of concrete as what sets the cost of a slab. A 4 in slab takes 1.36 cubic yards per 100 square feet with the extra, so at the producer prices the concrete is about $2.18 to $2.74 of every square foot, and the rest pays for the base, the steel, the labor and the finish. Thickness moves the concrete in proportion: 6 in takes half again as much as 4 in, and 8 in twice as much. A decorative finish, a sloped or wet site, or a long pump line add to the installed figure, so a quote for a stamped patio can sit well above these ranges.',
   'page.concrete-slab-cost.p2':
     'The ready-mix prices are averages over all the concrete each producer sold in the quarter, in the regions it serves: Eagle Materials reported $160.18 per cubic yard for the quarter ended September 30, 2026, and Knife River $201.90 for its third quarter, so your local price can sit near either one or outside both. Concrete Network notes that some supplier quotes include delivery or short-load fees, and those weigh most on a small pour: a 10 by 10 ft patio needs only 1.36 cubic yards, and a minimum charge for a part load can cost more than the concrete. For a pour that small, the calculator also counts the 80 lb bags. Ask two or three local suppliers for the delivered price per yard, type it into the calculator and compare.',
+  'page.cost-to-paint-a-house.title': 'Cost to Paint a House: $2.20 to $4.40/Sq Ft | Maestro Calc',
+  'page.cost-to-paint-a-house.description':
+    'How much does it cost to paint a house? $2.20 to $4.40 per sq ft of wall outside, $1 to $4 per sq ft of floor inside, for 1,000 to 2,500 sq ft homes.',
+  'page.cost-to-paint-a-house.heading':
+    'Painting a house costs $2.20 to $4.40 per square foot outside and $1 to $4 inside',
+  'page.cost-to-paint-a-house.label': 'Cost to paint a house',
+  'page.cost-to-paint-a-house.intro':
+    'Painting the outside of a house costs about $2.20 to $4.40 per square foot of wall, the exterior painting area This Old House prices in its guide updated March 6, 2026; inside, its interior guide gives $1 to $4 per square foot of floor. A one-story 1,500 sq ft house of 30 by 50 ft with 9 ft walls has 1,440 square feet of outside wall, so a painter charges about $3,168 to $6,336 outside and $1,500 to $6,000 inside. The table prices four house sizes, from 1,000 to 2,500 square feet.',
+  'page.cost-to-paint-a-house.note':
+    'Each house is one story with 9 ft walls, and its outside walls are counted whole, with no door or window taken out, so the wall area is an upper bound. The outside column multiplies that area by $2.20 to $4.40 and the inside column the floor by $1 to $4, This Old House’s ranges. Each house opens the paint calculator, where you can enter the doors, the windows and your own price per gallon.',
+  'page.cost-to-paint-a-house.about': 'What moves the price of painting a house',
+  'page.cost-to-paint-a-house.p1':
+    'This Old House names the type of paint, its finish and its brand among what moves the price outside, and puts painting contractors at $40 to $100 an hour per painter, by experience, insurance and regional labor costs. The wall area matters most, and it follows the wall height as much as the footprint: the same 30 by 50 ft house has 1,280 square feet of outside wall with 8 ft walls and 1,600 with 10 ft walls, $2,816 to $5,632 against $3,520 to $7,040 with a painter. Ask whether a quote counts the trim, the shutters and the doors, or the siding only.',
+  'page.cost-to-paint-a-house.p2':
+    'Doing it yourself saves the labor but not the paint. This Old House prices exterior paint at $30 to $50 a gallon for contractor-grade, $45 to $85 for premium 100% acrylic and $40 to $75 for oil-based. Two coats on the 1,800 square feet of wall of a 50 by 50 ft house take 10.29 gallons at the calculator’s 350 square feet per gallon, so 11 cans: $330 to $550 in contractor-grade or $495 to $935 in premium acrylic, before brushes, rollers, ladders and primer. Inside, a 2,000 sq ft house runs $2,000 to $8,000 with a painter at the range of the interior guide, updated April 20, 2026.',
+  'page.cost-to-paint-a-house.tip1':
+    'Measure the outside walls, not the floor: This Old House prices exterior painting by the area painted, so a 30 by 50 ft house with 9 ft walls is 1,440 square feet of wall, $3,168 to $6,336 at $2.20 to $4.40.',
+  'page.cost-to-paint-a-house.tip2':
+    'Wall height moves the price as much as the footprint: 8 ft walls give that house 1,280 square feet to paint and 10 ft walls 1,600, a quarter more wall on the same floor.',
+  'page.cost-to-paint-a-house.tip3':
+    'Order the outside paint for the whole house at once: two coats on a 50 by 50 ft house take 11 cans, $330 to $550 in contractor-grade and $495 to $935 in premium acrylic.',
+  'page.cost-to-paint-a-house.tip4':
+    'Price the inside by the floor: a 2,000 sq ft house is $2,000 to $8,000 at This Old House’s $1 to $4 per square foot; ask whether the ceilings, the trim and the doors are in the quote.',
+  'page.cost-to-paint-a-room.title': 'Cost to Paint a Room: $1 to $4 per Sq Ft | Maestro Calc',
+  'page.cost-to-paint-a-room.description':
+    'How much does it cost to paint a room? $1 to $4 per sq ft of floor with a painter, and a gallon of paint is $15 to $60, for rooms from 10x10 to 12x16.',
+  'page.cost-to-paint-a-room.heading':
+    'Painting a room costs $1 to $4 per square foot of floor with a painter',
+  'page.cost-to-paint-a-room.label': 'Cost to paint a room',
+  'page.cost-to-paint-a-room.intro':
+    'A painter charges about $1 to $4 per square foot of floor to paint a room, by This Old House’s interior painting guide, and Fixr gives $1.50 to $3.50 for the walls alone, so a 10 by 10 ft bedroom runs $100 to $400. Doing it yourself, the paint is the main cost: This Old House puts a gallon at $15 to $35 for value paint and up to $60 for premium, and two coats on that bedroom’s 270 square feet of wall take 2 cans. The table prices four common rooms with 8 ft walls.',
+  'page.cost-to-paint-a-room.note':
+    'The walls leave out one door of 20 sq ft and two windows of 15 sq ft and take two coats at 350 sq ft per gallon, the paint calculator’s defaults, rounded up to whole cans. The paint column prices those cans from $15 to $60 a gallon; the two painter columns multiply the floor by each guide’s range per square foot. Each room opens the calculator, where you can type your own price per gallon.',
+  'page.cost-to-paint-a-room.about': 'What a painter’s price for a room covers',
+  'page.cost-to-paint-a-room.p1':
+    'A painter’s price is mostly labor. This Old House says labor accounts for the bulk of a professional paint job, at $30 to $60 an hour for standard work and $75 or more for specialty work, which is why both guides price a room by its size and not by its paint. On a 12 by 16 ft room the 3 cans of paint cost $45 to $180, while a painter charges $192 to $768 at This Old House’s range and $288 to $672 at Fixr’s. Ask whether a quote covers the ceiling, the trim and the doors, or the walls only.',
+  'page.cost-to-paint-a-room.p2':
+    'Both guides say when they were checked: This Old House updated its interior painting guide on April 20, 2026, and Fixr its room painting guide on January 31, 2025. This Old House gives a gallon about 350 to 400 square feet in one coat; the calculator counts the low end, 350, so its cans do not come up short. A repaint in the same color may need one coat: the 10 by 10 and 12 by 12 ft rooms then take a single can, and the 12 by 14 and 12 by 16 ft rooms two. This Old House counts two coats plus primer for most interior walls and prices primer at $20 to $30 a gallon.',
+  'page.cost-to-paint-a-room.tip1':
+    'Price a room by its floor, the way both guides do: a 12 by 12 ft room is 144 square feet, so $144 to $576 at This Old House’s $1 to $4 and $216 to $504 at Fixr’s $1.50 to $3.50 per square foot.',
+  'page.cost-to-paint-a-room.tip2':
+    'Buy whole cans for two coats: the 270 square feet of wall of a 10 by 10 ft room take 1.54 gallons, so 2 cans, and the 398 square feet of a 12 by 16 ft room take 2.27 gallons, so 3.',
+  'page.cost-to-paint-a-room.tip3':
+    'Choose the grade before the store: mid-tier paint at $35 to $50 a gallon puts the 3 cans of a 12 by 14 ft room at $105 to $150, against $45 to $105 in value paint and $150 to $180 in premium.',
+  'page.cost-to-paint-a-room.tip4':
+    'Get each quote in writing with what it covers: walls only or walls, ceiling and trim, how many coats and who moves the furniture, so two painters’ prices for the same room compare line by line.',
+  'page.drywall-installation-cost.title':
+    'Drywall Installation Cost: $1.50–$3.50/Sq Ft | Maestro Calc',
+  'page.drywall-installation-cost.description':
+    'How much does drywall installation cost? $1.50 to $3.50 per sq ft hung and finished and $48 to $80 per sheet installed, for rooms from 10x10 to 12x16.',
+  'page.drywall-installation-cost.heading':
+    'Drywall installation costs $1.50 to $3.50 per square foot',
+  'page.drywall-installation-cost.label': 'Drywall installation cost',
+  'page.drywall-installation-cost.intro':
+    'Drywall costs about $1.50 to $3.50 per square foot installed, material and labor together, by Fixr’s drywall installation guide, which also prices one 4 by 8 ft sheet at $48 to $80 installed. The square feet are those of the drywall itself, walls and ceiling, not of the floor: a 12 by 12 ft room with 8 ft walls has 478 square feet of drywall, so it costs about $717 to $1,673 to hang and finish. The table prices four common rooms, with the panels alone for doing it yourself.',
+  'page.drywall-installation-cost.note':
+    'The area is the walls less one door of 20 sq ft and two windows of 15 sq ft, plus the ceiling, and the sheets are 4 by 8 ft with 10% extra, the drywall calculator’s defaults. The panels column prices those sheets from $10 (Fixr) to $20 (Bob Vila) each; the installed column multiplies the area by $1.50 to $3.50. Each room opens the calculator, where you can type your own price per sheet.',
+  'page.drywall-installation-cost.about': 'What a drywall price pays for',
+  'page.drywall-installation-cost.p1':
+    'Most of an installed price is labor. Fixr puts the labor alone at $1.15 to $3 per square foot for standard and moisture-resistant drywall, against $10 to $15 for the material of a 4 by 8 ft sheet, and names the project size, the drywall type and the finish level as what moves the price. On a 10 by 10 ft room the 13 sheets cost $130 to $260 while the labor runs $426 to $1,110, so hanging it yourself saves most of the bill, but the taping, the joint compound and the sanding are then yours: that room takes 3.33 gallons of compound at the calculator’s rate.',
+  'page.drywall-installation-cost.p2':
+    'The two guides date their figures: Fixr updated its drywall installation guide on January 31, 2025, and Bob Vila, which gives $12 to $20 per panel with a national average of $15, on October 31, 2022, so read the panel prices as a range rather than today’s shelf price. Leaving out the ceiling cuts a 12 by 16 ft room from 590 to 398 square feet and from 21 to 14 sheets, and its installed price from $885 to $2,065 down to $597 to $1,393. Ask for the walls and the ceiling as separate lines when you compare quotes.',
+  'page.drywall-installation-cost.tip1':
+    'Measure the drywall, not the floor: a 12 by 12 ft room has 144 square feet of floor but 478 of walls and ceiling, $717 to $1,673 installed at $1.50 to $3.50 per square foot.',
+  'page.drywall-installation-cost.tip2':
+    'Price the walls apart when the ceiling stays: the walls alone of a 12 by 16 ft room are 398 square feet and 14 sheets, $597 to $1,393 installed.',
+  'page.drywall-installation-cost.tip3':
+    'Know what the labor is worth before you take the job on: at Fixr’s $1.15 to $3 per square foot, the labor of a 10 by 10 ft room is $426 to $1,110 of its price.',
+  'page.drywall-installation-cost.tip4':
+    'Check a quote by the sheet too: at $48 to $80 per installed 4 by 8 ft sheet, the 19 sheets of a 12 by 14 ft room come to $912 to $1,520.',
   'page.square-feet-1-car-garage.title':
     '1-Car Garage Square Feet: 240 to 384 sq ft | Maestro Calc',
   'page.square-feet-1-car-garage.description':

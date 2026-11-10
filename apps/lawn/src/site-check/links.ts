@@ -9,6 +9,11 @@ export interface LinkRules {
   /** The calculators: each links the methodology. */
   readonly calculators: readonly string[];
   readonly methodology: string;
+  /**
+   * The cost guides (`COST_GUIDES` of `src/costs.ts`): the home Lawn costs list links the hub and
+   * each page, the hub links each page and each page links the hub (in its `<main>`).
+   */
+  readonly costs?: { readonly hub: string; readonly pages: readonly string[] };
   /** The frost dates index and the pages of each state (`FROST_PAGES` of `src/frost.ts`). */
   readonly frost: {
     readonly index: string;
@@ -23,6 +28,7 @@ const ANCHOR = /<a\b[^>]*?\shref="([^"]*)"/g;
 const MAIN = /<main\b[^>]*>([\s\S]*?)<\/main>/;
 const FOOTER = /<footer\b[^>]*>([\s\S]*?)<\/footer>/;
 const HOME_GUIDES = /<section\b[^>]*\saria-labelledby="guides"[^>]*>([\s\S]*?)<\/section>/;
+const HOME_COSTS = /<section\b[^>]*\saria-labelledby="costs"[^>]*>([\s\S]*?)<\/section>/;
 
 /** The canonical path of a link, or `undefined` for a link off the site, a fragment or a scheme. */
 const pathOf = (href: string, origin: string): string | undefined => {
@@ -61,7 +67,8 @@ export const inboundOf = (
  * footer of every page, a guide and each calculator it explains link each other, each calculator
  * links the methodology, the frost index lists the first page of every state and every frost page
  * links back to the index (the index is in every footer too), the parts of a state link each
- * other, and no sitemap page is an orphan.
+ * other, the home lists every cost guide and the cost hub and its pages link each other, and no
+ * sitemap page is an orphan.
  */
 export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules): string[] => {
   const missing = [
@@ -84,6 +91,7 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
   const guides = rules.guides.map(({ path }) => path);
   const inbound = inboundOf(site, rules);
   const { index, states } = rules.frost;
+  const { costs } = rules;
   return [
     ...must('/', guides, 'the Guides list must link', HOME_GUIDES),
     ...rules.sitemap.flatMap((path) =>
@@ -93,6 +101,13 @@ export const linkProblems = (site: ReadonlyMap<string, string>, rules: LinkRules
       ...calculators.flatMap((calculator) => must(calculator, [path], 'must link its guide')),
       ...must(path, calculators, 'must link the calculator it explains,'),
     ]),
+    ...(costs === undefined
+      ? []
+      : [
+          ...must('/', [costs.hub, ...costs.pages], 'the Lawn costs list must link', HOME_COSTS),
+          ...must(costs.hub, costs.pages, 'must link the cost guide'),
+          ...costs.pages.flatMap((path) => must(path, [costs.hub], 'must link the cost hub')),
+        ]),
     ...rules.calculators.flatMap((path) => must(path, [rules.methodology], 'must link')),
     ...must(
       index,

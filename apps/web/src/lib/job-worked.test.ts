@@ -90,6 +90,41 @@ describe('jobWorked (the worked example of a job page)', () => {
     ]);
   });
 
+  // hand-verified in paint-cost.test.ts: 320 − 50 = 270 ft², 540/350 = 1.54 gal, 2 cans at $15 and
+  // $60 (This Old House, value and premium); 100 ft² of floor at $1 and $4
+  it('prices the first room of the room cost page with the published prices', () => {
+    expect(mathOf(jobWorked('cost-to-paint-a-room', 'en'))).toEqual([
+      '2 × (10 ft + 10 ft) × 8 ft − 20 ft² − 2 × 15 ft² = 270 ft²',
+      '270 ft² × 2 ÷ 350 ft² ≈ 1.54 gal → 2',
+      '2 × $15.00 = $30; 2 × $60.00 = $120',
+      '10 ft × 10 ft = 100 ft²; 100 ft² × $1.00 = $100; 100 ft² × $4.00 = $400',
+    ]);
+  });
+
+  // hand-verified in paint-cost.test.ts: 2 × 65 × 9 = 1,170 ft², 2,340/350 = 6.69 gal, 7 cans at
+  // $30 and $85; 1,170 × $2.20 = $2,574 and × $4.40 = $5,148; 1,000 ft² × $1 and $4
+  it('prices the first house of the house cost page with the published prices', () => {
+    expect(mathOf(jobWorked('cost-to-paint-a-house', 'es'))).toEqual([
+      '2 × (25 ft + 40 ft) × 9 ft = 1,170 ft²',
+      '1,170 ft² × 2 ÷ 350 ft² ≈ 6.69 gal → 7',
+      '7 × $30.00 = $210; 7 × $85.00 = $595',
+      '1,170 ft² × $2.20 = $2,574; 1,170 ft² × $4.40 = $5,148',
+      '25 ft × 40 ft = 1,000 ft²; 1,000 ft² × $1.00 = $1,000; 1,000 ft² × $4.00 = $4,000',
+    ]);
+  });
+
+  // hand-verified in drywall-cost.test.ts: 270 + 100 = 370 ft², 407/32 = 12.7, 13 sheets at $10 and
+  // $20; 370 × $1.50 = $555, × $3.50 = $1,295; 370 × $1.15 = 425.50 ≈ $426, × $3 = $1,110
+  it('prices the first room of the drywall cost page with the published prices', () => {
+    expect(mathOf(jobWorked('drywall-installation-cost', 'en'))).toEqual([
+      '2 × (10 ft + 10 ft) × 8 ft − 20 ft² − 2 × 15 ft² + 10 ft × 10 ft = 370 ft²',
+      '370 ft² × 1.10 ÷ 32 ft² ≈ 12.7 → 13',
+      '13 × $10.00 = $130; 13 × $20.00 = $260',
+      '370 ft² × $1.50 = $555; 370 ft² × $3.50 = $1,295',
+      '370 ft² × $1.15 ≈ $426; 370 ft² × $3.00 = $1,110',
+    ]);
+  });
+
   // hand-verified: 2 × 20 × 8 = 320 − 50 = 270 ft² of wall, + 100 ft² of ceiling = 370 ft² =
   // 34.37 m² (× 0.09290304); 370 × 1.10 ÷ 32 = 12.7, so 13 sheets of 4 × 8 ft
   it('works the drywall for a 10 × 10 ft room out as the drywall calculator does', () => {

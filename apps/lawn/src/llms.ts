@@ -2,6 +2,7 @@ import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT } from './about.ts';
 import { CALCULATORS } from './calculators.ts';
 import { CITY_GUIDES } from './city-guides.ts';
+import { COST_GUIDES } from './costs.ts';
 import { EDITORIAL } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
 import { frostCopyOf, FROST_TEXT } from './frost-copy.ts';
@@ -31,6 +32,10 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
     CALCULATORS.map(({ h1, path, description }) => ({ name: h1, path, note: description })),
   ],
   ['Guides', GUIDES.map(({ h1, path, description }) => ({ name: h1, path, note: description }))],
+  [
+    'Lawn costs',
+    COST_GUIDES.map(({ h1, path, description }) => ({ name: h1, path, note: description })),
+  ],
   [
     'Frost dates',
     [

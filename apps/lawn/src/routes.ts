@@ -48,6 +48,11 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'growing-guide', kind: 'article', path: '/how-long-does-grass-seed-take-to-grow' },
   { id: 'aeration-guide', kind: 'article', path: '/when-to-aerate-lawn' },
   { id: 'pre-emergent-guide', kind: 'article', path: '/when-to-apply-pre-emergent' },
+  // the cost guides (`src/costs.ts`): the hub, then each priced job
+  { id: 'lawn-care-cost', kind: 'article', path: '/how-much-does-lawn-care-cost' },
+  { id: 'mowing-cost', kind: 'article', path: '/lawn-mowing-cost' },
+  { id: 'sod-cost', kind: 'article', path: '/sod-cost' },
+  { id: 'artificial-grass-cost', kind: 'article', path: '/artificial-grass-cost' },
 ];
 
 /**

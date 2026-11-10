@@ -486,7 +486,8 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   });
 
   it('states the gallons of paint of each room in its title, heading and description', () => {
-    for (const id of jobsOf('paint')) {
+    // the cost pages answer their price instead (the question pages test below)
+    for (const id of jobsOf('paint').filter((each) => !isQuestionJob(each))) {
       const size = id.replace('paint-room-', '');
       for (const locale of ['en', 'es'] as const) {
         const text = siteText(locale);
@@ -503,7 +504,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
   });
 
   it('states the sheets of drywall of each room in its title, heading and description', () => {
-    for (const id of jobsOf('drywall')) {
+    for (const id of jobsOf('drywall').filter((each) => !isQuestionJob(each))) {
       const size = id.replace('drywall-room-', '');
       for (const locale of ['en', 'es'] as const) {
         const text = siteText(locale);
@@ -624,6 +625,9 @@ describe('titles from real queries (growth plan › lever 4)', () => {
         'How much does a cubic yard of concrete weigh?',
       ],
       'concrete-slab-cost': ['$4 to $10.50', 'How much does a concrete slab cost?'],
+      'cost-to-paint-a-house': ['$2.20 to $4.40', 'How much does it cost to paint a house?'],
+      'cost-to-paint-a-room': ['$1 to $4', 'How much does it cost to paint a room?'],
+      'drywall-installation-cost': ['$1.50 to $3.50', 'How much does drywall installation cost?'],
       'square-feet-1-car-garage': ['240 to 384', 'How many square feet is a 1-car garage?'],
       'square-feet-2-car-garage': ['400 to 576', 'How many square feet is a 2-car garage?'],
       'cubic-yards-to-tons': ['1.29', 'How many tons is a cubic yard?'],

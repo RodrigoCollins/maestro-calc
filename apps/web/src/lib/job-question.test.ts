@@ -160,6 +160,86 @@ describe('jobQuestion (the tables a question page adds to its job table)', () =>
     ]);
   });
 
+  // hand-verified in paint-cost.test.ts: This Old House prices a gallon of interior paint at $15 to
+  // $35 (value), $35 to $50 (mid-tier) and $50 to $60 (premium); 2 cans of the 10 × 10 room and 3
+  // of the 12 × 16 room: $30 to $70 and $45 to $105, $70 to $100 and $105 to $150, $100 to $120 and
+  // $150 to $180. One coat: 270/350 = 0.77 gal (1 can), 334/350 = 0.95 (1), 366/350 = 1.05 (2),
+  // 398/350 = 1.14 (2); two coats at mid-tier: 2 × $35 to $50 = $70 to $100, 3 × = $105 to $150
+  it('prices a gallon of each grade and the coats of each room, with dated sources', () => {
+    expect(rowsOf('cost-to-paint-a-room', 0)?.map(([, ...cells]) => cells)).toEqual([
+      ['$15.00–$35.00', '$30–$70', '$45–$105'],
+      ['$35.00–$50.00', '$70–$100', '$105–$150'],
+      ['$50.00–$60.00', '$100–$120', '$150–$180'],
+    ]);
+    expect(rowsOf('cost-to-paint-a-room', 1)).toEqual([
+      ['10 ft × 10 ft × 8 ft', '270', '1', '2', '$70–$100'],
+      ['12 ft × 12 ft × 8 ft', '334', '1', '2', '$70–$100'],
+      ['12 ft × 14 ft × 8 ft', '366', '2', '3', '$105–$150'],
+      ['12 ft × 16 ft × 8 ft', '398', '2', '3', '$105–$150'],
+    ]);
+    expect(jobQuestion('cost-to-paint-a-room', 'es')?.tables[1]?.rows[0]?.href).toMatch(
+      new RegExp(`^${pathOf('paint', 'es')}\\?`),
+    );
+    expect(
+      jobQuestion('cost-to-paint-a-room', 'en')?.sources.map(({ source }) => source.url),
+    ).toEqual([
+      'https://www.thisoldhouse.com/painting/interior-painting-cost',
+      'https://www.fixr.com/costs/paint-room',
+    ]);
+  });
+
+  // hand-verified in paint-cost.test.ts: two coats at 350 sq ft a gallon of 1,170, 1,440, 1,620 and
+  // 1,800 sq ft of outside wall: 6.69, 8.23, 9.26 and 10.29 gal, 7, 9, 10 and 11 cans, at $30 to $50
+  // (contractor-grade) and $45 to $85 (premium acrylic) a gallon. The 30 × 50 ft house at 8, 9 and
+  // 10 ft: 1,280, 1,440 and 1,600 sq ft; 7.31, 8.23 and 9.14 gal (8, 9, 10 cans); × $2.20 to $4.40
+  it('prices the outside paint of each house and the walls of each height, with dated sources', () => {
+    expect(rowsOf('cost-to-paint-a-house', 0)).toEqual([
+      ['25 ft × 40 ft × 9 ft', '6.69', '7', '$210–$350', '$315–$595'],
+      ['30 ft × 50 ft × 9 ft', '8.23', '9', '$270–$450', '$405–$765'],
+      ['40 ft × 50 ft × 9 ft', '9.26', '10', '$300–$500', '$450–$850'],
+      ['50 ft × 50 ft × 9 ft', '10.29', '11', '$330–$550', '$495–$935'],
+    ]);
+    expect(rowsOf('cost-to-paint-a-house', 1)).toEqual([
+      ['30 ft × 50 ft × 8 ft', '1,280', '8', '$2,816–$5,632'],
+      ['30 ft × 50 ft × 9 ft', '1,440', '9', '$3,168–$6,336'],
+      ['30 ft × 50 ft × 10 ft', '1,600', '10', '$3,520–$7,040'],
+    ]);
+    expect(
+      jobQuestion('cost-to-paint-a-house', 'en')?.sources.map(({ source }) => source.url),
+    ).toEqual([
+      'https://www.thisoldhouse.com/painting/exterior-painting-cost',
+      'https://www.thisoldhouse.com/painting/interior-painting-cost',
+    ]);
+  });
+
+  // hand-verified in drywall-cost.test.ts: by the sheet 13, 17, 19 and 21 × $48 to $80; labor 370,
+  // 478, 534 and 590 sq ft × $1.15 to $3 (425.50 → $426, 549.70 → $550, 614.10 → $614, 678.50 →
+  // $679); the walls alone 270, 334, 366 and 398 sq ft, × 1.1 ÷ 32 = 9.28, 11.48, 12.58 and 13.68
+  // (10, 12, 13, 14 sheets), × $1.50 to $3.50
+  it('prices drywall by the sheet, by the labor and for the walls alone, with dated sources', () => {
+    expect(rowsOf('drywall-installation-cost', 0)).toEqual([
+      ['10 ft × 10 ft × 8 ft', '$624–$1,040', '$426–$1,110'],
+      ['12 ft × 12 ft × 8 ft', '$816–$1,360', '$550–$1,434'],
+      ['12 ft × 14 ft × 8 ft', '$912–$1,520', '$614–$1,602'],
+      ['12 ft × 16 ft × 8 ft', '$1,008–$1,680', '$679–$1,770'],
+    ]);
+    expect(rowsOf('drywall-installation-cost', 1)).toEqual([
+      ['10 ft × 10 ft × 8 ft', '270', '10', '$405–$945'],
+      ['12 ft × 12 ft × 8 ft', '334', '12', '$501–$1,169'],
+      ['12 ft × 14 ft × 8 ft', '366', '13', '$549–$1,281'],
+      ['12 ft × 16 ft × 8 ft', '398', '14', '$597–$1,393'],
+    ]);
+    expect(jobQuestion('drywall-installation-cost', 'es')?.tables[1]?.rows[0]?.href).toMatch(
+      new RegExp(`^${pathOf('drywall', 'es')}\\?`),
+    );
+    expect(
+      jobQuestion('drywall-installation-cost', 'en')?.sources.map(({ source }) => source.url),
+    ).toEqual([
+      'https://www.fixr.com/costs/drywall-installation',
+      'https://www.bobvila.com/articles/drywall-cost/',
+    ]);
+  });
+
   it.each(PAIRS)('writes %s an about section of its own in %s, with sources', (id, locale) => {
     const question = jobQuestion(id, locale);
     expect(question).toBeDefined();

@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { JOB_IDS, JOBS } from '../routing/jobs.ts';
+import { isQuestionJob, JOB_IDS, JOBS } from '../routing/jobs.ts';
 import { LOCALES } from '../routing/routes.ts';
 import { CGC_CLADDING, jobRoom, QUALI_KOTE_PDS } from './job-room.ts';
 import { jobView } from './job-view.ts';
 import { jobWorked } from './job-worked.ts';
 
-const ROOMS = JOB_IDS.filter((id) => ['paint', 'drywall'].includes(JOBS[id].calculator));
+// a cost page (a question page) prices its rooms instead: it has no room section of its own
+const ROOMS = JOB_IDS.filter(
+  (id) => ['paint', 'drywall'].includes(JOBS[id].calculator) && !isQuestionJob(id),
+);
 const PAIRS = ROOMS.flatMap((id) => LOCALES.map((locale) => [id, locale] as const));
 
 const valuesOf = (id: (typeof ROOMS)[number]) => jobRoom(id, 'en')?.facts.map(({ value }) => value);
@@ -112,6 +115,12 @@ describe('jobRoom (every room page)', () => {
   it('is only for the room pages', () => {
     expect(jobRoom('square-feet-12x12', 'en')).toBeUndefined();
     expect(jobRoom('concrete-slab-10x10', 'es')).toBeUndefined();
+    for (const id of [
+      'cost-to-paint-a-house',
+      'cost-to-paint-a-room',
+      'drywall-installation-cost',
+    ] as const)
+      expect(jobRoom(id, 'en'), id).toBeUndefined();
     for (const source of [QUALI_KOTE_PDS, CGC_CLADDING])
       expect(source.retrieved).toBe('2026-11-09');
   });

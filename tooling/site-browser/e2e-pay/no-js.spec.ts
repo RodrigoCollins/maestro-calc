@@ -10,6 +10,7 @@ import {
   PAGES,
   PTO,
   SHIFT,
+  SHIFT_TOOL,
   TIPPED,
   TIME_CARD,
 } from './pages.ts';
@@ -51,6 +52,31 @@ for (const { path } of HOURS) {
     await expect(page.locator('[data-sum="difference"]')).toHaveText('4 h 15 min');
   });
 }
+
+// the answer, the rows and the tool's figures for its own fields are in the page as built
+test(`${SHIFT_TOOL.day} shows the answer, the tool and the rows without JavaScript`, async ({
+  page,
+}) => {
+  await page.goto(SHIFT_TOOL.day);
+  await expect(page.locator('.result-figure')).toHaveText('8 hours');
+  await expect(page.locator('[data-out="hours"][data-format="hours-minutes"]')).toHaveText(
+    '7 h 30 min',
+  );
+  await expect(page.locator('[data-out="dayPay"]')).toHaveText('$150.00');
+  await expect(page.locator('[data-out="weekPay"]')).toHaveText('$750.00');
+  await expect(page.locator('.breakdown li').filter({ hasText: '7 h 30 min (7.50)' })).toHaveCount(
+    1,
+  );
+});
+
+test(`${SHIFT_TOOL.night} shows its overnight notice and its week without JavaScript`, async ({
+  page,
+}) => {
+  await page.goto(SHIFT_TOOL.night);
+  await expect(page.locator('.result-figure')).toHaveText('12 horas');
+  await expect(page.locator('form [data-warning="overnight"]')).toBeVisible();
+  await expect(page.locator('[data-out="weekPay"]')).toHaveText('$1,325.00');
+});
 
 for (const { path } of DECIMAL_HOURS) {
   test(`${path} shows both conversions and the chart without JavaScript`, async ({ page }) => {

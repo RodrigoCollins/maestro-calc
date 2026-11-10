@@ -112,11 +112,14 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'paint-room-12x12',
       'paint-room-12x14',
       'paint-room-12x16',
+      'cost-to-paint-a-house',
+      'cost-to-paint-a-room',
       'drywall-room-10x10',
       'drywall-room-10x12',
       'drywall-room-12x12',
       'drywall-room-12x14',
       'drywall-room-12x16',
+      'drywall-installation-cost',
       'topsoil-raised-bed-4x4',
       'topsoil-raised-bed-4x8',
       'topsoil-10x10',
@@ -152,10 +155,10 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'feet-inches',
       'board-feet',
     ]);
-    expect(staticPaths()).toHaveLength(272);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(272);
+    expect(staticPaths()).toHaveLength(278);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(278);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(274);
+    expect(pageCount(ROUTES)).toBe(280);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -187,7 +190,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(274);
+      ).toHaveLength(280);
     },
   );
 
@@ -200,6 +203,6 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
 
   // spec: site-seo › [SE10]
   it('lists two hundred and fifty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(272);
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(278);
   });
 });

@@ -12,6 +12,7 @@ import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/bylines.ts';
 import { CALCULATORS } from '../src/calculators.ts';
+import { COST_GUIDES, COST_HUB } from '../src/costs.ts';
 import { FROST_PAGES } from '../src/frost.ts';
 import { GUIDES } from '../src/guide.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
@@ -76,6 +77,11 @@ const all = [
     guides: GUIDES.map(({ path, calculators }) => ({ path, calculators })),
     calculators: CALCULATORS.map(({ path }) => path),
     methodology: '/methodology',
+    // the home lists every cost guide, and the hub and each priced job link each other
+    costs: {
+      hub: COST_HUB.path,
+      pages: COST_GUIDES.filter(({ path }) => path !== COST_HUB.path).map(({ path }) => path),
+    },
     frost: {
       index: '/frost-dates',
       states: [...new Set(FROST_PAGES.map(({ state }) => state.slug))].map((slug) => ({

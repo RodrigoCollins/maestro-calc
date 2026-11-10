@@ -16,7 +16,8 @@
     "./shift-differential": "./src/shift-differential/index.ts",
     "./tipped-wage": "./src/tipped-wage/index.ts",
     "./military-time": "./src/military-time/index.ts",
-    "./calendar": "./src/calendar/index.ts"
+    "./calendar": "./src/calendar/index.ts",
+    "./shift-pay": "./src/shift-pay/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",
