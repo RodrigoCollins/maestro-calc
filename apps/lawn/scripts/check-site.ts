@@ -7,6 +7,7 @@
 // Usage: node apps/lawn/scripts/check-site.ts [dist-directory]
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
+import { affiliateLinkProblems } from '@maestro-calc/site-kit/affiliate';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/bylines.ts';
@@ -56,6 +57,8 @@ const required = [
 ].filter((file) => !existsSync(join(dist, file)));
 const all = [
   ...problems,
+  // every sponsored link sits in the recommendation block, next to its disclosure
+  ...[...html].flatMap(([file, text]) => affiliateLinkProblems(file, text)),
   ...seoProblems(launched, {
     origin: SITE.origin,
     image: '/og.png',

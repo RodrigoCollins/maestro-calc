@@ -41,3 +41,11 @@ Found a wrong number or an outdated source? Write to contacto@maestrocalc.com wi
 <h2 id="no-advice">Not professional advice</h2>
 
 Our figures are estimates to help you plan and buy. They are not professional advice, and they do not replace your local building code, the instructions on the product you buy or a licensed professional who sees the job.
+
+<h2 id="affiliate-links">Affiliate disclosure</h2>
+
+Some links on Maestro Calc may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.
+
+We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.
+
+When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.

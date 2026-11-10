@@ -175,6 +175,15 @@ export const EDITORIAL_TEXTS: Readonly<Record<Lang, EditorialTexts>> = {
         ],
         sources: [sourceOf(WHD_COMPLAINTS, 'en')],
       },
+      {
+        id: 'affiliate',
+        heading: 'Affiliate disclosure',
+        paragraphs: [
+          'Some links on Cuenta Horas may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.',
+          'We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.',
+          'When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.',
+        ],
+      },
     ],
     reviewed: 'Last updated November 6, 2026.',
   },
@@ -229,6 +238,15 @@ export const EDITORIAL_TEXTS: Readonly<Record<Lang, EditorialTexts>> = {
           'Las cifras son estimaciones para planificar: no son asesoría legal ni fiscal. Tu empleador, un contrato sindical o una regla local pueden cambiar lo que te corresponde. Para reclamar un salario, comunícate con el departamento laboral de tu estado o con la División de Horas y Salarios del Departamento de Trabajo de EE. UU.',
         ],
         sources: [sourceOf(WHD_COMPLAINTS, 'es')],
+      },
+      {
+        id: 'affiliate',
+        heading: 'Enlaces de afiliado',
+        paragraphs: [
+          'Algunos enlaces de Cuenta Horas pueden ser enlaces pagados (de afiliado). Si te registras o compras a través de uno, podemos recibir una comisión sin costo extra para ti. Cada enlace pagado lleva la etiqueta "Enlace pagado" justo al lado.',
+          'Solo recomendamos una herramienta cuando la recomendaríamos para la tarea de esa página, pague o no. Un pago nunca cambia el resultado de una calculadora, una cifra ni una clasificación, y no mostramos precios que puedan quedar desactualizados.',
+          'Cuando una página enlaza a Amazon: Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos.',
+        ],
       },
     ],
     reviewed: 'Última actualización: 6 de noviembre de 2026.',

@@ -90,6 +90,15 @@ export const EDITORIAL: TextPage = {
         'If you find a figure that disagrees with a source, tell us which page and which source. A confirmed mistake is corrected on the page and its review date moves.',
       ],
     },
+    {
+      id: 'affiliate',
+      heading: 'Affiliate disclosure',
+      paragraphs: [
+        'Some links on Bowl Figures may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.',
+        'We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.',
+        'When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.',
+      ],
+    },
   ],
   reviewed: `Last reviewed ${checkedText(POLICY_CHECKED)}.`,
 };

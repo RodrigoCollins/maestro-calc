@@ -1,3 +1,4 @@
+import { affiliateProblems } from './affiliate.ts';
 import { assetProblems } from './assets.ts';
 import { budgetProblems } from './budgets.ts';
 import { contentProblems } from './content.ts';
@@ -41,6 +42,7 @@ export const checkSite = (dist: Dist, site: Site, buildBytes: BuildBytes): Probl
     ...guideProblems(context),
     ...hubProblems(context),
     ...jobLinkProblems(context),
+    ...affiliateProblems(context),
     ...chartIndexProblems(context),
     ...glyphProblems(buildBytes.fonts),
   ];
