@@ -22,6 +22,8 @@ describe('titleCase', () => {
     expect(titleCase('FT COLLINS')).toBe('Ft Collins');
     expect(titleCase('LAFAYETTE PURDUE UNIV AP')).toBe('Lafayette Purdue Univ AP');
     expect(titleCase('NEW YORK CENTRAL PARK')).toBe('New York Central Park');
+    // the one station NOAA names with a state abbreviation
+    expect(titleCase('NY AVE V BROOKLYN')).toBe('NY Ave V Brooklyn');
   });
 
   it('keeps compass points, digits and capitals after a punctuation mark', () => {

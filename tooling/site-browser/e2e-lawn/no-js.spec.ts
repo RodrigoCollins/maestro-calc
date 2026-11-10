@@ -31,6 +31,7 @@ test('lists the states without JavaScript and leaves the ZIP lookup out', async 
   await page.goto('/frost-dates');
   await expect(page.locator('form[data-zip]')).toBeHidden();
   await expect(page.locator('.lawn-states a')).toHaveCount(50);
+  await expect(page.locator('.lawn-cities a')).toHaveCount(22);
   await page.goto('/frost-dates/indiana');
   await expect(page.locator('tr#USW00014835 th')).toHaveText('Lafayette Purdue Univ AP');
   await expect(page.locator('tr#USW00014835 td')).toHaveText([
@@ -41,4 +42,25 @@ test('lists the states without JavaScript and leaves the ZIP lookup out', async 
     'Oct 18',
     'Oct 31',
   ]);
+});
+
+test('answers the last frost of a city from its nearest station without JavaScript', async ({
+  page,
+}) => {
+  // CHICAGO NORTHERLY IS (USC00111550), 4.1 miles from the 2020 Census point of Chicago:
+  // last spring freeze Apr 25, Apr 10, Mar 29; first fall freeze Oct 24, Nov 5, Nov 20
+  await page.goto('/last-frost-date/chicago-il');
+  await expect(page.locator('h1')).toHaveText('When is the last frost in Chicago?');
+  await expect(page.locator('.lawn-hero p').last()).toContainText('around Apr 10');
+  await expect(page.locator('#dates ~ ul li').first()).toContainText('Apr 25 at 10%');
+  await page.locator('a[href="/frost-dates/illinois#USC00111550"]').click();
+  await expect(page.locator('tr#USC00111550 td')).toHaveText([
+    'Apr 25',
+    'Apr 10',
+    'Mar 29',
+    'Oct 24',
+    'Nov 5',
+    'Nov 20',
+  ]);
+  await expect(page.locator('a[href="/last-frost-date/chicago-il"]')).toBeVisible();
 });

@@ -29,7 +29,7 @@ const KEEP = new Set([
   'WNW',
   'WSW',
 ]);
-const KEEP_ENDING = new Set(['AP', 'AFB', 'ARPT', 'USA', 'US', 'II', 'III', 'IV']);
+const KEEP_ENDING = new Set(['AP', 'AFB', 'ARPT', 'USA', 'US', 'NY', 'II', 'III', 'IV']);
 
 /** A station name as NOAA gives it (`FT COLLINS`, `BEDFORD 5 WNW`) in title case, compass points kept. */
 export const titleCase = (name: string): string =>

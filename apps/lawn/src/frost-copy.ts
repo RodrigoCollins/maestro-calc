@@ -11,6 +11,9 @@ export const FROST_TEXT = {
     h1: 'Last and first frost dates',
     lead: 'The last spring freeze and the first fall freeze, at 32°F, for the weather stations of every state, from the NOAA 1991-2020 climate normals. Type your ZIP to find the nearest station, or pick your state.',
     statesHeading: 'Pick your state',
+    citiesHeading: 'Frost dates for big cities',
+    citiesLead:
+      'Some of the largest cities have a page of their own: the station nearest the city with its six dates, the stations around it, how it compares with the rest of its state, and the lawn and garden dates its extension service and the frost rules give.',
   },
   zip: {
     label: 'Your ZIP code',
