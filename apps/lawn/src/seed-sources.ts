@@ -77,6 +77,12 @@ export const GROWING_LINK = {
   href: '/how-long-does-grass-seed-take-to-grow',
   label: 'How long grass seed takes to grow',
 };
+/** The aeration and pre-emergent guides (`aeration-guides.ts`). */
+export const AERATION_LINK = { href: '/when-to-aerate-lawn', label: 'When to aerate your lawn' };
+export const PRE_EMERGENT_LINK = {
+  href: '/when-to-apply-pre-emergent',
+  label: 'When to apply pre-emergent',
+};
 export const PLANTING_LINK = {
   href: '/when-to-plant-grass-seed',
   label: 'When to plant grass seed',

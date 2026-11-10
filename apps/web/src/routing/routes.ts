@@ -144,6 +144,10 @@ export const ROUTES = {
     en: '/concrete/how-much-does-a-cubic-yard-of-concrete-weigh',
     es: '/es/concreto/cuanto-pesa-una-yarda-cubica-de-concreto',
   },
+  'concrete-slab-cost': {
+    en: '/concrete/how-much-does-a-concrete-slab-cost',
+    es: '/es/concreto/cuanto-cuesta-una-losa-de-concreto',
+  },
   'roof-pitch-2-12': {
     en: '/roofing/2-12-roof-pitch',
     es: '/es/techos/pendiente-de-techo-2-12',

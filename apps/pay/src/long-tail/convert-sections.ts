@@ -6,6 +6,7 @@ import { MINIMUM_WAGE_STATES, MINIMUM_WAGE_STATES_SOURCES } from '../guide/minim
 import { OVERTIME_STATES_SOURCES } from '../guide/overtime-states.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { Job } from './routes.ts';
+import { hourlySpellingsOf, salarySpellingsOf } from './spellings.ts';
 import { type LongTailSection, type LongTailSource, SOURCES } from './sections.ts';
 
 /*
@@ -101,9 +102,26 @@ const federalWeekOf = (overtime: number): readonly Day[] =>
 const overtimeWeek = (rate: string, overtime: number): Money =>
   payOf(rate, federalWeekOf(overtime), 'federal');
 
+/** The workdays of a year of 52 weeks of 5 days, which the FAQ divides a salary by. */
+const WORKDAYS = 260;
+
 const WORDS = {
   en: {
     heading: 'How the figures are worked out',
+    faqHeading: 'Frequently asked questions',
+    day: {
+      hourlyQuestion: (spelled: string): string => `How much is ${spelled} a day?`,
+      salaryQuestion: (spelled: string): string => `How much is ${spelled} a day?`,
+      hourly: (rate: string, d8: string, d10: string): string =>
+        `${d8} for an 8-hour day (${rate} × 8 hours) and ${d10} for a 10-hour day, before taxes.`,
+      salary: (day: string, salary: string): string =>
+        `${day} for an 8-hour workday: ${salary} ÷ ${String(WORKDAYS)} workdays, 52 weeks of 5 days, before taxes.`,
+    },
+    paycheck: {
+      question: (spelled: string): string => `How much is ${spelled} per paycheck?`,
+      answer: (biweekly: string, semimonthly: string, monthly: string): string =>
+        `${biweekly} paid every two weeks (26 paychecks a year), ${semimonthly} paid twice a month (24) and ${monthly} paid once a month (12), before taxes.`,
+    },
     hourly: {
       intro: (rate: string, annual: string): string =>
         `${rate} an hour comes to ${annual} a year at 40 hours a week and 52 paid weeks. Here is the arithmetic, period by period:`,
@@ -194,6 +212,20 @@ const WORDS = {
   },
   es: {
     heading: 'Cómo se calcula',
+    faqHeading: 'Preguntas frecuentes',
+    day: {
+      hourlyQuestion: (spelled: string): string => `¿Cuánto son ${spelled} al día?`,
+      salaryQuestion: (spelled: string): string => `¿Cuánto es ${spelled} por día?`,
+      hourly: (rate: string, d8: string, d10: string): string =>
+        `${d8} por una jornada de 8 horas (${rate} × 8 horas) y ${d10} por una de 10 horas, antes de impuestos.`,
+      salary: (day: string, salary: string): string =>
+        `${day} por una jornada de 8 horas: ${salary} ÷ ${String(WORKDAYS)} días laborables, 52 semanas de 5 días, antes de impuestos.`,
+    },
+    paycheck: {
+      question: (spelled: string): string => `¿Cuánto es ${spelled} en cada pago?`,
+      answer: (biweekly: string, semimonthly: string, monthly: string): string =>
+        `${biweekly} si te pagan cada dos semanas (26 pagos al año), ${semimonthly} si te pagan dos veces al mes (24) y ${monthly} si te pagan una vez al mes (12), antes de impuestos.`,
+    },
     hourly: {
       intro: (rate: string, annual: string): string =>
         `${rate} la hora son ${annual} al año con 40 horas por semana y 52 semanas pagadas. Esta es la cuenta, período por período:`,
@@ -293,6 +325,53 @@ export interface JobSections {
   readonly sources: readonly LongTailSource[];
 }
 
+type Converted = ReturnType<typeof convert>;
+
+/** The answer to "how much per paycheck": the three pay periods of the converter, before taxes. */
+const paycheckOf = (lang: Lang, base: Converted): string =>
+  WORDS[lang].paycheck.answer(short(base.biweekly), short(base.semimonthly), short(base.monthly));
+
+/**
+ * The FAQ of an hourly rate, in the spellings its title does not use (`spellings.ts`): the pay of
+ * an 8-hour and a 10-hour day, and of each paycheck.
+ */
+const hourlyFaq = (job: Job, lang: Lang, rate: string, base: Converted): LongTailSection => {
+  const w = WORDS[lang];
+  const spelled = hourlySpellingsOf(job.amount, lang);
+  const day = (hours: number): string => short(scaleMoney(base.hourly, Rational.of(hours)));
+  return {
+    id: 'faq',
+    heading: w.faqHeading,
+    paragraphs: [],
+    questions: [
+      {
+        question: w.day.hourlyQuestion(spelled.dollars),
+        answer: w.day.hourly(rate, day(8), day(10)),
+      },
+      { question: w.paycheck.question(spelled.bare), answer: paycheckOf(lang, base) },
+    ],
+  };
+};
+
+/**
+ * The FAQ of a salary, in the spellings its heading does not use (`spellings.ts`): the pay of a
+ * workday, the salary over the 260 workdays of the year, and of each paycheck.
+ */
+const salaryFaq = (job: Job, lang: Lang, salary: string, base: Converted): LongTailSection => {
+  const w = WORDS[lang];
+  const spelled = salarySpellingsOf(job.amount, lang);
+  const day = short(scaleMoney(base.annual, Rational.of(1, WORKDAYS)));
+  return {
+    id: 'faq',
+    heading: w.faqHeading,
+    paragraphs: [],
+    questions: [
+      { question: w.day.salaryQuestion(spelled.thousands), answer: w.day.salary(day, salary) },
+      { question: w.paycheck.question(spelled.plain), answer: paycheckOf(lang, base) },
+    ],
+  };
+};
+
 const hourlySections = (job: Job, lang: Lang): JobSections => {
   const w = WORDS[lang].hourly;
   const base = convert(job.amount, 'hour');
@@ -357,6 +436,7 @@ const hourlySections = (job: Job, lang: Lang): JobSections => {
         ],
       },
       { id: 'minimum', heading: w.minimumHeading, paragraphs: [minimum] },
+      hourlyFaq(job, lang, rate, base),
     ],
     sources: [SOURCES.factSheet23, MINIMUM_WAGE_STATES_SOURCES.dol],
   };
@@ -416,6 +496,7 @@ const salarySections = (job: Job, lang: Lang): JobSections => {
           ),
         ],
       },
+      salaryFaq(job, lang, salary, base),
     ],
     sources: [SOURCES.factSheet23, SOURCES.factSheet17a, SOURCES.ecfr778113],
   };

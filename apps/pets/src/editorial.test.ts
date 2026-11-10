@@ -70,6 +70,17 @@ describe('the text pages', () => {
     expect(JSON.stringify(EDITORIAL)).toContain('call a veterinarian or a poison line');
   });
 
+  it('disclose paid links in the policy: the label, the commission and the Amazon statement', () => {
+    const affiliate = EDITORIAL.sections
+      .filter(({ id }) => id === 'affiliate')
+      .flatMap(({ paragraphs }) => paragraphs)
+      .join('\n');
+    expect(affiliate).toContain('"Paid link"');
+    expect(affiliate).toContain('commission at no extra cost to you');
+    expect(affiliate).toContain('never changes a calculator result');
+    expect(affiliate).toContain('As an Amazon Associate we earn from qualifying purchases');
+  });
+
   it('say the values entered are never sent', () => {
     expect(JSON.stringify(PRIVACY)).toContain('never sent to us');
   });

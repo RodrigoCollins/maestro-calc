@@ -1,5 +1,7 @@
+import { AERATION_GUIDE, PRE_EMERGENT_GUIDE } from './aeration-guides.ts';
 import { CALENDAR_STATES, feedStatePathOf } from './calendar-paths.ts';
 import { CALCULATORS } from './calculators.ts';
+import { CITY_GUIDES } from './city-guides.ts';
 import { BEST_SEED_GUIDE, GRASS_GUIDES } from './grass-guides.ts';
 import { PLANTING_GUIDE, SPECIES_GUIDES } from './seed-guides.ts';
 import { FEED_STATE_GUIDES, SEED_STATE_GUIDES } from './state-guides.ts';
@@ -171,6 +173,8 @@ export const GUIDES: readonly Guide[] = [
   PLANTING_GUIDE,
   UK_GUIDE,
   GROWING_GUIDE,
+  AERATION_GUIDE,
+  PRE_EMERGENT_GUIDE,
   BEST_SEED_GUIDE,
   ...SPECIES_GUIDES,
   ...GRASS_GUIDES,
@@ -185,6 +189,7 @@ export const DATA_GUIDES: readonly Guide[] = [
   ...ZONE_GUIDES,
   ...SEED_STATE_GUIDES,
   ...FEED_STATE_GUIDES,
+  ...CITY_GUIDES,
 ];
 
 /** Every guide page of the site. */

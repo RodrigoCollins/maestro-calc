@@ -1,6 +1,7 @@
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { ABOUT } from './about.ts';
 import { CALCULATORS } from './calculators.ts';
+import { CITY_GUIDES } from './city-guides.ts';
 import { EDITORIAL } from './editorial.ts';
 import { FROST_PAGES } from './frost.ts';
 import { frostCopyOf, FROST_TEXT } from './frost-copy.ts';
@@ -38,6 +39,7 @@ const SECTIONS: readonly (readonly [string, readonly Entry[]])[] = [
         path: '/frost-dates',
         note: FROST_TEXT.index.description,
       },
+      ...CITY_GUIDES.map(({ h1, path, description }) => ({ name: h1, path, note: description })),
     ],
   ],
   [

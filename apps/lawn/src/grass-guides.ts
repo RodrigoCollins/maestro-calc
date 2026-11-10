@@ -4,6 +4,7 @@ import { amountText, fieldText } from './format.ts';
 import type { Guide } from './guide.ts';
 import { seedPoundsText, seedRateText } from './seed-guides.ts';
 import {
+  AERATION_LINK,
   AGRILIFE,
   ALABAMA_CENTIPEDE,
   ARKANSAS,
@@ -14,6 +15,7 @@ import {
   NEBRASKA_BUFFALO,
   GROWING_LINK,
   PLANTING_LINK,
+  PRE_EMERGENT_LINK,
   PURDUE_SEED,
   READ,
   SEED_CALCULATOR,
@@ -438,6 +440,8 @@ export const BEST_SEED_GUIDE: Guide = {
         PLANTING_LINK,
         GROWING_LINK,
         UK_LINK,
+        AERATION_LINK,
+        PRE_EMERGENT_LINK,
       ],
     },
   ],

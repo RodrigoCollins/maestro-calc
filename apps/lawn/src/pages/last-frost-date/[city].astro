@@ -1,0 +1,15 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { CITY_GUIDES } from '../../city-guides.ts';
+import GuidePage from '../../components/GuidePage.astro';
+
+export const getStaticPaths = (() =>
+  CITY_GUIDES.map(({ path }) => ({
+    params: { city: path.slice('/last-frost-date/'.length) },
+    props: { path },
+  }))) satisfies GetStaticPaths;
+
+const { path } = Astro.props;
+---
+
+<GuidePage {path} />

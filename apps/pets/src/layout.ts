@@ -27,6 +27,7 @@ const FOOTER: readonly NavLink[] = [
   { id: 'dog-age-chart', label: 'Dog age chart' },
   { id: 'cat-age-chart', label: 'Cat age chart' },
   { id: 'label-guide', label: 'How to read a pet food label' },
+  { id: 'feed', label: 'How much to feed a dog' },
   { id: 'breed-guide', label: 'Dog food by breed' },
   { id: 'chocolate-guide', label: 'My dog ate chocolate' },
   { id: 'foods', label: 'Can dogs eat it?' },

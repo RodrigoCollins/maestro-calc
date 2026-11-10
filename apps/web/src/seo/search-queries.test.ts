@@ -623,6 +623,7 @@ describe('titles from real queries (growth plan › lever 4)', () => {
         '3,915 to 4,050',
         'How much does a cubic yard of concrete weigh?',
       ],
+      'concrete-slab-cost': ['$4 to $10.50', 'How much does a concrete slab cost?'],
       'square-feet-1-car-garage': ['240 to 384', 'How many square feet is a 1-car garage?'],
       'square-feet-2-car-garage': ['400 to 576', 'How many square feet is a 2-car garage?'],
       'cubic-yards-to-tons': ['1.29', 'How many tons is a cubic yard?'],

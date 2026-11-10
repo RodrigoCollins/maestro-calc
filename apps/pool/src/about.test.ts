@@ -84,6 +84,7 @@ describe('the about page', () => {
     expect(text).toContain('how many gallons a pool holds, Olympic pools included');
     expect(text).toContain('how often to shock it');
     expect(text).toContain('how to fix a green pool and why a pool is cloudy');
+    expect(text).toContain('what a pool costs to build, resurface or reline');
   });
 
   it('gives the address readers write to', () => {

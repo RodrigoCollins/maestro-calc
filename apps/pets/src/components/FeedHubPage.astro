@@ -1,0 +1,83 @@
+---
+import { FEED_HUB } from '../feed-by-weight.ts';
+import { hrefOf } from '../routes.ts';
+import Byline from './Byline.astro';
+import Layout from './Layout.astro';
+import ShareLink from './ShareLink.astro';
+import Sources from './Sources.astro';
+
+const { title, description, h1, lead, checked, columns, rows, sections, questions, sources } =
+  FEED_HUB;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="by-weight">
+      <h2 id="by-weight">How much to feed a dog, by weight</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label="Calories and cups a day by dog weight, scrolls sideways on a narrow screen"
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ href, cells: [first, ...cells] }) => (
+              <tr>
+                <th scope="row">
+                  <a {href}>{first}</a>
+                </th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <a href={hrefOf('dog')}>Dog food calculator</a>
+        {': any weight, life stage and label. '}
+        <a href={hrefOf('puppy')}>Puppy feeding calculator</a>
+        {' · '}
+        <a href={hrefOf('dog-chart')}>Dog feeding chart, 5 to 100 lb</a>
+      </p>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {id === 'bag' && (
+          <p>
+            <a href={hrefOf('label-guide')}>How to read the calorie line on a pet food label</a>
+            {' · '}
+            <a href={hrefOf('breed-guide')}>Dog food by breed</a>
+          </p>
+        )}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">Frequently asked questions</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <Sources {sources} />
+    <ShareLink path={FEED_HUB.path} {title} />
+  </main>
+</Layout>

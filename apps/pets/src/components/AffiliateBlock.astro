@@ -1,0 +1,30 @@
+---
+import { affiliateBlockHtml, type AffiliateOffer } from '@maestro-calc/site-kit/affiliate';
+
+/**
+ * The recommendation block of one enabled offer of `../affiliate/offers.ts`: its name, why it fits,
+ * the sponsored link and the disclosure next to it, from `@maestro-calc/site-kit/affiliate`. No
+ * script; the check of the built site holds every sponsored link to this block.
+ */
+interface Props {
+  readonly offer: AffiliateOffer<'en'>;
+  readonly locale: 'en';
+}
+
+const { offer, locale } = Astro.props;
+---
+
+<div class="affiliate-slot">
+  <Fragment set:html={affiliateBlockHtml(offer, locale)} />
+</div>
+
+<style>
+  .affiliate-slot :global(.affiliate) {
+    border: 1px solid currentColor;
+    padding: 0.75rem 1rem;
+    margin-block: 1.5rem;
+  }
+  .affiliate-slot :global(.affiliate-name) {
+    font-weight: 700;
+  }
+</style>

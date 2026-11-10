@@ -18,6 +18,7 @@ import {
 import { GRAVEL_DENSITIES } from '@maestro-calc/data/yields/gravel';
 import { ROOFING_COVERAGE } from '@maestro-calc/data/yields/roofing';
 import { concrete } from './concrete.ts';
+import { INSTALLED_PRICES, READY_MIX_PRICES, slabCostOf } from './slab-cost.ts';
 import { drywall } from './drywall.ts';
 import { gravel } from './gravel.ts';
 import { jobView } from './job-view.ts';
@@ -119,6 +120,37 @@ const concreteSteps = (id: JobId, locale: Locale): Steps => {
     {
       label: text('site.job.worked.concrete.weight'),
       math: `${count} × 80 lb = ${groupedInteger(bags.qty * 80n)} lb`,
+    },
+  ];
+};
+
+/**
+ * The slab cost page adds the price of its first slab: its cubic yards at the two producer prices,
+ * then its area at the lowest and the highest installed price per square foot.
+ */
+const slabCostSteps = (id: JobId, locale: Locale): Steps => {
+  const text = siteText(locale);
+  const [raw] = JOBS[id].cases;
+  const cost = slabCostOf(raw);
+  const yards = Rational.of(BigInt(cost.yards.replace(/[,.]/g, '')), 100n);
+  const priced = READY_MIX_PRICES.map(({ perYard }, index) => {
+    const price = Rational.of(BigInt(perYard.replace('.', '')), 100n);
+    const shown = `$${decimalText(yards.mul(price), 2, true)}`;
+    const exact = cost.readyMixExact[index] ?? '';
+    return `${cost.yards} yd³ × $${perYard} ${shown === exact ? '=' : '≈'} ${exact}`;
+  });
+  const [low, high] = cost.installedAll.split('–');
+  const area = `${cost.area} sq ft`;
+  const [first, second, third, ...rest] = concreteSteps(id, locale);
+  return [
+    first,
+    second,
+    third,
+    ...rest,
+    { label: text('site.job.worked.cost.readyMix'), math: priced.join('; ') },
+    {
+      label: text('site.job.worked.cost.installed'),
+      math: `${area} × $${INSTALLED_PRICES[0].low} = ${String(low)}; ${area} × $${INSTALLED_PRICES[1].high} = ${String(high)}`,
     },
   ];
 };
@@ -428,7 +460,12 @@ const STEPS: Partial<Record<Job['calculator'], (id: JobId, locale: Locale) => St
 
 /** The worked example of job `id` in `locale`, or `undefined` for a chart or another calculator. */
 export const jobWorked = (id: JobId, locale: Locale): JobWorked | undefined => {
-  const steps = isChartJob(id) ? undefined : STEPS[JOBS[id].calculator];
+  const steps =
+    id === 'concrete-slab-cost'
+      ? slabCostSteps
+      : isChartJob(id)
+        ? undefined
+        : STEPS[JOBS[id].calculator];
   if (steps === undefined) return undefined;
   return { heading: siteText(locale)('site.job.worked.heading'), steps: steps(id, locale) };
 };

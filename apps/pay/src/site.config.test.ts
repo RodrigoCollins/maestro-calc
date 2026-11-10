@@ -12,6 +12,7 @@ describe('Cuenta Horas site constants', () => {
       indexable: true,
       gaId: 'G-NNB8KG2TXZ',
       pinterestVerify: '8ed159206fe46e99ba11ac3ac0b8bff3',
+      impactVerify: 'a59dfd0f-5922-4266-8836-f85371ea4a62',
       indexNowKey: 'dd860e1e00fb82df0feac833e84e8677',
     });
   });
@@ -26,5 +27,19 @@ describe('Cuenta Horas site constants', () => {
     expect(head.match(/name="p:domain_verify"/g)).toHaveLength(1);
     expect(head).toContain('<meta name="p:domain_verify" content={SITE.pinterestVerify} />');
     expect(SITE.pinterestVerify).toMatch(/^[0-9a-f]{32}$/);
+  });
+
+  // impact-verify: the site ownership claim of the impact.com partner account, one meta tag in the head of every page
+  it('names the impact.com site verification in one meta tag of the layout head', () => {
+    const layout = readFileSync(
+      resolve(import.meta.dirname, 'components/SiteLayout.astro'),
+      'utf8',
+    );
+    const head = /<head>([\s\S]*)<\/head>/.exec(layout)?.[1] ?? '';
+    expect(head.match(/name="impact-site-verification"/g)).toHaveLength(1);
+    expect(head).toContain('<meta name="impact-site-verification" content={SITE.impactVerify} />');
+    expect(SITE.impactVerify).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
+    );
   });
 });

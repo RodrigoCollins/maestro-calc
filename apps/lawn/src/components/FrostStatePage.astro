@@ -1,4 +1,5 @@
 ---
+import { cityGuidesOfState } from '../city-guides.ts';
 import { FROST_CHECKED } from '../editorial.ts';
 import { frostPageOf, frostPathOf, FROST_PAGES, type FrostPage } from '../frost.ts';
 import { frostCopyOf, FROST_FOOTNOTE, FROST_TEXT } from '../frost-copy.ts';
@@ -19,6 +20,7 @@ const copy = frostCopyOf(page);
 const summary = frostSummaryOf(page);
 const { columns, alwaysFreezing } = FROST_TEXT;
 const siblings = FROST_PAGES.filter(({ state }) => state.slug === page.state.slug);
+const cities = cityGuidesOfState(page.state.slug);
 ---
 
 <Layout
@@ -108,6 +110,18 @@ const siblings = FROST_PAGES.filter(({ state }) => state.slug === page.state.slu
         </ul>
       )}
     </section>
+    {cities.length > 0 && (
+      <section class="lawn-section" aria-labelledby="cities">
+        <h2 id="cities">City pages in {page.state.name}</h2>
+        <ul>
+          {cities.map(({ path: href, card }) => (
+            <li>
+              <a {href}>{card.title}</a>: {card.summary}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
     <section class="lawn-section" aria-labelledby="reading">
       <h2 id="reading">How to read the dates</h2>
       {FROST_TEXT.reading.map((paragraph) => (

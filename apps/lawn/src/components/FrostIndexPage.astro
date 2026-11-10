@@ -1,6 +1,7 @@
 ---
 import { FROST_CHECKED } from '../editorial.ts';
 import { frostPathOf, FROST_PAGES, FROST_STATES } from '../frost.ts';
+import { CITY_GUIDES } from '../city-guides.ts';
 import { FROST_FOOTNOTE, FROST_TEXT } from '../frost-copy.ts';
 import { frostIndexSummary } from '../frost-summary.ts';
 import { pageTrailOf } from '../seo/breadcrumb.ts';
@@ -42,6 +43,17 @@ const partsOf = (slug: string) => FROST_PAGES.filter(({ state }) => state.slug =
         ))}
       </ul>
     </section>
+    <section class="lawn-section" aria-labelledby="cities">
+      <h2 id="cities">{index.citiesHeading}</h2>
+      <p>{index.citiesLead}</p>
+      <ul class="lawn-cities">
+        {CITY_GUIDES.map(({ path: href, card }) => (
+          <li>
+            <a {href}>{card.title}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
     <section class="lawn-section" aria-labelledby="side-by-side">
       <h2 id="side-by-side">{summary.h2}</h2>
       {summary.paragraphs.map((paragraph) => (
@@ -62,13 +74,15 @@ const partsOf = (slug: string) => FROST_PAGES.filter(({ state }) => state.slug =
 </Layout>
 
 <style is:global>
-  .lawn-main .lawn-states {
+  .lawn-main .lawn-states,
+  .lawn-main .lawn-cities {
     list-style: none;
     padding: 0;
     columns: 2 12rem;
   }
 
-  .lawn-states li {
+  .lawn-states li,
+  .lawn-cities li {
     break-inside: avoid;
     min-height: 2rem;
   }

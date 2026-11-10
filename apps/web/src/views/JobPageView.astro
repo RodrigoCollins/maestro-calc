@@ -8,7 +8,11 @@ import { jobCoverings, jobGuide } from '../lib/job-guide.ts';
 import { jobLand } from '../lib/job-land.ts';
 import { jobQuestion } from '../lib/job-question.ts';
 import { jobSlope } from '../lib/job-slope.ts';
+import { jobConcrete } from '../lib/job-concrete.ts';
 import { jobFloor } from '../lib/job-floor.ts';
+import { jobRafter } from '../lib/job-rafter.ts';
+import { jobRoof } from '../lib/job-roof.ts';
+import { jobSoil } from '../lib/job-soil.ts';
 import { jobRoom } from '../lib/job-room.ts';
 import { jobView } from '../lib/job-view.ts';
 import { jobWorked } from '../lib/job-worked.ts';
@@ -91,8 +95,25 @@ const worked = jobWorked(id, locale);
 const land = jobLand(id, locale);
 // An exact pitch page also says how OSHA classes the pitch, the ridge of a gable and the roof surface.
 const slope = jobSlope(id, locale);
-// A room or a floor page also works its own size out: surface by surface, or what fits on it.
-const extra = jobRoom(id, locale) ?? jobFloor(id, locale);
+// A room, a floor, a slab, a tube, a footing, a soil area, a roof or a pitch page also works its
+// own size out: surface by surface, what fits on it, its base and weight, its edges, its square.
+const extra =
+  jobRoom(id, locale) ??
+  jobFloor(id, locale) ??
+  jobConcrete(id, locale) ??
+  jobSoil(id, locale) ??
+  jobRoof(id, locale) ??
+  jobRafter(id, locale);
+// Its tables: the size's own, then a second one with a lead of its own (the rebar of a slab).
+const extraTables =
+  extra === undefined
+    ? []
+    : [
+        ...(extra.table === undefined
+          ? []
+          : [{ lead: undefined, label: extra.heading, table: extra.table }]),
+        ...(extra.more === undefined ? [] : [extra.more]),
+      ];
 // A question page also explains its answer and adds the conversion tables of its question.
 const question = jobQuestion(id, locale);
 const guideEntry =
@@ -368,44 +389,49 @@ const guideName = guideEntry === undefined ? '' : headingOf(guideEntry.body ?? '
             </div>
           ))}
         </dl>
-        {extra.table !== undefined && (
-          // a table wider than a phone scrolls: the region takes the keyboard focus to scroll it
-          <div class="job-table" tabindex="0" role="region" aria-label={extra.heading}>
-            <table>
-              <thead>
-                <tr>
-                  {extra.table.columns.map((label) => (
-                    <th scope="col">{label}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {extra.table.rows.map((row) => (
+        {extraTables.map(({ lead, label, table }) => (
+          <>
+            {lead !== undefined && <p>{lead}</p>}
+            {/* a table wider than a phone scrolls: the region takes the keyboard focus to scroll it */}
+            <div class="job-table" tabindex="0" role="region" aria-label={label}>
+              <table>
+                <thead>
                   <tr>
-                    <th scope="row">{row.label}</th>
-                    {row.cells.map((cell) => (
-                      <td>{cell}</td>
+                    {table.columns.map((column) => (
+                      <th scope="col">{column}</th>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {table.rows.map((row) => (
+                    <tr>
+                      <th scope="row">{row.label}</th>
+                      {row.cells.map((cell) => (
+                        <td>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        ))}
         {extra.paragraphs.slice(1).map((paragraph) => (
           <p>{paragraph}</p>
         ))}
-        <p>
-          {text('site.job.slope.sources')}:{' '}
-          {extra.sources.map((source, index) => (
-            <>
-              {index > 0 && '; '}
-              {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
-              {calendarDay(source.retrieved, locale)}
-            </>
-          ))}
-          .
-        </p>
+        {extra.sources.length > 0 && (
+          <p>
+            {text('site.job.slope.sources')}:{' '}
+            {extra.sources.map((source, index) => (
+              <>
+                {index > 0 && '; '}
+                {source.name}, <code>{source.url}</code>, {text('site.job.chart.retrieved')}{' '}
+                {calendarDay(source.retrieved, locale)}
+              </>
+            ))}
+            .
+          </p>
+        )}
       </>
     )}
     {question !== undefined && (

@@ -170,6 +170,17 @@ describe('policy pages', () => {
     expect(urls.length).toBeGreaterThan(8);
   });
 
+  it('discloses paid links in the policy: the label, the commission and the Amazon statement', () => {
+    const affiliate = EDITORIAL.sections
+      .filter(({ id }) => id === 'affiliate')
+      .flatMap(({ paragraphs }) => paragraphs)
+      .join('\n');
+    expect(affiliate).toContain('"Paid link"');
+    expect(affiliate).toContain('commission at no extra cost to you');
+    expect(affiliate).toContain('never changes a calculator result');
+    expect(affiliate).toContain('As an Amazon Associate we earn from qualifying purchases');
+  });
+
   it('takes error reports at the site domain, in the privacy and the policy', () => {
     expect(CONTACT_EMAIL).toBe('hello@lawnfigures.com');
     expect(JSON.stringify(EDITORIAL)).toContain(CONTACT_EMAIL);

@@ -36,7 +36,15 @@ describe('the editorial policy page', () => {
 
   it('has the same sections in both languages, each titled, with descriptions search engines show whole', () => {
     const ids = (lang: 'en' | 'es') => EDITORIAL_TEXTS[lang].sections.map(({ id }) => id);
-    expect(ids('en')).toEqual(['who', 'sources', 'checks', 'reviews', 'errors', 'advice']);
+    expect(ids('en')).toEqual([
+      'who',
+      'sources',
+      'checks',
+      'reviews',
+      'errors',
+      'advice',
+      'affiliate',
+    ]);
     expect(ids('es')).toEqual(ids('en'));
     expect(EDITORIAL_TEXTS.en.title).toBe('Editorial policy | Pool Figures');
     expect(EDITORIAL_TEXTS.es.title).toBe('Política editorial | Pool Figures');
@@ -90,6 +98,22 @@ describe('the editorial policy page', () => {
     }
     expect(textOf('en')).toContain('not professional advice');
     expect(textOf('es')).toContain('no es asesoría profesional');
+  });
+
+  it('discloses paid links: the label, the commission and the Amazon statement', () => {
+    const affiliate = (lang: 'en' | 'es'): string =>
+      EDITORIAL_TEXTS[lang].sections
+        .filter(({ id }) => id === 'affiliate')
+        .flatMap(({ paragraphs }) => paragraphs)
+        .join('\n');
+    expect(affiliate('en')).toContain('"Paid link"');
+    expect(affiliate('en')).toContain('commission at no extra cost to you');
+    expect(affiliate('en')).toContain('As an Amazon Associate we earn from qualifying purchases');
+    expect(affiliate('es')).toContain('"Enlace pagado"');
+    expect(affiliate('es')).toContain('comisión sin costo extra para ti');
+    expect(affiliate('es')).toContain(
+      'Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos',
+    );
   });
 
   it('is linked from the about page in both languages', () => {

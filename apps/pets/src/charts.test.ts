@@ -196,3 +196,14 @@ describe('the guide of the charts index', () => {
     expect(urls.length).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('the dog feeding chart', () => {
+  it('leads to the feeding page of every weight, with "an" before 80', () => {
+    const links = chartOf('/dog-feeding-chart').pages?.links ?? [];
+    expect(links).toHaveLength(11);
+    expect(links[9]).toEqual({
+      href: '/how-much-to-feed-an-80-lb-dog',
+      label: 'How much to feed an 80 lb dog',
+    });
+  });
+});

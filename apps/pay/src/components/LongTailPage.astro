@@ -33,6 +33,7 @@ const page = longTailPageOf(job, lang);
       <h1>{page.h1}</h1>
     </div>
     <p class="lead">{page.lead}</p>
+    {page.aka !== undefined && <p class="note">{page.aka}</p>}
 
     <section class="result" aria-labelledby="figure-label">
       <div>

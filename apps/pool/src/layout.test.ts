@@ -43,6 +43,7 @@ describe('the footer', () => {
         href: '/how-long-after-adding-chemicals-can-you-swim',
         label: 'When to swim after chemicals',
       },
+      { href: '/how-much-does-a-pool-cost', label: 'How much a pool costs' },
       { href: '/privacy', label: 'Privacy' },
       { href: '/about', label: 'About' },
       { href: '/editorial-policy', label: 'Editorial policy' },

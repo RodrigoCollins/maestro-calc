@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 
 describe('BYLINE_PAGES', () => {
-  it('are the guides, the data pages, the dog and cat years pages, the food hub and its foods, then the plant hubs and plants', () => {
+  it('are the guides, the data pages, the dog and cat years pages, the food hub and its foods, the plant hubs and plants, then the feeding hub and its weights', () => {
     expect(BYLINE_PAGES.map(({ path }) => path).slice(0, 8)).toEqual([
       '/how-to-read-pet-food-label',
       '/dog-food-by-breed',
@@ -25,13 +25,17 @@ describe('BYLINE_PAGES', () => {
     expect(foods[0]).toBe('/can-dogs-eat');
     expect(foods).toHaveLength(42);
     expect(foods).toContain('/can-dogs-eat-grapes');
-    const plants = BYLINE_PAGES.slice(86).map(({ path }) => path);
+    const plants = BYLINE_PAGES.slice(86, -12).map(({ path }) => path);
     expect(plants.slice(0, 3)).toEqual([
       '/plants-toxic-to-cats',
       '/plants-toxic-to-dogs',
       '/pet-safe-houseplants',
     ]);
     expect(plants).toContain('/are-tulips-toxic-to-cats-and-dogs');
+    const feeding = BYLINE_PAGES.slice(-12).map(({ path }) => path);
+    expect(feeding[0]).toBe('/how-much-should-i-feed-my-dog');
+    expect(feeding).toContain('/how-much-to-feed-a-50-lb-dog');
+    expect(feeding).toContain('/how-much-to-feed-an-80-lb-dog');
   });
 
   it('give every page a review day and at least one source with an address', () => {

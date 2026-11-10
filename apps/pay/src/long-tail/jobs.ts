@@ -19,6 +19,7 @@ import { minutesLinksOf, minutesPageOf } from './minutes.ts';
 import { ptoLinksOf, ptoPageOf } from './pto.ts';
 import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
 import { shiftLinksOf, shiftPageOf } from './shifts.ts';
+import { hourlySpellingsOf, salarySpellingsOf } from './spellings.ts';
 import { tippedLinksOf, tippedPageOf } from './tipped.ts';
 
 export {
@@ -70,6 +71,8 @@ const WORDS = {
     question: (given: string, ask: string): string => `${given} is how much ${ask}?`,
     headline: (given: string, figure: string, ask: string): string =>
       `${given} is ${figure} ${ask}`,
+    titled: (thousands: string, salary: string, figure: string): string =>
+      `${thousands} (${salary}) is ${figure} an hour`,
     searched: (headline: string): string =>
       `${headline}, at 40 hours a week and 52 paid weeks, before taxes.`,
     answer: (given: string, figure: string, ask: string): string =>
@@ -100,6 +103,8 @@ const WORDS = {
     question: (given: string, ask: string): string => `¿${given} cuánto es ${ask}?`,
     headline: (given: string, figure: string, ask: string): string =>
       `${given} son ${figure} ${ask}`,
+    titled: (thousands: string, salary: string, figure: string): string =>
+      `${thousands} (${salary}) son ${figure} por hora`,
     searched: (headline: string): string =>
       `${headline}, con 40 horas por semana y 52 semanas pagadas, antes de impuestos.`,
     answer: (given: string, figure: string, ask: string): string =>
@@ -169,6 +174,8 @@ export interface LongTailPage {
   readonly description: string;
   readonly h1: string;
   readonly lead: string;
+  /** The other spellings of the amount people search, in one line under the answer. */
+  readonly aka?: string;
   readonly figure: string;
   readonly figureLabel: string;
   /** The label of the list of rows. */
@@ -348,21 +355,31 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   const givenKey = job.per === 'hour' ? 'hourly' : 'annual';
   const given = `${short(text(givenKey))} ${w.per[job.per]}`;
   const figure = text(figureKey);
-  const question = questionOf(job, lang);
   const rows = Object.entries(t.outputs)
     .filter(([key]) => key !== figureKey && key !== givenKey)
     .map(([key, label]) => ({ key, label, value: text(key) }));
   const answer = w.answer(given, short(figure), w.ask[job.per]);
   const headline = w.headline(given, short(figure), w.ask[job.per]);
+  // the title leads with the spelling searched most, the description with another (spellings.ts)
+  const hourly = job.per === 'hour' ? hourlySpellingsOf(job.amount, lang) : undefined;
+  const salary = job.per === 'year' ? salarySpellingsOf(job.amount, lang) : undefined;
+  const titled =
+    salary === undefined
+      ? headline
+      : w.titled(salary.thousands, short(text(givenKey)), short(figure));
+  const searched =
+    hourly === undefined ? headline : w.headline(hourly.dollars, short(figure), w.ask[job.per]);
+  const aka = salary?.aka ?? hourly?.aka;
   return {
     kicker: t.kicker,
-    title: titleOf(headline),
+    title: titleOf(titled),
     description: descriptionOf(
-      w.searched(headline),
+      w.searched(searched),
       rows.map(({ label, value }) => `${label}: ${short(value)}`),
     ),
-    h1: question,
+    h1: headline,
     lead: answer,
+    ...(aka === undefined ? {} : { aka }),
     figure,
     figureLabel: t.outputs[figureKey],
     breakdown: t.breakdown,

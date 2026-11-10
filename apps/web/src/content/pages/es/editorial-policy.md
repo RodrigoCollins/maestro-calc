@@ -41,3 +41,11 @@ Cada página de calculadora, guía y tabla muestra el día en que se revisó por
 <h2 id="sin-asesoria">No es asesoría profesional</h2>
 
 Nuestras cifras son estimaciones para ayudarte a planear y comprar. Lo que publicamos no es asesoría profesional, y no reemplaza el código de construcción local, las instrucciones del producto que compras ni a un profesional con licencia que vea la obra.
+
+<h2 id="enlaces-de-afiliado">Enlaces de afiliado</h2>
+
+Algunos enlaces de Maestro Calc pueden ser enlaces pagados (de afiliado). Si te registras o compras a través de uno, podemos recibir una comisión sin costo extra para ti. Cada enlace pagado lleva la etiqueta "Enlace pagado" justo al lado.
+
+Solo recomendamos una herramienta cuando la recomendaríamos para la tarea de esa página, pague o no. Un pago nunca cambia el resultado de una calculadora, una cifra ni una clasificación, y no mostramos precios que puedan quedar desactualizados.
+
+Cuando una página enlaza a Amazon: Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos.

@@ -2,7 +2,7 @@
 import { gal, isQuantityOf, valueIn } from '@maestro-calc/core';
 import { poolVolume } from '@maestro-calc/pool-core/pool-volume';
 import Layout from './Layout.astro';
-import { GUIDES } from '../guide.ts';
+import { COST_GUIDES } from '../costs.ts';
 import { HOME_TEXTS, toolsOf } from '../home.ts';
 import { JOB_PAGES } from '../jobs.ts';
 import { guideLinksOf } from '../layout.ts';
@@ -16,6 +16,8 @@ const { lang } = Astro.props;
 const text = HOME_TEXTS[lang];
 // the job pages are English only for now, so the Spanish home leaves their list out
 const jobs = lang === 'en' ? JOB_PAGES : [];
+// the cost guides are English only (United States prices), so the Spanish home leaves them out
+const costs = lang === 'en' ? COST_GUIDES : [];
 // the guides at their page in this language once it is built, named in this language
 const guides = guideLinksOf(lang);
 
@@ -70,6 +72,20 @@ const gallons = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).for
         <h2 id="pool-jobs">{text.jobsHeading}</h2>
         <ul class="pool-tools" role="list">
           {jobs.map(({ path, card }) => (
+            <li>
+              <a href={path}>{card.title}</a>
+              <p>{card.summary}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {costs.length > 0 && (
+      <section aria-labelledby="pool-costs">
+        <h2 id="pool-costs">{text.costsHeading}</h2>
+        <ul class="pool-tools" role="list">
+          {costs.map(({ path, card }) => (
             <li>
               <a href={path}>{card.title}</a>
               <p>{card.summary}</p>

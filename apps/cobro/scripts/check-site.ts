@@ -9,6 +9,7 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { affiliateLinkProblems } from '@maestro-calc/site-kit/affiliate';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, embedPathOf, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems } from '@maestro-calc/site-kit/seo-check';
@@ -37,6 +38,8 @@ const sitemap = [...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
 const image = join(dist, 'og.png');
 const all = [
   ...problems,
+  // every sponsored link sits in the recommendation block, next to its disclosure
+  ...[...html].flatMap(([file, text]) => affiliateLinkProblems(file, text)),
   ...siteSeoProblems(html, SITE.origin, sitemapText, SITE.indexable),
   ...(sitemap.length === ROUTES.length * 2
     ? []

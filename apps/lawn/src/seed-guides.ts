@@ -3,12 +3,14 @@ import { CALENDAR_STATES, seedStatePathOf, ZONE_INDEX_PATH } from './calendar-pa
 import { fieldText } from './format.ts';
 import type { Guide } from './guide.ts';
 import {
+  AERATION_LINK,
   AGRILIFE,
   ARKANSAS,
   BEST_SEED_LINK,
   GROWING_LINK,
   NC_STATE,
   NOAA,
+  PRE_EMERGENT_LINK,
   PURDUE_FINE_FESCUE,
   PURDUE_SEED,
   READ,
@@ -118,11 +120,11 @@ export const PLANTING_GUIDE: Guide = {
     },
     {
       id: 'uk-and-germination',
-      heading: 'In the UK, and how long the seed takes',
+      heading: 'In the UK, how long the seed takes, and before you sow',
       paragraphs: [
-        'The windows above are for the United States. For a UK lawn, sown by the gram per square metre, the UK page gives the RHS windows, the soil temperature to wait for, the rates of a UK seed supplier and the Met Office months. How long the seed takes to come up, grass by grass, and when to mow it first have a page of their own.',
+        'The windows above are for the United States. For a UK lawn, sown by the gram per square metre, the UK page gives the RHS windows, the soil temperature to wait for, the rates of a UK seed supplier and the Met Office months. How long the seed takes to come up, grass by grass, and when to mow it first have a page of their own. Before you overseed, one page says when to core-aerate the lawn and another how long a crabgrass pre-emergent keeps seed from coming up.',
       ],
-      links: [UK_LINK, GROWING_LINK],
+      links: [UK_LINK, GROWING_LINK, AERATION_LINK, PRE_EMERGENT_LINK],
     },
     {
       id: 'st-augustine',

@@ -1,4 +1,5 @@
 import { CHEMISTRY_CHARTS } from './chemistry-es.ts';
+import { COST_GUIDES } from './costs.ts';
 import { DOSING_CHARTS } from './dosing-es.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
 import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
@@ -64,7 +65,10 @@ const jobSourcesOf = (calculator: string): MethodSource[] => {
   return unique(section.sources);
 };
 
-/** Every page with a byline: the guides, the data pages, in both languages, then the job pages. */
+/**
+ * Every page with a byline: the guides, the data pages, in both languages, the cost guides
+ * (English only), then the job pages.
+ */
 export const BYLINE_PAGES: readonly BylinePage[] = [
   ...[
     OPENING_GUIDE,
@@ -104,6 +108,7 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       sources: [VOLUME_CHARTS[lang].source],
     },
   ]),
+  ...COST_GUIDES.map(entryOf),
   ...JOB_PAGES.map((page) => ({
     path: page.path,
     checked: page.checked,

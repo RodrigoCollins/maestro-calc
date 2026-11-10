@@ -86,6 +86,15 @@ export const EDITORIAL: Editorial = {
         'The figures are estimates. What we publish is not professional advice. Read the label of your product and follow it where it differs from our figures, and follow your soil test, your state and local rules, and your extension office. Fertilizer that runs off a lawn pollutes water, so the pages state the limits of their sources and never suggest more.',
       ],
     },
+    {
+      id: 'affiliate',
+      heading: 'Affiliate disclosure',
+      paragraphs: [
+        'Some links on Lawn Figures may be paid (affiliate) links. When you sign up or buy through one, we may earn a commission at no extra cost to you. Each paid link is labelled "Paid link" right next to it.',
+        'We recommend a tool only when it is one we would recommend for the task on that page, whether or not it pays. Payment never changes a calculator result, a figure or a ranking, and we do not show prices that can go stale.',
+        'When a page links to Amazon: As an Amazon Associate we earn from qualifying purchases.',
+      ],
+    },
   ],
   reviewed: 'Last updated November 7, 2026.',
 };

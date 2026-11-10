@@ -6,6 +6,7 @@ import {
   ZONE_LABELS,
   zonePathOf,
 } from './calendar-paths.ts';
+import { cityPathOf, FROST_CITIES } from './frost-cities.ts';
 import { FROST_PAGES } from './frost.ts';
 
 /** What a page is to search engines and link previews: the home, a calculator or an article. */
@@ -45,13 +46,16 @@ const PAGE_ROUTES: readonly Route[] = [
   { id: 'zone-index', kind: 'article', path: ZONE_INDEX_PATH },
   { id: 'uk-sowing-guide', kind: 'article', path: '/when-to-sow-grass-seed-uk' },
   { id: 'growing-guide', kind: 'article', path: '/how-long-does-grass-seed-take-to-grow' },
+  { id: 'aeration-guide', kind: 'article', path: '/when-to-aerate-lawn' },
+  { id: 'pre-emergent-guide', kind: 'article', path: '/when-to-apply-pre-emergent' },
 ];
 
 /**
  * Every page: the page files, then the pages built from data: the frost pages
  * (`frost-dates/[...state].astro`), the planting zones (`planting-zones/[zone].astro`) and the seed
  * and fertilizer calendars of the states (`when-to-plant-grass-seed/[state].astro`,
- * `when-to-fertilize-lawn/[state].astro`).
+ * `when-to-fertilize-lawn/[state].astro`), then the frost pages of the big cities
+ * (`last-frost-date/[city].astro`).
  */
 export const ROUTES: readonly Route[] = [
   ...PAGE_ROUTES,
@@ -74,6 +78,11 @@ export const ROUTES: readonly Route[] = [
     id: `feed:${slug}`,
     kind: 'article' as const,
     path: feedStatePathOf(slug),
+  })),
+  ...FROST_CITIES.map(({ slug }) => ({
+    id: `city:${slug}`,
+    kind: 'article' as const,
+    path: cityPathOf(slug),
   })),
 ];
 

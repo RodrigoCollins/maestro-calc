@@ -84,7 +84,7 @@ describe('long-tail pages', () => {
     // 50,000 / (40 x 52) = 24.038...
     const fifty = longTailPageOf(jobOf('50000'), 'es');
     expect(fifty.figure).toBe('$24.04');
-    expect(fifty.h1).toBe('¿$50,000 al año cuánto es por hora?');
+    expect(fifty.h1).toBe('$50,000 al año son $24.04 por hora');
     // 22 x 40 x 52 = 45,760; 45,760 / 12 = 3,813.33; 22 x 40 = 880
     const twentyTwo = longTailPageOf(jobOf('22'), 'en');
     expect(twentyTwo.figure).toBe('$45,760.00');
@@ -98,7 +98,7 @@ describe('long-tail pages', () => {
     // 55,000 / 2,080 = 26.442...; 150,000 / 2,080 = 72.115...
     expect(longTailPageOf(jobOf('55000'), 'en').figure).toBe('$26.44');
     expect(longTailPageOf(jobOf('150000'), 'en').figure).toBe('$72.12');
-    expect(longTailPageOf(jobOf('150000'), 'en').h1).toBe('$150,000 a year is how much an hour?');
+    expect(longTailPageOf(jobOf('150000'), 'en').h1).toBe('$150,000 a year is $72.12 an hour');
     // 27 x 2,080 = 56,160; 32 x 2,080 = 66,560; 60 x 2,080 = 124,800
     expect(longTailPageOf(jobOf('27'), 'en').figure).toBe('$56,160.00');
     expect(longTailPageOf(jobOf('32'), 'es').figure).toBe('$66,560.00');
@@ -113,12 +113,12 @@ describe('long-tail pages', () => {
     expect(longTailPageOf(jobOf('12'), 'en').figure).toBe('$24,960.00');
     const cents = longTailPageOf(jobOf('17.50'), 'en');
     expect(cents.figure).toBe('$36,400.00');
-    expect(cents.h1).toBe('$17.50 an hour is how much a year?');
+    expect(cents.h1).toBe('$17.50 an hour is $36,400 a year');
     expect(cents.paths).toEqual({
       en: '/pay/17-50-an-hour-is-how-much-a-year',
       es: '/es/pago/17-50-la-hora-cuanto-es-al-ano',
     });
-    expect(longTailPageOf(jobOf('17.50'), 'es').h1).toBe('¿$17.50 la hora cuánto es al año?');
+    expect(longTailPageOf(jobOf('17.50'), 'es').h1).toBe('$17.50 la hora son $36,400 al año');
     expect(longTailPageOf(jobOf('100'), 'en').figure).toBe('$208,000.00');
     // 25,000 / 2,080 = 12.019...; 130,000 / 2,080 = 62.5; 200,000 / 2,080 = 96.153...
     expect(longTailPageOf(jobOf('25000'), 'en').figure).toBe('$12.02');
@@ -135,10 +135,13 @@ describe('long-tail pages', () => {
       '$25 la hora son $52,000 al año | Cuenta Horas',
     );
     expect(longTailPageOf(jobOf('50000'), 'en').title).toBe(
-      '$50,000 a year is $24.04 an hour | Cuenta Horas',
+      '50k a year ($50,000) is $24.04 an hour | Cuenta Horas',
     );
     expect(longTailPageOf(jobOf('50000'), 'es').title).toBe(
-      '$50,000 al año son $24.04 por hora | Cuenta Horas',
+      '50 mil al año ($50,000) son $24.04 por hora | Cuenta Horas',
+    );
+    expect(longTailPageOf(jobOf('200000'), 'en').title).toBe(
+      '200k a year ($200,000) is $96.15 an hour | Cuenta Horas',
     );
     expect(longTailPageOf(jobOf('17.50'), 'en').title).toBe(
       '$17.50 an hour is $36,400 a year | Cuenta Horas',
@@ -150,10 +153,13 @@ describe('long-tail pages', () => {
       'Tiempo y medio de $15 la hora es $22.50 la hora | Cuenta Horas',
     );
     expect(longTailPageOf(jobOf('25'), 'en').description).toMatch(
-      /^\$25 an hour is \$52,000 a year, at 40 hours a week and 52 paid weeks, before taxes\./,
+      /^25 dollars an hour is \$52,000 a year, at 40 hours a week and 52 paid weeks, before taxes\./,
     );
     expect(longTailPageOf(jobOf('25'), 'es').description).toMatch(
-      /^\$25 la hora son \$52,000 al año, con 40 horas por semana y 52 semanas pagadas, antes de impuestos\./,
+      /^25 dólares la hora son \$52,000 al año, con 40 horas por semana y 52 semanas pagadas, antes de impuestos\./,
+    );
+    expect(longTailPageOf(jobOf('60000'), 'en').description).toMatch(
+      /^\$60,000 a year is \$28\.85 an hour, at 40 hours a week and 52 paid weeks, before taxes\./,
     );
     expect(longTailPageOf(jobOf('20', 'overtime'), 'en').description).toMatch(
       /^Time and a half for \$20 an hour is \$30 an hour, so 10 overtime hours past 40 in a week pay \$300 under the federal rule\./,
@@ -165,10 +171,42 @@ describe('long-tail pages', () => {
       for (const lang of LANGS) {
         const page = longTailPageOf(job, lang);
         const answer = page.title.replace(/ \| Cuenta Horas$/, '');
-        expect(answer).toContain(page.figure.replace(/\.00$/, ''));
-        expect(page.description.startsWith(`${answer},`)).toBe(true);
+        const figure = page.figure.replace(/\.00$/, '');
+        expect(answer).toContain(figure);
+        if (job.kind === 'overtime') {
+          expect(page.description.startsWith(`${answer},`)).toBe(true);
+        } else {
+          // the answer leads the description too, in another of the spellings people search
+          const lead = page.description.slice(0, page.description.indexOf(', '));
+          expect(lead.endsWith(figure) || lead.includes(` ${figure} `)).toBe(true);
+          expect(page.h1).toContain(figure);
+        }
       }
     }
+  });
+
+  it('answer in the heading, then name each other spelling people search once', () => {
+    // 25 x 2,080 = 52,000; 60,000 / 2,080 = 28.846...
+    const hour = longTailPageOf(jobOf('25'), 'en');
+    expect(hour.h1).toBe('$25 an hour is $52,000 a year');
+    expect(hour.aka).toBe('Also written as $25/hr or $25 per hour.');
+    expect(longTailPageOf(jobOf('25'), 'es').aka).toBe(
+      'También se escribe 25 dólares por hora o $25/h.',
+    );
+    const year = longTailPageOf(jobOf('60000'), 'en');
+    expect(year.h1).toBe('$60,000 a year is $28.85 an hour');
+    expect(year.title).toBe('60k a year ($60,000) is $28.85 an hour | Cuenta Horas');
+    expect(year.aka).toBe('Also written as 60 000 or 60 thousand dollars a year.');
+    const año = longTailPageOf(jobOf('60000'), 'es');
+    expect(año.title).toBe('60 mil al año ($60,000) son $28.85 por hora | Cuenta Horas');
+    expect(año.aka).toBe('También se escribe 60k o 60 000 dólares al año.');
+    expect(longTailPageOf(jobOf('17.50'), 'en').aka).toBe(
+      'Also written as $17.50/hr or $17.50 per hour.',
+    );
+    expect(longTailPageOf(jobOf('100000'), 'en').aka).toBe(
+      'Also written as 100 000 or 100 thousand dollars a year.',
+    );
+    for (const job of OVERTIMES) expect(longTailPageOf(job, 'en').aka).toBeUndefined();
   });
 
   it('link the nearest amounts of their family, never every page of it', () => {

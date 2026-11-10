@@ -59,7 +59,15 @@ describe('the editorial policy', () => {
     const ids = (lang: 'en' | 'es') => EDITORIAL_TEXTS[lang].sections.map(({ id }) => id);
     expect(ids('es')).toEqual(ids('en'));
     expect(new Set(ids('en')).size).toBe(ids('en').length);
-    expect(ids('en')).toEqual(['who', 'sources', 'checks', 'reviews', 'errors', 'advice']);
+    expect(ids('en')).toEqual([
+      'who',
+      'sources',
+      'checks',
+      'reviews',
+      'errors',
+      'advice',
+      'affiliate',
+    ]);
     for (const lang of LANGS)
       for (const { paragraphs } of EDITORIAL_TEXTS[lang].sections)
         expect(paragraphs.length).toBeGreaterThan(0);
@@ -99,6 +107,22 @@ describe('the editorial policy', () => {
     expect(textOf('en')).toContain('Wage and Hour Division');
     expect(textOf('es')).toContain('no son asesoría legal ni fiscal');
     expect(textOf('es')).toContain('División de Horas y Salarios');
+  });
+
+  it('discloses paid links: the label, the commission and the Amazon statement', () => {
+    const affiliate = (lang: 'en' | 'es'): string =>
+      EDITORIAL_TEXTS[lang].sections
+        .filter(({ id }) => id === 'affiliate')
+        .flatMap(({ paragraphs }) => paragraphs)
+        .join('\n');
+    expect(affiliate('en')).toContain('"Paid link"');
+    expect(affiliate('en')).toContain('commission at no extra cost to you');
+    expect(affiliate('en')).toContain('As an Amazon Associate we earn from qualifying purchases');
+    expect(affiliate('es')).toContain('"Enlace pagado"');
+    expect(affiliate('es')).toContain('comisión sin costo extra para ti');
+    expect(affiliate('es')).toContain(
+      'Como Asociado de Amazon, ganamos con las compras que cumplen los requisitos',
+    );
   });
 
   it('says when the state tables are rechecked: before January 1 and July 1', () => {

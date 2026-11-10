@@ -406,6 +406,25 @@ describe('the long-tail job pages', () => {
     expect(byPath('/how-much-chlorine-for-a-30000-gallon-pool').figure.value).toBe('61.4');
   });
 
+  // worked by hand: 1,211.33 mL of 12.5% liquid ÷ 3,785.41 mL a gallon = 0.32 of a jug; the same
+  // 151.416 g of available chlorine ÷ 0.65 = 232.95 g = 8.2 oz of cal-hypo; 20,000 × 3,600 × 8.34 ÷
+  // 1,000,000 = 600.48 lb of salt for a Pentair IntelliChlor
+  it('answers the chlorine and salt questions first, with the jug, the dry dose and every cell', () => {
+    const chlorine = byPath('/how-much-chlorine-for-a-20000-gallon-pool').lead;
+    expect(chlorine).toMatch(/^A 20,000 gallon pool needs 41\.0 fl oz of 12\.5% liquid chlorine/);
+    expect(chlorine).toContain('0.32 of a 1 gallon jug');
+    expect(chlorine).toContain('8.2 oz of 65% cal-hypo');
+    const salt = byPath('/how-much-salt-for-a-20000-gallon-pool').lead;
+    expect(salt).toMatch(/^A 20,000 gallon pool filled with fresh water needs 533\.8 lb of salt/);
+    expect(salt).toContain('14 bags of 40 lb');
+    expect(salt).toContain('600.5 lb for a Pentair IntelliChlor at 3,600 ppm');
+    // 5,000 gallons: 0.08 of a jug (10.24 ÷ 128), 133.4 lb of salt, 150.1 lb for 3,600 ppm
+    expect(byPath('/how-much-chlorine-for-a-5000-gallon-pool').lead).toContain(
+      '0.08 of a 1 gallon jug',
+    );
+    expect(byPath('/how-much-salt-for-a-5000-gallon-pool').lead).toContain('150.1 lb');
+  });
+
   // worked by hand: 200 ft² × 4 ft × 1,728 ÷ 231 = 5,984; 576 ft² × 5.75 ft = 3,312 ft³ = 24,775;
   // 640 ft² × 5.75 ft = 3,680 ft³ = 27,528
   it('works out the 10 x 20, 16 x 36 and 16 x 40 pools as by hand', () => {
