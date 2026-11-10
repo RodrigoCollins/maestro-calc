@@ -24,19 +24,32 @@ const LUNCHES = [30, 60] as const;
 /** A time clock that rounds to the nearest quarter hour records a punch up to 7 minutes off as the hour. */
 const ROUNDING = 7;
 
-/** The rates of the pay table: the federal minimum wage, then common rates. */
-const RATES: readonly Money[] = [
-  usd(Rational.of(FEDERAL_MINIMUM_WAGE, 100)),
-  usd(15),
-  usd(20),
-  usd(25),
-];
-
 /** The hours a workday may run before the daily overtime of Alaska, California and Nevada. */
 const DAILY_LINE = 8;
 
 /** The weekly hours of full time for the IRS (Affordable Care Act) and the BLS (job statistics). */
 const FULL_TIME = { irs: 30, bls: 35 } as const;
+
+/**
+ * New York Labor Law 162, for a mercantile or other establishment: more than 6 hours across the
+ * noonday period of 11 am to 2 pm owes 30 minutes in it; a start before 11 am that runs past 7 pm,
+ * 20 more minutes from 5 pm to 7 pm; more than 6 hours from a start between 1 pm and 6 am, 45
+ * minutes midway. In minutes from midnight.
+ */
+const NEW_YORK = {
+  over: 6,
+  noonFrom: 11 * 60,
+  noonTo: 14 * 60,
+  eveningTo: 19 * 60,
+  lateFrom: 13 * 60,
+  lateTo: 6 * 60,
+} as const;
+
+/**
+ * The federal hours of 14- and 15-year-olds outside agriculture (DOL Fact Sheet #43): from 7 am to
+ * 7 pm, 9 pm from June 1 through Labor Day, and no more than 8 hours on a day without school.
+ */
+const TEEN_HOURS = { from: 7 * 60, to: 19 * 60, summerTo: 21 * 60, day: 8 } as const;
 
 /** The weekdays of the time card, Monday first. */
 const WEEKDAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
@@ -131,6 +144,9 @@ const articleOf = (clock: string): string => (/^(8|11)[: ]/.test(clock) ? 'an' :
 const atClock = (clock: string): string =>
   /^1[: ]/.test(clock) ? `a la ${clock}` : `a las ${clock}`;
 
+/** `la 1 pm`, `las 9 am`: a clock time after `es` or `desde` in Spanish. */
+const theClock = (clock: string): string => atClock(clock).replace(/^a /, '');
+
 const capital = (word: string): string => `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
 
 /** `A, B and C`, `A, B y C`. */
@@ -165,7 +181,7 @@ const WORDS = {
     worked: {
       heading: 'How the figures are worked out',
       intro: (start: string, end: string, figure: string): string =>
-        `To check that ${start} to ${end} is ${figure}, put both times on one clock and subtract the start from the end.`,
+        `To check that ${start} to ${end} is ${figure}, subtract the start from the end:`,
       clock: (start: string, end: string, from: string, to: string): string =>
         `On a 24-hour clock, ${start} is ${from} and ${end} is ${to}.`,
       subtract: (
@@ -210,6 +226,14 @@ const WORDS = {
       total: string,
     ): string =>
       `A 30-minute lunch at the middle of the shift runs from ${lunchFrom} to ${lunchTo}: ${start} to ${lunchFrom} is ${first} hours and ${lunchTo} to ${end} is ${second}, ${total} hours in all.`,
+    rounding: {
+      heading: (start: string, end: string): string =>
+        `How a quarter-hour time clock records ${start} to ${end}`,
+      caption: (start: string, end: string): string =>
+        `Punches near ${start} and ${end}, rounded to the nearest quarter hour`,
+      head: ['Punch', 'Clock time', 'Recorded as', 'Paid time against the schedule'],
+      kinds: ['In', 'Out'],
+    },
     clockOut: {
       heading: 'When to clock out with a lunch break',
       rounding: (
@@ -235,24 +259,12 @@ const WORDS = {
       totals: (
         start: string,
         end: string,
-        w0: string,
-        w30: string,
         b0: string,
         b30: string,
         m0: string,
         m30: string,
       ): string =>
-        `Monday to Friday from ${start} to ${end} is ${w0} hours a week with no unpaid break and ${w30} with a 30-minute lunch each day. Paid every two weeks, ${start} to ${end} comes to ${b0} or ${b30} hours a pay period; over 52 weeks it averages ${m0} or ${m30} hours a month.`,
-      rule: 'Under the federal Fair Labor Standards Act (FLSA), only the hours over 40 in a workweek are overtime, paid at least 1.5 times the regular rate (DOL Fact Sheet #23).',
-      over: (start: string, end: string, w0: string, ot0: string): string =>
-        `Five ${start} to ${end} shifts with no unpaid break come to ${w0} hours, so ${ot0} of them are overtime;`,
-      overLunch: (ot30: string): string => `with a 30-minute lunch each day, ${ot30} hours are.`,
-      underLunch: (w30: string): string =>
-        `with a 30-minute lunch each day the week drops to ${w30} hours, with no overtime.`,
-      under: (start: string, end: string, w6: string, ot6?: string): string =>
-        ot6 === undefined
-          ? `Five ${start} to ${end} shifts stay at or under 40 hours, with or without a lunch, so they owe no federal overtime; even a sixth ${start} to ${end} shift on Saturday keeps the week at ${w6} hours with lunches.`
-          : `Five ${start} to ${end} shifts stay at or under 40 hours, with or without a lunch, so they owe no federal overtime; a sixth ${start} to ${end} shift on Saturday would bring the week to ${w6} hours with lunches, ${ot6} of them overtime.`,
+        `Paid every two weeks, ${start} to ${end} comes to ${b0} hours a pay period with no unpaid break or ${b30} with a 30-minute lunch each day; over 52 weeks it averages ${m0} or ${m30} hours a month.`,
       four: (w4: string, ot4?: string): string =>
         ot4 === undefined
           ? `Four of these shifts a week, with a 30-minute lunch each, come to ${w4} hours, inside the 40-hour line.`
@@ -276,7 +288,7 @@ const WORDS = {
       heading: (start: string, end: string): string =>
         `A week of ${start} to ${end} on a time card`,
       intro: (start: string, end: string, rate: string): string =>
-        `Here is a Monday-to-Friday week of ${start} to ${end} shifts as the time card calculator fills it in, with a 30-minute unpaid lunch each day, at ${rate} an hour under the federal overtime rule: the hours of each day, the hours of the week so far and the gross pay so far.`,
+        `A Monday-to-Friday week of ${start} to ${end} in the time card calculator, with a 30-minute unpaid lunch a day, at ${rate} an hour under the federal overtime rule.`,
       caption: (start: string, end: string, from: string, to: string, rate: string): string =>
         `Time card: ${start} to ${end} with lunch from ${from} to ${to}, Monday to Friday, at ${rate} an hour`,
       head: [
@@ -289,6 +301,10 @@ const WORDS = {
         'Week so far',
         'Gross pay so far',
       ],
+      minimum: (start: string, end: string, week: string, two: string): string =>
+        `At the federal minimum wage of $7.25, the same ${start} to ${end} card pays ${week} a week and ${two} every two weeks.`,
+      saturday: (start: string, time: string): string =>
+        `A sixth shift on Saturday from ${start} would reach 40 hours at ${time}; every minute after that is overtime.`,
       punches: (
         start: string,
         lunchOut: string,
@@ -302,14 +318,11 @@ const WORDS = {
       periods: (
         start: string,
         end: string,
-        twoHours: string,
         twoPay: string,
         yearHours: string,
         yearPay: string,
       ): string =>
-        `Two weeks of ${start} to ${end} cards come to ${twoHours} hours, ${twoPay} a biweekly pay period; 52 weeks of ${start} to ${end} cards, ${yearHours} hours and ${yearPay} a year before taxes.`,
-      minimum: (start: string, end: string, week: string, two: string): string =>
-        `At the federal minimum wage of $7.25, the same ${start} to ${end} card pays ${week} a week and ${two} every two weeks.`,
+        `Two weeks of ${start} to ${end} cards pay ${twoPay} a biweekly pay period; 52 weeks of ${start} to ${end} cards, ${yearHours} hours and ${yearPay} a year before taxes.`,
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
       regular: (card: string, total: string, rate: string, pay: string, left: string): string =>
         left === '0'
@@ -324,27 +337,57 @@ const WORDS = {
         overtimePay: string,
         pay: string,
         day: string,
+        time: string,
       ): string =>
-        `By Friday the ${card} card shows ${total} hours: the first 40 are regular time, ${regularPay}, and the ${overtime} hours past 40 are overtime at ${overtimeRate} an hour, ${overtimePay}, for ${pay} before taxes. The week crosses the 40-hour line on ${day}, so that day's gross pay so far already includes overtime.`,
+        `By Friday the ${card} card shows ${total} hours: the first 40 are regular time, ${regularPay}, and the ${overtime} hours past 40 are overtime at ${overtimeRate} an hour, ${overtimePay}, for ${pay} before taxes. The week crosses the 40-hour line on ${day} at ${time}, so that day's gross pay so far already includes overtime.`,
     },
-    pay: {
-      heading: (start: string, end: string): string => `Pay for ${start} to ${end} at common rates`,
+    byHour: {
+      heading: (start: string, end: string): string => `Hour by hour from ${start} to ${end}`,
       intro: (
         start: string,
         end: string,
-        day: string,
-        week: string,
-        dayPay: string,
-        weekPay: string,
+        half: string,
+        halfHours: string,
+        from: string,
+        to: string,
+        stop: string,
+        paid: string,
       ): string =>
-        `From ${start} to ${end} with a 30-minute unpaid lunch you are paid ${day} hours a shift and ${week} in a five-day week: at $15.00 an hour, ${dayPay} a shift and ${weekPay} a week before taxes (time card calculator, federal overtime rule; the first row is the federal minimum wage).`,
-      caption: (start: string, end: string): string => `${start} to ${end}, 30-minute lunch`,
-      head: ['Hourly rate', 'One shift', 'Five shifts', 'Of it, overtime'],
+        `Halfway through ${start} to ${end} is ${half}, ${halfHours} on the clock. With a 30-minute unpaid lunch from ${from} to ${to}, the paid hours stop at ${stop} during the lunch and reach ${paid} at ${end}.`,
+      caption: (start: string, end: string): string =>
+        `Hours since ${start} at each hour of ${articleOf(start)} ${start} to ${end} shift`,
+      head: ['Time', 'On the clock', 'Paid, with the lunch', 'Gross pay so far at $20.00'],
+    },
+    teens: {
+      heading: (start: string, end: string): string =>
+        `Can a 14- or 15-year-old work ${start} to ${end}?`,
+      allYear: (start: string, end: string): string =>
+        `${start} to ${end} falls inside the 7 am to 7 pm that federal law allows a 14- or 15-year-old all year.`,
+      summer: (start: string, end: string): string =>
+        `${start} to ${end} ends after 7 pm, so a 14- or 15-year-old may work it only from June 1 through Labor Day, when the evening limit is 9 pm.`,
+      early: (start: string, end: string): string =>
+        `${start} to ${end} starts before 7 am, the earliest a 14- or 15-year-old may start, so federal law does not allow it.`,
+      late: (start: string, end: string): string =>
+        `${start} to ${end} ends after 9 pm, later than a 14- or 15-year-old may work even from June 1 through Labor Day, so federal law does not allow it.`,
+      night: (start: string, end: string): string =>
+        `${start} to ${end} runs through the night, outside the 7 am to 7 pm (9 pm in summer) a 14- or 15-year-old may work, so federal law does not allow it.`,
+      within: (paid: string): string =>
+        `Its ${paid} paid hours with a 30-minute lunch fit a day without school, up to 8, but never a school day, up to 3.`,
+      longLunch: (paid: string, long: string): string =>
+        `Its ${paid} paid hours with a 30-minute lunch pass the 8 allowed on a day without school; only a 60-minute lunch, at ${long}, keeps it within the limit.`,
+      over: (paid: string, long: string): string =>
+        `Its ${paid} paid hours with a 30-minute lunch, and ${long} even with a 60-minute one, pass the 8 allowed on a day without school, so it is not allowed on any day.`,
     },
     breaks: {
       heading: 'Is the lunch break paid?',
       federal: (figure: string, start: string, end: string): string =>
-        `Federal law does not require lunch breaks. Short breaks of about 5 to 20 minutes are paid work time (29 CFR 785.18); a meal period, ordinarily 30 minutes or more fully off duty, is not (29 CFR 785.19). So only a real lunch comes off the ${figure} from ${start} to ${end}, and two paid 15-minute breaks stay in your hours.`,
+        `Federal law does not require a lunch break: breaks of about 5 to 20 minutes are paid (29 CFR 785.18), and only a meal of 30 minutes or more fully off duty comes off the ${figure} from ${start} to ${end} (29 CFR 785.19).`,
+      noon: (start: string, end: string): string =>
+        `In New York, ${start} to ${end} runs more than 6 hours across the noonday period of 11 am to 2 pm, so it owes at least 30 minutes off between 11 am and 2 pm (60 minutes in a factory).`,
+      evening: (start: string, end: string): string =>
+        `Because ${start} to ${end} starts before 11 am and goes past 7 pm, New York adds at least 20 minutes between 5 pm and 7 pm.`,
+      late: (start: string, end: string, midway: string): string =>
+        `In New York, ${start} to ${end} runs more than 6 hours from a start between 1 pm and 6 am, so it owes at least 45 minutes (60 in a factory) midway through the shift, around ${midway}.`,
       states: (figure: string, count: number, list: string): string =>
         `Some states do require a meal period. For a shift of ${figure} from start to end, the U.S. Department of Labor table of state meal periods (January 1, 2023) lists one in ${String(count)} states: ${list}. Each has exceptions; check yours in the table.`,
       group: (minutes: number | undefined, states: string): string =>
@@ -369,7 +412,7 @@ const WORDS = {
     worked: {
       heading: 'Cómo se calcula',
       intro: (start: string, end: string, figure: string): string =>
-        `Para comprobar que de ${start} a ${end} son ${figure}, pon las dos horas en un mismo reloj y resta la entrada de la salida.`,
+        `Para comprobar que de ${start} a ${end} son ${figure}, resta la entrada de la salida:`,
       clock: (start: string, end: string, from: string, to: string): string =>
         `En un reloj de 24 horas, las ${start} son las ${from} y las ${end} son las ${to}.`,
       subtract: (
@@ -415,6 +458,14 @@ const WORDS = {
       total: string,
     ): string =>
       `Una comida de 30 minutos a la mitad del turno va de ${lunchFrom} a ${lunchTo}: de ${start} a ${lunchFrom} son ${first} horas y de ${lunchTo} a ${end} son ${second}, ${total} horas en total.`,
+    rounding: {
+      heading: (start: string, end: string): string =>
+        `Cómo registra un reloj de cuartos de hora un turno de ${start} a ${end}`,
+      caption: (start: string, end: string): string =>
+        `Marcas cerca de las ${start} y de las ${end}, redondeadas al cuarto de hora más cercano`,
+      head: ['Marca', 'Hora del reloj', 'Queda como', 'Tiempo pagado frente al horario'],
+      kinds: ['Entrada', 'Salida'],
+    },
     clockOut: {
       heading: 'A qué hora salir si tomas un descanso para comer',
       rounding: (
@@ -425,9 +476,9 @@ const WORDS = {
         outTo: string,
         end: string,
       ): string =>
-        `Si tu reloj marcador redondea al cuarto de hora más cercano, una marca de entrada de ${inFrom} a ${inTo} y una de salida de ${outFrom} a ${outTo} siguen quedando de ${start} a ${end}. El redondeo solo se permite si, con el tiempo, te pagan todo el tiempo que trabajaste (29 CFR 785.48).`,
+        `Si tu reloj marcador redondea al cuarto de hora, marcar la entrada de ${inFrom} a ${inTo} y la salida de ${outFrom} a ${outTo} sigue quedando de ${start} a ${end}. El redondeo es legal solo si con el tiempo te pagan todo lo trabajado (29 CFR 785.48).`,
       intro: (start: string, end: string, figure: string): string =>
-        `El descanso sin pago se resta de tus horas, así que si sales a las ${end} después de un descanso te pagan menos de ${figure}. Para que te paguen las ${figure} completas entrando a las ${start}, quédate lo que dure el descanso:`,
+        `El descanso sin pago se resta, así que si sales a las ${end} te pagan menos de ${figure}. Para cobrar las ${figure} completas entrando a las ${start}, sal más tarde lo que dure el descanso:`,
       caption: (start: string): string => `Entrando a las ${start}`,
       head: (end: string, figure: string): readonly string[] => [
         'Descanso sin pago',
@@ -440,31 +491,18 @@ const WORDS = {
       totals: (
         start: string,
         end: string,
-        w0: string,
-        w30: string,
         b0: string,
         b30: string,
         m0: string,
         m30: string,
       ): string =>
-        `De lunes a viernes de ${start} a ${end} son ${w0} horas a la semana sin descanso sin pago y ${w30} con 30 minutos de comida cada día. Si te pagan cada dos semanas, de ${start} a ${end} son ${b0} o ${b30} horas por periodo de pago; en 52 semanas, el promedio es de ${m0} o ${m30} horas al mes.`,
-      rule: 'Según la Ley de Normas Justas de Trabajo (FLSA), solo las horas que pasan de 40 en una semana laboral son horas extra, y se pagan al menos a 1.5 veces la tarifa regular (DOL Fact Sheet #23).',
-      over: (start: string, end: string, w0: string, ot0: string): string =>
-        `Cinco turnos de ${start} a ${end} sin descanso sin pago suman ${w0} horas, así que ${ot0} son horas extra;`,
-      overLunch: (ot30: string): string =>
-        `con 30 minutos de comida cada día, lo son ${ot30} horas.`,
-      underLunch: (w30: string): string =>
-        `con 30 minutos de comida cada día la semana baja a ${w30} horas, sin horas extra.`,
-      under: (start: string, end: string, w6: string, ot6?: string): string =>
-        ot6 === undefined
-          ? `Cinco turnos de ${start} a ${end} no pasan de 40 horas, con o sin comida, así que no generan horas extra federales; incluso un sexto turno de ${start} a ${end} el sábado deja la semana en ${w6} horas con comidas.`
-          : `Cinco turnos de ${start} a ${end} no pasan de 40 horas, con o sin comida, así que no generan horas extra federales; un sexto turno de ${start} a ${end} el sábado llevaría la semana a ${w6} horas con comidas, ${ot6} de ellas extra.`,
+        `Con pago cada dos semanas, de ${start} a ${end} son ${b0} horas por periodo sin descanso o ${b30} con 30 minutos de comida al día; en 52 semanas, un promedio de ${m0} o ${m30} horas al mes.`,
       four: (w4: string, ot4?: string): string =>
         ot4 === undefined
           ? `Cuatro de estos turnos a la semana, con 30 minutos de comida cada uno, suman ${w4} horas, dentro del límite de 40.`
           : `Cuatro de estos turnos a la semana, con 30 minutos de comida cada uno, suman ${w4} horas, ${ot4} de ellas extra.`,
       fullTime: (start: string, end: string, irs: string, bls: string): string =>
-        `Cuántos turnos de ${start} a ${end} hacen un tiempo completo depende de quién cuente, porque la FLSA no fija ningún número: con 30 minutos de comida, ${irs} a la semana llegan a las 30 horas que cuenta el IRS para la cobertura médica del empleador (130 al mes), y ${bls} a las 35 horas de las estadísticas de empleo de la Oficina de Estadísticas Laborales (BLS).`,
+        `La FLSA no fija un número para el tiempo completo: con 30 minutos de comida, ${irs} turnos de ${start} a ${end} a la semana llegan a las 30 horas del IRS (cobertura médica del empleador, 130 al mes) y ${bls} a las 35 de la Oficina de Estadísticas Laborales (BLS).`,
       daily: (
         states: string,
         below: string,
@@ -476,13 +514,13 @@ const WORDS = {
         fed: string,
         double: string,
       ): string =>
-        `En ${states} (en Nevada solo si ganas menos de ${below} la hora), las horas que pasan de 8 en un día de trabajo también son extra, sin importar la semana. Un turno de ${start} a ${end} con 30 minutos de comida es de ${day} horas, así que ${extra} de cada día son horas extra diarias: con la regla de California esta semana de cinco días tiene ${ca} horas extra${double === '0' ? '' : ` y ${double} horas de tiempo doble`}, frente a ${fed} con la regla federal. En Colorado el límite diario es de 12 horas.`,
+        `En ${states} (en Nevada solo por debajo de ${below} la hora) también son extra las horas después de 8 en un día. Con 30 minutos de comida, de ${start} a ${end} son ${day} horas al día, ${extra} de ellas extra diarias: con la regla de California la semana suma ${ca} horas extra${double === '0' ? '' : ` y ${double} de tiempo doble`}, frente a ${fed} con la federal. Colorado pone el límite diario en 12 horas.`,
     },
     card: {
       heading: (start: string, end: string): string =>
         `Una semana de ${start} a ${end} en la tarjeta de horas`,
       intro: (start: string, end: string, rate: string): string =>
-        `Esta es una semana de lunes a viernes con turnos de ${start} a ${end} tal como la llena la calculadora de tarjeta de horas, con 30 minutos de comida sin pago cada día, a ${rate} la hora con la regla federal de horas extra: las horas de cada día, las horas acumuladas de la semana y el pago bruto acumulado.`,
+        `Una semana de lunes a viernes de ${start} a ${end} en la calculadora de tarjeta de horas, con 30 minutos de comida sin pago al día, a ${rate} la hora con la regla federal de horas extra.`,
       caption: (start: string, end: string, from: string, to: string, rate: string): string =>
         `Tarjeta de horas: de ${start} a ${end} con comida de ${from} a ${to}, de lunes a viernes, a ${rate} la hora`,
       head: [
@@ -495,6 +533,10 @@ const WORDS = {
         'Horas en la semana',
         'Pago bruto acumulado',
       ],
+      minimum: (start: string, end: string, week: string, two: string): string =>
+        `Con el salario mínimo federal de $7.25, la misma tarjeta de ${start} a ${end} paga ${week} a la semana y ${two} cada dos semanas.`,
+      saturday: (start: string, time: string): string =>
+        `Un sexto turno el sábado desde ${theClock(start)} llegaría a las 40 horas ${atClock(time)}; cada minuto después es hora extra.`,
       punches: (
         start: string,
         lunchOut: string,
@@ -508,14 +550,11 @@ const WORDS = {
       periods: (
         start: string,
         end: string,
-        twoHours: string,
         twoPay: string,
         yearHours: string,
         yearPay: string,
       ): string =>
-        `Dos semanas de tarjetas de ${start} a ${end} suman ${twoHours} horas, ${twoPay} por un periodo de pago quincenal; 52 semanas de tarjetas de ${start} a ${end}, ${yearHours} horas y ${yearPay} al año antes de impuestos.`,
-      minimum: (start: string, end: string, week: string, two: string): string =>
-        `Con el salario mínimo federal de $7.25, la misma tarjeta de ${start} a ${end} paga ${week} a la semana y ${two} cada dos semanas.`,
+        `Dos semanas de tarjetas de ${start} a ${end} pagan ${twoPay} por un periodo de pago quincenal; 52 semanas de tarjetas de ${start} a ${end}, ${yearHours} horas y ${yearPay} al año antes de impuestos.`,
       days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
       regular: (card: string, total: string, rate: string, pay: string, left: string): string =>
         left === '0'
@@ -530,30 +569,59 @@ const WORDS = {
         overtimePay: string,
         pay: string,
         day: string,
+        time: string,
       ): string =>
-        `Al viernes la tarjeta ${card} suma ${total} horas: las primeras 40 son a tarifa normal, ${regularPay}, y las ${overtime} horas después de 40 son horas extra a ${overtimeRate} la hora, ${overtimePay}, en total ${pay} antes de impuestos. La semana pasa de 40 horas el ${day}, así que el pago acumulado de ese día ya incluye horas extra.`,
+        `Al viernes la tarjeta ${card} suma ${total} horas: 40 a tarifa normal, ${regularPay}, y ${overtime} extra a ${overtimeRate} la hora, ${overtimePay}; en total, ${pay} antes de impuestos. La semana pasa de 40 horas el ${day} ${atClock(time)}, y desde ahí el acumulado ya incluye horas extra.`,
     },
-    pay: {
-      heading: (start: string, end: string): string =>
-        `Pago de ${start} a ${end} con tarifas comunes`,
+    byHour: {
+      heading: (start: string, end: string): string => `Hora por hora de ${start} a ${end}`,
       intro: (
         start: string,
         end: string,
-        day: string,
-        week: string,
-        dayPay: string,
-        weekPay: string,
+        half: string,
+        halfHours: string,
+        from: string,
+        to: string,
+        stop: string,
+        paid: string,
       ): string =>
-        `De ${start} a ${end} con 30 minutos de comida sin pago te pagan ${day} horas por turno y ${week} en una semana de cinco días: a $15.00 la hora, ${dayPay} por turno y ${weekPay} a la semana antes de impuestos (calculadora de tarjeta de horas, regla federal de horas extra; la primera fila es el salario mínimo federal).`,
-      caption: (start: string, end: string): string => `De ${start} a ${end}, 30 minutos de comida`,
-      head: ['Tarifa por hora', 'Un turno', 'Cinco turnos', 'De eso, horas extra'],
+        `La mitad de un turno de ${start} a ${end} es ${theClock(half)}, con ${halfHours} en el reloj. Con 30 minutos de comida sin pago de ${from} a ${to}, las horas pagadas se quedan en ${stop} durante la comida y llegan a ${paid} ${atClock(end)}.`,
+      caption: (start: string, end: string): string =>
+        `Horas desde ${theClock(start)} en cada hora de un turno de ${start} a ${end}`,
+      head: ['Hora', 'En el reloj', 'Pagadas, con la comida', 'Pago bruto acumulado a $20.00'],
+    },
+    teens: {
+      heading: (start: string, end: string): string =>
+        `¿Puede un adolescente de 14 o 15 años trabajar de ${start} a ${end}?`,
+      allYear: (start: string, end: string): string =>
+        `De ${start} a ${end} cae dentro del horario de 7 am a 7 pm, permitido todo el año a los adolescentes de 14 y 15 años.`,
+      summer: (start: string, end: string): string =>
+        `De ${start} a ${end} termina después de las 7 pm, así que un adolescente de 14 o 15 años solo puede trabajarlo del 1 de junio al Día del Trabajo, cuando el límite de la tarde son las 9 pm.`,
+      early: (start: string, end: string): string =>
+        `De ${start} a ${end} empieza antes de las 7 am, la hora más temprana a la que puede entrar un adolescente de 14 o 15 años, así que la ley federal no lo permite.`,
+      late: (start: string, end: string): string =>
+        `De ${start} a ${end} termina después de las 9 pm, más tarde de lo que puede trabajar un adolescente de 14 o 15 años incluso del 1 de junio al Día del Trabajo, así que la ley federal no lo permite.`,
+      night: (start: string, end: string): string =>
+        `De ${start} a ${end} es un turno de noche, fuera del horario de 7 am a 7 pm (9 pm en verano) de un adolescente de 14 o 15 años, así que la ley federal no lo permite.`,
+      within: (paid: string): string =>
+        `Sus ${paid} horas pagadas con 30 minutos de comida caben en un día sin clases, hasta 8, pero nunca en un día de clases, hasta 3.`,
+      longLunch: (paid: string, long: string): string =>
+        `Sus ${paid} horas pagadas con 30 minutos de comida pasan de las 8 permitidas en un día sin clases; solo con 60 minutos de comida, ${long} horas, queda dentro del límite.`,
+      over: (paid: string, long: string): string =>
+        `Sus ${paid} horas pagadas con 30 minutos de comida, y ${long} incluso con 60 minutos, pasan de las 8 permitidas en un día sin clases, así que no se permite ningún día.`,
     },
     breaks: {
       heading: '¿Se paga el descanso para comer?',
       federal: (figure: string, start: string, end: string): string =>
-        `La ley federal no exige descansos para comer. Los descansos cortos, de unos 5 a 20 minutos, son tiempo de trabajo pagado (29 CFR 785.18); un descanso para comer, por lo general de 30 minutos o más y libre de tareas, no lo es (29 CFR 785.19). Así que solo una comida de verdad se resta de las ${figure} de ${start} a ${end}, y dos descansos pagados de 15 minutos siguen en tus horas.`,
+        `La ley federal no exige un descanso para comer: los descansos de unos 5 a 20 minutos se pagan (29 CFR 785.18), y solo una comida de 30 minutos o más, libre de tareas, se resta de las ${figure} de ${start} a ${end} (29 CFR 785.19).`,
+      noon: (start: string, end: string): string =>
+        `En Nueva York, de ${start} a ${end} pasa de 6 horas y cubre el mediodía, así que da derecho a 30 minutos libres entre las 11 am y las 2 pm (60 en una fábrica).`,
+      evening: (start: string, end: string): string =>
+        `Como de ${start} a ${end} empieza antes de las 11 am y sigue después de las 7 pm, Nueva York suma 20 minutos como mínimo entre las 5 pm y las 7 pm.`,
+      late: (start: string, end: string, midway: string): string =>
+        `En Nueva York, de ${start} a ${end} dura más de 6 horas y empieza entre la 1 pm y las 6 am, así que da derecho a 45 minutos como mínimo (60 en una fábrica) a la mitad del turno, hacia ${theClock(midway)}.`,
       states: (figure: string, count: number, list: string): string =>
-        `Algunos estados sí exigen un descanso para comer. Para un turno de ${figure} de entrada a salida, la tabla de descansos para comer por estado del Departamento de Trabajo de EE. UU. (1 de enero de 2023) indica uno en ${String(count)} estados: ${list}. Cada una tiene excepciones; revisa la tuya en la tabla.`,
+        `Algunos estados sí lo exigen. Para ${figure} de entrada a salida, la tabla del Departamento de Trabajo de EE. UU. (1 de enero de 2023) lo pide en ${String(count)} estados, cada uno con excepciones: ${list}.`,
       group: (minutes: number | undefined, states: string): string =>
         minutes === undefined
           ? `tiempo suficiente sin pago en ${states}`
@@ -604,6 +672,28 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
       hoursText(second),
       hoursText(short),
     );
+
+  // hour by hour: the hours on the clock and the paid hours, the lunch at the middle unpaid
+  const marks = [
+    ...Array.from(
+      { length: Math.floor(minutes / 60) },
+      (_, index) => shift.start + (index + 1) * 60,
+    ),
+    ...(minutes % 60 === 0 ? [] : [end]),
+  ];
+  const paidAt = (at: number): Rational =>
+    at <= middle
+      ? hoursOf(shift.start, at, 0)
+      : at <= middle + 30
+        ? first
+        : first.add(hoursOf(middle + 30, at, 0));
+  if (!paidAt(end).equals(short)) throw new Error('the hour by hour must end at the paid hours');
+  const hourRows = marks.map((at) => [
+    clockOf(at),
+    decimalHoursText(hoursOf(shift.start, at, 0)),
+    decimalHoursText(paidAt(at)),
+    moneyText(scaleMoney(CARD_RATE, paidAt(at))),
+  ]);
 
   // worked out by hand
   const steps = [
@@ -669,31 +759,18 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
   // the week, the pay period, the month and their overtime
   const five0 = weekOf(shift, 5, 0);
   const five30 = weekOf(shift, 5, 30);
-  const six30 = weekOf(shift, 6, 30);
   const four30 = weekOf(shift, 4, 30);
   const monthly = (week: Rational): string => hoursText(week.mul(Rational.of(52, 12)));
   const weekParagraphs = [
     w.week.totals(
       start,
       finish,
-      hoursText(five0.totalHours),
-      hoursText(five30.totalHours),
       hoursText(five0.totalHours.mul(Rational.of(2))),
       hoursText(five30.totalHours.mul(Rational.of(2))),
       monthly(five0.totalHours),
       monthly(five30.totalHours),
     ),
-    [
-      w.week.rule,
-      isZero(five0.overtimeHours)
-        ? w.week.under(start, finish, hoursText(six30.totalHours), overtimeOf(six30))
-        : `${w.week.over(start, finish, hoursText(five0.totalHours), hoursText(five0.overtimeHours))} ${
-            isZero(five30.overtimeHours)
-              ? w.week.underLunch(hoursText(five30.totalHours))
-              : w.week.overLunch(hoursText(five30.overtimeHours))
-          }`,
-      ...(spanHours >= 10 ? [w.week.four(hoursText(four30.totalHours), overtimeOf(four30))] : []),
-    ].join(' '),
+    ...(spanHours >= 10 ? [w.week.four(hoursText(four30.totalHours), overtimeOf(four30))] : []),
   ];
   const shiftsFor = (hours: number): string => String(Rational.of(hours).div(short).ceil());
   weekParagraphs.push(
@@ -719,7 +796,7 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
 
   // the time card of a Monday-to-Friday week: each day's hours, and the week and pay so far
   const card = weekOf(shift, CARD_DAYS, 30, CARD_RATE);
-  const minimumCard = weekOf(shift, CARD_DAYS, 30, RATES[0]);
+  const minimumCard = weekOf(shift, CARD_DAYS, 30, usd(Rational.of(FEDERAL_MINIMUM_WAGE, 100)));
   const soFar = Array.from({ length: CARD_DAYS }, (_, index) =>
     weekOf(shift, index + 1, 30, CARD_RATE),
   );
@@ -745,6 +822,17 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
     hoursText(second),
     hoursText(short),
   );
+  // the clock time a day of the card brings the week to 40 hours, from `before` hours
+  const fortyAt = (before: Rational): string => {
+    const needed = Rational.of(40).sub(before);
+    const minutesOf = (hours: Rational): number => Number(hoursText(hours.mul(Rational.of(60))));
+    const at =
+      needed.compare(first) <= 0
+        ? shift.start + minutesOf(needed)
+        : middle + 30 + minutesOf(needed.sub(first));
+    if (!paidAt(at).add(before).equals(Rational.of(40))) throw new Error('40 hours at the time');
+    return clockOf(at);
+  };
   const cardAfter = isZero(card.overtimeHours)
     ? w.card.regular(
         cardName,
@@ -762,14 +850,12 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
         moneyText(card.overtimePay),
         moneyText(card.pay),
         (lang === 'en' ? w.card.days[crossing] : w.card.days[crossing]?.toLowerCase()) ?? '',
+        fortyAt(soFar[crossing - 1]?.totalHours ?? Rational.of(0)),
       );
-
-  // the pay at common rates, from the time card
-  const payRows = RATES.map((rate) => {
-    const day = weekOf(shift, 1, 30, rate);
-    const week = weekOf(shift, 5, 30, rate);
-    return [moneyText(rate), moneyText(day.pay), moneyText(week.pay), moneyText(week.overtimePay)];
-  });
+  const saturday =
+    card.totalHours.compare(Rational.of(40)) < 0
+      ? [w.card.saturday(start, fortyAt(card.totalHours))]
+      : [];
 
   // the meal periods: federal, then the states whose rule a shift of this length meets
   const applying = MEAL_PERIODS.filter((period) => appliesTo(period, spanHours));
@@ -800,6 +886,60 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
     ];
   });
 
+  // New York Labor Law 162: the meal periods by the time of day, for a shift of more than 6 hours
+  const newYork: string[] = [];
+  if (minutes > NEW_YORK.over * 60) {
+    if (shift.start <= NEW_YORK.noonFrom && end >= NEW_YORK.noonTo)
+      newYork.push(w.breaks.noon(start, finish));
+    if (shift.start < NEW_YORK.noonFrom && end > NEW_YORK.eveningTo)
+      newYork.push(w.breaks.evening(start, finish));
+    if (shift.start >= NEW_YORK.lateFrom || shift.start < NEW_YORK.lateTo)
+      newYork.push(w.breaks.late(start, finish, clockOf(shift.start + minutes / 2)));
+  }
+
+  // a quarter-hour clock: 7 minutes or less off records the time, 8 or more the next quarter
+  const roundingRows = (
+    [
+      [0, shift.start, 1],
+      [1, end, -1],
+    ] as const
+  ).flatMap(([kind, at, sign]) =>
+    [-8, -ROUNDING, ROUNDING, 8].map((off) => {
+      const recorded = at + (Math.abs(off) > ROUNDING ? Math.sign(off) * 15 : 0);
+      const paid = sign * (at - recorded);
+      return [
+        w.rounding.kinds[kind],
+        clockOf(at + off),
+        clockOf(recorded),
+        `${paid > 0 ? '+' : paid < 0 ? '−' : ''}${String(Math.abs(paid))} min`,
+      ];
+    }),
+  );
+
+  // federal child labor hours for 14- and 15-year-olds (DOL Fact Sheet #43)
+  const teenWindow =
+    shift.end < shift.start && shift.end > 0
+      ? 'night'
+      : shift.start < TEEN_HOURS.from
+        ? 'early'
+        : end > TEEN_HOURS.summerTo
+          ? 'late'
+          : end > TEEN_HOURS.to
+            ? 'summer'
+            : 'allYear';
+  const teenDay = Rational.of(TEEN_HOURS.day);
+  const teenLength =
+    short.compare(teenDay) <= 0
+      ? w.teens.within(hoursText(short))
+      : long.compare(teenDay) <= 0
+        ? w.teens.longLunch(hoursText(short), hoursText(long))
+        : w.teens.over(hoursText(short), hoursText(long));
+  const teenText =
+    teenWindow === 'allYear' || teenWindow === 'summer'
+      ? `${capital(w.teens[teenWindow](start, finish))} ${teenLength}`
+      : capital(w.teens[teenWindow](start, finish));
+  const teenParagraphs = [`${teenText.replace(/\.$/, '')} (DOL Fact Sheet #43).`];
+
   const sections: LongTailSection[] = [
     {
       id: 'worked',
@@ -816,7 +956,11 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
         head: w.clockOut.head(finish, figure),
         rows: clockOutRows,
       },
-      after: [
+    },
+    {
+      id: 'rounding',
+      heading: w.rounding.heading(start, finish),
+      paragraphs: [
         w.clockOut.rounding(
           clockOf(shift.start - ROUNDING),
           clockOf(shift.start + ROUNDING),
@@ -826,6 +970,28 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
           finish,
         ),
       ],
+      table: {
+        caption: w.rounding.caption(start, finish),
+        head: w.rounding.head,
+        rows: roundingRows,
+      },
+    },
+    {
+      id: 'by-hour',
+      heading: w.byHour.heading(start, finish),
+      paragraphs: [
+        w.byHour.intro(
+          start,
+          finish,
+          clockOf(shift.start + minutes / 2),
+          w.hours(Rational.of(minutes, 120)),
+          clockOf(middle),
+          clockOf(middle + 30),
+          hoursText(first),
+          hoursText(short),
+        ),
+      ],
+      table: { caption: w.byHour.caption(start, finish), head: w.byHour.head, rows: hourRows },
     },
     { id: 'week', heading: w.week.heading, paragraphs: weekParagraphs },
     {
@@ -844,12 +1010,11 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
         rows: cardRows,
       },
       after: [
-        `${punches} ${cardAfter}`,
+        [punches, cardAfter, ...saturday].join(' '),
         // each workweek stands alone under the FLSA, so a pay period and a year are whole weeks
         w.card.periods(
           start,
           finish,
-          hoursText(card.totalHours.mul(Rational.of(2))),
           moneyText(scaleMoney(card.pay, Rational.of(2))),
           hoursText(card.totalHours.mul(Rational.of(52))),
           moneyText(scaleMoney(card.pay, Rational.of(52))),
@@ -863,21 +1028,6 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
       ],
     },
     {
-      id: 'pay',
-      heading: w.pay.heading(start, finish),
-      paragraphs: [
-        w.pay.intro(
-          start,
-          finish,
-          decimalHoursText(short),
-          hoursText(five30.totalHours),
-          moneyText(weekOf(shift, 1, 30).pay),
-          moneyText(five30.pay),
-        ),
-      ],
-      table: { caption: w.pay.caption(start, finish), head: w.pay.head, rows: payRows },
-    },
-    {
       id: 'breaks',
       heading: w.breaks.heading,
       paragraphs: [
@@ -885,6 +1035,7 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
         ...(applying.length === 0
           ? []
           : [w.breaks.states(figure, applying.length, list.join('; '))]),
+        ...(newYork.length === 0 ? [] : [newYork.join(' ')]),
       ],
       ...(windowRows.length === 0
         ? {}
@@ -896,6 +1047,7 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
             },
           }),
     },
+    { id: 'teens', heading: w.teens.heading(start, finish), paragraphs: teenParagraphs },
   ];
   const sources: LongTailSource[] = [
     SOURCES.factSheet23,
@@ -904,8 +1056,10 @@ export const shiftSectionsOf = (shift: Shift, lang: Lang, figure: string): Shift
     SOURCES.ecfr19,
     SOURCES.ecfr48,
     SOURCES.mealTable,
+    SOURCES.nyMeal,
     SOURCES.irsFullTime,
     SOURCES.blsCps,
+    SOURCES.factSheet43,
     ...(dailyOvertime
       ? [OVERTIME_STATES_SOURCES.dol, OVERTIME_STATES_SOURCES.ca, OVERTIME_STATES_SOURCES.ak]
       : []),

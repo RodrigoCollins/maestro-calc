@@ -36,10 +36,12 @@ describe('the sections of a shift page', () => {
         expect(page.sections?.map(({ id }) => id)).toEqual([
           'worked',
           'clock-out',
+          'rounding',
+          'by-hour',
           'week',
           'time-card',
-          'pay',
           'breaks',
+          'teens',
         ]);
         expect(page.sections?.[0]?.heading).toMatch(
           lang === 'en' ? /^How the figures are worked out$/ : /^Cómo se calcula$/,
@@ -48,7 +50,12 @@ describe('the sections of a shift page', () => {
           expect(textOf(section)).not.toMatch(/undefined|NaN|\$-/);
         }
         const hrefs = page.sources?.map(({ href }) => href) ?? [];
-        for (const source of [SOURCES.factSheet23, SOURCES.ecfr19, SOURCES.mealTable]) {
+        for (const source of [
+          SOURCES.factSheet23,
+          SOURCES.ecfr19,
+          SOURCES.mealTable,
+          SOURCES.factSheet43,
+        ]) {
           expect(hrefs).toContain(source.href);
         }
       }
@@ -82,30 +89,62 @@ describe('the sections of a shift page', () => {
       ['60 min', '7 h 0 min (7.00)', '6 pm'],
     ]);
     expect(sectionOf('22:00-6:00', 'clock-out').table?.rows[1]?.[2]).toBe('7 am');
-    // a quarter-hour clock records a punch up to 7 minutes off as the time itself
-    expect(textOf(sectionOf('9:00-17:00', 'clock-out'))).toContain(
+  });
+
+  it('show how a quarter-hour time clock records the punches of the shift', () => {
+    // a quarter-hour clock records a punch up to 7 minutes off as the time itself, 8 or more as
+    // the next quarter: 8:52 is 8 minutes from 9 and 7 from 8:45, so it records 8:45
+    const nine = sectionOf('9:00-17:00', 'rounding');
+    expect(nine.heading).toBe('How a quarter-hour time clock records 9 am to 5 pm');
+    expect(textOf(nine)).toContain(
       'a punch-in from 8:53 am to 9:07 am and a punch-out from 4:53 pm to 5:07 pm still record 9 am to 5 pm',
     );
+    expect(nine.table?.rows).toEqual([
+      ['In', '8:52 am', '8:45 am', '+15 min'],
+      ['In', '8:53 am', '9 am', '0 min'],
+      ['In', '9:07 am', '9 am', '0 min'],
+      ['In', '9:08 am', '9:15 am', '−15 min'],
+      ['Out', '4:52 pm', '4:45 pm', '−15 min'],
+      ['Out', '4:53 pm', '5 pm', '0 min'],
+      ['Out', '5:07 pm', '5 pm', '0 min'],
+      ['Out', '5:08 pm', '5:15 pm', '+15 min'],
+    ]);
+    // across midnight: 10 pm to 6 am, a punch-in at 10:08 pm records 10:15 pm
+    expect(sectionOf('22:00-6:00', 'rounding').table?.rows[3]).toEqual([
+      'In',
+      '10:08 pm',
+      '10:15 pm',
+      '−15 min',
+    ]);
+    expect(sectionOf('9:00-17:00', 'rounding', 'es').table?.rows[0]).toEqual([
+      'Entrada',
+      '8:52 am',
+      '8:45 am',
+      '+15 min',
+    ]);
   });
 
   it('give the week, the pay period and the month, and the federal overtime of the week', () => {
     // 5 x 8 = 40 h, 5 x 7.5 = 37.5 h; 80 and 75 every two weeks; 40 x 52 / 12 = 173.33
     const nine = textOf(sectionOf('9:00-17:00', 'week'));
-    expect(nine).toContain('40 hours a week with no unpaid break and 37.5');
-    expect(nine).toContain('80 or 75 hours');
+    // the week itself is the answer's rows, so the section starts at the pay period
+    expect(nine).not.toContain('40 hours a week with no unpaid break');
+    expect(nine).not.toContain('Fair Labor Standards Act');
+    expect(nine).toContain('80 hours a pay period with no unpaid break or 75');
     expect(nine).toContain('173.33 or 162.5 hours a month');
-    // a sixth shift with lunch: 6 x 7.5 = 45 h, 5 of them overtime
-    expect(nine).toContain('45 hours with lunches, 5 of them overtime');
-    // 8 to 5 is 9 h: 45 h a week, 5 overtime; with lunch 42.5, 2.5 overtime
+    // the overtime of the week is the time card's, so the week section does not restate it
+    expect(nine).not.toContain('overtime;');
     const eight = textOf(sectionOf('8:00-17:00', 'week'));
-    expect(eight).toContain('come to 45 hours, so 5 of them are overtime');
-    expect(eight).toContain('2.5 hours are');
+    // four 10-hour days with lunch: 4 x 9.5 = 38 h, inside 40
+    expect(textOf(sectionOf('8:00-18:00', 'week'))).toContain(
+      'Four of these shifts a week, with a 30-minute lunch each, come to 38 hours, inside the 40-hour line.',
+    );
     // full time with lunch: 30 / 7.5 = 4 shifts, 35 / 7.5 = 4.67 so 5; 30 / 8.5 = 3.53 so 4
     expect(nine).toContain('4 a week reach the 30 hours the IRS counts');
     expect(nine).toContain('and 5 reach the 35 hours');
     expect(eight).toContain('4 a week reach the 30 hours');
     expect(textOf(sectionOf('9:00-17:00', 'week', 'es'))).toContain(
-      '4 a la semana llegan a las 30 horas que cuenta el IRS',
+      '4 turnos de 9 am a 5 pm a la semana llegan a las 30 horas del IRS',
     );
   });
 
@@ -150,11 +189,11 @@ describe('the sections of a shift page', () => {
     expect(textOf(nine)).toContain('2.5 hours short of the 40');
     // 2 x 37.5 = 75 h and 2 x $750 = $1,500; 52 x 37.5 = 1,950 h and 52 x $750 = $39,000
     expect(textOf(nine)).toContain(
-      'Two weeks of 9 am to 5 pm cards come to 75 hours, $1,500.00 a biweekly pay period; 52 weeks of 9 am to 5 pm cards, 1,950 hours and $39,000.00 a year',
+      'Two weeks of 9 am to 5 pm cards pay $1,500.00 a biweekly pay period; 52 weeks of 9 am to 5 pm cards, 1,950 hours and $39,000.00 a year',
     );
     // 37.5 x $7.25 = $271.875, shown $271.88; a biweekly check of 75 x $7.25 = $543.75
     expect(textOf(nine)).toContain(
-      'the same 9 am to 5 pm card pays $271.88 a week and $543.75 every two weeks',
+      'At the federal minimum wage of $7.25, the same 9 am to 5 pm card pays $271.88 a week and $543.75 every two weeks.',
     );
     // 8 to 4:30 less 30 min is 8 h: exactly 40 by Friday
     expect(textOf(sectionOf('8:00-16:30', 'time-card'))).toContain('exactly the 40-hour line');
@@ -166,11 +205,25 @@ describe('the sections of a shift page', () => {
     expect(textOf(ten)).toContain(
       'the first 40 are regular time, $800.00, and the 7.5 hours past 40 are overtime at $30.00 an hour, $225.00, for $1,025.00 before taxes',
     );
-    expect(textOf(ten)).toContain('crosses the 40-hour line on Friday');
+    // 38 h by Thursday, 2 more on Friday: 8 am + 2 h = 10 am, before the lunch at 1 pm
+    expect(textOf(ten)).toContain('crosses the 40-hour line on Friday at 10 am');
+    // 7 to 4: 34 h by Thursday, 6 more: 4.5 to the lunch at 11:30 am, 1.5 after 12 pm = 1:30 pm
+    expect(textOf(sectionOf('7:00-16:00', 'time-card'))).toContain(
+      'crosses the 40-hour line on Friday at 1:30 pm',
+    );
     // 7 to 7 less 30 min is 11.5 h: 46 h by Thursday, 6 of them overtime: $800 + $180 = $980
     const twelve = sectionOf('7:00-19:00', 'time-card');
     expect(twelve.table?.rows[3]?.slice(6)).toEqual(['46', '$980.00']);
-    expect(textOf(twelve)).toContain('crosses the 40-hour line on Thursday');
+    // 34.5 h by Wednesday, 5.5 more: 7 am + 5.5 h = 12:30 pm, before the lunch at 1 pm
+    expect(textOf(twelve)).toContain('crosses the 40-hour line on Thursday at 12:30 pm');
+    // 9 to 5 stops at 37.5: a Saturday from 9 am reaches 40 at 9 am + 2.5 h = 11:30 am
+    expect(textOf(nine)).toContain(
+      'A sixth shift on Saturday from 9 am would reach 40 hours at 11:30 am; every minute after that is overtime.',
+    );
+    expect(textOf(sectionOf('9:00-17:00', 'time-card', 'es'))).toContain(
+      'Un sexto turno el sábado desde las 9 am llegaría a las 40 horas a las 11:30 am',
+    );
+    expect(textOf(sectionOf('8:00-16:30', 'time-card'))).not.toContain('sixth shift');
     // an overnight shift clocks in one evening and out the next morning
     // 10 pm to 2 am, then 2:30 am to 6 am
     expect(sectionOf('22:00-6:00', 'time-card').table?.rows[0]).toEqual([
@@ -194,22 +247,96 @@ describe('the sections of a shift page', () => {
     expect(textOf(nine)).toContain('By Friday the 9 am to 5 pm card shows 37.5 hours');
   });
 
-  it('price the shift with the time card at common rates', () => {
-    // 7.5 h x $15 = $112.50 a shift, 37.5 h x $15 = $562.50 a week, no overtime
-    expect(sectionOf('9:00-17:00', 'pay').table?.rows[1]).toEqual([
-      '$15.00',
-      '$112.50',
-      '$562.50',
-      '$0.00',
+  it('price the minimum-wage week of a shift with overtime from the time card', () => {
+    // 8 to 5 with lunch: 42.5 h: 40 x $7.25 = $290 + 2.5 x $10.875 = $27.1875, $317.19 a week
+    expect(textOf(sectionOf('8:00-17:00', 'time-card'))).toContain(
+      'the same 8 am to 5 pm card pays $317.19 a week',
+    );
+    for (const shift of SHIFTS) {
+      const page = longTailPageOf(shift, 'en');
+      expect(page.sections?.some(({ id }) => id === 'pay')).toBe(false);
+    }
+  });
+
+  it('count the hours on the clock and the paid hours at each hour of the shift', () => {
+    // 9 to 5 with lunch from 1 to 1:30: 4 paid hours at 1 pm, then 4.5 at 2 pm and 7.5 at 5 pm
+    const nine = sectionOf('9:00-17:00', 'by-hour');
+    expect(nine.heading).toBe('Hour by hour from 9 am to 5 pm');
+    expect(nine.table?.rows).toEqual([
+      ['10 am', '1.00', '1.00', '$20.00'],
+      ['11 am', '2.00', '2.00', '$40.00'],
+      ['12 pm', '3.00', '3.00', '$60.00'],
+      ['1 pm', '4.00', '4.00', '$80.00'],
+      ['2 pm', '5.00', '4.50', '$90.00'],
+      ['3 pm', '6.00', '5.50', '$110.00'],
+      ['4 pm', '7.00', '6.50', '$130.00'],
+      ['5 pm', '8.00', '7.50', '$150.00'],
     ]);
-    // 8 to 5 with lunch: 8.5 h a day, 42.5 h: 40 x $15 + 2.5 x $22.50 = $656.25, $56.25 overtime
-    expect(sectionOf('8:00-17:00', 'pay').table?.rows[1]).toEqual([
-      '$15.00',
-      '$127.50',
-      '$656.25',
-      '$56.25',
-    ]);
-    expect(sectionOf('8:00-17:00', 'pay').table?.rows[0]?.[0]).toBe('$7.25');
+    expect(nine.paragraphs[0]).toBe(
+      'Halfway through 9 am to 5 pm is 1 pm, 4 hours on the clock. With a 30-minute unpaid lunch from 1 pm to 1:30 pm, the paid hours stop at 4 during the lunch and reach 7.5 at 5 pm.',
+    );
+    // 8:30 to 5: 8.5 h, halfway at 12:45 pm; lunch from 12:45 to 1:15 (4:15 in), and the last
+    // row is the end, half an hour after 4:30 pm: 8.5 on the clock, 8 paid
+    const half = sectionOf('8:30-17:00', 'by-hour');
+    expect(half.table?.rows[3]).toEqual(['12:30 pm', '4.00', '4.00', '$80.00']);
+    expect(half.table?.rows[4]).toEqual(['1:30 pm', '5.00', '4.50', '$90.00']);
+    expect(half.table?.rows.at(-1)).toEqual(['5 pm', '8.50', '8.00', '$160.00']);
+    expect(half.paragraphs[0]).toContain('Halfway through 8:30 am to 5 pm is 12:45 pm');
+    // overnight: 10 pm to 6 am crosses midnight at the second row
+    const night = sectionOf('22:00-6:00', 'by-hour');
+    expect(night.table?.rows[1]).toEqual(['12 am', '2.00', '2.00', '$40.00']);
+    expect(night.table?.rows.at(-1)).toEqual(['6 am', '8.00', '7.50', '$150.00']);
+    const es = sectionOf('9:00-17:00', 'by-hour', 'es');
+    expect(es.heading).toBe('Hora por hora de 9 am a 5 pm');
+    expect(es.paragraphs[0]).toContain('La mitad de un turno de 9 am a 5 pm es la 1 pm');
+  });
+
+  it('say whether federal child labor rules let a 14- or 15-year-old work the shift', () => {
+    // 9 to 5 with lunch is 7.5 paid hours: inside 7 am to 7 pm and the 8-hour non-school day
+    const nine = sectionOf('9:00-17:00', 'teens');
+    expect(nine.heading).toBe('Can a 14- or 15-year-old work 9 am to 5 pm?');
+    expect(textOf(nine)).toContain(
+      '9 am to 5 pm falls inside the 7 am to 7 pm that federal law allows a 14- or 15-year-old all year.',
+    );
+    expect(textOf(nine)).toContain(
+      'Its 7.5 paid hours with a 30-minute lunch fit a day without school, up to 8, but never a school day, up to 3',
+    );
+    // 12 to 8 ends after 7 pm, but by 9 pm: only from June 1 through Labor Day
+    expect(textOf(sectionOf('12:00-20:00', 'teens'))).toContain(
+      '12 pm to 8 pm ends after 7 pm, so a 14- or 15-year-old may work it only from June 1 through Labor Day, when the evening limit is 9 pm.',
+    );
+    // 6 to 2 starts before 7 am; 3 to 11 ends after 9 pm; 10 to 6 crosses midnight
+    expect(textOf(sectionOf('6:00-14:00', 'teens'))).toContain(
+      '6 am to 2 pm starts before 7 am, the earliest a 14- or 15-year-old may start, so federal law does not allow it',
+    );
+    expect(textOf(sectionOf('15:00-23:00', 'teens'))).toContain(
+      '3 pm to 11 pm ends after 9 pm, later than a 14- or 15-year-old may work even from June 1 through Labor Day, so federal law does not allow it',
+    );
+    expect(textOf(sectionOf('22:00-6:00', 'teens'))).toContain(
+      '10 pm to 6 am runs through the night',
+    );
+    // 8 to 5 less 30 min is 8.5 h, over 8; less 60 min it is 8, at the limit
+    expect(textOf(sectionOf('8:00-17:00', 'teens'))).toContain(
+      'Its 8.5 paid hours with a 30-minute lunch pass the 8 allowed on a day without school; only a 60-minute lunch, at 8, keeps it within the limit',
+    );
+    // 8 to 6 less 60 min is 9 h: over 8 either way
+    expect(textOf(sectionOf('8:00-18:00', 'teens'))).toContain(
+      'Its 9.5 paid hours with a 30-minute lunch, and 9 even with a 60-minute one, pass the 8 allowed on a day without school, so it is not allowed on any day',
+    );
+    // a window it cannot work says nothing about the length
+    expect(textOf(sectionOf('6:00-14:00', 'teens'))).not.toContain('paid hours');
+    expect(textOf(sectionOf('9:00-17:00', 'teens'))).not.toContain('16-');
+    expect(textOf(sectionOf('9:00-17:00', 'teens', 'es'))).toContain(
+      'De 9 am a 5 pm cae dentro del horario de 7 am a 7 pm',
+    );
+    for (const shift of SHIFTS) {
+      expect(textOf(sectionOf(`${clock(shift.start)}-${clock(shift.end)}`, 'teens'))).toContain(
+        '(DOL Fact Sheet #43)',
+      );
+      expect(
+        sectionOf(`${clock(shift.start)}-${clock(shift.end)}`, 'teens').paragraphs,
+      ).toHaveLength(1);
+    }
   });
 
   it('list the state meal periods a shift of its length meets, and when they fall', () => {
@@ -239,6 +366,32 @@ describe('the sections of a shift page', () => {
       'Between 2 and 5 hours from the start',
       'Between 12 am and 3 am',
     ]);
+  });
+
+  it("give New York's own meal periods, which turn on the time of day", () => {
+    // 9 to 5 is over 6 hours and covers 11 am to 2 pm: 30 minutes inside that window
+    expect(textOf(sectionOf('9:00-17:00', 'breaks'))).toContain(
+      'In New York, 9 am to 5 pm runs more than 6 hours across the noonday period of 11 am to 2 pm, so it owes at least 30 minutes off between 11 am and 2 pm (60 minutes in a factory).',
+    );
+    // 8 to 8 starts before 11 am and goes past 7 pm: also 20 more minutes between 5 and 7 pm
+    expect(textOf(sectionOf('8:00-20:00', 'breaks'))).toContain(
+      'Because 8 am to 8 pm starts before 11 am and goes past 7 pm, New York adds at least 20 minutes between 5 pm and 7 pm.',
+    );
+    // 7 to 7 ends at 7 pm, not later: no extra period
+    expect(textOf(sectionOf('7:00-19:00', 'breaks'))).not.toContain('New York adds');
+    // 10 pm to 6 am starts between 1 pm and 6 am: 45 minutes midway, at 2 am
+    expect(textOf(sectionOf('22:00-6:00', 'breaks'))).toContain(
+      'In New York, 10 pm to 6 am runs more than 6 hours from a start between 1 pm and 6 am, so it owes at least 45 minutes (60 in a factory) midway through the shift, around 2 am.',
+    );
+    // 5 am to 1 pm starts before 6 am: midway is 9 am
+    expect(textOf(sectionOf('5:00-13:00', 'breaks'))).toContain('around 9 am');
+    // 9 to 3 is exactly 6 hours, not more: New York owes nothing by these rules
+    expect(textOf(sectionOf('9:00-15:00', 'breaks'))).not.toContain('In New York');
+    expect(textOf(sectionOf('22:00-6:00', 'breaks', 'es'))).toContain(
+      'En Nueva York, de 10 pm a 6 am dura más de 6 horas y empieza entre la 1 pm y las 6 am, así que da derecho a 45 minutos como mínimo (60 en una fábrica) a la mitad del turno, hacia las 2 am.',
+    );
+    const hrefs = longTailPageOf(shiftOf('9:00-17:00'), 'en').sources?.map(({ href }) => href);
+    expect(hrefs).toContain(SOURCES.nyMeal.href);
   });
 
   it('hold each meal threshold to the words of the DOL table', () => {
