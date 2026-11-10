@@ -123,6 +123,8 @@ describe('job pages (growth plan › lever 1)', () => {
       'paint-room-12x12',
       'paint-room-12x14',
       'paint-room-12x16',
+      'cost-to-paint-a-house',
+      'cost-to-paint-a-room',
     ]);
     expect(jobsOf('drywall')).toEqual([
       'drywall-room-10x10',
@@ -130,6 +132,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'drywall-room-12x12',
       'drywall-room-12x14',
       'drywall-room-12x16',
+      'drywall-installation-cost',
     ]);
     expect(jobsOf('topsoil')).toEqual([
       'topsoil-raised-bed-4x4',
@@ -407,12 +410,13 @@ describe('job pages (growth plan › lever 1)', () => {
       expect(ROUTES[id].en, id).toBe(`/landscaping/gravel-for-${size}-driveway`);
       expect(ROUTES[id].es, id).toBe(`/es/jardineria/grava-para-entrada-de-${size}`);
     }
-    for (const id of jobsOf('paint')) {
+    // a cost page is a question page, routed by its question
+    for (const id of jobsOf('paint').filter((each) => !isQuestionJob(each))) {
       const size = id.replace('paint-room-', '');
       expect(ROUTES[id].en, id).toBe(`/painting/paint-for-${size}-room`);
       expect(ROUTES[id].es, id).toBe(`/es/pintura/pintura-para-cuarto-de-${size}`);
     }
-    for (const id of jobsOf('drywall')) {
+    for (const id of jobsOf('drywall').filter((each) => !isQuestionJob(each))) {
       const size = id.replace('drywall-room-', '');
       expect(ROUTES[id].en, id).toBe(`/drywall/drywall-for-${size}-room`);
       expect(ROUTES[id].es, id).toBe(`/es/drywall/drywall-para-cuarto-de-${size}`);
@@ -620,6 +624,10 @@ describe('job pages (growth plan › lever 1)', () => {
       );
     expect(areas('square-feet-1-car-garage')).toEqual([240, 288, 308, 336, 384]);
     expect(areas('square-feet-2-car-garage')).toEqual([576, 400, 480, 484, 528]);
+    // the house sizes people price (1,000 to 2,500 sq ft) and the rooms of the room pages, 8 ft walls
+    expect(areas('cost-to-paint-a-house')).toEqual([1000, 1500, 2000, 2500]);
+    expect(areas('cost-to-paint-a-room')).toEqual([100, 144, 168, 192]);
+    expect(areas('drywall-installation-cost')).toEqual([100, 144, 168, 192]);
     expect(isQuestionJob('cubic-yard-weight-chart')).toBe(false);
     expect(isQuestionJob('square-feet-12x12')).toBe(false);
   });

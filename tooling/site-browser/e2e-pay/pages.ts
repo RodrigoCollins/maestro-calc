@@ -132,6 +132,12 @@ export const TIPPED = PAGES.filter(({ path }) =>
   ['/tipped-wage-calculator', '/es/calculadora-de-propinas-por-hora'].includes(path),
 );
 
+/** Two shift pages with their tool: a day shift in English and a night shift in Spanish. */
+export const SHIFT_TOOL = {
+  day: '/pay/how-many-hours-is-9am-to-5pm',
+  night: '/es/pago/cuantas-horas-son-de-7-pm-a-7-am',
+} as const;
+
 /** The calculator pages: each one is embedded at `/embed` + its path (`apps/pay/src/embed/embeds.ts`). */
 export const CALCULATOR_PATHS: readonly string[] = [
   '/time-card-calculator',

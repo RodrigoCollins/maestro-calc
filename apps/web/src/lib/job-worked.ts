@@ -2,6 +2,7 @@ import {
   bdft,
   ft2,
   ft3,
+  gal,
   inch,
   lbYd3,
   m,
@@ -18,6 +19,7 @@ import { feetInches } from '@maestro-calc/core/calculators/feet-inches';
 import { rectangleArea } from '@maestro-calc/core/calculators/rectangle-area';
 import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { CONCRETE_MIX_YIELDS } from '@maestro-calc/data/yields/concrete-mix';
+import { PAINT_COVERAGE } from '@maestro-calc/data/yields/paint';
 import type { Locale } from '@maestro-calc/i18n';
 import { decimalText, groupedInteger, outputText } from '../calculator/present.ts';
 import {
@@ -40,6 +42,14 @@ import { dressedOf } from './lumber-sizes.ts';
 import { paint } from './paint.ts';
 import { roofing } from './roofing.ts';
 import { siteText } from './site-text.ts';
+import {
+  EXTERIOR_GALLON_PRICES,
+  EXTERIOR_PRO_PRICE,
+  INTERIOR_GALLON_PRICES,
+  INTERIOR_PRO_PRICE,
+  type PriceRange,
+} from './paint-cost.ts';
+import { INSTALLED_PRICE, LABOR_PRICE, PANEL_PRICES } from './drywall-cost.ts';
 
 /*
  * The worked example of a job page (AdSense audit 2026-11-08): the first row of the table worked
@@ -495,6 +505,139 @@ const boardFeetSteps = (id: JobId, locale: Locale): Steps => {
   ];
 };
 
+/*
+ * The cost pages: the first room or house worked out from its walls to its price, each product of
+ * a quantity and a published price written out, `≈` where the page rounds to whole dollars.
+ */
+
+/** A published price per unit as the exact dollars it states. */
+const dollarsOf = (price: string): Rational => Rational.of(Math.round(Number(price) * 100), 100);
+
+/** `13 × $10.00 = $130`, `370 ft² × $1.15 ≈ $426`. */
+const priced = (quantity: Rational, unit: string, price: string): string => {
+  const total = quantity.mul(dollarsOf(price));
+  const shown = `${decimalText(quantity, 0, true)}${unit}`;
+  return `${shown} × $${price} ${total.isInteger() ? '=' : '≈'} $${decimalText(total, 0, true)}`;
+};
+
+/** Both ends of a published range applied to `quantity`, joined as one step. */
+const bothEnds = (quantity: Rational, unit: string, low: string, high: string): string =>
+  `${priced(quantity, unit, low)}; ${priced(quantity, unit, high)}`;
+
+/** The walls of `raw` less its doors and windows, as the paint and drywall calculators take them. */
+const wallsMath = (raw: JobCase, doors: number, windows: number): string => {
+  const [length, width, height] = (['length', 'width', 'height'] as const).map((key) =>
+    feetOf(raw[key]).toString(),
+  );
+  const gross = `2 × (${String(length)} ft + ${String(width)} ft) × ${String(height)} ft`;
+  const door = doors === 0 ? '' : ` − ${doors === 1 ? '' : `${String(doors)} × `}20 ft²`;
+  const window = windows === 0 ? '' : ` − ${windows === 1 ? '' : `${String(windows)} × `}15 ft²`;
+  return `${gross}${door}${window}`;
+};
+
+/** The paint of the first case: its walls, the gallons of its coats and the whole cans. */
+const paintedOf = (raw: JobCase) => {
+  const state = valid(paint.validate(raw), raw);
+  const { outputs, shopping } = paint.compute(state);
+  const cans = shopping.find(({ materialId }) => materialId === 'paint')?.qty;
+  if (cans === undefined) throw new Error('the paint engine returned no can line');
+  const area = valueIn(outputs.paintArea, ft2);
+  const gallons = valueIn(outputs.gallons, gal);
+  const shown = decimalText(gallons, 2, true);
+  const exactly = gallons.mul(Rational.of(100)).isInteger() ? '=' : '≈';
+  return {
+    walls: `${wallsMath(raw, state.doors, state.windows)} = ${decimalText(area, 0, true)} ft²`,
+    gallons: `${decimalText(area, 0, true)} ft² × ${String(state.coats)} ÷ ${decimalText(valueIn(PAINT_COVERAGE.perGallon, ft2), 0, true)} ft² ${exactly} ${shown} gal → ${groupedInteger(cans)}`,
+    area,
+    cans: Rational.of(cans),
+  };
+};
+
+const floorOf = (raw: JobCase): string => {
+  const [length, width] = [feetOf(raw['length']), feetOf(raw['width'])];
+  return `${length.toString()} ft × ${width.toString()} ft = ${decimalText(length.mul(width), 0, true)} ft²; ${bothEnds(length.mul(width), ' ft²', INTERIOR_PRO_PRICE.low, INTERIOR_PRO_PRICE.high)}`;
+};
+
+/** Value paint at its lowest price to premium at its highest, the range the room page gives. */
+const widest = (prices: readonly PriceRange[]): readonly [string, string] => [
+  prices[0]?.low ?? '',
+  prices.at(-1)?.high ?? '',
+];
+
+const roomCostSteps = (id: JobId, locale: Locale): Steps => {
+  const text = siteText(locale);
+  const [raw] = JOBS[id].cases;
+  const room = paintedOf(raw);
+  const [low, high] = widest(INTERIOR_GALLON_PRICES);
+  return [
+    { label: text('site.job.worked.cost.walls'), math: room.walls },
+    { label: text('site.job.worked.cost.cans'), math: room.gallons },
+    { label: text('site.job.worked.cost.paint'), math: bothEnds(room.cans, '', low, high) },
+    { label: text('site.job.worked.cost.painter'), math: floorOf(raw) },
+  ];
+};
+
+const houseCostSteps = (id: JobId, locale: Locale): Steps => {
+  const text = siteText(locale);
+  const [raw] = JOBS[id].cases;
+  const house = paintedOf(raw);
+  const [low, high] = widest(EXTERIOR_GALLON_PRICES);
+  return [
+    { label: text('site.job.worked.cost.outsideWalls'), math: house.walls },
+    { label: text('site.job.worked.cost.cans'), math: house.gallons },
+    { label: text('site.job.worked.cost.outsidePaint'), math: bothEnds(house.cans, '', low, high) },
+    {
+      label: text('site.job.worked.cost.outside'),
+      math: bothEnds(house.area, ' ft²', EXTERIOR_PRO_PRICE.low, EXTERIOR_PRO_PRICE.high),
+    },
+    { label: text('site.job.worked.cost.inside'), math: floorOf(raw) },
+  ];
+};
+
+const drywallCostSteps = (id: JobId, locale: Locale): Steps => {
+  const text = siteText(locale);
+  const [raw] = JOBS[id].cases;
+  const state = valid(drywall.validate(raw), raw);
+  const { outputs, shopping } = drywall.compute(state);
+  const sheets = shopping.find(({ materialId }) => materialId === 'drywall')?.qty;
+  if (sheets === undefined) throw new Error('the drywall engine returned no sheet line');
+  const area = valueIn(outputs.areaFt2, ft2);
+  const [length, width] = [feetOf(raw['length']), feetOf(raw['width'])];
+  const factor = Rational.ONE.add(state.waste.div(Rational.of(100)));
+  const panels = area.mul(factor).div(Rational.of(32));
+  const tenth = panels.mul(Rational.of(10)).isInteger() ? '=' : '≈';
+  return [
+    {
+      label: text('site.job.worked.cost.drywallArea'),
+      math: `${wallsMath(raw, state.doors, state.windows)} + ${length.toString()} ft × ${width.toString()} ft = ${decimalText(area, 0, true)} ft²`,
+    },
+    {
+      label: text('site.job.worked.drywall.sheets'),
+      math: `${decimalText(area, 0, true)} ft² × ${two(factor)} ÷ 32 ft² ${tenth} ${decimalText(panels, 1, true)} → ${groupedInteger(sheets)}`,
+    },
+    {
+      label: text('site.job.worked.cost.panels'),
+      math: bothEnds(Rational.of(sheets), '', PANEL_PRICES[0].low, PANEL_PRICES[1].high),
+    },
+    {
+      label: text('site.job.worked.cost.drywallInstalled'),
+      math: bothEnds(area, ' ft²', INSTALLED_PRICE.low, INSTALLED_PRICE.high),
+    },
+    {
+      label: text('site.job.worked.cost.labor'),
+      math: bothEnds(area, ' ft²', LABOR_PRICE.low, LABOR_PRICE.high),
+    },
+  ];
+};
+
+/** The worked examples that price their first case: the cost pages. */
+const COST_STEPS: Partial<Record<JobId, (id: JobId, locale: Locale) => Steps>> = {
+  'concrete-slab-cost': slabCostSteps,
+  'cost-to-paint-a-room': roomCostSteps,
+  'cost-to-paint-a-house': houseCostSteps,
+  'drywall-installation-cost': drywallCostSteps,
+};
+
 const STEPS: Partial<Record<Job['calculator'], (id: JobId, locale: Locale) => Steps>> = {
   concrete: concreteSteps,
   'rectangle-area': areaSteps,
@@ -510,12 +653,7 @@ const STEPS: Partial<Record<Job['calculator'], (id: JobId, locale: Locale) => St
 
 /** The worked example of job `id` in `locale`, or `undefined` for a chart or another calculator. */
 export const jobWorked = (id: JobId, locale: Locale): JobWorked | undefined => {
-  const steps =
-    id === 'concrete-slab-cost'
-      ? slabCostSteps
-      : isChartJob(id)
-        ? undefined
-        : STEPS[JOBS[id].calculator];
+  const steps = COST_STEPS[id] ?? (isChartJob(id) ? undefined : STEPS[JOBS[id].calculator]);
   if (steps === undefined) return undefined;
   return { heading: siteText(locale)('site.job.worked.heading'), steps: steps(id, locale) };
 };

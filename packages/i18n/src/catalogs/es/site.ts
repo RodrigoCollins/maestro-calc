@@ -531,6 +531,19 @@ export const esSite = {
   'site.job.worked.concrete.weight': 'Peso de la mezcla seca que hay que levantar y cargar',
   'site.job.worked.cost.readyMix': 'Concreto premezclado a los dos precios de productor',
   'site.job.worked.cost.installed': 'Instalada al precio publicado más bajo y al más alto',
+  'site.job.worked.cost.walls': 'Pared que pintar, sin la puerta ni las ventanas',
+  'site.job.worked.cost.cans': 'Galones para dos manos, redondeados a galones enteros',
+  'site.job.worked.cost.paint': 'Pintura al precio por galón más bajo y al más alto',
+  'site.job.worked.cost.painter': 'Un pintor por el piso, a $1 y $4 por pie cuadrado',
+  'site.job.worked.cost.outsideWalls': 'Paredes exteriores de la primera casa, contadas enteras',
+  'site.job.worked.cost.outsidePaint':
+    'Pintura exterior al precio por galón más bajo y al más alto',
+  'site.job.worked.cost.outside': 'Un pintor por fuera, a $2.20 y $4.40 por pie cuadrado',
+  'site.job.worked.cost.inside': 'Un pintor por dentro, por el piso, a $1 y $4 por pie cuadrado',
+  'site.job.worked.cost.drywallArea': 'Paredes sin la puerta ni las ventanas, más el techo',
+  'site.job.worked.cost.panels': 'Placas al precio por placa más bajo y al más alto',
+  'site.job.worked.cost.drywallInstalled': 'Colocado y terminado, a $1.50 y $3.50 por pie cuadrado',
+  'site.job.worked.cost.labor': 'Solo la mano de obra, a $1.15 y $3 por pie cuadrado',
   'site.job.worked.area.feet': 'Área de la primera medida',
   'site.job.worked.area.yards': 'En yardas cuadradas, de 9 pies cuadrados cada una',
   'site.job.worked.area.metric': 'En sistema métrico, con 1 ft = 0.3048 m',
@@ -1571,6 +1584,51 @@ export const esSite = {
   'site.job.question.slabCost.heading': 'Concreto premezclado para una losa de 30 × 30 ft',
   'site.job.question.slabCost.lead':
     'Una losa de 30 por 30 ft tiene 900 pies cuadrados, la medida que más se cotiza; cada pulgada de espesor suma unas 3 yardas cúbicas y de $489 a $617 de concreto:',
+  'site.job.question.exteriorSource': 'Precio de pintura exterior por pie cuadrado y por galón',
+  'site.job.question.interiorSource': 'Precio de pintura interior por pie cuadrado y por galón',
+  'site.job.question.roomSource': 'Precio por pie cuadrado para pintar un cuarto',
+  'site.job.question.drywallSource': 'Precio del drywall instalado por pie cuadrado y por placa',
+  'site.job.question.panelSource': 'Precio de una placa de drywall',
+  'site.job.question.gallonGrade.heading': 'Cuánto cuesta un galón de pintura interior',
+  'site.job.question.gallonGrade.lead':
+    'This Old House da el precio del galón según su calidad. El cuarto de 10 por 10 ft lleva 2 galones para dos manos y el de 12 por 16 ft, 3:',
+  'site.job.question.paintCoats.heading': 'Una mano o dos, cuarto por cuarto',
+  'site.job.question.paintCoats.lead':
+    'Si repintas del mismo color, puede bastar una sola mano. La última columna da el precio de dos manos de pintura de gama media, de $35 a $50 el galón:',
+  'site.job.question.outsidePaint.heading': 'Pintura exterior para cada casa',
+  'site.job.question.outsidePaint.lead':
+    'Dos manos a 350 pies cuadrados por galón, en galones enteros, a los precios exteriores de This Old House, de $30 a $50 y de $45 a $85 el galón:',
+  'site.job.question.wallHeight.heading': 'La casa de 1,500 pies² con tres alturas de pared',
+  'site.job.question.wallHeight.lead':
+    'La misma planta de 30 por 50 ft con paredes de 8, 9 y 10 ft, pintada por fuera de $2.20 a $4.40 por pie cuadrado:',
+  'site.job.question.drywallWays.heading': 'Dos formas más de revisar una cotización de drywall',
+  'site.job.question.drywallWays.lead':
+    'Fixr también da el precio de una placa de 4 por 8 ft instalada, de $48 a $80, y el de la mano de obra sola, de $1.15 a $3 por pie cuadrado de drywall:',
+  'site.job.question.wallsOnly.heading': 'Solo las paredes, sin el techo',
+  'site.job.question.wallsOnly.lead':
+    'Sin el techo bajan el área, las placas y el precio instalado de $1.50 a $3.50 por pie cuadrado:',
+  'site.job.question.grade.value': 'Económica',
+  'site.job.question.grade.mid': 'Gama media',
+  'site.job.question.grade.premium': 'Premium',
+  'site.job.question.col.grade': 'Calidad',
+  'site.job.question.col.perGallon': 'Por galón',
+  'site.job.question.col.smallRoom': 'Cuarto de 10 × 10 ft, 2 galones',
+  'site.job.question.col.largeRoom': 'Cuarto de 12 × 16 ft, 3 galones',
+  'site.job.question.col.paintedWalls': 'Pared que pintar, pies²',
+  'site.job.question.col.oneCoat': 'Galones, una mano',
+  'site.job.question.col.twoCoats': 'Galones, dos manos',
+  'site.job.question.col.midTier': 'Dos manos, gama media',
+  'site.job.question.col.gallonsTwoCoats': 'Galones, dos manos (exacto)',
+  'site.job.question.col.cans': 'Galones enteros',
+  'site.job.question.col.contractor': 'Grado contratista',
+  'site.job.question.col.premiumAcrylic': 'Acrílica premium',
+  'site.job.question.col.outsideWalls': 'Pared exterior, pies²',
+  'site.job.question.col.outsidePro': 'Pintor, por fuera',
+  'site.job.question.col.bySheet': 'Instalado por placa',
+  'site.job.question.col.labor': 'Solo mano de obra',
+  'site.job.question.col.wallsArea': 'Paredes, pies²',
+  'site.job.question.col.sheets': 'Placas de 4 × 8',
+  'site.job.question.col.wallsInstalled': 'Paredes instaladas',
   'site.job.question.feetToYards.heading': 'De pies cúbicos a yardas cúbicas',
   'site.job.question.feetToYards.lead':
     'Divide los pies cúbicos entre 27. Los metros cúbicos multiplican los pies cúbicos por 0.028316846592, el valor métrico exacto de un pie cúbico.',
@@ -1639,6 +1697,34 @@ export const esSite = {
   'site.job.cost.col.readyMix': 'Concreto premezclado',
   'site.job.cost.col.installedLow': 'Instalada, rango de This Old House',
   'site.job.cost.col.installedHigh': 'Instalada, rango de Concrete Network',
+  'site.job.cost.room.lead': 'Lo que cobra un pintor por un cuarto',
+  'site.job.cost.room.perFoot': 'por pie cuadrado de piso con un pintor',
+  'site.job.cost.room.gallon': 'Un galón de pintura interior, de económica a premium',
+  'site.job.cost.room.pro': 'Cuarto de 10 × 10 ft, pintor (This Old House)',
+  'site.job.cost.room.paint': 'Cuarto de 10 × 10 ft, pintura para dos manos',
+  'site.job.cost.room.col.cans': 'Galones, dos manos',
+  'site.job.cost.room.col.paint': 'Pintura, $15 a $60 el galón',
+  'site.job.cost.room.col.proLow': 'Pintor, rango de This Old House',
+  'site.job.cost.room.col.proHigh': 'Pintor, rango de Fixr',
+  'site.job.cost.house.lead': 'Lo que cobra un pintor por una casa',
+  'site.job.cost.house.perFoot': 'por pie cuadrado de pared por fuera',
+  'site.job.cost.house.inside': 'Por dentro, por pie cuadrado de piso',
+  'site.job.cost.house.fifteen': 'Casa de 1,500 pies² (30 × 50 ft), por fuera',
+  'site.job.cost.house.gallon': 'Un galón de pintura exterior',
+  'site.job.cost.house.col.size': 'Casa: largo × ancho × altura de pared',
+  'site.job.cost.house.col.floor': 'Piso, pies²',
+  'site.job.cost.house.col.walls': 'Pared exterior, pies²',
+  'site.job.cost.house.col.outside': 'Pintor, por fuera',
+  'site.job.cost.house.col.inside': 'Pintor, por dentro',
+  'site.job.cost.drywall.lead': 'Precio del drywall instalado, colocado y terminado',
+  'site.job.cost.drywall.perFoot': 'por pie cuadrado instalado',
+  'site.job.cost.drywall.sheet': 'Una placa de 4 × 8 ft, instalada',
+  'site.job.cost.drywall.panel': 'Una placa comprada sola',
+  'site.job.cost.drywall.twelve': 'Cuarto de 12 × 12 ft, paredes y techo, instalado',
+  'site.job.cost.drywall.col.area': 'Drywall, pies²',
+  'site.job.cost.drywall.col.sheets': 'Placas de 4 × 8',
+  'site.job.cost.drywall.col.panels': 'Placas, $10 a $20 cada una',
+  'site.job.cost.drywall.col.installed': 'Instalado',
   'page.concrete-cubic-yard-weight.title':
     'Yarda de concreto: pesa 3,915 a 4,050 lb | Maestro Calc',
   'page.concrete-cubic-yard-weight.description':
@@ -1670,6 +1756,75 @@ export const esSite = {
     'El precio instalado paga mucho más que el concreto. Concrete Network nombra la nivelación, la sub-base, las cimbras y el acabado, el refuerzo y el precio local del concreto como lo que fija el costo de una losa. Una losa de 4 in lleva 1.36 yardas cúbicas por cada 100 pies cuadrados con el extra, así que a los precios de los productores el concreto es de $2.18 a $2.74 de cada pie cuadrado, y el resto paga la base, el acero, la mano de obra y el acabado. El espesor mueve el concreto en proporción: 6 in lleva la mitad más que 4 in, y 8 in el doble. Un acabado decorativo, un terreno en pendiente o húmedo, o una línea de bombeo larga suben la cifra instalada, así que la cotización de un patio estampado puede quedar muy por encima de estos rangos.',
   'page.concrete-slab-cost.p2':
     'Los precios del premezclado son promedios de todo el concreto que cada productor vendió en el trimestre, en las regiones donde opera: Eagle Materials reportó $160.18 por yarda cúbica para el trimestre que terminó el 30 de septiembre de 2026, y Knife River $201.90 para su tercer trimestre, así que tu precio local puede quedar cerca de cualquiera de los dos o fuera de ambos. Concrete Network señala que algunas cotizaciones de proveedores incluyen cargos por entrega o por carga corta, y esos pesan más en un colado pequeño: un patio de 10 por 10 ft necesita solo 1.36 yardas cúbicas, y un cargo mínimo por una carga parcial puede costar más que el concreto. Para un colado tan pequeño, la calculadora también cuenta las bolsas de 80 lb. Pide el precio por yarda puesto en obra a dos o tres proveedores locales, escríbelo en la calculadora y compara.',
+  'page.cost-to-paint-a-house.title': 'Pintar una casa: $2.20 a $4.40 por pie² | Maestro Calc',
+  'page.cost-to-paint-a-house.description':
+    '¿Cuánto cuesta pintar una casa? $2.20 a $4.40 por pie² de pared por fuera y $1 a $4 por pie² de piso por dentro, para casas de 1,000 a 2,500 pies².',
+  'page.cost-to-paint-a-house.heading':
+    'Pintar una casa cuesta de $2.20 a $4.40 por pie cuadrado por fuera y de $1 a $4 por dentro',
+  'page.cost-to-paint-a-house.label': 'Costo de pintar una casa',
+  'page.cost-to-paint-a-house.intro':
+    'Pintar el exterior de una casa cuesta de $2.20 a $4.40 por pie cuadrado de pared, el área de pintura exterior con la que This Old House da sus precios en la guía que actualizó el 6 de marzo de 2026; por dentro, su guía de interiores da de $1 a $4 por pie cuadrado de piso. Una casa de un piso de 1,500 pies cuadrados, de 30 por 50 ft y con paredes de 9 ft, tiene 1,440 pies cuadrados de pared exterior, así que un pintor cobra de $3,168 a $6,336 por fuera y de $1,500 a $6,000 por dentro. La tabla da el precio de cuatro tamaños de casa, de 1,000 a 2,500 pies cuadrados.',
+  'page.cost-to-paint-a-house.note':
+    'Cada casa es de un piso con paredes de 9 ft, y sus paredes exteriores se cuentan enteras, sin restar puertas ni ventanas, así que el área de pared es un máximo. La columna exterior multiplica esa área por $2.20 a $4.40 y la interior multiplica el piso por $1 a $4, los rangos de This Old House. Cada casa abre la calculadora de pintura, donde puedes ingresar las puertas, las ventanas y tu propio precio por galón.',
+  'page.cost-to-paint-a-house.about': 'Qué mueve el precio de pintar una casa',
+  'page.cost-to-paint-a-house.p1':
+    'This Old House nombra el tipo de pintura, su acabado y su marca entre lo que mueve el precio por fuera, y sitúa a los contratistas de pintura entre $40 y $100 la hora por pintor, según su experiencia, su seguro y el costo de la mano de obra en la región. Lo que más pesa es el área de pared, y esta sigue a la altura de las paredes tanto como a la planta: la misma casa de 30 por 50 ft tiene 1,280 pies cuadrados de pared exterior con paredes de 8 ft y 1,600 con paredes de 10 ft, de $2,816 a $5,632 frente a $3,520 a $7,040 con un pintor. Pregunta si la cotización incluye las molduras, las contraventanas y las puertas, o solo el revestimiento.',
+  'page.cost-to-paint-a-house.p2':
+    'Si lo haces tú, te ahorras la mano de obra, pero no la pintura. This Old House pone la pintura exterior de $30 a $50 el galón en grado contratista, de $45 a $85 en acrílica 100% premium y de $40 a $75 en pintura de aceite. Dos manos sobre los 1,800 pies cuadrados de pared de una casa de 50 por 50 ft llevan 10.29 galones a los 350 pies cuadrados por galón de la calculadora, así que 11 galones enteros: de $330 a $550 en grado contratista o de $495 a $935 en acrílica premium, sin contar brochas, rodillos, escaleras ni sellador. Por dentro, una casa de 2,000 pies cuadrados cuesta de $2,000 a $8,000 con un pintor al rango de la guía de interiores, actualizada el 20 de abril de 2026.',
+  'page.cost-to-paint-a-house.tip1':
+    'Mide las paredes exteriores, no el piso: This Old House da el precio de la pintura exterior por el área pintada, así que una casa de 30 por 50 ft con paredes de 9 ft son 1,440 pies cuadrados de pared, de $3,168 a $6,336 con $2.20 a $4.40 por pie cuadrado.',
+  'page.cost-to-paint-a-house.tip2':
+    'La altura de las paredes mueve el precio tanto como la planta: con paredes de 8 ft esa casa tiene 1,280 pies cuadrados que pintar y con paredes de 10 ft, 1,600, una cuarta parte más de pared sobre el mismo piso.',
+  'page.cost-to-paint-a-house.tip3':
+    'Pide la pintura exterior de toda la casa de una vez: dos manos sobre una casa de 50 por 50 ft llevan 11 galones, de $330 a $550 en grado contratista y de $495 a $935 en acrílica premium.',
+  'page.cost-to-paint-a-house.tip4':
+    'Calcula el interior por el piso: una casa de 2,000 pies cuadrados cuesta de $2,000 a $8,000 a los $1 a $4 por pie cuadrado de This Old House; pregunta si los techos, las molduras y las puertas entran en la cotización.',
+  'page.cost-to-paint-a-room.title': 'Pintar un cuarto: $1 a $4 por pie² | Maestro Calc',
+  'page.cost-to-paint-a-room.description':
+    '¿Cuánto cuesta pintar un cuarto? $1 a $4 por pie² de piso con un pintor, y un galón de pintura cuesta de $15 a $60, para cuartos de 10x10 a 12x16.',
+  'page.cost-to-paint-a-room.heading':
+    'Pintar un cuarto cuesta de $1 a $4 por pie cuadrado de piso con un pintor',
+  'page.cost-to-paint-a-room.label': 'Costo de pintar un cuarto',
+  'page.cost-to-paint-a-room.intro':
+    'Un pintor cobra de $1 a $4 por pie cuadrado de piso por pintar un cuarto, según la guía de pintura interior de This Old House, y Fixr da de $1.50 a $3.50 solo por las paredes, así que un dormitorio de 10 por 10 ft cuesta de $100 a $400. Si lo haces tú, la pintura es el gasto principal: This Old House pone el galón de $15 a $35 en pintura económica y hasta $60 en premium, y dos manos sobre los 270 pies cuadrados de pared de ese dormitorio llevan 2 galones. La tabla da el precio de cuatro cuartos comunes con paredes de 8 ft.',
+  'page.cost-to-paint-a-room.note':
+    'Las paredes restan una puerta de 20 pies² y dos ventanas de 15 pies² y llevan dos manos a 350 pies² por galón, los valores predeterminados de la calculadora de pintura, redondeados a galones enteros. La columna de pintura da el precio de esos galones de $15 a $60 cada uno; las dos columnas del pintor multiplican el piso por el rango por pie cuadrado de cada guía. Cada cuarto abre la calculadora, donde puedes escribir tu propio precio por galón.',
+  'page.cost-to-paint-a-room.about': 'Qué cubre el precio de un pintor por un cuarto',
+  'page.cost-to-paint-a-room.p1':
+    'El precio de un pintor es sobre todo mano de obra. This Old House dice que la mano de obra es la mayor parte de un trabajo de pintura profesional, de $30 a $60 la hora en un trabajo normal y a $75 o más en uno especializado, y por eso las dos guías dan el precio de un cuarto por su tamaño y no por su pintura. En un cuarto de 12 por 16 ft los 3 galones de pintura cuestan de $45 a $180, mientras que un pintor cobra de $192 a $768 al rango de This Old House y de $288 a $672 al de Fixr. Pregunta si la cotización incluye el techo, las molduras y las puertas, o solo las paredes.',
+  'page.cost-to-paint-a-room.p2':
+    'Las dos guías dicen cuándo se revisaron: This Old House actualizó su guía de pintura interior el 20 de abril de 2026, y Fixr su guía para pintar un cuarto el 31 de enero de 2025. This Old House da a un galón unos 350 a 400 pies cuadrados en una mano; la calculadora cuenta el extremo bajo, 350, para que los galones no se queden cortos. Si repintas del mismo color, puede bastar una mano: los cuartos de 10 por 10 y de 12 por 12 ft llevan entonces un solo galón, y los de 12 por 14 y 12 por 16 ft, dos. This Old House cuenta dos manos más sellador para la mayoría de las paredes interiores y pone el sellador de $20 a $30 el galón.',
+  'page.cost-to-paint-a-room.tip1':
+    'Calcula un cuarto por su piso, como hacen las dos guías: un cuarto de 12 por 12 ft tiene 144 pies cuadrados, así que cuesta de $144 a $576 a los $1 a $4 de This Old House y de $216 a $504 a los $1.50 a $3.50 por pie cuadrado de Fixr.',
+  'page.cost-to-paint-a-room.tip2':
+    'Compra galones enteros para dos manos: los 270 pies cuadrados de pared de un cuarto de 10 por 10 ft llevan 1.54 galones, así que 2, y los 398 pies cuadrados de un cuarto de 12 por 16 ft llevan 2.27 galones, así que 3.',
+  'page.cost-to-paint-a-room.tip3':
+    'Elige la calidad antes de ir a la tienda: la pintura de gama media de $35 a $50 el galón pone los 3 galones de un cuarto de 12 por 14 ft en $105 a $150, frente a $45–$105 en pintura económica y $150–$180 en premium.',
+  'page.cost-to-paint-a-room.tip4':
+    'Pide cada cotización por escrito con lo que incluye: solo paredes o paredes, techo y molduras, cuántas manos y quién mueve los muebles, para comparar línea por línea el precio de dos pintores por el mismo cuarto.',
+  'page.drywall-installation-cost.title': 'Instalar drywall: $1.50 a $3.50 por pie² | Maestro Calc',
+  'page.drywall-installation-cost.description':
+    '¿Cuánto cuesta instalar drywall? $1.50 a $3.50 por pie² colocado y terminado y $48 a $80 por placa instalada, para cuartos de 10x10 a 12x16.',
+  'page.drywall-installation-cost.heading':
+    'Instalar drywall cuesta de $1.50 a $3.50 por pie cuadrado',
+  'page.drywall-installation-cost.label': 'Costo de instalar drywall',
+  'page.drywall-installation-cost.intro':
+    'El drywall cuesta de $1.50 a $3.50 por pie cuadrado instalado, material y mano de obra juntos, según la guía de instalación de drywall de Fixr, que también pone una placa de 4 por 8 ft instalada de $48 a $80. Los pies cuadrados son los del propio drywall, paredes y techo, no los del piso: un cuarto de 12 por 12 ft con paredes de 8 ft tiene 478 pies cuadrados de drywall, así que colocarlo y terminarlo cuesta de $717 a $1,673. La tabla da el precio de cuatro cuartos comunes, con las placas solas por si lo haces tú.',
+  'page.drywall-installation-cost.note':
+    'El área son las paredes menos una puerta de 20 pies² y dos ventanas de 15 pies², más el techo, y las placas son de 4 por 8 ft con un 10% extra, los valores predeterminados de la calculadora de drywall. La columna de placas da el precio de esas placas de $10 (Fixr) a $20 (Bob Vila) cada una; la columna instalada multiplica el área por $1.50 a $3.50. Cada cuarto abre la calculadora, donde puedes escribir tu propio precio por placa.',
+  'page.drywall-installation-cost.about': 'Qué paga el precio del drywall',
+  'page.drywall-installation-cost.p1':
+    'Casi todo el precio instalado es mano de obra. Fixr pone la mano de obra sola de $1.15 a $3 por pie cuadrado para el drywall normal y el resistente a la humedad, frente a $10 a $15 por el material de una placa de 4 por 8 ft, y nombra el tamaño del proyecto, el tipo de drywall y el nivel de acabado como lo que mueve el precio. En un cuarto de 10 por 10 ft las 13 placas cuestan de $130 a $260 mientras que la mano de obra va de $426 a $1,110, así que colocarlo tú ahorra la mayor parte de la cuenta, pero la cinta, el compuesto para juntas y el lijado quedan de tu lado: ese cuarto lleva 3.33 galones de compuesto a la tasa de la calculadora.',
+  'page.drywall-installation-cost.p2':
+    'Las dos guías fechan sus cifras: Fixr actualizó su guía de instalación de drywall el 31 de enero de 2025, y Bob Vila, que da de $12 a $20 por placa con un promedio nacional de $15, el 31 de octubre de 2022, así que toma los precios de las placas como un rango y no como el precio de hoy en la tienda. Sin el techo, un cuarto de 12 por 16 ft baja de 590 a 398 pies cuadrados y de 21 a 14 placas, y su precio instalado de $885–$2,065 a $597–$1,393. Pide las paredes y el techo en líneas separadas cuando compares cotizaciones.',
+  'page.drywall-installation-cost.tip1':
+    'Mide el drywall, no el piso: un cuarto de 12 por 12 ft tiene 144 pies cuadrados de piso pero 478 de paredes y techo, de $717 a $1,673 instalado, con $1.50 a $3.50 por pie cuadrado.',
+  'page.drywall-installation-cost.tip2':
+    'Calcula las paredes aparte si el techo se queda: solo las paredes de un cuarto de 12 por 16 ft son 398 pies cuadrados y 14 placas, de $597 a $1,393 instaladas.',
+  'page.drywall-installation-cost.tip3':
+    'Averigua cuánto vale la mano de obra antes de hacerlo tú: a los $1.15 a $3 por pie cuadrado de Fixr, la mano de obra de un cuarto de 10 por 10 ft es de $426 a $1,110 de su precio.',
+  'page.drywall-installation-cost.tip4':
+    'Revisa también la cotización por placa: de $48 a $80 por placa de 4 por 8 ft instalada, las 19 placas de un cuarto de 12 por 14 ft suman de $912 a $1,520.',
   'page.square-feet-1-car-garage.title':
     'Garaje de 1 auto: 240 a 384 pies cuadrados | Maestro Calc',
   'page.square-feet-1-car-garage.description':

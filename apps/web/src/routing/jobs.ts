@@ -125,6 +125,28 @@ const room = (length: number, width: number) => {
 };
 
 /**
+ * A room of `length` by `width` feet with 8 ft walls, one door and two windows (the calculators'
+ * defaults): the cost pages price one room per size.
+ */
+const room8 = (length: number, width: number): JobCase => ({
+  length: `${String(length)}ft`,
+  width: `${String(width)}ft`,
+  height: '8ft',
+});
+
+/**
+ * A one-story house of `length` by `width` feet with 9 ft walls, counted whole (no door or window
+ * taken out): the paint calculator works the outside walls out as it works a room's.
+ */
+const house = (length: number, width: number): JobCase => ({
+  length: `${String(length)}ft`,
+  width: `${String(width)}ft`,
+  height: '9ft',
+  doors: '0',
+  windows: '0',
+});
+
+/**
  * A bed or an area of `length` by `width` feet at each of `depths` inches: 10% extra for settling
  * and bags of 0.75 cu ft, the topsoil calculator's defaults, so the case names only the sizes.
  */
@@ -610,11 +632,29 @@ export const JOBS = {
   'paint-room-12x12': { calculator: 'paint', updated: '2026-11-04', cases: room(12, 12) },
   'paint-room-12x14': { calculator: 'paint', updated: '2026-11-05', cases: room(12, 14) },
   'paint-room-12x16': { calculator: 'paint', updated: '2026-11-05', cases: room(12, 16) },
+  // Ahrefs US, 2026-11-08: "how much does it cost to paint a house" (4.9K), 1,500 sq ft exterior
+  'cost-to-paint-a-house': {
+    calculator: 'paint',
+    updated: '2026-11-10',
+    cases: [house(25, 40), house(30, 50), house(40, 50), house(50, 50)],
+  },
+  // "cost to paint a room" (2.0K) and "how much does a gallon of paint cost" (2.4K)
+  'cost-to-paint-a-room': {
+    calculator: 'paint',
+    updated: '2026-11-10',
+    cases: [room8(10, 10), room8(12, 12), room8(12, 14), room8(12, 16)],
+  },
   'drywall-room-10x10': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 10) },
   'drywall-room-10x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(10, 12) },
   'drywall-room-12x12': { calculator: 'drywall', updated: '2026-11-04', cases: room(12, 12) },
   'drywall-room-12x14': { calculator: 'drywall', updated: '2026-11-05', cases: room(12, 14) },
   'drywall-room-12x16': { calculator: 'drywall', updated: '2026-11-05', cases: room(12, 16) },
+  // "drywall installation cost" (3.9K, KD 1 to 3)
+  'drywall-installation-cost': {
+    calculator: 'drywall',
+    updated: '2026-11-10',
+    cases: [room8(10, 10), room8(12, 12), room8(12, 14), room8(12, 16)],
+  },
   'topsoil-raised-bed-4x4': {
     calculator: 'topsoil',
     updated: '2026-11-05',
@@ -769,6 +809,9 @@ export const QUESTION_IDS = [
   'square-feet-2-car-garage',
   'cubic-yards-to-tons',
   'cubic-yards-in-a-ton-of-gravel',
+  'cost-to-paint-a-house',
+  'cost-to-paint-a-room',
+  'drywall-installation-cost',
   'cubic-feet-in-a-cubic-yard',
   'cubic-feet-to-gallons',
   'cubic-yards-in-a-ton-of-dirt',

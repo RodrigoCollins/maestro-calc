@@ -109,6 +109,21 @@ import {
   perFootRange,
   perFootRangeOf,
 } from './fence-cost.ts';
+import {
+  EXTERIOR_GALLON_PRICES,
+  EXTERIOR_PRO_PRICE,
+  houseCostOf,
+  INTERIOR_GALLON_PRICES,
+  INTERIOR_PRO_PRICE,
+  priceText,
+  roomCostOf,
+} from './paint-cost.ts';
+import {
+  drywallCostOf,
+  INSTALLED_PRICE,
+  PANEL_PRICES,
+  SHEET_INSTALLED_PRICE,
+} from './drywall-cost.ts';
 
 /** One case of a job page: its sizes, the calculator link that loads it, and what the engine gives. */
 export interface JobRow {
@@ -727,6 +742,129 @@ const drywallTable = (cases: Job['cases'], locale: Locale): JobTable => {
   };
 };
 
+/*
+ * The cost pages of paint and drywall: each room or house of the calculator's table priced at the
+ * published, dated prices (`paint-cost.ts`, `drywall-cost.ts`); the answer is the price per square
+ * foot the page's question asks for.
+ */
+
+/** The rows of `base` with the cells `cellsOf` gives each case, keeping the list non-empty. */
+const pricedRows = (
+  base: JobTable,
+  cases: Job['cases'],
+  cellsOf: (raw: JobCase) => readonly string[],
+): JobTable['rows'] => {
+  const [first, ...rest] = base.rows.map((row, index) => ({
+    ...row,
+    cells: cellsOf(cases[index] ?? {}),
+  }));
+  if (first === undefined) throw new Error('a cost page has no case');
+  return [first, ...rest];
+};
+
+const roomCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const text = siteText(locale);
+  const base = paintTable(cases, locale);
+  const first = roomCostOf(cases[0]);
+  const [value, , premium] = INTERIOR_GALLON_PRICES;
+  return {
+    lead: text('site.job.cost.room.lead'),
+    answer: `${priceText(INTERIOR_PRO_PRICE)} ${text('site.job.cost.room.perFoot')}`,
+    facts: [
+      {
+        label: text('site.job.cost.room.gallon'),
+        value: priceText({ ...value, high: premium.high }),
+      },
+      { label: text('site.job.cost.room.pro'), value: first.pro[0] },
+      { label: text('site.job.cost.room.paint'), value: first.paint },
+    ],
+    columns: [
+      base.columns[0],
+      text('site.job.cost.room.col.cans'),
+      text('site.job.cost.room.col.paint'),
+      text('site.job.cost.room.col.proLow'),
+      text('site.job.cost.room.col.proHigh'),
+    ],
+    rows: pricedRows(base, cases, (raw) => {
+      const cost = roomCostOf(raw);
+      return [cost.cans, cost.paint, ...cost.pro];
+    }),
+    calculatorName: base.calculatorName,
+  };
+};
+
+const houseCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const text = siteText(locale);
+  const base = paintTable(cases, locale);
+  const [contractor, premium] = EXTERIOR_GALLON_PRICES;
+  return {
+    lead: text('site.job.cost.house.lead'),
+    answer: `${priceText(EXTERIOR_PRO_PRICE)} ${text('site.job.cost.house.perFoot')}`,
+    facts: [
+      { label: text('site.job.cost.house.inside'), value: priceText(INTERIOR_PRO_PRICE) },
+      {
+        label: text('site.job.cost.house.fifteen'),
+        value: houseCostOf(cases[1] ?? cases[0]).outside,
+      },
+      {
+        label: text('site.job.cost.house.gallon'),
+        value: priceText({ ...contractor, high: premium.high }),
+      },
+    ],
+    columns: [
+      text('site.job.cost.house.col.size'),
+      text('site.job.cost.house.col.floor'),
+      text('site.job.cost.house.col.walls'),
+      text('site.job.cost.house.col.outside'),
+      text('site.job.cost.house.col.inside'),
+    ],
+    rows: pricedRows(base, cases, (raw) => {
+      const cost = houseCostOf(raw);
+      return [cost.floor, cost.walls, cost.outside, cost.inside];
+    }),
+    calculatorName: base.calculatorName,
+  };
+};
+
+const drywallCostTable = (cases: Job['cases'], locale: Locale): JobTable => {
+  const text = siteText(locale);
+  const base = drywallTable(cases, locale);
+  const [low, high] = PANEL_PRICES;
+  return {
+    lead: text('site.job.cost.drywall.lead'),
+    answer: `${priceText(INSTALLED_PRICE)} ${text('site.job.cost.drywall.perFoot')}`,
+    facts: [
+      { label: text('site.job.cost.drywall.sheet'), value: priceText(SHEET_INSTALLED_PRICE) },
+      { label: text('site.job.cost.drywall.panel'), value: priceText({ ...low, high: high.high }) },
+      {
+        label: text('site.job.cost.drywall.twelve'),
+        value: drywallCostOf(cases[1] ?? cases[0]).installed,
+      },
+    ],
+    columns: [
+      base.columns[0],
+      text('site.job.cost.drywall.col.area'),
+      text('site.job.cost.drywall.col.sheets'),
+      text('site.job.cost.drywall.col.panels'),
+      text('site.job.cost.drywall.col.installed'),
+    ],
+    rows: pricedRows(base, cases, (raw) => {
+      const cost = drywallCostOf(raw);
+      return [cost.area, cost.sheets, cost.panels, cost.installed];
+    }),
+    calculatorName: base.calculatorName,
+  };
+};
+
+/** The job tables that price their cases: the cost pages. */
+const COST_TABLES: Partial<Record<JobId, (cases: Job['cases'], locale: Locale) => JobTable>> = {
+  'concrete-slab-cost': slabCostTable,
+  'cost-to-paint-a-room': roomCostTable,
+  'cost-to-paint-a-house': houseCostTable,
+  'drywall-installation-cost': drywallCostTable,
+  'fence-cost': fenceCostTable,
+};
+
 /* Topsoil: the cubic yards, the cubic feet and the bags of a bed or an area at each depth. */
 
 const topsoilCatalogs = { en: createTranslator(enTopsoil), es: createTranslator(esTopsoil) };
@@ -1098,9 +1236,7 @@ const chartOf = (id: JobId, heading: string, locale: Locale): JobChart | undefin
 /** The table of job `id`: its chart's own, or the job table of its calculator. */
 const tableOf = (id: JobId, locale: Locale): JobTable => {
   const { calculator, cases } = JOBS[id];
-  if (id === 'concrete-slab-cost') return slabCostTable(cases, locale);
-  if (id === 'fence-cost') return fenceCostTable(cases, locale);
-  const own = isChart(id) ? CHART_TABLES[id] : undefined;
+  const own = COST_TABLES[id] ?? (isChart(id) ? CHART_TABLES[id] : undefined);
   return (own ?? TABLES[calculator])(cases, locale);
 };
 

@@ -5,11 +5,14 @@ import {
   sumOf,
   type Duration,
 } from '@maestro-calc/pay-core/hours';
+import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
 import { watchUsage } from '@maestro-calc/site-kit/track';
 import { durationDecimalText, durationText } from '../format.ts';
 import { runForm } from './run-form.ts';
 
 runForm(document.querySelector<HTMLFormElement>('form[data-hours]'), hoursBetween);
+// the tool of a shift page: the same shift with its pay for the day and the week
+runForm(document.querySelector<HTMLFormElement>('form[data-shift-pay]'), shiftPay);
 
 /** The most a field of the sum form holds: 9,999 hours, or 9,999 minutes. */
 const MAX = 9999;

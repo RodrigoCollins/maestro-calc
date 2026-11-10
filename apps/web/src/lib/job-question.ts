@@ -42,6 +42,19 @@ import {
   guideRangeOf,
 } from './fence-cost.ts';
 import { siteText } from './site-text.ts';
+import { paint } from './paint.ts';
+import { drywall } from './drywall.ts';
+import {
+  EXTERIOR_PRO_PRICE,
+  gallonCost,
+  houseCostOf,
+  INTERIOR_GALLON_PRICES,
+  INTERIOR_PRO_PRICE,
+  priceText,
+  ROOM_PRO_PRICE,
+  roomCostOf,
+} from './paint-cost.ts';
+import { drywallCostOf, INSTALLED_PRICE, PANEL_PRICES } from './drywall-cost.ts';
 
 /*
  * The question pages (Ahrefs US, 2026-11-08: "how many cubic feet in a cubic yard", "cubic yards to
@@ -175,6 +188,12 @@ type TableKind =
   | 'garageSlab'
   | 'slabCost'
   | 'thicknessCost'
+  | 'gallonGrade'
+  | 'paintCoats'
+  | 'outsidePaint'
+  | 'wallHeight'
+  | 'drywallWays'
+  | 'wallsOnly'
   | 'fencePrices'
   | 'fenceMaterials';
 
@@ -202,6 +221,25 @@ type Column =
   | 'yardsPer100'
   | 'readyMix'
   | 'readyMixPerFoot'
+  | 'grade'
+  | 'perGallon'
+  | 'smallRoom'
+  | 'largeRoom'
+  | 'paintedWalls'
+  | 'oneCoat'
+  | 'twoCoats'
+  | 'midTier'
+  | 'gallonsTwoCoats'
+  | 'cans'
+  | 'contractor'
+  | 'premiumAcrylic'
+  | 'outsideWalls'
+  | 'outsidePro'
+  | 'bySheet'
+  | 'labor'
+  | 'wallsArea'
+  | 'sheets'
+  | 'wallsInstalled'
   | 'thisOldHouse'
   | 'bobVila'
   | 'length'
@@ -614,6 +652,142 @@ const fenceSources = (text: Text): [QuestionSource, ...QuestionSource[]] => {
   ];
 };
 
+/* Paint and drywall cost: the rooms and houses of the cost pages, priced (`paint-cost.ts`). */
+
+const paintHref = (raw: JobCase, locale: Locale): string =>
+  `${pathOf('paint', locale)}?${encode(paint, valid(paint.validate(raw), raw), { unitSystem: 'imperial' })}`;
+
+const drywallHref = (raw: JobCase, locale: Locale): string =>
+  `${pathOf('drywall', locale)}?${encode(drywall, valid(drywall.validate(raw), raw), { unitSystem: 'imperial' })}`;
+
+const GRADES = ['value', 'mid', 'premium'] as const;
+
+const roomCost = (id: QuestionId, text: Text, locale: Locale): QuestionTable[] => {
+  const cases = JOBS[id].cases;
+  const small = roomCostOf(cases[0]);
+  const large = roomCostOf(cases.at(-1) ?? cases[0]);
+  const [, mid] = INTERIOR_GALLON_PRICES;
+  return [
+    table(
+      text,
+      'gallonGrade',
+      [col(text, 'grade'), col(text, 'perGallon'), col(text, 'smallRoom'), col(text, 'largeRoom')],
+      mapRows(GRADES, (grade) => {
+        const price = INTERIOR_GALLON_PRICES[GRADES.indexOf(grade)] ?? mid;
+        return {
+          label: text(`site.job.question.grade.${grade}`),
+          cells: [
+            priceText(price),
+            gallonCost(BigInt(small.cans), price),
+            gallonCost(BigInt(large.cans), price),
+          ],
+        };
+      }),
+    ),
+    table(
+      text,
+      'paintCoats',
+      [
+        col(text, 'size'),
+        col(text, 'paintedWalls'),
+        col(text, 'oneCoat'),
+        col(text, 'twoCoats'),
+        col(text, 'midTier'),
+      ],
+      mapRows(cases, (raw) => {
+        const cost = roomCostOf(raw);
+        return {
+          label: cost.label,
+          href: paintHref(raw, locale),
+          cells: [cost.walls, cost.oneCoatCans, cost.cans, gallonCost(BigInt(cost.cans), mid)],
+        };
+      }),
+    ),
+  ];
+};
+
+/** The middle house of the cost page (30 × 50 ft, 1,500 sq ft) at 8, 9 and 10 ft walls. */
+const HEIGHTS = [8, 9, 10] as const;
+
+const houseCost = (id: QuestionId, text: Text, locale: Locale): QuestionTable[] => {
+  const cases = JOBS[id].cases;
+  const middle = cases[1];
+  return [
+    table(
+      text,
+      'outsidePaint',
+      [
+        col(text, 'size'),
+        col(text, 'gallonsTwoCoats'),
+        col(text, 'cans'),
+        col(text, 'contractor'),
+        col(text, 'premiumAcrylic'),
+      ],
+      mapRows(cases, (raw) => {
+        const cost = houseCostOf(raw);
+        return {
+          label: cost.label,
+          href: paintHref(raw, locale),
+          cells: [cost.gallons, cost.cans, ...cost.paint],
+        };
+      }),
+    ),
+    table(
+      text,
+      'wallHeight',
+      [col(text, 'size'), col(text, 'outsideWalls'), col(text, 'cans'), col(text, 'outsidePro')],
+      mapRows(HEIGHTS, (height) => {
+        const raw = { ...middle, height: `${String(height)}ft` };
+        const cost = houseCostOf(raw);
+        return {
+          label: cost.label,
+          href: paintHref(raw, locale),
+          cells: [cost.walls, cost.cans, cost.outside],
+        };
+      }),
+    ),
+  ];
+};
+
+const drywallCost = (id: QuestionId, text: Text, locale: Locale): QuestionTable[] => {
+  const cases = JOBS[id].cases;
+  return [
+    table(
+      text,
+      'drywallWays',
+      [col(text, 'size'), col(text, 'bySheet'), col(text, 'labor')],
+      mapRows(cases, (raw) => {
+        const cost = drywallCostOf(raw);
+        return {
+          label: cost.label,
+          href: drywallHref(raw, locale),
+          cells: [cost.bySheet, cost.labor],
+        };
+      }),
+    ),
+    table(
+      text,
+      'wallsOnly',
+      [col(text, 'size'), col(text, 'wallsArea'), col(text, 'sheets'), col(text, 'wallsInstalled')],
+      mapRows(cases, (raw) => {
+        const cost = drywallCostOf(raw);
+        const walls = { ...raw, surfaces: 'walls' };
+        return {
+          label: cost.label,
+          href: drywallHref(walls, locale),
+          cells: [cost.walls.area, cost.walls.sheets, cost.walls.installed],
+        };
+      }),
+    ),
+  ];
+};
+
+/** One published guide, labelled by what the page takes from it. */
+const guide = (label: string, { source }: { readonly source: Required<MaterialSource> }) => ({
+  label,
+  source,
+});
+
 /** What each question page builds: its tables, its sources and the page it leads to. */
 const QUESTIONS = {
   'concrete-cubic-yard-weight': {
@@ -625,6 +799,30 @@ const QUESTIONS = {
     tables: slabCost,
     sources: priceSources,
     more: 'concrete-slab-chart',
+  },
+  'cost-to-paint-a-house': {
+    tables: houseCost,
+    sources: (text) => [
+      guide(text('site.job.question.exteriorSource'), EXTERIOR_PRO_PRICE),
+      guide(text('site.job.question.interiorSource'), INTERIOR_PRO_PRICE),
+    ],
+    more: 'cost-to-paint-a-room',
+  },
+  'cost-to-paint-a-room': {
+    tables: roomCost,
+    sources: (text) => [
+      guide(text('site.job.question.interiorSource'), INTERIOR_PRO_PRICE),
+      guide(text('site.job.question.roomSource'), ROOM_PRO_PRICE),
+    ],
+    more: 'cost-to-paint-a-house',
+  },
+  'drywall-installation-cost': {
+    tables: drywallCost,
+    sources: (text) => [
+      guide(text('site.job.question.drywallSource'), INSTALLED_PRICE),
+      guide(text('site.job.question.panelSource'), PANEL_PRICES[1]),
+    ],
+    more: 'drywall-room-12x12',
   },
   'square-feet-1-car-garage': {
     tables: garageFloor,

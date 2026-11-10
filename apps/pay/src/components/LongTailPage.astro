@@ -4,6 +4,7 @@ import { longTailPageOf, type LongTailJob } from '../long-tail/jobs.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { SOURCES_HEADING } from '../long-tail/sections.ts';
 import type { Lang } from '../time-card/receipt.ts';
+import HoursScript from '../islands/HoursScript.astro';
 import TimeNowScript from '../islands/TimeNowScript.astro';
 import Sections from './Sections.astro';
 import SiteLayout from './SiteLayout.astro';
@@ -16,6 +17,11 @@ interface Props {
 const { lang, job } = Astro.props;
 const t = PAY_CONVERTER_TEXTS[lang];
 const page = longTailPageOf(job, lang);
+// A page with a tool puts it right under the answer, then the lead and the rows of figures.
+const { tool } = page;
+// the two times share a row, as on the hours calculator; the break and the rate the next
+const times = tool?.fields.slice(0, 2) ?? [];
+const more = tool?.fields.slice(2) ?? [];
 ---
 
 <SiteLayout
@@ -32,8 +38,8 @@ const page = longTailPageOf(job, lang);
       <p class="kicker">{page.kicker}</p>
       <h1>{page.h1}</h1>
     </div>
-    <p class="lead">{page.lead}</p>
-    {page.aka !== undefined && <p class="note">{page.aka}</p>}
+    {tool === undefined && <p class="lead">{page.lead}</p>}
+    {tool === undefined && page.aka !== undefined && <p class="note">{page.aka}</p>}
 
     <section class="result" aria-labelledby="figure-label">
       <div>
@@ -54,6 +60,64 @@ const page = longTailPageOf(job, lang);
           </p>
         )}
       </div>
+      {tool === undefined && (
+        <ul class="breakdown labeled" aria-label={page.breakdown}>
+          {page.rows.map((row) => (
+            <li>
+              <span>{row.label}</span>
+              <span>{row.value}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+
+    {tool !== undefined && (
+      <form class="deduction" data-shift-pay novalidate aria-labelledby="tool-heading">
+        <h2 id="tool-heading">{tool.heading}</h2>
+        <div class="settings">
+          {times.map((field) => (
+            <label class="field">
+              {field.label}
+              <input name={field.key} autocomplete="off" value={field.value} />
+            </label>
+          ))}
+        </div>
+        <p class="note">{tool.hint}</p>
+        <div class="settings">
+          {more.map((field) => (
+            <label class="field">
+              {field.label}
+              <input
+                name={field.key}
+                inputmode={field.key === 'rate' ? 'decimal' : 'numeric'}
+                autocomplete="off"
+                value={field.value}
+              />
+            </label>
+          ))}
+        </div>
+        {tool.warnings.map((warning) => (
+          <p class="warning" data-warning={warning.code} hidden={warning.hidden}>
+            {warning.text}
+          </p>
+        ))}
+        <ul class="breakdown labeled" aria-label={tool.figures} aria-live="polite">
+          {tool.lines.map((line) => (
+            <li>
+              <span>{line.label}</span>
+              <span data-out={line.key} data-format={line.format}>
+                {line.value}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </form>
+    )}
+
+    {tool !== undefined && <p class="lead">{page.lead}</p>}
+    {tool !== undefined && page.aka !== undefined && <p class="note">{page.aka}</p>}
+    {tool !== undefined && (
       <ul class="breakdown labeled" aria-label={page.breakdown}>
         {page.rows.map((row) => (
           <li>
@@ -62,7 +126,7 @@ const page = longTailPageOf(job, lang);
           </li>
         ))}
       </ul>
-    </section>
+    )}
 
     <a class="button button-primary" href={page.calculator.href}>
       {page.calculator.label}
@@ -100,4 +164,5 @@ const page = longTailPageOf(job, lang);
     </section>
   </main>
   {page.live !== undefined && <TimeNowScript />}
+  {tool !== undefined && <HoursScript />}
 </SiteLayout>

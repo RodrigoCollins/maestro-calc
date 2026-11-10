@@ -320,6 +320,14 @@ export const ROUTES = {
     en: '/painting/paint-for-12x16-room',
     es: '/es/pintura/pintura-para-cuarto-de-12x16',
   },
+  'cost-to-paint-a-house': {
+    en: '/painting/how-much-does-it-cost-to-paint-a-house',
+    es: '/es/pintura/cuanto-cuesta-pintar-una-casa',
+  },
+  'cost-to-paint-a-room': {
+    en: '/painting/how-much-does-it-cost-to-paint-a-room',
+    es: '/es/pintura/cuanto-cuesta-pintar-un-cuarto',
+  },
   'drywall-room-10x10': {
     en: '/drywall/drywall-for-10x10-room',
     es: '/es/drywall/drywall-para-cuarto-de-10x10',
@@ -339,6 +347,10 @@ export const ROUTES = {
   'drywall-room-12x16': {
     en: '/drywall/drywall-for-12x16-room',
     es: '/es/drywall/drywall-para-cuarto-de-12x16',
+  },
+  'drywall-installation-cost': {
+    en: '/drywall/how-much-does-drywall-installation-cost',
+    es: '/es/drywall/cuanto-cuesta-instalar-drywall',
   },
   'topsoil-raised-bed-4x4': {
     en: '/landscaping/soil-for-4x4-raised-bed',
