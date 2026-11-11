@@ -1,5 +1,7 @@
 ---
 import { bylineOf } from '../editorial.ts';
+import { langOf } from '../routes.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
 
 /** The byline under the h1 of a guide or a data page: the team, the review day, the sources link. */
 interface Props {
@@ -9,6 +11,7 @@ interface Props {
 const { by, team, reviewed, sources } = bylineOf({
   checked: Astro.props.checked,
   sources: true,
+  lang: langOf(canonicalPath(Astro.url.pathname)),
 });
 ---
 

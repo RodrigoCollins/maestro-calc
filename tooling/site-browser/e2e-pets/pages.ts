@@ -1,4 +1,4 @@
-/** Every page of Bowl Figures (English only); the e2e suites run over all of them. */
+/** Every English page of Bowl Figures; the e2e suites run over all of them. */
 export const PAGES: readonly string[] = [
   '/',
   '/dog-food-calculator',
@@ -174,6 +174,33 @@ export const PAGES: readonly string[] = [
 ];
 
 /**
+ * Every German page under /de (plans/growth/BACKLOG.md #50), closed to search engines until the
+ * owner gives the Impressum details (`SITE.deIndexable`): its own suite, `de.spec.ts`.
+ */
+export const DE_PAGES: readonly string[] = [
+  '/de',
+  '/de/hundejahre-rechner',
+  '/de/hund-hat-schokolade-gefressen',
+  '/de/was-duerfen-hunde-essen',
+  '/de/duerfen-hunde-erdbeeren-essen',
+  '/de/duerfen-hunde-bananen-essen',
+  '/de/duerfen-hunde-weintrauben-essen',
+  '/de/duerfen-hunde-blaubeeren-essen',
+  '/de/duerfen-hunde-aepfel-essen',
+  '/de/duerfen-hunde-wassermelone-essen',
+  '/de/duerfen-hunde-mango-essen',
+  '/de/duerfen-hunde-ananas-essen',
+  '/de/duerfen-hunde-tomaten-essen',
+  '/de/duerfen-hunde-gurken-essen',
+  '/de/duerfen-hunde-paprika-essen',
+  '/de/duerfen-hunde-kaese-essen',
+  '/de/duerfen-hunde-schokolade-essen',
+  '/de/ueber-uns',
+  '/de/redaktionelle-grundsaetze',
+  '/de/datenschutz',
+];
+
+/**
  * Each calculator: the text of one figure at its starting values (worked out at build time, so it
  * reads with no script), and one edit worked out by hand with the figure it must show after it.
  */
@@ -233,6 +260,14 @@ export const CALCULATORS = [
     // a 10-year-old medium dog: 60 on the AVMA chart
     edit: { field: 'age', value: '10' },
     edited: '60',
+  },
+  {
+    path: '/de/hundejahre-rechner',
+    out: 'figure',
+    initial: '28',
+    // typed with a decimal comma: 3,5 years of a medium dog is halfway from 28 (3) to 32 (4) on AVMA's chart
+    edit: { field: 'age', value: '3,5' },
+    edited: '30',
   },
   {
     path: '/cat-age-calculator',

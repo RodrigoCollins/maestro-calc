@@ -1,7 +1,8 @@
 ---
 import { Font } from 'astro:assets';
-import { footerLinks, LAYOUT_TEXTS, navLinks } from '../layout.ts';
-import { headOf } from '../seo/head.ts';
+import { footerLinks, LAYOUT_TEXTS, navLinks, switchOf } from '../layout.ts';
+import { hrefOf, langOf } from '../routes.ts';
+import { alternatesOf, headOf } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
@@ -23,16 +24,25 @@ const jsonLd = jsonLdOf(
   { title, description, ...(modified === undefined ? {} : { modified }) },
   SITE.origin,
 );
+const lang = langOf(path);
+const texts = LAYOUT_TEXTS[lang];
+// the hreflang pair only on an indexed page whose route has its twin, once German is open
+const alternates = canonical === undefined ? [] : alternatesOf(path);
+// the other language's page; an English page shows it only once German is open
+const other = indexed ? switchOf(path, SITE.indexable && SITE.deIndexable) : undefined;
 ---
 
 <!doctype html>
-<html lang="en">
+<html {lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
     {robots !== undefined && <meta name="robots" content={robots} />}
     {canonical !== undefined && <link rel="canonical" href={canonical} />}
+    {alternates.map(({ hreflang, href }) => (
+      <link rel="alternate" {hreflang} {href} />
+    ))}
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -41,7 +51,10 @@ const jsonLd = jsonLdOf(
     <meta property="og:title" content={preview['og:title']} />
     <meta property="og:description" content={preview['og:description']} />
     {canonical !== undefined && <meta property="og:url" content={canonical} />}
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'de_DE'} />
+    {alternates.length > 0 && (
+      <meta property="og:locale:alternate" content={lang === 'en' ? 'de_DE' : 'en_US'} />
+    )}
     <meta property="og:image" content={preview['og:image']} />
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />
@@ -61,22 +74,27 @@ const jsonLd = jsonLdOf(
   </head>
   <body>
     <header class="bf-header">
-      <a class="bf-brand" href="/">
+      <a class="bf-brand" href={hrefOf('home', lang)}>
         {SITE.name}
       </a>
-      <nav aria-label={LAYOUT_TEXTS.navLabel}>
-        {navLinks().map(({ href, label }) => (
+      <nav aria-label={texts.navLabel}>
+        {navLinks(lang).map(({ href, label }) => (
           <a {href} aria-current={href === path ? 'page' : undefined}>
             {label}
           </a>
         ))}
+        {other !== undefined && (
+          <a class="bf-lang" href={other.href} hreflang={other.lang} lang={other.lang}>
+            {other.label}
+          </a>
+        )}
       </nav>
     </header>
     <slot />
     <footer class="bf-footer">
-      <p>{LAYOUT_TEXTS.warning}</p>
+      <p>{texts.warning}</p>
       <ul>
-        {footerLinks().map(({ href, label }) => (
+        {footerLinks(lang).map(({ href, label }) => (
           <li>
             <a {href}>{label}</a>
           </li>

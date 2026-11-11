@@ -4,13 +4,19 @@
  * result shows whole; the sitemap lists exactly the pages of the site (the 404 never); robots.txt
  * lets search engines in and names the sitemap. While the site is closed (`SITE.indexable` false)
  * every page must say `noindex` and name no canonical; once open, every page but the 404 must
- * name its own address as its canonical and none may say `noindex`.
+ * name its own address as its canonical and none may say `noindex`, but for the pages of a
+ * language still closed (`closed`), which say `noindex`, name no canonical and are not listed.
  */
 export interface SeoAuditRules {
   /** The site origin, `https://bowlfigures.com`. */
   readonly origin: string;
   /** Whether the site is open to search engines (`SITE.indexable`). */
   readonly indexable: boolean;
+  /**
+   * The pages of a language still closed on an open site (German until `SITE.deIndexable`): each
+   * must say `noindex`, name no canonical and stay out of the sitemap.
+   */
+  readonly closed?: (path: string) => boolean;
   /** The canonical paths the sitemap lists. */
   readonly sitemap: readonly string[];
   /** The text of the built robots.txt, `undefined` when the build has none. */
@@ -105,20 +111,30 @@ export const seoAuditProblems = (
     ...heads.flatMap(([path, head]) => {
       const url = new URL(path, rules.origin).href;
       const noindex = head.robots?.includes('noindex') === true;
+      const closedLanguage = rules.indexable && rules.closed?.(path) === true;
       return [
-        ...(rules.indexable
+        ...(closedLanguage
           ? [
-              ...(head.canonical === url
-                ? []
-                : [`${path}: the canonical must be "${url}", found "${head.canonical ?? 'none'}"`]),
-              ...(noindex ? [`${path}: an open site must not say noindex`] : []),
-            ]
-          : [
-              ...(noindex ? [] : [`${path}: a closed site must say noindex`]),
+              ...(noindex ? [] : [`${path}: a closed language must say noindex`]),
               ...(head.canonical === undefined
                 ? []
-                : [`${path}: a closed site must name no canonical`]),
-            ]),
+                : [`${path}: a closed language must name no canonical`]),
+            ]
+          : rules.indexable
+            ? [
+                ...(head.canonical === url
+                  ? []
+                  : [
+                      `${path}: the canonical must be "${url}", found "${head.canonical ?? 'none'}"`,
+                    ]),
+                ...(noindex ? [`${path}: an open site must not say noindex`] : []),
+              ]
+            : [
+                ...(noindex ? [] : [`${path}: a closed site must say noindex`]),
+                ...(head.canonical === undefined
+                  ? []
+                  : [`${path}: a closed site must name no canonical`]),
+              ]),
         ...(head.title.length > TITLE_MAX
           ? [
               `${path}: the title has ${String(head.title.length)} characters, more than ${String(TITLE_MAX)}`,
@@ -135,7 +151,13 @@ export const seoAuditProblems = (
         ...(descriptions.has(path)
           ? [`${path}: the description is also the description of ${descriptions.get(path) ?? ''}`]
           : []),
-        ...(listed.has(path) ? [] : [`${path}: a page the sitemap does not list`]),
+        ...(closedLanguage
+          ? listed.has(path)
+            ? [`${path}: closed to search engines, but in the sitemap`]
+            : []
+          : listed.has(path)
+            ? []
+            : [`${path}: a page the sitemap does not list`]),
       ];
     }),
     ...rules.sitemap

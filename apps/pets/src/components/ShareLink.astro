@@ -1,5 +1,6 @@
 ---
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
+import { langOf } from '../routes.ts';
 import { nameOf } from '../seo/json-ld.ts';
 import { shareMessage, whatsappHref } from '../share/href.ts';
 import { SITE } from '../site.config.ts';
@@ -11,14 +12,16 @@ interface Props {
 }
 
 const { path, title } = Astro.props;
-const text = `${nameOf(title)}, on ${SITE.name}:`;
+const en = langOf(path) === 'en';
+const text = en ? `${nameOf(title)}, on ${SITE.name}:` : `${nameOf(title)}, auf ${SITE.name}:`;
+const label = en ? 'Share on WhatsApp' : 'Per WhatsApp teilen';
 ---
 
 <a
   class="bf-share"
   data-share={text}
   href={whatsappHref(shareMessage(text, canonicalUrl(path, SITE.origin)))}
-  aria-label={`Share on WhatsApp: ${nameOf(title)}`}
+  aria-label={`${label}: ${nameOf(title)}`}
 >
-  Share on WhatsApp
+  {label}
 </a>

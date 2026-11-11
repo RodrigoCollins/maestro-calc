@@ -4,12 +4,14 @@ import { describe, expect, it } from 'vitest';
 import { SITE } from './site.config.ts';
 
 describe('Bowl Figures site constants', () => {
-  it('names the site and its canonical origin, in English, open to search engines', () => {
+  it('names the site and its origin, in English (open) and German (closed for now)', () => {
     expect(SITE).toEqual({
       name: 'Bowl Figures',
       origin: 'https://bowlfigures.com',
-      locales: ['en'],
+      locales: ['en', 'de'],
       indexable: true,
+      // closed until the owner gives the details of the Impressum (src/de/impressum.ts)
+      deIndexable: false,
       gaId: 'G-3NTFC4MK3R',
       indexNowKey: 'e479169234dd94a0442e50568c49b81b',
     });
