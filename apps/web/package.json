@@ -18,7 +18,7 @@
     "@maestro-calc/data": "*",
     "@maestro-calc/i18n": "*",
     "@maestro-calc/site-kit": "*",
-    "astro": "^7.4.4"
+    "astro": "^7.4.7"
   },
   "devDependencies": {
     "@capsizecss/unpack": "4.0.1",
