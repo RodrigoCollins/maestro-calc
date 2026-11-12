@@ -52,7 +52,7 @@
     "@eslint/js": "^10.0.1",
     "@stryker-mutator/core": "10.1.1",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "5.0.5",
+    "@vitest/coverage-v8": "5.1.0",
     "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-astro": "^3.2.1",
@@ -62,7 +62,7 @@
     "prettier-plugin-astro": "^1.1.2",
     "typescript": "~6.0.0",
     "typescript-eslint": "^8.72.1",
-    "vitest": "5.0.5",
+    "vitest": "5.1.0",
     "yaml": "^2.9.1"
   }
 }
