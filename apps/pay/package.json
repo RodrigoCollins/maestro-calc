@@ -17,6 +17,6 @@
     "@maestro-calc/core": "*",
     "@maestro-calc/pay-core": "*",
     "@maestro-calc/site-kit": "*",
-    "astro": "^7.4.4"
+    "astro": "^7.4.7"
   }
 }
