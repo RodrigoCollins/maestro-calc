@@ -43,4 +43,4 @@ Last reviewed: 2026-11-15.
 
 - Affiliate offers are declared per site in the `OFFERS` of the site-kit affiliate block (PR #396). An offer without approval stays with an empty URL; the page links to the brand's plain homepage meanwhile.
 - Employer software (payroll, time tracking, scheduling) belongs on employer-facing Cuenta Horas pages, not on worker pages.
-- Tax software belongs on tax pages for US readers, during the tax season.
+- Tax software belongs on tax pages for US readers, during the tax season. On Cuenta Horas the slots are `TAX_OFFERS` in `apps/pay/src/affiliate/offers.ts` (TurboTax and TaxAct, disabled with an empty URL), shown on the no tax on tips and overtime guide and the W-2 box 12 guide, English and Spanish. FreeTaxUSA has no slot (declined).

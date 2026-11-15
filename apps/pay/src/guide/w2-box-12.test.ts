@@ -22,6 +22,9 @@ const outputsOf = (engine: Engine, raw: Readonly<Record<string, string>>) => {
 };
 
 const LANGS = ['en', 'es'] as const;
+/** A source label that ends with the date of the version read: `(created June 16, 2026)`. */
+const DATED =
+  /\((?:[^()]* )?(?:January|February|March|April|May|June|July|August|September|October|November|December) (?:\d{1,2}, )?\d{4}\)$/;
 /** A whole-dollar amount as the prose prints it: `$1,176`. */
 const dollars = (money: unknown): string => moneyText(money as Money).replace(/\.00$/, '');
 const body = (lang: 'en' | 'es'): string =>
@@ -118,5 +121,11 @@ describe('the W-2 box 12 guide', () => {
     expect(ROUTES).toContainEqual(
       expect.objectContaining({ id: 'w2-box-12-guide', kind: 'article', ...W2_BOX_12_GUIDE_PATHS }),
     );
+  });
+
+  it.each(LANGS)('%s: dates every source and gives the due date of the 2026 return', (lang) => {
+    for (const { sources } of W2_BOX_12_GUIDE[lang].sections)
+      for (const { label } of sources) expect(label).toMatch(DATED);
+    expect(body(lang)).toContain(lang === 'en' ? 'April 15, 2027' : '15 de abril de 2027');
   });
 });

@@ -55,3 +55,19 @@ export const OFFERS: readonly AffiliateOffer<'en' | 'es'>[] = [
     'Horarios y reloj checador pensados para restaurantes.',
   ),
 ];
+
+const TAX_WHY = {
+  en: 'Online tax software to prepare and e-file your federal return.',
+  es: 'Un programa en línea para preparar y presentar por internet tu declaración federal.',
+};
+
+/**
+ * The tax software the two tax guides (no tax on tips and overtime, W-2 box 12) may show in the
+ * filing season, both CJ programs of docs/affiliate-rules.md (FreeTaxUSA declined the site, so it
+ * has no slot). They stay disabled with an empty url until the program approves the site and the
+ * owner enables them; the `why` claims nothing about what a product supports or costs.
+ */
+export const TAX_OFFERS: readonly AffiliateOffer<'en' | 'es'>[] = [
+  { ...offer('turbotax', 'TurboTax', TAX_WHY.en, TAX_WHY.es), network: 'cj' },
+  { ...offer('taxact', 'TaxAct', TAX_WHY.en, TAX_WHY.es), network: 'cj' },
+];

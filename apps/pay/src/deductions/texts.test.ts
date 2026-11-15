@@ -31,8 +31,12 @@ describe('deduction texts', () => {
           );
         });
 
-        it('cites the IRS Schedule 1-A and keeps the title and description short', () => {
-          expect(texts.source.href).toBe('https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf');
+        it('cites the dated 2026 IRS Schedule 1-A and keeps the title and description short', () => {
+          // the pages are for tax year 2026: its schedule is a draft until the IRS posts the final
+          expect(texts.source.href).toBe('https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf');
+          expect(texts.source.label).toMatch(
+            /2026 .*\((?:created June 16, 2026|creado el 16 de junio de 2026)\)$/,
+          );
           expect(texts.title.length, texts.title).toBeLessThanOrEqual(70);
           expect(texts.description.length, texts.description).toBeLessThanOrEqual(160);
         });

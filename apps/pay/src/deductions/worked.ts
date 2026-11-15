@@ -45,6 +45,12 @@ const HEADING: Readonly<Record<Lang, string>> = {
   es: 'Cómo se calculan las cifras',
 };
 
+/** Where the saving shows up: the return of the 2026 tax year, due April 15, 2027 (IRS, When to file). */
+const refundOf = (lang: Lang, saved: string): string =>
+  lang === 'en'
+    ? `If your withholding stays the same, the ${saved} saved comes back as a bigger refund, or a smaller balance due, on the 2026 return due April 15, 2027.`
+    : `Si tu retención no cambia, los ${saved} ahorrados vuelven como un reembolso mayor, o un saldo a pagar menor, en la declaración 2026, que vence el 15 de abril de 2027.`;
+
 const overtimeText = (lang: Lang): readonly string[] => {
   const start = overtimeOf({});
   const limit = overtimeOf({ magi: '165500', bracket: '24' });
@@ -59,11 +65,13 @@ const overtimeText = (lang: Lang): readonly string[] => {
         `The calculator starts at 300 overtime hours at $22.00. Only the half of time and a half counts, ${half} an hour: ${half} × 300 = ${premium}. With a MAGI of $60,000 on a single return nothing is lost to the limit, and in the 12% bracket the deduction saves about ${start('savings')}.`,
         `Past the income limit it shrinks: a MAGI of $165,500 is $15,500 over $150,000, so 15 full $1,000s take ${limit('reduction')} off and ${limit('deduction')} is left, about ${limit('savings')} in the 24% bracket.`,
         `At the cap: 700 overtime hours at $40.00 make ${bigHalf} × 700 = ${big('premium')} of qualified overtime, capped at ${big('deduction')} on a single return; a joint return, capped at $25,000, keeps all ${joint('deduction')}.`,
+        refundOf(lang, start('savings')),
       ]
     : [
         `La calculadora empieza con 300 horas extra a $22.00. Solo cuenta la mitad del tiempo y medio, ${half} la hora: ${half} × 300 = ${premium}. Con un MAGI de $60,000 en una declaración individual no se pierde nada por el límite, y en la tasa del 12% la deducción ahorra unos ${start('savings')}.`,
         `Pasado el límite de ingresos se reduce: un MAGI de $165,500 pasa $150,000 por $15,500, así que 15 tramos completos de $1,000 restan ${limit('reduction')} y quedan ${limit('deduction')}, unos ${limit('savings')} de ahorro en la tasa del 24%.`,
         `En el tope: 700 horas extra a $40.00 dan ${bigHalf} × 700 = ${big('premium')} de horas extra calificadas, con tope de ${big('deduction')} en una declaración individual; una declaración conjunta, con tope de $25,000, conserva los ${joint('deduction')}.`,
+        refundOf(lang, start('savings')),
       ];
 };
 
@@ -77,11 +85,13 @@ const tipsText = (lang: Lang): readonly string[] => {
         `The calculator starts at ${start('deduction')} of qualified tips on a single return with a MAGI of $45,000, under the $150,000 where the limit begins: all of it is deducted, and in the 12% bracket that saves about ${start('savings')}.`,
         `Past the income limit it shrinks: a MAGI of $172,300 is $22,300 over $150,000, so 22 full $1,000s take ${limit('reduction')} off and ${limit('deduction')} is left, about ${limit('savings')} in the 24% bracket.`,
         `At the cap: $30,000 of tips deduct ${big('deduction')}, and a joint return deducts the same ${joint('deduction')}, since the tips cap does not double for a couple.`,
+        refundOf(lang, start('savings')),
       ]
     : [
         `La calculadora empieza con ${start('deduction')} de propinas calificadas en una declaración individual con un MAGI de $45,000, por debajo de los $150,000 donde empieza el límite: se deduce todo, y en la tasa del 12% eso ahorra unos ${start('savings')}.`,
         `Pasado el límite de ingresos se reduce: un MAGI de $172,300 pasa $150,000 por $22,300, así que 22 tramos completos de $1,000 restan ${limit('reduction')} y quedan ${limit('deduction')}, unos ${limit('savings')} de ahorro en la tasa del 24%.`,
         `En el tope: $30,000 de propinas deducen ${big('deduction')}, y una declaración conjunta deduce los mismos ${joint('deduction')}, porque el tope de las propinas no se duplica para una pareja.`,
+        refundOf(lang, start('savings')),
       ];
 };
 

@@ -12,7 +12,7 @@ import {
 import { phasedOut } from '../deductions/phase-out.ts';
 import { BRACKETS, FILINGS, savingsOf, THRESHOLD } from '../deductions/schedule-1a.ts';
 
-/** Line 15: the overtime cap, $12,500 or $25,000 on a joint return. */
+/** The overtime cap, $12,500 or $25,000 on a joint return (2026 draft line 21; 15 in 2025). */
 const CAP = { single: usd(12_500), joint: usd(25_000) } as const;
 const HALF = Rational.of(1, 2);
 

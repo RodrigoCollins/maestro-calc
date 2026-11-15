@@ -87,12 +87,14 @@ const DLSE_FAQ: Source = {
   label: 'California Labor Commissioner (DLSE), Overtime FAQ',
   href: 'https://www.dir.ca.gov/dlse/faq_overtime.htm',
 };
+// the 2026 draft has the same caps, thresholds and round-down steps as the final 2025 form
 const SCHEDULE_1A: Source = {
-  label: 'IRS, Schedule 1-A (Form 1040), Additional Deductions',
-  href: 'https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf',
+  label: 'IRS, 2026 Schedule 1-A (Form 1040), Additional Deductions, draft (created June 16, 2026)',
+  href: 'https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf',
 };
 const IRS_OVERTIME: Source = {
-  label: 'IRS, questions and answers on the deduction for qualified overtime compensation',
+  label:
+    'IRS, FS-2026-01, questions and answers on the deduction for qualified overtime compensation (January 2026)',
   href: 'https://www.irs.gov/newsroom/questions-and-answers-about-the-new-deduction-for-qualified-overtime-compensation',
 };
 const DOL_VACATION: Source = {
