@@ -19,7 +19,9 @@ import { CONTACT_EMAIL } from './privacy.ts';
 import { hrefOf } from './routes.ts';
 import { pageKindOf } from './seo/json-ld.ts';
 import { SWIM_GUIDE } from './swim.ts';
+import { ABOVE_GROUND_GUIDE } from './above-ground.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { LITRES_GUIDE } from './litres.ts';
 import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 
@@ -40,6 +42,8 @@ const cited = [
     SWIM_GUIDE,
     GALLONS_GUIDE,
     OLYMPIC_GUIDE,
+    ABOVE_GROUND_GUIDE,
+    LITRES_GUIDE,
     SHOCK_OFTEN_GUIDE,
     GREEN_GUIDE,
     CLOUDY_GUIDE,
