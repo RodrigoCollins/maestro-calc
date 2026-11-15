@@ -1,5 +1,7 @@
 export {
+  addBusinessDays,
   addDays,
+  civilDateOf,
   dateOfRule,
   daysBetween,
   daysFrom,
@@ -12,9 +14,11 @@ export {
   nthWeekdayOf,
   parseIsoDate,
   restDayPayOf,
+  shiftDate,
   weekdayOf,
   weeksAndDaysOf,
   type CivilDate,
   type DateRule,
   type DaysBetween,
+  type ShiftedDate,
 } from './calendar.ts';

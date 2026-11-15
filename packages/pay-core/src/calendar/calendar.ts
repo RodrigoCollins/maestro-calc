@@ -160,6 +160,67 @@ export const daysBetween = (start: CivilDate, end: CivilDate, inclusive: boolean
 };
 
 /**
+ * The local calendar date of an instant: the day as the visitor's own clock reads it, which the
+ * browser passes as today (never the UTC date, which turns a day early or late away from UTC).
+ */
+export const civilDateOf = (instant: Date): CivilDate => ({
+  y: instant.getFullYear(),
+  m: instant.getMonth() + 1,
+  d: instant.getDate(),
+});
+
+/**
+ * The date `days` Mondays to Fridays after `date`, before it when negative: the start is not
+ * counted, Saturdays and Sundays are stepped over, holidays are not. Zero keeps the date itself.
+ */
+export const addBusinessDays = (date: CivilDate, days: number): CivilDate => {
+  if (!Number.isInteger(days)) throw new RangeError(`whole weekdays only: ${String(days)}`);
+  const step = days < 0 ? -1 : 1;
+  let left = Math.abs(days);
+  // any 7 days in a row hold 5 weekdays: jump whole weeks, keeping at least one day to walk, so
+  // a start on a weekend still ends on a weekday
+  const weeks = left === 0 ? 0 : Math.floor((left - 1) / 5);
+  let at = addDays(date, step * weeks * 7);
+  left -= weeks * 5;
+  while (left > 0) {
+    at = addDays(at, step);
+    if (weekdayOf(at) < 5) left -= 1;
+  }
+  return at;
+};
+
+/** A date moved some days: where it lands and the days counted on the way. */
+export interface ShiftedDate {
+  readonly date: CivilDate;
+  /** The calendar days from the start to the date, as a positive number. */
+  readonly days: number;
+  /** The Mondays to Fridays among them, counted the way it moved (the start never counts). */
+  readonly businessDays: number;
+}
+
+/**
+ * `amount` days after `from` (before it when negative), calendar days or, with `business`,
+ * Mondays to Fridays only. The start is not counted: 1 day after the 1st is the 2nd. `null` for
+ * an amount that is not a whole number or a date outside the years 1583 to 9999.
+ */
+export const shiftDate = (
+  from: CivilDate,
+  amount: number,
+  business: boolean,
+): ShiftedDate | null => {
+  if (!Number.isInteger(amount)) return null;
+  const date = business ? addBusinessDays(from, amount) : addDays(from, amount);
+  if (!isValidDate(date)) return null;
+  const days = Math.abs(daysFrom(from, date));
+  if (days === 0) return { date, days, businessDays: 0 };
+  // the days counted are those after the start up to the date, or, going back, the date up to
+  // the day before the start
+  const counted =
+    amount > 0 ? daysBetween(from, date, false) : daysBetween(date, addDays(from, -1), true);
+  return { date, days, businessDays: counted.businessDays };
+};
+
+/**
  * The pay of working a mandatory rest day in Mexico (Ley Federal del Trabajo, art. 75): the day's
  * wage, which is owed for the rest day anyway, plus double wages for the service, in cents.
  */

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  addBusinessDays,
   addDays,
+  civilDateOf,
   dateOfRule,
   daysBetween,
   daysFrom,
@@ -13,6 +15,7 @@ import {
   nthWeekdayOf,
   parseIsoDate,
   restDayPayOf,
+  shiftDate,
   weekdayOf,
   weeksAndDaysOf,
 } from './calendar.ts';
@@ -293,6 +296,154 @@ describe('daysBetween', () => {
         expect(daysBetween(a, b, false).businessDays, `${isoOf(a)} ${isoOf(b)}`).toBe(weekdays);
         const first = weekdayOf(a) < 5 ? 1 : 0;
         expect(daysBetween(a, b, true).businessDays).toBe(weekdays + first);
+      }
+  });
+});
+
+describe('civilDateOf', () => {
+  it("reads an instant's local calendar date, never the UTC one", () => {
+    expect(civilDateOf(new Date(2026, 10, 15, 0, 0))).toEqual(date(2026, 11, 15));
+    expect(civilDateOf(new Date(2026, 10, 15, 23, 59))).toEqual(date(2026, 11, 15));
+    expect(civilDateOf(new Date(2028, 1, 29, 12, 0))).toEqual(date(2028, 2, 29));
+  });
+});
+
+// Weekdays of November 2026, hand-checked: Wed 11, Fri 13, Sat 14, Sun 15, Mon 16, Wed 18,
+// Fri 20, Fri 27. 1 January 2026 is a Thursday.
+describe('addBusinessDays', () => {
+  it('skips Saturdays and Sundays, the start not counted', () => {
+    expect(addBusinessDays(date(2026, 11, 13), 1)).toEqual(date(2026, 11, 16));
+    expect(addBusinessDays(date(2026, 11, 11), 5)).toEqual(date(2026, 11, 18));
+    expect(addBusinessDays(date(2026, 11, 13), 10)).toEqual(date(2026, 11, 27));
+  });
+
+  it('starts from a weekend on the next Monday', () => {
+    expect(addBusinessDays(date(2026, 11, 14), 1)).toEqual(date(2026, 11, 16));
+    expect(addBusinessDays(date(2026, 11, 15), 1)).toEqual(date(2026, 11, 16));
+    expect(addBusinessDays(date(2026, 11, 14), 5)).toEqual(date(2026, 11, 20));
+    expect(addBusinessDays(date(2026, 11, 14), 10)).toEqual(date(2026, 11, 27));
+  });
+
+  it('goes back when negative, to the Friday before a weekend', () => {
+    expect(addBusinessDays(date(2026, 11, 16), -1)).toEqual(date(2026, 11, 13));
+    expect(addBusinessDays(date(2026, 11, 15), -1)).toEqual(date(2026, 11, 13));
+    expect(addBusinessDays(date(2026, 11, 14), -1)).toEqual(date(2026, 11, 13));
+    expect(addBusinessDays(date(2026, 11, 18), -5)).toEqual(date(2026, 11, 11));
+  });
+
+  it('keeps the date itself for zero, a weekend too', () => {
+    expect(addBusinessDays(date(2026, 11, 14), 0)).toEqual(date(2026, 11, 14));
+    expect(addBusinessDays(date(2026, 11, 16), 0)).toEqual(date(2026, 11, 16));
+  });
+
+  it('crosses months and years: 90 weekdays after 1 January 2026 is 7 May', () => {
+    expect(addBusinessDays(date(2026, 1, 1), 90)).toEqual(date(2026, 5, 7));
+    expect(addBusinessDays(date(2026, 12, 31), 1)).toEqual(date(2027, 1, 1));
+    expect(addBusinessDays(date(2027, 1, 1), -1)).toEqual(date(2026, 12, 31));
+  });
+
+  it('agrees with a day-by-day walk from every weekday, both ways', () => {
+    const walk = (from: ReturnType<typeof date>, n: number) => {
+      const step = n < 0 ? -1 : 1;
+      let at = from;
+      for (let left = Math.abs(n); left > 0;) {
+        at = addDays(at, step);
+        if (weekdayOf(at) < 5) left -= 1;
+      }
+      return at;
+    };
+    for (let from = 0; from < 7; from += 1)
+      for (let n = -40; n <= 40; n += 1) {
+        const start = addDays(date(2026, 11, 9), from);
+        expect(addBusinessDays(start, n), `${isoOf(start)} ${String(n)}`).toEqual(walk(start, n));
+      }
+  });
+
+  it('refuses a count that is not a whole number', () => {
+    expect(() => addBusinessDays(date(2026, 11, 9), 1.5)).toThrow(RangeError);
+  });
+});
+
+describe('shiftDate', () => {
+  it('adds calendar days across months: 90 days after 1 January 2026 is 1 April', () => {
+    expect(shiftDate(date(2026, 1, 1), 90, false)).toEqual({
+      date: date(2026, 4, 1),
+      days: 90,
+      businessDays: 64,
+    });
+    expect(shiftDate(date(2026, 1, 31), 30, false)?.date).toEqual(date(2026, 3, 2));
+  });
+
+  it('takes days away: 30 days before Sunday 15 November 2026 is Friday 16 October', () => {
+    // Fri 16 Oct to Sat 14 Nov: 4 whole weeks (20 weekdays), then Fri 13 and Sat 14
+    expect(shiftDate(date(2026, 11, 15), -30, false)).toEqual({
+      date: date(2026, 10, 16),
+      days: 30,
+      businessDays: 21,
+    });
+  });
+
+  it('walks over February 29 only in a leap year', () => {
+    expect(shiftDate(date(2028, 2, 28), 1, false)?.date).toEqual(date(2028, 2, 29));
+    expect(shiftDate(date(2027, 2, 28), 1, false)?.date).toEqual(date(2027, 3, 1));
+    expect(shiftDate(date(2024, 2, 29), 365, false)?.date).toEqual(date(2025, 2, 28));
+    expect(shiftDate(date(2024, 2, 29), -366, false)?.date).toEqual(date(2023, 2, 28));
+  });
+
+  it('counts weekdays only when asked, and says how many calendar days they span', () => {
+    expect(shiftDate(date(2026, 1, 1), 90, true)).toEqual({
+      date: date(2026, 5, 7),
+      days: 126,
+      businessDays: 90,
+    });
+    expect(shiftDate(date(2026, 11, 14), -1, true)).toEqual({
+      date: date(2026, 11, 13),
+      days: 1,
+      businessDays: 1,
+    });
+  });
+
+  it('counts the weekdays the way it moved: going back, the start day is not one of them', () => {
+    // 7 days back from Sat 14 Nov: Sat 7 to Fri 13, five weekdays
+    expect(shiftDate(date(2026, 11, 14), -7, false)?.businessDays).toBe(5);
+    // 1 day back from Mon 16 Nov: Sun 15, no weekday
+    expect(shiftDate(date(2026, 11, 16), -1, false)?.businessDays).toBe(0);
+    // 7 forward from Sat 14 Nov: Sun 15 to Sat 21, five weekdays
+    expect(shiftDate(date(2026, 11, 14), 7, false)?.businessDays).toBe(5);
+  });
+
+  it('keeps the date for zero days', () => {
+    expect(shiftDate(date(2026, 11, 14), 0, true)).toEqual({
+      date: date(2026, 11, 14),
+      days: 0,
+      businessDays: 0,
+    });
+  });
+
+  it('returns null outside the years 1583 to 9999, or for a count that is not whole', () => {
+    expect(shiftDate(date(9999, 12, 31), 1, false)).toBeNull();
+    expect(shiftDate(date(1583, 1, 1), -1, true)).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), 0.5, false)).toBeNull();
+    expect(shiftDate(date(2026, 1, 1), Number.NaN, false)).toBeNull();
+  });
+
+  it('goes there and back to the same date, its weekdays those daysBetween counts', () => {
+    for (let from = 0; from < 7; from += 1)
+      for (let n = -60; n <= 60; n += 1) {
+        const start = addDays(date(2026, 2, 20), from);
+        const there = shiftDate(start, n, false);
+        if (there === null) throw new Error('in range');
+        expect(shiftDate(there.date, -n, false)?.date).toEqual(start);
+        expect(there.days).toBe(Math.abs(n));
+        const counted =
+          n >= 0
+            ? daysBetween(start, there.date, false)
+            : daysBetween(there.date, addDays(start, -1), true);
+        expect(there.businessDays, `${isoOf(start)} ${String(n)}`).toBe(
+          n === 0 ? 0 : counted.businessDays,
+        );
+        const back = shiftDate(start, n, true);
+        expect(back?.businessDays).toBe(Math.abs(n));
       }
   });
 });
