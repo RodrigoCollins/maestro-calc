@@ -1,6 +1,13 @@
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { CLOCK_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
-import { AGUINALDO_PATH, ANTIGUEDAD_PATH, SDI_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
+import {
+  AGUINALDO_PATH,
+  ANTIGUEDAD_PATH,
+  ISR_PATH,
+  SDI_PATH,
+  SUELDO_NETO_PATH,
+  VACACIONES_PATH,
+} from '../mexico/routes.ts';
 
 /** The built calculator pages of the route table. */
 const ROUTED = [
@@ -64,6 +71,8 @@ export const MEXICO_PAGES: readonly string[] = [
   VACACIONES_PATH,
   ANTIGUEDAD_PATH,
   SDI_PATH,
+  ISR_PATH,
+  SUELDO_NETO_PATH,
 ].map((path) => `${path.slice(1)}.html`);
 
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */

@@ -29,9 +29,11 @@ import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  ISR_PATH,
   MEXICO_SLUGS,
   mexicoPathOf,
   SDI_PATH,
+  SUELDO_NETO_PATH,
   VACACIONES_PATH,
   type MexicoSlug,
 } from '../mexico/routes.ts';
@@ -123,6 +125,9 @@ export const MEXICO_RULES: readonly GuideRule[] = [
   { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
   { path: ANTIGUEDAD_PATH, calculators: [SDI_PATH, AGUINALDO_PATH] },
   { path: SDI_PATH, calculators: [VACACIONES_PATH] },
+  // the ISR and take-home pay calculators link each other
+  { path: ISR_PATH, calculators: [SUELDO_NETO_PATH] },
+  { path: SUELDO_NETO_PATH, calculators: [ISR_PATH] },
 ];
 
 /**

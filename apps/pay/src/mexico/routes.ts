@@ -12,6 +12,10 @@ export const VACACIONES_PATH = '/es/calculadora-de-vacaciones-mexico';
 export const ANTIGUEDAD_PATH = '/es/calculadora-de-prima-de-antiguedad';
 /** The salario diario integrado calculator. */
 export const SDI_PATH = '/es/calculadora-de-salario-diario-integrado';
+/** The ISR calculator of a salary: the monthly, biweekly and weekly tariffs of 2026. */
+export const ISR_PATH = '/es/calculadora-isr';
+/** The take-home pay calculator: ISR and the IMSS worker quotas of a monthly salary. */
+export const SUELDO_NETO_PATH = '/es/calculadora-de-sueldo-neto';
 
 export const MEXICO_SLUGS = [
   'cuantos-dias-de-aguinaldo-son-por-ley',
@@ -36,6 +40,8 @@ export const MEXICO_ROUTES: readonly {
   { id: 'vacaciones-mexico', kind: 'calculator', es: VACACIONES_PATH },
   { id: 'prima-antiguedad', kind: 'calculator', es: ANTIGUEDAD_PATH },
   { id: 'sdi-mexico', kind: 'calculator', es: SDI_PATH },
+  { id: 'isr-mexico', kind: 'calculator', es: ISR_PATH },
+  { id: 'sueldo-neto', kind: 'calculator', es: SUELDO_NETO_PATH },
   ...MEXICO_SLUGS.map((slug) => ({
     id: `mexico-${slug}`,
     kind: 'article' as const,

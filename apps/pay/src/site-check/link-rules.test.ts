@@ -1,5 +1,12 @@
 import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
-import { AGUINALDO_PATH, ANTIGUEDAD_PATH, SDI_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
+import {
+  AGUINALDO_PATH,
+  ANTIGUEDAD_PATH,
+  ISR_PATH,
+  SDI_PATH,
+  SUELDO_NETO_PATH,
+  VACACIONES_PATH,
+} from '../mexico/routes.ts';
 import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
 import { LONG_TAIL_ROUTES, SCHOOL_YEAR_ROUTES } from '../long-tail/routes.ts';
@@ -148,6 +155,8 @@ describe('MEXICO_RULES', () => {
       { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
       { path: ANTIGUEDAD_PATH, calculators: [SDI_PATH, AGUINALDO_PATH] },
       { path: SDI_PATH, calculators: [VACACIONES_PATH] },
+      { path: ISR_PATH, calculators: [SUELDO_NETO_PATH] },
+      { path: SUELDO_NETO_PATH, calculators: [ISR_PATH] },
     ]);
   });
 });
