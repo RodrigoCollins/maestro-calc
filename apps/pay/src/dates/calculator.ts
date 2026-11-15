@@ -6,6 +6,8 @@ import {
 } from '@maestro-calc/pay-core/calendar';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import type { LongTailSection } from '../long-tail/sections.ts';
+import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
+import { AGUINALDO_NAME, VACACIONES_NAME } from '../mexico/words.ts';
 import { titleOf } from '../seo/meta.ts';
 import { countdownLinks } from './countdowns.ts';
 import { DAYS_BETWEEN_PATH } from './routes.ts';
@@ -137,6 +139,17 @@ const sectionsOf = (): LongTailSection[] => {
       links: countdownLinks(),
     },
     {
+      id: 'mexico',
+      heading: 'Los días trabajados del aguinaldo y las vacaciones',
+      paragraphs: [
+        'En México, el aguinaldo proporcional se calcula con los días trabajados del año, del día de ingreso al 31 de diciembre con los dos extremos incluidos: marca «Contar también el día de inicio». Las vacaciones dependen de los años de servicio cumplidos a la fecha del cálculo.',
+      ],
+      links: [
+        { href: AGUINALDO_PATH, label: AGUINALDO_NAME },
+        { href: VACACIONES_PATH, label: VACACIONES_NAME },
+      ],
+    },
+    {
       id: 'related',
       heading: 'Horas en lugar de días',
       paragraphs: [
@@ -153,10 +166,10 @@ export const daysBetweenPageOf = () => {
   return {
     title: titleOf(DAYS_BETWEEN_NAME),
     description:
-      'Calcula cuántos días hay entre dos fechas: días naturales, semanas y días hábiles de lunes a viernes, con o sin el día de inicio. Gratis y sin registro.',
+      'Calculadora de fechas gratis: cuenta los días entre dos fechas o los que han pasado desde una fecha, en semanas y en días hábiles, con o sin el día de inicio.',
     kicker: 'Calculadora de fechas · gratis',
     h1: DAYS_BETWEEN_NAME,
-    lead: 'Elige dos fechas y ve cuántos días hay entre ellas, cuántas semanas son y cuántos días hábiles caen de lunes a viernes. Marca la casilla si el día de inicio también cuenta.',
+    lead: 'Elige dos fechas y ve cuántos días hay entre ellas, cuántas semanas son y cuántos días hábiles caen de lunes a viernes. Para saber cuántos días han pasado desde una fecha, ponla como fecha de inicio y la de hoy como fecha final. Marca la casilla si el día de inicio también cuenta.',
     start: 'Fecha de inicio',
     end: 'Fecha final',
     inclusive: 'Contar también el día de inicio',

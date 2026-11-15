@@ -11,7 +11,7 @@ import {
  */
 
 /** The name of the days-between calculator: its `h1` and the label of the links to it. */
-export const DAYS_BETWEEN_NAME = 'Calculadora de días entre fechas';
+export const DAYS_BETWEEN_NAME = 'Calculadora de fechas: contador de días entre dos fechas';
 
 const WEEKDAYS = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
 export const MONTHS = [
