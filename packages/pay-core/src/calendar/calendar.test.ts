@@ -360,7 +360,9 @@ describe('addBusinessDays', () => {
   });
 
   it('refuses a count that is not a whole number', () => {
-    expect(() => addBusinessDays(date(2026, 11, 9), 1.5)).toThrow(RangeError);
+    expect(() => addBusinessDays(date(2026, 11, 9), 1.5)).toThrow(
+      new RangeError('whole weekdays only: 1.5'),
+    );
   });
 });
 

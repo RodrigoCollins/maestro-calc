@@ -175,11 +175,12 @@ export const civilDateOf = (instant: Date): CivilDate => ({
  */
 export const addBusinessDays = (date: CivilDate, days: number): CivilDate => {
   if (!Number.isInteger(days)) throw new RangeError(`whole weekdays only: ${String(days)}`);
-  const step = days < 0 ? -1 : 1;
+  if (days === 0) return date;
+  const step = Math.sign(days);
   let left = Math.abs(days);
   // any 7 days in a row hold 5 weekdays: jump whole weeks, keeping at least one day to walk, so
-  // a start on a weekend still ends on a weekday
-  const weeks = left === 0 ? 0 : Math.floor((left - 1) / 5);
+  // a start on a weekend still ends on a weekday (walking every day gives the same date, slower)
+  const weeks = Math.floor((left - 1) / 5);
   let at = addDays(date, step * weeks * 7);
   left -= weeks * 5;
   while (left > 0) {
@@ -211,13 +212,11 @@ export const shiftDate = (
   if (!Number.isInteger(amount)) return null;
   const date = business ? addBusinessDays(from, amount) : addDays(from, amount);
   if (!isValidDate(date)) return null;
-  const days = Math.abs(daysFrom(from, date));
-  if (days === 0) return { date, days, businessDays: 0 };
   // the days counted are those after the start up to the date, or, going back, the date up to
   // the day before the start
   const counted =
-    amount > 0 ? daysBetween(from, date, false) : daysBetween(date, addDays(from, -1), true);
-  return { date, days, businessDays: counted.businessDays };
+    amount < 0 ? daysBetween(date, addDays(from, -1), true) : daysBetween(from, date, false);
+  return { date, days: Math.abs(daysFrom(from, date)), businessDays: counted.businessDays };
 };
 
 /**
