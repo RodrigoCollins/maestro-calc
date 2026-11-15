@@ -29,6 +29,7 @@ import { FOOD_HUB_ES, FOOD_PAGES_ES } from './es/can-dogs-eat.ts';
 import { CHOCOLATE_GUIDE_ES } from './es/chocolate.ts';
 import { EDAD_PERRO_PAGE } from './es/edad-perro.ts';
 import { ABOUT_ES, EDITORIAL_ES } from './es/trust.ts';
+import { CATS_HUB_ES, DOGS_HUB_ES, PLANT_PAGES_ES, SAFE_HUB_ES } from './es/toxic-plants.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
 interface Entry {
@@ -100,6 +101,7 @@ const FRENCH: readonly Entry[] = [
 /** The Spanish pages, listed once Spanish is open to search engines (`SITE.esIndexable`). */
 const SPANISH: readonly Entry[] = [
   ...[EDAD_PERRO_PAGE, CHOCOLATE_GUIDE_ES, FOOD_HUB_ES, ...FOOD_PAGES_ES],
+  ...[DOGS_HUB_ES, CATS_HUB_ES, SAFE_HUB_ES, ...PLANT_PAGES_ES],
   { ...ABOUT_ES, path: hrefOf('about', 'es') },
   { ...EDITORIAL_ES, path: hrefOf('editorial', 'es') },
 ].map(({ h1, path, description }) => ({ name: h1, path, note: description }));

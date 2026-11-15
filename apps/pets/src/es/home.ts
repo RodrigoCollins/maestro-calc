@@ -1,11 +1,12 @@
 import { humanAt } from '../dog-years.ts';
 import { hrefOf } from '../routes.ts';
 import { FOOD_PAGES_ES } from './can-dogs-eat.ts';
+import { PLANT_PAGES_ES } from './toxic-plants.ts';
 import { amountEs } from './format.ts';
 
 const medium = (age: number): string => amountEs(humanAt(age, 'medium'), 0);
 
-/** The Spanish home: the three questions the Spanish pages answer, then every food page. */
+/** The Spanish home: the questions the Spanish pages answer, then every food page. */
 export const HOME_ES = {
   title: 'Bowl Figures: qué pueden comer los perros y su edad humana',
   description:
@@ -28,6 +29,11 @@ export const HOME_ES = {
       title: '¿Qué pasa si un perro come chocolate?',
       summary:
         'Lo que haces en los próximos minutos, a partir de qué dosis es peligroso y qué signos llegan y cuándo.',
+    },
+    {
+      href: hrefOf('plants-dogs', 'es'),
+      title: 'Plantas tóxicas para perros y gatos',
+      summary: `${String(PLANT_PAGES_ES.length)} plantas comparadas con la lista de la ASPCA, de la palma sago y los lirios a la flor de Nochebuena, con las partes, los signos y qué hacer.`,
     },
   ],
   approach: [

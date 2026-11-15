@@ -85,11 +85,14 @@ const NAV_ES: readonly NavLink[] = [
   { id: 'chocolate-guide', label: 'Chocolate' },
 ];
 
-/** The Spanish footer: the same three, then the pages about the site. */
+/** The Spanish footer: the same three, the plant hubs, then the pages about the site. */
 const FOOTER_ES: readonly NavLink[] = [
   { id: 'foods', label: '¿Qué frutas pueden comer los perros? Todos los alimentos' },
   { id: 'dog-age', label: 'Edad de perro en años humanos' },
   { id: 'chocolate-guide', label: '¿Qué pasa si un perro come chocolate?' },
+  { id: 'plants-dogs', label: 'Plantas tóxicas para perros' },
+  { id: 'plants-cats', label: 'Plantas tóxicas para gatos' },
+  { id: 'plants-safe', label: 'Plantas seguras para perros y gatos' },
   { id: 'about', label: 'Acerca de' },
   { id: 'editorial', label: 'Política editorial' },
   { id: 'privacy', label: 'Privacidad' },

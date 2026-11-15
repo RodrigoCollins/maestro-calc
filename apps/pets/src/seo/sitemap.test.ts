@@ -113,8 +113,9 @@ describe('sitemapXml, as shipped: Spanish open, German and French closed', () =>
   it('lists every English and Spanish page once, and no German or French one', () => {
     expect(locs).toHaveLength(ROUTES.length + ROUTES.filter(({ es }) => es !== undefined).length);
     expect(locs).toContain('https://bowlfigures.com/es/los-perros-pueden-comer-fresas');
-    expect(locs.some((loc) => loc?.includes('/de'))).toBe(false);
-    expect(locs.some((loc) => loc?.includes('/fr'))).toBe(false);
+    // by the first segment: a Spanish slug may hold the letters (/es/dedalera-…)
+    expect(locs.some((loc) => loc?.includes('bowlfigures.com/de'))).toBe(false);
+    expect(locs.some((loc) => loc?.includes('bowlfigures.com/fr'))).toBe(false);
   });
 
   it('pairs each Spanish page with its English twin and x-default, and names no closed twin', () => {
