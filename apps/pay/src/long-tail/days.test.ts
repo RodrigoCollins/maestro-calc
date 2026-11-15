@@ -60,7 +60,7 @@ describe('hours in days long-tail pages', () => {
     );
     const setentaYDos = longTailPageOf(daysOf(72), 'es');
     expect(setentaYDos.h1).toBe('¿Cuántos días son 72 horas?');
-    expect(setentaYDos.title).toBe('72 horas son 3 días | Cuenta Horas');
+    expect(setentaYDos.title).toBe('72 horas son 3 días exactos | Cuenta Horas');
     expect(setentaYDos.lead).toBe(
       '72 horas son exactamente 3 días: las horas divididas por 24, las horas de un día de calendario. Como tiempo de trabajo, son 9 jornadas de 8 horas, o 1.8 semanas laborales de 40 horas.',
     );
@@ -72,7 +72,7 @@ describe('hours in days long-tail pages', () => {
       '100 hours is 4.17 days, or 4 days and 4 hours: the hours divided by 24, rounded to two places. As working time, it is 12.5 workdays of 8 hours, or 2.5 workweeks of 40 hours.',
     );
     expect(longTailPageOf(daysOf(100), 'es').title).toBe(
-      '100 horas son 4.17 días (4 días y 4 horas) | Cuenta Horas',
+      '100 horas son 4 días y 4 horas (4.17 días) | Cuenta Horas',
     );
     // 10,000 / 24 = 416.666...
     expect(longTailPageOf(daysOf(10000), 'en').title).toBe(
@@ -208,7 +208,7 @@ describe('hours in days long-tail pages', () => {
     const one = longTailPageOf(daysOf(24), 'en');
     expect(one.title).toBe('24 hours is 1 day | Cuenta Horas');
     expect(one.lead).toMatch(/^24 hours is exactly 1 day: /);
-    expect(longTailPageOf(daysOf(24), 'es').title).toBe('24 horas son 1 día | Cuenta Horas');
+    expect(longTailPageOf(daysOf(24), 'es').title).toBe('24 horas son 1 día exacto | Cuenta Horas');
     const clock = textOf(sectionOf(24, 'calendar'));
     expect(clock).toContain('they end 1 day later, on Tuesday at 9:00 am');
     expect(clock).toContain(
@@ -251,13 +251,21 @@ describe('hours in days long-tail pages', () => {
     expect(week).toContain('168 ÷ 168 = 1 whole week (168 hours), with no hours left');
     expect(rowOf(168, 'split')).toBe('1 week');
     expect(longTailPageOf(daysOf(168), 'en').title).toBe('168 hours is 7 days | Cuenta Horas');
-    expect(longTailPageOf(daysOf(120), 'es').title).toBe('120 horas son 5 días | Cuenta Horas');
+    expect(longTailPageOf(daysOf(120), 'es').title).toBe(
+      '120 horas son 5 días exactos | Cuenta Horas',
+    );
   });
 
   it('count the time first and leave the US overtime rule for last, labelled in Spanish', () => {
     for (const job of DAYS) {
       const ids = longTailPageOf(job, 'es').sections?.map(({ id }) => id) ?? [];
-      expect(ids.slice(0, 4)).toEqual(['worked', 'calendar', 'shifts', 'weeks']);
+      // the Spanish tables of their own (`spanish-search.test.ts`) follow the worked figures
+      expect(ids.filter((id) => id !== 'nearby' && id !== 'workdays').slice(0, 4)).toEqual([
+        'worked',
+        'calendar',
+        'shifts',
+        'weeks',
+      ]);
     }
     const es = longTailPageOf(daysOf(72), 'es');
     expect(es.note).toContain('ley federal de EE. UU.');

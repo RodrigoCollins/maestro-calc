@@ -307,6 +307,150 @@ const WORDS = {
   },
 } as const;
 
+/*
+ * The Spanish searches (Search Console, 7-13 Nov 2026: these pages show at position 9 in Mexico,
+ * Spain and South America with almost no clicks). The Spanish page answers in its title with the
+ * exact figure, says in its description what the click finds, and adds what no sibling has: its
+ * neighbours from half to one and a half times its hours, its working days at 8 hours a day five
+ * and six days a week, and the questions people ask. The English page is left as it was.
+ */
+
+/** The neighbours of the nearby table: half, three quarters, the hours, 1.25 and 1.5 times. */
+const NEARBY = [
+  [1, 2],
+  [3, 4],
+  [1, 1],
+  [5, 4],
+  [3, 2],
+] as const;
+/** The working days of a week the working days table counts, Monday first. */
+const WORKWEEKS = [
+  { days: 5, label: '5, de lunes a viernes' },
+  { days: 6, label: '6, de lunes a sábado' },
+] as const;
+/** From this many hours the questions count the hours in months, of 730 hours on average. */
+const MONTHS_FROM = 300;
+/** An average month, 8,760 hours ÷ 12, and a month of 30 days. */
+const MONTH = 730;
+const MONTH_30 = 720;
+
+/** The calendar days that `hours` of 8-hour workdays take from a Monday, `perWeek` days a week. */
+const calendarDaysOf = (hours: number, perWeek: number): number => {
+  const workdays = Math.ceil(hours / WORKDAY);
+  return Math.floor((workdays - 1) / perWeek) * 7 + ((workdays - 1) % perWeek) + 1;
+};
+
+/** `48 horas son 2 días exactos`, `100 horas son 4 días y 4 horas (4.17 días)`. */
+const esNameOf = (h: number): string => {
+  const whole = Math.floor(h / DAY);
+  if (h % DAY !== 0) return `${n(h)} horas son ${splitOf(h, 'es', false)} (${ratio(h, DAY)} días)`;
+  const weeks = h % WEEK === 0 ? ` (${WORDS.es.unit.week(h / WEEK)})` : '';
+  return `${n(h)} horas son ${n(whole)} ${whole === 1 ? 'día exacto' : 'días exactos'}${weeks}`;
+};
+
+/** The figure of `h × num / den`, which the hours of a days page keep whole. */
+const scaled = (h: number, [num, den]: readonly [number, number]): number => {
+  if ((h * num) % den !== 0)
+    throw new Error(`${String(h)} hours have no whole ${String(num)}/${String(den)}`);
+  return (h * num) / den;
+};
+
+const esDescriptionOf = (h: number): string =>
+  descriptionOf(
+    `${esNameOf(h).replace(/ \(.*\)$/, '')}: ${n(h * 60)} minutos o ${n(h * 3600)} segundos. Como trabajo, son ${ratio(h, WORKDAY)} jornadas de 8 horas. Con tabla de ${n(scaled(h, [1, 2]))} a ${n(scaled(h, [3, 2]))} horas y la calculadora de horas.`,
+  );
+
+/** The two tables of the Spanish page, after the worked figures. */
+const esTablesOf = (h: number): readonly LongTailSection[] => [
+  {
+    id: 'nearby',
+    heading: `De ${n(scaled(h, [1, 2]))} a ${n(scaled(h, [3, 2]))} horas en días`,
+    paragraphs: [
+      `${n(h)} horas y las cantidades de alrededor, de la mitad a una vez y media, en días de 24 horas y en jornadas de 8 horas:`,
+    ],
+    table: {
+      caption: `De ${n(scaled(h, [1, 2]))} a ${n(scaled(h, [3, 2]))} horas`,
+      head: ['Horas', 'Días', 'Días y horas', 'Jornadas de 8 h'],
+      rows: NEARBY.map((factor) => {
+        const x = scaled(h, factor);
+        return [n(x), ratio(x, DAY), splitOf(x, 'es', false), ratio(x, WORKDAY)];
+      }),
+    },
+  },
+  {
+    id: 'workdays',
+    heading: `${n(h)} horas en días laborables de 8 horas`,
+    paragraphs: [
+      `Con jornadas de 8 horas, ${n(h)} horas son ${ratio(h, WORKDAY)} días laborables. Cuántas semanas y cuántos días de calendario llevan depende de los días que trabajes por semana:`,
+    ],
+    table: {
+      caption: `${n(h)} horas en jornadas de 8 horas`,
+      head: [
+        'Días de trabajo por semana',
+        'Horas por semana',
+        'Semanas de trabajo',
+        'Días de calendario',
+      ],
+      rows: WORKWEEKS.map(({ days, label }) => [
+        label,
+        String(days * WORKDAY),
+        ratio(h, days * WORKDAY),
+        n(calendarDaysOf(h, days)),
+      ]),
+    },
+    after: [
+      'Los días de calendario cuentan desde un lunes e incluyen los días de descanso de en medio; no descuentan feriados ni vacaciones.',
+    ],
+  },
+];
+
+/** The questions of the Spanish page, last. */
+const esFaqOf = (h: number): LongTailSection => {
+  const whole = Math.floor(h / DAY);
+  const end = clockEndOf(h, 'es');
+  const at = (time: string): string => `${time.startsWith('1:') ? 'a la' : 'a las'} ${time}`;
+  const questions = [
+    h % DAY === 0
+      ? {
+          question: `¿${n(h)} horas son ${n(whole)} ${whole === 1 ? 'día' : 'días'}?`,
+          answer: `Sí, exactamente: ${n(whole)} × 24 = ${n(h)} horas, sin horas de sobra.`,
+        }
+      : {
+          question: `¿${n(h)} horas son ${WORDS.es.unit.day(whole)}?`,
+          answer: `No del todo: ${WORDS.es.unit.day(whole)} ${whole === 1 ? 'es' : 'son'} ${n(whole * DAY)} horas, así que ${n(h)} horas son ${splitOf(h, 'es', false)}, o ${ratio(h, DAY)} días.`,
+        },
+    {
+      question: `¿Cuántas semanas son ${n(h)} horas?`,
+      answer: `${ratio(h, WEEK)} semanas: ${n(h)} ÷ 168, las horas de una semana de 7 días. ${h < WEEK ? 'Es menos de una semana.' : `Son ${splitOf(h, 'es', true)}.`}`,
+    },
+    {
+      question: `¿Cuántos minutos y segundos son ${n(h)} horas?`,
+      answer: `${n(h * 60)} minutos (${n(h)} × 60) y ${n(h * 3600)} segundos (${n(h * 60)} × 60).`,
+    },
+    {
+      question: `¿Cuántos días de trabajo son ${n(h)} horas?`,
+      answer: `${ratio(h, WORKDAY)} jornadas de 8 horas (${n(h)} ÷ 8), o ${ratio(h, 12)} turnos de 12 horas.`,
+    },
+    ...(h < YEARS_FROM
+      ? [
+          {
+            question: `Si empiezo un lunes ${at(end.start)}, ¿cuándo se cumplen ${n(h)} horas?`,
+            answer: `El ${WORDS.es.weekdays[end.weekday] ?? ''} ${at(end.time)}, ${WORDS.es.unit.day(end.daysLater)} después, contando de día y de noche.`,
+          },
+        ]
+      : []),
+    ...(h >= MONTHS_FROM
+      ? [
+          {
+            question: `¿Cuántos meses son ${n(h)} horas?`,
+            answer: `${ratio(h, MONTH)} meses de 730 horas, lo que dura en promedio un mes (8,760 horas de un año de 365 días ÷ 12), o ${ratio(h, MONTH_30)} meses de 30 días.`,
+          },
+        ]
+      : []),
+  ];
+  return { id: 'faq', heading: 'Preguntas frecuentes', paragraphs: [], questions };
+};
+
 const questionOf = (job: Days, lang: Lang): string => WORDS[lang].question(job.hours);
 
 /** The days pages as links: every one on the hours calculator, on a days page (`except`) its nearest. */
@@ -404,7 +548,9 @@ const sectionsOf = (
       after: [w.weeksAfter],
     },
   ];
-  if (h < YEARS_FROM) return { sections, sources: [SOURCES.factSheet23] };
+  if (lang === 'es') sections.splice(1, 0, ...esTablesOf(h));
+  const faq = lang === 'es' ? [esFaqOf(h)] : [];
+  if (h < YEARS_FROM) return { sections: [...sections, ...faq], sources: [SOURCES.factSheet23] };
   sections.push({
     id: 'years',
     heading: w.yearsHeading(h),
@@ -416,7 +562,10 @@ const sectionsOf = (
     },
     after: [w.yearsAfter],
   });
-  return { sections, sources: [SOURCES.factSheet23, SOURCES.irsFullTime, SOURCES.blsCps] };
+  return {
+    sections: [...sections, ...faq],
+    sources: [SOURCES.factSheet23, SOURCES.irsFullTime, SOURCES.blsCps],
+  };
 };
 
 /** The page of one hours in days job in one language, every figure worked out at build time. */
@@ -442,11 +591,14 @@ export const daysPageOf = (job: Days, lang: Lang): LongTailPage => {
   ];
   return {
     kicker: HOURS_TEXTS[lang].kicker,
-    title: titleOf(headline),
-    description: descriptionOf(
-      `${headline}. ${w.working(workdays, workweeks)}`,
-      rows.map(({ label, value }) => `${label}: ${value}`),
-    ),
+    title: titleOf(lang === 'es' ? esNameOf(h) : headline),
+    description:
+      lang === 'es'
+        ? esDescriptionOf(h)
+        : descriptionOf(
+            `${headline}. ${w.working(workdays, workweeks)}`,
+            rows.map(({ label, value }) => `${label}: ${value}`),
+          ),
     h1: questionOf(job, lang),
     lead,
     figure,

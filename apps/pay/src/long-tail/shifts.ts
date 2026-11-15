@@ -3,12 +3,13 @@ import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
 import { clockFieldText, decimalHoursText, hoursMinutesText, moneyText } from '../format.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
-import { descriptionOf, titleOf } from '../seo/meta.ts';
+import { descriptionOf, TITLE_MAX, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage, ShiftTool } from './jobs.ts';
 import { clockOf, fieldOf } from './clock.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, SHIFTS, type Shift } from './routes.ts';
+import type { LongTailSection } from './sections.ts';
 import { shiftSectionsOf } from './shift-sections.ts';
 
 /** The days of the work week the weekly rows count. */
@@ -233,6 +234,64 @@ const bothOf = (hours: Rational): string =>
 const cuedOf = (headline: string, cue: string): string =>
   `${headline}${cue}`.length <= CUED_MAX ? `${headline}${cue}` : headline;
 
+/*
+ * The Spanish searches (Search Console, 7-13 Nov 2026: position 9, almost no clicks). The Spanish
+ * page answers in its title with the hours and the hours after a 30-minute break, says in its
+ * description what the click finds, and ends with the questions people ask. The English page is
+ * left as it was.
+ */
+
+/** `8 h`, `8 h 30 min`: hours short enough for a title. */
+const compactOf = (hours: Rational): string => {
+  const { h, min } = partsOf(hours);
+  return min === 0 ? `${String(h)} h` : `${String(h)} h ${String(min)} min`;
+};
+
+const capitalOf = (text: string): string => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+
+/** `a las 4 pm`, `a la 1:30 pm`: a time of `clockOf` after its article. */
+const atOf = (minutes: number): string => {
+  const time = clockOf(minutes);
+  return `${/^1[: ]/.test(time) ? 'a la' : 'a las'} ${time}`;
+};
+
+/** The title with the break cue: with the site name if it fits, without it, or the name alone. */
+const esTitleOf = (name: string, short: Rational): string => {
+  const cued = titleOf(`${name} (${compactOf(short)} con 30 min de descanso)`);
+  return cued.length <= TITLE_MAX ? cued : titleOf(name);
+};
+
+/** The questions of a Spanish shift page, every figure from the hours calculator. */
+const esFaqOf = (
+  shift: Shift,
+  searched: { readonly start: string; readonly end: string },
+  figure: string,
+  short: Rational,
+  long: Rational,
+  hours: Rational,
+): LongTailSection => {
+  const times = (day: Rational, count: number): string => compactOf(day.mul(Rational.of(count)));
+  return {
+    id: 'faq',
+    heading: 'Preguntas frecuentes',
+    paragraphs: [],
+    questions: [
+      {
+        question: `¿Cuántas horas son de ${searched.start} a ${searched.end} con 1 hora de comida?`,
+        answer: `${WORDS.es.hours(long)}, o ${decimalHoursText(long)} horas decimales: las ${figure} del turno menos 60 minutos de descanso sin pago.`,
+      },
+      {
+        question: `¿Cuántas horas a la semana son de ${searched.start} a ${searched.end}?`,
+        answer: `${times(hours, 5)} de lunes a viernes y ${times(hours, 6)} de lunes a sábado, sin descanso. Con 30 minutos de descanso al día, ${times(short, 5)} y ${times(short, 6)}.`,
+      },
+      {
+        question: `Si entro ${atOf(shift.start)}, ¿a qué hora salgo para trabajar 8 horas?`,
+        answer: `${capitalOf(atOf(shift.start + 480))} sin descanso, o ${atOf(shift.start + 510)} con 30 minutos de descanso sin pago.`,
+      },
+    ],
+  };
+};
+
 /** The page of one shift in one language, every figure from the hours calculator at build time. */
 export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   const w = WORDS[lang];
@@ -263,15 +322,24 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   ];
   const note = overnight ? t.warnings.overnight : t.notes[2];
   if (note === undefined) throw new Error('the hours calculator must say what a break does');
+  const explained = shiftSectionsOf(shift, lang, figure);
   const validated = hoursBetween.validate(rawOf(shift, 0));
   if (!validated.ok) throw new Error(`the shift ${shift.slug.en} must validate`);
   return {
     kicker: t.kicker,
-    title: titleOf(cuedOf(w.headline(searched.start, searched.end, figure), w.cue)),
-    description: descriptionOf(
-      leadFrom(searched.start, searched.end),
-      rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
-    ),
+    title:
+      lang === 'es'
+        ? esTitleOf(w.headline(searched.start, searched.end, figure), short)
+        : titleOf(cuedOf(w.headline(searched.start, searched.end, figure), w.cue)),
+    description:
+      lang === 'es'
+        ? descriptionOf(
+            `${w.headline(searched.start, searched.end, figure)}. Con 30 minutos de descanso son ${compactOf(short)}, y con 1 hora, ${compactOf(long)}; en 5 días, ${compactOf(week(hours))}. Tabla hora por hora y calculadora con tu pago.`,
+          )
+        : descriptionOf(
+            leadFrom(searched.start, searched.end),
+            rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
+          ),
     h1: question,
     lead,
     figure,
@@ -287,6 +355,10 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     paths: { en: pathOf(shift, 'en'), es: pathOf(shift, 'es') },
     others: shiftLinksOf(lang, shift),
     tool: toolOf(shift, lang),
-    ...shiftSectionsOf(shift, lang, figure),
+    ...explained,
+    sections:
+      lang === 'es'
+        ? [...explained.sections, esFaqOf(shift, searched, figure, short, long, hours)]
+        : explained.sections,
   };
 };
