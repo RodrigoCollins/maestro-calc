@@ -138,6 +138,9 @@ export const GUIDE_CALCULATORS: Readonly<Record<string, readonly string[]>> = {
   'overtime-states-guide': ['overtime'],
   'minimum-wage-states-guide': ['hourly-to-salary', 'salary-to-hourly'],
   'minimum-wage-2027-states-guide': ['hourly-to-salary'],
+  'employer-hours-guide': ['time-card', 'overtime'],
+  'timesheet-guide': ['time-card'],
+  'time-apps-guide': ['time-card'],
 };
 
 export const GUIDE_RULES: readonly GuideRule[] = Object.entries(GUIDE_CALCULATORS).flatMap(

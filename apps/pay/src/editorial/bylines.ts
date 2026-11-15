@@ -1,5 +1,13 @@
 import { DATA_PAGES } from '../data/pages.ts';
 import {
+  EMPLOYER_HOURS_GUIDE,
+  EMPLOYER_HOURS_GUIDE_PATHS,
+  TIME_APPS_GUIDE,
+  TIME_APPS_GUIDE_PATHS,
+  TIMESHEET_GUIDE,
+  TIMESHEET_GUIDE_PATHS,
+} from '../guide/employers.ts';
+import {
   FULL_TIME_GUIDE,
   FULL_TIME_GUIDE_PATHS,
   PART_TIME_GUIDE,
@@ -64,6 +72,9 @@ export const BYLINE_GUIDES: readonly {
   { paths: HOURS_WORKED_GUIDE_PATHS, texts: HOURS_WORKED_GUIDE },
   { paths: FULL_TIME_GUIDE_PATHS, texts: FULL_TIME_GUIDE },
   { paths: PART_TIME_GUIDE_PATHS, texts: PART_TIME_GUIDE },
+  { paths: EMPLOYER_HOURS_GUIDE_PATHS, texts: EMPLOYER_HOURS_GUIDE },
+  { paths: TIMESHEET_GUIDE_PATHS, texts: TIMESHEET_GUIDE },
+  { paths: TIME_APPS_GUIDE_PATHS, texts: TIME_APPS_GUIDE },
 ];
 
 const LANGS = ['en', 'es'] as const;

@@ -13,6 +13,7 @@ import {
   PART_TIME_GUIDE,
   PART_TIME_GUIDE_PATHS,
 } from '../guide/full-part-time.ts';
+import { EMPLOYER_GUIDE_LINKS } from '../guide/employers.ts';
 import { TIP_CREDIT_GUIDE, TIP_CREDIT_GUIDE_PATHS } from '../guide/tip-credit.ts';
 import {
   MINIMUM_WAGE_2027_GUIDE,
@@ -157,6 +158,17 @@ const rows = TIME_CARD_TEXTS[lang].days.slice(0, 3).map((day) => ({
         {guides.map((guide) => (
           <li>
             <a href={guide.href}>{guide.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="guides" aria-labelledby="employers-heading">
+      <h2 id="employers-heading">{EMPLOYER_GUIDE_LINKS[lang].heading}</h2>
+      <ul class="link-list">
+        {EMPLOYER_GUIDE_LINKS[lang].links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
           </li>
         ))}
       </ul>
