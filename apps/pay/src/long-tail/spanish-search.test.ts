@@ -306,6 +306,10 @@ describe('the Spanish hours calculator', () => {
     );
     expect(HOURS_TEXTS.es.description.length).toBeLessThanOrEqual(DESCRIPTION.max);
     expect(HOURS_TEXTS.es.description).toMatch(/48, 72 o 200 horas/);
+    // "calculadora de horas y minutos" (Ahrefs Mexico, 2026-11-15): the title, the h1, the lead
+    expect(HOURS_TEXTS.es.h1).toBe('Calculadora de horas y minutos');
+    expect(HOURS_TEXTS.es.lead).toMatch(/^Calculadora de horas y minutos: /);
+    expect(HOURS_TEXTS.es.lead).toMatch(/suma y resta horas y minutos/);
   });
 
   it('links the most searched pages under the tool, each labelled with its answer', () => {

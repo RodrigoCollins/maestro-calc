@@ -117,7 +117,7 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
       'Calcula cuántas horas hay entre dos horas, con descanso, y suma o resta horas y minutos. Y cuántos días son 48, 72 o 200 horas, o qué hora era hace 5 horas.',
     kicker: 'Horas · gratis',
     h1: 'Calculadora de horas y minutos',
-    lead: 'Ingresa la hora de inicio, la de fin y el descanso que no cuenta. Te da el tiempo entre las dos, en horas y minutos y en horas decimales. Más abajo, suma y resta horas y minutos.',
+    lead: 'Calculadora de horas y minutos: ingresa la hora de inicio, la de fin y el descanso que no cuenta, y te da el tiempo entre las dos, en horas y minutos y en horas decimales. Más abajo, suma y resta horas y minutos.',
     start: 'Hora de inicio',
     end: 'Hora de fin',
     unpaidBreak: 'Descanso que no cuenta (minutos)',
