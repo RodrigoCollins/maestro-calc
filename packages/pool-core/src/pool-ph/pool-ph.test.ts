@@ -176,6 +176,57 @@ describe('pool pH', () => {
     expect(poolPh.run({ drops: '-1' }).ok).toBe(false);
     expect(poolPh.run({ drops: '10' }).ok).toBe(true);
     expect(poolPh.run({ drops: '11' }).ok).toBe(false);
-    expect(poolPh.run({ product: 'dry-acid' }).ok).toBe(false);
+    expect(poolPh.run({ product: 'sulfuric-acid' }).ok).toBe(false);
+  });
+});
+
+// Taylor's chart, the dry acid column (sodium bisulfate, 93.2%): 6.16 oz a drop in 5,000 gallons,
+// 12.3 oz in 10,000 and 1.16 lb for 3 drops in 5,000 (18.48 oz); 6.16 x 2 = 12.32 oz a drop per
+// 10,000 gallons. pH Down (sodium bisulfate 93.2%) label made for Alliance Trading, Inc. (01616484,
+// REV052024): "Never add more than 1.5 pounds of this product per 10,000 gallons of pool water at
+// any one time. Allow pool water to recirculate two hours and retest pH." 24 oz per 10,000 a time.
+describe('pool pH with dry acid', () => {
+  const DRY = { product: 'dry-acid' } as const;
+
+  it('gives 12.32 oz of dry acid a drop per 10,000 gallons, exactly, and no liquid', () => {
+    expect(sodaAsh({ ...DRY, gallons: '10000', drops: '1' })).toEqual(Rational.of(1232, 100));
+    expect(acid({ ...DRY, gallons: '10000', drops: '1' })).toEqual(Rational.ZERO);
+  });
+
+  // the chart's printed cells: oz, and lb = 16 oz
+  it.each([
+    ['250', '1', 0.31, 2],
+    ['1000', '2', 2.46, 2],
+    ['5000', '1', 6.16, 2],
+    ['5000', '3', 1.16 * 16, 0],
+    ['10000', '2', 1.54 * 16, 1],
+    ['10000', '3', 2.31 * 16, 0],
+  ] as const)(
+    'matches the chart: %s gal, %s drops of acid demand',
+    (gallons, drops, ounces, digits) => {
+      expect(sodaAsh({ ...DRY, gallons, drops }).toNumber()).toBeCloseTo(ounces, digits);
+    },
+  );
+
+  it('splits past 1.5 lb per 10,000 gallons into additions, and never into days', () => {
+    // 20,000 gal: at most 48 oz a time; 2 drops = 49.28 oz, so 2 additions and the note
+    expect(ounces({ ...DRY }, 'dryPerAddition')).toEqual(Rational.of(48));
+    expect(sodaAsh({ ...DRY })).toEqual(Rational.of(4928, 100));
+    expect(valueOf({ ...DRY }, 'additions')).toEqual(Rational.of(2));
+    expect(valueOf({ ...DRY }, 'days')).toEqual(Rational.ZERO);
+    expect(ran({ ...DRY }).warnings).toEqual([{ code: 'splitAdditions', params: {} }]);
+    // 1 drop = 24.64 oz, under 48: one addition, no note
+    expect(valueOf({ ...DRY, drops: '1' }, 'additions')).toEqual(Rational.of(1));
+    expect(ran({ ...DRY, drops: '1' }).warnings).toEqual([]);
+    // past the chart's 3 drops the chart note comes too
+    expect(ran({ ...DRY, drops: '4' }).warnings).toEqual([
+      { code: 'pastChart', params: {} },
+      { code: 'splitAdditions', params: {} },
+    ]);
+  });
+
+  it('keeps the soda ash at the pH Up label’s 1 lb per 10,000 gallons a time', () => {
+    expect(ounces({ ...SODA, gallons: '10000' }, 'dryPerAddition')).toEqual(Rational.of(16));
+    expect(ounces({ ...DRY, gallons: '10000' }, 'dryPerAddition')).toEqual(Rational.of(24));
   });
 });

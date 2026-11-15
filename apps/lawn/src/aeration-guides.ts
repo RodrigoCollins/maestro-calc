@@ -178,9 +178,9 @@ export const AERATION_GUIDE: Guide = {
   path: '/when-to-aerate-lawn',
   title: 'When to Aerate Your Lawn: Fall or Late Spring | Lawn Figures',
   description:
-    'Aerate cool-season lawns in the fall and warm-season lawns in late spring and summer, by Clemson and NC State Extension, with dates for 20 states.',
+    'Aerate cool-season lawns in the fall and warm-season lawns in late spring and summer, by Clemson and NC State Extension, with dates for 26 states.',
   h1: 'When to aerate your lawn',
-  lead: 'Aerate a cool-season lawn (Kentucky bluegrass, tall fescue) in the fall, and a warm-season lawn (bermudagrass, zoysiagrass, centipedegrass, St. Augustinegrass) in late spring and summer, while it is actively growing. That is the advice of Clemson Cooperative Extension; NC State Extension says to delay tall fescue aeration until fall. Below: how to do it, how to tell a lawn needs it, and a date for 20 states worked from their own frost dates.',
+  lead: 'Aerate a cool-season lawn (Kentucky bluegrass, tall fescue) in the fall, and a warm-season lawn (bermudagrass, zoysiagrass, centipedegrass, St. Augustinegrass) in late spring and summer, while it is actively growing. That is the advice of Clemson Cooperative Extension; NC State Extension says to delay tall fescue aeration until fall. Below: how to do it, how to tell a lawn needs it, and a date for 26 states worked from their own frost dates.',
   checked: READ_AP,
   sections: [
     {
@@ -220,7 +220,7 @@ export const AERATION_GUIDE: Guide = {
     },
     {
       id: 'by-state',
-      heading: 'When to aerate in 20 states',
+      heading: 'When to aerate in 26 states',
       paragraphs: [
         'These dates are worked from the middle 50% first fall and last spring freeze dates of each state’s NOAA weather stations (1991-2020 normals) and the grasses its extension service says its lawns are grown with. For a cool-season lawn you will overseed, the seed goes down at least 45 days before the first fall freeze (Illinois Extension), and the aeration about a month before the seed (Clemson). For a warm-season lawn, the start is about six weeks after the last spring freeze, when Texas A&M’s E-436 first feeds the grass; aeration then runs through summer.',
         'A middle date of a whole state is a rough guide: a station near you can be weeks apart. The state calendars give the dates zone by zone.',
@@ -284,7 +284,7 @@ export const PRE_EMERGENT_GUIDE: Guide = {
   path: '/when-to-apply-pre-emergent',
   title: 'When to Apply Pre-Emergent: Soil Temperature | Lawn Figures',
   description:
-    'Put a crabgrass pre-emergent down before the soil holds at 53 to 55°F, by Maryland, Purdue, Clemson and NC State Extension, with seeding gaps for 20 states.',
+    'Put a crabgrass pre-emergent down before the soil holds at 53 to 55°F, by Maryland, Purdue, Clemson and NC State Extension, with seeding gaps for 26 states.',
   h1: 'When to apply pre-emergent',
   lead: 'Put a crabgrass pre-emergent down before crabgrass comes up: the University of Maryland Extension says that begins when soil temperatures hold at 53 to 55°F for 5 days. The soil, not the date, decides, so a soil thermometer beats a calendar. Purdue says to be at least two weeks ahead of emergence, and a pre-emergent stops seed you sow as well, so it does not mix with overseeding.',
   checked: READ_AP,
@@ -331,7 +331,7 @@ export const PRE_EMERGENT_GUIDE: Guide = {
     },
     {
       id: 'by-state',
-      heading: 'Pre-emergent and seeding dates in 20 states',
+      heading: 'Pre-emergent and seeding dates in 26 states',
       paragraphs: [
         'No source here ties the pre-emergent to a frost date, so this list does not give a date to spray. It gives, from the middle 50% freeze dates of each state’s NOAA stations (1991-2020 normals), the middle last spring freeze, the first day seed could go down if a pre-emergent went on that day (nine weeks later, Clemson), and for cool-season lawns the fall seed date, 45 days before the middle first fall freeze (Illinois Extension).',
         'Check the soil at your own lawn: the fertilizer calendar of each state lists its extension service’s months and its stations zone by zone.',

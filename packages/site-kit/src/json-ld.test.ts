@@ -47,6 +47,20 @@ describe('webApplicationLd', () => {
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
     });
   });
+
+  it('gives the day the page was last reviewed only when it carries one', () => {
+    const app = {
+      name: 'Pool Salt Calculator',
+      description: 'Pounds of salt.',
+      url: 'https://x.test/salt',
+      inLanguage: 'en-US',
+      applicationCategory: 'UtilitiesApplication',
+    };
+    expect(webApplicationLd({ ...app, dateModified: '2026-11-10' })).toMatchObject({
+      dateModified: '2026-11-10',
+    });
+    expect(webApplicationLd(app)).not.toHaveProperty('dateModified');
+  });
 });
 
 describe('articleLd', () => {

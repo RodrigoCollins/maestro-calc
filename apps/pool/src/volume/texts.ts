@@ -3,7 +3,7 @@ export const VOLUME_TEXTS = {
   path: '/pool-volume-calculator',
   title: 'Pool Volume Calculator: How Many Gallons? | Pool Figures',
   description:
-    'Work out how many gallons or litres your pool holds from its length, width and the depth at each end, in feet or metres. Rectangle, round and oval.',
+    'How many gallons or litres your pool holds from its size and depths, in feet or metres, with the gallons of 12 to 33 ft round and 12 x 24 to 20 x 40 ft pools.',
   kicker: 'Pool volume · free',
   h1: 'Pool volume calculator',
   lead: 'Choose feet or metres and type the size of your pool the way you read the tape. You get the gallons or litres it holds, for salt, chlorine and the pump.',

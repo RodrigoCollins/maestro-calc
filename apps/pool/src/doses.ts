@@ -11,6 +11,8 @@ export interface ResultRow {
   readonly metricLabel?: string;
   /** A row under the large figure of its forms (a label's most per addition), not a figure of its own. */
   readonly detail?: true;
+  /** The output in its larger unit (`format.ts`): pounds or gallons, kilograms or millilitres. */
+  readonly as?: 'large';
 }
 
 export interface DosePage {
@@ -65,9 +67,9 @@ const units = {
 
 export const SALT: DosePage = {
   path: '/pool-salt-calculator',
-  title: 'Pool Salt Calculator: How Many Bags? | Pool Figures',
+  title: 'Pool Salt Calculator: How Many Pounds and Bags | Pool Figures',
   description:
-    'How many pounds and 40 lb bags, or kilograms and 20 kg bags, of salt raise your pool from its reading to the target, in gallons or litres.',
+    'How many pounds and 40 lb bags, or kilograms and 20 kg bags, of salt raise your pool to the target, with a table by pool size and when to swim and retest.',
   kicker: 'Saltwater pools · free',
   h1: 'Pool salt calculator',
   lead: 'Choose US or metric units, then type your pool volume, today’s salt reading and the level your cell asks for. You get the pounds or kilograms, and the bags.',
@@ -102,9 +104,9 @@ export const SALT: DosePage = {
 
 export const CHLORINE: DosePage = {
   path: '/pool-chlorine-calculator',
-  title: 'Pool Chlorine Calculator: How Much to Add | Pool Figures',
+  title: 'Pool Chlorine Calculator: How Much Chlorine to Add | Pool Figures',
   description:
-    'How much liquid chlorine, cal-hypo or dichlor raises your pool’s free chlorine from its reading to the target.',
+    'How much liquid chlorine, cal-hypo or dichlor raises your free chlorine to the target or shocks the pool, with a dose table by pool size and when to swim.',
   kicker: 'Chlorine · free',
   h1: 'Pool chlorine calculator',
   lead: 'Type your pool volume, in gallons or litres, today’s free chlorine and the level you want. You get the dose of the product you have.',
@@ -138,6 +140,40 @@ export const CHLORINE: DosePage = {
       metricUnit: 'GRAMS',
       forms: ['cal-hypo-65', 'dichlor-56'],
     },
+    {
+      key: 'liquid',
+      as: 'large',
+      label: 'In gallons',
+      unit: 'gal',
+      metricLabel: 'In millilitres',
+      metricUnit: 'mL',
+      forms: ['liquid-12-5', 'liquid-10'],
+      detail: true,
+    },
+    {
+      key: 'dry',
+      as: 'large',
+      label: 'In pounds',
+      unit: 'lb',
+      metricLabel: 'In kilograms',
+      metricUnit: 'kg',
+      forms: ['cal-hypo-65', 'dichlor-56'],
+      detail: true,
+    },
+    {
+      key: 'cya',
+      label: 'Stabilizer (CYA) it adds',
+      unit: 'ppm',
+      forms: ['dichlor-56'],
+      detail: true,
+    },
+    {
+      key: 'hardness',
+      label: 'Calcium hardness it adds',
+      unit: 'ppm',
+      forms: ['cal-hypo-65'],
+      detail: true,
+    },
   ],
   strip: { field: 'current', ...STRIP },
   method:
@@ -166,12 +202,12 @@ export const PUMP: DosePage = {
 
 export const PH: DosePage = {
   path: '/pool-ph-calculator',
-  title: 'Pool pH Calculator: How Much Muriatic Acid? | Pool Figures',
+  title: 'Pool pH Calculator: How Much pH Up or Down to Add | Pool Figures',
   description:
-    'How much muriatic acid lowers your pool’s pH, or soda ash raises it, from the drops of the acid or base demand test of a Taylor kit.',
+    'How much muriatic acid or dry acid lowers your pool’s pH, or soda ash raises it, in oz and lb, from the drops of your test kit’s demand test.',
   kicker: 'pH · free',
   h1: 'Pool pH calculator',
-  lead: 'Run the acid demand test of your kit to lower pH, or the base demand test to raise it, and count the drops it takes. Type your pool volume, in gallons or litres, and those drops. You get the muriatic acid or soda ash to add.',
+  lead: 'Run the acid demand test of your kit to lower pH, or the base demand test to raise it, and count the drops it takes. Type your pool volume, in gallons or litres, and those drops. You get the muriatic acid, dry acid or soda ash to add, in ounces and pounds.',
   fields: {
     gallons: volume,
     product: {
@@ -179,6 +215,7 @@ export const PH: DosePage = {
       options: {
         'muriatic-31-45': 'Lower pH: muriatic acid, 31.45%',
         'soda-ash': 'Raise pH: soda ash',
+        'dry-acid': 'Lower pH: dry acid (sodium bisulfate)',
       },
     },
     drops: { label: 'Drops of demand reagent' },
@@ -200,6 +237,33 @@ export const PH: DosePage = {
       forms: ['soda-ash'],
     },
     {
+      key: 'dry',
+      label: 'Dry acid to add',
+      unit: 'OZ BY WEIGHT',
+      metricUnit: 'GRAMS',
+      forms: ['dry-acid'],
+    },
+    {
+      key: 'liquid',
+      as: 'large',
+      label: 'In gallons',
+      unit: 'gal',
+      metricLabel: 'In millilitres',
+      metricUnit: 'mL',
+      forms: ['muriatic-31-45'],
+      detail: true,
+    },
+    {
+      key: 'dry',
+      as: 'large',
+      label: 'In pounds',
+      unit: 'lb',
+      metricLabel: 'In kilograms',
+      metricUnit: 'kg',
+      forms: ['soda-ash', 'dry-acid'],
+      detail: true,
+    },
+    {
       key: 'liquidPerDay',
       label: 'Most to add in 24 hours',
       unit: 'fl oz',
@@ -213,7 +277,7 @@ export const PH: DosePage = {
       label: 'Most to add at a time',
       unit: 'oz',
       metricUnit: 'g',
-      forms: ['soda-ash'],
+      forms: ['soda-ash', 'dry-acid'],
       detail: true,
     },
     {
@@ -223,6 +287,13 @@ export const PH: DosePage = {
       forms: ['soda-ash'],
       detail: true,
     },
+    {
+      key: 'additions',
+      label: 'Additions, 2 hours apart',
+      unit: '',
+      forms: ['dry-acid'],
+      detail: true,
+    },
   ],
   warnings: {
     pastChart:
@@ -230,13 +301,13 @@ export const PH: DosePage = {
     splitDays:
       'That is more than the label adds in one day, so split it: add at most the amount above, run the pump, test the pH again after 24 hours, and add the rest the same way.',
     splitAdditions:
-      'That is more than the label adds at a time, so split it: add at most the amount above, let the water circulate 2 to 3 hours, test the pH again, and add the rest the same way.',
+      'That is more than the label adds at a time, so split it: add at most the amount above, let the water circulate (2 hours for dry acid, 2 to 3 hours for soda ash), test the pH again, and add the rest the same way.',
   },
   method:
-    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, and each drop of base demand reagent is 5.13 oz of soda ash. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours. Days or additions = the dose ÷ that most, rounded up.',
+    'From Taylor Technologies’ pH dosage chart: each drop of acid demand reagent is 9.16 fl oz of muriatic acid per 10,000 gallons, each drop of base demand reagent is 5.13 oz of soda ash, and each drop of acid demand reagent is 12.32 oz of dry acid. Dose = gallons ÷ 10,000 × drops × that amount. The test runs on your own water, so its alkalinity is already in the count. The result is approximate. HASA’s muriatic acid label adds at most one quart per 20,000 gallons in 24 hours, gallons × 32 ÷ 20,000 fl oz a day, and repeats it 24 hours apart; the pH Up soda ash label adds at most 1 lb per 10,000 gallons at a time, then lets the water circulate 2 to 3 hours; the pH Down dry acid label at most 1.5 lb per 10,000 gallons at any one time, then 2 hours. Days or additions = the dose ÷ that most, rounded up.',
   metricMethod:
     'In metric the litres are read as gallons, 3.785 L each, since the chart and the labels are written per gallon.',
-  note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé); for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
+  note: 'The acid dose is for muriatic acid of 31.45% (20° Baumé) and dry acid of 93.2% sodium bisulfate; for another strength, follow the label of your product. Add acid to water, never water to acid: pour it slowly into the deep end with the pump running, wearing gloves and eye protection, and never mix it with chlorine. Test the pH again after the wait time on the label.',
 };
 
 /** The CDC's Model Aquatic Health Code, the one source of the public-pool limits these pages cite. */

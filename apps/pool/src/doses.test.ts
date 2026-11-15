@@ -46,7 +46,10 @@ describe('dose pages', () => {
     'labels every input of the %s engine in order, and every output',
     (_n, page, engine) => {
       expect(Object.keys(page.fields)).toEqual(engine.inputs.map(({ key }) => key));
-      expect(page.results.map(({ key }) => key)).toEqual(engine.outputs.map(({ key }) => key));
+      // a row may repeat an output, for another product or in its larger unit, never invent one
+      expect([...new Set(page.results.map(({ key }) => key))]).toEqual(
+        engine.outputs.map(({ key }) => key),
+      );
       expect(page.title.length).toBeLessThanOrEqual(70);
       expect(page.description.length).toBeLessThanOrEqual(160);
     },
@@ -56,28 +59,66 @@ describe('dose pages', () => {
     const product = poolChlorine.inputs.find(({ key }) => key === 'product');
     const options = product?.kind === 'select' ? product.options : [];
     expect(Object.keys(CHLORINE.fields['product']?.options ?? {})).toEqual(options);
-    expect(CHLORINE.results.flatMap(({ forms }) => forms ?? []).sort()).toEqual(
-      [...options].sort(),
-    );
+    expect(
+      CHLORINE.results
+        .filter(({ detail }) => detail !== true)
+        .flatMap(({ forms }) => forms ?? [])
+        .sort(),
+    ).toEqual([...options].sort());
   });
 
-  it('labels both pH products, each shown by one result', () => {
+  it('gives each chlorine dose in its larger unit, and what dichlor and cal-hypo bring with them', () => {
+    const detail = CHLORINE.results.filter(({ detail }) => detail === true);
+    expect(detail.map(({ key, as, forms }) => [key, as, forms])).toEqual([
+      ['liquid', 'large', ['liquid-12-5', 'liquid-10']],
+      ['dry', 'large', ['cal-hypo-65', 'dichlor-56']],
+      ['cya', undefined, ['dichlor-56']],
+      ['hardness', undefined, ['cal-hypo-65']],
+    ]);
+    expect(detail.map(({ unit, metricUnit }) => [unit, metricUnit])).toEqual([
+      ['gal', 'mL'],
+      ['lb', 'kg'],
+      ['ppm', undefined],
+      ['ppm', undefined],
+    ]);
+    // the gallon job pages quote the method, so the molar masses stay in the page's own answers
+    expect(CHLORINE.method).not.toContain('CYA');
+  });
+
+  it('labels the three pH products, each shown by one large figure', () => {
     const product = poolPh.inputs.find(({ key }) => key === 'product');
     const options = product?.kind === 'select' ? product.options : [];
+    expect(options).toEqual(['muriatic-31-45', 'soda-ash', 'dry-acid']);
     expect(Object.keys(PH.fields['product']?.options ?? {})).toEqual(options);
-    expect(PH.results.map(({ forms }) => forms)).toEqual([
-      ['muriatic-31-45'],
-      ['soda-ash'],
-      ['muriatic-31-45'],
-      ['muriatic-31-45'],
-      ['soda-ash'],
-      ['soda-ash'],
+    expect(PH.results.map(({ key, forms, as }) => [key, forms, as])).toEqual([
+      ['liquid', ['muriatic-31-45'], undefined],
+      ['dry', ['soda-ash'], undefined],
+      ['dry', ['dry-acid'], undefined],
+      ['liquid', ['muriatic-31-45'], 'large'],
+      ['dry', ['soda-ash', 'dry-acid'], 'large'],
+      ['liquidPerDay', ['muriatic-31-45'], undefined],
+      ['days', ['muriatic-31-45'], undefined],
+      ['dryPerAddition', ['soda-ash', 'dry-acid'], undefined],
+      ['additions', ['soda-ash'], undefined],
+      ['additions', ['dry-acid'], undefined],
     ]);
-    // one large figure per product; the labels' most and the parts it takes sit under it
-    expect(PH.results.filter(({ detail }) => detail !== true).map(({ key }) => key)).toEqual([
-      'liquid',
-      'dry',
+    // one large figure per product; the larger unit, the labels' most and the parts sit under it
+    expect(PH.results.filter(({ detail }) => detail !== true).map(({ forms }) => forms)).toEqual([
+      ['muriatic-31-45'],
+      ['soda-ash'],
+      ['dry-acid'],
     ]);
+  });
+
+  // Taylor's chart, dry acid (sodium bisulfate 93.2%): 12.32 oz a drop per 10,000 gallons; the pH
+  // Down label (Alliance Trading, 01616484, REV052024): at most 1.5 lb per 10,000 gallons at any one
+  // time, 2 hours of recirculation before the retest
+  it('states the dry acid figures and its label’s most per addition', () => {
+    expect(PH.method).toContain('12.32 oz of dry acid');
+    expect(PH.method).toContain('1.5 lb per 10,000 gallons');
+    expect(PH.method).toContain('2 hours');
+    expect(PH.note).toContain('93.2%');
+    expect(PH.warnings?.['splitAdditions']).toContain('2 hours for dry acid');
   });
 
   // HASA Muriatic Acid, directions for use: one quart per 20,000 gallons per 24 hours, repeated at
@@ -243,12 +284,16 @@ describe('the metric choice of the dose pages', () => {
   it.each(METRIC)(
     'names a metric unit for every mass and liquid result of the %s page',
     (_n, en, es, engine) => {
-      const measured = engine.outputs
+      const measured: readonly string[] = engine.outputs
         .filter(({ measure }) => measure === 'mass' || measure === 'volume')
         .map(({ key }) => key);
       for (const page of [en, es]) {
         const named = page.results.filter(({ metricUnit }) => metricUnit !== undefined);
-        expect(named.map(({ key }) => key)).toEqual(measured);
+        expect([...new Set(named.map(({ key }) => key))]).toEqual(measured);
+        // every row of a mass or a liquid names one, the repeated ones too
+        expect(
+          page.results.filter(({ key, metricUnit }) => measured.includes(key) && !metricUnit),
+        ).toEqual([]);
       }
     },
   );

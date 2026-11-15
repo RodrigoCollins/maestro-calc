@@ -84,7 +84,7 @@ test('shows the soda ash dose to raise pH, and notes a count past the 3-drop cha
   await expect(page.locator('[data-out="liquidPerDay"]')).toHaveText('32.0');
   await expect(page.locator('[data-out="days"]')).toHaveText('2');
   await expect(days).toBeVisible();
-  await expect(page.locator('[data-out="additions"]')).toBeHidden();
+  await expect(page.locator('[data-forms="soda-ash"] [data-out="additions"]')).toBeHidden();
   await page.locator('[name="product"]').selectOption('soda-ash');
   // Taylor: 5.13 oz a drop of base demand per 10,000 gal, x 2 drops x 2 (20,000 gal)
   await expect(soda).toHaveText('20.5');
@@ -93,13 +93,36 @@ test('shows the soda ash dose to raise pH, and notes a count past the 3-drop cha
   await expect(days).toBeHidden();
   // pH Up: at most 1 lb per 10,000 gal at a time, 32 oz here: one addition
   await expect(page.locator('[data-out="dryPerAddition"]')).toHaveText('32.0');
-  await expect(page.locator('[data-out="additions"]')).toHaveText('1');
+  await expect(page.locator('[data-forms="soda-ash"] [data-out="additions"]')).toHaveText('1');
   await expect(additions).toBeHidden();
   await page.locator('[name="drops"]').fill('4');
   await expect(soda).toHaveText('41.0');
-  await expect(page.locator('[data-out="additions"]')).toHaveText('2');
+  await expect(page.locator('[data-forms="soda-ash"] [data-out="additions"]')).toHaveText('2');
   await expect(past).toBeVisible();
   await expect(additions).toBeVisible();
+});
+
+test('shows the dry acid dose in ounces and pounds, split by its label', async ({ page }) => {
+  await page.goto('/pool-ph-calculator');
+  await page.locator('[name="product"]').selectOption('dry-acid');
+  // Taylor: 12.32 oz of dry acid a drop per 10,000 gal, x 2 drops x 2 (20,000 gal) = 49.28 oz
+  await expect(page.locator('[data-forms="dry-acid"] [data-out="dry"]')).toHaveText('49.3');
+  await expect(page.locator('[data-out="dry"][data-as="large"]')).toHaveText('3.08');
+  // pH Down: at most 1.5 lb per 10,000 gal at any one time, 48 oz here: 2 additions
+  await expect(page.locator('[data-out="dryPerAddition"]')).toHaveText('48.0');
+  await expect(page.locator('[data-forms="dry-acid"] [data-out="additions"]')).toHaveText('2');
+  await expect(page.locator('[data-warning="splitAdditions"]')).toBeVisible();
+  await expect(page.locator('[data-out="liquid"]').first()).toBeHidden();
+});
+
+test('shows what dichlor adds besides chlorine, and the dose in pounds', async ({ page }) => {
+  await page.goto('/pool-chlorine-calculator');
+  await page.locator('[name="product"]').selectOption('dichlor-56');
+  // 129.07 / 141.80 ppm of CYA a ppm, x 2 ppm = 1.82
+  await expect(page.locator('[data-out="cya"]')).toHaveText('1.8');
+  // 75.708 g x 2 ppm / 0.56 = 270.4 g = 0.60 lb
+  await expect(page.locator('[data-out="dry"][data-as="large"]')).toHaveText('0.60');
+  await expect(page.locator('[data-out="hardness"]')).toBeHidden();
 });
 
 test('redraws the side view of the pool as the visitor types', async ({ page }) => {
