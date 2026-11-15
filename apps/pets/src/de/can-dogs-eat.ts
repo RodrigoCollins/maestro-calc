@@ -109,19 +109,21 @@ const kcalOfPiece = (words: Words): Rational => {
 
 /** What a threshold reaches for a dog of `kilos`, in the words of the table. */
 const thresholdCell = (words: Words, threshold: Threshold, kilos: number): string => {
-  const piece = pieceOf(words);
   if (threshold.piecesPer10Lb !== undefined) {
     const count = threshold.piecesPer10Lb.mul(Rational.of(kilos)).div(TEN_POUNDS);
+    // a threshold in its own unit (teaspoons of avocado) needs no piece
     if (threshold.unit !== undefined) {
       const index = words.food.thresholds?.indexOf(threshold) ?? -1;
       const unit = words.de.thresholds?.[index]?.unit;
       if (unit === undefined) throw new Error(`${words.food.id}: no German unit`);
       return counted(count, unit.one, unit.many);
     }
+    const piece = pieceOf(words);
     return `${counted(count, piece.one, piece.many)} (${gramsDe(count.mul(piece.grams))})`;
   }
   if (threshold.gramsPerKg === undefined) throw new Error(`${words.food.id}: no dose`);
   const grams = threshold.gramsPerKg.mul(Rational.of(kilos));
+  const piece = pieceOf(words);
   const compound = words.food.compound;
   if (compound !== undefined) {
     const [most, least] = compound.perPiece;
