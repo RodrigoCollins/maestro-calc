@@ -26,6 +26,16 @@ const STRENGTH = {
   'dichlor-56': { form: 'dry', percent: Rational.of(56) },
 } as const satisfies Record<Product, unknown>;
 
+/**
+ * What a ppm of free chlorine brings with it, by the molar masses of PubChem (cyanuric acid 129.07
+ * g/mol, chlorine 70.90, calcium carbonate 100.09): available chlorine is counted as Cl2, one 70.90 g
+ * for each HOCl a molecule releases. Dichlor releases 2 HOCl and 1 cyanuric acid: 129.07 / 141.80 ppm
+ * of CYA a ppm. Cal-hypo, Ca(OCl)2, releases 2 HOCl and 1 calcium, read as calcium carbonate:
+ * 100.09 / 141.80 ppm of calcium hardness a ppm. Liquid chlorine brings neither.
+ */
+const CYA_PER_PPM = Rational.of(12907, 14180);
+const HARDNESS_PER_PPM = Rational.of(10009, 14180);
+
 const THOUSAND = Rational.of(1000);
 const HUNDRED = Rational.of(100);
 
@@ -65,6 +75,8 @@ export const poolChlorine = defineCalculator({
       role: 'secondary',
       display: { unit: 'oz', format: 'decimal', places: 1 },
     },
+    { key: 'cya', measure: 'number', role: 'secondary' },
+    { key: 'hardness', measure: 'number', role: 'secondary' },
   ],
   warnings: [],
   compute: ({ gallons, current, target, product, units }) => {
@@ -78,6 +90,8 @@ export const poolChlorine = defineCalculator({
       outputs: {
         liquid: quantity(form === 'liquid' ? amount : Rational.ZERO, cm3),
         dry: quantity(form === 'dry' ? amount.div(THOUSAND) : Rational.ZERO, kg),
+        cya: product === 'dichlor-56' ? raise.mul(CYA_PER_PPM) : Rational.ZERO,
+        hardness: product === 'cal-hypo-65' ? raise.mul(HARDNESS_PER_PPM) : Rational.ZERO,
       },
       shopping: [],
       warnings: [],

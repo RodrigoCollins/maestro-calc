@@ -1,6 +1,26 @@
-import { cm3, ft, ft3, gal, inch, kg, lb, liter, quantity, Rational } from '@maestro-calc/core';
+import { cm3, ft, ft3, gal, inch, kg, lb, liter, oz, quantity, Rational } from '@maestro-calc/core';
 import { describe, expect, it } from 'vitest';
 import { durationText, lengthFieldText, outputText, volumeText } from './format.ts';
+
+describe('outputText in the larger unit of a dose', () => {
+  it('writes a granular dose in pounds and a liquid one in gallons, to two places', () => {
+    // 49.28 oz of dry acid is 3.08 lb; 36.64 fl oz of muriatic acid is 0.29 gal (36.64 / 128)
+    expect(outputText('dry', quantity(Rational.of(4928, 100), oz), 'us', 'large')).toBe('3.08');
+    expect(outputText('liquid', quantity(Rational.of(3664, 100 * 128), gal), 'us', 'large')).toBe(
+      '0.29',
+    );
+  });
+
+  it('writes the same doses in kilograms and millilitres in metric', () => {
+    expect(outputText('dry', quantity(Rational.of(3, 2), kg), 'metric', 'large')).toBe('1.50');
+    expect(outputText('liquid', quantity(Rational.of(3, 4), liter), 'metric', 'large')).toBe('750');
+  });
+
+  it('writes what the chlorine brings with it to a tenth of a ppm', () => {
+    expect(outputText('cya', Rational.of(2 * 12907, 14180))).toBe('1.8');
+    expect(outputText('hardness', Rational.of(10 * 10009, 14180), 'metric')).toBe('7.1');
+  });
+});
 
 describe('volumeText', () => {
   it('groups whole gallons and rounds half up', () => {

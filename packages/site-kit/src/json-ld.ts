@@ -25,11 +25,14 @@ export const webApplicationLd = ({
   url,
   inLanguage,
   applicationCategory,
+  dateModified,
 }: Page & {
   readonly name: string;
   readonly description: string;
   /** A schema.org category such as `UtilitiesApplication` or `FinanceApplication`. */
   readonly applicationCategory: string;
+  /** The day the page's cited content was last checked (`YYYY-MM-DD`), when it carries one. */
+  readonly dateModified?: string;
 }) => ({
   '@context': CONTEXT,
   '@type': 'WebApplication',
@@ -41,6 +44,7 @@ export const webApplicationLd = ({
   operatingSystem: 'Any',
   isAccessibleForFree: true,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  ...(dateModified === undefined ? {} : { dateModified }),
 });
 
 /**
