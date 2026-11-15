@@ -622,7 +622,14 @@ export const LIVE_JOBS: readonly (TimeOffset | Until | DaysFrom)[] = [
 export interface Weeks {
   readonly kind: 'weeks';
   readonly topic:
-    'year' | 'month' | 'months-of-weeks' | 'weeks-of-months' | 'left-in-year' | 'until-christmas';
+    | 'year'
+    | 'days-in-year'
+    | 'hours-in-year'
+    | 'month'
+    | 'months-of-weeks'
+    | 'weeks-of-months'
+    | 'left-in-year'
+    | 'until-christmas';
   readonly amount: number;
   readonly slug: Readonly<Record<Lang, string>>;
 }
@@ -654,7 +661,8 @@ export const WEEKS_LIVE: readonly Weeks[] = [
 ];
 
 /**
- * The measured weeks questions: a year, a month, the months of 12 to 24 weeks (each measured at
+ * The measured weeks questions: a year in weeks, in days and in hours (the last two measured in
+ * Spanish, Mexico, plans/growth/ahrefs-2026-11-15-spanish.md), a month, the months of 12 to 24 weeks (each measured at
  * 8.2K to 12K searches a month), the weeks of 6 months, then the two counts from today. A page
  * links its nearest.
  */
@@ -664,6 +672,18 @@ export const WEEKS: readonly Weeks[] = [
     topic: 'year',
     amount: 0,
     slug: { en: 'how-many-weeks-in-a-year', es: 'cuantas-semanas-tiene-un-ano' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'days-in-year',
+    amount: 0,
+    slug: { en: 'how-many-days-in-a-year', es: 'cuantos-dias-tiene-un-ano' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'hours-in-year',
+    amount: 0,
+    slug: { en: 'how-many-hours-in-a-year', es: 'cuantas-horas-tiene-un-ano' },
   },
   {
     kind: 'weeks',

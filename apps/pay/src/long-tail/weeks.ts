@@ -86,6 +86,37 @@ const observedOf = (date: CivilDate): CivilDate => {
   return weekday === 5 ? addDays(date, -1) : weekday === 6 ? addDays(date, 1) : date;
 };
 
+/** The `nth` weekday `weekday` (0 is Monday) of a month; a negative `nth` counts from its end. */
+const nthWeekdayOf = (y: number, m: number, weekday: number, nth: number): CivilDate => {
+  if (nth > 0) {
+    const first = 1 + ((weekday - weekdayOf(at(y, m, 1)) + 7) % 7);
+    return at(y, m, first + (nth - 1) * 7);
+  }
+  const lastDay = daysInMonth(y, m);
+  const last = lastDay - ((weekdayOf(at(y, m, lastDay)) - weekday + 7) % 7);
+  return at(y, m, last + (nth + 1) * 7);
+};
+
+/** The 11 federal holidays of a year (5 U.S.C. 6103), each on the day it is observed. */
+const federalHolidaysOf = (y: number): readonly CivilDate[] =>
+  [
+    at(y, 1, 1),
+    nthWeekdayOf(y, 1, 0, 3),
+    nthWeekdayOf(y, 2, 0, 3),
+    nthWeekdayOf(y, 5, 0, -1),
+    at(y, 6, 19),
+    at(y, 7, 4),
+    nthWeekdayOf(y, 9, 0, 1),
+    nthWeekdayOf(y, 10, 0, 2),
+    at(y, 11, 11),
+    thanksgivingOf(y),
+    at(y, 12, 25),
+  ].map(observedOf);
+
+/** The federal holidays observed within a year: next year's New Year's Day can fall in it. */
+const holidaysInOf = (y: number): number =>
+  [...federalHolidaysOf(y), ...federalHolidaysOf(y + 1)].filter((date) => date.y === y).length;
+
 /** Whole calendar months from `from` to `to`, and the days past them. */
 const monthsAndDaysOf = (from: CivilDate, to: CivilDate): { months: number; days: number } => {
   let months = (to.y - from.y) * 12 + to.m - from.m;
@@ -175,11 +206,91 @@ const WORDS = {
         },
       ],
     },
+    daysYear: {
+      h1: 'How many days are in a year?',
+      headline: 'A year has 365 days; 366 in a leap year',
+      figureLabel: 'Days in a common year',
+      lead: (next: number): string =>
+        `A year has 365 days; 366 days in a leap year, which comes every 4 years: the next is ${String(next)}. ${String(THIS_YEAR)} and ${String(THIS_YEAR + 1)} have 365 days each, 52 weeks and 1 day, and the average year of the Gregorian calendar is 365.2425 days.`,
+      rows: {
+        common: 'A common year',
+        leap: 'A leap year',
+        average: 'The average Gregorian year',
+        weekdays: (y: number): string => `Weekdays in ${String(y)}, Monday to Friday`,
+        workdays: (y: number): string => `Workdays in ${String(y)} after the federal holidays`,
+      },
+      steps: [
+        'A common year: 31 days in January, March, May, July, August, October and December (7 × 31 = 217), 30 in April, June, September and November (4 × 30 = 120), and 28 in February: 217 + 120 + 28 = 365.',
+        'A leap year adds February 29: 366 days.',
+        'The leap years: every year divisible by 4, except the century years, which are leap years only when divisible by 400. 2000 was one, 2100 will not be.',
+        'So 400 years have 97 leap years and 146,097 days, and the average year is 146,097 ÷ 400 = 365.2425 days.',
+      ],
+      yearsHeading: `Days, weekdays and workdays from ${String(YEARS[0])} to ${String(YEARS[YEARS.length - 1])}`,
+      yearsIntro:
+        'Each year with its days, its February, the weekdays and weekend days it holds, the federal holidays observed on its weekdays (5 U.S.C. 6103), and the workdays left after them:',
+      yearsCaption: 'Days and workdays by year',
+      yearsHead: [
+        'Year',
+        'Days',
+        'Leap year',
+        'February',
+        'Weekdays',
+        'Weekend days',
+        'Federal holidays',
+        'Workdays',
+      ],
+      yes: 'Yes',
+      no: 'No',
+      holidaysHeading: 'Why the federal holidays are 10, 11 or 12',
+      holidays: (from: string, to: string): string =>
+        `There are 11 federal holidays, and one that falls on a Saturday is observed on the Friday before, one on a Sunday on the Monday after (OPM), so each is observed on a weekday. New Year's Day can leave its year: January 1 of ${to.slice(-4)} is a Saturday, so it is observed on Friday, ${from}, and that year counts 12 holidays while the next counts 10.`,
+      workAfter:
+        'Private employers set their own holidays: federal law does not require paid days off, so the workdays of the last column are those of a federal schedule.',
+      questions: (next: number): readonly { question: string; answer: string }[] => [
+        {
+          question: 'Is the next leap year 2028?',
+          answer: `Yes: ${String(next)} is divisible by 4 and is not a century year, so February ${String(next)} has 29 days and the year 366.`,
+        },
+        {
+          question: 'How many days are in a year without the weekends?',
+          answer:
+            'A year has 260 to 262 weekdays, Monday to Friday: 52 weeks of 5, and 0 to 2 days more as the extra day or two falls on a weekday or on a weekend.',
+        },
+      ],
+    },
+    hoursYear: {
+      h1: 'How many hours are in a year?',
+      headline: 'A year has 8,760 hours; 8,784 in a leap year',
+      figureLabel: 'Hours in a common year',
+      lead: 'A year has 8,760 hours; 8,784 hours in a leap year: 365 or 366 days of 24 hours. A full-time work year is 2,080 hours, 40 a week for 52 weeks, less than a quarter of them.',
+      rows: {
+        common: 'A common year, 365 × 24',
+        leap: 'A leap year, 366 × 24',
+        average: 'The average year, 365.2425 × 24',
+        minutes: 'Minutes in a common year',
+        work: 'A work year, 40 × 52',
+      },
+      steps: [
+        'Hours: 365 × 24 = 8,760 hours, and 366 × 24 = 8,784 in a leap year.',
+        'Minutes: 8,760 × 60 = 525,600 minutes; seconds: 525,600 × 60 = 31,536,000.',
+        'The average year: 365.2425 × 24 = 8,765.82 hours.',
+        'A work year: 40 hours × 52 weeks = 2,080 hours, 23.7% of the 8,760.',
+      ],
+      yearsHeading: `Hours in each year from ${String(THIS_YEAR)} to ${String(YEARS[YEARS.length - 1])}`,
+      yearsIntro:
+        'Each year with its hours, the hours of its weekdays at 8 a day, and those hours after the federal holidays observed on them:',
+      yearsCaption: 'Hours by year',
+      yearsHead: ['Year', 'Hours', 'Weekdays × 8', 'After federal holidays'],
+      workHeading: '2,080 or 2,087 work hours',
+      work: 'The pay converters of this site use 2,080 hours, 52 weeks of 40. The average year is 52.1775 weeks, and 52.1775 × 40 = 2,087 hours: the divisor the federal government uses to turn a yearly salary into an hourly rate (5 U.S.C. 5504). A year of weekdays at 8 hours is 2,080 to 2,096 hours.',
+      workAfter: (rate: string, other: string): string =>
+        `So $50,000 a year is ${rate} an hour over 2,080 hours and ${other} over 2,087.`,
+    },
     month: {
       h1: 'How many weeks are in a month?',
       headline: 'A month has 4.35 weeks on average (4 weeks and 2 to 3 days)',
       figureLabel: 'Weeks in an average month',
-      lead: 'An average month has 4.35 weeks: 365.2425 days a year, divided by 12 months and by 7 days. Only February of a common year is exactly 4 weeks, 28 days; a 30-day month is 4 weeks and 2 days, and a 31-day month 4 weeks and 3 days.',
+      lead: 'A month has 4.35 weeks on average: 365.2425 days a year, divided by 12 months and by 7 days. Only February of a common year is exactly 4 weeks, 28 days; a 30-day month is 4 weeks and 2 days, and a 31-day month 4 weeks and 3 days.',
       rows: {
         feb: 'February, 28 days',
         leap: 'February of a leap year, 29 days',
@@ -410,10 +521,10 @@ const WORDS = {
     note: 'Cada cifra de esta página es aritmética del calendario: 7 días por semana, el calendario gregoriano de 365 días y un día bisiesto cada 4 años, salvo los años de siglo que no son divisibles por 400.',
     year: {
       h1: '¿Cuántas semanas tiene un año?',
-      headline: 'Un año tiene 52 semanas y 1 día (52.14 semanas)',
+      headline: 'Un año tiene 52 semanas y 1 día; 52 semanas y 2 días si es bisiesto',
       figureLabel: 'Semanas de un año de 365 días',
       lead: (thisIso: number): string =>
-        `Un año de 365 días tiene 52 semanas y 1 día, o 52.14 semanas: 365 dividido por 7. Un año bisiesto de 366 días tiene 52 semanas y 2 días, o 52.29 semanas. ${String(THIS_YEAR)} no es bisiesto, así que tiene 52 semanas y 1 día, y el calendario ISO numera ${String(thisIso)} semanas en él.`,
+        `Un año tiene 52 semanas y 1 día; 52 semanas y 2 días si es bisiesto. Son 365 días ÷ 7 = 52.14 semanas, y 366 ÷ 7 = 52.29 en un año bisiesto. ${String(THIS_YEAR)} no es bisiesto, así que tiene 52 semanas y 1 día, y el calendario ISO numera ${String(thisIso)} semanas en él.`,
       rows: {
         common: 'Un año de 365 días',
         leap: 'Un año bisiesto de 366 días',
@@ -455,11 +566,92 @@ const WORDS = {
         },
       ],
     },
+    daysYear: {
+      h1: '¿Cuántos días tiene un año?',
+      headline: 'Un año tiene 365 días; 366 si es bisiesto',
+      figureLabel: 'Días de un año común',
+      lead: (next: number): string =>
+        `Un año tiene 365 días; 366 días si es bisiesto, lo que pasa cada 4 años: el próximo es ${String(next)}. ${String(THIS_YEAR)} y ${String(THIS_YEAR + 1)} tienen 365 días cada uno, 52 semanas y 1 día, y el año promedio del calendario gregoriano es de 365.2425 días.`,
+      rows: {
+        common: 'Un año común',
+        leap: 'Un año bisiesto',
+        average: 'El año gregoriano promedio',
+        weekdays: (y: number): string => `Días hábiles de ${String(y)}, de lunes a viernes`,
+        workdays: (y: number): string =>
+          `Días laborables de ${String(y)} sin los feriados federales de EE. UU.`,
+      },
+      steps: [
+        'Un año común: 31 días en enero, marzo, mayo, julio, agosto, octubre y diciembre (7 × 31 = 217), 30 en abril, junio, septiembre y noviembre (4 × 30 = 120), y 28 en febrero: 217 + 120 + 28 = 365.',
+        'Un año bisiesto agrega el 29 de febrero: 366 días.',
+        'Los años bisiestos: todo año divisible por 4, salvo los años de siglo, que son bisiestos solo si son divisibles por 400. 2000 lo fue, 2100 no lo será.',
+        'Así, 400 años tienen 97 bisiestos y 146,097 días, y el año promedio es de 146,097 ÷ 400 = 365.2425 días.',
+      ],
+      yearsHeading: `Días, días hábiles y laborables de ${String(YEARS[0])} a ${String(YEARS[YEARS.length - 1])}`,
+      yearsIntro:
+        'Cada año con sus días, su febrero, los días entre semana y de fin de semana que tiene, los feriados federales de EE. UU. que se observan en días hábiles (5 U.S.C. 6103) y los días laborables que quedan:',
+      yearsCaption: 'Días y días laborables por año',
+      yearsHead: [
+        'Año',
+        'Días',
+        'Bisiesto',
+        'Febrero',
+        'Días hábiles',
+        'Fin de semana',
+        'Feriados federales',
+        'Laborables',
+      ],
+      yes: 'Sí',
+      no: 'No',
+      holidaysHeading: 'Por qué los feriados federales de EE. UU. son 10, 11 o 12',
+      holidays: (from: string, to: string): string =>
+        `En EE. UU. hay 11 feriados federales, y uno que cae en sábado se observa el viernes anterior, y uno en domingo el lunes siguiente (OPM), así que cada uno se observa en un día hábil. El Año Nuevo puede salirse de su año: el 1 de enero de ${to.slice(-4)} es sábado, así que se observa el viernes ${from}, y ese año cuenta 12 feriados y el siguiente 10.`,
+      workAfter:
+        'Los empleadores privados fijan sus propios feriados: la ley federal de EE. UU. no exige días libres pagados, así que los laborables de la última columna son los de un calendario federal. México y España tienen sus propios días de descanso.',
+      questions: (next: number): readonly { question: string; answer: string }[] => [
+        {
+          question: '¿El próximo año bisiesto es 2028?',
+          answer: `Sí: ${String(next)} es divisible por 4 y no es un año de siglo, así que febrero de ${String(next)} tiene 29 días y el año 366.`,
+        },
+        {
+          question: '¿Cuántos días hábiles tiene un año?',
+          answer:
+            'Un año tiene de 260 a 262 días de lunes a viernes: 52 semanas de 5, y de 0 a 2 días más según caiga el día o los dos días de sobra entre semana o en fin de semana.',
+        },
+      ],
+    },
+    hoursYear: {
+      h1: '¿Cuántas horas tiene un año?',
+      headline: 'Un año tiene 8,760 horas; 8,784 si es bisiesto',
+      figureLabel: 'Horas de un año común',
+      lead: 'Un año tiene 8,760 horas; 8,784 horas si es bisiesto: 365 o 366 días de 24 horas. Un año de trabajo de tiempo completo son 2,080 horas, 40 por semana durante 52 semanas, menos de la cuarta parte.',
+      rows: {
+        common: 'Un año común, 365 × 24',
+        leap: 'Un año bisiesto, 366 × 24',
+        average: 'El año promedio, 365.2425 × 24',
+        minutes: 'Minutos de un año común',
+        work: 'Un año de trabajo, 40 × 52',
+      },
+      steps: [
+        'Horas: 365 × 24 = 8,760 horas, y 366 × 24 = 8,784 en un año bisiesto.',
+        'Minutos: 8,760 × 60 = 525,600 minutos; segundos: 525,600 × 60 = 31,536,000.',
+        'El año promedio: 365.2425 × 24 = 8,765.82 horas.',
+        'Un año de trabajo: 40 horas × 52 semanas = 2,080 horas, el 23.7% de las 8,760.',
+      ],
+      yearsHeading: `Horas de cada año de ${String(THIS_YEAR)} a ${String(YEARS[YEARS.length - 1])}`,
+      yearsIntro:
+        'Cada año con sus horas, las horas de sus días hábiles a 8 por día, y esas horas sin los feriados federales de EE. UU. que caen en ellos:',
+      yearsCaption: 'Horas por año',
+      yearsHead: ['Año', 'Horas', 'Días hábiles × 8', 'Sin feriados federales'],
+      workHeading: '2,080 o 2,087 horas de trabajo',
+      work: 'Los conversores de pago de este sitio usan 2,080 horas, 52 semanas de 40. El año promedio es de 52.1775 semanas, y 52.1775 × 40 = 2,087 horas: el divisor que usa el gobierno federal de EE. UU. para pasar un sueldo anual a pago por hora (5 U.S.C. 5504). Un año de días hábiles a 8 horas son de 2,080 a 2,096 horas.',
+      workAfter: (rate: string, other: string): string =>
+        `Así, $50,000 al año son ${rate} la hora con 2,080 horas y ${other} con 2,087.`,
+    },
     month: {
       h1: '¿Cuántas semanas tiene un mes?',
       headline: 'Un mes tiene 4.35 semanas en promedio (4 semanas y 2 o 3 días)',
       figureLabel: 'Semanas de un mes promedio',
-      lead: 'Un mes promedio tiene 4.35 semanas: 365.2425 días al año, divididos en 12 meses y por 7 días. Solo febrero de un año común tiene 4 semanas exactas, 28 días; un mes de 30 días tiene 4 semanas y 2 días, y uno de 31 días, 4 semanas y 3 días.',
+      lead: 'Un mes tiene 4.35 semanas en promedio: 365.2425 días al año, divididos en 12 meses y por 7 días. Solo febrero de un año común tiene 4 semanas exactas, 28 días; un mes de 30 días tiene 4 semanas y 2 días, y uno de 31 días, 4 semanas y 3 días.',
       rows: {
         feb: 'Febrero, 28 días',
         leap: 'Febrero de un año bisiesto, 29 días',
@@ -727,6 +919,10 @@ const questionOf = (job: Weeks, lang: Lang): string => {
   switch (job.topic) {
     case 'year':
       return w.year.h1;
+    case 'days-in-year':
+      return w.daysYear.h1;
+    case 'hours-in-year':
+      return w.hoursYear.h1;
     case 'month':
       return w.month.h1;
     case 'months-of-weeks':
@@ -836,6 +1032,122 @@ const yearPageOf = (job: Weeks, lang: Lang): LongTailPage => {
     breakdown: t.figureLabel,
     rows,
     sections,
+  };
+};
+
+const daysYearPageOf = (job: Weeks, lang: Lang): LongTailPage => {
+  const w = WORDS[lang];
+  const t = w.daysYear;
+  const next = YEARS.find((y) => y > THIS_YEAR && isLeap(y)) ?? THIS_YEAR;
+  const weekdaysIn = (y: number): number => weekdaysOf(at(y, 1, 1), daysOfYear(y));
+  // the year whose New Year's Day is observed in the year before
+  const spill = YEARS.find((y) => weekdayOf(at(y + 1, 1, 1)) === 5) ?? THIS_YEAR;
+  const lead = t.lead(next);
+  const rows = [
+    { key: 'common', label: t.rows.common, value: '365' },
+    { key: 'leap', label: t.rows.leap, value: '366' },
+    { key: 'average', label: t.rows.average, value: '365.2425' },
+    { key: 'weekdays', label: t.rows.weekdays(THIS_YEAR), value: String(weekdaysIn(THIS_YEAR)) },
+    {
+      key: 'workdays',
+      label: t.rows.workdays(THIS_YEAR),
+      value: String(weekdaysIn(THIS_YEAR) - holidaysInOf(THIS_YEAR)),
+    },
+  ];
+  const sections: LongTailSection[] = [
+    { id: 'worked', heading: WORKED[lang], paragraphs: [], steps: t.steps },
+    {
+      id: 'years',
+      heading: t.yearsHeading,
+      paragraphs: [t.yearsIntro],
+      table: {
+        caption: t.yearsCaption,
+        head: t.yearsHead,
+        rows: YEARS.map((y) => [
+          String(y),
+          String(daysOfYear(y)),
+          isLeap(y) ? t.yes : t.no,
+          String(daysInMonth(y, 2)),
+          String(weekdaysIn(y)),
+          String(daysOfYear(y) - weekdaysIn(y)),
+          String(holidaysInOf(y)),
+          String(weekdaysIn(y) - holidaysInOf(y)),
+        ]),
+      },
+    },
+    {
+      id: 'holidays',
+      heading: t.holidaysHeading,
+      paragraphs: [t.holidays(w.full(at(spill, 12, 31)), w.full(at(spill + 1, 1, 1))), t.workAfter],
+      questions: t.questions(next),
+    },
+  ];
+  return {
+    ...frameOf(job, lang),
+    title: titleOf(t.headline),
+    description: descriptionOf(lead),
+    lead,
+    figure: '365',
+    figureLabel: t.figureLabel,
+    breakdown: t.figureLabel,
+    rows,
+    sections,
+    sources: CHRISTMAS_SOURCES.slice(0, 2),
+  };
+};
+
+const hoursYearPageOf = (job: Weeks, lang: Lang): LongTailPage => {
+  const w = WORDS[lang];
+  const t = w.hoursYear;
+  const weekdaysIn = (y: number): number => weekdaysOf(at(y, 1, 1), daysOfYear(y));
+  const dollars = (a: number, b: number): string => `$${ratio(a, b)}`;
+  const rows = [
+    { key: 'common', label: t.rows.common, value: n(8760) },
+    { key: 'leap', label: t.rows.leap, value: n(8784) },
+    { key: 'average', label: t.rows.average, value: ratio(CYCLE_DAYS * 24, 400) },
+    { key: 'minutes', label: t.rows.minutes, value: n(525_600) },
+    { key: 'work', label: t.rows.work, value: n(2080) },
+  ];
+  const sections: LongTailSection[] = [
+    { id: 'worked', heading: WORKED[lang], paragraphs: [], steps: t.steps },
+    {
+      id: 'years',
+      heading: t.yearsHeading,
+      paragraphs: [t.yearsIntro],
+      table: {
+        caption: t.yearsCaption,
+        head: t.yearsHead,
+        rows: YEARS.filter((y) => y >= THIS_YEAR).map((y) => [
+          String(y),
+          n(daysOfYear(y) * 24),
+          n(weekdaysIn(y) * 8),
+          n((weekdaysIn(y) - holidaysInOf(y)) * 8),
+        ]),
+      },
+    },
+    {
+      id: 'work',
+      heading: t.workHeading,
+      paragraphs: [t.work, t.workAfter(dollars(50_000, 2080), dollars(50_000, 2087))],
+    },
+  ];
+  return {
+    ...frameOf(job, lang),
+    title: titleOf(t.headline),
+    description: descriptionOf(t.lead),
+    lead: t.lead,
+    figure: n(8760),
+    figureLabel: t.figureLabel,
+    breakdown: t.figureLabel,
+    rows,
+    sections,
+    sources: [
+      {
+        label:
+          '5 U.S.C. 5504, Biweekly pay periods; computation of pay (Legal Information Institute)',
+        href: 'https://www.law.cornell.edu/uscode/text/5/5504',
+      },
+    ],
   };
 };
 
@@ -1225,6 +1537,10 @@ export const weeksPageOf = (job: Weeks, lang: Lang): LongTailPage => {
   switch (job.topic) {
     case 'year':
       return yearPageOf(job, lang);
+    case 'days-in-year':
+      return daysYearPageOf(job, lang);
+    case 'hours-in-year':
+      return hoursYearPageOf(job, lang);
     case 'month':
       return monthPageOf(job, lang);
     case 'months-of-weeks':

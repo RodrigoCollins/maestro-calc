@@ -49,6 +49,8 @@ describe('weeks long-tail pages', () => {
   it('cover the measured weeks questions, in both languages', () => {
     expect(WEEKS.map(({ slug }) => slug.en)).toEqual([
       'how-many-weeks-in-a-year',
+      'how-many-days-in-a-year',
+      'how-many-hours-in-a-year',
       'how-many-weeks-in-a-month',
       ...[12, 14, 16, 18, 20, 24].map((weeks) => `how-many-months-is-${String(weeks)}-weeks`),
       'how-many-weeks-is-6-months',
@@ -93,6 +95,29 @@ describe('weeks long-tail pages', () => {
     expect(pageOf('how-many-weeks-in-a-year').figure).toBe('52.14');
     expect(pageOf('how-many-weeks-in-a-year').title).toMatch(/^A year has 52 weeks and 1 day/);
     expect(pageOf('how-many-weeks-in-a-year', 'es').h1).toBe('¿Cuántas semanas tiene un año?');
+    // the Spanish twin answers the phrasing searched in Mexico, first
+    expect(pageOf('how-many-weeks-in-a-year', 'es').title).toMatch(
+      /^Un año tiene 52 semanas y 1 día; 52 semanas y 2 días si es bisiesto/,
+    );
+    expect(pageOf('how-many-weeks-in-a-year', 'es').lead).toMatch(
+      /^Un año tiene 52 semanas y 1 día; 52 semanas y 2 días si es bisiesto\./,
+    );
+    expect(pageOf('how-many-weeks-in-a-month', 'es').h1).toBe('¿Cuántas semanas tiene un mes?');
+    expect(pageOf('how-many-weeks-in-a-month', 'es').lead).toMatch(/^Un mes tiene 4.35 semanas/);
+    expect(pageOf('how-many-days-in-a-year', 'es').h1).toBe('¿Cuántos días tiene un año?');
+    expect(pageOf('how-many-days-in-a-year', 'es').title).toMatch(
+      /^Un año tiene 365 días; 366 si es bisiesto/,
+    );
+    expect(pageOf('how-many-days-in-a-year', 'es').lead).toMatch(
+      /^Un año tiene 365 días; 366 días si es bisiesto/,
+    );
+    expect(pageOf('how-many-days-in-a-year').figure).toBe('365');
+    expect(pageOf('how-many-days-in-a-year').h1).toBe('How many days are in a year?');
+    expect(pageOf('how-many-hours-in-a-year', 'es').h1).toBe('¿Cuántas horas tiene un año?');
+    expect(pageOf('how-many-hours-in-a-year', 'es').title).toMatch(
+      /^Un año tiene 8,760 horas; 8,784 si es bisiesto/,
+    );
+    expect(pageOf('how-many-hours-in-a-year').figure).toBe('8,760');
     expect(pageOf('how-many-weeks-in-a-month').figure).toBe('4.35');
     expect(pageOf('how-many-months-is-12-weeks').figure).toBe('2.76');
     expect(pageOf('how-many-months-is-12-weeks').h1).toBe('How many months is 12 weeks?');
@@ -150,6 +175,63 @@ describe('weeks long-tail pages', () => {
     // the 53rd ISO week of 2026 runs into 2027
     expect(textOf(slug)).toContain('December 28, 2026');
     expect(textOf(slug)).toContain('January 3, 2027');
+  });
+
+  it('give each year its days, its weekdays and its workdays after the federal holidays', () => {
+    const slug = 'how-many-days-in-a-year';
+    expect(rowOf(slug, 'years', '2026')).toEqual([
+      '2026',
+      '365',
+      'No',
+      '28',
+      '261',
+      '104',
+      '11',
+      '250',
+    ]);
+    // January 1, 2028 is a Saturday, so its holiday is Friday, December 31, 2027
+    expect(rowOf(slug, 'years', '2027')).toEqual([
+      '2027',
+      '365',
+      'No',
+      '28',
+      '261',
+      '104',
+      '12',
+      '249',
+    ]);
+    expect(rowOf(slug, 'years', '2028')).toEqual([
+      '2028',
+      '366',
+      'Yes',
+      '29',
+      '260',
+      '106',
+      '10',
+      '250',
+    ]);
+    expect(rowOf(slug, 'years', '2028', 'es')).toEqual([
+      '2028',
+      '366',
+      'Sí',
+      '29',
+      '260',
+      '106',
+      '10',
+      '250',
+    ]);
+    expect(textOf(slug)).toContain('December 31, 2027');
+    expect(textOf(slug)).toContain('2100');
+  });
+
+  it('give each year its hours, on the clock and at work', () => {
+    const slug = 'how-many-hours-in-a-year';
+    expect(rowOf(slug, 'years', '2026')).toEqual(['2026', '8,760', '2,088', '2,000']);
+    expect(rowOf(slug, 'years', '2027')).toEqual(['2027', '8,760', '2,088', '1,992']);
+    expect(rowOf(slug, 'years', '2028')).toEqual(['2028', '8,784', '2,080', '2,000']);
+    expect(textOf(slug)).toContain('525,600');
+    expect(textOf(slug)).toContain('31,536,000');
+    expect(textOf(slug)).toContain('2,087');
   });
 
   it('give each month its days, its weeks and its Fridays in 2026 and 2027', () => {
