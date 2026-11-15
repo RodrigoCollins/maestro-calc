@@ -1,5 +1,5 @@
 ---
-import { BYLINE_TEXTS, BYLINE_TEXTS_DE, SOURCES_ID } from '../editorial.ts';
+import { BYLINE_TEXTS_OF, SOURCES_ID } from '../editorial.ts';
 import type { PageSource } from '../guides.ts';
 import { langOf } from '../routes.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
@@ -9,7 +9,7 @@ interface Props {
   readonly sources: readonly PageSource[];
 }
 
-const texts = langOf(canonicalPath(Astro.url.pathname)) === 'en' ? BYLINE_TEXTS : BYLINE_TEXTS_DE;
+const texts = BYLINE_TEXTS_OF[langOf(canonicalPath(Astro.url.pathname))];
 ---
 
 <section class="bf-card" aria-labelledby={SOURCES_ID}>

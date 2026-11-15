@@ -34,8 +34,11 @@ const organizationOf = (origin: string, lang: Lang) => ({
   publishingPrinciples: new URL(hrefOf('editorial', lang), origin).href,
 });
 
-/** The language of the JSON-LD: American English, or German for every German-speaking country. */
-const IN_LANGUAGE: Readonly<Record<Lang, string>> = { en: 'en-US', de: 'de' };
+/**
+ * The language of the JSON-LD: American English, German for every German-speaking country and
+ * French for every French-speaking one.
+ */
+const IN_LANGUAGE: Readonly<Record<Lang, string>> = { en: 'en-US', de: 'de', fr: 'fr' };
 
 /**
  * The JSON-LD of the page at `path`, ready for its script element. The home is the WebSite and the

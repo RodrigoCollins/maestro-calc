@@ -3,16 +3,18 @@
 // which reads open sites only), the internal links (`src/site-check/links.ts`), the search rules of
 // `src/site-check/seo.ts` (unique, measured titles and descriptions, the sitemap equal to the
 // pages, robots.txt, and noindex while the site is closed), and the byline of every guide and
-// data page. The German pages under /de stay noindex, out of the sitemap and with no hreflang pair
-// until `SITE.deIndexable`; once open, every pair names both pages and x-default both ways.
+// data page. The German pages under /de and the French pages under /fr stay noindex, out of the
+// sitemap and with no hreflang alternate until `SITE.deIndexable` and `SITE.frIndexable`; once a
+// language is open, every page with a twin names each open language and x-default both ways.
 // Usage: node apps/pets/scripts/check-site.ts [dist-directory]
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { affiliateLinkProblems } from '@maestro-calc/site-kit/affiliate';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { headProblems, imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
-import { BYLINE_PAGES, BYLINE_PAGES_DE } from '../src/bylines.ts';
-import { hrefOf, langOf, ROUTES } from '../src/routes.ts';
+import { BYLINE_PAGES, BYLINE_PAGES_DE, BYLINE_PAGES_FR } from '../src/bylines.ts';
+import { hrefOf, langOf, ROUTES, TWINS } from '../src/routes.ts';
+import { twinOpen } from '../src/seo/head.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
 import { canonicalPath } from '../src/seo/sitemap.ts';
 import { bylineProblems } from '../src/site-check/byline.ts';
@@ -37,7 +39,8 @@ const robotsFile = join(dist, 'robots.txt');
 const files = new Set(readdirSync(dist).map((name) => `/${name}`));
 const calculators = ROUTES.filter(({ kind }) => kind === 'calculator').map(({ path }) => path);
 const open = SITE.indexable;
-const deOpen = SITE.indexable && SITE.deIndexable;
+const deOpen = twinOpen('de');
+const frOpen = twinOpen('fr');
 const all = [
   ...problems,
   // every sponsored link sits in the recommendation block, next to its disclosure
@@ -65,6 +68,7 @@ const all = [
         ...calculators.map((path) => ({ path, targets: [hrefOf('methodology')] })),
         ...BYLINE_PAGES.map(({ path }) => ({ path, targets: [hrefOf('editorial')] })),
         ...BYLINE_PAGES_DE.map(({ path }) => ({ path, targets: [hrefOf('editorial', 'de')] })),
+        ...BYLINE_PAGES_FR.map(({ path }) => ({ path, targets: [hrefOf('editorial', 'fr')] })),
       ],
     },
     files,
@@ -72,16 +76,21 @@ const all = [
   ...seoAuditProblems(site, {
     origin: SITE.origin,
     indexable: SITE.indexable,
-    closed: (path) => langOf(path) === 'de' && !SITE.deIndexable,
+    closed: (path) => {
+      const lang = langOf(path);
+      return lang !== 'en' && !twinOpen(lang);
+    },
     sitemap,
     robots: existsSync(robotsFile) ? readFileSync(robotsFile, 'utf8') : undefined,
   }),
   // the byline of the editorial team under the h1 of every guide and data page
   ...bylineProblems(site, BYLINE_PAGES, hrefOf('editorial'), SITE.indexable),
   ...bylineProblems(site, BYLINE_PAGES_DE, hrefOf('editorial', 'de'), deOpen),
-  // the hreflang pairs: none while German is closed, then en, de and x-default both ways
+  ...bylineProblems(site, BYLINE_PAGES_FR, hrefOf('editorial', 'fr'), frOpen),
+  // the hreflang alternates: none while German and French are closed, then en, each open language
+  // and x-default both ways
   ...headProblems(html, {
-    languages: ['en', 'de'],
+    languages: ['en', ...TWINS.filter((twin) => twinOpen(twin))],
     title: { max: TITLE_MAX },
     description: { min: DESCRIPTION_RANGE[0], max: DESCRIPTION_RANGE[1] },
     sitemap: sitemapText,
@@ -96,6 +105,6 @@ if (all.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${open ? 'open to' : 'closed to'} search engines, German ${deOpen ? 'open' : 'closed (noindex)'}`,
+    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${open ? 'open to' : 'closed to'} search engines, German ${deOpen ? 'open' : 'closed (noindex)'}, French ${frOpen ? 'open' : 'closed (noindex)'}`,
   );
 }

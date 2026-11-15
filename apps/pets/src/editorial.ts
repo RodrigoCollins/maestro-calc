@@ -54,12 +54,28 @@ const MONTHS_DE = [
   'Dezember',
 ] as const;
 
-/** `2026-11-07` as `Nov 7, 2026`, or in German `7. November 2026`. */
+const MONTHS_FR = [
+  'janvier',
+  'février',
+  'mars',
+  'avril',
+  'mai',
+  'juin',
+  'juillet',
+  'août',
+  'septembre',
+  'octobre',
+  'novembre',
+  'décembre',
+] as const;
+
+/** `2026-11-07` as `Nov 7, 2026`, in German `7. November 2026`, in French `7 novembre 2026`. */
 export const checkedText = (checked: string, lang: Lang = 'en'): string => {
   const [year = 0, month = 0, day = 0] = checked.split('-').map(Number);
-  return lang === 'en'
-    ? dateText({ year, month, day })
-    : `${String(day)}. ${MONTHS_DE[month - 1] ?? ''} ${String(year)}`;
+  if (lang === 'en') return dateText({ year, month, day });
+  if (lang === 'de') return `${String(day)}. ${MONTHS_DE[month - 1] ?? ''} ${String(year)}`;
+  // French writes the first day of a month as an ordinal: 1er novembre
+  return `${day === 1 ? '1er' : String(day)} ${MONTHS_FR[month - 1] ?? ''} ${String(year)}`;
 };
 
 export const EDITORIAL: TextPage = {
@@ -136,6 +152,27 @@ export const BYLINE_TEXTS_DE = {
   sources: 'Quellen',
 } as const;
 
+/** The same words in French: an organization, never a person (`la rédaction de Bowl Figures`). */
+export const BYLINE_TEXTS_FR = {
+  by: 'Par la',
+  team: 'rédaction de Bowl Figures',
+  reviewed: 'Vérifié le',
+  sources: 'Sources',
+} as const;
+
+/** The byline words of each language. */
+export const BYLINE_TEXTS_OF: Readonly<
+  Record<
+    Lang,
+    {
+      readonly by: string;
+      readonly team: string;
+      readonly reviewed: string;
+      readonly sources: string;
+    }
+  >
+> = { en: BYLINE_TEXTS, de: BYLINE_TEXTS_DE, fr: BYLINE_TEXTS_FR };
+
 /** The id of the sources section a byline links to. */
 export const SOURCES_ID = 'sources';
 
@@ -159,7 +196,7 @@ export const bylineOf = ({
   readonly sources?: boolean;
   readonly lang?: Lang;
 }): Byline => {
-  const texts = lang === 'en' ? BYLINE_TEXTS : BYLINE_TEXTS_DE;
+  const texts = BYLINE_TEXTS_OF[lang];
   return {
     by: texts.by,
     team: { href: hrefOf('editorial', lang), label: texts.team },

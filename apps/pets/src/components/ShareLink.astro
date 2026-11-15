@@ -12,9 +12,14 @@ interface Props {
 }
 
 const { path, title } = Astro.props;
-const en = langOf(path) === 'en';
-const text = en ? `${nameOf(title)}, on ${SITE.name}:` : `${nameOf(title)}, auf ${SITE.name}:`;
-const label = en ? 'Share on WhatsApp' : 'Per WhatsApp teilen';
+// the words of the link in the page's language; French puts a space before the colon
+const words = {
+  en: { on: `on ${SITE.name}:`, label: 'Share on WhatsApp' },
+  de: { on: `auf ${SITE.name}:`, label: 'Per WhatsApp teilen' },
+  fr: { on: `sur ${SITE.name} :`, label: 'Partager sur WhatsApp' },
+}[langOf(path)];
+const text = `${nameOf(title)}, ${words.on}`;
+const label = words.label;
 ---
 
 <a

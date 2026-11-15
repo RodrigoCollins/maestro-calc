@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { HOME_AGES, HOME_CAT_AGES } from './home.ts';
-import { footerLinks, LAYOUT_TEXTS, navLinks, switchOf } from './layout.ts';
+import { footerLinks, LAYOUT_TEXTS, navLinks, switchesOf } from './layout.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the header and footer', () => {
@@ -78,22 +78,48 @@ describe('the German header and footer', () => {
   });
 });
 
-describe('switchOf', () => {
-  it('leads a German page to its English twin, in English', () => {
-    expect(switchOf('/de/hundejahre-rechner', false)).toEqual({
-      href: '/dog-age-calculator',
-      lang: 'en',
-      label: 'English',
-    });
+describe('the French header and footer', () => {
+  it('lead to the French pages only, the hub, the dog age calculator and the chocolate guide first', () => {
+    expect(navLinks('fr').map(({ href }) => href)).toEqual([
+      '/fr/que-peut-manger-un-chien',
+      '/fr/age-chien-en-humain',
+      '/fr/mon-chien-a-mange-du-chocolat',
+    ]);
   });
 
-  it('leads an English page to its German twin only once German is open', () => {
-    expect(switchOf('/dog-age-calculator', false)).toBeUndefined();
-    expect(switchOf('/dog-age-calculator', true)).toEqual({
-      href: '/de/hundejahre-rechner',
-      lang: 'de',
-      label: 'Deutsch',
-    });
-    expect(switchOf('/dog-food-calculator', true)).toBeUndefined();
+  it('link every French page that is not a food page, so none is an orphan', () => {
+    const french = ROUTES.filter(
+      ({ id, fr }) => fr !== undefined && id !== 'home' && !id.startsWith('food-'),
+    );
+    expect(
+      footerLinks('fr')
+        .map(({ href }) => href)
+        .sort(),
+    ).toEqual(french.map(({ fr }) => fr).sort());
+  });
+});
+
+describe('switchesOf', () => {
+  const closed = { de: false, fr: false };
+
+  it('leads a German or a French page to its English twin, in English', () => {
+    expect(switchesOf('/de/hundejahre-rechner', closed)).toEqual([
+      { href: '/dog-age-calculator', lang: 'en', label: 'English' },
+    ]);
+    expect(switchesOf('/fr/age-chien-en-humain', closed)).toEqual([
+      { href: '/dog-age-calculator', lang: 'en', label: 'English' },
+    ]);
+  });
+
+  it('leads to a German or French twin only once that language is open', () => {
+    expect(switchesOf('/dog-age-calculator', closed)).toEqual([]);
+    expect(switchesOf('/dog-age-calculator', { de: true, fr: false })).toEqual([
+      { href: '/de/hundejahre-rechner', lang: 'de', label: 'Deutsch' },
+    ]);
+    expect(switchesOf('/de/hundejahre-rechner', { de: true, fr: true })).toEqual([
+      { href: '/dog-age-calculator', lang: 'en', label: 'English' },
+      { href: '/fr/age-chien-en-humain', lang: 'fr', label: 'Français' },
+    ]);
+    expect(switchesOf('/dog-food-calculator', { de: true, fr: true })).toEqual([]);
   });
 });
