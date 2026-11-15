@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { CALCULATORS, DE_PAGES, FR_PAGES, PAGES } from './pages.ts';
+import { CALCULATORS, DE_PAGES, ES_PAGES, FR_PAGES, PAGES } from './pages.ts';
 
-for (const path of [...PAGES, ...DE_PAGES, ...FR_PAGES]) {
+for (const path of [...PAGES, ...DE_PAGES, ...FR_PAGES, ...ES_PAGES]) {
   test(`${path} reads without JavaScript`, async ({ page }) => {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);

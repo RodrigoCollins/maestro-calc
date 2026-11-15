@@ -69,11 +69,30 @@ const MONTHS_FR = [
   'décembre',
 ] as const;
 
-/** `2026-11-07` as `Nov 7, 2026`, in German `7. November 2026`, in French `7 novembre 2026`. */
+const MONTHS_ES = [
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
+] as const;
+
+/**
+ * `2026-11-07` as `Nov 7, 2026`, in German `7. November 2026`, in French `7 novembre 2026`, in
+ * Spanish `7 de noviembre de 2026`.
+ */
 export const checkedText = (checked: string, lang: Lang = 'en'): string => {
   const [year = 0, month = 0, day = 0] = checked.split('-').map(Number);
   if (lang === 'en') return dateText({ year, month, day });
   if (lang === 'de') return `${String(day)}. ${MONTHS_DE[month - 1] ?? ''} ${String(year)}`;
+  if (lang === 'es') return `${String(day)} de ${MONTHS_ES[month - 1] ?? ''} de ${String(year)}`;
   // French writes the first day of a month as an ordinal: 1er novembre
   return `${day === 1 ? '1er' : String(day)} ${MONTHS_FR[month - 1] ?? ''} ${String(year)}`;
 };
@@ -160,6 +179,14 @@ export const BYLINE_TEXTS_FR = {
   sources: 'Sources',
 } as const;
 
+/** The same words in Spanish: an organization, never a person (`el equipo editorial de Bowl Figures`). */
+export const BYLINE_TEXTS_ES = {
+  by: 'Por el',
+  team: 'equipo editorial de Bowl Figures',
+  reviewed: 'Revisado el',
+  sources: 'Fuentes',
+} as const;
+
 /** The byline words of each language. */
 export const BYLINE_TEXTS_OF: Readonly<
   Record<
@@ -171,7 +198,7 @@ export const BYLINE_TEXTS_OF: Readonly<
       readonly sources: string;
     }
   >
-> = { en: BYLINE_TEXTS, de: BYLINE_TEXTS_DE, fr: BYLINE_TEXTS_FR };
+> = { en: BYLINE_TEXTS, de: BYLINE_TEXTS_DE, fr: BYLINE_TEXTS_FR, es: BYLINE_TEXTS_ES };
 
 /** The id of the sources section a byline links to. */
 export const SOURCES_ID = 'sources';

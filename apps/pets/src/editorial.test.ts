@@ -58,6 +58,20 @@ describe('the byline', () => {
     });
   });
 
+  it('writes a day in Spanish, the month in lower case with de', () => {
+    expect(checkedText('2026-11-15', 'es')).toBe('15 de noviembre de 2026');
+    expect(checkedText('2027-01-01', 'es')).toBe('1 de enero de 2027');
+  });
+
+  it('credits the Spanish editorial team at the Spanish policy, in Spanish', () => {
+    expect(bylineOf({ checked: '2026-11-15', sources: true, lang: 'es' })).toEqual({
+      by: 'Por el',
+      team: { href: '/es/politica-editorial', label: 'equipo editorial de Bowl Figures' },
+      reviewed: { label: 'Revisado el', datetime: '2026-11-15', text: '15 de noviembre de 2026' },
+      sources: { href: '#sources', label: 'Fuentes' },
+    });
+  });
+
   it('credits the German editorial team at the German policy, in German', () => {
     expect(bylineOf({ checked: '2026-11-08', sources: true, lang: 'de' })).toEqual({
       by: 'Von der',

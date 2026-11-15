@@ -3,16 +3,17 @@
 // which reads open sites only), the internal links (`src/site-check/links.ts`), the search rules of
 // `src/site-check/seo.ts` (unique, measured titles and descriptions, the sitemap equal to the
 // pages, robots.txt, and noindex while the site is closed), and the byline of every guide and
-// data page. The German pages under /de and the French pages under /fr stay noindex, out of the
-// sitemap and with no hreflang alternate until `SITE.deIndexable` and `SITE.frIndexable`; once a
-// language is open, every page with a twin names each open language and x-default both ways.
+// data page. The German pages under /de, the French under /fr and the Spanish under /es stay
+// noindex, out of the sitemap and with no hreflang alternate until `SITE.deIndexable`,
+// `SITE.frIndexable` and `SITE.esIndexable` (Spanish ships open); once a language is open, every
+// page with a twin names each open language and x-default both ways.
 // Usage: node apps/pets/scripts/check-site.ts [dist-directory]
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { affiliateLinkProblems } from '@maestro-calc/site-kit/affiliate';
 import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { headProblems, imageProblems, seoProblems } from '@maestro-calc/site-kit/seo-check';
-import { BYLINE_PAGES, BYLINE_PAGES_DE, BYLINE_PAGES_FR } from '../src/bylines.ts';
+import { BYLINE_PAGES, BYLINE_PAGES_DE, BYLINE_PAGES_ES, BYLINE_PAGES_FR } from '../src/bylines.ts';
 import { hrefOf, langOf, ROUTES, TWINS } from '../src/routes.ts';
 import { twinOpen } from '../src/seo/head.ts';
 import { ogTypeOf, pageKindOf, schemaTypeOf } from '../src/seo/json-ld.ts';
@@ -41,6 +42,7 @@ const calculators = ROUTES.filter(({ kind }) => kind === 'calculator').map(({ pa
 const open = SITE.indexable;
 const deOpen = twinOpen('de');
 const frOpen = twinOpen('fr');
+const esOpen = twinOpen('es');
 const all = [
   ...problems,
   // every sponsored link sits in the recommendation block, next to its disclosure
@@ -69,6 +71,7 @@ const all = [
         ...BYLINE_PAGES.map(({ path }) => ({ path, targets: [hrefOf('editorial')] })),
         ...BYLINE_PAGES_DE.map(({ path }) => ({ path, targets: [hrefOf('editorial', 'de')] })),
         ...BYLINE_PAGES_FR.map(({ path }) => ({ path, targets: [hrefOf('editorial', 'fr')] })),
+        ...BYLINE_PAGES_ES.map(({ path }) => ({ path, targets: [hrefOf('editorial', 'es')] })),
       ],
     },
     files,
@@ -87,6 +90,7 @@ const all = [
   ...bylineProblems(site, BYLINE_PAGES, hrefOf('editorial'), SITE.indexable),
   ...bylineProblems(site, BYLINE_PAGES_DE, hrefOf('editorial', 'de'), deOpen),
   ...bylineProblems(site, BYLINE_PAGES_FR, hrefOf('editorial', 'fr'), frOpen),
+  ...bylineProblems(site, BYLINE_PAGES_ES, hrefOf('editorial', 'es'), esOpen),
   // the hreflang alternates: none while German and French are closed, then en, each open language
   // and x-default both ways
   ...headProblems(html, {
@@ -105,6 +109,6 @@ if (all.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${open ? 'open to' : 'closed to'} search engines, German ${deOpen ? 'open' : 'closed (noindex)'}, French ${frOpen ? 'open' : 'closed (noindex)'}`,
+    `check:site: ${String(pages.length)} pages within budget, each with its own title and description, ${String(sitemap.length)} sitemap pages linked, ${open ? 'open to' : 'closed to'} search engines, German ${deOpen ? 'open' : 'closed (noindex)'}, French ${frOpen ? 'open' : 'closed (noindex)'}, Spanish ${esOpen ? 'open' : 'closed (noindex)'}`,
   );
 }

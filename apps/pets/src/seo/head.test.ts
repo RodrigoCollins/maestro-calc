@@ -7,6 +7,7 @@ const open = {
   indexable: true,
   deIndexable: false,
   frIndexable: false,
+  esIndexable: false,
 };
 const closed = { ...open, indexable: false };
 
@@ -92,7 +93,7 @@ describe('alternatesOf', () => {
   });
 
   it('ships with German closed', () => {
-    expect(alternatesOf('/dog-age-calculator')).toEqual([]);
+    expect(alternatesOf('/de/hundejahre-rechner')).toEqual([]);
   });
 });
 
@@ -142,5 +143,56 @@ describe('alternatesOf, French', () => {
 
   it('ships with French closed', () => {
     expect(alternatesOf('/fr/age-chien-en-humain')).toEqual([]);
+  });
+});
+
+const esOpen = { ...open, esIndexable: true };
+
+describe('headOf, Spanish pages', () => {
+  it('gives a Spanish page its own canonical once Spanish is open, German and French closed', () => {
+    const es = headOf('/es/edad-de-perro-en-anos-humanos', text, true, esOpen);
+    expect(es.canonical).toBe('https://bowlfigures.com/es/edad-de-perro-en-anos-humanos');
+    expect(es.robots).toBeUndefined();
+    expect(headOf('/fr/age-chien-en-humain', text, true, esOpen).robots).toBe('noindex');
+  });
+
+  it('keeps a Spanish page out of the index while Spanish is closed', () => {
+    expect(headOf('/es', text, true, open).robots).toBe('noindex');
+  });
+
+  it('ships with Spanish open: no legal notice to wait for, unlike German and French', () => {
+    expect(headOf('/es', text, true).canonical).toBe('https://bowlfigures.com/es');
+  });
+});
+
+describe('alternatesOf, Spanish', () => {
+  it('names en, es and x-default on both twins once Spanish alone is open', () => {
+    const pair = [
+      { hreflang: 'en', href: 'https://bowlfigures.com/dog-age-calculator' },
+      { hreflang: 'es', href: 'https://bowlfigures.com/es/edad-de-perro-en-anos-humanos' },
+      { hreflang: 'x-default', href: 'https://bowlfigures.com/dog-age-calculator' },
+    ];
+    expect(alternatesOf('/dog-age-calculator', esOpen)).toEqual(pair);
+    expect(alternatesOf('/es/edad-de-perro-en-anos-humanos', esOpen)).toEqual(pair);
+  });
+
+  it('names every open twin, German, French then Spanish', () => {
+    const all = { ...open, deIndexable: true, frIndexable: true, esIndexable: true };
+    expect(alternatesOf('/es', all).map(({ hreflang }) => hreflang)).toEqual([
+      'en',
+      'de',
+      'fr',
+      'es',
+      'x-default',
+    ]);
+  });
+
+  it('ships naming the Spanish twin of the English page, and no closed German or French one', () => {
+    expect(alternatesOf('/can-dogs-eat-grapes').map(({ hreflang }) => hreflang)).toEqual([
+      'en',
+      'es',
+      'x-default',
+    ]);
+    expect(alternatesOf('/fr/chien-peut-il-manger-du-raisin')).toEqual([]);
   });
 });

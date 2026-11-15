@@ -2,7 +2,7 @@
 export const SITE = {
   name: 'Bowl Figures',
   origin: 'https://bowlfigures.com',
-  locales: ['en', 'de', 'fr'],
+  locales: ['en', 'de', 'fr', 'es'],
   /** Launch switch: open to search engines on 2026-11-08; false would keep every page `noindex` (the 404 always is). */
   indexable: true as boolean,
   /**
@@ -19,6 +19,12 @@ export const SITE = {
    * `src/fr/mentions-legales.ts` as a page.
    */
   frIndexable: false as boolean,
+  /**
+   * The Spanish switch for every page under `/es`, open from the start: the owner asked for
+   * Spanish to be indexable at once (plans/growth/BACKLOG.md #86), with no publisher notice to wait
+   * for as the German Impressum and the French mentions légales do.
+   */
+  esIndexable: true as boolean,
   /** Google Analytics 4 measurement id; the loader runs on `origin` only (`public/analytics.js`). */
   gaId: 'G-3NTFC4MK3R' as string,
   /** IndexNow key (public by design): `public/<key>.txt` holds it, and the deploy job sends it. */

@@ -2,21 +2,21 @@
 export type PageKind = 'home' | 'calculator' | 'article';
 
 /**
- * The languages of Bowl Figures: English, German under `/de` (plans/growth/BACKLOG.md #50) and
- * French under `/fr` (#51).
+ * The languages of Bowl Figures: English, German under `/de` (plans/growth/BACKLOG.md #50),
+ * French under `/fr` (#51) and Spanish under `/es` (#86).
  */
-export type Lang = 'en' | 'de' | 'fr';
+export type Lang = 'en' | 'de' | 'fr' | 'es';
 
 /** The languages a page can have a twin in, besides English. */
 export type Twin = Exclude<Lang, 'en'>;
 
 /** Every twin language, in the order the head, the sitemap and the language links list them. */
-export const TWINS: readonly Twin[] = ['de', 'fr'];
+export const TWINS: readonly Twin[] = ['de', 'fr', 'es'];
 
 /**
  * A page of Bowl Figures: its id, its kind, its English address and, once they are written, its
- * German and French twins. A twin is never a word-for-word translation of its English page: it
- * answers the same question with the same facts, for a German or a French reader.
+ * German, French and Spanish twins. A twin is never a word-for-word translation of its English
+ * page: it answers the same question with the same facts, for a German, French or Spanish reader.
  */
 export interface Route {
   readonly id: string;
@@ -24,11 +24,12 @@ export interface Route {
   readonly path: string;
   readonly de?: string;
   readonly fr?: string;
+  readonly es?: string;
 }
 
 /** The page files of `src/pages` (the 404 is not a route), in the order of the site. */
 export const ROUTES: readonly Route[] = [
-  { id: 'home', kind: 'home', path: '/', de: '/de', fr: '/fr' },
+  { id: 'home', kind: 'home', path: '/', de: '/de', fr: '/fr', es: '/es' },
   { id: 'dog', kind: 'calculator', path: '/dog-food-calculator' },
   { id: 'cat', kind: 'calculator', path: '/cat-food-calculator' },
   { id: 'puppy', kind: 'calculator', path: '/puppy-feeding-calculator' },
@@ -41,6 +42,7 @@ export const ROUTES: readonly Route[] = [
     path: '/dog-age-calculator',
     de: '/de/hundejahre-rechner',
     fr: '/fr/age-chien-en-humain',
+    es: '/es/edad-de-perro-en-anos-humanos',
   },
   { id: 'cat-age', kind: 'calculator', path: '/cat-age-calculator' },
   { id: 'puppy-weight', kind: 'calculator', path: '/puppy-weight-calculator' },
@@ -59,6 +61,7 @@ export const ROUTES: readonly Route[] = [
     path: '/my-dog-ate-chocolate',
     de: '/de/hund-hat-schokolade-gefressen',
     fr: '/fr/mon-chien-a-mange-du-chocolat',
+    es: '/es/que-pasa-si-un-perro-come-chocolate',
   },
   { id: 'cat-growth-guide', kind: 'article', path: '/when-do-cats-stop-growing' },
   { id: 'dog-heat-guide', kind: 'article', path: '/dog-in-heat' },
@@ -116,6 +119,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat',
     de: '/de/was-duerfen-hunde-essen',
     fr: '/fr/que-peut-manger-un-chien',
+    es: '/es/que-frutas-pueden-comer-los-perros',
   },
   {
     id: 'food-strawberries',
@@ -123,6 +127,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-strawberries',
     de: '/de/duerfen-hunde-erdbeeren-essen',
     fr: '/fr/chien-peut-il-manger-des-fraises',
+    es: '/es/los-perros-pueden-comer-fresas',
   },
   {
     id: 'food-bananas',
@@ -130,6 +135,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-bananas',
     de: '/de/duerfen-hunde-bananen-essen',
     fr: '/fr/chien-peut-il-manger-de-la-banane',
+    es: '/es/los-perros-pueden-comer-platano',
   },
   {
     id: 'food-grapes',
@@ -137,6 +143,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-grapes',
     de: '/de/duerfen-hunde-weintrauben-essen',
     fr: '/fr/chien-peut-il-manger-du-raisin',
+    es: '/es/los-perros-pueden-comer-uvas',
   },
   {
     id: 'food-raisins',
@@ -144,6 +151,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-raisins',
     de: '/de/duerfen-hunde-rosinen-essen',
     fr: '/fr/chien-peut-il-manger-des-raisins-secs',
+    es: '/es/los-perros-pueden-comer-pasas',
   },
   {
     id: 'food-blueberries',
@@ -151,6 +159,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-blueberries',
     de: '/de/duerfen-hunde-blaubeeren-essen',
     fr: '/fr/chien-peut-il-manger-des-myrtilles',
+    es: '/es/los-perros-pueden-comer-arandanos',
   },
   {
     id: 'food-apples',
@@ -158,6 +167,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-apples',
     de: '/de/duerfen-hunde-aepfel-essen',
     fr: '/fr/chien-peut-il-manger-des-pommes',
+    es: '/es/los-perros-pueden-comer-manzana',
   },
   {
     id: 'food-watermelon',
@@ -165,6 +175,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-watermelon',
     de: '/de/duerfen-hunde-wassermelone-essen',
     fr: '/fr/chien-peut-il-manger-de-la-pasteque',
+    es: '/es/los-perros-pueden-comer-sandia',
   },
   {
     id: 'food-cherries',
@@ -172,6 +183,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-cherries',
     de: '/de/duerfen-hunde-kirschen-essen',
     fr: '/fr/chien-peut-il-manger-des-cerises',
+    es: '/es/los-perros-pueden-comer-cerezas',
   },
   {
     id: 'food-mango',
@@ -179,6 +191,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-mango',
     de: '/de/duerfen-hunde-mango-essen',
     fr: '/fr/chien-peut-il-manger-de-la-mangue',
+    es: '/es/los-perros-pueden-comer-mango',
   },
   {
     id: 'food-oranges',
@@ -186,6 +199,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-oranges',
     de: '/de/duerfen-hunde-orangen-essen',
     fr: '/fr/chien-peut-il-manger-des-oranges',
+    es: '/es/los-perros-pueden-comer-naranja',
   },
   {
     id: 'food-pineapple',
@@ -193,6 +207,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-pineapple',
     de: '/de/duerfen-hunde-ananas-essen',
     fr: '/fr/chien-peut-il-manger-de-l-ananas',
+    es: '/es/los-perros-pueden-comer-pina',
   },
   {
     id: 'food-tomatoes',
@@ -200,6 +215,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-tomatoes',
     de: '/de/duerfen-hunde-tomaten-essen',
     fr: '/fr/chien-peut-il-manger-des-tomates',
+    es: '/es/los-perros-pueden-comer-tomate',
   },
   {
     id: 'food-avocado',
@@ -207,6 +223,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-avocado',
     de: '/de/duerfen-hunde-avocado-essen',
     fr: '/fr/chien-peut-il-manger-de-l-avocat',
+    es: '/es/los-perros-pueden-comer-aguacate',
   },
   {
     id: 'food-onions',
@@ -214,6 +231,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-onions',
     de: '/de/duerfen-hunde-zwiebeln-essen',
     fr: '/fr/chien-peut-il-manger-des-oignons',
+    es: '/es/los-perros-pueden-comer-cebolla',
   },
   {
     id: 'food-garlic',
@@ -221,6 +239,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-garlic',
     de: '/de/duerfen-hunde-knoblauch-essen',
     fr: '/fr/chien-peut-il-manger-de-l-ail',
+    es: '/es/los-perros-pueden-comer-ajo',
   },
   {
     id: 'food-carrots',
@@ -228,6 +247,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-carrots',
     de: '/de/duerfen-hunde-karotten-essen',
     fr: '/fr/chien-peut-il-manger-des-carottes',
+    es: '/es/los-perros-pueden-comer-zanahoria',
   },
   {
     id: 'food-broccoli',
@@ -235,6 +255,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-broccoli',
     de: '/de/duerfen-hunde-brokkoli-essen',
     fr: '/fr/chien-peut-il-manger-du-brocoli',
+    es: '/es/los-perros-pueden-comer-brocoli',
   },
   {
     id: 'food-cucumber',
@@ -242,6 +263,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-cucumber',
     de: '/de/duerfen-hunde-gurken-essen',
     fr: '/fr/chien-peut-il-manger-du-concombre',
+    es: '/es/los-perros-pueden-comer-pepino',
   },
   {
     id: 'food-bell-peppers',
@@ -249,6 +271,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-bell-peppers',
     de: '/de/duerfen-hunde-paprika-essen',
     fr: '/fr/chien-peut-il-manger-du-poivron',
+    es: '/es/los-perros-pueden-comer-pimiento',
   },
   {
     id: 'food-zucchini',
@@ -256,6 +279,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-zucchini',
     de: '/de/duerfen-hunde-zucchini-essen',
     fr: '/fr/chien-peut-il-manger-de-la-courgette',
+    es: '/es/los-perros-pueden-comer-calabacin',
   },
   {
     id: 'food-potatoes',
@@ -263,6 +287,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-potatoes',
     de: '/de/duerfen-hunde-kartoffeln-essen',
     fr: '/fr/chien-peut-il-manger-des-pommes-de-terre',
+    es: '/es/los-perros-pueden-comer-papa',
   },
   {
     id: 'food-sweet-potatoes',
@@ -270,6 +295,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-sweet-potatoes',
     de: '/de/duerfen-hunde-suesskartoffeln-essen',
     fr: '/fr/chien-peut-il-manger-de-la-patate-douce',
+    es: '/es/los-perros-pueden-comer-camote',
   },
   {
     id: 'food-pumpkin',
@@ -277,6 +303,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-pumpkin',
     de: '/de/duerfen-hunde-kuerbis-essen',
     fr: '/fr/chien-peut-il-manger-de-la-citrouille',
+    es: '/es/los-perros-pueden-comer-calabaza',
   },
   {
     id: 'food-cheese',
@@ -284,6 +311,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-cheese',
     de: '/de/duerfen-hunde-kaese-essen',
     fr: '/fr/chien-peut-il-manger-du-fromage',
+    es: '/es/los-perros-pueden-comer-queso',
   },
   {
     id: 'food-eggs',
@@ -291,6 +319,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-eggs',
     de: '/de/duerfen-hunde-eier-essen',
     fr: '/fr/chien-peut-il-manger-des-oeufs',
+    es: '/es/los-perros-pueden-comer-huevo',
   },
   {
     id: 'food-yogurt',
@@ -298,6 +327,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-yogurt',
     de: '/de/duerfen-hunde-joghurt-essen',
     fr: '/fr/chien-peut-il-manger-du-yaourt',
+    es: '/es/los-perros-pueden-comer-yogur',
   },
   {
     id: 'food-shrimp',
@@ -305,6 +335,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-shrimp',
     de: '/de/duerfen-hunde-garnelen-essen',
     fr: '/fr/chien-peut-il-manger-des-crevettes',
+    es: '/es/los-perros-pueden-comer-camarones',
   },
   {
     id: 'food-salmon',
@@ -312,6 +343,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-salmon',
     de: '/de/duerfen-hunde-lachs-essen',
     fr: '/fr/chien-peut-il-manger-du-saumon',
+    es: '/es/los-perros-pueden-comer-salmon',
   },
   {
     id: 'food-pork',
@@ -319,6 +351,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-pork',
     de: '/de/duerfen-hunde-schweinefleisch-essen',
     fr: '/fr/chien-peut-il-manger-du-porc',
+    es: '/es/los-perros-pueden-comer-cerdo',
   },
   {
     id: 'food-ham',
@@ -326,6 +359,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-ham',
     de: '/de/duerfen-hunde-schinken-essen',
     fr: '/fr/chien-peut-il-manger-du-jambon',
+    es: '/es/los-perros-pueden-comer-jamon',
   },
   {
     id: 'food-bacon',
@@ -333,6 +367,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-bacon',
     de: '/de/duerfen-hunde-speck-essen',
     fr: '/fr/chien-peut-il-manger-du-bacon',
+    es: '/es/los-perros-pueden-comer-tocino',
   },
   {
     id: 'food-peanut-butter',
@@ -340,6 +375,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-peanut-butter',
     de: '/de/duerfen-hunde-erdnussbutter-essen',
     fr: '/fr/chien-peut-il-manger-du-beurre-de-cacahuete',
+    es: '/es/los-perros-pueden-comer-crema-de-cacahuate',
   },
   {
     id: 'food-honey',
@@ -347,6 +383,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-honey',
     de: '/de/duerfen-hunde-honig-essen',
     fr: '/fr/chien-peut-il-manger-du-miel',
+    es: '/es/los-perros-pueden-comer-miel',
   },
   {
     id: 'food-chocolate',
@@ -354,6 +391,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-chocolate',
     de: '/de/duerfen-hunde-schokolade-essen',
     fr: '/fr/chien-peut-il-manger-du-chocolat',
+    es: '/es/los-perros-pueden-comer-chocolate',
   },
   {
     id: 'food-rice',
@@ -361,6 +399,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-rice',
     de: '/de/duerfen-hunde-reis-essen',
     fr: '/fr/chien-peut-il-manger-du-riz',
+    es: '/es/los-perros-pueden-comer-arroz',
   },
   {
     id: 'food-popcorn',
@@ -368,6 +407,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-popcorn',
     de: '/de/duerfen-hunde-popcorn-essen',
     fr: '/fr/chien-peut-il-manger-du-pop-corn',
+    es: '/es/los-perros-pueden-comer-palomitas',
   },
   {
     id: 'food-bread',
@@ -375,6 +415,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-bread',
     de: '/de/duerfen-hunde-brot-essen',
     fr: '/fr/chien-peut-il-manger-du-pain',
+    es: '/es/los-perros-pueden-comer-pan',
   },
   {
     id: 'food-almonds',
@@ -382,6 +423,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-almonds',
     de: '/de/duerfen-hunde-mandeln-essen',
     fr: '/fr/chien-peut-il-manger-des-amandes',
+    es: '/es/los-perros-pueden-comer-almendras',
   },
   {
     id: 'food-cashews',
@@ -389,6 +431,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-cashews',
     de: '/de/duerfen-hunde-cashewkerne-essen',
     fr: '/fr/chien-peut-il-manger-des-noix-de-cajou',
+    es: '/es/los-perros-pueden-comer-nueces-de-la-india',
   },
   {
     id: 'food-macadamia-nuts',
@@ -396,6 +439,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-macadamia-nuts',
     de: '/de/duerfen-hunde-macadamianuesse-essen',
     fr: '/fr/chien-peut-il-manger-des-noix-de-macadamia',
+    es: '/es/los-perros-pueden-comer-nueces-de-macadamia',
   },
   {
     id: 'food-xylitol-gum',
@@ -403,6 +447,7 @@ export const ROUTES: readonly Route[] = [
     path: '/can-dogs-eat-xylitol-gum',
     de: '/de/duerfen-hunde-kaugummi-essen',
     fr: '/fr/chien-peut-il-manger-du-chewing-gum',
+    es: '/es/los-perros-pueden-comer-chicle',
   },
   { id: 'plants-cats', kind: 'article', path: '/plants-toxic-to-cats' },
   { id: 'plants-dogs', kind: 'article', path: '/plants-toxic-to-dogs' },
@@ -476,13 +521,21 @@ export const ROUTES: readonly Route[] = [
   { id: 'plant-boston-ferns', kind: 'article', path: '/are-boston-ferns-toxic-to-cats-and-dogs' },
   { id: 'plant-hibiscus', kind: 'article', path: '/is-hibiscus-toxic-to-cats-and-dogs' },
   { id: 'methodology', kind: 'article', path: '/methodology' },
-  { id: 'about', kind: 'article', path: '/about', de: '/de/ueber-uns', fr: '/fr/a-propos' },
+  {
+    id: 'about',
+    kind: 'article',
+    path: '/about',
+    de: '/de/ueber-uns',
+    fr: '/fr/a-propos',
+    es: '/es/acerca-de',
+  },
   {
     id: 'editorial',
     kind: 'article',
     path: '/editorial-policy',
     de: '/de/redaktionelle-grundsaetze',
     fr: '/fr/principes-editoriaux',
+    es: '/es/politica-editorial',
   },
   {
     id: 'privacy',
@@ -490,10 +543,11 @@ export const ROUTES: readonly Route[] = [
     path: '/privacy',
     de: '/de/datenschutz',
     fr: '/fr/confidentialite',
+    es: '/es/privacidad',
   },
 ];
 
-/** The addresses of a route: the English page, then its German and French twins when it has them. */
+/** The addresses of a route: the English page, then its German, French and Spanish twins. */
 export const pathsOf = (route: Route): string[] => [
   route.path,
   ...TWINS.flatMap((twin) => (route[twin] === undefined ? [] : [route[twin]])),
@@ -503,15 +557,19 @@ export const pathsOf = (route: Route): string[] => [
 export const routeOf = (path: string, routes: readonly Route[] = ROUTES): Route | undefined =>
   routes.find((route) => pathsOf(route).includes(path));
 
-/** The language of an address: `/de` and every page below it are German, `/fr` French. */
+/** The language of an address: `/de` and every page below it are German, `/fr` French, `/es` Spanish. */
 export const langOf = (path: string): Lang =>
   TWINS.find((twin) => path === `/${twin}` || path.startsWith(`/${twin}/`)) ?? 'en';
 
 /** Each twin language named in English, for the errors of `hrefOf`. */
-const TWIN_NAMES: Readonly<Record<Twin, string>> = { de: 'German', fr: 'French' };
+const TWIN_NAMES: Readonly<Record<Twin, string>> = {
+  de: 'German',
+  fr: 'French',
+  es: 'Spanish',
+};
 
 /**
- * The address of route `id` in `lang`. A German or French page that links a page with no twin in
+ * The address of route `id` in `lang`. A German, French or Spanish page that links a page with no twin in
  * its language links the English page on purpose, with `hrefOf(id)`, and says so in its label.
  */
 export const hrefOf = (id: string, lang: Lang = 'en'): string => {

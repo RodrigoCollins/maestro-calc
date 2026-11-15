@@ -11,8 +11,15 @@ describe('canonicalPath', () => {
   });
 });
 
-describe('sitemapXml', () => {
-  const xml = sitemapXml(ROUTES, 'https://bowlfigures.com');
+describe('sitemapXml, every twin language closed', () => {
+  const closed = {
+    origin: 'https://bowlfigures.com',
+    indexable: true,
+    deIndexable: false,
+    frIndexable: false,
+    esIndexable: false,
+  };
+  const xml = sitemapXml(ROUTES, closed.origin, closed);
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
 
   it('lists every route once, by address', () => {
@@ -26,7 +33,8 @@ describe('sitemapXml', () => {
     expect(paths).toEqual([...paths].sort());
   });
 
-  it('leaves the German and French pages and every hreflang out while both are closed', () => {
+  it('leaves the twin pages and every hreflang out while their languages are closed', () => {
+    expect(locs.some((loc) => loc?.includes('/es'))).toBe(false);
     expect(locs.some((loc) => loc?.includes('/de'))).toBe(false);
     expect(locs.some((loc) => loc?.includes('/fr'))).toBe(false);
     expect(xml).not.toContain('hreflang');
@@ -39,6 +47,7 @@ describe('sitemapXml, German open', () => {
     indexable: true,
     deIndexable: true,
     frIndexable: false,
+    esIndexable: false,
   };
   const xml = sitemapXml(ROUTES, open.origin, open);
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
@@ -73,11 +82,12 @@ describe('sitemapXml, German and French open', () => {
     indexable: true,
     deIndexable: true,
     frIndexable: true,
+    esIndexable: true,
   };
   const xml = sitemapXml(ROUTES, open.origin, open);
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
 
-  it('lists every English, German and French page once', () => {
+  it('lists every English, German, French and Spanish page once', () => {
     expect(locs).toHaveLength(ROUTES.flatMap(pathsOf).length);
     expect(locs).toContain('https://bowlfigures.com/fr/age-chien-en-humain');
     expect(new Set(locs).size).toBe(locs.length);
@@ -93,5 +103,34 @@ describe('sitemapXml, German and French open', () => {
     expect(url).toContain('hreflang="de" href="https://bowlfigures.com/de/hundejahre-rechner"');
     expect(url).toContain('hreflang="fr" href="https://bowlfigures.com/fr/age-chien-en-humain"');
     expect(url).toContain('hreflang="x-default" href="https://bowlfigures.com/dog-age-calculator"');
+  });
+});
+
+describe('sitemapXml, as shipped: Spanish open, German and French closed', () => {
+  const xml = sitemapXml(ROUTES, 'https://bowlfigures.com');
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
+
+  it('lists every English and Spanish page once, and no German or French one', () => {
+    expect(locs).toHaveLength(ROUTES.length + ROUTES.filter(({ es }) => es !== undefined).length);
+    expect(locs).toContain('https://bowlfigures.com/es/los-perros-pueden-comer-fresas');
+    expect(locs.some((loc) => loc?.includes('/de'))).toBe(false);
+    expect(locs.some((loc) => loc?.includes('/fr'))).toBe(false);
+  });
+
+  it('pairs each Spanish page with its English twin and x-default, and names no closed twin', () => {
+    const url =
+      xml
+        .split('<url>')
+        .find((block) =>
+          block.includes(
+            '<loc>https://bowlfigures.com/es/que-pasa-si-un-perro-come-chocolate</loc>',
+          ),
+        ) ?? '';
+    expect(url).toContain('hreflang="en" href="https://bowlfigures.com/my-dog-ate-chocolate"');
+    expect(url).toContain(
+      'hreflang="x-default" href="https://bowlfigures.com/my-dog-ate-chocolate"',
+    );
+    expect(xml).not.toContain('hreflang="de"');
+    expect(xml).not.toContain('hreflang="fr"');
   });
 });

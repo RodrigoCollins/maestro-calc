@@ -1,0 +1,115 @@
+---
+import { FOOD_HUB_ES } from '../../es/can-dogs-eat.ts';
+import { HEADINGS_ES, readOnEs } from '../../es/texts.ts';
+import { hrefOf } from '../../routes.ts';
+import Byline from '../Byline.astro';
+import Layout from '../Layout.astro';
+import ShareLink from '../ShareLink.astro';
+import Sources from '../Sources.astro';
+
+const {
+  title,
+  description,
+  h1,
+  lead,
+  checked,
+  fruits,
+  sections,
+  budgetColumns,
+  budget,
+  othersHeading,
+  groups,
+  sources,
+} = FOOD_HUB_ES;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <p class="bf-call" role="note">
+      {FOOD_HUB_ES.callNote}
+    </p>
+    <section aria-labelledby="frutas">
+      <h2 id="frutas">{fruits.heading}</h2>
+      <p>{fruits.intro}</p>
+      <ul class="bf-foods">
+        {fruits.rows.map(({ href, name, word, summary }) => (
+          <li>
+            <a {href}>{name}</a>: <strong>{word}.</strong> {summary}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <h2>{othersHeading}</h2>
+    {groups.map(({ verdict, heading, intro, rows }) => (
+      <section aria-labelledby={`v-${verdict}`}>
+        <h3 id={`v-${verdict}`}>{heading}</h3>
+        <p>{intro}</p>
+        <ul class="bf-foods">
+          {rows.map(({ href, name, summary }) => (
+            <li>
+              <a {href}>{name}</a>: {summary}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+        {id === 'presupuesto' && (
+          <div
+            class="bf-scroll"
+            tabindex="0"
+            role="region"
+            aria-label={`El presupuesto de premios según el peso, ${HEADINGS_ES.scrolls}`}
+          >
+            <table class="bf-table">
+              <thead>
+                <tr>
+                  {budgetColumns.map((column) => (
+                    <th scope="col">{column}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {budget.map(([weight, ...cells]) => (
+                  <tr>
+                    <th scope="row">{weight}</th>
+                    {cells.map((cell) => (
+                      <td>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    ))}
+    <p>
+      {'Qué hacer si fue chocolate: '}
+      <a href={hrefOf('chocolate-guide', 'es')}>¿Qué pasa si un perro come chocolate?</a>
+      {'. Y cuántos años humanos tiene tu perro: '}
+      <a href={hrefOf('dog-age', 'es')}>la calculadora de edad de perro</a>
+      {'. Todas las páginas en español: '}
+      <a href={hrefOf('home', 'es')}>la portada de Bowl Figures en español</a>.
+    </p>
+    <p>{readOnEs(FOOD_HUB_ES.checkedEnglish, checked)}</p>
+    <Sources {sources} />
+    <ShareLink path={FOOD_HUB_ES.path} {title} />
+  </main>
+</Layout>
+
+<style>
+  .bf-foods {
+    display: grid;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+  }
+</style>

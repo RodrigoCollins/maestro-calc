@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import { formatViolations } from '../e2e/axe-report.ts';
-import { PAGES } from './pages.ts';
+import { ES_PAGES, PAGES } from './pages.ts';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -71,10 +71,12 @@ test('answers an unknown path with the 404 page, which links the home', async ({
 test('links every calculator from the header, each answering', async ({ page }) => {
   await page.goto('/');
   const hrefs = await page
-    .locator('header nav a')
+    .locator('header nav a:not(.bf-lang)')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
   expect(hrefs).toHaveLength(9);
   for (const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
+  // and the Spanish home, open from the start, beside them
+  await expect(page.locator('header nav a.bf-lang[hreflang="es"]')).toHaveAttribute('href', '/es');
 });
 
 test('links the methodology from every calculator, with its worked examples', async ({ page }) => {
@@ -120,8 +122,10 @@ test('serves a sitemap with every page, robots that point to it, llms.txt and th
   request,
 }) => {
   const xml = await (await request.get('/sitemap.xml')).text();
-  expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length);
-  for (const path of PAGES) expect(xml, path).toContain(`<loc>https://bowlfigures.com${path}`);
+  // the English pages and, open from the start, the Spanish ones
+  expect(xml.match(/<loc>/g)).toHaveLength(PAGES.length + ES_PAGES.length);
+  for (const path of [...PAGES, ...ES_PAGES])
+    expect(xml, path).toContain(`<loc>https://bowlfigures.com${path}<`);
   const robots = await (await request.get('/robots.txt')).text();
   expect(robots).toContain('Sitemap: https://bowlfigures.com/sitemap.xml');
   expect((await request.get('/llms.txt')).status()).toBe(200);

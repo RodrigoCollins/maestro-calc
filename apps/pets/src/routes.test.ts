@@ -301,6 +301,60 @@ describe('ROUTES', () => {
     ]);
   });
 
+  // the Spanish twins (plans/growth/BACKLOG.md #86), pinned like the other addresses
+  it('pins the address of every Spanish page', () => {
+    expect(ROUTES.flatMap(({ id, es }) => (es === undefined ? [] : [[id, es]]))).toEqual([
+      ['home', '/es'],
+      ['dog-age', '/es/edad-de-perro-en-anos-humanos'],
+      ['chocolate-guide', '/es/que-pasa-si-un-perro-come-chocolate'],
+      ['foods', '/es/que-frutas-pueden-comer-los-perros'],
+      ['food-strawberries', '/es/los-perros-pueden-comer-fresas'],
+      ['food-bananas', '/es/los-perros-pueden-comer-platano'],
+      ['food-grapes', '/es/los-perros-pueden-comer-uvas'],
+      ['food-raisins', '/es/los-perros-pueden-comer-pasas'],
+      ['food-blueberries', '/es/los-perros-pueden-comer-arandanos'],
+      ['food-apples', '/es/los-perros-pueden-comer-manzana'],
+      ['food-watermelon', '/es/los-perros-pueden-comer-sandia'],
+      ['food-cherries', '/es/los-perros-pueden-comer-cerezas'],
+      ['food-mango', '/es/los-perros-pueden-comer-mango'],
+      ['food-oranges', '/es/los-perros-pueden-comer-naranja'],
+      ['food-pineapple', '/es/los-perros-pueden-comer-pina'],
+      ['food-tomatoes', '/es/los-perros-pueden-comer-tomate'],
+      ['food-avocado', '/es/los-perros-pueden-comer-aguacate'],
+      ['food-onions', '/es/los-perros-pueden-comer-cebolla'],
+      ['food-garlic', '/es/los-perros-pueden-comer-ajo'],
+      ['food-carrots', '/es/los-perros-pueden-comer-zanahoria'],
+      ['food-broccoli', '/es/los-perros-pueden-comer-brocoli'],
+      ['food-cucumber', '/es/los-perros-pueden-comer-pepino'],
+      ['food-bell-peppers', '/es/los-perros-pueden-comer-pimiento'],
+      ['food-zucchini', '/es/los-perros-pueden-comer-calabacin'],
+      ['food-potatoes', '/es/los-perros-pueden-comer-papa'],
+      ['food-sweet-potatoes', '/es/los-perros-pueden-comer-camote'],
+      ['food-pumpkin', '/es/los-perros-pueden-comer-calabaza'],
+      ['food-cheese', '/es/los-perros-pueden-comer-queso'],
+      ['food-eggs', '/es/los-perros-pueden-comer-huevo'],
+      ['food-yogurt', '/es/los-perros-pueden-comer-yogur'],
+      ['food-shrimp', '/es/los-perros-pueden-comer-camarones'],
+      ['food-salmon', '/es/los-perros-pueden-comer-salmon'],
+      ['food-pork', '/es/los-perros-pueden-comer-cerdo'],
+      ['food-ham', '/es/los-perros-pueden-comer-jamon'],
+      ['food-bacon', '/es/los-perros-pueden-comer-tocino'],
+      ['food-peanut-butter', '/es/los-perros-pueden-comer-crema-de-cacahuate'],
+      ['food-honey', '/es/los-perros-pueden-comer-miel'],
+      ['food-chocolate', '/es/los-perros-pueden-comer-chocolate'],
+      ['food-rice', '/es/los-perros-pueden-comer-arroz'],
+      ['food-popcorn', '/es/los-perros-pueden-comer-palomitas'],
+      ['food-bread', '/es/los-perros-pueden-comer-pan'],
+      ['food-almonds', '/es/los-perros-pueden-comer-almendras'],
+      ['food-cashews', '/es/los-perros-pueden-comer-nueces-de-la-india'],
+      ['food-macadamia-nuts', '/es/los-perros-pueden-comer-nueces-de-macadamia'],
+      ['food-xylitol-gum', '/es/los-perros-pueden-comer-chicle'],
+      ['about', '/es/acerca-de'],
+      ['editorial', '/es/politica-editorial'],
+      ['privacy', '/es/privacidad'],
+    ]);
+  });
+
   it('holds every page source file and no page without one', () => {
     expect(ROUTES.flatMap(pathsOf).sort()).toEqual(sourcePaths().sort());
   });
@@ -314,6 +368,14 @@ describe('ROUTES', () => {
   it('finds a route by its German address too, with the kind of its English page', () => {
     expect(routeOf('/de/hundejahre-rechner')).toMatchObject({ id: 'dog-age', kind: 'calculator' });
     expect(routeOf('/de')?.kind).toBe('home');
+  });
+
+  it('finds a route by its Spanish address too', () => {
+    expect(routeOf('/es/edad-de-perro-en-anos-humanos')).toMatchObject({
+      id: 'dog-age',
+      kind: 'calculator',
+    });
+    expect(routeOf('/es')?.kind).toBe('home');
   });
 
   it('finds a route by its French address too', () => {
@@ -345,6 +407,12 @@ describe('hrefOf', () => {
     expect(() => hrefOf('dog', 'de')).toThrow('no German page for dog');
   });
 
+  it('leads to the Spanish page of a route, and refuses a route with none', () => {
+    expect(hrefOf('dog-age', 'es')).toBe('/es/edad-de-perro-en-anos-humanos');
+    expect(hrefOf('home', 'es')).toBe('/es');
+    expect(() => hrefOf('dog', 'es')).toThrow('no Spanish page for dog');
+  });
+
   it('leads to the French page of a route, and refuses a route with none', () => {
     expect(hrefOf('dog-age', 'fr')).toBe('/fr/age-chien-en-humain');
     expect(hrefOf('home', 'fr')).toBe('/fr');
@@ -365,5 +433,11 @@ describe('langOf', () => {
     expect(langOf('/fr')).toBe('fr');
     expect(langOf('/fr/que-peut-manger-un-chien')).toBe('fr');
     expect(langOf('/fresh')).toBe('en');
+  });
+
+  it('reads Spanish under /es', () => {
+    expect(langOf('/es')).toBe('es');
+    expect(langOf('/es/los-perros-pueden-comer-uvas')).toBe('es');
+    expect(langOf('/especially')).toBe('en');
   });
 });

@@ -36,9 +36,14 @@ const organizationOf = (origin: string, lang: Lang) => ({
 
 /**
  * The language of the JSON-LD: American English, German for every German-speaking country and
- * French for every French-speaking one.
+ * French and Spanish for every French- and Spanish-speaking one.
  */
-const IN_LANGUAGE: Readonly<Record<Lang, string>> = { en: 'en-US', de: 'de', fr: 'fr' };
+const IN_LANGUAGE: Readonly<Record<Lang, string>> = {
+  en: 'en-US',
+  de: 'de',
+  fr: 'fr',
+  es: 'es',
+};
 
 /**
  * The JSON-LD of the page at `path`, ready for its script element. The home is the WebSite and the

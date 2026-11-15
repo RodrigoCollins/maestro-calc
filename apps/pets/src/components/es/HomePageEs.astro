@@ -1,0 +1,49 @@
+---
+import { HOME_ES } from '../../es/home.ts';
+import Layout from '../Layout.astro';
+---
+
+<Layout title={HOME_ES.title} description={HOME_ES.description}>
+  <main class="bf-page">
+    <h1>{HOME_ES.h1}</h1>
+    <p>{HOME_ES.lead}</p>
+    <div class="bf-cards">
+      {HOME_ES.cards.map(({ href, title, summary }, index) => (
+        <section class="bf-card" aria-labelledby={`tarjeta-${String(index)}`}>
+          <h2 id={`tarjeta-${String(index)}`}>
+            <a {href}>{title}</a>
+          </h2>
+          <p>{summary}</p>
+        </section>
+      ))}
+    </div>
+    {HOME_ES.approach.map((paragraph) => (
+      <p>{paragraph}</p>
+    ))}
+    <section class="bf-card mint" aria-labelledby="todos">
+      <h2 id="todos">{HOME_ES.foodsHeading}</h2>
+      <ul>
+        {HOME_ES.foods.map(({ href, label }) => (
+          <li>
+            <a {href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p>
+      {HOME_ES.trust.text}{' '}
+      {HOME_ES.trust.links.map(({ href, label }, index) => (
+        <>
+          {index > 0 && ' · '}
+          <a {href}>{label}</a>
+        </>
+      ))}
+    </p>
+    <p>
+      {HOME_ES.english.text}{' '}
+      <a href={HOME_ES.english.href} hreflang="en">
+        {HOME_ES.english.label}
+      </a>
+    </p>
+  </main>
+</Layout>

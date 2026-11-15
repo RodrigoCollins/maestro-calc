@@ -78,6 +78,23 @@ const FOOTER_FR: readonly NavLink[] = [
   { id: 'privacy', label: 'Confidentialité' },
 ];
 
+/** The Spanish header: the hub of the food pages, the dog age calculator and the chocolate guide. */
+const NAV_ES: readonly NavLink[] = [
+  { id: 'foods', label: '¿Qué pueden comer?' },
+  { id: 'dog-age', label: 'Edad del perro' },
+  { id: 'chocolate-guide', label: 'Chocolate' },
+];
+
+/** The Spanish footer: the same three, then the pages about the site. */
+const FOOTER_ES: readonly NavLink[] = [
+  { id: 'foods', label: '¿Qué frutas pueden comer los perros? Todos los alimentos' },
+  { id: 'dog-age', label: 'Edad de perro en años humanos' },
+  { id: 'chocolate-guide', label: '¿Qué pasa si un perro come chocolate?' },
+  { id: 'about', label: 'Acerca de' },
+  { id: 'editorial', label: 'Política editorial' },
+  { id: 'privacy', label: 'Privacidad' },
+];
+
 /** What the layout writes around every page, in each language. */
 export const LAYOUT_TEXTS = {
   en: {
@@ -95,6 +112,11 @@ export const LAYOUT_TEXTS = {
     warning:
       'Chaque chiffre est un point de départ, pas un avis vétérinaire. Parlez-en avec votre vétérinaire.',
   },
+  es: {
+    navLabel: 'Calculadoras y guías',
+    warning:
+      'Cada cifra es un punto de partida, no un consejo veterinario. Coméntala con tu veterinario.',
+  },
 } as const satisfies Record<Lang, { readonly navLabel: string; readonly warning: string }>;
 
 const linksOf = (links: readonly NavLink[], lang: Lang): { href: string; label: string }[] =>
@@ -107,6 +129,7 @@ const LINKS: Readonly<
   en: { nav: NAV, footer: FOOTER },
   de: { nav: NAV_DE, footer: FOOTER_DE },
   fr: { nav: NAV_FR, footer: FOOTER_FR },
+  es: { nav: NAV_ES, footer: FOOTER_ES },
 };
 
 /** The header links of `lang`, each at its page. */
@@ -118,16 +141,21 @@ export const footerLinks = (lang: Lang = 'en'): { href: string; label: string }[
   linksOf(LINKS[lang].footer, lang);
 
 /** Each language named in itself, as the link to it reads. */
-const NAMES: Readonly<Record<Lang, string>> = { en: 'English', de: 'Deutsch', fr: 'Français' };
+const NAMES: Readonly<Record<Lang, string>> = {
+  en: 'English',
+  de: 'Deutsch',
+  fr: 'Français',
+  es: 'Español',
+};
 
 /** The languages in the order the header lists them. */
-const ORDER: readonly Lang[] = ['en', 'de', 'fr'];
+const ORDER: readonly Lang[] = ['en', 'de', 'fr', 'es'];
 
 /**
- * The links to the other languages' pages, when the page at `path` has twins: a German or French
- * page always leads to its English twin, and any page leads to a German or French twin only once
- * that language is open (`open`, from `SITE.deIndexable` and `SITE.frIndexable`), so no page sends a
- * reader to a page closed to search engines.
+ * The links to the other languages' pages, when the page at `path` has twins: a German, French or
+ * Spanish page always leads to its English twin, and any page leads to a twin in another language
+ * only once that language is open (`open`, from `SITE.deIndexable`, `SITE.frIndexable` and
+ * `SITE.esIndexable`), so no page sends a reader to a page closed to search engines.
  */
 export const switchesOf = (
   path: string,
