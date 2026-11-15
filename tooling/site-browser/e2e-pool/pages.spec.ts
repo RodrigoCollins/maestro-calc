@@ -387,7 +387,7 @@ test('numbers the pump run time steps, whose calculator links all answer', async
 
 test('numbers the salt water vs chlorine steps, whose links all answer', async ({ page }) => {
   await page.goto('/salt-water-pool-vs-chlorine-pool');
-  await expect(page.locator('.pool-steps > li')).toHaveCount(13);
+  await expect(page.locator('.pool-steps > li')).toHaveCount(12);
   const hrefs = await page
     .locator('.pool-steps a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
