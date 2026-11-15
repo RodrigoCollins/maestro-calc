@@ -10,8 +10,12 @@ import {
 } from '@maestro-calc/core';
 import { gallonsOf, unitsInput } from '../units.ts';
 
-/** Muriatic acid (20° Baumé, 31.45% HCl) lowers pH; soda ash (sodium carbonate, 100%) raises it. */
-const PRODUCTS = ['muriatic-31-45', 'soda-ash'] as const;
+/**
+ * Muriatic acid (20° Baumé, 31.45% HCl) lowers pH; soda ash (sodium carbonate, 100%) raises it; dry
+ * acid (sodium bisulfate, 93.2%) lowers it too. A new product is appended: a shared link keeps its
+ * meaning.
+ */
+const PRODUCTS = ['muriatic-31-45', 'soda-ash', 'dry-acid'] as const;
 
 /**
  * Taylor Technologies, K-1003 instructions (Instr. #5816), pH dosage charts, per drop of the
@@ -21,6 +25,11 @@ const PRODUCTS = ['muriatic-31-45', 'soda-ash'] as const;
  */
 const ACID_GALLONS_PER_DROP = Rational.of(916, 100 * 128 * 10_000);
 const SODA_OUNCES_PER_DROP = Rational.of(513, 100 * 10_000);
+/**
+ * The same chart, dry acid (sodium bisulfate, 93.2%): 6.16 oz a drop of acid demand reagent in
+ * 5,000 gallons, 12.32 oz in 10,000.
+ */
+const DRY_ACID_OUNCES_PER_DROP = Rational.of(1232, 100 * 10_000);
 /** The chart lists 1, 2 and 3 drops. */
 const CHART_DROPS = 3;
 /**
@@ -35,6 +44,12 @@ const ACID_GALLONS_PER_DAY = Rational.of(1, 4 * 20_000);
  * to three hours, recheck pH, and repeat treatments if necessary." 16 oz per 10,000 gallons a time.
  */
 const SODA_OUNCES_PER_ADDITION = Rational.of(16, 10_000);
+/**
+ * pH Down (sodium bisulfate 93.2%) label, made for Alliance Trading, Inc. (01616484, REV052024):
+ * "Never add more than 1.5 pounds of this product per 10,000 gallons of pool water at any one time.
+ * Allow pool water to recirculate two hours and retest pH." 24 oz per 10,000 gallons a time.
+ */
+const DRY_ACID_OUNCES_PER_ADDITION = Rational.of(24, 10_000);
 
 /** The parts a dose takes at `most` a part: none for no dose, else the dose over it, rounded up. */
 const partsOf = (dose: Rational, most: Rational): Rational =>
@@ -48,7 +63,9 @@ const partsOf = (dose: Rational, most: Rational): Rational =>
  * adds the same amount, and the run says the chart stops there. The labels cap one addition: HASA's
  * acid at a quart per 20,000 gallons in 24 hours, the pH Up soda ash at 1 lb per 10,000 gallons
  * 2 to 3 hours apart; the run gives that most for the pool's gallons and the days (acid) or the
- * additions (soda ash) the dose takes at it, and says so when it takes more than one.
+ * additions (soda ash) the dose takes at it, and says so when it takes more than one. Dry acid reads
+ * the chart's sodium bisulfate column, 12.32 oz a drop, in the dry output, and the pH Down label
+ * caps it at 1.5 lb per 10,000 gallons a time, 2 hours apart: additions, as soda ash.
  */
 export const poolPh = defineCalculator({
   id: 'pool-ph',
@@ -96,10 +113,15 @@ export const poolPh = defineCalculator({
     const gallons = gallonsOf(volume, units);
     const dose = gallons.mul(Rational.of(drops));
     const acid = product === 'muriatic-31-45';
+    const dryAcid = product === 'dry-acid';
     const liquid = acid ? dose.mul(ACID_GALLONS_PER_DROP) : Rational.ZERO;
-    const dry = acid ? Rational.ZERO : dose.mul(SODA_OUNCES_PER_DROP);
+    const dry = acid
+      ? Rational.ZERO
+      : dose.mul(dryAcid ? DRY_ACID_OUNCES_PER_DROP : SODA_OUNCES_PER_DROP);
     const perDay = gallons.mul(ACID_GALLONS_PER_DAY);
-    const perAddition = gallons.mul(SODA_OUNCES_PER_ADDITION);
+    const perAddition = gallons.mul(
+      dryAcid ? DRY_ACID_OUNCES_PER_ADDITION : SODA_OUNCES_PER_ADDITION,
+    );
     const days = partsOf(liquid, perDay);
     const additions = partsOf(dry, perAddition);
     const one = Rational.of(1);

@@ -17,10 +17,12 @@ import { cityStationsOf } from './city-stations.ts';
 import { frostPathOf } from './frost.ts';
 import { STATIONS_OF } from './frost-stations.ts';
 import { frostStatsOf, type FrostStats } from './frost-stats.ts';
+import { feedingOf, fertilizerHrefOf } from './feed-rates.ts';
 import { dateText } from './frost-text.ts';
 import type { Guide, GuideSource } from './guide.ts';
 import { AERATION_LINK, NOAA, PRE_EMERGENT_LINK, READ } from './seed-sources.ts';
 import { STATE_CALENDARS, type Claim, type StateCalendar } from './state-calendars.ts';
+import { RATES_READ, STATE_RATES, type StateRates } from './state-rates.ts';
 import { USDA_SOURCES } from './zone-guides.ts';
 import { ZONED, zonesOfState } from './zoned.ts';
 
@@ -69,6 +71,10 @@ const uniqueSources = (sources: Record<string, GuideSource>): Record<string, Gui
     Object.entries(sources).filter(([, { url }]) => !seen.has(url) && Boolean(seen.add(url))),
   );
 };
+
+/** The publication a state's rates come from, as the page names it: `Ohio State University Extension HYG-4031`. */
+const rateSourceText = (rates: StateRates): string =>
+  rates.sources[0]?.name.split(',')[0] ?? 'its extension service';
 
 const zoneSpan = (rows: readonly ZoneRow[]): string => {
   const first = rows[0]?.label ?? '';
@@ -219,6 +225,9 @@ const feedGuideOf = (state: StateEntry): Guide => {
   const cool = calendar.kinds.includes('cool');
   const stations = STATIONS_OF[state.slug]?.length ?? 0;
   const first = calendar.feed[0];
+  const rates = STATE_RATES[state.code as CalendarStateCode];
+  const feeding = feedingOf(rates.feeding);
+  const city = citiesOf(state)[0];
   return {
     id: `feed:${state.slug}`,
     path: feedStatePathOf(state.slug),
@@ -230,7 +239,7 @@ const feedGuideOf = (state: StateEntry): Guide => {
     description: `The months to feed a ${state.name} lawn, from its extension service, and the spring and fall freeze dates of its ${count(stations, 'NOAA station')} by zone.`,
     h1: `When to fertilize your lawn in ${state.name}`,
     lead: `${first?.text[0] ?? ''} ${warm ? `For warm-season grass timed from the frost, the first feeding comes about 6 weeks after the last spring freeze, ${dateText(warmFeedFirst(stats.spring.middle))} at the middle station, and the last no later than 6 weeks before the first fall freeze, ${dateText(warmFeedLast(stats.fall.middle).weeks6)}.` : `The middle of its ${count(stations, 'weather station')} has its last spring freeze on ${dateText(stats.spring.middle)} and its first fall freeze on ${dateText(stats.fall.middle)}.`}`,
-    checked: READ,
+    checked: RATES_READ,
     sections: [
       {
         id: 'extension',
@@ -246,6 +255,14 @@ const feedGuideOf = (state: StateEntry): Guide => {
             ? 'Purdue Extension sums up the cool-season rule: most of the nitrogen from late summer through autumn, less in the spring flush and little to none in summer, and none on frozen soil.'
             : 'Warm-season grasses grow in the heat, so they are fed from green-up through summer and not into the cold months.',
         ],
+      },
+      {
+        id: 'rates',
+        heading: `How much nitrogen a ${state.name} lawn takes`,
+        paragraphs: [
+          `The pounds of nitrogen (N) per 1,000 sq ft that ${rateSourceText(rates)} gives, per feeding and per year:`,
+        ],
+        items: rates.items,
       },
       {
         id: 'by-zone',
@@ -278,15 +295,24 @@ const feedGuideOf = (state: StateEntry): Guide => {
         ),
       },
       {
-        id: 'how-much',
-        heading: 'How much to put down',
+        id: 'worked',
+        heading: `Worked example: one feeding in ${state.name}`,
         paragraphs: [
-          `The fertilizer calculator turns the N-P-K numbers on the bag and the rate of your source into pounds for your lawn. Check the station nearest you on the ${state.name} frost page before you set the dates.`,
+          `On the calculator’s starting lawn, 5,000 sq ft fed from a 24-0-6 bag sold in 15 lb bags, ${String(rates.feeding)} lb of N per 1,000 sq ft, ${rates.of}, takes ${feeding.perThousand} lb of product per 1,000 sq ft (${String(rates.feeding)} ÷ 0.24), ${feeding.pounds} lb for the lawn: ${feeding.bags} ${feeding.bags === '1' ? 'bag' : 'bags'} of 15 lb.`,
+          ...(warm && city !== undefined
+            ? [
+                `Timed from the frost, the first warm-season feeding falls about ${dateText(warmFeedFirst(city.spring))} in ${city.name}, 6 weeks after its last spring freeze of ${dateText(city.spring)}, and the last by ${dateText(warmFeedLast(city.fall).weeks6)}.`,
+              ]
+            : []),
+          `The calculator turns another bag or another lawn size into pounds the same way. Check the station nearest you on the ${state.name} frost page before you set the dates.`,
         ],
         links: [
+          {
+            href: fertilizerHrefOf(rates.feeding),
+            label: `Lawn fertilizer calculator at ${String(rates.feeding)} lb of N per 1,000 sq ft`,
+          },
           { href: frostPathOf(state.slug), label: `${state.name} frost dates` },
           { href: seedStatePathOf(state.slug), label: `When to plant grass seed in ${state.name}` },
-          { href: '/lawn-fertilizer-calculator', label: 'Lawn fertilizer calculator' },
           PRE_EMERGENT_LINK,
           AERATION_LINK,
         ],
@@ -298,12 +324,17 @@ const feedGuideOf = (state: StateEntry): Guide => {
         answer: `${cool ? 'A cool-season lawn mostly from late summer through fall' : 'A warm-season lawn from green-up through summer'}, by ${calendar.feed[0]?.source.name.split(',')[0] ?? 'its extension service'}.${warm ? ` For warm-season grass timed from the frost, from about ${dateText(warmFeedFirst(stats.spring.middle))} to ${dateText(warmFeedLast(stats.fall.middle).weeks6)} at the middle station.` : ''}`,
       },
       {
+        question: `How much nitrogen does a lawn need in ${state.name}?`,
+        answer: `${rates.items[0] ?? ''} One feeding of ${String(rates.feeding)} lb of N per 1,000 sq ft is ${feeding.pounds} lb of a 24-0-6 fertilizer on a 5,000 sq ft lawn.`,
+      },
+      {
         question: `When is the last frost in ${state.name}?`,
         answer: `At the middle of its ${count(stats.dated, 'dated station')}, the 50% last spring freeze is ${dateText(stats.spring.middle)}; half of them fall between ${dateText(stats.spring.low)} and ${dateText(stats.spring.high)}.`,
       },
     ],
     sources: uniqueSources({
       ...sourcesOf([calendar.grasses, ...calendar.feed]),
+      ...Object.fromEntries(rates.sources.map((source) => [source.url, source])),
       ...(warm ? { texas: RULE_SOURCES.texas, ncBermuda: RULE_SOURCES.ncBermuda } : {}),
       ...(cool ? { purdue: RULE_SOURCES.purdue } : {}),
       noaa: NOAA,

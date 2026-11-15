@@ -74,3 +74,49 @@ describe('pool chlorine', () => {
     expect(poolChlorine.run({ current: '-1' }).ok).toBe(false);
   });
 });
+
+// What the chlorine brings with it, by the molar masses of PubChem: cyanuric acid 129.07 g/mol,
+// chlorine (Cl2) 70.90 g/mol and calcium carbonate 100.09 g/mol. Available chlorine is counted as
+// Cl2, one 70.90 g for each HOCl a molecule releases in water. Dichlor releases 2 HOCl and 1
+// cyanuric acid, so each ppm of free chlorine from it brings 129.07 / 141.80 = 0.910 ppm of CYA;
+// cal-hypo, Ca(OCl)2, releases 2 HOCl and 1 calcium, read as calcium carbonate: 100.09 / 141.80 =
+// 0.706 ppm of calcium hardness a ppm. Liquid chlorine brings neither.
+describe('what the chlorine brings with it', () => {
+  const extra = (raw: Readonly<Record<string, unknown>>, key: string): Rational => {
+    const value = ran(raw)[key];
+    if (!(value instanceof Rational)) throw new Error(`${key} is not a number`);
+    return value;
+  };
+
+  it('adds 0.910 ppm of CYA a ppm of dichlor, and no calcium', () => {
+    expect(extra({ ...PER_PPM, product: 'dichlor-56' }, 'cya')).toEqual(Rational.of(12907, 14180));
+    // the default raise of 2 ppm: 1.82 ppm of CYA
+    expect(extra({ product: 'dichlor-56' }, 'cya').toNumber()).toBeCloseTo(1.82, 2);
+    expect(extra({ product: 'dichlor-56' }, 'hardness')).toEqual(Rational.ZERO);
+  });
+
+  it('adds 0.706 ppm of calcium hardness a ppm of cal-hypo, and no CYA', () => {
+    expect(extra({ ...PER_PPM, product: 'cal-hypo-65' }, 'hardness')).toEqual(
+      Rational.of(10009, 14180),
+    );
+    // a shock from 0 to 10 ppm: 7.06 ppm of calcium hardness
+    expect(
+      extra({ ...PER_PPM, target: '10', product: 'cal-hypo-65' }, 'hardness').toNumber(),
+    ).toBeCloseTo(7.06, 2);
+    expect(extra({ product: 'cal-hypo-65' }, 'cya')).toEqual(Rational.ZERO);
+  });
+
+  it('adds neither with liquid chlorine, and nothing when no chlorine goes in', () => {
+    for (const product of ['liquid-12-5', 'liquid-10']) {
+      expect(extra({ product }, 'cya')).toEqual(Rational.ZERO);
+      expect(extra({ product }, 'hardness')).toEqual(Rational.ZERO);
+    }
+    expect(extra({ product: 'dichlor-56', current: '5' }, 'cya')).toEqual(Rational.ZERO);
+  });
+
+  it('reads the same ppm in metric, where the raise does not depend on the volume', () => {
+    expect(extra({ product: 'dichlor-56', units: 'metric', gallons: '50000' }, 'cya')).toEqual(
+      Rational.of(2 * 12907, 14180),
+    );
+  });
+});

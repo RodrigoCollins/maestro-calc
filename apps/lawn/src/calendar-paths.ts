@@ -14,7 +14,10 @@ export const feedStatePathOf = (slug: string): string => `/when-to-fertilize-law
 /**
  * The states with a seed and a fertilizer calendar: the 21 most populous in the 2020 Census
  * resident population, in that order, but Massachusetts (15th), whose extension pages could not
- * be read to cite; Colorado (21st) takes its place.
+ * be read to cite; Colorado (21st) takes its place. Then, in the same order, the next states whose
+ * extension service publishes its feeding months and nitrogen rates by grass, read 2026-11-10:
+ * Minnesota (22nd), Louisiana (25th), Oregon (27th), Oklahoma (28th) and the rest are left out
+ * until their pages can be read and cited.
  */
 export const CALENDAR_STATE_CODES = [
   'CA',
@@ -37,6 +40,12 @@ export const CALENDAR_STATE_CODES = [
   'MO',
   'WI',
   'CO',
+  'SC',
+  'AL',
+  'KY',
+  'AR',
+  'MS',
+  'KS',
 ] as const;
 
 export type CalendarStateCode = (typeof CALENDAR_STATE_CODES)[number];

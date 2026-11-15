@@ -187,10 +187,41 @@ const href = whatsappHref(receiptMessage(result, lang, canonical));
         </svg>
         {t.whatsapp}
       </a>
+      {!embed && (
+        <button
+          class="button button-secondary"
+          type="button"
+          data-send
+          data-share-label={t.share}
+          hidden
+        >
+          {t.copy}
+        </button>
+      )}
       <button class="button button-secondary" type="button" data-print>
         {t.print}
       </button>
       <p class="note">{t.shareNote}</p>
+      {!embed && (
+        <div class="actions" data-saved hidden>
+          <button class="button button-secondary" type="button" data-clear>
+            {t.clear}
+          </button>
+          <p class="note">{t.savedNote}</p>
+        </div>
+      )}
+      {!embed && (
+        <p
+          class="note"
+          role="status"
+          data-status
+          data-restored={t.restored}
+          data-cleared={t.cleared}
+          data-copied={t.copied}
+          data-shared={t.shared}
+          data-failed={t.notCopied}
+        />
+      )}
     </div>
 
     <p class="note">

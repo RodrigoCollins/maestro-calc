@@ -86,8 +86,8 @@ export const runDose = <const I extends readonly InputDescriptor[]>(
       return;
     }
     for (const { key, value } of ran.value.outputs) {
-      for (const node of document.querySelectorAll(`[data-out="${key}"]`))
-        node.textContent = outputText(key, value, units);
+      for (const node of document.querySelectorAll<HTMLElement>(`[data-out="${key}"]`))
+        node.textContent = outputText(key, value, units, node.dataset['as']);
     }
     for (const node of document.querySelectorAll('[data-shop]')) {
       node.textContent = String(ran.value.shopping[0]?.qty ?? 0n);

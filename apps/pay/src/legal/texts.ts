@@ -49,6 +49,7 @@ export const PRIVACY_TEXTS: Readonly<Record<Lang, PrivacyTexts>> = {
         heading: 'Calculators',
         paragraphs: [
           'Calculators run in your browser. Nothing you type, such as your hours, your pay rate or your tips, is sent to us or to Google Analytics. The values you enter sit in the page address, so you can copy the link and share it. Opening or sharing that address sends it like any page request, so it can appear in Cloudflare request logs. The address with your values also stays in your browser history, like any page you visit.',
+          "The time card keeps your last week in your browser's local storage, on your device only, so it is there when you come back; it is never sent to us or to anyone, and the Clear my week button deletes it.",
         ],
       },
       {
@@ -64,7 +65,7 @@ export const PRIVACY_TEXTS: Readonly<Record<Lang, PrivacyTexts>> = {
         paragraphs: ['We will update this page before we add advertising.'],
       },
     ],
-    reviewed: 'Last updated November 3, 2026.',
+    reviewed: 'Last updated November 10, 2026.',
   },
   es: {
     title: 'Privacidad | Cuenta Horas',
@@ -95,6 +96,7 @@ export const PRIVACY_TEXTS: Readonly<Record<Lang, PrivacyTexts>> = {
         heading: 'Calculadoras',
         paragraphs: [
           'Las calculadoras funcionan en tu navegador. Nada de lo que escribes, como tus horas, tu pago por hora o tus propinas, se nos envía ni se envía a Google Analytics. Los valores que ingresas quedan en la dirección de la página, para que puedas copiar el enlace y compartirlo. Abrir o compartir esa dirección la envía como cualquier solicitud de página, así que puede aparecer en los registros de Cloudflare. La dirección con tus valores también queda en el historial de tu navegador, como cualquier página que visitas.',
+          'La tarjeta de horas guarda tu última semana en el almacenamiento local de tu navegador, solo en tu dispositivo, para que esté ahí cuando vuelvas; nunca se envía a nosotros ni a nadie, y el botón Borrar mi semana la elimina.',
         ],
       },
       {
@@ -110,6 +112,6 @@ export const PRIVACY_TEXTS: Readonly<Record<Lang, PrivacyTexts>> = {
         paragraphs: ['Vamos a actualizar esta página antes de agregar publicidad.'],
       },
     ],
-    reviewed: 'Última actualización: 3 de noviembre de 2026.',
+    reviewed: 'Última actualización: 10 de noviembre de 2026.',
   },
 };
