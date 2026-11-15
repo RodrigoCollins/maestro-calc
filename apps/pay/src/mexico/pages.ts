@@ -13,7 +13,16 @@ import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { countOf, DAYS_BETWEEN_NAME, longDateOf, pesosOf, shortDateOf } from '../dates/words.ts';
 import type { LongTailSection, LongTailSource } from '../long-tail/sections.ts';
 import { titleOf } from '../seo/meta.ts';
-import { AGUINALDO_PATH, mexicoPathOf, VACACIONES_PATH, type MexicoSlug } from './routes.ts';
+import { LABOR_ARTICLE_LABELS, LABOR_ARTICLES, laborCalculatorLinks } from './labor-pages.ts';
+import {
+  AGUINALDO_PATH,
+  ANTIGUEDAD_PATH,
+  mexicoPathOf,
+  SDI_PATH,
+  VACACIONES_PATH,
+  type MexicoSlug,
+} from './routes.ts';
+import { ANTIGUEDAD_NAME, SDI_NAME } from './labor-words.ts';
 import {
   AGUINALDO_NAME,
   aguinaldoTextOf,
@@ -90,12 +99,15 @@ interface CalculatorLink {
 const AGUINALDO_LINK: CalculatorLink = { href: AGUINALDO_PATH, label: AGUINALDO_NAME };
 const DAYS_BETWEEN_LINK: CalculatorLink = { href: DAYS_BETWEEN_PATH, label: DAYS_BETWEEN_NAME };
 const VACACIONES_LINK: CalculatorLink = { href: VACACIONES_PATH, label: VACACIONES_NAME };
+const ANTIGUEDAD_LINK: CalculatorLink = { href: ANTIGUEDAD_PATH, label: ANTIGUEDAD_NAME };
+const SDI_LINK: CalculatorLink = { href: SDI_PATH, label: SDI_NAME };
 
 const ARTICLE_LABELS: Readonly<Record<MexicoSlug, string>> = {
   'cuantos-dias-de-aguinaldo-son-por-ley': '¿Cuántos días de aguinaldo son por ley?',
   'aguinaldo-2026': 'Aguinaldo 2026: cuánto te toca y cuándo se paga',
   'cuantos-dias-de-vacaciones-son-por-ano': 'Días de vacaciones por ley en México',
   'prima-vacacional': 'Prima vacacional: qué es y cómo se calcula',
+  ...LABOR_ARTICLE_LABELS,
 };
 
 const articleLink = (slug: MexicoSlug): CalculatorLink => ({
@@ -107,6 +119,7 @@ const articleLink = (slug: MexicoSlug): CalculatorLink => ({
 export const mexicoLinks = (): readonly CalculatorLink[] => [
   AGUINALDO_LINK,
   VACACIONES_LINK,
+  ...laborCalculatorLinks(),
   ...(Object.keys(ARTICLE_LABELS) as MexicoSlug[]).map(articleLink),
 ];
 
@@ -170,13 +183,14 @@ const aguinaldoSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Más sobre el aguinaldo y las vacaciones',
       paragraphs: [
-        'Las reglas con sus fuentes, la otra prestación de cada año y la calculadora de fechas, para contar los días trabajados entre tu fecha de ingreso y tu último día (marca «Contar también el día de inicio»).',
+        'Las reglas con sus fuentes, la otra prestación de cada año, la calculadora de fechas, para contar los días trabajados entre tu fecha de ingreso y tu último día (marca «Contar también el día de inicio»), y la prima de antigüedad, que también va en tu finiquito si dejas el trabajo.',
       ],
       links: [
         articleLink('cuantos-dias-de-aguinaldo-son-por-ley'),
         articleLink('aguinaldo-2026'),
         VACACIONES_LINK,
         DAYS_BETWEEN_LINK,
+        ANTIGUEDAD_LINK,
       ],
     },
   ];
@@ -289,12 +303,13 @@ const vacacionesSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'La tabla completa, la prima y el aguinaldo',
       paragraphs: [
-        'Los días de cada año de servicio, la prima vacacional explicada con ejemplos, y la otra prestación de fin de año.',
+        'Los días de cada año de servicio, la prima vacacional explicada con ejemplos, la otra prestación de fin de año y el salario diario integrado, que suma las dos a tu salario.',
       ],
       links: [
         articleLink('cuantos-dias-de-vacaciones-son-por-ano'),
         articleLink('prima-vacacional'),
         AGUINALDO_LINK,
+        SDI_LINK,
       ],
     },
   ];
@@ -781,9 +796,10 @@ const ARTICLES: Readonly<
       calculator: VACACIONES_LINK,
       sections: PRIMA_VACACIONAL(),
       sources: [MX_SOURCES.lft, MX_SOURCES.dof2022, MX_SOURCES.lisr, MX_SOURCES.uma],
-      others: [articleLink('cuantos-dias-de-vacaciones-son-por-ano'), AGUINALDO_LINK],
+      others: [articleLink('cuantos-dias-de-vacaciones-son-por-ano'), AGUINALDO_LINK, SDI_LINK],
     };
   },
+  ...LABOR_ARTICLES,
 };
 
 /** The answer page of `slug`. */

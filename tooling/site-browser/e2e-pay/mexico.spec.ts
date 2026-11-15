@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { AGUINALDO, VACACIONES_MX } from './pages.ts';
+import { AGUINALDO, ANTIGUEDAD, SDI_MX, VACACIONES_MX } from './pages.ts';
 
 // Hand-verified:
 // - 2026 at the general minimum wage: 315.04 × 15 = 4,725.60; 30 UMA = 30 × 117.31 = 3,519.30
@@ -73,5 +73,70 @@ test.describe(VACACIONES_MX, () => {
     await page.locator('input[name="start"]').fill('2026-03-01');
     await expect(page.locator('[data-mx="figure"]')).toHaveText('12 días');
     await expect(page.locator('[data-mx-not-earned]')).toBeVisible();
+  });
+});
+
+// Hand-verified (LFT arts. 162, 485 and 486; LSS arts. 27 and 28):
+// - 1 July 2011 to 30 June 2026 at 315.04: 15 years, 12 × 15 = 180 days, 315.04 × 180 = 56,707.20.
+// - The same dates on leaving by choice at 10 years (from 1 July 2016): no prima owed, $0.00.
+// - $20,000 a month (666.67 a day) over twice the minimum: 630.08; dismissal from 1 January 2022 to
+//   30 June 2026, 4 years and 181 days: 630.08 × 12 × 1,641 / 365 = 33,993.25.
+// - SDI: 315.04 × 383 / 365 = 330.58 (factor 1.0493); 5 whole years from 15 January 2021 to
+//   31 December 2026: the sixth year, 22 days, 315.04 × 385.5 / 365 = 332.73 (1.0562);
+//   $100,000 a month: 3,497.72, capped for the IMSS at 25 × 117.31 = 2,932.75.
+
+test.describe(ANTIGUEDAD, () => {
+  test('starts at 15 years at the minimum wage, owed on leaving by choice', async ({ page }) => {
+    await page.goto(ANTIGUEDAD);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$56,707.20');
+    await expect(page.locator('[data-mx="service"]')).toHaveText('15 años');
+    await expect(page.locator('[data-mx-not-owed]')).toBeHidden();
+  });
+
+  test('owes nothing on leaving by choice before 15 years', async ({ page }) => {
+    await page.goto(ANTIGUEDAD);
+    await page.locator('input[name="start"]').fill('2016-07-01');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-mx-not-owed]')).toBeVisible();
+    await page.locator('select[name="reason"]').selectOption('dismissal');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$37,804.80');
+  });
+
+  test('caps a monthly salary at twice the minimum after a dismissal', async ({ page }) => {
+    await page.goto(ANTIGUEDAD);
+    await page.locator('select[name="reason"]').selectOption('dismissal');
+    await page.locator('select[name="period"]').selectOption('month');
+    await page.locator('input[name="wage"]').fill('20000');
+    await page.locator('input[name="start"]').fill('2022-01-01');
+    await expect(page.locator('[data-mx="base"]')).toHaveText('$630.08');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$33,993.25');
+    await expect(page.locator('[data-mx-capped]')).toBeVisible();
+  });
+});
+
+test.describe(SDI_MX, () => {
+  test('starts at the first year at the minimum wage', async ({ page }) => {
+    await page.goto(SDI_MX);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$330.58');
+    await expect(page.locator('[data-mx="factor"]')).toHaveText('1.0493');
+    await expect(page.locator('[data-mx-capped]')).toBeHidden();
+  });
+
+  test('takes the vacation days of the sixth year', async ({ page }) => {
+    await page.goto(SDI_MX);
+    await page.locator('input[name="start"]').fill('2021-01-15');
+    await expect(page.locator('[data-mx="year"]')).toHaveText('Año 6 · 22 días de vacaciones');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$332.73');
+  });
+
+  test('caps the IMSS base at 25 UMA and warns under the legal aguinaldo', async ({ page }) => {
+    await page.goto(SDI_MX);
+    await page.locator('select[name="period"]').selectOption('month');
+    await page.locator('input[name="wage"]').fill('100000');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$3,497.72');
+    await expect(page.locator('[data-mx="sbc"]')).toHaveText('$2,932.75');
+    await expect(page.locator('[data-mx-capped]')).toBeVisible();
+    await page.locator('input[name="aguinaldo"]').fill('10');
+    await expect(page.locator('[data-mx-below]')).toBeVisible();
   });
 });

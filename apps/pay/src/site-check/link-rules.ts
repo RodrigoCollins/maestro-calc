@@ -27,8 +27,10 @@ import { STATE_ROUTES } from '../states/routes.ts';
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import {
   AGUINALDO_PATH,
+  ANTIGUEDAD_PATH,
   MEXICO_SLUGS,
   mexicoPathOf,
+  SDI_PATH,
   VACACIONES_PATH,
   type MexicoSlug,
 } from '../mexico/routes.ts';
@@ -94,12 +96,15 @@ const MEXICO_CALCULATOR: Readonly<Record<MexicoSlug, string>> = {
   'aguinaldo-2026': AGUINALDO_PATH,
   'cuantos-dias-de-vacaciones-son-por-ano': VACACIONES_PATH,
   'prima-vacacional': VACACIONES_PATH,
+  'prima-dominical': SDI_PATH,
+  'como-se-pagan-las-horas-extras': SDI_PATH,
 };
 
 /**
  * The Mexico labor pages (Spanish only), each linked from the Spanish home: every answer page and
  * the calculator it explains link each other, the two calculators link each other, and the
- * aguinaldo calculator and the dates calculator, which counts the days worked, link each other.
+ * aguinaldo calculator and the dates calculator, which counts the days worked, link each other;
+ * the prima de antigüedad links the aguinaldo and the SDI, and the SDI the vacation calculator.
  */
 export const MEXICO_RULES: readonly GuideRule[] = [
   ...MEXICO_SLUGS.map((slug) => ({
@@ -108,6 +113,8 @@ export const MEXICO_RULES: readonly GuideRule[] = [
   })),
   { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH, DAYS_BETWEEN_PATH] },
   { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
+  { path: ANTIGUEDAD_PATH, calculators: [SDI_PATH, AGUINALDO_PATH] },
+  { path: SDI_PATH, calculators: [VACACIONES_PATH] },
 ];
 
 /**

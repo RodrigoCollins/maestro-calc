@@ -1,8 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { DESCRIPTION, TITLE_MAX } from '../seo/meta.ts';
-import { aguinaldoPageOf, mexicoArticleOf, vacacionesPageOf } from './pages.ts';
+import { antiguedadPageOf, sdiPageOf } from './labor-pages.ts';
+import { aguinaldoPageOf, mexicoArticleOf, mexicoLinks, vacacionesPageOf } from './pages.ts';
 import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
-import { AGUINALDO_PATH, MEXICO_SLUGS, mexicoPathOf, VACACIONES_PATH } from './routes.ts';
+import {
+  AGUINALDO_PATH,
+  MEXICO_SLUGS,
+  mexicoPathOf,
+  ANTIGUEDAD_PATH,
+  SDI_PATH,
+  VACACIONES_PATH,
+} from './routes.ts';
 
 const textOf = (value: unknown): string => JSON.stringify(value);
 
@@ -165,6 +173,7 @@ describe('mexicoArticleOf', () => {
       expect(page.others.map(({ href }) => href)).toEqual([
         mexicoPathOf('cuantos-dias-de-vacaciones-son-por-ano'),
         AGUINALDO_PATH,
+        SDI_PATH,
       ]);
     });
   });
@@ -176,16 +185,40 @@ describe('mexicoArticleOf', () => {
     expect(page.description.length).toBeGreaterThanOrEqual(DESCRIPTION.min);
     expect(page.description.length).toBeLessThanOrEqual(DESCRIPTION.max);
     expect(page.sources.length).toBeGreaterThanOrEqual(3);
-    expect([AGUINALDO_PATH, VACACIONES_PATH]).toContain(page.calculator.href);
+    expect([AGUINALDO_PATH, VACACIONES_PATH, SDI_PATH]).toContain(page.calculator.href);
   });
 
   it('gives each page its own title and description', () => {
-    const pages = [aguinaldoPageOf(), vacacionesPageOf(), ...MEXICO_SLUGS.map(mexicoArticleOf)];
+    const pages = [
+      aguinaldoPageOf(),
+      vacacionesPageOf(),
+      antiguedadPageOf(),
+      sdiPageOf(),
+      ...MEXICO_SLUGS.map(mexicoArticleOf),
+    ];
     expect(new Set(pages.map(({ title }) => title)).size).toBe(pages.length);
     expect(new Set(pages.map(({ description }) => description)).size).toBe(pages.length);
     for (const { description } of pages) {
       expect(description.length).toBeGreaterThanOrEqual(DESCRIPTION.min);
       expect(description.length).toBeLessThanOrEqual(DESCRIPTION.max);
     }
+  });
+});
+
+describe('the links between the Mexico pages', () => {
+  const hrefsOf = (sections: readonly { readonly links?: readonly { href: string }[] }[]) =>
+    sections.flatMap(({ links }) => links ?? []).map(({ href }) => href);
+
+  it('lists every calculator and answer page for the home', () => {
+    const hrefs = mexicoLinks().map(({ href }) => href);
+    for (const href of [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH])
+      expect(hrefs).toContain(href);
+    for (const slug of MEXICO_SLUGS) expect(hrefs).toContain(mexicoPathOf(slug));
+  });
+
+  it('links the prima de antigüedad from the aguinaldo and the SDI from the vacation pages', () => {
+    expect(hrefsOf(aguinaldoPageOf().sections)).toContain(ANTIGUEDAD_PATH);
+    expect(hrefsOf(vacacionesPageOf().sections)).toContain(SDI_PATH);
+    expect(mexicoArticleOf('prima-vacacional').others.map(({ href }) => href)).toContain(SDI_PATH);
   });
 });

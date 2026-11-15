@@ -1,5 +1,5 @@
 import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
-import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
+import { AGUINALDO_PATH, ANTIGUEDAD_PATH, SDI_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
@@ -140,8 +140,12 @@ describe('MEXICO_RULES', () => {
       { path: '/es/mexico/aguinaldo-2026', calculators: [AGUINALDO_PATH] },
       { path: '/es/mexico/cuantos-dias-de-vacaciones-son-por-ano', calculators: [VACACIONES_PATH] },
       { path: '/es/mexico/prima-vacacional', calculators: [VACACIONES_PATH] },
+      { path: '/es/mexico/prima-dominical', calculators: [SDI_PATH] },
+      { path: '/es/mexico/como-se-pagan-las-horas-extras', calculators: [SDI_PATH] },
       { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH, DAYS_BETWEEN_PATH] },
       { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
+      { path: ANTIGUEDAD_PATH, calculators: [SDI_PATH, AGUINALDO_PATH] },
+      { path: SDI_PATH, calculators: [VACACIONES_PATH] },
     ]);
   });
 });
