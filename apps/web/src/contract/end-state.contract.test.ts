@@ -143,6 +143,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'board-feet-4x4x8',
       'board-feet-1x6x8',
       'board-feet-2x12x12',
+      'fence-cost',
       'concrete',
       'rectangle-area',
       'gravel',
@@ -154,11 +155,12 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roofing',
       'feet-inches',
       'board-feet',
+      'fence',
     ]);
-    expect(staticPaths()).toHaveLength(278);
-    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(278);
+    expect(staticPaths()).toHaveLength(282);
+    expect(Object.values(ROUTES).flatMap(({ en, es }) => [urlOf(en), urlOf(es)])).toHaveLength(282);
     // spec: site-seo › [SE14]
-    expect(pageCount(ROUTES)).toBe(280);
+    expect(pageCount(ROUTES)).toBe(284);
   });
 
   // spec: site-routing-i18n › [SR17] every registry calculator has a page (gravel, mulch and
@@ -177,6 +179,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
       'roofing',
       'feet-inches',
       'board-feet',
+      'fence',
     ]);
     expect(PAGELESS).toEqual([]);
   });
@@ -190,7 +193,7 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
     (_locale, module) => {
       expect(
         Object.keys(module).filter((key) => /^page\.[^.]+\.(title|description)$/.test(key)),
-      ).toHaveLength(280);
+      ).toHaveLength(284);
     },
   );
 
@@ -198,11 +201,11 @@ describe('end state of the question pages (site-routing-i18n › [SR1], [SR19], 
   // two entries per calculator page: eighty-six content entries in all
   it('has sixty-six trust entries and twenty calculator entries', () => {
     expect(readEntries(fromRoot('apps/web/src/content/pages'))).toHaveLength(68);
-    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(22);
+    expect(readEntries(fromRoot('apps/web/src/content/calculators'))).toHaveLength(24);
   });
 
   // spec: site-seo › [SE10]
   it('lists two hundred and fifty-six URLs in the sitemap', () => {
-    expect(sitemapXml().match(/<loc>/g)).toHaveLength(278);
+    expect(sitemapXml().match(/<loc>/g)).toHaveLength(282);
   });
 });

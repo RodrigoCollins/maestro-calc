@@ -1,0 +1,21 @@
+---
+import GuidePageDe from '../../components/de/GuidePageDe.astro';
+import { SCHOKOLADE_ENGLISH_CHECKED, SCHOKOLADE_GUIDE } from '../../de/schokolade.ts';
+import { hrefOf } from '../../routes.ts';
+---
+
+<GuidePageDe
+  guide={SCHOKOLADE_GUIDE}
+  checkedEnglish={SCHOKOLADE_ENGLISH_CHECKED}
+  related={[
+    {
+      href: hrefOf('food-chocolate', 'de'),
+      label: 'Dürfen Hunde Schokolade essen? Die Mengen nach Gewicht',
+    },
+    { href: hrefOf('foods', 'de'), label: 'Was dürfen Hunde essen? Alle Lebensmittel' },
+    {
+      href: hrefOf('chocolate'),
+      label: 'Dog chocolate toxicity calculator (Rechner auf Englisch)',
+    },
+  ]}
+/>

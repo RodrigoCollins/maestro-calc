@@ -115,6 +115,34 @@ describe('seoAuditProblems', () => {
     ]);
   });
 
+  it('holds a closed language of an open site to noindex, no canonical and no sitemap line', () => {
+    const site = openSite();
+    site.set(
+      '/de/c',
+      page({ title: 'C | Bowl Figures', description: `${DESCRIPTION} C`, noindex: true }),
+    );
+    const german = (path: string): boolean => path.startsWith('/de/');
+    expect(seoAuditProblems(site, rules({ indexable: true, closed: german }))).toEqual([]);
+    site.set(
+      '/de/c',
+      page({
+        title: 'C | Bowl Figures',
+        description: `${DESCRIPTION} C`,
+        canonical: `${ORIGIN}/de/c`,
+      }),
+    );
+    expect(
+      seoAuditProblems(
+        site,
+        rules({ indexable: true, closed: german, sitemap: ['/a', '/b', '/de/c'] }),
+      ),
+    ).toEqual([
+      '/de/c: a closed language must say noindex',
+      '/de/c: a closed language must name no canonical',
+      '/de/c: closed to search engines, but in the sitemap',
+    ]);
+  });
+
   it('keeps the 404 out of the index', () => {
     const site = closedSite();
     site.set('/404', page({ canonical: `${ORIGIN}/404` }));

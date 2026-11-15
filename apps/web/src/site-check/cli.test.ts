@@ -84,6 +84,17 @@ const site = {
       'https://www.nist.gov/document/doc-ps-20-20-american-softwood-lumber-standard',
       NIST_URL,
     ],
+    fence: [
+      'https://www.quikrete.com/PDFs/Projects/SettingPosts.pdf',
+      'https://www.quikrete.com/PDFs/DATA_SHEET-Concrete%20Mix%201101.pdf',
+      'https://treatedwood.com/projects/building-a-fence',
+      'https://images.homedepot-static.com/catalog/pdfImages/66/665f47cf-0ce3-4613-b7ca-88426b6f6e03.pdf',
+      'https://pros.americasfencestore.com/pages/how-to-building-a-picket-wood-fence',
+      'https://pdf.lowes.com/productdocuments/1bf53922-7486-4be3-bb5e-0ff3f42a5799/40459176.pdf',
+      'https://www.thisoldhouse.com/fences/21014933/fencing-lessons',
+      'https://www.nist.gov/document/doc-ps-20-20-american-softwood-lumber-standard',
+      NIST_URL,
+    ],
   },
   guides: Object.fromEntries(
     Object.entries(GUIDES).map(([id, { calculator }]) => [id, calculator ?? 'home']),

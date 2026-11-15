@@ -1,0 +1,109 @@
+---
+import type { Guide } from '../../guides.ts';
+import { CALL_DE, HEADINGS_DE, readOnDe } from '../../de/texts.ts';
+import Byline from '../Byline.astro';
+import Layout from '../Layout.astro';
+import ShareLink from '../ShareLink.astro';
+import Sources from '../Sources.astro';
+
+/** A German guide (`src/de/schokolade.ts`): sections, a worked table, a FAQ and its sources. */
+interface Props {
+  readonly guide: Guide;
+  /** The day the English-language sources of the guide were read. */
+  readonly checkedEnglish: string;
+  /** Pages worth a click from this one, in German or marked as English. */
+  readonly related: readonly { readonly href: string; readonly label: string }[];
+}
+
+const { guide, checkedEnglish, related } = Astro.props;
+const { title, description, h1, lead, checked, sections, sources, table, questions } = guide;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    {guide.callNow === true && (
+      <p class="bf-call" role="note">
+        {CALL_DE}
+      </p>
+    )}
+    {sections.map(({ id, heading, paragraphs }) => (
+      <>
+        <section aria-labelledby={id}>
+          <h2 {id}>{heading}</h2>
+          {paragraphs.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </section>
+        {table !== undefined && table.after === id && (
+          <section aria-labelledby={table.id}>
+            <h2 id={table.id}>{table.heading}</h2>
+            {table.paragraphs.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+            <div
+              class="bf-scroll"
+              tabindex="0"
+              role="region"
+              aria-label={`${table.heading}, ${HEADINGS_DE.scrolls}`}
+            >
+              <table class="bf-table">
+                <thead>
+                  <tr>
+                    {table.columns.map((column) => (
+                      <th scope="col">{column}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {table.rows.map(([first, ...cells]) => (
+                    <tr>
+                      <th scope="row">{first}</th>
+                      {cells.map((cell) => (
+                        <td>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p>{table.linksHeading}</p>
+            <ul>
+              {table.links.map(({ href, label }) => (
+                <li>
+                  <a {href}>{label}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </>
+    ))}
+    {questions !== undefined && (
+      <section aria-labelledby="faq">
+        <h2 id="faq">{HEADINGS_DE.faq}</h2>
+        {questions.map(({ question, answer }) => (
+          <>
+            <h3>{question}</h3>
+            <p>{answer}</p>
+          </>
+        ))}
+      </section>
+    )}
+    <section class="bf-card mint" aria-labelledby="bf-weiter">
+      <h2 id="bf-weiter">Weiterlesen</h2>
+      <ul>
+        {related.map(({ href, label }) => (
+          <li>
+            <a {href}>{label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p>{readOnDe(checkedEnglish, checked)}</p>
+    <Sources {sources} />
+    <ShareLink path={guide.path} {title} />
+  </main>
+</Layout>

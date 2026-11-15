@@ -1,15 +1,19 @@
 ---
-import { BYLINE_TEXTS, SOURCES_ID } from '../editorial.ts';
+import { BYLINE_TEXTS, BYLINE_TEXTS_DE, SOURCES_ID } from '../editorial.ts';
 import type { PageSource } from '../guides.ts';
+import { langOf } from '../routes.ts';
+import { canonicalPath } from '../seo/sitemap.ts';
 
 /** The sources section a byline links to: every source the page cites, once each. */
 interface Props {
   readonly sources: readonly PageSource[];
 }
+
+const texts = langOf(canonicalPath(Astro.url.pathname)) === 'en' ? BYLINE_TEXTS : BYLINE_TEXTS_DE;
 ---
 
 <section class="bf-card" aria-labelledby={SOURCES_ID}>
-  <h2 id={SOURCES_ID}>{BYLINE_TEXTS.sources}</h2>
+  <h2 id={SOURCES_ID}>{texts.sources}</h2>
   <ul>
     {Astro.props.sources.map(({ name, url }) => (
       <li>

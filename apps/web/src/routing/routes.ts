@@ -444,6 +444,10 @@ export const ROUTES = {
     en: '/measurement/how-many-board-feet-in-a-2x12x12',
     es: '/es/medidas/cuantos-pies-tablares-tiene-un-2x12x12',
   },
+  'fence-cost': {
+    en: '/landscaping/how-much-does-a-fence-cost',
+    es: '/es/jardineria/cuanto-cuesta-una-cerca',
+  },
   concrete: { en: '/concrete-calculator', es: '/es/calculadora-de-concreto' },
   'rectangle-area': {
     en: '/square-footage-calculator',
@@ -461,6 +465,7 @@ export const ROUTES = {
     es: '/es/calculadora-de-pies-y-pulgadas',
   },
   'board-feet': { en: '/board-feet-calculator', es: '/es/calculadora-de-pies-tablares' },
+  fence: { en: '/fence-calculator', es: '/es/calculadora-de-cercas' },
 } as const satisfies Record<string, Record<Locale, `/${string}`>>;
 
 export type PageId = keyof typeof ROUTES;

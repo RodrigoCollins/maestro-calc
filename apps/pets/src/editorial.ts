@@ -1,5 +1,5 @@
 import { dateText } from './format.ts';
-import { hrefOf } from './routes.ts';
+import { hrefOf, type Lang } from './routes.ts';
 
 /** One section of a text page (editorial policy, about, privacy): a heading, paragraphs, optional sources and link. */
 export interface TextSection {
@@ -39,10 +39,27 @@ export const PRIMARY_SOURCES = [
   },
 ] as const;
 
-/** `2026-11-07` as `Nov 7, 2026`. */
-export const checkedText = (checked: string): string => {
+const MONTHS_DE = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+] as const;
+
+/** `2026-11-07` as `Nov 7, 2026`, or in German `7. November 2026`. */
+export const checkedText = (checked: string, lang: Lang = 'en'): string => {
   const [year = 0, month = 0, day = 0] = checked.split('-').map(Number);
-  return dateText({ year, month, day });
+  return lang === 'en'
+    ? dateText({ year, month, day })
+    : `${String(day)}. ${MONTHS_DE[month - 1] ?? ''} ${String(year)}`;
 };
 
 export const EDITORIAL: TextPage = {
@@ -111,6 +128,14 @@ export const BYLINE_TEXTS = {
   sources: 'Sources',
 } as const;
 
+/** The same words in German: an organization, never a person (`Redaktion Bowl Figures`). */
+export const BYLINE_TEXTS_DE = {
+  by: 'Von der',
+  team: 'Redaktion Bowl Figures',
+  reviewed: 'Geprüft am',
+  sources: 'Quellen',
+} as const;
+
 /** The id of the sources section a byline links to. */
 export const SOURCES_ID = 'sources';
 
@@ -128,20 +153,25 @@ export interface Byline {
 export const bylineOf = ({
   checked,
   sources = false,
+  lang = 'en',
 }: {
   readonly checked?: string;
   readonly sources?: boolean;
-}): Byline => ({
-  by: BYLINE_TEXTS.by,
-  team: { href: hrefOf('editorial'), label: BYLINE_TEXTS.team },
-  ...(checked === undefined
-    ? {}
-    : {
-        reviewed: {
-          label: BYLINE_TEXTS.reviewed,
-          datetime: checked,
-          text: checkedText(checked),
-        },
-      }),
-  ...(sources ? { sources: { href: `#${SOURCES_ID}`, label: BYLINE_TEXTS.sources } } : {}),
-});
+  readonly lang?: Lang;
+}): Byline => {
+  const texts = lang === 'en' ? BYLINE_TEXTS : BYLINE_TEXTS_DE;
+  return {
+    by: texts.by,
+    team: { href: hrefOf('editorial', lang), label: texts.team },
+    ...(checked === undefined
+      ? {}
+      : {
+          reviewed: {
+            label: texts.reviewed,
+            datetime: checked,
+            text: checkedText(checked, lang),
+          },
+        }),
+    ...(sources ? { sources: { href: `#${SOURCES_ID}`, label: texts.sources } } : {}),
+  };
+};

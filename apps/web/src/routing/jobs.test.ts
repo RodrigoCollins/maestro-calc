@@ -7,6 +7,7 @@ import { topsoil } from '@maestro-calc/core/calculators/topsoil';
 import { describe, expect, it } from 'vitest';
 import { concrete } from '../lib/concrete.ts';
 import { drywall } from '../lib/drywall.ts';
+import { fence } from '../lib/fence.ts';
 import { gravel } from '../lib/gravel.ts';
 import { paint } from '../lib/paint.ts';
 import { roofing } from '../lib/roofing.ts';
@@ -41,6 +42,7 @@ const ENGINES = {
   roofing,
   'feet-inches': feetInches,
   'board-feet': boardFeet,
+  fence,
 } as const;
 
 describe('job pages (growth plan › lever 1)', () => {
@@ -159,6 +161,7 @@ describe('job pages (growth plan › lever 1)', () => {
       ...jobsOf('roofing'),
       ...jobsOf('feet-inches'),
       ...jobsOf('board-feet'),
+      ...jobsOf('fence'),
     ]).toEqual(JOB_IDS);
     expect(jobsOf('feet-inches')).toEqual([
       'divide-29-1-4-in-by-2',
@@ -176,6 +179,7 @@ describe('job pages (growth plan › lever 1)', () => {
       'board-feet-1x6x8',
       'board-feet-2x12x12',
     ]);
+    expect(jobsOf('fence')).toEqual(['fence-cost']);
     expect(isJobPage('concrete-slab-10x10')).toBe(true);
     expect(isJobPage('roof-pitch-6-12')).toBe(true);
     expect(isJobPage('square-feet-12x14')).toBe(true);
