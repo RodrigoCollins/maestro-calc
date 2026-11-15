@@ -1,3 +1,4 @@
+import { civilDateOf } from '@maestro-calc/pay-core/calendar';
 import { countdownOf, ruleOfData } from '../dates/live.ts';
 
 /**
@@ -8,9 +9,7 @@ import { countdownOf, ruleOfData } from '../dates/live.ts';
 const box = document.querySelector<HTMLElement>('[data-countdown-rule]');
 const rule = box === null ? null : ruleOfData(box.dataset);
 if (rule !== null) {
-  const now = new Date();
-  const today = { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() };
-  const text = countdownOf(rule, today);
+  const text = countdownOf(rule, civilDateOf(new Date()));
   const texts: Readonly<Record<string, string>> = {
     days: text.days,
     weeks: text.weeks,

@@ -1,5 +1,10 @@
 ---
-import { DEFAULT_END, DEFAULT_START, daysBetweenPageOf } from '../dates/calculator.ts';
+import {
+  DEFAULT_END,
+  DEFAULT_SHIFT,
+  DEFAULT_START,
+  daysBetweenPageOf,
+} from '../dates/calculator.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
@@ -8,8 +13,11 @@ import ShareLink from './ShareLink.astro';
 import SiteLayout from './SiteLayout.astro';
 
 // Spanish only: the language switch leads to the English hours calculator. The page renders the
-// engine's own figures for the whole of 2026, so it reads without JavaScript.
+// engine's own figures for the whole of 2026 and for 90 days after 1 January 2026, so it reads
+// without JavaScript; the «Hoy» buttons stay hidden until the script shows them, so the build
+// never writes a date as today's.
 const page = daysBetweenPageOf();
+const { shift } = page;
 ---
 
 <SiteLayout
@@ -29,14 +37,36 @@ const page = daysBetweenPageOf();
     <p class="lead">{page.lead}</p>
 
     <form class="deduction" data-days-between novalidate>
-      <label class="field">
-        {page.start}
-        <input type="date" name="start" value={DEFAULT_START} required />
-      </label>
-      <label class="field">
-        {page.end}
-        <input type="date" name="end" value={DEFAULT_END} required />
-      </label>
+      <div class="field">
+        <label for="days-start">{page.start}</label>
+        <div class="with-today">
+          <input id="days-start" type="date" name="start" value={DEFAULT_START} required />
+          <button
+            class="button button-secondary"
+            type="button"
+            data-today="start"
+            aria-label={page.today.start}
+            hidden
+          >
+            {page.today.label}
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="days-end">{page.end}</label>
+        <div class="with-today">
+          <input id="days-end" type="date" name="end" value={DEFAULT_END} required />
+          <button
+            class="button button-secondary"
+            type="button"
+            data-today="end"
+            aria-label={page.today.end}
+            hidden
+          >
+            {page.today.label}
+          </button>
+        </div>
+      </div>
       <label class="check">
         <input type="checkbox" name="inclusive" />
         {page.inclusive}
@@ -69,6 +99,76 @@ const page = daysBetweenPageOf();
     </section>
     <p class="note">{page.note}</p>
 
+    <section class="shift" aria-labelledby="shift-heading">
+      <h2 id="shift-heading">{shift.heading}</h2>
+      <form class="deduction" data-date-shift novalidate>
+        <div class="field">
+          <label for="shift-from">{shift.from}</label>
+          <div class="with-today">
+            <input id="shift-from" type="date" name="from" value={DEFAULT_SHIFT.from} required />
+            <button
+              class="button button-secondary"
+              type="button"
+              data-today="from"
+              aria-label={page.today.from}
+              hidden
+            >
+              {page.today.label}
+            </button>
+          </div>
+        </div>
+        <label class="field">
+          {shift.amount}
+          <input
+            type="number"
+            name="amount"
+            inputmode="numeric"
+            min="0"
+            max={shift.max}
+            step="1"
+            value={DEFAULT_SHIFT.amount}
+            required
+          />
+        </label>
+        <label class="field">
+          {shift.direction}
+          <select name="direction">
+            <option value="add" selected>
+              {shift.add}
+            </option>
+            <option value="subtract">{shift.subtract}</option>
+          </select>
+        </label>
+        <label class="check">
+          <input type="checkbox" name="business" />
+          {shift.business}
+        </label>
+      </form>
+      <p class="warning" data-shift-invalid hidden>
+        {shift.invalid}
+      </p>
+
+      <section class="result" aria-live="polite" aria-labelledby="shift-label">
+        <div>
+          <p class="result-label" id="shift-label">
+            {shift.figureLabel}
+          </p>
+          <p class="result-figure shift-figure" data-shift="figure">
+            {shift.result.figure}
+          </p>
+        </div>
+        <ul class="breakdown labeled" aria-label={shift.breakdown}>
+          {shift.result.rows.map((row) => (
+            <li>
+              <span>{row.label}</span>
+              <span data-shift={row.key}>{row.value}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <p class="note">{shift.note}</p>
+    </section>
+
     <ShareLink lang="es" title={page.title} path={page.paths.es} />
 
     <div class="prose explained">
@@ -77,3 +177,37 @@ const page = daysBetweenPageOf();
   </main>
   <script src="../client/days-between.ts"></script>
 </SiteLayout>
+
+<style>
+  /* a «Hoy» button beside its date field */
+  .with-today {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .with-today input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .with-today .button {
+    flex: none;
+    min-height: 3rem;
+    padding-inline: 1rem;
+  }
+
+  .shift {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+
+  .shift h2 {
+    margin: 0;
+  }
+
+  /* a date with its weekday is longer than a count of days */
+  .shift-figure {
+    font-size: 1.75rem;
+  }
+</style>

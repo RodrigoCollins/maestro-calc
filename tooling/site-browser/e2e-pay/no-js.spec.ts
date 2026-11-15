@@ -98,6 +98,11 @@ test(`${DAYS_BETWEEN} shows the days of 2026 without JavaScript`, async ({ page 
   await page.goto(DAYS_BETWEEN);
   await expect(page.locator('[data-days="figure"]')).toHaveText('364 días');
   await expect(page.locator('[data-days="business"]')).toHaveText('260 días');
+  // the date 90 days after 1 January 2026, and no «Hoy» button: the build writes no today
+  await expect(page.locator('[data-shift="figure"]')).toHaveText('miércoles 1 de abril de 2026');
+  await expect(page.locator('button[data-today]')).toHaveCount(3);
+  await expect(page.locator('button[data-today]').first()).toBeHidden();
+  await expect(page.getByRole('button', { name: /^Hoy/ })).toHaveCount(0);
 });
 
 // The defaults, worked by the build: 315.04 × 15 = 4,725.60 for 2026; 5 years of service give
