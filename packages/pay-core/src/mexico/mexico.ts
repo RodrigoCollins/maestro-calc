@@ -46,10 +46,9 @@ const perDay = (period: WagePeriod): number => (period === 'month' ? 30 : 1);
 /** Pesos typed into a field (`315.04`, `$12,000`) as centavos, or `null` when it is no amount. */
 export const parseCents = (text: string): number | null => {
   const plain = text.trim().replace(/^\$\s*/, '');
-  const match = /^(\d{1,3}(?:,\d{3})+|\d+)(?:\.(\d{1,2}))?$/.exec(plain);
-  if (match === null) return null;
-  const cents =
-    Number((match[1] ?? '').replaceAll(',', '')) * 100 + Number((match[2] ?? '').padEnd(2, '0'));
+  if (!/^(\d{1,3}(?:,\d{3})+|\d+)(\.\d{1,2})?$/.test(plain)) return null;
+  // at most two decimals and 10 million pesos: rounding the product gives the exact centavos
+  const cents = Math.round(Number(plain.replaceAll(',', '')) * 100);
   return cents > 0 && cents <= MAX_CENTS ? cents : null;
 };
 
