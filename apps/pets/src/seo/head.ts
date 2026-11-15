@@ -10,15 +10,23 @@ export interface IndexSwitches {
   readonly indexable: boolean;
   readonly deIndexable: boolean;
   readonly frIndexable: boolean;
+  readonly esIndexable: boolean;
 }
+
+/** The switch of each twin language in `IndexSwitches`. */
+const SWITCH_OF: Readonly<Record<Twin, 'deIndexable' | 'frIndexable' | 'esIndexable'>> = {
+  de: 'deIndexable',
+  fr: 'frIndexable',
+  es: 'esIndexable',
+};
 
 /** Whether the pages of twin language `twin` are open to search engines on an open site. */
 export const twinOpen = (twin: Twin, site: IndexSwitches = SITE): boolean =>
-  site.indexable && (twin === 'de' ? site.deIndexable : site.frIndexable);
+  site.indexable && site[SWITCH_OF[twin]];
 
 /**
- * Whether search engines may index the pages of `path`'s language: English with the site, German
- * and French each only once its own switch is open.
+ * Whether search engines may index the pages of `path`'s language: English with the site, German,
+ * French and Spanish each only once its own switch is open.
  */
 export const languageOpen = (path: string, site: IndexSwitches = SITE): boolean => {
   const lang = langOf(path);
@@ -27,7 +35,7 @@ export const languageOpen = (path: string, site: IndexSwitches = SITE): boolean 
 
 /**
  * The hreflang alternates of the page at `path`: en, then each twin of its route whose language is
- * open (de, fr), then x-default (the English page); none when the page's own language is closed or
+ * open (de, fr, es), then x-default (the English page); none when the page's own language is closed or
  * no twin of it is open, so no page names a twin that is closed to search engines or does not exist.
  */
 export const alternatesOf = (
@@ -52,7 +60,7 @@ export const alternatesOf = (
  * What the layout writes about the page at `path`: its canonical while the site and the page's
  * language are open and the page is `indexed` (never the 404), `noindex` otherwise, and its link
  * preview. The owner flips `SITE.indexable` (the site), `SITE.deIndexable` (German) and
- * `SITE.frIndexable` (French).
+ * `SITE.frIndexable` (French) and `SITE.esIndexable` (Spanish).
  */
 export const headOf = (
   path: string,

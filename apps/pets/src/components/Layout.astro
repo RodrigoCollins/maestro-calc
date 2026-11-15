@@ -28,9 +28,12 @@ const lang = langOf(path);
 const texts = LAYOUT_TEXTS[lang];
 // the hreflang alternates only on an indexed page whose route has a twin in an open language
 const alternates = canonical === undefined ? [] : alternatesOf(path);
-// the other languages' pages; a German or French twin shows only once its language is open
-const others = indexed ? switchesOf(path, { de: twinOpen('de'), fr: twinOpen('fr') }) : [];
-const LOCALES = { en: 'en_US', de: 'de_DE', fr: 'fr_FR' } as const;
+// the other languages' pages; a twin shows only once its language is open
+const others = indexed
+  ? switchesOf(path, { de: twinOpen('de'), fr: twinOpen('fr'), es: twinOpen('es') })
+  : [];
+// Spanish is written for Mexico, Spain and South America alike; Mexico is the measured market
+const LOCALES = { en: 'en_US', de: 'de_DE', fr: 'fr_FR', es: 'es_MX' } as const;
 const alternateLocales = alternates.flatMap(({ hreflang }) =>
   hreflang === lang || hreflang === 'x-default' ? [] : [LOCALES[hreflang as keyof typeof LOCALES]],
 );

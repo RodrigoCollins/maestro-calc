@@ -284,6 +284,61 @@ export const FR_PAGES: readonly string[] = [
 ];
 
 /**
+ * Every Spanish page under /es (plans/growth/BACKLOG.md #86), open to search engines from the
+ * start (`SITE.esIndexable`): its own suite, `es.spec.ts`.
+ */
+export const ES_PAGES: readonly string[] = [
+  '/es',
+  '/es/edad-de-perro-en-anos-humanos',
+  '/es/que-pasa-si-un-perro-come-chocolate',
+  '/es/que-frutas-pueden-comer-los-perros',
+  '/es/los-perros-pueden-comer-fresas',
+  '/es/los-perros-pueden-comer-platano',
+  '/es/los-perros-pueden-comer-uvas',
+  '/es/los-perros-pueden-comer-pasas',
+  '/es/los-perros-pueden-comer-arandanos',
+  '/es/los-perros-pueden-comer-manzana',
+  '/es/los-perros-pueden-comer-sandia',
+  '/es/los-perros-pueden-comer-cerezas',
+  '/es/los-perros-pueden-comer-mango',
+  '/es/los-perros-pueden-comer-naranja',
+  '/es/los-perros-pueden-comer-pina',
+  '/es/los-perros-pueden-comer-tomate',
+  '/es/los-perros-pueden-comer-aguacate',
+  '/es/los-perros-pueden-comer-cebolla',
+  '/es/los-perros-pueden-comer-ajo',
+  '/es/los-perros-pueden-comer-zanahoria',
+  '/es/los-perros-pueden-comer-brocoli',
+  '/es/los-perros-pueden-comer-pepino',
+  '/es/los-perros-pueden-comer-pimiento',
+  '/es/los-perros-pueden-comer-calabacin',
+  '/es/los-perros-pueden-comer-papa',
+  '/es/los-perros-pueden-comer-camote',
+  '/es/los-perros-pueden-comer-calabaza',
+  '/es/los-perros-pueden-comer-queso',
+  '/es/los-perros-pueden-comer-huevo',
+  '/es/los-perros-pueden-comer-yogur',
+  '/es/los-perros-pueden-comer-camarones',
+  '/es/los-perros-pueden-comer-salmon',
+  '/es/los-perros-pueden-comer-cerdo',
+  '/es/los-perros-pueden-comer-jamon',
+  '/es/los-perros-pueden-comer-tocino',
+  '/es/los-perros-pueden-comer-crema-de-cacahuate',
+  '/es/los-perros-pueden-comer-miel',
+  '/es/los-perros-pueden-comer-chocolate',
+  '/es/los-perros-pueden-comer-arroz',
+  '/es/los-perros-pueden-comer-palomitas',
+  '/es/los-perros-pueden-comer-pan',
+  '/es/los-perros-pueden-comer-almendras',
+  '/es/los-perros-pueden-comer-nueces-de-la-india',
+  '/es/los-perros-pueden-comer-nueces-de-macadamia',
+  '/es/los-perros-pueden-comer-chicle',
+  '/es/acerca-de',
+  '/es/politica-editorial',
+  '/es/privacidad',
+];
+
+/**
  * Each calculator: the text of one figure at its starting values (worked out at build time, so it
  * reads with no script), and one edit worked out by hand with the figure it must show after it.
  */
@@ -354,6 +409,14 @@ export const CALCULATORS = [
   },
   {
     path: '/fr/age-chien-en-humain',
+    out: 'figure',
+    initial: '28',
+    // typed with a decimal comma: 3,5 years of a medium dog is halfway from 28 (3) to 32 (4) on AVMA's chart
+    edit: { field: 'age', value: '3,5' },
+    edited: '30',
+  },
+  {
+    path: '/es/edad-de-perro-en-anos-humanos',
     out: 'figure',
     initial: '28',
     // typed with a decimal comma: 3,5 years of a medium dog is halfway from 28 (3) to 32 (4) on AVMA's chart

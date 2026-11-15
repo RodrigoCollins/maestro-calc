@@ -99,8 +99,29 @@ describe('the French header and footer', () => {
   });
 });
 
+describe('the Spanish header and footer', () => {
+  it('lead to the Spanish pages only, the hub, the dog age calculator and the chocolate guide first', () => {
+    expect(navLinks('es').map(({ href }) => href)).toEqual([
+      '/es/que-frutas-pueden-comer-los-perros',
+      '/es/edad-de-perro-en-anos-humanos',
+      '/es/que-pasa-si-un-perro-come-chocolate',
+    ]);
+  });
+
+  it('link every Spanish page that is not a food page, so none is an orphan', () => {
+    const spanish = ROUTES.filter(
+      ({ id, es }) => es !== undefined && id !== 'home' && !id.startsWith('food-'),
+    );
+    expect(
+      footerLinks('es')
+        .map(({ href }) => href)
+        .sort(),
+    ).toEqual(spanish.map(({ es }) => es).sort());
+  });
+});
+
 describe('switchesOf', () => {
-  const closed = { de: false, fr: false };
+  const closed = { de: false, fr: false, es: false };
 
   it('leads a German or a French page to its English twin, in English', () => {
     expect(switchesOf('/de/hundejahre-rechner', closed)).toEqual([
@@ -113,13 +134,23 @@ describe('switchesOf', () => {
 
   it('leads to a German or French twin only once that language is open', () => {
     expect(switchesOf('/dog-age-calculator', closed)).toEqual([]);
-    expect(switchesOf('/dog-age-calculator', { de: true, fr: false })).toEqual([
+    expect(switchesOf('/dog-age-calculator', { de: true, fr: false, es: false })).toEqual([
       { href: '/de/hundejahre-rechner', lang: 'de', label: 'Deutsch' },
     ]);
-    expect(switchesOf('/de/hundejahre-rechner', { de: true, fr: true })).toEqual([
+    expect(switchesOf('/de/hundejahre-rechner', { de: true, fr: true, es: false })).toEqual([
       { href: '/dog-age-calculator', lang: 'en', label: 'English' },
       { href: '/fr/age-chien-en-humain', lang: 'fr', label: 'Français' },
     ]);
-    expect(switchesOf('/dog-food-calculator', { de: true, fr: true })).toEqual([]);
+    expect(switchesOf('/dog-food-calculator', { de: true, fr: true, es: true })).toEqual([]);
+  });
+
+  it('leads a Spanish page to English and an English page to Spanish once Spanish is open', () => {
+    const esOpen = { de: false, fr: false, es: true };
+    expect(switchesOf('/es/edad-de-perro-en-anos-humanos', esOpen)).toEqual([
+      { href: '/dog-age-calculator', lang: 'en', label: 'English' },
+    ]);
+    expect(switchesOf('/dog-age-calculator', esOpen)).toEqual([
+      { href: '/es/edad-de-perro-en-anos-humanos', lang: 'es', label: 'Español' },
+    ]);
   });
 });
