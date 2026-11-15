@@ -6,6 +6,7 @@ import type { Lang } from '../time-card/receipt.ts';
 import { clockOf, fieldOf as f } from './clock.ts';
 import { monthDayOf, weekdayNameOf } from './days-from.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
+import { agoSearchOf } from './ago-search.ts';
 import { minutesLink, shiftLink, WORKED } from './live-links.ts';
 import { nearestOf } from './nearest.ts';
 import {
@@ -1086,11 +1087,15 @@ export const offsetPageOf = (job: TimeOffset, lang: Lang): LongTailPage => {
   const { headline, lead, figure, rows, live, sections, sources } =
     job.unit === 'hour' ? hoursPageOf(job, lang) : minutesPageOf(job, lang);
   const english = lang === 'en' && job.unit !== 'hour' ? minutesEnglishOf(job.amount) : undefined;
+  // the Spanish hours ago pages answer a search of their own (`ago-search.ts`)
+  const search =
+    lang === 'es' && job.unit === 'hour' && job.direction === 'ago' ? agoSearchOf(job) : undefined;
   return {
     kicker: HOURS_TEXTS[lang].kicker,
-    title: english?.title ?? titleOf(headline),
+    title: english?.title ?? search?.title ?? titleOf(headline),
     description:
       english?.description ??
+      search?.description ??
       descriptionOf(
         `${headline}.`,
         rows.map(({ label, value }) => `${label}: ${value}`),
@@ -1106,7 +1111,7 @@ export const offsetPageOf = (job: TimeOffset, lang: Lang): LongTailPage => {
     note: w.note,
     paths: { en: pathOf(job, 'en'), es: pathOf(job, 'es') },
     others: offsetLinksOf(lang, job),
-    sections,
+    sections: search === undefined ? sections : [...sections, search.faq],
     sources,
     live,
   };

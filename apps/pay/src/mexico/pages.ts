@@ -9,7 +9,8 @@ import {
   vacacionesOf,
   type WagePeriod,
 } from '@maestro-calc/pay-core/mexico';
-import { countOf, longDateOf, pesosOf, shortDateOf } from '../dates/words.ts';
+import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
+import { countOf, DAYS_BETWEEN_NAME, longDateOf, pesosOf, shortDateOf } from '../dates/words.ts';
 import type { LongTailSection, LongTailSource } from '../long-tail/sections.ts';
 import { titleOf } from '../seo/meta.ts';
 import { AGUINALDO_PATH, mexicoPathOf, VACACIONES_PATH, type MexicoSlug } from './routes.ts';
@@ -25,7 +26,7 @@ import {
 
 /*
  * The Mexico labor pages (Spanish only): the aguinaldo and vacation calculators, with the result
- * the build works out for their defaults so they answer with no script, and three answer pages.
+ * the build works out for their defaults so they answer with no script, and four answer pages.
  * Every amount comes from the engine of `@maestro-calc/pay-core/mexico`; every rule from a cited
  * law or official notice. The components render them; `client/aguinaldo.ts` and
  * `client/vacaciones-mexico.ts` redo the results on every edit.
@@ -87,12 +88,14 @@ interface CalculatorLink {
 }
 
 const AGUINALDO_LINK: CalculatorLink = { href: AGUINALDO_PATH, label: AGUINALDO_NAME };
+const DAYS_BETWEEN_LINK: CalculatorLink = { href: DAYS_BETWEEN_PATH, label: DAYS_BETWEEN_NAME };
 const VACACIONES_LINK: CalculatorLink = { href: VACACIONES_PATH, label: VACACIONES_NAME };
 
 const ARTICLE_LABELS: Readonly<Record<MexicoSlug, string>> = {
   'cuantos-dias-de-aguinaldo-son-por-ley': '¿Cuántos días de aguinaldo son por ley?',
   'aguinaldo-2026': 'Aguinaldo 2026: cuánto te toca y cuándo se paga',
-  'cuantos-dias-de-vacaciones-son-por-ano': '¿Cuántos días de vacaciones son por año en México?',
+  'cuantos-dias-de-vacaciones-son-por-ano': 'Días de vacaciones por ley en México',
+  'prima-vacacional': 'Prima vacacional: qué es y cómo se calcula',
 };
 
 const articleLink = (slug: MexicoSlug): CalculatorLink => ({
@@ -166,11 +169,14 @@ const aguinaldoSections = (): LongTailSection[] => {
     {
       id: 'relacionadas',
       heading: 'Más sobre el aguinaldo y las vacaciones',
-      paragraphs: ['Las reglas con sus fuentes, y la otra prestación de cada año.'],
+      paragraphs: [
+        'Las reglas con sus fuentes, la otra prestación de cada año y la calculadora de fechas, para contar los días trabajados entre tu fecha de ingreso y tu último día (marca «Contar también el día de inicio»).',
+      ],
       links: [
         articleLink('cuantos-dias-de-aguinaldo-son-por-ley'),
         articleLink('aguinaldo-2026'),
         VACACIONES_LINK,
+        DAYS_BETWEEN_LINK,
       ],
     },
   ];
@@ -180,12 +186,12 @@ const aguinaldoSections = (): LongTailSection[] => {
 export const aguinaldoPageOf = () => {
   const text = aguinaldoTextOf(aguinaldo2026(MINIMUM, 'day', 15));
   return {
-    title: titleOf('Calculadora de aguinaldo 2026 (México)'),
+    title: titleOf('Calculadora de aguinaldo 2026: calcular el aguinaldo en México'),
     description:
-      'Calcula tu aguinaldo 2026 en México: 15 días de salario por ley, la parte proporcional si no trabajaste el año completo y la parte exenta de ISR.',
+      'Calculadora de aguinaldo 2026 para México: calcula tus 15 días de salario por ley, la parte proporcional si no trabajaste todo el año y lo exento de ISR.',
     kicker: 'México · Ley Federal del Trabajo',
     h1: AGUINALDO_NAME,
-    lead: 'Escribe tu salario, los días de aguinaldo y tu fecha de ingreso: ve cuánto te toca de aguinaldo este año, la parte proporcional si entraste o saliste a mitad de año y cuánto está exento de ISR.',
+    lead: 'Para calcular tu aguinaldo, escribe tu salario, los días de aguinaldo y tu fecha de ingreso: ve cuánto te toca este año, la parte proporcional si entraste o saliste a mitad de año y cuánto está exento de ISR.',
     labels: {
       wage: 'Salario',
       period: 'Periodo del salario',
@@ -281,9 +287,15 @@ const vacacionesSections = (): LongTailSection[] => {
     },
     {
       id: 'relacionadas',
-      heading: 'La tabla completa y el aguinaldo',
-      paragraphs: ['Los días de cada año de servicio, y la otra prestación de fin de año.'],
-      links: [articleLink('cuantos-dias-de-vacaciones-son-por-ano'), AGUINALDO_LINK],
+      heading: 'La tabla completa, la prima y el aguinaldo',
+      paragraphs: [
+        'Los días de cada año de servicio, la prima vacacional explicada con ejemplos, y la otra prestación de fin de año.',
+      ],
+      links: [
+        articleLink('cuantos-dias-de-vacaciones-son-por-ano'),
+        articleLink('prima-vacacional'),
+        AGUINALDO_LINK,
+      ],
     },
   ];
 };
@@ -542,6 +554,117 @@ const VACACIONES_LAW = (): LongTailSection[] => [
   },
 ];
 
+/** The vacation pay and prima of `years` of service on 1 January 2026, at the 25% of the law. */
+const primaOf = (wageCents: number, period: WagePeriod, years: number) =>
+  vacacionesOf({
+    wageCents,
+    period,
+    primaPercent: 25,
+    start: date(2026 - years, 1, 1),
+    on: date(2026, 1, 1),
+  });
+
+const PRIMA_VACACIONAL = (): LongTailSection[] => {
+  const three = primaOf(1_200_000, 'month', 3);
+  const ten = primaOf(2_000_000, 'month', 10);
+  const salaries: readonly (readonly [number, WagePeriod])[] = [
+    [MINIMUM, 'day'],
+    [1_200_000, 'month'],
+    [2_000_000, 'month'],
+  ];
+  return [
+    {
+      id: 'que-es',
+      heading: 'Qué es la prima vacacional',
+      paragraphs: [
+        'El artículo 80 de la Ley Federal del Trabajo dice: «Los trabajadores tendrán derecho a una prima no menor de veinticinco por ciento sobre los salarios que les correspondan durante el período de vacaciones.»',
+        'Es un pago aparte del salario de los días de vacaciones: tu patrón te paga esos días como si los trabajaras y, además, la prima. El 25% es el mínimo; tu contrato individual o colectivo puede dar más, y entonces te toca lo que diga el contrato.',
+        'Se calcula sobre el salario de los días de vacaciones, no sobre tu sueldo del mes ni del año: por eso crece con tu antigüedad, porque los días de vacaciones crecen (art. 76).',
+      ],
+    },
+    {
+      id: 'formula',
+      heading: 'La fórmula de la prima vacacional',
+      paragraphs: [
+        'Prima vacacional = salario diario × días de vacaciones × 25%. Si te pagan por mes, el salario diario es el mensual entre 30; si te pagan por semana, entre 7 (art. 89). Con 3 años de servicio y $12,000 al mes:',
+      ],
+      steps: [
+        `Salario diario: ${pesosOf(1_200_000)} / 30 = ${pesosOf(three.dailyCents)}.`,
+        `Días de vacaciones al cumplir 3 años (art. 76): ${countOf(three.days, 'día', 'días')}.`,
+        `Salario de los días de vacaciones: ${pesosOf(three.dailyCents)} × ${String(three.days)} = ${pesosOf(three.payCents)}.`,
+        `Prima vacacional: ${pesosOf(three.payCents)} × 25% = ${pesosOf(three.primaCents)}.`,
+      ],
+    },
+    {
+      id: 'tabla',
+      heading: 'Prima vacacional por años de servicio',
+      paragraphs: [
+        'La prima del 25% de cada año de servicio, con los días de la tabla vigente desde 2023 (art. 76), al salario mínimo general de 2026 y con dos sueldos mensuales:',
+      ],
+      table: {
+        caption: 'Prima vacacional del 25% por años de servicio y salario',
+        head: [
+          'Años de servicio',
+          'Días de vacaciones',
+          `Con ${pesosOf(MINIMUM)} al día`,
+          `Con ${pesosOf(1_200_000)} al mes`,
+          `Con ${pesosOf(2_000_000)} al mes`,
+        ],
+        rows: VACATION_TABLE.map(({ from, to, days }) => [
+          from === to ? countOf(from, 'año', 'años') : `${String(from)} a ${String(to)} años`,
+          countOf(days, 'día', 'días'),
+          ...salaries.map(([cents, period]) => pesosOf(primaOf(cents, period, from).primaCents)),
+        ]),
+      },
+      after: [
+        'Con una prima mayor que la de la ley, cambia el 25% por tu porcentaje: con el 50%, la prima es el doble de la de la tabla.',
+      ],
+    },
+    {
+      id: 'cuando-se-paga',
+      heading: 'Cuándo se paga la prima vacacional',
+      paragraphs: [
+        'La ley no fija una fecha de pago para la prima: el artículo 80 la calcula sobre los salarios del periodo de vacaciones, y lo usual es que se pague junto con ellos, cuando sales de vacaciones. Tu contrato colectivo o el reglamento de tu empresa pueden fijar la fecha.',
+        'Las vacaciones se ganan al cumplir cada año de servicio, y el patrón debe darlas dentro de los seis meses siguientes, con una constancia anual de tu antigüedad, tus días y la fecha en que debes disfrutarlos (art. 81).',
+      ],
+    },
+    {
+      id: 'isr',
+      heading: 'La prima vacacional y el ISR',
+      paragraphs: [
+        `La prima vacacional no paga ISR hasta 15 UMA al año (Ley del ISR, art. 93, fracción XIV). Con la UMA de 2026, ${UMA} al día, son ${PRIMA_EXEMPT}; solo lo que pasa de esa cantidad es gravado.`,
+        `Con ${pesosOf(2_000_000)} al mes y 10 años de servicio te tocan ${countOf(ten.days, 'día', 'días')}: ${pesosOf(ten.payCents)} de salario y ${pesosOf(ten.primaCents)} de prima, de los que ${pesosOf(ten.primaExemptCents)} están exentos y ${pesosOf(ten.primaTaxableCents)} son gravados. El salario de los días de vacaciones paga ISR como el resto de tu sueldo.`,
+      ],
+    },
+    {
+      id: 'preguntas',
+      heading: 'Preguntas frecuentes',
+      paragraphs: ['Lo que más se pregunta de la prima vacacional, con el artículo que lo dice.'],
+      questions: [
+        {
+          question: '¿La prima vacacional es el 25% de mi sueldo mensual?',
+          answer: `No: es el 25% del salario de tus días de vacaciones (art. 80). Con ${pesosOf(1_200_000)} al mes y 12 días, es ${pesosOf(primaOf(1_200_000, 'month', 1).primaCents)}, no ${pesosOf(300_000)}.`,
+        },
+        {
+          question: '¿Me pueden pagar menos del 25%?',
+          answer:
+            'No: el artículo 80 dice una prima «no menor de veinticinco por ciento». Un contrato puede dar más, nunca menos.',
+        },
+        {
+          question: '¿Me toca prima vacacional antes de cumplir un año?',
+          answer:
+            'Las vacaciones se ganan al cumplir cada año de servicio (art. 76), y la prima se calcula sobre su salario. Si la relación de trabajo termina antes de cumplir el año, el artículo 79 te da una remuneración proporcional al tiempo de servicios prestados.',
+        },
+        {
+          question: '¿Puedo cambiar mis vacaciones por dinero?',
+          answer:
+            'No mientras sigas trabajando: «Las vacaciones no podrán compensarse con una remuneración» (art. 79). Tomas los días con su salario y su prima.',
+        },
+      ],
+    },
+  ];
+};
+
 /** The last day the aguinaldo of `year` can be paid: the day before 20 December. */
 const aguinaldoDeadlineOf = (year: number): CivilDate => addDays(date(year, 12, 20), -1);
 
@@ -612,12 +735,12 @@ const ARTICLES: Readonly<
     };
   },
   'cuantos-dias-de-vacaciones-son-por-ano': () => ({
-    title: titleOf('¿Cuántos días de vacaciones son por año en México?'),
+    title: titleOf('Días de vacaciones por ley en México: tabla 2026'),
     description:
-      'En México son 12 días el primer año, 2 más por año hasta 20 en el quinto y, desde el sexto, 2 más cada cinco años (LFT art. 76, vigente desde 2023).',
+      'Vacaciones por ley en México: 12 días el primer año, 2 más por año hasta 20 en el quinto y, desde el sexto, 2 más cada cinco años (LFT art. 76, desde 2023).',
     kicker: 'México · Vacaciones',
-    h1: '¿Cuántos días de vacaciones son por año en México?',
-    lead: 'En México te tocan 12 días de vacaciones al cumplir el primer año, 2 más por cada año hasta llegar a 20 en el quinto y, a partir del sexto, 2 más por cada cinco años de servicio (Ley Federal del Trabajo, art. 76, reformado en 2023). Además, te toca una prima vacacional de al menos el 25%.',
+    h1: 'Días de vacaciones por ley en México',
+    lead: 'Los días de vacaciones por ley en México son 12 al cumplir el primer año, 2 más por cada año hasta llegar a 20 en el quinto y, a partir del sexto, 2 más por cada cinco años de servicio (Ley Federal del Trabajo, art. 76, reformado en 2023). Además, te toca una prima vacacional de al menos el 25%.',
     answer: {
       label: 'Vacaciones del primer año',
       figure: countOf(12, 'día', 'días'),
@@ -630,8 +753,37 @@ const ARTICLES: Readonly<
     calculator: VACACIONES_LINK,
     sections: VACACIONES_LAW(),
     sources: [MX_SOURCES.lft, MX_SOURCES.dof2022, MX_SOURCES.lisr, MX_SOURCES.uma],
-    others: [articleLink('cuantos-dias-de-aguinaldo-son-por-ley'), AGUINALDO_LINK],
+    others: [
+      articleLink('prima-vacacional'),
+      articleLink('cuantos-dias-de-aguinaldo-son-por-ley'),
+      AGUINALDO_LINK,
+    ],
   }),
+  'prima-vacacional': () => {
+    const first = primaOf(MINIMUM, 'day', 1);
+    const fifth = primaOf(MINIMUM, 'day', 5);
+    return {
+      title: titleOf('Prima vacacional 2026: qué es y cómo se calcula'),
+      description:
+        'La prima vacacional es al menos el 25% del salario de tus días de vacaciones (LFT art. 80). Fórmula, tabla por años de servicio, ISR y ejemplos de 2026.',
+      kicker: 'México · Prima vacacional',
+      h1: 'Prima vacacional: qué es, cuánto es y cómo se calcula',
+      lead: `La prima vacacional es un pago de al menos el 25% del salario de tus días de vacaciones, además de ese salario (Ley Federal del Trabajo, art. 80). Con el salario mínimo de 2026, ${pesosOf(MINIMUM)} al día, y los 12 días del primer año, son ${pesosOf(first.primaCents)}.`,
+      answer: {
+        label: 'Prima vacacional mínima por ley',
+        figure: '25%',
+        rows: [
+          { label: 'Primer año, 12 días, salario mínimo', value: pesosOf(first.primaCents) },
+          { label: 'Quinto año, 20 días, salario mínimo', value: pesosOf(fifth.primaCents) },
+          { label: 'Exenta de ISR hasta (15 UMA)', value: PRIMA_EXEMPT },
+        ],
+      },
+      calculator: VACACIONES_LINK,
+      sections: PRIMA_VACACIONAL(),
+      sources: [MX_SOURCES.lft, MX_SOURCES.dof2022, MX_SOURCES.lisr, MX_SOURCES.uma],
+      others: [articleLink('cuantos-dias-de-vacaciones-son-por-ano'), AGUINALDO_LINK],
+    };
+  },
 };
 
 /** The answer page of `slug`. */

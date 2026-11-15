@@ -45,6 +45,8 @@ describe('the sections of a shift page', () => {
           'time-card',
           'breaks',
           'teens',
+          // the Spanish questions (`spanish-search.test.ts`)
+          ...(lang === 'es' ? ['faq'] : []),
         ]);
         expect(sections?.[0]?.heading).toMatch(
           lang === 'en' ? /^How the figures are worked out$/ : /^Cómo se calcula$/,

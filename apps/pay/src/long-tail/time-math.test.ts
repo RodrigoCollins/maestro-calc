@@ -167,6 +167,37 @@ describe('liveTextOf', () => {
     ).toBe('2027-3-1 → 2027-1-30');
   });
 
+  it('counts the weeks and days to a date, this year or the next', () => {
+    const words = { week: 'week', weeks: 'weeks', day: 'day', days: 'days', and: ' and ' };
+    const christmas = {
+      m: '12',
+      d: '25',
+      ...words,
+      text: '{today}: {span} ({total}, {decimal}) to {date}',
+      today: 'T {date}',
+    };
+    expect(liveTextOf('weeks', christmas, new Date(2026, 10, 15, 9, 0), formats)).toBe(
+      '2026-11-15: 5 weeks and 5 days (40, 5.7) to 2026-12-25',
+    );
+    expect(liveTextOf('weeks', christmas, new Date(2026, 11, 18), formats)).toBe(
+      '2026-12-18: 1 week (7, 1.0) to 2026-12-25',
+    );
+    expect(liveTextOf('weeks', christmas, new Date(2026, 11, 24), formats)).toBe(
+      '2026-12-24: 1 day (1, 0.1) to 2026-12-25',
+    );
+    expect(liveTextOf('weeks', christmas, new Date(2026, 11, 25, 23, 0), formats)).toBe(
+      'T 2026-12-25',
+    );
+    // past this year's day, the count runs to the next year's
+    expect(liveTextOf('weeks', christmas, new Date(2026, 11, 26), formats)).toBe(
+      '2026-12-26: 52 weeks (364, 52.0) to 2027-12-25',
+    );
+    const year = { y: '2027', m: '1', d: '1', ...words, text: '{span}', past: 'P {today}' };
+    expect(liveTextOf('weeks', year, new Date(2026, 0, 1), formats)).toBe('52 weeks and 1 day');
+    expect(liveTextOf('weeks', year, new Date(2026, 11, 31), formats)).toBe('1 day');
+    expect(liveTextOf('weeks', year, new Date(2027, 0, 1), formats)).toBe('P 2027-1-1');
+  });
+
   it('leaves the page as built for a kind it does not know', () => {
     expect(liveTextOf('other', { amount: '1' }, now, formats)).toBeUndefined();
   });

@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { COUNTDOWNS, countdownPathOf } from '../dates/routes.ts';
-import { LIVE_JOBS, LONG_TAIL_ROUTES, SHIFTS } from '../long-tail/routes.ts';
+import { CLOCK_JOBS, LONG_TAIL_ROUTES, SHIFTS } from '../long-tail/routes.ts';
 import { CALCULATOR_PAGES, LIVE_PAGES, SHIFT_PAGES } from './pages.ts';
 
 const builtOf = (path: string): string => `${path.slice(1)}.html`;
@@ -22,13 +22,17 @@ describe('CALCULATOR_PAGES', () => {
   });
 
   it('lets each live time page, in both languages, load its one script', () => {
-    expect(LIVE_PAGES).toHaveLength(LIVE_JOBS.length * 2);
+    expect(LIVE_PAGES).toHaveLength(CLOCK_JOBS.length * 2);
     expect(LIVE_PAGES).toContain('pay/15-hours-ago.html');
     expect(LIVE_PAGES).toContain('es/pago/cuanto-falta-para-las-3-00-pm.html');
     expect(LIVE_PAGES).toContain('es/pago/hace-30-dias.html');
+    expect(LIVE_PAGES).toContain('pay/how-many-weeks-left-in-2026.html');
+    expect(LIVE_PAGES).toContain('es/pago/cuantas-semanas-faltan-para-navidad.html');
     for (const page of LIVE_PAGES) expect(CALCULATOR_PAGES).toContain(page);
     // the other long-tail pages load no script
     expect(CALCULATOR_PAGES).not.toContain('pay/how-many-days-is-72-hours.html');
+    expect(CALCULATOR_PAGES).not.toContain('pay/how-many-weeks-in-a-year.html');
+    expect(CALCULATOR_PAGES).not.toContain('pay/how-many-months-is-12-weeks.html');
   });
 
   it('lets each shift page, in both languages, load the hours calculator script of its tool', () => {

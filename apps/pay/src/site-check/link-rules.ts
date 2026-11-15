@@ -10,6 +10,7 @@ import {
   PTOS,
   SHIFTS,
   TIPPED,
+  WEEKS,
   type LongTailJob,
 } from '../long-tail/routes.ts';
 import { DATA_PAGES } from '../data/pages.ts';
@@ -57,6 +58,7 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
   { calculator: 'shift-differential', members: DIFFERENTIALS },
   { calculator: 'tipped-wage', members: TIPPED },
   { calculator: 'hours', members: DAYS },
+  { calculator: 'hours', members: WEEKS },
   ...LIVE_GROUPS.map((members) => ({ calculator: 'hours', members })),
 ];
 
@@ -89,18 +91,20 @@ const MEXICO_CALCULATOR: Readonly<Record<MexicoSlug, string>> = {
   'cuantos-dias-de-aguinaldo-son-por-ley': AGUINALDO_PATH,
   'aguinaldo-2026': AGUINALDO_PATH,
   'cuantos-dias-de-vacaciones-son-por-ano': VACACIONES_PATH,
+  'prima-vacacional': VACACIONES_PATH,
 };
 
 /**
  * The Mexico labor pages (Spanish only), each linked from the Spanish home: every answer page and
- * the calculator it explains link each other, and the two calculators link each other.
+ * the calculator it explains link each other, the two calculators link each other, and the
+ * aguinaldo calculator and the dates calculator, which counts the days worked, link each other.
  */
 export const MEXICO_RULES: readonly GuideRule[] = [
   ...MEXICO_SLUGS.map((slug) => ({
     path: mexicoPathOf(slug),
     calculators: [MEXICO_CALCULATOR[slug]],
   })),
-  { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH] },
+  { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH, DAYS_BETWEEN_PATH] },
   { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
 ];
 

@@ -12,9 +12,6 @@ const LANGS = ['en', 'es'] as const;
 const isMoney = (value: unknown): value is Money =>
   typeof value === 'object' && value !== null && 'currency' in value;
 
-/** The tool cue a title ends with when it fits. */
-const CUE = { en: ' — with lunch & pay calculator', es: ' — calcula descanso y pago' } as const;
-
 /** The common shifts people ask the hours of, as `start-end` on a 24-hour clock. */
 // prettier-ignore
 const ASKED = ['5:00-13:00', '6:00-14:00', '6:00-14:30', '6:00-15:00', '6:00-16:00', '6:00-18:00', '7:00-15:00', '7:00-16:00', '7:00-17:00', '7:00-19:00', '8:00-15:00', '8:00-16:00', '8:00-16:30', '8:00-17:00', '8:00-18:00', '8:00-20:00', '8:30-16:30', '8:30-17:00', '9:00-15:00', '9:00-16:00', '9:00-17:00', '9:00-18:00', '9:00-21:00', '10:00-16:00', '10:00-18:00', '10:00-19:00', '11:00-19:00', '12:00-20:00', '14:00-22:00', '15:00-23:00', '16:00-0:00', '19:00-7:00', '20:00-8:00', '21:00-9:00', '22:00-6:00', '23:00-7:00'];
@@ -139,14 +136,14 @@ describe('shift long-tail pages', () => {
     const nueve = longTailPageOf(nine, 'es');
     expect(nueve.h1).toBe('¿Cuántas horas son de 9 am a 5 pm?');
     expect(nueve.figure).toBe('8 horas');
-    expect(nueve.title).toBe('De 9 a 5 son 8 horas — calcula descanso y pago | Cuenta Horas');
+    expect(nueve.title).toBe('De 9 a 5 son 8 horas (7 h 30 min con 30 min de descanso)');
     // 22:00 to 6:00 crosses midnight: 2 h to midnight + 6 h = 8 h
     const late = longTailPageOf(shiftOf('22:00-6:00'), 'en');
     expect(late.figure).toBe('8 hours');
     expect(late.lead).toContain('crosses midnight');
     expect(late.title).toBe('10 PM to 6 AM Is How Many Hours? 8 Hours, 7.5 With Lunch');
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'es').title).toBe(
-      'De 10 pm a 6 am son 8 horas — calcula descanso y pago | Cuenta Horas',
+      'De 10 pm a 6 am son 8 horas (7 h 30 min con 30 min de descanso)',
     );
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'es').paths.es).toBe(
       '/es/pago/cuantas-horas-son-de-10-pm-a-6-am',
@@ -161,42 +158,33 @@ describe('shift long-tail pages', () => {
       '8 to 6 Is How Many Hours? 10 Hours, 9.5 With Lunch | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('8:00-18:00'), 'es').title).toBe(
-      'De 8 a 6 son 10 horas — calcula descanso y pago | Cuenta Horas',
+      'De 8 a 6 son 10 horas (9 h 30 min con 30 min de descanso)',
     );
     expect(rowOf(shiftOf('9:00-15:00'), 'week')).toBe('30 h 0 min (30.00)');
     expect(rowOf(shiftOf('6:00-14:30'), 'decimal')).toBe('8.50');
     expect(longTailPageOf(shiftOf('6:00-14:30'), 'es').title).toBe(
-      'De 6 a 2:30 son 8 horas y 30 minutos | Cuenta Horas',
+      'De 6 a 2:30 son 8 horas y 30 minutos (8 h con 30 min de descanso)',
     );
     // 8:30 to 16:30 is 8 h; 20:00 to 8:00 crosses midnight: 4 h + 8 h = 12 h
     expect(longTailPageOf(shiftOf('8:30-16:30'), 'es').title).toBe(
-      'De 8:30 a 4:30 son 8 horas — calcula descanso y pago | Cuenta Horas',
+      'De 8:30 a 4:30 son 8 horas (7 h 30 min con 30 min de descanso)',
     );
     expect(longTailPageOf(shiftOf('20:00-8:00'), 'en').figure).toBe('12 hours');
     expect(longTailPageOf(shiftOf('8:00-20:00'), 'es').title).toBe(
-      'De 8 a 8 son 12 horas — calcula descanso y pago | Cuenta Horas',
+      'De 8 a 8 son 12 horas (11 h 30 min con 30 min de descanso)',
     );
     // an afternoon start keeps its pm, so 7 pm to 7 am is not 7 am to 7 pm
     expect(longTailPageOf(shiftOf('19:00-7:00'), 'es').title).toBe(
-      'De 7 pm a 7 am son 12 horas — calcula descanso y pago | Cuenta Horas',
+      'De 7 pm a 7 am son 12 horas (11 h 30 min con 30 min de descanso)',
     );
     expect(longTailPageOf(shiftOf('7:00-19:00'), 'es').title).toBe(
-      'De 7 a 7 son 12 horas — calcula descanso y pago | Cuenta Horas',
+      'De 7 a 7 son 12 horas (11 h 30 min con 30 min de descanso)',
     );
   });
 
   it('answer the question first, in the words people search, in the title and the description', () => {
     for (const shift of SHIFTS) {
-      const page = longTailPageOf(shift, 'es');
-      const name = page.title.replace(/ \| Cuenta Horas$/, '');
-      const answer = name.replace(CUE.es, '');
-      expect(answer.endsWith(page.figure)).toBe(true);
-      expect(page.description.startsWith(`${answer},`)).toBe(true);
-      // the tool cue only where the whole name still fits a result, about 60 characters
-      expect(name.endsWith(CUE.es)).toBe(`${answer}${CUE.es}`.length <= 60);
-    }
-    // English: the question as typed, "9 to 5 is how many hours", then the hours and with a lunch
-    for (const shift of SHIFTS) {
+      // English: the question as typed, "9 to 5 is how many hours", then the hours and with a lunch
       const page = longTailPageOf(shift, 'en');
       const name = page.title.replace(/ \| Cuenta Horas$/, '');
       const match = /^(.+) Is How Many Hours\? ([\d.]+) Hours, ([\d.]+) With Lunch$/.exec(name);
@@ -205,6 +193,11 @@ describe('shift long-tail pages', () => {
       expect(hours).toBe(hoursText(engineHours(shift, 0)));
       expect(lunch).toBe(hoursText(engineHours(shift, 30)));
       expect(page.description.startsWith(said)).toBe(true);
+      // the Spanish title gives the hours after a 30-minute break (`spanish-search.test.ts`)
+      const es = longTailPageOf(shift, 'es');
+      const respuesta = es.title.replace(/ \| Cuenta Horas$/, '').replace(/ \(.*\)$/, '');
+      expect(respuesta.endsWith(es.figure)).toBe(true);
+      expect(es.description.startsWith(`${respuesta}.`)).toBe(true);
     }
     // 6 am to 2:30 pm is too long a headline for the cue
     expect(longTailPageOf(shiftOf('6:00-14:30'), 'en').title).toBe(
@@ -215,7 +208,7 @@ describe('shift long-tail pages', () => {
       '8:30 to 4:30 Is How Many Hours? 8 Hours, 7.5 With Lunch | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').description).toMatch(
-      /^De 9 a 5 son 8 horas, o 8\.00 horas decimales\./,
+      /^De 9 a 5 son 8 horas\. Con 30 minutos de descanso son 7 h 30 min,/,
     );
   });
 

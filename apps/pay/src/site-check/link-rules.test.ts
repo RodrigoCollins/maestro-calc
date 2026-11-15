@@ -1,3 +1,4 @@
+import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
@@ -124,12 +125,13 @@ describe('GUIDE_RULES', () => {
 });
 
 describe('MEXICO_RULES', () => {
-  it('ties each Mexico answer page to its calculator, both linked from the Spanish home', () => {
+  it('ties each Mexico answer page to its calculator, and the aguinaldo to the dates calculator', () => {
     expect(MEXICO_RULES).toEqual([
       { path: '/es/mexico/cuantos-dias-de-aguinaldo-son-por-ley', calculators: [AGUINALDO_PATH] },
       { path: '/es/mexico/aguinaldo-2026', calculators: [AGUINALDO_PATH] },
       { path: '/es/mexico/cuantos-dias-de-vacaciones-son-por-ano', calculators: [VACACIONES_PATH] },
-      { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH] },
+      { path: '/es/mexico/prima-vacacional', calculators: [VACACIONES_PATH] },
+      { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH, DAYS_BETWEEN_PATH] },
       { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
     ]);
   });

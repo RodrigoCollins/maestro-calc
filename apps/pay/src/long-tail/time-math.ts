@@ -161,5 +161,59 @@ export const liveTextOf = (
       date: formats.date(new Date(y, m - 1, d)),
     });
   }
+  if (kind === 'weeks') return weeksTextOf(data, now, formats, fill);
   return undefined;
+};
+
+/** `days` as whole weeks and days in the words of `data`, the zero part left out: `5 weeks and 5 days`. */
+export const weeksSpanOf = (
+  days: number,
+  data: Readonly<Record<string, string | undefined>>,
+): string => {
+  const weeks = Math.floor(days / 7);
+  const rest = days % 7;
+  const part = (count: number, one: string, many: string): string =>
+    `${String(count)} ${(count === 1 ? data[one] : data[many]) ?? ''}`;
+  const parts = [
+    ...(weeks > 0 ? [part(weeks, 'week', 'weeks')] : []),
+    ...(rest > 0 || weeks === 0 ? [part(rest, 'day', 'days')] : []),
+  ];
+  return parts.join(data['and'] ?? ' ');
+};
+
+/**
+ * The weeks and days from today to a date of `data`: `m` and `d`, and `y` for one fixed date
+ * (its `past` sentence once it has come), or, with no `y`, the next one of the day in the year
+ * (its `today` sentence on the day itself).
+ */
+const weeksTextOf = (
+  data: Readonly<Record<string, string | undefined>>,
+  now: Date,
+  formats: LiveFormats,
+  fill: (
+    template: string | undefined,
+    values: Readonly<Record<string, string>>,
+  ) => string | undefined,
+): string | undefined => {
+  const today = civilOf(now);
+  const m = Number(data['m']);
+  const d = Number(data['d']);
+  const fixed = data['y'] === undefined ? undefined : Number(data['y']);
+  const thisYear = { y: fixed ?? today.y, m, d };
+  const target =
+    fixed === undefined && dayDelta(today, thisYear) < 0
+      ? { ...thisYear, y: today.y + 1 }
+      : thisYear;
+  const days = dayDelta(today, target);
+  const values = {
+    today: formats.date(now),
+    date: formats.date(new Date(target.y, target.m - 1, target.d)),
+    span: weeksSpanOf(days, data),
+    total: String(days),
+    decimal: (days / 7).toFixed(1),
+  };
+  // a fixed date is the day after the span counted: on it, the span is over
+  if (fixed !== undefined && days <= 0) return fill(data['past'], values);
+  if (days === 0) return fill(data['today'], values);
+  return fill(data['text'], values);
 };

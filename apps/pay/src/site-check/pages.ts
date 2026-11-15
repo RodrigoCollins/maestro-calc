@@ -1,5 +1,5 @@
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
-import { LIVE_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
+import { CLOCK_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
 import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 
 /** The built calculator pages of the route table. */
@@ -34,10 +34,10 @@ const ROUTED = [
 export const EMBED_PAGES = ROUTED.map((page) => `embed/${page}`);
 
 /**
- * The live time pages (`LIVE_JOBS`), in both languages: their one script, `src/client/time-now.ts`,
+ * The live time pages and the weeks counts from today (`CLOCK_JOBS`), in both languages: their one script, `src/client/time-now.ts`,
  * fills the answer from the visitor's clock, so each is held to a calculator page's script budget.
  */
-export const LIVE_PAGES: readonly string[] = LIVE_JOBS.flatMap((job) =>
+export const LIVE_PAGES: readonly string[] = CLOCK_JOBS.flatMap((job) =>
   (['en', 'es'] as const).map((lang) => `${pathOf(job, lang).slice(1)}.html`),
 );
 
