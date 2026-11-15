@@ -5,8 +5,10 @@ import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/rout
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  ISR_PATH,
   MEXICO_ROUTES,
   SDI_PATH,
+  SUELDO_NETO_PATH,
   VACACIONES_PATH,
 } from '../../../apps/pay/src/mexico/routes.ts';
 
@@ -124,6 +126,12 @@ export const ANTIGUEDAD = ANTIGUEDAD_PATH;
 
 /** The salario diario integrado calculator of Mexico, Spanish only. */
 export const SDI_MX = SDI_PATH;
+
+/** The ISR calculator of a salary in Mexico, Spanish only. */
+export const ISR_MX = ISR_PATH;
+
+/** The take-home pay calculator of Mexico, Spanish only. */
+export const SUELDO_NETO = SUELDO_NETO_PATH;
 
 /** The days-between calculator, Spanish only. */
 export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;

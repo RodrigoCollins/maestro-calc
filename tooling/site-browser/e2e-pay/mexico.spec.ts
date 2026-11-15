@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { AGUINALDO, ANTIGUEDAD, SDI_MX, VACACIONES_MX } from './pages.ts';
+import { AGUINALDO, ANTIGUEDAD, ISR_MX, SDI_MX, SUELDO_NETO, VACACIONES_MX } from './pages.ts';
 
 // Hand-verified:
 // - 2026 at the general minimum wage: 315.04 × 15 = 4,725.60; 30 UMA = 30 × 117.31 = 3,519.30
@@ -138,5 +138,74 @@ test.describe(SDI_MX, () => {
     await expect(page.locator('[data-mx-capped]')).toBeVisible();
     await page.locator('input[name="aguinaldo"]').fill('10');
     await expect(page.locator('[data-mx-below]')).toBeVisible();
+  });
+});
+
+// Hand-verified from Anexo 8 RMF 2026 (DOF 28-12-2025) and the subsidy decree (DOF 31-12-2025):
+// - $12,000 a month: 420.95 + 4,831.48 × 10.88% = 946.62, no subsidy (over 11,492.66).
+// - $11,492.66: 891.42 − 535.65 = 355.77; a centavo more loses the subsidy: 891.42.
+// - $9,451.20 (315.04 × 30): the tariff gives 669.31, nothing withheld (LISR art. 96).
+// - A fortnight of $5,000: 207.75 + 1,462.84 × 10.88% = 366.91 − 264.30 = 102.61.
+// - $20,000 net: 20,000 − 2,383.65 − 540.13 = 17,076.22; $40,000: 40,000 − 6,755.82 − 1,122.51.
+test.describe(ISR_MX, () => {
+  test('starts at $12,000 a month', async ({ page }) => {
+    await page.goto(ISR_MX);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$946.62');
+    await expect(page.locator('[data-mx="subsidy"]')).toHaveText('$0.00');
+  });
+
+  test('drops the subsidy a centavo over $11,492.66', async ({ page }) => {
+    await page.goto(ISR_MX);
+    await page.locator('input[name="wage"]').fill('11492.66');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$355.77');
+    await expect(page.locator('[data-mx="subsidy"]')).toHaveText('$535.65');
+    await page.locator('input[name="wage"]').fill('11492.67');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$891.42');
+  });
+
+  test('withholds nothing from the minimum wage and works a fortnight', async ({ page }) => {
+    await page.goto(ISR_MX);
+    await page.locator('input[name="wage"]').fill('9451.20');
+    await expect(page.locator('[data-mx="tariff"]')).toHaveText('$669.31');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-mx-below]')).toBeVisible();
+    await page.locator('select[name="period"]').selectOption('fortnight');
+    await page.locator('input[name="wage"]').fill('5000');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$102.61');
+    await expect(page.locator('[data-mx-below]')).toBeHidden();
+  });
+
+  test('marks a salary it cannot read', async ({ page }) => {
+    await page.goto(ISR_MX);
+    await page.locator('input[name="wage"]').fill('doce mil');
+    await expect(page.locator('[data-mx-invalid]')).toBeVisible();
+  });
+});
+
+test.describe(SUELDO_NETO, () => {
+  test('starts at $20,000 a month', async ({ page }) => {
+    await page.goto(SUELDO_NETO);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$17,076.22');
+    await expect(page.locator('[data-mx="sbc"]')).toHaveText('$699.54');
+    await expect(page.locator('[data-mx="cesantia"]')).toHaveText('$236.09');
+  });
+
+  test('nets $40,000 and keeps the whole minimum wage', async ({ page }) => {
+    await page.goto(SUELDO_NETO);
+    await page.locator('input[name="wage"]').fill('40000');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$32,121.67');
+    await expect(page.locator('[data-mx="imss"]')).toHaveText('$1,122.51');
+    await page.locator('input[name="wage"]').fill('9451.20');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$9,451.20');
+    await expect(page.locator('[data-mx-below]')).toBeVisible();
+  });
+
+  test('integrates more vacation days after 11 years', async ({ page }) => {
+    await page.goto(SUELDO_NETO);
+    await page.locator('input[name="years"]').fill('11');
+    await expect(page.locator('[data-mx="sbc"]')).toHaveText('$705.02');
+    await expect(page.locator('[data-mx="imss"]')).toHaveText('$544.69');
+    await page.locator('input[name="years"]').fill('x');
+    await expect(page.locator('[data-mx-invalid]')).toBeVisible();
   });
 });
