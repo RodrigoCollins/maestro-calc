@@ -88,6 +88,32 @@ export const civilOf = (moment: Date): CivilDate => ({
 export const fillTemplate = (template: string, values: Readonly<Record<string, string>>): string =>
   template.replace(/\{(\w+)\}/g, (whole, name: string) => values[name] ?? whole);
 
+/**
+ * The moment `delta` minutes after `now` on the clock of the IANA `zone`, with its short weekday,
+ * as `lang` writes it: `Sun 10:20 AM`. An unknown zone gives `undefined`, so the page keeps its
+ * text. The narrow space some engines put before AM is written as a plain one.
+ */
+export const zonedTimeOf = (
+  now: Date,
+  delta: number,
+  zone: string,
+  lang: string,
+): string | undefined => {
+  try {
+    return new Intl.DateTimeFormat(lang, {
+      weekday: 'short',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: zone,
+    })
+      .format(new Date(now.getTime() + delta * 60_000))
+      .replace(/\s/g, ' ')
+      .replace(/,/g, '');
+  } catch {
+    return undefined;
+  }
+};
+
 /** How the client writes a moment, in the page's language (`Intl.DateTimeFormat`). */
 export interface LiveFormats {
   readonly time: (moment: Date) => string;
@@ -120,7 +146,11 @@ export const liveTextOf = (
   }
   if (kind === 'until') {
     const { minutes, tomorrow } = untilOf(now.getHours() * 60 + now.getMinutes(), amount);
-    return fill(tomorrow ? data['tomorrow'] : data['today'], { duration: durationOf(minutes) });
+    return fill(tomorrow ? data['tomorrow'] : data['today'], {
+      duration: durationOf(minutes),
+      // the total minutes, grouped by thousands as the English sentence writes them: `1,140`
+      minutes: String(minutes).replace(/\B(?=(\d{3})+$)/g, ','),
+    });
   }
   if (kind === 'date') {
     const today = civilOf(now);

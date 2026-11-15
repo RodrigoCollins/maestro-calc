@@ -1,4 +1,4 @@
-import { liveTextOf } from '../long-tail/time-math.ts';
+import { liveTextOf, zonedTimeOf } from '../long-tail/time-math.ts';
 
 /*
  * The live answer of the time pages (`LongTailPage.live`): every `[data-time-now]` slot is filled
@@ -26,6 +26,12 @@ const fill = (): void => {
   for (const slot of document.querySelectorAll<HTMLElement>('[data-time-now]')) {
     const text = liveTextOf(slot.dataset['timeNow'] ?? '', slot.dataset, now, formats);
     if (text !== undefined) slot.textContent = text;
+  }
+  // the clock table of a minutes page: each cell the time in its zone, `data-delta` minutes on
+  for (const cell of document.querySelectorAll<HTMLElement>('[data-zone]')) {
+    const { zone = '', delta = '0' } = cell.dataset;
+    const text = zonedTimeOf(now, Number(delta), zone, lang);
+    if (text !== undefined) cell.textContent = text;
   }
 };
 

@@ -157,7 +157,10 @@ describe('the Spanish hours in days pages', () => {
 
   it('keep the English pages as they were', () => {
     expect(longTailPageOf(daysOf(48), 'en').sections?.map(({ id }) => id)).not.toContain('faq');
-    expect(longTailPageOf(daysOf(48), 'en').title).toBe('48 hours is 2 days | Cuenta Horas');
+    // the English title is its own (`days.ts`): the workdays a search box does not give
+    expect(longTailPageOf(daysOf(48), 'en').title).toBe(
+      '48 Hours Is 2 Days, or 6 8-Hour Workdays | Cuenta Horas',
+    );
   });
 });
 

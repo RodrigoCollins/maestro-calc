@@ -134,6 +134,41 @@ const more = tool?.fields.slice(2) ?? [];
     <p class="note">{page.note}</p>
 
     <div class="prose explained">
+      {page.zones !== undefined && (
+        <section aria-labelledby="zones">
+          <h2 id="zones">{page.zones.heading}</h2>
+          <p>{page.zones.intro}</p>
+          <div class="table-scroll" role="region" aria-labelledby="zones-caption" tabindex="0">
+            <table class="ledger figures">
+              <caption id="zones-caption">{page.zones.caption}</caption>
+              <thead>
+                <tr>
+                  {page.zones.head.map((cell) => (
+                    <th scope="col">{cell}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {page.zones.rows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.label}</th>
+                    <td>
+                      <span data-zone={row.zone} data-delta="0">
+                        {row.offset}
+                      </span>
+                    </td>
+                    <td>
+                      <span data-zone={row.zone} data-delta={page.zones?.amount}>
+                        {page.zones?.fallback}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
       <Sections sections={page.sections ?? []} />
 
       {page.sources !== undefined && page.sources.length > 0 && (

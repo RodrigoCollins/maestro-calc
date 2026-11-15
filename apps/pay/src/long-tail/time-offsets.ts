@@ -1046,23 +1046,61 @@ const minutesPageOf = (job: TimeOffset, lang: Lang) => {
   };
 };
 
+/**
+ * The zones of the live clock table, east to west, then UTC: their IANA names and their offsets
+ * as the page says them without a script (49 CFR part 71; Arizona and Hawaii keep standard time).
+ */
+const ZONES = [
+  { label: 'Eastern Time (ET)', zone: 'America/New_York', offset: 'UTC−5, UTC−4 in summer' },
+  { label: 'Central Time (CT)', zone: 'America/Chicago', offset: 'UTC−6, UTC−5 in summer' },
+  { label: 'Mountain Time (MT)', zone: 'America/Denver', offset: 'UTC−7, UTC−6 in summer' },
+  { label: 'Arizona (MST all year)', zone: 'America/Phoenix', offset: 'UTC−7 all year' },
+  { label: 'Pacific Time (PT)', zone: 'America/Los_Angeles', offset: 'UTC−8, UTC−7 in summer' },
+  { label: 'Alaska Time (AKT)', zone: 'America/Anchorage', offset: 'UTC−9, UTC−8 in summer' },
+  { label: 'Hawaii Time (HT)', zone: 'Pacific/Honolulu', offset: 'UTC−10 all year' },
+  { label: 'Zulu time (UTC)', zone: 'UTC', offset: 'UTC, the military Z' },
+] as const;
+
+/**
+ * The English result and clock table of a minutes from now page: what a search's answer box does
+ * not give, the time in every US zone at once, live from the visitor's clock.
+ */
+const minutesEnglishOf = (m: number) => ({
+  title: titleOf(`${String(m)} Minutes From Now: The Time in Every US Time Zone`),
+  description: descriptionOf(
+    `The time ${String(m)} minutes from now in Eastern, Central, Mountain, Pacific, Alaska and Hawaii time and UTC, live from your clock; ${decimalOf(m)} hours on a time card.`,
+  ),
+  zones: {
+    heading: `${String(m)} minutes from now in every US time zone`,
+    intro: `The clock of each zone now and ${String(m)} minutes on, read from your device's clock: a call, a delivery or a shift change in another zone lands at the time in its row. The weekday shows when the ${String(m)} minutes cross midnight there.`,
+    caption: `The time now and ${String(m)} minutes from now, by time zone`,
+    head: ['Time zone', 'Now', `${String(m)} minutes from now`] as const,
+    amount: String(m),
+    fallback: `+${String(m)} min`,
+    rows: ZONES,
+  },
+});
+
 /** The page of one offset in one language: the rule at any time, and the live answer's slot. */
 export const offsetPageOf = (job: TimeOffset, lang: Lang): LongTailPage => {
   const w = WORDS[lang];
   const { headline, lead, figure, rows, live, sections, sources } =
     job.unit === 'hour' ? hoursPageOf(job, lang) : minutesPageOf(job, lang);
+  const english = lang === 'en' && job.unit !== 'hour' ? minutesEnglishOf(job.amount) : undefined;
   // the Spanish hours ago pages answer a search of their own (`ago-search.ts`)
   const search =
     lang === 'es' && job.unit === 'hour' && job.direction === 'ago' ? agoSearchOf(job) : undefined;
   return {
     kicker: HOURS_TEXTS[lang].kicker,
-    title: search?.title ?? titleOf(headline),
+    title: english?.title ?? search?.title ?? titleOf(headline),
     description:
+      english?.description ??
       search?.description ??
       descriptionOf(
         `${headline}.`,
         rows.map(({ label, value }) => `${label}: ${value}`),
       ),
+    ...(english === undefined ? {} : { zones: english.zones }),
     h1: questionOf(job, lang),
     lead,
     figure,

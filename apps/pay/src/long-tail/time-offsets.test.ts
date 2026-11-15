@@ -62,6 +62,29 @@ describe('hours ago and minutes from now long-tail pages', () => {
     }
   });
 
+  it('give an English minutes page a live clock table for every US time zone and UTC', () => {
+    const { zones } = longTailPageOf(offsetOf('20-minutes-from-now'), 'en');
+    expect(zones?.amount).toBe('20');
+    expect(zones?.head).toEqual(['Time zone', 'Now', '20 minutes from now']);
+    expect(zones?.rows.map(({ label, zone }) => [label, zone])).toEqual([
+      ['Eastern Time (ET)', 'America/New_York'],
+      ['Central Time (CT)', 'America/Chicago'],
+      ['Mountain Time (MT)', 'America/Denver'],
+      ['Arizona (MST all year)', 'America/Phoenix'],
+      ['Pacific Time (PT)', 'America/Los_Angeles'],
+      ['Alaska Time (AKT)', 'America/Anchorage'],
+      ['Hawaii Time (HT)', 'Pacific/Honolulu'],
+      ['Zulu time (UTC)', 'UTC'],
+    ]);
+    // without a script each row still says the zone's offset and the rule
+    expect(zones?.rows[0]?.offset).toBe('UTC−5, UTC−4 in summer');
+    expect(zones?.rows[6]?.offset).toBe('UTC−10 all year');
+    expect(zones?.fallback).toBe('+20 min');
+    // the hours pages and the Spanish twins keep their pages as they were
+    expect(longTailPageOf(offsetOf('20-minutes-from-now'), 'es').zones).toBeUndefined();
+    expect(longTailPageOf(offsetOf('15-hours-ago'), 'en').zones).toBeUndefined();
+  });
+
   it('answer first with the rule that holds at any time, never a time of the build', () => {
     const fifteen = longTailPageOf(offsetOf('15-hours-ago'), 'en');
     expect(fifteen.h1).toBe('What time was it 15 hours ago?');
@@ -77,7 +100,10 @@ describe('hours ago and minutes from now long-tail pages', () => {
     expect(quince.title).toMatch(/^Hace 15 horas eran las 0:00 si ahora son las 15:00/);
     const thirty = longTailPageOf(offsetOf('30-minutes-from-now'), 'en');
     expect(thirty.h1).toBe('What time will it be 30 minutes from now?');
-    expect(thirty.title).toMatch(/^30 minutes from now: the clock plus 30 min, 0.5 hours/);
+    expect(thirty.title).toBe('30 Minutes From Now: The Time in Every US Time Zone | Cuenta Horas');
+    expect(thirty.description).toBe(
+      'The time 30 minutes from now in Eastern, Central, Mountain, Pacific, Alaska and Hawaii time and UTC, live from your clock; 0.5 hours on a time card.',
+    );
     expect(thirty.figure).toBe('+30 min');
     expect(thirty.lead).toContain('at 11:45 pm, 30 minutes from now is 12:15 am tomorrow');
     expect(longTailPageOf(offsetOf('30-minutes-from-now'), 'es').h1).toBe(
@@ -279,7 +305,7 @@ describe('hours ago and minutes from now long-tail pages', () => {
 
   it('give the hand-verified minutes from now, up to an hour and a half', () => {
     const ninety = longTailPageOf(offsetOf('90-minutes-from-now'), 'en');
-    expect(ninety.title).toMatch(/^90 minutes from now: the clock plus 90 min, 1.5 hours/);
+    expect(ninety.title).toMatch(/^90 Minutes From Now: The Time in Every US Time Zone/);
     expect(ninety.lead).toContain('an hour and a half');
     expect(textOf(sectionOf('90-minutes-from-now', 'worked'))).toContain(
       '2:45 pm + 90 min = 3:75, which is 4:15 pm',

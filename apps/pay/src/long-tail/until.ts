@@ -130,10 +130,11 @@ const WORDS = {
       `To count down to ${label}, subtract the time on your clock from ${f}, the 24-hour form of ${label}. From ${from} that is ${durationOf(nine)}, or ${dec(nine)} hours; once ${label} has passed, the next one is tomorrow, so add 24 hours first: from ${at} it is ${durationOf(evening)}.`,
     midnightLead: (nine: number, evening: number): string =>
       `To count down to 12:00 am, midnight, subtract the time on your clock from 24:00, the end of the day. From 9:00 am that is ${durationOf(nine)}, or ${dec(nine)} hours, and from 8:00 pm it is ${durationOf(evening)}.`,
-    today: (label: string): string => `It is {now}: ${label} is {duration} away, today.`,
+    today: (label: string): string =>
+      `It is {now}: ${label} is {duration} away, {minutes} minutes, today.`,
     tomorrow: (label: string): string =>
-      `It is {now}: ${label} has passed today, so the next one is {duration} away, tomorrow.`,
-    midnight: 'It is {now}: midnight tonight is {duration} away.',
+      `It is {now}: ${label} has passed today, so the next one is {duration} away, {minutes} minutes, tomorrow.`,
+    midnight: 'It is {now}: midnight tonight is {duration} away, {minutes} minutes.',
     fallback: (label: string, f: string): string =>
       `Subtract the time on your clock from ${f} (${label}). After ${label}, add 24 hours first: the next ${label} is tomorrow.`,
     midnightFallback:
@@ -161,7 +162,13 @@ const WORDS = {
     midnightHours:
       'From each hour on the hour, the time left until midnight tonight, in hours and minutes and in the decimal hours a time card uses.',
     caption: (label: string): string => `Time left until ${label}`,
-    head: (label: string): string[] => ['Time now', `Until ${label}`, 'Decimal hours', 'Day'],
+    head: (label: string): string[] => [
+      'Time now',
+      `Until ${label}`,
+      'Minutes',
+      'Decimal hours',
+      'Day',
+    ],
     sinceHeading: (label: string): string => `Time since ${label}`,
     since: (
       label: string,
@@ -312,6 +319,27 @@ export const untilLinksOf = (lang: Lang, except?: Until): CommonLinks => {
   };
 };
 
+/**
+ * The English search result of a countdown: the question as typed, then what the answer box of a
+ * search does not give, the live count in minutes and the table from every hour.
+ */
+const englishResultOf = (
+  label: string,
+  midnight: boolean,
+): { readonly title: string; readonly description: string } => {
+  const upper = label.replace(/ ([ap])m$/, (_, half: string) => ` ${half.toUpperCase()}M`);
+  return {
+    title: titleOf(
+      midnight
+        ? `How Long Until Midnight, ${upper}? Live Countdown in Minutes`
+        : `How Long Until ${upper}? Live Countdown in Hours and Minutes`,
+    ),
+    description: descriptionOf(
+      `Live countdown to ${midnight ? `midnight, ${upper},` : upper} from your clock, in hours and minutes and in total minutes, with the time left from every hour of the day${midnight ? '' : ' and the shift math'}.`,
+    ),
+  };
+};
+
 /** The page of one time to count down to in one language, and the live count's slot. */
 export const untilPageOf = (job: Until, lang: Lang): LongTailPage => {
   const w = WORDS[lang];
@@ -357,7 +385,14 @@ export const untilPageOf = (job: Until, lang: Lang): LongTailPage => {
         head: w.head(label),
         rows: Array.from({ length: 24 }, (_, hour) => {
           const { minutes } = count(hour * 60);
-          return [t(hour * 60), durationOf(minutes), dec(minutes), markOf(hour * 60)];
+          // the English table adds the total minutes, for "how many minutes until"
+          return [
+            t(hour * 60),
+            durationOf(minutes),
+            ...(lang === 'en' ? [n(minutes)] : []),
+            dec(minutes),
+            markOf(hour * 60),
+          ];
         }),
       },
     },
@@ -394,8 +429,9 @@ export const untilPageOf = (job: Until, lang: Lang): LongTailPage => {
   });
   return {
     kicker: HOURS_TEXTS[lang].kicker,
-    title: titleOf(w.headline(label, f)),
-    description: descriptionOf(lead),
+    ...(lang === 'en'
+      ? englishResultOf(label, midnight)
+      : { title: titleOf(w.headline(label, f)), description: descriptionOf(lead) }),
     h1: questionOf(job, lang),
     lead,
     figure: w.figure(f),

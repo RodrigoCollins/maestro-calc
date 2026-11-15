@@ -13,7 +13,26 @@ import {
   untilOf,
   weekdayOf,
   weekdaysIn,
+  zonedTimeOf,
 } from './time-math.ts';
+
+describe('zonedTimeOf', () => {
+  // Sunday 15 November 2026, 15:00 UTC: 10:00 am in New York (EST), 5:00 am in Honolulu
+  const now = new Date(Date.UTC(2026, 10, 15, 15, 0));
+
+  it('reads a moment some minutes away on the clock of a time zone, with its weekday', () => {
+    expect(zonedTimeOf(now, 20, 'America/New_York', 'en')).toBe('Sun 10:20 AM');
+    expect(zonedTimeOf(now, 20, 'Pacific/Honolulu', 'en')).toBe('Sun 5:20 AM');
+    expect(zonedTimeOf(now, 20, 'UTC', 'en')).toBe('Sun 3:20 PM');
+    // 9 h 30 min on, it is past midnight in UTC: Monday
+    expect(zonedTimeOf(now, 570, 'UTC', 'en')).toBe('Mon 12:30 AM');
+    expect(zonedTimeOf(now, 0, 'America/Phoenix', 'en')).toBe('Sun 8:00 AM');
+  });
+
+  it('reads an unknown zone as nothing, so the page keeps its text', () => {
+    expect(zonedTimeOf(now, 20, 'Not/AZone', 'en')).toBeUndefined();
+  });
+});
 
 describe('clockShift', () => {
   it('moves a time of day by minutes and counts the days it crosses', () => {
@@ -125,6 +144,13 @@ describe('liveTextOf', () => {
     expect(liveTextOf('until', data, new Date(2027, 0, 1, 20, 0), formats)).toBe(
       'M 19 h 0 min 20:00',
     );
+  });
+
+  it('gives a countdown in total minutes too, grouped by thousands', () => {
+    const data = { amount: '900', today: '{minutes}', tomorrow: '{minutes}' };
+    // 6:00 am to 3:00 pm: 540 minutes; 8:00 pm to 3:00 pm tomorrow: 1,140 minutes
+    expect(liveTextOf('until', data, now, formats)).toBe('540');
+    expect(liveTextOf('until', data, new Date(2027, 0, 1, 20, 0), formats)).toBe('1,140');
   });
 
   it('fills a date some days or months away', () => {

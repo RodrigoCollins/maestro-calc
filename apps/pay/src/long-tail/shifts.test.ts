@@ -2,7 +2,7 @@ import { decode, Rational, type Money } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
 import { describe, expect, it } from 'vitest';
-import { decimalHoursText, hoursMinutesText, moneyText } from '../format.ts';
+import { decimalHoursText, hoursMinutesText, hoursText, moneyText } from '../format.ts';
 import { HOURS_PATHS } from '../hours/texts.ts';
 import { commonLinksOf, LONG_TAIL_ROUTES, longTailPageOf } from './jobs.ts';
 import { SHIFTS, type Shift } from './routes.ts';
@@ -11,9 +11,6 @@ const LANGS = ['en', 'es'] as const;
 
 const isMoney = (value: unknown): value is Money =>
   typeof value === 'object' && value !== null && 'currency' in value;
-
-/** The tool cue a title ends with when it fits. */
-const CUE = { en: ' — with lunch & pay calculator' } as const;
 
 /** The common shifts people ask the hours of, as `start-end` on a 24-hour clock. */
 // prettier-ignore
@@ -111,14 +108,14 @@ describe('shift long-tail pages', () => {
     expect(rowOf(nine, 'break30')).toBe('7 h 30 min (7.50)');
     expect(rowOf(nine, 'week')).toBe('40 h 0 min (40.00)');
     expect(page.lead).toBe(
-      '9 am to 5 pm is 8 hours, or 8.00 decimal hours. With a 30-minute unpaid lunch you work 7 hours 30 minutes, or 7.50 hours; to be paid the full 8 hours, clock out at 5:30 pm.',
+      '9-5, or 9 am to 5 pm, is 8 hours, or 8.00 decimal hours. With a 30-minute unpaid lunch you work 7 hours 30 minutes, or 7.50 hours; to be paid the full 8 hours, clock out at 5:30 pm.',
     );
     // 10 pm to 6 am plus a 30-minute lunch: out at 6:30 am
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'en').lead).toContain('clock out at 6:30 am.');
     expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').lead).toContain(
       'para cobrar las 8 horas completas, sal a las 5:30 pm.',
     );
-    expect(page.title).toBe('9 AM to 5 PM is 8 hours — with lunch & pay calculator | Cuenta Horas');
+    expect(page.title).toBe('9 to 5 Is How Many Hours? 8 Hours, 7.5 With Lunch | Cuenta Horas');
     // 8:00 to 16:30 is 8 h 30 min = 8.5 h
     expect(longTailPageOf(shiftOf('8:00-16:30'), 'en').figure).toBe('8 hours 30 minutes');
     expect(rowOf(shiftOf('8:00-16:30'), 'decimal')).toBe('8.50');
@@ -144,9 +141,7 @@ describe('shift long-tail pages', () => {
     const late = longTailPageOf(shiftOf('22:00-6:00'), 'en');
     expect(late.figure).toBe('8 hours');
     expect(late.lead).toContain('crosses midnight');
-    expect(late.title).toBe(
-      '10 PM to 6 AM is 8 hours — with lunch & pay calculator | Cuenta Horas',
-    );
+    expect(late.title).toBe('10 PM to 6 AM Is How Many Hours? 8 Hours, 7.5 With Lunch');
     expect(longTailPageOf(shiftOf('22:00-6:00'), 'es').title).toBe(
       'De 10 pm a 6 am son 8 horas (7 h 30 min con 30 min de descanso)',
     );
@@ -157,12 +152,10 @@ describe('shift long-tail pages', () => {
     const closing = longTailPageOf(shiftOf('16:00-0:00'), 'en');
     expect(closing.paths.en).toBe('/pay/how-many-hours-is-4pm-to-12am');
     expect(closing.figure).toBe('8 hours');
-    expect(closing.title).toBe(
-      '4 PM to 12 AM is 8 hours — with lunch & pay calculator | Cuenta Horas',
-    );
+    expect(closing.title).toBe('4 PM to 12 AM Is How Many Hours? 8 Hours, 7.5 With Lunch');
     // 8:00 to 18:00 is 10 h; 9:00 to 15:00 is 6 h; 6:00 to 14:30 is 8 h 30 min
     expect(longTailPageOf(shiftOf('8:00-18:00'), 'en').title).toBe(
-      '8 AM to 6 PM is 10 hours — with lunch & pay calculator | Cuenta Horas',
+      '8 to 6 Is How Many Hours? 10 Hours, 9.5 With Lunch | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('8:00-18:00'), 'es').title).toBe(
       'De 8 a 6 son 10 horas (9 h 30 min con 30 min de descanso)',
@@ -191,13 +184,15 @@ describe('shift long-tail pages', () => {
 
   it('answer the question first, in the words people search, in the title and the description', () => {
     for (const shift of SHIFTS) {
+      // English: the question as typed, "9 to 5 is how many hours", then the hours and with a lunch
       const page = longTailPageOf(shift, 'en');
       const name = page.title.replace(/ \| Cuenta Horas$/, '');
-      const answer = name.replace(CUE.en, '');
-      expect(answer.endsWith(page.figure)).toBe(true);
-      expect(page.description.startsWith(`${answer},`)).toBe(true);
-      // the tool cue only where the whole name still fits a result, about 60 characters
-      expect(name.endsWith(CUE.en)).toBe(`${answer}${CUE.en}`.length <= 60);
+      const match = /^(.+) Is How Many Hours\? ([\d.]+) Hours, ([\d.]+) With Lunch$/.exec(name);
+      expect(match, name).not.toBeNull();
+      const [, said = '', hours = '', lunch = ''] = match ?? [];
+      expect(hours).toBe(hoursText(engineHours(shift, 0)));
+      expect(lunch).toBe(hoursText(engineHours(shift, 30)));
+      expect(page.description.startsWith(said)).toBe(true);
       // the Spanish title gives the hours after a 30-minute break (`spanish-search.test.ts`)
       const es = longTailPageOf(shift, 'es');
       const respuesta = es.title.replace(/ \| Cuenta Horas$/, '').replace(/ \(.*\)$/, '');
@@ -206,15 +201,73 @@ describe('shift long-tail pages', () => {
     }
     // 6 am to 2:30 pm is too long a headline for the cue
     expect(longTailPageOf(shiftOf('6:00-14:30'), 'en').title).toBe(
-      '6 AM to 2:30 PM is 8 hours 30 minutes | Cuenta Horas',
+      '6 to 2:30 Is How Many Hours? 8.5 Hours, 8 With Lunch | Cuenta Horas',
     );
     // a name with the cue past 55 characters drops the site name, under the 70 of a title
     expect(longTailPageOf(shiftOf('8:30-16:30'), 'en').title).toBe(
-      '8:30 AM to 4:30 PM is 8 hours — with lunch & pay calculator',
+      '8:30 to 4:30 Is How Many Hours? 8 Hours, 7.5 With Lunch | Cuenta Horas',
     );
     expect(longTailPageOf(shiftOf('9:00-17:00'), 'es').description).toMatch(
       /^De 9 a 5 son 8 horas\. Con 30 minutos de descanso son 7 h 30 min,/,
     );
+  });
+
+  it('promise the week, the year and the time card in the English description', () => {
+    // 9 to 5: 8 h, 7.5 with lunch; 5 days 40 h, 80 every two weeks, 52 x 40 = 2,080 a year
+    expect(longTailPageOf(shiftOf('9:00-17:00'), 'en').description).toBe(
+      '9 to 5 (9 AM to 5 PM) is 8 hours, or 7.5 hours with a 30-minute unpaid lunch. 5 days: 40 hours a week, 80 biweekly, 2,080 a year; overtime math and a time card.',
+    );
+    // an overnight shift keeps its am and pm: 12 h, 11.5 with lunch, 60 a week, 3,120 a year
+    expect(longTailPageOf(shiftOf('19:00-7:00'), 'en').description).toMatch(
+      /^7 PM to 7 AM is 12 hours, or 11\.5 hours with a 30-minute unpaid lunch\./,
+    );
+  });
+
+  it('set the day, week, two weeks, month and year of the shift in one English table', () => {
+    // 9 to 5: day 8, week 40, two weeks 80, month 40 x 52 / 12 = 173.33, year 2,080
+    const glance = longTailPageOf(shiftOf('9:00-17:00'), 'en').sections?.find(
+      ({ id }) => id === 'glance',
+    );
+    expect(glance?.heading).toBe('9-5 in hours: a day, a week, a month and a year');
+    expect(glance?.table?.head).toEqual([
+      'Unpaid lunch',
+      'Day',
+      'Week, 5 days',
+      'Two weeks',
+      'Month, average',
+      'Year, 52 weeks',
+    ]);
+    expect(glance?.table?.rows).toEqual([
+      ['None', '8', '40', '80', '173.33', '2,080'],
+      ['30 minutes', '7.5', '37.5', '75', '162.5', '1,950'],
+      ['60 minutes', '7', '35', '70', '151.67', '1,820'],
+    ]);
+    expect(glance?.paragraphs.join(' ')).toContain('no overtime');
+    // 7 pm to 7 am with a 30-minute lunch: 5 x 11.5 = 57.5 h, 17.5 of them past 40
+    const night = longTailPageOf(shiftOf('19:00-7:00'), 'en').sections?.find(
+      ({ id }) => id === 'glance',
+    );
+    expect(night?.heading).toBe('7 pm to 7 am in hours: a day, a week, a month and a year');
+    expect(night?.paragraphs.join(' ')).toContain('17.5 hours of overtime');
+    const links = (glance?.links ?? []).map(({ href }) => href);
+    expect(links).toEqual([
+      HOURS_PATHS.en,
+      '/guides/how-many-hours-is-full-time',
+      '/overtime-calculator',
+      '/time-card-calculator',
+    ]);
+    // the Spanish twin keeps its sections as they were
+    const es = longTailPageOf(shiftOf('9:00-17:00'), 'es').sections?.map(({ id }) => id);
+    expect(es).not.toContain('glance');
+  });
+
+  it('say the short form people type before the clock times, in English only', () => {
+    expect(longTailPageOf(shiftOf('8:30-16:30'), 'en').lead).toMatch(
+      /^8:30-4:30, or 8:30 am to 4:30 pm, is 8 hours/,
+    );
+    // 9 am to 9 pm reads both ways as 9 to 9, so it keeps its am and pm
+    expect(longTailPageOf(shiftOf('9:00-21:00'), 'en').lead).toMatch(/^9 am to 9 pm is 12 hours/);
+    expect(longTailPageOf(shiftOf('9:00-21:00'), 'en').title).toMatch(/^9 AM to 9 PM Is/);
   });
 
   it('say that an overnight shift crosses midnight, and only then', () => {

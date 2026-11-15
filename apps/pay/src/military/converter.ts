@@ -92,7 +92,10 @@ const WORDS = {
           'Noon is 1200, twelve hundred hours, and 12:00 PM on the 12-hour clock.',
         ],
         links: [
-          { href: MILITARY_CHART_PATHS.en, label: 'Military time chart: every hour of the day' },
+          {
+            href: MILITARY_CHART_PATHS.en,
+            label: 'Military time chart: every hour and every 15 minutes',
+          },
         ],
       },
       {

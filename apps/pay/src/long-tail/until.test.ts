@@ -60,14 +60,23 @@ describe('how long until a time of day long-tail pages', () => {
   it('answer first with the subtraction that holds at any time', () => {
     const three = longTailPageOf(untilOf(900), 'en');
     expect(three.h1).toBe('How long until 3:00 pm?');
-    expect(three.title).toMatch(/^How long until 3:00 pm: 15:00 minus the time on your clock/);
+    expect(three.title).toBe('How Long Until 3:00 PM? Live Countdown in Hours and Minutes');
+    expect(three.description).toBe(
+      'Live countdown to 3:00 PM from your clock, in hours and minutes and in total minutes, with the time left from every hour of the day and the shift math.',
+    );
     expect(three.figure).toBe('15:00 − now');
     expect(three.lead).toContain('From 9:00 am that is 6 h 0 min, or 6.00 hours');
     const tres = longTailPageOf(untilOf(900), 'es');
     expect(tres.h1).toBe('¿Cuánto falta para las 3:00 pm?');
     expect(tres.figure).toBe('15:00 − ahora');
+    expect(tres.title).toMatch(/^Cuánto falta para las 3:00 pm: 15:00 menos/);
+    expect(three.live?.data['today']).toBe(
+      'It is {now}: 3:00 pm is {duration} away, {minutes} minutes, today.',
+    );
     expect(longTailPageOf(untilOf(0), 'en').figure).toBe('24:00 − now');
-    expect(longTailPageOf(untilOf(0), 'en').title).toMatch(/^How long until 12:00 am: 24:00 minus/);
+    expect(longTailPageOf(untilOf(0), 'en').title).toMatch(
+      /^How Long Until Midnight, 12:00 AM\? Live/,
+    );
   });
 
   it('give the client script the target and a sentence for today and for tomorrow', () => {
@@ -86,15 +95,15 @@ describe('how long until a time of day long-tail pages', () => {
   it('give the hand-verified counts from each hour of the day', () => {
     expect(sectionOf(900, 'hours').table?.rows).toHaveLength(24);
     // until 3:00 pm from 9:00 am: 6 h; from 8:00 pm: 19 h, tomorrow
-    expect(rowOf(900, '9:00 am')).toEqual(['9:00 am', '6 h 0 min', '6.00', 'today']);
-    expect(rowOf(900, '8:00 pm')).toEqual(['8:00 pm', '19 h 0 min', '19.00', 'tomorrow']);
+    expect(rowOf(900, '9:00 am')).toEqual(['9:00 am', '6 h 0 min', '360', '6.00', 'today']);
+    expect(rowOf(900, '8:00 pm')).toEqual(['8:00 pm', '19 h 0 min', '1,140', '19.00', 'tomorrow']);
     // until 12:00 am from 6:00 pm: 6 h, at midnight
-    expect(rowOf(0, '6:00 pm')).toEqual(['6:00 pm', '6 h 0 min', '6.00', 'tonight']);
+    expect(rowOf(0, '6:00 pm')).toEqual(['6:00 pm', '6 h 0 min', '360', '6.00', 'tonight']);
     // until 2:15 pm from 9:00 am: 5 h 15 min = 5.25
-    expect(rowOf(855, '9:00 am')).toEqual(['9:00 am', '5 h 15 min', '5.25', 'today']);
+    expect(rowOf(855, '9:00 am')).toEqual(['9:00 am', '5 h 15 min', '315', '5.25', 'today']);
     // until 2:45 pm from 3:00 pm: 23 h 45 min
     expect(rowOf(885, '3:00 pm', 'es')).toEqual(['3:00 pm', '23 h 45 min', '23.75', 'mañana']);
-    expect(rowOf(1020, '9:00 am')).toEqual(['9:00 am', '8 h 0 min', '8.00', 'today']);
+    expect(rowOf(1020, '9:00 am')).toEqual(['9:00 am', '8 h 0 min', '480', '8.00', 'today']);
   });
 
   it('work the figures out step by step', () => {
@@ -125,7 +134,7 @@ describe('how long until a time of day long-tail pages', () => {
     const seven = longTailPageOf(untilOf(420), 'en');
     expect(seven.lead).toContain('From 1:40 am that is 5 h 20 min, or 5.33 hours');
     expect(seven.lead).toContain('from 8:00 pm it is 11 h 0 min');
-    expect(rowOf(420, '9:00 am')).toEqual(['9:00 am', '22 h 0 min', '22.00', 'tomorrow']);
+    expect(rowOf(420, '9:00 am')).toEqual(['9:00 am', '22 h 0 min', '1,320', '22.00', 'tomorrow']);
     // until 11:00 pm: from 11:30 pm the next one is 23 h 30 min away
     const eleven = textOf(sectionOf(1380, 'worked'));
     expect(eleven).toContain('1,380 + 1,440 − 1,410 = 1,410 minutes, 23 h 30 min');

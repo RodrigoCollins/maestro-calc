@@ -184,6 +184,16 @@ describe('the military time pages', () => {
     expect(fifteen.calculator.href).toBe(MILITARY_CONVERTER_PATHS.en);
   });
 
+  it('points to the chart from how the time is said, high on the page', () => {
+    const links = section('1500', 'said').links ?? [];
+    expect(links).toEqual([
+      {
+        href: MILITARY_CHART_PATHS.en,
+        label: 'Military time chart: 1500 beside every hour and quarter hour',
+      },
+    ]);
+  });
+
   // the content audit flags two pages whose six-word shingles overlap by half or more
   it('are no near-duplicates of one another', () => {
     const sets = MILITARY_TIMES.map((job) => shingles(prose(job)));
