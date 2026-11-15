@@ -2,7 +2,9 @@ import { CALCULATOR_EXTRAS } from './calculator-extras.ts';
 import { CHEMISTRY_CHARTS } from './chemistry-es.ts';
 import { COST_GUIDES } from './costs.ts';
 import { DOSING_CHARTS } from './dosing-es.ts';
+import { ABOVE_GROUND_GUIDE } from './above-ground.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { LITRES_GUIDE } from './litres.ts';
 import { GALLONS_GUIDE_ES, OLYMPIC_GUIDE_ES } from './gallons-es.ts';
 import {
   CALCIUM_GUIDE,
@@ -90,6 +92,8 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
     CALCIUM_GUIDE_ES,
     GALLONS_GUIDE,
     OLYMPIC_GUIDE,
+    ABOVE_GROUND_GUIDE,
+    LITRES_GUIDE,
     GALLONS_GUIDE_ES,
     OLYMPIC_GUIDE_ES,
     SHOCK_OFTEN_GUIDE,

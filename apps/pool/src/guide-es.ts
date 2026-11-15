@@ -38,6 +38,10 @@ const gallons = linkTo('volume', 'Calcula tus galones');
 
 const OPENING_STEPS: readonly GuideStep[] = [
   {
+    title: 'Abre cuando llegue tu primavera',
+    text: 'Los pasos son los mismos a los dos lados del ecuador; solo cambia el calendario. La primavera va de marzo a mayo en Estados Unidos, México y España, y de septiembre a noviembre en Argentina, Chile y Australia, así que una piscina del sur se abre mientras las del norte se cierran.',
+  },
+  {
     title: 'Revisa lo que tienes',
     text: 'Antes de quitar la cubierta, revisa el cloro, el producto de choque, el alguicida y los balanceadores que guardaste de la temporada pasada, y tira cualquier producto vencido.',
     sources: ['hayward'],

@@ -110,6 +110,13 @@ const PAGE_ROUTES: readonly Route[] = [
     en: '/how-many-gallons-in-an-olympic-pool',
     es: '/es/cuantos-galones-tiene-una-piscina-olimpica',
   },
+  // English only: the measured questions are American and Australian (Ahrefs 2026-11-08)
+  {
+    id: 'above-ground-guide',
+    kind: 'article',
+    en: '/how-many-gallons-in-an-above-ground-pool',
+  },
+  { id: 'litres-guide', kind: 'article', en: '/how-many-litres-is-my-pool' },
   {
     id: 'charts',
     kind: 'article',

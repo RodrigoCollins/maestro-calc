@@ -65,6 +65,9 @@ describe('ROUTES', () => {
         '/how-many-gallons-in-an-olympic-pool',
         '/es/cuantos-galones-tiene-una-piscina-olimpica',
       ],
+      // English only: the measured questions are American and Australian (Ahrefs 2026-11-08)
+      ['above-ground-guide', '/how-many-gallons-in-an-above-ground-pool', undefined],
+      ['litres-guide', '/how-many-litres-is-my-pool', undefined],
       ['charts', '/charts', '/es/datos-y-tablas'],
       ['opening-guide', '/opening-your-pool', '/es/como-abrir-tu-piscina'],
       ['closing-guide', '/closing-your-pool', '/es/como-cerrar-tu-piscina'],

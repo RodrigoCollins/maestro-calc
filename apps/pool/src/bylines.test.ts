@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { ABOVE_GROUND_GUIDE } from './above-ground.ts';
 import { BYLINE_PAGES, bylinePageOf } from './bylines.ts';
 import { CALCULATOR_EXTRAS } from './calculator-extras.ts';
 import { DATA_PAGES_OF } from './charts.ts';
@@ -6,10 +7,12 @@ import { COST_GUIDES } from './costs.ts';
 import { GUIDES } from './guide.ts';
 import { jobDetailOf } from './job-detail.ts';
 import { JOB_PAGES } from './jobs.ts';
+import { LITRES_GUIDE } from './litres.ts';
 import { METHOD_SECTIONS } from './methodology.ts';
 import { routeOf } from './routes.ts';
 
 const paths = BYLINE_PAGES.map(({ path }) => path);
+const ENGLISH_ONLY: readonly string[] = [ABOVE_GROUND_GUIDE.path, LITRES_GUIDE.path];
 
 describe('the pages with a byline', () => {
   it('are every guide and data page in both languages, every cost guide, every job page and every calculator page with questions', () => {
@@ -48,6 +51,11 @@ describe('the pages with a byline', () => {
   it('give a guide and its Spanish twin the same day', () => {
     for (const { path } of GUIDES) {
       const twin = routeOf(path)?.es;
+      // the measured questions of these two are American and Australian: English only for now
+      if (ENGLISH_ONLY.includes(path)) {
+        expect(twin, path).toBeUndefined();
+        continue;
+      }
       expect(twin, path).toBeDefined();
       if (twin !== undefined)
         expect(bylinePageOf(twin).checked, twin).toBe(bylinePageOf(path).checked);
