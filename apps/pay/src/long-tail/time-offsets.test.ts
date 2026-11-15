@@ -73,7 +73,8 @@ describe('hours ago and minutes from now long-tail pages', () => {
     expect(fifteen.lead).toContain('at 6:00 am, 15 hours ago was 3:00 pm yesterday');
     const quince = longTailPageOf(offsetOf('15-hours-ago'), 'es');
     expect(quince.h1).toBe('¿Qué hora era hace 15 horas?');
-    expect(quince.title).toMatch(/^Hace 15 horas: tu hora menos 15 h, o más 9 h el día anterior/);
+    // the Spanish title works 15:00 out (`spanish-search.test.ts`)
+    expect(quince.title).toMatch(/^Hace 15 horas eran las 0:00 si ahora son las 15:00/);
     const thirty = longTailPageOf(offsetOf('30-minutes-from-now'), 'en');
     expect(thirty.h1).toBe('What time will it be 30 minutes from now?');
     expect(thirty.title).toMatch(/^30 minutes from now: the clock plus 30 min, 0.5 hours/);

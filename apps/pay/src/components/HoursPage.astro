@@ -9,6 +9,7 @@ import {
   hoursMinutesText,
 } from '../format.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { popularOf } from '../hours/popular.ts';
 import { HOURS_SUM_TEXTS, hoursSectionsOf } from '../hours/sum.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
 import { commonLinksOf } from '../long-tail/jobs.ts';
@@ -44,6 +45,8 @@ if (hours?.key !== 'hours' || shift?.key !== 'shiftHours') {
 }
 const [startInput, endInput, breakInput] = hoursBetween.inputs;
 const warnings = Object.entries(t.warnings);
+// the most searched pages, right under the tool (Spanish only)
+const popular = popularOf(lang);
 const common = commonLinksOf('shift', lang);
 const days = commonLinksOf('days', lang);
 const live = (['time-offset', 'until', 'days-from'] as const).map((family) => ({
@@ -141,6 +144,20 @@ const LIVE_INTRO = {
     </section>
 
     <ShareLink lang={lang} title={t.title} path={HOURS_PATHS[lang]} />
+
+    {popular !== undefined && (
+      <section aria-labelledby="popular-heading">
+        <h2 id="popular-heading">{popular.heading}</h2>
+        <p>{popular.intro}</p>
+        <ul class="link-list">
+          {popular.links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
 
     <ul class="rules">
       {t.notes.map((note) => (
