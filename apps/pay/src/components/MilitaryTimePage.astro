@@ -1,29 +1,46 @@
 ---
 import { HOME_TEXTS } from '../home/texts.ts';
 import { SOURCES_HEADING } from '../long-tail/sections.ts';
-import { MILITARY_CONVERTER_PATHS, type MilitaryTimeJob } from '../military/routes.ts';
+import {
+  MILITARY_CONVERTER_PATHS,
+  militaryPathOf,
+  spanishPathOfTime,
+  type MilitaryTimeJob,
+} from '../military/routes.ts';
+import { spanishTimePageOf } from '../military/spanish-times.ts';
 import { militaryTimePageOf } from '../military/times.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import type { Lang } from '../time-card/receipt.ts';
 import Sections from './Sections.astro';
 import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly job: MilitaryTimeJob;
+  /** `es` for the Spanish twin of midnight or of a time from noon on, "las 19 horas". */
+  readonly lang?: Lang;
 }
 
-// English only: the language switch leads to the Spanish converter
-const page = militaryTimePageOf(Astro.props.job);
+const { job, lang = 'en' } = Astro.props;
+const es = spanishPathOfTime(job);
+// a time with no Spanish twin is English only: the language switch leads to the Spanish converter
+const page =
+  lang === 'es'
+    ? spanishTimePageOf(job)
+    : {
+        ...militaryTimePageOf(job),
+        paths: { en: militaryPathOf(job), ...(es === undefined ? {} : { es }) },
+      };
 ---
 
 <SiteLayout
-  lang="en"
+  lang={lang}
   title={page.title}
   description={page.description}
   paths={page.paths}
   otherHref={MILITARY_CONVERTER_PATHS.es}
   parent={{ title: page.calculator.title, path: page.calculator.href }}
-  otherLang={PAY_CONVERTER_TEXTS.en.otherLang}
-  footer={HOME_TEXTS.en.sources}
+  otherLang={PAY_CONVERTER_TEXTS[lang].otherLang}
+  footer={HOME_TEXTS[lang].sources}
 >
   <main class="page">
     <div>
@@ -58,7 +75,7 @@ const page = militaryTimePageOf(Astro.props.job);
       <Sections sections={page.sections} />
 
       <section aria-labelledby="sources">
-        <h2 id="sources">{SOURCES_HEADING.en}</h2>
+        <h2 id="sources">{SOURCES_HEADING[lang]}</h2>
         <ul class="link-list">
           {page.sources.map((source) => (
             <li>

@@ -14,8 +14,11 @@ const DATES = DATE_ROUTES.map(({ es }) => ({ path: es, lang: 'es' as const }));
 /** The Spanish-only Mexico labor pages: the aguinaldo and vacation calculators, the answer pages. */
 const MEXICO = MEXICO_ROUTES.map(({ es }) => ({ path: es, lang: 'es' as const }));
 
-/** The military time of every hour and half hour, English only, from its table. */
-const MILITARY_TIMES = MILITARY_TIME_ROUTES.map(({ en }) => ({ path: en, lang: 'en' as const }));
+/** The military time of every hour and half hour, and the Spanish twins of midnight and noon on. */
+const MILITARY_TIMES = MILITARY_TIME_ROUTES.flatMap(({ en, es }) => [
+  { path: en, lang: 'en' as const },
+  ...(es === undefined ? [] : [{ path: es, lang: 'es' as const }]),
+]);
 
 /** The long-tail pages, read from their table (a module with no run-time import), in both languages. */
 const LONG_TAIL = LONG_TAIL_ROUTES.flatMap(({ en, es }) => [

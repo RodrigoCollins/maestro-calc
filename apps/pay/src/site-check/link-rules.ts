@@ -19,6 +19,8 @@ import {
   MILITARY_CONVERTER_PATHS,
   MILITARY_TIMES,
   militaryPathOf,
+  SPANISH_TIMES,
+  spanishPathOf,
 } from '../military/routes.ts';
 import { isPaired, pathsOfRoute, ROUTES, type PairedRoute } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
@@ -109,19 +111,32 @@ export const MEXICO_RULES: readonly GuideRule[] = [
 ];
 
 /**
- * Every military time page (English only): the converter links it, and it links the converter and
- * the `NEIGHBORS` times nearest to it.
+ * Every military time page: the converter of its language links it, and it links the converter and
+ * the `NEIGHBORS` times nearest to it in its language (the Spanish ones are midnight and noon on).
  */
-export const MILITARY_RULES: readonly LongTailRule[] = MILITARY_TIMES.map((job) => ({
-  path: militaryPathOf(job),
-  calculator: MILITARY_CONVERTER_PATHS.en,
-  siblings: nearestOf(MILITARY_TIMES, job).map(militaryPathOf),
-}));
+export const MILITARY_RULES: readonly LongTailRule[] = [
+  ...MILITARY_TIMES.map((job) => ({
+    path: militaryPathOf(job),
+    calculator: MILITARY_CONVERTER_PATHS.en,
+    siblings: nearestOf(MILITARY_TIMES, job).map(militaryPathOf),
+  })),
+  ...SPANISH_TIMES.map((job) => ({
+    path: spanishPathOf(job),
+    calculator: MILITARY_CONVERTER_PATHS.es,
+    siblings: nearestOf(SPANISH_TIMES, job).map(spanishPathOf),
+  })),
+];
 
-/** The chart of each language and its converter link each other, and a hub links the chart. */
+/**
+ * The chart of each language and its converter link each other, and a hub links the chart; the
+ * Spanish chart and every Spanish time page link each other too.
+ */
 export const MILITARY_CHART_RULES: readonly GuideRule[] = LANGS.map((lang) => ({
   path: MILITARY_CHART_PATHS[lang],
-  calculators: [MILITARY_CONVERTER_PATHS[lang]],
+  calculators: [
+    MILITARY_CONVERTER_PATHS[lang],
+    ...(lang === 'es' ? SPANISH_TIMES.map(spanishPathOf) : []),
+  ],
 }));
 
 /** The calculators (route ids) each guide (a route id) explains: they link it, and it links them. */

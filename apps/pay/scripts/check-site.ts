@@ -67,7 +67,7 @@ const all = [
     sitemap: existsSync(sitemapFile) ? readFileSync(sitemapFile, 'utf8') : '',
     longTail: [
       ...LONG_TAIL_ROUTES.flatMap(({ en, es }) => [en, es]),
-      ...MILITARY_TIME_ROUTES.map(({ en }) => en),
+      ...MILITARY_TIME_ROUTES.flatMap(pathsOfRoute),
       ...COUNTDOWNS.map(countdownPathOf),
     ],
   }),

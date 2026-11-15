@@ -20,15 +20,17 @@ const templateOf = (path: string): string =>
       ? 'es/pago/[slug].astro'
       : path.startsWith('/military-time/')
         ? 'military-time/[slug].astro'
-        : path.startsWith('/states/')
-          ? 'states/[slug].astro'
-          : path.startsWith('/es/estados/')
-            ? 'es/estados/[slug].astro'
-            : path.startsWith('/es/fechas/')
-              ? 'es/fechas/[slug].astro'
-              : path.startsWith('/es/mexico/')
-                ? 'es/mexico/[slug].astro'
-                : fileOf(path);
+        : path.startsWith('/es/hora/')
+          ? 'es/hora/[slug].astro'
+          : path.startsWith('/states/')
+            ? 'states/[slug].astro'
+            : path.startsWith('/es/estados/')
+              ? 'es/estados/[slug].astro'
+              : path.startsWith('/es/fechas/')
+                ? 'es/fechas/[slug].astro'
+                : path.startsWith('/es/mexico/')
+                  ? 'es/mexico/[slug].astro'
+                  : fileOf(path);
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {
@@ -47,9 +49,9 @@ describe('ROUTES', () => {
     }
   });
 
-  it('pairs every page but the English-only military times and the Spanish-only dates and Mexico pages', () => {
+  it('pairs every page but the English-only morning military times and the Spanish-only dates and Mexico pages', () => {
     const english = ROUTES.flatMap(({ en, es }) => (es === undefined ? [en] : []));
-    expect(english).toHaveLength(48);
+    expect(english).toHaveLength(22);
     for (const path of english) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
     const spanish = ROUTES.flatMap(({ en, es }) => (en === undefined ? [es] : []));
     expect(spanish).toEqual(expect.arrayContaining(MEXICO_ROUTES.map(({ es }) => es)));

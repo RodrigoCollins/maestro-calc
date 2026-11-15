@@ -1,8 +1,11 @@
 /*
  * The military time pages and their paths, with no import at all, as `../long-tail/routes.ts`: the
  * browser suites of `tooling/site-browser/e2e-pay` read the page list from here without the
- * workspace install. The converter and the chart are pairs; each time of day is English only (a
- * search of the US four-digit clock), so its route has no `es`.
+ * workspace install. The converter and the chart are pairs. Each time of day has its English page
+ * (a search of the US four-digit clock, "1900 military time"); midnight and every time from noon on
+ * also have a Spanish twin, the way Spanish speakers search the 24-hour clock: "qué hora son las 19
+ * horas" (Ahrefs Mexico, plans/growth/ahrefs-2026-11-15-spanish.md). A morning hour reads the same
+ * on both clocks, so it has no Spanish page.
  */
 
 /** The converter: any time either way, 12-hour to military and back. */
@@ -39,13 +42,38 @@ export const MILITARY_TIMES: readonly MilitaryTimeJob[] = Array.from({ length: 4
 
 export const militaryPathOf = (job: MilitaryTimeJob): string => `/military-time/${job.slug}`;
 
-/** The English-only routes of the times, in the order of the day. */
+const NOON = 720;
+
+/** The times with a Spanish page: midnight and its half hour, then noon to 2330. */
+export const SPANISH_TIMES: readonly MilitaryTimeJob[] = MILITARY_TIMES.filter(
+  ({ minutes }) => minutes < 60 || minutes >= NOON,
+);
+
+/** The Spanish slug of a time: `las-19-horas`, `las-18-30-horas`, `las-00-horas`. */
+export const spanishSlugOf = (job: MilitaryTimeJob): string => {
+  const hour = job.slug.slice(0, 2);
+  const minute = job.slug.slice(2);
+  return `las-${hour}${minute === '00' ? '' : `-${minute}`}-horas`;
+};
+
+export const spanishPathOf = (job: MilitaryTimeJob): string => `/es/hora/${spanishSlugOf(job)}`;
+
+/** The Spanish twin of a time, when it has one. */
+export const spanishPathOfTime = (job: MilitaryTimeJob): string | undefined =>
+  SPANISH_TIMES.includes(job) ? spanishPathOf(job) : undefined;
+
+/** The routes of the times, in the order of the day, with the Spanish twin when there is one. */
 export const MILITARY_TIME_ROUTES: readonly {
   readonly id: string;
   readonly kind: 'article';
   readonly en: string;
-}[] = MILITARY_TIMES.map((job) => ({
-  id: `military-time-${job.slug}`,
-  kind: 'article',
-  en: militaryPathOf(job),
-}));
+  readonly es?: string;
+}[] = MILITARY_TIMES.map((job) => {
+  const es = spanishPathOfTime(job);
+  return {
+    id: `military-time-${job.slug}`,
+    kind: 'article',
+    en: militaryPathOf(job),
+    ...(es === undefined ? {} : { es }),
+  };
+});

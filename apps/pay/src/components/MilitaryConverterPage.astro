@@ -1,6 +1,7 @@
 ---
 import { HOME_TEXTS } from '../home/texts.ts';
 import { CONVERTER_DEFAULT, converterOf } from '../military/converter.ts';
+import { withSpanishTimes } from '../military/spanish-times.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import Sections from './Sections.astro';
@@ -16,6 +17,8 @@ interface Props {
 const { lang, embed = false } = Astro.props;
 // The page renders the engine's own figures for 1500, so it reads without JavaScript.
 const page = converterOf(lang);
+// the Spanish converter lists every Spanish time page, "las 19 horas"; its embed stays slim
+const sections = lang === 'es' && !embed ? withSpanishTimes(page.sections) : page.sections;
 ---
 
 <SiteLayout
@@ -67,7 +70,7 @@ const page = converterOf(lang);
     <ShareLink lang={lang} title={page.title} path={page.paths[lang]} />
 
     <div class="prose explained">
-      <Sections sections={page.sections} />
+      <Sections sections={sections} />
     </div>
   </main>
   <script src="../client/military-time.ts"></script>

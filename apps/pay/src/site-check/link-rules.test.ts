@@ -22,6 +22,8 @@ import {
   MILITARY_CHART_PATHS,
   MILITARY_CONVERTER_PATHS,
   MILITARY_TIME_ROUTES,
+  SPANISH_TIMES,
+  spanishPathOf,
 } from '../military/routes.ts';
 
 const both = (routes: readonly Route[]): string[] => routes.flatMap(pathsOfRoute);
@@ -82,14 +84,18 @@ describe('LONG_TAIL_RULES', () => {
 });
 
 describe('MILITARY_RULES', () => {
-  it('holds every military time page, English only, under the converter, with its nearest times', () => {
-    expect(MILITARY_RULES.map(({ path }) => path)).toEqual(
-      MILITARY_TIME_ROUTES.map(({ en }) => en),
-    );
+  it('holds every military time page under the converter of its language, with its nearest times', () => {
+    expect(MILITARY_RULES.map(({ path }) => path)).toEqual([
+      ...MILITARY_TIME_ROUTES.map(({ en }) => en),
+      ...SPANISH_TIMES.map(spanishPathOf),
+    ]);
     for (const { path, calculator, siblings } of MILITARY_RULES) {
-      expect(calculator, path).toBe(MILITARY_CONVERTER_PATHS.en);
+      const spanish = path.startsWith('/es/');
+      expect(calculator, path).toBe(MILITARY_CONVERTER_PATHS[spanish ? 'es' : 'en']);
       expect(siblings, path).toHaveLength(NEIGHBORS);
       expect(siblings, path).not.toContain(path);
+      for (const sibling of siblings)
+        expect(sibling.startsWith(spanish ? '/es/hora/' : '/military-time/'), sibling).toBe(true);
     }
     expect(MILITARY_RULES.find(({ path }) => path === '/military-time/1500')?.siblings).toEqual([
       '/military-time/1330',
@@ -101,10 +107,13 @@ describe('MILITARY_RULES', () => {
     ]);
   });
 
-  it('ties the chart of each language to its converter, and puts it on a hub', () => {
+  it('ties the chart of each language to its converter, and the Spanish chart to every Spanish time', () => {
     expect(MILITARY_CHART_RULES).toEqual([
       { path: MILITARY_CHART_PATHS.en, calculators: [MILITARY_CONVERTER_PATHS.en] },
-      { path: MILITARY_CHART_PATHS.es, calculators: [MILITARY_CONVERTER_PATHS.es] },
+      {
+        path: MILITARY_CHART_PATHS.es,
+        calculators: [MILITARY_CONVERTER_PATHS.es, ...SPANISH_TIMES.map(spanishPathOf)],
+      },
     ]);
   });
 });
