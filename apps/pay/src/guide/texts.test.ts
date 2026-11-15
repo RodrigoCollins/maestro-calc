@@ -12,6 +12,10 @@ const outputsOf = (engine: Engine, raw: Readonly<Record<string, string>>) => {
   return Object.fromEntries(ran.value.outputs.map(({ key, value }) => [key, value]));
 };
 
+/** A source label that ends with the date of the version read: `(created June 16, 2026)`. */
+const DATED =
+  /\((?:[^()]* )?(?:January|February|March|April|May|June|July|August|September|October|November|December) (?:\d{1,2}, )?\d{4}\)$/;
+
 const money = (dollars: number): string => `$${dollars.toLocaleString('en-US')}`;
 
 describe('the tax guide', () => {
@@ -62,5 +66,23 @@ describe('the tax guide', () => {
       expect(first(lead)).toContain(money(GUIDE_EXAMPLES.tips.deduction));
       expect(lead).toContain('Medicare');
     }
+  });
+
+  // every figure is dated: each source names the version of the IRS or DOL page that was read
+  it('dates every source it cites', () => {
+    for (const texts of Object.values(GUIDE_TEXTS))
+      for (const { sources } of texts.sections)
+        for (const { label } of sources) expect(label).toMatch(DATED);
+  });
+
+  it('gives the due date of the 2026 return and the extension in each language', () => {
+    const text = (lang: 'en' | 'es') =>
+      [GUIDE_TEXTS[lang].lead, ...GUIDE_TEXTS[lang].sections.flatMap((s) => s.paragraphs)].join(
+        ' ',
+      );
+    expect(text('en')).toContain('April 15, 2027');
+    expect(text('en')).toContain('Form 4868');
+    expect(text('es')).toContain('15 de abril de 2027');
+    expect(text('es')).toContain('Formulario 4868');
   });
 });

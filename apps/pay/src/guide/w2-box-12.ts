@@ -78,18 +78,18 @@ const buildLedger = (): readonly LedgerLine[] => {
 export const W2_BOX_12_LEDGER: readonly LedgerLine[] = buildLedger();
 
 const TOPIC_154: GuideSource = {
-  label: 'IRS, Topic no. 154, Form W-2 and Form 1099-R (what to do if incorrect or not received)',
+  label:
+    'IRS, Topic no. 154, Form W-2 and Form 1099-R (what to do if incorrect or not received) (reviewed September 24, 2026)',
   href: 'https://www.irs.gov/taxtopics/tc154',
-};
-const FACT_SHEET: GuideSource = {
-  label: 'IRS, FS-2025-03, Tax deductions for working Americans and seniors',
-  href: 'https://www.irs.gov/newsroom/one-big-beautiful-bill-act-tax-deductions-for-working-americans-and-seniors',
 };
 const {
   w2: W2,
   schedule1a: SCHEDULE_1A,
   overtimeQa: OVERTIME_QA,
   tippedOccupations: TIPPED,
+  factSheet: FACT_SHEET,
+  form1040: FORM_1040,
+  whenToFile: WHEN_TO_FILE,
 } = IRS_SOURCES;
 
 export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
@@ -115,7 +115,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
         id: 'how-much',
         heading: 'How much of each you can deduct',
         paragraphs: [
-          'Tips: up to $25,000 on any return, joint included. Overtime: up to $12,500, or $25,000 on a joint return. Both shrink by $100 for each full $1,000 of modified adjusted gross income over $150,000, or $300,000 on a joint return. The deductions apply to tax years 2025 through 2028.',
+          'As of November 15, 2026, the 2026 draft of Schedule 1-A (created June 16, 2026) sets these limits. Tips: up to $25,000 on any return, joint included. Overtime: up to $12,500, or $25,000 on a joint return. Both shrink by $100 for each full $1,000 of modified adjusted gross income over $150,000, or $300,000 on a joint return. The deductions apply to tax years 2025 through 2028.',
           'Tips count when they are voluntary cash or card tips received in an occupation on the IRS list. For both deductions, the person who got the pay needs a Social Security number valid for work, and a married couple must file a joint return.',
         ],
         sources: [FACT_SHEET, SCHEDULE_1A],
@@ -143,10 +143,10 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
         id: 'where-it-goes',
         heading: 'Where the amounts go on the return',
         paragraphs: [
-          'On the 2026 draft of Schedule 1-A (Form 1040), line 4 of Part II takes the tips of each employer and line 16 of Part III takes the TT amount of each employer, with the employer identification number of box b. The total of the schedule goes to Form 1040, line 13a. Line numbers can change when the IRS publishes the final form.',
-          'You can take both deductions whether you itemize or take the standard deduction.',
+          'On the 2026 draft of Schedule 1-A (Form 1040), line 4 of Part II takes the tips of each employer and line 16 of Part III takes the TT amount of each employer, with the employer identification number of box b. The total of the schedule, line 44, goes to line 13a of the 2026 draft of Form 1040. Line numbers can change when the IRS publishes the final forms.',
+          'You can take both deductions whether you itemize or take the standard deduction. The 2026 return is due April 15, 2027; Form 4868 gives you until October 15, 2027 to file, not to pay.',
         ],
-        sources: [SCHEDULE_1A, FACT_SHEET],
+        sources: [SCHEDULE_1A, FORM_1040, FACT_SHEET, WHEN_TO_FILE],
       },
     ],
     ledger: {
@@ -166,7 +166,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Sources',
     disclaimer:
       'A guide to the federal rules, not tax advice. Your return, credits and state taxes decide the real amount.',
-    checked: '2026-11-06',
+    checked: '2026-11-15',
     ctas: [
       { label: 'No tax on tips calculator', href: DEDUCTION_PATHS.tips.en },
       { label: 'No tax on overtime calculator', href: DEDUCTION_PATHS.overtime.en },
@@ -196,7 +196,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
         id: 'cuanto',
         heading: 'Cuánto puedes deducir de cada uno',
         paragraphs: [
-          'Propinas: hasta $25,000 en cualquier declaración, también la conjunta. Horas extra: hasta $12,500, o $25,000 en una declaración conjunta. Las dos bajan $100 por cada $1,000 completos de ingreso bruto ajustado modificado sobre $150,000, o $300,000 en una declaración conjunta. Las deducciones valen para los años fiscales 2025 a 2028.',
+          'Al 15 de noviembre de 2026, el borrador 2026 del Schedule 1-A (creado el 16 de junio de 2026) fija estos límites. Propinas: hasta $25,000 en cualquier declaración, también la conjunta. Horas extra: hasta $12,500, o $25,000 en una declaración conjunta. Las dos bajan $100 por cada $1,000 completos de ingreso bruto ajustado modificado sobre $150,000, o $300,000 en una declaración conjunta. Las deducciones valen para los años fiscales 2025 a 2028.',
           'Las propinas cuentan cuando son voluntarias, en efectivo o con tarjeta, y las recibes en una ocupación de la lista del IRS. En las dos deducciones, quien recibió el pago necesita un número de Seguro Social válido para trabajar, y un matrimonio debe presentar una declaración conjunta.',
         ],
         sources: [FACT_SHEET, SCHEDULE_1A],
@@ -224,10 +224,10 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
         id: 'donde-van',
         heading: 'Dónde van los montos en la declaración',
         paragraphs: [
-          'En el borrador 2026 del Schedule 1-A (Formulario 1040), la línea 4 de la Parte II lleva las propinas de cada empleador y la línea 16 de la Parte III el monto TT de cada empleador, con el número de identificación del empleador de la casilla b. El total del anexo va al Formulario 1040, línea 13a. Los números de línea pueden cambiar cuando el IRS publique el formulario final.',
-          'Puedes tomar las dos deducciones tanto si detallas tus deducciones como si tomas la deducción estándar.',
+          'En el borrador 2026 del Schedule 1-A (Formulario 1040), la línea 4 de la Parte II lleva las propinas de cada empleador y la línea 16 de la Parte III el monto TT de cada empleador, con el número de identificación del empleador de la casilla b. El total del anexo, la línea 44, va a la línea 13a del borrador 2026 del Formulario 1040. Los números de línea pueden cambiar cuando el IRS publique los formularios finales.',
+          'Puedes tomar las dos deducciones tanto si detallas tus deducciones como si tomas la deducción estándar. La declaración 2026 vence el 15 de abril de 2027; el Formulario 4868 te da hasta el 15 de octubre de 2027 para declarar, no para pagar.',
         ],
-        sources: [SCHEDULE_1A, FACT_SHEET],
+        sources: [SCHEDULE_1A, FORM_1040, FACT_SHEET, WHEN_TO_FILE],
       },
     ],
     ledger: {
@@ -247,7 +247,7 @@ export const W2_BOX_12_GUIDE: Readonly<Record<Lang, GuideTexts>> = {
     sourcesLabel: 'Fuentes',
     disclaimer:
       'Una guía de las reglas federales, no asesoría fiscal. Tu declaración, los créditos y los impuestos estatales deciden el monto real.',
-    checked: '2026-11-06',
+    checked: '2026-11-15',
     ctas: [
       { label: 'Calculadora de propinas sin impuestos', href: DEDUCTION_PATHS.tips.es },
       { label: 'Calculadora de horas extra sin impuestos', href: DEDUCTION_PATHS.overtime.es },

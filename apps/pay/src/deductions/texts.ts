@@ -35,7 +35,8 @@ export const DEDUCTION_PATHS: Readonly<Record<Deduction, Readonly<Record<Lang, s
   tips: { en: '/no-tax-on-tips-calculator', es: '/es/calculadora-propinas-sin-impuestos' },
 };
 
-const SCHEDULE_1A = 'https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf';
+/** The 2026 schedule the pages work from: a draft until the IRS posts the final form. */
+const SCHEDULE_1A = 'https://www.irs.gov/pub/irs-dft/f1040s1a--dft.pdf';
 
 const filingEn = { single: 'Single, head of household', joint: 'Married filing jointly' };
 const filingEs = { single: 'Soltero o jefe de familia', joint: 'Casados, declaración conjunta' };
@@ -82,7 +83,10 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Up to $12,500, or $25,000 on a joint return. It shrinks by $100 for each full $1,000 of MAGI over $150,000 ($300,000 joint).',
           'You need a Social Security number valid for work, and married couples must file jointly. It applies to tax years 2025 through 2028.',
         ],
-        source: { label: 'IRS Schedule 1-A (Form 1040), Part III', href: SCHEDULE_1A },
+        source: {
+          label: 'IRS, 2026 Schedule 1-A (Form 1040), Part III, draft (created June 16, 2026)',
+          href: SCHEDULE_1A,
+        },
         disclaimer:
           'An estimate, not tax advice. The savings use your top bracket; your return, credits and state taxes decide the real amount.',
         otherLang: 'Español',
@@ -111,7 +115,10 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Up to $25,000 on any return, joint included. It shrinks by $100 for each full $1,000 of MAGI over $150,000 ($300,000 joint).',
           'You need a Social Security number valid for work, and married couples must file jointly. It applies to tax years 2025 through 2028.',
         ],
-        source: { label: 'IRS Schedule 1-A (Form 1040), Part II', href: SCHEDULE_1A },
+        source: {
+          label: 'IRS, 2026 Schedule 1-A (Form 1040), Part II, draft (created June 16, 2026)',
+          href: SCHEDULE_1A,
+        },
         disclaimer:
           'An estimate, not tax advice. The savings use your top bracket; your return, credits and state taxes decide the real amount.',
         otherLang: 'Español',
@@ -154,7 +161,11 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Hasta $12,500, o $25,000 en una declaración conjunta. Baja $100 por cada $1,000 completos de MAGI por encima de $150,000 ($300,000 en conjunta).',
           'Necesitas un número de Seguro Social válido para trabajar, y los casados deben declarar en conjunto. Vale para los años fiscales 2025 a 2028.',
         ],
-        source: { label: 'IRS, Schedule 1-A (Formulario 1040), Parte III', href: SCHEDULE_1A },
+        source: {
+          label:
+            'IRS, Schedule 1-A 2026 (Formulario 1040), Parte III, borrador (creado el 16 de junio de 2026)',
+          href: SCHEDULE_1A,
+        },
         disclaimer:
           'Es una estimación, no asesoría fiscal. El ahorro usa tu tramo más alto; tu declaración, los créditos y los impuestos del estado deciden el monto real.',
         otherLang: 'English',
@@ -186,7 +197,11 @@ export const DEDUCTION_TEXTS: Readonly<Record<Lang, Readonly<Record<Deduction, D
           'Hasta $25,000 en cualquier declaración, también la conjunta. Baja $100 por cada $1,000 completos de MAGI por encima de $150,000 ($300,000 en conjunta).',
           'Necesitas un número de Seguro Social válido para trabajar, y los casados deben declarar en conjunto. Vale para los años fiscales 2025 a 2028.',
         ],
-        source: { label: 'IRS, Schedule 1-A (Formulario 1040), Parte II', href: SCHEDULE_1A },
+        source: {
+          label:
+            'IRS, Schedule 1-A 2026 (Formulario 1040), Parte II, borrador (creado el 16 de junio de 2026)',
+          href: SCHEDULE_1A,
+        },
         disclaimer:
           'Es una estimación, no asesoría fiscal. El ahorro usa tu tramo más alto; tu declaración, los créditos y los impuestos del estado deciden el monto real.',
         otherLang: 'English',

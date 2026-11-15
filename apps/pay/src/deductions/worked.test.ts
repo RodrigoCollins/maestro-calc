@@ -39,4 +39,20 @@ describe('workedOf: how a no-tax page works its deduction out', () => {
     expect(textOf(overtime)).toContain('$1,800.00');
     expect(textOf(workedOf('tips', 'es'))).toContain('$5,800.00');
   });
+
+  // the search "overtime tax refund calculator": the saving reaches the worker as the refund
+  it.each([
+    ['overtime', '$396.00'],
+    ['tips', '$960.00'],
+  ] as const)(
+    'says the %s saving comes back as a refund on the return due April 15, 2027',
+    (deduction, saved) => {
+      const en = textOf(workedOf(deduction, 'en'));
+      expect(en).toMatch(new RegExp(`\\${saved.replace('.', '\\.')}[^.]*bigger refund`));
+      expect(en).toContain('April 15, 2027');
+      const es = textOf(workedOf(deduction, 'es'));
+      expect(es).toContain('reembolso');
+      expect(es).toContain('15 de abril de 2027');
+    },
+  );
 });

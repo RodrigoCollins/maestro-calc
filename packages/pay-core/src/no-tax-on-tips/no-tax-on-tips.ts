@@ -9,7 +9,7 @@ import {
   usd,
 } from '@maestro-calc/core';
 
-/** Line 7: the tips cap, $25,000 on every return, joint included. */
+/** The tips cap, $25,000 on every return, joint included (2026 draft line 9; line 7 in 2025). */
 const CAP = usd(25_000);
 
 /**
