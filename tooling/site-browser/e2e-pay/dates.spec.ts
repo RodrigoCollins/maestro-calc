@@ -37,6 +37,54 @@ test.describe(DAYS_BETWEEN, () => {
     await expect(page.locator('[data-days="figure"]')).toHaveText('87 días');
     await expect(page.locator('[data-days-reversed]')).toBeVisible();
   });
+
+  // 1 Jan to 15 Nov 2026: 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 = 304 days to 1 Nov,
+  // then 14 more, 318. 15 Nov to 25 Dec 2026: 15 days left of November plus 25, 40.
+  test('«Hoy» puts the local date in the end, then in the start', async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 10, 15, 23, 30));
+    await page.goto(DAYS_BETWEEN);
+    await page.getByRole('button', { name: 'Hoy en la fecha final' }).click();
+    await expect(page.locator('input[name="end"]')).toHaveValue('2026-11-15');
+    await expect(page.locator('[data-days="figure"]')).toHaveText('318 días');
+    await page.locator('input[name="end"]').fill('2026-12-25');
+    await page.getByRole('button', { name: 'Hoy en la fecha de inicio' }).click();
+    await expect(page.locator('input[name="start"]')).toHaveValue('2026-11-15');
+    await expect(page.locator('[data-days="figure"]')).toHaveText('40 días');
+  });
+});
+
+// 1 Jan 2026 is a Thursday: 90 days later, 12 weeks and 6 days, is Wednesday 1 April
+// (30 + 28 + 31 + 1). 30 days before Sunday 15 Nov 2026 is Friday 16 Oct. 10 weekdays after
+// Friday 13 Nov 2026: Mon 16 to Fri 20, then Mon 23 to Fri 27.
+test.describe(`${DAYS_BETWEEN} adds and subtracts days`, () => {
+  test('starts at 90 days after 1 January 2026', async ({ page }) => {
+    await page.goto(DAYS_BETWEEN);
+    await expect(page.locator('[data-shift="figure"]')).toHaveText('miércoles 1 de abril de 2026');
+    await expect(page.locator('[data-shift="business"]')).toHaveText('64 días');
+  });
+
+  test('goes back 30 days from today, then 10 weekdays forward', async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 10, 15, 9, 0));
+    await page.goto(DAYS_BETWEEN);
+    await page.getByRole('button', { name: 'Hoy en la fecha de partida' }).click();
+    await page.locator('input[name="amount"]').fill('30');
+    await page.locator('select[name="direction"]').selectOption('subtract');
+    await expect(page.locator('[data-shift="figure"]')).toHaveText('viernes 16 de octubre de 2026');
+    await page.locator('input[name="from"]').fill('2026-11-13');
+    await page.locator('input[name="amount"]').fill('10');
+    await page.locator('select[name="direction"]').selectOption('add');
+    await page.locator('input[name="business"]').check();
+    await expect(page.locator('[data-shift="figure"]')).toHaveText(
+      'viernes 27 de noviembre de 2026',
+    );
+    await expect(page.locator('[data-shift="calendar"]')).toHaveText('14 días');
+  });
+
+  test('marks an amount that is not a whole number', async ({ page }) => {
+    await page.goto(DAYS_BETWEEN);
+    await page.locator('input[name="amount"]').fill('2.5');
+    await expect(page.locator('[data-shift-invalid]')).toBeVisible();
+  });
 });
 
 test.describe('the countdowns', () => {

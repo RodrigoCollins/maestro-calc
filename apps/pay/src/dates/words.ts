@@ -1,4 +1,6 @@
 import {
+  parseIsoDate,
+  shiftDate,
   weekdayOf,
   weeksAndDaysOf,
   type CivilDate,
@@ -78,3 +80,39 @@ export const betweenOf = (
   },
   reversed: between.reversed,
 });
+
+/** The keys of the rows of the add-or-subtract result. */
+export type ShiftKey = 'calendar' | 'weeks' | 'business';
+
+/** The most days the add-or-subtract form takes: five digits. */
+export const SHIFT_MAX = 99_999;
+
+/**
+ * The date some days after (or, `back`, before) the date of a form, as the calculator shows it:
+ * the date with its weekday, the calendar days, weeks and weekdays on the way. `null` when the
+ * date is missing, the amount is not a whole number from 0 to `SHIFT_MAX`, or the date lands
+ * past the calendar the engine reads.
+ */
+export const shiftTextOf = (form: {
+  readonly from: string;
+  readonly amount: string;
+  readonly back: boolean;
+  readonly business: boolean;
+}): {
+  readonly figure: string;
+  readonly values: Readonly<Record<ShiftKey, string>>;
+} | null => {
+  const from = parseIsoDate(form.from);
+  const amount = form.amount.trim();
+  if (from === null || !/^\d{1,5}$/.test(amount)) return null;
+  const shifted = shiftDate(from, (form.back ? -1 : 1) * Number(amount), form.business);
+  if (shifted === null) return null;
+  return {
+    figure: longDateOf(shifted.date),
+    values: {
+      calendar: countOf(shifted.days, 'día', 'días'),
+      weeks: weeksTextOf(shifted.days),
+      business: countOf(shifted.businessDays, 'día', 'días'),
+    },
+  };
+};
