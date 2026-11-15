@@ -78,6 +78,10 @@ Kept by hand (a type or a security list cannot be derived from a directory; each
 
 Mutation testing takes one step: the calculators are split by directory into the `calculators-<n>` shards of `packages/core/stryker.config.mjs` (`calculatorGroups`), so add the new id to the group with the least source (a `concrete`-sized calculator adds about 190 mutants) and its `packages/core/src/calculators/<id>/**` line to that group's `inputs` in the `.github/workflows/ci.yml` matrix. `calculators-1` holds `released.contract.test.ts`, which imports every calculator, so its identity holds every calculator directory (`src/calculators/**`, already in its inputs) and it keeps the smallest calculators. Forgotten: the exactly-once contract in `mutation.contract.test.ts` fails on the unassigned directory. When a group passes about 400 mutants or 10 minutes of CI, add a group (a new `calculators-<n>` key and its matrix entry). `npm run verify` runs every guard above.
 
+## Affiliate links
+
+Read `docs/affiliate-rules.md` before adding, changing or removing any affiliate link or offer on any site. A program gets links only after its terms are summarized there; never accept a program's terms without the owner's explicit OK; never declare an eligibility we do not have (we are an individual resident in Argentina). Every affiliate link carries the FTC disclosure of the site-kit affiliate block, lives only on our own sites, and uses the program's unmodified tracking link.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
