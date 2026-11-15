@@ -5,6 +5,7 @@ import type { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import type { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import type { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
 import type { enFeetInches } from '@maestro-calc/i18n/catalogs/en/feet-inches';
+import type { enFence } from '@maestro-calc/i18n/catalogs/en/fence';
 import type { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import type { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import type { enRectangleArea } from '@maestro-calc/i18n/catalogs/en/rectangle-area';
@@ -30,7 +31,8 @@ type EnglishKeys =
   | keyof typeof enRoofPitch
   | keyof typeof enRoofing
   | keyof typeof enFeetInches
-  | keyof typeof enBoardFeet;
+  | keyof typeof enBoardFeet
+  | keyof typeof enFence;
 
 /** The catalog keys of a material record: its name and one per purchase unit. */
 type MaterialKeys<M extends { nameKey: string; purchaseUnits: readonly { nameKey: string }[] }> =
@@ -165,6 +167,22 @@ type RectangleAreaPageKeys =
   | 'calc.rectangle-area.page.drawing'
   | 'calc.rectangle-area.page.example';
 
+/** The page copy of the fence calculator (`calc.fence.page.*`), exactly: a new key is added here. */
+type FencePageKeys =
+  | 'calc.fence.page.example'
+  | 'calc.fence.page.posts'
+  | 'calc.fence.page.postsOne'
+  | 'calc.fence.page.shoppingPosts'
+  | 'calc.fence.page.shoppingRails'
+  | 'calc.fence.page.shoppingBoards'
+  | 'calc.fence.page.shoppingBags'
+  | 'calc.fence.page.bagYield'
+  | 'calc.fence.page.priceHint'
+  | 'calc.fence.page.answer.privacy'
+  | 'calc.fence.page.answer.picket'
+  | 'calc.fence.page.answer.rail'
+  | 'calc.fence.page.drawing.note';
+
 /** The keys core derives for every calculator of the registry, one calculator at a time. */
 type DerivedKeys<C = (typeof calculators)[number]> = C extends Parameters<typeof messageKeysOf>[0]
   ? MessageKeysOf<C>
@@ -196,6 +214,7 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
       | RoofingPageKeys
       | FeetInchesPageKeys
       | BoardFeetPageKeys
+      | FencePageKeys
       | TopsoilPageKeys
     >();
   });
@@ -235,5 +254,8 @@ describe('catalog keys against the calculator (i18n-catalog › Convention for t
     expectTypeOf<
       Extract<keyof typeof enBoardFeet, `calc.board-feet.page.${string}`>
     >().toEqualTypeOf<BoardFeetPageKeys>();
+    expectTypeOf<
+      Extract<keyof typeof enFence, `calc.fence.page.${string}`>
+    >().toEqualTypeOf<FencePageKeys>();
   });
 });

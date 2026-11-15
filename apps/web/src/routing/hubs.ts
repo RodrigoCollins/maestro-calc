@@ -30,7 +30,7 @@ export const HUBS = {
   },
   'hub-drywall': { calculators: ['drywall'], guides: ['guide-drywall-estimate'] },
   'hub-landscaping': {
-    calculators: ['gravel', 'mulch', 'topsoil'],
+    calculators: ['gravel', 'mulch', 'topsoil', 'fence'],
     guides: [
       'guide-gravel-driveway',
       'guide-raised-bed-soil',

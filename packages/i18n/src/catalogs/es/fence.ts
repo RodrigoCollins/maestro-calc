@@ -1,0 +1,50 @@
+import type { CatalogOf } from '../../translate.ts';
+import type { enFence } from '../en/fence.ts';
+
+/** Copy of the `fence` calculator, Spanish (neutral tú): the same keys as English. */
+export const esFence = {
+  'calc.fence.title': 'Calculadora de cercas',
+  'calc.fence.inputs.length': 'Largo de la cerca',
+  'calc.fence.inputs.height': 'Altura de la cerca',
+  'calc.fence.inputs.spacing': 'Entre postes',
+  'calc.fence.inputs.style': 'Estilo',
+  'calc.fence.inputs.boardWidth': 'Ancho de tabla',
+  'calc.fence.inputs.gap': 'Espacio entre estacas',
+  'calc.fence.inputs.boardSpace': 'Espacio entre tablas',
+  'calc.fence.inputs.rails': 'Travesaños por tramo',
+  'calc.fence.inputs.gates': 'Portones',
+  'calc.fence.inputs.postWidth': 'Ancho del poste',
+  'calc.fence.inputs.postPrice': 'Precio por poste ($)',
+  'calc.fence.inputs.railPrice': 'Precio por travesaño ($)',
+  'calc.fence.inputs.boardPrice': 'Precio por tabla ($)',
+  'calc.fence.inputs.bagPrice': 'Precio por bolsa ($)',
+  'calc.fence.options.style.privacy': 'Tabla sobre tabla',
+  'calc.fence.options.style.picket': 'Estacas',
+  'calc.fence.options.style.rail': 'Travesaños',
+  'calc.fence.outputs.posts': 'Postes',
+  'calc.fence.outputs.postLength': 'Largo del poste',
+  'calc.fence.outputs.holeDiameter': 'Ancho del hoyo',
+  'calc.fence.outputs.holeDepth': 'Profundidad con grava',
+  'calc.fence.outputs.concreteFt3': 'Concreto (ft³)',
+  'calc.fence.outputs.gravelFt3': 'Grava (ft³)',
+  'calc.fence.outputs.postCost': 'Costo de postes',
+  'calc.fence.outputs.railCost': 'Costo de travesaños',
+  'calc.fence.outputs.boardCost': 'Costo de tablas',
+  'calc.fence.outputs.bagCost': 'Costo del concreto',
+  'calc.fence.page.example': 'Ejemplo: 100 ft de cerca de 6 ft: 14 postes y 37 bolsas de 80 lb.',
+  'calc.fence.page.posts': '{value} postes',
+  'calc.fence.page.postsOne': '{value} poste',
+  'calc.fence.page.shoppingPosts': 'Postes de {length}',
+  'calc.fence.page.shoppingRails': 'Travesaños de {length}',
+  'calc.fence.page.shoppingBoards': 'Tablas de {length}',
+  'calc.fence.page.shoppingBags': 'Concreto, bolsas de 80 lb',
+  'calc.fence.page.bagYield': 'Unos {yield} ft³ por bolsa',
+  'calc.fence.page.priceHint': 'Sin precio',
+  'calc.fence.page.answer.privacy':
+    'Cerca de privacidad de {length} y {height} de alto, postes cada {spacing}: {posts}, {rails} travesaños, {boards} tablas y {bags} bolsas de 80 lb.',
+  'calc.fence.page.answer.picket':
+    'Cerca de estacas de {length} y {height} de alto, postes cada {spacing}: {posts}, {rails} travesaños, {boards} estacas y {bags} bolsas de 80 lb.',
+  'calc.fence.page.answer.rail':
+    'Cerca de travesaños de {length} y {height} de alto, postes cada {spacing}: {posts}, {rails} travesaños y {bags} bolsas de 80 lb.',
+  'calc.fence.page.drawing.note': 'Postes cada {spacing}',
+} as const satisfies CatalogOf<typeof enFence>;

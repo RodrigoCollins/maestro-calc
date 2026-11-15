@@ -3,6 +3,7 @@ import { enBoardFeet } from '@maestro-calc/i18n/catalogs/en/board-feet';
 import { enCommon } from '@maestro-calc/i18n/catalogs/en/common';
 import { enConcrete } from '@maestro-calc/i18n/catalogs/en/concrete';
 import { enDrywall } from '@maestro-calc/i18n/catalogs/en/drywall';
+import { enFence } from '@maestro-calc/i18n/catalogs/en/fence';
 import { enGravel } from '@maestro-calc/i18n/catalogs/en/gravel';
 import { enMulch } from '@maestro-calc/i18n/catalogs/en/mulch';
 import { enPaint } from '@maestro-calc/i18n/catalogs/en/paint';
@@ -16,6 +17,7 @@ import { esBoardFeet } from '@maestro-calc/i18n/catalogs/es/board-feet';
 import { esCommon } from '@maestro-calc/i18n/catalogs/es/common';
 import { esConcrete } from '@maestro-calc/i18n/catalogs/es/concrete';
 import { esDrywall } from '@maestro-calc/i18n/catalogs/es/drywall';
+import { esFence } from '@maestro-calc/i18n/catalogs/es/fence';
 import { esGravel } from '@maestro-calc/i18n/catalogs/es/gravel';
 import { esMulch } from '@maestro-calc/i18n/catalogs/es/mulch';
 import { esPaint } from '@maestro-calc/i18n/catalogs/es/paint';
@@ -30,6 +32,8 @@ import { boardFeetReserve } from '../calculator/board-feet/reserve.ts';
 import { concretePage } from '../calculator/concrete/page.ts';
 import { drywallPage } from '../calculator/drywall/page.ts';
 import { drywallReserve } from '../calculator/drywall/reserve.ts';
+import { fencePage } from '../calculator/fence/page.ts';
+import { fenceReserve } from '../calculator/fence/reserve.ts';
 import { gravelPage } from '../calculator/gravel/page.ts';
 import { gravelReserve } from '../calculator/gravel/reserve.ts';
 import { mulchPage } from '../calculator/mulch/page.ts';
@@ -164,6 +168,14 @@ export const PAGES = {
       es: { ...esCommon, ...esBoardFeet, ...esSite },
     },
     reserve: boardFeetReserve,
+  },
+  fence: {
+    module: fencePage,
+    catalogs: {
+      en: { ...enCommon, ...enFence, ...enSite },
+      es: { ...esCommon, ...esFence, ...esSite },
+    },
+    reserve: fenceReserve,
   },
 } as const satisfies Record<CalculatorPageId, PageEntry>;
 
