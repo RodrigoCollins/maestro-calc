@@ -1,4 +1,4 @@
-import { hrefOf, langOf, routeOf, type Lang } from './routes.ts';
+import { hrefOf, langOf, routeOf, type Lang, type Twin } from './routes.ts';
 
 /** One link of the header or the footer: the route it leads to and its label. */
 interface NavLink {
@@ -61,6 +61,23 @@ const FOOTER_DE: readonly NavLink[] = [
   { id: 'privacy', label: 'Datenschutz' },
 ];
 
+/** The French header: the hub of the food pages, the dog age calculator and the chocolate guide. */
+const NAV_FR: readonly NavLink[] = [
+  { id: 'foods', label: 'Que peut manger un chien ?' },
+  { id: 'dog-age', label: 'Âge du chien' },
+  { id: 'chocolate-guide', label: 'Chocolat' },
+];
+
+/** The French footer: the same three, then the pages about the site. */
+const FOOTER_FR: readonly NavLink[] = [
+  { id: 'foods', label: 'Que peut manger un chien ? Tous les aliments' },
+  { id: 'dog-age', label: 'Âge du chien en âge humain' },
+  { id: 'chocolate-guide', label: 'Mon chien a mangé du chocolat' },
+  { id: 'about', label: 'À propos' },
+  { id: 'editorial', label: 'Principes éditoriaux' },
+  { id: 'privacy', label: 'Confidentialité' },
+];
+
 /** What the layout writes around every page, in each language. */
 export const LAYOUT_TEXTS = {
   en: {
@@ -73,33 +90,56 @@ export const LAYOUT_TEXTS = {
     warning:
       'Jede Zahl ist ein Anhaltspunkt und keine tierärztliche Beratung. Besprechen Sie sie mit Ihrem Tierarzt oder Ihrer Tierärztin.',
   },
+  fr: {
+    navLabel: 'Calculateurs et guides',
+    warning:
+      'Chaque chiffre est un point de départ, pas un avis vétérinaire. Parlez-en avec votre vétérinaire.',
+  },
 } as const satisfies Record<Lang, { readonly navLabel: string; readonly warning: string }>;
 
 const linksOf = (links: readonly NavLink[], lang: Lang): { href: string; label: string }[] =>
   links.map(({ id, label }) => ({ href: hrefOf(id, lang), label }));
 
+/** The header and footer links of each language. */
+const LINKS: Readonly<
+  Record<Lang, { readonly nav: readonly NavLink[]; readonly footer: readonly NavLink[] }>
+> = {
+  en: { nav: NAV, footer: FOOTER },
+  de: { nav: NAV_DE, footer: FOOTER_DE },
+  fr: { nav: NAV_FR, footer: FOOTER_FR },
+};
+
 /** The header links of `lang`, each at its page. */
 export const navLinks = (lang: Lang = 'en'): { href: string; label: string }[] =>
-  lang === 'en' ? linksOf(NAV, 'en') : linksOf(NAV_DE, 'de');
+  linksOf(LINKS[lang].nav, lang);
 
 /** The footer links of `lang`, each at its page. */
 export const footerLinks = (lang: Lang = 'en'): { href: string; label: string }[] =>
-  lang === 'en' ? linksOf(FOOTER, 'en') : linksOf(FOOTER_DE, 'de');
+  linksOf(LINKS[lang].footer, lang);
 
-/** Each language named in itself, as the switch to it reads. */
-const NAMES: Readonly<Record<Lang, string>> = { en: 'English', de: 'Deutsch' };
+/** Each language named in itself, as the link to it reads. */
+const NAMES: Readonly<Record<Lang, string>> = { en: 'English', de: 'Deutsch', fr: 'Français' };
+
+/** The languages in the order the header lists them. */
+const ORDER: readonly Lang[] = ['en', 'de', 'fr'];
 
 /**
- * The link to the other language's page, when the page at `path` has a twin: a German page always
- * leads to its English twin; an English page leads to its German twin only once German is open
- * (`SITE.deIndexable`), so no open page sends a reader to a page closed to search engines.
+ * The links to the other languages' pages, when the page at `path` has twins: a German or French
+ * page always leads to its English twin, and any page leads to a German or French twin only once
+ * that language is open (`open`, from `SITE.deIndexable` and `SITE.frIndexable`), so no page sends a
+ * reader to a page closed to search engines.
  */
-export const switchOf = (
+export const switchesOf = (
   path: string,
-  deOpen: boolean,
-): { readonly href: string; readonly lang: Lang; readonly label: string } | undefined => {
+  open: Readonly<Record<Twin, boolean>>,
+): { readonly href: string; readonly lang: Lang; readonly label: string }[] => {
   const route = routeOf(path);
-  if (route?.de === undefined) return undefined;
-  if (langOf(path) === 'de') return { href: route.path, lang: 'en', label: NAMES.en };
-  return deOpen ? { href: route.de, lang: 'de', label: NAMES.de } : undefined;
+  if (route === undefined) return [];
+  const own = langOf(path);
+  return ORDER.flatMap((lang) => {
+    if (lang === own) return [];
+    const href = lang === 'en' ? route.path : route[lang];
+    if (href === undefined || (lang !== 'en' && !open[lang])) return [];
+    return [{ href, lang, label: NAMES[lang] }];
+  });
 };

@@ -18,9 +18,10 @@ describe('llmsTxt', () => {
     }
   });
 
-  it('names three sections, and no German page while German is closed', () => {
+  it('names three sections, and no German or French page while both are closed', () => {
     expect(text.match(/^## /gm)).toHaveLength(3);
     expect(text).not.toContain('/de');
+    expect(text).not.toContain('/fr/');
   });
 
   it('adds the German pages as a fourth section once German is open', () => {
@@ -31,6 +32,18 @@ describe('llmsTxt', () => {
       if (de === undefined || id === 'home' || id === 'privacy') continue;
       expect(open, de).toContain(`(https://bowlfigures.com${de})`);
     }
+  });
+
+  it('adds the French pages as their own section once French is open', () => {
+    const open = llmsTxt(false, true);
+    expect(open.match(/^## /gm)).toHaveLength(4);
+    expect(open).toContain('## En français (French)');
+    expect(open).not.toContain('## Auf Deutsch');
+    for (const { id, fr } of ROUTES) {
+      if (fr === undefined || id === 'home' || id === 'privacy') continue;
+      expect(open, fr).toContain(`(https://bowlfigures.com${fr})`);
+    }
+    expect(llmsTxt(true, true).match(/^## /gm)).toHaveLength(5);
   });
 
   it('says every chocolate result tells the reader to call', () => {

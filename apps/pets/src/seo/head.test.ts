@@ -2,8 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { alternatesOf, headOf } from './head.ts';
 
 const text = { title: 'T | Bowl Figures', description: 'D' };
-const open = { origin: 'https://bowlfigures.com', indexable: true, deIndexable: false };
-const closed = { origin: 'https://bowlfigures.com', indexable: false, deIndexable: false };
+const open = {
+  origin: 'https://bowlfigures.com',
+  indexable: true,
+  deIndexable: false,
+  frIndexable: false,
+};
+const closed = { ...open, indexable: false };
 
 describe('headOf', () => {
   it('gives an indexed page of an open site its canonical and no robots line', () => {
@@ -34,8 +39,8 @@ describe('headOf', () => {
   });
 });
 
-const deOpen = { origin: 'https://bowlfigures.com', indexable: true, deIndexable: true };
-const deClosed = { origin: 'https://bowlfigures.com', indexable: true, deIndexable: false };
+const deOpen = { ...open, deIndexable: true };
+const deClosed = open;
 
 describe('headOf, German pages', () => {
   it('keeps a German page out of the index while German is closed, the English twin open', () => {
@@ -88,5 +93,54 @@ describe('alternatesOf', () => {
 
   it('ships with German closed', () => {
     expect(alternatesOf('/dog-age-calculator')).toEqual([]);
+  });
+});
+
+const frOpen = { ...open, frIndexable: true };
+const bothOpen = { ...open, deIndexable: true, frIndexable: true };
+
+describe('headOf, French pages', () => {
+  it('keeps a French page out of the index while French is closed, the English twin open', () => {
+    const fr = headOf('/fr/age-chien-en-humain', text, true, deOpen);
+    expect(fr).toMatchObject({ robots: 'noindex' });
+    expect(fr.canonical).toBeUndefined();
+  });
+
+  it('gives a French page its own canonical once French is open, German closed or not', () => {
+    expect(headOf('/fr/age-chien-en-humain', text, true, frOpen).canonical).toBe(
+      'https://bowlfigures.com/fr/age-chien-en-humain',
+    );
+    expect(headOf('/de/hundejahre-rechner', text, true, frOpen).robots).toBe('noindex');
+  });
+
+  it('ships with French closed', () => {
+    expect(headOf('/fr', text, true).robots).toBe('noindex');
+  });
+});
+
+describe('alternatesOf, French', () => {
+  it('names en, fr and x-default once French alone is open', () => {
+    const pair = [
+      { hreflang: 'en', href: 'https://bowlfigures.com/dog-age-calculator' },
+      { hreflang: 'fr', href: 'https://bowlfigures.com/fr/age-chien-en-humain' },
+      { hreflang: 'x-default', href: 'https://bowlfigures.com/dog-age-calculator' },
+    ];
+    expect(alternatesOf('/dog-age-calculator', frOpen)).toEqual(pair);
+    expect(alternatesOf('/fr/age-chien-en-humain', frOpen)).toEqual(pair);
+  });
+
+  it('names every open twin, German then French, once both are open', () => {
+    expect(
+      alternatesOf('/de/hundejahre-rechner', bothOpen).map(({ hreflang }) => hreflang),
+    ).toEqual(['en', 'de', 'fr', 'x-default']);
+  });
+
+  it('names none on a German page while German is closed, though French is open', () => {
+    expect(alternatesOf('/de/hundejahre-rechner', frOpen)).toEqual([]);
+    expect(alternatesOf('/fr/age-chien-en-humain', deOpen)).toEqual([]);
+  });
+
+  it('ships with French closed', () => {
+    expect(alternatesOf('/fr/age-chien-en-humain')).toEqual([]);
   });
 });

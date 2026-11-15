@@ -33,7 +33,6 @@ const POPULAR_ES: readonly LongTailJob[] = [
   shift(9, 17),
   ago(1),
   ago(5),
-  ago(24),
 ];
 
 export interface Popular {
@@ -48,8 +47,7 @@ export const popularOf = (lang: Lang): Popular | undefined => {
   const suffix = ` | ${SITE.name}`;
   return {
     heading: 'Lo más buscado',
-    intro:
-      'Las respuestas que más se buscan, cada una con su tabla, sus equivalencias y el cálculo paso a paso:',
+    intro: 'Cada respuesta con su tabla y el cálculo paso a paso:',
     links: POPULAR_ES.map((job) => ({
       href: pathOf(job, lang),
       label: longTailPageOf(job, lang).title.replace(suffix, ''),

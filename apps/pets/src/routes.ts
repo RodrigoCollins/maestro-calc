@@ -1,31 +1,47 @@
 /** What a page is to search engines and link previews: the home, a calculator or an article. */
 export type PageKind = 'home' | 'calculator' | 'article';
 
-/** The languages of Bowl Figures: English, and German under `/de` (plans/growth/BACKLOG.md #50). */
-export type Lang = 'en' | 'de';
+/**
+ * The languages of Bowl Figures: English, German under `/de` (plans/growth/BACKLOG.md #50) and
+ * French under `/fr` (#51).
+ */
+export type Lang = 'en' | 'de' | 'fr';
+
+/** The languages a page can have a twin in, besides English. */
+export type Twin = Exclude<Lang, 'en'>;
+
+/** Every twin language, in the order the head, the sitemap and the language links list them. */
+export const TWINS: readonly Twin[] = ['de', 'fr'];
 
 /**
- * A page of Bowl Figures: its id, its kind, its English address and, once it is written, its
- * German twin. A German page is never a word-for-word translation of its English twin: it answers
- * the same question with the same facts, for a German reader.
+ * A page of Bowl Figures: its id, its kind, its English address and, once they are written, its
+ * German and French twins. A twin is never a word-for-word translation of its English page: it
+ * answers the same question with the same facts, for a German or a French reader.
  */
 export interface Route {
   readonly id: string;
   readonly kind: PageKind;
   readonly path: string;
   readonly de?: string;
+  readonly fr?: string;
 }
 
 /** The page files of `src/pages` (the 404 is not a route), in the order of the site. */
 export const ROUTES: readonly Route[] = [
-  { id: 'home', kind: 'home', path: '/', de: '/de' },
+  { id: 'home', kind: 'home', path: '/', de: '/de', fr: '/fr' },
   { id: 'dog', kind: 'calculator', path: '/dog-food-calculator' },
   { id: 'cat', kind: 'calculator', path: '/cat-food-calculator' },
   { id: 'puppy', kind: 'calculator', path: '/puppy-feeding-calculator' },
   { id: 'kitten', kind: 'calculator', path: '/kitten-feeding-calculator' },
   { id: 'chocolate', kind: 'calculator', path: '/dog-chocolate-toxicity-calculator' },
   { id: 'due-date', kind: 'calculator', path: '/dog-pregnancy-calculator' },
-  { id: 'dog-age', kind: 'calculator', path: '/dog-age-calculator', de: '/de/hundejahre-rechner' },
+  {
+    id: 'dog-age',
+    kind: 'calculator',
+    path: '/dog-age-calculator',
+    de: '/de/hundejahre-rechner',
+    fr: '/fr/age-chien-en-humain',
+  },
   { id: 'cat-age', kind: 'calculator', path: '/cat-age-calculator' },
   { id: 'puppy-weight', kind: 'calculator', path: '/puppy-weight-calculator' },
   { id: 'charts', kind: 'article', path: '/charts' },
@@ -42,6 +58,7 @@ export const ROUTES: readonly Route[] = [
     kind: 'article',
     path: '/my-dog-ate-chocolate',
     de: '/de/hund-hat-schokolade-gefressen',
+    fr: '/fr/mon-chien-a-mange-du-chocolat',
   },
   { id: 'cat-growth-guide', kind: 'article', path: '/when-do-cats-stop-growing' },
   { id: 'dog-heat-guide', kind: 'article', path: '/dog-in-heat' },
@@ -93,252 +110,299 @@ export const ROUTES: readonly Route[] = [
   { id: 'cat-years-18', kind: 'article', path: '/18-years-in-cat-years' },
   { id: 'cat-years-19', kind: 'article', path: '/19-years-in-cat-years' },
   { id: 'cat-years-20', kind: 'article', path: '/20-years-in-cat-years' },
-  { id: 'foods', kind: 'article', path: '/can-dogs-eat', de: '/de/was-duerfen-hunde-essen' },
+  {
+    id: 'foods',
+    kind: 'article',
+    path: '/can-dogs-eat',
+    de: '/de/was-duerfen-hunde-essen',
+    fr: '/fr/que-peut-manger-un-chien',
+  },
   {
     id: 'food-strawberries',
     kind: 'article',
     path: '/can-dogs-eat-strawberries',
     de: '/de/duerfen-hunde-erdbeeren-essen',
+    fr: '/fr/chien-peut-il-manger-des-fraises',
   },
   {
     id: 'food-bananas',
     kind: 'article',
     path: '/can-dogs-eat-bananas',
     de: '/de/duerfen-hunde-bananen-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-banane',
   },
   {
     id: 'food-grapes',
     kind: 'article',
     path: '/can-dogs-eat-grapes',
     de: '/de/duerfen-hunde-weintrauben-essen',
+    fr: '/fr/chien-peut-il-manger-du-raisin',
   },
   {
     id: 'food-raisins',
     kind: 'article',
     path: '/can-dogs-eat-raisins',
     de: '/de/duerfen-hunde-rosinen-essen',
+    fr: '/fr/chien-peut-il-manger-des-raisins-secs',
   },
   {
     id: 'food-blueberries',
     kind: 'article',
     path: '/can-dogs-eat-blueberries',
     de: '/de/duerfen-hunde-blaubeeren-essen',
+    fr: '/fr/chien-peut-il-manger-des-myrtilles',
   },
   {
     id: 'food-apples',
     kind: 'article',
     path: '/can-dogs-eat-apples',
     de: '/de/duerfen-hunde-aepfel-essen',
+    fr: '/fr/chien-peut-il-manger-des-pommes',
   },
   {
     id: 'food-watermelon',
     kind: 'article',
     path: '/can-dogs-eat-watermelon',
     de: '/de/duerfen-hunde-wassermelone-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-pasteque',
   },
   {
     id: 'food-cherries',
     kind: 'article',
     path: '/can-dogs-eat-cherries',
     de: '/de/duerfen-hunde-kirschen-essen',
+    fr: '/fr/chien-peut-il-manger-des-cerises',
   },
   {
     id: 'food-mango',
     kind: 'article',
     path: '/can-dogs-eat-mango',
     de: '/de/duerfen-hunde-mango-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-mangue',
   },
   {
     id: 'food-oranges',
     kind: 'article',
     path: '/can-dogs-eat-oranges',
     de: '/de/duerfen-hunde-orangen-essen',
+    fr: '/fr/chien-peut-il-manger-des-oranges',
   },
   {
     id: 'food-pineapple',
     kind: 'article',
     path: '/can-dogs-eat-pineapple',
     de: '/de/duerfen-hunde-ananas-essen',
+    fr: '/fr/chien-peut-il-manger-de-l-ananas',
   },
   {
     id: 'food-tomatoes',
     kind: 'article',
     path: '/can-dogs-eat-tomatoes',
     de: '/de/duerfen-hunde-tomaten-essen',
+    fr: '/fr/chien-peut-il-manger-des-tomates',
   },
   {
     id: 'food-avocado',
     kind: 'article',
     path: '/can-dogs-eat-avocado',
     de: '/de/duerfen-hunde-avocado-essen',
+    fr: '/fr/chien-peut-il-manger-de-l-avocat',
   },
   {
     id: 'food-onions',
     kind: 'article',
     path: '/can-dogs-eat-onions',
     de: '/de/duerfen-hunde-zwiebeln-essen',
+    fr: '/fr/chien-peut-il-manger-des-oignons',
   },
   {
     id: 'food-garlic',
     kind: 'article',
     path: '/can-dogs-eat-garlic',
     de: '/de/duerfen-hunde-knoblauch-essen',
+    fr: '/fr/chien-peut-il-manger-de-l-ail',
   },
   {
     id: 'food-carrots',
     kind: 'article',
     path: '/can-dogs-eat-carrots',
     de: '/de/duerfen-hunde-karotten-essen',
+    fr: '/fr/chien-peut-il-manger-des-carottes',
   },
   {
     id: 'food-broccoli',
     kind: 'article',
     path: '/can-dogs-eat-broccoli',
     de: '/de/duerfen-hunde-brokkoli-essen',
+    fr: '/fr/chien-peut-il-manger-du-brocoli',
   },
   {
     id: 'food-cucumber',
     kind: 'article',
     path: '/can-dogs-eat-cucumber',
     de: '/de/duerfen-hunde-gurken-essen',
+    fr: '/fr/chien-peut-il-manger-du-concombre',
   },
   {
     id: 'food-bell-peppers',
     kind: 'article',
     path: '/can-dogs-eat-bell-peppers',
     de: '/de/duerfen-hunde-paprika-essen',
+    fr: '/fr/chien-peut-il-manger-du-poivron',
   },
   {
     id: 'food-zucchini',
     kind: 'article',
     path: '/can-dogs-eat-zucchini',
     de: '/de/duerfen-hunde-zucchini-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-courgette',
   },
   {
     id: 'food-potatoes',
     kind: 'article',
     path: '/can-dogs-eat-potatoes',
     de: '/de/duerfen-hunde-kartoffeln-essen',
+    fr: '/fr/chien-peut-il-manger-des-pommes-de-terre',
   },
   {
     id: 'food-sweet-potatoes',
     kind: 'article',
     path: '/can-dogs-eat-sweet-potatoes',
     de: '/de/duerfen-hunde-suesskartoffeln-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-patate-douce',
   },
   {
     id: 'food-pumpkin',
     kind: 'article',
     path: '/can-dogs-eat-pumpkin',
     de: '/de/duerfen-hunde-kuerbis-essen',
+    fr: '/fr/chien-peut-il-manger-de-la-citrouille',
   },
   {
     id: 'food-cheese',
     kind: 'article',
     path: '/can-dogs-eat-cheese',
     de: '/de/duerfen-hunde-kaese-essen',
+    fr: '/fr/chien-peut-il-manger-du-fromage',
   },
   {
     id: 'food-eggs',
     kind: 'article',
     path: '/can-dogs-eat-eggs',
     de: '/de/duerfen-hunde-eier-essen',
+    fr: '/fr/chien-peut-il-manger-des-oeufs',
   },
   {
     id: 'food-yogurt',
     kind: 'article',
     path: '/can-dogs-eat-yogurt',
     de: '/de/duerfen-hunde-joghurt-essen',
+    fr: '/fr/chien-peut-il-manger-du-yaourt',
   },
   {
     id: 'food-shrimp',
     kind: 'article',
     path: '/can-dogs-eat-shrimp',
     de: '/de/duerfen-hunde-garnelen-essen',
+    fr: '/fr/chien-peut-il-manger-des-crevettes',
   },
   {
     id: 'food-salmon',
     kind: 'article',
     path: '/can-dogs-eat-salmon',
     de: '/de/duerfen-hunde-lachs-essen',
+    fr: '/fr/chien-peut-il-manger-du-saumon',
   },
   {
     id: 'food-pork',
     kind: 'article',
     path: '/can-dogs-eat-pork',
     de: '/de/duerfen-hunde-schweinefleisch-essen',
+    fr: '/fr/chien-peut-il-manger-du-porc',
   },
   {
     id: 'food-ham',
     kind: 'article',
     path: '/can-dogs-eat-ham',
     de: '/de/duerfen-hunde-schinken-essen',
+    fr: '/fr/chien-peut-il-manger-du-jambon',
   },
   {
     id: 'food-bacon',
     kind: 'article',
     path: '/can-dogs-eat-bacon',
     de: '/de/duerfen-hunde-speck-essen',
+    fr: '/fr/chien-peut-il-manger-du-bacon',
   },
   {
     id: 'food-peanut-butter',
     kind: 'article',
     path: '/can-dogs-eat-peanut-butter',
     de: '/de/duerfen-hunde-erdnussbutter-essen',
+    fr: '/fr/chien-peut-il-manger-du-beurre-de-cacahuete',
   },
   {
     id: 'food-honey',
     kind: 'article',
     path: '/can-dogs-eat-honey',
     de: '/de/duerfen-hunde-honig-essen',
+    fr: '/fr/chien-peut-il-manger-du-miel',
   },
   {
     id: 'food-chocolate',
     kind: 'article',
     path: '/can-dogs-eat-chocolate',
     de: '/de/duerfen-hunde-schokolade-essen',
+    fr: '/fr/chien-peut-il-manger-du-chocolat',
   },
   {
     id: 'food-rice',
     kind: 'article',
     path: '/can-dogs-eat-rice',
     de: '/de/duerfen-hunde-reis-essen',
+    fr: '/fr/chien-peut-il-manger-du-riz',
   },
   {
     id: 'food-popcorn',
     kind: 'article',
     path: '/can-dogs-eat-popcorn',
     de: '/de/duerfen-hunde-popcorn-essen',
+    fr: '/fr/chien-peut-il-manger-du-pop-corn',
   },
   {
     id: 'food-bread',
     kind: 'article',
     path: '/can-dogs-eat-bread',
     de: '/de/duerfen-hunde-brot-essen',
+    fr: '/fr/chien-peut-il-manger-du-pain',
   },
   {
     id: 'food-almonds',
     kind: 'article',
     path: '/can-dogs-eat-almonds',
     de: '/de/duerfen-hunde-mandeln-essen',
+    fr: '/fr/chien-peut-il-manger-des-amandes',
   },
   {
     id: 'food-cashews',
     kind: 'article',
     path: '/can-dogs-eat-cashews',
     de: '/de/duerfen-hunde-cashewkerne-essen',
+    fr: '/fr/chien-peut-il-manger-des-noix-de-cajou',
   },
   {
     id: 'food-macadamia-nuts',
     kind: 'article',
     path: '/can-dogs-eat-macadamia-nuts',
     de: '/de/duerfen-hunde-macadamianuesse-essen',
+    fr: '/fr/chien-peut-il-manger-des-noix-de-macadamia',
   },
   {
     id: 'food-xylitol-gum',
     kind: 'article',
     path: '/can-dogs-eat-xylitol-gum',
     de: '/de/duerfen-hunde-kaugummi-essen',
+    fr: '/fr/chien-peut-il-manger-du-chewing-gum',
   },
   { id: 'plants-cats', kind: 'article', path: '/plants-toxic-to-cats' },
   { id: 'plants-dogs', kind: 'article', path: '/plants-toxic-to-dogs' },
@@ -412,35 +476,49 @@ export const ROUTES: readonly Route[] = [
   { id: 'plant-boston-ferns', kind: 'article', path: '/are-boston-ferns-toxic-to-cats-and-dogs' },
   { id: 'plant-hibiscus', kind: 'article', path: '/is-hibiscus-toxic-to-cats-and-dogs' },
   { id: 'methodology', kind: 'article', path: '/methodology' },
-  { id: 'about', kind: 'article', path: '/about', de: '/de/ueber-uns' },
+  { id: 'about', kind: 'article', path: '/about', de: '/de/ueber-uns', fr: '/fr/a-propos' },
   {
     id: 'editorial',
     kind: 'article',
     path: '/editorial-policy',
     de: '/de/redaktionelle-grundsaetze',
+    fr: '/fr/principes-editoriaux',
   },
-  { id: 'privacy', kind: 'article', path: '/privacy', de: '/de/datenschutz' },
+  {
+    id: 'privacy',
+    kind: 'article',
+    path: '/privacy',
+    de: '/de/datenschutz',
+    fr: '/fr/confidentialite',
+  },
 ];
 
-/** The addresses of a route: the English page, then its German twin when it has one. */
-export const pathsOf = ({ path, de }: Route): string[] => (de === undefined ? [path] : [path, de]);
+/** The addresses of a route: the English page, then its German and French twins when it has them. */
+export const pathsOf = (route: Route): string[] => [
+  route.path,
+  ...TWINS.flatMap((twin) => (route[twin] === undefined ? [] : [route[twin]])),
+];
 
-/** The route of an address in either language, or `undefined` (the 404). */
+/** The route of an address in any language, or `undefined` (the 404). */
 export const routeOf = (path: string, routes: readonly Route[] = ROUTES): Route | undefined =>
-  routes.find((route) => route.path === path || route.de === path);
+  routes.find((route) => pathsOf(route).includes(path));
 
-/** The language of an address: `/de` and every page below it are German. */
+/** The language of an address: `/de` and every page below it are German, `/fr` French. */
 export const langOf = (path: string): Lang =>
-  path === '/de' || path.startsWith('/de/') ? 'de' : 'en';
+  TWINS.find((twin) => path === `/${twin}` || path.startsWith(`/${twin}/`)) ?? 'en';
+
+/** Each twin language named in English, for the errors of `hrefOf`. */
+const TWIN_NAMES: Readonly<Record<Twin, string>> = { de: 'German', fr: 'French' };
 
 /**
- * The address of route `id` in `lang`. A German page that links a page with no German twin links
- * the English page on purpose, with `hrefOf(id)`, and says so in its label.
+ * The address of route `id` in `lang`. A German or French page that links a page with no twin in
+ * its language links the English page on purpose, with `hrefOf(id)`, and says so in its label.
  */
 export const hrefOf = (id: string, lang: Lang = 'en'): string => {
   const route = ROUTES.find((candidate) => candidate.id === id);
   if (route === undefined) throw new Error(`no route ${id}`);
   if (lang === 'en') return route.path;
-  if (route.de === undefined) throw new Error(`no German page for ${id}`);
-  return route.de;
+  const twin = route[lang];
+  if (twin === undefined) throw new Error(`no ${TWIN_NAMES[lang]} page for ${id}`);
+  return twin;
 };

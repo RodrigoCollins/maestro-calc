@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BYLINE_PAGES, BYLINE_PAGES_DE, bylinePageOf } from './bylines.ts';
+import { BYLINE_PAGES, BYLINE_PAGES_DE, BYLINE_PAGES_FR, bylinePageOf } from './bylines.ts';
 import { ROUTES } from './routes.ts';
 
 describe('BYLINE_PAGES_DE', () => {
@@ -10,6 +10,19 @@ describe('BYLINE_PAGES_DE', () => {
     expect(BYLINE_PAGES_DE.map(({ path }) => path).sort()).toEqual(german.sort());
     for (const { checked, sources } of BYLINE_PAGES_DE) {
       expect(checked).toBe('2026-11-10');
+      expect(sources.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe('BYLINE_PAGES_FR', () => {
+  it('are the French guide, the dog age page, the food hub and every French food page', () => {
+    const french = ROUTES.flatMap(({ id, fr }) =>
+      fr === undefined || ['home', 'about', 'editorial', 'privacy'].includes(id) ? [] : [fr],
+    );
+    expect(BYLINE_PAGES_FR.map(({ path }) => path).sort()).toEqual(french.sort());
+    for (const { checked, sources } of BYLINE_PAGES_FR) {
+      expect(checked).toBe('2026-11-15');
       expect(sources.length).toBeGreaterThan(0);
     }
   });

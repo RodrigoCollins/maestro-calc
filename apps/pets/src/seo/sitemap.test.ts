@@ -26,20 +26,27 @@ describe('sitemapXml', () => {
     expect(paths).toEqual([...paths].sort());
   });
 
-  it('leaves the German pages and every hreflang out while German is closed', () => {
+  it('leaves the German and French pages and every hreflang out while both are closed', () => {
     expect(locs.some((loc) => loc?.includes('/de'))).toBe(false);
+    expect(locs.some((loc) => loc?.includes('/fr'))).toBe(false);
     expect(xml).not.toContain('hreflang');
   });
 });
 
 describe('sitemapXml, German open', () => {
-  const open = { origin: 'https://bowlfigures.com', indexable: true, deIndexable: true };
+  const open = {
+    origin: 'https://bowlfigures.com',
+    indexable: true,
+    deIndexable: true,
+    frIndexable: false,
+  };
   const xml = sitemapXml(ROUTES, open.origin, open);
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
 
   it('lists every English and German page once', () => {
-    expect(locs).toHaveLength(ROUTES.flatMap(pathsOf).length);
+    expect(locs).toHaveLength(ROUTES.length + ROUTES.filter(({ de }) => de !== undefined).length);
     expect(locs).toContain('https://bowlfigures.com/de/hundejahre-rechner');
+    expect(locs.some((loc) => loc?.includes('/fr'))).toBe(false);
     expect(new Set(locs).size).toBe(locs.length);
   });
 
@@ -57,5 +64,34 @@ describe('sitemapXml, German open', () => {
       );
     }
     expect(urlOf('https://bowlfigures.com/dog-food-calculator')).not.toContain('hreflang');
+  });
+});
+
+describe('sitemapXml, German and French open', () => {
+  const open = {
+    origin: 'https://bowlfigures.com',
+    indexable: true,
+    deIndexable: true,
+    frIndexable: true,
+  };
+  const xml = sitemapXml(ROUTES, open.origin, open);
+  const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, loc]) => loc);
+
+  it('lists every English, German and French page once', () => {
+    expect(locs).toHaveLength(ROUTES.flatMap(pathsOf).length);
+    expect(locs).toContain('https://bowlfigures.com/fr/age-chien-en-humain');
+    expect(new Set(locs).size).toBe(locs.length);
+  });
+
+  it('gives each of the three twins all three languages and x-default at English', () => {
+    const url =
+      xml
+        .split('<url>')
+        .find((block) =>
+          block.includes('<loc>https://bowlfigures.com/fr/age-chien-en-humain</loc>'),
+        ) ?? '';
+    expect(url).toContain('hreflang="de" href="https://bowlfigures.com/de/hundejahre-rechner"');
+    expect(url).toContain('hreflang="fr" href="https://bowlfigures.com/fr/age-chien-en-humain"');
+    expect(url).toContain('hreflang="x-default" href="https://bowlfigures.com/dog-age-calculator"');
   });
 });

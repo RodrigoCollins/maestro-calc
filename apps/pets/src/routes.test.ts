@@ -247,6 +247,60 @@ describe('ROUTES', () => {
     ]);
   });
 
+  // the French twins (plans/growth/BACKLOG.md #51), pinned like the English and German addresses
+  it('pins the address of every French page', () => {
+    expect(ROUTES.flatMap(({ id, fr }) => (fr === undefined ? [] : [[id, fr]]))).toEqual([
+      ['home', '/fr'],
+      ['dog-age', '/fr/age-chien-en-humain'],
+      ['chocolate-guide', '/fr/mon-chien-a-mange-du-chocolat'],
+      ['foods', '/fr/que-peut-manger-un-chien'],
+      ['food-strawberries', '/fr/chien-peut-il-manger-des-fraises'],
+      ['food-bananas', '/fr/chien-peut-il-manger-de-la-banane'],
+      ['food-grapes', '/fr/chien-peut-il-manger-du-raisin'],
+      ['food-raisins', '/fr/chien-peut-il-manger-des-raisins-secs'],
+      ['food-blueberries', '/fr/chien-peut-il-manger-des-myrtilles'],
+      ['food-apples', '/fr/chien-peut-il-manger-des-pommes'],
+      ['food-watermelon', '/fr/chien-peut-il-manger-de-la-pasteque'],
+      ['food-cherries', '/fr/chien-peut-il-manger-des-cerises'],
+      ['food-mango', '/fr/chien-peut-il-manger-de-la-mangue'],
+      ['food-oranges', '/fr/chien-peut-il-manger-des-oranges'],
+      ['food-pineapple', '/fr/chien-peut-il-manger-de-l-ananas'],
+      ['food-tomatoes', '/fr/chien-peut-il-manger-des-tomates'],
+      ['food-avocado', '/fr/chien-peut-il-manger-de-l-avocat'],
+      ['food-onions', '/fr/chien-peut-il-manger-des-oignons'],
+      ['food-garlic', '/fr/chien-peut-il-manger-de-l-ail'],
+      ['food-carrots', '/fr/chien-peut-il-manger-des-carottes'],
+      ['food-broccoli', '/fr/chien-peut-il-manger-du-brocoli'],
+      ['food-cucumber', '/fr/chien-peut-il-manger-du-concombre'],
+      ['food-bell-peppers', '/fr/chien-peut-il-manger-du-poivron'],
+      ['food-zucchini', '/fr/chien-peut-il-manger-de-la-courgette'],
+      ['food-potatoes', '/fr/chien-peut-il-manger-des-pommes-de-terre'],
+      ['food-sweet-potatoes', '/fr/chien-peut-il-manger-de-la-patate-douce'],
+      ['food-pumpkin', '/fr/chien-peut-il-manger-de-la-citrouille'],
+      ['food-cheese', '/fr/chien-peut-il-manger-du-fromage'],
+      ['food-eggs', '/fr/chien-peut-il-manger-des-oeufs'],
+      ['food-yogurt', '/fr/chien-peut-il-manger-du-yaourt'],
+      ['food-shrimp', '/fr/chien-peut-il-manger-des-crevettes'],
+      ['food-salmon', '/fr/chien-peut-il-manger-du-saumon'],
+      ['food-pork', '/fr/chien-peut-il-manger-du-porc'],
+      ['food-ham', '/fr/chien-peut-il-manger-du-jambon'],
+      ['food-bacon', '/fr/chien-peut-il-manger-du-bacon'],
+      ['food-peanut-butter', '/fr/chien-peut-il-manger-du-beurre-de-cacahuete'],
+      ['food-honey', '/fr/chien-peut-il-manger-du-miel'],
+      ['food-chocolate', '/fr/chien-peut-il-manger-du-chocolat'],
+      ['food-rice', '/fr/chien-peut-il-manger-du-riz'],
+      ['food-popcorn', '/fr/chien-peut-il-manger-du-pop-corn'],
+      ['food-bread', '/fr/chien-peut-il-manger-du-pain'],
+      ['food-almonds', '/fr/chien-peut-il-manger-des-amandes'],
+      ['food-cashews', '/fr/chien-peut-il-manger-des-noix-de-cajou'],
+      ['food-macadamia-nuts', '/fr/chien-peut-il-manger-des-noix-de-macadamia'],
+      ['food-xylitol-gum', '/fr/chien-peut-il-manger-du-chewing-gum'],
+      ['about', '/fr/a-propos'],
+      ['editorial', '/fr/principes-editoriaux'],
+      ['privacy', '/fr/confidentialite'],
+    ]);
+  });
+
   it('holds every page source file and no page without one', () => {
     expect(ROUTES.flatMap(pathsOf).sort()).toEqual(sourcePaths().sort());
   });
@@ -260,6 +314,11 @@ describe('ROUTES', () => {
   it('finds a route by its German address too, with the kind of its English page', () => {
     expect(routeOf('/de/hundejahre-rechner')).toMatchObject({ id: 'dog-age', kind: 'calculator' });
     expect(routeOf('/de')?.kind).toBe('home');
+  });
+
+  it('finds a route by its French address too', () => {
+    expect(routeOf('/fr/age-chien-en-humain')).toMatchObject({ id: 'dog-age', kind: 'calculator' });
+    expect(routeOf('/fr')?.kind).toBe('home');
   });
 
   it('names the home, nine calculators, and every other page an article', () => {
@@ -285,6 +344,12 @@ describe('hrefOf', () => {
     expect(hrefOf('home', 'de')).toBe('/de');
     expect(() => hrefOf('dog', 'de')).toThrow('no German page for dog');
   });
+
+  it('leads to the French page of a route, and refuses a route with none', () => {
+    expect(hrefOf('dog-age', 'fr')).toBe('/fr/age-chien-en-humain');
+    expect(hrefOf('home', 'fr')).toBe('/fr');
+    expect(() => hrefOf('dog', 'fr')).toThrow('no French page for dog');
+  });
 });
 
 describe('langOf', () => {
@@ -294,5 +359,11 @@ describe('langOf', () => {
     expect(langOf('/')).toBe('en');
     expect(langOf('/dog-age-calculator')).toBe('en');
     expect(langOf('/deer')).toBe('en');
+  });
+
+  it('reads French under /fr', () => {
+    expect(langOf('/fr')).toBe('fr');
+    expect(langOf('/fr/que-peut-manger-un-chien')).toBe('fr');
+    expect(langOf('/fresh')).toBe('en');
   });
 });

@@ -1,0 +1,30 @@
+---
+import { dogAge } from '@maestro-calc/pets-core/dog-age';
+import CalcPage from '../../components/CalcPage.astro';
+import { AGE_CHIEN_ARTICLE, AGE_CHIEN_METHOD, AGE_CHIEN_PAGE } from '../../fr/age-chien.ts';
+import { dogAgeViewFr } from '../../fr/age-chien-view.ts';
+import AgeChienScript from '../../islands/AgeChienScript.astro';
+import { hrefOf } from '../../routes.ts';
+---
+
+<CalcPage
+  page={AGE_CHIEN_PAGE}
+  calculator={dogAge}
+  view={dogAgeViewFr}
+  kind="dog-age"
+  method={AGE_CHIEN_METHOD}
+  article={AGE_CHIEN_ARTICLE}
+  related={[
+    {
+      href: hrefOf('foods', 'fr'),
+      label: 'Que peut manger un chien ? Les aliments, du toxique au sans risque',
+    },
+    {
+      href: hrefOf('chocolate-guide', 'fr'),
+      label: 'Mon chien a mangé du chocolat : que faire maintenant',
+    },
+    { href: hrefOf('dog-age-chart'), label: 'Dog age chart (en anglais)' },
+  ]}
+>
+  <AgeChienScript />
+</CalcPage>

@@ -329,7 +329,6 @@ describe('the Spanish hours calculator', () => {
       pathOf(shiftOf(9, 17), 'es'),
       pathOf(agoOf(1), 'es'),
       pathOf(agoOf(5), 'es'),
-      pathOf(agoOf(24), 'es'),
     ]);
     expect(popular?.links[0]?.label).toBe('48 horas son 2 días exactos');
     expect(popular?.links[6]?.label).toBe(

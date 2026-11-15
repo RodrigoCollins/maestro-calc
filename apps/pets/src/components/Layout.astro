@@ -1,8 +1,8 @@
 ---
 import { Font } from 'astro:assets';
-import { footerLinks, LAYOUT_TEXTS, navLinks, switchOf } from '../layout.ts';
+import { footerLinks, LAYOUT_TEXTS, navLinks, switchesOf } from '../layout.ts';
 import { hrefOf, langOf } from '../routes.ts';
-import { alternatesOf, headOf } from '../seo/head.ts';
+import { alternatesOf, headOf, twinOpen } from '../seo/head.ts';
 import { jsonLdOf, ogTypeOf, pageKindOf } from '../seo/json-ld.ts';
 import { canonicalPath } from '../seo/sitemap.ts';
 import { SITE } from '../site.config.ts';
@@ -26,10 +26,14 @@ const jsonLd = jsonLdOf(
 );
 const lang = langOf(path);
 const texts = LAYOUT_TEXTS[lang];
-// the hreflang pair only on an indexed page whose route has its twin, once German is open
+// the hreflang alternates only on an indexed page whose route has a twin in an open language
 const alternates = canonical === undefined ? [] : alternatesOf(path);
-// the other language's page; an English page shows it only once German is open
-const other = indexed ? switchOf(path, SITE.indexable && SITE.deIndexable) : undefined;
+// the other languages' pages; a German or French twin shows only once its language is open
+const others = indexed ? switchesOf(path, { de: twinOpen('de'), fr: twinOpen('fr') }) : [];
+const LOCALES = { en: 'en_US', de: 'de_DE', fr: 'fr_FR' } as const;
+const alternateLocales = alternates.flatMap(({ hreflang }) =>
+  hreflang === lang || hreflang === 'x-default' ? [] : [LOCALES[hreflang as keyof typeof LOCALES]],
+);
 ---
 
 <!doctype html>
@@ -51,10 +55,10 @@ const other = indexed ? switchOf(path, SITE.indexable && SITE.deIndexable) : und
     <meta property="og:title" content={preview['og:title']} />
     <meta property="og:description" content={preview['og:description']} />
     {canonical !== undefined && <meta property="og:url" content={canonical} />}
-    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'de_DE'} />
-    {alternates.length > 0 && (
-      <meta property="og:locale:alternate" content={lang === 'en' ? 'de_DE' : 'en_US'} />
-    )}
+    <meta property="og:locale" content={LOCALES[lang]} />
+    {alternateLocales.map((locale) => (
+      <meta property="og:locale:alternate" content={locale} />
+    ))}
     <meta property="og:image" content={preview['og:image']} />
     <meta property="og:image:width" content={preview['og:image:width']} />
     <meta property="og:image:height" content={preview['og:image:height']} />
@@ -83,11 +87,11 @@ const other = indexed ? switchOf(path, SITE.indexable && SITE.deIndexable) : und
             {label}
           </a>
         ))}
-        {other !== undefined && (
+        {others.map((other) => (
           <a class="bf-lang" href={other.href} hreflang={other.lang} lang={other.lang}>
             {other.label}
           </a>
-        )}
+        ))}
       </nav>
     </header>
     <slot />

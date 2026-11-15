@@ -32,7 +32,7 @@ interface Props {
 }
 
 const { page, calculator, view, kind, related = [], method, article } = Astro.props;
-// the words of the page around the figures: English, or German for the dog age page under /de
+// the words of the page around the figures: English, or German or French for the dog age page under /de and /fr
 const lang = langOf(page.path);
 const words = {
   en: {
@@ -54,6 +54,16 @@ const words = {
     scrolls: 'lässt sich auf schmalen Bildschirmen seitlich scrollen',
     faq: 'Häufige Fragen',
     related: 'Weiterlesen',
+  },
+  fr: {
+    stage: 'stade de vie :',
+    senior: 'senior à partir de',
+    wang: 'horloge ADN :',
+    seven: 'règle du ×7 :',
+    method: 'Notre méthode de calcul (en anglais)',
+    scrolls: 'défile horizontalement sur un écran étroit',
+    faq: 'Questions fréquentes',
+    related: 'À lire aussi',
   },
 }[lang];
 // The page renders the result of its starting values, so it reads complete with no script.
