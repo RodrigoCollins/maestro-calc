@@ -91,7 +91,7 @@ const sources = guideSourcesOf(t);
       <section aria-labelledby={table.id}>
         <h2 id={table.id}>{table.heading}</h2>
         <p>{table.lead}</p>
-        <div class="sheet">
+        <div class="sheet" tabindex="0" role="region" aria-label={table.caption}>
           <table>
             <caption>{table.caption}</caption>
             <thead>
