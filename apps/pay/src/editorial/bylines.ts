@@ -23,6 +23,8 @@ import { GUIDE_PATHS, GUIDE_TEXTS, type GuideSource, type GuideTexts } from '../
 import { TIP_CREDIT_GUIDE } from '../guide/tip-credit.ts';
 import { UNPAID_WAGES_GUIDE } from '../guide/unpaid-wages.ts';
 import { W2_BOX_12_GUIDE } from '../guide/w2-box-12.ts';
+import { mexicoArticleOf } from '../mexico/pages.ts';
+import { MEXICO_SLUGS } from '../mexico/routes.ts';
 import { STATE_FACTS, statePageOf } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
@@ -93,4 +95,9 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       return { path: page.paths[lang], checked: page.reviewed, sources: hrefs(page.sources) };
     }),
   ),
+  // the Mexico answer pages, Spanish only: the day their laws and figures were read
+  ...MEXICO_SLUGS.map((slug) => {
+    const page = mexicoArticleOf(slug);
+    return { path: page.paths.es, checked: page.checked, sources: hrefs(page.sources) };
+  }),
 ];

@@ -1,0 +1,88 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { SOURCES_HEADING } from '../long-tail/sections.ts';
+import { mexicoArticleOf } from '../mexico/pages.ts';
+import type { MexicoSlug } from '../mexico/routes.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import Byline from './Byline.astro';
+import Sections from './Sections.astro';
+import SiteLayout from './SiteLayout.astro';
+
+interface Props {
+  readonly slug: MexicoSlug;
+}
+
+// Spanish only (Mexico's law): the language switch leads to the English home. The answer comes
+// first, every amount from the engine; no script.
+const page = mexicoArticleOf(Astro.props.slug);
+---
+
+<SiteLayout
+  lang="es"
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherHref="/"
+  parent={{ title: page.calculator.label, path: page.calculator.href }}
+  modified={page.checked}
+  otherLang={PAY_CONVERTER_TEXTS.es.otherLang}
+  footer={HOME_TEXTS.es.sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+      <Byline lang="es" checked={page.checked} />
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <section class="result" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.answer.label}
+        </p>
+        <p class="result-figure">{page.answer.figure}</p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.answer.label}>
+        {page.answer.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <a class="button button-primary" href={page.calculator.href}>
+      {page.calculator.label}
+    </a>
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">{SOURCES_HEADING.es}</h2>
+        <ul class="link-list">
+          {page.sources.map((source) => (
+            <li>
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <section aria-labelledby="others-heading">
+      <h2 id="others-heading">También te puede servir</h2>
+      <ul class="link-list">
+        {page.others.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </main>
+</SiteLayout>

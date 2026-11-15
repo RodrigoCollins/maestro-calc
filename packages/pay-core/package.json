@@ -17,7 +17,8 @@
     "./tipped-wage": "./src/tipped-wage/index.ts",
     "./military-time": "./src/military-time/index.ts",
     "./calendar": "./src/calendar/index.ts",
-    "./shift-pay": "./src/shift-pay/index.ts"
+    "./shift-pay": "./src/shift-pay/index.ts",
+    "./mexico": "./src/mexico/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.src.json && tsc --noEmit -p tsconfig.test.json",

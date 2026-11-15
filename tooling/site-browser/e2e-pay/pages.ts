@@ -2,9 +2,17 @@ import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
 import { STATE_ROUTES, STATES_INDEX_PATHS } from '../../../apps/pay/src/states/routes.ts';
 import { MILITARY_TIME_ROUTES } from '../../../apps/pay/src/military/routes.ts';
 import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/routes.ts';
+import {
+  AGUINALDO_PATH,
+  MEXICO_ROUTES,
+  VACACIONES_PATH,
+} from '../../../apps/pay/src/mexico/routes.ts';
 
 /** The Spanish-only date pages: the days-between calculator and the countdowns. */
 const DATES = DATE_ROUTES.map(({ es }) => ({ path: es, lang: 'es' as const }));
+
+/** The Spanish-only Mexico labor pages: the aguinaldo and vacation calculators, the answer pages. */
+const MEXICO = MEXICO_ROUTES.map(({ es }) => ({ path: es, lang: 'es' as const }));
 
 /** The military time of every hour and half hour, English only, from its table. */
 const MILITARY_TIMES = MILITARY_TIME_ROUTES.map(({ en }) => ({ path: en, lang: 'en' as const }));
@@ -86,8 +94,15 @@ export const PAGES = [
   ...LONG_TAIL,
   ...MILITARY_TIMES,
   ...DATES,
+  ...MEXICO,
   ...STATES,
 ] as const;
+
+/** The aguinaldo calculator of Mexico, Spanish only. */
+export const AGUINALDO = AGUINALDO_PATH;
+
+/** The vacation and prima vacacional calculator of Mexico, Spanish only. */
+export const VACACIONES_MX = VACACIONES_PATH;
 
 /** The days-between calculator, Spanish only. */
 export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;

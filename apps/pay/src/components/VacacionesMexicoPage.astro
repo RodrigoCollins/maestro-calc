@@ -1,0 +1,110 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { SOURCES_HEADING } from '../long-tail/sections.ts';
+import { vacacionesPageOf } from '../mexico/pages.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import Sections from './Sections.astro';
+import ShareLink from './ShareLink.astro';
+import SiteLayout from './SiteLayout.astro';
+
+// Spanish only (Mexico's law): the language switch leads to the English home. The page renders
+// the engine's own figures for five years of service, so it reads without JavaScript.
+const page = vacacionesPageOf();
+const v = page.defaults;
+---
+
+<SiteLayout
+  lang="es"
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherHref="/"
+  otherLang={PAY_CONVERTER_TEXTS.es.otherLang}
+  footer={HOME_TEXTS.es.sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <form class="deduction" data-vacaciones-mx novalidate>
+      <label class="field">
+        {page.labels.start}
+        <input type="date" name="start" value={v.start} required />
+      </label>
+      <label class="field">
+        {page.labels.on}
+        <input type="date" name="on" value={v.on} required />
+      </label>
+      <label class="field">
+        {page.labels.wage}
+        <input name="wage" inputmode="decimal" autocomplete="off" value={v.wage} required />
+      </label>
+      <label class="field">
+        {page.labels.period}
+        <select name="period">
+          {page.periods.map(([key, label]) => (
+            <option value={key} selected={key === v.period}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="field">
+        {page.labels.prima}
+        <input name="prima" inputmode="numeric" autocomplete="off" value={v.prima} required />
+      </label>
+    </form>
+    <p class="warning" data-mx-invalid hidden>
+      {page.invalid}
+    </p>
+    <p class="warning" data-mx-below hidden>
+      {page.belowMinimum}
+    </p>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure" data-mx="figure">
+          {page.result.figure}
+        </p>
+        <p class="note" data-mx-not-earned hidden>
+          {page.notEarned}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
+        {page.result.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-mx={row.key}>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p class="note">{page.note}</p>
+
+    <ShareLink lang="es" title={page.title} path={page.paths.es} />
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">{SOURCES_HEADING.es}</h2>
+        <ul class="link-list">
+          {page.sources.map((source) => (
+            <li>
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  </main>
+  <script src="../client/vacaciones-mexico.ts"></script>
+</SiteLayout>

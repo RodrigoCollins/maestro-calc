@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import {
+  AGUINALDO,
   COUNTDOWN_PATHS,
   DAYS_BETWEEN,
   DECIMAL_HOURS,
@@ -10,6 +11,7 @@ import {
   PAGES,
   PTO,
   SHIFT,
+  VACACIONES_MX,
   SHIFT_TOOL,
   TIPPED,
   TIME_CARD,
@@ -96,6 +98,20 @@ test(`${DAYS_BETWEEN} shows the days of 2026 without JavaScript`, async ({ page 
   await page.goto(DAYS_BETWEEN);
   await expect(page.locator('[data-days="figure"]')).toHaveText('364 días');
   await expect(page.locator('[data-days="business"]')).toHaveText('260 días');
+});
+
+// The defaults, worked by the build: 315.04 × 15 = 4,725.60 for 2026; 5 years of service give
+// 20 days, 315.04 × 20 = 6,300.80 and a prima of 25%, 1,575.20.
+test(`${AGUINALDO} shows the aguinaldo of 2026 without JavaScript`, async ({ page }) => {
+  await page.goto(AGUINALDO);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$4,725.60');
+  await expect(page.locator('[data-mx="exempt"]')).toHaveText('$3,519.30');
+});
+
+test(`${VACACIONES_MX} shows five years of vacation without JavaScript`, async ({ page }) => {
+  await page.goto(VACACIONES_MX);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('20 días');
+  await expect(page.locator('[data-mx="prima"]')).toHaveText('$1,575.20');
 });
 
 for (const path of COUNTDOWN_PATHS) {
