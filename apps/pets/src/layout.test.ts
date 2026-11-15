@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { HOME_AGES, HOME_CAT_AGES } from './home.ts';
-import { footerLinks, LAYOUT_TEXTS, navLinks } from './layout.ts';
+import { footerLinks, LAYOUT_TEXTS, navLinks, switchOf } from './layout.ts';
 import { ROUTES } from './routes.ts';
 
 describe('the header and footer', () => {
@@ -44,6 +44,56 @@ describe('the header and footer', () => {
   });
 
   it('say every figure is a starting point to check with a veterinarian', () => {
-    expect(LAYOUT_TEXTS.warning).toContain('veterinarian');
+    expect(LAYOUT_TEXTS.en.warning).toContain('veterinarian');
+    expect(LAYOUT_TEXTS.de.warning).toContain('Tierarzt');
+  });
+});
+
+describe('the German header and footer', () => {
+  it('lead to the German pages only, the hub, the dog age calculator and the chocolate guide first', () => {
+    expect(navLinks('de').map(({ href }) => href)).toEqual([
+      '/de/was-duerfen-hunde-essen',
+      '/de/hundejahre-rechner',
+      '/de/hund-hat-schokolade-gefressen',
+    ]);
+    expect(footerLinks('de').map(({ href }) => href)).toEqual([
+      '/de/was-duerfen-hunde-essen',
+      '/de/hundejahre-rechner',
+      '/de/hund-hat-schokolade-gefressen',
+      '/de/ueber-uns',
+      '/de/redaktionelle-grundsaetze',
+      '/de/datenschutz',
+    ]);
+  });
+
+  it('link every German page that is not a food page, so none is an orphan', () => {
+    const german = ROUTES.filter(
+      ({ id, de }) => de !== undefined && id !== 'home' && !id.startsWith('food-'),
+    );
+    expect(
+      footerLinks('de')
+        .map(({ href }) => href)
+        .sort(),
+    ).toEqual(german.map(({ de }) => de).sort());
+  });
+});
+
+describe('switchOf', () => {
+  it('leads a German page to its English twin, in English', () => {
+    expect(switchOf('/de/hundejahre-rechner', false)).toEqual({
+      href: '/dog-age-calculator',
+      lang: 'en',
+      label: 'English',
+    });
+  });
+
+  it('leads an English page to its German twin only once German is open', () => {
+    expect(switchOf('/dog-age-calculator', false)).toBeUndefined();
+    expect(switchOf('/dog-age-calculator', true)).toEqual({
+      href: '/de/hundejahre-rechner',
+      lang: 'de',
+      label: 'Deutsch',
+    });
+    expect(switchOf('/dog-food-calculator', true)).toBeUndefined();
   });
 });

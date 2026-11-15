@@ -15,7 +15,12 @@ import { AGE_PAGES } from './dog-years.ts';
 import { EDITORIAL } from './editorial.ts';
 import { FEED_HUB, FEED_PAGES } from './feed-by-weight.ts';
 import { GUIDES } from './guides.ts';
+import { hrefOf } from './routes.ts';
 import { SITE } from './site.config.ts';
+import { FOOD_HUB_DE, FOOD_PAGES_DE } from './de/can-dogs-eat.ts';
+import { HUNDEJAHRE_PAGE } from './de/hundejahre.ts';
+import { SCHOKOLADE_GUIDE } from './de/schokolade.ts';
+import { ABOUT_DE, EDITORIAL_DE } from './de/trust.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
 interface Entry {
@@ -70,6 +75,13 @@ const ABOUT_PAGES: readonly Entry[] = [
   { name: 'Editorial policy', path: '/editorial-policy', note: EDITORIAL.description },
 ];
 
+/** The German pages, listed only once German is open to search engines (`SITE.deIndexable`). */
+const GERMAN: readonly Entry[] = [
+  ...[HUNDEJAHRE_PAGE, SCHOKOLADE_GUIDE, FOOD_HUB_DE, ...FOOD_PAGES_DE],
+  { ...ABOUT_DE, path: hrefOf('about', 'de') },
+  { ...EDITORIAL_DE, path: hrefOf('editorial', 'de') },
+].map(({ h1, path, description }) => ({ name: h1, path, note: description }));
+
 const section = (heading: string, entries: readonly Entry[]): string =>
   [
     `## ${heading}`,
@@ -79,8 +91,11 @@ const section = (heading: string, entries: readonly Entry[]): string =>
     ),
   ].join('\n');
 
-/** The `/llms.txt` of the site (llmstxt.org): a title, a summary, and the pages by section. */
-export const llmsTxt = (): string =>
+/**
+ * The `/llms.txt` of the site (llmstxt.org): a title, a summary, and the pages by section; the
+ * German pages join as their own section once German is open.
+ */
+export const llmsTxt = (deOpen: boolean = SITE.indexable && SITE.deIndexable): string =>
   [
     `# ${SITE.name}`,
     '',
@@ -94,4 +109,5 @@ export const llmsTxt = (): string =>
     '',
     section('About', ABOUT_PAGES),
     '',
+    ...(deOpen ? [section('Auf Deutsch (German)', GERMAN), ''] : []),
   ].join('\n');

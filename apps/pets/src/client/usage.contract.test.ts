@@ -16,11 +16,12 @@ const entries = readdirSync(resolve(src, 'islands'))
   );
 
 describe('the usage events of the calculator scripts', () => {
-  it('finds the seven calculator scripts of the pages', () => {
+  it('finds the eight calculator scripts of the pages, the German dog age one among them', () => {
     expect(entries.sort()).toEqual([
       'cat-age.ts',
       'cat.ts',
       'chocolate.ts',
+      'dog-age-de.ts',
       'dog-age.ts',
       'dog.ts',
       'due-date.ts',

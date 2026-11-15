@@ -1,4 +1,4 @@
-import { hrefOf } from './routes.ts';
+import { hrefOf, langOf, routeOf, type Lang } from './routes.ts';
 
 /** One link of the header or the footer: the route it leads to and its label. */
 interface NavLink {
@@ -44,18 +44,62 @@ const FOOTER: readonly NavLink[] = [
   { id: 'privacy', label: 'Privacy' },
 ];
 
-/** What the layout writes around every page. */
+/** The German header: the hub of the food pages, the dog age calculator and the chocolate guide. */
+const NAV_DE: readonly NavLink[] = [
+  { id: 'foods', label: 'Was dürfen Hunde essen?' },
+  { id: 'dog-age', label: 'Hundejahre' },
+  { id: 'chocolate-guide', label: 'Schokolade' },
+];
+
+/** The German footer: the same three, then the pages about the site. */
+const FOOTER_DE: readonly NavLink[] = [
+  { id: 'foods', label: 'Was dürfen Hunde essen? Alle Lebensmittel' },
+  { id: 'dog-age', label: 'Hundejahre in Menschenjahre' },
+  { id: 'chocolate-guide', label: 'Hund hat Schokolade gefressen' },
+  { id: 'about', label: 'Über uns' },
+  { id: 'editorial', label: 'Redaktionelle Grundsätze' },
+  { id: 'privacy', label: 'Datenschutz' },
+];
+
+/** What the layout writes around every page, in each language. */
 export const LAYOUT_TEXTS = {
-  navLabel: 'Calculators',
-  warning:
-    'Every figure is a starting point, not veterinary advice. Check the amount with your pet’s veterinarian.',
-} as const;
+  en: {
+    navLabel: 'Calculators',
+    warning:
+      'Every figure is a starting point, not veterinary advice. Check the amount with your pet’s veterinarian.',
+  },
+  de: {
+    navLabel: 'Rechner und Ratgeber',
+    warning:
+      'Jede Zahl ist ein Anhaltspunkt und keine tierärztliche Beratung. Besprechen Sie sie mit Ihrem Tierarzt oder Ihrer Tierärztin.',
+  },
+} as const satisfies Record<Lang, { readonly navLabel: string; readonly warning: string }>;
 
-const linksOf = (links: readonly NavLink[]): { href: string; label: string }[] =>
-  links.map(({ id, label }) => ({ href: hrefOf(id), label }));
+const linksOf = (links: readonly NavLink[], lang: Lang): { href: string; label: string }[] =>
+  links.map(({ id, label }) => ({ href: hrefOf(id, lang), label }));
 
-/** The header links, each at its page. */
-export const navLinks = (): { href: string; label: string }[] => linksOf(NAV);
+/** The header links of `lang`, each at its page. */
+export const navLinks = (lang: Lang = 'en'): { href: string; label: string }[] =>
+  lang === 'en' ? linksOf(NAV, 'en') : linksOf(NAV_DE, 'de');
 
-/** The footer links, each at its page. */
-export const footerLinks = (): { href: string; label: string }[] => linksOf(FOOTER);
+/** The footer links of `lang`, each at its page. */
+export const footerLinks = (lang: Lang = 'en'): { href: string; label: string }[] =>
+  lang === 'en' ? linksOf(FOOTER, 'en') : linksOf(FOOTER_DE, 'de');
+
+/** Each language named in itself, as the switch to it reads. */
+const NAMES: Readonly<Record<Lang, string>> = { en: 'English', de: 'Deutsch' };
+
+/**
+ * The link to the other language's page, when the page at `path` has a twin: a German page always
+ * leads to its English twin; an English page leads to its German twin only once German is open
+ * (`SITE.deIndexable`), so no open page sends a reader to a page closed to search engines.
+ */
+export const switchOf = (
+  path: string,
+  deOpen: boolean,
+): { readonly href: string; readonly lang: Lang; readonly label: string } | undefined => {
+  const route = routeOf(path);
+  if (route?.de === undefined) return undefined;
+  if (langOf(path) === 'de') return { href: route.path, lang: 'en', label: NAMES.en };
+  return deOpen ? { href: route.de, lang: 'de', label: NAMES.de } : undefined;
+};

@@ -1,16 +1,18 @@
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { hrefOf, routeOf, ROUTES } from './routes.ts';
+import { hrefOf, langOf, pathsOf, routeOf, ROUTES } from './routes.ts';
 
 const pagesDir = resolve(import.meta.dirname, 'pages');
 
 /** The canonical path of every page source file. */
-const sourcePaths = (): string[] =>
-  readdirSync(pagesDir, { withFileTypes: true }).flatMap((entry) => {
+const sourcePaths = (dir = pagesDir, prefix = ''): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.isDirectory())
+      return sourcePaths(resolve(dir, entry.name), `${prefix}/${entry.name}`);
     if (!entry.name.endsWith('.astro') || entry.name === '404.astro') return [];
     const name = entry.name.replace(/\.astro$/, '');
-    return [name === 'index' ? '/' : `/${name}`];
+    return [name === 'index' ? prefix || '/' : `${prefix}/${name}`];
   });
 
 describe('ROUTES', () => {
@@ -191,13 +193,45 @@ describe('ROUTES', () => {
     ]);
   });
 
-  it('holds every page source file and no page without one', () => {
-    expect(ROUTES.map(({ path }) => path).sort()).toEqual(sourcePaths().sort());
+  // the German twins (plans/growth/BACKLOG.md #50), pinned like the English addresses
+  it('pins the address of every German page', () => {
+    expect(ROUTES.flatMap(({ id, de }) => (de === undefined ? [] : [[id, de]]))).toEqual([
+      ['home', '/de'],
+      ['dog-age', '/de/hundejahre-rechner'],
+      ['chocolate-guide', '/de/hund-hat-schokolade-gefressen'],
+      ['foods', '/de/was-duerfen-hunde-essen'],
+      ['food-strawberries', '/de/duerfen-hunde-erdbeeren-essen'],
+      ['food-bananas', '/de/duerfen-hunde-bananen-essen'],
+      ['food-grapes', '/de/duerfen-hunde-weintrauben-essen'],
+      ['food-blueberries', '/de/duerfen-hunde-blaubeeren-essen'],
+      ['food-apples', '/de/duerfen-hunde-aepfel-essen'],
+      ['food-watermelon', '/de/duerfen-hunde-wassermelone-essen'],
+      ['food-mango', '/de/duerfen-hunde-mango-essen'],
+      ['food-pineapple', '/de/duerfen-hunde-ananas-essen'],
+      ['food-tomatoes', '/de/duerfen-hunde-tomaten-essen'],
+      ['food-cucumber', '/de/duerfen-hunde-gurken-essen'],
+      ['food-bell-peppers', '/de/duerfen-hunde-paprika-essen'],
+      ['food-cheese', '/de/duerfen-hunde-kaese-essen'],
+      ['food-chocolate', '/de/duerfen-hunde-schokolade-essen'],
+      ['about', '/de/ueber-uns'],
+      ['editorial', '/de/redaktionelle-grundsaetze'],
+      ['privacy', '/de/datenschutz'],
+    ]);
   });
 
-  it('gives every route its own id and address', () => {
+  it('holds every page source file and no page without one', () => {
+    expect(ROUTES.flatMap(pathsOf).sort()).toEqual(sourcePaths().sort());
+  });
+
+  it('gives every route its own id and every page its own address', () => {
     expect(new Set(ROUTES.map(({ id }) => id)).size).toBe(ROUTES.length);
-    expect(new Set(ROUTES.map(({ path }) => path)).size).toBe(ROUTES.length);
+    const paths = ROUTES.flatMap(pathsOf);
+    expect(new Set(paths).size).toBe(paths.length);
+  });
+
+  it('finds a route by its German address too, with the kind of its English page', () => {
+    expect(routeOf('/de/hundejahre-rechner')).toMatchObject({ id: 'dog-age', kind: 'calculator' });
+    expect(routeOf('/de')?.kind).toBe('home');
   });
 
   it('names the home, nine calculators, and every other page an article', () => {
@@ -216,5 +250,21 @@ describe('hrefOf', () => {
 
   it('refuses an id that is not a route', () => {
     expect(() => hrefOf('nowhere')).toThrow('no route nowhere');
+  });
+
+  it('leads to the German page of a route, and refuses a route with none', () => {
+    expect(hrefOf('dog-age', 'de')).toBe('/de/hundejahre-rechner');
+    expect(hrefOf('home', 'de')).toBe('/de');
+    expect(() => hrefOf('dog', 'de')).toThrow('no German page for dog');
+  });
+});
+
+describe('langOf', () => {
+  it('reads German under /de and English everywhere else', () => {
+    expect(langOf('/de')).toBe('de');
+    expect(langOf('/de/hundejahre-rechner')).toBe('de');
+    expect(langOf('/')).toBe('en');
+    expect(langOf('/dog-age-calculator')).toBe('en');
+    expect(langOf('/deer')).toBe('en');
   });
 });

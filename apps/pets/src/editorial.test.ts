@@ -36,6 +36,21 @@ describe('the byline', () => {
   it('writes a day in English', () => {
     expect(checkedText('2027-01-05')).toBe('Jan 5, 2027');
   });
+
+  it('writes a day in German, the month in full', () => {
+    expect(checkedText('2027-01-05', 'de')).toBe('5. Januar 2027');
+    expect(checkedText('2026-11-08', 'de')).toBe('8. November 2026');
+    expect(checkedText('2026-03-31', 'de')).toBe('31. März 2026');
+  });
+
+  it('credits the German editorial team at the German policy, in German', () => {
+    expect(bylineOf({ checked: '2026-11-08', sources: true, lang: 'de' })).toEqual({
+      by: 'Von der',
+      team: { href: '/de/redaktionelle-grundsaetze', label: 'Redaktion Bowl Figures' },
+      reviewed: { label: 'Geprüft am', datetime: '2026-11-08', text: '8. November 2026' },
+      sources: { href: '#sources', label: 'Quellen' },
+    });
+  });
 });
 
 describe('the text pages', () => {
