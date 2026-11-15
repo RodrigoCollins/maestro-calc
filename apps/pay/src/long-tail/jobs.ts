@@ -21,6 +21,7 @@ import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
 import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 import { hourlySpellingsOf, salarySpellingsOf } from './spellings.ts';
 import { tippedLinksOf, tippedPageOf } from './tipped.ts';
+import { weeksLinksOf, weeksPageOf } from './weeks.ts';
 
 export {
   DAYS,
@@ -36,7 +37,9 @@ export {
   TIME_OFFSETS,
   TIPPED,
   UNTILS,
+  WEEKS,
   type Days,
+  type Weeks,
   type DaysFrom,
   type TimeOffset,
   type Until,
@@ -208,7 +211,7 @@ export interface LongTailPage {
    * instruction that holds at any time. Only the live families have it, and only they load a script.
    */
   readonly live?: {
-    readonly kind: 'offset' | 'until' | 'date';
+    readonly kind: 'offset' | 'until' | 'date' | 'weeks';
     readonly data: Readonly<Record<string, string>>;
     readonly fallback: string;
   };
@@ -261,7 +264,8 @@ export type Family =
   | 'days'
   | 'time-offset'
   | 'until'
-  | 'days-from';
+  | 'days-from'
+  | 'weeks';
 
 const familyOf = (job: Job): Family => (job.kind === 'overtime' ? 'overtime' : job.per);
 
@@ -287,6 +291,7 @@ export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonL
   if (family === 'time-offset') return offsetLinksOf(lang);
   if (family === 'until') return untilLinksOf(lang);
   if (family === 'days-from') return daysFromLinksOf(lang);
+  if (family === 'weeks') return weeksLinksOf(lang);
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);
@@ -371,6 +376,7 @@ export const longTailPageOf = (job: LongTailJob, lang: Lang): LongTailPage => {
   if (job.kind === 'time-offset') return offsetPageOf(job, lang);
   if (job.kind === 'until') return untilPageOf(job, lang);
   if (job.kind === 'days-from') return daysFromPageOf(job, lang);
+  if (job.kind === 'weeks') return weeksPageOf(job, lang);
   if (job.kind === 'overtime') return overtimePageOf(job, lang);
   const validated = payConverter.validate({ amount: job.amount, per: job.per });
   const ran = payConverter.run({ amount: job.amount, per: job.per });
