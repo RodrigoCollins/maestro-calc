@@ -2,6 +2,7 @@ import { PATHS } from './pay-converter/texts.ts';
 import { DEDUCTION_PATHS } from './deductions/texts.ts';
 import { OVERTIME_GUIDE_PATHS } from './guide/overtime.ts';
 import {
+  EMPLOYER_HOURS_GUIDE_PATHS,
   FULL_TIME_GUIDE_PATHS,
   HOURS_WORKED_GUIDE_PATHS,
   MINIMUM_WAGE_2027_GUIDE_PATHS,
@@ -11,6 +12,8 @@ import {
   PAY_STUB_GUIDE_PATHS,
   PTO_GUIDE_PATHS,
   SHIFT_GUIDE_PATHS,
+  TIME_APPS_GUIDE_PATHS,
+  TIMESHEET_GUIDE_PATHS,
   TIP_CREDIT_GUIDE_PATHS,
   TIPPED_STATES_GUIDE_PATHS,
   UNPAID_WAGES_GUIDE_PATHS,
@@ -23,6 +26,7 @@ import { EMBED_PATHS } from './embed/texts.ts';
 import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { DATE_ROUTES } from './dates/routes.ts';
+import { MEXICO_ROUTES } from './mexico/routes.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import {
   MILITARY_CHART_PATHS,
@@ -38,7 +42,7 @@ import { TIPPED_PATHS } from './tipped/texts.ts';
 /**
  * Every page of Cuenta Horas, an English and Spanish pair but for the few one-language pages: the
  * English-only military times (a search of the US clock), with no `es`, and the Spanish-only date
- * pages (a search of Mexico and Spain), with no `en`; the sitemap is built from it.
+ * pages (a search of Mexico and Spain) and the Mexico labor pages, with no `en`; the sitemap is built from it.
  */
 export type Route = {
   readonly id: string;
@@ -93,6 +97,9 @@ export const ROUTES: readonly Route[] = [
   { id: 'hours-worked-guide', kind: 'article', ...HOURS_WORKED_GUIDE_PATHS },
   { id: 'full-time-guide', kind: 'article', ...FULL_TIME_GUIDE_PATHS },
   { id: 'part-time-guide', kind: 'article', ...PART_TIME_GUIDE_PATHS },
+  { id: 'employer-hours-guide', kind: 'article', ...EMPLOYER_HOURS_GUIDE_PATHS },
+  { id: 'timesheet-guide', kind: 'article', ...TIMESHEET_GUIDE_PATHS },
+  { id: 'time-apps-guide', kind: 'article', ...TIME_APPS_GUIDE_PATHS },
   { id: 'overtime-states-guide', kind: 'article', ...OVERTIME_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-states-guide', kind: 'article', ...MINIMUM_WAGE_STATES_GUIDE_PATHS },
   { id: 'minimum-wage-2027-states-guide', kind: 'article', ...MINIMUM_WAGE_2027_GUIDE_PATHS },
@@ -107,5 +114,6 @@ export const ROUTES: readonly Route[] = [
   ...LONG_TAIL_ROUTES,
   ...MILITARY_TIME_ROUTES,
   ...DATE_ROUTES,
+  ...MEXICO_ROUTES,
   ...STATE_ROUTES,
 ];

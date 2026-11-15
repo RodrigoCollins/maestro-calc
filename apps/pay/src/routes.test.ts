@@ -1,6 +1,7 @@
 import { globSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { LONG_TAIL_ROUTES } from './long-tail/jobs.ts';
+import { MEXICO_ROUTES } from './mexico/routes.ts';
 import { pathsOfRoute, ROUTES } from './routes.ts';
 
 const pagesDir = new URL('./pages/', import.meta.url).pathname;
@@ -25,7 +26,9 @@ const templateOf = (path: string): string =>
             ? 'es/estados/[slug].astro'
             : path.startsWith('/es/fechas/')
               ? 'es/fechas/[slug].astro'
-              : fileOf(path);
+              : path.startsWith('/es/mexico/')
+                ? 'es/mexico/[slug].astro'
+                : fileOf(path);
 
 describe('ROUTES', () => {
   it('has one row per page pair, and every page file is in a row', () => {
@@ -44,13 +47,16 @@ describe('ROUTES', () => {
     }
   });
 
-  it('pairs every page but the English-only military times and the Spanish-only dates', () => {
+  it('pairs every page but the English-only military times and the Spanish-only dates and Mexico pages', () => {
     const english = ROUTES.flatMap(({ en, es }) => (es === undefined ? [en] : []));
     expect(english).toHaveLength(48);
     for (const path of english) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
     const spanish = ROUTES.flatMap(({ en, es }) => (en === undefined ? [es] : []));
+    expect(spanish).toEqual(expect.arrayContaining(MEXICO_ROUTES.map(({ es }) => es)));
     for (const path of spanish)
-      expect(path).toMatch(/^\/es\/(calculadora-de-dias-entre-fechas|fechas\/[a-z0-9-]+)$/);
+      expect(path).toMatch(
+        /^\/es\/(calculadora-de-dias-entre-fechas|fechas\/[a-z0-9-]+|calculadora-de-aguinaldo|calculadora-de-vacaciones-mexico|mexico\/[a-z0-9-]+)$/,
+      );
   });
 
   it('starts with the home pair', () => {

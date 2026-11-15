@@ -168,6 +168,69 @@ export const FRUIT_DE: readonly FoodDe[] = [
     ],
   },
   {
+    id: 'raisins',
+    name: 'Rosinen',
+    answer: 'Rosinen sind für Hunde giftig',
+    short: 'Nein, auch wenige',
+    summary:
+      'Rosinen, Sultaninen und Korinthen können bei Hunden schon in kleinen Mengen ein Nierenversagen auslösen.',
+    why: [
+      'Rosinen sind getrocknete Weintrauben. Merck nennt Rosinen, Weintrauben und Korinthen gemeinsam als die Früchte, die bei Hunden mit Nierenversagen in Verbindung gebracht werden; die ASPCA vermutet die Weinsäure als Ursache. CliniTox, die Giftdatenbank der Vetsuisse-Fakultät Zürich, beschreibt ein akutes Nierenversagen, das unbehandelt zum Tod führt.',
+      'Das Trocknen konzentriert die Frucht. PetMD schreibt, Rosinen seien streng genommen gefährlicher als Trauben, weil der Giftstoff konzentrierter ist; AKC hält sie für ebenso gefährlich. Eine Rosine wiegt etwa ein Zehntel einer Traube, eine kleine Handvoll sind also viele Rosinen.',
+      'Die britische Tierhilfsorganisation PDSA schreibt, die giftige Menge sei von Hund zu Hund verschieden und könne in manchen Fällen sehr klein sein.',
+    ],
+    serve: [
+      'Rufen Sie sofort Ihre Tierarztpraxis oder den tierärztlichen Notdienst an. PDSA: Melden Sie sich sofort bei der Tierärztin oder dem Tierarzt und warten Sie nicht ab, ob Anzeichen auftreten.',
+      'Halten Sie die Packung bereit: Die gefressene Menge in Gramm oder Stück und das Gewicht Ihres Hundes sind das, was die Praxis wissen muss.',
+      'Lösen Sie kein Erbrechen aus, außer die Tierärztin oder der Tierarzt sagt es Ihnen.',
+    ],
+    never: [
+      'Rosinen, Sultaninen und Korinthen, pur, im Studentenfutter oder im Müsli.',
+      'Früchtebrot, Stollen, Rosinenbrötchen, Kekse und Schokolade mit Rosinen (PDSA). Die Vetmeduni Wien nennt Rosinen ausdrücklich unter den Festtagsgefahren für Hunde.',
+    ],
+    signs: [
+      'PDSA: Die Anzeichen können schon wenige Stunden nach dem Fressen beginnen, mit Erbrechen, Durchfall, Bauchschmerzen, Mattigkeit und Appetitlosigkeit; ein Nierenversagen kann innerhalb von ein bis drei Tagen folgen.',
+      'Merck nennt 6 bis 12 Stunden für Erbrechen oder Durchfall und 24 bis 72 Stunden für das Nierenversagen, mit Durst, Austrocknung und Zittern unter den Anzeichen. CliniTox beschreibt Erbrechen, Durchfall, Mattigkeit und Appetitlosigkeit innerhalb von 24 Stunden und das Nierenversagen innerhalb von 24 bis 72 Stunden.',
+    ],
+    disagree: [
+      'Merck zieht die Linie bei mehr als einer Rosine pro 10 Pfund (4,5 kg) Körpergewicht. CliniTox gibt als toxische Dosis etwa 3 g Rosinen pro kg Körpergewicht an, und die Kleintierklinik der Universität Bern beschreibt Nierenversagen ab 3 g Rosinen pro kg; beide betonen große Unterschiede zwischen einzelnen Hunden. VCA sagt, es gebe keine gesicherte giftige Dosis, und PDSA, sie könne sehr klein sein.',
+      'Bei den Korinthen nehmen Merck und VCA die echten Johannisbeeren (Gattung Ribes), etwa schwarze Johannisbeeren, aus und warnen vor den getrockneten Korinthen; PDSA führt „currants“ ohne diese Unterscheidung.',
+    ],
+    usdaName: 'dunkle kernlose Rosinen',
+    piece: {
+      a: 'eine Rosine',
+      one: 'Rosine',
+      many: 'Rosinen',
+      basis: 'USDA: 50 Rosinen = 26 g',
+    },
+    thresholds: [
+      {
+        label: 'Merck: mehr als das kann die Nieren schädigen',
+        lead: 'die Linie, die Merck bei einer Rosine pro 10 Pfund (4,5 kg) zieht,',
+      },
+    ],
+    thresholdNote:
+      'Die Linie von Merck, eine Rosine pro 10 Pfund (4,5 kg) Körpergewicht, für vier Gewichte ausgerechnet. Eine Mini-Packung Rosinen der USDA enthält 14 g, etwa 27 Rosinen: mehr als die Linie für jeden Hund der Tabelle. Die Linie ist keine sichere Menge: Rufen Sie bei jeder Menge Rosinen an.',
+    questions: [
+      {
+        question: 'Mein Hund hat einen Rosinenkeks gefressen. Ist das ein Notfall?',
+        answer:
+          'Behandeln Sie es als Notfall und rufen Sie Ihre Tierarztpraxis oder den tierärztlichen Notdienst an: PDSA nennt Kekse, Kuchen und Brötchen unter den Lebensmitteln mit Rosinen, und für einen kleinen Hund liegen schon wenige Rosinen über der Linie von Merck.',
+      },
+      {
+        question: 'Dürfen Hunde Sultaninen essen?',
+        answer:
+          'Nein. Sultaninen sind getrocknete Weintrauben, und PDSA führt Weintrauben, Rosinen, Korinthen und Sultaninen alle als möglicherweise giftig für Hunde.',
+      },
+      {
+        question: 'Dürfen Hunde Korinthen essen?',
+        answer:
+          'Nein. Korinthen sind kleine getrocknete Weintrauben, und Merck und VCA halten sie für ebenso gefährlich wie Rosinen. Echte Johannisbeeren (Gattung Ribes), etwa schwarze Johannisbeeren, wurden nach Merck und VCA nicht mit Nierenschäden in Verbindung gebracht. PDSA unterscheidet nicht; behandeln Sie jede getrocknete Korinthe wie eine Rosine.',
+      },
+    ],
+    sources: [SOURCES_DE.clinitoxVitis, SOURCES_DE.bernGrapes, SOURCES_DE.vetmeduniHolidays],
+  },
+  {
     id: 'blueberries',
     name: 'Blaubeeren',
     answer: 'Blaubeeren sind ein unbedenkliches kleines Leckerli',
@@ -326,6 +389,54 @@ export const FRUIT_DE: readonly FoodDe[] = [
     sources: [],
   },
   {
+    id: 'cherries',
+    name: 'Kirschen',
+    answer: 'die Kerne setzen Blausäure frei',
+    short: 'Besser nicht',
+    summary:
+      'Kerne, Stiele und Blätter der Kirsche setzen Blausäure frei, und die Kerne können den Darm verlegen.',
+    why: [
+      'AKC rät von Kirschen ab: Kleine Mengen Fruchtfleisch sind in Ordnung, aber Kerne, Stiele und Blätter enthalten Blausäure, und die Kerne können den Verdauungstrakt verlegen.',
+      'Auf der Pflanzenliste der ASPCA steht die Kirsche (Prunus) aus demselben Grund als giftig für Hunde: Stiele, Blätter und Kerne enthalten cyanogene Glykoside. PetMD nennt den Stoff Amygdalin, aus dem der Körper Blausäure macht.',
+      'Cocktailkirschen (Maraschino) sind nicht besser: AKC und PetMD verweisen auf ihren zugesetzten Zucker und die Konservierungsstoffe.',
+    ],
+    serve: [
+      'Hat Ihr Hund ein, zwei Kirschen mit Kern gefressen, beobachten Sie ihn und rufen Sie die Tierarztpraxis an, wenn es mehrere waren oder er irgendein Anzeichen zeigt (AKC). Die Tierärztin oder der Tierarzt kann entscheiden, ihn erbrechen zu lassen.',
+      'Rufen Sie sofort an, wenn er Kerne, Stiele oder Blätter zerkaut hat oder Anzeichen einer Vergiftung zeigt (PetMD); außerhalb der Sprechzeiten den tierärztlichen Notdienst.',
+    ],
+    never: [
+      'Kerne, Stiele und Blätter jeder Kirsche, und ganze Kirschen, die ein Hund mitsamt Kern schlucken kann.',
+      'Cocktailkirschen und Kirschdesserts.',
+    ],
+    signs: [
+      'Blausäure: Atemnot, hellrotes Zahnfleisch und weite Pupillen (AKC), Hecheln, Speicheln, Erbrechen, Zittern, Krampfanfälle und Zusammenbruch (PetMD). Wie viele Kerne es dafür braucht, hängt nach PetMD von der Größe des Hundes ab und davon, ob er sie zerkaut hat.',
+      'Ein verlegter Darm: Erbrechen, ein Hund, der nicht mehr frisst, Verstopfung oder wenig Kot (AKC).',
+    ],
+    disagree: [
+      'PetMD schreibt, Hunde dürften frische Kirschen ohne Kerne, Stiele und Blätter fressen, und nennt eine Tabelle von einer Kirsche für einen Hund von 1 bis 5 kg bis zu fünf für einen Hund über 41 kg, zwei- bis dreimal pro Woche. AKC rät von Kirschen ab und empfiehlt sichereres Obst. Diese Seite folgt AKC und der ASPCA; einig sind sich alle Quellen, dass Kern, Stiele und Blätter die Gefahr sind.',
+    ],
+    usdaName: 'rohe Süßkirschen',
+    piece: {
+      a: 'eine Kirsche',
+      one: 'Kirsche',
+      many: 'Kirschen',
+      basis: 'USDA: 1 Kirsche = 8,2 g',
+    },
+    questions: [
+      {
+        question: 'Mein Hund hat einen Kirschkern verschluckt. Was nun?',
+        answer:
+          'Ein einzelner verschluckter Kern ist vor allem ein Risiko für einen Darmverschluss, bei einem kleinen Hund mehr als bei einem großen. Achten Sie auf Erbrechen, Verstopfung oder einen Hund, der nicht mehr frisst, und rufen Sie die Tierarztpraxis an, wenn er mehrere Kirschen gefressen oder die Kerne zerkaut hat (AKC, PetMD).',
+      },
+      {
+        question: 'Darf mein Hund entkernte Kirschen fressen?',
+        answer:
+          'Kleine Mengen Fruchtfleisch ohne Kern, Stiel und Blätter sind nach AKC in Ordnung, und PetMD erlaubt sie zwei- bis dreimal pro Woche. AKC rät trotzdem zu sichererem Obst.',
+      },
+    ],
+    sources: [],
+  },
+  {
     id: 'mango',
     name: 'Mango',
     answer: 'geschält und ohne Kern',
@@ -374,6 +485,62 @@ export const FRUIT_DE: readonly FoodDe[] = [
         question: 'Mein Hund hat einen Mangokern verschluckt. Ist das ein Notfall?',
         answer:
           'Der Kern ist groß und hart; AKC nennt ihn eine ernste Erstickungsgefahr, PetMD die Gefahr eines Darmverschlusses. Rufen Sie die Tierarztpraxis an und beschreiben Sie, wie groß der Kern und wie groß Ihr Hund ist.',
+      },
+    ],
+    sources: [],
+  },
+  {
+    id: 'oranges',
+    name: 'Orangen',
+    answer: 'ein, zwei geschälte Spalten',
+    short: 'Ja, ein paar Spalten',
+    summary:
+      'Geschälte Orangenspalten sind in kleinen Mengen unbedenklich; Schale, Kerne und Säure sind das Problem.',
+    why: [
+      'AKC schreibt, Hunde dürften Orangen nur in begrenzter Menge fressen, weil ihr natürlicher Zucker und ihre Säure den Magen verstimmen können. PetMD sagt ja, in Maßen und nur das Fruchtfleisch; Hunde mit Diabetes oder Übergewicht sollten darauf verzichten.',
+      'Auf der Pflanzenliste der ASPCA steht der Orangenbaum wegen seiner ätherischen Öle und Psoralene als giftig für Hunde, mit dem Zusatz, dass die Frucht essbar ist und Schale und Pflanzenteile die Probleme machen. Nach ihrem Hinweis zu Zitrusfrüchten enthalten Schalen, Kerne und Blätter Zitronensäure und Öle, die in größeren Mengen reizen können.',
+    ],
+    serve: [
+      'Schälen Sie die Orange vollständig und entfernen Sie die Kerne (AKC, PetMD).',
+      'Geben Sie eine Spalte, klein geschnitten (AKC).',
+    ],
+    never: [
+      'Die Schale: Nach PetMD ist sie schwer verdaulich, kann den Darm verlegen, und ihre Öle können den Magen reizen.',
+      'Die Kerne, an denen ein Hund ersticken kann (AKC), und Blätter und Stiele des Baums (ASPCA).',
+    ],
+    signs: [
+      'Durchfall und Magenverstimmung nach zu viel Obst (AKC, PetMD). Für die Pflanzenteile nennt die ASPCA Erbrechen, Durchfall, Teilnahmslosigkeit und Hautreizungen.',
+    ],
+    usdaName: 'rohe Orangen',
+    piece: {
+      a: 'eine ganze Orange',
+      one: 'ganze Orange',
+      many: 'ganze Orangen',
+      basis: 'USDA: 1 Frucht (6,7 cm Durchmesser) = 131 g',
+    },
+    sizeGuide: {
+      note: 'Die Mengen von PetMD, ein- bis zweimal pro Woche, die Gewichtsklassen von Pfund in Kilogramm umgerechnet. AKC hält je nach Größe ein bis zwei kleine Spalten am Tag in der Regel für genug.',
+      rows: [
+        ['Sehr klein (1 bis 5 kg)', '½ Spalte'],
+        ['Klein (5 bis 9 kg)', '1 Spalte'],
+        ['Mittel (10 bis 23 kg)', '1½ Spalten'],
+        ['Groß (23 bis 41 kg)', '2 Spalten'],
+        ['Sehr groß (ab 41 kg)', '2½ Spalten'],
+      ],
+    },
+    disagree: [
+      'Beim Wie oft: AKC erlaubt ein bis zwei Spalten am Tag, PetMD beschränkt sie auf ein- bis zweimal pro Woche.',
+    ],
+    questions: [
+      {
+        question: 'Dürfen Hunde Clementinen oder Mandarinen fressen?',
+        answer:
+          'Die Quellen dieser Seite sprechen von Orangen. Der Hinweis der ASPCA zu Zitrusfrüchten gilt aber für alle Zitruspflanzen: Schale, Kerne und Blätter sind die Problemteile. Vorsichtig gelesen gilt also dieselbe Regel: geschält, ohne Kerne, in kleinen Mengen.',
+      },
+      {
+        question: 'Darf mein Hund jeden Tag Orange fressen?',
+        answer:
+          'Da sind sich die Quellen nicht einig: AKC hält ein bis zwei kleine Spalten am Tag für genug, PetMD gibt Orange nur ein- bis zweimal pro Woche. Hunde mit Diabetes oder Übergewicht sollten nach PetMD ganz darauf verzichten.',
       },
     ],
     sources: [],

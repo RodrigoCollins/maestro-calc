@@ -56,6 +56,11 @@ describe('the German food pages', () => {
     ]);
   });
 
+  it('count a threshold in its own unit, with no piece: avocado in teaspoons', () => {
+    // one teaspoon per 10 lb (4.5359237 kg): 10 kg is 2.2 teaspoons
+    expect(pageOf('avocado').table?.rows[1]).toEqual(['10 kg', '2,2 Teelöffel']);
+  });
+
   it('work the treat budget in kilocalories and grams at each weight', () => {
     // 10 kg neutered: 70 x 10^0.75 x 1.6 = 629.8 kcal, a tenth is 63 kcal; at 32 kcal per 100 g
     // that is 196.8 g, 16.4 strawberries of 12 g

@@ -80,3 +80,21 @@ export const PART_TIME_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
   en: '/guides/how-many-hours-is-part-time',
   es: '/es/guias/cuantas-horas-son-medio-tiempo',
 };
+
+/** How to track employee hours: what the FLSA asks an employer to keep, and three ways to keep it. */
+export const EMPLOYER_HOURS_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/how-to-track-employee-hours',
+  es: '/es/guias/como-llevar-el-registro-de-horas-de-empleados',
+};
+
+/** The free crew timesheet: a blank sheet to print and a worked crew from the time card. */
+export const TIMESHEET_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/free-employee-timesheet-template',
+  es: '/es/guias/plantilla-gratis-de-hoja-de-horas-de-empleados',
+};
+
+/** Time-tracking apps for a small business: their public plan facts, dated, with no ranking. */
+export const TIME_APPS_GUIDE_PATHS: Readonly<Record<Lang, string>> = {
+  en: '/guides/time-tracking-apps-for-small-business',
+  es: '/es/guias/apps-de-control-de-horas-para-pequenas-empresas',
+};

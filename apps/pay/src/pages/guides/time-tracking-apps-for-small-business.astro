@@ -1,0 +1,24 @@
+---
+import { enabledOffers } from '@maestro-calc/site-kit/affiliate';
+import AffiliateBlock from '../../components/AffiliateBlock.astro';
+import GuidePage from '../../components/GuidePage.astro';
+import { OFFERS } from '../../affiliate/offers.ts';
+import {
+  TIME_APPS_GUIDE,
+  TIME_APPS_GUIDE_LINKS,
+  TIME_APPS_GUIDE_PATHS,
+} from '../../guide/employers.ts';
+// a program's paid link shows only once it approves the site, in its disclosed block
+const offers = enabledOffers(OFFERS);
+---
+
+<GuidePage
+  lang="en"
+  texts={TIME_APPS_GUIDE.en}
+  paths={TIME_APPS_GUIDE_PATHS}
+  links={TIME_APPS_GUIDE_LINKS.en}
+>
+  {offers.map((offer) => (
+    <AffiliateBlock offer={offer} locale="en" />
+  ))}
+</GuidePage>

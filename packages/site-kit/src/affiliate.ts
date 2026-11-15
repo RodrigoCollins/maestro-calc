@@ -17,7 +17,7 @@ export interface AffiliateOffer<L extends AffiliateLocale = AffiliateLocale> {
   readonly name: string;
   /** One sentence per language on why it fits the page it is shown on. */
   readonly why: Readonly<Record<L, string>>;
-  /** The tracked https link the network gives. */
+  /** The tracked https link the network gives; empty while the offer is disabled and has none. */
   readonly url: string;
   /** False until the program approves the site and the link is checked by hand. */
   readonly enabled: boolean;
@@ -55,7 +55,8 @@ export const offerProblems = <L extends AffiliateLocale>(
   locales: readonly L[],
 ): string[] =>
   offers.flatMap((offer, index) => [
-    ...(offer.url.startsWith('https://')
+    // a disabled offer may wait with no url: the program has not given its link yet
+    ...(offer.url.startsWith('https://') || (offer.url === '' && !offer.enabled)
       ? []
       : [`${offer.id}: the url must be https, found "${offer.url}"`]),
     ...(offers.findIndex(({ id }) => id === offer.id) === index

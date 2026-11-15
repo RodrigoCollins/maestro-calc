@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DATA_PAGES } from '../data/pages.ts';
-import { ROUTES } from '../routes.ts';
+import { pathsOfRoute, ROUTES } from '../routes.ts';
 import { STATE_FACTS, statePageOf } from '../states/pages.ts';
 import { BYLINE_GUIDES, BYLINE_PAGES, uniqueSources } from './bylines.ts';
 
@@ -13,10 +13,10 @@ const component = (name: string): string =>
 
 describe('the byline pages', () => {
   // every guide, every table and every state page, in both languages; never an index or a calculator
-  it('are every guide, table and state page of the route table, in both languages', () => {
+  it('are every guide, table, state and Mexico answer page of the route table', () => {
     const expected = ROUTES.filter(
-      ({ id }) => id.endsWith('-guide') || id.startsWith('state-'),
-    ).flatMap(({ en, es }) => [en, es]);
+      ({ id }) => id.endsWith('-guide') || id.startsWith('state-') || id.startsWith('mexico-'),
+    ).flatMap(pathsOfRoute);
     expect(BYLINE_PAGES.map(({ path }) => path).sort()).toEqual([...expected].sort());
   });
 

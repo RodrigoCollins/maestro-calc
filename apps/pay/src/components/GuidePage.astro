@@ -87,6 +87,54 @@ const sources = guideSourcesOf(t);
       </section>
     ))}
 
+    {(t.tables ?? []).map((table) => (
+      <section aria-labelledby={table.id}>
+        <h2 id={table.id}>{table.heading}</h2>
+        <p>{table.lead}</p>
+        <div class="sheet" tabindex="0" role="region" aria-label={table.caption}>
+          <table>
+            <caption>{table.caption}</caption>
+            <thead>
+              <tr>
+                {table.columns.map((column) => (
+                  <th scope="col">{column}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {table.rows.map((row) => (
+                <tr>
+                  {row.map((cell, index) =>
+                    index === 0 ? (
+                      <th scope="row">
+                        {cell.href === undefined ? cell.text : <a href={cell.href}>{cell.text}</a>}
+                      </th>
+                    ) : (
+                      <td>
+                        {cell.href === undefined ? cell.text : <a href={cell.href}>{cell.text}</a>}
+                      </td>
+                    ),
+                  )}
+                </tr>
+              ))}
+            </tbody>
+            {table.foot !== undefined && (
+              <tfoot>
+                <tr>
+                  {table.foot.map((cell, index) =>
+                    index === 0 ? <th scope="row">{cell.text}</th> : <td>{cell.text}</td>,
+                  )}
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+        {table.note !== undefined && <p class="note">{table.note}</p>}
+      </section>
+    ))}
+
+    <slot />
+
     {examples !== undefined && rows.length > 0 && (
       <section aria-labelledby="examples">
         <h2 id="examples">{examples.heading}</h2>

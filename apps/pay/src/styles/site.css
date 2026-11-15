@@ -701,6 +701,35 @@ a.tool:hover .tool-title {
   }
 }
 
+/* A guide table (a timesheet, a dated comparison): ruled like paper, scrolled inside its box. */
+.sheet {
+  overflow-x: auto;
+}
+
+.sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  font-size: 0.875rem;
+}
+
+.sheet th,
+.sheet td {
+  border: 1px solid var(--ink);
+  padding: 0.4rem 0.5rem;
+  min-width: 2.5rem;
+  height: 2.25rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.sheet caption {
+  text-align: left;
+  font-weight: 700;
+  padding-block-end: 0.5rem;
+}
+
 /* A worked ledger (the sample pay stub): label and how it is worked out, then the amount. */
 .ledger {
   width: 100%;

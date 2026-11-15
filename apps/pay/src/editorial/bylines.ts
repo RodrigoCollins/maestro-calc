@@ -1,5 +1,13 @@
 import { DATA_PAGES } from '../data/pages.ts';
 import {
+  EMPLOYER_HOURS_GUIDE,
+  EMPLOYER_HOURS_GUIDE_PATHS,
+  TIME_APPS_GUIDE,
+  TIME_APPS_GUIDE_PATHS,
+  TIMESHEET_GUIDE,
+  TIMESHEET_GUIDE_PATHS,
+} from '../guide/employers.ts';
+import {
   FULL_TIME_GUIDE,
   FULL_TIME_GUIDE_PATHS,
   PART_TIME_GUIDE,
@@ -23,6 +31,8 @@ import { GUIDE_PATHS, GUIDE_TEXTS, type GuideSource, type GuideTexts } from '../
 import { TIP_CREDIT_GUIDE } from '../guide/tip-credit.ts';
 import { UNPAID_WAGES_GUIDE } from '../guide/unpaid-wages.ts';
 import { W2_BOX_12_GUIDE } from '../guide/w2-box-12.ts';
+import { mexicoArticleOf } from '../mexico/pages.ts';
+import { MEXICO_SLUGS } from '../mexico/routes.ts';
 import { STATE_FACTS, statePageOf } from '../states/pages.ts';
 import type { Lang } from '../time-card/receipt.ts';
 
@@ -62,6 +72,9 @@ export const BYLINE_GUIDES: readonly {
   { paths: HOURS_WORKED_GUIDE_PATHS, texts: HOURS_WORKED_GUIDE },
   { paths: FULL_TIME_GUIDE_PATHS, texts: FULL_TIME_GUIDE },
   { paths: PART_TIME_GUIDE_PATHS, texts: PART_TIME_GUIDE },
+  { paths: EMPLOYER_HOURS_GUIDE_PATHS, texts: EMPLOYER_HOURS_GUIDE },
+  { paths: TIMESHEET_GUIDE_PATHS, texts: TIMESHEET_GUIDE },
+  { paths: TIME_APPS_GUIDE_PATHS, texts: TIME_APPS_GUIDE },
 ];
 
 const LANGS = ['en', 'es'] as const;
@@ -93,4 +106,9 @@ export const BYLINE_PAGES: readonly BylinePage[] = [
       return { path: page.paths[lang], checked: page.reviewed, sources: hrefs(page.sources) };
     }),
   ),
+  // the Mexico answer pages, Spanish only: the day their laws and figures were read
+  ...MEXICO_SLUGS.map((slug) => {
+    const page = mexicoArticleOf(slug);
+    return { path: page.paths.es, checked: page.checked, sources: hrefs(page.sources) };
+  }),
 ];

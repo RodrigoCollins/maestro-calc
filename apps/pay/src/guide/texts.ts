@@ -46,6 +46,25 @@ export interface GuideLedgerTexts {
   readonly labels: Readonly<Record<string, string>>;
 }
 
+/** One cell of a guide table: its text, and a plain link when it has one. */
+export interface GuideTableCell {
+  readonly text: string;
+  readonly href?: string;
+}
+
+/** A table a guide shows after its sections, such as a timesheet or a dated comparison. */
+export interface GuideTable {
+  readonly id: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly caption: string;
+  readonly columns: readonly string[];
+  readonly rows: readonly (readonly GuideTableCell[])[];
+  /** The closing row, such as the totals of a crew. */
+  readonly foot?: readonly GuideTableCell[];
+  readonly note?: string;
+}
+
 export interface GuideTexts {
   readonly title: string;
   readonly description: string;
@@ -55,6 +74,7 @@ export interface GuideTexts {
   readonly sections: readonly GuideSection[];
   readonly examples?: GuideExamplesTexts;
   readonly ledger?: GuideLedgerTexts;
+  readonly tables?: readonly GuideTable[];
   readonly sourcesLabel: string;
   readonly disclaimer: string;
   /** The day the guide was last checked against its sources, `YYYY-MM-DD` (its byline). */

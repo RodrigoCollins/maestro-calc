@@ -13,6 +13,7 @@ import {
   PART_TIME_GUIDE,
   PART_TIME_GUIDE_PATHS,
 } from '../guide/full-part-time.ts';
+import { EMPLOYER_GUIDE_LINKS } from '../guide/employers.ts';
 import { TIP_CREDIT_GUIDE, TIP_CREDIT_GUIDE_PATHS } from '../guide/tip-credit.ts';
 import {
   MINIMUM_WAGE_2027_GUIDE,
@@ -32,6 +33,7 @@ import { MILITARY_CHART_PATHS } from '../military/routes.ts';
 import { countdownLinks } from '../dates/countdowns.ts';
 import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { DAYS_BETWEEN_NAME } from '../dates/words.ts';
+import { mexicoLinks } from '../mexico/pages.ts';
 import { outputOf, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -69,6 +71,8 @@ const guides = [
   ...(lang === 'es'
     ? [{ href: DAYS_BETWEEN_PATH, label: DAYS_BETWEEN_NAME }, ...countdownLinks()]
     : []),
+  // the Mexico labor pages are Spanish only: the aguinaldo and the vacaciones of the LFT
+  ...(lang === 'es' ? mexicoLinks() : []),
 ];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.
 const ran = timeCard.run({});
@@ -154,6 +158,17 @@ const rows = TIME_CARD_TEXTS[lang].days.slice(0, 3).map((day) => ({
         {guides.map((guide) => (
           <li>
             <a href={guide.href}>{guide.label}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="guides" aria-labelledby="employers-heading">
+      <h2 id="employers-heading">{EMPLOYER_GUIDE_LINKS[lang].heading}</h2>
+      <ul class="link-list">
+        {EMPLOYER_GUIDE_LINKS[lang].links.map((link) => (
+          <li>
+            <a href={link.href}>{link.label}</a>
           </li>
         ))}
       </ul>
