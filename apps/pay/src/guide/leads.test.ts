@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { EMPLOYER_HOURS_GUIDE, TIME_APPS_GUIDE, TIMESHEET_GUIDE } from './employers.ts';
 import { FULL_TIME_GUIDE, PART_TIME_GUIDE } from './full-part-time.ts';
 import { HOURS_WORKED_GUIDE } from './hours-worked.ts';
 import { OVERTIME_GUIDES } from './overtime.ts';
@@ -33,6 +34,9 @@ const GUIDES = {
   'w2-box-12-guide': W2_BOX_12_GUIDE,
   'full-time-guide': FULL_TIME_GUIDE,
   'part-time-guide': PART_TIME_GUIDE,
+  'employer-hours-guide': EMPLOYER_HOURS_GUIDE,
+  'timesheet-guide': TIMESHEET_GUIDE,
+  'time-apps-guide': TIME_APPS_GUIDE,
 };
 
 /** The first sentence: up to the first full stop followed by a space, or the end. */
@@ -56,6 +60,9 @@ const KEY: Readonly<Record<keyof typeof GUIDES, string>> = {
   'w2-box-12-guide': '$12,500',
   'full-time-guide': '30',
   'part-time-guide': '35',
+  'employer-hours-guide': '3',
+  'timesheet-guide': '7',
+  'time-apps-guide': '10',
 };
 
 describe('the opening of each guide', () => {

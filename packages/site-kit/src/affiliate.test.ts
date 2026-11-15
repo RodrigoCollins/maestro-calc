@@ -84,6 +84,13 @@ describe('enabledOffers and offerProblems', () => {
     expect(offerProblems([offer], ['en', 'es'])).toEqual([]);
   });
 
+  it('accepts an empty url on a disabled offer, the link a program has not given yet', () => {
+    expect(offerProblems([{ ...offer, url: '', enabled: false }], ['en', 'es'])).toEqual([]);
+    expect(offerProblems([{ ...offer, url: '' }], ['en', 'es'])).toEqual([
+      'payroll: the url must be https, found ""',
+    ]);
+  });
+
   it('names an http url, a repeated id, an empty name and a missing why', () => {
     expect(
       offerProblems(

@@ -6,6 +6,7 @@ import { clockFieldText, hoursText, moneyText } from '../format.ts';
 import { outputOf, receiptMessage, whatsappHref, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import { HOME_TEXTS } from '../home/texts.ts';
+import { EMPLOYER_GUIDE_LINKS } from '../guide/employers.ts';
 import { overtimeGuideLinksOf } from '../guide/links.ts';
 import { commonLinksOf, TIME_CARD_PATHS } from '../long-tail/jobs.ts';
 import { SITE } from '../site.config.ts';
@@ -246,6 +247,18 @@ const href = whatsappHref(receiptMessage(result, lang, canonical));
         ))}
       </ul>
     </section>
+    {!embed && (
+      <section aria-labelledby="employers-heading">
+        <h2 id="employers-heading">{EMPLOYER_GUIDE_LINKS[lang].heading}</h2>
+        <ul class="link-list">
+          {EMPLOYER_GUIDE_LINKS[lang].links.map((link) => (
+            <li>
+              <a href={link.href}>{link.label}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </main>
   <script src="../client/time-card.ts"></script>
 </SiteLayout>
