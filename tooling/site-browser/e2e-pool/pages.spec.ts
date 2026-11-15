@@ -218,7 +218,7 @@ test('leads from the home to the spring guide, whose calculator links all answer
   await page.goto('/');
   await page.locator('.pool-band a').click();
   await expect(page).toHaveURL(/\/opening-your-pool$/);
-  await expect(page.locator('.pool-steps > li')).toHaveCount(12);
+  await expect(page.locator('.pool-steps > li')).toHaveCount(13);
   const hrefs = await page
     .locator('.pool-steps a[href^="/"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
@@ -239,6 +239,8 @@ test('lists every guide on the home, each one answering', async ({ page }) => {
     '/pool-volume-chart',
     '/how-many-gallons-is-my-pool',
     '/how-many-gallons-in-an-olympic-pool',
+    '/how-many-gallons-in-an-above-ground-pool',
+    '/how-many-litres-is-my-pool',
     '/how-long-to-run-pool-pump',
     '/salt-water-pool-vs-chlorine-pool',
     '/how-much-salt-for-a-pool',

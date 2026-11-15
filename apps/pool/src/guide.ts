@@ -2,7 +2,9 @@ import { CHEMISTRY_CHART } from './chemistry.ts';
 import { DOSING_CHART, doseOf } from './dosing.ts';
 import { VOLUME_CHART } from './volume/chart.ts';
 import { ALKALINITY, CALCIUM, CHLORINE, FILL_TIME, HEATER, PH, PUMP, SALT } from './doses.ts';
+import { ABOVE_GROUND_GUIDE } from './above-ground.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { LITRES_GUIDE } from './litres.ts';
 import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { SWIM_GUIDE } from './swim.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
@@ -134,6 +136,10 @@ export const OPENING = {
 /** The steps, in order; each names the sources its figures come from. */
 const STEPS: readonly GuideStep[] = [
   {
+    title: 'Open when your spring comes',
+    text: 'The steps are the same on both sides of the equator; only the calendar moves. Spring runs from March to May in the United States, Canada and the UK, and from September to November in Australia, so an Australian pool is opened while the northern ones are being closed.',
+  },
+  {
     title: 'Check what you have',
     text: 'Before you open the cover, look at the chlorine, shock, algaecide and balancers you kept from last season, and throw out any product past its date.',
     sources: ['hayward'],
@@ -207,7 +213,7 @@ const STEPS: readonly GuideStep[] = [
  */
 export const OPENING_GUIDE = {
   path: '/opening-your-pool',
-  checked: '2026-11-09',
+  checked: '2026-11-15',
   kicker: 'Guide · spring',
   card: {
     title: 'Opening your pool',
@@ -977,6 +983,8 @@ export const GUIDES: readonly GuideCard[] = [
   cardOf(VOLUME_CHART, [VOLUME_CHART.calculator]),
   stepsCard(GALLONS_GUIDE),
   stepsCard(OLYMPIC_GUIDE),
+  stepsCard(ABOVE_GROUND_GUIDE),
+  stepsCard(LITRES_GUIDE),
   stepsCard(PUMP_RUN_GUIDE),
   stepsCard(SALT_VS_CHLORINE_GUIDE),
   stepsCard(SALT_AMOUNT_GUIDE),

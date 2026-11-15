@@ -25,8 +25,11 @@ import {
   type GuideSource,
   type StepGuide,
 } from './guide.ts';
+import { ABOVE_GROUND_GUIDE } from './above-ground.ts';
 import { GALLONS_GUIDE, OLYMPIC_GUIDE } from './gallons.ts';
+import { LITRES_GUIDE } from './litres.ts';
 import { HOME_TOOLS } from './home.ts';
+import { JOB_PAGES } from './jobs.ts';
 import { SALT_AMOUNT_GUIDE } from './salt-amount.ts';
 import { CLOUDY_GUIDE, GREEN_GUIDE, SHOCK_OFTEN_GUIDE } from './trouble.ts';
 import { footerLinksOf } from './layout.ts';
@@ -54,9 +57,13 @@ const metricDose = (
 const LITRES = [20_000, 30_000, 40_000, 50_000, 60_000, 80_000];
 const litres = (size: number): string => `${size.toLocaleString('en-US')} L`;
 
-const pages = readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
-  .filter((name) => name.endsWith('.astro'))
-  .map((name) => `/${name.replace(/\.astro$/, '').replace(/^index$/, '')}`);
+// the page files, and the pool size pages `[job].astro` builds
+const pages = [
+  ...readdirSync(fileURLToPath(new URL('pages/', import.meta.url)))
+    .filter((name) => name.endsWith('.astro'))
+    .map((name) => `/${name.replace(/\.astro$/, '').replace(/^index$/, '')}`),
+  ...JOB_PAGES.map(({ path }) => path),
+];
 const footer = footerLinksOf('en').map(({ href }) => href);
 
 const textOf = (
@@ -80,6 +87,8 @@ describe.each([
   ['calcium hardness', CALCIUM_GUIDE],
   ['pool gallons', GALLONS_GUIDE],
   ['Olympic pool gallons', OLYMPIC_GUIDE],
+  ['above ground pool gallons', ABOVE_GROUND_GUIDE],
+  ['pool litres', LITRES_GUIDE],
   ['how often to shock', SHOCK_OFTEN_GUIDE],
   ['green pool', GREEN_GUIDE],
   ['cloudy pool', CLOUDY_GUIDE],
@@ -121,6 +130,14 @@ describe('the guide figures', () => {
     expect(text).toContain('pH 7.0 to 7.8');
     expect(text).toContain('7.2 to 7.8');
     expect(text).toContain('1 to 3 ppm');
+  });
+
+  // it is spring in Australia when it is autumn in the US: the opening says when each one opens
+  it('opens with the spring of each hemisphere, Australia’s included', () => {
+    const [first] = OPENING_GUIDE.steps;
+    expect(first?.text).toContain('March to May');
+    expect(first?.text).toContain('September to November in Australia');
+    expect(OPENING_GUIDE.checked).toBe('2026-11-15');
   });
 
   it('gives the closing figures exactly as Hayward’s closing guide publishes them', () => {
@@ -556,6 +573,8 @@ describe('the guides', () => {
       VOLUME_CHART.path,
       GALLONS_GUIDE.path,
       OLYMPIC_GUIDE.path,
+      ABOVE_GROUND_GUIDE.path,
+      LITRES_GUIDE.path,
       PUMP_RUN_GUIDE.path,
       SALT_VS_CHLORINE_GUIDE.path,
       SALT_AMOUNT_GUIDE.path,
@@ -609,6 +628,8 @@ describe('the calculators each guide explains', () => {
                 CALCIUM_GUIDE,
                 GALLONS_GUIDE,
                 OLYMPIC_GUIDE,
+                ABOVE_GROUND_GUIDE,
+                LITRES_GUIDE,
                 SHOCK_OFTEN_GUIDE,
                 GREEN_GUIDE,
                 CLOUDY_GUIDE,

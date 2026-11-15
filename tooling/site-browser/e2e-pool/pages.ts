@@ -18,6 +18,8 @@ export const PAGES: readonly Page[] = [
   en('/pool-volume-chart'),
   en('/how-many-gallons-is-my-pool'),
   en('/how-many-gallons-in-an-olympic-pool'),
+  en('/how-many-gallons-in-an-above-ground-pool'),
+  en('/how-many-litres-is-my-pool'),
   en('/how-often-to-shock-a-pool'),
   en('/how-to-fix-a-green-pool'),
   en('/why-is-my-pool-cloudy'),
