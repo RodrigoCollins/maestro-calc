@@ -100,7 +100,10 @@ export const HOURS_TEXTS: Readonly<Record<Lang, HoursTexts>> = {
     links: [
       { label: 'Convert minutes to decimal hours', href: '/minutes-to-decimal-hours' },
       { label: 'Convert military time to 12-hour time and back', href: '/military-time-converter' },
-      { label: 'Military time chart: every hour of the day', href: '/military-time-chart' },
+      {
+        label: 'Military time chart: every hour and every 15 minutes',
+        href: '/military-time-chart',
+      },
     ],
     usHeading: 'Hours worked, overtime and full time under US law',
     usLinks: [

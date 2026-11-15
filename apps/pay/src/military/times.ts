@@ -360,7 +360,17 @@ export const militaryTimePageOf = (job: MilitaryTimeJob): MilitaryTimePage => {
     paths: { en: militaryPathOf(job) },
     sections: [
       { id: 'worked', heading: WORKED.en, paragraphs: [], steps: stepsOf(time) },
-      { id: 'said', heading: `How ${military} is said`, paragraphs: saidOf(time) },
+      {
+        id: 'said',
+        heading: `How ${military} is said`,
+        paragraphs: saidOf(time),
+        links: [
+          {
+            href: MILITARY_CHART_PATHS.en,
+            label: `Military time chart: ${military} beside every hour and quarter hour`,
+          },
+        ],
+      },
       {
         id: 'formats',
         heading: `${military} in other formats`,
@@ -388,7 +398,10 @@ export const militaryTimePageOf = (job: MilitaryTimeJob): MilitaryTimePage => {
             label: `${each.military} in military time is ${each.twelveText}`,
           };
         }),
-        { href: MILITARY_CHART_PATHS.en, label: 'Military time chart: every hour of the day' },
+        {
+          href: MILITARY_CHART_PATHS.en,
+          label: 'Military time chart: every hour and every 15 minutes',
+        },
       ],
     },
   };

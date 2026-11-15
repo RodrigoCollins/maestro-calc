@@ -440,9 +440,13 @@ export const daysPageOf = (job: Days, lang: Lang): LongTailPage => {
     { key: 'workweeks', label: w.rows.workweeks, value: workweeks },
     { key: 'years', label: w.rows.years, value: ratio(h, WORK_YEAR) },
   ];
+  // the English title adds the workdays, the answer a search box does not give
+  const englishTitle = exact
+    ? `${n(h)} Hours Is ${figure} Day${figure === '1' ? '' : 's'}, or ${workdays} 8-Hour Workdays`
+    : `${n(h)} Hours Is ${figure} Days (${whole} ${rest}), ${workdays} Workdays`;
   return {
     kicker: HOURS_TEXTS[lang].kicker,
-    title: titleOf(headline),
+    title: titleOf(lang === 'en' ? englishTitle : headline),
     description: descriptionOf(
       `${headline}. ${w.working(workdays, workweeks)}`,
       rows.map(({ label, value }) => `${label}: ${value}`),

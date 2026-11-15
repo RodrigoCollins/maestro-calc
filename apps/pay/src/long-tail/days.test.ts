@@ -53,7 +53,7 @@ describe('hours in days long-tail pages', () => {
   it('answer first, in the title, the heading and the lead', () => {
     const seventyTwo = longTailPageOf(daysOf(72), 'en');
     expect(seventyTwo.h1).toBe('How many days is 72 hours?');
-    expect(seventyTwo.title).toBe('72 hours is 3 days | Cuenta Horas');
+    expect(seventyTwo.title).toBe('72 Hours Is 3 Days, or 9 8-Hour Workdays | Cuenta Horas');
     expect(seventyTwo.figure).toBe('3');
     expect(seventyTwo.lead).toBe(
       '72 hours is exactly 3 days: the hours divided by 24, the hours of a calendar day. As working time, it is 9 workdays of 8 hours, or 1.8 workweeks of 40 hours.',
@@ -66,7 +66,9 @@ describe('hours in days long-tail pages', () => {
     );
     // 100 / 24 = 4.1666..., 4 days and 4 hours
     const hundred = longTailPageOf(daysOf(100), 'en');
-    expect(hundred.title).toBe('100 hours is 4.17 days (4 days 4 hours) | Cuenta Horas');
+    expect(hundred.title).toBe(
+      '100 Hours Is 4.17 Days (4 days 4 hours), 12.5 Workdays | Cuenta Horas',
+    );
     expect(hundred.figure).toBe('4.17');
     expect(hundred.lead).toBe(
       '100 hours is 4.17 days, or 4 days and 4 hours: the hours divided by 24, rounded to two places. As working time, it is 12.5 workdays of 8 hours, or 2.5 workweeks of 40 hours.',
@@ -76,9 +78,11 @@ describe('hours in days long-tail pages', () => {
     );
     // 10,000 / 24 = 416.666...
     expect(longTailPageOf(daysOf(10000), 'en').title).toBe(
-      '10,000 hours is 416.67 days (416 days 16 hours) | Cuenta Horas',
+      '10,000 Hours Is 416.67 Days (416 days 16 hours), 1,250 Workdays',
     );
-    expect(longTailPageOf(daysOf(3000), 'en').title).toBe('3,000 hours is 125 days | Cuenta Horas');
+    expect(longTailPageOf(daysOf(3000), 'en').title).toBe(
+      '3,000 Hours Is 125 Days, or 375 8-Hour Workdays | Cuenta Horas',
+    );
   });
 
   it('give the hand-verified rows', () => {
@@ -206,7 +210,7 @@ describe('hours in days long-tail pages', () => {
   it('write one day, one week and the hours under a workweek in good grammar', () => {
     // 24 / 24 = 1; 9 + 24 = 33 = 24 + 9: Tuesday 9:00 am; 3 workdays from a Monday: Wednesday
     const one = longTailPageOf(daysOf(24), 'en');
-    expect(one.title).toBe('24 hours is 1 day | Cuenta Horas');
+    expect(one.title).toBe('24 Hours Is 1 Day, or 3 8-Hour Workdays | Cuenta Horas');
     expect(one.lead).toMatch(/^24 hours is exactly 1 day: /);
     expect(longTailPageOf(daysOf(24), 'es').title).toBe('24 horas son 1 día | Cuenta Horas');
     const clock = textOf(sectionOf(24, 'calendar'));
@@ -219,7 +223,7 @@ describe('hours in days long-tail pages', () => {
     );
     // 36 / 24 = 1.5, 1 day and 12 hours; 9 + 36 = 45 = 24 + 21: Tuesday 9:00 pm
     const half = longTailPageOf(daysOf(36), 'en');
-    expect(half.title).toBe('36 hours is 1.5 days (1 day 12 hours) | Cuenta Horas');
+    expect(half.title).toBe('36 Hours Is 1.5 Days (1 day 12 hours), 4.5 Workdays | Cuenta Horas');
     expect(textOf(sectionOf(36, 'calendar'))).toContain('on Tuesday at 9:00 pm');
     expect(textOf(sectionOf(36, 'calendar', 'es'))).toContain(
       'terminan 1 día después, el martes a las 21:00 (9:00 p. m.)',
@@ -250,7 +254,9 @@ describe('hours in days long-tail pages', () => {
     const week = textOf(sectionOf(168, 'worked'));
     expect(week).toContain('168 ÷ 168 = 1 whole week (168 hours), with no hours left');
     expect(rowOf(168, 'split')).toBe('1 week');
-    expect(longTailPageOf(daysOf(168), 'en').title).toBe('168 hours is 7 days | Cuenta Horas');
+    expect(longTailPageOf(daysOf(168), 'en').title).toBe(
+      '168 Hours Is 7 Days, or 21 8-Hour Workdays | Cuenta Horas',
+    );
     expect(longTailPageOf(daysOf(120), 'es').title).toBe('120 horas son 5 días | Cuenta Horas');
   });
 

@@ -212,6 +212,25 @@ export interface LongTailPage {
     readonly data: Readonly<Record<string, string>>;
     readonly fallback: string;
   };
+  /**
+   * A live clock table, one row a time zone: the time there now and `amount` minutes from now,
+   * filled by the same script as `live`. Without it each row says the zone's UTC offset and the
+   * page's `fallback` rule. Only the English minutes from now pages have it.
+   */
+  readonly zones?: {
+    readonly heading: string;
+    readonly intro: string;
+    readonly caption: string;
+    readonly head: readonly [string, string, string];
+    readonly amount: string;
+    readonly fallback: string;
+    readonly rows: readonly {
+      readonly label: string;
+      /** The IANA zone the script reads the clock of. */
+      readonly zone: string;
+      readonly offset: string;
+    }[];
+  };
 }
 
 /** The form of a shift page and its figures, each line one `data-out` of the calculator. */

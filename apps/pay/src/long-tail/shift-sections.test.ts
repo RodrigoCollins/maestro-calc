@@ -33,7 +33,10 @@ describe('the sections of a shift page', () => {
     for (const shift of SHIFTS) {
       for (const lang of LANGS) {
         const page = longTailPageOf(shift, lang);
-        expect(page.sections?.map(({ id }) => id)).toEqual([
+        // the English page opens on the hours at a glance (`shifts.ts`)
+        const sections = lang === 'en' ? page.sections?.slice(1) : page.sections;
+        expect(page.sections?.[0]?.id).toBe(lang === 'en' ? 'glance' : 'worked');
+        expect(sections?.map(({ id }) => id)).toEqual([
           'worked',
           'clock-out',
           'rounding',
@@ -43,7 +46,7 @@ describe('the sections of a shift page', () => {
           'breaks',
           'teens',
         ]);
-        expect(page.sections?.[0]?.heading).toMatch(
+        expect(sections?.[0]?.heading).toMatch(
           lang === 'en' ? /^How the figures are worked out$/ : /^Cómo se calcula$/,
         );
         for (const section of page.sections ?? []) {

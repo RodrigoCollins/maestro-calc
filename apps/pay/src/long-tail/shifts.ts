@@ -1,14 +1,23 @@
 import { encode, Rational, toDecimalParts, usd, type Money } from '@maestro-calc/core';
 import { hoursBetween } from '@maestro-calc/pay-core/hours';
 import { shiftPay } from '@maestro-calc/pay-core/shift-pay';
-import { clockFieldText, decimalHoursText, hoursMinutesText, moneyText } from '../format.ts';
+import {
+  clockFieldText,
+  decimalHoursText,
+  hoursMinutesText,
+  hoursText,
+  moneyText,
+} from '../format.ts';
+import { FULL_TIME_GUIDE_PATHS } from '../guide/paths.ts';
 import { HOURS_PATHS, HOURS_TEXTS } from '../hours/texts.ts';
+import { OVERTIME_PATHS } from '../overtime/texts.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import type { CommonLinks, LongTailPage, ShiftTool } from './jobs.ts';
 import { clockOf, fieldOf } from './clock.ts';
 import { nearestOf } from './nearest.ts';
 import { pathOf, SHIFTS, type Shift } from './routes.ts';
+import type { LongTailSection } from './sections.ts';
 import { shiftSectionsOf } from './shift-sections.ts';
 
 /** The days of the work week the weekly rows count. */
@@ -39,6 +48,22 @@ const searchedOf = (shift: Shift, lang: Lang): { readonly start: string; readonl
   const day = shift.start < NOON && shift.end >= NOON && shift.end > shift.start;
   const bare = (clock: string): string => clock.replace(/ [ap]m$/, '');
   return day ? { start: bare(start), end: bare(end) } : { start, end };
+};
+
+/**
+ * The short form an English search types for a day shift, `9 to 5` and `9-5`: only from a morning
+ * start to an afternoon end whose clock number is the smaller, so `9 to 5` can only mean 9 am to
+ * 5 pm; `9 am to 9 pm`, `7 pm to 7 am` and every overnight shift keep their am and pm.
+ */
+const shortOf = (shift: Shift): { readonly to: string; readonly dash: string } | undefined => {
+  const hour12 = (minutes: number): number => Math.floor(minutes / 60) % 12 || 12;
+  const day = shift.start < NOON && shift.end > NOON && shift.end > shift.start;
+  if (!day || hour12(shift.end) >= hour12(shift.start)) return undefined;
+  const bare = (minutes: number): string => clockOf(minutes).replace(/ [ap]m$/, '');
+  return {
+    to: `${bare(shift.start)} to ${bare(shift.end)}`,
+    dash: `${bare(shift.start)}-${bare(shift.end)}`,
+  };
 };
 
 /** Hours and whole minutes of `hours`, to the nearest minute. */
@@ -233,6 +258,96 @@ const bothOf = (hours: Rational): string =>
 const cuedOf = (headline: string, cue: string): string =>
   `${headline}${cue}`.length <= CUED_MAX ? `${headline}${cue}` : headline;
 
+/** The weeks of a year and the months they average over. */
+const YEAR_WEEKS = 52;
+const MONTHS = 12;
+
+/** The hours a workweek holds before federal overtime (DOL Fact Sheet #23). */
+const OVERTIME_LINE = 40;
+
+/**
+ * The English search result of a shift: the question as people type it, "9 to 5 is how many
+ * hours", answered in the title with the hours and the hours after a 30-minute lunch; the
+ * description adds the week, the pay period and the year.
+ */
+const englishResultOf = (
+  shift: Shift,
+  hours: Rational,
+  lunch: Rational,
+): { readonly title: string; readonly description: string } => {
+  const typed = shortOf(shift);
+  const searched = searchedOf(shift, 'en');
+  const full = `${searched.start} to ${searched.end}`;
+  const said = typed?.to ?? full;
+  const days = Rational.of(DAYS);
+  const answer = `${typed === undefined ? full : `${said} (${full})`} is ${WORDS.en.hours(hours)}, or ${hoursText(lunch)} hours with a 30-minute unpaid lunch.`;
+  const weekly = hours.mul(days);
+  const more = `${String(DAYS)} days: ${hoursText(weekly)} hours a week, ${hoursText(weekly.mul(Rational.of(2)))} biweekly, ${hoursText(weekly.mul(Rational.of(YEAR_WEEKS)))} a year; overtime math and a time card.`;
+  return {
+    title: titleOf(
+      `${said} Is How Many Hours? ${hoursText(hours)} Hours, ${hoursText(lunch)} With Lunch`,
+    ),
+    description: descriptionOf(`${answer} ${more}`),
+  };
+};
+
+/**
+ * The English table of the shift at a glance: the hours a day, a week of five, a biweekly pay
+ * period, an average month and a year, with no lunch and with an unpaid one of 30 or 60 minutes,
+ * then the overtime of the week, all from the hours calculator.
+ */
+const glanceOf = (shift: Shift, days: readonly Rational[]): LongTailSection => {
+  const typed = shortOf(shift);
+  const start = clockOf(shift.start);
+  const end = clockOf(shift.end);
+  const name = typed?.dash ?? `${start} to ${end}`;
+  const weekOf = (day: Rational): Rational => day.mul(Rational.of(DAYS));
+  const rows = days.map((day, index) => {
+    const weekly = weekOf(day);
+    return [
+      ['None', '30 minutes', '60 minutes'][index] ?? '',
+      hoursText(day),
+      hoursText(weekly),
+      hoursText(weekly.mul(Rational.of(2))),
+      hoursText(weekly.mul(Rational.of(YEAR_WEEKS, MONTHS))),
+      hoursText(weekly.mul(Rational.of(YEAR_WEEKS))),
+    ];
+  });
+  const [none, lunch] = days;
+  if (none === undefined || lunch === undefined) throw new Error('the glance needs two days');
+  const paid = weekOf(lunch);
+  const over = paid.sub(Rational.of(OVERTIME_LINE));
+  const overtime =
+    over.compare(Rational.of(0)) > 0
+      ? `Five shifts with a 30-minute lunch are ${hoursText(paid)} paid hours, so ${hoursText(over)} hours of overtime a week at time and a half under federal law; four are ${hoursText(lunch.mul(Rational.of(4)))}.`
+      : `Five shifts with a 30-minute lunch are ${hoursText(paid)} paid hours, inside the 40 past which federal law pays time and a half, so no overtime.`;
+  return {
+    id: 'glance',
+    heading: `${name} in hours: a day, a week, a month and a year`,
+    paragraphs: [
+      `${start} to ${end} five days a week is ${hoursText(weekOf(none))} hours on the clock and ${hoursText(weekOf(none).mul(Rational.of(YEAR_WEEKS)))} over 52 weeks. ${overtime}`,
+    ],
+    table: {
+      caption: `Hours of ${start} to ${end}, by unpaid lunch`,
+      head: [
+        'Unpaid lunch',
+        'Day',
+        'Week, 5 days',
+        'Two weeks',
+        'Month, average',
+        'Year, 52 weeks',
+      ],
+      rows,
+    },
+    links: [
+      { href: HOURS_PATHS.en, label: 'Every shift and any two times: the hours calculator' },
+      { href: FULL_TIME_GUIDE_PATHS.en, label: 'How many hours is full time?' },
+      { href: OVERTIME_PATHS.en, label: 'Overtime calculator: time and a half past 40 hours' },
+      { href: '/time-card-calculator', label: 'Time card calculator: a week, day by day' },
+    ],
+  };
+};
+
 /** The page of one shift in one language, every figure from the hours calculator at build time. */
 export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   const w = WORDS[lang];
@@ -252,7 +367,10 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
       ...(overnight ? [w.overnight(end)] : []),
       w.week(w.hours(short), decimalHoursText(short), figure, clockOf(shift.end + BREAKS[0])),
     ].join(' ');
-  const lead = leadFrom(start, end);
+  const typed = lang === 'en' ? shortOf(shift) : undefined;
+  // `9-5, or 9 am to 5 pm, is 8 hours`: the short form first, as an English search types it
+  const lead =
+    typed === undefined ? leadFrom(start, end) : leadFrom(`${typed.dash}, or ${start}`, `${end},`);
   const rows = [
     { key: 'decimal', label: w.rows.decimal, value: decimalHoursText(hours) },
     { key: 'break30', label: w.rows.break30, value: bothOf(short) },
@@ -265,13 +383,20 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
   if (note === undefined) throw new Error('the hours calculator must say what a break does');
   const validated = hoursBetween.validate(rawOf(shift, 0));
   if (!validated.ok) throw new Error(`the shift ${shift.slug.en} must validate`);
+  const result =
+    lang === 'en'
+      ? englishResultOf(shift, hours, short)
+      : {
+          title: titleOf(cuedOf(w.headline(searched.start, searched.end, figure), w.cue)),
+          description: descriptionOf(
+            leadFrom(searched.start, searched.end),
+            rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
+          ),
+        };
+  const { sections, sources } = shiftSectionsOf(shift, lang, figure);
   return {
     kicker: t.kicker,
-    title: titleOf(cuedOf(w.headline(searched.start, searched.end, figure), w.cue)),
-    description: descriptionOf(
-      leadFrom(searched.start, searched.end),
-      rows.slice(1).map(({ label, value }) => `${label}: ${value}`),
-    ),
+    ...result,
     h1: question,
     lead,
     figure,
@@ -287,6 +412,8 @@ export const shiftPageOf = (shift: Shift, lang: Lang): LongTailPage => {
     paths: { en: pathOf(shift, 'en'), es: pathOf(shift, 'es') },
     others: shiftLinksOf(lang, shift),
     tool: toolOf(shift, lang),
-    ...shiftSectionsOf(shift, lang, figure),
+    // the English page opens its sections on the table at a glance; the Spanish one as it was
+    sections: lang === 'en' ? [glanceOf(shift, [hours, short, long]), ...sections] : sections,
+    sources,
   };
 };
