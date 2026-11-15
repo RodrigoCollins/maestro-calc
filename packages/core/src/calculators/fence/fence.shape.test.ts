@@ -106,6 +106,14 @@ describe('fence descriptors and result shape (calc-fence › Inputs, Materials, 
     ['a missing bag', { 'bag-40': CONCRETE_YIELDS['bag-40'], 'bag-60': CONCRETE_YIELDS['bag-60'] }],
     ['a zero yield', { ...CONCRETE_YIELDS, 'bag-80': quantity(0, ft3) }],
     ['an extra key', { ...CONCRETE_YIELDS, 'bag-90': quantity(1, ft3) }],
+    [
+      'a wrong key',
+      {
+        'bag-40': CONCRETE_YIELDS['bag-40'],
+        'bag-60': CONCRETE_YIELDS['bag-60'],
+        'bag-50': quantity(1, ft3),
+      },
+    ],
   ])('refuses %s as bag yields', (_name, yields) => {
     expect(() => createFence(yields as never)).toThrow();
   });
