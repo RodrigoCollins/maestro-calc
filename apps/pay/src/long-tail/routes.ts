@@ -701,6 +701,31 @@ export const WEEKS: readonly Weeks[] = [
   ...WEEKS_LIVE,
 ];
 
+/**
+ * "how many weeks in a school year" (19K searches a month, plans/growth/ahrefs-2026-11-08.md): the
+ * state minimums of the US school year (NCES), in days, hours and weeks. English only, as the
+ * one-language military times: a search of the US school calendar, built by its own module
+ * (`./school-year.ts`) outside the paired `LONG_TAIL_JOBS`. The hours calculator lists it.
+ */
+export interface SchoolYear {
+  readonly kind: 'school-year';
+  readonly slug: { readonly en: string };
+}
+
+export const SCHOOL_YEAR: SchoolYear = {
+  kind: 'school-year',
+  slug: { en: 'how-many-weeks-in-a-school-year' },
+};
+
+export const SCHOOL_YEAR_PATH = `/pay/${SCHOOL_YEAR.slug.en}`;
+
+/** The English-only long-tail routes: in the route table, so the sitemap lists them. */
+export const SCHOOL_YEAR_ROUTES: readonly {
+  readonly id: string;
+  readonly kind: 'article';
+  readonly en: string;
+}[] = [{ id: `pay-${SCHOOL_YEAR.slug.en}`, kind: 'article', en: SCHOOL_YEAR_PATH }];
+
 /** Every page that loads the clock script: the live time families and the weeks counts. */
 export const CLOCK_JOBS: readonly (TimeOffset | Until | DaysFrom | Weeks)[] = [
   ...LIVE_JOBS,

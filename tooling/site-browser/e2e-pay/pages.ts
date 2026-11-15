@@ -1,4 +1,4 @@
-import { LONG_TAIL_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
+import { LONG_TAIL_ROUTES, SCHOOL_YEAR_ROUTES } from '../../../apps/pay/src/long-tail/routes.ts';
 import { STATE_ROUTES, STATES_INDEX_PATHS } from '../../../apps/pay/src/states/routes.ts';
 import { MILITARY_TIME_ROUTES } from '../../../apps/pay/src/military/routes.ts';
 import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/routes.ts';
@@ -20,11 +20,15 @@ const MILITARY_TIMES = MILITARY_TIME_ROUTES.flatMap(({ en, es }) => [
   ...(es === undefined ? [] : [{ path: es, lang: 'es' as const }]),
 ]);
 
-/** The long-tail pages, read from their table (a module with no run-time import), in both languages. */
-const LONG_TAIL = LONG_TAIL_ROUTES.flatMap(({ en, es }) => [
-  { path: en, lang: 'en' as const },
-  { path: es, lang: 'es' as const },
-]);
+/** The long-tail pages, read from their table (a module with no run-time import), in both languages but the English-only school year. */
+const LONG_TAIL = [
+  ...LONG_TAIL_ROUTES.flatMap(({ en, es }) => [
+    { path: en, lang: 'en' as const },
+    { path: es, lang: 'es' as const },
+  ]),
+  // the English-only school year page
+  ...SCHOOL_YEAR_ROUTES.map(({ en }) => ({ path: en, lang: 'en' as const })),
+];
 
 /** The state index and the page of every state and DC, read from their table (no run-time import). */
 const STATES = [STATES_INDEX_PATHS, ...STATE_ROUTES].flatMap(({ en, es }) => [

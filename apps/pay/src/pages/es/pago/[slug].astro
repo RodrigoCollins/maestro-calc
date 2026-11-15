@@ -1,13 +1,20 @@
 ---
 import LongTailPage from '../../../components/LongTailPage.astro';
-import { LONG_TAIL_JOBS, type LongTailJob } from '../../../long-tail/jobs.ts';
+import {
+  LONG_TAIL_JOBS,
+  longTailPageOf,
+  type LongTailPage as Page,
+} from '../../../long-tail/jobs.ts';
 
 export const getStaticPaths = () =>
-  LONG_TAIL_JOBS.map((job) => ({ params: { slug: job.slug.es }, props: { job } }));
+  LONG_TAIL_JOBS.map((job) => ({
+    params: { slug: job.slug.es },
+    props: { page: longTailPageOf(job, 'es') },
+  }));
 
 interface Props {
-  readonly job: LongTailJob;
+  readonly page: Page;
 }
 ---
 
-<LongTailPage lang="es" job={Astro.props.job} />
+<LongTailPage lang="es" page={Astro.props.page} />

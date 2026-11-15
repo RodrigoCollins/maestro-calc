@@ -27,7 +27,7 @@ import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { DATE_ROUTES } from './dates/routes.ts';
 import { MEXICO_ROUTES } from './mexico/routes.ts';
-import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
+import { LONG_TAIL_ROUTES, SCHOOL_YEAR_ROUTES } from './long-tail/routes.ts';
 import {
   MILITARY_CHART_PATHS,
   MILITARY_CONVERTER_PATHS,
@@ -112,6 +112,7 @@ export const ROUTES: readonly Route[] = [
   { id: 'editorial-policy', kind: 'article', ...EDITORIAL_PATHS },
   { id: 'embed', kind: 'article', ...EMBED_PATHS },
   ...LONG_TAIL_ROUTES,
+  ...SCHOOL_YEAR_ROUTES,
   ...MILITARY_TIME_ROUTES,
   ...DATE_ROUTES,
   ...MEXICO_ROUTES,
