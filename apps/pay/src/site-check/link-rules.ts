@@ -22,6 +22,13 @@ import {
 import { isPaired, pathsOfRoute, ROUTES, type PairedRoute } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
+import {
+  AGUINALDO_PATH,
+  MEXICO_SLUGS,
+  mexicoPathOf,
+  VACACIONES_PATH,
+  type MexicoSlug,
+} from '../mexico/routes.ts';
 import type { GuideRule, LongTailRule } from './links.ts';
 
 const LANGS = ['en', 'es'] as const;
@@ -77,6 +84,25 @@ export const COUNTDOWN_RULES: readonly LongTailRule[] = COUNTDOWNS.map((job) => 
   calculator: DAYS_BETWEEN_PATH,
   siblings: nearestOf(COUNTDOWNS, job).map(countdownPathOf),
 }));
+
+const MEXICO_CALCULATOR: Readonly<Record<MexicoSlug, string>> = {
+  'cuantos-dias-de-aguinaldo-son-por-ley': AGUINALDO_PATH,
+  'aguinaldo-2026': AGUINALDO_PATH,
+  'cuantos-dias-de-vacaciones-son-por-ano': VACACIONES_PATH,
+};
+
+/**
+ * The Mexico labor pages (Spanish only), each linked from the Spanish home: every answer page and
+ * the calculator it explains link each other, and the two calculators link each other.
+ */
+export const MEXICO_RULES: readonly GuideRule[] = [
+  ...MEXICO_SLUGS.map((slug) => ({
+    path: mexicoPathOf(slug),
+    calculators: [MEXICO_CALCULATOR[slug]],
+  })),
+  { path: AGUINALDO_PATH, calculators: [VACACIONES_PATH] },
+  { path: VACACIONES_PATH, calculators: [AGUINALDO_PATH] },
+];
 
 /**
  * Every military time page (English only): the converter links it, and it links the converter and

@@ -1,5 +1,6 @@
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { LIVE_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
+import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 
 /** The built calculator pages of the route table. */
 const ROUTED = [
@@ -57,6 +58,11 @@ export const DATE_PAGES: readonly string[] = [
   ...COUNTDOWNS.map((job) => `${countdownPathOf(job).slice(1)}.html`),
 ];
 
+/** The Mexico labor calculators, Spanish only, with no embed: the answer pages load no script. */
+export const MEXICO_PAGES: readonly string[] = [AGUINALDO_PATH, VACACIONES_PATH].map(
+  (path) => `${path.slice(1)}.html`,
+);
+
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */
 export const CALCULATOR_PAGES: readonly string[] = [
   ...ROUTED,
@@ -64,4 +70,5 @@ export const CALCULATOR_PAGES: readonly string[] = [
   ...LIVE_PAGES,
   ...SHIFT_PAGES,
   ...DATE_PAGES,
+  ...MEXICO_PAGES,
 ];

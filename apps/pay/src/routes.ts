@@ -23,6 +23,7 @@ import { EMBED_PATHS } from './embed/texts.ts';
 import { DATA_PATHS } from './data/texts.ts';
 import { DECIMAL_HOURS_PATHS, HOURS_PATHS } from './hours/texts.ts';
 import { DATE_ROUTES } from './dates/routes.ts';
+import { MEXICO_ROUTES } from './mexico/routes.ts';
 import { LONG_TAIL_ROUTES } from './long-tail/routes.ts';
 import {
   MILITARY_CHART_PATHS,
@@ -38,7 +39,7 @@ import { TIPPED_PATHS } from './tipped/texts.ts';
 /**
  * Every page of Cuenta Horas, an English and Spanish pair but for the few one-language pages: the
  * English-only military times (a search of the US clock), with no `es`, and the Spanish-only date
- * pages (a search of Mexico and Spain), with no `en`; the sitemap is built from it.
+ * pages (a search of Mexico and Spain) and the Mexico labor pages, with no `en`; the sitemap is built from it.
  */
 export type Route = {
   readonly id: string;
@@ -107,5 +108,6 @@ export const ROUTES: readonly Route[] = [
   ...LONG_TAIL_ROUTES,
   ...MILITARY_TIME_ROUTES,
   ...DATE_ROUTES,
+  ...MEXICO_ROUTES,
   ...STATE_ROUTES,
 ];

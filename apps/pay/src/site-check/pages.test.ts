@@ -38,4 +38,11 @@ describe('CALCULATOR_PAGES', () => {
     for (const page of SHIFT_PAGES) expect(CALCULATOR_PAGES).toContain(page);
     expect(new Set(CALCULATOR_PAGES).size).toBe(CALCULATOR_PAGES.length);
   });
+
+  it('lets the two Mexico calculators, Spanish only, load their one script', () => {
+    expect(CALCULATOR_PAGES).toContain('es/calculadora-de-aguinaldo.html');
+    expect(CALCULATOR_PAGES).toContain('es/calculadora-de-vacaciones-mexico.html');
+    // the answer pages load no script
+    expect(CALCULATOR_PAGES).not.toContain('es/mexico/aguinaldo-2026.html');
+  });
 });

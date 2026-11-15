@@ -1,0 +1,13 @@
+---
+import MexicoArticlePage from '../../../components/MexicoArticlePage.astro';
+import { MEXICO_SLUGS, type MexicoSlug } from '../../../mexico/routes.ts';
+
+export const getStaticPaths = () =>
+  MEXICO_SLUGS.map((slug) => ({ params: { slug }, props: { slug } }));
+
+interface Props {
+  readonly slug: MexicoSlug;
+}
+---
+
+<MexicoArticlePage slug={Astro.props.slug} />
