@@ -229,6 +229,61 @@ export const DE_PAGES: readonly string[] = [
 ];
 
 /**
+ * Every French page under /fr (plans/growth/BACKLOG.md #51), closed to search engines until the
+ * owner gives the mentions légales details (`SITE.frIndexable`): its own suite, `fr.spec.ts`.
+ */
+export const FR_PAGES: readonly string[] = [
+  '/fr',
+  '/fr/age-chien-en-humain',
+  '/fr/mon-chien-a-mange-du-chocolat',
+  '/fr/que-peut-manger-un-chien',
+  '/fr/chien-peut-il-manger-des-fraises',
+  '/fr/chien-peut-il-manger-de-la-banane',
+  '/fr/chien-peut-il-manger-du-raisin',
+  '/fr/chien-peut-il-manger-des-raisins-secs',
+  '/fr/chien-peut-il-manger-des-myrtilles',
+  '/fr/chien-peut-il-manger-des-pommes',
+  '/fr/chien-peut-il-manger-de-la-pasteque',
+  '/fr/chien-peut-il-manger-des-cerises',
+  '/fr/chien-peut-il-manger-de-la-mangue',
+  '/fr/chien-peut-il-manger-des-oranges',
+  '/fr/chien-peut-il-manger-de-l-ananas',
+  '/fr/chien-peut-il-manger-des-tomates',
+  '/fr/chien-peut-il-manger-de-l-avocat',
+  '/fr/chien-peut-il-manger-des-oignons',
+  '/fr/chien-peut-il-manger-de-l-ail',
+  '/fr/chien-peut-il-manger-des-carottes',
+  '/fr/chien-peut-il-manger-du-brocoli',
+  '/fr/chien-peut-il-manger-du-concombre',
+  '/fr/chien-peut-il-manger-du-poivron',
+  '/fr/chien-peut-il-manger-de-la-courgette',
+  '/fr/chien-peut-il-manger-des-pommes-de-terre',
+  '/fr/chien-peut-il-manger-de-la-patate-douce',
+  '/fr/chien-peut-il-manger-de-la-citrouille',
+  '/fr/chien-peut-il-manger-du-fromage',
+  '/fr/chien-peut-il-manger-des-oeufs',
+  '/fr/chien-peut-il-manger-du-yaourt',
+  '/fr/chien-peut-il-manger-des-crevettes',
+  '/fr/chien-peut-il-manger-du-saumon',
+  '/fr/chien-peut-il-manger-du-porc',
+  '/fr/chien-peut-il-manger-du-jambon',
+  '/fr/chien-peut-il-manger-du-bacon',
+  '/fr/chien-peut-il-manger-du-beurre-de-cacahuete',
+  '/fr/chien-peut-il-manger-du-miel',
+  '/fr/chien-peut-il-manger-du-chocolat',
+  '/fr/chien-peut-il-manger-du-riz',
+  '/fr/chien-peut-il-manger-du-pop-corn',
+  '/fr/chien-peut-il-manger-du-pain',
+  '/fr/chien-peut-il-manger-des-amandes',
+  '/fr/chien-peut-il-manger-des-noix-de-cajou',
+  '/fr/chien-peut-il-manger-des-noix-de-macadamia',
+  '/fr/chien-peut-il-manger-du-chewing-gum',
+  '/fr/a-propos',
+  '/fr/principes-editoriaux',
+  '/fr/confidentialite',
+];
+
+/**
  * Each calculator: the text of one figure at its starting values (worked out at build time, so it
  * reads with no script), and one edit worked out by hand with the figure it must show after it.
  */
@@ -291,6 +346,14 @@ export const CALCULATORS = [
   },
   {
     path: '/de/hundejahre-rechner',
+    out: 'figure',
+    initial: '28',
+    // typed with a decimal comma: 3,5 years of a medium dog is halfway from 28 (3) to 32 (4) on AVMA's chart
+    edit: { field: 'age', value: '3,5' },
+    edited: '30',
+  },
+  {
+    path: '/fr/age-chien-en-humain',
     out: 'figure',
     initial: '28',
     // typed with a decimal comma: 3,5 years of a medium dog is halfway from 28 (3) to 32 (4) on AVMA's chart

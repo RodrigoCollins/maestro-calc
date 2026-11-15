@@ -43,6 +43,21 @@ describe('the byline', () => {
     expect(checkedText('2026-03-31', 'de')).toBe('31. März 2026');
   });
 
+  it('writes a day in French, the month in lower case and the first of the month as 1er', () => {
+    expect(checkedText('2027-01-05', 'fr')).toBe('5 janvier 2027');
+    expect(checkedText('2026-11-15', 'fr')).toBe('15 novembre 2026');
+    expect(checkedText('2026-08-01', 'fr')).toBe('1er août 2026');
+  });
+
+  it('credits the French editorial team at the French policy, in French', () => {
+    expect(bylineOf({ checked: '2026-11-15', sources: true, lang: 'fr' })).toEqual({
+      by: 'Par la',
+      team: { href: '/fr/principes-editoriaux', label: 'rédaction de Bowl Figures' },
+      reviewed: { label: 'Vérifié le', datetime: '2026-11-15', text: '15 novembre 2026' },
+      sources: { href: '#sources', label: 'Sources' },
+    });
+  });
+
   it('credits the German editorial team at the German policy, in German', () => {
     expect(bylineOf({ checked: '2026-11-08', sources: true, lang: 'de' })).toEqual({
       by: 'Von der',

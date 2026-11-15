@@ -21,6 +21,10 @@ import { FOOD_HUB_DE, FOOD_PAGES_DE } from './de/can-dogs-eat.ts';
 import { HUNDEJAHRE_PAGE } from './de/hundejahre.ts';
 import { SCHOKOLADE_GUIDE } from './de/schokolade.ts';
 import { ABOUT_DE, EDITORIAL_DE } from './de/trust.ts';
+import { AGE_CHIEN_PAGE } from './fr/age-chien.ts';
+import { FOOD_HUB_FR, FOOD_PAGES_FR } from './fr/can-dogs-eat.ts';
+import { CHOCOLAT_GUIDE } from './fr/chocolat.ts';
+import { ABOUT_FR, EDITORIAL_FR } from './fr/trust.ts';
 
 /** One line of a section: a page by its canonical address and what it holds. */
 interface Entry {
@@ -82,6 +86,13 @@ const GERMAN: readonly Entry[] = [
   { ...EDITORIAL_DE, path: hrefOf('editorial', 'de') },
 ].map(({ h1, path, description }) => ({ name: h1, path, note: description }));
 
+/** The French pages, listed only once French is open to search engines (`SITE.frIndexable`). */
+const FRENCH: readonly Entry[] = [
+  ...[AGE_CHIEN_PAGE, CHOCOLAT_GUIDE, FOOD_HUB_FR, ...FOOD_PAGES_FR],
+  { ...ABOUT_FR, path: hrefOf('about', 'fr') },
+  { ...EDITORIAL_FR, path: hrefOf('editorial', 'fr') },
+].map(({ h1, path, description }) => ({ name: h1, path, note: description }));
+
 const section = (heading: string, entries: readonly Entry[]): string =>
   [
     `## ${heading}`,
@@ -93,9 +104,12 @@ const section = (heading: string, entries: readonly Entry[]): string =>
 
 /**
  * The `/llms.txt` of the site (llmstxt.org): a title, a summary, and the pages by section; the
- * German pages join as their own section once German is open.
+ * German and the French pages each join as their own section once their language is open.
  */
-export const llmsTxt = (deOpen: boolean = SITE.indexable && SITE.deIndexable): string =>
+export const llmsTxt = (
+  deOpen: boolean = SITE.indexable && SITE.deIndexable,
+  frOpen: boolean = SITE.indexable && SITE.frIndexable,
+): string =>
   [
     `# ${SITE.name}`,
     '',
@@ -110,4 +124,5 @@ export const llmsTxt = (deOpen: boolean = SITE.indexable && SITE.deIndexable): s
     section('About', ABOUT_PAGES),
     '',
     ...(deOpen ? [section('Auf Deutsch (German)', GERMAN), ''] : []),
+    ...(frOpen ? [section('En français (French)', FRENCH), ''] : []),
   ].join('\n');

@@ -9,6 +9,9 @@ import { GUIDES, type PageSource } from './guides.ts';
 import { FOOD_HUB_DE, FOOD_PAGES_DE } from './de/can-dogs-eat.ts';
 import { HUNDEJAHRE_ARTICLE, HUNDEJAHRE_PAGE } from './de/hundejahre.ts';
 import { SCHOKOLADE_GUIDE } from './de/schokolade.ts';
+import { AGE_CHIEN_ARTICLE, AGE_CHIEN_PAGE } from './fr/age-chien.ts';
+import { FOOD_HUB_FR, FOOD_PAGES_FR } from './fr/can-dogs-eat.ts';
+import { CHOCOLAT_GUIDE } from './fr/chocolat.ts';
 import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 
 /**
@@ -44,6 +47,14 @@ export const BYLINE_PAGES_DE: readonly BylinePage[] = [
   { path: HUNDEJAHRE_PAGE.path, ...HUNDEJAHRE_ARTICLE },
   FOOD_HUB_DE,
   ...FOOD_PAGES_DE,
+].map(({ path, checked, sources }) => ({ path, checked, sources }));
+
+/** Every French page with a byline, credited to the French editorial policy (`site-check`). */
+export const BYLINE_PAGES_FR: readonly BylinePage[] = [
+  CHOCOLAT_GUIDE,
+  { path: AGE_CHIEN_PAGE.path, ...AGE_CHIEN_ARTICLE },
+  FOOD_HUB_FR,
+  ...FOOD_PAGES_FR,
 ].map(({ path, checked, sources }) => ({ path, checked, sources }));
 
 /** The byline data of the page at `path`. */

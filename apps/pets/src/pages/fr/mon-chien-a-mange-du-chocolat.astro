@@ -1,0 +1,21 @@
+---
+import GuidePageFr from '../../components/fr/GuidePageFr.astro';
+import { CHOCOLAT_ENGLISH_CHECKED, CHOCOLAT_GUIDE } from '../../fr/chocolat.ts';
+import { hrefOf } from '../../routes.ts';
+---
+
+<GuidePageFr
+  guide={CHOCOLAT_GUIDE}
+  checkedEnglish={CHOCOLAT_ENGLISH_CHECKED}
+  related={[
+    {
+      href: hrefOf('food-chocolate', 'fr'),
+      label: 'Mon chien peut-il manger du chocolat ? Les quantités selon le poids',
+    },
+    { href: hrefOf('foods', 'fr'), label: 'Que peut manger un chien ? Tous les aliments' },
+    {
+      href: hrefOf('chocolate'),
+      label: 'Dog chocolate toxicity calculator (calculateur en anglais)',
+    },
+  ]}
+/>
