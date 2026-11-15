@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DESCRIPTION, TITLE_MAX } from '../seo/meta.ts';
 import { aguinaldoPageOf, mexicoArticleOf, vacacionesPageOf } from './pages.ts';
+import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { AGUINALDO_PATH, MEXICO_SLUGS, mexicoPathOf, VACACIONES_PATH } from './routes.ts';
 
 const textOf = (value: unknown): string => JSON.stringify(value);
@@ -18,6 +19,18 @@ describe('aguinaldoPageOf', () => {
       ['taxable', '$1,206.30'],
     ]);
     expect(page.paths).toEqual({ es: AGUINALDO_PATH });
+  });
+
+  it('targets the searches «calculadora de aguinaldo» and «calcular aguinaldo»', () => {
+    expect(page.title.startsWith('Calculadora de aguinaldo 2026')).toBe(true);
+    expect(page.h1).toBe('Calculadora de aguinaldo');
+    expect(page.lead.startsWith('Para calcular tu aguinaldo')).toBe(true);
+    expect(page.description.startsWith('Calculadora de aguinaldo')).toBe(true);
+  });
+
+  it('links the dates calculator, to count the days worked', () => {
+    const hrefs = page.sections.flatMap(({ links }) => links ?? []).map(({ href }) => href);
+    expect(hrefs).toContain(DAYS_BETWEEN_PATH);
   });
 
   it('works the partial year, the monthly salary and the exempt part out by the engine', () => {
@@ -45,6 +58,12 @@ describe('vacacionesPageOf', () => {
       ['next', '22 días desde el viernes 15 de enero de 2027'],
     ]);
     expect(page.paths).toEqual({ es: VACACIONES_PATH });
+  });
+
+  it('links the prima vacacional and the vacation days by law', () => {
+    const hrefs = page.sections.flatMap(({ links }) => links ?? []).map(({ href }) => href);
+    expect(hrefs).toContain(mexicoPathOf('prima-vacacional'));
+    expect(hrefs).toContain(mexicoPathOf('cuantos-dias-de-vacaciones-son-por-ano'));
   });
 
   it('works 11 years on $15,000 a month out by the engine', () => {
@@ -83,6 +102,71 @@ describe('mexicoArticleOf', () => {
     // 315.04 × 22 = 6,930.88, prima 25% = 1,732.72
     expect(table?.rows[5]).toEqual(['6 a 10 años', '22 días', '$6,930.88', '$1,732.72']);
     expect(table?.rows).toHaveLength(11);
+  });
+
+  it('targets «días de vacaciones por ley» on the vacation days page', () => {
+    const page = mexicoArticleOf('cuantos-dias-de-vacaciones-son-por-ano');
+    expect(page.h1).toBe('Días de vacaciones por ley en México');
+    expect(page.title).toContain('Días de vacaciones por ley');
+    expect(page.lead.startsWith('Los días de vacaciones por ley en México son 12')).toBe(true);
+    expect(page.others.map(({ href }) => href)).toContain(mexicoPathOf('prima-vacacional'));
+  });
+
+  describe('the prima vacacional page', () => {
+    const page = mexicoArticleOf('prima-vacacional');
+    const text = textOf(page.sections);
+
+    it('answers 25% at least (art. 80), with the first year at the minimum wage: $945.12', () => {
+      expect(page.answer.figure).toBe('25%');
+      expect(page.h1.startsWith('Prima vacacional')).toBe(true);
+      expect(page.lead).toContain('art. 80');
+      // 315.04 × 12 = 3,780.48; × 25% = 945.12
+      expect(page.lead).toContain('$945.12');
+      expect(page.calculator.href).toBe(VACACIONES_PATH);
+    });
+
+    it('quotes article 80 of the LFT word for word', () => {
+      expect(text).toContain(
+        '«Los trabajadores tendrán derecho a una prima no menor de veinticinco por ciento sobre los salarios que les correspondan durante el período de vacaciones.»',
+      );
+    });
+
+    it('works the formula out on $12,000 a month and three years: $1,600.00', () => {
+      const steps = page.sections.find(({ id }) => id === 'formula')?.steps?.join(' ') ?? '';
+      // 12,000 / 30 = 400.00; 16 days; 400 × 16 = 6,400.00; × 25% = 1,600.00
+      for (const figure of ['$400.00', '16 días', '$6,400.00', '$1,600.00'])
+        expect(steps).toContain(figure);
+    });
+
+    it('tabulates the prima by years of service at three salaries, by the engine', () => {
+      const table = page.sections.find(({ id }) => id === 'tabla')?.table;
+      expect(table?.rows).toHaveLength(11);
+      // 12 days: 945.12, 400 × 12 / 4 = 1,200.00, 20,000 × 12 / 30 / 4 = 2,000.00
+      expect(table?.rows[0]).toEqual(['1 año', '12 días', '$945.12', '$1,200.00', '$2,000.00']);
+      // 22 days: 1,732.72, 2,200.00, 3,666.67
+      expect(table?.rows[5]).toEqual([
+        '6 a 10 años',
+        '22 días',
+        '$1,732.72',
+        '$2,200.00',
+        '$3,666.67',
+      ]);
+    });
+
+    it('splits the exempt part: $20,000 a month, ten years, $1,907.02 taxable', () => {
+      // 3,666.67 − 15 × 117.31 (1,759.65) = 1,907.02
+      for (const figure of ['$3,666.67', '$1,759.65', '$1,907.02']) expect(text).toContain(figure);
+    });
+
+    it('answers the questions people search, and links the vacation pages and the aguinaldo', () => {
+      expect(
+        page.sections.flatMap(({ questions }) => questions ?? []).length,
+      ).toBeGreaterThanOrEqual(4);
+      expect(page.others.map(({ href }) => href)).toEqual([
+        mexicoPathOf('cuantos-dias-de-vacaciones-son-por-ano'),
+        AGUINALDO_PATH,
+      ]);
+    });
   });
 
   it.each(MEXICO_SLUGS)('%s has its path, a head that fits, sources and a calculator', (slug) => {

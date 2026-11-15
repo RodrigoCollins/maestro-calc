@@ -13,6 +13,7 @@ export const MEXICO_SLUGS = [
   'cuantos-dias-de-aguinaldo-son-por-ley',
   'aguinaldo-2026',
   'cuantos-dias-de-vacaciones-son-por-ano',
+  'prima-vacacional',
 ] as const;
 
 export type MexicoSlug = (typeof MEXICO_SLUGS)[number];

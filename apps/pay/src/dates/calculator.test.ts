@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { DESCRIPTION, TITLE_MAX } from '../seo/meta.ts';
 import { daysBetweenPageOf, DEFAULT_END, DEFAULT_START } from './calculator.ts';
+import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 import { COUNTDOWNS, countdownPathOf, DAYS_BETWEEN_PATH } from './routes.ts';
 
 const page = daysBetweenPageOf();
@@ -16,6 +17,17 @@ describe('the days-between calculator page', () => {
     expect(page.description.length).toBeGreaterThanOrEqual(DESCRIPTION.min);
     expect(page.description.length).toBeLessThanOrEqual(DESCRIPTION.max);
     expect(page.paths).toEqual({ es: DAYS_BETWEEN_PATH });
+  });
+
+  it('targets «calculadora de fechas» and «contador de días», for the days between two dates', () => {
+    expect(page.h1).toBe('Calculadora de fechas: contador de días entre dos fechas');
+    expect(page.title.startsWith(page.h1)).toBe(true);
+    expect(page.lead).toContain('cuántos días han pasado desde una fecha');
+  });
+
+  it('links the aguinaldo and vacation calculators, which count days and years worked', () => {
+    const hrefs = section('mexico').links?.map(({ href }) => href);
+    expect(hrefs).toEqual([AGUINALDO_PATH, VACACIONES_PATH]);
   });
 
   it('works out 2026 with no script: 364 days, 52 weeks, 260 weekdays', () => {
