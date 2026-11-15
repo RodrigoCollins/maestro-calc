@@ -73,6 +73,8 @@ const weekdayOf = (index: number, lang: Lang): string =>
 export const weekdayNameOf = weekdayOf;
 /** A date of the year with no year: `January 29`, `29 de enero`. */
 export const monthDayOf = dateOf;
+/** The name of a month, 1 for January: `January`, `enero`. */
+export const monthNameOf = (m: number, lang: Lang): string => MONTHS[lang][m - 1] ?? '';
 
 /** `June 15, 2027`, `15 de junio de 2027`. */
 const fullDateOf = (date: CivilDate, lang: Lang): string =>

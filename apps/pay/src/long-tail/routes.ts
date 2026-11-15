@@ -612,6 +612,101 @@ export const LIVE_JOBS: readonly (TimeOffset | Until | DaysFrom)[] = [
   ...DAYS_FROM,
 ];
 
+/**
+ * A weeks question people search (plans/growth/ahrefs-2026-11-08.md, "how many weeks"): the weeks
+ * of a year or a month, the months of some weeks, the weeks of some months, and two counts from
+ * today, the weeks left in 2026 and the weeks until Christmas. `amount` is the weeks, the months
+ * or the year the question names (0 when it names none). Plain calendar arithmetic; the hours
+ * calculator lists them.
+ */
+export interface Weeks {
+  readonly kind: 'weeks';
+  readonly topic:
+    | 'year'
+    | 'days-in-year'
+    | 'hours-in-year'
+    | 'month'
+    | 'months-of-weeks'
+    | 'weeks-of-months'
+    | 'left-in-year'
+    | 'until-christmas';
+  readonly amount: number;
+  readonly slug: Readonly<Record<Lang, string>>;
+}
+
+const monthsOfWeeks = (weeks: number): Weeks => ({
+  kind: 'weeks',
+  topic: 'months-of-weeks',
+  amount: weeks,
+  slug: {
+    en: `how-many-months-is-${String(weeks)}-weeks`,
+    es: `cuantos-meses-son-${String(weeks)}-semanas`,
+  },
+});
+
+/** The two counts from today: their one script, `../client/time-now.ts`, fills the answer. */
+export const WEEKS_LIVE: readonly Weeks[] = [
+  {
+    kind: 'weeks',
+    topic: 'left-in-year',
+    amount: 2026,
+    slug: { en: 'how-many-weeks-left-in-2026', es: 'cuantas-semanas-quedan-en-2026' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'until-christmas',
+    amount: 0,
+    slug: { en: 'how-many-weeks-until-christmas', es: 'cuantas-semanas-faltan-para-navidad' },
+  },
+];
+
+/**
+ * The measured weeks questions: a year in weeks, in days and in hours (the last two measured in
+ * Spanish, Mexico, plans/growth/ahrefs-2026-11-15-spanish.md), a month, the months of 12 to 24 weeks (each measured at
+ * 8.2K to 12K searches a month), the weeks of 6 months, then the two counts from today. A page
+ * links its nearest.
+ */
+export const WEEKS: readonly Weeks[] = [
+  {
+    kind: 'weeks',
+    topic: 'year',
+    amount: 0,
+    slug: { en: 'how-many-weeks-in-a-year', es: 'cuantas-semanas-tiene-un-ano' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'days-in-year',
+    amount: 0,
+    slug: { en: 'how-many-days-in-a-year', es: 'cuantos-dias-tiene-un-ano' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'hours-in-year',
+    amount: 0,
+    slug: { en: 'how-many-hours-in-a-year', es: 'cuantas-horas-tiene-un-ano' },
+  },
+  {
+    kind: 'weeks',
+    topic: 'month',
+    amount: 0,
+    slug: { en: 'how-many-weeks-in-a-month', es: 'cuantas-semanas-tiene-un-mes' },
+  },
+  ...[12, 14, 16, 18, 20, 24].map(monthsOfWeeks),
+  {
+    kind: 'weeks',
+    topic: 'weeks-of-months',
+    amount: 6,
+    slug: { en: 'how-many-weeks-is-6-months', es: 'cuantas-semanas-son-6-meses' },
+  },
+  ...WEEKS_LIVE,
+];
+
+/** Every page that loads the clock script: the live time families and the weeks counts. */
+export const CLOCK_JOBS: readonly (TimeOffset | Until | DaysFrom | Weeks)[] = [
+  ...LIVE_JOBS,
+  ...WEEKS_LIVE,
+];
+
 /** A long-tail page's job, of any family. */
 export type LongTailJob =
   | Job
@@ -624,7 +719,8 @@ export type LongTailJob =
   | Days
   | TimeOffset
   | Until
-  | DaysFrom;
+  | DaysFrom
+  | Weeks;
 
 /** Every long-tail job: the two page templates build one page per language from each. */
 export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
@@ -637,6 +733,7 @@ export const LONG_TAIL_JOBS: readonly LongTailJob[] = [
   ...TIPPED,
   ...DAYS,
   ...LIVE_JOBS,
+  ...WEEKS,
 ];
 
 export const pathOf = (job: LongTailJob, lang: Lang): string =>

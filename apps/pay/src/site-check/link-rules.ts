@@ -10,6 +10,7 @@ import {
   PTOS,
   SHIFTS,
   TIPPED,
+  WEEKS,
   type LongTailJob,
 } from '../long-tail/routes.ts';
 import { DATA_PAGES } from '../data/pages.ts';
@@ -57,6 +58,7 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
   { calculator: 'shift-differential', members: DIFFERENTIALS },
   { calculator: 'tipped-wage', members: TIPPED },
   { calculator: 'hours', members: DAYS },
+  { calculator: 'hours', members: WEEKS },
   ...LIVE_GROUPS.map((members) => ({ calculator: 'hours', members })),
 ];
 

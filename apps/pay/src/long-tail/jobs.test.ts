@@ -11,6 +11,7 @@ import {
   DIFFERENTIALS,
   TIME_OFFSETS,
   UNTILS,
+  WEEKS,
   DOUBLES,
   JOBS,
   LONG_TAIL_ROUTES,
@@ -271,7 +272,8 @@ describe('long-tail pages', () => {
         DAYS.length +
         TIME_OFFSETS.length +
         UNTILS.length +
-        DAYS_FROM.length,
+        DAYS_FROM.length +
+        WEEKS.length,
     );
     const titles = JOBS.flatMap((job) => LANGS.map((lang) => longTailPageOf(job, lang).title));
     expect(new Set(titles).size).toBe(titles.length);
@@ -301,6 +303,7 @@ describe('long-tail pages', () => {
           'time-offset',
           'until',
           'days-from',
+          'weeks',
         ] as const
       ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
       expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
