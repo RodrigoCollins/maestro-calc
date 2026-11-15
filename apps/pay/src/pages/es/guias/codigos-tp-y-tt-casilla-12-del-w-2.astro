@@ -1,10 +1,15 @@
 ---
+import { enabledOffers } from '@maestro-calc/site-kit/affiliate';
+import AffiliateBlock from '../../../components/AffiliateBlock.astro';
 import GuidePage from '../../../components/GuidePage.astro';
+import { TAX_OFFERS } from '../../../affiliate/offers.ts';
 import {
   W2_BOX_12_GUIDE,
   W2_BOX_12_GUIDE_PATHS,
   W2_BOX_12_LEDGER,
 } from '../../../guide/w2-box-12.ts';
+// a tax program's paid link shows only once it approves the site, in its disclosed block
+const offers = enabledOffers(TAX_OFFERS);
 ---
 
 <GuidePage
@@ -12,4 +17,8 @@ import {
   texts={W2_BOX_12_GUIDE.es}
   paths={W2_BOX_12_GUIDE_PATHS}
   ledger={W2_BOX_12_LEDGER}
-/>
+>
+  {offers.map((offer) => (
+    <AffiliateBlock offer={offer} locale="es" />
+  ))}
+</GuidePage>

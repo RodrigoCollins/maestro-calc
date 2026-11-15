@@ -1,6 +1,15 @@
 ---
+import { enabledOffers } from '@maestro-calc/site-kit/affiliate';
+import AffiliateBlock from '../../../components/AffiliateBlock.astro';
 import GuidePage from '../../../components/GuidePage.astro';
+import { TAX_OFFERS } from '../../../affiliate/offers.ts';
 import { GUIDE_PATHS, GUIDE_TEXTS } from '../../../guide/texts.ts';
+// a tax program's paid link shows only once it approves the site, in its disclosed block
+const offers = enabledOffers(TAX_OFFERS);
 ---
 
-<GuidePage lang="es" texts={GUIDE_TEXTS.es} paths={GUIDE_PATHS} />
+<GuidePage lang="es" texts={GUIDE_TEXTS.es} paths={GUIDE_PATHS}>
+  {offers.map((offer) => (
+    <AffiliateBlock offer={offer} locale="es" />
+  ))}
+</GuidePage>
