@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { canonicalUrl } from '@maestro-calc/site-kit/canonical';
 import { describe, expect, it } from 'vitest';
 import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
+import { MILITARY_TIME_ROUTES } from '../military/routes.ts';
 import { isPaired, pathsOfRoute, ROUTES } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import { SITE } from '../site.config.ts';
@@ -16,9 +17,9 @@ const links = lines.flatMap((line) => {
   const [, title = '', url = '', description = ''] = found;
   return [{ title, url, description }];
 });
-const longTail = new Set(LONG_TAIL_ROUTES.map(({ id }) => id));
+// the military times, English only or paired with their Spanish twin, are long-tail pages too
+const longTail = new Set([...LONG_TAIL_ROUTES, ...MILITARY_TIME_ROUTES].map(({ id }) => id));
 // every page but the home, the long-tail pages and the privacy notice is worth an answer engine
-// the English-only military times are long-tail pages too: every route left is a pair
 const LISTED = ROUTES.filter(isPaired).filter(
   ({ id }) => id !== 'home' && id !== 'privacy' && !longTail.has(id),
 );

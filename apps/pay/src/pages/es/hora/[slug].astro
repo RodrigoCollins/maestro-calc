@@ -1,0 +1,13 @@
+---
+import MilitaryTimePage from '../../../components/MilitaryTimePage.astro';
+import { SPANISH_TIMES, spanishSlugOf, type MilitaryTimeJob } from '../../../military/routes.ts';
+
+export const getStaticPaths = () =>
+  SPANISH_TIMES.map((job) => ({ params: { slug: spanishSlugOf(job) }, props: { job } }));
+
+interface Props {
+  readonly job: MilitaryTimeJob;
+}
+---
+
+<MilitaryTimePage job={Astro.props.job} lang="es" />
