@@ -8,6 +8,7 @@ import {
   MEXICO_SLUGS,
   mexicoPathOf,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   SDI_PATH,
   VACACIONES_PATH,
 } from './routes.ts';
@@ -211,7 +212,7 @@ describe('the links between the Mexico pages', () => {
 
   it('lists every calculator and answer page for the home', () => {
     const hrefs = mexicoLinks().map(({ href }) => href);
-    for (const href of [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH])
+    for (const href of [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH, FINIQUITO_PATH])
       expect(hrefs).toContain(href);
     for (const slug of MEXICO_SLUGS) expect(hrefs).toContain(mexicoPathOf(slug));
   });
@@ -220,5 +221,10 @@ describe('the links between the Mexico pages', () => {
     expect(hrefsOf(aguinaldoPageOf().sections)).toContain(ANTIGUEDAD_PATH);
     expect(hrefsOf(vacacionesPageOf().sections)).toContain(SDI_PATH);
     expect(mexicoArticleOf('prima-vacacional').others.map(({ href }) => href)).toContain(SDI_PATH);
+  });
+
+  it('links the finiquito from the aguinaldo and the vacation calculators', () => {
+    expect(hrefsOf(aguinaldoPageOf().sections)).toContain(FINIQUITO_PATH);
+    expect(hrefsOf(vacacionesPageOf().sections)).toContain(FINIQUITO_PATH);
   });
 });

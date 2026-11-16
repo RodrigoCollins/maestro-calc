@@ -1,5 +1,13 @@
 import { expect, test } from '@playwright/test';
-import { AGUINALDO, ANTIGUEDAD, ISR_MX, SDI_MX, SUELDO_NETO, VACACIONES_MX } from './pages.ts';
+import {
+  AGUINALDO,
+  ANTIGUEDAD,
+  FINIQUITO,
+  ISR_MX,
+  SDI_MX,
+  SUELDO_NETO,
+  VACACIONES_MX,
+} from './pages.ts';
 
 // Hand-verified:
 // - 2026 at the general minimum wage: 315.04 × 15 = 4,725.60; 30 UMA = 30 × 117.31 = 3,519.30
@@ -206,6 +214,49 @@ test.describe(SUELDO_NETO, () => {
     await expect(page.locator('[data-mx="sbc"]')).toHaveText('$705.02');
     await expect(page.locator('[data-mx="imss"]')).toHaveText('$544.69');
     await page.locator('input[name="years"]').fill('x');
+    await expect(page.locator('[data-mx-invalid]')).toBeVisible();
+  });
+});
+
+// Hand-verified (LFT arts. 48, 50, 76, 79, 80, 87, 89 and 162; LISR art. 93 fr. XIII and XIV):
+// $15,000 a month (500.00 a day) from 1 March 2019 to 15 November 2026, 7 years and 260 days,
+// 4 vacation days taken and 15 unpaid:
+// - finiquito: 7,500.00 + 6,554.79 (500 × 15 × 319 / 365) + 16,835.62 (33.67 days) + 4,208.90
+//   (25%) + 46,273.97 (500 × 12 × 2,815 / 365) = 81,373.28;
+// - unjustified dismissal: 90 × 528.08 (500 × 385.5 / 365) = 47,527.20, in all 128,900.48;
+//   with the 20 days, 528.08 × 20 × 2,815 / 365 = 81,454.53, in all 210,355.01;
+// - resignation at 7 years: no prima de antigüedad, 81,373.28 − 46,273.97 = 35,099.31.
+
+test.describe(FINIQUITO, () => {
+  test('starts at an unjustified dismissal, without the 20 days', async ({ page }) => {
+    await page.goto(FINIQUITO);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$128,900.48');
+    await expect(page.locator('[data-mx="finiquito"]')).toHaveText('$81,373.28');
+    await expect(page.locator('[data-mx="veinte"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-mx-not-owed]')).toBeHidden();
+  });
+
+  test('adds the 20 days a year when the employer refuses reinstatement', async ({ page }) => {
+    await page.goto(FINIQUITO);
+    await page.locator('input[name="refused"]').check();
+    await expect(page.locator('[data-mx="veinte"]')).toHaveText('$81,454.53');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$210,355.01');
+  });
+
+  test('owes no indemnización and no prima de antigüedad on a resignation at 7 years', async ({
+    page,
+  }) => {
+    await page.goto(FINIQUITO);
+    await page.locator('select[name="exit"]').selectOption('resignation');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$35,099.31');
+    await expect(page.locator('[data-mx="antiguedad"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-mx="liquidacion"]')).toHaveText('$0.00');
+    await expect(page.locator('[data-mx-not-owed]')).toBeVisible();
+  });
+
+  test('shows the notice for a field it cannot read', async ({ page }) => {
+    await page.goto(FINIQUITO);
+    await page.locator('input[name="taken"]').fill('x');
     await expect(page.locator('[data-mx-invalid]')).toBeVisible();
   });
 });

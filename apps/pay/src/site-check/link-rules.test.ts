@@ -2,6 +2,7 @@ import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   ISR_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
@@ -157,6 +158,10 @@ describe('MEXICO_RULES', () => {
       { path: SDI_PATH, calculators: [VACACIONES_PATH] },
       { path: ISR_PATH, calculators: [SUELDO_NETO_PATH] },
       { path: SUELDO_NETO_PATH, calculators: [ISR_PATH] },
+      {
+        path: FINIQUITO_PATH,
+        calculators: [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH],
+      },
     ]);
   });
 });
