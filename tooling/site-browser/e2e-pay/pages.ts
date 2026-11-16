@@ -4,7 +4,9 @@ import { MILITARY_TIME_ROUTES } from '../../../apps/pay/src/military/routes.ts';
 import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/routes.ts';
 import {
   AGUINALDO_PATH,
+  ANTIGUEDAD_PATH,
   MEXICO_ROUTES,
+  SDI_PATH,
   VACACIONES_PATH,
 } from '../../../apps/pay/src/mexico/routes.ts';
 
@@ -116,6 +118,12 @@ export const AGUINALDO = AGUINALDO_PATH;
 
 /** The vacation and prima vacacional calculator of Mexico, Spanish only. */
 export const VACACIONES_MX = VACACIONES_PATH;
+
+/** The prima de antigüedad calculator of Mexico, Spanish only. */
+export const ANTIGUEDAD = ANTIGUEDAD_PATH;
+
+/** The salario diario integrado calculator of Mexico, Spanish only. */
+export const SDI_MX = SDI_PATH;
 
 /** The days-between calculator, Spanish only. */
 export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;

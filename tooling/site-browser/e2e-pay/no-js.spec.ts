@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   AGUINALDO,
+  ANTIGUEDAD,
   COUNTDOWN_PATHS,
   DAYS_BETWEEN,
   DECIMAL_HOURS,
@@ -11,6 +12,7 @@ import {
   PAGES,
   PTO,
   SHIFT,
+  SDI_MX,
   VACACIONES_MX,
   SHIFT_TOOL,
   TIPPED,
@@ -187,3 +189,17 @@ for (const path of ['/states/texas', '/es/estados/texas', '/overtime-calculator'
     expect(decodeURIComponent(href)).toMatch(new RegExp(`\\nhttps://cuentahoras\\.com${path}$`));
   });
 }
+
+// The defaults, worked by the build: 15 years at the minimum wage, 315.04 × 180 = 56,707.20; the
+// first year of service, 315.04 × 383 / 365 = 330.58 with the factor 1.0493.
+test(`${ANTIGUEDAD} shows 15 years of prima without JavaScript`, async ({ page }) => {
+  await page.goto(ANTIGUEDAD);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$56,707.20');
+  await expect(page.locator('[data-mx="earned"]')).toHaveText('180 días');
+});
+
+test(`${SDI_MX} shows the first year SDI without JavaScript`, async ({ page }) => {
+  await page.goto(SDI_MX);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$330.58');
+  await expect(page.locator('[data-mx="factor"]')).toHaveText('1.0493');
+});
