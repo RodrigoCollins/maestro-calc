@@ -7,12 +7,14 @@ import {
   DECIMAL_HOURS,
   DEFAULT_PAY,
   HOURS,
+  ISR_MX,
   MILITARY,
   OVERTIME,
   PAGES,
   PTO,
   SHIFT,
   SDI_MX,
+  SUELDO_NETO,
   VACACIONES_MX,
   SHIFT_TOOL,
   TIPPED,
@@ -119,6 +121,20 @@ test(`${VACACIONES_MX} shows five years of vacation without JavaScript`, async (
   await page.goto(VACACIONES_MX);
   await expect(page.locator('[data-mx="figure"]')).toHaveText('20 días');
   await expect(page.locator('[data-mx="prima"]')).toHaveText('$1,575.20');
+});
+
+// $12,000 a month: 420.95 + (12,000 − 7,168.52) × 10.88% = 946.62, over the subsidy limit;
+// $20,000: 2,383.65 of ISR and 540.13 of IMSS worker quotas, 17,076.22 net.
+test(`${ISR_MX} shows the ISR of $12,000 without JavaScript`, async ({ page }) => {
+  await page.goto(ISR_MX);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$946.62');
+  await expect(page.locator('[data-mx="rate"]')).toHaveText('10.88%');
+});
+
+test(`${SUELDO_NETO} shows the net pay of $20,000 without JavaScript`, async ({ page }) => {
+  await page.goto(SUELDO_NETO);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$17,076.22');
+  await expect(page.locator('[data-mx="imss"]')).toHaveText('$540.13');
 });
 
 for (const path of COUNTDOWN_PATHS) {

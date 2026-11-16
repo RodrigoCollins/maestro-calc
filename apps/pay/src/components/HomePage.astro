@@ -34,6 +34,7 @@ import { countdownLinks } from '../dates/countdowns.ts';
 import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { DAYS_BETWEEN_NAME } from '../dates/words.ts';
 import { mexicoLinks } from '../mexico/pages.ts';
+import { salaryLinks } from '../mexico/salary-pages.ts';
 import { outputOf, type Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
 import SiteLayout from './SiteLayout.astro';
@@ -72,7 +73,7 @@ const guides = [
     ? [{ href: DAYS_BETWEEN_PATH, label: DAYS_BETWEEN_NAME }, ...countdownLinks()]
     : []),
   // the Mexico labor pages are Spanish only: the aguinaldo and the vacaciones of the LFT
-  ...(lang === 'es' ? mexicoLinks() : []),
+  ...(lang === 'es' ? [...mexicoLinks(), ...salaryLinks()] : []),
 ];
 // The card in the hero is the calculator's own default week, so its figures are the engine's.
 const ran = timeCard.run({});

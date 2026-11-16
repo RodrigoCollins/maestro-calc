@@ -53,8 +53,8 @@ export const LABOR_SOURCES = {
     href: 'https://www.ordenjuridico.gob.mx/Documentos/Federal/wo125151.doc',
   },
   lss: {
-    label: `Ley del Seguro Social, arts. 27 a 30 (texto vigente, última reforma DOF 07-06-2024), Orden Jurídico Nacional, ${READ}`,
-    href: 'https://www.ordenjuridico.gob.mx/Documentos/Federal/wo9056.doc',
+    label: `Ley del Seguro Social, arts. 27 a 30 (texto vigente de la Cámara de Diputados, última reforma DOF 15-01-2026, copia del IMSS), ${READ}`,
+    href: 'https://www.imss.gob.mx/sites/all/statics/pdf/leyes/LSS.pdf',
   },
   lisr: {
     label: `Ley del Impuesto sobre la Renta, art. 93 fracciones I y XIV (texto vigente, última reforma DOF 01-04-2024), Orden Jurídico Nacional, ${READ}`,
