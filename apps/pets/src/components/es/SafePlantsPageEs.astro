@@ -1,0 +1,77 @@
+---
+import { HEADINGS_ES } from '../../es/texts.ts';
+import { SAFE_HUB_ES } from '../../es/toxic-plants.ts';
+import Byline from '../Byline.astro';
+import Layout from '../Layout.astro';
+import ShareLink from '../ShareLink.astro';
+import Sources from '../Sources.astro';
+
+const { title, description, h1, lead, checked, rows, avoid, sections, links, sources } =
+  SAFE_HUB_ES;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="seguras">
+      <h2 id="seguras">No tóxicas para perros y gatos en la lista de la ASPCA</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={`Plantas seguras para perros y gatos, ${HEADINGS_ES.scrolls}`}
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              <th scope="col">Planta</th>
+              <th scope="col">Ficha de la ASPCA</th>
+              <th scope="col">Nombre científico</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ href, name, entry, scientific }) => (
+              <tr>
+                <th scope="row">
+                  <a {href}>{name}</a>
+                </th>
+                <td>{entry}</td>
+                <td>{scientific}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <section aria-labelledby="no-seguras">
+      <h2 id="no-seguras">Plantas de interior populares que no son seguras</h2>
+      <ul>
+        {avoid.map(({ href, name, note }) => (
+          <li>
+            <a {href}>{name}</a>: {note}
+          </li>
+        ))}
+      </ul>
+    </section>
+    <ul>
+      {links.map(({ href, label }) => (
+        <li>
+          <a {href}>{label}</a>
+        </li>
+      ))}
+    </ul>
+    <p>{SAFE_HUB_ES.readOn}</p>
+    <Sources {sources} />
+    <ShareLink path={SAFE_HUB_ES.path} {title} />
+  </main>
+</Layout>

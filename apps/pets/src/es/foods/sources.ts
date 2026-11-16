@@ -40,6 +40,10 @@ export const SOURCES_ES = {
     name: 'Manual de veterinaria de MSD: Toxicosis por aguacate (Persea spp.) en animales',
     url: `${MSD_ES}/toxicosis-por-aguacate-persea-spp-en-animales`,
   },
+  msdPlants: {
+    name: 'Manual de veterinaria de MSD: Plantas de interior y ornamentales tóxicas para los animales (Renee D. Schmid, DVM, DABT, DABVT, Pet Poison Helpline; revisado en noviembre de 2023, modificado en septiembre de 2024)',
+    url: 'https://www.msdvetmanual.com/es/toxicolog%C3%ADa/plantas-venenosas/plantas-de-interior-y-ornamentales-t%C3%B3xicas-para-los-animales',
+  },
   cituc: {
     name: 'CITUC, Centro de Información Toxicológica de la Pontificia Universidad Católica de Chile: Quiénes somos',
     url: 'https://cituc.uc.cl/a-cerca-del-cituc/quienes-somos/',

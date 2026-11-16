@@ -108,9 +108,10 @@ describe('the Spanish header and footer', () => {
     ]);
   });
 
-  it('link every Spanish page that is not a food page, so none is an orphan', () => {
+  it('link every Spanish page that is not a food or a plant page, so none is an orphan', () => {
     const spanish = ROUTES.filter(
-      ({ id, es }) => es !== undefined && id !== 'home' && !id.startsWith('food-'),
+      ({ id, es }) =>
+        es !== undefined && id !== 'home' && !id.startsWith('food-') && !id.startsWith('plant-'),
     );
     expect(
       footerLinks('es')

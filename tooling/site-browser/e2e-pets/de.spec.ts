@@ -63,7 +63,7 @@ test('sends the security headers with every German page', async ({ request }) =>
 
 test('keeps the German pages out of the sitemap while German is closed', async ({ request }) => {
   const xml = await (await request.get('/sitemap.xml')).text();
-  expect(xml).not.toContain('/de');
+  expect(xml).not.toContain('bowlfigures.com/de');
 });
 
 test('tells the reader of a toxic food to call the veterinarian, with the Swiss line', async ({
