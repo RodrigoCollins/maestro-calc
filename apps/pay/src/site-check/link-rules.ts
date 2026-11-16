@@ -33,6 +33,7 @@ import {
   ISR_PATH,
   MEXICO_SLUGS,
   mexicoPathOf,
+  PTU_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
   VACACIONES_PATH,
@@ -134,6 +135,8 @@ export const MEXICO_RULES: readonly GuideRule[] = [
     path: FINIQUITO_PATH,
     calculators: [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH],
   },
+  // the PTU and the aguinaldo, SDI and finiquito calculators link each other
+  { path: PTU_PATH, calculators: [AGUINALDO_PATH, SDI_PATH, FINIQUITO_PATH] },
 ];
 
 /**

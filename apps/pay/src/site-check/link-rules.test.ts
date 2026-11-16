@@ -3,6 +3,7 @@ import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
+  PTU_PATH,
   ISR_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
@@ -162,6 +163,7 @@ describe('MEXICO_RULES', () => {
         path: FINIQUITO_PATH,
         calculators: [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH],
       },
+      { path: PTU_PATH, calculators: [AGUINALDO_PATH, SDI_PATH, FINIQUITO_PATH] },
     ]);
   });
 });

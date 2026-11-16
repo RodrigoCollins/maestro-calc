@@ -5,6 +5,7 @@ import {
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
   ISR_PATH,
+  PTU_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
   VACACIONES_PATH,
@@ -75,6 +76,7 @@ export const MEXICO_PAGES: readonly string[] = [
   ISR_PATH,
   SUELDO_NETO_PATH,
   FINIQUITO_PATH,
+  PTU_PATH,
 ].map((path) => `${path.slice(1)}.html`);
 
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */

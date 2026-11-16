@@ -8,6 +8,7 @@ import {
   FINIQUITO_PATH,
   ISR_PATH,
   MEXICO_ROUTES,
+  PTU_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
   VACACIONES_PATH,
@@ -136,6 +137,9 @@ export const SUELDO_NETO = SUELDO_NETO_PATH;
 
 /** The finiquito and liquidación calculator of Mexico, Spanish only. */
 export const FINIQUITO = FINIQUITO_PATH;
+
+/** The PTU calculator of Mexico, Spanish only. */
+export const PTU = PTU_PATH;
 
 /** The days-between calculator, Spanish only. */
 export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;

@@ -4,6 +4,7 @@ import {
   ANTIGUEDAD,
   FINIQUITO,
   ISR_MX,
+  PTU,
   SDI_MX,
   SUELDO_NETO,
   VACACIONES_MX,
@@ -257,6 +258,59 @@ test.describe(FINIQUITO, () => {
   test('shows the notice for a field it cannot read', async ({ page }) => {
     await page.goto(FINIQUITO);
     await page.locator('input[name="taken"]').fill('x');
+    await expect(page.locator('[data-mx-invalid]')).toBeVisible();
+  });
+});
+
+// Hand-verified (LFT arts. 120, 123, 124 and 127 fr. VIII; LISR art. 93 fr. XIV):
+// - $12,000 a month (400.00 a day) all 365 days, renta gravable $2,000,000, 7,300 days and
+//   $3,650,000 of salaries: 10% = 200,000.00; 100,000 × 365 / 7,300 = 5,000.00 and
+//   100,000 × 146,000 / 3,650,000 = 4,000.00, $9,000.00 under the cap of 90 × 400 = 36,000.00;
+// - with the cap alone: 36,000.00;
+// - 315.04 a day, $5,000,000, 1,825 days and $1,000,000: 50,000.00 + 28,747.40 = 78,747.40,
+//   capped at 90 × 315.04 = 28,353.60 over an average of 25,000.00; with 30,000, 32,000 and
+//   34,000 the average, 32,000.00, is the cap.
+
+test.describe(PTU, () => {
+  test('starts with the company figures: $9,000.00 by days and by salary', async ({ page }) => {
+    await page.goto(PTU);
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$9,000.00');
+    await expect(page.locator('[data-mx="daysShare"]')).toHaveText('$5,000.00');
+    await expect(page.locator('[data-mx="salaryShare"]')).toHaveText('$4,000.00');
+    await expect(page.locator('[data-mx-estimate]')).toBeHidden();
+    await expect(page.locator('[data-mx-capped]')).toBeHidden();
+  });
+
+  test('estimates with the cap alone when the company figures are unknown', async ({ page }) => {
+    await page.goto(PTU);
+    await page.locator('select[name="mode"]').selectOption('cap');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$36,000.00');
+    await expect(page.locator('[data-mx="pool"]')).toHaveText('Sin las cifras de la empresa');
+    await expect(page.locator('[data-mx-estimate]')).toBeVisible();
+  });
+
+  test('caps a large share at three months or the average of three years', async ({ page }) => {
+    await page.goto(PTU);
+    await page.locator('select[name="period"]').selectOption('day');
+    await page.locator('input[name="wage"]').fill('315.04');
+    await page.locator('input[name="company"]').fill('5000000');
+    await page.locator('input[name="totalDays"]').fill('1825');
+    await page.locator('input[name="totalSalary"]').fill('1000000');
+    await page.locator('input[name="past1"]').fill('20000');
+    await page.locator('input[name="past2"]').fill('25000');
+    await page.locator('input[name="past3"]').fill('30000');
+    await expect(page.locator('[data-mx="beforeCap"]')).toHaveText('$78,747.40');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$28,353.60');
+    await expect(page.locator('[data-mx-capped]')).toBeVisible();
+    await page.locator('input[name="past1"]').fill('30000');
+    await page.locator('input[name="past2"]').fill('32000');
+    await page.locator('input[name="past3"]').fill('34000');
+    await expect(page.locator('[data-mx="figure"]')).toHaveText('$32,000.00');
+  });
+
+  test('shows the notice for a company smaller than the worker', async ({ page }) => {
+    await page.goto(PTU);
+    await page.locator('input[name="totalDays"]').fill('100');
     await expect(page.locator('[data-mx-invalid]')).toBeVisible();
   });
 });
