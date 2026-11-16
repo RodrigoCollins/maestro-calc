@@ -38,24 +38,21 @@ export interface TariffRow {
   readonly rateBp: number;
 }
 
-/** The rates of every tariff of Anexo 8, bracket by bracket, in hundredths of a percent. */
-const RATES = [192, 640, 1088, 1600, 1792, 2136, 2352, 3000, 3200, 3400, 3500] as const;
-
 /** A tariff: its first row, then the rest (a tariff is never empty). */
 export type Tariff = readonly [TariffRow, ...TariffRow[]];
 
-/** A lower limit and a fixed fee of a published table, in centavos. */
-type Published = readonly [number, number];
+/** A row of a published table: lower limit and fixed fee in centavos, rate in basis points. */
+type Published = readonly [number, number, number];
 
-/** Rows from the lower limits and fixed fees of a published table, with the shared rates. */
+/** Rows from the lower limits, fixed fees and rates of a published table. */
 const tariff = (rows: readonly [Published, ...Published[]]): Tariff => {
-  const rowOf = ([lowerCents, fixedCents]: Published, i: number): TariffRow => {
+  const rowOf = ([lowerCents, fixedCents, rateBp]: Published, i: number): TariffRow => {
     const next = rows[i + 1];
     return {
       lowerCents,
       upperCents: next === undefined ? null : next[0] - 1,
       fixedCents,
-      rateBp: RATES[i] ?? 0,
+      rateBp,
     };
   };
   const [first, ...rest] = rows;
@@ -65,43 +62,43 @@ const tariff = (rows: readonly [Published, ...Published[]]): Tariff => {
 /** The tariffs of Anexo 8 B.II (7 days), B.IV (15 days) and B.V (the month), 2026. */
 export const ISR_TARIFFS_2026: Readonly<Record<PayPeriod, Tariff>> = {
   week: tariff([
-    [1, 0],
-    [19447, 371],
-    [165068, 9695],
-    [290088, 23296],
-    [337212, 30835],
-    [403733, 42756],
-    [814276, 130445],
-    [1283409, 240786],
-    [2450246, 590835],
-    [3266992, 852194],
-    [9800967, 3073749],
+    [1, 0, 192],
+    [19447, 371, 640],
+    [165068, 9695, 1088],
+    [290088, 23296, 1600],
+    [337212, 30835, 1792],
+    [403733, 42756, 2136],
+    [814276, 130445, 2352],
+    [1283409, 240786, 3000],
+    [2450246, 590835, 3200],
+    [3266992, 852194, 3400],
+    [9800967, 3073749, 3500],
   ]),
   fortnight: tariff([
-    [1, 0],
-    [41671, 795],
-    [353716, 20775],
-    [621616, 49920],
-    [722596, 66075],
-    [865141, 91620],
-    [1744876, 279525],
-    [2750161, 515970],
-    [5250526, 1266075],
-    [7000696, 1826130],
-    [21002071, 6586605],
+    [1, 0, 192],
+    [41671, 795, 640],
+    [353716, 20775, 1088],
+    [621616, 49920, 1600],
+    [722596, 66075, 1792],
+    [865141, 91620, 2136],
+    [1744876, 279525, 2352],
+    [2750161, 515970, 3000],
+    [5250526, 1266075, 3200],
+    [7000696, 1826130, 3400],
+    [21002071, 6586605, 3500],
   ]),
   month: tariff([
-    [1, 0],
-    [84460, 1622],
-    [716852, 42095],
-    [1259803, 101168],
-    [1464465, 133914],
-    [1753365, 185684],
-    [3536284, 566516],
-    [5573669, 1045709],
-    [10641051, 2565923],
-    [14188067, 3700969],
-    [42564200, 13348854],
+    [1, 0, 192],
+    [84460, 1622, 640],
+    [716852, 42095, 1088],
+    [1259803, 101168, 1600],
+    [1464465, 133914, 1792],
+    [1753365, 185684, 2136],
+    [3536284, 566516, 2352],
+    [5573669, 1045709, 3000],
+    [10641051, 2565923, 3200],
+    [14188067, 3700969, 3400],
+    [42564200, 13348854, 3500],
   ]),
 };
 
