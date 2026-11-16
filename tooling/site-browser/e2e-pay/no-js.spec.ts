@@ -10,6 +10,7 @@ import {
   HOURS,
   ISR_MX,
   MILITARY,
+  PTU,
   OVERTIME,
   PAGES,
   PTO,
@@ -229,4 +230,13 @@ test(`${FINIQUITO} shows the finiquito and liquidación without JavaScript`, asy
   await expect(page.locator('[data-mx="figure"]')).toHaveText('$128,900.48');
   await expect(page.locator('[data-mx="indemnizacion"]')).toHaveText('$47,527.20');
   await expect(page.locator('[data-mx="exempt"]')).toHaveText('$89,742.15');
+});
+
+// The defaults, worked by the build: $12,000 a month all year, renta gravable $2,000,000,
+// 7,300 days and $3,650,000 of salaries: 5,000.00 + 4,000.00 = 9,000.00, free of ISR 1,759.65.
+test(`${PTU} shows the PTU without JavaScript`, async ({ page }) => {
+  await page.goto(PTU);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$9,000.00');
+  await expect(page.locator('[data-mx="salaryShare"]')).toHaveText('$4,000.00');
+  await expect(page.locator('[data-mx="exempt"]')).toHaveText('$1,759.65');
 });

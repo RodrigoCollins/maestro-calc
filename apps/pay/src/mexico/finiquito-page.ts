@@ -26,9 +26,11 @@ import {
   FINIQUITO_PATH,
   ISR_PATH,
   mexicoPathOf,
+  PTU_PATH,
   SDI_PATH,
   VACACIONES_PATH,
 } from './routes.ts';
+import { PTU_NAME } from './ptu-words.ts';
 import { ISR_NAME } from './salary-words.ts';
 import { AGUINALDO_NAME, hundredthsDaysText, VACACIONES_NAME } from './words.ts';
 
@@ -87,6 +89,7 @@ const LINKS = {
   antiguedad: { href: ANTIGUEDAD_PATH, label: ANTIGUEDAD_NAME },
   sdi: { href: SDI_PATH, label: SDI_NAME },
   isr: { href: ISR_PATH, label: ISR_NAME },
+  ptu: { href: PTU_PATH, label: PTU_NAME },
   primaVacacional: {
     href: mexicoPathOf('prima-vacacional'),
     label: 'Prima vacacional: qué es y cómo se calcula',
@@ -262,7 +265,7 @@ const sections = (): LongTailSection[] => {
       id: 'que-no-incluye',
       heading: 'Lo que la calculadora no incluye',
       paragraphs: [
-        'Las vacaciones de años anteriores que no tomaste: se deben conceder en los seis meses siguientes a cada aniversario (art. 81) y la acción para cobrarlas prescribe en un año (art. 516). Tampoco incluye la PTU pendiente, las horas extras o bonos sin pagar ni las prestaciones de tu contrato que pasen de la ley.',
+        'Las vacaciones de años anteriores que no tomaste: se deben conceder en los seis meses siguientes a cada aniversario (art. 81) y la acción para cobrarlas prescribe en un año (art. 516). Tampoco incluye la PTU pendiente (la calculadora de PTU la estima), las horas extras o bonos sin pagar ni las prestaciones de tu contrato que pasen de la ley.',
         'La prima de antigüedad se calcula con tu salario diario, del mínimo al doble del mínimo de tu zona (arts. 162, 485 y 486). La exención de 15 UMA de la prima vacacional y de 30 UMA del aguinaldo es por año de calendario: si ya cobraste parte de ellas este año, te queda menos exento.',
       ],
     },
@@ -278,7 +281,7 @@ const sections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Cada parte con su calculadora',
       paragraphs: [
-        'Para revisar cada línea por separado, con sus tablas y ejemplos, y el salario integrado de las indemnizaciones:',
+        'Para revisar cada línea por separado, con sus tablas y ejemplos, el salario integrado de las indemnizaciones y la PTU que te deben del año:',
       ],
       links: [
         LINKS.aguinaldo,
@@ -287,6 +290,7 @@ const sections = (): LongTailSection[] => {
         LINKS.antiguedad,
         LINKS.sdi,
         LINKS.isr,
+        LINKS.ptu,
       ],
     },
   ];

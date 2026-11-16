@@ -54,3 +54,16 @@ export {
   type FiniquitoInput,
   type FiniquitoIsr,
 } from './finiquito.ts';
+export {
+  EVENTUAL_MIN_DAYS,
+  PTU_CAP_DAYS,
+  PTU_EXEMPT_CENTS,
+  PTU_MAX_CENTS,
+  PTU_PERCENT,
+  ptuOf,
+  type Ptu,
+  type PtuBase,
+  type PtuCompany,
+  type PtuInput,
+  type PtuShares,
+} from './ptu.ts';

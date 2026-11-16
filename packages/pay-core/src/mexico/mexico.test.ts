@@ -61,6 +61,12 @@ describe('parseCents', () => {
     for (const text of ['', '0', '0.00', '-5', '1.234', '12,34', '1,2345', 'abc', '10000000.01'])
       expect(parseCents(text)).toBeNull();
   });
+
+  it('reads up to a larger ceiling when one is given, for a company figure', () => {
+    expect(parseCents('100,000,000,000', 10_000_000_000_000)).toBe(10_000_000_000_000);
+    expect(parseCents('2,000,000.50', 10_000_000_000_000)).toBe(200_000_050);
+    expect(parseCents('100000000000.01', 10_000_000_000_000)).toBeNull();
+  });
 });
 
 describe('parseWhole', () => {

@@ -19,11 +19,13 @@ import {
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
   mexicoPathOf,
+  PTU_PATH,
   SDI_PATH,
   VACACIONES_PATH,
   type MexicoSlug,
 } from './routes.ts';
 import { FINIQUITO_NAME } from './finiquito-words.ts';
+import { PTU_NAME } from './ptu-words.ts';
 import { ANTIGUEDAD_NAME, SDI_NAME } from './labor-words.ts';
 import {
   AGUINALDO_NAME,
@@ -104,6 +106,7 @@ const VACACIONES_LINK: CalculatorLink = { href: VACACIONES_PATH, label: VACACION
 const ANTIGUEDAD_LINK: CalculatorLink = { href: ANTIGUEDAD_PATH, label: ANTIGUEDAD_NAME };
 const SDI_LINK: CalculatorLink = { href: SDI_PATH, label: SDI_NAME };
 const FINIQUITO_LINK: CalculatorLink = { href: FINIQUITO_PATH, label: FINIQUITO_NAME };
+const PTU_LINK: CalculatorLink = { href: PTU_PATH, label: PTU_NAME };
 
 const ARTICLE_LABELS: Readonly<Record<MexicoSlug, string>> = {
   'cuantos-dias-de-aguinaldo-son-por-ley': '¿Cuántos días de aguinaldo son por ley?',
@@ -124,6 +127,7 @@ export const mexicoLinks = (): readonly CalculatorLink[] => [
   VACACIONES_LINK,
   ...laborCalculatorLinks(),
   FINIQUITO_LINK,
+  PTU_LINK,
   ...(Object.keys(ARTICLE_LABELS) as MexicoSlug[]).map(articleLink),
 ];
 
@@ -187,7 +191,7 @@ const aguinaldoSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Más sobre el aguinaldo y las vacaciones',
       paragraphs: [
-        'Las reglas con sus fuentes, la otra prestación de cada año, la calculadora de fechas, para contar los días trabajados entre tu fecha de ingreso y tu último día (marca «Contar también el día de inicio»), y la prima de antigüedad, que también va en tu finiquito si dejas el trabajo; la calculadora de finiquito y liquidación suma todo lo que te toca al terminar.',
+        'Las reglas con sus fuentes, la otra prestación de cada año, la calculadora de fechas, para contar los días trabajados entre tu fecha de ingreso y tu último día (marca «Contar también el día de inicio»), y la prima de antigüedad, que también va en tu finiquito si dejas el trabajo; la calculadora de finiquito y liquidación suma todo lo que te toca al terminar. La otra prestación grande del año, la PTU, se paga en mayo o junio.',
       ],
       links: [
         articleLink('cuantos-dias-de-aguinaldo-son-por-ley'),
@@ -196,6 +200,7 @@ const aguinaldoSections = (): LongTailSection[] => {
         DAYS_BETWEEN_LINK,
         ANTIGUEDAD_LINK,
         FINIQUITO_LINK,
+        PTU_LINK,
       ],
     },
   ];

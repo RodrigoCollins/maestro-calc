@@ -1,0 +1,149 @@
+---
+import { HOME_TEXTS } from '../home/texts.ts';
+import { SOURCES_HEADING } from '../long-tail/sections.ts';
+import { ptuPageOf } from '../mexico/ptu-page.ts';
+import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import Sections from './Sections.astro';
+import ShareLink from './ShareLink.astro';
+import SiteLayout from './SiteLayout.astro';
+
+// Spanish only (Mexico's law): the language switch leads to the English home. The page renders
+// the engine's own figures for its defaults, $12,000 a month all year in a company with a renta
+// gravable of $2,000,000, so it reads without JavaScript.
+const page = ptuPageOf();
+const v = page.defaults;
+const companyFields = (['company', 'totalDays', 'totalSalary'] as const).map((name) => ({
+  name,
+  label: page.labels[name],
+  value: v[name],
+  mode: name === 'totalDays' ? ('numeric' as const) : ('decimal' as const),
+}));
+const pastFields = (['past1', 'past2', 'past3'] as const).map((name) => ({
+  name,
+  label: page.labels[name],
+  value: v[name],
+}));
+---
+
+<SiteLayout
+  lang="es"
+  title={page.title}
+  description={page.description}
+  paths={page.paths}
+  otherHref="/"
+  otherLang={PAY_CONVERTER_TEXTS.es.otherLang}
+  footer={HOME_TEXTS.es.sources}
+>
+  <main class="page">
+    <div>
+      <p class="kicker">{page.kicker}</p>
+      <h1>{page.h1}</h1>
+    </div>
+    <p class="lead">{page.lead}</p>
+
+    <form class="deduction" data-ptu novalidate>
+      <label class="field">
+        {page.labels.mode}
+        <select name="mode">
+          {page.modes.map(([key, label]) => (
+            <option value={key} selected={key === v.mode}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="field">
+        {page.labels.wage}
+        <input name="wage" inputmode="decimal" autocomplete="off" value={v.wage} required />
+      </label>
+      <label class="field">
+        {page.labels.period}
+        <select name="period">
+          {page.periods.map(([key, label]) => (
+            <option value={key} selected={key === v.period}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label class="field">
+        {page.labels.days}
+        <input name="days" inputmode="numeric" autocomplete="off" value={v.days} required />
+      </label>
+      <label class="field">
+        {page.labels.base}
+        <select name="base">
+          {page.bases.map(([key, label]) => (
+            <option value={key} selected={key === v.base}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      {companyFields.map((field) => (
+        <label class="field">
+          {field.label}
+          <input name={field.name} inputmode={field.mode} autocomplete="off" value={field.value} />
+        </label>
+      ))}
+      {pastFields.map((field) => (
+        <label class="field">
+          {field.label}
+          <input name={field.name} inputmode="decimal" autocomplete="off" value={field.value} />
+        </label>
+      ))}
+    </form>
+    <p class="warning" data-mx-invalid hidden>
+      {page.invalid}
+    </p>
+    <p class="note" data-mx-capped hidden>
+      {page.capped}
+    </p>
+    <p class="note" data-mx-eventual hidden>
+      {page.eventual}
+    </p>
+
+    <section class="result" aria-live="polite" aria-labelledby="figure-label">
+      <div>
+        <p class="result-label" id="figure-label">
+          {page.figureLabel}
+        </p>
+        <p class="result-figure" data-mx="figure">
+          {page.result.figure}
+        </p>
+        <p class="note" data-mx-estimate hidden>
+          {page.estimate}
+        </p>
+      </div>
+      <ul class="breakdown labeled" aria-label={page.breakdown}>
+        {page.result.rows.map((row) => (
+          <li>
+            <span>{row.label}</span>
+            <span data-mx={row.key}>{row.value}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+    <p class="note">{page.note}</p>
+
+    <ShareLink lang="es" title={page.title} path={page.paths.es} />
+
+    <div class="prose explained">
+      <Sections sections={page.sections} />
+
+      <section aria-labelledby="sources">
+        <h2 id="sources">{SOURCES_HEADING.es}</h2>
+        <ul class="link-list">
+          {page.sources.map((source) => (
+            <li>
+              <a href={source.href} rel="noopener">
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  </main>
+  <script src="../client/ptu.ts"></script>
+</SiteLayout>

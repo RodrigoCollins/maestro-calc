@@ -7,6 +7,7 @@ import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
+  PTU_PATH,
   mexicoPathOf,
   SDI_PATH,
   VACACIONES_PATH,
@@ -155,6 +156,7 @@ describe('sdiPageOf', () => {
       mexicoPathOf('como-se-pagan-las-horas-extras'),
       ANTIGUEDAD_PATH,
       FINIQUITO_PATH,
+      PTU_PATH,
     ])
       expect(hrefs).toContain(href);
   });

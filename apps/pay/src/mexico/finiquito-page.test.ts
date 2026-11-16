@@ -6,6 +6,7 @@ import {
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
   ISR_PATH,
+  PTU_PATH,
   SDI_PATH,
   VACACIONES_PATH,
 } from './routes.ts';
@@ -106,9 +107,16 @@ describe('finiquitoPageOf', () => {
     for (const label of labels) expect(label).toMatch(/leído el 16 de noviembre de 2026/);
   });
 
-  it('links the aguinaldo, vacation, prima de antigüedad, SDI and ISR calculators', () => {
+  it('links the aguinaldo, vacation, prima de antigüedad, SDI, ISR and PTU calculators', () => {
     const hrefs = page.sections.flatMap(({ links }) => links ?? []).map(({ href }) => href);
-    for (const href of [AGUINALDO_PATH, VACACIONES_PATH, ANTIGUEDAD_PATH, SDI_PATH, ISR_PATH])
+    for (const href of [
+      AGUINALDO_PATH,
+      VACACIONES_PATH,
+      ANTIGUEDAD_PATH,
+      SDI_PATH,
+      ISR_PATH,
+      PTU_PATH,
+    ])
       expect(hrefs).toContain(href);
   });
 });

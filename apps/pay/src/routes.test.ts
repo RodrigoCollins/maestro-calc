@@ -58,7 +58,7 @@ describe('ROUTES', () => {
     expect(spanish).toEqual(expect.arrayContaining(MEXICO_ROUTES.map(({ es }) => es)));
     for (const path of spanish)
       expect(path).toMatch(
-        /^\/es\/(calculadora-de-dias-entre-fechas|fechas\/[a-z0-9-]+|calculadora-de-aguinaldo|calculadora-de-vacaciones-mexico|calculadora-de-prima-de-antiguedad|calculadora-de-salario-diario-integrado|calculadora-isr|calculadora-de-sueldo-neto|calculadora-de-finiquito-y-liquidacion|mexico\/[a-z0-9-]+)$/,
+        /^\/es\/(calculadora-de-dias-entre-fechas|fechas\/[a-z0-9-]+|calculadora-de-aguinaldo|calculadora-de-vacaciones-mexico|calculadora-de-prima-de-antiguedad|calculadora-de-salario-diario-integrado|calculadora-isr|calculadora-de-sueldo-neto|calculadora-de-finiquito-y-liquidacion|calculadora-de-ptu|mexico\/[a-z0-9-]+)$/,
       );
   });
 

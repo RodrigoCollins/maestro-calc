@@ -21,11 +21,13 @@ import {
   ANTIGUEDAD_PATH,
   FINIQUITO_PATH,
   mexicoPathOf,
+  PTU_PATH,
   SDI_PATH,
   VACACIONES_PATH,
   type MexicoSlug,
 } from './routes.ts';
 import { FINIQUITO_NAME } from './finiquito-words.ts';
+import { PTU_NAME } from './ptu-words.ts';
 import {
   ANTIGUEDAD_NAME,
   antiguedadTextOf,
@@ -97,6 +99,7 @@ const LINKS = {
   antiguedad: { href: ANTIGUEDAD_PATH, label: ANTIGUEDAD_NAME },
   sdi: { href: SDI_PATH, label: SDI_NAME },
   finiquito: { href: FINIQUITO_PATH, label: FINIQUITO_NAME },
+  ptu: { href: PTU_PATH, label: PTU_NAME },
   primaVacacional: {
     href: mexicoPathOf('prima-vacacional'),
     label: 'Prima vacacional: qué es y cómo se calcula',
@@ -448,7 +451,7 @@ const sdiSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Las prestaciones que forman tu SDI',
       paragraphs: [
-        'Cada prestación del factor con su calculadora o su explicación, las primas que también pueden integrar y el finiquito, cuyas indemnizaciones se pagan con tu salario integrado:',
+        'Cada prestación del factor con su calculadora o su explicación, las primas que también pueden integrar y el finiquito, cuyas indemnizaciones se pagan con tu salario integrado. La PTU, en cambio, no forma parte del salario para las indemnizaciones (art. 129):',
       ],
       links: [
         LINKS.aguinaldo,
@@ -458,6 +461,7 @@ const sdiSections = (): LongTailSection[] => {
         LINKS.extras,
         LINKS.antiguedad,
         LINKS.finiquito,
+        LINKS.ptu,
       ],
     },
   ];

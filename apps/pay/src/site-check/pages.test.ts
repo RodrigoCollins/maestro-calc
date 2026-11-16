@@ -49,6 +49,7 @@ describe('CALCULATOR_PAGES', () => {
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-prima-de-antiguedad.html');
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-salario-diario-integrado.html');
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-finiquito-y-liquidacion.html');
+    expect(CALCULATOR_PAGES).toContain('es/calculadora-de-ptu.html');
     // the answer pages load no script
     expect(CALCULATOR_PAGES).not.toContain('es/mexico/aguinaldo-2026.html');
     expect(CALCULATOR_PAGES).not.toContain('es/mexico/prima-dominical.html');

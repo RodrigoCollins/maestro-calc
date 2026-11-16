@@ -43,13 +43,16 @@ const rounded = (num: number, den: number): number => Math.floor((2 * num + den)
 
 const perDay = (period: WagePeriod): number => (period === 'month' ? 30 : 1);
 
-/** Pesos typed into a field (`315.04`, `$12,000`) as centavos, or `null` when it is no amount. */
-export const parseCents = (text: string): number | null => {
+/**
+ * Pesos typed into a field (`315.04`, `$12,000`) as centavos, or `null` when it is no amount or
+ * passes `maxCents` (10 million pesos unless a company figure asks for more).
+ */
+export const parseCents = (text: string, maxCents: number = MAX_CENTS): number | null => {
   const plain = text.trim().replace(/^\$\s*/, '');
   if (!/^(\d{1,3}(?:,\d{3})+|\d+)(\.\d{1,2})?$/.test(plain)) return null;
-  // at most two decimals and 10 million pesos: rounding the product gives the exact centavos
+  // at most two decimals and far under 2^53 centavos: rounding the product gives the exact centavos
   const cents = Math.round(Number(plain.replaceAll(',', '')) * 100);
-  return cents > 0 && cents <= MAX_CENTS ? cents : null;
+  return cents > 0 && cents <= maxCents ? cents : null;
 };
 
 /** A whole number typed into a field, from `min` to `max`, or `null`. */
