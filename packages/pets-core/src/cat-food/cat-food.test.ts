@@ -29,6 +29,7 @@ describe('cat food', () => {
       dryKcal: Rational.of(350),
       wetKcal: Rational.of(80),
       wetShare: Rational.ZERO,
+      dryBasis: 'cup',
     });
   });
 
@@ -81,6 +82,28 @@ describe('cat food', () => {
     expect(figure(mix, 'cansWithTreats')).toBeCloseTo(1.3364, 3);
   });
 
+  // a label in kcal per kilogram (the European labels): 237.59 / 3,800 x 1,000 = 62.52 g a day
+  it('feeds 4 kg neutered 62.5 g a day of a dry food of 3,800 kcal per kilogram', () => {
+    const kg = { ...FOUR_KG, dryBasis: 'kg', dryKcal: '3800' };
+    expect(figure(kg, 'grams')).toBeCloseTo(62.524, 2);
+    expect(figure(kg, 'gramsWithTreats')).toBeCloseTo(56.271, 2);
+    expect(figure(kg, 'cups')).toBe(0);
+    expect(figure(kg, 'cupsWithTreats')).toBe(0);
+    expect(figure(kg, 'mer')).toBeCloseTo(237.59, 2);
+  });
+
+  it('splits a mix by calories on a label per kilogram: half wet is 31.3 g and 1.485 cans', () => {
+    const mix = { ...FOUR_KG, dryBasis: 'kg', dryKcal: '3800', wetShare: '50' };
+    expect(figure(mix, 'grams')).toBeCloseTo(31.262, 2);
+    expect(figure(mix, 'cans')).toBeCloseTo(1.4849, 3);
+  });
+
+  it('keeps the cups of a label per cup and gives no grams', () => {
+    expect(figure({ dryBasis: 'cup' }, 'cups')).toBeCloseTo(0.746, 3);
+    expect(figure({}, 'grams')).toBe(0);
+    expect(figure({}, 'gramsWithTreats')).toBe(0);
+  });
+
   it('keeps no shopping and no warnings', () => {
     expect(ran({}).shopping).toEqual([]);
     expect(ran({}).warnings).toEqual([]);
@@ -96,5 +119,6 @@ describe('cat food', () => {
     expect(catFood.run({ dryKcal: '0' }).ok).toBe(false);
     expect(catFood.run({ wetKcal: '0' }).ok).toBe(false);
     expect(catFood.run({ status: 'puppy-young' }).ok).toBe(false);
+    expect(catFood.run({ dryBasis: 'can' }).ok).toBe(false);
   });
 });
