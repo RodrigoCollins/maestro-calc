@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { UMA_2026 } from '../mexico/mexico.ts';
 import {
-  IMSS_WORKER_QUOTAS,
+  IMSS_WORKER_RATES,
   ISR_TARIFFS_2026,
   isrOf,
   netPayOf,
@@ -65,7 +65,7 @@ describe('the ISR tariffs of Anexo 8, 2026', () => {
     'the %s tariff has no gap: each lower limit is a centavo over the upper one before it',
     (period) => {
       const rows = ISR_TARIFFS_2026[period];
-      expect(rows[0]?.lowerCents).toBe(1);
+      expect(rows[0].lowerCents).toBe(1);
       expect(rows.at(-1)?.upperCents).toBeNull();
       rows.slice(1).forEach((row, i) => {
         expect(row.lowerCents).toBe((rows[i]?.upperCents ?? Number.NaN) + 1);
@@ -77,10 +77,9 @@ describe('the ISR tariffs of Anexo 8, 2026', () => {
   it('the monthly fixed fees continue the bracket below within a centavo', () => {
     const rows = ISR_TARIFFS_2026.month;
     rows.slice(1).forEach((row, i) => {
-      const below = rows[i] as TariffRow;
-      const reach =
-        below.fixedCents +
-        (((below.upperCents as number) - below.lowerCents + 1) * below.rateBp) / 10000;
+      const below = rows[i] ?? rows[0];
+      const width = (below.upperCents ?? Number.NaN) - below.lowerCents + 1;
+      const reach = below.fixedCents + (width * below.rateBp) / 10000;
       expect(Math.abs(reach - row.fixedCents)).toBeLessThanOrEqual(1);
     });
   });
@@ -89,10 +88,11 @@ describe('the ISR tariffs of Anexo 8, 2026', () => {
     ['week', 7],
     ['fortnight', 15],
   ] as const)('the %s tariff is the daily one of Anexo 8 times %i days', (period, days) => {
-    ISR_TARIFFS_2026[period].forEach((row, i) => {
-      const [, upper, fixed] = DAILY[i] as readonly [number, number | null, number];
-      expect(row.upperCents).toBe(upper === null ? null : upper * days);
-      expect(row.fixedCents).toBe(fixed * days);
+    expect(ISR_TARIFFS_2026[period]).toHaveLength(DAILY.length);
+    DAILY.forEach(([, upper, fixed], i) => {
+      const row = ISR_TARIFFS_2026[period][i];
+      expect(row?.upperCents).toBe(upper === null ? null : upper * days);
+      expect(row?.fixedCents).toBe(fixed * days);
     });
   });
 
@@ -273,14 +273,14 @@ describe('isrOf, the ISR withheld from a salary', () => {
 });
 
 describe('the IMSS worker quotas', () => {
-  it('lists the five worker shares of the LSS, in thousandths of a percent', () => {
-    expect(IMSS_WORKER_QUOTAS).toEqual([
-      { key: 'excedente', rate: 400, overThreeUma: true },
-      { key: 'dinero', rate: 250, overThreeUma: false },
-      { key: 'pensionados', rate: 375, overThreeUma: false },
-      { key: 'invalidez', rate: 625, overThreeUma: false },
-      { key: 'cesantia', rate: 1125, overThreeUma: false },
-    ]);
+  it('holds the five worker shares of the LSS, in thousandths of a percent', () => {
+    expect(IMSS_WORKER_RATES).toEqual({
+      excedente: 400,
+      dinero: 250,
+      pensionados: 375,
+      invalidez: 625,
+      cesantia: 1125,
+    });
     // 3 UMA = 351.93; 25 UMA = 2,932.75
     expect(SBC_EXCESS_FLOOR_CENTS).toBe(35193);
     expect(SBC_CAP_CENTS).toBe(293275);
@@ -364,5 +364,12 @@ describe('netPayOf, the take-home pay of a month', () => {
     expect(net.sbcCents).toBe(293275);
     expect(net.imssCents).toBe(239928);
     expect(net.netCents).toBe(7_386_464);
+  });
+
+  it('does not mark as capped an SBC that lands exactly on 25 UMA', () => {
+    // 83,847.55 × 383 / 365 / 30 = 2,932.7499… → 2,932.75, the cap itself
+    const at = netPayOf({ monthlyCents: 8_384_755, years: 1, zone: 'general' });
+    expect(at.sbcCents).toBe(SBC_CAP_CENTS);
+    expect(at.capped).toBe(false);
   });
 });

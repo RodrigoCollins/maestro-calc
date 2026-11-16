@@ -1,5 +1,5 @@
 export {
-  IMSS_WORKER_QUOTAS,
+  IMSS_WORKER_RATES,
   ISR_TARIFFS_2026,
   isrOf,
   netPayOf,
@@ -14,6 +14,7 @@ export {
   type NetPayInput,
   type PayPeriod,
   type QuotaKey,
+  type Tariff,
   type TariffRow,
   type WageZone,
 } from './salary.ts';

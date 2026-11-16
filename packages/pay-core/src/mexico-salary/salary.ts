@@ -38,22 +38,32 @@ export interface TariffRow {
   readonly rateBp: number;
 }
 
+/** The rates of every tariff of Anexo 8, bracket by bracket, in hundredths of a percent. */
 const RATES = [192, 640, 1088, 1600, 1792, 2136, 2352, 3000, 3200, 3400, 3500] as const;
 
+/** A tariff: its first row, then the rest (a tariff is never empty). */
+export type Tariff = readonly [TariffRow, ...TariffRow[]];
+
+/** A lower limit and a fixed fee of a published table, in centavos. */
+type Published = readonly [number, number];
+
 /** Rows from the lower limits and fixed fees of a published table, with the shared rates. */
-const tariff = (rows: readonly (readonly [number, number])[]): readonly TariffRow[] =>
-  rows.map(([lowerCents, fixedCents], i) => {
+const tariff = (rows: readonly [Published, ...Published[]]): Tariff => {
+  const rowOf = ([lowerCents, fixedCents]: Published, i: number): TariffRow => {
     const next = rows[i + 1];
     return {
       lowerCents,
       upperCents: next === undefined ? null : next[0] - 1,
       fixedCents,
-      rateBp: RATES[i] as number,
+      rateBp: RATES[i] ?? 0,
     };
-  });
+  };
+  const [first, ...rest] = rows;
+  return [rowOf(first, 0), ...rest.map((each, i) => rowOf(each, i + 1))];
+};
 
 /** The tariffs of Anexo 8 B.II (7 days), B.IV (15 days) and B.V (the month), 2026. */
-export const ISR_TARIFFS_2026: Readonly<Record<PayPeriod, readonly TariffRow[]>> = {
+export const ISR_TARIFFS_2026: Readonly<Record<PayPeriod, Tariff>> = {
   week: tariff([
     [1, 0],
     [19447, 371],
@@ -162,11 +172,16 @@ export interface Isr {
 
 /** The ISR withheld from the salary of a period (LISR art. 96, Anexo 8 RMF 2026, the subsidy). */
 export const isrOf = ({ grossCents, period, zone }: IsrInput): Isr => {
+  // the bracket is the last row whose lower limit the salary reaches (the rows have no gap)
   const rows = ISR_TARIFFS_2026[period];
-  const rowIndex = rows.findIndex(
-    (each) => each.upperCents === null || grossCents <= each.upperCents,
-  );
-  const row = rows[rowIndex] as TariffRow;
+  let rowIndex = 0;
+  let row = rows[0];
+  for (const [i, each] of rows.entries()) {
+    if (each.lowerCents <= grossCents) {
+      rowIndex = i;
+      row = each;
+    }
+  }
   const excessCents = grossCents - row.lowerCents;
   const tariffCents = rounded(row.fixedCents * 10000 + excessCents * row.rateBp, 10000);
   const eligible = subsidyEligible(grossCents, period);
@@ -198,17 +213,13 @@ export type QuotaKey = 'excedente' | 'dinero' | 'pensionados' | 'invalidez' | 'c
  * the 19th transitory: 0.40%), its cash benefits (art. 107, 25% of 1%), the pensioners' medical
  * care (art. 25), invalidez y vida (art. 147) and cesantía en edad avanzada y vejez (art. 168 II b).
  */
-export const IMSS_WORKER_QUOTAS: readonly {
-  readonly key: QuotaKey;
-  readonly rate: number;
-  readonly overThreeUma: boolean;
-}[] = [
-  { key: 'excedente', rate: 400, overThreeUma: true },
-  { key: 'dinero', rate: 250, overThreeUma: false },
-  { key: 'pensionados', rate: 375, overThreeUma: false },
-  { key: 'invalidez', rate: 625, overThreeUma: false },
-  { key: 'cesantia', rate: 1125, overThreeUma: false },
-];
+export const IMSS_WORKER_RATES: Readonly<Record<QuotaKey, number>> = {
+  excedente: 400,
+  dinero: 250,
+  pensionados: 375,
+  invalidez: 625,
+  cesantia: 1125,
+};
 
 /** Three UMA a day: the SBC over it pays the 0.40% of art. 106 II. */
 export const SBC_EXCESS_FLOOR_CENTS = 3 * UMA_2026.dailyCents;
@@ -253,15 +264,18 @@ export const netPayOf = ({ monthlyCents, years, zone }: NetPayInput): NetPay => 
   const sbcCents = Math.min(integrated, SBC_CAP_CENTS);
   const isr = isrOf({ grossCents: monthlyCents, period: 'month', zone });
   const minimumWage = isr.minimumWage;
-  const quota = (rate: number, overThreeUma: boolean): number => {
-    if (minimumWage) return 0;
-    const base = overThreeUma ? Math.max(sbcCents - SBC_EXCESS_FLOOR_CENTS, 0) : sbcCents;
-    return rounded(base * QUOTA_DAYS * rate, 100000);
+  // at the minimum wage the employer pays the worker quotas too (art. 36)
+  const quota = (key: QuotaKey, baseCents: number): number =>
+    minimumWage ? 0 : rounded(baseCents * QUOTA_DAYS * IMSS_WORKER_RATES[key], 100000);
+  const quotas: Readonly<Record<QuotaKey, number>> = {
+    excedente: quota('excedente', Math.max(sbcCents - SBC_EXCESS_FLOOR_CENTS, 0)),
+    dinero: quota('dinero', sbcCents),
+    pensionados: quota('pensionados', sbcCents),
+    invalidez: quota('invalidez', sbcCents),
+    cesantia: quota('cesantia', sbcCents),
   };
-  const quotas = Object.fromEntries(
-    IMSS_WORKER_QUOTAS.map(({ key, rate, overThreeUma }) => [key, quota(rate, overThreeUma)]),
-  ) as Record<QuotaKey, number>;
-  const imssCents = Object.values(quotas).reduce((sum, each) => sum + each, 0);
+  const imssCents =
+    quotas.excedente + quotas.dinero + quotas.pensionados + quotas.invalidez + quotas.cesantia;
   return {
     monthlyCents,
     dailyCents: rounded(monthlyCents, QUOTA_DAYS),
