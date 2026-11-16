@@ -80,13 +80,16 @@ const FOOTER_FR: readonly NavLink[] = [
 
 /** The Spanish header: the hub of the food pages, the dog age calculator and the chocolate guide. */
 const NAV_ES: readonly NavLink[] = [
+  { id: 'feed', label: '¿Cuánto debe comer?' },
   { id: 'foods', label: '¿Qué pueden comer?' },
   { id: 'dog-age', label: 'Edad del perro' },
   { id: 'chocolate-guide', label: 'Chocolate' },
 ];
 
-/** The Spanish footer: the same three, the plant hubs, then the pages about the site. */
+/** The Spanish footer: the feeding pages, the same three, the plant hubs, then the pages about the site. */
 const FOOTER_ES: readonly NavLink[] = [
+  { id: 'feed', label: '¿Cuánto debe comer un perro según su peso?' },
+  { id: 'dog', label: 'Calculadora de comida para perros' },
   { id: 'foods', label: '¿Qué frutas pueden comer los perros? Todos los alimentos' },
   { id: 'dog-age', label: 'Edad de perro en años humanos' },
   { id: 'chocolate-guide', label: '¿Qué pasa si un perro come chocolate?' },

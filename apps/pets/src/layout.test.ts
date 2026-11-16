@@ -100,8 +100,9 @@ describe('the French header and footer', () => {
 });
 
 describe('the Spanish header and footer', () => {
-  it('lead to the Spanish pages only, the hub, the dog age calculator and the chocolate guide first', () => {
+  it('lead to the Spanish pages only, the feeding and food hubs, the dog age calculator and the chocolate guide first', () => {
     expect(navLinks('es').map(({ href }) => href)).toEqual([
+      '/es/cuanto-debe-comer-un-perro-segun-su-peso',
       '/es/que-frutas-pueden-comer-los-perros',
       '/es/edad-de-perro-en-anos-humanos',
       '/es/que-pasa-si-un-perro-come-chocolate',
@@ -142,7 +143,7 @@ describe('switchesOf', () => {
       { href: '/dog-age-calculator', lang: 'en', label: 'English' },
       { href: '/fr/age-chien-en-humain', lang: 'fr', label: 'Français' },
     ]);
-    expect(switchesOf('/dog-food-calculator', { de: true, fr: true, es: true })).toEqual([]);
+    expect(switchesOf('/cat-food-calculator', { de: true, fr: true, es: true })).toEqual([]);
   });
 
   it('leads a Spanish page to English and an English page to Spanish once Spanish is open', () => {

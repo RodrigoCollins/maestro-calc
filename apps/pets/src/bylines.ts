@@ -15,6 +15,8 @@ import { CHOCOLAT_GUIDE } from './fr/chocolat.ts';
 import { FOOD_HUB_ES, FOOD_PAGES_ES } from './es/can-dogs-eat.ts';
 import { CHOCOLATE_GUIDE_ES } from './es/chocolate.ts';
 import { EDAD_PERRO_ARTICLE, EDAD_PERRO_PAGE } from './es/edad-perro.ts';
+import { COMIDA_PERRO_ARTICLE, COMIDA_PERRO_PAGE } from './es/comida-perro.ts';
+import { CUANTO_COME } from './es/cuanto-come.ts';
 import { CATS_HUB_ES, DOGS_HUB_ES, PLANT_PAGES_ES, SAFE_HUB_ES } from './es/toxic-plants.ts';
 import { CATS_HUB, DOGS_HUB, PLANT_PAGES, SAFE_HUB } from './toxic-plants.ts';
 
@@ -65,6 +67,8 @@ export const BYLINE_PAGES_FR: readonly BylinePage[] = [
 export const BYLINE_PAGES_ES: readonly BylinePage[] = [
   CHOCOLATE_GUIDE_ES,
   { path: EDAD_PERRO_PAGE.path, ...EDAD_PERRO_ARTICLE },
+  { path: COMIDA_PERRO_PAGE.path, ...COMIDA_PERRO_ARTICLE },
+  CUANTO_COME,
   FOOD_HUB_ES,
   ...FOOD_PAGES_ES,
   DOGS_HUB_ES,

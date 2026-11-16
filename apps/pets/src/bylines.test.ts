@@ -22,7 +22,7 @@ describe('BYLINE_PAGES_DE', () => {
 });
 
 describe('BYLINE_PAGES_ES', () => {
-  it('are the Spanish guide, the dog age page, the food hub and every Spanish food page', () => {
+  it('are the Spanish guide, the dog age and dog food pages, the feeding and food hubs and every Spanish food page', () => {
     const spanish = ROUTES.flatMap(({ id, es }) =>
       es === undefined || ['home', 'about', 'editorial', 'privacy'].includes(id) ? [] : [es],
     );
