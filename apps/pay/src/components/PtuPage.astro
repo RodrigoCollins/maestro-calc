@@ -16,7 +16,7 @@ const companyFields = (['company', 'totalDays', 'totalSalary'] as const).map((na
   name,
   label: page.labels[name],
   value: v[name],
-  mode: name === 'totalDays' ? 'numeric' : 'decimal',
+  mode: name === 'totalDays' ? ('numeric' as const) : ('decimal' as const),
 }));
 const pastFields = (['past1', 'past2', 'past3'] as const).map((name) => ({
   name,
