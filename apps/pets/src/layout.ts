@@ -90,6 +90,7 @@ const NAV_ES: readonly NavLink[] = [
 const FOOTER_ES: readonly NavLink[] = [
   { id: 'feed', label: '¿Cuánto debe comer un perro según su peso?' },
   { id: 'dog', label: 'Calculadora de comida para perros' },
+  { id: 'cat', label: 'Calculadora de comida para gatos' },
   { id: 'foods', label: '¿Qué frutas pueden comer los perros? Todos los alimentos' },
   { id: 'dog-age', label: 'Edad de perro en años humanos' },
   { id: 'chocolate-guide', label: '¿Qué pasa si un perro come chocolate?' },

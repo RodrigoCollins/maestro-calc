@@ -30,6 +30,7 @@ import { CHOCOLATE_GUIDE_ES } from './es/chocolate.ts';
 import { EDAD_PERRO_PAGE } from './es/edad-perro.ts';
 import { COMIDA_PERRO_PAGE } from './es/comida-perro.ts';
 import { CUANTO_COME } from './es/cuanto-come.ts';
+import { COMIDA_GATO_PAGE } from './es/comida-gato.ts';
 import { ABOUT_ES, EDITORIAL_ES } from './es/trust.ts';
 import { CATS_HUB_ES, DOGS_HUB_ES, PLANT_PAGES_ES, SAFE_HUB_ES } from './es/toxic-plants.ts';
 
@@ -105,6 +106,7 @@ const SPANISH: readonly Entry[] = [
   ...[
     COMIDA_PERRO_PAGE,
     CUANTO_COME,
+    COMIDA_GATO_PAGE,
     EDAD_PERRO_PAGE,
     CHOCOLATE_GUIDE_ES,
     FOOD_HUB_ES,

@@ -4,6 +4,7 @@ import { FOOD_PAGES_ES } from './can-dogs-eat.ts';
 import { PLANT_PAGES_ES } from './toxic-plants.ts';
 import { amountEs } from './format.ts';
 import { dogFigureKg, kcalEs } from './comida-perro.ts';
+import { catFigureKg } from './comida-gato.ts';
 
 const medium = (age: number): string => amountEs(humanAt(age, 'medium'), 0);
 
@@ -24,6 +25,11 @@ export const HOME_ES = {
       href: hrefOf('feed', 'es'),
       title: '¿Cuánto debe comer un perro según su peso?',
       summary: `Un perro adulto castrado de 20 kg necesita unas ${kcalEs(dogFigureKg(20, 'mer'))} kcal al día. Tabla en gramos de 2 a 50 kg y calculadora con la etiqueta de su alimento.`,
+    },
+    {
+      href: hrefOf('cat', 'es'),
+      title: 'Calculadora de comida para gatos',
+      summary: `Un gato adulto castrado de 4 kg necesita unas ${kcalEs(catFigureKg(4, 'mer'))} kcal al día. Gramos de seco y latas de húmedo con la etiqueta de su alimento.`,
     },
     {
       href: hrefOf('dog-age', 'es'),
@@ -56,7 +62,7 @@ export const HOME_ES = {
     ],
   },
   english: {
-    text: 'Otras calculadoras, por ejemplo la de la ración de los gatos, están en inglés:',
+    text: 'Otras calculadoras, por ejemplo la de la ración de los cachorros, están en inglés:',
     href: hrefOf('home'),
     label: 'Bowl Figures en inglés',
   },

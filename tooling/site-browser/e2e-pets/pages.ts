@@ -290,6 +290,7 @@ export const FR_PAGES: readonly string[] = [
 export const ES_PAGES: readonly string[] = [
   '/es',
   '/es/calculadora-de-comida-para-perros',
+  '/es/calculadora-de-comida-para-gatos',
   '/es/cuanto-debe-comer-un-perro-segun-su-peso',
   '/es/edad-de-perro-en-anos-humanos',
   '/es/que-pasa-si-un-perro-come-chocolate',
@@ -480,6 +481,15 @@ export const CALCULATORS = [
     // typed with a decimal comma: 4.5 kg, 70 x 4.5^0.75 x 1.6 = 346.0 kcal, 96.1 g
     edit: { field: 'weight', value: '4,5' },
     edited: '96',
+  },
+  {
+    path: '/es/calculadora-de-comida-para-gatos',
+    out: 'figure',
+    // 4 kg neutered cat: 70 x 4^0.75 x 1.2 = 237.6 kcal, / 3,800 kcal per kg x 1,000 = 63 g
+    initial: '63',
+    // typed with a decimal comma: 5.5 kg, 70 x 5.5^0.75 x 1.2 = 301.7 kcal, 79.4 g
+    edit: { field: 'weight', value: '5,5' },
+    edited: '79',
   },
   {
     path: '/es/edad-de-perro-en-anos-humanos',

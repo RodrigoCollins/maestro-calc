@@ -6,11 +6,12 @@ import { CALCULATOR_PAGES } from './pages.ts';
 const pages = resolve(import.meta.dirname, '../pages');
 
 describe('CALCULATOR_PAGES', () => {
-  it('names the nine calculator pages, the German, French and Spanish dog age pages and the Spanish dog food page as the build files them', () => {
+  it('names the nine calculator pages, the German, French and Spanish dog age pages and the Spanish dog and cat food pages as the build files them', () => {
     expect(CALCULATOR_PAGES).toEqual([
       'dog-food-calculator.html',
       'es/calculadora-de-comida-para-perros.html',
       'cat-food-calculator.html',
+      'es/calculadora-de-comida-para-gatos.html',
       'puppy-feeding-calculator.html',
       'kitten-feeding-calculator.html',
       'dog-chocolate-toxicity-calculator.html',
