@@ -17,7 +17,7 @@ import {
 const date = (y: number, m: number, d: number): CivilDate => ({ y, m, d });
 
 // The rules, as the Ley Federal del Trabajo (Cámara de Diputados text, last reform DOF
-// 21-02-2025) and the Ley del Seguro Social (last reform DOF 07-06-2024) read on 2026-11-15:
+// 21-02-2025) and the Ley del Seguro Social (last reform DOF 15-01-2026) read on 2026-11-15:
 // - LFT art. 71: a prima of 25% at least over the salary of an ordinary day for working on Sunday.
 // - LFT arts. 61, 66, 67, 68: a day of 8, 7 or 7.5 hours; overtime paid with 100% more, and the
 //   hours over nine a week with 200% more.
