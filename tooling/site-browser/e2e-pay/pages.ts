@@ -5,6 +5,7 @@ import { DATE_ROUTES, DAYS_BETWEEN_PATH } from '../../../apps/pay/src/dates/rout
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   ISR_PATH,
   MEXICO_ROUTES,
   SDI_PATH,
@@ -132,6 +133,9 @@ export const ISR_MX = ISR_PATH;
 
 /** The take-home pay calculator of Mexico, Spanish only. */
 export const SUELDO_NETO = SUELDO_NETO_PATH;
+
+/** The finiquito and liquidación calculator of Mexico, Spanish only. */
+export const FINIQUITO = FINIQUITO_PATH;
 
 /** The days-between calculator, Spanish only. */
 export const DAYS_BETWEEN = DAYS_BETWEEN_PATH;

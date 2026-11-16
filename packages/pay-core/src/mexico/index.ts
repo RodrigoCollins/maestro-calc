@@ -44,3 +44,13 @@ export {
   type Separation,
   type WageZone,
 } from './labor.ts';
+export {
+  finiquitoOf,
+  INDEMNIZACION_DAYS,
+  SEPARATION_EXEMPT_UMA,
+  VEINTE_DIAS_PER_YEAR,
+  type Exit,
+  type Finiquito,
+  type FiniquitoInput,
+  type FiniquitoIsr,
+} from './finiquito.ts';

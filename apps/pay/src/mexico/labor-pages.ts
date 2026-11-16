@@ -19,11 +19,13 @@ import type { MexicoArticle } from './pages.ts';
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   mexicoPathOf,
   SDI_PATH,
   VACACIONES_PATH,
   type MexicoSlug,
 } from './routes.ts';
+import { FINIQUITO_NAME } from './finiquito-words.ts';
 import {
   ANTIGUEDAD_NAME,
   antiguedadTextOf,
@@ -94,6 +96,7 @@ const LINKS = {
   vacaciones: { href: VACACIONES_PATH, label: VACACIONES_NAME },
   antiguedad: { href: ANTIGUEDAD_PATH, label: ANTIGUEDAD_NAME },
   sdi: { href: SDI_PATH, label: SDI_NAME },
+  finiquito: { href: FINIQUITO_PATH, label: FINIQUITO_NAME },
   primaVacacional: {
     href: mexicoPathOf('prima-vacacional'),
     label: 'Prima vacacional: qué es y cómo se calcula',
@@ -274,9 +277,9 @@ const antiguedadSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Lo demás que te toca al terminar',
       paragraphs: [
-        'Al terminar la relación de trabajo también te toca el aguinaldo proporcional del año y las vacaciones que no tomaste, con su prima; y para una indemnización, tu salario integrado.',
+        'Al terminar la relación de trabajo también te toca el aguinaldo proporcional del año y las vacaciones que no tomaste, con su prima; y para una indemnización, tu salario integrado. La calculadora de finiquito y liquidación suma todo.',
       ],
-      links: [LINKS.aguinaldo, LINKS.vacaciones, LINKS.sdi],
+      links: [LINKS.aguinaldo, LINKS.vacaciones, LINKS.sdi, LINKS.finiquito],
     },
   ];
 };
@@ -445,7 +448,7 @@ const sdiSections = (): LongTailSection[] => {
       id: 'relacionadas',
       heading: 'Las prestaciones que forman tu SDI',
       paragraphs: [
-        'Cada prestación del factor con su calculadora o su explicación, y las primas que también pueden integrar:',
+        'Cada prestación del factor con su calculadora o su explicación, las primas que también pueden integrar y el finiquito, cuyas indemnizaciones se pagan con tu salario integrado:',
       ],
       links: [
         LINKS.aguinaldo,
@@ -454,6 +457,7 @@ const sdiSections = (): LongTailSection[] => {
         LINKS.dominical,
         LINKS.extras,
         LINKS.antiguedad,
+        LINKS.finiquito,
       ],
     },
   ];

@@ -6,6 +6,7 @@ import {
   DAYS_BETWEEN,
   DECIMAL_HOURS,
   DEFAULT_PAY,
+  FINIQUITO,
   HOURS,
   ISR_MX,
   MILITARY,
@@ -218,4 +219,14 @@ test(`${SDI_MX} shows the first year SDI without JavaScript`, async ({ page }) =
   await page.goto(SDI_MX);
   await expect(page.locator('[data-mx="figure"]')).toHaveText('$330.58');
   await expect(page.locator('[data-mx="factor"]')).toHaveText('1.0493');
+});
+
+// The defaults, worked by the build: $15,000 a month from 1 March 2019 to 15 November 2026,
+// dismissed with no cause: finiquito 81,373.28 and 90 × 528.08 = 47,527.20, in all 128,900.48;
+// free of ISR 84,463.20 + 3,519.30 + 1,759.65 = 89,742.15.
+test(`${FINIQUITO} shows the finiquito and liquidación without JavaScript`, async ({ page }) => {
+  await page.goto(FINIQUITO);
+  await expect(page.locator('[data-mx="figure"]')).toHaveText('$128,900.48');
+  await expect(page.locator('[data-mx="indemnizacion"]')).toHaveText('$47,527.20');
+  await expect(page.locator('[data-mx="exempt"]')).toHaveText('$89,742.15');
 });

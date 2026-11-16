@@ -6,6 +6,7 @@ import { MX_SOURCES } from './pages.ts';
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   mexicoPathOf,
   SDI_PATH,
   VACACIONES_PATH,
@@ -100,7 +101,8 @@ describe('antiguedadPageOf', () => {
 
   it('links the salario integrado, the aguinaldo and the vacation calculators', () => {
     const hrefs = hrefsOf(page.sections);
-    for (const href of [SDI_PATH, AGUINALDO_PATH, VACACIONES_PATH]) expect(hrefs).toContain(href);
+    for (const href of [SDI_PATH, AGUINALDO_PATH, VACACIONES_PATH, FINIQUITO_PATH])
+      expect(hrefs).toContain(href);
   });
 });
 
@@ -152,6 +154,7 @@ describe('sdiPageOf', () => {
       mexicoPathOf('prima-dominical'),
       mexicoPathOf('como-se-pagan-las-horas-extras'),
       ANTIGUEDAD_PATH,
+      FINIQUITO_PATH,
     ])
       expect(hrefs).toContain(href);
   });

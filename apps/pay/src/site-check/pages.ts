@@ -3,6 +3,7 @@ import { CLOCK_JOBS, pathOf, SHIFTS } from '../long-tail/routes.ts';
 import {
   AGUINALDO_PATH,
   ANTIGUEDAD_PATH,
+  FINIQUITO_PATH,
   ISR_PATH,
   SDI_PATH,
   SUELDO_NETO_PATH,
@@ -73,6 +74,7 @@ export const MEXICO_PAGES: readonly string[] = [
   SDI_PATH,
   ISR_PATH,
   SUELDO_NETO_PATH,
+  FINIQUITO_PATH,
 ].map((path) => `${path.slice(1)}.html`);
 
 /** The built pages that hold a calculator, each allowed one module script (`budgets.ts`). */

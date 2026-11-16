@@ -43,11 +43,12 @@ describe('CALCULATOR_PAGES', () => {
     expect(new Set(CALCULATOR_PAGES).size).toBe(CALCULATOR_PAGES.length);
   });
 
-  it('lets the four Mexico calculators, Spanish only, load their one script', () => {
+  it('lets the Mexico calculators, Spanish only, load their one script', () => {
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-aguinaldo.html');
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-vacaciones-mexico.html');
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-prima-de-antiguedad.html');
     expect(CALCULATOR_PAGES).toContain('es/calculadora-de-salario-diario-integrado.html');
+    expect(CALCULATOR_PAGES).toContain('es/calculadora-de-finiquito-y-liquidacion.html');
     // the answer pages load no script
     expect(CALCULATOR_PAGES).not.toContain('es/mexico/aguinaldo-2026.html');
     expect(CALCULATOR_PAGES).not.toContain('es/mexico/prima-dominical.html');
