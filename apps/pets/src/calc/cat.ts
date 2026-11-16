@@ -15,9 +15,13 @@ const FIELDS = {
   weight: { label: 'Your cat’s weight' },
   unit: { label: 'Unit', options: { lb: 'pounds', kg: 'kilograms' } },
   status: { label: 'Life stage and status', options: STATUS_COPY },
-  dryKcal: { label: 'Dry food: calories per cup' },
+  dryKcal: { label: 'Dry food: calories on the label' },
   wetKcal: { label: 'Wet food: calories per can' },
   wetShare: { label: 'Share of the calories from wet food (%)' },
+  dryBasis: {
+    label: 'The dry food label gives calories per',
+    options: { cup: 'cup', kg: 'kilogram' },
+  },
 } as const;
 
 const VET =
@@ -42,6 +46,7 @@ export const CAT_PAGE: FeedingPage = {
     dryKcal: '350',
     wetKcal: '80',
     wetShare: '0',
+    dryBasis: 'cup',
   },
   notes: [VET, TREATS],
 };
@@ -63,6 +68,7 @@ export const KITTEN_PAGE: FeedingPage = {
     dryKcal: '350',
     wetKcal: '80',
     wetShare: '0',
+    dryBasis: 'cup',
   },
   notes: [
     'The Merck Veterinary Manual notes that kittens can alternatively be fed free choice. Ask your veterinarian which suits your kitten, and weigh it every week or two.',
@@ -70,16 +76,21 @@ export const KITTEN_PAGE: FeedingPage = {
   ],
 };
 
-/** The result of the cat food calculator: the bowl for the cups, the can for the wet share. */
+/**
+ * The result of the cat food calculator: the bowl for the dry food (cups, or grams for a label
+ * per kilogram), the can for the wet share.
+ */
 export const catView: View = (figures): Patch => {
   const mer = figureOf(figures, 'mer');
   const cups = figureOf(figures, 'cups');
+  const grams = figureOf(figures, 'grams');
   const cans = figureOf(figures, 'cans');
+  const byGrams = grams.sign() === 1;
   return {
     text: {
-      figure: cupsText(quarterCups(cups.toNumber())),
-      unit: 'cups of dry food a day',
-      exact: `${amountText(cups, 2)} cups exactly`,
+      figure: byGrams ? amountText(grams, 0) : cupsText(quarterCups(cups.toNumber())),
+      unit: byGrams ? 'grams of dry food a day' : 'cups of dry food a day',
+      exact: byGrams ? `${amountText(grams, 1)} g exactly` : `${amountText(cups, 2)} cups exactly`,
       canFigure: cupsText(quarterCups(cans.toNumber())),
       canUnit: 'cans of wet food a day',
       canExact: `${amountText(cans, 2)} cans exactly`,
@@ -89,7 +100,7 @@ export const catView: View = (figures): Patch => {
     },
     html: { bowl: bowlSvg(kibbleCount(mer.toNumber())) },
     // the dry figure shows while any calories come from dry food, the wet one while any come from cans
-    show: { dry: cups.sign() === 1, wet: cans.sign() === 1 },
+    show: { dry: cups.sign() === 1 || byGrams, wet: cans.sign() === 1 },
     vars: {},
     flags: {},
   };

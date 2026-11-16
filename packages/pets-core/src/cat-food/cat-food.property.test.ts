@@ -42,6 +42,32 @@ describe('cat-food properties', () => {
     );
   });
 
+  it('feeds exactly the day on a label per kilogram: grams x dry kcal / 1,000 + cans x wet kcal', () => {
+    fc.assert(
+      fc.property(weight, unit, status, kcal, kcal, share, (w, u, s, d, c, ws) => {
+        const out = ran({
+          weight: w,
+          unit: u,
+          status: s,
+          dryKcal: d,
+          wetKcal: c,
+          wetShare: ws,
+          dryBasis: 'kg',
+        });
+        const fed = at(out, 'grams')
+          .mul(Rational.of(BigInt(d)))
+          .div(Rational.of(1000))
+          .add(at(out, 'cans').mul(Rational.of(BigInt(c))));
+        expect(fed.equals(at(out, 'mer'))).toBe(true);
+        expect(at(out, 'cups').sign()).toBe(0);
+        expect(at(out, 'gramsWithTreats').equals(at(out, 'grams').mul(Rational.of(9, 10)))).toBe(
+          true,
+        );
+      }),
+      { numRuns },
+    );
+  });
+
   it('moves calories from the cup to the can as the wet share grows', () => {
     fc.assert(
       fc.property(weight, status, share, share, (w, s, a, b) => {

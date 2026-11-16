@@ -1,0 +1,28 @@
+---
+import { catFood } from '@maestro-calc/pets-core/cat-food';
+import CalcPage from '../../components/CalcPage.astro';
+import { COMIDA_GATO_ARTICLE, COMIDA_GATO_METHOD, COMIDA_GATO_PAGE } from '../../es/comida-gato.ts';
+import { catViewEs } from '../../es/comida-gato-view.ts';
+import ComidaGatoScript from '../../islands/ComidaGatoScript.astro';
+import { hrefOf } from '../../routes.ts';
+---
+
+<CalcPage
+  page={COMIDA_GATO_PAGE}
+  calculator={catFood}
+  view={catViewEs}
+  kind="cat"
+  method={COMIDA_GATO_METHOD}
+  article={COMIDA_GATO_ARTICLE}
+  related={[
+    { href: hrefOf('dog', 'es'), label: 'Calculadora de comida para perros' },
+    {
+      href: hrefOf('plants-cats', 'es'),
+      label: 'Plantas tóxicas para gatos',
+    },
+    { href: hrefOf('kitten'), label: 'Kitten feeding calculator (en inglés)' },
+    { href: hrefOf('cat-chart'), label: 'Cat feeding chart by weight (en inglés)' },
+  ]}
+>
+  <ComidaGatoScript />
+</CalcPage>

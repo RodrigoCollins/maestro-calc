@@ -143,7 +143,7 @@ describe('switchesOf', () => {
       { href: '/dog-age-calculator', lang: 'en', label: 'English' },
       { href: '/fr/age-chien-en-humain', lang: 'fr', label: 'Français' },
     ]);
-    expect(switchesOf('/cat-food-calculator', { de: true, fr: true, es: true })).toEqual([]);
+    expect(switchesOf('/puppy-feeding-calculator', { de: true, fr: true, es: true })).toEqual([]);
   });
 
   it('leads a Spanish page to English and an English page to Spanish once Spanish is open', () => {

@@ -11,6 +11,7 @@ describe('cat-food contract', () => {
       ['dryKcal', 'd'],
       ['wetKcal', 'c'],
       ['wetShare', 'ws'],
+      ['dryBasis', 'db'],
     ]);
   });
 
@@ -36,6 +37,14 @@ describe('cat-food contract', () => {
       ['low', 'secondary'],
       ['high', 'secondary'],
       ['treats', 'secondary'],
+      ['grams', 'secondary'],
+      ['gramsWithTreats', 'secondary'],
     ]);
+  });
+
+  it('reads the dry label per cup or per kilogram, by the cup unless a link says otherwise', () => {
+    const basis = catFood.inputs.find(({ key }) => key === 'dryBasis');
+    expect(basis?.kind === 'select' && basis.options).toEqual(['cup', 'kg']);
+    expect(basis?.kind === 'select' && basis.default).toBe('cup');
   });
 });

@@ -5,6 +5,7 @@ import { CHOCOLATE_GUIDE_ES } from './chocolate.ts';
 import { EDAD_PERRO_PAGE } from './edad-perro.ts';
 import { COMIDA_PERRO_PAGE } from './comida-perro.ts';
 import { CUANTO_COME } from './cuanto-come.ts';
+import { COMIDA_GATO_PAGE } from './comida-gato.ts';
 import { HOME_ES } from './home.ts';
 import { ABOUT_ES, EDITORIAL_ES, PRIVACY_ES } from './trust.ts';
 
@@ -20,6 +21,7 @@ describe('the Spanish pages about the site', () => {
       EDAD_PERRO_PAGE,
       COMIDA_PERRO_PAGE,
       CUANTO_COME,
+      COMIDA_GATO_PAGE,
     ];
     for (const { title, description } of pages) {
       expect(title.length, title).toBeLessThanOrEqual(65);

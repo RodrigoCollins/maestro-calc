@@ -36,7 +36,12 @@ export const ROUTES: readonly Route[] = [
     path: '/dog-food-calculator',
     es: '/es/calculadora-de-comida-para-perros',
   },
-  { id: 'cat', kind: 'calculator', path: '/cat-food-calculator' },
+  {
+    id: 'cat',
+    kind: 'calculator',
+    path: '/cat-food-calculator',
+    es: '/es/calculadora-de-comida-para-gatos',
+  },
   { id: 'puppy', kind: 'calculator', path: '/puppy-feeding-calculator' },
   { id: 'kitten', kind: 'calculator', path: '/kitten-feeding-calculator' },
   { id: 'chocolate', kind: 'calculator', path: '/dog-chocolate-toxicity-calculator' },

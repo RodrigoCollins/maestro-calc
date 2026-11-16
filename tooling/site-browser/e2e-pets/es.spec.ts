@@ -109,3 +109,13 @@ test('leads the English dog food calculator to its Spanish twin from the header'
     '/es/calculadora-de-comida-para-perros',
   );
 });
+
+test('leads the English cat food calculator to its Spanish twin, in grams', async ({ page }) => {
+  await page.goto('/cat-food-calculator');
+  const spanish = page.locator('header a[hreflang="es"]');
+  await expect(spanish).toHaveAttribute('href', '/es/calculadora-de-comida-para-gatos');
+  await spanish.click();
+  await expect(page.locator('[data-text="unit"]').first()).toHaveText(
+    'gramos de alimento seco al día',
+  );
+});

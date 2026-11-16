@@ -306,6 +306,7 @@ describe('ROUTES', () => {
     expect(ROUTES.flatMap(({ id, es }) => (es === undefined ? [] : [[id, es]]))).toEqual([
       ['home', '/es'],
       ['dog', '/es/calculadora-de-comida-para-perros'],
+      ['cat', '/es/calculadora-de-comida-para-gatos'],
       ['dog-age', '/es/edad-de-perro-en-anos-humanos'],
       ['chocolate-guide', '/es/que-pasa-si-un-perro-come-chocolate'],
       ['feed', '/es/cuanto-debe-comer-un-perro-segun-su-peso'],
@@ -468,7 +469,8 @@ describe('hrefOf', () => {
     expect(hrefOf('dog-age', 'es')).toBe('/es/edad-de-perro-en-anos-humanos');
     expect(hrefOf('home', 'es')).toBe('/es');
     expect(hrefOf('dog', 'es')).toBe('/es/calculadora-de-comida-para-perros');
-    expect(() => hrefOf('cat', 'es')).toThrow('no Spanish page for cat');
+    expect(hrefOf('cat', 'es')).toBe('/es/calculadora-de-comida-para-gatos');
+    expect(() => hrefOf('puppy', 'es')).toThrow('no Spanish page for puppy');
   });
 
   it('leads to the French page of a route, and refuses a route with none', () => {

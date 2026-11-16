@@ -8,6 +8,9 @@ import {
 import { CAT_STATUSES, catEnergy, kilogramsOf } from '../energy/index.ts';
 
 const HUNDRED = Rational.of(100);
+const THOUSAND = Rational.of(1000);
+/** How the dry food label states the calories: per cup (US labels) or per kilogram (AAFCO, EU labels). */
+const DRY_BASES = ['cup', 'kg'] as const;
 /** Complete and balanced food is at least 90% of the day; treats and the rest at most 10% (AAHA 2021). */
 const TREAT_SHARE = Rational.of(1, 10);
 const FOOD_SHARE = Rational.of(9, 10);
@@ -16,7 +19,8 @@ const FOOD_SHARE = Rational.of(9, 10);
  * Cat food: the calories a day of a cat (`catEnergy`, Merck and AAHA), split between dry food by
  * the cup and wet food by the can from the share of the calories that comes from the wet food
  * (0 for dry only, 100 for wet only): cups a day = MER x dry share / kcal per cup, cans a day =
- * MER x wet share / kcal per can. Both come from the calorie lines of the labels (AAFCO,
+ * MER x wet share / kcal per can. A dry label per kilogram gives grams instead of cups: grams a
+ * day = MER x dry share / (kcal per kg) x 1,000, and the cups are then 0. Both come from the calorie lines of the labels (AAFCO,
  * "Calorie Content"). The `WithTreats` amounts are 90% of them, for a day that spends the 10%
  * treat allowance. For a cat on a weight-loss plan the weight is the ideal weight.
  */
@@ -47,6 +51,7 @@ export const catFood = defineCalculator({
       max: Rational.of(100_000),
     }),
     percentInput({ key: 'wetShare', urlKey: 'ws', default: Rational.ZERO }),
+    selectInput({ key: 'dryBasis', urlKey: 'db', options: DRY_BASES, default: 'cup' }),
   ],
   outputs: [
     { key: 'cups', measure: 'number', role: 'primary' },
@@ -58,12 +63,16 @@ export const catFood = defineCalculator({
     { key: 'low', measure: 'number', role: 'secondary' },
     { key: 'high', measure: 'number', role: 'secondary' },
     { key: 'treats', measure: 'number', role: 'secondary' },
+    { key: 'grams', measure: 'number', role: 'secondary' },
+    { key: 'gramsWithTreats', measure: 'number', role: 'secondary' },
   ],
   warnings: [],
-  compute: ({ weight, unit, status, dryKcal, wetKcal, wetShare }) => {
+  compute: ({ weight, unit, status, dryKcal, wetKcal, wetShare, dryBasis }) => {
     const { rer, mer, low, high } = catEnergy(status, kilogramsOf(weight, unit));
     const wet = wetShare.div(HUNDRED);
-    const cups = mer.mul(Rational.ONE.sub(wet)).div(dryKcal);
+    const dry = mer.mul(Rational.ONE.sub(wet)).div(dryKcal);
+    const cups = dryBasis === 'kg' ? Rational.ZERO : dry;
+    const grams = dryBasis === 'kg' ? dry.mul(THOUSAND) : Rational.ZERO;
     const cans = mer.mul(wet).div(wetKcal);
     return {
       outputs: {
@@ -76,6 +85,8 @@ export const catFood = defineCalculator({
         low,
         high,
         treats: mer.mul(TREAT_SHARE),
+        grams,
+        gramsWithTreats: grams.mul(FOOD_SHARE),
       },
       shopping: [],
       warnings: [],
