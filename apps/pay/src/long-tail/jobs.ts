@@ -3,6 +3,7 @@ import { payConverter } from '@maestro-calc/pay-core/pay-converter';
 import { timeCard } from '@maestro-calc/pay-core/time-card';
 import { moneyText } from '../format.ts';
 import { PATHS, PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
+import type { PagePaths } from '../seo/head.ts';
 import { descriptionOf, titleOf } from '../seo/meta.ts';
 import type { Lang } from '../time-card/receipt.ts';
 import { TIME_CARD_TEXTS } from '../time-card/texts.ts';
@@ -20,6 +21,7 @@ import { ptoLinksOf, ptoPageOf } from './pto.ts';
 import { JOBS, pathOf, type Job, type LongTailJob } from './routes.ts';
 import { shiftLinksOf, shiftPageOf } from './shifts.ts';
 import { hourlySpellingsOf, salarySpellingsOf } from './spellings.ts';
+import { SCHOOL_YEAR_LINK } from './school-year.ts';
 import { tippedLinksOf, tippedPageOf } from './tipped.ts';
 import { weeksLinksOf, weeksPageOf } from './weeks.ts';
 
@@ -192,7 +194,8 @@ export interface LongTailPage {
   /** The calculator the page answers for: its link, prefilled, and its title, for the breadcrumb. */
   readonly calculator: { readonly href: string; readonly label: string; readonly title: string };
   readonly note: string;
-  readonly paths: Readonly<Record<Lang, string>>;
+  /** Both languages, or English alone on the English-only school year page. */
+  readonly paths: PagePaths;
   readonly others: CommonLinks;
   /** The sections under the answer: the figures worked out, the page's own tables and rules. */
   readonly sections?: readonly LongTailSection[];
@@ -310,7 +313,11 @@ export const commonLinksOf = (family: Family, lang: Lang, except?: Job): CommonL
   if (family === 'time-offset') return offsetLinksOf(lang);
   if (family === 'until') return untilLinksOf(lang);
   if (family === 'days-from') return daysFromLinksOf(lang);
-  if (family === 'weeks') return weeksLinksOf(lang);
+  if (family === 'weeks') {
+    const weeks = weeksLinksOf(lang);
+    // the English-only school year page closes the English list
+    return lang === 'en' ? { ...weeks, links: [...weeks.links, SCHOOL_YEAR_LINK] } : weeks;
+  }
   const w = family === 'overtime' ? WORDS[lang].overtime : WORDS[lang];
   const members = JOBS.filter((job) => familyOf(job) === family);
   const listed = except === undefined ? members : nearestOf(members, except);

@@ -13,7 +13,7 @@ import { checkSite } from '@maestro-calc/site-kit/check-site';
 import { embedPageProblems, moduleScriptsOf } from '@maestro-calc/site-kit/embed';
 import { imageProblems } from '@maestro-calc/site-kit/seo-check';
 import { BYLINE_PAGES } from '../src/editorial/bylines.ts';
-import { LONG_TAIL_ROUTES } from '../src/long-tail/routes.ts';
+import { LONG_TAIL_ROUTES, SCHOOL_YEAR_PATH } from '../src/long-tail/routes.ts';
 import { COUNTDOWNS, countdownPathOf } from '../src/dates/routes.ts';
 import { MILITARY_TIME_ROUTES } from '../src/military/routes.ts';
 import { pathsOfRoute, ROUTES } from '../src/routes.ts';
@@ -67,6 +67,7 @@ const all = [
     sitemap: existsSync(sitemapFile) ? readFileSync(sitemapFile, 'utf8') : '',
     longTail: [
       ...LONG_TAIL_ROUTES.flatMap(({ en, es }) => [en, es]),
+      SCHOOL_YEAR_PATH,
       ...MILITARY_TIME_ROUTES.flatMap(pathsOfRoute),
       ...COUNTDOWNS.map(countdownPathOf),
     ],

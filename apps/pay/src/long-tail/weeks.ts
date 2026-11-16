@@ -8,7 +8,7 @@ import { monthDayOf, monthNameOf, weekdayNameOf } from './days-from.ts';
 import type { CommonLinks, LongTailPage } from './jobs.ts';
 import { WORKED } from './live-links.ts';
 import { nearestOf } from './nearest.ts';
-import { pathOf, WEEKS, type Weeks } from './routes.ts';
+import { pathOf, SCHOOL_YEAR_PATH, WEEKS, type Weeks } from './routes.ts';
 import type { LongTailSection, LongTailSource } from './sections.ts';
 import {
   addDays,
@@ -890,6 +890,12 @@ const FMLA_SOURCE: LongTailSource = {
 
 type Words = (typeof WORDS)[Lang];
 
+/** The English-only school year page (`./school-year.ts`), linked from the English year pages. */
+const schoolYearLinksOf = (lang: Lang) =>
+  lang === 'en'
+    ? { links: [{ href: SCHOOL_YEAR_PATH, label: 'How many weeks are in a school year?' }] }
+    : {};
+
 /** `days` as weeks and days, the zero part left out: `52 weeks and 1 day`, `4 weeks`. */
 const spanOf = (days: number, lang: Lang): string => {
   const { unit, and } = WORDS[lang];
@@ -935,6 +941,9 @@ const questionOf = (job: Weeks, lang: Lang): string => {
       return w.christmas.h1;
   }
 };
+
+/** The question of a weeks page, its heading: the label it is linked by. */
+export const weeksQuestionOf = questionOf;
 
 /** The weeks pages as links: every one on the hours calculator, on a weeks page (`except`) its nearest. */
 export const weeksLinksOf = (lang: Lang, except?: Weeks): CommonLinks => {
@@ -1019,6 +1028,7 @@ const yearPageOf = (job: Weeks, lang: Lang): LongTailPage => {
       id: 'pay',
       heading: t.payHeading,
       paragraphs: [t.pay(listOf(fridayYears, lang), listOf(workdays, lang)), t.hoursAfter],
+      ...schoolYearLinksOf(lang),
       questions: t.questions(thisIso),
     },
   ];
@@ -1079,6 +1089,7 @@ const daysYearPageOf = (job: Weeks, lang: Lang): LongTailPage => {
       id: 'holidays',
       heading: t.holidaysHeading,
       paragraphs: [t.holidays(w.full(at(spill, 12, 31)), w.full(at(spill + 1, 1, 1))), t.workAfter],
+      ...schoolYearLinksOf(lang),
       questions: t.questions(next),
     },
   ];

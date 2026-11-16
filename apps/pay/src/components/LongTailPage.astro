@@ -1,6 +1,6 @@
 ---
 import { HOME_TEXTS } from '../home/texts.ts';
-import { longTailPageOf, type LongTailJob } from '../long-tail/jobs.ts';
+import type { LongTailPage } from '../long-tail/jobs.ts';
 import { PAY_CONVERTER_TEXTS } from '../pay-converter/texts.ts';
 import { SOURCES_HEADING } from '../long-tail/sections.ts';
 import type { Lang } from '../time-card/receipt.ts';
@@ -11,12 +11,12 @@ import SiteLayout from './SiteLayout.astro';
 
 interface Props {
   readonly lang: Lang;
-  readonly job: LongTailJob;
+  /** The page, built by `longTailPageOf` or, English only, by `../long-tail/school-year.ts`. */
+  readonly page: LongTailPage;
 }
 
-const { lang, job } = Astro.props;
+const { lang, page } = Astro.props;
 const t = PAY_CONVERTER_TEXTS[lang];
-const page = longTailPageOf(job, lang);
 // A page with a tool puts it right under the answer, then the lead and the rows of figures.
 const { tool } = page;
 // the two times share a row, as on the hours calculator; the break and the rate the next

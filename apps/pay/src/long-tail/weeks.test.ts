@@ -389,9 +389,12 @@ describe('weeks long-tail pages', () => {
 
   it('are linked from the hours calculator, and each links its nearest', () => {
     for (const lang of LANGS) {
-      expect(commonLinksOf('weeks', lang).links.map(({ href }) => href)).toEqual(
-        WEEKS.map((job) => pathOf(job, lang)),
-      );
+      // the English list closes with the English-only school year page (./school-year.test.ts)
+      expect(
+        commonLinksOf('weeks', lang)
+          .links.map(({ href }) => href)
+          .slice(0, WEEKS.length),
+      ).toEqual(WEEKS.map((job) => pathOf(job, lang)));
       for (const job of WEEKS) {
         const links = longTailPageOf(job, lang).others.links.map(({ href }) => href);
         expect(links).not.toContain(pathOf(job, lang));

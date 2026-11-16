@@ -49,10 +49,11 @@ describe('ROUTES', () => {
     }
   });
 
-  it('pairs every page but the English-only morning military times and the Spanish-only dates and Mexico pages', () => {
+  it('pairs every page but the English-only morning military times and school year, and the Spanish-only dates and Mexico pages', () => {
     const english = ROUTES.flatMap(({ en, es }) => (es === undefined ? [en] : []));
-    expect(english).toHaveLength(22);
-    for (const path of english) expect(path).toMatch(/^\/military-time\/[0-9]{4}$/);
+    expect(english).toHaveLength(23);
+    for (const path of english)
+      expect(path).toMatch(/^\/(military-time\/[0-9]{4}|pay\/how-many-weeks-in-a-school-year)$/);
     const spanish = ROUTES.flatMap(({ en, es }) => (en === undefined ? [es] : []));
     expect(spanish).toEqual(expect.arrayContaining(MEXICO_ROUTES.map(({ es }) => es)));
     for (const path of spanish)

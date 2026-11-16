@@ -1,4 +1,4 @@
-import { nearestOf } from '../long-tail/nearest.ts';
+import { NEIGHBORS, nearestOf } from '../long-tail/nearest.ts';
 import {
   DAYS,
   DIFFERENTIALS,
@@ -8,6 +8,7 @@ import {
   MINUTES,
   pathOf,
   PTOS,
+  SCHOOL_YEAR_PATH,
   SHIFTS,
   TIPPED,
   WEEKS,
@@ -66,10 +67,11 @@ const FAMILIES: readonly { calculator: string; members: readonly LongTailJob[] }
 
 /**
  * Every long-tail page: its calculator links it, and it links its calculator and the
- * `NEIGHBORS` pages of its family nearest to it, in its own language.
+ * `NEIGHBORS` pages of its family nearest to it, in its own language. The English-only school
+ * year page links the first `NEIGHBORS` weeks pages.
  */
-export const LONG_TAIL_RULES: readonly LongTailRule[] = FAMILIES.flatMap(
-  ({ calculator, members }) =>
+export const LONG_TAIL_RULES: readonly LongTailRule[] = [
+  ...FAMILIES.flatMap(({ calculator, members }) =>
     members.flatMap((job) =>
       LANGS.map((lang) => ({
         path: pathOf(job, lang),
@@ -77,7 +79,13 @@ export const LONG_TAIL_RULES: readonly LongTailRule[] = FAMILIES.flatMap(
         siblings: nearestOf(members, job).map((sibling) => pathOf(sibling, lang)),
       })),
     ),
-);
+  ),
+  {
+    path: SCHOOL_YEAR_PATH,
+    calculator: routeOf('hours').en,
+    siblings: WEEKS.slice(0, NEIGHBORS).map((sibling) => pathOf(sibling, 'en')),
+  },
+];
 
 /**
  * Every countdown page (Spanish only): the days-between calculator links it, and it links the

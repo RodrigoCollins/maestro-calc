@@ -2,7 +2,7 @@ import { DAYS_BETWEEN_PATH } from '../dates/routes.ts';
 import { AGUINALDO_PATH, VACACIONES_PATH } from '../mexico/routes.ts';
 import { describe, expect, it } from 'vitest';
 import { NEIGHBORS } from '../long-tail/nearest.ts';
-import { LONG_TAIL_ROUTES } from '../long-tail/routes.ts';
+import { LONG_TAIL_ROUTES, SCHOOL_YEAR_ROUTES } from '../long-tail/routes.ts';
 import { pathsOfRoute, ROUTES, type Route } from '../routes.ts';
 import { STATE_ROUTES } from '../states/routes.ts';
 import {
@@ -31,7 +31,9 @@ const calculators = both(ROUTES.filter(({ kind }) => kind === 'calculator'));
 
 describe('LONG_TAIL_RULES', () => {
   it('holds every long-tail page once, in each language', () => {
-    expect(LONG_TAIL_RULES.map(({ path }) => path).sort()).toEqual(both(LONG_TAIL_ROUTES).sort());
+    expect(LONG_TAIL_RULES.map(({ path }) => path).sort()).toEqual(
+      both([...LONG_TAIL_ROUTES, ...SCHOOL_YEAR_ROUTES]).sort(),
+    );
   });
 
   it('gives each a calculator of the route table and at most NEIGHBORS nearest siblings of its language', () => {

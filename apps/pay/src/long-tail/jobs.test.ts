@@ -23,6 +23,7 @@ import {
   TIME_CARD_PATHS,
   TIPPED,
 } from './jobs.ts';
+import { SCHOOL_YEAR_ROUTES } from './routes.ts';
 
 const LANGS = ['en', 'es'] as const;
 
@@ -306,7 +307,11 @@ describe('long-tail pages', () => {
           'weeks',
         ] as const
       ).flatMap((per) => commonLinksOf(per, lang).links.map(({ href }) => href));
-      expect(linked.sort()).toEqual(LONG_TAIL_ROUTES.map((route) => route[lang]).sort());
+      // the hours calculator also lists the English-only school year page
+      const english = lang === 'en' ? SCHOOL_YEAR_ROUTES.map(({ en }) => en) : [];
+      expect(linked.sort()).toEqual(
+        [...LONG_TAIL_ROUTES.map((route) => route[lang]), ...english].sort(),
+      );
     }
   });
 });
