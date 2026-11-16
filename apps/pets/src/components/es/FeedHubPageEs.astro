@@ -1,0 +1,104 @@
+---
+import { checkedText } from '../../editorial.ts';
+import { COMIDA_ENGLISH_CHECKED } from '../../es/comida-perro.ts';
+import { CUANTO_COME } from '../../es/cuanto-come.ts';
+import { HEADINGS_ES } from '../../es/texts.ts';
+import { hrefOf } from '../../routes.ts';
+import Byline from '../Byline.astro';
+import Layout from '../Layout.astro';
+import ShareLink from '../ShareLink.astro';
+import Sources from '../Sources.astro';
+
+const {
+  title,
+  description,
+  h1,
+  lead,
+  checked,
+  tableHeading,
+  columns,
+  rows,
+  sections,
+  questions,
+  sources,
+} = CUANTO_COME;
+---
+
+<Layout {title} {description} modified={checked}>
+  <main class="bf-page">
+    <h1>{h1}</h1>
+    <Byline {checked} />
+    <p>{lead}</p>
+    <section aria-labelledby="por-peso">
+      <h2 id="por-peso">{tableHeading}</h2>
+      <div
+        class="bf-scroll"
+        tabindex="0"
+        role="region"
+        aria-label={`${tableHeading}, ${HEADINGS_ES.scrolls}`}
+      >
+        <table class="bf-table">
+          <thead>
+            <tr>
+              {columns.map((column) => (
+                <th scope="col">{column}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(({ href, cells: [first, ...cells] }) => (
+              <tr>
+                <th scope="row">
+                  <a {href}>{first}</a>
+                </th>
+                {cells.map((cell) => (
+                  <td>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Cada peso abre la <a href={hrefOf('dog', 'es')}>calculadora de comida para perros</a> con
+        ese peso: cambia la etapa de vida y las calorías de tu etiqueta.
+      </p>
+    </section>
+    {sections.map(({ id, heading, paragraphs }) => (
+      <section aria-labelledby={id}>
+        <h2 {id}>{heading}</h2>
+        {paragraphs.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </section>
+    ))}
+    <section aria-labelledby="faq">
+      <h2 id="faq">{HEADINGS_ES.faq}</h2>
+      {questions.map(({ question, answer }) => (
+        <>
+          <h3>{question}</h3>
+          <p>{answer}</p>
+        </>
+      ))}
+    </section>
+    <section class="bf-card mint" aria-labelledby="bf-sigue">
+      <h2 id="bf-sigue">Sigue leyendo</h2>
+      <ul>
+        <li>
+          <a href={hrefOf('dog', 'es')}>Calculadora de comida para perros: cuántos gramos al día</a>
+        </li>
+        <li>
+          <a href={hrefOf('foods', 'es')}>¿Qué frutas pueden comer los perros?</a>
+        </li>
+        <li>
+          <a href={hrefOf('label-guide')}>How to read a pet food label (en inglés)</a>
+        </li>
+      </ul>
+    </section>
+    <p>
+      El equipo editorial leyó las fuentes en inglés el {checkedText(COMIDA_ENGLISH_CHECKED, 'es')}.
+    </p>
+    <Sources {sources} />
+    <ShareLink path={CUANTO_COME.path} {title} />
+  </main>
+</Layout>

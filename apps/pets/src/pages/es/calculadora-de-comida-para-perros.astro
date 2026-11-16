@@ -1,0 +1,35 @@
+---
+import { dogFood } from '@maestro-calc/pets-core/dog-food';
+import CalcPage from '../../components/CalcPage.astro';
+import {
+  COMIDA_PERRO_ARTICLE,
+  COMIDA_PERRO_METHOD,
+  COMIDA_PERRO_PAGE,
+} from '../../es/comida-perro.ts';
+import { dogViewEs } from '../../es/comida-perro-view.ts';
+import ComidaPerroScript from '../../islands/ComidaPerroScript.astro';
+import { hrefOf } from '../../routes.ts';
+---
+
+<CalcPage
+  page={COMIDA_PERRO_PAGE}
+  calculator={dogFood}
+  view={dogViewEs}
+  kind="dog"
+  method={COMIDA_PERRO_METHOD}
+  article={COMIDA_PERRO_ARTICLE}
+  related={[
+    {
+      href: hrefOf('feed', 'es'),
+      label: '¿Cuánto debe comer un perro según su peso? Tabla de 2 a 50 kg',
+    },
+    {
+      href: hrefOf('foods', 'es'),
+      label: '¿Qué frutas pueden comer los perros? Todos los alimentos, de tóxico a seguro',
+    },
+    { href: hrefOf('dog-age', 'es'), label: 'Edad de perro en años humanos' },
+    { href: hrefOf('puppy'), label: 'Puppy feeding calculator (en inglés)' },
+  ]}
+>
+  <ComidaPerroScript />
+</CalcPage>

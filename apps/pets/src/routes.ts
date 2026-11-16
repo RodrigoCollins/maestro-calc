@@ -30,7 +30,12 @@ export interface Route {
 /** The page files of `src/pages` (the 404 is not a route), in the order of the site. */
 export const ROUTES: readonly Route[] = [
   { id: 'home', kind: 'home', path: '/', de: '/de', fr: '/fr', es: '/es' },
-  { id: 'dog', kind: 'calculator', path: '/dog-food-calculator' },
+  {
+    id: 'dog',
+    kind: 'calculator',
+    path: '/dog-food-calculator',
+    es: '/es/calculadora-de-comida-para-perros',
+  },
   { id: 'cat', kind: 'calculator', path: '/cat-food-calculator' },
   { id: 'puppy', kind: 'calculator', path: '/puppy-feeding-calculator' },
   { id: 'kitten', kind: 'calculator', path: '/kitten-feeding-calculator' },
@@ -65,7 +70,12 @@ export const ROUTES: readonly Route[] = [
   },
   { id: 'cat-growth-guide', kind: 'article', path: '/when-do-cats-stop-growing' },
   { id: 'dog-heat-guide', kind: 'article', path: '/dog-in-heat' },
-  { id: 'feed', kind: 'article', path: '/how-much-should-i-feed-my-dog' },
+  {
+    id: 'feed',
+    kind: 'article',
+    path: '/how-much-should-i-feed-my-dog',
+    es: '/es/cuanto-debe-comer-un-perro-segun-su-peso',
+  },
   { id: 'feed-10', kind: 'article', path: '/how-much-to-feed-a-10-lb-dog' },
   { id: 'feed-15', kind: 'article', path: '/how-much-to-feed-a-15-lb-dog' },
   { id: 'feed-20', kind: 'article', path: '/how-much-to-feed-a-20-lb-dog' },

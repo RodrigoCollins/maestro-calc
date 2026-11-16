@@ -32,7 +32,7 @@ interface Props {
 }
 
 const { page, calculator, view, kind, related = [], method, article } = Astro.props;
-// the words of the page around the figures: English, or German, French or Spanish for the dog age page under /de, /fr and /es
+// the words of the page around the figures: English, or German, French or Spanish for the pages under /de, /fr and /es
 const lang = langOf(page.path);
 const words = {
   en: {
@@ -44,6 +44,12 @@ const words = {
     scrolls: 'scrolls sideways on a narrow screen',
     faq: 'Frequently asked questions',
     related: 'Related',
+    morning: 'Morning',
+    evening: 'Evening',
+    kcalDay: 'kcal a day',
+    treatsUpTo: 'treats up to',
+    range: 'range',
+    withTreats: 'with treats:',
   },
   de: {
     stage: 'Lebensphase:',
@@ -54,6 +60,12 @@ const words = {
     scrolls: 'lässt sich auf schmalen Bildschirmen seitlich scrollen',
     faq: 'Häufige Fragen',
     related: 'Weiterlesen',
+    morning: 'Morgens',
+    evening: 'Abends',
+    kcalDay: 'kcal am Tag',
+    treatsUpTo: 'Leckerli bis',
+    range: 'Spanne',
+    withTreats: 'mit Leckerli:',
   },
   fr: {
     stage: 'stade de vie :',
@@ -64,6 +76,12 @@ const words = {
     scrolls: 'défile horizontalement sur un écran étroit',
     faq: 'Questions fréquentes',
     related: 'À lire aussi',
+    morning: 'Matin',
+    evening: 'Soir',
+    kcalDay: 'kcal par jour',
+    treatsUpTo: 'friandises jusqu’à',
+    range: 'fourchette',
+    withTreats: 'avec friandises :',
   },
   es: {
     stage: 'etapa de vida:',
@@ -74,6 +92,12 @@ const words = {
     scrolls: 'se desplaza horizontalmente en una pantalla estrecha',
     faq: 'Preguntas frecuentes',
     related: 'Sigue leyendo',
+    morning: 'Mañana',
+    evening: 'Noche',
+    kcalDay: 'kcal al día',
+    treatsUpTo: 'premios hasta',
+    range: 'rango',
+    withTreats: 'con premios:',
   },
 }[lang];
 // The page renders the result of its starting values, so it reads complete with no script.
@@ -137,8 +161,8 @@ const fields = calculator.inputs.map((input) => {
             <div class="bf-bowl">
               <div data-html="bowl" set:html={html['bowl']} />
               <p class="bf-meals">
-                <span>Morning</span>
-                <span>Evening</span>
+                <span>{words.morning}</span>
+                <span>{words.evening}</span>
               </p>
             </div>
             <div class="bf-figures">
@@ -168,17 +192,17 @@ const fields = calculator.inputs.map((input) => {
               )}
               <ul class="bf-chips">
                 <li>
-                  <strong data-text="kcal">{text['kcal']}</strong> kcal a day
+                  <strong data-text="kcal">{text['kcal']}</strong> {words.kcalDay}
                 </li>
                 <li>
-                  treats up to <strong data-text="treats">{text['treats']}</strong> kcal
+                  {words.treatsUpTo} <strong data-text="treats">{text['treats']}</strong> kcal
                 </li>
                 <li>
-                  range <strong data-text="range">{text['range']}</strong> kcal
+                  {words.range} <strong data-text="range">{text['range']}</strong> kcal
                 </li>
                 {kind === 'dog' && (
                   <li>
-                    with treats: <strong data-text="withTreats">{text['withTreats']}</strong>
+                    {words.withTreats} <strong data-text="withTreats">{text['withTreats']}</strong>
                   </li>
                 )}
               </ul>

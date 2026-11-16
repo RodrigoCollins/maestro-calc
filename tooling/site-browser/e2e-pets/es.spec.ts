@@ -87,3 +87,25 @@ test('tells the reader of a toxic food to call the veterinarian at once', async 
     await expect(page.locator('main .bf-call').first()).toContainText('Llama ya a tu veterinario');
   }
 });
+
+test('opens the Spanish dog food calculator at the weight of a row of the feeding table', async ({
+  page,
+}) => {
+  await page.goto('/es/cuanto-debe-comer-un-perro-segun-su-peso');
+  await page.locator('main table a', { hasText: '35 kg' }).click();
+  await expect(page).toHaveURL(/\/es\/calculadora-de-comida-para-perros\?/);
+  await expect(page.locator('[name="weight"]')).toHaveValue('35');
+  // 35 kg neutered: 70 x 35^0.75 x 1.6 = 1,611.6 kcal, / 3,600 x 1,000 = 448 g
+  await expect(page.locator('[data-text="figure"]').first()).toHaveText('448');
+  await expect(page.locator('[data-text="unit"]').first()).toHaveText('gramos al día');
+});
+
+test('leads the English dog food calculator to its Spanish twin from the header', async ({
+  page,
+}) => {
+  await page.goto('/dog-food-calculator');
+  await expect(page.locator('header a[hreflang="es"]')).toHaveAttribute(
+    'href',
+    '/es/calculadora-de-comida-para-perros',
+  );
+});
