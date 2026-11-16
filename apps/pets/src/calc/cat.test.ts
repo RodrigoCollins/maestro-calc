@@ -21,6 +21,7 @@ describe('the cat page', () => {
       dryKcal: '350',
       wetKcal: '80',
       wetShare: '0',
+      dryBasis: 'cup',
     });
   });
 
@@ -79,6 +80,14 @@ describe('the cat result', () => {
     expect(text['figure']).toBe('¼');
     expect(text['canFigure']).toBe('1 ½');
     expect(show).toEqual({ dry: true, wet: true });
+  });
+
+  it('writes grams for a dry label per kilogram: 4 kg on 3,800 kcal/kg is 63 g', () => {
+    const { text, show } = patch({ weight: '4', unit: 'kg', dryBasis: 'kg', dryKcal: '3800' });
+    expect(text['figure']).toBe('63');
+    expect(text['unit']).toBe('grams of dry food a day');
+    expect(text['exact']).toBe('62.5 g exactly');
+    expect(show).toEqual({ dry: true, wet: false });
   });
 
   it('gives nothing for a field it cannot read', () => {
