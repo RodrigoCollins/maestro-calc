@@ -19,6 +19,6 @@
     "@playwright/test": "1.65.0",
     "@types/node": "24.19.2",
     "typescript": "6.0.3",
-    "wrangler": "4.160.0"
+    "wrangler": "4.162.0"
   }
 }
